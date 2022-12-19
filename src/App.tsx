@@ -43,6 +43,7 @@ import '@ionic/react/css/display.css';
 
 /* Theme variables */
 import './theme/variables.css';
+import './theme/custom-tab-bar.css';
 
 const App = () => {
 
@@ -117,40 +118,24 @@ const App = () => {
     return (
         <IonApp>
             <IonReactRouter>
-                <IonTabs>
-                    <IonRouterOutlet>
-                        <Route exact path="/tab1">
-                            <All />
+                <IonSplitPane contentId="main">
+                    <Menu pages={ pages } />
+                    <IonRouterOutlet id="main">
+                        <Route path="/" exact={true}>
+                            <Redirect to="/overlay/all" />
                         </Route>
-                        <Route exact path="/tab2">
-                            <All />
-                        </Route>
-                        <Route path="/tab3">
-                            <All />
-                        </Route>
-                        <Route path="/tab4">
-                            <All />
-                        </Route>
-                        <Route exact path="/">
-                            <Redirect to="/tab1" />
-                        </Route>
-                    </IonRouterOutlet>
-                    <IonTabBar slot="bottom">
-                        <IonTabButton tab="tab1" href="/tab1">
-                            <IonIcon icon={ home } />
-                        </IonTabButton>
-                        <IonTabButton tab="tab2" href="/tab2">
-                            <IonIcon icon={ search } />
-                        </IonTabButton>
-                        <IonTabButton tab="tab3" href="/tab3">
-                            <IonIcon icon={ chatbubble } />
-                        </IonTabButton>
 
-                        <IonTabButton tab="tab4" href="/tab4">
-                            <IonIcon icon={ person } />
-                        </IonTabButton>
-                    </IonTabBar>
-                </IonTabs>
+                        { pages.map((page, index) => {
+
+                            const pageComponent = page.component;
+
+                            return (
+
+                                <Route key={ index } path={ page.url } exact={ true } component={ pageComponent } />
+                            );
+                        })}
+                    </IonRouterOutlet>
+                </IonSplitPane>
             </IonReactRouter>
         </IonApp>
     )
