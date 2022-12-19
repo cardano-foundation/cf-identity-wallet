@@ -1,6 +1,15 @@
 
 import React, {useRef} from "react";
-import {IonApp, IonIcon, IonRouterOutlet, IonSplitPane, IonTabBar, IonTabButton, IonTabs} from '@ionic/react';
+import {
+    IonApp,
+    IonIcon,
+    IonRouterOutlet,
+    IonSplitPane,
+    IonTabBar,
+    IonTabButton,
+    IonTabs,
+    setupIonicReact
+} from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
 import { useEffect } from "react";
@@ -14,8 +23,8 @@ import Picker from './screens/Picker';
 import Popover from './screens/Popover';
 import Toast from './screens/Toast';
 import { chatbubble, home, person, search } from 'ionicons/icons';
-//import './App.scss';
 
+setupIonicReact();
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
 

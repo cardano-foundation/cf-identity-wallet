@@ -3,8 +3,6 @@ import React, { useEffect, useRef } from 'react';
 import CardanoModule from "../lib/CardanoModule";
 import {useTranslation} from "react-i18next";
 
-setupIonicReact({});
-
 // @ts-ignore
 const AppWrapper = (props) => {
 
