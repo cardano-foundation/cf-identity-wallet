@@ -1,0 +1,69 @@
+{
+  "home": {
+    "financialHealth": "Salud Financiera",
+    "expenses": "Gastos",
+    "balanced": "Balanceado",
+    "incomes": "Ingresos",
+    "send": "Enviar",
+    "fundWallet": "Recibir",
+    "assets": "Activos",
+    "activity": "Actividad",
+    "tokens": "Tokens",
+    "nft": "NFT",
+    "identity": "Identidad",
+    "nativeToken": "Token Nativo",
+    "policyId": "Policy ID",
+    "amount": "Cantidad",
+    "id": "ID",
+    "idProvider": "Proveedor",
+    "idStatus": "Estado"
+  },
+  "send": {
+    "sendFrom": "Enviar desde",
+    "toAddress": "A la dirección:",
+    "adaToSend": "Ada a enviar",
+    "address": "Dirección",
+    "remove": "Eliminar",
+    "fee": "comisión de red",
+    "enterPassword": "Introduzca la contraseña",
+    "confirm": "Confirmar",
+    "done": "Hecho",
+    "addAsset": "Añadir Activo",
+    "pay": "Pagar"
+  },
+  "accounts": {
+    "label": "Cuentas",
+    "tip1": "Tip1",
+    "tip2": "Tip2",
+    "name": "Nome",
+    "seedTip": "Utilice su frase semilla de 15 o 24 para restaurar su cuenta o genera una nueva.",
+    "new": "Nueva",
+    "enterSeed": "Introducir frase semilla",
+    "spendingPassword": "Contraseña de gastos",
+    "cancel": "Cancelar",
+    "stakeAddress": "Dirección de stake",
+    "selected": "Seleccionada",
+    "addAcount": "Añadir Cuenta"
+  },
+  "receive": {
+    "label": "Recibir",
+    "copy": "Copiar",
+    "share": "Compartir"
+  },
+  "stats": {
+    "label": "Estadisticas",
+    "epoch": "Epoca",
+    "block": "Bloque",
+    "slot": "Slot",
+    "rewards": "Recompensas",
+    "stakingActivity": "Actividad de staking",
+    "congratsMessage": "Enhorabuena por las recompensas!"
+  },
+  "settings": {
+    "settings": "Ajustes",
+    "darkMode": "Modo Oscuro",
+    "language": "Lenguaje",
+    "blockfrost": "Blockfrost",
+    "submit": "Submit Api"
+  }
+}

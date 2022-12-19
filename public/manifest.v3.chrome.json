@@ -1,0 +1,43 @@
+{
+  "name": "BOOST Wallet",
+  "short_name": "BOOST Wallet",
+  "description": "Cardano light wallet",
+  "manifest_version": 3,
+  "version": "1.0.0",
+  "action": {
+    "default_title": "BOOST Wallet",
+    "default_popup": "popup.html"
+  },
+  "icons": {
+    "128": "logo192.png"
+  },
+  "permissions": [
+    "storage",
+    "unlimitedStorage",
+    "tabs",
+    "scripting",
+    "activeTab"
+  ],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-eval'; worker-src 'self' 'wasm-unsafe-eval'; object-src 'self'; style-src 'unsafe-inline' 'self'; img-src 'unsafe-inline' 'self' data: http://www.w3.org; script-src-elem 'unsafe-inline' 'self' https://unpkg.com; default-src 'self'; connect-src 'unsafe-inline' 'self' https://api.coingecko.com https://cardano-preprod.blockfrost.io localhost"
+  },
+  "background": { "service_worker": "background.bundle.js" },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icon-128.png",
+        "icon-34.png",
+        "injected.bundle.js",
+        "internalPopup.html"
+      ],
+      "matches": ["http://*/*", "https://*/*", "<all_urls>"]
+    }
+  ],
+  "content_scripts": [
+    {
+      "matches": ["http://*/*", "https://*/*", "<all_urls>"],
+      "js": ["contentScript.bundle.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

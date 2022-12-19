@@ -1,0 +1,70 @@
+{
+  "hom2": "hom233222",
+  "home": {
+    "financialHealth": "Financial Health",
+    "expenses": "Expenses",
+    "balanced": "Balanced",
+    "incomes": "Incomes",
+    "send": "Send",
+    "fundWallet": "Fund Wallet",
+    "assets": "Assets",
+    "activity": "Activity",
+    "tokens": "Tokens",
+    "nft": "NFT",
+    "identity": "Identity",
+    "nativeToken": "Native Token",
+    "policyId": "Policy ID",
+    "amount": "Amount",
+    "id": "ID",
+    "idProvider": "Provider",
+    "idStatus": "Status"
+  },
+  "send": {
+    "sendFrom": "Send from",
+    "toAddress": "To address:",
+    "adaToSend": "Ada to send",
+    "address": "Address",
+    "remove": "Remove",
+    "fee": "fee",
+    "enterPassword": "Enter password",
+    "confirm": "Confirm",
+    "done": "Done",
+    "addAsset": "Add Asset",
+    "pay": "Pay"
+  },
+  "accounts": {
+    "label": "Accounts",
+    "tip1": "Tip1",
+    "tip2": "Tip2",
+    "name": "Name",
+    "seedTip": "Use your 15 or 24 seed phrase to restore your account or generate a new one.",
+    "new": "New",
+    "enterSeed": "Enter seed",
+    "spendingPassword": "Spending Password",
+    "cancel": "Cancel",
+    "stakeAddress": "Stake Address",
+    "selected": "Selected",
+    "addAcount": "Add Account"
+  },
+  "receive": {
+    "label": "Receive",
+    "copy": "Copy",
+    "share": "Share"
+  },
+  "stats": {
+    "label": "Statistics",
+    "epoch": "Epoch",
+    "block": "Block",
+    "slot": "Slot",
+    "rewards": "Rewards",
+    "stakingActivity": "Staking Activity",
+    "congratsMessage": "Congratulations for the rewards!"
+  },
+  "settings": {
+    "settings": "Settings",
+    "darkMode": "Dark Mode",
+    "language": "Language",
+    "blockfrost": "Blockfrost",
+    "submit": "Submit Api"
+  }
+}

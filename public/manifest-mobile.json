@@ -1,0 +1,15 @@
+{
+  "manifest_version": 2,
+  "version": "3.2.5",
+  "description": "A wallet to experience Cardano to as developer",
+  "name": "Boost",
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_icon": "logo192.png"
+  },
+  "icons": {
+    "128": "logo192.png"
+  },
+  "permissions": ["storage", "chrome://favicon/", "unlimitedStorage"],
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self';"
+}

@@ -1,0 +1,7 @@
+{
+   "name": "Dev Rendy",
+   "integrations": {
+      "capacitor": {}
+   },
+   "type": "react"
+}
