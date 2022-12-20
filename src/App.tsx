@@ -1,5 +1,5 @@
 
-import React, {useRef} from "react";
+import React, {useRef, useState} from "react";
 import {
     IonApp,
     IonIcon,
@@ -14,6 +14,7 @@ import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
 import { useEffect } from "react";
 import Menu from './components/Menu';
+import TabMenu from './routes/TabMenu';
 import All from './screens/All';
 import ActionSheet from './screens/ActionSheet';
 import Alert from './screens/Alert';
@@ -22,7 +23,17 @@ import Modal from './screens/Modal';
 import Picker from './screens/Picker';
 import Popover from './screens/Popover';
 import Toast from './screens/Toast';
-import { chatbubble, home, person, search } from 'ionicons/icons';
+import {
+    addCircle,
+    addCircleOutline,
+    chatbubble,
+    home, homeOutline, notifications,
+    notificationsOutline,
+    person,
+    personOutline,
+    search,
+    searchOutline
+} from 'ionicons/icons';
 
 setupIonicReact();
 /* Core CSS required for Ionic components to work properly */
@@ -45,9 +56,19 @@ import '@ionic/react/css/display.css';
 import './theme/variables.css';
 import './theme/custom-tab-bar.css';
 
+export const Tabs = () => ( <TabMenu tabs={ [
+    { label: "Profile", component: ActionSheet, icon: personOutline, path: "/tabs/tab1", default: true, isTab: true, sideMenu: true, sideMenuOptions: false }
+] } position="bottom" /> );
+
 const App = () => {
 
     const pages = [
+
+        {
+            label: "Tabs",
+            url: "/tabs",
+            component: Tabs
+        },
 
         {
             label: "All",
@@ -91,6 +112,47 @@ const App = () => {
         }
     ];
 
+    const tabs = [
+
+        {
+            name: "Home",
+            url: "/home",
+            activeIcon: home,
+            icon: homeOutline,
+            component: All
+        },
+        {
+            name: "Search",
+            url: "/search",
+            activeIcon: search,
+            icon: searchOutline,
+            component: ActionSheet
+        },
+        {
+            name: "Add",
+            url: "/add",
+            activeIcon: addCircle,
+            icon: addCircleOutline,
+            component: Alert
+        },
+        {
+            name: "Account",
+            url: "/account",
+            activeIcon: person,
+            icon: personOutline,
+            component: Loading
+        },
+        {
+            name: "Notifications",
+            url: "/notifications",
+            activeIcon: notifications,
+            icon: notificationsOutline,
+            component: Modal
+        }
+    ];
+
+    const [ activeTab, setActiveTab ] = useState(tabs[0].name);
+
     const useIsMounted = () => {
         const isMounted = useRef(false)
         // @ts-ignore
@@ -117,6 +179,7 @@ const App = () => {
 
     return (
         <IonApp>
+
             <IonReactRouter>
                 <IonSplitPane contentId="main">
                     <Menu pages={ pages } />
@@ -124,6 +187,7 @@ const App = () => {
                         <Route path="/" exact={true}>
                             <Redirect to="/overlay/all" />
                         </Route>
+                        <Route path="/tabs" render={ () => <Tabs />} />
 
                         { pages.map((page, index) => {
 
@@ -137,6 +201,7 @@ const App = () => {
                     </IonRouterOutlet>
                 </IonSplitPane>
             </IonReactRouter>
+
         </IonApp>
     )
 };
