@@ -119,15 +119,15 @@ const Enable: FC<IEnable> = (props:IEnable) => {
                       <a className="text-blue-500">Your are using{' '}
                         <span
                             className="cursor-pointer underline"
-                            onClick={() => openCapacitorSite("https://github.com/boost-pool/boost-wallet")}>
-                    Boost Wallet</span>
+                            onClick={() => openCapacitorSite("https://github.com/cardano-foundation/cf-identity-wallet")}>
+                    ID Wallet</span>
                       </a>
                       <p className="leading-normal my-5"> With ❤️
-                        <br/> by BOOST Stake Pool
+                        <br/> Cardano Foundation
                       </p>
                       <span className="inline-flex">
             <a
-                onClick={() => openCapacitorSite("https://twitter.com/BoostPool")}
+                onClick={() => openCapacitorSite("https://twitter.com/Cardano_CF")}
                 className="text-gray-500 cursor-pointer">
               <svg fill="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
                    className="w-5 h-5" viewBox="0 0 24 24">
@@ -136,7 +136,7 @@ const Enable: FC<IEnable> = (props:IEnable) => {
               </svg>
             </a>
             <a
-                onClick={() => openCapacitorSite("https://github.com/boost-pool/boost-wallet")}
+                onClick={() => openCapacitorSite("https://github.com/cardano-foundation/cf-identity-wallet")}
                 className="ml-4 text-gray-500 cursor-pointer">
                 <svg  fill="currentColor" aria-hidden="true" focusable="false" data-prefix="fab" data-icon="github"
                       className="w-4" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512">
