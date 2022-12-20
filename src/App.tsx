@@ -55,6 +55,7 @@ import '@ionic/react/css/display.css';
 /* Theme variables */
 import './theme/variables.css';
 import './theme/custom-tab-bar.css';
+import './theme/popup.css';
 
 export const Tabs = () => ( <TabMenu tabs={ [
     { label: "Profile", component: ActionSheet, icon: personOutline, path: "/tabs/tab1", default: true, isTab: true, sideMenu: true, sideMenuOptions: false }
@@ -182,23 +183,27 @@ const App = () => {
 
             <IonReactRouter>
                 <IonSplitPane contentId="main">
-                    <Menu pages={ pages } />
-                    <IonRouterOutlet id="main">
-                        <Route path="/" exact={true}>
-                            <Redirect to="/overlay/all" />
-                        </Route>
-                        <Route path="/tabs" render={ () => <Tabs />} />
 
-                        { pages.map((page, index) => {
+                    <div style={{height: "650px", width: "400px"}}>
+                        hey!!!!
+                        <Menu pages={ pages } />
+                        <IonRouterOutlet id="main">
+                            <Route path="/" exact={true}>
+                                <Redirect to="/overlay/all" />
+                            </Route>
+                            <Route path="/tabs" render={ () => <Tabs />} />
 
-                            const pageComponent = page.component;
+                            { pages.map((page, index) => {
 
-                            return (
+                                const pageComponent = page.component;
 
-                                <Route key={ index } path={ page.url } exact={ true } component={ pageComponent } />
-                            );
-                        })}
-                    </IonRouterOutlet>
+                                return (
+
+                                    <Route key={ index } path={ page.url } exact={ true } component={ pageComponent } />
+                                );
+                            })}
+                        </IonRouterOutlet>
+                    </div>
                 </IonSplitPane>
             </IonReactRouter>
 
