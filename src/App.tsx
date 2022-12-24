@@ -11,7 +11,7 @@ import {
     setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { Redirect, Route } from 'react-router-dom';
+import {Redirect, Route, useHistory} from 'react-router-dom';
 import { useEffect } from "react";
 import Menu from './components/Menu';
 import TabMenu from './routes/TabMenu';
@@ -23,6 +23,7 @@ import Modal from './screens/Modal';
 import Picker from './screens/Picker';
 import Popover from './screens/Popover';
 import Toast from './screens/Toast';
+
 import {
     addCircle,
     addCircleOutline,
@@ -37,31 +38,28 @@ import {
 
 setupIonicReact();
 /* Core CSS required for Ionic components to work properly */
-import '@ionic/react/css/core.css';
+import './theme/App.scss';
 
-/* Basic CSS for apps built with Ionic */
-import '@ionic/react/css/normalize.css';
-import '@ionic/react/css/structure.css';
-import '@ionic/react/css/typography.css';
-
-/* Optional CSS utils that can be commented out */
-import '@ionic/react/css/padding.css';
-import '@ionic/react/css/float-elements.css';
-import '@ionic/react/css/text-alignment.css';
-import '@ionic/react/css/text-transformation.css';
-import '@ionic/react/css/flex-utils.css';
-import '@ionic/react/css/display.css';
-
-/* Theme variables */
 import './theme/variables.css';
+import './theme/structure.css';
 import './theme/custom-tab-bar.css';
-import './theme/popup.css';
 
 export const Tabs = () => ( <TabMenu tabs={ [
     { label: "Profile", component: ActionSheet, icon: personOutline, path: "/tabs/tab1", default: true, isTab: true, sideMenu: true, sideMenuOptions: false }
 ] } position="bottom" /> );
 
-const App = () => {
+const App = (isExtension?:boolean) => {
+
+    const history = useHistory();
+
+    if (isExtension && history){
+        console.log("isExtension44")
+        console.log(window.location.pathname);
+        history.push('/');
+    }
+
+    console.log("window.location.pathname2")
+    console.log(window.location.pathname);
 
     const pages = [
 
@@ -154,6 +152,7 @@ const App = () => {
 
     const [ activeTab, setActiveTab ] = useState(tabs[0].name);
 
+
     const useIsMounted = () => {
         const isMounted = useRef(false)
         // @ts-ignore
@@ -167,6 +166,7 @@ const App = () => {
     const isMounted = useIsMounted();
 
     useEffect(() => {
+
         const init = async () => {
         }
         if (isMounted.current) {
@@ -177,33 +177,33 @@ const App = () => {
         }
     }, [])
 
-
     return (
         <IonApp>
 
             <IonReactRouter>
                 <IonSplitPane contentId="main">
+                    hellooooo
+                    <Menu pages={ pages } />
 
-                    <div style={{height: "650px", width: "400px"}}>
-                        hey!!!!
-                        <Menu pages={ pages } />
-                        <IonRouterOutlet id="main">
-                            <Route path="/" exact={true}>
-                                <Redirect to="/overlay/all" />
-                            </Route>
-                            <Route path="/tabs" render={ () => <Tabs />} />
+                    {/*
 
-                            { pages.map((page, index) => {
+                    */}
+                    <IonRouterOutlet id="main">
+                        <Route path="/" exact={true}>
+                            <Redirect to="/overlay/all" />
+                        </Route>
+                        <Route path="/tabs" render={ () => <Tabs />} />
 
-                                const pageComponent = page.component;
+                        { pages.map((page, index) => {
 
-                                return (
+                            const pageComponent = page.component;
 
-                                    <Route key={ index } path={ page.url } exact={ true } component={ pageComponent } />
-                                );
-                            })}
-                        </IonRouterOutlet>
-                    </div>
+                            return (
+
+                                <Route key={ index } path={ page.url } exact={ true } component={ pageComponent } />
+                            );
+                        })}
+                    </IonRouterOutlet>
                 </IonSplitPane>
             </IonReactRouter>
 

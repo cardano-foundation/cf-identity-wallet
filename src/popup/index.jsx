@@ -8,8 +8,9 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { LocalNotifications } from '@capacitor/local-notifications';
 import { Toast } from '@capacitor/toast';
-import '../resources/style.css';
-import 'tw-elements';
+import { BrowserRouter } from "react-router-dom";
+//import '../theme/style.css';
+
 import {I18nextProvider} from 'react-i18next';
 import i18n from '../i18n';
 
@@ -19,7 +20,9 @@ root.render(
       <SafeArea top bottom>
          <I18nextProvider i18n={ i18n }>
             <div style={{height: "650px", width: "400px"}}>
-               <App />
+               <BrowserRouter>
+                  <App isExtension={true} />
+               </BrowserRouter>
             </div>
          </I18nextProvider>
       </SafeArea>

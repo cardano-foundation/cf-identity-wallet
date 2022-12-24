@@ -3,7 +3,6 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const config = {
    entry:{
@@ -43,13 +42,14 @@ const config = {
             ],
          },
          {
-            test: /\.(css)$/,
-            use: ['style-loader', 'css-loader'],
+            test: /\.css$/i,
+            include: path.resolve(__dirname, 'src'),
+            use: ['style-loader', 'css-loader', 'postcss-loader'],
          },
       ],
    },
    resolve: {
-      extensions: ['*', '.js', '.jsx', '.ts', '.tsx', '.css', '.scss'],
+      extensions: ['*', '.js', '.jsx', '.ts', '.tsx', '.scss'],
       fallback: {
          crypto: require.resolve('crypto-browserify'),
          stream: require.resolve('stream-browserify'),
@@ -104,11 +104,6 @@ const config = {
       new webpack.ProvidePlugin({
          Buffer: ['buffer', 'Buffer'],
       }),
-      new MiniCssExtractPlugin({
-         filename: "[name].[contenthash].css",
-         chunkFilename: "[id].css",
-         ignoreOrder: false,
-      })
    ],
    infrastructureLogging: {
       level: 'info',

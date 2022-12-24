@@ -41,6 +41,9 @@ module.exports = merge(require("./webpack.common.js"), {
          skipWaiting: true,
          maximumFileSizeToCacheInBytes: 5000000,
       }),
+      new MiniCssExtractPlugin({
+         filename: 'styles.[fullhash].min.css',
+      }),
    ],
    optimization: {
       minimizer: [

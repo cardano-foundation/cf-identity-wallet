@@ -9,6 +9,8 @@ const Menu = ({ pages }) => {
 
 	const location = useLocation();
 
+	console.log("Menu");
+	console.log(location);
 	return (
 		<IonMenu contentId="main" type="overlay">
 			<IonContent>

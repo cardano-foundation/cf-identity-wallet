@@ -7,8 +7,8 @@ import { App as CapacitorApp } from '@capacitor/app';
 import { defineCustomElements } from '@ionic/pwa-elements/loader';
 import { StatusBar, Style } from '@capacitor/status-bar';
 import { LocalNotifications } from '@capacitor/local-notifications';
-import './resources/style.css';
-import 'tw-elements';
+import './theme/style.css';
+
 import {I18nextProvider} from 'react-i18next';
 import i18n from './i18n';
 
@@ -17,7 +17,7 @@ root.render(
     <React.StrictMode>
        <SafeArea top bottom>
           <I18nextProvider i18n={ i18n }>
-             <App />
+             <App isExtension={false} />
           </I18nextProvider>
        </SafeArea>
     </React.StrictMode>
