@@ -74,6 +74,9 @@ http://ionicframework.com/docs/theming/ */
     --ion-color-light-contrast-rgb: 0, 0, 0;
     --ion-color-light-shade: #d7d8da;
     --ion-color-light-tint: #f5f6f9;
+
+    --chat-bubble-sent-color: #105347;
+    --chat-bubble-received-color: #3c3c3e;
 }
 
 @media (prefers-color-scheme: dark) {

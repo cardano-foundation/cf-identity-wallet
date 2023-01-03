@@ -1,0 +1,289 @@
+.chat-page ion-header,
+.chat-page ion-toolbar {
+
+    --min-height: 3.5rem;
+}
+
+.chat-page ion-title {
+
+    margin-left: -3.5rem;
+}
+
+.chat-page ion-title p {
+
+    padding: 0;
+    margin: 0;
+}
+
+.chat-contact {
+
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+
+.chat-contact img {
+
+    height: 2rem;
+    width: 2rem;
+    border-radius: 500px;
+}
+
+.chat-contact-details {
+
+    display: flex;
+    flex-direction: column;
+    margin-left: 0.5rem;
+    text-align: left;
+}
+
+.chat-contact-details p {
+
+    font-size: 0.9rem;
+}
+
+.chat-contact-details ion-text {
+
+    font-size: 0.7rem;
+    font-weight: 400;
+}
+
+.chat-bubble {
+
+    border-radius: 5px;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    margin-top: 0.8rem;
+
+    padding: 0.5rem;
+    max-width: 80%;
+    clear: both;
+
+    display: flex;
+    flex-direction: row;
+    transition: 0.2s all linear;
+}
+
+.chat-bubble:last-child {
+
+    margin-bottom: 0.8rem;
+}
+
+.bubble-sent {
+
+    background-color: var(--chat-bubble-sent-color);
+    float: right;
+}
+
+.bubble-received {
+
+    background-color: var(--chat-bubble-received-color);
+    float: left;
+}
+
+.chat-bubble p {
+
+    padding: 0;
+    margin: 0;
+}
+
+.chat-footer {
+    
+    background-color: rgb(22, 22, 22);
+    border-top: 1px solid rgb(47, 47, 47);
+    padding-top: 0.2rem;
+    padding-bottom: 1rem;
+}
+
+.chat-footer ion-textarea {
+
+    background-color: rgb(31, 31, 31);
+    border: 1px solid rgb(36, 36, 36);
+    color: white;
+    border-radius: 25px;
+    padding-left: 0.5rem;
+    caret-color: var(--ion-color-primary);
+}
+
+.chat-footer ion-icon {
+
+    font-size: 1.5rem;
+    margin-top: 8px;
+}
+
+.chat-input-container {
+
+    width: 70%;
+    margin-right: 0.75rem;
+}
+
+.chat-send-button {
+
+    margin: 0 !important;
+    padding: 0 !important;
+    position: absolute;
+    right: 17px;
+    margin-top: -0.2rem !important;
+
+    display: flex;
+    flex-direction: row;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+}
+
+.chat-send-button ion-icon {
+
+    color: white;
+    background-color: var(--ion-color-primary);
+    font-size: 1.1rem;
+    border-radius: 500px;
+    padding: 0.5rem;
+}
+
+.chat-time {
+
+    color: rgb(165, 165, 165);
+    font-size: 0.75rem;
+    right: 0;
+    bottom: 0 !important;
+    margin: 0;
+    padding: 0;
+    margin-top: 5px;
+}
+
+.bubble-arrow {
+    
+    position: absolute;
+    float: left;
+    left: 6px;
+    margin-top: -8px;
+    /* top: 0px; */
+}
+
+.bubble-arrow.alt {
+
+    position: relative;
+    bottom: 0px;
+    left: auto;
+    right: -3px;
+    float: right;
+}
+
+.bubble-arrow:after {
+    
+    content: "";
+    position: absolute;
+    border-top: 15px solid var(--chat-bubble-received-color);
+    border-left: 15px solid transparent;
+    border-radius: 4px 0 0 0px;
+    width: 0;
+    height: 0;
+}
+
+.bubble-arrow.alt:after {
+    
+    border-top: 15px solid var(--chat-bubble-sent-color);
+    transform: scaleX(-1);
+}
+
+.chat-reply-to-row {
+
+    bottom: 70px !important;
+    position: absolute;
+
+    border-left: 4px solid rgb(224, 176, 18);
+    width: 100%;
+    background-color: rgb(22, 22, 22);
+    border-top: 1px solid rgb(47, 47, 47);
+    padding: 0.5rem;
+    padding-bottom: 0.8rem;
+}
+
+.chat-reply-to-container {
+
+    display: flex;
+    flex-direction: column;
+}
+
+.chat-reply-to-name {
+
+    color: rgb(224, 176, 18);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.chat-reply-to-message {
+
+    font-size: 0.8rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.all-chats {
+
+
+}
+
+.chat-bottom-details {
+
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-content: center;
+    align-items: center;
+    justify-content: flex-end;
+    margin-top: 0.4rem;
+}
+
+.chat-bottom-details ion-icon {
+
+    font-size: 0.6rem;
+    color: grey;
+    margin-left: 0.5rem;
+    margin-top: 0.05rem;
+}
+
+.chat-bottom-details span {
+
+    margin: 0;
+    padding: 0;
+    font-size: 0.75rem;
+    color: rgb(190, 190, 190);
+}
+
+.in-chat-reply-to-container {
+
+    background-color: rgba(0, 0, 0, 0.2);
+    border-left: 3px solid rgb(224, 176, 18);
+    height: fit-content;
+    padding: 0.5rem;
+    border-radius: 5px;
+    margin-bottom: 0.5rem;
+}
+
+.in-chat-reply-to-container h1 {
+
+    margin: 0;
+    padding: 0;
+    color: rgb(224, 176, 18);
+    font-size: 0.8rem;
+}
+
+.in-chat-reply-to-container p {
+
+    color: rgb(167, 167, 167);
+    font-size: 0.8rem;
+}
+
+.bottom-container {
+
+    position: absolute;
+    bottom: 4.5rem;
+    height: 5rem;
+    background-color: red;
+    width: 100%;
+}
