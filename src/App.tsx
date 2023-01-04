@@ -197,7 +197,6 @@ const App = (isExtension?: boolean) => {
     <IonApp>
       <IonReactRouter>
         <IonSplitPane contentId='main'>
-          hellooooo
           <Menu pages={pages} />
           {/*
 

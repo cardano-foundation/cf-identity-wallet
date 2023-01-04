@@ -62,14 +62,8 @@ const Chats = () => {
         </IonToolbar>
       </IonHeader>
 
-      <IonContent fullscreen>
-        <IonHeader collapse='condense'>
-          <IonToolbar>
-            <IonTitle size='large'>Chats</IonTitle>
-          </IonToolbar>
-        </IonHeader>
-
-        <IonHeader collapse='condense'>
+      <IonContent>
+        <IonHeader>
           <IonToolbar>
             <IonTitle size='large'>Chats</IonTitle>
           </IonToolbar>
