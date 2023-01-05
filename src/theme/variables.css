@@ -77,6 +77,9 @@ http://ionicframework.com/docs/theming/ */
 
     --chat-bubble-sent-color: #105347;
     --chat-bubble-received-color: #3c3c3e;
+
+    /** transparent **/
+    --ion-color-transparent: rgba(0,0,0,0);
 }
 
 @media (prefers-color-scheme: dark) {

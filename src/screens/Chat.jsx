@@ -3,6 +3,9 @@ import {
   IonBackButton,
   IonButton,
   IonButtons,
+  IonCheckbox,
+  IonItem,
+  IonLabel,
   IonCol,
   IonContent,
   IonFooter,
@@ -218,7 +221,7 @@ const Chat = () => {
 
   const widthAnimation = {
     property: 'width',
-    fromValue: '110%',
+    fromValue: '100%',
     toValue: '100%',
   };
 
@@ -353,7 +356,6 @@ const Chat = () => {
           onDidDismiss={() => setShowActionSheet(false)}
           buttons={actionSheetButtons}
         />
-
         <IonToast
           color='primary'
           isOpen={showToast}
@@ -369,6 +371,9 @@ const Chat = () => {
       <IonFooter className='chat-footer' id='chat-footer'>
         <IonGrid>
           <IonRow className='ion-align-items-center'>
+            <IonItem color='transparent'>
+              <IonCheckbox slot='start'></IonCheckbox>
+            </IonItem>
             <div className='chat-input-container'>
               <CreateAnimation ref={textareaRef} {...textareaAnimation}>
                 <IonTextarea

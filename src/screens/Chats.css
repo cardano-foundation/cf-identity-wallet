@@ -95,3 +95,13 @@
   flex-direction: row;
   justify-content: space-between;
 }
+
+ion-input .native-input {
+  background-color: #333 !important;
+  padding-left: 10px !important;
+  margin: 16px 0 !important;
+}
+
+ion-list {
+  background-color: rgba(0,0,0,0) !important;
+}

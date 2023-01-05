@@ -252,3 +252,12 @@
   display: block;
   z-index: 1;
 }
+
+ion-checkbox {
+  margin: 0;
+}
+
+ion-item::part(native) {
+  --inner-border-width: 0;
+  padding-left: 10px;
+}
