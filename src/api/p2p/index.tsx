@@ -100,7 +100,7 @@ export class PeerConnect extends CardanoPeerConnect {
     }
 
     /**
-     * Add a new torrent tracker for peers discovering
+     * Add a new torrent tracker endpoint for peers discovering
      *
      * @param tracker - The tracker url
      *
@@ -117,11 +117,10 @@ export class PeerConnect extends CardanoPeerConnect {
             if (c.meerkat) c.meerkat.announce = this.trackers;
             return c;
         });
-
     }
 
     /**
-     * Create a new channel.
+     * Create a new channel/server.
      *
      * @param name - The channel object
      *
@@ -135,6 +134,24 @@ export class PeerConnect extends CardanoPeerConnect {
         this.initChannel(name, meerkat.seed, true);
     }
 
+
+    /**
+     * Join an existing channel.
+     *
+     * @param name - The chat name
+     * @param serverAddress - The server address identifier
+     *
+     */
+    joinChannel(name: string, serverAddress: string): void {
+
+        getPeerConnect().then(peerConnect => {
+            // TODO: identifier?seed?
+            let meerkat = new Meerkat({identifier: serverAddress, seed: peerConnect.identity.seed});
+
+            this.initChannel(name, meerkat.seed, false);
+        });
+    }
+
     /**
      * Init an existing channel.
      *
@@ -143,9 +160,15 @@ export class PeerConnect extends CardanoPeerConnect {
      *
      */
     initChannel(name:string, seed: string, isServer: boolean): void {
+        console.log("initChannel");
+
         if( !name || !seed || this.channels.some(c => c.name === name || c.meerkat?.seed === seed)) return;
 
         let meerkat = new Meerkat({seed});
+        console.log("seed:");
+        console.log(seed);
+        console.log("meerkat address:");
+        console.log(meerkat.address());
 
         meerkat.register('message', (address: any, args: any, callback: (arg0: string) => void) => {
             console.log(
@@ -198,24 +221,8 @@ export class PeerConnect extends CardanoPeerConnect {
                             server: false
                         });
                 });
-
             });
         }
-    }
-
-
-
-    /**
-     * Join an existing channel.
-     *
-     * @param serverAddress - The server address identifier
-     *
-     */
-    joinChannel(name: string, serverAddress: string): void {
-
-        let meerkat = new Meerkat({identifier: serverAddress});
-
-        this.initChannel(name, meerkat.seed, false);
     }
 
     /**
@@ -225,8 +232,8 @@ export class PeerConnect extends CardanoPeerConnect {
      *
      */
     closeChannel(channelId: string): void {
-        getPeerConnect().then(channels => {
-            const filteredChannels = channels.filter((c: { id: string; }) => c.id !== channelId);
+        getPeerConnect().then(peerConnect => {
+            const filteredChannels = peerConnect.channels.filter((c: { id: string; }) => c.id !== channelId);
             setPeerConnect(filteredChannels).then(_ => {
                 this.channels = this.channels.filter((c: { id: string; }) => c.id !== channelId);
             });
@@ -237,13 +244,15 @@ export class PeerConnect extends CardanoPeerConnect {
      * Send message to channel
      *
      * @param serverAddress - The channel address to send the message
+     * @param name - The channel name
      * @param message - The text message to send
      *
      */
-    sendMessage(serverAddress: string, message: string): void {
+    sendMessage(serverAddress: string,name: string, message: string): void {
 
         getPeerConnect().then(peerConnect => {
 
+            // TODO: identifier?seed?
             let meerkat = new Meerkat({
                     identifier: serverAddress,
                     seed: peerConnect.identity.seed
@@ -253,12 +262,18 @@ export class PeerConnect extends CardanoPeerConnect {
             meerkat.on('server', () => {
                 console.log(`[info]: SendMessage-> connected to server: ${serverAddress}`);
                 meerkat.rpc(serverAddress, 'message', {message}, (response: (arg0: string) => void) => {
-                    console.log(`Message sent :${message}`)
-                    console.log(`To server :${serverAddress}`)
-                    console.log(`By user :${meerkat.address()}`)
+                    console.log(`Message: ${message}`)
+                    console.log(`Sent to server: ${serverAddress}`)
+                    console.log(`By user: ${meerkat.address()}`)
                     //response(`Message sent: ${message}`);
                     //meerkat.close();
                     //console.log(`Connection is closed`)
+
+                    addMessageInPeerConnect(`${name}:${meerkat.address()}`, {
+                        sender: meerkat.address(),
+                        content: message,
+                        time: moment.utc().millisecond()
+                    });
                 });
             });
         })

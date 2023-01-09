@@ -237,7 +237,9 @@ export const setPeerConnect = async (peers:any) => {
 
 export const addChannelInPeerConnect = async (channel:{id:string,name:string, seed:string, server:boolean, messages:string[]}) => {
 
-  console.log("setPeerInPeerConnect");
+  console.log("addChannelInPeerConnect");
+  console.log("channel");
+  console.log(channel);
   if(!channel) return;
 
   let peerConnect = await getPeerConnect();
@@ -256,6 +258,9 @@ export const addChannelInPeerConnect = async (channel:{id:string,name:string, se
 export const addMessageInPeerConnect = async (channelId:string, message: {sender:string, content:string, time: number}) => {
 
   console.log("addMessageInPeerConnect");
+  console.log("channelId");
+  console.log(channelId);
+  console.log(message);
   if(!channelId) return;
 
   let peerConnect = await getPeerConnect();
