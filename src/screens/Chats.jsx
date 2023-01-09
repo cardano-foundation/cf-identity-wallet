@@ -25,6 +25,7 @@ import { useEffect, useState } from 'react';
 import ChatItem from '../components/ChatItem';
 import { useRef } from 'react';
 import ContactModal from '../components/ContactModal';
+import {peerConnect} from "../api/p2p";
 
 const Chats = () => {
   const pageRef = useRef();
@@ -35,6 +36,9 @@ const Chats = () => {
   const [showContactModal, setShowContactModal] = useState(false);
   const [showCreateServer, setShowCreateServer] = useState(false);
   const [showJoinServer, setShowJoinServer] = useState(false);
+  const [createServerName, setCreateServerName] = useState('');
+  const [joinServerName, setJoinServerName] = useState('');
+  const [joinServerAddressName, setJoinServerAddressName] = useState('');
   const [showConnectDapp, setShowConnectDapp] = useState(false);
 
   useEffect(() => {
@@ -59,12 +63,23 @@ const Chats = () => {
     }
   };
 
+  const createNewChannel = () => {
+
+    console.log("createNewChannel");
+    if (!createServerName?.length) return;
+
+    peerConnect.createChannel(createServerName);
+
+  }
+
   useEffect(() => {
     if (showConnectDapp) {
       //  Something happens!
     }
   }, [showConnectDapp]);
 
+  console.log("peerConnect");
+  console.log(peerConnect);
   return (
     <IonPage>
       <IonHeader>
@@ -89,7 +104,7 @@ const Chats = () => {
             <IonModal isOpen={showCreateServer}>
               <IonHeader>
                 <IonToolbar>
-                  <IonTitle>Create Server</IonTitle>
+                  <IonTitle>Create Channel</IonTitle>
                   <IonButtons slot='end'>
                     <IonButton onClick={() => setShowCreateServer(false)}>
                       Close
@@ -100,19 +115,30 @@ const Chats = () => {
               <IonContent className='ion-padding'>
                 <IonCard>
                   <IonCardHeader>
-                    <IonCardTitle>Create a room</IonCardTitle>
+                    <IonCardTitle>Set a channel name</IonCardTitle>
                   </IonCardHeader>
                   <IonCardContent>
                     <IonList>
                       <IonLabel class='ion-text-wrap' position='stacked'>
-                        Create a new p2p server with WebRTC and WebTorrent
+                        Create a new p2p channel with WebRTC and WebTorrent
                         trackers.
                       </IonLabel>
-                      <IonInput placeholder='Name'/>
-                      <IonButton expand='block'>Create</IonButton>
+                      <IonInput
+                          value={createServerName}
+                          onIonChange={(e) => setCreateServerName(e.target.value)}
+                          placeholder='Name'
+                          type="text"
+                          required
+                          />
+                      <IonButton
+                          disabled={!createServerName?.length}
+                          expand='block'
+                          onClick={() => createNewChannel()}>
+                        Create
+                      </IonButton>
                       <br />
                       <IonLabel class='ion-text-wrap' position='stacked'>
-                        About the Room ID...
+                        About the Channel ID...
                       </IonLabel>
                     </IonList>
                   </IonCardContent>

@@ -6,7 +6,6 @@ let storage:Storage = new Storage();
 export const createStore = (name = "walletStorage") => {
 
   storage = new Storage({
-
     name,
     driverOrder: [Drivers.IndexedDB, Drivers.LocalStorage]
   });
@@ -37,7 +36,7 @@ export const clear = async () => {
 export const setObject = async (tableName:string, id:string, val:any) => {
 
   try {
-    const all = await get(tableName) || [];
+    const all = await get(tableName) || {};
     all[id] = val;
     await set(tableName, all);
     return true;

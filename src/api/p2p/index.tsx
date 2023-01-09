@@ -184,11 +184,10 @@ export class PeerConnect extends CardanoPeerConnect {
         });
 
         if (isServer){
+            console.log("Its server")
             meerkat.on('connections', (clients:number) => {
-                if (clients === 0) {
-                    console.log(`[info]: server ready  ${meerkat.address()}`);
-
-                }
+                console.log(`[info]: server ready: ${meerkat.address()}`);
+                console.log(`id: ${name}:${meerkat.address()}`)
                 addChannelInPeerConnect({
                     id:`${name}:${meerkat.address()}`,
                     name,
@@ -202,9 +201,9 @@ export class PeerConnect extends CardanoPeerConnect {
                             server: true
                         });
                     });
-                console.log(`[info]: ${clients} clients connected in channel`);
             });
         } else {
+            console.log("Its NOT server")
             meerkat.on('server', () => {
                 console.log('[info]: connected to channel');
 

@@ -3,7 +3,7 @@ import {BLOCKFROST_DEFAULT_URL, BLOCKFROST_TOKEN, DEFAULT_NETWORK, SUBMIT_DEFAUL
 import {maxId} from "../utils/utils";
 import Meerkat from "@fabianbormann/meerkat";
 
-export const DB_NAME = "WALLET_DB";
+export const DB_NAME = "ID_WALLET_DB";
 
 createStore(DB_NAME);
 
@@ -215,7 +215,7 @@ export const getPeerConnect = async () => {
     return peerConnect;
   } else {
     const meerkat = new Meerkat();
-    return {
+    const pc = {
       identity: {
         address: meerkat.address(),
         seed: meerkat.seed
@@ -223,7 +223,9 @@ export const getPeerConnect = async () => {
       channels: [],
       trackers: [],
       whitelist: []
-    }
+    };
+    await setPeerConnect(pc)
+    return pc
   }
 }
 
@@ -247,12 +249,15 @@ export const addChannelInPeerConnect = async (channel:{id:string,name:string, se
   console.log(peerConnect);
   if(!peerConnect.channels.some((p: { id: string; }) =>
       p.id === channel.id  )){
-      return;
+    console.log("already there");
+    peerConnect.channels.push(channel);
+    console.log("peerConnect");
+    console.log(peerConnect);
+
+    await set("peer-connect", peerConnect);
   }
 
-  peerConnect.channels.push(channel);
 
-  await set("peer-connect", peerConnect);
 }
 
 export const addMessageInPeerConnect = async (channelId:string, message: {sender:string, content:string, time: number}) => {
