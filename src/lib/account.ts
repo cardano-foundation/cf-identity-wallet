@@ -292,12 +292,15 @@ export const decryptWithPassword = async (
 
 export const encrypt = async (data: string, password: string) => {
   const Cardano = await EmurgoModule.CardanoWasm();
+  const passwordHex = Buffer.from(password, 'utf8').toString('hex');
 
-  const generateRandomHex = customAlphabet('0123456789abcdef');
-  const salt = generateRandomHex(64);
-  const nonce = generateRandomHex(24);
+  const salt = cryptoRandomString(2 * 32);
+  const nonce = cryptoRandomString(2 * 12);
   return Cardano.encrypt_with_password(
-    fromUTF8(password), salt, nonce, data,
+      passwordHex,
+      salt,
+      nonce,
+      data
   );
 }
 
