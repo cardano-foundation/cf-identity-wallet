@@ -1,12 +1,8 @@
 import React, { useRef, useState } from 'react';
 import {
   IonApp,
-  IonIcon,
   IonRouterOutlet,
   IonSplitPane,
-  IonTabBar,
-  IonTabButton,
-  IonTabs,
   setupIonicReact,
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
@@ -19,6 +15,7 @@ import ActionSheet from './screens/ActionSheet';
 import Alert from './screens/Alert';
 import Chats from './screens/Chats';
 import Chat from './screens/Chat';
+import Dashboard from './screens/Dashboard';
 import Loading from './screens/Loading';
 import Modal from './screens/Modal';
 import Picker from './screens/Picker';
@@ -28,7 +25,6 @@ import Toast from './screens/Toast';
 import {
   addCircle,
   addCircleOutline,
-  chatbubble,
   home,
   homeOutline,
   notifications,
@@ -42,7 +38,6 @@ import {
 setupIonicReact();
 /* Core CSS required for Ionic components to work properly */
 import './theme/App.scss';
-
 import './theme/variables.css';
 import './theme/structure.css';
 import './theme/custom-tab-bar.css';
@@ -79,12 +74,6 @@ const App = (isExtension?: boolean) => {
 
   const pages = [
     {
-      label: 'Tabs',
-      url: '/tabs',
-      component: Tabs,
-    },
-
-    {
       label: 'All',
       url: '/overlay/all',
       component: All,
@@ -103,6 +92,11 @@ const App = (isExtension?: boolean) => {
       label: 'Chats',
       url: '/chats',
       component: Chats,
+    },
+    {
+      label: 'Dashboard',
+      url: '/wallet',
+      component: Dashboard,
     },
     {
       label: 'Loading',
@@ -186,10 +180,7 @@ const App = (isExtension?: boolean) => {
   useEffect(() => {
     const init = async () => {};
     if (isMounted.current) {
-      // call the function
-      init()
-        // make sure to catch any error
-        .catch(console.error);
+      init().catch(console.error);
     }
   }, []);
 
@@ -198,20 +189,15 @@ const App = (isExtension?: boolean) => {
       <IonReactRouter>
         <IonSplitPane contentId='main'>
           <Menu pages={pages} />
-          {/*
-
-                    */}
           <IonRouterOutlet id='main'>
             <Route path='/' exact={true}>
               <Redirect to='/overlay/all' />
             </Route>
-            <Route path='/tabs' render={() => <Tabs />} />
+            <Route path='/wallet' render={() => <Dashboard />} />
             <Route path='/chats' render={() => <Chats />} />
             <Route path='/view-chat/:contact_id' render={() => <Chat />} />
-
             {pages.map((page, index) => {
               const pageComponent = page.component;
-
               return (
                 <Route
                   key={index}
