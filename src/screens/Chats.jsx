@@ -14,7 +14,7 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonSearchbar,
+  IonSearchbar, IonList, IonLabel, IonInput,
 } from '@ionic/react';
 import { checkmarkDone, createOutline } from 'ionicons/icons';
 import './Chats.css';
@@ -103,18 +103,18 @@ const Chats = () => {
                     <IonCardTitle>Create a room</IonCardTitle>
                   </IonCardHeader>
                   <IonCardContent>
-                    <ion-list>
-                      <ion-label class='ion-text-wrap' position='stacked'>
+                    <IonList>
+                      <IonLabel class='ion-text-wrap' position='stacked'>
                         Create a new p2p server with WebRTC and WebTorrent
                         trackers.
-                      </ion-label>
-                      <ion-input placeholder='Name'></ion-input>
+                      </IonLabel>
+                      <IonInput placeholder='Name'/>
                       <IonButton expand='block'>Create</IonButton>
                       <br />
-                      <ion-label class='ion-text-wrap' position='stacked'>
+                      <IonLabel class='ion-text-wrap' position='stacked'>
                         About the Room ID...
-                      </ion-label>
-                    </ion-list>
+                      </IonLabel>
+                    </IonList>
                   </IonCardContent>
                 </IonCard>
               </IonContent>
@@ -143,14 +143,14 @@ const Chats = () => {
                     <IonCardTitle>Join a room</IonCardTitle>
                   </IonCardHeader>
                   <IonCardContent>
-                    <ion-list>
-                      <ion-label class='ion-text-wrap' position='stacked'>
+                    <IonList>
+                      <IonLabel class='ion-text-wrap' position='stacked'>
                         Connect through WebRTC and WebTorrent trackers.
-                      </ion-label>
-                      <ion-input placeholder='Room Name'></ion-input>
-                      <ion-input placeholder='Room Address'></ion-input>
+                      </IonLabel>
+                      <IonInput placeholder='Room Name'/>
+                      <IonInput placeholder='Room Address'/>
                       <IonButton expand='block'>Join</IonButton>
-                    </ion-list>
+                    </IonList>
                   </IonCardContent>
                 </IonCard>
               </IonContent>
@@ -179,18 +179,18 @@ const Chats = () => {
                     <IonCardTitle>Connect dApp</IonCardTitle>
                   </IonCardHeader>
                   <IonCardContent>
-                    <ion-list>
-                      <ion-label class='ion-text-wrap' position='stacked'>
+                    <IonList>
+                      <IonLabel class='ion-text-wrap' position='stacked'>
                         Some placeholder text goes here as if it was a lorem
                         ipsum but better.
-                      </ion-label>
-                      <ion-input placeholder='Name'></ion-input>
+                      </IonLabel>
+                      <IonInput placeholder='Name'/>
                       <IonButton expand='block'>Connect</IonButton>
                       <br />
-                      <ion-label class='ion-text-wrap' position='stacked'>
+                      <IonLabel class='ion-text-wrap' position='stacked'>
                         This is a work in progress...
-                      </ion-label>
-                    </ion-list>
+                      </IonLabel>
+                    </IonList>
                   </IonCardContent>
                 </IonCard>
               </IonContent>

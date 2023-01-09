@@ -19,7 +19,7 @@ root.render(
   <React.StrictMode>
     <SafeArea top bottom>
       <I18nextProvider i18n={i18n}>
-        <div style={{ height: '100%', width: '400px' }}>
+        <div style={{ height: '650px', width: '400px' }}>
           <BrowserRouter>
             <App isExtension={true} />
           </BrowserRouter>
