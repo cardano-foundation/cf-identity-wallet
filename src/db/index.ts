@@ -1,6 +1,7 @@
 import {createStore, get, getObject, set, setObject} from './storage';
 import {BLOCKFROST_DEFAULT_URL, BLOCKFROST_TOKEN, DEFAULT_NETWORK, SUBMIT_DEFAULT_URL} from '../../config';
 import {maxId} from "../utils/utils";
+import Meerkat from "@fabianbormann/meerkat";
 
 export const DB_NAME = "WALLET_DB";
 
@@ -204,4 +205,71 @@ export const removeOriginFromWhitelist = async (origin:string) => {
     external.whitelist = external.whitelist.filter((ori: string) => ori !== origin)
     await set("external", external);
   }
+}
+
+export const getPeerConnect = async () => {
+
+  const peerConnect = await get("peer-connect");
+
+  if (peerConnect){
+    return peerConnect;
+  } else {
+    const meerkat = new Meerkat();
+    return {
+      identity: {
+        address: meerkat.address(),
+        seed: meerkat.seed
+      },
+      channels: [],
+      trackers: [],
+      whitelist: []
+    }
+  }
+}
+
+export const setPeerConnect = async (peers:any) => {
+
+  if(!peers) return;
+
+  await set("peer-connect", peers);
+}
+
+
+export const addChannelInPeerConnect = async (channel:{id:string,name:string, seed:string, server:boolean, messages:string[]}) => {
+
+  console.log("setPeerInPeerConnect");
+  if(!channel) return;
+
+  let peerConnect = await getPeerConnect();
+  console.log("peerConnect");
+  console.log(peerConnect);
+  if(!peerConnect.channels.some((p: { id: string; }) =>
+      p.id === channel.id  )){
+      return;
+  }
+
+  peerConnect.channels.push(channel);
+
+  await set("peer-connect", peerConnect);
+}
+
+export const addMessageInPeerConnect = async (channelId:string, message: {sender:string, content:string, time: number}) => {
+
+  console.log("addMessageInPeerConnect");
+  if(!channelId) return;
+
+  let peerConnect = await getPeerConnect();
+  if(!peerConnect.channels.some((p: { id: string; }) =>
+      p.id === channelId  )){
+      return;
+  }
+
+  peerConnect.channels = peerConnect.channels.map((channel: { id: string; messages: any[]; }) => {
+    if (channel.id === channelId) {
+      channel.messages = [...channel.messages, message];
+    }
+    return channel;
+  });
+
+  await set("peer-connect", peerConnect);
 }

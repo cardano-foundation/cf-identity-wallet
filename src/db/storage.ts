@@ -34,12 +34,12 @@ export const clear = async () => {
   await storage.clear();
 }
 
-export const setObject = async (key:string, id:string, val:any) => {
+export const setObject = async (tableName:string, id:string, val:any) => {
 
   try {
-    const all = await get(key) || [];
+    const all = await get(tableName) || [];
     all[id] = val;
-    await set(key, all);
+    await set(tableName, all);
     return true;
   } catch (e) {
     return false;
@@ -47,13 +47,13 @@ export const setObject = async (key:string, id:string, val:any) => {
 
 }
 
-export const setNewObject = async (key:string, val:any) => {
+export const setNewObject = async (tableName:string, val:any) => {
 
   try {
     let value = { ...val };
 
-    let all = await storage.get(key);
-    let objIndex = 0;
+    let all = await storage.get(tableName);
+    let objIndex;
     let aux = 0;
 
     if (all){
@@ -69,7 +69,7 @@ export const setNewObject = async (key:string, val:any) => {
       all = Array(1).fill(value);
     }
 
-    await set(key, all);
+    await set(tableName, all);
     return objIndex+aux;
   } catch (e) {
     console.log("error");
@@ -79,21 +79,21 @@ export const setNewObject = async (key:string, val:any) => {
 
 }
 
-export const removeObject = async (key:string, id:string) => {
+export const removeObject = async (tableName:string, id:string) => {
 
-  let all = await get(key) || [];
+  let all = await get(tableName) || [];
   all = all.filter((a: { id: string; }) => (a.id) !== (id))
 
-  await set(key, all);
+  await set(tableName, all);
 }
 
-export const getObject = async (key:string, id:string) => {
+export const getObject = async (tableName:string, id:string) => {
 
   try {
-    const all = await get(key) || [];
+    const all = await get(tableName) || [];
 
     if (all && all.length){
-      return all.filter;
+      return all.find((o: { id: string; }) => o.id === id);
     }
   } catch (e) {
     console.log(e);
