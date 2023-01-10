@@ -28,6 +28,7 @@ import ContactModal from '../components/ContactModal';
 import {peerConnect} from "../api/p2p/PeerConnect";
 import {handleConnect} from "../api/p2p/HandleConnect";
 import {getHostList, getPeerList} from "../db";
+import {handleConnect2} from "../App";
 
 
 const Chats = () => {
@@ -67,22 +68,17 @@ const Chats = () => {
   };
 
   const createNewChannel = async () => {
-    console.log("createNewChannel");
     const hosts = await getHostList();
-    console.log("hosts");
-    console.log(hosts);
     if (!createServerNameInput?.length || (hosts && Object.entries(hosts).some(host => host.name === createServerNameInput))) return;
 
-    handleConnect.createChannel(createServerNameInput);
+    handleConnect2.createChannel(createServerNameInput);
   }
 
   const joinNewChannel = async () => {
-    console.log("joinNewChannel");
     const peers = await getPeerList();
     if (!joinServerNameInput?.length && !joinServerAddressInput?.length || (peers && Object.entries(peers).some(peer => (peer.name === joinServerNameInput)))) return;
 
-    handleConnect.joinChannel(joinServerNameInput, joinServerAddressInput);
-
+    handleConnect2.joinChannel(joinServerNameInput, joinServerAddressInput);
   }
 
   useEffect(() => {
@@ -91,6 +87,8 @@ const Chats = () => {
     }
   }, [showConnectDapp]);
 
+  console.log("handleConnect2");
+  console.log(handleConnect2);
   return (
     <IonPage>
       <IonHeader>

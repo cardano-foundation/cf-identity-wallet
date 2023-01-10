@@ -46,6 +46,9 @@ import './theme/App.scss';
 import './theme/variables.css';
 import './theme/structure.css';
 import './theme/custom-tab-bar.css';
+import {HandleConnect} from "./api/p2p/HandleConnect";
+
+export const handleConnect2 = new HandleConnect();
 
 export const Tabs = () => (
   <TabMenu

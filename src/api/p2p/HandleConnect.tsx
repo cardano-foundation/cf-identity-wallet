@@ -41,8 +41,6 @@ export class HandleConnect  {
         getPeerList().then(peers => {
             if(!peers)return;
             for (const [_, value] of Object.entries(peers)) {
-                console.log("value");
-                console.log(value);
                 // @ts-ignore
                 this.joinChannel(value.name, value.identifier);
             }
@@ -112,13 +110,12 @@ export class HandleConnect  {
             announce: this.trackers,
             messages: []
         });
-        console.log("peer");
-        console.log(peer);
+
         this.peers = [...this.peers, peer];
     }
 
     /**
-     * Join an existing channel.
+     * Send a text message
      *
      * @param peerId - The peer id
      * @param identifier - The host identifier to send the message

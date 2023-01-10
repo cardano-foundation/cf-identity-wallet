@@ -14,7 +14,7 @@ export const md5 = (contents: string) => crypto.createHash('md5').update(content
 
 export class HostConnect {
 
-    private meerkat: Meerkat | undefined;
+    private meerkat: Meerkat;
     id:string;
     name:string;
 
@@ -28,7 +28,7 @@ export class HostConnect {
 
         this.meerkat = new Meerkat({
             seed: config.seed || undefined,
-            announce: config.announce
+            //announce: config.announce
         });
         this.id = `${name}:${this.meerkat.identifier}`;
 

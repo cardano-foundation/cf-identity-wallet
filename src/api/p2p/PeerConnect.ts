@@ -11,7 +11,7 @@ const moment = extendMoment(Moment);
 
 export class PeerConnect extends CardanoPeerConnect {
 
-    private meerkat: Meerkat | undefined;
+    private meerkat: Meerkat;
     id: string;
     apiVersion: string = '0.1.0';
     name: string = 'idWallet';
@@ -36,7 +36,7 @@ export class PeerConnect extends CardanoPeerConnect {
         this.meerkat = new Meerkat({
             seed: config.seed || undefined,
             identifier: config.identifier,
-            announce: config.announce,
+            //announce: config.announce,
         });
 
         console.log(`You are joining ${config.identifier} host`);
