@@ -58,7 +58,7 @@ export class PeerConnect extends CardanoPeerConnect {
             (address: string, message: string, callback: Function) => {
                 try {
                     console.log(`[info]: message: ${message}`);
-                    console.log(`[info]: sent by: ${address}`);
+                    console.log(`[info]: sent by(in peer connect): ${address}`);
                     getPeer(this.id).then(host => {
                         setPeer(this.id, host.seed, host.identifier, name, host.announce, [...host.messages, message]).then(_ => {
                             callback(true);

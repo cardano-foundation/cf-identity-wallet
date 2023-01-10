@@ -224,6 +224,8 @@ export const setHost = async (id:string, seed:string, identifier:string, name:st
 }
 
 export const getHost = async (id:string) => {
+  console.log("getHostList")
+  console.log(await getHostList());
   return await getObject("host-connect", id);
 }
 

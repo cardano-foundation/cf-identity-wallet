@@ -49,7 +49,12 @@ export class HostConnect {
                 try {
                     console.log(`[info]: message: ${message}`);
                     console.log(`[info]: sent by: ${address}`);
+                    console.log("this.id");
+                    console.log(this.id);
                     getHost(this.id).then(host => {
+
+                        console.log("host");
+                        console.log(host);
                         setHost(this.id, host.seed, host.identifier, name, host.announce, [...host.messages, message]).then(_ => {
                             callback(true);
                         });
