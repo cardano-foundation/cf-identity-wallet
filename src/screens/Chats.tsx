@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import {
   IonButton,
   IonButtons,
   IonCard,
   IonCardHeader,
   IonCardTitle,
-  IonCardSubtitle,
   IonCardContent,
   IonContent,
   IonHeader,
@@ -14,42 +13,50 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonSearchbar, IonList, IonLabel, IonInput,
+  IonSearchbar,
+  IonList,
+  IonLabel,
+  IonInput,
 } from '@ionic/react';
-import { checkmarkDone, createOutline } from 'ionicons/icons';
 import './Chats.css';
 import ChatStore from '../store/ChatStore';
 import ContactStore from '../store/ContactStore';
 import { getContacts, getChats } from '../store/Selectors';
-import { useEffect, useState } from 'react';
 import ChatItem from '../components/ChatItem';
-import { useRef } from 'react';
 import ContactModal from '../components/ContactModal';
+import {
+  IonSearchbarCustomEvent,
+  OverlayEventDetail,
+  SearchbarChangeEventDetail,
+} from '@ionic/core/components';
 
 const Chats = () => {
   const pageRef = useRef();
   const contacts = ContactStore.useState(getContacts);
   const latestChats = ChatStore.useState(getChats);
-
   const [results, setResults] = useState(latestChats);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showCreateServer, setShowCreateServer] = useState(false);
   const [showJoinServer, setShowJoinServer] = useState(false);
   const [showConnectDapp, setShowConnectDapp] = useState(false);
+  const modal = useRef<HTMLIonModalElement>(null);
+  const input = useRef<HTMLIonInputElement>(null);
+
+  const [message, setMessage] = useState(
+    'This modal example uses triggers to automatically open a modal when the button is clicked.'
+  );
 
   useEffect(() => {
     setResults(latestChats);
   }, [latestChats]);
 
-  const search = (e) => {
+  const search = (e: IonSearchbarCustomEvent<SearchbarChangeEventDetail>) => {
     const searchTerm = e.target.value;
-
     if (searchTerm !== '') {
-      const searchTermLower = searchTerm.toLowerCase();
-
-      const newResults = latestChats.filter((chat) =>
+      const searchTermLower = searchTerm?.toLowerCase();
+      const newResults = latestChats.filter((chat: { contact_id: any }) =>
         contacts
-          .filter((c) => c.id === chat.contact_id)[0]
+          .filter((c: { id: any }) => c.id === chat.contact_id)[0]
           .name.toLowerCase()
           .includes(searchTermLower)
       );
@@ -64,6 +71,8 @@ const Chats = () => {
       //  Something happens!
     }
   }, [showConnectDapp]);
+
+  function onWillDismiss(ev: CustomEvent<OverlayEventDetail>) {}
 
   return (
     <IonPage>
@@ -83,10 +92,16 @@ const Chats = () => {
               class='ion-margin-horizontal'
               size='small'
               onClick={() => setShowCreateServer(true)}
+              id='open-create'
             >
               Create
             </IonButton>
-            <IonModal isOpen={showCreateServer}>
+            <IonModal
+              isOpen={showCreateServer}
+              ref={modal}
+              trigger='open-create'
+              onWillDismiss={(ev) => onWillDismiss(ev)}
+            >
               <IonHeader>
                 <IonToolbar>
                   <IonTitle>Create Server</IonTitle>
@@ -108,7 +123,7 @@ const Chats = () => {
                         Create a new p2p server with WebRTC and WebTorrent
                         trackers.
                       </IonLabel>
-                      <IonInput placeholder='Name'/>
+                      <IonInput placeholder='Name' />
                       <IonButton expand='block'>Create</IonButton>
                       <br />
                       <IonLabel class='ion-text-wrap' position='stacked'>
@@ -123,10 +138,16 @@ const Chats = () => {
               class='ion-margin-horizontal'
               size='small'
               onClick={() => setShowJoinServer(true)}
+              id='open-join'
             >
               Join
             </IonButton>
-            <IonModal isOpen={showJoinServer}>
+            <IonModal
+              isOpen={showJoinServer}
+              ref={modal}
+              trigger='open-join'
+              onWillDismiss={(ev) => onWillDismiss(ev)}
+            >
               <IonHeader>
                 <IonToolbar>
                   <IonTitle>Join Server</IonTitle>
@@ -147,8 +168,8 @@ const Chats = () => {
                       <IonLabel class='ion-text-wrap' position='stacked'>
                         Connect through WebRTC and WebTorrent trackers.
                       </IonLabel>
-                      <IonInput placeholder='Room Name'/>
-                      <IonInput placeholder='Room Address'/>
+                      <IonInput placeholder='Room Name' />
+                      <IonInput placeholder='Room Address' />
                       <IonButton expand='block'>Join</IonButton>
                     </IonList>
                   </IonCardContent>
@@ -159,10 +180,16 @@ const Chats = () => {
               class='ion-margin-horizontal'
               size='small'
               onClick={() => setShowConnectDapp(true)}
+              id='open-dapp'
             >
               dApp
             </IonButton>
-            <IonModal isOpen={showConnectDapp}>
+            <IonModal
+              isOpen={showConnectDapp}
+              ref={modal}
+              trigger='open-dapp'
+              onWillDismiss={(ev) => onWillDismiss(ev)}
+            >
               <IonHeader>
                 <IonToolbar>
                   <IonTitle>Connect dApp</IonTitle>
@@ -184,7 +211,7 @@ const Chats = () => {
                         Some placeholder text goes here as if it was a lorem
                         ipsum but better.
                       </IonLabel>
-                      <IonInput placeholder='Name'/>
+                      <IonInput placeholder='Name' />
                       <IonButton expand='block'>Connect</IonButton>
                       <br />
                       <IonLabel class='ion-text-wrap' position='stacked'>
@@ -199,7 +226,7 @@ const Chats = () => {
           <IonSearchbar onIonChange={(e) => search(e)} />
         </IonHeader>
 
-        {results.map((chat, index) => {
+        {results.map((chat: any, index: React.Key | null | undefined) => {
           return <ChatItem chat={chat} key={index} />;
         })}
 
