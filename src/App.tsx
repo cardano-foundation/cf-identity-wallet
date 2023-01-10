@@ -1,39 +1,7 @@
-import React, { useRef, useState } from 'react';
-import {
-  IonApp,
-  IonRouterOutlet,
-  IonSplitPane,
-  setupIonicReact,
-} from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import { Redirect, Route, useHistory } from 'react-router-dom';
+import React, { useRef } from 'react';
+import { setupIonicReact } from '@ionic/react';
+import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
-import Menu from './components/Menu';
-import TabMenu from './routes/TabMenu';
-import All from './screens/All';
-import ActionSheet from './screens/ActionSheet';
-import Alert from './screens/Alert';
-import Chats from './screens/Chats';
-import Chat from './screens/Chat';
-import Dashboard from './screens/Dashboard';
-import Loading from './screens/Loading';
-import Modal from './screens/Modal';
-import Picker from './screens/Picker';
-import Popover from './screens/Popover';
-import Toast from './screens/Toast';
-
-import {
-  addCircle,
-  addCircleOutline,
-  home,
-  homeOutline,
-  notifications,
-  notificationsOutline,
-  person,
-  personOutline,
-  search,
-  searchOutline,
-} from 'ionicons/icons';
 
 setupIonicReact();
 /* Core CSS required for Ionic components to work properly */
@@ -41,24 +9,6 @@ import './theme/App.scss';
 import './theme/variables.css';
 import './theme/structure.css';
 import './theme/custom-tab-bar.css';
-
-export const Tabs = () => (
-  <TabMenu
-    tabs={[
-      {
-        label: 'Profile',
-        component: ActionSheet,
-        icon: personOutline,
-        path: '/tabs/tab1',
-        default: true,
-        isTab: true,
-        sideMenu: true,
-        sideMenuOptions: false,
-      },
-    ]}
-    position='bottom'
-  />
-);
 
 const App = (isExtension?: boolean) => {
   const history = useHistory();
@@ -71,99 +21,6 @@ const App = (isExtension?: boolean) => {
 
   console.log('window.location.pathname2');
   console.log(window.location.pathname);
-
-  const pages = [
-    {
-      label: 'All',
-      url: '/overlay/all',
-      component: All,
-    },
-    {
-      label: 'Action Sheet',
-      url: '/overlay/action-sheet',
-      component: ActionSheet,
-    },
-    {
-      label: 'Alert',
-      url: '/overlay/alert',
-      component: Alert,
-    },
-    {
-      label: 'Chats',
-      url: '/chats',
-      component: Chats,
-    },
-    {
-      label: 'Dashboard',
-      url: '/wallet',
-      component: Dashboard,
-    },
-    {
-      label: 'Loading',
-      url: '/overlay/loading',
-      component: Loading,
-    },
-    {
-      label: 'Modal',
-      url: '/overlay/modal',
-      component: Modal,
-    },
-    {
-      label: 'Picker',
-      url: '/overlay/picker',
-      component: Picker,
-    },
-    {
-      label: 'Popover',
-      url: '/overlay/popover',
-      component: Popover,
-    },
-    {
-      label: 'Toast',
-      url: '/overlay/toast',
-      component: Toast,
-    },
-  ];
-
-  const tabs = [
-    {
-      name: 'Home',
-      url: '/home',
-      activeIcon: home,
-      icon: homeOutline,
-      component: All,
-    },
-    {
-      name: 'Search',
-      url: '/search',
-      activeIcon: search,
-      icon: searchOutline,
-      component: ActionSheet,
-    },
-    {
-      name: 'Add',
-      url: '/add',
-      activeIcon: addCircle,
-      icon: addCircleOutline,
-      component: Alert,
-    },
-    {
-      name: 'Account',
-      url: '/account',
-      activeIcon: person,
-      icon: personOutline,
-      component: Loading,
-    },
-    {
-      name: 'Notifications',
-      url: '/notifications',
-      activeIcon: notifications,
-      icon: notificationsOutline,
-      component: Modal,
-    },
-  ];
-
-  const [activeTab, setActiveTab] = useState(tabs[0].name);
 
   const useIsMounted = () => {
     const isMounted = useRef(false);
@@ -184,34 +41,7 @@ const App = (isExtension?: boolean) => {
     }
   }, []);
 
-  return (
-    <IonApp>
-      <IonReactRouter>
-        <IonSplitPane contentId='main'>
-          <Menu pages={pages} />
-          <IonRouterOutlet id='main'>
-            <Route path='/' exact={true}>
-              <Redirect to='/overlay/all' />
-            </Route>
-            <Route path='/wallet' render={() => <Dashboard />} />
-            <Route path='/chats' render={() => <Chats />} />
-            <Route path='/view-chat/:contact_id' render={() => <Chat />} />
-            {pages.map((page, index) => {
-              const pageComponent = page.component;
-              return (
-                <Route
-                  key={index}
-                  path={page.url}
-                  exact={true}
-                  component={pageComponent}
-                />
-              );
-            })}
-          </IonRouterOutlet>
-        </IonSplitPane>
-      </IonReactRouter>
-    </IonApp>
-  );
+  return <>Test</>;
 };
 
 export default App;
