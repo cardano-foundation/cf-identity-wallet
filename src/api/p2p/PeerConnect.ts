@@ -39,16 +39,18 @@ export class PeerConnect extends CardanoPeerConnect {
             announce: config.announce,
         });
 
-        this.id = `${name}:${this.meerkat.identifier}`;
+        console.log(`You are joining ${config.identifier} host`);
 
-        setPeer(this.id, this.meerkat.seed, this.meerkat.identifier, name, this.meerkat.announce);
+        this.id = `${name}:${config.identifier}`;
 
-        let connected = false;
-        this.meerkat.on('connections', () => {
-            if (!connected) {
-                connected = true;
-                console.log('server ready');
-            }
+        this.meerkat.on('server', () => {
+            console.log('[info]: connected to server');
+            // @ts-ignore
+            this.meerkat.rpc(config.identifier, 'message', "hello world!", (response) => {
+                    console.log("response")
+                    console.log(response)
+                }
+            );
         });
 
         this.meerkat.register(
@@ -67,6 +69,8 @@ export class PeerConnect extends CardanoPeerConnect {
                 }
             }
         );
+
+        setPeer(this.id, this.meerkat.seed, this.meerkat.identifier, name, this.meerkat.announce);
     }
 
     /**

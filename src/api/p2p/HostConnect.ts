@@ -32,10 +32,11 @@ export class HostConnect {
         });
         this.id = `${name}:${this.meerkat.identifier}`;
 
-        setHost(this.id, this.meerkat.seed, this.meerkat.identifier, name, this.meerkat.announce);
+        console.log(`Share this address ${this.meerkat.address()} with your clients`);
 
         let connected = false;
         this.meerkat.on('connections', () => {
+            console.log("onConnections");
             if (!connected) {
                 connected = true;
                 console.log('server ready');
@@ -58,7 +59,8 @@ export class HostConnect {
                 }
             }
         );
-    }
 
+        setHost(this.id, this.meerkat.seed, this.meerkat.identifier, name, this.meerkat.announce);
+    }
 }
 

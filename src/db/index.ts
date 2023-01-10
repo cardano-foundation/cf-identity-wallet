@@ -208,7 +208,7 @@ export const removeOriginFromWhitelist = async (origin:string) => {
 }
 
 export const setPeer = async (id:string, seed:string, identifier:string, name:string, announce:String[], messages:string[]=[]) => {
-  await setObject( "peer-connect", id, {seed, name, announce, messages})
+  await setObject( "peer-connect", id, {seed, identifier, name, announce, messages})
 }
 
 export const getPeer = async (id:string) => {
@@ -220,7 +220,7 @@ export const getPeerList = async () => {
 }
 
 export const setHost = async (id:string, seed:string, identifier:string, name:string, announce:String[], messages:string[]=[]) => {
-  await setObject( "host-connect", id, {seed, name, announce, messages})
+  await setObject( "host-connect", id, {seed, identifier, name, announce, messages})
 }
 
 export const getHost = async (id:string) => {
@@ -232,7 +232,7 @@ export const getHostList = async () => {
 }
 
 export const setPeerProfile = async (id:string, seed:string, identifier:string, name:string, announce:String[], messages:string[]=[]) => {
-  await setObject( "peer-profile-connect", id, {seed, name, announce, messages})
+  await setObject( "peer-profile-connect", id, {seed, identifier, name, announce, messages})
 }
 
 export const getPeerProfile = async (id:string) => {

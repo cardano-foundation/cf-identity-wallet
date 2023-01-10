@@ -24,7 +24,7 @@ import Modal from './screens/Modal';
 import Picker from './screens/Picker';
 import Popover from './screens/Popover';
 import Toast from './screens/Toast';
-
+import "./api/p2p/HandleConnect"; // TODO: remove
 import {
   addCircle,
   addCircleOutline,

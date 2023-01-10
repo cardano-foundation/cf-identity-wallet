@@ -26,6 +26,8 @@ import ChatItem from '../components/ChatItem';
 import { useRef } from 'react';
 import ContactModal from '../components/ContactModal';
 import {peerConnect} from "../api/p2p/PeerConnect";
+import {handleConnect} from "../api/p2p/HandleConnect";
+import {getHostList, getPeerList} from "../db";
 
 
 const Chats = () => {
@@ -64,20 +66,22 @@ const Chats = () => {
     }
   };
 
-  const createNewChannel = () => {
-
+  const createNewChannel = async () => {
     console.log("createNewChannel");
-    if (!createServerNameInput?.length) return;
+    const hosts = await getHostList();
+    console.log("hosts");
+    console.log(hosts);
+    if (!createServerNameInput?.length || (hosts && Object.entries(hosts).some(host => host.name === createServerNameInput))) return;
 
-    peerConnect.createChannel(createServerNameInput);
-
+    handleConnect.createChannel(createServerNameInput);
   }
-  const joinNewChannel = () => {
 
+  const joinNewChannel = async () => {
     console.log("joinNewChannel");
-    if (!joinServerNameInput?.length && !joinServerAddressInput?.length) return;
+    const peers = await getPeerList();
+    if (!joinServerNameInput?.length && !joinServerAddressInput?.length || (peers && Object.entries(peers).some(peer => (peer.name === joinServerNameInput)))) return;
 
-    peerConnect.joinChannel(joinServerNameInput, joinServerAddressInput);
+    handleConnect.joinChannel(joinServerNameInput, joinServerAddressInput);
 
   }
 
@@ -87,8 +91,6 @@ const Chats = () => {
     }
   }, [showConnectDapp]);
 
-  console.log("peerConnect");
-  console.log(peerConnect);
   return (
     <IonPage>
       <IonHeader>

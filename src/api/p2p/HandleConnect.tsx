@@ -9,7 +9,7 @@ export class HandleConnect  {
     hosts: Array<HostConnect> = [];
     peers: Array<PeerConnect> = [];
     trackers: Array<string> = [];
-    // trusted peers
+    // trusted hosts/peers
     whitelist: Array<string> = [];
 
     constructor() {
@@ -30,14 +30,21 @@ export class HandleConnect  {
         });
 
         getHostList().then(hosts => {
-            for (let i=0; i<hosts.length; i++){
-                this.restoreChannel(hosts[i].seed, hosts[i].name, hosts[i].announce)
+            if(!hosts)return;
+
+            for (const [_, value] of Object.entries(hosts)) {
+                // @ts-ignore
+                this.restoreChannel(value.seed, value.name, value.announce);
             }
         });
 
         getPeerList().then(peers => {
-            for (let i=0; i<peers.length; i++){
-                this.joinChannel(peers[i].seed, peers[i].identifier);
+            if(!peers)return;
+            for (const [_, value] of Object.entries(peers)) {
+                console.log("value");
+                console.log(value);
+                // @ts-ignore
+                this.joinChannel(value.name, value.identifier);
             }
         });
     }
@@ -82,16 +89,14 @@ export class HandleConnect  {
      *
      */
     restoreChannel(seed:string, name:string, announce:string[]): void {
-
-        if( !name || this.hosts.some(c => c.name === name)) return;
-
+        // if( !name || this.hosts.some(c => c.name === name)) return;
         const host = new HostConnect(name,{
             seed,
             announce
         });
         this.hosts = [...this.hosts, host];
-    }
 
+    }
 
     /**
      * Join an existing channel.
@@ -107,6 +112,8 @@ export class HandleConnect  {
             announce: this.trackers,
             messages: []
         });
+        console.log("peer");
+        console.log(peer);
         this.peers = [...this.peers, peer];
     }
 
