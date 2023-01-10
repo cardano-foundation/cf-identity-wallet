@@ -25,7 +25,8 @@ import { useEffect, useState } from 'react';
 import ChatItem from '../components/ChatItem';
 import { useRef } from 'react';
 import ContactModal from '../components/ContactModal';
-import {peerConnect} from "../api/p2p";
+import {peerConnect} from "../api/p2p/PeerConnect";
+
 
 const Chats = () => {
   const pageRef = useRef();
@@ -36,9 +37,9 @@ const Chats = () => {
   const [showContactModal, setShowContactModal] = useState(false);
   const [showCreateServer, setShowCreateServer] = useState(false);
   const [showJoinServer, setShowJoinServer] = useState(false);
-  const [createServerName, setCreateServerName] = useState('');
-  const [joinServerName, setJoinServerName] = useState('');
-  const [joinServerAddressName, setJoinServerAddressName] = useState('');
+  const [createServerNameInput, setCreateServerNameInput] = useState('');
+  const [joinServerNameInput, setJoinServerNameInput] = useState('');
+  const [joinServerAddressInput, setJoinServerAddressInput] = useState('');
   const [showConnectDapp, setShowConnectDapp] = useState(false);
 
   useEffect(() => {
@@ -66,9 +67,17 @@ const Chats = () => {
   const createNewChannel = () => {
 
     console.log("createNewChannel");
-    if (!createServerName?.length) return;
+    if (!createServerNameInput?.length) return;
 
-    peerConnect.createChannel(createServerName);
+    peerConnect.createChannel(createServerNameInput);
+
+  }
+  const joinNewChannel = () => {
+
+    console.log("joinNewChannel");
+    if (!joinServerNameInput?.length && !joinServerAddressInput?.length) return;
+
+    peerConnect.joinChannel(joinServerNameInput, joinServerAddressInput);
 
   }
 
@@ -124,14 +133,14 @@ const Chats = () => {
                         trackers.
                       </IonLabel>
                       <IonInput
-                          value={createServerName}
-                          onIonChange={(e) => setCreateServerName(e.target.value)}
+                          value={createServerNameInput}
+                          onIonChange={(e) => setCreateServerNameInput(e.target.value)}
                           placeholder='Name'
                           type="text"
                           required
                           />
                       <IonButton
-                          disabled={!createServerName?.length}
+                          disabled={!createServerNameInput?.length}
                           expand='block'
                           onClick={() => createNewChannel()}>
                         Create
@@ -173,9 +182,27 @@ const Chats = () => {
                       <IonLabel class='ion-text-wrap' position='stacked'>
                         Connect through WebRTC and WebTorrent trackers.
                       </IonLabel>
-                      <IonInput placeholder='Room Name'/>
-                      <IonInput placeholder='Room Address'/>
-                      <IonButton expand='block'>Join</IonButton>
+                      <IonInput
+                          value={joinServerNameInput}
+                          onIonChange={(e) => setJoinServerNameInput(e.target.value)}
+                          placeholder='Name'
+                          type="text"
+                          required
+                      />
+                      <IonInput
+                          value={joinServerAddressInput}
+                          onIonChange={(e) => setJoinServerAddressInput(e.target.value)}
+                          placeholder='Address'
+                          type="text"
+                          required
+                      />
+
+                      <IonButton
+                          disabled={!joinServerNameInput?.length || !joinServerAddressInput?.length}
+                          expand='block'
+                          onClick={() => joinNewChannel()}>
+                        Join
+                      </IonButton>
                     </IonList>
                   </IonCardContent>
                 </IonCard>

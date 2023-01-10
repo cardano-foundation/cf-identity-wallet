@@ -1,4 +1,4 @@
-import {createStore, get, getObject, set, setObject} from './storage';
+import {createStore, get, getObject, set, setNewObject, setObject} from './storage';
 import {BLOCKFROST_DEFAULT_URL, BLOCKFROST_TOKEN, DEFAULT_NETWORK, SUBMIT_DEFAULT_URL} from '../../config';
 import {maxId} from "../utils/utils";
 import Meerkat from "@fabianbormann/meerkat";
@@ -207,79 +207,34 @@ export const removeOriginFromWhitelist = async (origin:string) => {
   }
 }
 
-export const getPeerConnect = async () => {
-
-  const peerConnect = await get("peer-connect");
-
-  if (peerConnect){
-    return peerConnect;
-  } else {
-    const meerkat = new Meerkat();
-    const pc = {
-      identity: {
-        address: meerkat.address(),
-        seed: meerkat.seed
-      },
-      channels: [],
-      trackers: [],
-      whitelist: []
-    };
-    await setPeerConnect(pc)
-    return pc
-  }
+export const setPeer = async (id:string, seed:string, identifier:string, name:string, announce:String[], messages:string[]=[]) => {
+  await setObject( "peer-connect", id, {seed, name, announce, messages})
 }
 
-export const setPeerConnect = async (peers:any) => {
-
-  if(!peers) return;
-
-  await set("peer-connect", peers);
+export const getPeer = async (id:string) => {
+  return await getObject("peer-connect", id);
 }
 
-
-export const addChannelInPeerConnect = async (channel:{id:string,name:string, seed:string, server:boolean, messages:string[]}) => {
-
-  console.log("addChannelInPeerConnect");
-  console.log("channel");
-  console.log(channel);
-  if(!channel) return;
-
-  let peerConnect = await getPeerConnect();
-  console.log("peerConnect");
-  console.log(peerConnect);
-  if(!peerConnect.channels.some((p: { id: string; }) =>
-      p.id === channel.id  )){
-    console.log("already there");
-    peerConnect.channels.push(channel);
-    console.log("peerConnect");
-    console.log(peerConnect);
-
-    await set("peer-connect", peerConnect);
-  }
-
-
+export const getPeerList = async () => {
+  return await get("peer-connect");
 }
 
-export const addMessageInPeerConnect = async (channelId:string, message: {sender:string, content:string, time: number}) => {
+export const setHost = async (id:string, seed:string, identifier:string, name:string, announce:String[], messages:string[]=[]) => {
+  await setObject( "host-connect", id, {seed, name, announce, messages})
+}
 
-  console.log("addMessageInPeerConnect");
-  console.log("channelId");
-  console.log(channelId);
-  console.log(message);
-  if(!channelId) return;
+export const getHost = async (id:string) => {
+  return await getObject("host-connect", id);
+}
 
-  let peerConnect = await getPeerConnect();
-  if(!peerConnect.channels.some((p: { id: string; }) =>
-      p.id === channelId  )){
-      return;
-  }
+export const getHostList = async () => {
+  return await get("host-connect");
+}
 
-  peerConnect.channels = peerConnect.channels.map((channel: { id: string; messages: any[]; }) => {
-    if (channel.id === channelId) {
-      channel.messages = [...channel.messages, message];
-    }
-    return channel;
-  });
+export const setPeerProfile = async (id:string, seed:string, identifier:string, name:string, announce:String[], messages:string[]=[]) => {
+  await setObject( "peer-profile-connect", id, {seed, name, announce, messages})
+}
 
-  await set("peer-connect", peerConnect);
+export const getPeerProfile = async (id:string) => {
+  return await getObject("peer-profile-connect", id);
 }
