@@ -34,7 +34,7 @@ export class HandleConnect  {
 
             for (const [_, value] of Object.entries(hosts)) {
                 // @ts-ignore
-                this.restoreChannel(value.seed, value.name, value.announce);
+                this.restoreChannel(value.seed, value.name, value.announce, value.messages);
             }
         });
 
@@ -42,7 +42,7 @@ export class HandleConnect  {
             if(!peers)return;
             for (const [_, value] of Object.entries(peers)) {
                 // @ts-ignore
-                this.joinChannel(value.name, value.identifier);
+                this.joinChannel(value.name, value.identifier, value.messages);
             }
         });
     }
@@ -83,14 +83,15 @@ export class HandleConnect  {
      *
      * @param seed - The channel seed
      * @param name - The channel name
-     * @param announce - The channel trackers
+     * @param messages - The channel messages
      *
      */
-    restoreChannel(seed:string, name:string, announce:string[]): void {
+    restoreChannel(seed:string, name:string, announce:string[], messages:string[]): void {
         // if( !name || this.hosts.some(c => c.name === name)) return;
         const host = new HostConnect(name,{
             seed,
-            announce
+            announce,
+            messages
         });
         this.hosts = [...this.hosts, host];
 
@@ -103,12 +104,12 @@ export class HandleConnect  {
      * @param hostIdentifier - The server address identifier
      *
      */
-    joinChannel(name: string, hostIdentifier: string): void {
+    joinChannel(name: string, hostIdentifier: string, messages:string[]=[]): void {
         const peer = new PeerConnect(name,{
             seed: this.profile?.seed,
             identifier: hostIdentifier,
             announce: this.trackers,
-            messages: []
+            messages,
         });
 
         this.peers = [...this.peers, peer];

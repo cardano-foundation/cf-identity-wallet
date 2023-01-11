@@ -6,9 +6,9 @@ import { getContacts } from '../store/Selectors';
 
 const ChatItem = ({ chat }) => {
   const contacts = ContactStore.useState(getContacts);
-  const { chats, contact_id } = chat;
-  const { read, date, preview, received } = chats[chats.length - 1];
-  const contact = contacts.filter((c) => c.id === contact_id)[0];
+  const { chats, name, read, date, preview, received  } = chat;
+
+  const contact = contacts[0];
   const notificationCount = chats.filter((chat) => chat.read === false).length;
 
   return (
@@ -17,12 +17,12 @@ const ChatItem = ({ chat }) => {
 
       <IonItem
         className='chat-content-container'
-        routerLink={`/view-chat/${contact.id}`}
+        routerLink={`/chats/${chat.key}`}
         detail={false}
       >
         <div className='chat-content'>
           <div className='chat-name-date'>
-            <h2>{contact.name}</h2>
+            <h2>{name}</h2>
           </div>
           <p className='ion-text-wrap'>
             {read && received && (

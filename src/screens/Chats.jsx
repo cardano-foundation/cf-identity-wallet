@@ -25,8 +25,10 @@ import { useEffect, useState } from 'react';
 import ChatItem from '../components/ChatItem';
 import { useRef } from 'react';
 import ContactModal from '../components/ContactModal';
-import {peerConnect} from "../api/p2p/PeerConnect";
-import {handleConnect} from "../api/p2p/HandleConnect";
+import {extendMoment} from "moment-range";
+import Moment from 'moment';
+// @ts-ignore
+const moment = extendMoment(Moment);
 import {getHostList, getPeerList} from "../db";
 import {handleConnect2} from "../App";
 
@@ -34,9 +36,10 @@ import {handleConnect2} from "../App";
 const Chats = () => {
   const pageRef = useRef();
   const contacts = ContactStore.useState(getContacts);
-  const latestChats = ChatStore.useState(getChats);
+  console.log("latestChats");
 
-  const [results, setResults] = useState(latestChats);
+  const [originalResults, setOriginalResults] = useState([]);
+  const [results, setResults] = useState([]);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showCreateServer, setShowCreateServer] = useState(false);
   const [showJoinServer, setShowJoinServer] = useState(false);
@@ -46,25 +49,102 @@ const Chats = () => {
   const [showConnectDapp, setShowConnectDapp] = useState(false);
 
   useEffect(() => {
-    setResults(latestChats);
-  }, [latestChats]);
+    updateChats();
+  }, []);
 
+  useEffect(() => {
+    const updateState = setTimeout(() =>  {
+      updateChats();
+    }, 3000);
+
+    return () => clearInterval(updateState);
+  }, []);
+
+  const updateChats = () => {
+    console.log("updateChats")
+    getHostList().then(hosts => {
+      console.log("hosts33");
+      console.log(hosts);
+      if(!hosts)return;
+      const chats = Object.values(hosts).map((host, index) => {
+        console.log("host11");
+        console.log(host);
+        const messages = host.messages.map((message, index) => {
+          return {
+            id: index,
+            preview: message,
+            received: true,
+            sent: false,
+            date: moment.utc().millisecond().toString(),
+            read: false,
+            starred: false
+          }
+        });
+        console.log("messages");
+        console.log(messages);
+        return {
+          id: index,
+          key: `${host.name}:${host.identifier}`,
+          name: host.name,
+          contact_id: index,
+          preview: messages.length && messages[messages.length-1].preview || "",
+          chats: messages
+        }
+      });
+      console.log("chats");
+      console.log(chats);
+      setResults(chats);
+    });
+
+    getPeerList().then(peers => {
+      console.log("peers44");
+      console.log(peers);
+      if(!peers)return;
+      const chats = Object.values(peers).map((peer, index) => {
+        console.log("peer22");
+        console.log(peer);
+        const messages = peer.messages.map((message, index) => {
+          return {
+            id: index,
+            preview: message,
+            received: true,
+            sent: false,
+            date: moment.utc().millisecond().toString(),
+            read: false,
+            starred: false
+          }
+        });
+        console.log("messages");
+        console.log(messages);
+        return {
+          id: index,
+          key: `${peer.name}:${peer.identifier}`,
+          name: peer.name,
+          contact_id: index,
+          preview: messages.length && messages[messages.length-1].preview || "",
+          chats: messages
+        }
+      });
+      console.log("chats");
+      console.log(chats);
+      setResults(prev => [...prev,...chats]);
+    });
+  }
   const search = (e) => {
     const searchTerm = e.target.value;
 
     if (searchTerm !== '') {
       const searchTermLower = searchTerm.toLowerCase();
 
-      const newResults = latestChats.filter((chat) =>
+      const newResults = results.filter((chat) =>
         contacts
           .filter((c) => c.id === chat.contact_id)[0]
           .name.toLowerCase()
           .includes(searchTermLower)
       );
       setResults(newResults);
-    } else {
-      setResults(latestChats);
     }
+
   };
 
   const createNewChannel = async () => {
@@ -72,6 +152,7 @@ const Chats = () => {
     if (!createServerNameInput?.length || (hosts && Object.entries(hosts).some(host => host.name === createServerNameInput))) return;
 
     handleConnect2.createChannel(createServerNameInput);
+    updateChats();
   }
 
   const joinNewChannel = async () => {
@@ -79,6 +160,7 @@ const Chats = () => {
     if (!joinServerNameInput?.length && !joinServerAddressInput?.length || (peers && Object.entries(peers).some(peer => (peer.name === joinServerNameInput)))) return;
 
     handleConnect2.joinChannel(joinServerNameInput, joinServerAddressInput);
+    updateChats();
   }
 
   useEffect(() => {

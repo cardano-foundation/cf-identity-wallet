@@ -210,7 +210,7 @@ const App = (isExtension?: boolean) => {
             </Route>
             <Route path='/tabs' render={() => <Tabs />} />
             <Route path='/chats' render={() => <Chats />} />
-            <Route path='/view-chat/:contact_id' render={() => <Chat />} />
+            <Route path='/chats/:channel_id' render={() => <Chat />} />
 
             {pages.map((page, index) => {
               const pageComponent = page.component;

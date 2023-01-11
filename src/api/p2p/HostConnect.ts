@@ -61,7 +61,7 @@ export class HostConnect {
             }
         );
 
-        setHost(this.id, this.meerkat.seed, this.meerkat.identifier, name, this.meerkat.announce);
+        setHost(this.id, this.meerkat.seed, this.meerkat.identifier, name, this.meerkat.announce, config.messages);
     }
 }
 

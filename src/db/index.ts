@@ -224,13 +224,17 @@ export const setHost = async (id:string, seed:string, identifier:string, name:st
 }
 
 export const getHost = async (id:string) => {
-  console.log("getHostList")
-  console.log(await getHostList());
   return await getObject("host-connect", id);
 }
 
 export const getHostList = async () => {
   return await get("host-connect");
+}
+
+export const getChannel = async (id:string) => {
+  const host = await getObject("host-connect", id);
+  const peer = await getObject("peer-connect", id);
+  return host ? host : peer;
 }
 
 export const setPeerProfile = async (id:string, seed:string, identifier:string, name:string, announce:String[], messages:string[]=[]) => {

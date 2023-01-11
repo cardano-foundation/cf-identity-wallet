@@ -51,17 +51,21 @@ import './Chat.css';
 import ReplyTo from '../components/ReplyTo';
 import { ChatBottomDetails } from '../components/ChatBottomDetails';
 import { ChatRepliedQuote } from '../components/ChatRepliedQuote';
+import {getChannel, getHost, getPeer} from "../db";
 
 const Chat = () => {
   const params = useParams();
+  console.log("params");
+  console.log(params);
 
   //  Global State
-  const chat = ChatStore.useState(getChat(params.contact_id));
+  const chat1 = ChatStore.useState(getChat(1));
   const chats = ChatStore.useState(getChats);
-  const contact = ContactStore.useState(getContact(params.contact_id));
+  const contact = ContactStore.useState(getContact(1));
   const notificationCount = getNotificationCount(chats);
 
   //  Local state
+  const [chat, serChat] = useState({});
   const [message, setMessage] = useState('');
   const [showSendButton, setShowSendButton] = useState(false);
   const [replyToMessage, setReplyToMessage] = useState(false);
@@ -114,8 +118,23 @@ const Chat = () => {
   ];
 
   useEffect(() => {
+    updateChat();
+  }, []);
+  useEffect(() => {
     !showActionSheet && setActionMessage(false);
   }, [showActionSheet]);
+
+  const updateChat = async () => {
+    console.log("updateChat1");
+    if (!params)return;
+    console.log("paramsda");
+    console.log(params);
+    const chat = await getChannel(params.channel_id);
+    console.log("chat3524");
+    console.log(chat);
+    serChat(chat);
+
+  }
 
   //  Scroll to end of content
   //  Mark all chats as read if we come into a chat
@@ -293,6 +312,9 @@ const Chat = () => {
     messageSent,
   };
 
+  console.log("chat messages");
+  console.log(chat);
+  console.log(chat.messages);
   return (
     <IonPage className='chat-page'>
       <IonHeader>
@@ -305,7 +327,7 @@ const Chat = () => {
             <div className='chat-contact'>
               <img src={contact.avatar} alt='avatar' />
               <div className='chat-contact-details'>
-                <p>{contact.name}</p>
+                <p>{chat.name}</p>
                 <IonText color='medium'>last seen today at 22:10</IonText>
               </div>
             </div>
@@ -314,7 +336,7 @@ const Chat = () => {
       </IonHeader>
 
       <IonContent id='main-chat-content' ref={contentRef}>
-        {chat.map((message, index) => {
+        {chat && Object.keys(chat).length && chat.messages.map((message, index) => {
           const repliedMessage = chat.filter(
             (subMessage) =>
               parseInt(subMessage.id) === parseInt(message.replyID)

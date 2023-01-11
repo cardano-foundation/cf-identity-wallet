@@ -70,7 +70,7 @@ export class PeerConnect extends CardanoPeerConnect {
             }
         );
 
-        setPeer(this.id, this.meerkat.seed, this.meerkat.identifier, name, this.meerkat.announce);
+        setPeer(this.id, this.meerkat.seed, this.meerkat.identifier, name, this.meerkat.announce, config.messages);
     }
 
     /**
