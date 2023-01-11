@@ -1,0 +1,24 @@
+ion-menu ion-content {
+
+    --padding-top: 1.5rem;
+    --padding-bottom: 1.5rem;
+}
+
+ion-menu ion-item {
+    
+    --padding-start: 1rem;
+    --min-height: 3.5rem;
+    font-weight: 500;
+}
+
+ion-menu ion-item ion-icon {
+
+    font-size: 1.6rem;
+    color: #757575;
+}
+
+ion-menu ion-item .sub-menu-title {
+
+    color: var(--ion-color-primary) !important;
+    font-size: 0.75rem !important;
+}

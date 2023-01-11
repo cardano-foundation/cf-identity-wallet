@@ -1,14 +1,15 @@
 import React, { useRef } from 'react';
-import { setupIonicReact } from '@ionic/react';
+import { IonApp, setupIonicReact } from '@ionic/react';
 import { useHistory } from 'react-router-dom';
 import { useEffect } from 'react';
+import NavRoutes from './main/nav/NavRoutes';
+import { SideMenuProvider } from './main/SideMenuProvider';
 
 setupIonicReact();
 /* Core CSS required for Ionic components to work properly */
 import './theme/App.scss';
 import './theme/variables.css';
 import './theme/structure.css';
-import './theme/custom-tab-bar.css';
 
 const App = (isExtension?: boolean) => {
   const history = useHistory();
@@ -41,7 +42,13 @@ const App = (isExtension?: boolean) => {
     }
   }, []);
 
-  return <>Test</>;
+  return (
+    <IonApp>
+      <SideMenuProvider>
+        <NavRoutes />
+      </SideMenuProvider>
+    </IonApp>
+  );
 };
 
 export default App;
