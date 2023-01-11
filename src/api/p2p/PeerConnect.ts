@@ -46,11 +46,13 @@ export class PeerConnect extends CardanoPeerConnect {
         this.meerkat.on('server', () => {
             console.log('[info]: connected to server');
             // @ts-ignore
+            /*
             this.meerkat.rpc(config.identifier, 'message', {message: "hello world!"}, (response) => {
                     console.log("response")
                     console.log(response)
                 }
             );
+             */
         });
 
         this.meerkat.register(
@@ -62,6 +64,7 @@ export class PeerConnect extends CardanoPeerConnect {
                     getPeer(this.id).then(host => {
                         const newMessage = {
                             preview: message,
+                            sender: address,
                             received: true,
                             sent: true,
                             read: false,

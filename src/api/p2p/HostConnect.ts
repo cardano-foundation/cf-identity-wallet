@@ -52,6 +52,7 @@ export class HostConnect {
 
                     const newMessage = {
                         preview: message,
+                        sender: address,
                         received: true,
                         sent: true,
                         read: false,
