@@ -14,7 +14,7 @@ import Settings from '../../pages/Settings';
 import InboxItem from '../../pages/InboxItem';
 
 //	Tab icons
-import { personOutline, mailOutline, mapOutline } from 'ionicons/icons';
+import { personOutline, walletOutline, settingsOutline } from 'ionicons/icons';
 
 //  Import custom tab menu
 import TabMenu from '../TabMenu';
@@ -33,7 +33,7 @@ import SubRoutes from './SubRoutes';
 //  path = the path which the tab is accessible
 export const tabRoutes = [
   {
-    label: 'Profile',
+    label: 'Identity',
     component: Tab1,
     icon: personOutline,
     path: '/tabs/tab1',
@@ -43,9 +43,9 @@ export const tabRoutes = [
     sideMenuOptions: tab1SideMenu,
   },
   {
-    label: 'Inbox',
+    label: 'Wallet',
     component: Tab2,
-    icon: mailOutline,
+    icon: walletOutline,
     path: '/tabs/tab2',
     default: false,
     isTab: true,
@@ -53,9 +53,9 @@ export const tabRoutes = [
     sideMenuOptions: tab2SideMenu,
   },
   {
-    label: 'Places',
+    label: 'Settings',
     component: Tab3,
-    icon: mapOutline,
+    icon: settingsOutline,
     path: '/tabs/tab3',
     default: false,
     isTab: true,
@@ -74,7 +74,7 @@ export const tabRoutes = [
 //  These pages should be related to tab pages and be held within the same path
 //  E.g. /tabs/tab1/child
 const tabChildrenRoutes = [
-  { component: InboxItem, path: '/tabs/tab2/:id', isTab: false },
+  { component: InboxItem, path: '/tabs/tab3/:id', isTab: false },
 ];
 
 //  Array of objects representing sub pages

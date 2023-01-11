@@ -5,8 +5,8 @@ import { addOutline } from 'ionicons/icons';
 import './Tab1.css';
 import CustomPage from '../main/CustomPage';
 
-const Settings = (props) => {
-  const pageName = 'Settings';
+const Stuff = (props) => {
+  const pageName = 'Stuff';
 
   return (
     <IonPage id={pageName}>
@@ -33,4 +33,4 @@ const Settings = (props) => {
   );
 };
 
-export default Settings;
+export default Stuff;

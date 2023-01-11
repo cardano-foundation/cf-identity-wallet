@@ -1,11 +1,8 @@
 import React from 'react';
 import {
   IonBackButton,
-  IonButton,
-  IonButtons,
   IonCheckbox,
   IonItem,
-  IonLabel,
   IonCol,
   IonContent,
   IonFooter,
@@ -26,31 +23,29 @@ import {
 } from '@ionic/react';
 import {
   alertOutline,
-  callOutline,
   send,
   shareOutline,
   starOutline,
   trashOutline,
-  videocamOutline,
 } from 'ionicons/icons';
 import { useRef } from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import ChatStore from '../store/ChatStore';
-import ContactStore from '../store/ContactStore';
+import ChatStore from '../../store/ChatStore';
+import ContactStore from '../../store/ContactStore';
 import {
   getNotificationCount,
   markAllAsRead,
   sendChatMessage,
   starChatMessage,
-} from '../store/ChatStore';
-import { getChat, getChats, getContact } from '../store/Selectors';
+} from '../../store/ChatStore';
+import { getChat, getChats, getContact } from '../../store/selectors';
 
 import { useLongPress } from 'react-use';
 import './Chat.css';
-import ReplyTo from '../components/ReplyTo';
-import { ChatBottomDetails } from '../components/ChatBottomDetails';
-import { ChatRepliedQuote } from '../components/ChatRepliedQuote';
+import ReplyTo from './ReplyTo';
+import { ChatBottomDetails } from './ChatBottomDetails';
+import { ChatRepliedQuote } from './ChatRepliedQuote';
 
 const Chat = () => {
   const params = useParams();

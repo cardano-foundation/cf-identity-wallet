@@ -4,9 +4,10 @@ import { addOutline } from 'ionicons/icons';
 
 import './Tab1.css';
 import CustomPage from '../main/CustomPage';
+import Chats from '../components/chat/Chats';
 
-const Settings = (props) => {
-  const pageName = 'Settings';
+const Chat = (props) => {
+  const pageName = 'Chats';
 
   return (
     <IonPage id={pageName}>
@@ -21,16 +22,10 @@ const Settings = (props) => {
         actionButtonPosition='end'
         actionButtonIconSize='1.7rem'
       >
-        <IonGrid>
-          <IonRow className='ion-text-center'>
-            <IonCol size='12'>
-              <h3>Sub page</h3>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+        <Chats />
       </CustomPage>
     </IonPage>
   );
 };
 
-export default Settings;
+export default Chat;

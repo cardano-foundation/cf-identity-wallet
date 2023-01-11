@@ -3,6 +3,11 @@ import { IonRouterOutlet, IonSplitPane } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
 import SideMenu from '../SideMenu';
+import Chat from '../../components/chat/Chat';
+import Chats from '../../pages/Chats';
+import Template from '../../pages/Template';
+import Payments from '../../pages/Payments';
+import Stuff from '../../pages/Stuff';
 import { SubPages, Tabs, tabRoutes } from './AllRoutes';
 
 const NavRoutes = () => {
@@ -13,6 +18,11 @@ const NavRoutes = () => {
 
         <IonRouterOutlet id='main'>
           <Route path='/tabs' render={() => <Tabs />} />
+          <Route path='/template' render={() => <Template />} />
+          <Route path='/payments' render={() => <Payments />} />
+          <Route path='/stuff' render={() => <Stuff />} />
+          <Route path='/chats' render={() => <Chats />} />
+          <Route path='/view-chat/:contact_id' render={() => <Chat />} />
           <SubPages />
 
           <Route

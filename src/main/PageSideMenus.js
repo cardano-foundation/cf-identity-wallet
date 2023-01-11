@@ -1,10 +1,11 @@
-import React from 'react';
 import {
   archiveOutline,
   beerOutline,
-  cogOutline,
+  cardOutline,
+  clipboardOutline,
   eyeOutline,
   golfOutline,
+  layersOutline,
   logOutOutline,
   mailOutline,
   mailUnreadOutline,
@@ -13,36 +14,42 @@ import {
   pulseOutline,
   refreshOutline,
   restaurantOutline,
-  settingsOutline,
+  chatbubbleOutline,
 } from 'ionicons/icons';
 import { buildSideMenuObject } from './Utils';
 
 export const tab1SideMenu = [
   buildSideMenuObject(
     false,
-    'Inbox',
-    'Navigates to Inbox page',
-    mailOutline,
-    '/tabs/tab2'
+    'Stuff',
+    'Check some stuff',
+    layersOutline,
+    '/stuff'
   ),
   buildSideMenuObject(
     false,
-    'Places',
-    'Navigates to Places page',
-    mapOutline,
-    '/tabs/tab3'
+    'Payments',
+    'Pay and get paid',
+    cardOutline,
+    '/payments'
   ),
   buildSideMenuObject(true),
-  buildSideMenuObject(false, 'Account Settings', null, settingsOutline, null),
   buildSideMenuObject(
     false,
-    'Settings Sub Page',
-    'Opens settings sub page',
-    cogOutline,
-    '/settings'
+    'Chats',
+    'Opens chats page',
+    chatbubbleOutline,
+    '/chats'
   ),
-  buildSideMenuObject(false, 'Privacy', null, eyeOutline, null),
-  buildSideMenuObject(false, 'Logout', null, logOutOutline, null),
+  buildSideMenuObject(
+    false,
+    'Template',
+    'Opens generic template page',
+    clipboardOutline,
+    '/template'
+  ),
+  buildSideMenuObject(false, 'Privacy', 'Boring stuff', eyeOutline, null),
+  buildSideMenuObject(false, 'Logout', 'See ya later!', logOutOutline, null),
 ];
 
 export const tab2SideMenu = [
