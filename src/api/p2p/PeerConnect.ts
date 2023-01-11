@@ -45,6 +45,12 @@ export class PeerConnect extends CardanoPeerConnect {
 
         this.meerkat.on('server', () => {
             console.log('[info]: connected to server');
+            getPeer(this.id).then(peer => {
+                setPeer(this.id, peer.seed, peer.identifier, name, peer.announce, peer.messages, true).then(_ => {
+                    console.log(`[info]: the peer is connected 💬`);
+                });
+            });
+
             // @ts-ignore
             /*
             this.meerkat.rpc(config.identifier, 'message', {message: "hello world!"}, (response) => {
@@ -61,17 +67,17 @@ export class PeerConnect extends CardanoPeerConnect {
                 try {
                     console.log(`[info]: message: ${message}`);
                     console.log(`[info]: sent by(in peer connect): ${address}`);
-                    getPeer(this.id).then(host => {
+                    getPeer(this.id).then(peer => {
                         const newMessage = {
                             preview: message,
                             sender: address,
                             received: true,
-                            sent: true,
+                            sent: address === peer.identifier,
                             read: false,
                             starred: false,
                             date: moment.utc().format("MM-DD HH:mm:ss")
                         }
-                        setPeer(this.id, host.seed, host.identifier, name, host.announce, [...host.messages, newMessage]).then(_ => {
+                        setPeer(this.id, peer.seed, peer.identifier, name, peer.announce, [...peer.messages, newMessage], peer.connected).then(_ => {
                             callback(true);
                         });
                     });
@@ -96,21 +102,13 @@ export class PeerConnect extends CardanoPeerConnect {
 
         if(!this.meerkat) return;
 
-        console.log("this.meerkat");
-        console.log(this.meerkat);
-        console.log("identifier");
-        console.log(identifier);
-        console.log("name");
-        console.log(name);
-        console.log("message");
-        console.log(message);
         this.meerkat.rpc(
             identifier,
             'message',
             {
                 message
             },
-            (response:any) => {
+            (response:boolean) => {
                 try {
                     console.log(`[info]: message: ${message}`);
                     console.log(`[info]: sent to: ${identifier}`);
@@ -119,7 +117,7 @@ export class PeerConnect extends CardanoPeerConnect {
                             preview: {
                                 message
                             },
-                            received: true,
+                            received: response,
                             sent: true,
                             read: false,
                             starred: false,
@@ -131,7 +129,8 @@ export class PeerConnect extends CardanoPeerConnect {
                             host.identifier,
                             name,
                             host.announce,
-                            [...host.messages, newMessage]).then(_ => {});
+                            [...host.messages, newMessage],
+                            host.connected).then(_ => {});
                         console.log(`[info]: message received by: ${identifier}`);
                     });
                 } catch (e) {

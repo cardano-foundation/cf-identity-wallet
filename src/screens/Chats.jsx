@@ -16,7 +16,7 @@ import {
   IonToolbar,
   IonSearchbar, IonList, IonLabel, IonInput,
 } from '@ionic/react';
-import { checkmarkDone, createOutline } from 'ionicons/icons';
+import { checkmarkDone, createOutline, cloudCircle } from 'ionicons/icons';
 import './Chats.css';
 import ChatStore from '../store/ChatStore';
 import ContactStore from '../store/ContactStore';
@@ -60,49 +60,60 @@ const Chats = () => {
 
   const updateChats = () => {
     getHostList().then(hosts => {
-      if(!hosts)return;
-      const chats = Object.values(hosts).map((host, index) => {
-        const messages = host.messages?.length ? host.messages.map((message, index) => {
+      //if(!hosts)return;
+      let hostList = [];
+      if (hosts){
+        hostList = Object.values(hosts).map((host, index) => {
+          const messages = host.messages?.length ? host.messages.map((message, index) => {
+            return {
+              ...message,
+              id: index,
+            }
+          }) : [];
           return {
-            ...message,
             id: index,
+            identifier: host.identifier,
+            key: `${host.name}:${host.identifier}`,
+            name: host.name,
+            contact_id: index,
+            preview: {message: messages.length && messages[messages.length-1].preview || ""},
+            messages,
+            connected: host.connected
           }
-        }) : [];
-        return {
-          id: index,
-          identifier: host.identifier,
-          key: `${host.name}:${host.identifier}`,
-          name: host.name,
-          contact_id: index,
-          preview: {message: messages.length && messages[messages.length-1].preview || ""},
-          messages
+        });
+      }
+
+      getPeerList().then(peers => {
+        //if(!peers)return;
+        console.log("peers___");
+        console.log(peers);
+        let peerList = [];
+        if (peers){
+          peerList = Object.values(peers).map((peer, index) => {
+            if(!peer.messages)return;
+            const messages = peer.messages?.length ? peer.messages.map((message, index) => {
+              return {
+                ...message,
+                id: index,
+              }
+            }) : [];
+            return {
+              id: index,
+              identifier: peer.identifier,
+              key: `${peer.name}:${peer.identifier}`,
+              name: peer.name,
+              contact_id: index,
+              preview: {message: messages.length && messages[messages.length-1].preview || ""},
+              messages,
+              connected: peer.connected
+            }
+          });
         }
+        setResults([...hostList, ...peerList]);
       });
-      setResults(chats);
     });
 
-    getPeerList().then(peers => {
-      if(!peers)return;
-      const chats = Object.values(peers).map((peer, index) => {
-        if(!peer.messages)return;
-        const messages = peer.messages?.length ? peer.messages.map((message, index) => {
-          return {
-            ...message,
-            id: index,
-          }
-        }) : [];
-        return {
-          id: index,
-          identifier: peer.identifier,
-          key: `${peer.name}:${peer.identifier}`,
-          name: peer.name,
-          contact_id: index,
-          preview: {message: messages.length && messages[messages.length-1].preview || ""},
-          messages
-        }
-      });
-      setResults(prev => [...prev,...chats]);
-    });
+
   }
   const search = (e) => {
     const searchTerm = e.target.value;

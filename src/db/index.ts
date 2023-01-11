@@ -207,8 +207,15 @@ export const removeOriginFromWhitelist = async (origin:string) => {
   }
 }
 
-export const setPeer = async (id:string, seed:string, identifier:string, name:string, announce:String[], messages:string[]=[]) => {
-  await setObject( "peer-connect", id, {seed, identifier, name, announce, messages})
+export const setPeer = async (
+    id:string,
+    seed:string,
+    identifier:string,
+    name:string,
+    announce:String[],
+    messages:string[]=[],
+    connected:boolean=false) => {
+  await setObject( "peer-connect", id, {seed, identifier, name, announce, messages, connected})
 }
 
 export const getPeer = async (id:string) => {
@@ -219,8 +226,15 @@ export const getPeerList = async () => {
   return await get("peer-connect");
 }
 
-export const setHost = async (id:string, seed:string, identifier:string, name:string, announce:String[], messages:string[]=[]) => {
-  await setObject( "host-connect", id, {seed, identifier, name, announce, messages})
+export const setHost = async (
+    id:string,
+    seed:string,
+    identifier:string,
+    name:string,
+    announce:String[],
+    messages:string[]=[],
+    connected:boolean=false) => {
+  await setObject( "host-connect", id, {seed, identifier, name, announce, messages, connected})
 }
 
 export const getHost = async (id:string) => {
@@ -235,6 +249,11 @@ export const getChannel = async (id:string) => {
   const host = await getObject("host-connect", id);
   const peer = await getObject("peer-connect", id);
   return host ? host : peer;
+}
+export const getAllChannels = async () => {
+  const host = await get("host-connect");
+  const peer = await get("peer-connect");
+  return [...host, ...peer];
 }
 
 export const setPeerProfile = async (id:string, seed:string, identifier:string, name:string, announce:String[], messages:string[]=[]) => {

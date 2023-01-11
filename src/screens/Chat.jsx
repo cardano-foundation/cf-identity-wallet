@@ -22,11 +22,11 @@ import {
   createGesture,
   useIonViewWillEnter,
   IonActionSheet,
-  IonToast,
+  IonToast, IonRefresher, IonRefresherContent,
 } from '@ionic/react';
 import {
   alertOutline,
-  callOutline,
+  callOutline, cloudCircle,
   send,
   shareOutline,
   starOutline,
@@ -124,10 +124,10 @@ const Chat = () => {
   }, [showActionSheet]);
 
   const updateChat = async () => {
+    console.log("Update chat")
     if (!params)return;
     const chat = await getChannel(params.channel_id);
     serChat(chat);
-
   }
 
   //  Scroll to end of content
@@ -290,7 +290,7 @@ const Chat = () => {
       const identifier = params.channel_id.split(':')[1];
 
       try {
-        handleConnect.sendMessage(params.channel_id,identifier, name, message);
+        handleConnect.sendMessage(params.channel_id, identifier, name, message);
         console.log("message sent");
         setMessage('');
         setMessageSent(true);
@@ -315,6 +315,15 @@ const Chat = () => {
     messageSent,
   };
 
+  const handleRefresh = (event) => {
+    console.log("Refresh!!");
+    updateChat();
+    setTimeout(() => {
+      // Any calls to load data go here
+      event.detail.complete();
+    }, 2000);
+  }
+
   return (
     <IonPage className='chat-page'>
       <IonHeader>
@@ -327,7 +336,11 @@ const Chat = () => {
             <div className='chat-contact'>
               <img src={contact.avatar} alt='avatar' />
               <div className='chat-contact-details'>
-                <p>{chat.name}</p>
+                <p>{chat.name}
+                  <span className="ml-3 color">{chat?.connected ? <IonIcon size='small' icon={cloudCircle} color='success' />
+                      : <IonIcon size='small' icon={cloudCircle} color='gray' />}
+              </span>
+                </p>
                 <IonText color='medium'>{chat.identifier}</IonText>
               </div>
             </div>
@@ -336,6 +349,9 @@ const Chat = () => {
       </IonHeader>
 
       <IonContent id='main-chat-content' ref={contentRef}>
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent/>
+        </IonRefresher>
         {chat && Object.keys(chat).length && chat.messages.map((message, index) => {
 
           /*
@@ -344,7 +360,6 @@ const Chat = () => {
               parseInt(subMessage.id) === parseInt(message.replyID)
           )[0];
           */
-
           return (
             <div
               ref={(ref) => (swiperRefs.current[index] = ref)}

@@ -2,11 +2,12 @@
 import Meerkat from "@fabianbormann/meerkat";
 import {
     setHost,
-    getHost, getPeer, setPeer
+    getHost, getPeer, setPeer, getAllChannels
 } from "../../db";
 import {extendMoment} from "moment-range";
 import Moment from 'moment';
 import crypto from "crypto";
+import {add} from "ionicons/icons";
 // @ts-ignore
 const moment = extendMoment(Moment);
 
@@ -40,6 +41,18 @@ export class HostConnect {
             if (!connected) {
                 connected = true;
                 console.log('server ready');
+                if (clients){
+                    getHost(this.id).then(host => {
+                        setHost(this.id, host.seed, host.identifier, name, host.announce, host.messages, true).then(_ => {
+                            console.log(`[info]: the server is ready to use 💬`);
+                            this.meerkat.rpc(host.identifier, 'message', {message: "server ready 💬"}, (response: any) => {
+                                    console.log("response");
+                                    console.log(response);
+                                }
+                            );
+                        });
+                    });
+                }
             }
         });
 
@@ -50,17 +63,18 @@ export class HostConnect {
                     console.log(`[info]: message: ${message}`);
                     console.log(`[info]: sent by: ${address}`);
 
-                    const newMessage = {
-                        preview: message,
-                        sender: address,
-                        received: true,
-                        sent: true,
-                        read: false,
-                        starred: false,
-                        date: moment.utc().format("MM-DD HH:mm:ss")
-                    }
                     getHost(this.id).then(host => {
-                        setHost(this.id, host.seed, host.identifier, name, host.announce, [...host.messages, newMessage]).then(_ => {
+
+                        const newMessage = {
+                            preview: message,
+                            sender: address,
+                            received: true,
+                            sent: address === host.identifier,
+                            read: false,
+                            starred: false,
+                            date: moment.utc().format("MM-DD HH:mm:ss")
+                        }
+                        setHost(this.id, host.seed, host.identifier, name, host.announce, [...host.messages, newMessage], host.connected).then(_ => {
                             callback(true);
                         });
                     });
@@ -85,46 +99,37 @@ export class HostConnect {
 
         if(!this.meerkat) return;
 
-        console.log(`[info]: send message from host:`);
-        console.log("this.meerkat");
-        console.log(this.meerkat);
-        console.log("identifier");
-        console.log(identifier);
-        console.log("name");
-        console.log(name);
-        console.log("message");
-        console.log(message);
+        console.log(`[info]: send message from host`);
         this.meerkat.rpc(
             identifier,
             'message',
             {
                 message
             },
-            (response:any) => {
+            (response:boolean) => {
                 try {
 
                     console.log(`[info]: message: ${message}`);
                     console.log(`[info]: sent from host to: ${identifier}`);
-
-                    if (!response) return;
-                    getPeer(this.id).then(host => {
+                    getHost(this.id).then(host => {
                         const newMessage = {
                             preview: {
                                 message
                             },
-                            received: true,
+                            received: response,
                             sent: true,
                             read: false,
                             starred: false,
-                            date: moment.utc().format("MM-DD HH:mm:ss")
+                            date: moment.utc().format("YYYY-MM-DD HH:mm:ss")
                         }
-                        setPeer(
+                        setHost(
                             this.id,
                             host.seed,
                             host.identifier,
                             name,
                             host.announce,
-                            [...host.messages, newMessage]).then(_ => {});
+                            [...host.messages, newMessage],
+                            host.connected).then(_ => {});
                         console.log(`[info]: message received by: ${identifier}`);
                     });
                 } catch (e) {
