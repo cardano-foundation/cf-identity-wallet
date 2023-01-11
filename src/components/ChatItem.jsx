@@ -11,8 +11,6 @@ const ChatItem = ({ chat }) => {
   const contact = contacts[0];
   const notificationCount = messages?.length && messages.filter((chat) => chat.read === false).length || 0;
 
-  console.log("ChatItem");
-  console.log(chat);
   return (
     <div className='chat-row' id='chat-row'>
       <img src={contact.avatar} alt='avatar' />

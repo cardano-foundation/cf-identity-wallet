@@ -14,7 +14,7 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
-  IonSearchbar, IonList, IonLabel, IonInput,
+  IonSearchbar, IonList, IonLabel, IonInput, IonRefresherContent, IonRefresher,
 } from '@ionic/react';
 import { checkmarkDone, createOutline, cloudCircle } from 'ionicons/icons';
 import './Chats.css';
@@ -60,7 +60,6 @@ const Chats = () => {
 
   const updateChats = () => {
     getHostList().then(hosts => {
-      //if(!hosts)return;
       let hostList = [];
       if (hosts){
         hostList = Object.values(hosts).map((host, index) => {
@@ -84,9 +83,6 @@ const Chats = () => {
       }
 
       getPeerList().then(peers => {
-        //if(!peers)return;
-        console.log("peers___");
-        console.log(peers);
         let peerList = [];
         if (peers){
           peerList = Object.values(peers).map((peer, index) => {
@@ -114,6 +110,14 @@ const Chats = () => {
     });
 
 
+  }
+  const handleRefresh = (event) => {
+    console.log("Refresh!!");
+    updateChats();
+    setTimeout(() => {
+      // Any calls to load data go here
+      event.detail.complete();
+    }, 2000);
   }
   const search = (e) => {
     const searchTerm = e.target.value;
@@ -317,6 +321,9 @@ const Chats = () => {
           <IonSearchbar onIonChange={(e) => search(e)} />
         </IonHeader>
 
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent/>
+        </IonRefresher>
         {results.map((chat, index) => {
           return <ChatItem chat={chat} key={index} />;
         })}
