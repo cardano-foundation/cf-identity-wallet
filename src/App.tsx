@@ -20,9 +20,6 @@ const App = (isExtension?: boolean) => {
     history.push('/');
   }
 
-  console.log('window.location.pathname2');
-  console.log(window.location.pathname);
-
   const useIsMounted = () => {
     const isMounted = useRef(false);
     // @ts-ignore

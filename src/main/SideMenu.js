@@ -3,8 +3,13 @@ import {
   IonButtons,
   IonContent,
   IonHeader,
+  IonItem,
+  IonIcon,
+  IonLabel,
+  IonList,
   IonMenu,
   IonMenuButton,
+  IonMenuToggle,
   IonPage,
   IonTitle,
   IonToolbar,
@@ -35,42 +40,6 @@ const SideMenu = (props) => {
 
     //     <IonListHeader>{menuOptions.pageName}</IonListHeader>
 
-    //     {menuOptions !== null && (
-    //       <IonList lines='none'>
-    //         {menuOptions &&
-    //           menuOptions.options.map((menuOption, i) => {
-    //             if (menuOption.url === null) {
-    //               return (
-    //                 <IonMenuToggle key={i} autoHide={true}>
-    //                   <IonItem
-    //                     onClick={menuOption.clickEvent}
-    //                     lines='none'
-    //                     detail={false}
-    //                   >
-    //                     <IonIcon slot='start' icon={menuOption.icon} />
-    //                     <IonLabel>{menuOption.text}</IonLabel>
-    //                   </IonItem>
-    //                 </IonMenuToggle>
-    //               );
-    //             } else {
-    //               if (menuOption.url !== null) {
-    //                 return (
-    //                   <IonMenuToggle key={i} autoHide={true}>
-    //                     <IonItem
-    //                       detail={false}
-    //                       routerLink={menuOption.url}
-    //                       lines='none'
-    //                     >
-    //                       <IonIcon slot='start' icon={menuOption.icon} />
-    //                       <IonLabel>{menuOption.text}</IonLabel>
-    //                     </IonItem>
-    //                   </IonMenuToggle>
-    //                 );
-    //               }
-    //             }
-    //           })}
-    //       </IonList>
-    //     )}
     //   </IonContent>
     // </IonMenu>
     <>
@@ -81,7 +50,42 @@ const SideMenu = (props) => {
           </IonToolbar>
         </IonHeader>
         <IonContent className='ion-padding'>
-          This is the menu content.
+          {menuOptions !== null && (
+            <IonList lines='none'>
+              {menuOptions &&
+                menuOptions.options.map((menuOption, i) => {
+                  if (menuOption.url === null) {
+                    return (
+                      <IonMenuToggle key={i} autoHide={true}>
+                        <IonItem
+                          onClick={menuOption.clickEvent}
+                          lines='none'
+                          detail={false}
+                        >
+                          <IonIcon slot='start' icon={menuOption.icon} />
+                          <IonLabel>{menuOption.text}</IonLabel>
+                        </IonItem>
+                      </IonMenuToggle>
+                    );
+                  } else {
+                    if (menuOption.url !== null) {
+                      return (
+                        <IonMenuToggle key={i} autoHide={true}>
+                          <IonItem
+                            detail={false}
+                            routerLink={menuOption.url}
+                            lines='none'
+                          >
+                            <IonIcon slot='start' icon={menuOption.icon} />
+                            <IonLabel>{menuOption.text}</IonLabel>
+                          </IonItem>
+                        </IonMenuToggle>
+                      );
+                    }
+                  }
+                })}
+            </IonList>
+          )}
         </IonContent>
       </IonMenu>
       <IonPage id='main-content'>
