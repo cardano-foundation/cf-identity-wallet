@@ -288,46 +288,22 @@ const Chat = () => {
     if (message !== '') {
       const name = params.channel_id.split(':')[0];
       const identifier = params.channel_id.split(':')[1];
-      console.log("params.channel_id")
-      console.log(params.channel_id);
-      console.log("name");
-      console.log(name);
-      console.log("identifier");
-      console.log(identifier);
-      handleConnect.sendMessage(params.channel_id,identifier, name, message);
-      console.log("message sent");
-      /*
-      sendChatMessage(
-        params.contact_id,
-        message,
-        replyToMessage,
-        replyToMessage ? replyToMessage.id : false,
-        image,
-        imagePath
-      );*/
-      setMessage('');
 
-      setMessageSent(true);
-      setTimeout(() => setMessageSent(false), 10);
-      setTimeout(() => scrollToBottom(), 100);
-    }
-  };
+      try {
+        handleConnect.sendMessage(params.channel_id,identifier, name, message);
+        console.log("message sent");
+        setMessage('');
+        setMessageSent(true);
+        setTimeout(() => setMessageSent(false), 10);
+        setTimeout(() => scrollToBottom(), 100);
 
-  const sendMessage0 = (image = false, imagePath = false) => {
-    if (message !== '' || image === true) {
-      sendChatMessage(
-        params.contact_id,
-        message,
-        replyToMessage,
-        replyToMessage ? replyToMessage.id : false,
-        image,
-        imagePath
-      );
-      setMessage('');
+      } catch (e) {
+        console.log("error:");
+        console.log(e);
+        setToastMessage(`Error: ${e}`);
+        setShowToast(true);
+      }
 
-      setMessageSent(true);
-      setTimeout(() => setMessageSent(false), 10);
-      image && setTimeout(() => scrollToBottom(), 100);
     }
   };
 
@@ -372,16 +348,16 @@ const Chat = () => {
           return (
             <div
               ref={(ref) => (swiperRefs.current[index] = ref)}
-              id={`chatBubble_${message.id}`}
+              id={`chatBubble_${index}`}
               key={index}
               className={`chat-bubble ${
                 message.sent ? 'bubble-sent' : 'bubble-received'
               }`}
               {...longPressEvent}
             >
-              <div id={`chatText_${message.id}`}>
+              <div id={`chatText_${index}`}>
                 <ChatRepliedQuote
-                  message={message.preview.message}
+                  message={message.preview}
                   contact={contact}
                   //repliedMessage={repliedMessage}
                 />
@@ -397,13 +373,13 @@ const Chat = () => {
 
         <IonActionSheet
           header='Message Actions'
-          subHeader={actionMessage && actionMessage.preview}
+          subHeader={actionMessage && actionMessage.preview.message}
           isOpen={showActionSheet}
           onDidDismiss={() => setShowActionSheet(false)}
           buttons={actionSheetButtons}
         />
         <IonToast
-          color='primary'
+          color='danger'
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
           message={toastMessage}

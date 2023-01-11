@@ -28,7 +28,7 @@ const ChatItem = ({ chat }) => {
             {read && received && (
               <IonIcon icon={checkmarkDone} color='primary' />
             )}
-            {preview.message}
+            {preview.message.message}
           </p>
         </div>
 

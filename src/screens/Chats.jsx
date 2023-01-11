@@ -74,7 +74,7 @@ const Chats = () => {
           key: `${host.name}:${host.identifier}`,
           name: host.name,
           contact_id: index,
-          preview: messages.length && messages[messages.length-1].preview || "",
+          preview: {message: messages.length && messages[messages.length-1].preview || ""},
           messages
         }
       });
@@ -97,7 +97,7 @@ const Chats = () => {
           key: `${peer.name}:${peer.identifier}`,
           name: peer.name,
           contact_id: index,
-          preview: messages.length && messages[messages.length-1].preview || "",
+          preview: {message: messages.length && messages[messages.length-1].preview || ""},
           messages
         }
       });

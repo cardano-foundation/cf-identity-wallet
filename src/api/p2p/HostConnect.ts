@@ -51,9 +51,7 @@ export class HostConnect {
                     console.log(`[info]: sent by: ${address}`);
 
                     const newMessage = {
-                        preview: {
-                            message
-                        },
+                        preview: message,
                         received: true,
                         sent: true,
                         read: false,
@@ -106,6 +104,8 @@ export class HostConnect {
 
                     console.log(`[info]: message: ${message}`);
                     console.log(`[info]: sent from host to: ${identifier}`);
+
+                    if (!response) return;
                     getPeer(this.id).then(host => {
                         const newMessage = {
                             preview: {
@@ -124,6 +124,7 @@ export class HostConnect {
                             name,
                             host.announce,
                             [...host.messages, newMessage]).then(_ => {});
+                        console.log(`[info]: message received by: ${identifier}`);
                     });
                 } catch (e) {
 

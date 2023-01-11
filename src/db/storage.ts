@@ -89,8 +89,6 @@ export const removeObject = async (tableName:string, id:string) => {
 export const getObject = async (tableName:string, id:string) => {
   try {
     const all = await get(tableName) || [];
-    console.log("all");
-    console.log(all);
 
     return all[id];
   } catch (e) {
