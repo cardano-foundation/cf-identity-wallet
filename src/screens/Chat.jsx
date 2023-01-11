@@ -295,7 +295,7 @@ const Chat = () => {
         setMessage('');
         setMessageSent(true);
         setTimeout(() => setMessageSent(false), 10);
-        setTimeout(() => scrollToBottom(), 100);
+        setTimeout(() => updateChat() && scrollToBottom(), 200);
 
       } catch (e) {
         console.log("error:");

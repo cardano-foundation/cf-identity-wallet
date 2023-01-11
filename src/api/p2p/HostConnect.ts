@@ -52,6 +52,12 @@ export class HostConnect {
                             );
                         });
                     });
+                } else {
+                    getHost(this.id).then(host => {
+                        setHost(this.id, host.seed, host.identifier, name, host.announce, host.messages, false).then(_ => {
+                            console.log(`[info]: loading server... 💬`);
+                        });
+                    });
                 }
             }
         });
