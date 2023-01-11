@@ -184,11 +184,13 @@ const Chat = () => {
       ? parseInt(elementID.replace('chatTime_', ''))
       : parseInt(elementID.replace('chatBubble_', ''));
 
+    /*
     const chatMessage = chat.filter(
       (message) => parseInt(message.id) === parseInt(chatMessageID)
     )[0];
+    */
 
-    setActionMessage(chatMessage);
+    // setActionMessage(chatMessage);
     setShowActionSheet(true);
   };
 
@@ -287,6 +289,26 @@ const Chat = () => {
   }, [showSendButton]);
 
   const sendMessage = (image = false, imagePath = false) => {
+    console.log("sendMessage");
+    if (message !== '' || image === true) {
+      /*
+      sendChatMessage(
+        params.contact_id,
+        message,
+        replyToMessage,
+        replyToMessage ? replyToMessage.id : false,
+        image,
+        imagePath
+      );*/
+      setMessage('');
+
+      setMessageSent(true);
+      setTimeout(() => setMessageSent(false), 10);
+      image && setTimeout(() => scrollToBottom(), 100);
+    }
+  };
+
+  const sendMessage0 = (image = false, imagePath = false) => {
     if (message !== '' || image === true) {
       sendChatMessage(
         params.contact_id,
@@ -337,10 +359,13 @@ const Chat = () => {
 
       <IonContent id='main-chat-content' ref={contentRef}>
         {chat && Object.keys(chat).length && chat.messages.map((message, index) => {
+
+          /*
           const repliedMessage = chat.filter(
             (subMessage) =>
               parseInt(subMessage.id) === parseInt(message.replyID)
           )[0];
+          */
 
           return (
             <div
@@ -356,13 +381,10 @@ const Chat = () => {
                 <ChatRepliedQuote
                   message={message}
                   contact={contact}
-                  repliedMessage={repliedMessage}
+                  //repliedMessage={repliedMessage}
                 />
 
-                {message.preview}
-                {message.image && message.imagePath && (
-                  <img src={message.imagePath} alt='chat message' />
-                )}
+                {message}
                 <ChatBottomDetails message={message} />
               </div>
 
