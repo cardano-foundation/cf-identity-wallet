@@ -36,9 +36,7 @@ import {handleConnect2} from "../App";
 const Chats = () => {
   const pageRef = useRef();
   const contacts = ContactStore.useState(getContacts);
-  console.log("latestChats");
 
-  const [originalResults, setOriginalResults] = useState([]);
   const [results, setResults] = useState([]);
   const [showContactModal, setShowContactModal] = useState(false);
   const [showCreateServer, setShowCreateServer] = useState(false);
@@ -61,72 +59,48 @@ const Chats = () => {
   }, []);
 
   const updateChats = () => {
-    console.log("updateChats")
     getHostList().then(hosts => {
-      console.log("hosts33");
-      console.log(hosts);
       if(!hosts)return;
       const chats = Object.values(hosts).map((host, index) => {
-        console.log("host11");
-        console.log(host);
-        const messages = host.messages.map((message, index) => {
+        const messages = host.messages?.length ? host.messages.map((message, index) => {
           return {
+            ...message,
             id: index,
-            preview: message,
-            received: true,
-            sent: false,
-            date: moment.utc().millisecond().toString(),
-            read: false,
-            starred: false
           }
-        });
-        console.log("messages");
-        console.log(messages);
+        }) : [];
         return {
           id: index,
+          identifier: host.identifier,
           key: `${host.name}:${host.identifier}`,
           name: host.name,
           contact_id: index,
           preview: messages.length && messages[messages.length-1].preview || "",
-          chats: messages
+          messages
         }
       });
-      console.log("chats");
-      console.log(chats);
       setResults(chats);
     });
 
     getPeerList().then(peers => {
-      console.log("peers44");
-      console.log(peers);
       if(!peers)return;
       const chats = Object.values(peers).map((peer, index) => {
-        console.log("peer22");
-        console.log(peer);
-        const messages = peer.messages.map((message, index) => {
+        if(!peer.messages)return;
+        const messages = peer.messages?.length ? peer.messages.map((message, index) => {
           return {
+            ...message,
             id: index,
-            preview: message,
-            received: true,
-            sent: false,
-            date: moment.utc().millisecond().toString(),
-            read: false,
-            starred: false
           }
-        });
-        console.log("messages");
-        console.log(messages);
+        }) : [];
         return {
           id: index,
+          identifier: peer.identifier,
           key: `${peer.name}:${peer.identifier}`,
           name: peer.name,
           contact_id: index,
           preview: messages.length && messages[messages.length-1].preview || "",
-          chats: messages
+          messages
         }
       });
-      console.log("chats");
-      console.log(chats);
       setResults(prev => [...prev,...chats]);
     });
   }
@@ -169,8 +143,6 @@ const Chats = () => {
     }
   }, [showConnectDapp]);
 
-  console.log("handleConnect2");
-  console.log(handleConnect2);
   return (
     <IonPage>
       <IonHeader>

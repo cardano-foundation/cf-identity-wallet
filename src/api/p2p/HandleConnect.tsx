@@ -125,9 +125,11 @@ export class HandleConnect  {
      *
      */
     sendMessage(peerId: string, identifier: string, name: string, message: string): void {
-        for (let i=0; i<this.peers.length; i++){
-            if(this.peers[i].id === peerId){
-                this.peers[i].sendMessage(identifier, name, message);
+
+        const meerkats = [...this.hosts,...this.peers];
+        for (let i=0; i<meerkats.length; i++){
+            if(meerkats[i].id === peerId){
+                meerkats[i].sendMessage(identifier, name, message);
             }
         }
     }

@@ -52,11 +52,10 @@ import ReplyTo from '../components/ReplyTo';
 import { ChatBottomDetails } from '../components/ChatBottomDetails';
 import { ChatRepliedQuote } from '../components/ChatRepliedQuote';
 import {getChannel, getHost, getPeer} from "../db";
+import {handleConnect} from "../api/p2p/HandleConnect";
 
 const Chat = () => {
   const params = useParams();
-  console.log("params");
-  console.log(params);
 
   //  Global State
   const chat1 = ChatStore.useState(getChat(1));
@@ -125,13 +124,8 @@ const Chat = () => {
   }, [showActionSheet]);
 
   const updateChat = async () => {
-    console.log("updateChat1");
     if (!params)return;
-    console.log("paramsda");
-    console.log(params);
     const chat = await getChannel(params.channel_id);
-    console.log("chat3524");
-    console.log(chat);
     serChat(chat);
 
   }
@@ -142,7 +136,7 @@ const Chat = () => {
   useIonViewWillEnter(() => {
     scrollToBottom();
     setupObserver();
-    markAllAsRead(params.contact_id);
+    // markAllAsRead(params.contact_id);
     setSwipeEvents();
   });
 
@@ -225,7 +219,7 @@ const Chat = () => {
   };
 
   const setSwipeEvents = () => {
-    chat.forEach((message, index) => {
+    chat.messages?.forEach((message, index) => {
       if (!message.sent) {
         const chatBubble = swiperRefs.current[index];
 
@@ -288,9 +282,20 @@ const Chat = () => {
     //sendRef.current.animation.play();
   }, [showSendButton]);
 
-  const sendMessage = (image = false, imagePath = false) => {
+  const sendMessage = () => {
     console.log("sendMessage");
-    if (message !== '' || image === true) {
+
+    if (message !== '') {
+      const name = params.channel_id.split(':')[0];
+      const identifier = params.channel_id.split(':')[1];
+      console.log("params.channel_id")
+      console.log(params.channel_id);
+      console.log("name");
+      console.log(name);
+      console.log("identifier");
+      console.log(identifier);
+      handleConnect.sendMessage(params.channel_id,identifier, name, message);
+      console.log("message sent");
       /*
       sendChatMessage(
         params.contact_id,
@@ -304,7 +309,7 @@ const Chat = () => {
 
       setMessageSent(true);
       setTimeout(() => setMessageSent(false), 10);
-      image && setTimeout(() => scrollToBottom(), 100);
+      setTimeout(() => scrollToBottom(), 100);
     }
   };
 
@@ -334,9 +339,6 @@ const Chat = () => {
     messageSent,
   };
 
-  console.log("chat messages");
-  console.log(chat);
-  console.log(chat.messages);
   return (
     <IonPage className='chat-page'>
       <IonHeader>
@@ -350,7 +352,7 @@ const Chat = () => {
               <img src={contact.avatar} alt='avatar' />
               <div className='chat-contact-details'>
                 <p>{chat.name}</p>
-                <IonText color='medium'>last seen today at 22:10</IonText>
+                <IonText color='medium'>{chat.identifier}</IonText>
               </div>
             </div>
           </IonTitle>
@@ -379,12 +381,12 @@ const Chat = () => {
             >
               <div id={`chatText_${message.id}`}>
                 <ChatRepliedQuote
-                  message={message}
+                  message={message.preview.message}
                   contact={contact}
                   //repliedMessage={repliedMessage}
                 />
 
-                {message}
+                {message.preview.message}
                 <ChatBottomDetails message={message} />
               </div>
 

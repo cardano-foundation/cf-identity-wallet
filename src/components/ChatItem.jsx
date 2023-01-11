@@ -6,10 +6,10 @@ import { getContacts } from '../store/Selectors';
 
 const ChatItem = ({ chat }) => {
   const contacts = ContactStore.useState(getContacts);
-  const { chats, name, read, date, preview, received  } = chat;
+  const { messages, name, read, date, preview, received  } = chat;
 
   const contact = contacts[0];
-  const notificationCount = chats.filter((chat) => chat.read === false).length;
+  const notificationCount = messages?.length && messages.filter((chat) => chat.read === false).length || 0;
 
   return (
     <div className='chat-row' id='chat-row'>
@@ -28,7 +28,7 @@ const ChatItem = ({ chat }) => {
             {read && received && (
               <IonIcon icon={checkmarkDone} color='primary' />
             )}
-            {preview}
+            {preview.message}
           </p>
         </div>
 
