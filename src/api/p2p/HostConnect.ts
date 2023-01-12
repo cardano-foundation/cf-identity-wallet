@@ -103,9 +103,10 @@ export class HostConnect {
      */
     sendMessage(identifier: string, name: string, message: string): void {
 
+        console.log("sendMessage HostConnect")
         if(!this.meerkat) return;
 
-        console.log(`[info]: send message from host`);
+        console.log("sendMessage rpc")
         this.meerkat.rpc(
             identifier,
             'message',
@@ -116,6 +117,7 @@ export class HostConnect {
                 try {
 
                     console.log(`[info]: message: ${message}`);
+                    console.log(`[info]: received: ${response}`);
                     console.log(`[info]: sent from host to: ${identifier}`);
                     getHost(this.id).then(host => {
                         const newMessage = {

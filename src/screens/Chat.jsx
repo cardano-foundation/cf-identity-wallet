@@ -53,6 +53,7 @@ import { ChatBottomDetails } from '../components/ChatBottomDetails';
 import { ChatRepliedQuote } from '../components/ChatRepliedQuote';
 import {getChannel, getHost, getPeer} from "../db";
 import {handleConnect} from "../api/p2p/HandleConnect";
+import {writeToClipboard} from "../utils/clipboard";
 
 const Chat = () => {
   const params = useParams();
@@ -75,6 +76,7 @@ const Chat = () => {
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [toastColor, setToastColor] = useState('success');
 
   //  Refs
   const contentRef = useRef();
@@ -282,6 +284,15 @@ const Chat = () => {
     //sendRef.current.animation.play();
   }, [showSendButton]);
 
+  useEffect(() => {
+    const updateState = setTimeout(() =>  {
+      updateChat();
+    }, 4000);
+
+    return () => clearInterval(updateState);
+  }, []);
+
+
   const sendMessage = () => {
     console.log("sendMessage");
 
@@ -301,6 +312,7 @@ const Chat = () => {
         console.log("error:");
         console.log(e);
         setToastMessage(`Error: ${e}`);
+        setToastColor("danger");
         setShowToast(true);
       }
 
@@ -314,6 +326,14 @@ const Chat = () => {
     contact: contact.name,
     messageSent,
   };
+
+  const onCopy = (content) => {
+    writeToClipboard(content).then(()=>{
+      setToastColor("success");
+      setToastMessage(`Copied: ${content}`);
+      setShowToast(true);
+    });
+  }
 
   const handleRefresh = (event) => {
     console.log("Refresh!!");
@@ -341,7 +361,7 @@ const Chat = () => {
                       : <IonIcon size='small' icon={cloudCircle} color='gray' />}
               </span>
                 </p>
-                <IonText color='medium'>{chat.identifier}</IonText>
+                <IonText color='medium' onClick={() => onCopy(chat.identifier)}>{chat.identifier}</IonText>
               </div>
             </div>
           </IonTitle>
@@ -349,9 +369,6 @@ const Chat = () => {
       </IonHeader>
 
       <IonContent id='main-chat-content' ref={contentRef}>
-        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
-          <IonRefresherContent/>
-        </IonRefresher>
         {chat && Object.keys(chat).length && chat.messages.map((message, index) => {
 
           /*
@@ -386,6 +403,10 @@ const Chat = () => {
           );
         })}
 
+        <IonRefresher slot="fixed" onIonRefresh={handleRefresh}>
+          <IonRefresherContent/>
+        </IonRefresher>
+
         <IonActionSheet
           header='Message Actions'
           subHeader={actionMessage && actionMessage.preview.message}
@@ -394,7 +415,7 @@ const Chat = () => {
           buttons={actionSheetButtons}
         />
         <IonToast
-          color='danger'
+          color={toastColor}
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
           message={toastMessage}
