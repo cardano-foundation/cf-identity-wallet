@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export function submitTransactionBody() {
-  return `
+	return `
     mutation submitTransaction(
         $transaction: String!
     ) {
@@ -13,9 +13,9 @@ export function submitTransactionBody() {
 }
 
 export async function submitTransaction(url: string, signedTxBinary: any) {
-  let transactionQuery = submitTransactionBody();
-  return await axios.post(url, {
-    query: transactionQuery,
-    variables: { transaction: signedTxBinary },
-  });
+	let transactionQuery = submitTransactionBody();
+	return await axios.post(url, {
+		query: transactionQuery,
+		variables: {transaction: signedTxBinary},
+	});
 }

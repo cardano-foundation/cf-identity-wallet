@@ -5,7 +5,7 @@ import Tab2 from '../../pages/Tab2';
 import Tab3 from '../../pages/Tab3';
 
 //  Side Menus
-import { tab1SideMenu, tab2SideMenu, tab3SideMenu } from '../PageSideMenus';
+import {tab1SideMenu, tab2SideMenu, tab3SideMenu} from '../PageSideMenus';
 
 //  Main tab children
 import Settings from '../../pages/Settings';
@@ -14,7 +14,7 @@ import Settings from '../../pages/Settings';
 import InboxItem from '../../pages/InboxItem';
 
 //	Tab icons
-import { personOutline, walletOutline, settingsOutline } from 'ionicons/icons';
+import {personOutline, walletOutline, settingsOutline} from 'ionicons/icons';
 
 //  Import custom tab menu
 import TabMenu from '../TabMenu';
@@ -32,36 +32,36 @@ import SubRoutes from './SubRoutes';
 //  icon = icon to show on the tab bar menu
 //  path = the path which the tab is accessible
 export const tabRoutes = [
-  {
-    label: 'Identity',
-    component: Tab1,
-    icon: personOutline,
-    path: '/tabs/tab1',
-    default: true,
-    isTab: true,
-    sideMenu: true,
-    sideMenuOptions: tab1SideMenu,
-  },
-  {
-    label: 'Wallet',
-    component: Tab2,
-    icon: walletOutline,
-    path: '/tabs/tab2',
-    default: false,
-    isTab: true,
-    sideMenu: true,
-    sideMenuOptions: tab2SideMenu,
-  },
-  {
-    label: 'Settings',
-    component: Tab3,
-    icon: settingsOutline,
-    path: '/tabs/tab3',
-    default: false,
-    isTab: true,
-    sideMenu: true,
-    sideMenuOptions: tab3SideMenu,
-  },
+	{
+		label: 'Identity',
+		component: Tab1,
+		icon: personOutline,
+		path: '/tabs/tab1',
+		default: true,
+		isTab: true,
+		sideMenu: true,
+		sideMenuOptions: tab1SideMenu,
+	},
+	{
+		label: 'Wallet',
+		component: Tab2,
+		icon: walletOutline,
+		path: '/tabs/tab2',
+		default: false,
+		isTab: true,
+		sideMenu: true,
+		sideMenuOptions: tab2SideMenu,
+	},
+	{
+		label: 'Settings',
+		component: Tab3,
+		icon: settingsOutline,
+		path: '/tabs/tab3',
+		default: false,
+		isTab: true,
+		sideMenu: true,
+		sideMenuOptions: tab3SideMenu,
+	},
 ];
 
 //  Array of objects representing children pages of tabs
@@ -74,7 +74,7 @@ export const tabRoutes = [
 //  These pages should be related to tab pages and be held within the same path
 //  E.g. /tabs/tab1/child
 const tabChildrenRoutes = [
-  { component: InboxItem, path: '/tabs/tab3/:id', isTab: false },
+	{component: InboxItem, path: '/tabs/tab3/:id', isTab: false},
 ];
 
 //  Array of objects representing sub pages
@@ -85,7 +85,7 @@ const tabChildrenRoutes = [
 
 //  This array should be sub pages which are not directly related to a tab page
 //  E.g. /child
-const subPageRoutes = [{ component: Settings, path: '/settings' }];
+const subPageRoutes = [{component: Settings, path: '/settings'}];
 
 //  Let's combine these together as they need to be controlled within the same IonRouterOutlet
 const tabsAndChildrenRoutes = [...tabRoutes, ...tabChildrenRoutes];
@@ -95,5 +95,8 @@ export const SubPages = () => <SubRoutes routes={subPageRoutes} />;
 
 //	Render tab menu
 export const Tabs = () => (
-  <TabMenu tabs={tabsAndChildrenRoutes} position="bottom" />
+	<TabMenu
+		tabs={tabsAndChildrenRoutes}
+		position="bottom"
+	/>
 );
