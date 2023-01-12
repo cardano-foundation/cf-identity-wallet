@@ -40,11 +40,11 @@ export class HostConnect {
             console.log(`[info]: connections: ${clients}`);
             if (!connected) {
                 connected = true;
-                console.log('server ready');
+                console.log(`[info]: server ready: ${this.meerkat.identifier}`);
                 if (clients){
                     getHost(this.id).then(host => {
                         setHost(this.id, host.seed, host.identifier, name, host.announce, host.messages, true).then(_ => {
-                            console.log(`[info]: the server is ready to use 💬`);
+                            console.log(`[info]: the server is ready to use 💬: ${this.meerkat.identifier}`);
                             this.meerkat.rpc(host.identifier, 'message', {message: "server ready 💬"}, (response: any) => {
                                     console.log("response");
                                     console.log(response);

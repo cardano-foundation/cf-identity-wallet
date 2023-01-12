@@ -44,10 +44,9 @@ export class PeerConnect extends CardanoPeerConnect {
         this.id = `${name}:${config.identifier}`;
 
         this.meerkat.on('server', () => {
-            console.log('[info]: connected to server');
+            console.log(`[info]: connected to server 💬: ${this.meerkat.identifier}`);
             getPeer(this.id).then(peer => {
                 setPeer(this.id, peer.seed, peer.identifier, name, peer.announce, peer.messages, true).then(_ => {
-                    console.log(`[info]: the peer is connected 💬`);
                 });
             });
 
