@@ -73,46 +73,46 @@ const Chats = () => {
   return (
     <IonContent>
       <IonHeader>
-        <IonToolbar class='ion-text-center'>
+        <IonToolbar class="ion-text-center">
           <IonButton
-            class='ion-margin-horizontal'
-            size='small'
+            class="ion-margin-horizontal"
+            size="small"
             onClick={() => setShowCreateServer(true)}
-            id='open-create'
+            id="open-create"
           >
             Create
           </IonButton>
           <IonModal
             isOpen={showCreateServer}
             ref={modal}
-            trigger='open-create'
+            trigger="open-create"
             onWillDismiss={(ev) => onWillDismiss(ev)}
           >
             <IonHeader>
               <IonToolbar>
                 <IonTitle>Create Server</IonTitle>
-                <IonButtons slot='end'>
+                <IonButtons slot="end">
                   <IonButton onClick={() => setShowCreateServer(false)}>
                     Close
                   </IonButton>
                 </IonButtons>
               </IonToolbar>
             </IonHeader>
-            <IonContent className='ion-padding'>
+            <IonContent className="ion-padding">
               <IonCard>
                 <IonCardHeader>
                   <IonCardTitle>Create a room</IonCardTitle>
                 </IonCardHeader>
                 <IonCardContent>
                   <IonList>
-                    <IonLabel class='ion-text-wrap' position='stacked'>
+                    <IonLabel class="ion-text-wrap" position="stacked">
                       Create a new p2p server with WebRTC and WebTorrent
                       trackers.
                     </IonLabel>
-                    <IonInput placeholder='Name' />
-                    <IonButton expand='block'>Create</IonButton>
+                    <IonInput placeholder="Name" />
+                    <IonButton expand="block">Create</IonButton>
                     <br />
-                    <IonLabel class='ion-text-wrap' position='stacked'>
+                    <IonLabel class="ion-text-wrap" position="stacked">
                       About the Room ID...
                     </IonLabel>
                   </IonList>
@@ -121,86 +121,86 @@ const Chats = () => {
             </IonContent>
           </IonModal>
           <IonButton
-            class='ion-margin-horizontal'
-            size='small'
+            class="ion-margin-horizontal"
+            size="small"
             onClick={() => setShowJoinServer(true)}
-            id='open-join'
+            id="open-join"
           >
             Join
           </IonButton>
           <IonModal
             isOpen={showJoinServer}
             ref={modal}
-            trigger='open-join'
+            trigger="open-join"
             onWillDismiss={(ev) => onWillDismiss(ev)}
           >
             <IonHeader>
               <IonToolbar>
                 <IonTitle>Join Server</IonTitle>
-                <IonButtons slot='end'>
+                <IonButtons slot="end">
                   <IonButton onClick={() => setShowJoinServer(false)}>
                     Close
                   </IonButton>
                 </IonButtons>
               </IonToolbar>
             </IonHeader>
-            <IonContent className='ion-padding'>
+            <IonContent className="ion-padding">
               <IonCard>
                 <IonCardHeader>
                   <IonCardTitle>Join a room</IonCardTitle>
                 </IonCardHeader>
                 <IonCardContent>
                   <IonList>
-                    <IonLabel class='ion-text-wrap' position='stacked'>
+                    <IonLabel class="ion-text-wrap" position="stacked">
                       Connect through WebRTC and WebTorrent trackers.
                     </IonLabel>
-                    <IonInput placeholder='Room Name' />
-                    <IonInput placeholder='Room Address' />
-                    <IonButton expand='block'>Join</IonButton>
+                    <IonInput placeholder="Room Name" />
+                    <IonInput placeholder="Room Address" />
+                    <IonButton expand="block">Join</IonButton>
                   </IonList>
                 </IonCardContent>
               </IonCard>
             </IonContent>
           </IonModal>
           <IonButton
-            class='ion-margin-horizontal'
-            size='small'
+            class="ion-margin-horizontal"
+            size="small"
             onClick={() => setShowConnectDapp(true)}
-            id='open-dapp'
+            id="open-dapp"
           >
             dApp
           </IonButton>
           <IonModal
             isOpen={showConnectDapp}
             ref={modal}
-            trigger='open-dapp'
+            trigger="open-dapp"
             onWillDismiss={(ev) => onWillDismiss(ev)}
           >
             <IonHeader>
               <IonToolbar>
                 <IonTitle>Connect dApp</IonTitle>
-                <IonButtons slot='end'>
+                <IonButtons slot="end">
                   <IonButton onClick={() => setShowConnectDapp(false)}>
                     Close
                   </IonButton>
                 </IonButtons>
               </IonToolbar>
             </IonHeader>
-            <IonContent className='ion-padding'>
+            <IonContent className="ion-padding">
               <IonCard>
                 <IonCardHeader>
                   <IonCardTitle>Connect dApp</IonCardTitle>
                 </IonCardHeader>
                 <IonCardContent>
                   <IonList>
-                    <IonLabel class='ion-text-wrap' position='stacked'>
+                    <IonLabel class="ion-text-wrap" position="stacked">
                       Some placeholder text goes here as if it was a lorem ipsum
                       but better.
                     </IonLabel>
-                    <IonInput placeholder='Name' />
-                    <IonButton expand='block'>Connect</IonButton>
+                    <IonInput placeholder="Name" />
+                    <IonButton expand="block">Connect</IonButton>
                     <br />
-                    <IonLabel class='ion-text-wrap' position='stacked'>
+                    <IonLabel class="ion-text-wrap" position="stacked">
                       This is a work in progress...
                     </IonLabel>
                   </IonList>

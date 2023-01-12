@@ -15,7 +15,7 @@ import { Browser } from '@capacitor/browser';
  * }
  */
 
-console.log("Browser");
+console.log('Browser');
 console.log(Browser);
 class InternalController {
   constructor() {
@@ -83,10 +83,7 @@ class BackgroundController {
         }
         return true;
       });
-    } catch (e) {
-
-    }
-
+    } catch (e) {}
   };
 }
 

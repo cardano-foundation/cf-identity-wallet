@@ -5,7 +5,7 @@ import { getNetworkFromDb } from '../db';
 const BLOCKFROST_URL = `https://blockfrost-api.${NETWORK}.dandelion.link/`;
 
 export const blockfrostAPI = axios.create({
-  baseURL: BLOCKFROST_URL
+  baseURL: BLOCKFROST_URL,
 });
 
 export const getBlockchainState = async () => {
@@ -48,54 +48,52 @@ export const getProtocolParameters = async () => {
     minFeeB: p.min_fee_b,
     minPoolCost: p.min_pool_cost,
   };
-
 };
 
-export const getAccountState = async (stakeAddress:string) => {
+export const getAccountState = async (stakeAddress: string) => {
   const result = await fetchBlockfrost(`accounts/${stakeAddress}`);
   if (!result || result.error) return null;
   return result;
 };
 
-export const getAddressesWithAssets = async (stakeAddress:string) => {
+export const getAddressesWithAssets = async (stakeAddress: string) => {
   const result = await fetchBlockfrost(`accounts/${stakeAddress}/addresses`);
   if (!result || result.error) return null;
   return result;
 };
 
-export const getTxUTxOsByAddress = async (address:string) => {
+export const getTxUTxOsByAddress = async (address: string) => {
   const result = await fetchBlockfrost(`addresses/${address}/utxos`);
   if (!result || result.error) return null;
   return result;
 };
 
-export const getTxInfo = async (txHash:string) => {
+export const getTxInfo = async (txHash: string) => {
   const result = await fetchBlockfrost(`/txs/${txHash}`);
   if (!result || result.error) return null;
   return result;
 };
 
-export const getTxUTxOs = async (txHash:string) => {
+export const getTxUTxOs = async (txHash: string) => {
   const result = await fetchBlockfrost(`/txs/${txHash}/utxos`);
   if (!result || result.error) return null;
   return result;
 };
 
-export const submitApi = async (txHex:string) => {
+export const submitApi = async (txHex: string) => {
   const network = await getNetworkFromDb();
-  const url = network.blockfrost.url + `/tx/submit`
-  return await axios.post(
-    url,
-    txHex,
-    {
+  const url = network.blockfrost.url + `/tx/submit`;
+  return await axios
+    .post(url, txHex, {
       headers: {
         'Content-Type': 'application/cbor',
-        'project_id': network.blockfrost.token
-      }
-    }).then( response => {
-    return response.data;
-  })
-    .catch(error => {
+        project_id: network.blockfrost.token,
+      },
+    })
+    .then((response) => {
+      return response.data;
+    })
+    .catch((error) => {
       console.log(error);
     });
 };
@@ -104,7 +102,7 @@ export const submitTx = async (data: string) => {
   const network = await getNetworkFromDb();
   const url = network.blockfrost.url + `tx/submit`;
   //const url = SUBMIT_DEFAULT_URL;
-  try{
+  try {
     return await fetch(url, {
       headers: {
         //Authorization: `Bearer \${${token}}`,
@@ -124,25 +122,21 @@ export const submitTx = async (data: string) => {
 };
 
 export const fetchBlockfrost = async (endpoint: string) => {
-
   const network = await getNetworkFromDb();
   const url = network.blockfrost.url + `${endpoint}`;
   const config = {
     method: 'GET',
     url,
     headers: {
-      "project_id": network.blockfrost.token
-    }
+      project_id: network.blockfrost.token,
+    },
   };
 
   return axios(config)
-    .then( response => {
+    .then((response) => {
       return response.data;
     })
-    .catch(error => {
+    .catch((error) => {
       console.log(error);
     });
-
-}
-
-
+};

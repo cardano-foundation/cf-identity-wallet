@@ -25,7 +25,7 @@ const Tab2 = (props) => {
 
   return (
     <IonPage id={pageName}>
-      <CustomPage name={pageName} sideMenu={true} sideMenuPosition='start'>
+      <CustomPage name={pageName} sideMenu={true} sideMenuPosition="start">
         <IonGrid>
           <PageHeader count={sideMenuOptions.length} pageName={pageName} />
         </IonGrid>

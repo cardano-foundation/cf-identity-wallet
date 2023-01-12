@@ -3,12 +3,12 @@ import { IonIcon } from '@ionic/react';
 import { checkmarkDone, star } from 'ionicons/icons';
 
 export const ChatBottomDetails = ({ message }) => (
-  <span className='chat-bottom-details' id={`chatTime_${message.id}`}>
+  <span className="chat-bottom-details" id={`chatTime_${message.id}`}>
     <span>{message.date}</span>
     {message.sent && (
       <IonIcon
         icon={checkmarkDone}
-        color='primary'
+        color="primary"
         style={{ fontSize: '0.8rem' }}
       />
     )}

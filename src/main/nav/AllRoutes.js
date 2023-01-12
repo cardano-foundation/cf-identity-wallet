@@ -95,5 +95,5 @@ export const SubPages = () => <SubRoutes routes={subPageRoutes} />;
 
 //	Render tab menu
 export const Tabs = () => (
-  <TabMenu tabs={tabsAndChildrenRoutes} position='bottom' />
+  <TabMenu tabs={tabsAndChildrenRoutes} position="bottom" />
 );

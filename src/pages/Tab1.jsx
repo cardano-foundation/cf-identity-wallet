@@ -46,17 +46,17 @@ const Tab1 = (props) => {
 
   return (
     <IonPage id={pageName}>
-      <CustomPage name={pageName} sideMenu={true} sideMenuPosition='start'>
+      <CustomPage name={pageName} sideMenu={true} sideMenuPosition="start">
         <PageHeader count={sideMenuOptions.length} pageName={pageName} />
         <IonGrid>
-          <IonRow className='ion-margin'>
-            <IonCol className='ion-align-self-center ion-margin'>
-              <IonImg className='ion-margin' src='/assets/cardano-logo.png' />
+          <IonRow className="ion-margin">
+            <IonCol className="ion-align-self-center ion-margin">
+              <IonImg className="ion-margin" src="/assets/cardano-logo.png" />
             </IonCol>
           </IonRow>
-          <IonRow className='ion-text-center'>
-            <IonCol size='12'>
-              <IonText className='ion-margin' color='dark'>
+          <IonRow className="ion-text-center">
+            <IonCol size="12">
+              <IonText className="ion-margin" color="dark">
                 <p>Work in progress...</p>
               </IonText>
             </IonCol>

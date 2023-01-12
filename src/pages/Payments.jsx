@@ -13,17 +13,17 @@ const Payments = (props) => {
       <CustomPage
         name={pageName}
         sideMenu={false}
-        sideMenuPosition='start'
+        sideMenuPosition="start"
         backButton={true}
-        backButtonText='Home'
+        backButtonText="Home"
         actionButton={true}
         actionButtonIcon={addOutline}
-        actionButtonPosition='end'
-        actionButtonIconSize='1.7rem'
+        actionButtonPosition="end"
+        actionButtonIconSize="1.7rem"
       >
         <IonGrid>
-          <IonRow className='ion-text-center'>
-            <IonCol size='12'>
+          <IonRow className="ion-text-center">
+            <IonCol size="12">
               <h3>Sub page</h3>
             </IonCol>
           </IonRow>

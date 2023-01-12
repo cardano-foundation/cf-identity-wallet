@@ -22,8 +22,8 @@ const ContactModal = ({ close }) => {
       <IonHeader>
         <IonToolbar>
           <IonTitle>New Chat</IonTitle>
-          <IonButtons slot='end'>
-            <IonButton fill='clear' onClick={close}>
+          <IonButtons slot="end">
+            <IonButton fill="clear" onClick={close}>
               Cancel
             </IonButton>
           </IonButtons>
@@ -36,10 +36,10 @@ const ContactModal = ({ close }) => {
             return (
               <IonItem
                 key={`contact_${contact.id}`}
-                lines='full'
-                className='contact-item'
+                lines="full"
+                className="contact-item"
               >
-                <img src={contact.avatar} alt='contact avatar' />
+                <img src={contact.avatar} alt="contact avatar" />
                 <IonLabel>
                   <h1>{contact.name}</h1>
                   <p>Available</p>

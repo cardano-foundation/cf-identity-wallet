@@ -64,7 +64,7 @@ const Tab3 = (props) => {
 
   return (
     <IonPage id={pageName}>
-      <CustomPage name={pageName} sideMenu={true} sideMenuPosition='start'>
+      <CustomPage name={pageName} sideMenu={true} sideMenuPosition="start">
         <IonGrid>
           <PageHeader count={sideMenuOptions.length} pageName={pageName} />
 
@@ -75,7 +75,7 @@ const Tab3 = (props) => {
                   routerLink={`/tabs/tab3/${item.id}`}
                   key={`item_${index}`}
                   detail={true}
-                  lines='full'
+                  lines="full"
                   detailIcon={
                     item.unread ? mailUnreadOutline : checkmarkOutline
                   }
@@ -86,13 +86,13 @@ const Tab3 = (props) => {
                     <p>{item.message}</p>
                   </IonLabel>
                   {Badge && (
-                    <IonBadge slot='end' style={{ fontSize: '0.7rem' }}>
+                    <IonBadge slot="end" style={{ fontSize: '0.7rem' }}>
                       {item.time}
                     </IonBadge>
                   )}
 
                   {!Badge && (
-                    <IonNote slot='end' style={{ fontSize: '0.9rem' }}>
+                    <IonNote slot="end" style={{ fontSize: '0.9rem' }}>
                       {item.time}
                     </IonNote>
                   )}

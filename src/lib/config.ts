@@ -1,11 +1,10 @@
-
 /**
  * Testnet Network
  */
 export const TESTNET_NETWORK_INDEX = '0';
 export const MAINNET_NETWORK_INDEX = '1';
 
-export const GLOBAL_TAG = "Global🌍";
+export const GLOBAL_TAG = 'Global🌍';
 
 export const numbers = {
   HardDerivationStart: 2147483648,

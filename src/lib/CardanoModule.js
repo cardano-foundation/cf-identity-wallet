@@ -1,6 +1,4 @@
-
 class CardanoModule {
-
   wasmV4;
 
   async load() {

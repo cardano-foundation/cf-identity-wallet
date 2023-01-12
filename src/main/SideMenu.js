@@ -43,15 +43,15 @@ const SideMenu = (props) => {
     //   </IonContent>
     // </IonMenu>
     <>
-      <IonMenu contentId='main-content'>
+      <IonMenu contentId="main-content">
         <IonHeader>
           <IonToolbar>
             <IonTitle>Menu Content</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent className='ion-padding'>
+        <IonContent className="ion-padding">
           {menuOptions !== null && (
-            <IonList lines='none'>
+            <IonList lines="none">
               {menuOptions &&
                 menuOptions.options.map((menuOption, i) => {
                   if (menuOption.url === null) {
@@ -59,10 +59,10 @@ const SideMenu = (props) => {
                       <IonMenuToggle key={i} autoHide={true}>
                         <IonItem
                           onClick={menuOption.clickEvent}
-                          lines='none'
+                          lines="none"
                           detail={false}
                         >
-                          <IonIcon slot='start' icon={menuOption.icon} />
+                          <IonIcon slot="start" icon={menuOption.icon} />
                           <IonLabel>{menuOption.text}</IonLabel>
                         </IonItem>
                       </IonMenuToggle>
@@ -74,9 +74,9 @@ const SideMenu = (props) => {
                           <IonItem
                             detail={false}
                             routerLink={menuOption.url}
-                            lines='none'
+                            lines="none"
                           >
-                            <IonIcon slot='start' icon={menuOption.icon} />
+                            <IonIcon slot="start" icon={menuOption.icon} />
                             <IonLabel>{menuOption.text}</IonLabel>
                           </IonItem>
                         </IonMenuToggle>
@@ -88,16 +88,16 @@ const SideMenu = (props) => {
           )}
         </IonContent>
       </IonMenu>
-      <IonPage id='main-content'>
+      <IonPage id="main-content">
         <IonHeader>
           <IonToolbar>
-            <IonButtons slot='start'>
+            <IonButtons slot="start">
               <IonMenuButton></IonMenuButton>
             </IonButtons>
             <IonTitle>Menu</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent className='ion-padding'>
+        <IonContent className="ion-padding">
           Tap the button in the toolbar to open the menu.
         </IonContent>
       </IonPage>

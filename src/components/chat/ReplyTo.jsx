@@ -48,17 +48,17 @@ const ReplyTo = ({
 
   return (
     <CreateAnimation ref={replyToAnimationRef} {...replyToAnimation}>
-      <IonRow className='ion-align-items-center chat-reply-to-row' id='replyTo'>
-        <IonCol size='10' className='chat-reply-to-container'>
-          <IonLabel className='chat-reply-to-name'>{contact}</IonLabel>
-          <IonLabel className='chat-reply-to-message'>
+      <IonRow className="ion-align-items-center chat-reply-to-row" id="replyTo">
+        <IonCol size="10" className="chat-reply-to-container">
+          <IonLabel className="chat-reply-to-name">{contact}</IonLabel>
+          <IonLabel className="chat-reply-to-message">
             {replyToMessage.preview}
           </IonLabel>
         </IonCol>
 
-        <IonCol size='1'>
-          <IonButton fill='clear' onClick={cancelReplyTo}>
-            <IonIcon size='large' icon={closeCircleOutline} color='primary' />
+        <IonCol size="1">
+          <IonButton fill="clear" onClick={cancelReplyTo}>
+            <IonIcon size="large" icon={closeCircleOutline} color="primary" />
           </IonButton>
         </IonCol>
       </IonRow>

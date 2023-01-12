@@ -31,22 +31,22 @@ const InboxItem = (props) => {
   });
 
   return (
-    <IonPage id='view-inbox-item'>
+    <IonPage id="view-inbox-item">
       <CustomPage
         showLargeHeader={false}
         name={pageName}
         sideMenu={false}
         backButton={true}
-        backButtonText='Inbox'
+        backButtonText="Inbox"
       >
         {inboxItem ? (
           <>
             <IonItem>
-              <IonIcon icon={personCircle} color='primary'></IonIcon>
-              <IonLabel className='ion-text-wrap'>
+              <IonIcon icon={personCircle} color="primary"></IonIcon>
+              <IonLabel className="ion-text-wrap">
                 <h2>
                   {inboxItem.sender}
-                  <span className='date'>
+                  <span className="date">
                     <IonNote>{inboxItem.time}</IonNote>
                   </span>
                 </h2>
@@ -56,7 +56,7 @@ const InboxItem = (props) => {
               </IonLabel>
             </IonItem>
 
-            <div className='ion-padding'>
+            <div className="ion-padding">
               <h1>{inboxItem.subject}</h1>
               <p>{inboxItem.message}</p>
             </div>

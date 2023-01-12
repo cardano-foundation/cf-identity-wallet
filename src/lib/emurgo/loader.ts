@@ -5,7 +5,9 @@ class Module {
 
   private async load(): Promise<Lib> {
     if (!this._wasm) {
-      this._wasm = await import('@emurgo/cardano-serialization-lib-browser/cardano_serialization_lib');
+      this._wasm = await import(
+        '@emurgo/cardano-serialization-lib-browser/cardano_serialization_lib'
+      );
     }
     return this._wasm;
   }

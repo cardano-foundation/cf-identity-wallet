@@ -1,5 +1,5 @@
 import { Messaging } from '../messaging';
-import chrome from "extensionizer";
+import chrome from 'extensionizer';
 
 const injectScript = () => {
   const script = document.createElement('script');

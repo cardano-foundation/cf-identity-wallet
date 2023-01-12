@@ -19,9 +19,9 @@ window.cardano = {
   ...(window.cardano || {}),
   idwallet: {
     enable: async () => {
-      console.log("Is enabled?1111")
+      console.log('Is enabled?1111');
       if (await enable()) {
-        console.log("Is enabled!")
+        console.log('Is enabled!');
         return {
           getBalance: () => getBalance(),
           signData: (address, payload) => signDataCIP30(address, payload),

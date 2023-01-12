@@ -14,13 +14,13 @@ const Chat = (props) => {
       <CustomPage
         name={pageName}
         sideMenu={false}
-        sideMenuPosition='start'
+        sideMenuPosition="start"
         backButton={true}
-        backButtonText='Home'
+        backButtonText="Home"
         actionButton={true}
         actionButtonIcon={addOutline}
-        actionButtonPosition='end'
-        actionButtonIconSize='1.7rem'
+        actionButtonPosition="end"
+        actionButtonIconSize="1.7rem"
       >
         <Chats />
       </CustomPage>

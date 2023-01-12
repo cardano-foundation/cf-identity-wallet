@@ -12,33 +12,33 @@ const ChatItem = ({ chat }) => {
   const notificationCount = chats.filter((chat) => chat.read === false).length;
 
   return (
-    <div className='chat-row' id='chat-row'>
-      <img src={contact.avatar} alt='avatar' />
+    <div className="chat-row" id="chat-row">
+      <img src={contact.avatar} alt="avatar" />
 
       <IonItem
-        className='chat-content-container'
+        className="chat-content-container"
         routerLink={`/view-chat/${contact.id}`}
         detail={false}
       >
-        <div className='chat-content'>
-          <div className='chat-name-date'>
+        <div className="chat-content">
+          <div className="chat-name-date">
             <h2>{contact.name}</h2>
           </div>
-          <p className='ion-text-wrap'>
+          <p className="ion-text-wrap">
             {read && received && (
-              <IonIcon icon={checkmarkDone} color='primary' />
+              <IonIcon icon={checkmarkDone} color="primary" />
             )}
             {preview}
           </p>
         </div>
 
-        <div className='chat-details'>
+        <div className="chat-details">
           <p className={`chat-date ${notificationCount > 0 && 'chat-unread'}`}>
             {date}
           </p>
 
           {notificationCount > 0 && (
-            <div className='chat-notification'>{notificationCount}</div>
+            <div className="chat-notification">{notificationCount}</div>
           )}
         </div>
       </IonItem>

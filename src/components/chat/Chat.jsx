@@ -289,26 +289,26 @@ const Chat = () => {
   };
 
   return (
-    <IonPage className='chat-page'>
+    <IonPage className="chat-page">
       <IonHeader>
         <IonToolbar>
           <IonBackButton
-            slot='start'
+            slot="start"
             text={notificationCount > 0 ? notificationCount : ''}
           />
           <IonTitle>
-            <div className='chat-contact'>
-              <img src={contact.avatar} alt='avatar' />
-              <div className='chat-contact-details'>
+            <div className="chat-contact">
+              <img src={contact.avatar} alt="avatar" />
+              <div className="chat-contact-details">
                 <p>{contact.name}</p>
-                <IonText color='medium'>last seen today at 22:10</IonText>
+                <IonText color="medium">last seen today at 22:10</IonText>
               </div>
             </div>
           </IonTitle>
         </IonToolbar>
       </IonHeader>
 
-      <IonContent id='main-chat-content' ref={contentRef}>
+      <IonContent id="main-chat-content" ref={contentRef}>
         {chat.map((message, index) => {
           const repliedMessage = chat.filter(
             (subMessage) =>
@@ -334,7 +334,7 @@ const Chat = () => {
 
                 {message.preview}
                 {message.image && message.imagePath && (
-                  <img src={message.imagePath} alt='chat message' />
+                  <img src={message.imagePath} alt="chat message" />
                 )}
                 <ChatBottomDetails message={message} />
               </div>
@@ -345,34 +345,34 @@ const Chat = () => {
         })}
 
         <IonActionSheet
-          header='Message Actions'
+          header="Message Actions"
           subHeader={actionMessage && actionMessage.preview}
           isOpen={showActionSheet}
           onDidDismiss={() => setShowActionSheet(false)}
           buttons={actionSheetButtons}
         />
         <IonToast
-          color='primary'
+          color="primary"
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
           message={toastMessage}
-          position='bottom'
-          duration='3000'
+          position="bottom"
+          duration="3000"
         />
       </IonContent>
 
       {replyToMessage && <ReplyTo {...replyToProps} />}
 
-      <IonFooter className='chat-footer' id='chat-footer'>
+      <IonFooter className="chat-footer" id="chat-footer">
         <IonGrid>
-          <IonRow className='ion-align-items-center'>
-            <IonItem color='transparent'>
-              <IonCheckbox slot='start'></IonCheckbox>
+          <IonRow className="ion-align-items-center">
+            <IonItem color="transparent">
+              <IonCheckbox slot="start"></IonCheckbox>
             </IonItem>
-            <div className='chat-input-container'>
+            <div className="chat-input-container">
               <CreateAnimation ref={textareaRef} {...textareaAnimation}>
                 <IonTextarea
-                  rows='1'
+                  rows="1"
                   value={message}
                   onIonChange={(e) => setMessage(e.target.value)}
                 />
@@ -381,8 +381,8 @@ const Chat = () => {
 
             <CreateAnimation ref={sendRef} {...sendButtonAnimation}>
               <IonCol
-                size='1'
-                className='chat-send-button'
+                size="1"
+                className="chat-send-button"
                 onClick={sendMessage}
               >
                 <IonIcon icon={send} />

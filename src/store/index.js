@@ -10,15 +10,15 @@ const Store = new PullStateStore({
   platform: '',
   router: {
     currentPath: '/',
-    history: []
+    history: [],
   },
-  settings:{
-    language: "English",
+  settings: {
+    language: 'English',
     currentAccount: 1,
     enableNotifications: false,
     darkTheme: false,
-    network: "preprod"
-  }
+    network: 'preprod',
+  },
 });
 
 export default Store;

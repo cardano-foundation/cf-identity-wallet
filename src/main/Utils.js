@@ -181,9 +181,9 @@ export const buildSideMenuObject = (
 const getInformativeSideMenuItem = (text, description) => {
   return (
     <>
-      <span className='menu-title'>{text}</span>
+      <span className="menu-title">{text}</span>
       <br />
-      <h6 className='sub-menu-title'>{description}</h6>
+      <h6 className="sub-menu-title">{description}</h6>
     </>
   );
 };

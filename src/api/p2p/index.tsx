@@ -1,233 +1,236 @@
-import { CardanoPeerConnect, DAppPeerConnect } from '@fabianbormann/cardano-peer-connect';
-import {Bytes, Cbor, Cip30DataSignature, Paginate} from "@fabianbormann/cardano-peer-connect/types";
-import Meerkat from "@fabianbormann/meerkat";
+import {
+  CardanoPeerConnect,
+  DAppPeerConnect,
+} from '@fabianbormann/cardano-peer-connect';
+import {
+  Bytes,
+  Cbor,
+  Cip30DataSignature,
+  Paginate,
+} from '@fabianbormann/cardano-peer-connect/types';
+import Meerkat from '@fabianbormann/meerkat';
 
 export interface IPeer {
-    id: string;
+  id: string;
 }
 
 export interface IChannel {
-    name: string;
-    connected: boolean;
-    server?: boolean;
-    meerkat: Meerkat;
+  name: string;
+  connected: boolean;
+  server?: boolean;
+  meerkat: Meerkat;
 }
 
 export class PeerConnect extends CardanoPeerConnect {
+  id?: number;
+  apiVersion: string = '0.1.0';
+  name: string = 'idWallet';
+  icon: string = 'data:image/svg+xml,%3Csvg%20xmlns...';
 
-    id?: number;
-    apiVersion: string = '0.1.0';
-    name: string = 'idWallet';
-    icon: string = 'data:image/svg+xml,%3Csvg%20xmlns...';
+  channels: Array<IChannel>;
+  // torrent trackers list
+  trackers: Array<string>;
+  // trusted addresses
+  whitelist: Array<string>;
 
-    channels: Array<IChannel>;
-    // torrent trackers list
-    trackers: Array<string>;
-    // trusted addresses
-    whitelist: Array<string>;
+  constructor() {
+    super();
+    this.channels = [];
+    this.whitelist = [];
+    this.trackers = [];
+  }
 
-    constructor() {
-        super();
-        this.channels = [];
-        this.whitelist = [];
-        this.trackers = [];
-    }
+  /**
+   * Init all meerkat instances
+   */
+  init(): void {}
 
-    /**
-     * Init all meerkat instances
-     */
-    init(): void {
+  /**
+   * refresh all meerkat instances
+   */
+  refreshChannels(): void {}
 
-    }
+  /**
+   * Add a new torrent tracker to our p2p state
+   *
+   * @param channelId - The channel id
+   */
+  refreshChannel(channelId: string): void {}
 
-    /**
-     * refresh all meerkat instances
-     */
-    refreshChannels(): void {
+  /**
+   * Add a new torrent tracker to our p2p state
+   *
+   * @param tracker - The tracker url
+   *
+   * @example "https://pro.passwordchaos.gimbalabs.io/"
+   */
+  addTracker(tracker: string): void {
+    if (this.trackers.includes(tracker)) return;
 
-    }
+    // update global trackers list
+    this.trackers = [...this.trackers, tracker];
 
-    /**
-     * Add a new torrent tracker to our p2p state
-     *
-     * @param channelId - The channel id
-     */
-    refreshChannel(channelId: string): void {
+    // update meerkat instances
+    this.channels = this.channels.map((c) => {
+      c.meerkat.announce = this.trackers;
+      return c;
+    });
 
-    }
+    // TODO: update localDb
+  }
 
-    /**
-     * Add a new torrent tracker to our p2p state
-     *
-     * @param tracker - The tracker url
-     *
-     * @example "https://pro.passwordchaos.gimbalabs.io/"
-     */
-    addTracker(tracker: string): void {
-        if (this.trackers.includes(tracker)) return;
+  /**
+   * Create a new channel.
+   *
+   * @param name - The channel object
+   *
+   */
+  createChannel(name: string): void {
+    if (!name || this.channels.some((c) => c.name === name)) return;
 
-        // update global trackers list
-        this.trackers =[...this.trackers, tracker];
+    let meerkat = new Meerkat();
 
-        // update meerkat instances
-        this.channels = this.channels.map(c => {
-            c.meerkat.announce = this.trackers;
-            return c;
-        });
+    meerkat.on('connections', (clients: number) => {
+      if (clients === 0) {
+        console.log(`[info]: server ready  ${meerkat.address()}`);
+      }
+      console.log(`[info]: ${clients} clients connected in channel`);
+    });
 
-        // TODO: update localDb
-    }
+    meerkat.register(
+      'message',
+      (address: any, args: any, callback: (arg0: string) => void) => {
+        console.log(
+          `[info]: message rpc call invoked by address ${address}, content ${args}`
+        );
 
-    /**
-     * Create a new channel.
-     *
-     * @param name - The channel object
-     *
-     */
-    createChannel(name: string): void {
+        callback('callback from message');
+      }
+    );
 
-        if( !name || this.channels.some(c => c.name === name)) return;
+    // @ts-ignore
+    const channel: IChannel = {
+      name,
+      server: true,
+      connected: true,
+      meerkat,
+    };
 
-        let meerkat = new Meerkat();
+    // TODO: persist state in db, remove meerkat object and replace with meerkat.seed
+    this.channels.push(channel);
+  }
 
-        meerkat.on('connections', (clients:number) => {
-            if (clients === 0) {
-                console.log(`[info]: server ready  ${meerkat.address()}`);
+  /**
+   * Restore an existing channel.
+   *
+   * @param name - The channel name
+   * @param seed - The seed of the channel instance
+   *
+   */
+  restoreChannel(name: string, seed: string): void {
+    if (
+      !name ||
+      !seed ||
+      this.channels.some((c) => c.name === name || c.meerkat.seed === seed)
+    )
+      return;
 
-            }
-            console.log(`[info]: ${clients} clients connected in channel`);
-        });
+    let meerkat = new Meerkat({ seed });
+  }
 
-        meerkat.register('message', (address: any, args: any, callback: (arg0: string) => void) => {
-            console.log(
-                `[info]: message rpc call invoked by address ${address}, content ${args}`
-            );
+  /**
+   * Close an existing channel.
+   *
+   * @param channelId - The channel identifier
+   *
+   */
+  closeChannel(): void {
+    return undefined;
+  }
 
-            callback('callback from message');
-        });
+  /**
+   * Leave an existing channel.
+   *
+   * @param channelId - The channel identifier
+   *
+   */
+  leaveChannel(): void {
+    return undefined;
+  }
 
-        // @ts-ignore
-        const channel:IChannel = {
-            name,
-            server: true,
-            connected: true,
-            meerkat
-        }
+  /**
+   * Join an existing channel.
+   *
+   * @param serverAddress - The server identifier
+   *
+   */
+  joinChannel(serverAddress: string): void {
+    let meerkat = new Meerkat({ identifier: serverAddress || '' });
+  }
 
-        // TODO: persist state in db, remove meerkat object and replace with meerkat.seed
-        this.channels.push(channel);
-    }
+  /**
+   * Update the channels
+   *
+   * @param channelId - The channel identifier
+   *
+   */
+  updateChannels(): void {
+    return undefined;
+  }
 
+  /**
+   * Send text message to
+   *
+   * @param channelId - The channel identifier
+   *
+   */
+  sendMessage(channelId: string): void {
+    const channel = this.channels.find((c) => c.id === channelId);
+  }
 
-    /**
-     * Restore an existing channel.
-     *
-     * @param name - The channel name
-     * @param seed - The seed of the channel instance
-     *
-     */
-    restoreChannel(name:string, seed:string): void {
-        if( !name || !seed || this.channels.some(c => c.name === name || c.meerkat.seed === seed)) return;
+  getBalance(): Cbor {
+    return undefined;
+  }
 
-        let meerkat = new Meerkat({seed});
-    }
+  getChangeAddress(): Cbor {
+    return undefined;
+  }
 
-    /**
-     * Close an existing channel.
-     *
-     * @param channelId - The channel identifier
-     *
-     */
-    closeChannel(): void {
-        return undefined;
-    }
+  getCollateral(params?: { amount?: Cbor }): Cbor[] | null {
+    return undefined;
+  }
 
-    /**
-     * Leave an existing channel.
-     *
-     * @param channelId - The channel identifier
-     *
-     */
-    leaveChannel(): void {
-        return undefined;
-    }
+  getNetworkId(): number {
+    return 0;
+  }
 
-    /**
-     * Join an existing channel.
-     *
-     * @param serverAddress - The server identifier
-     *
-     */
-    joinChannel(serverAddress: string): void {
+  getRewardAddresses(): Cbor[] {
+    return [];
+  }
 
-        let meerkat = new Meerkat({identifier: serverAddress || ''});
-    }
+  getUnusedAddresses(): Cbor[] {
+    return [];
+  }
 
-    /**
-     * Update the channels
-     *
-     * @param channelId - The channel identifier
-     *
-     */
-    updateChannels(): void {
-        return undefined;
-    }
+  getUsedAddresses(): Cbor[] {
+    return [];
+  }
 
-    /**
-     * Send text message to
-     *
-     * @param channelId - The channel identifier
-     *
-     */
-    sendMessage(channelId: string): void {
+  getUtxos(amount?: Cbor, paginate?: Paginate): Cbor[] | null {
+    return undefined;
+  }
 
-        const channel = this.channels.find(c => c.id === channelId);
-    }
+  signData(addr: string, payload: Bytes): Cip30DataSignature {
+    return undefined;
+  }
 
-    getBalance(): Cbor {
-        return undefined;
-    }
+  signTx(tx: Cbor, partialSign: boolean): Cbor {
+    return undefined;
+  }
 
-    getChangeAddress(): Cbor {
-        return undefined;
-    }
-
-    getCollateral(params?: { amount?: Cbor }): Cbor[] | null {
-        return undefined;
-    }
-
-    getNetworkId(): number {
-        return 0;
-    }
-
-    getRewardAddresses(): Cbor[] {
-        return [];
-    }
-
-    getUnusedAddresses(): Cbor[] {
-        return [];
-    }
-
-    getUsedAddresses(): Cbor[] {
-        return [];
-    }
-
-    getUtxos(amount?: Cbor, paginate?: Paginate): Cbor[] | null {
-        return undefined;
-    }
-
-    signData(addr: string, payload: Bytes): Cip30DataSignature {
-        return undefined;
-    }
-
-    signTx(tx: Cbor, partialSign: boolean): Cbor {
-        return undefined;
-    }
-
-    submitTx(tx: Cbor): string {
-        return "";
-    }
+  submitTx(tx: Cbor): string {
+    return '';
+  }
 }
-
 
 export const peerConnect = new PeerConnect();

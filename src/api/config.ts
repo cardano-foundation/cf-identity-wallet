@@ -1,4 +1,3 @@
-
 export const SENDER = { extension: 'extension', webpage: 'webpage' };
 export const METHOD = {
   isWhitelisted: 'isWhitelisted',

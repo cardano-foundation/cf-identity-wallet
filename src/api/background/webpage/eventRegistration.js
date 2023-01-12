@@ -5,8 +5,7 @@ import { TARGET } from '../config';
  * @param {Function} callback
  */
 export const on = (eventName, callback) => {
-
-  console.log("on");
+  console.log('on');
   const handler = (event) => callback(event.detail);
 
   const events = window.cardano.idwallet._events[eventName] || [];
@@ -40,4 +39,3 @@ export const off = (eventName, callback) => {
       filterByNonMatchingHandlers(eventHandlers);
   }
 };
-

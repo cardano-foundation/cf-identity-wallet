@@ -40,7 +40,7 @@ const CustomPage = (props) => {
           <IonTitle>{name}</IonTitle>
 
           {backButton && (
-            <IonButtons slot='start'>
+            <IonButtons slot="start">
               <IonBackButton
                 icon={backButtonIcon}
                 text={backButtonText}
@@ -69,9 +69,9 @@ const CustomPage = (props) => {
 
       <IonContent className={contentClass} fullscreen>
         {showLargeHeader && (
-          <IonHeader collapse='condense'>
+          <IonHeader collapse="condense">
             <IonToolbar>
-              <IonTitle slot='start' size='large'>
+              <IonTitle slot="start" size="large">
                 {name}
               </IonTitle>
               {searchbar && (
