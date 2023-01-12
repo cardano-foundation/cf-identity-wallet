@@ -9,7 +9,6 @@ const ChatItem = ({ chat }) => {
   return (
     <div className='chat-row' id='chat-row'>
       <img src={"https://via.placeholder.com/150"} alt='avatar' />
-
       <IonItem
         className='chat-content-container'
         routerLink={`/chats/${chat.key}`}
