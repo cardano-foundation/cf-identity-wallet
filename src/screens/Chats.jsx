@@ -16,11 +16,7 @@ import {
   IonToolbar,
   IonSearchbar, IonList, IonLabel, IonInput, IonRefresherContent, IonRefresher,
 } from '@ionic/react';
-import { checkmarkDone, createOutline, wifiOutline } from 'ionicons/icons';
 import './Chats.css';
-import ChatStore from '../store/ChatStore';
-import ContactStore from '../store/ContactStore';
-import { getContacts, getChats } from '../store/Selectors';
 import { useEffect, useState } from 'react';
 import ChatItem from '../components/ChatItem';
 import { useRef } from 'react';
@@ -35,7 +31,6 @@ import {handleConnect2} from "../App";
 
 const Chats = () => {
   const pageRef = useRef();
-  const contacts = ContactStore.useState(getContacts);
 
   const [results, setResults] = useState([]);
   const [showContactModal, setShowContactModal] = useState(false);
@@ -126,7 +121,7 @@ const Chats = () => {
       const searchTermLower = searchTerm.toLowerCase();
 
       const newResults = results.filter((chat) =>
-        contacts
+        results
           .filter((c) => c.id === chat.contact_id)[0]
           .name.toLowerCase()
           .includes(searchTermLower)
