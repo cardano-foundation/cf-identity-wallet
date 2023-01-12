@@ -16,7 +16,7 @@ import {
   IonToolbar,
   IonSearchbar, IonList, IonLabel, IonInput, IonRefresherContent, IonRefresher,
 } from '@ionic/react';
-import { checkmarkDone, createOutline, cloudCircle } from 'ionicons/icons';
+import { checkmarkDone, createOutline, wifiOutline } from 'ionicons/icons';
 import './Chats.css';
 import ChatStore from '../store/ChatStore';
 import ContactStore from '../store/ContactStore';

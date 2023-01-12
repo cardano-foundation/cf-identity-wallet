@@ -16,11 +16,13 @@ export const md5 = (contents: string) => crypto.createHash('md5').update(content
 export class HostConnect {
 
     private meerkat: Meerkat;
+    private meerkatSender: Meerkat | undefined;
     id:string;
     name:string;
 
     constructor(name:string, config:{
                     seed:string | undefined,
+                    identifier:string | undefined,
                     announce:string[],
                     messages?:string[]
                 }) {
@@ -29,6 +31,7 @@ export class HostConnect {
 
         this.meerkat = new Meerkat({
             seed: config.seed || undefined,
+            identifier: config.identifier || undefined,
             //announce: config.announce
         });
         this.id = `${name}:${this.meerkat.identifier}`;
@@ -106,45 +109,68 @@ export class HostConnect {
         console.log("sendMessage HostConnect")
         if(!this.meerkat) return;
 
-        console.log("sendMessage rpc")
-        this.meerkat.rpc(
-            identifier,
-            'message',
-            {
-                message
-            },
-            (response:boolean) => {
-                try {
+        console.log("sendMessage on server")
 
-                    console.log(`[info]: message: ${message}`);
-                    console.log(`[info]: received: ${response}`);
-                    console.log(`[info]: sent from host to: ${identifier}`);
-                    getHost(this.id).then(host => {
-                        const newMessage = {
-                            preview: {
-                                message
-                            },
-                            received: response,
-                            sent: true,
-                            read: false,
-                            starred: false,
-                            date: moment.utc().format("YYYY-MM-DD HH:mm:ss")
-                        }
-                        setHost(
-                            this.id,
-                            host.seed,
-                            host.identifier,
-                            name,
-                            host.announce,
-                            [...host.messages, newMessage],
-                            host.connected).then(_ => {});
-                        console.log(`[info]: message received by: ${identifier}`);
-                    });
-                } catch (e) {
-
-                }
+        //const meerkat = new Meerkat({ identifier: identifier });
+        getHost(this.id).then(host => {
+            const newMessage = {
+                preview: {
+                    message
+                },
+                received: false,
+                sent: true,
+                read: false,
+                starred: false,
+                date: moment.utc().format("YYYY-MM-DD HH:mm:ss")
             }
-        );
+            setHost(
+                this.id,
+                host.seed,
+                host.identifier,
+                name,
+                host.announce,
+                [...host.messages, newMessage],
+                host.connected).then(_ => {});
+            console.log(`[info]: message was sent by: ${this.meerkat.identifier}`);
+        });
+
+        this.meerkat.on('server', () => {
+            console.log(`[info]: connected to server: ${identifier}`);
+            this.meerkat.rpc(identifier, 'message', {message}, (response:boolean) =>
+                {
+                    try {
+
+                        console.log(`[info]: message sent: ${message}`);
+                        console.log(`[info]: received: ${response}`);
+                        console.log(`[info]: sent from host to: ${identifier}`);
+                        getHost(this.id).then(host => {
+                            const newMessage = {
+                                preview: {
+                                    message
+                                },
+                                received: response,
+                                sent: true,
+                                read: false,
+                                starred: false,
+                                date: moment.utc().format("YYYY-MM-DD HH:mm:ss")
+                            }
+                            setHost(
+                                this.id,
+                                host.seed,
+                                host.identifier,
+                                name,
+                                host.announce,
+                                [...host.messages, newMessage],
+                                host.connected).then(_ => {});
+                            console.log(`[info]: message received by: ${identifier}`);
+                        });
+                    } catch (e) {
+
+                    }
+                }
+            );
+        });
+
     }
 }
 

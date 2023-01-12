@@ -101,6 +101,28 @@ export class PeerConnect extends CardanoPeerConnect {
 
         if(!this.meerkat) return;
 
+        getPeer(this.id).then(host => {
+            const newMessage = {
+                preview: {
+                    message
+                },
+                received: false,
+                sent: true,
+                read: false,
+                starred: false,
+                date: moment.utc().format("MM-DD HH:mm:ss")
+            }
+            setPeer(
+                this.id,
+                host.seed,
+                host.identifier,
+                name,
+                host.announce,
+                [...host.messages, newMessage],
+                host.connected).then(_ => {
+                console.log(`[info]: message was sent by: ${this.meerkat.identifier}`);
+            });
+        });
         this.meerkat.rpc(
             identifier,
             'message',

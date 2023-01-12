@@ -26,26 +26,19 @@ import {
 } from '@ionic/react';
 import {
   alertOutline,
-  callOutline, cloudCircle,
+  wifiOutline,
   send,
   shareOutline,
   starOutline,
-  trashOutline,
-  videocamOutline,
+  trashOutline
 } from 'ionicons/icons';
 import { useRef } from 'react';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
-import ChatStore from '../store/ChatStore';
-import ContactStore from '../store/ContactStore';
+
 import {
-  getNotificationCount,
-  markAllAsRead,
-  sendChatMessage,
   starChatMessage,
 } from '../store/ChatStore';
-import { getChat, getChats, getContact } from '../store/Selectors';
-
+import { useParams } from "react-router";
 import { useLongPress } from 'react-use';
 import './Chat.css';
 import ReplyTo from '../components/ReplyTo';
@@ -59,10 +52,7 @@ const Chat = () => {
   const params = useParams();
 
   //  Global State
-  const chat1 = ChatStore.useState(getChat(1));
-  const chats = ChatStore.useState(getChats);
-  const contact = ContactStore.useState(getContact(1));
-  const notificationCount = getNotificationCount(chats);
+  const notificationCount = 0;
 
   //  Local state
   const [chat, serChat] = useState({});
@@ -323,7 +313,7 @@ const Chat = () => {
     replyToAnimationRef,
     replyToMessage,
     setReplyToMessage,
-    contact: contact.name,
+    contact: "name",
     messageSent,
   };
 
@@ -354,11 +344,11 @@ const Chat = () => {
           />
           <IonTitle>
             <div className='chat-contact'>
-              <img src={contact.avatar} alt='avatar' />
+              <img src={"https://via.placeholder.com/150"} alt='avatar' />
               <div className='chat-contact-details'>
                 <p>{chat.name}
-                  <span className="ml-3 color">{chat?.connected ? <IonIcon size='small' icon={cloudCircle} color='success' />
-                      : <IonIcon size='small' icon={cloudCircle} color='gray' />}
+                  <span className="ml-3 color">{chat?.connected ? <IonIcon size='small' icon={wifiOutline} color='success' />
+                      : <IonIcon size='small' icon={wifiOutline} color='gray' />}
               </span>
                 </p>
                 <IonText color='medium' onClick={() => onCopy(chat.identifier)}>{chat.identifier}</IonText>
@@ -390,7 +380,7 @@ const Chat = () => {
               <div id={`chatText_${index}`}>
                 <ChatRepliedQuote
                   message={message.preview}
-                  contact={contact}
+                  contact={null}
                   //repliedMessage={repliedMessage}
                 />
 

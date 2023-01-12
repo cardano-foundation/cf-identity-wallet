@@ -34,7 +34,7 @@ export class HandleConnect  {
 
             for (const [_, value] of Object.entries(hosts)) {
                 // @ts-ignore
-                this.restoreChannel(value.seed, value.name, value.announce, value.messages);
+                this.restoreChannel(value.seed, value.identifier, value.name, value.announce, value.messages);
             }
         });
 
@@ -73,6 +73,7 @@ export class HandleConnect  {
 
         const host = new HostConnect(name,{
             seed: undefined,
+            identifier: undefined,
             announce: this.trackers
         });
         this.hosts = [...this.hosts, host];
@@ -86,10 +87,11 @@ export class HandleConnect  {
      * @param messages - The channel messages
      *
      */
-    restoreChannel(seed:string, name:string, announce:string[], messages:string[]): void {
+    restoreChannel(seed:string, identifier:string, name:string, announce:string[], messages:string[]): void {
         // if( !name || this.hosts.some(c => c.name === name)) return;
         const host = new HostConnect(name,{
             seed,
+            identifier,
             announce,
             messages
         });
