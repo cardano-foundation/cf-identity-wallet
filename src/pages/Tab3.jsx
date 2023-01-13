@@ -32,9 +32,16 @@ const Tab3 = (props) => {
 
 	const handleTheme = () => {
 		// window.matchMedia('(prefers-color-scheme: dark)').matches, match OS preference
-		document.body.classList.contains('dark')
-			? document.body.classList.remove('dark')
-			: document.body.classList.toggle('dark', true);
+		let div = document.getElementById('appWrapper');
+		if (document.body.classList.contains('dark')) {
+			// Ionic
+			document.body.classList.remove('dark');
+			// Tailwind
+			div.setAttribute("data-theme",'dark');
+		} else {
+			document.body.classList.toggle('dark', true);
+			div.setAttribute("data-theme",'light');
+		}
 	};
 
 	return (

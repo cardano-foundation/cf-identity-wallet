@@ -56,7 +56,7 @@ const AppWrapper = (props: { children: any; }) => {
 		}
 	}, []);
 
-	return <>{props.children}</>;
+	return <div id="appWrapper" data-theme="light">{props.children}</div>;
 };
 
 export default AppWrapper;
