@@ -7,7 +7,6 @@ import {App as CapacitorApp} from '@capacitor/app';
 import {defineCustomElements} from '@ionic/pwa-elements/loader';
 import {StatusBar, Style} from '@capacitor/status-bar';
 import {LocalNotifications} from '@capacitor/local-notifications';
-import './theme/style.css';
 
 import {I18nextProvider} from 'react-i18next';
 import i18n from './i18n';

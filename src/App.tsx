@@ -5,6 +5,7 @@ import {useEffect} from 'react';
 import NavRoutes from './main/nav/NavRoutes';
 import {SideMenuProvider} from './main/SideMenuProvider';
 /* Core CSS required for Ionic components to work properly */
+import './theme/tailwind.css';
 import './theme/App.scss';
 import './theme/variables.css';
 import './theme/structure.css';

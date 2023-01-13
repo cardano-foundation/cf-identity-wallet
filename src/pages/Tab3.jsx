@@ -31,6 +31,7 @@ const Tab3 = (props) => {
 	}, [props.location]);
 
 	const handleTheme = () => {
+		// window.matchMedia('(prefers-color-scheme: dark)').matches, match OS preference
 		document.body.classList.contains('dark')
 			? document.body.classList.remove('dark')
 			: document.body.classList.toggle('dark', true);
@@ -51,6 +52,12 @@ const Tab3 = (props) => {
 						<IonItem>
 							<IonLabel>Default Toggle</IonLabel>
 							<IonToggle onIonChange={(_) => handleTheme()} slot="end" />
+						</IonItem>
+						<IonItem>
+							<button className="tw-btn tw-btn-info">Info</button>
+							<button className="tw-btn tw-btn-success">Success</button>
+							<button className="tw-btn tw-btn-warning">Warning</button>
+							<button className="tw-btn tw-btn-error">Error</button>
 						</IonItem>
 						{inboxItems.map((item, index) => {
 							return (
