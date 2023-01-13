@@ -1,0 +1,24 @@
+{
+  "darkMode": "class",
+  "important": true,
+  "theme": {
+    "extend": {
+
+    }
+  },
+  "content": ["./src/**/*.{js,jsx,ts,tsx}"],
+  "plugins": [
+
+  ],
+  "daisyui": {
+    "styled": true,
+    "base": true,
+    "utils": true,
+    "logs": true,
+    "rtl": false,
+    "prefix": "tw-",
+    "themes": [
+
+    ]
+  }
+}
