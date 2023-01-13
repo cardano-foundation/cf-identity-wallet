@@ -4,12 +4,13 @@ import {useHistory} from 'react-router-dom';
 import {useEffect} from 'react';
 import NavRoutes from './main/nav/NavRoutes';
 import {SideMenuProvider} from './main/SideMenuProvider';
-
-setupIonicReact();
 /* Core CSS required for Ionic components to work properly */
 import './theme/App.scss';
 import './theme/variables.css';
 import './theme/structure.css';
+import AppWrapper from "./components/AppWrapper";
+
+setupIonicReact();
 
 const App = (isExtension?: boolean) => {
 	const history = useHistory();
@@ -33,6 +34,7 @@ const App = (isExtension?: boolean) => {
 	const isMounted = useIsMounted();
 
 	useEffect(() => {
+		// eslint-disable-next-line @typescript-eslint/no-empty-function
 		const init = async () => {};
 		if (isMounted.current) {
 			init().catch(console.error);
@@ -41,9 +43,11 @@ const App = (isExtension?: boolean) => {
 
 	return (
 		<IonApp>
-			<SideMenuProvider>
-				<NavRoutes />
-			</SideMenuProvider>
+			<AppWrapper>
+				<SideMenuProvider>
+					<NavRoutes />
+				</SideMenuProvider>
+			</AppWrapper>
 		</IonApp>
 	);
 };

@@ -3,12 +3,12 @@ import React, {useEffect, useRef} from 'react';
 import CardanoModule from '../lib/CardanoModule';
 import {useTranslation} from 'react-i18next';
 
-// @ts-ignore
-const AppWrapper = (props) => {
+const AppWrapper = (props: { children: any; }) => {
 	const {t, i18n} = useTranslation();
 
 	const useIsMounted = () => {
 		const isMounted = useRef(false);
+
 		// @ts-ignore
 		useEffect(() => {
 			isMounted.current = true;
@@ -31,7 +31,9 @@ const AppWrapper = (props) => {
 		}
 	}, []);
 
-	const initApp = async () => {};
+	const initApp = async () => {
+
+	};
 
 	useEffect(() => {
 		const init = async () => {

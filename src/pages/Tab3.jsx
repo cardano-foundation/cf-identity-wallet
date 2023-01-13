@@ -1,66 +1,40 @@
 import React from 'react';
 import {useEffect, useState} from 'react';
 import {
-	archiveOutline,
 	checkmarkOutline,
-	mailOutline,
 	mailUnreadOutline,
-	mapOutline,
-	personOutline,
-	refreshOutline,
-	settingsSharp,
 } from 'ionicons/icons';
-import {useSideMenuUpdate, useSideMenu} from '../main/SideMenuProvider';
 
 import './Tab3.css';
 import CustomPage from '../main/CustomPage';
 
 import {PageHeader} from '../components/PageHeader';
-import {Modal} from '../components/Modal';
 import {
 	IonBadge,
-	IonChip,
 	IonGrid,
 	IonItem,
 	IonLabel,
 	IonList,
 	IonNote,
-	IonPage,
+	IonPage, IonToggle,
 } from '@ionic/react';
 import {getInboxItems} from '../main/Utils';
 
 const Tab3 = (props) => {
 	const pageName = 'Settings';
-	var {sideMenuOptions} = props;
-	const setSideMenu = useSideMenuUpdate();
 
 	const [Badge, setBadge] = useState(true);
-	const [showModal, setShowModal] = useState(false);
-	const [modalOptions, setModalOptions] = useState(false);
 
 	const inboxItems = getInboxItems();
 
-	const handleModal = async (index) => {
-		await setModalOptions(sideMenuOptions[index]);
-		setShowModal(true);
-	};
-
-	//  Access other side menu options here
-	const sideMenu = useSideMenu();
-
 	useEffect(() => {
-		if (props.location.pathname === '/tabs/tab3') {
-			setSideMenu({
-				options: sideMenuOptions,
-				side: 'start',
-				pageName: pageName,
-			});
-
-			// sideMenuOptions = sideMenuOptions.filter(
-			//   (m) => m.title === 'Timestamp style'
-			// )[0].clickEvent = () => setBadge((Badge) => !Badge);
-		}
 	}, [props.location]);
+
+	const handleTheme = () => {
+		document.body.classList.contains('dark')
+			? document.body.classList.remove('dark')
+			: document.body.classList.toggle('dark', true);
+	};
 
 	return (
 		<IonPage id={pageName}>
@@ -70,11 +44,14 @@ const Tab3 = (props) => {
 				sideMenuPosition="start">
 				<IonGrid>
 					<PageHeader
-						count={sideMenuOptions.length}
 						pageName={pageName}
 					/>
 
 					<IonList>
+						<IonItem>
+							<IonLabel>Default Toggle</IonLabel>
+							<IonToggle onIonChange={(_) => handleTheme()} slot="end" />
+						</IonItem>
 						{inboxItems.map((item, index) => {
 							return (
 								<IonItem
@@ -110,14 +87,6 @@ const Tab3 = (props) => {
 						})}
 					</IonList>
 				</IonGrid>
-
-				{showModal && modalOptions && (
-					<Modal
-						showModal={showModal}
-						modalOptions={modalOptions}
-						close={() => setShowModal(false)}
-					/>
-				)}
 			</CustomPage>
 		</IonPage>
 	);
