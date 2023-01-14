@@ -59,14 +59,14 @@ const Tab3 = (props) => {
 
 					<IonList>
 						<IonItem>
-							<IonLabel>Default Toggle</IonLabel>
+							<IonLabel>Dark Mode</IonLabel>
 							<IonToggle onIonChange={(_) => handleTheme()} slot="end" />
 						</IonItem>
 						<IonItem>
-							<button className="tw-btn tw-btn-info">Info</button>
-							<button className="tw-btn tw-btn-success">Success</button>
-							<button className="tw-btn tw-btn-warning">Warning</button>
-							<button className="tw-btn tw-btn-error">Error</button>
+							<button className="daisy-btn daisy-btn-info">Info</button>
+							<button className="daisy-btn daisy-btn-success">Success</button>
+							<button className="daisy-btn daisy-btn-warning">Warning</button>
+							<button className="daisy-btn daisy-btn-error">Error</button>
 						</IonItem>
 						{inboxItems.map((item, index) => {
 							return (

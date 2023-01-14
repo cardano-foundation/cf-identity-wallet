@@ -16,7 +16,7 @@
     "utils": true,
     "logs": true,
     "rtl": false,
-    "prefix": "tw-",
+    "prefix": "daisy-",
     "themes": [
 
     ]

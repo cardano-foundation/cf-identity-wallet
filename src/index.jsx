@@ -46,7 +46,7 @@ if (Capacitor.getPlatform() === 'web') {
 // Capacitor App
 if (Capacitor.getPlatform() !== 'web') {
 	// Display content under transparent status bar (Android only)
-	StatusBar.setOverlaysWebView({overlay: true});
+	//StatusBar.setOverlaysWebView({overlay: true});
 
 	// Handle back button on capacitor app
 	let timePeriodToExit = 3000; // ms

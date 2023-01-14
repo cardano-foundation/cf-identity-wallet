@@ -12,7 +12,7 @@ module.exports = {
         "utils": true,
         "logs": true,
         "rtl": false,
-        "prefix": "tw-",
+        "prefix": "daisy-",
         "themes": [{
             "light": {
                 "primary": "#3880ff",
@@ -41,7 +41,8 @@ module.exports = {
                 "medium-focus": "#86888f",
                 "light": "#f4f5f8",
                 "light-content": "#000",
-                "light-focus": "#d7d8da"
+                "light-focus": "#d7d8da",
+                "--border-color": "#efeff2"
             },
             "dark": {
                 "primary": "#428cff",
@@ -71,6 +72,58 @@ module.exports = {
                 "light": "#222428",
                 "light-content": "#fff",
                 "light-focus": "#1e2023"
+            },
+            "dark_ios_theme": {
+                "base-100": "#000",
+                "text-color": "#fff",
+                "color-50": "#0d0d0d",
+                "color-100": "#1a1a1a",
+                "color-150": "#262626",
+                "color-200": "#333",
+                "color-250": "#404040",
+                "color-300": "#4d4d4d",
+                "color-350": "#595959",
+                "color-400": "#666",
+                "color-450": "#737373",
+                "color-500": "#808080",
+                "color-550": "#8c8c8c",
+                "color-600": "#999",
+                "color-650": "#a6a6a6",
+                "color-700": "#b3b3b3",
+                "color-750": "#bfbfbf",
+                "color-800": "#ccc",
+                "color-850": "#d9d9d9",
+                "color-900": "#e6e6e6",
+                "color-950": "#f2f2f2",
+                "toolbar-background": "#0d0d0d",
+                "item-background": "#000",
+                "--border-color": "#1a1a1a"
+            },
+            "dark_md_theme": {
+                "base-100": "#121212",
+                "text-color": "#fff",
+                "--border-color": "#434343",
+                "color-50": "#1e1e1e",
+                "color-100": "#2a2a2a",
+                "color-150": "#363636",
+                "color-200": "#414141",
+                "color-250": "#4d4d4d",
+                "color-300": "#595959",
+                "color-350": "#656565",
+                "color-400": "#717171",
+                "color-450": "#7d7d7d",
+                "color-500": "#898989",
+                "color-550": "#949494",
+                "color-600": "#a0a0a0",
+                "color-650": "#acacac",
+                "color-700": "#b8b8b8",
+                "color-750": "#c4c4c4",
+                "color-800": "#d0d0d0",
+                "color-850": "#dbdbdb",
+                "color-900": "#e7e7e7",
+                "color-950": "#f3f3f3",
+                "item-background": "#292929",
+                "toolbar-background": "#272727"
             }
         }]
     }

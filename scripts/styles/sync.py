@@ -78,20 +78,20 @@ def main():
 
     light_theme = create_tailwind_theme(light)
     dark_theme = create_tailwind_theme(dark)
-    """
-    iOS & MD
+
     root_properties = get_css_properties_from_file(BODY_DARK_IOS, DARK_IOS_CSS_PATH)
     dark_ios = get_css_properties_from_CSSStyleDeclaration(root_properties)
+    print("[info]: dark_ios loaded")
 
     root_properties = get_css_properties_from_file(BODY_DARK_MD, DARK_MD_CSS_PATH)
     dark_md = get_css_properties_from_CSSStyleDeclaration(root_properties)
+    print("[info]: dark_md loaded")
 
     dark_ios_theme = create_tailwind_theme(dark_ios)
-
     dark_md_theme = create_tailwind_theme(dark_md)
-    """
 
-    create_tailwind_config(dict(light=light_theme, dark=dark_theme))
+
+    create_tailwind_config(dict(light=light_theme, dark=dark_theme, dark_ios_theme=dark_ios_theme,dark_md_theme=dark_md_theme))
 
 if __name__ == "__main__":
     main()

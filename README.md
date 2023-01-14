@@ -1,9 +1,6 @@
 # ID Wallet
 
 ## Usage
-
-Build and export for all platforms:
-
 ```bash
     nvm use 18
     npm i
@@ -27,4 +24,12 @@ Or open Android Studio:
 
 ```
     npx cap open android
+```
+
+### Styles between Ionic and Tailwind
+Requirements: install `cssutils` and `jsbeautifier`.
+
+Generate `tailwind.config.js` based on Ionic themes.
+```bash
+    cd scripts/styles & python sync.py
 ```

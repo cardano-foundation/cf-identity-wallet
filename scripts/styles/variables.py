@@ -45,7 +45,33 @@ VARS_MAP = {
     # Dark
     "--ion-color-dark": "dark",
     "--ion-color-dark-contrast": "dark-content",
-    "--ion-color-dark-shade": "dark-focus"
+    "--ion-color-dark-shade": "dark-focus",
+    # dark iOS/MD
+    "--ion-background-color": "base-100",
+    "--ion-text-color": "text-color",
+    "--ion-toolbar-background": "toolbar-background",
+    "--ion-item-background": "item-background",
+    "--ion-border-color": "--border-color",
+    "--ion-color-step-50": "color-50",
+    "--ion-color-step-100": "color-100",
+    "--ion-color-step-150": "color-150",
+    "--ion-color-step-200": "color-200",
+    "--ion-color-step-250": "color-250",
+    "--ion-color-step-300": "color-300",
+    "--ion-color-step-350": "color-350",
+    "--ion-color-step-400": "color-400",
+    "--ion-color-step-450": "color-450",
+    "--ion-color-step-500": "color-500",
+    "--ion-color-step-550": "color-550",
+    "--ion-color-step-600": "color-600",
+    "--ion-color-step-650": "color-650",
+    "--ion-color-step-700": "color-700",
+    "--ion-color-step-750": "color-750",
+    "--ion-color-step-800": "color-800",
+    "--ion-color-step-850": "color-850",
+    "--ion-color-step-900": "color-900",
+    "--ion-color-step-950": "color-950"
+
 }
 
 PLUGINS = [
