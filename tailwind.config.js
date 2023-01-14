@@ -24,7 +24,7 @@ module.exports = {
                 "tertiary": "#7044ff",
                 "tertiary-content": "#fff",
                 "tertiary-focus": "#633ce0",
-                "success": "#f04141",
+                "success": "#10dc60",
                 "success-content": "#fff",
                 "success-focus": "#0ec254",
                 "warning": "#ffce00",

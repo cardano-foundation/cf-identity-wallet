@@ -9,14 +9,10 @@ from variables import *
 def get_css_properties_from_file(key, file_path):
 
     if os.path.isfile(file_path):
-        # open text file in read mode
         text_file = open(file_path, "r")
-        # read whole file to a string
         data = text_file.read()
-        # close file
         text_file.close()
 
-        # parse css
         sheet = cssutils.parseString(data)
         properties = set()
         for rule in sheet:
@@ -65,25 +61,20 @@ def create_tailwind_config(theme_dict):
 
 
 def write_tailwind_file(config):
-    #open text file
     text_file = open("../../tailwind.config.js", "w")
 
-    #write string to file
     text_file.write(config)
 
-    #close file
     text_file.close()
 
 def main():
     root_properties = get_css_properties_from_file(ROOT, ROOT_PATH)
     light = get_css_properties_from_CSSStyleDeclaration(root_properties)
-    print("light")
-    print(light)
+    print("[info]: light loaded")
 
     root_properties = get_css_properties_from_file(BODY_DARK, DARK_CSS_PATH)
     dark = get_css_properties_from_CSSStyleDeclaration(root_properties)
-    print("dark")
-    print(dark)
+    print("[info]: dark loaded")
 
     light_theme = create_tailwind_theme(light)
     dark_theme = create_tailwind_theme(dark)

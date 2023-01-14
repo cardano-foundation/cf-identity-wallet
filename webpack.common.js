@@ -7,11 +7,11 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const config = {
    entry:{
       main: path.join(__dirname, "src", "index.jsx"),
-      //popup: path.join(__dirname, "src", "popup", "index.jsx"),
-      //background: path.join(__dirname, 'src', 'api', 'background', 'index.ts'),
-      //contentScript: path.join(__dirname, 'src', 'api', 'background', 'inject', 'index.js'),
-      //injected: path.join(__dirname, 'src', 'api', 'background',  'inject', 'injected.js'),
-      //internalPopup: path.join(__dirname, 'src', 'popup', 'internal.jsx'),
+      popup: path.join(__dirname, "src", "popup", "index.jsx"),
+      background: path.join(__dirname, 'src', 'api', 'background', 'index.ts'),
+      contentScript: path.join(__dirname, 'src', 'api', 'background', 'inject', 'index.js'),
+      injected: path.join(__dirname, 'src', 'api', 'background',  'inject', 'injected.js'),
+      internalPopup: path.join(__dirname, 'src', 'popup', 'internal.jsx'),
    },
    experiments: {
       asyncWebAssembly: true,
@@ -65,7 +65,6 @@ const config = {
       new HtmlWebpackPlugin({
          template: path.join(__dirname, "src", "index.html"),
       }),
-       /*
       new HtmlWebpackPlugin({
          template: path.join(__dirname, "src", "popup", "index.html"),
          filename: 'popup.html',
@@ -78,7 +77,6 @@ const config = {
          chunks: ['internalPopup'],
          cache: false,
       }),
-        */
       new CopyPlugin({
          patterns: [
             { from: "public" }
