@@ -33,8 +33,6 @@ def get_css_properties_from_CSSStyleDeclaration(properties):
     return dict
 
 def create_tailwind_theme(dict):
-    print("create_tailwind_theme")
-    print(dict)
     theme = {}
     for key in dict:
       if key in VARS_MAP.keys():
@@ -48,12 +46,12 @@ def generate_plugins():
         plugins += 'require(\"'+plugin+'\"),'
     return plugins[:-1]
 
-def create_tailwind_config(theme_list):
+def create_tailwind_config(theme_dict):
 
     json_file = open("tailwind.config.template.json")
     tailwind_config = json.load(json_file)
 
-    tailwind_config["daisyui"]["themes"] = theme_list
+    tailwind_config["daisyui"]["themes"] = [theme_dict]
 
     con_str = json.dumps(tailwind_config)
 
@@ -68,7 +66,7 @@ def create_tailwind_config(theme_list):
 
 def write_tailwind_file(config):
     #open text file
-    text_file = open("../../test-tailwind.config.js", "w")
+    text_file = open("../../tailwind.config.js", "w")
 
     #write string to file
     text_file.write(config)
@@ -87,33 +85,22 @@ def main():
     print("dark")
     print(dark)
 
+    light_theme = create_tailwind_theme(light)
+    dark_theme = create_tailwind_theme(dark)
+    """
+    iOS & MD
     root_properties = get_css_properties_from_file(BODY_DARK_IOS, DARK_IOS_CSS_PATH)
     dark_ios = get_css_properties_from_CSSStyleDeclaration(root_properties)
-    print("dark ios")
-    print(dark_ios)
 
     root_properties = get_css_properties_from_file(BODY_DARK_MD, DARK_MD_CSS_PATH)
     dark_md = get_css_properties_from_CSSStyleDeclaration(root_properties)
-    print("dark md")
-    print(dark_md)
 
-    light_theme = create_tailwind_theme(light)
-    dark_theme = create_tailwind_theme(dark)
-
-    print("")
-    print("")
-    print("dark_ios_theme")
     dark_ios_theme = create_tailwind_theme(dark_ios)
-    print(dark_ios_theme)
 
-    print("")
-    print("")
-    print("dark_md_theme")
     dark_md_theme = create_tailwind_theme(dark_md)
-    print("dark_md_theme")
-    print(dark_md_theme)
+    """
 
-    create_tailwind_config(dict(light=light_theme, dark=dark_theme, dark_ios=dark_ios_theme, dark_md=dark_md_theme))
+    create_tailwind_config(dict(light=light_theme, dark=dark_theme))
 
 if __name__ == "__main__":
     main()

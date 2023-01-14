@@ -1,12 +1,12 @@
 DEFAULT_CSS = "variables.css"
 ROOT = ":root"
-ROOT_PATH = "../../src/theme/variables.css"
+ROOT_PATH = "../../src/theme/styles/light.css"
 BODY_DARK = "body.dark"
-DARK_CSS_PATH = "../../src/theme/dark/default.css"
+DARK_CSS_PATH = "../../src/theme/styles/dark.css"
 BODY_DARK_IOS = ".ios body.dark"
-DARK_IOS_CSS_PATH = "../../src/theme/dark/ios.css"
+DARK_IOS_CSS_PATH = "../../src/theme/styles/ios.css"
 BODY_DARK_MD = ".md body.dark"
-DARK_MD_CSS_PATH = "../../src/theme/dark/md.css"
+DARK_MD_CSS_PATH = "../../src/theme/styles/md.css"
 
 ## CSS variables match, ionic <-> tailwind, TODO: move to json
 VARS_MAP = {

@@ -1,42 +1,77 @@
-module.exports =
-{
-    darkMode: 'class',
-    important: true,
-    theme: {
-        extend: {
-
-        },
+module.exports = {
+    "darkMode": "class",
+    "important": true,
+    "theme": {
+        "extend": {}
     },
-    content: ["./src/**/*.{js,jsx,ts,tsx}",],
-    plugins: [
-        require("daisyui")
-    ],
-    daisyui: {
-        styled: true,
-        base: true,
-        utils: true,
-        logs: true,
-        rtl: false,
-        prefix: "tw-",
-        themes: [
-            {
-                light: {
-                    primary: "#a101f7",
-                    secondary: "#f6d860",
-                    success: "#2fdf75",
-                    warning: "#ffd534",
-                    error: "#ff4961",
-                    info: "#6a64ff"
-                },
-                dark: {
-                    primary: "#a991f7",
-                    secondary: "#f6d860",
-                    success: "#ffd534",
-                    warning: "#ffd534",
-                    error: "#ff4961",
-                    info: "#6a64ff"
-                },
+    "content": ["./src/**/*.{js,jsx,ts,tsx}"],
+    "plugins": [require("daisyui")],
+    "daisyui": {
+        "styled": true,
+        "base": true,
+        "utils": true,
+        "logs": true,
+        "rtl": false,
+        "prefix": "tw-",
+        "themes": [{
+            "light": {
+                "primary": "#3880ff",
+                "primary-content": "#fff",
+                "primary-focus": "#3171e0",
+                "secondary": "#0cd1e8",
+                "secondary-content": "#fff",
+                "secondary-focus": "#0bb8cc",
+                "tertiary": "#7044ff",
+                "tertiary-content": "#fff",
+                "tertiary-focus": "#633ce0",
+                "success": "#f04141",
+                "success-content": "#fff",
+                "success-focus": "#0ec254",
+                "warning": "#ffce00",
+                "warning-content": "#fff",
+                "warning-focus": "#e0b500",
+                "error": "#f04141",
+                "error-content": "#fff",
+                "error-focus": "#d33939",
+                "dark": "#222428",
+                "dark-content": "#fff",
+                "dark-focus": "#1e2023",
+                "medium": "#989aa2",
+                "medium-content": "#fff",
+                "medium-focus": "#86888f",
+                "light": "#f4f5f8",
+                "light-content": "#000",
+                "light-focus": "#d7d8da"
             },
-        ],
-    },
+            "dark": {
+                "primary": "#428cff",
+                "primary-content": "#fff",
+                "primary-focus": "#3a7be0",
+                "secondary": "#50c8ff",
+                "secondary-content": "#fff",
+                "secondary-focus": "#46b0e0",
+                "tertiary": "#6a64ff",
+                "tertiary-content": "#fff",
+                "tertiary-focus": "#5d58e0",
+                "success": "#2fdf75",
+                "success-content": "#000",
+                "success-focus": "#29c467",
+                "warning": "#ffd534",
+                "warning-content": "#000",
+                "warning-focus": "#e0bb2e",
+                "error": "#ff4961",
+                "error-content": "#fff",
+                "error-focus": "#e04055",
+                "dark": "#f4f5f8",
+                "dark-content": "#000",
+                "dark-focus": "#d7d8da",
+                "medium": "#989aa2",
+                "medium-content": "#000",
+                "medium-focus": "#86888f",
+                "light": "#222428",
+                "light-content": "#fff",
+                "light-focus": "#1e2023"
+            }
+        }]
+    }
 }

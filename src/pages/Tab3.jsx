@@ -31,6 +31,8 @@ const Tab3 = (props) => {
 	}, [props.location]);
 
 	const handleTheme = () => {
+		console.log("handleTheme");
+
 		// window.matchMedia('(prefers-color-scheme: dark)').matches, match OS preference
 		let div = document.getElementById('appWrapper');
 		if (document.body.classList.contains('dark')) {
