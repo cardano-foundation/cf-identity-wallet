@@ -2,3 +2,11 @@
 @import "styles/light.css";
 @import "styles/md.css";
 @import "styles/ios.css";
+
+.ion-toolbar {
+    margin-top: var(--ion-safe-area-top);
+}
+
+.ion-content {
+     padding-top: var(--ion-safe-area-top, 0);
+ }

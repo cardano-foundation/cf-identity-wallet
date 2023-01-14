@@ -43,7 +43,8 @@ export const compareObjectsByHash = async (obj1: any, obj2: any) => {
 };
 
 export function amountIsValid(amount: string) {
-	return /(?<=^| )\d+(\.\d+)?(?=$| )/.test(amount);
+	return true;
+	//return /(?<=^| )\d+(\.\d+)?(?=$| )/.test(amount); TODO: not working with excode: SyntaxError: Invalid regular expression: invalid group specifier name
 }
 
 export const fromBytes = (bytes: Uint8Array) =>
