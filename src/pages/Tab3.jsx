@@ -7,7 +7,7 @@ import {
 
 import './Tab3.css';
 import CustomPage from '../main/CustomPage';
-
+import {useHistory} from 'react-router-dom';
 import {PageHeader} from '../components/PageHeader';
 import {
 	IonBadge,
@@ -27,9 +27,20 @@ const Tab3 = (props) => {
 
 	const inboxItems = getInboxItems();
 
+	const history = useHistory();
+
 	useEffect(() => {
 	}, [props.location]);
 
+	const handleNavigation = () => {
+		history.push({
+			pathname: '/settings',
+			search: '?update=true',  // query string
+			state: {  // location state
+				update: true,
+			},
+		});
+	}
 	const handleTheme = () => {
 		console.log("handleTheme");
 
@@ -63,10 +74,26 @@ const Tab3 = (props) => {
 							<IonToggle onIonChange={(_) => handleTheme()} slot="end" />
 						</IonItem>
 						<IonItem>
-							<button className="daisy-btn daisy-btn-info">Info</button>
+							<button onClick={() => handleNavigation()} className="daisy-btn daisy-btn-info">Info</button>
 							<button className="daisy-btn daisy-btn-success">Success</button>
 							<button className="daisy-btn daisy-btn-warning">Warning</button>
 							<button className="daisy-btn daisy-btn-error">Error</button>
+						</IonItem>
+						<IonItem>
+							<div className="daisy-drawer">
+								<input id="my-drawer" type="checkbox" className="daisy-drawer-toggle" />
+								<div className="daisy-drawer-content">
+									<label htmlFor="my-drawer" className="daisy-btn daisy-btn-primary daisy-drawer-button">Open drawer</label>
+								</div>
+								<div className="daisy-drawer-side">
+									<label htmlFor="my-drawer" className="daisy-drawer-overlay"></label>
+									<ul className="daisy-menu p-4 w-80 daisy-bg-base-100 daisy-text-base-content">
+										<li><a>Sidebar Item 1</a></li>
+										<li><a>Sidebar Item 2</a></li>
+
+									</ul>
+								</div>
+							</div>
 						</IonItem>
 						{inboxItems.map((item, index) => {
 							return (
