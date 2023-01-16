@@ -70,7 +70,7 @@ VARS_MAP = {
     "--ion-text-color": "text-color",
     "--ion-toolbar-background": "toolbar-background",
     "--ion-item-background": "item-background",
-    "--ion-border-color": "--border-color",
+    "--ion-border-color": "border-color",
     "--ion-color-step-50": "color-50",
     "--ion-color-step-100": "color-100",
     "--ion-color-step-150": "color-150",
@@ -93,5 +93,5 @@ VARS_MAP = {
 
 }
 
-SCRIPT_TITLE_1 = "█ █▀█ █▄░█ █ █▀▀ ▄▄ ▀█▀ ▄▀█ █ █░░ █░█░█ █ █▄░█ █▀▄█"
-SCRIPT_TITLE_2 = "█ █▄█ █░▀█ █ █▄▄ ░░ ░█░ █▀█ █ █▄▄ ▀▄▀▄▀ █ █░▀█ █▄▀▀"
+SCRIPT_TITLE_1 = "█ █▀█ █▄░█ █ █▀▀ ▄▄▄▄ ▀█▀ ▄▀█ █ █░░ █░█░█ █ █▄░█ █▀▄"
+SCRIPT_TITLE_2 = "█ █▄█ █░▀█ █ █▄▄ ░░░░ ░█░ █▀█ █ █▄▄ ▀▄▀▄▀ █ █░▀█ █▄▀"
