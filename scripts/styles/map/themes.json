@@ -1,0 +1,22 @@
+[
+  {
+    "css_key": ":root",
+    "file_path": "../../src/theme/styles/light.css",
+    "theme_name": "light"
+  },
+  {
+    "css_key": "body.dark",
+    "file_path": "../../src/theme/styles/dark.css",
+    "theme_name": "dark"
+  },
+  {
+    "css_key": ".ios body.dark",
+    "file_path": "../../src/theme/styles/ios.css",
+    "theme_name": "dark_ios"
+  },
+  {
+    "css_key": ".md body.dark",
+    "file_path": "../../src/theme/styles/md.css",
+    "theme_name": "dark_md"
+  }
+]

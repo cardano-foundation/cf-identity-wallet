@@ -25,6 +25,11 @@ from variables import *
 # Disable warns and errs
 cssutils.log.setLevel(logging.CRITICAL)
 
+def parse_json(file_path):
+    if os.path.isfile(file_path):
+        text_file = open(file_path, "r")
+        return json.load(text_file)
+
 def get_css_properties_from_file(key, file_path):
 
     if os.path.isfile(file_path):
@@ -49,9 +54,10 @@ def get_css_properties_from_CSSStyleDeclaration(properties):
 
 def create_tailwind_theme(dict):
     theme = {}
+    variables = parse_json(VARS_MAP)
     for key in dict:
-        if key in VARS_MAP:
-            theme[VARS_MAP[key]] = dict[key]
+        if key in variables:
+            theme[variables[key]] = dict[key]
 
     return theme
 
@@ -96,7 +102,8 @@ def main():
     print("[LOG]: Syncing...  {} themes".format(len(CSS_KEY_FILES)))
     themes = dict()
 
-    for item in CSS_KEY_FILES:
+    css_files = parse_json(CSS_KEY_FILES)
+    for item in css_files:
         try:
           properties = get_css_properties_from_file(item["css_key"], item["file_path"])
           theme = get_css_properties_from_CSSStyleDeclaration(properties)
