@@ -1,14 +1,33 @@
-DEFAULT_CSS = "variables.css"
-ROOT = ":root"
-ROOT_PATH = "../../src/theme/styles/light.css"
-BODY_DARK = "body.dark"
-DARK_CSS_PATH = "../../src/theme/styles/dark.css"
-BODY_DARK_IOS = ".ios body.dark"
-DARK_IOS_CSS_PATH = "../../src/theme/styles/ios.css"
-BODY_DARK_MD = ".md body.dark"
-DARK_MD_CSS_PATH = "../../src/theme/styles/md.css"
 
-## CSS variables match, ionic <-> tailwind, TODO: move to json
+PLUGINS = [
+    "daisyui"
+]
+TAILWIND_TEMPLATE_FILE_PATH = "tailwind.config.template.json"
+TAILWIND_CONFIG_FILE_PATH = "../../tailwind.config.js"
+
+CSS_KEY_FILES = [
+    {
+        "css_key": ":root",
+        "file_path": "../../src/theme/styles/light.css",
+        "theme_name": "light"
+    },
+    {
+        "css_key": "body.dark",
+        "file_path": "../../src/theme/styles/dark.css",
+        "theme_name": "dark"
+    },
+    {
+        "css_key": ".ios body.dark",
+        "file_path": "../../src/theme/styles/ios.css",
+        "theme_name": "dark_ios"
+    },
+    {
+        "css_key": ".md body.dark",
+        "file_path": "../../src/theme/styles/md.css",
+        "theme_name": "dark_md"
+    }
+]
+
 VARS_MAP = {
     # Primary
     "--ion-color-primary": "primary",
@@ -74,6 +93,5 @@ VARS_MAP = {
 
 }
 
-PLUGINS = [
-    "daisyui"
-]
+SCRIPT_TITLE_1 = "█ █▀█ █▄░█ █ █▀▀ ▄▄ ▀█▀ ▄▀█ █ █░░ █░█░█ █ █▄░█ █▀▄█"
+SCRIPT_TITLE_2 = "█ █▄█ █░▀█ █ █▄▄ ░░ ░█░ █▀█ █ █▄▄ ▀▄▀▄▀ █ █░▀█ █▄▀▀"

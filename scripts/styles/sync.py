@@ -4,7 +4,10 @@ import os
 import json
 import re
 import jsbeautifier
+import logging
 from variables import *
+
+cssutils.log.setLevel(logging.CRITICAL)
 
 def get_css_properties_from_file(key, file_path):
 
@@ -31,7 +34,7 @@ def get_css_properties_from_CSSStyleDeclaration(properties):
 def create_tailwind_theme(dict):
     theme = {}
     for key in dict:
-      if key in VARS_MAP.keys():
+      if key in VARS_MAP:
         theme[VARS_MAP[key]] = dict[key]
 
     return theme
@@ -44,7 +47,7 @@ def generate_plugins():
 
 def create_tailwind_config(theme_dict):
 
-    json_file = open("tailwind.config.template.json")
+    json_file = open(TAILWIND_TEMPLATE_FILE_PATH)
     tailwind_config = json.load(json_file)
 
     tailwind_config["daisyui"]["themes"] = [theme_dict]
@@ -53,45 +56,37 @@ def create_tailwind_config(theme_dict):
 
     plugins = generate_plugins()
     insert_index = con_str.find('\"plugins\": [') + len('\"plugins\": [')
-
+    # Insert plugins
     tailwind = "module.exports = " +con_str[:insert_index] + plugins + con_str[insert_index:]
 
     res = jsbeautifier.beautify(tailwind)
     write_tailwind_file(res)
 
-
 def write_tailwind_file(config):
-    text_file = open("../../tailwind.config.js", "w")
-
+    text_file = open(TAILWIND_CONFIG_FILE_PATH, "w")
     text_file.write(config)
-
     text_file.close()
 
+def print_header():
+    print("\n")
+    print(SCRIPT_TITLE_1)
+    print(SCRIPT_TITLE_2)
+
 def main():
-    root_properties = get_css_properties_from_file(ROOT, ROOT_PATH)
-    light = get_css_properties_from_CSSStyleDeclaration(root_properties)
-    print("[info]: light loaded")
+    print_header()
+    print("[LOG]: Syncing...  {} themes".format(len(CSS_KEY_FILES)))
+    themes = dict()
 
-    root_properties = get_css_properties_from_file(BODY_DARK, DARK_CSS_PATH)
-    dark = get_css_properties_from_CSSStyleDeclaration(root_properties)
-    print("[info]: dark loaded")
+    for item in CSS_KEY_FILES:
+        try:
+          properties = get_css_properties_from_file(item["css_key"], item["file_path"])
+          theme = get_css_properties_from_CSSStyleDeclaration(properties)
+          themes[item["theme_name"]] = theme
+          print("\t✅ {} ".format(item["theme_name"]))
+        except:
+          print("\t❌ {} ".format(item["theme_name"]))
 
-    light_theme = create_tailwind_theme(light)
-    dark_theme = create_tailwind_theme(dark)
-
-    root_properties = get_css_properties_from_file(BODY_DARK_IOS, DARK_IOS_CSS_PATH)
-    dark_ios = get_css_properties_from_CSSStyleDeclaration(root_properties)
-    print("[info]: dark_ios loaded")
-
-    root_properties = get_css_properties_from_file(BODY_DARK_MD, DARK_MD_CSS_PATH)
-    dark_md = get_css_properties_from_CSSStyleDeclaration(root_properties)
-    print("[info]: dark_md loaded")
-
-    dark_ios_theme = create_tailwind_theme(dark_ios)
-    dark_md_theme = create_tailwind_theme(dark_md)
-
-
-    create_tailwind_config(dict(light=light_theme, dark=dark_theme, dark_ios_theme=dark_ios_theme,dark_md_theme=dark_md_theme))
+    create_tailwind_config(themes)
 
 if __name__ == "__main__":
     main()
