@@ -28,16 +28,9 @@ def get_css_properties_from_file(key, file_path):
 def get_css_properties_from_CSSStyleDeclaration(properties):
     dict = {}
     for property in properties:
+        if ('#' in property.value ):
             dict[property.name] = property.value
     return dict
-
-def create_tailwind_theme(dict):
-    theme = {}
-    for key in dict:
-      if key in VARS_MAP:
-        theme[VARS_MAP[key]] = dict[key]
-
-    return theme
 
 def generate_plugins():
     plugins = ""
