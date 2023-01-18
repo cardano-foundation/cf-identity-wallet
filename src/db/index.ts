@@ -226,6 +226,18 @@ export const getPeerList = async () => {
 	return await get("peer-connect");
 }
 
+export const setPeerList = async (peers:any[]) => {
+	return await set("peer-connect", peers);
+}
+
+export const removePeer = async (id:string) => {
+	let peers = await getPeerList();
+	if (peers && peers[id] !== undefined){
+		delete peers[id];
+		await setPeerList(peers);
+	}
+}
+
 export const setHost = async (
 	id:string,
 	seed:string,
@@ -241,15 +253,28 @@ export const getHost = async (id:string) => {
 	return await getObject("host-connect", id);
 }
 
+export const setHostList = async (hosts:any) => {
+	return await set("host-connect", hosts);
+}
+
 export const getHostList = async () => {
 	return await get("host-connect");
+}
+
+export const removeHost = async (id:string) => {
+	let hosts = await getHostList();
+	if (hosts && hosts[id] !== undefined){
+		delete hosts[id];
+		await setHostList(hosts);
+	}
 }
 
 export const getChannel = async (id:string) => {
 	const host = await getObject("host-connect", id);
 	const peer = await getObject("peer-connect", id);
-	return host ? host : peer;
+	return host ? {...host, host:true} : peer;
 }
+
 export const getAllChannels = async () => {
 	const host = await get("host-connect");
 	const peer = await get("peer-connect");

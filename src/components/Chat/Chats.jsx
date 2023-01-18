@@ -72,7 +72,8 @@ const Chats = () => {
             contact_id: index,
             preview: {message: messages.length && messages[messages.length-1].preview || ""},
             messages,
-            connected: host.connected
+            connected: host.connected,
+            host: true
           }
         });
       }
@@ -96,7 +97,8 @@ const Chats = () => {
               contact_id: index,
               preview: {message: messages.length && messages[messages.length-1].preview || ""},
               messages,
-              connected: peer.connected
+              connected: peer.connected,
+              host: false
             }
           });
         }

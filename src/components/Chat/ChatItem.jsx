@@ -13,7 +13,7 @@ const ChatItem = ({ chat }) => {
       pathname: route,
       search: '?update=true',  // query string
       state: {  // location state
-        update: true,
+        chat
       },
     });
   }

@@ -30,7 +30,8 @@ import {
   send,
   shareOutline,
   starOutline,
-  trashOutline
+  trashOutline,
+    trash
 } from 'ionicons/icons';
 import { useRef } from 'react';
 import { useEffect, useState } from 'react';
@@ -44,18 +45,22 @@ import './Chat.css';
 import ReplyTo from "../../components/chat/ReplyTo";
 import { ChatBottomDetails } from './ChatBottomDetails';
 import { ChatRepliedQuote } from './ChatRepliedQuote';
-import {getChannel, getHost, getPeer} from "../../db";
+import {getChannel, getHost, getPeer, removeHost, removePeer} from "../../db";
 import {handleConnect} from "../../api/p2p/HandleConnect";
 import {writeToClipboard} from "../../utils/clipboard";
+import {useHistory, useLocation} from "react-router-dom";
 
 const Chat = () => {
   const params = useParams();
+  const location = useLocation();
+  console.log("location.state")
+  console.log(location.state)
 
   //  Global State
   const notificationCount = 0;
 
   //  Local state
-  const [chat, serChat] = useState({});
+  const [chat, serChat] = useState(location?.state?.chat || {});
   const [message, setMessage] = useState('');
   const [showSendButton, setShowSendButton] = useState(false);
   const [replyToMessage, setReplyToMessage] = useState(false);
@@ -119,6 +124,17 @@ const Chat = () => {
     if (!params)return;
     const chat = await getChannel(params.channel_id);
     serChat(chat);
+  }
+
+  const history = useHistory();
+  const handleNavigation = (route) => {
+    history.push({
+      pathname: route,
+      search: '?update=true',  // query string
+      state: {  // location state
+        update: true,
+      },
+    });
   }
 
   //  Scroll to end of content
@@ -282,6 +298,19 @@ const Chat = () => {
   }, []);
 
 
+  const removeChat = async () => {
+    console.log("removeChat");
+    console.log("chat");
+    console.log(chat);
+    const id = `${chat?.name}:${chat?.identifier}`;
+    if (chat?.host){
+      await removeHost(id);
+    } else {
+      await removePeer(id);
+    }
+
+    handleNavigation("/chats");
+  }
   const sendMessage = () => {
     console.log("sendMessage");
 
@@ -353,6 +382,10 @@ const Chat = () => {
               </div>
             </div>
           </IonTitle>
+          <IonIcon
+            slot='end'
+            icon={trash}
+            onClick={()=> removeChat()}/>
         </IonToolbar>
       </IonHeader>
 

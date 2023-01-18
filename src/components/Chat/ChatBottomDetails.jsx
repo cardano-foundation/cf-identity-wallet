@@ -8,7 +8,7 @@ export const ChatBottomDetails = ({ message }) => (
     {message.sent && (
       <IonIcon
         icon={checkmarkDone}
-        color='primary'
+        color={message.received ? 'primary' : 'gray'}
         style={{ fontSize: '0.8rem' }}
       />
     )}
