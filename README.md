@@ -1,6 +1,7 @@
 # ID Wallet
 
 ## Usage
+
 ```bash
     nvm use 18
     npm i
@@ -10,7 +11,7 @@
 #### Mobile
 
 ```bash
-    yarn buildcap
+    npm run buildcap
 ```
 
 Finally, run the app:
@@ -27,9 +28,11 @@ Or open Android Studio:
 ```
 
 ### Styles between Ionic and Tailwind
+
 Requirements: install `cssutils` and `jsbeautifier`.
 
 Generate `tailwind.config.js` based on Ionic themes.
+
 ```bash
     cd scripts/styles & python sync.py
 ```
