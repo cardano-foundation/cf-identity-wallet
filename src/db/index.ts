@@ -24,8 +24,8 @@ export const getAccountFromDb = async (name?: string) => {
 	if (accounts && Object.keys(accounts).length && !name) {
 		return accounts[Object.keys(accounts)[0]];
 	}
-	let settings = await getSettingsFromDb();
-	let currentName = name ? name : settings && settings.currentAccount;
+	const settings = await getSettingsFromDb();
+	const currentName = name ? name : settings && settings.currentAccount;
 
 	if (accounts) {
 		// @ts-ignore
@@ -33,7 +33,7 @@ export const getAccountFromDb = async (name?: string) => {
 	}
 };
 export const removeAccountFromDb = async (name: string) => {
-	let accounts = await get('accounts');
+	const accounts = await get('accounts');
 	if (accounts[name] !== undefined) {
 		delete accounts[name];
 		await set('accounts', accounts);
@@ -41,7 +41,7 @@ export const removeAccountFromDb = async (name: string) => {
 };
 
 export const getSettingsFromDb = async () => {
-	let settings = await get('settings');
+	const settings = await get('settings');
 
 	if (settings) {
 		return settings;
@@ -54,10 +54,10 @@ export const getSettingsFromDb = async () => {
 			network: {
 				blockfrost: {
 					url: BLOCKFROST_DEFAULT_URL,
-					token: BLOCKFROST_TOKEN,
+					token: BLOCKFROST_TOKEN
 				},
 				net: 'preprod',
-				submit: SUBMIT_DEFAULT_URL,
+				submit: SUBMIT_DEFAULT_URL
 			},
 		};
 		await set('settings', defaultSettings);
@@ -76,7 +76,7 @@ export const updateAccountByNetworkInDb = async (
 	account: any
 ) => {
 	if (account) {
-		let acc = await getAccountFromDb();
+		const acc = await getAccountFromDb();
 		if (!acc) return;
 		acc[network] = account;
 		await setObject('accounts', acc.name, acc);
@@ -88,7 +88,7 @@ export const updateAccountByNameAndNetworkInDb = async (
 	account: any
 ) => {
 	if (account) {
-		let acc = await getAccountFromDb(name);
+		const acc = await getAccountFromDb(name);
 		if (!acc) return;
 		acc[network] = account;
 		await setObject('accounts', acc.name, acc);
@@ -102,7 +102,7 @@ export const setAccountInDb = async (account: any) => {
 
 export const setSelectedAddressInDb = async (address: string) => {
 	if (address) {
-		let acc = await getAccountFromDb();
+		const acc = await getAccountFromDb();
 		if (!acc) return;
 		acc.selectedAddress = address;
 		await setObject('accounts', acc.name, acc);
@@ -110,7 +110,7 @@ export const setSelectedAddressInDb = async (address: string) => {
 };
 
 export const getNetworkFromDb = async () => {
-	let settings = await get('settings');
+	const settings = await get('settings');
 
 	if (settings && settings.network) {
 		return settings.network;
@@ -126,7 +126,7 @@ export const getNetworkFromDb = async () => {
 	}
 };
 export const setCurrentAccountInDb = async (id: string) => {
-	let settings = await get('settings');
+	const settings = await get('settings');
 
 	if (settings) {
 		settings.currentAccount = id;
@@ -135,7 +135,7 @@ export const setCurrentAccountInDb = async (id: string) => {
 };
 
 export const setBlockfrostInDb = async (url: string, token: string) => {
-	let settings = await get('settings');
+	const settings = await get('settings');
 
 	if (settings) {
 		settings.network.blockfrost = {
@@ -148,7 +148,7 @@ export const setBlockfrostInDb = async (url: string, token: string) => {
 };
 
 export const setNetworkInDb = async (net: string) => {
-	let settings = await get('settings');
+	const settings = await get('settings');
 
 	if (settings) {
 		settings.network = {
@@ -159,7 +159,7 @@ export const setNetworkInDb = async (net: string) => {
 	}
 };
 export const setSubmitUrlInDb = async (submitUrl: string) => {
-	let settings = await get('settings');
+	const settings = await get('settings');
 
 	if (settings) {
 		settings.network = {
@@ -191,7 +191,7 @@ export const getWhitelistInDb = async () => {
 };
 
 export const addOriginToWhitelist = async (origin: string) => {
-	let external = (await get('external')) || [];
+	const external = (await get('external')) || [];
 
 	if (external && external.whitelist && !external.whitelist.includes(origin)) {
 		external.whitelist = [...external.whitelist, origin];
@@ -200,7 +200,7 @@ export const addOriginToWhitelist = async (origin: string) => {
 };
 
 export const removeOriginFromWhitelist = async (origin: string) => {
-	let external = await get('external');
+	const external = await get('external');
 	if (external && external.whitelist.includes(origin)) {
 		external.whitelist = external.whitelist.filter(
 			(ori: string) => ori !== origin

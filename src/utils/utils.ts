@@ -59,3 +59,12 @@ export const fromUTF8 = (utf8: string) => {
 export const capitalizeFirstLetter = (string: string) => {
 	return string.charAt(0).toUpperCase() + string.slice(1);
 };
+
+export const isJsonString = (str:string) => {
+	try {
+		JSON.parse(str);
+	} catch (e) {
+		return false;
+	}
+	return true;
+}

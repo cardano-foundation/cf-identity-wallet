@@ -20,6 +20,10 @@ export const get = async (key: string) => {
 	return await storage.get(key);
 };
 
+export const keys = async () => {
+	return await storage.keys();
+};
+
 export const remove = async (key: string) => {
 	await storage.remove(key);
 };
@@ -41,7 +45,7 @@ export const setObject = async (key: string, id: string, val: any) => {
 
 export const setNewObject = async (key: string, val: any) => {
 	try {
-		let value = {...val};
+		const value = {...val};
 
 		let all = await storage.get(key);
 		let objIndex = 0;
