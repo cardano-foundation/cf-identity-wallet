@@ -81,12 +81,10 @@ export const removeObject = async (key: string, id: string) => {
 };
 
 export const getObject = async (key: string, id: string) => {
-	try {
-		const all = (await get(key)) || [];
 
-		if (all && all.length) {
-			return all.filter;
-		}
+	try {
+		const objs = (await get(key)) || {};
+		return objs[id];
 	} catch (e) {
 		console.log(e);
 	}

@@ -1,0 +1,53 @@
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonTitle,
+  IonToolbar,
+} from '@ionic/react';
+
+import './ContactModal.scss';
+
+const ContactModal = ({ close }) => {
+
+  return (
+    <div style={{ height: '100%' }}>
+      <IonHeader>
+        <IonToolbar>
+          <IonTitle>New Chat</IonTitle>
+          <IonButtons slot='end'>
+            <IonButton fill='clear' onClick={close}>
+              Cancel
+            </IonButton>
+          </IonButtons>
+        </IonToolbar>
+      </IonHeader>
+
+      <IonContent>
+        <IonList>
+          {[{id: 0, name: 'name'}].map((contact) => {
+            return (
+              <IonItem
+                key={`contact_${contact.id}`}
+                lines='full'
+                className='contact-item'
+              >
+                <img src={"https://via.placeholder.com/150"} alt='contact avatar' />
+                <IonLabel>
+                  <h1>{contact.name}</h1>
+                  <p>Available</p>
+                </IonLabel>
+              </IonItem>
+            );
+          })}
+        </IonList>
+      </IonContent>
+    </div>
+  );
+};
+
+export default ContactModal;

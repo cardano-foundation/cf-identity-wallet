@@ -8,7 +8,7 @@
   "rules": {
     "react/jsx-filename-extension": [
       "error",
-      { "extensions": [".js", ".jsx", ".tsx",  "d.ts"] }
+      { "extensions": [".js", ".jsx", ".tsx"] }
     ],
     "import/extensions": [
       "error",
@@ -25,7 +25,7 @@
   "settings": {
     "import/resolver": {
       "node": {
-        "extensions": [".js", ".jsx", ".ts", ".tsx", "d.ts"]
+        "extensions": [".js", ".jsx", ".ts", ".tsx"]
       }
     }
   }
