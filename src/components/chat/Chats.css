@@ -97,11 +97,27 @@
 }
 
 ion-input .native-input {
-  background-color: #333 !important;
+
   padding-left: 10px !important;
   margin: 16px 0 !important;
 }
 
 ion-list {
   background-color: rgba(0,0,0,0) !important;
+}
+
+ion-modal {
+  --height: 60%;
+  --border-radius: 16px;
+  --box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+ion-modal::part(backdrop) {
+  background: rgba(0, 0, 0, 0.9);
+  opacity: 1;
+}
+
+ion-modal ion-toolbar {
+  --background: rgb(14 116 144);
+  --color: white;
 }

@@ -1,9 +1,6 @@
 import React from 'react';
 import {useEffect, useState} from 'react';
-import {
-	checkmarkOutline,
-	mailUnreadOutline,
-} from 'ionicons/icons';
+import {checkmarkOutline, mailUnreadOutline} from 'ionicons/icons';
 
 import './Tab3.css';
 import CustomPage from '../main/CustomPage';
@@ -16,35 +13,34 @@ import {
 	IonLabel,
 	IonList,
 	IonNote,
-	IonPage, IonToggle,
+	IonPage,
+	IonToggle,
 } from '@ionic/react';
 import {getInboxItems} from '../main/Utils';
-import {changeTheme} from "../theme/handleTheme";
+import {changeTheme} from '../theme/handleTheme';
 
 const Tab3 = (props) => {
 	const pageName = 'Settings';
 
-	const [Badge, setBadge] = useState(true);
+	const [Badge] = useState(true);
 
 	const inboxItems = getInboxItems();
 
 	const history = useHistory();
 
-	useEffect(() => {
-	}, [props.location]);
+	useEffect(() => {}, [props.location]);
 
 	const handleNavigation = () => {
 		history.push({
 			pathname: '/settings',
-			search: '?update=true',  // query string
-			state: {  // location state
+			search: '?update=true', // query string
+			state: {
+				// location state
 				update: true,
 			},
 		});
-	}
+	};
 	const handleTheme = () => {
-		console.log("handleTheme");
-
 		changeTheme();
 	};
 
@@ -55,17 +51,22 @@ const Tab3 = (props) => {
 				sideMenu={true}
 				sideMenuPosition="start">
 				<IonGrid>
-					<PageHeader
-						pageName={pageName}
-					/>
+					<PageHeader pageName={pageName} />
 
 					<IonList>
 						<IonItem>
 							<IonLabel>Dark Mode</IonLabel>
-							<IonToggle onIonChange={(_) => handleTheme()} slot="end" />
+							<IonToggle
+								onIonChange={(_) => handleTheme()}
+								slot="end"
+							/>
 						</IonItem>
 						<IonItem>
-							<button onClick={() => handleNavigation()} className="daisy-btn daisy-btn-info">Info</button>
+							<button
+								onClick={() => handleNavigation()}
+								className="daisy-btn daisy-btn-info">
+								Info
+							</button>
 							<button className="daisy-btn daisy-btn-success">Success</button>
 							<button className="daisy-btn daisy-btn-warning">Warning</button>
 							<button className="daisy-btn daisy-btn-error">Error</button>

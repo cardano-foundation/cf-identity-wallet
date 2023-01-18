@@ -8,9 +8,7 @@ import {
 	IonCardContent,
 	IonContent,
 	IonHeader,
-	IonMenuButton,
 	IonModal,
-	IonPage,
 	IonTitle,
 	IonToolbar,
 	IonSearchbar,
@@ -29,6 +27,7 @@ import {
 	OverlayEventDetail,
 	SearchbarChangeEventDetail,
 } from '@ionic/core/components';
+import {useHistory} from 'react-router-dom';
 
 const Chats = () => {
 	const pageRef = useRef();
@@ -39,12 +38,21 @@ const Chats = () => {
 	const [showCreateServer, setShowCreateServer] = useState(false);
 	const [showJoinServer, setShowJoinServer] = useState(false);
 	const [showConnectDapp, setShowConnectDapp] = useState(false);
+
+	const nav = useHistory();
 	const modal = useRef<HTMLIonModalElement>(null);
-	const input = useRef<HTMLIonInputElement>(null);
 
 	useEffect(() => {
 		setResults(latestChats);
 	}, [latestChats]);
+
+	const openModal = () => {
+		nav.push(nav.location.pathname + '?modalOpened=true');
+	};
+
+	const closeModal = () => {
+		nav.replace('/chats');
+	};
 
 	const search = (e: IonSearchbarCustomEvent<SearchbarChangeEventDetail>) => {
 		const searchTerm = e.target.value;
@@ -68,7 +76,9 @@ const Chats = () => {
 		}
 	}, [showConnectDapp]);
 
-	function onWillDismiss(ev: CustomEvent<OverlayEventDetail>) {}
+	function onWillDismiss(ev: CustomEvent<OverlayEventDetail>) {
+		closeModal();
+	}
 
 	return (
 		<IonContent>
@@ -77,7 +87,10 @@ const Chats = () => {
 					<IonButton
 						class="ion-margin-horizontal"
 						size="small"
-						onClick={() => setShowCreateServer(true)}
+						onClick={() => {
+							setShowCreateServer(true);
+							openModal();
+						}}
 						id="open-create">
 						Create
 					</IonButton>
@@ -90,7 +103,11 @@ const Chats = () => {
 							<IonToolbar>
 								<IonTitle>Create Server</IonTitle>
 								<IonButtons slot="end">
-									<IonButton onClick={() => setShowCreateServer(false)}>
+									<IonButton
+										onClick={() => {
+											setShowCreateServer(false);
+											closeModal();
+										}}>
 										Close
 									</IonButton>
 								</IonButtons>
@@ -125,7 +142,10 @@ const Chats = () => {
 					<IonButton
 						class="ion-margin-horizontal"
 						size="small"
-						onClick={() => setShowJoinServer(true)}
+						onClick={() => {
+							setShowJoinServer(true);
+							openModal();
+						}}
 						id="open-join">
 						Join
 					</IonButton>
@@ -138,7 +158,11 @@ const Chats = () => {
 							<IonToolbar>
 								<IonTitle>Join Server</IonTitle>
 								<IonButtons slot="end">
-									<IonButton onClick={() => setShowJoinServer(false)}>
+									<IonButton
+										onClick={() => {
+											setShowJoinServer(false);
+											closeModal();
+										}}>
 										Close
 									</IonButton>
 								</IonButtons>
@@ -167,7 +191,10 @@ const Chats = () => {
 					<IonButton
 						class="ion-margin-horizontal"
 						size="small"
-						onClick={() => setShowConnectDapp(true)}
+						onClick={() => {
+							setShowConnectDapp(true);
+							openModal();
+						}}
 						id="open-dapp">
 						dApp
 					</IonButton>
@@ -180,7 +207,11 @@ const Chats = () => {
 							<IonToolbar>
 								<IonTitle>Connect dApp</IonTitle>
 								<IonButtons slot="end">
-									<IonButton onClick={() => setShowConnectDapp(false)}>
+									<IonButton
+										onClick={() => {
+											setShowConnectDapp(false);
+											closeModal();
+										}}>
 										Close
 									</IonButton>
 								</IonButtons>
