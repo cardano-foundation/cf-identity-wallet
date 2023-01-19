@@ -15,7 +15,6 @@ const NavRoutes = () => {
 		<IonReactRouter>
 			<IonSplitPane contentId="main">
 				<SideMenu />
-
 				<IonRouterOutlet id="main">
 					<Route
 						path="/tabs"
@@ -38,7 +37,7 @@ const NavRoutes = () => {
 						render={() => <Chats />}
 					/>
 					<Route
-						path="/view-chat/:contact_id"
+						path="/chat/:contact_id"
 						render={() => <Chat />}
 					/>
 					<SubPages />

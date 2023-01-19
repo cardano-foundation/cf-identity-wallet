@@ -22,7 +22,7 @@ const ChatItem = ({chat}) => {
 
 			<IonItem
 				className="chat-content-container"
-				routerLink={`/view-chat/${contact.id}`}
+				routerLink={`/chat/${contact.id}`}
 				detail={false}>
 				<div className="chat-content">
 					<div className="chat-name-date">

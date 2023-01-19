@@ -7,6 +7,7 @@ import {
 	IonIcon,
 	IonLabel,
 	IonList,
+	IonListHeader,
 	IonMenu,
 	IonMenuButton,
 	IonMenuToggle,
@@ -105,8 +106,12 @@ const SideMenu = (props) => {
 						<IonTitle>Menu</IonTitle>
 					</IonToolbar>
 				</IonHeader>
-				<IonContent className="ion-padding">
-					Tap the button in the toolbar to open the menu.
+				<IonContent
+					forceOverscroll={false}
+					id="main">
+					{mainContent}
+
+					<IonListHeader>{menuOptions.pageName}</IonListHeader>
 				</IonContent>
 			</IonPage>
 		</>
