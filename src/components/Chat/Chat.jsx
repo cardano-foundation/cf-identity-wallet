@@ -53,8 +53,6 @@ import {useHistory, useLocation} from "react-router-dom";
 const Chat = () => {
   const params = useParams();
   const location = useLocation();
-  console.log("location.state")
-  console.log(location.state)
 
   //  Global State
   const notificationCount = 0;
@@ -299,9 +297,6 @@ const Chat = () => {
 
 
   const removeChat = async () => {
-    console.log("removeChat");
-    console.log("chat");
-    console.log(chat);
     const id = `${chat?.name}:${chat?.identifier}`;
     if (chat?.host){
       await removeHost(id);
@@ -313,6 +308,8 @@ const Chat = () => {
   }
   const sendMessage = () => {
     console.log("sendMessage");
+    console.log("handleConnect");
+    console.log(handleConnect);
 
     if (message !== '') {
       const name = params.channel_id.split(':')[0];
@@ -320,7 +317,6 @@ const Chat = () => {
 
       try {
         handleConnect.sendMessage(params.channel_id, identifier, name, message);
-        console.log("message sent");
         setMessage('');
         setMessageSent(true);
         setTimeout(() => setMessageSent(false), 10);

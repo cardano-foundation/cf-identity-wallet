@@ -36,10 +36,16 @@ export class PeerConnect extends CardanoPeerConnect {
         this.meerkat = new Meerkat({
             seed: config.seed || undefined,
             identifier: config.identifier,
-            //announce: config.announce,
+            //announce: ["https://tracker.boostpool.io"]
+            announce: [
+                "ws://tracker.files.fm:7072/announce",
+                "wss://tracker.openwebtorrent.com/announce",
+                "wss://tracker.btorrent.xyz/",
+                "https://tracker.boostpool.io"
+            ]
         });
 
-        console.log(`You are joining ${config.identifier} host`);
+        //console.log(`You are joining host: ${config.identifier}`);
 
         this.id = `${name}:${config.identifier}`;
 
@@ -65,7 +71,7 @@ export class PeerConnect extends CardanoPeerConnect {
             (address: string, message: string, callback: Function) => {
                 try {
                     console.log(`[info]: message: ${message}`);
-                    console.log(`[info]: sent by(in peer connect): ${address}`);
+                    console.log(`[info]: sent by peer: ${address}`);
                     getPeer(this.id).then(peer => {
                         const newMessage = {
                             preview: message,
@@ -99,8 +105,11 @@ export class PeerConnect extends CardanoPeerConnect {
      */
     sendMessage(identifier: string, name: string, message: string): void {
 
+        console.log("sendMessage from peer");
+        console.log(message);
         if(!this.meerkat) return;
 
+        /*
         getPeer(this.id).then(host => {
             const newMessage = {
                 preview: {
@@ -123,6 +132,8 @@ export class PeerConnect extends CardanoPeerConnect {
                 console.log(`[info]: message was sent by: ${this.meerkat.identifier}`);
             });
         });
+
+        */
         this.meerkat.rpc(
             identifier,
             'message',

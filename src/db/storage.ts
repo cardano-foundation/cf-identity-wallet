@@ -34,9 +34,9 @@ export const clear = async () => {
 
 export const setObject = async (key: string, id: string, val: any) => {
 	try {
-		const all = (await get(key)) || [];
-		all[id] = val;
-		await set(key, all);
+		const objs = (await get(key)) || {};
+		objs[id] = val;
+		await set(key, objs);
 		return true;
 	} catch (e) {
 		return false;

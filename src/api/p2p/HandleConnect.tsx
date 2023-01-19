@@ -96,7 +96,6 @@ export class HandleConnect  {
             messages
         });
         this.hosts = [...this.hosts, host];
-
     }
 
     /**
@@ -127,7 +126,6 @@ export class HandleConnect  {
      *
      */
     sendMessage(peerId: string, identifier: string, name: string, message: string): void {
-
         const meerkats = [...this.hosts,...this.peers];
         for (let i=0; i<meerkats.length; i++){
             if(meerkats[i].id === peerId){
@@ -135,7 +133,6 @@ export class HandleConnect  {
             }
         }
     }
-
 }
 
 export const handleConnect = new HandleConnect();

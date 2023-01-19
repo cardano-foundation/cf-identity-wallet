@@ -112,7 +112,6 @@ def main():
           print("\t✅ {} ".format(item["theme_name"]))
         except:
           print("\t❌ {} ".format(item["theme_name"]))
-          print(e)
 
     create_tailwind_config(themes)
 
