@@ -42,7 +42,7 @@ import {
 import { useParams } from "react-router";
 import { useLongPress } from 'react-use';
 import './Chat.css';
-import ReplyTo from "../../components/chat/ReplyTo";
+import ReplyTo from "./ReplyTo";
 import { ChatBottomDetails } from './ChatBottomDetails';
 import { ChatRepliedQuote } from './ChatRepliedQuote';
 import {getChannel, getHost, getPeer, removeHost, removePeer} from "../../db";

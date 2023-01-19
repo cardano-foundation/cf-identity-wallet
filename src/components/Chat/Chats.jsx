@@ -18,7 +18,7 @@ import {
 } from '@ionic/react';
 import './Chats.css';
 import { useEffect, useState } from 'react';
-import ChatItem from '../../components/chat/ChatItem';
+import ChatItem from './ChatItem';
 import { useRef } from 'react';
 import {extendMoment} from "moment-range";
 import Moment from 'moment';
