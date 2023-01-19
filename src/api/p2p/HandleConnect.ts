@@ -77,6 +77,7 @@ export class HandleConnect  {
             announce: this.trackers
         });
         this.hosts = [...this.hosts, host];
+        this.joinChannel(`${name}:peer`,host.getMeerkatIdentifier());
     }
 
     /**

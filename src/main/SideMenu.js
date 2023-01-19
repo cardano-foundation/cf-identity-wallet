@@ -104,7 +104,7 @@ const SideMenu = (props) => {
 					</IonToolbar>
 				</IonHeader>
 				<IonContent className="ion-padding">
-					Refresh...
+
 				</IonContent>
 			</IonPage>
 		</>

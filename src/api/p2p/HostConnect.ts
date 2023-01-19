@@ -222,5 +222,9 @@ export class HostConnect {
         });
 
     }
+
+    getMeerkatIdentifier()  {
+        return this.meerkat.identifier;
+    }
 }
 

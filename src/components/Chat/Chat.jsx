@@ -49,6 +49,7 @@ import {getChannel, getHost, getPeer, removeHost, removePeer} from "../../db";
 import {handleConnect} from "../../api/p2p/HandleConnect";
 import {writeToClipboard} from "../../utils/clipboard";
 import {useHistory, useLocation} from "react-router-dom";
+import {addressSlice} from "../../utils/utils";
 
 const Chat = () => {
   const params = useParams();
@@ -362,6 +363,7 @@ const Chat = () => {
       <IonHeader>
         <IonToolbar>
           <IonBackButton
+            defaultHref={'/chats'}
             slot='start'
             text={notificationCount > 0 ? notificationCount : ''}
           />
@@ -374,7 +376,7 @@ const Chat = () => {
                       : <IonIcon size='small' icon={wifiOutline} color='gray' />}
               </span>
                 </p>
-                <IonText color='medium' onClick={() => onCopy(chat?.identifier)}>{chat?.identifier}</IonText>
+                <IonText color='medium' onClick={() => onCopy(chat?.identifier)}>{addressSlice(chat?.identifier, 10)}</IonText>
               </div>
             </div>
           </IonTitle>
@@ -404,13 +406,18 @@ const Chat = () => {
               }`}
               {...longPressEvent}
             >
+              {message.sender ?
+                  <div className="mr-2">
+                    <span
+                        onClick={() => onCopy(message.sender)}
+                        className="text-sm rounded p-1 bg-blue-200">{addressSlice(message.sender, 2)}</span>
+                  </div> : null}
               <div id={`chatText_${index}`}>
                 <ChatRepliedQuote
                   message={message.preview}
                   contact={null}
                   //repliedMessage={repliedMessage}
                 />
-
                 {message.preview.message}
                 <ChatBottomDetails message={message} />
               </div>
