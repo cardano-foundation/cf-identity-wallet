@@ -1,4 +1,5 @@
 import React, {useRef} from 'react';
+import PropTypes from 'prop-types';
 import {IonApp, setupIonicReact} from '@ionic/react';
 import {useHistory} from 'react-router-dom';
 import {useEffect} from 'react';
@@ -9,7 +10,7 @@ import './theme/tailwind.css';
 import './theme/App.scss';
 import './theme/variables.css';
 import './theme/structure.css';
-import AppWrapper from "./components/AppWrapper";
+import AppWrapper from './components/AppWrapper';
 
 setupIonicReact();
 
@@ -54,3 +55,7 @@ const App = (isExtension?: boolean) => {
 };
 
 export default App;
+
+App.propTypes = {
+	isExtension: PropTypes.bool,
+};

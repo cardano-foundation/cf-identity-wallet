@@ -71,7 +71,7 @@
 		"crypto-random-string": "2.0.0",
 		"daisyui": "^2.46.1",
 		"extensionizer": "1.0.1",
-		"i18next": "19.8.4",
+		"i18next": "^22.4.9",
 		"ionicons": "^6.0.4",
 		"jquery": "^3.6.0",
 		"moment": "^2.29.4",

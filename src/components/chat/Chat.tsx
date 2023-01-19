@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import {
 	IonBackButton,
 	IonCheckbox,
@@ -123,14 +124,14 @@ const Chat = () => {
 	});
 
 	//  For displaying toast messages
-	const toaster = (message) => {
+	const toaster = (message: React.SetStateAction<string>) => {
 		setToastMessage(message);
 		setShowToast(true);
 	};
 
 	//  Scroll to end of content
 	const scrollToBottom = async () => {
-		contentRef.current.scrollToBottom();
+		contentRef?.current?.scrollToBottom();
 	};
 
 	//  Watch for DOM changes
@@ -176,8 +177,8 @@ const Chat = () => {
 	const showReplyToMessage = async (message) => {
 		//  Activate reply-to functionality
 		setReplyToMessage(message);
-		await replyToAnimationRef.current.animation.play();
-		contentRef.current.scrollToBottom(300);
+		await replyToAnimationRef?.current?.animation.play();
+		contentRef?.current?.scrollToBottom(300);
 	};
 
 	const checkBubble = async (bubble, message, event) => {
@@ -257,7 +258,7 @@ const Chat = () => {
 
 	//  Play the animations when the state value changes
 	useEffect(() => {
-		textareaRef.current.animation.play();
+		textareaRef?.current?.animation.play();
 		//sideRef.current.animation.play();
 		//sendRef.current.animation.play();
 	}, [showSendButton]);
@@ -408,3 +409,5 @@ const Chat = () => {
 };
 
 export default Chat;
+
+Chat.propTypes = {};

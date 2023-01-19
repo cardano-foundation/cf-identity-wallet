@@ -11,7 +11,9 @@ import {LocalNotifications} from '@capacitor/local-notifications';
 import {I18nextProvider} from 'react-i18next';
 import i18n from './i18n';
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
+const root = ReactDOM.createRoot(
+	document?.getElementById('root') as HTMLElement
+);
 root.render(
 	<React.StrictMode>
 		<SafeArea
@@ -49,7 +51,7 @@ if (Capacitor.getPlatform() !== 'web') {
 	//StatusBar.setOverlaysWebView({overlay: true});
 
 	// Handle back button on capacitor app
-	let timePeriodToExit = 3000; // ms
+	const timePeriodToExit = 3000; // ms
 	let countBack = 0;
 	let firstBack = 0;
 	let secondBack = 0;
