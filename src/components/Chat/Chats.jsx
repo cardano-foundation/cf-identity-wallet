@@ -20,7 +20,6 @@ import './Chats.css';
 import { useEffect, useState } from 'react';
 import ChatItem from '../../components/chat/ChatItem';
 import { useRef } from 'react';
-import ContactModal from '../../components/chat/ContactModal';
 import {extendMoment} from "moment-range";
 import Moment from 'moment';
 // @ts-ignore
@@ -324,15 +323,6 @@ const Chats = () => {
         {results.map((chat, index) => {
           return <ChatItem chat={chat} key={index} />;
         })}
-
-        <IonModal
-          isOpen={showContactModal}
-          swipeToClose={true}
-          presentingElement={pageRef.current}
-          onDidDismiss={() => setShowContactModal(false)}
-        >
-          <ContactModal close={() => setShowContactModal(false)} />
-        </IonModal>
       </IonContent>
     </IonPage>
   );
