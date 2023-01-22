@@ -8,7 +8,7 @@ import Template from '../../pages/Template';
 import Payments from '../../pages/Payments';
 import Stuff from '../../pages/Stuff';
 import {SubPages, Tabs, tabRoutes} from './AllRoutes';
-import Chats from "../../components/Chat/Chats";
+import Chats from '../../components/Chat/Chats';
 
 const NavRoutes = () => {
 	return (
@@ -37,7 +37,10 @@ const NavRoutes = () => {
 						path="/chats"
 						render={() => <Chats />}
 					/>
-					<Route path='/chat/:channel_id' render={() => <Chat />} />
+					<Route
+						path="/chat/:channel_id"
+						render={() => <Chat />}
+					/>
 					<SubPages />
 
 					<Route

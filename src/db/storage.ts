@@ -81,7 +81,6 @@ export const removeObject = async (key: string, id: string) => {
 };
 
 export const getObject = async (key: string, id: string) => {
-
 	try {
 		const objs = (await get(key)) || {};
 		return objs[id];

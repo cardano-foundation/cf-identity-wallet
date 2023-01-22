@@ -9,8 +9,8 @@ import './theme/tailwind.css';
 import './theme/App.scss';
 import './theme/variables.css';
 import './theme/structure.css';
-import AppWrapper from "./components/AppWrapper";
-import {HandleConnect} from "./api/p2p/HandleConnect";
+import AppWrapper from './components/AppWrapper';
+import {HandleConnect} from './api/p2p/HandleConnect';
 
 export const handleConnect = new HandleConnect();
 
