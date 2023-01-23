@@ -46,10 +46,12 @@ import ReplyTo from './ReplyTo';
 import {ChatBottomDetails} from './ChatBottomDetails';
 import {ChatRepliedQuote} from './ChatRepliedQuote';
 import {getChannel, getHost, getPeer, removeHost, removePeer} from '../../db';
-import {handleConnect} from '../../api/p2p/HandleConnect';
+
 import {writeToClipboard} from '../../utils/clipboard';
 import {useHistory, useLocation} from 'react-router-dom';
 import {addressSlice} from '../../utils/utils';
+import {handleConnect} from "../../App";
+import {publish, subscribe} from "../../utils/events";
 
 const Chat = () => {
 	const params = useParams();
@@ -118,6 +120,13 @@ const Chat = () => {
 	useEffect(() => {
 		!showActionSheet && setActionMessage(false);
 	}, [showActionSheet]);
+
+	useEffect(() => {
+		subscribe("updateChat", () => {
+			console.log("subscribe updateChat, lets update!")
+			updateChat();
+		});
+	}, []);
 
 	const updateChat = async () => {
 		if (!params) return;
@@ -308,14 +317,14 @@ const Chat = () => {
 		handleNavigation('/chats');
 	};
 	const sendMessage = () => {
-		console.log('sendMessage');
-		console.log('handleConnect');
-		console.log(handleConnect);
 
 		if (message !== '') {
 			const name = params.channel_id.split(':')[0];
 			const identifier = params.channel_id.split(':')[1];
 
+			console.log("params.channel_id");
+			console.log(name);
+			console.log(identifier);
 			try {
 				handleConnect.sendMessage(params.channel_id, identifier, name, message);
 				setMessage('');
@@ -427,7 +436,7 @@ const Chat = () => {
 									message.sent ? 'bubble-sent' : 'bubble-received'
 								}`}
 								{...longPressEvent}>
-								{message.sender ? (
+								{message?.sender ? (
 									<div className="mr-2">
 										<span
 											onClick={() => onCopy(message.sender)}
@@ -438,11 +447,11 @@ const Chat = () => {
 								) : null}
 								<div id={`chatText_${index}`}>
 									<ChatRepliedQuote
-										message={message.preview}
+										message={message?.preview}
 										contact={null}
 										//repliedMessage={repliedMessage}
 									/>
-									{message.preview.message}
+									{message?.preview}
 									<ChatBottomDetails message={message} />
 								</div>
 
@@ -459,7 +468,7 @@ const Chat = () => {
 
 				<IonActionSheet
 					header="Message Actions"
-					subHeader={actionMessage && actionMessage.preview.message}
+					subHeader={actionMessage && actionMessage.preview?.message}
 					isOpen={showActionSheet}
 					onDidDismiss={() => setShowActionSheet(false)}
 					buttons={actionSheetButtons}

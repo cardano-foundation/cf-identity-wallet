@@ -9,6 +9,7 @@ import Meerkat from '@fabianbormann/meerkat';
 import {setPeer, getPeer} from '../../db';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
+import {publish} from "../../utils/events";
 // @ts-ignore
 const moment = extendMoment(Moment);
 
@@ -49,8 +50,6 @@ export class PeerConnect extends CardanoPeerConnect {
 			],
 		});
 
-		//console.log(`You are joining host: ${config.identifier}`);
-
 		this.id = `${name}:${config.identifier}`;
 
 		this.meerkat.on('server', () => {
@@ -66,29 +65,22 @@ export class PeerConnect extends CardanoPeerConnect {
 					true
 				).then((_) => {});
 			});
-
-			// @ts-ignore
-			/*
-            this.meerkat.rpc(config.identifier, 'message', {message: "hello world!"}, (response) => {
-                    console.log("response")
-                    console.log(response)
-                }
-            );
-             */
 		});
 
 		this.meerkat.register(
-			'message',
-			(address: string, message: string, callback: Function) => {
+			'text_receive',
+			(address: string, message:{[key:string]:any}, callback: Function) => {
 				try {
-					console.log(`[info]: message: ${message}`);
-					console.log(`[info]: sent by peer: ${address}`);
+					console.log(`[info]: message received: ${JSON.stringify(message)}`);
+					console.log(`[info]: transmitted by the server: ${address}`);
+					console.log("message");
+					console.log(message);
 					getPeer(this.id).then((peer) => {
 						const newMessage = {
-							preview: message,
-							sender: address,
+							preview: message?.message,
+							sender: message?.address,
 							received: true,
-							sent: address === peer.identifier,
+							sent: true,
 							read: false,
 							starred: false,
 							date: moment.utc().format('MM-DD HH:mm:ss'),
@@ -102,6 +94,7 @@ export class PeerConnect extends CardanoPeerConnect {
 							[...peer.messages, newMessage],
 							peer.connected
 						).then((_) => {
+							publish('updateChat');
 							callback(true);
 						});
 					});
@@ -125,72 +118,28 @@ export class PeerConnect extends CardanoPeerConnect {
 	 * Send message to host
 	 *
 	 * @param identifier - The host identifier to send the message
+	 * @param peerId - The peer identifier from db
 	 * @param name - The local channel name
 	 * @param message - The text message to send
 	 *
 	 */
-	sendMessage(identifier: string, name: string, message: string): void {
-		console.log('sendMessage from peer');
-		console.log(message);
+	sendMessage(identifier: string, peerId: string, name: string, message: string): void {
+		console.log("sendMessage peerConnect")
 		if (!this.meerkat) return;
 
-		/*
-        getPeer(this.id).then(host => {
-            const newMessage = {
-                preview: {
-                    message
-                },
-                received: false,
-                sent: true,
-                read: false,
-                starred: false,
-                date: moment.utc().format("MM-DD HH:mm:ss")
-            }
-            setPeer(
-                this.id,
-                host.seed,
-                host.identifier,
-                name,
-                host.announce,
-                [...host.messages, newMessage],
-                host.connected).then(_ => {
-                console.log(`[info]: message was sent by: ${this.meerkat.identifier}`);
-            });
-        });
-
-        */
+		console.log("this.meerkat.peers");
+		console.log(this.meerkat.peers);
+		console.log("identifier");
+		console.log(identifier);
 		this.meerkat.rpc(
 			identifier,
-			'message',
+			'text_message',
 			{
 				message,
 			},
 			(response: boolean) => {
 				try {
-					console.log(`[info]: message: ${message}`);
-					console.log(`[info]: sent to: ${identifier}`);
-					getPeer(this.id).then((host) => {
-						const newMessage = {
-							preview: {
-								message,
-							},
-							received: response,
-							sent: true,
-							read: false,
-							starred: false,
-							date: moment.utc().format('MM-DD HH:mm:ss'),
-						};
-						setPeer(
-							this.id,
-							host.seed,
-							host.identifier,
-							name,
-							host.announce,
-							[...host.messages, newMessage],
-							host.connected
-						).then((_) => {});
-						console.log(`[info]: message received by: ${identifier}`);
-					});
+
 				} catch (e) {}
 			}
 		);
