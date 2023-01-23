@@ -66,12 +66,12 @@ const Tab3 = (props) => {
 						<IonItem>
 							<button
 								onClick={() => handleNavigation()}
-								className="daisy-btn daisy-btn-info">
+								className="btn btn-info">
 								Info
 							</button>
-							<button className="daisy-btn daisy-btn-success">Success</button>
-							<button className="daisy-btn daisy-btn-warning">Warning</button>
-							<button className="daisy-btn daisy-btn-error">Error</button>
+							<button className="btn btn-success">Success</button>
+							<button className="btn btn-warning">Warning</button>
+							<button className="btn btn-error">Error</button>
 						</IonItem>
 						{inboxItems.map((item, index) => {
 							return (

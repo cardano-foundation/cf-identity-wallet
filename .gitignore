@@ -24,3 +24,6 @@ yarn-error.log*
 
 package-lock.json
 yarn.lock
+
+# story book auto generated
+/public/tailwind.css

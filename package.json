@@ -15,13 +15,8 @@
     "lint": "eslint --ext .js,.ts,.jsx,.tsx src",
     "format": "npm run lint --fix & yarn prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
     "//": "New scripts to run and build Storybook with Tailwind",
-    "storybook": "concurrently \"yarn:watch:*\"",
-    "build-storybook": "concurrently \"yarn:build:*\"",
-    "build:css": "npx tailwindcss -i ./src/theme/tailwind.css -o ./public/tailwind.css",
-    "build:storybook": "storybook build",
-    "watch:css": "npx tailwindcss -i ./src/theme/tailwind.css -o ./public/tailwind.css --watch",
-    "watch:storybook": "storybook dev -p 6006",
-    "storybook-run": "start-storybook -p 6006 -s public"
+    "storybook": "npm run build:css && start-storybook -p 6006 -s public",
+    "build:css": "npx tailwindcss -i ./src/theme/tailwind.css -o ./public/tailwind.css"
   },
   "dependencies": {
     "@ant-design/plots": "^1.2.2",
