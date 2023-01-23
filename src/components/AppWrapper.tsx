@@ -3,7 +3,7 @@ import React, {useEffect, useRef} from 'react';
 import CardanoModule from '../lib/CardanoModule';
 import {useTranslation} from 'react-i18next';
 
-const AppWrapper = (props: { children: any; }) => {
+const AppWrapper = (props: {children: any}) => {
 	const {t, i18n} = useTranslation();
 
 	const useIsMounted = () => {
@@ -31,9 +31,7 @@ const AppWrapper = (props: { children: any; }) => {
 		}
 	}, []);
 
-	const initApp = async () => {
-
-	};
+	const initApp = async () => {};
 
 	useEffect(() => {
 		const init = async () => {
@@ -56,7 +54,13 @@ const AppWrapper = (props: { children: any; }) => {
 		}
 	}, []);
 
-	return <div id="appWrapper" data-theme="light">{props.children}</div>;
+	return (
+		<div
+			id="appWrapper"
+			data-theme="light">
+			{props.children}
+		</div>
+	);
 };
 
 export default AppWrapper;

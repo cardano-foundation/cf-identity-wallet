@@ -1,8 +1,11 @@
 import React from 'react';
 import {
 	IonBackButton,
+	IonButton,
+	IonButtons,
 	IonCheckbox,
 	IonItem,
+	IonLabel,
 	IonCol,
 	IonContent,
 	IonFooter,
@@ -20,43 +23,43 @@ import {
 	useIonViewWillEnter,
 	IonActionSheet,
 	IonToast,
+	IonRefresher,
+	IonRefresherContent,
 } from '@ionic/react';
 import {
 	alertOutline,
+	wifiOutline,
 	send,
 	shareOutline,
 	starOutline,
 	trashOutline,
+	trash,
 } from 'ionicons/icons';
 import {useRef} from 'react';
 import {useEffect, useState} from 'react';
-import {useParams} from 'react-router';
-import ChatStore from '../../store/ChatStore';
-import ContactStore from '../../store/ContactStore';
-import {
-	getNotificationCount,
-	markAllAsRead,
-	sendChatMessage,
-	starChatMessage,
-} from '../../store/ChatStore';
-import {getChat, getChats, getContact} from '../../store/selectors';
 
+import {starChatMessage} from '../../store/ChatStore';
+import {useParams} from 'react-router';
 import {useLongPress} from 'react-use';
 import './Chat.css';
 import ReplyTo from './ReplyTo';
 import {ChatBottomDetails} from './ChatBottomDetails';
 import {ChatRepliedQuote} from './ChatRepliedQuote';
+import {getChannel, getHost, getPeer, removeHost, removePeer} from '../../db';
+import {handleConnect} from '../../api/p2p/HandleConnect';
+import {writeToClipboard} from '../../utils/clipboard';
+import {useHistory, useLocation} from 'react-router-dom';
+import {addressSlice} from '../../utils/utils';
 
 const Chat = () => {
 	const params = useParams();
+	const location = useLocation();
 
 	//  Global State
-	const chat = ChatStore.useState(getChat(params.contact_id));
-	const chats = ChatStore.useState(getChats);
-	const contact = ContactStore.useState(getContact(params.contact_id));
-	const notificationCount = getNotificationCount(chats);
+	const notificationCount = 0;
 
 	//  Local state
+	const [chat, serChat] = useState(location?.state?.chat || {});
 	const [message, setMessage] = useState('');
 	const [showSendButton, setShowSendButton] = useState(false);
 	const [replyToMessage, setReplyToMessage] = useState(false);
@@ -67,6 +70,7 @@ const Chat = () => {
 
 	const [showToast, setShowToast] = useState(false);
 	const [toastMessage, setToastMessage] = useState('');
+	const [toastColor, setToastColor] = useState('success');
 
 	//  Refs
 	const contentRef = useRef();
@@ -109,8 +113,29 @@ const Chat = () => {
 	];
 
 	useEffect(() => {
+		updateChat();
+	}, []);
+	useEffect(() => {
 		!showActionSheet && setActionMessage(false);
 	}, [showActionSheet]);
+
+	const updateChat = async () => {
+		if (!params) return;
+		const chat = await getChannel(params.channel_id);
+		serChat(chat);
+	};
+
+	const history = useHistory();
+	const handleNavigation = (route) => {
+		history.push({
+			pathname: route,
+			search: '?update=true', // query string
+			state: {
+				// location state
+				update: true,
+			},
+		});
+	};
 
 	//  Scroll to end of content
 	//  Mark all chats as read if we come into a chat
@@ -118,7 +143,7 @@ const Chat = () => {
 	useIonViewWillEnter(() => {
 		scrollToBottom();
 		setupObserver();
-		markAllAsRead(params.contact_id);
+		// markAllAsRead(params.contact_id);
 		setSwipeEvents();
 	});
 
@@ -160,11 +185,13 @@ const Chat = () => {
 			? parseInt(elementID.replace('chatTime_', ''))
 			: parseInt(elementID.replace('chatBubble_', ''));
 
-		const chatMessage = chat.filter(
-			(message) => parseInt(message.id) === parseInt(chatMessageID)
-		)[0];
+		/*
+    const chatMessage = chat.filter(
+      (message) => parseInt(message.id) === parseInt(chatMessageID)
+    )[0];
+    */
 
-		setActionMessage(chatMessage);
+		// setActionMessage(chatMessage);
 		setShowActionSheet(true);
 	};
 
@@ -199,7 +226,7 @@ const Chat = () => {
 	};
 
 	const setSwipeEvents = () => {
-		chat.forEach((message, index) => {
+		chat?.messages?.forEach((message, index) => {
 			if (!message.sent) {
 				const chatBubble = swiperRefs.current[index];
 
@@ -262,21 +289,46 @@ const Chat = () => {
 		//sendRef.current.animation.play();
 	}, [showSendButton]);
 
-	const sendMessage = (image = false, imagePath = false) => {
-		if (message !== '' || image === true) {
-			sendChatMessage(
-				params.contact_id,
-				message,
-				replyToMessage,
-				replyToMessage ? replyToMessage.id : false,
-				image,
-				imagePath
-			);
-			setMessage('');
+	useEffect(() => {
+		const updateState = setTimeout(() => {
+			updateChat();
+		}, 4000);
 
-			setMessageSent(true);
-			setTimeout(() => setMessageSent(false), 10);
-			image && setTimeout(() => scrollToBottom(), 100);
+		return () => clearInterval(updateState);
+	}, []);
+
+	const removeChat = async () => {
+		const id = `${chat?.name}:${chat?.identifier}`;
+		if (chat?.host) {
+			await removeHost(id);
+		} else {
+			await removePeer(id);
+		}
+
+		handleNavigation('/chats');
+	};
+	const sendMessage = () => {
+		console.log('sendMessage');
+		console.log('handleConnect');
+		console.log(handleConnect);
+
+		if (message !== '') {
+			const name = params.channel_id.split(':')[0];
+			const identifier = params.channel_id.split(':')[1];
+
+			try {
+				handleConnect.sendMessage(params.channel_id, identifier, name, message);
+				setMessage('');
+				setMessageSent(true);
+				setTimeout(() => setMessageSent(false), 10);
+				setTimeout(() => updateChat() && scrollToBottom(), 200);
+			} catch (e) {
+				console.log('error:');
+				console.log(e);
+				setToastMessage(`Error: ${e}`);
+				setToastColor('danger');
+				setShowToast(true);
+			}
 		}
 	};
 
@@ -284,8 +336,24 @@ const Chat = () => {
 		replyToAnimationRef,
 		replyToMessage,
 		setReplyToMessage,
-		contact: contact.name,
+		contact: 'name',
 		messageSent,
+	};
+
+	const onCopy = (content) => {
+		writeToClipboard(content).then(() => {
+			setToastColor('success');
+			setToastMessage(`Copied: ${content}`);
+			setShowToast(true);
+		});
+	};
+
+	const handleRefresh = (event) => {
+		updateChat();
+		setTimeout(() => {
+			// Any calls to load data go here
+			event.detail.complete();
+		}, 2000);
 	};
 
 	return (
@@ -293,73 +361,111 @@ const Chat = () => {
 			<IonHeader>
 				<IonToolbar>
 					<IonBackButton
+						defaultHref={'/chats'}
 						slot="start"
 						text={notificationCount > 0 ? notificationCount : ''}
 					/>
 					<IonTitle>
 						<div className="chat-contact">
 							<img
-								src={contact.avatar}
+								src={'https://via.placeholder.com/150'}
 								alt="avatar"
 							/>
 							<div className="chat-contact-details">
-								<p>{contact.name}</p>
-								<IonText color="medium">last seen today at 22:10</IonText>
+								<p>
+									{chat?.name}
+									<span className="ml-3 color">
+										{chat?.connected ? (
+											<IonIcon
+												size="small"
+												icon={wifiOutline}
+												color="success"
+											/>
+										) : (
+											<IonIcon
+												size="small"
+												icon={wifiOutline}
+												color="gray"
+											/>
+										)}
+									</span>
+								</p>
+								<IonText
+									color="medium"
+									onClick={() => onCopy(chat?.identifier)}>
+									{addressSlice(chat?.identifier, 10)}
+								</IonText>
 							</div>
 						</div>
 					</IonTitle>
+					<IonIcon
+						slot="end"
+						icon={trash}
+						onClick={() => removeChat()}
+					/>
 				</IonToolbar>
 			</IonHeader>
 
 			<IonContent
 				id="main-chat-content"
 				ref={contentRef}>
-				{chat.map((message, index) => {
-					const repliedMessage = chat.filter(
-						(subMessage) =>
-							parseInt(subMessage.id) === parseInt(message.replyID)
-					)[0];
-
-					return (
-						<div
-							ref={(ref) => (swiperRefs.current[index] = ref)}
-							id={`chatBubble_${message.id}`}
-							key={index}
-							className={`chat-bubble ${
-								message.sent ? 'bubble-sent' : 'bubble-received'
-							}`}
-							{...longPressEvent}>
-							<div id={`chatText_${message.id}`}>
-								<ChatRepliedQuote
-									message={message}
-									contact={contact}
-									repliedMessage={repliedMessage}
-								/>
-
-								{message.preview}
-								{message.image && message.imagePath && (
-									<img
-										src={message.imagePath}
-										alt="chat message"
+				{chat &&
+					Object.keys(chat).length &&
+					chat?.messages.map((message, index) => {
+						/*
+          const repliedMessage = chat.filter(
+            (subMessage) =>
+              parseInt(subMessage.id) === parseInt(message.replyID)
+          )[0];
+          */
+						return (
+							<div
+								ref={(ref) => (swiperRefs.current[index] = ref)}
+								id={`chatBubble_${index}`}
+								key={index}
+								className={`chat-bubble ${
+									message.sent ? 'bubble-sent' : 'bubble-received'
+								}`}
+								{...longPressEvent}>
+								{message.sender ? (
+									<div className="mr-2">
+										<span
+											onClick={() => onCopy(message.sender)}
+											className="text-sm rounded p-1 bg-blue-200">
+											{addressSlice(message.sender, 2)}
+										</span>
+									</div>
+								) : null}
+								<div id={`chatText_${index}`}>
+									<ChatRepliedQuote
+										message={message.preview}
+										contact={null}
+										//repliedMessage={repliedMessage}
 									/>
-								)}
-								<ChatBottomDetails message={message} />
-							</div>
+									{message.preview.message}
+									<ChatBottomDetails message={message} />
+								</div>
 
-							<div className={`bubble-arrow ${message.sent && 'alt'}`}></div>
-						</div>
-					);
-				})}
+								<div className={`bubble-arrow ${message.sent && 'alt'}`}></div>
+							</div>
+						);
+					})}
+
+				<IonRefresher
+					slot="fixed"
+					onIonRefresh={handleRefresh}>
+					<IonRefresherContent />
+				</IonRefresher>
 
 				<IonActionSheet
 					header="Message Actions"
-					subHeader={actionMessage && actionMessage.preview}
+					subHeader={actionMessage && actionMessage.preview.message}
 					isOpen={showActionSheet}
 					onDidDismiss={() => setShowActionSheet(false)}
 					buttons={actionSheetButtons}
 				/>
 				<IonToast
-					color="primary"
+					color={toastColor}
 					isOpen={showToast}
 					onDidDismiss={() => setShowToast(false)}
 					message={toastMessage}

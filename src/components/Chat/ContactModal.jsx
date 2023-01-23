@@ -9,14 +9,10 @@ import {
 	IonTitle,
 	IonToolbar,
 } from '@ionic/react';
-import ContactStore from '../../store/ContactStore';
-import {getContacts} from '../../store/selectors';
 
 import './ContactModal.scss';
 
 const ContactModal = ({close}) => {
-	const contacts = ContactStore.useState(getContacts);
-
 	return (
 		<div style={{height: '100%'}}>
 			<IonHeader>
@@ -34,14 +30,14 @@ const ContactModal = ({close}) => {
 
 			<IonContent>
 				<IonList>
-					{contacts.map((contact) => {
+					{[{id: 0, name: 'name'}].map((contact) => {
 						return (
 							<IonItem
 								key={`contact_${contact.id}`}
 								lines="full"
 								className="contact-item">
 								<img
-									src={contact.avatar}
+									src={'https://via.placeholder.com/150'}
 									alt="contact avatar"
 								/>
 								<IonLabel>

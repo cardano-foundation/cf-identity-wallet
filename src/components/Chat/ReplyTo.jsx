@@ -58,7 +58,7 @@ const ReplyTo = ({
 					className="chat-reply-to-container">
 					<IonLabel className="chat-reply-to-name">{contact}</IonLabel>
 					<IonLabel className="chat-reply-to-message">
-						{replyToMessage.preview}
+						{replyToMessage.preview.message}
 					</IonLabel>
 				</IonCol>
 

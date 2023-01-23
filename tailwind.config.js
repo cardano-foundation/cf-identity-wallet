@@ -1,18 +1,19 @@
 module.exports = {
-    "darkMode": "class",
+    "darkMode": ["class", '[data-mode="dark"]'],
     "important": true,
     "theme": {
         "extend": {}
     },
     "content": ["./src/**/*.{js,jsx,ts,tsx}"],
     "plugins": [require("daisyui")],
+    "prefix": "",
     "daisyui": {
         "styled": true,
         "base": true,
         "utils": true,
         "logs": true,
         "rtl": false,
-        "prefix": "daisy-",
+        "prefix": "",
         "themes": [{
             "light": {
                 "primary": "#3880ff",

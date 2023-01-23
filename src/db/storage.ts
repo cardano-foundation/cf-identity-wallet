@@ -34,9 +34,9 @@ export const clear = async () => {
 
 export const setObject = async (key: string, id: string, val: any) => {
 	try {
-		const all = (await get(key)) || [];
-		all[id] = val;
-		await set(key, all);
+		const objs = (await get(key)) || {};
+		objs[id] = val;
+		await set(key, objs);
 		return true;
 	} catch (e) {
 		return false;
@@ -82,11 +82,8 @@ export const removeObject = async (key: string, id: string) => {
 
 export const getObject = async (key: string, id: string) => {
 	try {
-		const all = (await get(key)) || [];
-
-		if (all && all.length) {
-			return all.filter;
-		}
+		const objs = (await get(key)) || {};
+		return objs[id];
 	} catch (e) {
 		console.log(e);
 	}

@@ -73,6 +73,7 @@ export const WalletApi = {
 	getUsedUTxOs: () => getUsedUTxOs(),
 };
 
+/*
 export const signAndSubmit = async (
 	currentAccount: any,
 	outputs: {
@@ -319,6 +320,7 @@ export const signAndSubmit = async (
 		};
 	}
 };
+ */
 
 export const assetsToValue = async (assets: IAsset[]) => {
 	const Cardano = await EmurgoModule.CardanoWasm();

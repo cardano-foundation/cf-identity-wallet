@@ -1,4 +1,11 @@
-import {createStore, get, getObject, set, setObject} from './storage';
+import {
+	createStore,
+	get,
+	getObject,
+	set,
+	setNewObject,
+	setObject,
+} from './storage';
 import {
 	BLOCKFROST_DEFAULT_URL,
 	BLOCKFROST_TOKEN,
@@ -6,8 +13,9 @@ import {
 	SUBMIT_DEFAULT_URL,
 } from '../../config';
 import {maxId} from '../utils/utils';
+import Meerkat from '@fabianbormann/meerkat';
 
-export const DB_NAME = 'WALLET_DB';
+export const DB_NAME = 'ID_WALLET_DB';
 
 createStore(DB_NAME);
 
@@ -54,10 +62,10 @@ export const getSettingsFromDb = async () => {
 			network: {
 				blockfrost: {
 					url: BLOCKFROST_DEFAULT_URL,
-					token: BLOCKFROST_TOKEN
+					token: BLOCKFROST_TOKEN,
 				},
 				net: 'preprod',
-				submit: SUBMIT_DEFAULT_URL
+				submit: SUBMIT_DEFAULT_URL,
 			},
 		};
 		await set('settings', defaultSettings);
@@ -207,4 +215,115 @@ export const removeOriginFromWhitelist = async (origin: string) => {
 		);
 		await set('external', external);
 	}
+};
+
+export const setPeer = async (
+	id: string,
+	seed: string,
+	identifier: string,
+	name: string,
+	announce: String[],
+	messages: string[] = [],
+	connected = false
+) => {
+	await setObject('peer-connect', id, {
+		seed,
+		identifier,
+		name,
+		announce,
+		messages,
+		connected,
+	});
+};
+
+export const getPeer = async (id: string) => {
+	return await getObject('peer-connect', id);
+};
+
+export const getPeerList = async () => {
+	return await get('peer-connect');
+};
+
+export const setPeerList = async (peers: any[]) => {
+	return await set('peer-connect', peers);
+};
+
+export const removePeer = async (id: string) => {
+	let peers = await getPeerList();
+	if (peers && peers[id] !== undefined) {
+		delete peers[id];
+		await setPeerList(peers);
+	}
+};
+
+export const setHost = async (
+	id: string,
+	seed: string,
+	identifier: string,
+	name: string,
+	announce: String[],
+	messages: string[] = [],
+	connected = false
+) => {
+	await setObject('host-connect', id, {
+		seed,
+		identifier,
+		name,
+		announce,
+		messages,
+		connected,
+	});
+};
+
+export const getHost = async (id: string) => {
+	return await getObject('host-connect', id);
+};
+
+export const setHostList = async (hosts: any) => {
+	return await set('host-connect', hosts);
+};
+
+export const getHostList = async () => {
+	return await get('host-connect');
+};
+
+export const removeHost = async (id: string) => {
+	let hosts = await getHostList();
+	if (hosts && hosts[id] !== undefined) {
+		delete hosts[id];
+		await setHostList(hosts);
+	}
+};
+
+export const getChannel = async (id: string) => {
+	const host = await getObject('host-connect', id);
+	const peer = await getObject('peer-connect', id);
+	return host ? {...host, host: true} : peer;
+};
+
+export const getAllChannels = async () => {
+	const host = await get('host-connect');
+	const peer = await get('peer-connect');
+	return [...host, ...peer];
+};
+
+export const setPeerProfile = async (
+	id: string,
+	seed: string,
+	identifier: string,
+	name: string,
+	announce: string[],
+	messages: string[] = []
+) => {
+	await setObject('peer-profile-connect', id, {
+		seed,
+		identifier,
+		name,
+		announce,
+		messages,
+	});
+};
+
+export const getPeerProfile = async (id: string) => {
+	return await getObject('peer-profile-connect', id);
 };
