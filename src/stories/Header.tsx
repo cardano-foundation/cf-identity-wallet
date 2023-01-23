@@ -46,7 +46,7 @@ export const Header = ({
 					</g>
 				</svg>
 				<h1>Acme</h1>
-				<button className="daisy-btn daisy-btn-success btn">Tailwind??</button>
+
 			</div>
 			<div>
 				{user ? (

@@ -12,11 +12,16 @@
     "open:ios": "npx cap open ios",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "//": "New scripts to run and build Storybook with Tailwind",
     "lint": "eslint --ext .js,.ts,.jsx,.tsx src",
     "format": "npm run lint --fix & yarn prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
-    "storybook": "start-storybook -p 6006 -s public",
-    "build-storybook": "build-storybook -s public"
+    "//": "New scripts to run and build Storybook with Tailwind",
+    "storybook": "concurrently \"yarn:watch:*\"",
+    "build-storybook": "concurrently \"yarn:build:*\"",
+    "build:css": "npx tailwindcss -i ./src/theme/tailwind.css -o ./public/tailwind.css",
+    "build:storybook": "storybook build",
+    "watch:css": "npx tailwindcss -i ./src/theme/tailwind.css -o ./public/tailwind.css --watch",
+    "watch:storybook": "storybook dev -p 6006",
+    "storybook-run": "start-storybook -p 6006 -s public"
   },
   "dependencies": {
     "@ant-design/plots": "^1.2.2",
