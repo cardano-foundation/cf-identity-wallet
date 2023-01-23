@@ -16,7 +16,7 @@ const Chat = (props) => {
 				sideMenu={false}
 				sideMenuPosition="start"
 				backButton={true}
-				backButtonText="Home"
+				backButtonText="Back"
 				actionButton={true}
 				actionButtonIcon={addOutline}
 				actionButtonPosition="end"

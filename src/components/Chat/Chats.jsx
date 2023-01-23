@@ -27,10 +27,11 @@ import ChatItem from './ChatItem';
 import {useRef} from 'react';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
-// @ts-ignore
-const moment = extendMoment(Moment);
 import {getHostList, getPeerList} from '../../db';
 import {handleConnect} from '../../App';
+import {useHistory} from 'react-router-dom';
+// @ts-ignore
+const moment = extendMoment(Moment);
 
 const Chats = () => {
 	const pageRef = useRef();
@@ -43,10 +44,20 @@ const Chats = () => {
 	const [joinServerNameInput, setJoinServerNameInput] = useState('');
 	const [joinServerAddressInput, setJoinServerAddressInput] = useState('');
 	const [showConnectDapp, setShowConnectDapp] = useState(false);
+	const nav = useHistory();
+	const modal = useRef(null);
 
 	useEffect(() => {
 		updateChats();
 	}, []);
+
+	const openModal = () => {
+		nav.push(nav.location.pathname + '?modalOpened=true');
+	};
+
+	const closeModal = () => {
+		nav.replace('/chats');
+	};
 
 	useEffect(() => {
 		const updateState = setTimeout(() => {
@@ -179,6 +190,10 @@ const Chats = () => {
 		}
 	}, [showConnectDapp]);
 
+	function onWillDismiss(ev) {
+		closeModal();
+	}
+
 	return (
 		<IonPage>
 			<IonHeader>
@@ -196,15 +211,27 @@ const Chats = () => {
 						<IonButton
 							class="ion-margin-horizontal"
 							size="small"
-							onClick={() => setShowCreateServer(true)}>
+							onClick={() => {
+								setShowCreateServer(true);
+								openModal();
+							}}
+							id="open-create">
 							Create
 						</IonButton>
-						<IonModal isOpen={showCreateServer}>
+						<IonModal
+							isOpen={showCreateServer}
+							ref={modal}
+							trigger="open-create"
+							onWillDismiss={(ev) => onWillDismiss(ev)}>
 							<IonHeader>
 								<IonToolbar>
 									<IonTitle>Create Channel</IonTitle>
 									<IonButtons slot="end">
-										<IonButton onClick={() => setShowCreateServer(false)}>
+										<IonButton
+											onClick={() => {
+												setShowCreateServer(false);
+												closeModal();
+											}}>
 											Close
 										</IonButton>
 									</IonButtons>
@@ -252,15 +279,27 @@ const Chats = () => {
 						<IonButton
 							class="ion-margin-horizontal"
 							size="small"
-							onClick={() => setShowJoinServer(true)}>
+							onClick={() => {
+								setShowJoinServer(true);
+								openModal();
+							}}
+							id="open-join">
 							Join
 						</IonButton>
-						<IonModal isOpen={showJoinServer}>
+						<IonModal
+							isOpen={showJoinServer}
+							ref={modal}
+							trigger="open-join"
+							onWillDismiss={(ev) => onWillDismiss(ev)}>
 							<IonHeader>
 								<IonToolbar>
 									<IonTitle>Join Server</IonTitle>
 									<IonButtons slot="end">
-										<IonButton onClick={() => setShowJoinServer(false)}>
+										<IonButton
+											onClick={() => {
+												setShowJoinServer(false);
+												closeModal();
+											}}>
 											Close
 										</IonButton>
 									</IonButtons>
@@ -314,15 +353,27 @@ const Chats = () => {
 						<IonButton
 							class="ion-margin-horizontal"
 							size="small"
-							onClick={() => setShowConnectDapp(true)}>
+							onClick={() => {
+								setShowConnectDapp(true);
+								openModal();
+							}}
+							id="open-dapp">
 							dApp
 						</IonButton>
-						<IonModal isOpen={showConnectDapp}>
+						<IonModal
+							isOpen={showConnectDapp}
+							ref={modal}
+							trigger="open-dapp"
+							onWillDismiss={(ev) => onWillDismiss(ev)}>
 							<IonHeader>
 								<IonToolbar>
 									<IonTitle>Connect dApp</IonTitle>
 									<IonButtons slot="end">
-										<IonButton onClick={() => setShowConnectDapp(false)}>
+										<IonButton
+											onClick={() => {
+												setShowConnectDapp(false);
+												closeModal();
+											}}>
 											Close
 										</IonButton>
 									</IonButtons>
