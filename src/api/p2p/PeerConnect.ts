@@ -15,6 +15,7 @@ const moment = extendMoment(Moment);
 
 export class PeerConnect extends CardanoPeerConnect {
 	private meerkat: Meerkat;
+	private table = "peer";
 	id: string;
 	apiVersion: string = '0.1.0';
 	name: string = 'idWallet';
@@ -50,7 +51,7 @@ export class PeerConnect extends CardanoPeerConnect {
 			],
 		});
 
-		this.id = `${name}:${config.identifier}`;
+		this.id = `${this.table}:${name}:${config.identifier}`;
 
 		this.meerkat.on('server', () => {
 			console.log(`[info]: connected to server 💬: ${this.meerkat.identifier}`);
@@ -78,7 +79,7 @@ export class PeerConnect extends CardanoPeerConnect {
 					getPeer(this.id).then((peer) => {
 						const newMessage = {
 							preview: message?.message,
-							sender: message?.address,
+							sender: message?.sender,
 							received: true,
 							sent: true,
 							read: false,

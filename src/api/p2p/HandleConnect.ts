@@ -91,7 +91,7 @@ export class HandleConnect {
 			announce: this.trackers,
 		});
 		this.hosts = [...this.hosts, host];
-		this.joinChannel(`${name}:peer`, host.getMeerkatIdentifier());
+		this.joinChannel(name, host.getMeerkatIdentifier());
 	}
 
 	/**
@@ -151,8 +151,8 @@ export class HandleConnect {
 	 *
 	 */
 	sendMessage(
-		peerId: string,
 		identifier: string,
+		peerId: string,
 		name: string,
 		message: string
 	): void {

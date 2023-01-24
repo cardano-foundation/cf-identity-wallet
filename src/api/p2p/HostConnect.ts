@@ -6,6 +6,7 @@ import Moment from 'moment';
 const moment = extendMoment(Moment);
 
 export class HostConnect {
+	private table = "host";
 	private meerkat: Meerkat;
 	id: string;
 	name: string;
@@ -31,7 +32,7 @@ export class HostConnect {
 				'https://tracker.boostpool.io',
 			],
 		});
-		this.id = `${name}:${this.meerkat.identifier}`;
+		this.id = `${this.table}:${name}:${this.meerkat.identifier}`;
 
 		//console.log(`Share this address ${this.meerkat.address()} with your clients`);
 		let connected = false;

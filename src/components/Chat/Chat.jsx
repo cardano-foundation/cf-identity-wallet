@@ -130,8 +130,8 @@ const Chat = () => {
 
 	const updateChat = async () => {
 		if (!params) return;
-		const chat = await getChannel(params.channel_id);
-		serChat(chat);
+		const chat = await getPeer(`peer:${params.channel_id}`);
+		if (chat) serChat(chat);
 	};
 
 	const history = useHistory();
@@ -318,15 +318,16 @@ const Chat = () => {
 	};
 	const sendMessage = () => {
 
+		console.log("sendMessage");
 		if (message !== '') {
-			const name = params.channel_id.split(':')[0];
-			const identifier = params.channel_id.split(':')[1];
-
-			console.log("params.channel_id");
-			console.log(name);
-			console.log(identifier);
 			try {
-				handleConnect.sendMessage(params.channel_id, identifier, name, message);
+				const name = params.channel_id.split(':')[0];
+				const identifier = params.channel_id.split(':')[1];
+				console.log("params.channel_id");
+				console.log(params.channel_id);
+				console.log("identifier");
+				console.log(identifier);
+				handleConnect.sendMessage(identifier, `peer:${params.channel_id}`, name, message);
 				setMessage('');
 				setMessageSent(true);
 				setTimeout(() => setMessageSent(false), 10);
