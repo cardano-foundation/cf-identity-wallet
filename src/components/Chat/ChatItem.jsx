@@ -62,7 +62,7 @@ const ChatItem = ({chat}) => {
 								color="primary"
 							/>
 						)}
-						{preview.message.message}
+						{chat?.preview}
 					</p>
 				</div>
 

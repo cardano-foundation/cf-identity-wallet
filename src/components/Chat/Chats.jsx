@@ -30,6 +30,7 @@ import Moment from 'moment';
 import {getHostList, getPeerList} from '../../db';
 import {handleConnect} from '../../App';
 import {useHistory} from 'react-router-dom';
+import {subscribe} from "../../utils/events";
 // @ts-ignore
 const moment = extendMoment(Moment);
 
@@ -60,85 +61,47 @@ const Chats = () => {
 	};
 
 	useEffect(() => {
-		const updateState = setTimeout(() => {
+		subscribe("updateChat", () => {
 			updateChats();
-		}, 3000);
-
-		return () => clearInterval(updateState);
+		});
 	}, []);
 
 	const updateChats = () => {
-		getHostList().then((hosts) => {
-			let hostList = [];
-			if (hosts) {
-				hostList = Object.values(hosts).map((host, index) => {
-					const messages = host.messages?.length
-						? host.messages.map((message, index) => {
-								return {
-									...message,
-									id: index,
-								};
-						  })
+		getPeerList().then((peers) => {
+			let peerList = [];
+			if (peers) {
+				peerList = Object.values(peers).map((peer, index) => {
+					if (!peer.messages) return;
+					const messages = peer?.messages?.length
+						? peer?.messages.map((message, index) => {
+							return {
+								...message,
+								id: index,
+							};
+						})
 						: [];
 					return {
 						id: index,
-						identifier: host.identifier,
-						key: `${host.name}:${host.identifier}`,
-						name: host.name,
+						identifier: peer.identifier,
+						key: `${peer.name}:${peer.identifier}`,
+						name: peer.name,
 						contact_id: index,
-						preview: {
-							message:
-								(messages.length && messages[messages.length - 1].preview) ||
-								'',
-						},
+						preview: messages.length && messages[messages.length - 1].preview || '',
 						messages,
-						connected: host.connected,
-						host: true,
+						connected: peer.connected,
+						host: false,
 					};
 				});
 			}
-
-			getPeerList().then((peers) => {
-				let peerList = [];
-				if (peers) {
-					peerList = Object.values(peers).map((peer, index) => {
-						if (!peer.messages) return;
-						const messages = peer.messages?.length
-							? peer.messages.map((message, index) => {
-									return {
-										...message,
-										id: index,
-									};
-							  })
-							: [];
-						return {
-							id: index,
-							identifier: peer.identifier,
-							key: `${peer.name}:${peer.identifier}`,
-							name: peer.name,
-							contact_id: index,
-							preview: {
-								message:
-									(messages.length && messages[messages.length - 1].preview) ||
-									'',
-							},
-							messages,
-							connected: peer.connected,
-							host: false,
-						};
-					});
-				}
-				setResults([...hostList, ...peerList]);
-			});
+			setResults(peerList);
 		});
 	};
 	const handleRefresh = (event) => {
-		console.log('Refresh!!');
 		updateChats();
 		setTimeout(() => {
 			// Any calls to load data go here
 			event.detail.complete();
-		}, 2000);
+		}, 1500);
 	};
 	const search = (e) => {
 		const searchTerm = e.target.value;

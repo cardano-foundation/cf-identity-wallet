@@ -1,17 +1,12 @@
 import Meerkat from '@fabianbormann/meerkat';
-import {setHost, getHost, getPeer, setPeer, getAllChannels} from '../../db';
+import {setHost, getHost} from '../../db';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
-import crypto from 'crypto';
-import {add} from 'ionicons/icons';
-import {handleConnect} from '../../App';
 // @ts-ignore
 const moment = extendMoment(Moment);
 
-export const md5 = (contents: string) =>
-	crypto.createHash('md5').update(contents).digest('hex');
-
 export class HostConnect {
+	private table = "host";
 	private meerkat: Meerkat;
 	id: string;
 	name: string;
@@ -37,16 +32,18 @@ export class HostConnect {
 				'https://tracker.boostpool.io',
 			],
 		});
-		this.id = `${name}:${this.meerkat.identifier}`;
+		this.id = `${this.table}:${name}:${this.meerkat.identifier}`;
 
 		//console.log(`Share this address ${this.meerkat.address()} with your clients`);
-
 		let connected = false;
 		this.meerkat.on('connections', (clients) => {
 			console.log(`[info]: connections: ${clients}`);
 			if (!connected) {
 				connected = true;
 				console.log(`[info]: server ready: ${this.meerkat.identifier}`);
+				// TODO: store clients
+
+				// TODO: remove store messages in server
 				if (clients) {
 					getHost(this.id).then((host) => {
 						setHost(
@@ -59,16 +56,7 @@ export class HostConnect {
 							true
 						).then((_) => {
 							console.log(
-								`[info]: the server is ready to use 💬: ${this.meerkat.identifier}`
-							);
-							this.meerkat.rpc(
-								host.identifier,
-								'message',
-								{message: 'server ready 💬'},
-								(response: any) => {
-									console.log('response');
-									console.log(response);
-								}
+								`[info]: the server is ready with address 💬: ${this.meerkat.identifier}`
 							);
 						});
 					});
@@ -91,36 +79,22 @@ export class HostConnect {
 		});
 
 		this.meerkat.register(
-			'message',
-			(address: string, message: string, callback: Function) => {
+			'text_message',
+			(address: string, message:{[key:string]:any}, callback: Function) => {
 				try {
-					console.log(`[info]: message: ${message}`);
+					console.log(`[info]: an message arrived to the server: ${message}`);
 					console.log(`[info]: sent by: ${address}`);
 
-					getHost(this.id).then((host) => {
-						const newMessage = {
-							preview: message,
-							sender: address,
-							received: true,
-							sent: address === host.identifier,
-							read: false,
-							starred: false,
-							date: moment.utc().format('MM-DD HH:mm:ss'),
-						};
-						setHost(
-							this.id,
-							host.seed,
-							host.identifier,
-							name,
-							host.announce,
-							[...host.messages, newMessage],
-							host.connected
-						).then((_) => {
-							callback(true);
+					console.log(`[info]: Broadcast message to: ${JSON.stringify(this.meerkat.peers)}`);
+					for (let key in this.meerkat.peers) {
+						// do something for each key in the object
+						// 2. Make a rpc call for each client with the message just received
+						this.meerkat.rpc(key, 'text_receive', {...message, sender: address}, (response: boolean) => {
+							console.log(`[info]: message transmitted to: ${key}`);
 						});
-					});
+					}
 				} catch (e) {
-					callback(false);
+
 				}
 			}
 		);
@@ -135,122 +109,6 @@ export class HostConnect {
 		);
 	}
 
-	/**
-	 * Send message to host
-	 *
-	 * @param identifier - The host identifier to send the message
-	 * @param name - The local channel name
-	 * @param message - The text message to send
-	 *
-	 */
-	sendMessage(identifier: string, name: string, message: string): void {
-		console.log('sendMessage HostConnect');
-		if (!this.meerkat) return;
-
-		console.log('identifier');
-		console.log(identifier);
-		console.log('this.meerkat');
-		console.log(this.meerkat);
-		console.log('handleConnect');
-		console.log(handleConnect);
-
-		console.log('sendMessage on server');
-
-		//const meerkat = new Meerkat({ identifier: identifier });
-		/*
-        getHost(this.id).then(host => {
-            const newMessage = {
-                preview: {
-                    message
-                },
-                received: false,
-                sent: true,
-                read: false,
-                starred: false,
-                date: moment.utc().format("YYYY-MM-DD HH:mm:ss")
-            }
-            setHost(
-                this.id,
-                host.seed,
-                host.identifier,
-                name,
-                host.announce,
-                [...host.messages, newMessage],
-                host.connected).then(_ => {});
-            console.log(`[info]: message was sent by: ${this.meerkat.identifier}`);
-        });
-        */
-
-		console.log('to identifier:');
-		console.log(identifier);
-		this.meerkat.rpc(identifier, 'message', {message}, (response: boolean) => {
-			try {
-				console.log(`[info]: message sent1: ${message}`);
-				console.log(`[info]: received1: ${response}`);
-				console.log(`[info]: sent from host to1: ${identifier}`);
-				getHost(this.id).then((host) => {
-					const newMessage = {
-						preview: {
-							message,
-						},
-						received: response,
-						sent: true,
-						read: false,
-						starred: false,
-						date: moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-					};
-					setHost(
-						this.id,
-						host.seed,
-						host.identifier,
-						name,
-						host.announce,
-						[...host.messages, newMessage],
-						host.connected
-					).then((_) => {});
-					console.log(`[info]: message received by: ${identifier}`);
-				});
-			} catch (e) {}
-		});
-
-		this.meerkat.on('server', () => {
-			console.log(`[info]: connected to server2: ${identifier}`);
-			this.meerkat.rpc(
-				identifier,
-				'message',
-				{message},
-				(response: boolean) => {
-					try {
-						console.log(`[info]: message sent2: ${message}`);
-						console.log(`[info]: received2: ${response}`);
-						console.log(`[info]: sent from host to2: ${identifier}`);
-						getHost(this.id).then((host) => {
-							const newMessage = {
-								preview: {
-									message,
-								},
-								received: response,
-								sent: true,
-								read: false,
-								starred: false,
-								date: moment.utc().format('YYYY-MM-DD HH:mm:ss'),
-							};
-							setHost(
-								this.id,
-								host.seed,
-								host.identifier,
-								name,
-								host.announce,
-								[...host.messages, newMessage],
-								host.connected
-							).then((_) => {});
-							console.log(`[info]: message received by: ${identifier}`);
-						});
-					} catch (e) {}
-				}
-			);
-		});
-	}
 
 	getMeerkatIdentifier() {
 		return this.meerkat.identifier;

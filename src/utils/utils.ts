@@ -1,4 +1,5 @@
 import {sha256} from 'crypto-hash';
+import crypto from "crypto";
 
 export function addressSlice(address: string, sliceLength = 10) {
 	if (address) {
@@ -68,3 +69,6 @@ export const isJsonString = (str: string) => {
 	}
 	return true;
 };
+
+export const md5 = (contents: string) =>
+	crypto.createHash('md5').update(contents).digest('hex');
