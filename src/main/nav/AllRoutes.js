@@ -17,11 +17,11 @@ import {tab1SideMenu, tab2SideMenu, tab3SideMenu} from '../PageSideMenus';
 
 //	Tab icons
 import {
-	idCardOutline,
-	fingerPrintOutline,
-	scanOutline,
-	settingsOutline,
-	walletOutline,
+  idCardOutline,
+  fingerPrintOutline,
+  scanOutline,
+  settingsOutline,
+  walletOutline,
 } from 'ionicons/icons';
 
 //  Import custom tab menu
@@ -40,61 +40,61 @@ import SubRoutes from './SubRoutes';
 //  icon = icon to show on the tab bar menu
 //  path = the path which the tab is accessible
 export const tabRoutes = [
-	{
-		label: 'DIDs',
-		component: Dids,
-		customIcon: false,
-		icon: fingerPrintOutline,
-		path: '/tabs/dids',
-		default: true,
-		isTab: true,
-		sideMenu: true,
-		sideMenuOptions: tab1SideMenu,
-	},
-	{
-		label: 'Credentials',
-		component: Credentials,
-		customIcon: false,
-		icon: idCardOutline,
-		path: '/tabs/credentials',
-		default: false,
-		isTab: true,
-		sideMenu: true,
-		sideMenuOptions: tab2SideMenu,
-	},
-	{
-		label: 'Camera',
-		component: Camera,
-		customIcon: false,
-		icon: scanOutline,
-		path: '/tabs/camera',
-		default: false,
-		isTab: true,
-		sideMenu: true,
-		sideMenuOptions: tab3SideMenu,
-	},
-	{
-		label: 'Crypto',
-		component: Crypto,
-		customIcon: false,
-		icon: walletOutline,
-		path: '/tabs/crypto',
-		default: false,
-		isTab: true,
-		sideMenu: true,
-		sideMenuOptions: tab1SideMenu,
-	},
-	{
-		label: 'Settings',
-		component: Settings,
-		customIcon: false,
-		icon: settingsOutline,
-		path: '/tabs/settings',
-		default: false,
-		isTab: true,
-		sideMenu: true,
-		sideMenuOptions: tab1SideMenu,
-	},
+  {
+    label: 'DIDs',
+    component: Dids,
+    customIcon: false,
+    icon: fingerPrintOutline,
+    path: '/tabs/dids',
+    default: true,
+    isTab: true,
+    sideMenu: true,
+    sideMenuOptions: tab1SideMenu,
+  },
+  {
+    label: 'Credentials',
+    component: Credentials,
+    customIcon: false,
+    icon: idCardOutline,
+    path: '/tabs/credentials',
+    default: false,
+    isTab: true,
+    sideMenu: true,
+    sideMenuOptions: tab2SideMenu,
+  },
+  {
+    label: 'Camera',
+    component: Camera,
+    customIcon: false,
+    icon: scanOutline,
+    path: '/tabs/camera',
+    default: false,
+    isTab: true,
+    sideMenu: true,
+    sideMenuOptions: tab3SideMenu,
+  },
+  {
+    label: 'Crypto',
+    component: Crypto,
+    customIcon: false,
+    icon: walletOutline,
+    path: '/tabs/crypto',
+    default: false,
+    isTab: true,
+    sideMenu: true,
+    sideMenuOptions: tab1SideMenu,
+  },
+  {
+    label: 'Settings',
+    component: Settings,
+    customIcon: false,
+    icon: settingsOutline,
+    path: '/tabs/settings',
+    default: false,
+    isTab: true,
+    sideMenu: true,
+    sideMenuOptions: tab1SideMenu,
+  },
 ];
 
 //  Array of objects representing children pages of tabs
@@ -107,7 +107,7 @@ export const tabRoutes = [
 //  These pages should be related to tab pages and be held within the same path
 //  E.g. /tabs/tab1/child
 const tabChildrenRoutes = [
-	// {component: InboxItem, path: '/tabs/tab3/:id', isTab: false},
+  // {component: InboxItem, path: '/tabs/tab3/:id', isTab: false},
 ];
 
 //  Array of objects representing sub pages
@@ -119,7 +119,7 @@ const tabChildrenRoutes = [
 //  This array should be sub pages which are not directly related to a tab page
 //  E.g. /child
 const subPageRoutes = [
-	// {component: Settings, path: '/settings'}
+  // {component: Settings, path: '/settings'}
 ];
 
 //  Let's combine these together as they need to be controlled within the same IonRouterOutlet
@@ -130,8 +130,8 @@ export const SubPages = () => <SubRoutes routes={subPageRoutes} />;
 
 //	Render tab menu
 export const Tabs = () => (
-	<TabMenu
-		tabs={tabsAndChildrenRoutes}
-		position="bottom"
-	/>
+  <TabMenu
+    tabs={tabsAndChildrenRoutes}
+    position="bottom"
+  />
 );
