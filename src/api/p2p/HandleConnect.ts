@@ -1,3 +1,4 @@
+// @ts-ignore
 import Meerkat from '@fabianbormann/meerkat';
 import {PeerConnect} from './PeerConnect';
 import {HostConnect} from './HostConnect';
@@ -83,14 +84,13 @@ export class HandleConnect {
 	 */
 	createChannel(name: string): void {
 		if (!name || this.hosts.some((c) => c.name === name)) return;
-
 		const host = new HostConnect(name, {
 			seed: undefined,
 			identifier: undefined,
 			announce: this.trackers,
 		});
 		this.hosts = [...this.hosts, host];
-		this.joinChannel(`${name}:peer`, host.getMeerkatIdentifier());
+		this.joinChannel(name, host.getMeerkatIdentifier());
 	}
 
 	/**
@@ -150,18 +150,17 @@ export class HandleConnect {
 	 *
 	 */
 	sendMessage(
-		peerId: string,
 		identifier: string,
+		peerId: string,
 		name: string,
 		message: string
 	): void {
-		const meerkats = [...this.hosts, ...this.peers];
+		const meerkats = this.peers;
 		for (let i = 0; i < meerkats.length; i++) {
 			if (meerkats[i].id === peerId) {
-				meerkats[i].sendMessage(identifier, name, message);
+				meerkats[i].sendMessage(identifier, peerId, name, message);
+				break;
 			}
 		}
 	}
 }
-
-export const handleConnect = new HandleConnect();

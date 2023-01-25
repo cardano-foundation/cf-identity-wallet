@@ -2,7 +2,11 @@
   "compilerOptions": {
     "target": "es5",
     "baseUrl": ".",
-    "lib": ["dom", "dom.iterable"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "es2015.core"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,

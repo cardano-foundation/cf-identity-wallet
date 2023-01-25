@@ -249,9 +249,15 @@ export const setPeerList = async (peers: any[]) => {
 
 export const removePeer = async (id: string) => {
 	let peers = await getPeerList();
-	if (peers && peers[id] !== undefined) {
-		delete peers[id];
+	if (peers && peers[`peer:${id}`] !== undefined) {
+		delete peers[`peer:${id}`];
 		await setPeerList(peers);
+	}
+
+	let hosts = await getHostList();
+	if (hosts && hosts[`host:${id}`] !== undefined) {
+		delete hosts[`host:${id}`];
+		await setHostList(hosts);
 	}
 };
 
