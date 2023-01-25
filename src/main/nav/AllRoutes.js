@@ -21,8 +21,8 @@ import {
 	fingerPrintOutline,
 	scanOutline,
 	settingsOutline,
+	walletOutline,
 } from 'ionicons/icons';
-import AdaCoinLogo from '../../media/AdaCoinLogo.svg';
 
 //  Import custom tab menu
 import TabMenu from '../TabMenu';
@@ -44,7 +44,7 @@ export const tabRoutes = [
 		label: 'DIDs',
 		component: Dids,
 		customIcon: false,
-		icon: idCardOutline,
+		icon: fingerPrintOutline,
 		path: '/tabs/dids',
 		default: true,
 		isTab: true,
@@ -55,7 +55,7 @@ export const tabRoutes = [
 		label: 'Credentials',
 		component: Credentials,
 		customIcon: false,
-		icon: fingerPrintOutline,
+		icon: idCardOutline,
 		path: '/tabs/credentials',
 		default: false,
 		isTab: true,
@@ -76,8 +76,8 @@ export const tabRoutes = [
 	{
 		label: 'Crypto',
 		component: Crypto,
-		customIcon: true,
-		icon: AdaCoinLogo,
+		customIcon: false,
+		icon: walletOutline,
 		path: '/tabs/crypto',
 		default: false,
 		isTab: true,

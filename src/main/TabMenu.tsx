@@ -1,14 +1,13 @@
 import React from 'react';
 import {
 	IonIcon,
-	IonImg,
 	IonLabel,
 	IonTabBar,
 	IonTabButton,
 	IonTabs,
 	IonRouterOutlet,
 } from '@ionic/react';
-import {Redirect, Route} from 'react-router-dom';
+import {Route} from 'react-router-dom';
 import './TabMenu.css';
 
 const TabMenu = (props) => {
@@ -17,7 +16,6 @@ const TabMenu = (props) => {
 			<IonRouterOutlet>
 				{props.tabs.map((tab, i) => {
 					const TabComponent = tab.component;
-
 					if (tab.isTab) {
 						return (
 							<Route
@@ -64,14 +62,7 @@ const TabMenu = (props) => {
 								key={`tab_button_${i + 1}`}
 								tab={`tab_${i + 1}`}
 								href={tab.path}>
-								{tab.customIcon ? (
-									<IonImg
-										src={tab.icon}
-										className="custom_icon"
-									/>
-								) : (
-									<IonIcon icon={tab.icon} />
-								)}
+								<IonIcon icon={tab.icon} />
 								{tab.label && <IonLabel>{tab.label}</IonLabel>}
 							</IonTabButton>
 						);
