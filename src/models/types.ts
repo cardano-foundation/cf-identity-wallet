@@ -1,18 +1,6 @@
 export interface IAccount {
-	id: string | undefined;
-	name: string | undefined;
 	era: ERA | undefined;
-	certificates: {[key: string]: ICertificate};
-	networks: {
-		[key: string]: {
-			assets: {[unit: string]: IAsset};
-			utxos: IUtxo[];
-			collateral: string[];
-			vault: string[];
-			addresses: IAddress[];
-			transactions: ITransaction[];
-		};
-	};
+	rootPublicKeyHex: string | undefined;
 }
 
 export interface ICertificate {
@@ -28,6 +16,15 @@ export interface IUtxo {
 	outputs: any[]; // TODO
 	datetime: string;
 	vault: boolean;
+}
+export interface INetwork {
+	assets: {[unit: string]: IAsset};
+	utxos: IUtxo[];
+	collateral: string[];
+	vault: string[];
+	stakeAddress: string;
+	addresses: IAddress[];
+	transactions: ITransaction[];
 }
 
 export interface IAddress {

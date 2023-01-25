@@ -3,15 +3,31 @@ import type * as EmurgoSerializationLibrary from '@emurgo/cardano-serialization-
 import type {Bip32PrivateKey, PrivateKey} from '@emurgo/cardano-serialization-lib-browser';
 import {EmurgoModule} from "./emurgo";
 import cryptoRandomString from "crypto-random-string";
-import {harden} from "./account";
 
-export const Cardano = {
-    _network: null,
+export const ERA_PARAMS = {
+    BYRON: {
+        purpose: 44,
+        mneSize: {
+            12: 128
+        }
+    },
+    SHELLEY: {
+        purpose: 1852,
+        mneSize: {
+            15: 160,
+            24: 256
+        }
+    },
+    MULTISIG: {
+        purpose: 1854
+    },
+}
+
+export const CardanoApi = {
     lib: undefined as
         | undefined
         | typeof EmurgoSerializationLibrary,
     async init() {
-        // @ts-ignore
         this.lib = await EmurgoModule.CardanoWasm();
     },
     generateSeedPhrase(size:number): string {
@@ -65,6 +81,32 @@ export const Cardano = {
                 .derive(harden(purpose))
                 .derive(harden(coinType))
                 .derive(harden(index));
+        } catch (error) {
+            return {
+                error
+            }
+        }
+    },
+    async getAccountKeys(encryptedPK:string, password:string, purpose:number, coinType:number, chain = 0, accountIndex = 0) {
+        try {
+            const pk = await this.decrypt(encryptedPK, password);
+
+            // @ts-ignore
+            if (pk && pk.error) return;
+
+            // @ts-ignore
+            const accountKey = this.deriveRootKey(pk, purpose, coinType);
+
+            // @ts-ignore
+            if (accountKey && accountKey.error) return;
+
+            return {
+                accountKey,
+                // @ts-ignore
+                paymentKey: (accountKey.derive(chain).derive(accountIndex)).to_raw_key(),
+                // @ts-ignore
+                stakeKey: (accountKey.derive(2).derive(0)).to_raw_key(),
+            };
         } catch (error) {
             return {
                 error
@@ -161,9 +203,30 @@ export const Cardano = {
         }
 
         return {
-            externalAddresses,
-            internalAddresses
+            external: externalAddresses,
+            internal: internalAddresses
         };
+    },
+    generateAddresses(accountKey:Bip32PrivateKey,
+                    networkId:number= 0,
+                    stakingKeyIndex:number = 0,
+                    totalPaymentAddresses:number = 100, // (100external + 100internal)
+    ) {
+
+        const stakeAddress = this.stakeAddress(accountKey, networkId);
+
+        // @ts-ignore
+        if (stakeAddress && stakeAddress.error) return stakeAddress.error
+
+        const paymentAddresses = this.generatePaymentAddresses(accountKey, networkId, totalPaymentAddresses);
+
+        // @ts-ignore
+        if (paymentAddresses && paymentAddresses.error) return paymentAddresses.error;
+
+        return {
+            stakeAddress,
+            paymentAddresses
+        }
     },
     // CIP-08
     // privKey: paymentKey or stakeKey
@@ -174,3 +237,7 @@ export const Cardano = {
         return privKey.sign(msgBuffer);
     }
 }
+
+export const harden = (num: number) => {
+    return 0x80000000 + num;
+};

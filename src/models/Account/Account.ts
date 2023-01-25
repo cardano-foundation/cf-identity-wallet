@@ -1,32 +1,30 @@
-import {ERA, IAccount, IAddress, IAsset, ICertificate, ITransaction, IUtxo, TX_STATUS,} from '../types';
-import {get, keys, remove, removeObject, setObject} from '../../db/storage';
+import {ERA, IAccount, IAddress, IAsset, ICertificate, INetwork, ITransaction, IUtxo, TX_STATUS,} from '../types';
+import {get, getObject, keys, remove, removeObject, setObject} from '../../db/storage';
 import {Capacitor} from "@capacitor/core";
 import {getKeystore, setKeystore} from "../../db/keystore";
 
 export class Account implements IAccount {
 	private static table: string;
 	table = 'account';
-	id: string | undefined;
-	name: string | undefined;
-	era: ERA | undefined;
+	private id: string | undefined;
+	private name: string | undefined;
 	private encryptedRootKey: string | undefined;
-	certificates: {[key: string]: ICertificate};
-	networks: {
-		[key: string]: {
-			assets: {[unit: string]: IAsset},
-			utxos: IUtxo[],
-			collateral: string[],
-			vault: string[],
-			addresses: IAddress[],
-			transactions: ITransaction[]
-		};
+	private certificates: {
+		[key: string]:
+			ICertificate
 	};
+	private networks: {
+		[key: string]: INetwork;
+	};
+	era: ERA | undefined;
+	rootPublicKeyHex: string | undefined;
 
 	constructor() {
 		this.id = undefined;
 		this.name = undefined;
 		this.era = undefined;
 		this.encryptedRootKey = undefined;
+		this.rootPublicKeyHex = undefined;
 		this.networks = {};
 		this.certificates = {};
 	}
@@ -36,11 +34,8 @@ export class Account implements IAccount {
 	}
 
 	set(account: IAccount) {
-		this.id = account.id;
-		this.name = account.name;
 		this.era = account.era;
-		this.certificates = account.certificates;
-		this.networks = account.networks;
+		this.rootPublicKeyHex = account.rootPublicKeyHex;
 	}
 
 	setEncryptedRootKey(encryptedRootKey: string) {
@@ -52,6 +47,10 @@ export class Account implements IAccount {
 		}
 	}
 
+	async getEncryptedRootKey() {
+		return await this.getCertificate(`${this.id}:rootKey`);
+	}
+
 	setCertificate(name: string, certificate: ICertificate) {
 		if (Capacitor.getPlatform() !== 'web'){
 			setKeystore(`${this.id}:certificate`, JSON.stringify(certificate))
@@ -59,10 +58,6 @@ export class Account implements IAccount {
 			// web, extension and desktop
 			this.certificates[name] = certificate;
 		}
-	}
-
-	async getEncryptedRootKey() {
-		return await this.getCertificate(`${this.id}:rootKey`);
 	}
 
 	async getCertificate(name:string) {
@@ -83,6 +78,35 @@ export class Account implements IAccount {
 
 	asset(network: string, unit: string) {
 		return this.networks[network]?.assets[unit];
+	}
+
+	setNetworks(networkName: string, networkObj: {[key: string]: INetwork}) {
+		this.networks = networkObj
+	}
+
+	setNetwork(networkName: string, networkObj: INetwork) {
+		this.networks[networkName] = networkObj
+	}
+
+	getName() {
+		return this.name;
+	}
+
+	async setName(name: string) {
+
+		// check if is unique
+		const accountNames = await Account.getAllAccountIds();
+		if (accountNames && accountNames.includes(name)){
+			return {
+				error: "Name already exists"
+			}
+		}
+		this.name = name;
+		this.id = name;
+	}
+
+	getNetwork(networkName: string) {
+		return this.networks[networkName];
 	}
 
 	setUtxos(network: string, utxos: IUtxo[]) {
@@ -173,6 +197,10 @@ export class Account implements IAccount {
 				error: e,
 			};
 		}
+	}
+
+	static async getAccount(id:string) {
+		return  await getObject(this.table, id)
 	}
 
 	static async getAllAccountIds() {
