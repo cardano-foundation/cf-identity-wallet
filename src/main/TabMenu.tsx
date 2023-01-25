@@ -7,7 +7,8 @@ import {
   IonTabs,
   IonRouterOutlet,
 } from '@ionic/react';
-import {Redirect, Route} from 'react-router-dom';
+import {Route} from 'react-router-dom';
+import './TabMenu.css';
 
 const TabMenu = (props) => {
   return (
@@ -15,7 +16,6 @@ const TabMenu = (props) => {
       <IonRouterOutlet>
         {props.tabs.map((tab, i) => {
           const TabComponent = tab.component;
-
           if (tab.isTab) {
             return (
               <Route
