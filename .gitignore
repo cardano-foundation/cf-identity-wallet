@@ -27,3 +27,5 @@ yarn.lock
 
 # story book auto generated
 /public/tailwind.css
+
+/.idea
