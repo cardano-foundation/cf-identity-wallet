@@ -28,7 +28,7 @@ export const createAccount = async (
 
   const excryptedRootKey = CardanoApi.encrypt(spendingPassword, rootKeyHex);
   // @ts-ignore
-  if (excryptedRootKey && excryptedRootKey.error) return excryptedRootKey.error;
+  if (excryptedRootKey && excryptedRootKey.error) throw excryptedRootKey.error;
 
   // @ts-ignore
   let accountKey = CardanoApi.deriveRootKey(
@@ -48,17 +48,17 @@ export const createAccount = async (
   account.rootPublicKeyHex = rootPublicKeyHex;
 
   // @ts-ignore
-  if (accountKey && accountKey.error) return accountKey.error;
+  if (accountKey && accountKey.error) throw accountKey.error;
 
   // @ts-ignore
   const testnetAddresses = await CardanoApi.generateAddresses(accountKey, 0);
   // @ts-ignore
-  if (testnetAddresses && testnetAddresses.error) return testnetAddresses.error;
+  if (testnetAddresses && testnetAddresses.error) throw testnetAddresses.error;
 
   // @ts-ignore
   const mainnetAddresses = await CardanoApi.generateAddresses(accountKey, 1);
   // @ts-ignore
-  if (mainnetAddresses && mainnetAddresses.error) return mainnetAddresses.error;
+  if (mainnetAddresses && mainnetAddresses.error) throw mainnetAddresses.error;
 
   // @ts-ignore
   accountKey.free();

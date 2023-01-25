@@ -1,6 +1,4 @@
-import {setupIonicReact} from '@ionic/react';
 import React, {useEffect, useRef} from 'react';
-import CardanoModule from '../lib/CardanoModule';
 import {useTranslation} from 'react-i18next';
 import {CardanoApi, ERA_PARAMS} from '../lib/ CardanoAPI';
 import {createAccount} from '../lib/wallet';
@@ -46,22 +44,27 @@ const AppWrapper = (props: {children: any}) => {
       console.log('seed');
       console.log(seed);
       const account: Account = await createAccount(
-        'jaime2',
-        seed,
-        ERA.SHELLEY,
-        'B1234567B'
+          'jaime5',
+          seed,
+          ERA.SHELLEY,
+          'B1234567B'
       );
 
       console.log('account');
       console.log(account);
+      console.log(account.toJson());
 
-      account.commit();
+      try {
+        account.commit();
+      } catch (e) {
+        console.log(e);
+      }
 
       // @ts-ignore
       const acc: Account = await Account.getAccount('jaime2');
       console.log('acc');
       console.log(acc);
-      acc.remove();
+      //acc.remove();
       // Init Redux
     };
     if (isMounted.current) {

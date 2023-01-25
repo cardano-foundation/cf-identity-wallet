@@ -1,57 +1,43 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
+  CreateAnimation,
+  createGesture,
+  IonActionSheet,
   IonBackButton,
-  IonButton,
-  IonButtons,
   IonCheckbox,
-  IonItem,
-  IonLabel,
   IonCol,
   IonContent,
   IonFooter,
   IonGrid,
   IonHeader,
   IonIcon,
+  IonItem,
   IonPage,
+  IonRefresher,
+  IonRefresherContent,
   IonRow,
   IonText,
   IonTextarea,
   IonTitle,
-  IonToolbar,
-  CreateAnimation,
-  createGesture,
-  useIonViewWillEnter,
-  IonActionSheet,
   IonToast,
-  IonRefresher,
-  IonRefresherContent,
+  IonToolbar,
+  useIonViewWillEnter,
 } from '@ionic/react';
-import {
-  alertOutline,
-  wifiOutline,
-  send,
-  shareOutline,
-  starOutline,
-  trashOutline,
-  trash,
-} from 'ionicons/icons';
-import {useRef} from 'react';
-import {useEffect, useState} from 'react';
+import {alertOutline, send, shareOutline, starOutline, trash, trashOutline, wifiOutline,} from 'ionicons/icons';
 
-import {starChatMessage} from '../../store/ChatStore';
 import {useParams} from 'react-router';
 import {useLongPress} from 'react-use';
 import './Chat.css';
 import ReplyTo from './ReplyTo';
 import {ChatBottomDetails} from './ChatBottomDetails';
 import {ChatRepliedQuote} from './ChatRepliedQuote';
-import {getChannel, getHost, getPeer, removeHost, removePeer} from '../../db';
+import {getPeer, removeHost, removePeer} from '../../db';
 
 import {writeToClipboard} from '../../utils/clipboard';
 import {useHistory, useLocation} from 'react-router-dom';
 import {addressSlice} from '../../utils/utils';
 import {handleConnect} from '../../App';
-import {publish, subscribe} from '../../utils/events';
+import {subscribe} from '../../utils/events';
 
 const Chat = () => {
   const params = useParams();
@@ -85,11 +71,12 @@ const Chat = () => {
   const actionSheetButtons = [
     {
       text:
-        actionMessage && actionMessage.starred
-          ? 'Unstar Message'
-          : 'Star Message',
+          actionMessage && actionMessage.starred
+              ? 'Unstar Message'
+              : 'Star Message',
       icon: starOutline,
-      handler: () => starChatMessage(params.contact_id, actionMessage.id),
+      handler: () => {
+      },
     },
     actionMessage && actionMessage.received
       ? {

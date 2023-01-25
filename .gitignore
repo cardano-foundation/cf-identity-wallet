@@ -29,3 +29,6 @@ yarn.lock
 /public/tailwind.css
 
 /.idea
+
+# secret keys
+secrets.ts

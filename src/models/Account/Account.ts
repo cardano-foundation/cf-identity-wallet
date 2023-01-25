@@ -1,28 +1,10 @@
-import {
-  ERA,
-  IAccount,
-  IAddress,
-  IAsset,
-  ICertificate,
-  INetwork,
-  ITransaction,
-  IUtxo,
-  TX_STATUS,
-} from '../types';
-import {
-  get,
-  getObject,
-  set,
-  remove,
-  removeObject,
-  setObject,
-} from '../../db/storage';
+import {ERA, IAccount, IAsset, ICertificate, INetwork, ITransaction, IUtxo, TX_STATUS,} from '../types';
+import {get, getObject, removeObject, set, setObject,} from '../../db/storage';
 import {Capacitor} from '@capacitor/core';
 import {getKeystore, setKeystore} from '../../db/keystore';
 
 export class Account implements IAccount {
-  private static table: string;
-  table = 'accounts';
+  private table = 'accounts';
   private id: string | undefined;
   private name: string | undefined;
   private encryptedRootKey: string | undefined;
@@ -50,9 +32,6 @@ export class Account implements IAccount {
   }
 
   set(account: any) {
-    console.log('lets set');
-    console.log(account);
-
     this.id = account.id;
     this.name = account.name;
     this.era = account.era;
@@ -117,11 +96,9 @@ export class Account implements IAccount {
   }
 
   async setName(name: string) {
-    const accountNames = await Account.getAllAccountsIds();
-    if (accountNames && accountNames.includes(name)) {
-      return {
-        error: 'Name already exists',
-      };
+    const accountsNames = await Account.getAllAccountsIds();
+    if (accountsNames && accountsNames.includes(name)) {
+      throw  `account name already exists: ${name}`;
     }
     this.name = name;
     this.id = name;
@@ -180,7 +157,7 @@ export class Account implements IAccount {
   }
 
   commit() {
-    if (!this.id || !this.id.length) return;
+    if (!this.id || !this.id.length) return {error: `id is ${typeof this.id}`};
     setObject(this.table, this.id, this);
   }
 
@@ -230,6 +207,10 @@ export class Account implements IAccount {
   static removeAllAccounts(id: string) {
     if (!id) return;
     set('accounts', {});
+  }
+
+  static async getAllAccounts() {
+    return await get('accounts');
   }
 
   static async getAllAccountsIds() {

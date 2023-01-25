@@ -1,13 +1,6 @@
-import {
-  generateMnemonic,
-  mnemonicToEntropy,
-  validateMnemonic as validateMne,
-} from 'bip39';
+import {generateMnemonic, mnemonicToEntropy, validateMnemonic as validateMne,} from 'bip39';
 import type * as EmurgoSerializationLibrary from '@emurgo/cardano-serialization-lib-browser';
-import type {
-  Bip32PrivateKey,
-  PrivateKey,
-} from '@emurgo/cardano-serialization-lib-browser';
+import {BaseAddress, Bip32PrivateKey, Ed25519KeyHash, PrivateKey} from "@emurgo/cardano-serialization-lib-browser";
 import {EmurgoModule} from './emurgo';
 import cryptoRandomString from 'crypto-random-string';
 
@@ -99,35 +92,27 @@ export const CardanoApi = {
     }
   },
   async getAccountKeys(
-    encryptedPK: string,
-    password: string,
-    purpose: number,
-    coinType: number,
-    chain: number = 0,
-    accountIndex: number = 0,
-    stakingKeyIndex: number = 0
+      rootKey: Bip32PrivateKey,
+      purpose: number,
+      coinType: number,
+      chain: number = 0,
+      accountIndex: number = 0,
+      stakingKeyIndex: number = 0
   ) {
     try {
-      const pk = await this.decrypt(encryptedPK, password);
 
-      // @ts-ignore
-      if (pk && pk.error) return;
-
-      // @ts-ignore
-      const accountKey = this.deriveRootKey(pk, purpose, coinType);
-
-      // @ts-ignore
+      const accountKey: Bip32PrivateKey = this.deriveRootKey(rootKey, purpose, coinType);
+      // @ts-ignore TODO handle error
       if (accountKey && accountKey.error) return;
 
       // TODO: refactor
       const chimericAccount = 2;
 
       return {
-        accountKey,
         // @ts-ignore
         paymentKey: accountKey.derive(chain).derive(accountIndex).to_raw_key(),
         stakeKey: accountKey
-          // @ts-ignore
+            // @ts-ignore
           .derive(chimericAccount)
           .derive(stakingKeyIndex)
           .to_raw_key(),
@@ -145,17 +130,13 @@ export const CardanoApi = {
   ) {
     try {
       const chimericAccount = 2;
-      const stakeKey = accountKey.derive(chimericAccount);
-      const stakeKey2 = stakeKey.derive(stakingKeyIndex);
-      const stakeKey3 = stakeKey2.to_raw_key();
-
-      const stakeKeyPub = stakeKey3.to_public();
+      const publicStakeKeyHash: Ed25519KeyHash = accountKey.derive(chimericAccount).derive(stakingKeyIndex).to_raw_key().to_public().hash();
 
       // @ts-ignore
       return this.lib.RewardAddress.new(
         networkId,
         // @ts-ignore
-        this.lib.StakeCredential.from_keyhash(stakeKeyPub.hash())
+          this.lib.StakeCredential.from_keyhash(publicStakeKeyHash)
       )
         .to_address()
         .to_bech32();
@@ -173,27 +154,27 @@ export const CardanoApi = {
   ) {
     try {
       const chimericAccount = 2; // TODO: refactor
-      const stakeKeyPubHash = accountKey
-        .derive(chimericAccount)
-        .derive(0)
-        .to_raw_key()
-        .to_public()
-        .hash();
+      const publicStakeKeyHash: Ed25519KeyHash = accountKey
+          .derive(chimericAccount)
+          .derive(0)
+          .to_raw_key()
+          .to_public()
+          .hash();
 
-      const paymentKeyPubHash = accountKey
-        .derive(chain)
-        .derive(index)
-        .to_raw_key()
-        .to_public()
-        .hash();
+      const publicPaymentKeyHash: Ed25519KeyHash = accountKey
+          .derive(chain)
+          .derive(index)
+          .to_raw_key()
+          .to_public()
+          .hash();
 
       // @ts-ignore
-      const addr = this.lib.BaseAddress.new(
-        networkId,
-        // @ts-ignore
-        this.lib.StakeCredential.from_keyhash(paymentKeyPubHash),
-        // @ts-ignore
-        this.lib.StakeCredential.from_keyhash(stakeKeyPubHash)
+      const addr: BaseAddress = this.lib.BaseAddress.new(
+          networkId,
+          // @ts-ignore
+          this.lib.StakeCredential.from_keyhash(publicPaymentKeyHash),
+          // @ts-ignore
+          this.lib.StakeCredential.from_keyhash(publicStakeKeyHash)
       );
       return addr.to_address().to_bech32();
     } catch (error) {
@@ -281,6 +262,15 @@ export const CardanoApi = {
     // Sign data
     return privKey.sign(msgBuffer);
   },
+  buildTx() {
+    // TODO
+  },
+  signTx() {
+    // TODO
+  },
+  sendTx() {
+    // TODO
+  }
 };
 
 export const harden = (num: number) => {
