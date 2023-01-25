@@ -1,211 +1,240 @@
-import {ERA, IAccount, IAddress, IAsset, ICertificate, INetwork, ITransaction, IUtxo, TX_STATUS,} from '../types';
-import {get, getObject, keys, remove, removeObject, setObject} from '../../db/storage';
-import {Capacitor} from "@capacitor/core";
-import {getKeystore, setKeystore} from "../../db/keystore";
+import {
+  ERA,
+  IAccount,
+  IAddress,
+  IAsset,
+  ICertificate,
+  INetwork,
+  ITransaction,
+  IUtxo,
+  TX_STATUS,
+} from '../types';
+import {
+  get,
+  getObject,
+  set,
+  remove,
+  removeObject,
+  setObject,
+} from '../../db/storage';
+import {Capacitor} from '@capacitor/core';
+import {getKeystore, setKeystore} from '../../db/keystore';
 
 export class Account implements IAccount {
-	private static table: string;
-	table = 'account';
-	private id: string | undefined;
-	private name: string | undefined;
-	private encryptedRootKey: string | undefined;
-	private certificates: {
-		[key: string]:
-			ICertificate
-	};
-	private networks: {
-		[key: string]: INetwork;
-	};
-	era: ERA | undefined;
-	rootPublicKeyHex: string | undefined;
+  private static table: string;
+  table = 'accounts';
+  private id: string | undefined;
+  private name: string | undefined;
+  private encryptedRootKey: string | undefined;
+  private certificates: {
+    [key: string]: ICertificate;
+  };
+  private networks: {
+    [key: string]: INetwork;
+  };
+  era: ERA | undefined;
+  rootPublicKeyHex: string | undefined;
 
-	constructor() {
-		this.id = undefined;
-		this.name = undefined;
-		this.era = undefined;
-		this.encryptedRootKey = undefined;
-		this.rootPublicKeyHex = undefined;
-		this.networks = {};
-		this.certificates = {};
-	}
+  constructor() {
+    this.id = undefined;
+    this.name = undefined;
+    this.era = undefined;
+    this.encryptedRootKey = undefined;
+    this.rootPublicKeyHex = undefined;
+    this.networks = {};
+    this.certificates = {};
+  }
 
-	balance(network: string) {
-		return this.networks[network]?.assets['lovelace'];
-	}
+  balance(network: string) {
+    return this.networks[network]?.assets['lovelace'];
+  }
 
-	set(account: IAccount) {
-		this.era = account.era;
-		this.rootPublicKeyHex = account.rootPublicKeyHex;
-	}
+  set(account: any) {
+    console.log('lets set');
+    console.log(account);
 
-	setEncryptedRootKey(encryptedRootKey: string) {
-		if (Capacitor.getPlatform() !== 'web'){
-			setKeystore(`${this.id}:rootKey`, encryptedRootKey)
-		} else {
-			// web, extension and desktop
-			this.encryptedRootKey = encryptedRootKey;
-		}
-	}
+    this.id = account.id;
+    this.name = account.name;
+    this.era = account.era;
+    this.encryptedRootKey = account.encryptedRootKey;
+    this.rootPublicKeyHex = account.rootPublicKeyHex;
+    this.networks = account.networks;
+    this.certificates = account.certificates;
+  }
 
-	async getEncryptedRootKey() {
-		return await this.getCertificate(`${this.id}:rootKey`);
-	}
+  setEncryptedRootKey(encryptedRootKey: string) {
+    if (Capacitor.getPlatform() !== 'web') {
+      setKeystore(`${this.id}:rootKey`, encryptedRootKey);
+    } else {
+      // web, extension and desktop
+      this.encryptedRootKey = encryptedRootKey;
+    }
+  }
 
-	setCertificate(name: string, certificate: ICertificate) {
-		if (Capacitor.getPlatform() !== 'web'){
-			setKeystore(`${this.id}:certificate`, JSON.stringify(certificate))
-		} else {
-			// web, extension and desktop
-			this.certificates[name] = certificate;
-		}
-	}
+  async getEncryptedRootKey() {
+    return await this.getCertificate(`${this.id}:rootKey`);
+  }
 
-	async getCertificate(name:string) {
-		if (Capacitor.getPlatform() !== 'web'){
-			// ios/android keystore
-			return await getKeystore(name);
-		} else {
-			return this.certificates[name];
-		}
-	}
+  setCertificate(name: string, certificate: ICertificate) {
+    if (Capacitor.getPlatform() !== 'web') {
+      setKeystore(`${this.id}:certificate`, JSON.stringify(certificate));
+    } else {
+      // web, extension and desktop
+      this.certificates[name] = certificate;
+    }
+  }
 
-	setAssets(network: string, assets: {[unit: string]: IAsset}) {
-		this.networks[network] = {
-			...this.networks[network],
-			assets,
-		};
-	}
+  async getCertificate(name: string) {
+    if (Capacitor.getPlatform() !== 'web') {
+      // ios/android keystore
+      return await getKeystore(name);
+    } else {
+      return this.certificates[name];
+    }
+  }
 
-	asset(network: string, unit: string) {
-		return this.networks[network]?.assets[unit];
-	}
+  setAssets(network: string, assets: {[unit: string]: IAsset}) {
+    this.networks[network] = {
+      ...this.networks[network],
+      assets,
+    };
+  }
 
-	setNetworks(networkName: string, networkObj: {[key: string]: INetwork}) {
-		this.networks = networkObj
-	}
+  asset(network: string, unit: string) {
+    return this.networks[network]?.assets[unit];
+  }
 
-	setNetwork(networkName: string, networkObj: INetwork) {
-		this.networks[networkName] = networkObj
-	}
+  setNetworks(networkName: string, networkObj: {[key: string]: INetwork}) {
+    this.networks = networkObj;
+  }
 
-	getName() {
-		return this.name;
-	}
+  setNetwork(networkName: string, networkObj: INetwork) {
+    this.networks[networkName] = networkObj;
+  }
 
-	async setName(name: string) {
+  getName() {
+    return this.name;
+  }
 
-		// check if is unique
-		const accountNames = await Account.getAllAccountIds();
-		if (accountNames && accountNames.includes(name)){
-			return {
-				error: "Name already exists"
-			}
-		}
-		this.name = name;
-		this.id = name;
-	}
+  async setName(name: string) {
+    const accountNames = await Account.getAllAccountsIds();
+    if (accountNames && accountNames.includes(name)) {
+      return {
+        error: 'Name already exists',
+      };
+    }
+    this.name = name;
+    this.id = name;
+  }
 
-	getNetwork(networkName: string) {
-		return this.networks[networkName];
-	}
+  getNetwork(networkName: string) {
+    return this.networks[networkName];
+  }
 
-	setUtxos(network: string, utxos: IUtxo[]) {
-		this.networks[network] = {
-			...this.networks[network],
-			utxos,
-		};
-	}
+  setUtxos(network: string, utxos: IUtxo[]) {
+    this.networks[network] = {
+      ...this.networks[network],
+      utxos,
+    };
+  }
 
-	address(network: string, index: number, chain: number) {
-		return this.networks[network].addresses.find(
-			(address) => address.index === index && address.chain === chain
-		);
-	}
+  address(network: string, index: number, chain: number) {
+    return this.networks[network].addresses.find(
+      (address) => address.index === index && address.chain === chain
+    );
+  }
 
-	externalAddresses(network: string) {
-		return this.networks[network].addresses.filter(
-			(address) => address.chain === 0
-		);
-	}
+  externalAddresses(network: string) {
+    return this.networks[network].addresses.filter(
+      (address) => address.chain === 0
+    );
+  }
 
-	internalAddresses(network: string) {
-		return this.networks[network].addresses.filter(
-			(address) => address.chain === 1
-		);
-	}
+  internalAddresses(network: string) {
+    return this.networks[network].addresses.filter(
+      (address) => address.chain === 1
+    );
+  }
 
-	unusedAddresses(network: string) {
-		// check addresses used in history and diff
-	}
+  unusedAddresses(network: string) {
+    // check addresses used in history and diff
+  }
 
-	pendingTransactions(network: string) {
-		return this.networks[network].transactions.filter(
-			(tx) => tx.status === TX_STATUS.PENDING
-		);
-	}
+  pendingTransactions(network: string) {
+    return this.networks[network].transactions.filter(
+      (tx) => tx.status === TX_STATUS.PENDING
+    );
+  }
 
-	addTransaction(network: string, tx: ITransaction) {
-		if (!this.networks[network]?.transactions?.length) {
-			this.networks[network] = {
-				...this.networks[network],
-				transactions: [],
-			};
-		}
-		const index = this.networks[network].transactions.findIndex(
-			(t) => t.txHash === tx.txHash
-		);
-		this.networks[network].transactions[index <= 0 ? 0 : index] = tx;
-	}
+  addTransaction(network: string, tx: ITransaction) {
+    if (!this.networks[network]?.transactions?.length) {
+      this.networks[network] = {
+        ...this.networks[network],
+        transactions: [],
+      };
+    }
+    const index = this.networks[network].transactions.findIndex(
+      (t) => t.txHash === tx.txHash
+    );
+    this.networks[network].transactions[index <= 0 ? 0 : index] = tx;
+  }
 
-	commit() {
-		if (!this.id || !this.id.length ) return;
-		setObject(this.table, this.id, this.toJson());
-	}
+  commit() {
+    if (!this.id || !this.id.length) return;
+    setObject(this.table, this.id, this);
+  }
 
-	remove() {
-		if (!this.id) return;
-		removeObject(this.table, this.id);
-	}
+  remove() {
+    if (!this.id) return;
+    removeObject('accounts', this.id);
+  }
 
-	toJson() {
-		try {
-			return JSON.stringify({
-				id: this.id,
-				name: this.name,
-				era: this.era,
-				encryptedRootKey: this.encryptedRootKey,
-				certificates: this.certificates,
-				network: this.networks,
-			});
-		} catch (e) {
-			return {
-				error: e,
-			};
-		}
-	}
+  toJson() {
+    try {
+      return JSON.stringify(this);
+    } catch (e) {
+      return {
+        error: e,
+      };
+    }
+  }
 
-	static new(acc: IAccount) {
-		return (new Account()).set(acc);
-	}
+  static new(acc: any) {
+    const account = new Account();
+    account.set(acc);
+    return account;
+  }
 
-	static fromJson(json: string) {
-		try {
-			const jsonObj = JSON.parse(json);
-			return Account.new(jsonObj);
-		} catch (e) {
-			return {
-				error: e,
-			};
-		}
-	}
+  static fromJson(json: string) {
+    try {
+      const jsonObj = JSON.parse(json);
+      return Account.new(jsonObj);
+    } catch (e) {
+      return {
+        error: e,
+      };
+    }
+  }
 
-	static async getAccount(id:string) {
-		return  await getObject(this.table, id)
-	}
+  static async getAccount(id: string) {
+    const accountInDb = await getObject('accounts', id);
+    if (!accountInDb) return;
+    return Account.new(accountInDb);
+  }
 
-	static async getAllAccountIds() {
-		const allKeys = await get(this.table);
-		if (!allKeys) return;
-		return Object.keys(allKeys);
-	}
+  static removeAccount(id: string) {
+    if (!id) return;
+    removeObject('accounts', id);
+  }
+
+  static removeAllAccounts(id: string) {
+    if (!id) return;
+    set('accounts', {});
+  }
+
+  static async getAllAccountsIds() {
+    const accounts = await get('accounts');
+    if (!accounts) return;
+    return Object.keys(accounts);
+  }
 }

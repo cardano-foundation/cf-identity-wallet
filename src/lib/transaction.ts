@@ -11,66 +11,66 @@ import {requestAccountKeys} from './account';
 //import { submitTransaction } from '../api/graphql';
 
 export interface IAsset {
-	quantity: string;
-	unit: string;
+  quantity: string;
+  unit: string;
 }
 
 export const getUsedAddress = async () => {
-	const account = await getAccountFromDb();
-	const network = await getNetworkFromDb();
-	const address = account[network.net].externalPubAddress[0];
+  const account = await getAccountFromDb();
+  const network = await getNetworkFromDb();
+  const address = account[network.net].externalPubAddress[0];
 
-	const Cardano = await EmurgoModule.CardanoWasm();
-	return Cardano.Address.from_bech32(address);
+  const Cardano = await EmurgoModule.CardanoWasm();
+  return Cardano.Address.from_bech32(address);
 };
 
 export const getUsedCollateral = async () => {
-	// TODO
-	return [];
+  // TODO
+  return [];
 };
 export const getUsedUTxOs = async () => {
-	let account = await getAccountFromDb();
+  let account = await getAccountFromDb();
 
-	const network = await getNetworkFromDb();
-	account = account[network.net];
+  const network = await getNetworkFromDb();
+  account = account[network.net];
 
-	if (!account) return;
+  if (!account) return;
 
-	const Cardano = await EmurgoModule.CardanoWasm();
-	let utxos: any[] = [];
+  const Cardano = await EmurgoModule.CardanoWasm();
+  let utxos: any[] = [];
 
-	await Promise.all(
-		account.utxos.map(async (utxo: any) => {
-			await Promise.all(
-				utxo.utxos.map(async (u: any) => {
-					const value = await assetsToValue(u.amount);
-					const TUO = Cardano.TransactionUnspentOutput.new(
-						Cardano.TransactionInput.new(
-							Cardano.TransactionHash.from_bytes(Buffer.from(u.tx_hash, 'hex')),
-							u.tx_index
-						),
-						Cardano.TransactionOutput.new(
-							Cardano.Address.from_bech32(utxo.address),
-							value
-						)
-					);
-					utxos.push(TUO);
-				})
-			);
-		})
-	);
+  await Promise.all(
+    account.utxos.map(async (utxo: any) => {
+      await Promise.all(
+        utxo.utxos.map(async (u: any) => {
+          const value = await assetsToValue(u.amount);
+          const TUO = Cardano.TransactionUnspentOutput.new(
+            Cardano.TransactionInput.new(
+              Cardano.TransactionHash.from_bytes(Buffer.from(u.tx_hash, 'hex')),
+              u.tx_index
+            ),
+            Cardano.TransactionOutput.new(
+              Cardano.Address.from_bech32(utxo.address),
+              value
+            )
+          );
+          utxos.push(TUO);
+        })
+      );
+    })
+  );
 
-	return utxos;
+  return utxos;
 };
 
 // @ts-ignore
 export const WalletApi = {
-	// @ts-ignore
-	getUsedAddress: () => getUsedAddress(),
-	// @ts-ignore
-	getUsedCollateral: () => getUsedCollateral(),
-	// @ts-ignore
-	getUsedUTxOs: () => getUsedUTxOs(),
+  // @ts-ignore
+  getUsedAddress: () => getUsedAddress(),
+  // @ts-ignore
+  getUsedCollateral: () => getUsedCollateral(),
+  // @ts-ignore
+  getUsedUTxOs: () => getUsedUTxOs(),
 };
 
 /*
@@ -323,37 +323,37 @@ export const signAndSubmit = async (
  */
 
 export const assetsToValue = async (assets: IAsset[]) => {
-	const Cardano = await EmurgoModule.CardanoWasm();
-	const multiAsset = Cardano.MultiAsset.new();
-	const lovelace = assets.find((asset: IAsset) => asset.unit === 'lovelace');
-	const policies = [
-		// @ts-ignore
-		...new Set(
-			assets
-				.filter((asset: IAsset) => asset.unit !== 'lovelace')
-				.map((asset: IAsset) => asset.unit.slice(0, 56))
-		),
-	];
-	policies.forEach((policy: any) => {
-		const policyAssets = assets.filter(
-			(asset: IAsset) => asset.unit.slice(0, 56) === policy
-		);
-		const assetsValue = Cardano.Assets.new();
-		policyAssets.forEach((asset: IAsset) => {
-			assetsValue.insert(
-				Cardano.AssetName.new(Buffer.from(asset.unit.slice(56), 'hex')),
-				Cardano.BigNum.from_str(asset.quantity)
-			);
-		});
-		multiAsset.insert(
-			Cardano.ScriptHash.from_bytes(Buffer.from(policy, 'hex')),
-			assetsValue
-		);
-	});
-	const value = Cardano.Value.new(
-		Cardano.BigNum.from_str(lovelace ? lovelace.quantity : '0')
-	);
-	if (assets.length > 1 || !lovelace) value.set_multiasset(multiAsset);
+  const Cardano = await EmurgoModule.CardanoWasm();
+  const multiAsset = Cardano.MultiAsset.new();
+  const lovelace = assets.find((asset: IAsset) => asset.unit === 'lovelace');
+  const policies = [
+    // @ts-ignore
+    ...new Set(
+      assets
+        .filter((asset: IAsset) => asset.unit !== 'lovelace')
+        .map((asset: IAsset) => asset.unit.slice(0, 56))
+    ),
+  ];
+  policies.forEach((policy: any) => {
+    const policyAssets = assets.filter(
+      (asset: IAsset) => asset.unit.slice(0, 56) === policy
+    );
+    const assetsValue = Cardano.Assets.new();
+    policyAssets.forEach((asset: IAsset) => {
+      assetsValue.insert(
+        Cardano.AssetName.new(Buffer.from(asset.unit.slice(56), 'hex')),
+        Cardano.BigNum.from_str(asset.quantity)
+      );
+    });
+    multiAsset.insert(
+      Cardano.ScriptHash.from_bytes(Buffer.from(policy, 'hex')),
+      assetsValue
+    );
+  });
+  const value = Cardano.Value.new(
+    Cardano.BigNum.from_str(lovelace ? lovelace.quantity : '0')
+  );
+  if (assets.length > 1 || !lovelace) value.set_multiasset(multiAsset);
 
-	return value;
+  return value;
 };

@@ -17,43 +17,43 @@ export const handleConnect = new HandleConnect();
 setupIonicReact();
 
 const App = (isExtension?: boolean) => {
-	const history = useHistory();
+  const history = useHistory();
 
-	if (isExtension && history) {
-		console.log('isExtension44');
-		console.log(window.location.pathname);
-		history.push('/');
-	}
+  if (isExtension && history) {
+    console.log('isExtension44');
+    console.log(window.location.pathname);
+    history.push('/');
+  }
 
-	const useIsMounted = () => {
-		const isMounted = useRef(false);
-		// @ts-ignore
-		useEffect(() => {
-			isMounted.current = true;
-			return () => (isMounted.current = false);
-		}, []);
-		return isMounted;
-	};
+  const useIsMounted = () => {
+    const isMounted = useRef(false);
+    // @ts-ignore
+    useEffect(() => {
+      isMounted.current = true;
+      return () => (isMounted.current = false);
+    }, []);
+    return isMounted;
+  };
 
-	const isMounted = useIsMounted();
+  const isMounted = useIsMounted();
 
-	useEffect(() => {
-		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		const init = async () => {};
-		if (isMounted.current) {
-			init().catch(console.error);
-		}
-	}, []);
+  useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
+    const init = async () => {};
+    if (isMounted.current) {
+      init().catch(console.error);
+    }
+  }, []);
 
-	return (
-		<IonApp>
-			<AppWrapper>
-				<SideMenuProvider>
-					<NavRoutes />
-				</SideMenuProvider>
-			</AppWrapper>
-		</IonApp>
-	);
+  return (
+    <IonApp>
+      <AppWrapper>
+        <SideMenuProvider>
+          <NavRoutes />
+        </SideMenuProvider>
+      </AppWrapper>
+    </IonApp>
+  );
 };
 
 export default App;

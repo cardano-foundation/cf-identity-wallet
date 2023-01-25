@@ -11,52 +11,52 @@ import {SubPages, Tabs, tabRoutes} from './AllRoutes';
 import Chats from '../../components/Chat/Chats';
 
 const NavRoutes = () => {
-	return (
-		<IonReactRouter>
-			<IonSplitPane contentId="main">
-				<SideMenu />
+  return (
+    <IonReactRouter>
+      <IonSplitPane contentId="main">
+        <SideMenu />
 
-				<IonRouterOutlet id="main">
-					<Route
-						path="/tabs"
-						render={() => <Tabs />}
-					/>
-					<Route
-						path="/template"
-						render={() => <Template />}
-					/>
-					<Route
-						path="/payments"
-						render={() => <Payments />}
-					/>
-					<Route
-						path="/stuff"
-						render={() => <Stuff />}
-					/>
-					<Route
-						path="/chats"
-						render={() => <Chats />}
-					/>
-					<Route
-						path="/chat/:channel_id"
-						render={() => <Chat />}
-					/>
-					<SubPages />
+        <IonRouterOutlet id="main">
+          <Route
+            path="/tabs"
+            render={() => <Tabs />}
+          />
+          <Route
+            path="/template"
+            render={() => <Template />}
+          />
+          <Route
+            path="/payments"
+            render={() => <Payments />}
+          />
+          <Route
+            path="/stuff"
+            render={() => <Stuff />}
+          />
+          <Route
+            path="/chats"
+            render={() => <Chats />}
+          />
+          <Route
+            path="/chat/:channel_id"
+            render={() => <Chat />}
+          />
+          <SubPages />
 
-					<Route
-						path="/"
-						component={tabRoutes.filter((t) => t.default)[0].component}
-						exact={true}
-					/>
-					<Redirect
-						exact
-						from="/"
-						to={tabRoutes.filter((t) => t.default)[0].path.toString()}
-					/>
-				</IonRouterOutlet>
-			</IonSplitPane>
-		</IonReactRouter>
-	);
+          <Route
+            path="/"
+            component={tabRoutes.filter((t) => t.default)[0].component}
+            exact={true}
+          />
+          <Redirect
+            exact
+            from="/"
+            to={tabRoutes.filter((t) => t.default)[0].path.toString()}
+          />
+        </IonRouterOutlet>
+      </IonSplitPane>
+    </IonReactRouter>
+  );
 };
 
 export default NavRoutes;
