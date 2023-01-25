@@ -3,7 +3,6 @@ import {
 	get,
 	getObject,
 	set,
-	setNewObject,
 	setObject,
 } from './storage';
 import {

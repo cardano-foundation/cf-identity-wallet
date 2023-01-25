@@ -3,7 +3,7 @@ export interface IAccount {
 	name: string | undefined;
 	era: ERA | undefined;
 	certificates: {[key: string]: ICertificate};
-	network: {
+	networks: {
 		[key: string]: {
 			assets: {[unit: string]: IAsset};
 			utxos: IUtxo[];
@@ -71,6 +71,11 @@ export interface IReward {
 	stakePoolName: string;
 }
 
+export enum PK_PATHS {
+	MULTISIG = '/1854/1815/0/0/0',
+	SHELLEY = '/1852/1815/0/0/0',
+	BYRON = '/44/1815/0/0/0',
+}
 export enum ERA {
 	BYRON = 'BYRON',
 	SHELLEY = 'SHELLEY',

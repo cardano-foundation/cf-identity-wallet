@@ -64,6 +64,7 @@
     "bignumber.js": "^9.0.0",
     "bip39": "^3.0.4",
     "buffer": "^6.0.3",
+    "capacitor-secure-storage-plugin": "^0.8.1",
     "classnames": "^2.2.6",
     "clean-webpack-plugin": "^4.0.0",
     "concurrently": "^7.6.0",

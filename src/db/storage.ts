@@ -32,51 +32,20 @@ export const clear = async () => {
 	await storage.clear();
 };
 
-export const setObject = async (key: string, id: string, val: any) => {
+export const setObject = async (table: string, id: string, val: any) => {
 	try {
-		const objs = (await get(key)) || {};
+		const objs = (await get(table)) || {};
 		objs[id] = val;
-		await set(key, objs);
+		await set(table, objs);
 		return true;
 	} catch (e) {
 		return false;
 	}
 };
 
-export const setNewObject = async (key: string, val: any) => {
-	try {
-		const value = {...val};
-
-		let all = await storage.get(key);
-		let objIndex = 0;
-		let aux = 0;
-
-		if (all) {
-			objIndex = maxId(all);
-			if (objIndex >= 0) aux += 1;
-			else objIndex = 0;
-
-			value['id'] = objIndex + aux;
-			all[objIndex + aux] = value;
-		} else {
-			value['id'] = 0;
-			objIndex = 0;
-			all = Array(1).fill(value);
-		}
-
-		await set(key, all);
-		return objIndex + aux;
-	} catch (e) {
-		console.log('error');
-		console.log(e);
-		return -1;
-	}
-};
-
 export const removeObject = async (key: string, id: string) => {
 	let all = (await get(key)) || [];
 	all = all.filter((a: {id: string}) => a.id !== id);
-
 	await set(key, all);
 };
 
