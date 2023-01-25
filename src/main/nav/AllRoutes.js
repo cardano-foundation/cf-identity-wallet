@@ -1,20 +1,28 @@
 import React from 'react';
 //	Main Tabs
-import Tab1 from '../../pages/Tab1';
-import Tab2 from '../../pages/Tab2';
-import Tab3 from '../../pages/Tab3';
+import Dids from '../../components/Tabs/Dids/Dids';
+import Credentials from '../../components/Tabs/Credentials/Credentials';
+import Camera from '../../components/Tabs/Camera/Camera';
+import Crypto from '../../components/Tabs/Crypto/Crypto';
+import Settings from '../../components/Tabs/Settings/Settings';
 
 //  Side Menus
 import {tab1SideMenu, tab2SideMenu, tab3SideMenu} from '../PageSideMenus';
 
 //  Main tab children
-import Settings from '../../pages/Settings';
+// import Settings from '../../pages/Settings';
 
 //  Sub pages
-import InboxItem from '../../pages/InboxItem';
+// import InboxItem from '../../pages/InboxItem';
 
 //	Tab icons
-import {personOutline, walletOutline, settingsOutline} from 'ionicons/icons';
+import {
+	idCardOutline,
+	fingerPrintOutline,
+	scanOutline,
+	settingsOutline,
+} from 'ionicons/icons';
+import AdaCoinLogo from '../../media/AdaCoinLogo.svg';
 
 //  Import custom tab menu
 import TabMenu from '../TabMenu';
@@ -33,34 +41,59 @@ import SubRoutes from './SubRoutes';
 //  path = the path which the tab is accessible
 export const tabRoutes = [
 	{
-		label: 'Identity',
-		component: Tab1,
-		icon: personOutline,
-		path: '/tabs/tab1',
+		label: 'DIDs',
+		component: Dids,
+		customIcon: false,
+		icon: idCardOutline,
+		path: '/tabs/dids',
 		default: true,
 		isTab: true,
 		sideMenu: true,
 		sideMenuOptions: tab1SideMenu,
 	},
 	{
-		label: 'Wallet',
-		component: Tab2,
-		icon: walletOutline,
-		path: '/tabs/tab2',
+		label: 'Credentials',
+		component: Credentials,
+		customIcon: false,
+		icon: fingerPrintOutline,
+		path: '/tabs/credentials',
 		default: false,
 		isTab: true,
 		sideMenu: true,
 		sideMenuOptions: tab2SideMenu,
 	},
 	{
-		label: 'Settings',
-		component: Tab3,
-		icon: settingsOutline,
-		path: '/tabs/tab3',
+		label: 'Camera',
+		component: Camera,
+		customIcon: false,
+		icon: scanOutline,
+		path: '/tabs/camera',
 		default: false,
 		isTab: true,
 		sideMenu: true,
 		sideMenuOptions: tab3SideMenu,
+	},
+	{
+		label: 'Crypto',
+		component: Crypto,
+		customIcon: true,
+		icon: AdaCoinLogo,
+		path: '/tabs/crypto',
+		default: false,
+		isTab: true,
+		sideMenu: true,
+		sideMenuOptions: tab1SideMenu,
+	},
+	{
+		label: 'Settings',
+		component: Settings,
+		customIcon: false,
+		icon: settingsOutline,
+		path: '/tabs/settings',
+		default: false,
+		isTab: true,
+		sideMenu: true,
+		sideMenuOptions: tab1SideMenu,
 	},
 ];
 
@@ -74,7 +107,7 @@ export const tabRoutes = [
 //  These pages should be related to tab pages and be held within the same path
 //  E.g. /tabs/tab1/child
 const tabChildrenRoutes = [
-	{component: InboxItem, path: '/tabs/tab3/:id', isTab: false},
+	// {component: InboxItem, path: '/tabs/tab3/:id', isTab: false},
 ];
 
 //  Array of objects representing sub pages
@@ -85,7 +118,9 @@ const tabChildrenRoutes = [
 
 //  This array should be sub pages which are not directly related to a tab page
 //  E.g. /child
-const subPageRoutes = [{component: Settings, path: '/settings'}];
+const subPageRoutes = [
+	// {component: Settings, path: '/settings'}
+];
 
 //  Let's combine these together as they need to be controlled within the same IonRouterOutlet
 const tabsAndChildrenRoutes = [...tabRoutes, ...tabChildrenRoutes];
