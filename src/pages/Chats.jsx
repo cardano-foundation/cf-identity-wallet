@@ -7,24 +7,24 @@ import CustomPage from '../main/CustomPage';
 import Chats from '../components/chat/Chats';
 
 const Chat = (props) => {
-	const pageName = 'Chats';
+  const pageName = 'Chats';
 
-	return (
-		<IonPage id={pageName}>
-			<CustomPage
-				name={pageName}
-				sideMenu={false}
-				sideMenuPosition="start"
-				backButton={true}
-				backButtonText="Back"
-				actionButton={true}
-				actionButtonIcon={addOutline}
-				actionButtonPosition="end"
-				actionButtonIconSize="1.7rem">
-				<Chats />
-			</CustomPage>
-		</IonPage>
-	);
+  return (
+    <IonPage id={pageName}>
+      <CustomPage
+        name={pageName}
+        sideMenu={false}
+        sideMenuPosition="start"
+        backButton={true}
+        backButtonText="Back"
+        actionButton={true}
+        actionButtonIcon={addOutline}
+        actionButtonPosition="end"
+        actionButtonIconSize="1.7rem">
+        <Chats />
+      </CustomPage>
+    </IonPage>
+  );
 };
 
 export default Chat;

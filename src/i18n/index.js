@@ -6,45 +6,45 @@ import {initReactI18next} from 'react-i18next';
 import {getSettingsFromDb} from '../db';
 
 getSettingsFromDb().then((settings) => {
-	i18n
+  i18n
 
-		.use(initReactI18next)
+    .use(initReactI18next)
 
-		.init({
-			// we init with resources
+    .init({
+      // we init with resources
 
-			resources: {
-				en: {
-					translations: {
-						...en,
-					},
-				},
+      resources: {
+        en: {
+          translations: {
+            ...en,
+          },
+        },
 
-				es: {
-					translations: {
-						...es,
-					},
-				},
-			},
+        es: {
+          translations: {
+            ...es,
+          },
+        },
+      },
 
-			fallbackLng: 'en',
+      fallbackLng: 'en',
 
-			debug: true,
+      debug: true,
 
-			// have a common namespace used around the full app
+      // have a common namespace used around the full app
 
-			ns: ['translations'],
+      ns: ['translations'],
 
-			defaultNS: 'translations',
+      defaultNS: 'translations',
 
-			interpolation: {
-				escapeValue: false,
-			},
+      interpolation: {
+        escapeValue: false,
+      },
 
-			react: {
-				wait: true,
-			},
-		});
+      react: {
+        wait: true,
+      },
+    });
 });
 
 export default i18n;
