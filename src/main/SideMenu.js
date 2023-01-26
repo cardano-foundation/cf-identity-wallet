@@ -100,7 +100,7 @@ const SideMenu = (props) => {
             <IonButtons slot="start">
               <IonMenuButton />
             </IonButtons>
-            <IonTitle>Menu</IonTitle>
+            {/* <IonTitle>Menu</IonTitle> */}
           </IonToolbar>
         </IonHeader>
         <IonContent className="ion-padding"></IonContent>

@@ -2,11 +2,10 @@ import React from 'react';
 import {useEffect} from 'react';
 import {IonCol, IonGrid, IonPage, IonRow} from '@ionic/react';
 import CustomPage from '../../../main/CustomPage';
-import {PageHeader} from '../../../components/PageHeader';
 import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
 
 const Dids = (props) => {
-  const pageName = 'Dids';
+  const pageName = 'My Identity';
   const {sideMenuOptions} = props;
   const setSideMenu = useSideMenuUpdate();
 
@@ -23,11 +22,9 @@ const Dids = (props) => {
   return (
     <IonPage id={pageName}>
       <CustomPage
-        // Adds title next to hamburger menu
-        // name={pageName}
-        sideMenu={true}
+        name={pageName}
+        sideMenu={false}
         sideMenuPosition="start">
-        <PageHeader pageName={pageName} />
         <IonGrid>
           <IonRow className="ion-margin">
             <IonCol className="ion-align-self-center ion-margin"></IonCol>
