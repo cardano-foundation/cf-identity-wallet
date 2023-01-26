@@ -9,15 +9,20 @@ export const createAccount = async (
   spendingPassword: string
 ) => {
   const account = new Account();
+
+  const accountsNames = await Account.getAllAccountsIds();
+  if (accountsNames && accountsNames.includes(name)) {
+    throw  `account name already exists: ${name}`;
+  }
   const duplicatedName = await account.setName(name);
 
   // @ts-ignore
-  if (duplicatedName && duplicatedName.error) return duplicatedName.error;
+  if (duplicatedName && duplicatedName.error) throw duplicatedName.error;
 
   let rootKey = await CardanoApi.generateRootKey(mnemonic);
 
   // @ts-ignore
-  if (rootKey && rootKey.error) return rootKey.error;
+  if (rootKey && rootKey.error) throw rootKey.error;
 
   // @ts-ignore
   const rootPublicKeyHex = Buffer.from(rootKey.to_public().as_bytes()).toString(

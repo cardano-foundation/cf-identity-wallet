@@ -96,10 +96,6 @@ export class Account implements IAccount {
   }
 
   async setName(name: string) {
-    const accountsNames = await Account.getAllAccountsIds();
-    if (accountsNames && accountsNames.includes(name)) {
-      throw  `account name already exists: ${name}`;
-    }
     this.name = name;
     this.id = name;
   }

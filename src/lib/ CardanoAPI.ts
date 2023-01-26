@@ -80,16 +80,10 @@ export const CardanoApi = {
     coinType: number,
     index: number = 0
   ) {
-    try {
-      return rootKey
+    return rootKey
         .derive(harden(purpose))
         .derive(harden(coinType))
         .derive(harden(index));
-    } catch (error) {
-      return {
-        error,
-      };
-    }
   },
   async getAccountKeys(
       rootKey: Bip32PrivateKey,
@@ -100,14 +94,9 @@ export const CardanoApi = {
       stakingKeyIndex: number = 0
   ) {
     try {
-
       const accountKey: Bip32PrivateKey = this.deriveRootKey(rootKey, purpose, coinType);
-      // @ts-ignore TODO handle error
-      if (accountKey && accountKey.error) return;
-
       // TODO: refactor
       const chimericAccount = 2;
-
       return {
         // @ts-ignore
         paymentKey: accountKey.derive(chain).derive(accountIndex).to_raw_key(),
