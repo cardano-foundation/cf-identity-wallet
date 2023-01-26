@@ -23,7 +23,7 @@ export const ERA_PARAMS = {
   },
 };
 
-export const CardanoApi = {
+export const CardanoAPI = {
   lib: undefined as undefined | typeof EmurgoSerializationLibrary,
   async init() {
     this.lib = await EmurgoModule.CardanoWasm();

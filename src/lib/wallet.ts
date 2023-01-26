@@ -1,4 +1,4 @@
-import {CardanoApi, ERA_PARAMS} from './ CardanoAPI';
+import {CardanoAPI, ERA_PARAMS} from './CardanoAPI';
 import {Account} from '../models/Account/Account';
 import {ERA, INetwork} from '../models/types';
 
@@ -19,7 +19,7 @@ export const createAccount = async (
   // @ts-ignore
   if (duplicatedName && duplicatedName.error) throw duplicatedName.error;
 
-  let rootKey = await CardanoApi.generateRootKey(mnemonic);
+  let rootKey = await CardanoAPI.generateRootKey(mnemonic);
 
   // @ts-ignore
   if (rootKey && rootKey.error) throw rootKey.error;
@@ -31,15 +31,15 @@ export const createAccount = async (
   // @ts-ignore
   const rootKeyHex = Buffer.from(rootKey.as_bytes()).toString('hex');
 
-  const excryptedRootKey = CardanoApi.encrypt(spendingPassword, rootKeyHex);
+  const excryptedRootKey = CardanoAPI.encrypt(spendingPassword, rootKeyHex);
   // @ts-ignore
   if (excryptedRootKey && excryptedRootKey.error) throw excryptedRootKey.error;
 
   // @ts-ignore
-  let accountKey = CardanoApi.deriveRootKey(
-    rootKey,
-    ERA_PARAMS[era].purpose,
-    1815
+  let accountKey = CardanoAPI.deriveRootKey(
+      rootKey,
+      ERA_PARAMS[era].purpose,
+      1815
   );
   account.era = era;
 
@@ -56,12 +56,12 @@ export const createAccount = async (
   if (accountKey && accountKey.error) throw accountKey.error;
 
   // @ts-ignore
-  const testnetAddresses = await CardanoApi.generateAddresses(accountKey, 0);
+  const testnetAddresses = await CardanoAPI.generateAddresses(accountKey, 0);
   // @ts-ignore
   if (testnetAddresses && testnetAddresses.error) throw testnetAddresses.error;
 
   // @ts-ignore
-  const mainnetAddresses = await CardanoApi.generateAddresses(accountKey, 1);
+  const mainnetAddresses = await CardanoAPI.generateAddresses(accountKey, 1);
   // @ts-ignore
   if (mainnetAddresses && mainnetAddresses.error) throw mainnetAddresses.error;
 

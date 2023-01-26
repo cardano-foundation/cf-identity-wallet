@@ -14,16 +14,8 @@ import {
 } from '../extension';
 import {Messaging} from './messaging';
 import {APIError, METHOD, POPUP, SENDER, TARGET} from './config';
-import {get, set} from '../../db/storage';
 import Meerkat from '@fabianbormann/meerkat';
-import {
-  getAccountFromDb,
-  getNetworkFromDb,
-  getSettingsFromDb,
-  updateAccountByNameAndNetworkInDb,
-  updateAccountByNetworkInDb,
-} from '../../db';
-import {setAccount} from '../../store/actions';
+import {getAccountFromDb, updateAccountByNameAndNetworkInDb,} from '../../db';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
 // @ts-ignore
@@ -515,7 +507,6 @@ app.add(METHOD.joinServerP2P, async (request, sendResponse) => {
         };
         acc.rooms.client = clientRooms;
         updateAccountByNameAndNetworkInDb(network, accountName, acc);
-        setAccount(acc);
       });
     });
 
@@ -545,7 +536,6 @@ app.add(METHOD.joinServerP2P, async (request, sendResponse) => {
           acc.rooms.server = serverRooms;
 
           updateAccountByNameAndNetworkInDb(network, accountName, acc);
-          setAccount(acc);
         });
         callback('callback from message in joinServerP2P');
       }
@@ -627,7 +617,6 @@ app.add(METHOD.createServerP2P, async (request, sendResponse) => {
 
           updateAccountByNameAndNetworkInDb(network, accountName, acc);
           updatedAccount = acc;
-          setAccount(acc);
         });
       }
       console.log(`[info]: ${clients} clients connected in room ${roomName}`);
@@ -665,7 +654,6 @@ app.add(METHOD.createServerP2P, async (request, sendResponse) => {
 
           updateAccountByNameAndNetworkInDb(network, accountName, acc);
           updatedAccount = acc;
-          setAccount(acc);
         });
 
         callback('callback from message');

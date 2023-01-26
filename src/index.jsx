@@ -2,10 +2,11 @@ import React from 'react';
 import SafeArea from 'react-safe-area-component';
 import ReactDOM from 'react-dom/client';
 import App from './App';
+import {Provider} from 'react-redux';
 import {Capacitor} from '@capacitor/core';
 import {App as CapacitorApp} from '@capacitor/app';
 import {defineCustomElements} from '@ionic/pwa-elements/loader';
-import {StatusBar, Style} from '@capacitor/status-bar';
+import {store} from './redux/store';
 import {LocalNotifications} from '@capacitor/local-notifications';
 
 import {I18nextProvider} from 'react-i18next';
@@ -15,11 +16,14 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <SafeArea
-      top
-      bottom>
-      <I18nextProvider i18n={i18n}>
-        <App isExtension={false} />
-      </I18nextProvider>
+        top
+        bottom>
+      <Provider store={store}>
+        <I18nextProvider i18n={i18n}>
+          <App isExtension={false}/>
+        </I18nextProvider>
+      </Provider>
+
     </SafeArea>
   </React.StrictMode>
 );

@@ -14,7 +14,6 @@ import {get} from '../../db/storage';
 import Moment from 'moment';
 // @ts-ignore
 import {extendMoment} from 'moment-range';
-import {setAccount} from '../../store/actions';
 // @ts-ignore
 const moment = extendMoment(Moment);
 
@@ -417,7 +416,6 @@ export const SendP2PMessage = async (room, message) => {
                 getNetworkFromDb().then((network) => {
                   acc = {...acc, rooms: rooms};
                   updateAccountByNetworkInDb(network.net, acc);
-                  setAccount(acc[network.net]);
                 });
               });
             }
@@ -460,7 +458,6 @@ export const SendP2PMessage = async (room, message) => {
                 getNetworkFromDb().then((network) => {
                   acc = {...acc, rooms: rooms};
                   updateAccountByNetworkInDb(network.net, acc);
-                  setAccount(acc[network.net]);
                 });
               });
             }

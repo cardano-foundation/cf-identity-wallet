@@ -1,12 +1,21 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {CardanoApi, ERA_PARAMS} from '../lib/ CardanoAPI';
+import {CardanoAPI, ERA_PARAMS} from '../lib/CardanoAPI';
 import {createAccount} from '../lib/wallet';
 import {ERA} from '../models/types';
 import {Account} from '../models/Account/Account';
+import {useAppDispatch, useAppSelector} from "../redux/hooks";
+import {increment, selectCount} from "../redux/reducers/counter";
 
-const AppWrapper = (props: {children: any}) => {
+const AppWrapper = (props: { children: any }) => {
   const {t, i18n} = useTranslation();
+
+  const count = useAppSelector(selectCount);
+  const dispatch = useAppDispatch();
+  const [incrementAmount] = useState('2');
+
+  console.log("count");
+  console.log(count);
 
   const useIsMounted = () => {
     const isMounted = useRef(false);
@@ -24,6 +33,8 @@ const AppWrapper = (props: {children: any}) => {
   useEffect(() => {
     const init = async () => {
       await initApp();
+
+      dispatch(increment());
     };
     if (isMounted.current) {
       // call the function
@@ -37,9 +48,9 @@ const AppWrapper = (props: {children: any}) => {
 
   useEffect(() => {
     const init = async () => {
-      await CardanoApi.init();
-      const seed = CardanoApi.generateSeedPhrase(
-        ERA_PARAMS[ERA.SHELLEY].mneSize[24]
+      await CardanoAPI.init();
+      const seed = CardanoAPI.generateSeedPhrase(
+          ERA_PARAMS[ERA.SHELLEY].mneSize[24]
       );
       console.log('seed');
       console.log(seed);
