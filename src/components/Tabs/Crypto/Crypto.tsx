@@ -44,8 +44,10 @@ const Crypto = (props) => {
   }
 
   const renderWallets = (wallets) => {
-    return wallets.map((wallet) => (
-      <IonRow className="ion-text-center">
+    return wallets.map((wallet, index) => (
+      <IonRow
+        className="ion-text-center"
+        key={index}>
         <IonCol>
           <IonButton
             size="large"
