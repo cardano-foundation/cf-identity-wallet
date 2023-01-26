@@ -13,6 +13,7 @@ import {
   IonCol,
 } from '@ionic/react';
 import {chevronBack} from 'ionicons/icons';
+import './CustomPage.css';
 
 const CustomPage = (props) => {
   const mainContent = props.children;
@@ -25,7 +26,6 @@ const CustomPage = (props) => {
     backButtonText = ' ',
     backButtonPath,
     actionButton = false,
-    actionButtonPosition,
     actionButtonIcon,
     actionButtonIconSize,
     actionButtonClickEvent,
@@ -37,8 +37,8 @@ const CustomPage = (props) => {
       <IonHeader translucent={true}>
         <IonToolbar>
           <IonGrid>
-            <IonRow className="">
-              <IonCol className="">
+            <IonRow>
+              <IonCol className="column_left">
                 {sideMenu && (
                   <IonButtons slot={sideMenuPosition}>
                     <IonMenuButton />
@@ -54,15 +54,16 @@ const CustomPage = (props) => {
                   </IonButtons>
                 )}
               </IonCol>
-              <IonCol className="ion-align-self-center">
+              <IonCol className="column_center">
                 <IonTitle className="ion-no-padding">{name}</IonTitle>
               </IonCol>
-              <IonCol className="">
+              <IonCol className="column_right">
                 {actionButton && actionButtonIcon && (
-                  <IonButtons slot={actionButtonPosition}>
+                  <IonButtons>
                     <IonIcon
                       style={{fontSize: actionButtonIconSize}}
                       icon={actionButtonIcon}
+                      className="ion-no-padding"
                       onClick={actionButtonClickEvent}></IonIcon>
                   </IonButtons>
                 )}

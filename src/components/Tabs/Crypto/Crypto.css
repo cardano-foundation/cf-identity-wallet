@@ -1,0 +1,14 @@
+.buttons_grid {
+  height: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+ion-modal .buttons_grid {
+  height: 30%;
+}
+ion-button .wallet_button {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+}

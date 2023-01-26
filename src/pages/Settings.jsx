@@ -18,7 +18,6 @@ const Settings = (props) => {
         backButtonText="Back"
         actionButton={true}
         actionButtonIcon={addOutline}
-        actionButtonPosition="end"
         actionButtonIconSize="1.7rem">
         <IonGrid>
           <IonRow className="ion-text-center">
