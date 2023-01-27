@@ -6,7 +6,7 @@ import {Provider} from 'react-redux';
 import {Capacitor} from '@capacitor/core';
 import {App as CapacitorApp} from '@capacitor/app';
 import {defineCustomElements} from '@ionic/pwa-elements/loader';
-import {store} from './redux/store';
+import {store} from './store/store';
 import {LocalNotifications} from '@capacitor/local-notifications';
 
 import {I18nextProvider} from 'react-i18next';

@@ -3,7 +3,7 @@ import {get, getObject, removeObject, set, setObject,} from '../../db/storage';
 import {Capacitor} from '@capacitor/core';
 import {getKeystore, setKeystore} from '../../db/keystore';
 
-export class Account implements IAccount {
+export class Account {
   private table = 'accounts';
   private id: string | undefined;
   private name: string | undefined;
@@ -29,6 +29,11 @@ export class Account implements IAccount {
 
   balance(network: string) {
     return this.networks[network]?.assets['lovelace'];
+  }
+
+  get(): IAccount {
+    // TODO: try catch undefined attributes
+    return JSON.parse(<string>this.toString());
   }
 
   set(account: any) {
@@ -162,7 +167,7 @@ export class Account implements IAccount {
     removeObject('accounts', this.id);
   }
 
-  toJson() {
+  toString() {
     try {
       return JSON.stringify(this);
     } catch (e) {
@@ -193,6 +198,12 @@ export class Account implements IAccount {
     const accountInDb = await getObject('accounts', id);
     if (!accountInDb) return;
     return Account.new(accountInDb);
+  }
+
+  static async getFirstAccount() {
+    const accounts = await get('accounts');
+    if (!accounts || !Object.entries(accounts).length) return;
+    return Account.new(Object.entries(accounts)[0]);
   }
 
   static removeAccount(id: string) {

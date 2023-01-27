@@ -1,12 +1,5 @@
 import {createStore, get, getObject, set, setObject} from './storage';
-import {
-  BLOCKFROST_DEFAULT_URL,
-  BLOCKFROST_TOKEN,
-  DEFAULT_NETWORK,
-  SUBMIT_DEFAULT_URL,
-} from '../../config';
-import {maxId} from '../utils/utils';
-import Meerkat from '@fabianbormann/meerkat';
+import {BLOCKFROST_DEFAULT_URL, BLOCKFROST_TOKEN, DEFAULT_NETWORK, SUBMIT_DEFAULT_URL,} from '../../config';
 
 export const DB_NAME = 'ID_WALLET_DB';
 
@@ -61,7 +54,7 @@ export const getSettingsFromDb = async () => {
         submit: SUBMIT_DEFAULT_URL,
       },
     };
-    await set('settings', defaultSettings);
+
     return defaultSettings;
   }
 };

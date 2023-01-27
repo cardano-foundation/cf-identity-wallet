@@ -4,18 +4,21 @@ import {CardanoAPI, ERA_PARAMS} from '../lib/CardanoAPI';
 import {createAccount} from '../lib/wallet';
 import {ERA} from '../models/types';
 import {Account} from '../models/Account/Account';
-import {useAppDispatch, useAppSelector} from "../redux/hooks";
-import {increment, selectCount} from "../redux/reducers/counter";
+import {useAppDispatch, useAppSelector} from "../store/hooks";
+import {selectCount} from "../store/reducers/counter";
+import {Cache} from "../models/Cache/Cache";
+import {Settings} from "../models/Settings/Settings";
+import {getCachedAccount, setCache} from "../store/reducers/cache";
+import {setCurrentAccount} from "../store/reducers/account";
+import {setSettings} from "../store/reducers/settings";
 
 const AppWrapper = (props: { children: any }) => {
   const {t, i18n} = useTranslation();
 
   const count = useAppSelector(selectCount);
+  const cachedAccount = useAppSelector(getCachedAccount);
   const dispatch = useAppDispatch();
   const [incrementAmount] = useState('2');
-
-  console.log("count");
-  console.log(count);
 
   const useIsMounted = () => {
     const isMounted = useRef(false);
@@ -34,17 +37,32 @@ const AppWrapper = (props: { children: any }) => {
     const init = async () => {
       await initApp();
 
-      dispatch(increment());
     };
     if (isMounted.current) {
       // call the function
       init()
-        // make sure to catch any error
-        .catch(console.error);
+          // make sure to catch any error
+          .catch(console.error);
     }
   }, []);
 
-  const initApp = async () => {};
+  const initApp = async () => {
+    console.log("lets init the cache");
+    await Cache.init();
+    dispatch(setCache(Cache.get()));
+    console.log("lets init the settings");
+    await Settings.init();
+    dispatch(setSettings(Settings.get()));
+    const currentAccount = await Account.getAccount(cachedAccount);
+    console.log("currAccount");
+    console.log(currentAccount?.get());
+    if (currentAccount) {
+      dispatch(setCurrentAccount(currentAccount.get()));
+    } else {
+      const firstAccount = await Account.getFirstAccount();
+      if (firstAccount) dispatch(setCurrentAccount(firstAccount.get()));
+    }
+  };
 
   useEffect(() => {
     const init = async () => {

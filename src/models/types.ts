@@ -1,4 +1,13 @@
 export interface IAccount {
+  id: string | undefined;
+  name: string | undefined;
+  encryptedRootKey: string | undefined;
+  certificates: {
+    [key: string]: ICertificate;
+  };
+  networks: {
+    [key: string]: INetwork;
+  };
   era: ERA | undefined;
   rootPublicKeyHex: string | undefined;
 }
