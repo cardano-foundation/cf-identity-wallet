@@ -1,9 +1,17 @@
-import {BLOCKFROST} from "../../secrets";
+import {BLOCKFROST_TOKEN_ID} from "../../../secrets";
 import axios from "axios";
+import {blockfrostEndpoints} from "./config";
 
-export const ProviderApi = {
+export const ApiProvider = {
     _network: 'MAINNET',
+    _type: 'blockfrost',
     _token: '...',
+    _networks: {
+        blockfrost: {
+            mainnet: blockfrostEndpoints.MAINNET,
+            preprod: blockfrostEndpoints.PREVIEW
+        }
+    },
     set network(network: string) {
         this._network = network;
     },
@@ -14,7 +22,7 @@ export const ProviderApi = {
             url,
             headers: {
                 // @ts-ignore
-                "project_id": BLOCKFROST[this._network]
+                "project_id": BLOCKFROST_TOKEN_ID[this._network]
             }
         };
 

@@ -24,9 +24,9 @@ export const ERA_PARAMS = {
 };
 
 export const CardanoAPI = {
-  lib: undefined as undefined | typeof EmurgoSerializationLibrary,
+  _lib: undefined as undefined | typeof EmurgoSerializationLibrary,
   async init() {
-    this.lib = await EmurgoModule.CardanoWasm();
+    this._lib = await EmurgoModule.CardanoWasm();
   },
   generateSeedPhrase(size: number): string {
     return generateMnemonic(size);
@@ -39,9 +39,9 @@ export const CardanoAPI = {
       const bip39entropy = mnemonicToEntropy(seedPhrase);
       const passphrase = Buffer.from('');
       // @ts-ignore
-      return this.lib.Bip32PrivateKey.from_bip39_entropy(
-        Buffer.from(bip39entropy, 'hex'),
-        passphrase
+      return this._lib.Bip32PrivateKey.from_bip39_entropy(
+          Buffer.from(bip39entropy, 'hex'),
+          passphrase
       );
     } catch (error) {
       return {
@@ -56,7 +56,7 @@ export const CardanoAPI = {
       const salt = cryptoRandomString(2 * 32);
       const nonce = cryptoRandomString(2 * 12);
       // @ts-ignore
-      return this.lib.encrypt_with_password(passwordHex, salt, nonce, data);
+      return this._lib.encrypt_with_password(passwordHex, salt, nonce, data);
     } catch (error) {
       return {
         error,
@@ -67,7 +67,7 @@ export const CardanoAPI = {
     try {
       const passwordHex = Buffer.from(password, 'utf8').toString('hex');
       // @ts-ignore
-      return this.lib.decrypt_with_password(passwordHex, data);
+      return this._lib.decrypt_with_password(passwordHex, data);
     } catch (error) {
       return {
         error,
@@ -122,13 +122,13 @@ export const CardanoAPI = {
       const publicStakeKeyHash: Ed25519KeyHash = accountKey.derive(chimericAccount).derive(stakingKeyIndex).to_raw_key().to_public().hash();
 
       // @ts-ignore
-      return this.lib.RewardAddress.new(
-        networkId,
-        // @ts-ignore
-          this.lib.StakeCredential.from_keyhash(publicStakeKeyHash)
+      return this._lib.RewardAddress.new(
+          networkId,
+          // @ts-ignore
+          this._lib.StakeCredential.from_keyhash(publicStakeKeyHash)
       )
-        .to_address()
-        .to_bech32();
+          .to_address()
+          .to_bech32();
     } catch (error) {
       return {
         error,
@@ -158,12 +158,12 @@ export const CardanoAPI = {
           .hash();
 
       // @ts-ignore
-      const addr: BaseAddress = this.lib.BaseAddress.new(
+      const addr: BaseAddress = this._lib.BaseAddress.new(
           networkId,
           // @ts-ignore
-          this.lib.StakeCredential.from_keyhash(publicPaymentKeyHash),
+          this._lib.StakeCredential.from_keyhash(publicPaymentKeyHash),
           // @ts-ignore
-          this.lib.StakeCredential.from_keyhash(publicStakeKeyHash)
+          this._lib.StakeCredential.from_keyhash(publicStakeKeyHash)
       );
       return addr.to_address().to_bech32();
     } catch (error) {

@@ -11,6 +11,7 @@ import {Settings} from "../models/Settings/Settings";
 import {getCachedAccount, setCache} from "../store/reducers/cache";
 import {setCurrentAccount} from "../store/reducers/account";
 import {setSettings} from "../store/reducers/settings";
+import {Blockfrost} from "../api/ApiProvider/BlockfrostApi";
 
 const AppWrapper = (props: { children: any }) => {
   const {t, i18n} = useTranslation();
@@ -62,6 +63,8 @@ const AppWrapper = (props: { children: any }) => {
       const firstAccount = await Account.getFirstAccount();
       if (firstAccount) dispatch(setCurrentAccount(firstAccount.get()));
     }
+
+    await Blockfrost.init('preview');
   };
 
   useEffect(() => {
@@ -81,7 +84,7 @@ const AppWrapper = (props: { children: any }) => {
 
       console.log('account');
       console.log(account);
-      console.log(account.toJson());
+      console.log(account.toString());
 
       try {
         account.commit();
