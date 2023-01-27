@@ -22,6 +22,7 @@ export const ERA_PARAMS = {
     purpose: 1854,
   },
 };
+export type CardanoNetwork = 'mainnet' | 'testnet' | 'preview' | 'preprod';
 
 export const CardanoAPI = {
   _lib: undefined as undefined | typeof EmurgoSerializationLibrary,

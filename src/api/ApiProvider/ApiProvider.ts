@@ -16,7 +16,7 @@ export const ApiProvider = {
         this._network = network;
     },
     async get(endpoint: string) {
-        const url = BLOCKFROST + `${endpoint}`;
+        const url = `${endpoint}`;
         const config = {
             method: 'GET',
             url,

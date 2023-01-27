@@ -1,43 +1,174 @@
-import {BlockFrostAPI, BlockfrostClientError} from '@blockfrost/blockfrost-js';
+import axios from "axios";
+import {
+    AdditionalEndpointOptions,
+    blockfrostEndpoints,
+    DEFAULT_ORDER,
+    DEFAULT_PAGINATION_PAGE_COUNT,
+    DEFAULT_PAGINATION_PAGE_ITEMS_COUNT,
+    PaginationOptions
+} from "./config";
 import {BLOCKFROST_TOKEN_ID} from "../../../secrets";
-import {CardanoNetwork} from "@blockfrost/blockfrost-js/lib/types";
 
 export const Blockfrost = {
-    _tokens: {
-        mainnet: '',
-        preprod: '',
-        preview: '',
-        ipfs: ''
+    _tokens: <{ [network: string]: string }>{
+        mainnet: BLOCKFROST_TOKEN_ID.mainnet,
+        preprod: BLOCKFROST_TOKEN_ID.preprod,
+        preview: BLOCKFROST_TOKEN_ID.preview,
+        ipfs: BLOCKFROST_TOKEN_ID.ipfs
     },
-    _api: undefined as any | typeof BlockFrostAPI,
-    _network: 'preprod',
-    async init(network: CardanoNetwork) {
+    _network: 'preview',
+    async init(network: string) {
         this._network = network;
-        this._api = new BlockFrostAPI({
-            projectId: BLOCKFROST_TOKEN_ID[this._network],
-            network: network
-        });
     },
-    async getProtocolParams() {
+    async get(endpoint: string, pagination?: PaginationOptions) {
         try {
-            return this._api.epochsLatestParameters();
+            const url = blockfrostEndpoints[this._network] + `${endpoint}`;
+            const config = {
+                method: 'GET',
+                url,
+                headers: {
+                    project_id: this._tokens[this._network]
+                },
+                params: pagination || {}
+            };
+            return axios(config)
+                .then(response => {
+                    return response.data;
+                });
         } catch (error) {
-            if (error instanceof BlockfrostClientError) {
-                console.log('Oops, error during sending the request');
-            }
-            // Depending on your use case you may want to rethrow the error
             throw error;
         }
     },
-    async getAccountState(stakeAddress: string) {
+    async epochsLatestParameters() {
         try {
-            return this._api.getAccountState(stakeAddress);
+            return await this.get(`/epochs/latest/parameters`);
         } catch (error) {
-            if (error instanceof BlockfrostClientError) {
+            if (error) {
                 console.log('Oops, error during sending the request');
             }
-            // Depending on your use case you may want to rethrow the error
+            throw error;
+        }
+    },
+    async accountState(stakeAddress: string, pagination?: PaginationOptions) {
+        const paginationOptions = getPaginationOptions(pagination);
+        try {
+            return await this.get(`/accounts/${stakeAddress}`, {
+                page: paginationOptions.page,
+                count: paginationOptions.count,
+                order: paginationOptions.order,
+            });
+        } catch (error) {
+            if (error) {
+                console.log('Oops, error during sending the request to accountState');
+            }
+            throw error;
+        }
+    },
+    async accountAddresses(stakeAddress: string, pagination?: PaginationOptions) {
+        const paginationOptions = getPaginationOptions(pagination);
+        try {
+            return await this.get(`/accounts/${stakeAddress}/addresses`, {
+                page: paginationOptions.page,
+                count: paginationOptions.count,
+                order: paginationOptions.order,
+            });
+        } catch (error) {
+            if (error) {
+                console.log('Oops, error during sending the request to accountState');
+            }
+            throw error;
+        }
+    },
+    async addressesUtxos(address: string, pagination?: PaginationOptions) {
+        const paginationOptions = getPaginationOptions(pagination);
+        try {
+            return await this.get(`/addresses/${address}/utxos`, {
+                page: paginationOptions.page,
+                count: paginationOptions.count,
+                order: paginationOptions.order,
+            });
+        } catch (error) {
+            if (error) {
+                console.log('Oops, error during sending the request to utxos');
+            }
+            throw error;
+        }
+    },
+    async asset(unit: string) {
+        try {
+            return await this.get(`assets/${unit}`);
+        } catch (error) {
+            if (error) {
+                console.log('Oops, error during sending the request to asset');
+            }
+            throw error;
+        }
+    },
+    async addressTransactions(address: string, pagination?: PaginationOptions, additionalOptions?: AdditionalEndpointOptions) {
+        const paginationOps: PaginationOptions = getPaginationOptions(pagination);
+        const additionalOps: AdditionalEndpointOptions = getAdditionalParams(additionalOptions);
+        try {
+
+            return await this.get(`addresses/${address}/transactions`, {
+                page: paginationOps.page,
+                count: paginationOps.count,
+                order: paginationOps.order,
+                // @ts-ignore
+                from: additionalOps.from,
+                to: additionalOps.to,
+            });
+        } catch (error) {
+            if (error) {
+                console.log('Oops, error during sending the request to utxos');
+            }
+            throw error;
+        }
+    },
+    async tx(hash: string) {
+        try {
+            return await this.get(`txs/${hash}`);
+        } catch (error) {
+            if (error) {
+                console.log('Oops, error during sending the request to tx');
+            }
+            throw error;
+        }
+    },
+    async txUtxos(hash: string) {
+        try {
+            return await this.get(`txs/${hash}/utxos`);
+        } catch (error) {
+            if (error) {
+                console.log('Oops, error during sending the request to txUtxos');
+            }
             throw error;
         }
     },
 }
+
+export const getPaginationOptions = (
+    options?: PaginationOptions,
+): PaginationOptions => {
+    if (!options) {
+        return {
+            page: DEFAULT_PAGINATION_PAGE_COUNT,
+            count: DEFAULT_PAGINATION_PAGE_ITEMS_COUNT,
+            order: DEFAULT_ORDER,
+        };
+    }
+
+    return {
+        page: options.page || DEFAULT_PAGINATION_PAGE_COUNT,
+        count: options.count || DEFAULT_PAGINATION_PAGE_ITEMS_COUNT,
+        order: options.order || DEFAULT_ORDER,
+    };
+};
+
+export const getAdditionalParams = (
+    options?: AdditionalEndpointOptions,
+): AdditionalEndpointOptions => {
+    return {
+        from: options?.from,
+        to: options?.to,
+    };
+};

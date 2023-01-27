@@ -22,7 +22,6 @@
     "@awesome-cordova-plugins/core": "^5.44.0",
     "@awesome-cordova-plugins/native-geocoder": "^5.44.0",
     "@babel/preset-typescript": "^7.18.6",
-    "@blockfrost/blockfrost-js": "^5.2.0",
     "@capacitor-community/barcode-scanner": "^3.0.0",
     "@capacitor/android": "^4.6.1",
     "@capacitor/app": "^4.0.1",
