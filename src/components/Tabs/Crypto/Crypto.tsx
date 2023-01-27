@@ -1,38 +1,110 @@
-import React from 'react';
-import {useEffect} from 'react';
-import {IonCol, IonGrid, IonPage, IonRow} from '@ionic/react';
+import React, {useRef, useState} from 'react';
+import {useHistory} from 'react-router-dom';
+import {
+  IonCol,
+  IonGrid,
+  IonPage,
+  IonRow,
+  IonButton,
+  IonIcon,
+  IonModal,
+  IonHeader,
+  IonToolbar,
+  IonTitle,
+  IonButtons,
+  IonContent,
+} from '@ionic/react';
+import {addOutline, ellipsisVertical} from 'ionicons/icons';
 import CustomPage from '../../../main/CustomPage';
-import {PageHeader} from '../../../components/PageHeader';
-import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
+import WalletButtons from './WalletButtons';
+import './Crypto.css';
 
 const Crypto = (props) => {
-  const pageName = 'Crypto';
-  const {sideMenuOptions} = props;
-  const setSideMenu = useSideMenuUpdate();
+  const pageName = 'My Wallets';
+  const wallets = [
+    {name: 'Wallet #1'},
+    {name: 'Wallet #2'},
+    {name: 'Wallet #3'},
+  ];
+  const nav = useHistory();
+  const modal = useRef(null);
+  const [showAddWallet, setShowAddWallet] = useState(false);
 
-  useEffect(() => {
-    if (props.location.pathname === '/tabs/crypto') {
-      setSideMenu({
-        options: sideMenuOptions,
-        side: 'start',
-        pageName: pageName,
-      });
-    }
-  }, [props.location]);
+  const openModal = () => {
+    nav.push(nav.location.pathname + '?modalOpened=true');
+  };
+
+  const closeModal = () => {
+    nav.replace('/tabs/crypto');
+    setShowAddWallet(false);
+  };
+
+  function onWillDismiss(ev) {
+    closeModal();
+  }
+
+  const renderWallets = (wallets) => {
+    return wallets.map((wallet, index) => (
+      <IonRow
+        className="ion-text-center"
+        key={index}>
+        <IonCol>
+          <IonButton
+            size="large"
+            color="dark"
+            expand="full">
+            <span className="wallet_button">
+              {wallet.name}
+              <IonIcon icon={ellipsisVertical} />
+            </span>
+          </IonButton>
+        </IonCol>
+      </IonRow>
+    ));
+  };
 
   return (
     <IonPage id={pageName}>
       <CustomPage
-        // Adds title next to hamburger menu
-        // name={pageName}
-        sideMenu={true}
-        sideMenuPosition="start">
-        <PageHeader pageName={pageName} />
-        <IonGrid>
-          <IonRow className="ion-margin">
-            <IonCol className="ion-align-self-center ion-margin"></IonCol>
-          </IonRow>
-        </IonGrid>
+        name={pageName}
+        sideMenu={false}
+        sideMenuPosition="start"
+        actionButton={!!wallets.length}
+        actionButtonIcon={addOutline}
+        actionButtonIconSize="1.7rem"
+        actionButtonClickEvent={() => {
+          setShowAddWallet(true);
+          openModal();
+        }}>
+        <IonModal
+          isOpen={showAddWallet}
+          ref={modal}
+          trigger="open-create"
+          onWillDismiss={(ev) => onWillDismiss(ev)}
+          initialBreakpoint={0.5}
+          breakpoints={[0, 0.25, 0.5, 0.75]}>
+          <IonHeader>
+            <IonToolbar>
+              <IonTitle>Add Wallet</IonTitle>
+              <IonButtons slot="end">
+                <IonButton
+                  onClick={() => {
+                    closeModal();
+                  }}>
+                  Close
+                </IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent className="ion-padding">
+            <WalletButtons />
+          </IonContent>
+        </IonModal>
+        {wallets.length ? (
+          <IonGrid className="ion-margin">{renderWallets(wallets)}</IonGrid>
+        ) : (
+          <WalletButtons />
+        )}
       </CustomPage>
     </IonPage>
   );
