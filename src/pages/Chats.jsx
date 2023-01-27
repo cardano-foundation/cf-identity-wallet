@@ -19,7 +19,6 @@ const Chat = (props) => {
         backButtonText="Back"
         actionButton={true}
         actionButtonIcon={addOutline}
-        actionButtonPosition="end"
         actionButtonIconSize="1.7rem">
         <Chats />
       </CustomPage>
