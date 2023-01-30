@@ -492,7 +492,7 @@ const Chat = () => {
         <IonGrid>
           <IonRow className="ion-align-items-center">
             <IonItem color="transparent">
-              <IonCheckbox slot="start"></IonCheckbox>
+              <IonCheckbox disabled={true} slot="start"></IonCheckbox>
             </IonItem>
             <div className="chat-input-container">
               <CreateAnimation
