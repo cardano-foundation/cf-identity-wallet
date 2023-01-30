@@ -24,7 +24,7 @@ const ChatItem = ({chat}) => {
 
   return (
     <div
-      className="chat-row"
+      className="chat-row cursor-pointer"
       id="chat-row">
       <img
         src={'https://via.placeholder.com/150'}

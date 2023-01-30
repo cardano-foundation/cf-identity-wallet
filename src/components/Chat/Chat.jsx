@@ -440,7 +440,7 @@ const Chat = () => {
                   <div className={`mr-2 ${message.self ? 'chat-bottom-details' : ''}`}>
                     <span
                         onClick={() => onCopy(message.sender.address)}
-                        className={`text-sm rounded p-1 text-white opacity-75 bg-${message.self ? 'green' : 'blue'}-400`}
+                        className={`cursor-pointer text-sm rounded p-1 text-white opacity-75 bg-${message.self ? 'green' : 'blue'}-400`}
                     >
                       {addressSlice(message.sender.address, 2)}
                     </span>
