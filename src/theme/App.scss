@@ -17,3 +17,16 @@
 :root {
   font-size: 0.9rem;
 }
+
+h3 {
+  font-size: 1.2rem !important;
+}
+
+h3,
+h4 {
+  font-weight: bold !important;
+}
+
+ion-label {
+  white-space: break-spaces;
+}

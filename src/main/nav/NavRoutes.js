@@ -10,6 +10,7 @@ import Stuff from '../../pages/Stuff';
 import {SubPages, Tabs, tabRoutes} from './AllRoutes';
 import Chats from '../../components/Chat/Chats';
 import CreateWallet from '../../pages/CreateWallet';
+import RecoverySeedPhrase from '../../pages/RecoverySeedPhrase';
 
 const NavRoutes = () => {
   return (
@@ -25,6 +26,10 @@ const NavRoutes = () => {
           <Route
             path="/createwallet"
             render={() => <CreateWallet />}
+          />
+          <Route
+            path="/recoveryseedphrase"
+            render={() => <RecoverySeedPhrase />}
           />
           <Route
             path="/template"
