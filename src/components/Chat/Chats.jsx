@@ -1,33 +1,31 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
+  IonAvatar,
   IonButton,
   IonButtons,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent,
+  IonChip,
   IonContent,
   IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonList,
   IonMenuButton,
   IonModal,
   IonPage,
+  IonRefresher,
+  IonRefresherContent,
+  IonSearchbar,
   IonTitle,
   IonToolbar,
-  IonSearchbar,
-  IonList,
-  IonLabel,
-  IonInput,
-  IonRefresherContent,
-  IonRefresher,
 } from '@ionic/react';
+import {pencilOutline} from 'ionicons/icons';
 import './Chats.css';
-import {useEffect, useState} from 'react';
 import ChatItem from './ChatItem';
-import {useRef} from 'react';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
-import {getHostList, getPeerList} from '../../db';
+import {getHostList, getPeerList, getPeerProfile, setPeerProfile} from '../../db';
 import {handleConnect} from '../../App';
 import {useHistory} from 'react-router-dom';
 import {subscribe} from '../../utils/events';
@@ -38,7 +36,7 @@ const Chats = () => {
   const pageRef = useRef();
 
   const [results, setResults] = useState([]);
-  const [showContactModal, setShowContactModal] = useState(false);
+  const [userName, setUsername] = useState('');
   const [showCreateServer, setShowCreateServer] = useState(false);
   const [showJoinServer, setShowJoinServer] = useState(false);
   const [createServerNameInput, setCreateServerNameInput] = useState('');
@@ -56,6 +54,22 @@ const Chats = () => {
     nav.push(nav.location.pathname + '?modalOpened=true');
   };
 
+  const handleUserName = async (username) => {
+    await getPeerProfile('global').then(profile => {
+      console.log(profile);
+      setPeerProfile(
+          'global',
+          profile.seed,
+          profile.identifier,
+          profile.name,
+          profile.announce,
+          profile.messages,
+          username
+      );
+    });
+
+  };
+
   const closeModal = () => {
     nav.replace('/chats');
   };
@@ -67,13 +81,14 @@ const Chats = () => {
   }, []);
 
   const updateChats = () => {
+    getPeerProfile('global').then(profile => setUsername(profile.username || ''));
     getPeerList().then((peers) => {
       let peerList = [];
       if (peers) {
         peerList = Object.values(peers).map((peer, index) => {
           if (!peer.messages) return;
           const messages = peer?.messages?.length
-            ? peer?.messages.map((message, index) => {
+              ? peer?.messages.map((message, index) => {
                 return {
                   ...message,
                   id: index,
@@ -171,15 +186,31 @@ const Chats = () => {
 
       <IonContent>
         <IonHeader>
-          <IonToolbar class="ion-text-center">
+          <IonToolbar className="ion-text-center">
+            <IonChip className="">
+              <IonAvatar>
+                <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
+              </IonAvatar>
+              <IonLabel>
+                <IonItem>
+                  <IonInput
+                      value={userName}
+                      onIonChange={(e) => handleUserName(e.target.value)}
+                      placeholder="Enter user name"/>
+                </IonItem>
+              </IonLabel>
+              <IonIcon icon={pencilOutline}/>
+            </IonChip>
+          </IonToolbar>
+          <IonToolbar className="ion-text-center">
             <IonButton
-              class="ion-margin-horizontal"
-              size="small"
-              onClick={() => {
-                setShowCreateServer(true);
-                openModal();
-              }}
-              id="open-create">
+                class="ion-margin-horizontal"
+                size="small"
+                onClick={() => {
+                  setShowCreateServer(true);
+                  openModal();
+                }}
+                id="open-create">
               Create
             </IonButton>
             <IonModal

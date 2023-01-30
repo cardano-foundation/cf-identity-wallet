@@ -31,7 +31,7 @@ import './Chat.css';
 import ReplyTo from './ReplyTo';
 import {ChatBottomDetails} from './ChatBottomDetails';
 import {ChatRepliedQuote} from './ChatRepliedQuote';
-import {getPeer, removeHost, removePeer} from '../../db';
+import {getPeer, getPeerProfile, removeHost, removePeer} from '../../db';
 
 import {writeToClipboard} from '../../utils/clipboard';
 import {useHistory, useLocation} from 'react-router-dom';
@@ -303,31 +303,31 @@ const Chat = () => {
     return () => clearInterval(updateState);
   }, []);
 
-  const removeChat = async () => {
-    const id = `${chat?.name}:${chat?.identifier}`;
-    await removePeer(id);
-    await removeHost(id.replace('peer', 'host'));
+    const removeChat = async () => {
+        const id = `${chat?.name}:${chat?.identifier}`;
+        await removePeer(id);
+        await removeHost(id.replace('peer', 'host'));
 
-    handleNavigation('/chats');
-  };
-  const sendMessage = () => {
-    console.log('sendMessage');
-    if (message !== '') {
-      try {
-        const name = params.channel_id.split(':')[0];
-        const identifier = params.channel_id.split(':')[1];
-        console.log('params.channel_id');
-        console.log(params.channel_id);
-        console.log('identifier');
-        console.log(identifier);
-        handleConnect.sendMessage(
-          identifier,
-          `peer:${params.channel_id}`,
-          name,
-          message
-        );
-        setMessage('');
-        setMessageSent(true);
+        handleNavigation('/chats');
+    };
+    const sendMessage = async () => {
+        console.log('sendMessage');
+        if (message !== '') {
+            try {
+                const name = params.channel_id.split(':')[0];
+                const identifier = params.channel_id.split(':')[1];
+
+                const profile = await getPeerProfile('global');
+
+                handleConnect.sendMessage(
+                    identifier,
+                    `peer:${params.channel_id}`,
+                    name,
+                    message,
+                    profile.username
+                );
+                setMessage('');
+                setMessageSent(true);
         setTimeout(() => setMessageSent(false), 10);
         setTimeout(() => updateChat() && scrollToBottom(), 200);
       } catch (e) {
@@ -440,9 +440,9 @@ const Chat = () => {
                   <div className={`mr-2 ${message.self ? 'chat-bottom-details' : ''}`}>
                     <span
                         onClick={() => onCopy(message.sender.address)}
-                        className={`cursor-pointer text-sm rounded p-1 text-white opacity-75 bg-${message.self ? 'green' : 'blue'}-400`}
+                        className={`cursor-pointer text-sm rounded p-1 text-white opacity-75 bg-${message.self ? 'green' : 'gray'}-400`}
                     >
-                      {addressSlice(message.sender.address, 2)}
+                      {message.username?.length ? `@${message.username}` : addressSlice(message.sender.address, 2)}
                     </span>
                   </div>
                 ) : null}

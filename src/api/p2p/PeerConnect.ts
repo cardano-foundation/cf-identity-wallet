@@ -77,6 +77,7 @@ export class PeerConnect extends CardanoPeerConnect {
               preview: message?.message,
               sender: message?.sender,
               self: this.meerkat.peers[message?.sender?.address] === undefined,
+              username: message?.username,
               received: true,
               sent: true,
               read: false,
@@ -122,10 +123,11 @@ export class PeerConnect extends CardanoPeerConnect {
    *
    */
   sendMessage(
-    identifier: string,
-    peerId: string,
-    name: string,
-    message: string
+      identifier: string,
+      peerId: string,
+      name: string,
+      message: string,
+      username: string = ''
   ): void {
     if (!this.meerkat) return;
     this.meerkat.rpc(
@@ -133,6 +135,7 @@ export class PeerConnect extends CardanoPeerConnect {
         'text_message',
         {
           message,
+          username
         },
         (response: boolean) => {
           try {

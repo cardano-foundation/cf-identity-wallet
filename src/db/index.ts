@@ -300,12 +300,13 @@ export const getAllChannels = async () => {
 };
 
 export const setPeerProfile = async (
-  id: string,
-  seed: string,
-  identifier: string,
-  name: string,
-  announce: string[],
-  messages: string[] = []
+    id: string,
+    seed: string,
+    identifier: string,
+    name: string,
+    announce: string[],
+    messages: string[] = [],
+    username = ''
 ) => {
   await setObject('peer-profile-connect', id, {
     seed,
@@ -313,6 +314,7 @@ export const setPeerProfile = async (
     name,
     announce,
     messages,
+    username
   });
 };
 
