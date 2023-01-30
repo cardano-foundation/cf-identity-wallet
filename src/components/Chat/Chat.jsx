@@ -439,10 +439,11 @@ const Chat = () => {
                 }`}
                 {...longPressEvent}>
                 {message?.sender ? (
-                  <div className="mr-2">
+                  <div className={`mr-2 ${message.self ? 'chat-bottom-details' : ''}`}>
                     <span
                         onClick={() => onCopy(message.sender.address)}
-                        className="text-sm rounded p-1 bg-blue-200">
+                        className={`text-sm rounded p-1 text-white opacity-75 bg-${message.self ? 'green' : 'blue'}-400`}
+                    >
                       {addressSlice(message.sender.address, 2)}
                     </span>
                   </div>
@@ -500,9 +501,10 @@ const Chat = () => {
                 ref={textareaRef}
                 {...textareaAnimation}>
                 <IonTextarea
-                  rows="1"
-                  value={message}
-                  onIonChange={(e) => setMessage(e.target.value)}
+                    rows="1"
+                    disabled={!chat?.connected}
+                    value={message}
+                    onIonChange={(e) => setMessage(e.target.value)}
                 />
               </CreateAnimation>
             </div>
