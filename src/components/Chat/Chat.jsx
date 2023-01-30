@@ -305,11 +305,8 @@ const Chat = () => {
 
   const removeChat = async () => {
     const id = `${chat?.name}:${chat?.identifier}`;
-    if (chat?.host) {
-      await removeHost(id);
-    } else {
-      await removePeer(id);
-    }
+    await removePeer(id);
+    await removeHost(id.replace('peer', 'host'));
 
     handleNavigation('/chats');
   };
@@ -396,23 +393,24 @@ const Chat = () => {
                         <IonIcon
                             size="small"
                             icon={wifiOutline}
-                        color="gray"
-                      />
+                            color="gray"
+                        />
                     )}
                   </span>
                 </p>
                 <IonText
-                  color="medium"
-                  onClick={() => onCopy(chat?.identifier)}>
+                    color="medium cursor-pointer"
+                    onClick={() => onCopy(chat?.identifier)}>
                   {addressSlice(chat?.identifier, 10)}
                 </IonText>
               </div>
             </div>
           </IonTitle>
           <IonIcon
-            slot="end"
-            icon={trash}
-            onClick={() => removeChat()}
+              className="mx-2 cursor-pointer"
+              slot="end"
+              icon={trash}
+              onClick={() => removeChat()}
           />
         </IonToolbar>
       </IonHeader>
