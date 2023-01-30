@@ -2,12 +2,7 @@
 import Meerkat from '@fabianbormann/meerkat';
 import {PeerConnect} from './PeerConnect';
 import {HostConnect} from './HostConnect';
-import {
-  getHostList,
-  getPeerList,
-  getPeerProfile,
-  setPeerProfile,
-} from '../../db';
+import {getHostList, getPeerList, getPeerProfile, setPeerProfile,} from '../../db';
 
 export class HandleConnect {
   profile: {identifier: string; seed: string} | undefined = undefined;
@@ -150,15 +145,37 @@ export class HandleConnect {
    *
    */
   sendMessage(
-    identifier: string,
-    peerId: string,
-    name: string,
-    message: string
+      identifier: string,
+      peerId: string,
+      name: string,
+      message: string
   ): void {
     const meerkats = this.peers;
     for (let i = 0; i < meerkats.length; i++) {
       if (meerkats[i].id === peerId) {
         meerkats[i].sendMessage(identifier, peerId, name, message);
+        break;
+      }
+    }
+  }
+
+  /**
+   * Ping the server
+   *
+   * @param peerId - The peer id
+   * @param identifier - The host identifier to send the message
+   * @param name - The local channel name
+   *
+   */
+  pingServer(
+      identifier: string,
+      peerId: string,
+      name: string
+  ): void {
+    const meerkats = this.peers;
+    for (let i = 0; i < meerkats.length; i++) {
+      if (meerkats[i].id === peerId) {
+        meerkats[i].pingServer(identifier, peerId, name);
         break;
       }
     }

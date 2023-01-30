@@ -1,7 +1,8 @@
 import Meerkat from '@fabianbormann/meerkat';
-import {setHost, getHost} from '../../db';
+import {getHost, setHost} from '../../db';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
+import {publish} from "../../utils/events";
 // @ts-ignore
 const moment = extendMoment(Moment);
 
@@ -56,8 +57,9 @@ export class HostConnect {
               true
             ).then((_) => {
               console.log(
-                `[info]: the server is ready with address 💬: ${this.meerkat.identifier}`
+                  `[info]: the server is ready with address 💬: ${this.meerkat.identifier}`
               );
+              publish('updateChat');
             });
           });
         } else {
@@ -72,6 +74,7 @@ export class HostConnect {
               false
             ).then((_) => {
               console.log(`[info]: loading server... 💬`);
+              publish('updateChat');
             });
           });
         }
@@ -94,25 +97,36 @@ export class HostConnect {
             // do something for each key in the object
             // 2. Make a rpc call for each client with the message just received
             this.meerkat.rpc(
-              key,
-              'text_receive',
-              {...message, sender: address},
-              (response: boolean) => {
-                console.log(`[info]: message transmitted to: ${key}`);
-              }
+                key,
+                'text_receive',
+                {...message, sender: {address, publicKey: this.meerkat.peers[key].publicKey}},
+                (response: boolean) => {
+                  console.log(`[info]: message transmitted to: ${key}`);
+                }
             );
           }
-        } catch (e) {}
+        } catch (e) {
+        }
       }
+    );
+    this.meerkat.register(
+        'ping_server',
+        (address: string, message: any, callback: Function) => {
+          try {
+            callback(true);
+          } catch (e) {
+            callback(false);
+          }
+        }
     );
 
     setHost(
-      this.id,
-      this.meerkat.seed,
-      this.meerkat.identifier,
-      name,
-      this.meerkat.announce,
-      config.messages
+        this.id,
+        this.meerkat.seed,
+        this.meerkat.identifier,
+        name,
+        this.meerkat.announce,
+        config.messages
     );
   }
 

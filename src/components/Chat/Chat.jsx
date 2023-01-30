@@ -110,26 +110,36 @@ const Chat = () => {
 
   useEffect(() => {
     subscribe('updateChat', () => {
-      console.log('subscribe updateChat, lets update!');
-      updateChat();
+        console.log('subscribe updateChat, lets update!');
+        updateChat();
     });
   }, []);
 
-  const updateChat = async () => {
-    if (!params) return;
-    const chat = await getPeer(`peer:${params.channel_id}`);
-    if (chat) serChat(chat);
-  };
+    const updateChat = async () => {
+        if (!params) return;
+        const chat = await getPeer(`peer:${params.channel_id}`);
+        if (chat) serChat(chat);
+    };
+    const pingChat = async () => {
+        if (!params) return;
+        const name = params.channel_id.split(':')[0];
+        const identifier = params.channel_id.split(':')[1];
+        handleConnect.pingServer(
+            identifier,
+            `peer:${params.channel_id}`,
+            name
+        );
+    };
 
-  const history = useHistory();
-  const handleNavigation = (route) => {
-    history.push({
-      pathname: route,
-      search: '?update=true', // query string
-      state: {
-        // location state
-        update: true,
-      },
+    const history = useHistory();
+    const handleNavigation = (route) => {
+        history.push({
+            pathname: route,
+            search: '?update=true', // query string
+            state: {
+                // location state
+                update: true,
+            },
     });
   };
 
@@ -375,17 +385,17 @@ const Chat = () => {
               <div className="chat-contact-details">
                 <p>
                   {chat?.name}
-                  <span className="ml-3 color">
+                    <span className="ml-3 color" onClick={() => pingChat()}>
                     {chat?.connected ? (
-                      <IonIcon
-                        size="small"
-                        icon={wifiOutline}
-                        color="success"
-                      />
+                        <IonIcon
+                            size="small"
+                            icon={wifiOutline}
+                            color="success"
+                        />
                     ) : (
-                      <IonIcon
-                        size="small"
-                        icon={wifiOutline}
+                        <IonIcon
+                            size="small"
+                            icon={wifiOutline}
                         color="gray"
                       />
                     )}
@@ -425,15 +435,15 @@ const Chat = () => {
                 id={`chatBubble_${index}`}
                 key={index}
                 className={`chat-bubble ${
-                  message.sent ? 'bubble-sent' : 'bubble-received'
+                    message.self ? 'bubble-sent' : 'bubble-received'
                 }`}
                 {...longPressEvent}>
                 {message?.sender ? (
                   <div className="mr-2">
                     <span
-                      onClick={() => onCopy(message.sender)}
-                      className="text-sm rounded p-1 bg-blue-200">
-                      {addressSlice(message.sender, 2)}
+                        onClick={() => onCopy(message.sender.address)}
+                        className="text-sm rounded p-1 bg-blue-200">
+                      {addressSlice(message.sender.address, 2)}
                     </span>
                   </div>
                 ) : null}
@@ -447,7 +457,7 @@ const Chat = () => {
                   <ChatBottomDetails message={message} />
                 </div>
 
-                <div className={`bubble-arrow ${message.sent && 'alt'}`}></div>
+                  <div className={`bubble-arrow ${message.self && 'alt'}`}></div>
               </div>
             );
           })}
