@@ -215,6 +215,7 @@ const Chats = () => {
                         trackers.
                       </IonLabel>
                       <IonInput
+                        className="ion-margin-vertical"
                         value={createServerNameInput}
                         onIonChange={(e) =>
                           setCreateServerNameInput(e.target.value)
@@ -282,6 +283,7 @@ const Chats = () => {
                         Connect through WebRTC and WebTorrent trackers.
                       </IonLabel>
                       <IonInput
+                        className="ion-margin-vertical"
                         value={joinServerNameInput}
                         onIonChange={(e) =>
                           setJoinServerNameInput(e.target.value)
@@ -291,6 +293,7 @@ const Chats = () => {
                         required
                       />
                       <IonInput
+                        className="ion-margin-vertical"
                         value={joinServerAddressInput}
                         onIonChange={(e) =>
                           setJoinServerAddressInput(e.target.value)
@@ -356,7 +359,10 @@ const Chats = () => {
                         Some placeholder text goes here as if it was a lorem
                         ipsum but better.
                       </IonLabel>
-                      <IonInput placeholder="Name" />
+                      <IonInput
+                        className="ion-margin-vertical"
+                        placeholder="Name"
+                      />
                       <IonButton expand="block">Connect</IonButton>
                       <br />
                       <IonLabel

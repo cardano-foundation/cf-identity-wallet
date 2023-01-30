@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   IonButton,
   IonCheckbox,
@@ -7,6 +7,7 @@ import {
   IonInput,
   IonItem,
   IonLabel,
+  IonNote,
   IonPage,
   IonProgressBar,
   IonRow,
@@ -18,6 +19,50 @@ import './CreateWallet.css';
 
 const CreateWallet = (props) => {
   const pageName = 'Create Wallet';
+  const [walletName, setWalletName] = useState<string>();
+  const [walletPassword, setWalletPassword] = useState<string>();
+  const [isNameValid, setIsNameValid] = useState<boolean>();
+  const [isPasswordValid, setIsPasswordValid] = useState<boolean>();
+  const [isPasswordMatching, setIsPasswordMatching] = useState<boolean>();
+
+  const nameValidator = (text: string) => {
+    // Lower and upper case alphanumeric between 2 and 16 characters
+    return text.match(/^[a-zA-Z0-9]{2,16}$/);
+  };
+
+  const validateName = (ev: Event) => {
+    const value = (ev.target as HTMLInputElement).value;
+    setWalletName(value);
+    setIsNameValid(undefined);
+    if (value === '') return;
+    nameValidator(value) !== null
+      ? setIsNameValid(true)
+      : setIsNameValid(false);
+  };
+
+  const passwordValidator = (text: string) => {
+    // At least 1 number, 1 lower case, 1 upper case, between 8 and 32 characters
+    return text.match(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{8,32}$/);
+  };
+
+  const validatePassword = (ev: Event) => {
+    const value = (ev.target as HTMLInputElement).value;
+    setWalletPassword(value);
+    setIsPasswordValid(undefined);
+    if (value === '') return;
+    passwordValidator(value) !== null
+      ? setIsPasswordValid(true)
+      : setIsPasswordValid(false);
+  };
+
+  const matchPassword = (ev: Event) => {
+    const value = (ev.target as HTMLInputElement).value;
+    setIsPasswordMatching(undefined);
+    if (value === '') return;
+    value === walletPassword
+      ? setIsPasswordMatching(true)
+      : setIsPasswordMatching(false);
+  };
 
   return (
     <IonPage id={pageName}>
@@ -51,23 +96,53 @@ const CreateWallet = (props) => {
             <IonCol
               size="12"
               className="mt-5">
-              <IonItem>
+              <IonItem
+                fill="solid"
+                className={`mb-4 ${isNameValid && 'ion-valid'} ${
+                  isNameValid === false && 'ion-invalid'
+                }`}>
                 <IonLabel position="stacked">
                   <strong>Enter Wallet/Account Name</strong>
                 </IonLabel>
-                <IonInput placeholder="Enter text" />
+                <IonInput
+                  type="text"
+                  placeholder="Enter text"
+                  onIonInput={(event) => validateName(event)}
+                  className="mb-0"
+                />
+                <IonNote slot="error">Invalid name</IonNote>
               </IonItem>
-              <IonItem>
+              <IonItem
+                fill="solid"
+                className={`mb-4 ${isPasswordValid && 'ion-valid'} ${
+                  isPasswordValid === false && 'ion-invalid'
+                }`}>
                 <IonLabel position="stacked">
                   <strong>Set Spending Password</strong>
                 </IonLabel>
-                <IonInput placeholder="Enter text" />
+                <IonInput
+                  type="password"
+                  placeholder="Enter text"
+                  onIonInput={(event) => validatePassword(event)}
+                  className="mb-0"
+                />
+                <IonNote slot="error">Invalid password</IonNote>
               </IonItem>
-              <IonItem>
+              <IonItem
+                fill="solid"
+                className={`mb-4 ${isPasswordMatching && 'ion-valid'} ${
+                  isPasswordMatching === false && 'ion-invalid'
+                }`}>
                 <IonLabel position="stacked">
                   <strong>Confirm Spending Password</strong>
                 </IonLabel>
-                <IonInput placeholder="Enter text" />
+                <IonInput
+                  type="password"
+                  placeholder="Enter text"
+                  onIonInput={(event) => matchPassword(event)}
+                  className="mb-0"
+                />
+                <IonNote slot="error">Password not matching</IonNote>
               </IonItem>
             </IonCol>
           </IonRow>
@@ -98,7 +173,10 @@ const CreateWallet = (props) => {
                 shape="round"
                 color="dark"
                 expand="block"
-                href="/recoveryseedphrase">
+                href="/recoveryseedphrase"
+                disabled={
+                  !(isNameValid && isPasswordValid && isPasswordMatching)
+                }>
                 Continue
               </IonButton>
             </IonCol>
