@@ -9,6 +9,7 @@ import Payments from '../../pages/Payments';
 import Stuff from '../../pages/Stuff';
 import {SubPages, Tabs, tabRoutes} from './AllRoutes';
 import Chats from '../../components/Chat/Chats';
+import CreateWallet from '../../pages/CreateWallet';
 
 const NavRoutes = () => {
   return (
@@ -20,6 +21,10 @@ const NavRoutes = () => {
           <Route
             path="/tabs"
             render={() => <Tabs />}
+          />
+          <Route
+            path="/createwallet"
+            render={() => <CreateWallet />}
           />
           <Route
             path="/template"

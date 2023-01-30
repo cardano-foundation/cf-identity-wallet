@@ -45,7 +45,7 @@ const CustomPage = (props) => {
                   </IonButtons>
                 )}
                 {backButton && (
-                  <IonButtons slot="start">
+                  <IonButtons>
                     <IonBackButton
                       icon={backButtonIcon}
                       text={backButtonText}
