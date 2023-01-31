@@ -1,6 +1,6 @@
 export function statusBody() {
     return ` 
-    query cardanoDbMeta  {
+    query statusBody  {
         cardanoDbMeta {
           initialized
           syncPercentage

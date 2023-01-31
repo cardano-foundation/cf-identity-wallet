@@ -81,7 +81,7 @@ const AppWrapper = (props: { children: any }) => {
   useEffect(() => {
     const init = async () => {
       console.log("query graph");
-      const graphqlStatus = await GraphQl.status();
+      const graphqlStatus = await GraphQl.epochsLatestParameters();
       console.log("graphqlStatus");
       console.log(graphqlStatus);
 
