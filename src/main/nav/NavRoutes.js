@@ -12,6 +12,7 @@ import Chats from '../../components/Chat/Chats';
 import CreateWallet from '../../pages/CreateWallet';
 import RecoverySeedPhrase from '../../pages/RecoverySeedPhrase';
 import FaceIdSetup from '../../pages/FaceIdSetup';
+import TermsAndConditions from '../../pages/TermsAndConditions';
 
 const NavRoutes = () => {
   return (
@@ -31,6 +32,10 @@ const NavRoutes = () => {
           <Route
             path="/recoveryseedphrase"
             render={() => <RecoverySeedPhrase />}
+          />
+          <Route
+            path="/termsandconditions"
+            render={() => <TermsAndConditions />}
           />
           <Route
             path="/faceidsetup"
