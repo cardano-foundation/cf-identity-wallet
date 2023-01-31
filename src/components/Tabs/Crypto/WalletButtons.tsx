@@ -8,7 +8,7 @@ export default function WalletButtons() {
         <IonCol>
           <IonButton
             shape="round"
-            color="primary"
+            color="dark"
             expand="block"
             href="/createwallet">
             Create New Wallet
@@ -19,7 +19,7 @@ export default function WalletButtons() {
         <IonCol>
           <IonButton
             shape="round"
-            color="secondary"
+            color="light"
             expand="block">
             Recover Existing Wallet
           </IonButton>

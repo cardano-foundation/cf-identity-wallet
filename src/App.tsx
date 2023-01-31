@@ -7,7 +7,7 @@ import {SideMenuProvider} from './main/SideMenuProvider';
 /* Core CSS required for Ionic components to work properly */
 import './theme/tailwind.css';
 import './theme/App.scss';
-import './theme/variables.css';
+import './theme/style.css';
 import './theme/structure.css';
 import AppWrapper from './components/AppWrapper';
 import {HandleConnect} from './api/p2p/HandleConnect';

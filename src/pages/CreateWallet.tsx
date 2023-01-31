@@ -204,7 +204,7 @@ const CreateWallet = (props) => {
               <IonCol>
                 <IonButton
                   shape="round"
-                  color="primary"
+                  color="dark"
                   expand="block"
                   href="/recoveryseedphrase"
                   disabled={

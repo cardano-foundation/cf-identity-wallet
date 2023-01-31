@@ -4,7 +4,7 @@
  */
 
 .ios body.dark {
-  --ion-background-color: #13152f;
+  --ion-background-color: #000000;
   --ion-background-color-rgb: 0, 0, 0;
 
   --ion-text-color: #ffffff;

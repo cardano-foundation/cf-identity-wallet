@@ -1,0 +1,11 @@
+ion-label {
+  white-space: break-spaces;
+}
+
+ion-button {
+  --border-style: solid;
+  --border-width: 1px;
+  --padding-top: 26px;
+  --padding-bottom: 26px;
+  font-size: 18px;
+}

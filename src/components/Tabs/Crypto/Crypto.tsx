@@ -77,6 +77,7 @@ const Crypto = (props) => {
           openModal();
         }}>
         <IonModal
+          id="create-wallet-modal"
           isOpen={showAddWallet}
           ref={modal}
           trigger="open-create"

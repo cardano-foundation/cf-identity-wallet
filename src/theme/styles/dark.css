@@ -4,19 +4,19 @@
  */
 
 body.dark {
-  --ion-color-primary: #154666;
+  --ion-color-primary: #428cff;
   --ion-color-primary-rgb: 66, 140, 255;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #275b7c;
-  --ion-color-primary-tint: #41708f;
+  --ion-color-primary-shade: #3a7be0;
+  --ion-color-primary-tint: #5598ff;
 
-  --ion-color-secondary: #438f68;
+  --ion-color-secondary: #50c8ff;
   --ion-color-secondary-rgb: 80, 200, 255;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
-  --ion-color-secondary-shade: #6cab8b;
-  --ion-color-secondary-tint: #9eccb5;
+  --ion-color-secondary-shade: #46b0e0;
+  --ion-color-secondary-tint: #62ceff;
 
   --ion-color-tertiary: #6a64ff;
   --ion-color-tertiary-rgb: 106, 100, 255;
@@ -60,7 +60,7 @@ body.dark {
   --ion-color-medium-shade: #86888f;
   --ion-color-medium-tint: #a2a4ab;
 
-  --ion-color-light: #13152f;
+  --ion-color-light: #222428;
   --ion-color-light-rgb: 34, 36, 40;
   --ion-color-light-contrast: #ffffff;
   --ion-color-light-contrast-rgb: 255, 255, 255;
@@ -69,5 +69,13 @@ body.dark {
 }
 
 .ios body.dark ion-title.large-title {
-  color: var(--ion-text-color, #ffffff);
+  color: var(--ion-text-color, --ion-color-primary-contrast);
+}
+
+body.dark ion-modal#create-wallet-modal ion-content {
+  --background: var(--ion-color-light-shade);
+}
+
+body.dark ion-button {
+  --border-color: var(--ion-color-primary-contrast);
 }
