@@ -33,7 +33,6 @@ import {subscribe} from '../../utils/events';
 const moment = extendMoment(Moment);
 
 const Chats = () => {
-  const pageRef = useRef();
 
   const [results, setResults] = useState([]);
   const [userName, setUsername] = useState('');
@@ -55,6 +54,8 @@ const Chats = () => {
   };
 
   const handleUserName = async (username) => {
+
+    setUsername(username);
     await getPeerProfile('global').then(profile => {
       console.log(profile);
       setPeerProfile(
@@ -81,7 +82,12 @@ const Chats = () => {
   }, []);
 
   const updateChats = () => {
-    getPeerProfile('global').then(profile => setUsername(profile.username || ''));
+    getPeerProfile('global').then(profile => {
+      if(profile.username?.length) {
+        setUsername(profile.username)
+      }
+    });
+
     getPeerList().then((peers) => {
       let peerList = [];
       if (peers) {
