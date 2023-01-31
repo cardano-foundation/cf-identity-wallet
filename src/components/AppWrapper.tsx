@@ -12,6 +12,7 @@ import {getCachedAccount, setCache} from "../store/reducers/cache";
 import {setCurrentAccount} from "../store/reducers/account";
 import {setSettings} from "../store/reducers/settings";
 import {Blockfrost} from "../api/ApiProvider/Blockfrost/BlockfrostApi";
+import {GraphQl} from "../api/ApiProvider/GraphQl/GraphQlApi";
 
 const AppWrapper = (props: { children: any }) => {
   const {t, i18n} = useTranslation();
@@ -51,6 +52,7 @@ const AppWrapper = (props: { children: any }) => {
     await Cache.init();
     dispatch(setCache(Cache.get()));
     await Settings.init();
+
     dispatch(setSettings(Settings.get()));
     const currentAccount = await Account.getAccount(cachedAccount);
     console.log("currAccount");
@@ -62,6 +64,8 @@ const AppWrapper = (props: { children: any }) => {
       if (firstAccount) dispatch(setCurrentAccount(firstAccount.get()));
     }
 
+
+
     console.log("lets init blockfrost");
     await Blockfrost.init('preview');
     const latestParameters = await Blockfrost.epochsLatestParameters();
@@ -70,10 +74,17 @@ const AppWrapper = (props: { children: any }) => {
     const accountState = await Blockfrost.accountState('stake_test1uz4j5w46kceey5kflku62xh9szvk2n3rj88qwct0pcdhxjc4vk9ws');
     console.log("accountState");
     console.log(accountState);
+
+
   };
 
   useEffect(() => {
     const init = async () => {
+      console.log("query graph");
+      const graphqlStatus = await GraphQl.status();
+      console.log("graphqlStatus");
+      console.log(graphqlStatus);
+
       await CardanoAPI.init();
       const seed = CardanoAPI.generateSeedPhrase(
           ERA_PARAMS[ERA.SHELLEY].mneSize[24]
@@ -90,6 +101,7 @@ const AppWrapper = (props: { children: any }) => {
       console.log('account');
       console.log(account);
       console.log(account.toString());
+
 
       try {
         account.commit();

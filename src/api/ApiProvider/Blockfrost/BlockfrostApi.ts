@@ -16,7 +16,7 @@ export const Blockfrost = {
         preview: BLOCKFROST_TOKEN_ID.preview,
         ipfs: BLOCKFROST_TOKEN_ID.ipfs
     },
-    _network: 'preview',
+    _network: 'preprod',
     async init(network: string) {
         this._network = network;
     },

@@ -10,7 +10,7 @@ export interface ISettingsState {
 const initialState: ISettingsState = {
     theme: 'dark',
     language: 'en',
-    network: 'preview',
+    network: 'preprod',
 };
 
 export const settingsSlice = createSlice({
