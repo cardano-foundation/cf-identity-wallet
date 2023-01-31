@@ -54,7 +54,9 @@ const TabMenu = (props) => {
         })}
       </IonRouterOutlet>
 
-      <IonTabBar slot={props.position}>
+      <IonTabBar
+        slot={props.position}
+        color="dark">
         {props.tabs.map((tab, i) => {
           if (tab.isTab) {
             return (

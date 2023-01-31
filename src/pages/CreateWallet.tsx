@@ -27,7 +27,6 @@ const CreateWallet = (props) => {
   const [isPasswordValid, setIsPasswordValid] = useState<boolean>();
   const [isPasswordMatching, setIsPasswordMatching] = useState<boolean>();
   const [checked, setChecked] = useState(false);
-  const [toggled, setToggled] = useState(false);
 
   const nameValidator = (text: string) => {
     // Lower and upper case alphanumeric between 2 and 16 characters
@@ -192,7 +191,9 @@ const CreateWallet = (props) => {
                   <IonLabel className="terms_and_conditions">
                     I understand that if I lose my recovery phrase, I will not
                     be able to access my account{' '}
-                    <a href="/termsandconditions">Terms</a>
+                    <a href="/termsandconditions">
+                      <u>Terms</u>
+                    </a>
                   </IonLabel>
                 </IonItem>
               </IonCol>
@@ -203,9 +204,8 @@ const CreateWallet = (props) => {
               <IonCol>
                 <IonButton
                   shape="round"
-                  color="dark"
+                  color="primary"
                   expand="block"
-                  type="submit"
                   href="/recoveryseedphrase"
                   disabled={
                     !(
