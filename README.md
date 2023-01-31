@@ -2,7 +2,7 @@
 
 ## Usage
 ```bash
-    nvm use 18
+    nvm use 16.10.0
     npm i
     npm run dev
 ```

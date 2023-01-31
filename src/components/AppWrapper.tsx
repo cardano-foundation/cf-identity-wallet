@@ -11,7 +11,7 @@ import {Settings} from "../models/Settings/Settings";
 import {getCachedAccount, setCache} from "../store/reducers/cache";
 import {setCurrentAccount} from "../store/reducers/account";
 import {setSettings} from "../store/reducers/settings";
-import {Blockfrost} from "../api/ApiProvider/BlockfrostApi";
+import {Blockfrost} from "../api/ApiProvider/Blockfrost/BlockfrostApi";
 
 const AppWrapper = (props: { children: any }) => {
   const {t, i18n} = useTranslation();

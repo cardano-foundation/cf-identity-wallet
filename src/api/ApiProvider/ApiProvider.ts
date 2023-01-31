@@ -1,6 +1,6 @@
 import {BLOCKFROST_TOKEN_ID} from "../../../secrets";
 import axios from "axios";
-import {blockfrostEndpoints} from "./config";
+import {blockfrostEndpoints} from "./Blockfrost/config";
 
 export const ApiProvider = {
     _network: 'MAINNET',

@@ -7,7 +7,7 @@ import {
     DEFAULT_PAGINATION_PAGE_ITEMS_COUNT,
     PaginationOptions
 } from "./config";
-import {BLOCKFROST_TOKEN_ID} from "../../../secrets";
+import {BLOCKFROST_TOKEN_ID} from "../../../../secrets";
 
 export const Blockfrost = {
     _tokens: <{ [network: string]: string }>{
