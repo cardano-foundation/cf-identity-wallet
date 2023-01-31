@@ -37,15 +37,6 @@ jobs:
           fetch-depth: 1         # Fetch all history for .GitInfo and .Lastmod
           lfs: true
 
-    # Initiate GH deployment status
-    - name: Start Deployment
-      uses: bobheadxi/deployments@v0.6.2
-      id: deployment
-      with:
-        step: start
-        token: ${{ secrets.GITHUB_TOKEN }}
-        env: vercel-deploy-${{ steps.metadata.outputs.DEPLOY_NAME }}
-
     - name: Setup Node
       uses: actions/setup-node@v2
       with:
@@ -81,17 +72,6 @@ jobs:
         github-comment: false
         #vercel-args: '--prod' #Optional
         working-directory: build
-
-    # Update GH deployment status
-    - name: Update Deployment Status
-      uses: bobheadxi/deployments@v0.6.2
-      if: always()
-      with:
-        step: finish
-        token: ${{ secrets.GITHUB_TOKEN }}
-        status: ${{ job.status }}
-        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
-        env_url: ${{ steps.vercel-action.outputs.preview-url }}
 
     - name: Comment PR
       uses: thollander/actions-comment-pull-request@v1
