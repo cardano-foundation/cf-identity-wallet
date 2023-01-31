@@ -78,5 +78,4 @@ body.dark ion-modal#create-wallet-modal ion-content {
 
 body.dark ion-button {
   --border-color: var(--ion-color-primary-contrast);
-  --color: var(--ion-color-light-contrast);
 }
