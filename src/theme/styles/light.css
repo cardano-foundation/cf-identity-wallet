@@ -92,4 +92,5 @@ ion-item {
 
 ion-button {
   --border-color: var(--ion-color-light-contrast);
+  --color: var(--ion-color-primary-contrast);
 }
