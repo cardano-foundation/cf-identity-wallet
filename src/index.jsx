@@ -11,6 +11,7 @@ import {LocalNotifications} from '@capacitor/local-notifications';
 
 import {I18nextProvider} from 'react-i18next';
 import i18n from './i18n';
+import {StatusBar, Style} from "@capacitor/status-bar";
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -27,6 +28,14 @@ root.render(
     </SafeArea>
   </React.StrictMode>
 );
+
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  document.body.classList.toggle('dark');
+  StatusBar.setStyle({style: Style.Dark});
+} else {
+  console.log("OS is light mode");
+  StatusBar.setStyle({style: Style.Light});
+}
 
 // Enable PWA
 defineCustomElements(window);

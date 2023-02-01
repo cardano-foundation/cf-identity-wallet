@@ -2,9 +2,9 @@ import {get, set} from "../../db/storage";
 
 export const Settings = {
     table: 'settings',
-    theme: 'dark',
-    language: 'en',
-    network: 'preview',
+    theme: '',
+    language: '',
+    network: 'preprod',
 
     async init() {
         const settings = await get(this.table);

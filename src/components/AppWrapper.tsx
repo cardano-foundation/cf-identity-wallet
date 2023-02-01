@@ -13,6 +13,7 @@ import {setCurrentAccount} from "../store/reducers/account";
 import {setSettings} from "../store/reducers/settings";
 import {Blockfrost} from "../api/ApiProvider/Blockfrost/BlockfrostApi";
 import {GraphQl} from "../api/ApiProvider/GraphQl/GraphQlApi";
+import {changeTheme} from "../theme/handleTheme";
 
 const AppWrapper = (props: { children: any }) => {
   const {t, i18n} = useTranslation();
@@ -52,6 +53,23 @@ const AppWrapper = (props: { children: any }) => {
     await Cache.init();
     dispatch(setCache(Cache.get()));
     await Settings.init();
+
+    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      console.log("OS is dark mode")
+    } else {
+      console.log("OS is dark mode")
+    }
+
+    if (Settings.theme?.length) {
+      // Use matchMedia to check the user preference
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+      if (
+          (prefersDark.matches && Settings.theme !== 'dark')
+          || (!prefersDark.matches && Settings.theme !== 'light')
+      ) {
+        changeTheme();
+      }
+    }
 
     dispatch(setSettings(Settings.get()));
     const currentAccount = await Account.getAccount(cachedAccount);
