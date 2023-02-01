@@ -12,7 +12,7 @@ import {addOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
 
 const RecoverySeedPhrase = (props) => {
-  const pageName = 'Create Wallet';
+  const pageName = 'Recovery Seed Phrase';
 
   return (
     <IonPage id={pageName}>

@@ -110,7 +110,7 @@ const CreateWallet = (props) => {
                     isNameValid === false && 'ion-invalid'
                   }`}>
                   <IonLabel position="stacked">
-                    <strong>Enter Wallet/Account Name</strong>
+                    <strong>Enter Wallet Name</strong>
                   </IonLabel>
                   <IonInput
                     type="text"
