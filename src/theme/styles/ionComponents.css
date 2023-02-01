@@ -5,7 +5,8 @@ ion-label {
 ion-button {
   --border-style: solid;
   --border-width: 1px;
-  --padding-top: 26px;
-  --padding-bottom: 26px;
+  --padding-top: 18px;
+  --padding-bottom: 18px;
   font-size: 18px;
+  text-transform: none;
 }

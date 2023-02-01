@@ -206,6 +206,7 @@ const CreateWallet = (props) => {
                   shape="round"
                   color="dark"
                   expand="block"
+                  className="h-auto my-4"
                   href="/recoveryseedphrase"
                   disabled={
                     !(
@@ -217,14 +218,11 @@ const CreateWallet = (props) => {
                   }>
                   Continue
                 </IonButton>
-              </IonCol>
-            </IonRow>
-            <IonRow className="ion-text-center">
-              <IonCol>
                 <IonButton
                   shape="round"
                   color="light"
                   expand="block"
+                  className="h-auto my-4"
                   href="/tabs/crypto">
                   Cancel
                 </IonButton>

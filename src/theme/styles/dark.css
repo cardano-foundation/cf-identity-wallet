@@ -69,7 +69,7 @@ body.dark {
 }
 
 .ios body.dark ion-title.large-title {
-  color: var(--ion-text-color, --ion-color-primary-contrast);
+  color: var(--ion-text-color, #fff);
 }
 
 body.dark ion-modal#create-wallet-modal ion-content {
@@ -77,5 +77,9 @@ body.dark ion-modal#create-wallet-modal ion-content {
 }
 
 body.dark ion-button {
-  --border-color: var(--ion-color-primary-contrast);
+  --border-color: #fff;
+}
+
+body.dark ion-button[color='dark'] {
+  --border-color: #000;
 }

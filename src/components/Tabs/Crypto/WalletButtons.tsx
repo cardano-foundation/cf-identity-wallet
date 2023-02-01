@@ -10,17 +10,15 @@ export default function WalletButtons() {
             shape="round"
             color="dark"
             expand="block"
-            href="/createwallet">
+            href="/createwallet"
+            className="h-auto my-4">
             Create New Wallet
           </IonButton>
-        </IonCol>
-      </IonRow>
-      <IonRow className="ion-text-center">
-        <IonCol>
           <IonButton
             shape="round"
             color="light"
-            expand="block">
+            expand="block"
+            className="h-auto my-4">
             Recover Existing Wallet
           </IonButton>
         </IonCol>

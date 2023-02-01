@@ -91,5 +91,9 @@ ion-item {
 }
 
 ion-button {
-  --border-color: var(--ion-color-light-contrast);
+  --border-color: #000;
+}
+
+ion-button[color='dark'] {
+  --border-color: #fff;
 }
