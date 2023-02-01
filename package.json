@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "prebuild": "rimraf build",
-    "dev": "yarn && webpack serve --config webpack.dev.js --host 0.0.0.0 --port 3001",
+    "dev": "npm i && webpack serve --config webpack.dev.js --host 0.0.0.0 --port 3001",
     "serve": "serve -s build",
     "build": "webpack --config webpack.prod.js ",
     "buildcap": "rimraf build && webpack --config webpack.prod.js && npx cap sync",
