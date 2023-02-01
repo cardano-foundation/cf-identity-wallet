@@ -52,7 +52,7 @@ export const tabRoutes = [
     sideMenuOptions: tab1SideMenu,
   },
   {
-    label: 'Credentials',
+    label: 'Creds',
     component: Credentials,
     customIcon: false,
     icon: idCardOutline,

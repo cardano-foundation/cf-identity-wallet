@@ -17,10 +17,10 @@ module.exports = {
     themes: [
       {
         light: {
-          primary: '#3880ff',
+          primary: '#154666',
           'primary-content': '#fff',
           'primary-focus': '#3171e0',
-          secondary: '#0cd1e8',
+          secondary: '#438F68',
           'secondary-content': '#fff',
           'secondary-focus': '#0bb8cc',
           tertiary: '#7044ff',
@@ -35,7 +35,7 @@ module.exports = {
           error: '#f04141',
           'error-content': '#fff',
           'error-focus': '#d33939',
-          dark: '#222428',
+          dark: '#13152F',
           'dark-content': '#fff',
           'dark-focus': '#1e2023',
           medium: '#989aa2',
@@ -71,7 +71,7 @@ module.exports = {
           medium: '#989aa2',
           'medium-content': '#000',
           'medium-focus': '#86888f',
-          light: '#222428',
+          light: '#13152F',
           'light-content': '#fff',
           'light-focus': '#1e2023',
         },
