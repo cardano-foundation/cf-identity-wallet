@@ -47,18 +47,18 @@ jobs:
         npm i
         npm run build
 
-    - name: Configure vercel.json
-      run: |
-        cat > build/vercel.json <<EOF
-        {
-          "rewrites": [
-            {
-              "source": "/((?!^/$).*)",
-              "destination": "/index.html"
-            }
-          ]
-        }
-        EOF
+    #- name: Configure vercel.json
+    #  run: |
+    #    cat > build/vercel.json <<EOF
+    #    {
+    #      "rewrites": [
+    #        {
+    #          "source": "/((?!^/$).*)",
+    #          "destination": "/index.html"
+    #        }
+    #      ]
+    #    }
+    #    EOF
 
     # Push our generated Hugo site to Vercel
     - name: Deploy testnet to Vercel
