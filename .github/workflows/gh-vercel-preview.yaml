@@ -53,7 +53,7 @@ jobs:
         {
           "rewrites": [
             {
-              "source": "/chat.*",
+              "source": "/(^api.*)",
               "destination": "/index.html"
             }
           ]
