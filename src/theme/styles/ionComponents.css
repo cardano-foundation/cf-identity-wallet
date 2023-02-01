@@ -8,4 +8,5 @@ ion-button {
   --padding-top: 18px;
   --padding-bottom: 18px;
   font-size: 18px;
+  text-transform: none;
 }
