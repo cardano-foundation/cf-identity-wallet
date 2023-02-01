@@ -9,7 +9,8 @@ export default function WalletButtons() {
           <IonButton
             shape="round"
             color="dark"
-            expand="block">
+            expand="block"
+            href="/createwallet">
             Create New Wallet
           </IonButton>
         </IonCol>

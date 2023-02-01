@@ -77,25 +77,13 @@ const Crypto = (props) => {
           openModal();
         }}>
         <IonModal
+          id="create-wallet-modal"
           isOpen={showAddWallet}
           ref={modal}
           trigger="open-create"
           onWillDismiss={(ev) => onWillDismiss(ev)}
-          initialBreakpoint={0.5}
-          breakpoints={[0, 0.25, 0.5, 0.75]}>
-          <IonHeader>
-            <IonToolbar>
-              <IonTitle>Add Wallet</IonTitle>
-              <IonButtons slot="end">
-                <IonButton
-                  onClick={() => {
-                    closeModal();
-                  }}>
-                  Close
-                </IonButton>
-              </IonButtons>
-            </IonToolbar>
-          </IonHeader>
+          initialBreakpoint={0.6}
+          breakpoints={[0, 0.6]}>
           <IonContent className="ion-padding">
             <WalletButtons />
           </IonContent>
