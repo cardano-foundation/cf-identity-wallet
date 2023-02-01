@@ -5,6 +5,7 @@
 .column_center {
   display: flex;
   justify-content: center;
+  flex-grow: 3;
 }
 .column_right {
   display: flex;
