@@ -1,7 +1,8 @@
 import React from 'react';
 import {IonIcon, IonItem} from '@ionic/react';
-import {checkmarkDone, cloudCircle, wifiOutline} from 'ionicons/icons';
+import {checkmarkDone, wifiOutline} from 'ionicons/icons';
 import {useHistory} from 'react-router-dom';
+
 const ChatItem = ({chat}) => {
   const {messages, name, read, date, preview, received, connected} = chat;
 
@@ -31,9 +32,9 @@ const ChatItem = ({chat}) => {
         alt="avatar"
       />
       <IonItem
-        className="chat-content-container"
-        onClick={() => handleNavigation(`/chat/${chat.key}`)}
-        detail={false}>
+          className="chat-content-container"
+          onClick={() => handleNavigation(`/api/chat/${chat.key}`)}
+          detail={false}>
         <div className="chat-content">
           <div className="chat-name-date">
             <h2>
