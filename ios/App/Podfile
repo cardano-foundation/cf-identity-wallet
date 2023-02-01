@@ -22,6 +22,7 @@ def capacitor_pods
   pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
   pod 'CapacitorToast', :path => '../../node_modules/@capacitor/toast'
   pod 'CapawesomeCapacitorBackgroundTask', :path => '../../node_modules/@capawesome/capacitor-background-task'
+  pod 'CapacitorSecureStoragePlugin', :path => '../../node_modules/capacitor-secure-storage-plugin'
   pod 'CordovaPlugins', :path => '../capacitor-cordova-ios-plugins'
 end
 

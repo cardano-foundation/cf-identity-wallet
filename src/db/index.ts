@@ -1,19 +1,5 @@
-import {
-  createStore,
-  get,
-  getObject,
-  set,
-  setNewObject,
-  setObject,
-} from './storage';
-import {
-  BLOCKFROST_DEFAULT_URL,
-  BLOCKFROST_TOKEN,
-  DEFAULT_NETWORK,
-  SUBMIT_DEFAULT_URL,
-} from '../../config';
-import {maxId} from '../utils/utils';
-import Meerkat from '@fabianbormann/meerkat';
+import {createStore, get, getObject, set, setObject} from './storage';
+import {BLOCKFROST_DEFAULT_URL, BLOCKFROST_TOKEN, DEFAULT_NETWORK, SUBMIT_DEFAULT_URL,} from '../../config';
 
 export const DB_NAME = 'ID_WALLET_DB';
 
@@ -68,7 +54,7 @@ export const getSettingsFromDb = async () => {
         submit: SUBMIT_DEFAULT_URL,
       },
     };
-    await set('settings', defaultSettings);
+
     return defaultSettings;
   }
 };
@@ -314,12 +300,13 @@ export const getAllChannels = async () => {
 };
 
 export const setPeerProfile = async (
-  id: string,
-  seed: string,
-  identifier: string,
-  name: string,
-  announce: string[],
-  messages: string[] = []
+    id: string,
+    seed: string,
+    identifier: string,
+    name: string,
+    announce: string[],
+    messages: string[] = [],
+    username = ''
 ) => {
   await setObject('peer-profile-connect', id, {
     seed,
@@ -327,6 +314,7 @@ export const setPeerProfile = async (
     name,
     announce,
     messages,
+    username
   });
 };
 

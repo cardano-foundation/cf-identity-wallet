@@ -1,164 +1,192 @@
-import {
-  ERA,
-  IAccount,
-  IAddress,
-  IAsset,
-  ICertificate,
-  ITransaction,
-  IUtxo,
-  TX_STATUS,
-} from '../types';
-import {get, keys, remove, set} from '../../db/storage';
+import {ERA, IAccount, IAsset, ICertificate, INetwork, ITransaction, IUtxo, TX_STATUS,} from '../types';
+import {get, getObject, removeObject, set, setObject,} from '../../db/storage';
+import {Capacitor} from '@capacitor/core';
+import {getKeystore, setKeystore} from '../../db/keystore';
 
-export class Account implements IAccount {
-  private static table: string;
-  table = 'account';
-  id: string | undefined;
-  name: string | undefined;
-  certificates: {[key: string]: ICertificate};
-  era: ERA | undefined;
-  network: {
-    [key: string]: {
-      assets: {[unit: string]: IAsset};
-      utxos: IUtxo[];
-      collateral: string[];
-      vault: string[];
-      addresses: IAddress[];
-      transactions: ITransaction[];
-    };
+export class Account {
+  private table = 'accounts';
+  private id: string | undefined;
+  private name: string | undefined;
+  private encryptedRootKey: string | undefined;
+  private certificates: {
+    [key: string]: ICertificate;
   };
+  private networks: {
+    [key: string]: INetwork;
+  };
+  era: ERA | undefined;
+  rootPublicKeyHex: string | undefined;
 
   constructor() {
     this.id = undefined;
     this.name = undefined;
-    this.certificates = {};
     this.era = undefined;
-    this.network = {};
-  }
-
-  set(account: IAccount) {
-    this.id = account.id;
-    this.name = account.name;
-    this.certificates = account.certificates;
-    this.era = account.era;
-    this.network = account.network;
+    this.encryptedRootKey = undefined;
+    this.rootPublicKeyHex = undefined;
+    this.networks = {};
+    this.certificates = {};
   }
 
   balance(network: string) {
-    return this.network[network]?.assets['lovelace'];
+    return this.networks[network]?.assets['lovelace'];
   }
 
-  setCertificate(
-    name: string,
-    key: string,
-    data: string,
-    derivation = undefined
-  ) {
-    this.certificates[name] = {
-      key,
-      data,
-      derivation,
-    };
+  get(): IAccount {
+    // TODO: try catch undefined attributes
+    return JSON.parse(<string>this.toString());
   }
 
-  setAssets(network: string, assets: {[p: string]: IAsset}) {
-    this.network[network] = {
-      ...this.network[network],
+  set(account: any) {
+    this.id = account.id;
+    this.name = account.name;
+    this.era = account.era;
+    this.encryptedRootKey = account.encryptedRootKey;
+    this.rootPublicKeyHex = account.rootPublicKeyHex;
+    this.networks = account.networks;
+    this.certificates = account.certificates;
+  }
+
+  setEncryptedRootKey(encryptedRootKey: string) {
+    if (Capacitor.getPlatform() !== 'web') {
+      setKeystore(`${this.id}:rootKey`, encryptedRootKey);
+    } else {
+      // web, extension and desktop
+      this.encryptedRootKey = encryptedRootKey;
+    }
+  }
+
+  async getEncryptedRootKey() {
+    return await this.getCertificate(`${this.id}:rootKey`);
+  }
+
+  setCertificate(name: string, certificate: ICertificate) {
+    if (Capacitor.getPlatform() !== 'web') {
+      setKeystore(`${this.id}:certificate`, JSON.stringify(certificate));
+    } else {
+      // web, extension and desktop
+      this.certificates[name] = certificate;
+    }
+  }
+
+  async getCertificate(name: string) {
+    if (Capacitor.getPlatform() !== 'web') {
+      // ios/android keystore
+      return await getKeystore(name);
+    } else {
+      return this.certificates[name];
+    }
+  }
+
+  setAssets(network: string, assets: {[unit: string]: IAsset}) {
+    this.networks[network] = {
+      ...this.networks[network],
       assets,
     };
   }
 
   asset(network: string, unit: string) {
-    return this.network[network]?.assets[unit];
+    return this.networks[network]?.assets[unit];
+  }
+
+  setNetworks(networkName: string, networkObj: {[key: string]: INetwork}) {
+    this.networks = networkObj;
+  }
+
+  setNetwork(networkName: string, networkObj: INetwork) {
+    this.networks[networkName] = networkObj;
+  }
+
+  getName() {
+    return this.name;
+  }
+
+  async setName(name: string) {
+    this.name = name;
+    this.id = name;
+  }
+
+  getNetwork(networkName: string) {
+    return this.networks[networkName];
   }
 
   setUtxos(network: string, utxos: IUtxo[]) {
-    this.network[network] = {
-      ...this.network[network],
+    this.networks[network] = {
+      ...this.networks[network],
       utxos,
     };
   }
 
   address(network: string, index: number, chain: number) {
-    return this.network[network].addresses.find(
+    return this.networks[network].addresses.find(
       (address) => address.index === index && address.chain === chain
     );
   }
 
   externalAddresses(network: string) {
-    return this.network[network].addresses.filter(
+    return this.networks[network].addresses.filter(
       (address) => address.chain === 0
     );
   }
 
   internalAddresses(network: string) {
-    return this.network[network].addresses.filter(
+    return this.networks[network].addresses.filter(
       (address) => address.chain === 1
     );
   }
 
   unusedAddresses(network: string) {
-    return this.network[network].addresses.filter((address) => !address.used);
-  }
-
-  setUsedAddress(address: string) {
-    // TODO:
+    // check addresses used in history and diff
   }
 
   pendingTransactions(network: string) {
-    return this.network[network].transactions.filter(
+    return this.networks[network].transactions.filter(
       (tx) => tx.status === TX_STATUS.PENDING
     );
   }
 
   addTransaction(network: string, tx: ITransaction) {
-    if (!this.network[network]?.transactions?.length) {
-      this.network[network] = {
-        ...this.network[network],
+    if (!this.networks[network]?.transactions?.length) {
+      this.networks[network] = {
+        ...this.networks[network],
         transactions: [],
       };
     }
-    const index = this.network[network].transactions.findIndex(
+    const index = this.networks[network].transactions.findIndex(
       (t) => t.txHash === tx.txHash
     );
-    this.network[network].transactions[index <= 0 ? 0 : index] = tx;
+    this.networks[network].transactions[index <= 0 ? 0 : index] = tx;
   }
 
-  async remove() {
-    await remove(`${this.table}:${this.id}`);
+  commit() {
+    if (!this.id || !this.id.length) return {error: `id is ${typeof this.id}`};
+    setObject(this.table, this.id, this);
   }
 
-  async commit() {
+  remove() {
     if (!this.id) return;
-    await set(`${this.table}:${this.id}`, this.toJson());
+    removeObject('accounts', this.id);
   }
 
-  toJson() {
+  toString() {
     try {
-      return JSON.stringify({
-        id: this.id,
-        name: this.name,
-        era: this.era,
-        certificates: this.certificates,
-        network: this.network,
-      });
+      return JSON.stringify(this);
     } catch (e) {
       return {
         error: e,
       };
     }
+  }
+
+  static new(acc: any) {
+    const account = new Account();
+    account.set(acc);
+    return account;
   }
 
   static fromJson(json: string) {
     try {
       const jsonObj = JSON.parse(json);
-      const account = new Account();
-      account.id = jsonObj.id;
-      account.name = jsonObj.name;
-      account.certificates = jsonObj.certificates;
-      account.era = jsonObj.era;
-      account.network = jsonObj.network;
-      return account;
+      return Account.new(jsonObj);
     } catch (e) {
       return {
         error: e,
@@ -166,11 +194,35 @@ export class Account implements IAccount {
     }
   }
 
-  static async getAllAccountIds() {
-    const allKeys = await keys();
-    if (!allKeys) return;
-    return Object.values(allKeys)
-      .filter((id) => id.includes(`${this.table}:`))
-      .map((id) => id.replace(`${this.table}:`, ''));
+  static async getAccount(id: string) {
+    const accountInDb = await getObject('accounts', id);
+    if (!accountInDb) return;
+    return Account.new(accountInDb);
+  }
+
+  static async getFirstAccount() {
+    const accounts = await get('accounts');
+    if (!accounts || !Object.entries(accounts).length) return;
+    return Account.new(Object.entries(accounts)[0]);
+  }
+
+  static removeAccount(id: string) {
+    if (!id) return;
+    removeObject('accounts', id);
+  }
+
+  static removeAllAccounts(id: string) {
+    if (!id) return;
+    set('accounts', {});
+  }
+
+  static async getAllAccounts() {
+    return await get('accounts');
+  }
+
+  static async getAllAccountsIds() {
+    const accounts = await get('accounts');
+    if (!accounts) return;
+    return Object.keys(accounts);
   }
 }

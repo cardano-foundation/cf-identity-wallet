@@ -1,33 +1,31 @@
-import React from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {
+  IonAvatar,
   IonButton,
   IonButtons,
-  IonCard,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCardContent,
+  IonChip,
   IonContent,
   IonHeader,
+  IonIcon,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonList,
   IonMenuButton,
   IonModal,
   IonPage,
+  IonRefresher,
+  IonRefresherContent,
+  IonSearchbar,
   IonTitle,
   IonToolbar,
-  IonSearchbar,
-  IonList,
-  IonLabel,
-  IonInput,
-  IonRefresherContent,
-  IonRefresher,
 } from '@ionic/react';
+import {pencilOutline} from 'ionicons/icons';
 import './Chats.css';
-import {useEffect, useState} from 'react';
 import ChatItem from './ChatItem';
-import {useRef} from 'react';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
-import {getHostList, getPeerList} from '../../db';
+import {getHostList, getPeerList, getPeerProfile, setPeerProfile} from '../../db';
 import {handleConnect} from '../../App';
 import {useHistory} from 'react-router-dom';
 import {subscribe} from '../../utils/events';
@@ -35,10 +33,9 @@ import {subscribe} from '../../utils/events';
 const moment = extendMoment(Moment);
 
 const Chats = () => {
-  const pageRef = useRef();
 
   const [results, setResults] = useState([]);
-  const [showContactModal, setShowContactModal] = useState(false);
+  const [userName, setUsername] = useState('');
   const [showCreateServer, setShowCreateServer] = useState(false);
   const [showJoinServer, setShowJoinServer] = useState(false);
   const [createServerNameInput, setCreateServerNameInput] = useState('');
@@ -56,6 +53,24 @@ const Chats = () => {
     nav.push(nav.location.pathname + '?modalOpened=true');
   };
 
+  const handleUserName = async (username) => {
+
+    setUsername(username);
+    await getPeerProfile('global').then(profile => {
+      console.log(profile);
+      setPeerProfile(
+          'global',
+          profile.seed,
+          profile.identifier,
+          profile.name,
+          profile.announce,
+          profile.messages,
+          username
+      );
+    });
+
+  };
+
   const closeModal = () => {
     nav.replace('/chats');
   };
@@ -67,13 +82,19 @@ const Chats = () => {
   }, []);
 
   const updateChats = () => {
+    getPeerProfile('global').then(profile => {
+      if(profile.username?.length) {
+        setUsername(profile.username)
+      }
+    });
+
     getPeerList().then((peers) => {
       let peerList = [];
       if (peers) {
         peerList = Object.values(peers).map((peer, index) => {
           if (!peer.messages) return;
           const messages = peer?.messages?.length
-            ? peer?.messages.map((message, index) => {
+              ? peer?.messages.map((message, index) => {
                 return {
                   ...message,
                   id: index,
@@ -171,15 +192,31 @@ const Chats = () => {
 
       <IonContent>
         <IonHeader>
-          <IonToolbar class="ion-text-center">
+          <IonToolbar className="ion-text-center">
+            <IonChip className="">
+              <IonAvatar>
+                <img alt="Silhouette of a person's head" src="https://ionicframework.com/docs/img/demos/avatar.svg"/>
+              </IonAvatar>
+              <IonLabel>
+                <IonItem>
+                  <IonInput
+                      value={userName}
+                      onIonChange={(e) => handleUserName(e.target.value)}
+                      placeholder="Enter user name"/>
+                </IonItem>
+              </IonLabel>
+              <IonIcon icon={pencilOutline}/>
+            </IonChip>
+          </IonToolbar>
+          <IonToolbar className="ion-text-center">
             <IonButton
-              class="ion-margin-horizontal"
-              size="small"
-              onClick={() => {
-                setShowCreateServer(true);
-                openModal();
-              }}
-              id="open-create">
+                class="ion-margin-horizontal"
+                size="small"
+                onClick={() => {
+                  setShowCreateServer(true);
+                  openModal();
+                }}
+                id="open-create">
               Create
             </IonButton>
             <IonModal
@@ -201,44 +238,30 @@ const Chats = () => {
                   </IonButtons>
                 </IonToolbar>
               </IonHeader>
-              <IonContent className="ion-padding">
-                <IonCard>
-                  <IonCardHeader>
-                    <IonCardTitle>Set a channel name</IonCardTitle>
-                  </IonCardHeader>
-                  <IonCardContent>
-                    <IonList>
-                      <IonLabel
-                        class="ion-text-wrap"
-                        position="stacked">
-                        Create a new p2p channel with WebRTC and WebTorrent
-                        trackers.
-                      </IonLabel>
-                      <IonInput
-                        className="ion-margin-vertical"
-                        value={createServerNameInput}
-                        onIonChange={(e) =>
+              <IonContent className="ion-padding p-8 px-12">
+                <IonList>
+                  <IonLabel
+                      class="ion-text-wrap"
+                      position="stacked">
+                    Create a new p2p channel with WebRTC and WebTorrent
+                    trackers.
+                  </IonLabel>
+                  <IonInput
+                      value={createServerNameInput}
+                      onIonChange={(e) =>
                           setCreateServerNameInput(e.target.value)
-                        }
-                        placeholder="Name"
-                        type="text"
-                        required
-                      />
-                      <IonButton
-                        disabled={!createServerNameInput?.length}
-                        expand="block"
-                        onClick={() => createNewChannel()}>
-                        Create
-                      </IonButton>
-                      <br />
-                      <IonLabel
-                        class="ion-text-wrap"
-                        position="stacked">
-                        About the Channel ID...
-                      </IonLabel>
-                    </IonList>
-                  </IonCardContent>
-                </IonCard>
+                      }
+                      placeholder="Name"
+                      type="text"
+                      required
+                  />
+                  <IonButton
+                      disabled={!createServerNameInput?.length}
+                      expand="block"
+                      onClick={() => createNewChannel()}>
+                    Create
+                  </IonButton>
+                </IonList>
               </IonContent>
             </IonModal>
             <IonButton
@@ -271,50 +294,41 @@ const Chats = () => {
                 </IonToolbar>
               </IonHeader>
               <IonContent className="ion-padding">
-                <IonCard>
-                  <IonCardHeader>
-                    <IonCardTitle>Join a room</IonCardTitle>
-                  </IonCardHeader>
-                  <IonCardContent>
-                    <IonList>
-                      <IonLabel
-                        class="ion-text-wrap"
-                        position="stacked">
-                        Connect through WebRTC and WebTorrent trackers.
-                      </IonLabel>
-                      <IonInput
-                        className="ion-margin-vertical"
-                        value={joinServerNameInput}
-                        onIonChange={(e) =>
+                <IonList>
+                  <IonLabel
+                      class="ion-text-wrap"
+                      position="stacked">
+                    Connect through WebRTC and WebTorrent trackers.
+                  </IonLabel>
+                  <IonInput
+                      value={joinServerNameInput}
+                      onIonChange={(e) =>
                           setJoinServerNameInput(e.target.value)
-                        }
-                        placeholder="Name"
-                        type="text"
-                        required
-                      />
-                      <IonInput
-                        className="ion-margin-vertical"
-                        value={joinServerAddressInput}
-                        onIonChange={(e) =>
+                      }
+                      placeholder="Name"
+                      type="text"
+                      required
+                  />
+                  <IonInput
+                      value={joinServerAddressInput}
+                      onIonChange={(e) =>
                           setJoinServerAddressInput(e.target.value)
-                        }
-                        placeholder="Address"
-                        type="text"
-                        required
-                      />
+                      }
+                      placeholder="Address"
+                      type="text"
+                      required
+                  />
 
-                      <IonButton
-                        disabled={
-                          !joinServerNameInput?.length ||
-                          !joinServerAddressInput?.length
-                        }
-                        expand="block"
-                        onClick={() => joinNewChannel()}>
-                        Join
-                      </IonButton>
-                    </IonList>
-                  </IonCardContent>
-                </IonCard>
+                  <IonButton
+                      disabled={
+                        !joinServerNameInput?.length ||
+                        !joinServerAddressInput?.length
+                      }
+                      expand="block"
+                      onClick={() => joinNewChannel()}>
+                    Join
+                  </IonButton>
+                </IonList>
               </IonContent>
             </IonModal>
             <IonButton
@@ -347,32 +361,13 @@ const Chats = () => {
                 </IonToolbar>
               </IonHeader>
               <IonContent className="ion-padding">
-                <IonCard>
-                  <IonCardHeader>
-                    <IonCardTitle>Connect dApp</IonCardTitle>
-                  </IonCardHeader>
-                  <IonCardContent>
-                    <IonList>
-                      <IonLabel
-                        class="ion-text-wrap"
-                        position="stacked">
-                        Some placeholder text goes here as if it was a lorem
-                        ipsum but better.
-                      </IonLabel>
-                      <IonInput
-                        className="ion-margin-vertical"
-                        placeholder="Name"
-                      />
-                      <IonButton expand="block">Connect</IonButton>
-                      <br />
-                      <IonLabel
-                        class="ion-text-wrap"
-                        position="stacked">
-                        This is a work in progress...
-                      </IonLabel>
-                    </IonList>
-                  </IonCardContent>
-                </IonCard>
+                <IonList>
+                  <IonLabel
+                      class="ion-text-wrap"
+                      position="stacked">
+                    This is a work in progress...
+                  </IonLabel>
+                </IonList>
               </IonContent>
             </IonModal>
           </IonToolbar>
