@@ -16,7 +16,7 @@ export const DidCard = ({name}) => (
     <>
         <IonCard color="secondary">
             <IonCardHeader>
-                <IonCardTitle>Thomas A. Mayfield</IonCardTitle>
+                <IonCardTitle style={{fontSize: '20px'}}>Thomas A. Mayfield</IonCardTitle>
                 <IonCardSubtitle>Expiration date</IonCardSubtitle>
             </IonCardHeader>
 
