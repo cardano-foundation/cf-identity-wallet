@@ -1,0 +1,20 @@
+.categorySlider {
+
+  margin-top: 1rem;
+
+  ion-slide {
+
+    width: 60%;
+    margin-right: 10px;
+    margin-left: 10px;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    img {
+
+      border-radius: 22px;
+    }
+  }
+}
