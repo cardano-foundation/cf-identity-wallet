@@ -8,14 +8,14 @@ import {
   IonProgressBar,
   IonRow,
   IonList,
-  IonSelect,
-  IonSelectOption,
   IonCard,
   IonCardHeader,
   IonCardContent,
   IonButton,
   IonIcon,
   IonCheckbox,
+  IonSegment,
+  IonSegmentButton,
 } from '@ionic/react';
 import {addOutline, eyeOffOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
@@ -90,12 +90,14 @@ const RecoverySeedPhrase = (props) => {
               className="mt-5">
               <IonList>
                 <IonItem>
-                  <IonSelect
-                    className="my-0 mx-auto"
-                    placeholder="Select length">
-                    <IonSelectOption value="apples">15 words</IonSelectOption>
-                    <IonSelectOption value="oranges">24 words</IonSelectOption>
-                  </IonSelect>
+                  <IonSegment value="default">
+                    <IonSegmentButton value="default">
+                      <IonLabel>15 words</IonLabel>
+                    </IonSegmentButton>
+                    <IonSegmentButton value="segment">
+                      <IonLabel>24 words</IonLabel>
+                    </IonSegmentButton>
+                  </IonSegment>
                 </IonItem>
               </IonList>
             </IonCol>
