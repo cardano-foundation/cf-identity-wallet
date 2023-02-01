@@ -39,9 +39,9 @@ export class PeerConnect extends CardanoPeerConnect {
       identifier: config.identifier,
       //announce: ["https://tracker.boostpool.io"]
       announce: [
-        //'ws://tracker.files.fm:7072/announce',
-        //'wss://tracker.openwebtorrent.com/announce',
-        //'wss://tracker.btorrent.xyz/',
+        'ws://tracker.files.fm:7072/announce',
+        'wss://tracker.openwebtorrent.com/announce',
+        'wss://tracker.btorrent.xyz/',
         'https://tracker.boostpool.io',
       ],
     });
