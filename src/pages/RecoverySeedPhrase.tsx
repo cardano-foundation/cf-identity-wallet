@@ -92,7 +92,7 @@ const RecoverySeedPhrase = (props) => {
           value={0.5}
           buffer={1}
         />
-        <IonGrid className="min-h-[64vh]">
+        <IonGrid className="min-h-[60vh]">
           <IonRow>
             <IonCol size="12">
               <IonItem>
@@ -130,7 +130,7 @@ const RecoverySeedPhrase = (props) => {
             <IonCol
               size="12"
               className={`flex flex-col justify-center ${
-                view && seedPhrase.length === 15 && 'min-h-[45vh]'
+                view && seedPhrase.length === 15 && 'min-h-[40vh]'
               }`}>
               {view ? (
                 <div className="grid grid-cols-3 gap-2 px-2">
