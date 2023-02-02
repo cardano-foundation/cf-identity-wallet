@@ -88,11 +88,9 @@ const CreateWallet = (props) => {
           buffer={1}
         />
         <form>
-          <IonGrid>
+          <IonGrid className="min-h-[64vh]">
             <IonRow>
-              <IonCol
-                size="12"
-                className="mt-5">
+              <IonCol size="12">
                 <IonItem>
                   <IonLabel>
                     <h4>The password unlocks the wallet in this device...</h4>
@@ -162,9 +160,7 @@ const CreateWallet = (props) => {
                 </IonItem>
               </IonCol>
             </IonRow>
-          </IonGrid>
-          <IonGrid className="mt-3">
-            <IonRow>
+            <IonRow className="mt-3">
               <IonCol size="12">
                 <IonItem>
                   <IonLabel>
@@ -180,7 +176,7 @@ const CreateWallet = (props) => {
           </IonGrid>
           <IonGrid className="mt-3">
             <IonRow>
-              <IonCol size="12">
+              <IonCol>
                 <IonItem>
                   <IonCheckbox
                     slot="start"
@@ -190,18 +186,12 @@ const CreateWallet = (props) => {
                   />
                   <IonLabel className="terms_and_conditions">
                     I understand that if I lose my recovery phrase, I will not
-                    be able to access my account{' '}
+                    be able to access my account.
                     <a href="/termsandconditions">
                       <u>Terms</u>
                     </a>
                   </IonLabel>
                 </IonItem>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-          <IonGrid className="mt-3">
-            <IonRow className="ion-text-center">
-              <IonCol>
                 <IonButton
                   shape="round"
                   color="dark"
