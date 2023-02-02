@@ -92,27 +92,25 @@ const RecoverySeedPhrase = (props) => {
           value={0.5}
           buffer={1}
         />
-        <IonGrid>
+        <IonGrid className="min-h-[64vh]">
           <IonRow>
             <IonCol size="12">
-              <IonList>
-                <IonItem>
-                  <IonSegment
-                    value={`${seedPhrase.length}words`}
-                    onIonChange={(event) => {
-                      (event.detail.value as string) === '15words'
-                        ? setSeedPhrase(seed15)
-                        : setSeedPhrase(seed24);
-                    }}>
-                    <IonSegmentButton value="15words">
-                      <IonLabel>15 words</IonLabel>
-                    </IonSegmentButton>
-                    <IonSegmentButton value="24words">
-                      <IonLabel>24 words</IonLabel>
-                    </IonSegmentButton>
-                  </IonSegment>
-                </IonItem>
-              </IonList>
+              <IonItem>
+                <IonSegment
+                  value={`${seedPhrase.length}words`}
+                  onIonChange={(event) => {
+                    (event.detail.value as string) === '15words'
+                      ? setSeedPhrase(seed15)
+                      : setSeedPhrase(seed24);
+                  }}>
+                  <IonSegmentButton value="15words">
+                    <IonLabel>15 words</IonLabel>
+                  </IonSegmentButton>
+                  <IonSegmentButton value="24words">
+                    <IonLabel>24 words</IonLabel>
+                  </IonSegmentButton>
+                </IonSegment>
+              </IonItem>
             </IonCol>
           </IonRow>
           <IonRow>
@@ -129,7 +127,11 @@ const RecoverySeedPhrase = (props) => {
             </IonCol>
           </IonRow>
           <IonRow>
-            <IonCol size="12">
+            <IonCol
+              size="12"
+              className={`flex flex-col justify-center ${
+                view && seedPhrase.length === 15 && 'min-h-[45vh]'
+              }`}>
               {view ? (
                 <div className="grid grid-cols-3 gap-2 px-2">
                   {seedPhrase.map((word, index) => (
@@ -174,7 +176,7 @@ const RecoverySeedPhrase = (props) => {
             </IonCol>
           </IonRow>
         </IonGrid>
-        <IonGrid>
+        <IonGrid className="mt-3">
           <IonRow>
             <IonCol>
               <IonItem>
@@ -185,7 +187,7 @@ const RecoverySeedPhrase = (props) => {
                 />
                 <IonLabel className="terms_and_conditions">
                   I understand that if I lose my recovery phrase, I will not be
-                  able to access my account{' '}
+                  able to access my account.
                   <a href="/termsandconditions">
                     <u>Terms</u>
                   </a>
