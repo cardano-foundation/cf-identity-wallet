@@ -16,56 +16,65 @@ import {
   IonCheckbox,
   IonSegment,
   IonSegmentButton,
+  IonChip,
 } from '@ionic/react';
 import {addOutline, eyeOffOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
+
+/* 
+  Hardcoding test values for seedphrases.
+  To be removed once the real seed phrase 
+  generating tool will be integrated.
+  */
+const seed15 = [
+  'dwarf',
+  'knife',
+  'soft',
+  'era',
+  'rose',
+  'tired',
+  'caught',
+  'save',
+  'talent',
+  'flip',
+  'shield',
+  'jazz',
+  'melt',
+  'gaze',
+  'own',
+];
+const seed24 = [
+  'rigid',
+  'eternal',
+  'village',
+  'outside',
+  'medal',
+  'conduct',
+  'crash',
+  'rifle',
+  'gesture',
+  'salad',
+  'unusual',
+  'someone',
+  'real',
+  'this',
+  'dash',
+  'major',
+  'common',
+  'arrange',
+  'suggest',
+  'wool',
+  'stick',
+  'swift',
+  'cushion',
+  'mouse',
+];
 
 const RecoverySeedPhrase = (props) => {
   const pageName = 'Recovery Seed Phrase';
   const [checked, setChecked] = useState(false);
   const [view, setView] = useState(false);
-  const seed15 = [
-    'dwarf',
-    'knife',
-    'soft',
-    'era',
-    'rose',
-    'tired',
-    'caught',
-    'save',
-    'talent',
-    'flip',
-    'shield',
-    'jazz',
-    'melt',
-    'gaze',
-    'own',
-  ];
-  const seed24 = [
-    'rigid',
-    'eternal',
-    'village',
-    'outside',
-    'medal',
-    'conduct',
-    'crash',
-    'rifle',
-    'gesture',
-    'salad',
-    'unusual',
-    'someone',
-    'real',
-    'this',
-    'dash',
-    'major',
-    'common',
-    'arrange',
-    'suggest',
-    'wool',
-    'stick',
-    'swift',
-    'cushion mouse',
-  ];
+  const [seedPhrase, setSeedPhrase] = useState<string[]>(seed15);
 
   return (
     <IonPage id={pageName}>
@@ -85,16 +94,20 @@ const RecoverySeedPhrase = (props) => {
         />
         <IonGrid>
           <IonRow>
-            <IonCol
-              size="12"
-              className="mt-5">
+            <IonCol size="12">
               <IonList>
                 <IonItem>
-                  <IonSegment value="default">
-                    <IonSegmentButton value="default">
+                  <IonSegment
+                    value={`${seedPhrase.length}words`}
+                    onIonChange={(event) => {
+                      (event.detail.value as string) === '15words'
+                        ? setSeedPhrase(seed15)
+                        : setSeedPhrase(seed24);
+                    }}>
+                    <IonSegmentButton value="15words">
                       <IonLabel>15 words</IonLabel>
                     </IonSegmentButton>
-                    <IonSegmentButton value="segment">
+                    <IonSegmentButton value="24words">
                       <IonLabel>24 words</IonLabel>
                     </IonSegmentButton>
                   </IonSegment>
@@ -109,8 +122,7 @@ const RecoverySeedPhrase = (props) => {
                   <h4>Write down this Secret Recovery Phrase</h4>
                   <p className="mt-2">
                     Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since the 1500s,
+                    typesetting industry.
                   </p>
                 </IonLabel>
               </IonItem>
@@ -118,36 +130,53 @@ const RecoverySeedPhrase = (props) => {
           </IonRow>
           <IonRow>
             <IonCol size="12">
-              <IonCard
-                color="dark"
-                className="text-center py-7">
-                <IonCardHeader className="pt-0">
-                  <IonIcon
-                    size="large"
-                    icon={eyeOffOutline}
-                  />
-                </IonCardHeader>
-                <IonCardContent>
-                  <p>
-                    <strong>Tap to reveal the secret phrase</strong>
-                  </p>
-                  <p className="mt-3">
-                    <strong>Make sure no one is looking at this screen</strong>
-                  </p>
-                </IonCardContent>
-                <IonButton
-                  shape="round"
+              {view ? (
+                <div className="grid grid-cols-3 gap-2 px-2">
+                  {seedPhrase.map((word, index) => (
+                    <IonChip
+                      className="text-sm"
+                      key={index}>
+                      <span className="w-full text-center">{word}</span>
+                    </IonChip>
+                  ))}
+                </div>
+              ) : (
+                <IonCard
                   color="dark"
-                  size="large">
-                  View
-                </IonButton>
-              </IonCard>
+                  className="text-center min-h-[16rem] flex flex-col justify-around">
+                  <IonCardHeader>
+                    <IonIcon
+                      size="large"
+                      icon={eyeOffOutline}
+                    />
+                  </IonCardHeader>
+                  <IonCardContent>
+                    <p>
+                      <strong>Tap to reveal the secret phrase</strong>
+                    </p>
+                    <p className="mt-3">
+                      <strong>
+                        Make sure no one is looking at this screen
+                      </strong>
+                    </p>
+                  </IonCardContent>
+                  <IonButton
+                    shape="round"
+                    color="dark"
+                    className="w-2/6 mx-auto mb-6"
+                    onClick={() => {
+                      setView(true);
+                    }}>
+                    View
+                  </IonButton>
+                </IonCard>
+              )}
             </IonCol>
           </IonRow>
         </IonGrid>
         <IonGrid>
           <IonRow>
-            <IonCol size="12">
+            <IonCol>
               <IonItem>
                 <IonCheckbox
                   slot="start"
@@ -162,12 +191,6 @@ const RecoverySeedPhrase = (props) => {
                   </a>
                 </IonLabel>
               </IonItem>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-        <IonGrid>
-          <IonRow className="ion-text-center">
-            <IonCol>
               <IonButton
                 shape="round"
                 color="dark"

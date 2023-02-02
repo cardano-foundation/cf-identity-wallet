@@ -90,9 +90,7 @@ const CreateWallet = (props) => {
         <form>
           <IonGrid>
             <IonRow>
-              <IonCol
-                size="12"
-                className="mt-5">
+              <IonCol size="12">
                 <IonItem>
                   <IonLabel>
                     <h4>The password unlocks the wallet in this device...</h4>
@@ -179,8 +177,8 @@ const CreateWallet = (props) => {
             </IonRow>
           </IonGrid>
           <IonGrid className="mt-3">
-            <IonRow>
-              <IonCol size="12">
+            <IonRow className="ion-text-center">
+              <IonCol>
                 <IonItem>
                   <IonCheckbox
                     slot="start"
@@ -196,12 +194,6 @@ const CreateWallet = (props) => {
                     </a>
                   </IonLabel>
                 </IonItem>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-          <IonGrid className="mt-3">
-            <IonRow className="ion-text-center">
-              <IonCol>
                 <IonButton
                   shape="round"
                   color="dark"
