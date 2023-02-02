@@ -88,7 +88,7 @@ const CreateWallet = (props) => {
           buffer={1}
         />
         <form>
-          <IonGrid className="min-h-[64vh]">
+          <IonGrid className="min-h-[60vh]">
             <IonRow>
               <IonCol size="12">
                 <IonItem>
