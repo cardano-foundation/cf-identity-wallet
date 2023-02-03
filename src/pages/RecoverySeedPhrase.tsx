@@ -168,7 +168,7 @@ const RecoverySeedPhrase = (props) => {
                   <IonButton
                     shape="round"
                     color="dark"
-                    className="w-2/6 mx-auto mb-6"
+                    className="w-2/6 mx-auto mb-6 reveal-button"
                     onClick={() => {
                       setView(true);
                     }}>
