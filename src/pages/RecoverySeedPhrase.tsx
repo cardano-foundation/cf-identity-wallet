@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   IonCol,
   IonGrid,
@@ -7,7 +7,6 @@ import {
   IonPage,
   IonProgressBar,
   IonRow,
-  IonList,
   IonCard,
   IonCardHeader,
   IonCardContent,
@@ -75,6 +74,10 @@ const RecoverySeedPhrase = (props) => {
   const [checked, setChecked] = useState(false);
   const [view, setView] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState<string[]>(seed15);
+
+  useEffect(() => {
+    localStorage.setItem('seedPhrase', JSON.stringify(seedPhrase));
+  }, [seedPhrase]);
 
   return (
     <IonPage id={pageName}>
@@ -198,7 +201,7 @@ const RecoverySeedPhrase = (props) => {
                 color="dark"
                 expand="block"
                 className="h-auto my-4"
-                href="/recoveryseedphrase"
+                href="/verifyseedphrase"
                 disabled={!checked}>
                 Continue
               </IonButton>
