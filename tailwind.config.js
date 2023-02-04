@@ -8,22 +8,23 @@ module.exports = {
   plugins: [require('daisyui')],
   prefix: '',
   daisyui: {
-    styled: true,
-    base: true,
-    utils: true,
-    logs: true,
-    rtl: false,
-    prefix: '',
-    themes: [
-      {
-        light: {
-          primary: '#154666',
-          'primary-content': '#fff',
-          'primary-focus': '#3171e0',
-          secondary: '#438F68',
-          'secondary-content': '#fff',
-          'secondary-focus': '#0bb8cc',
-          tertiary: '#7044ff',
+      styled: true,
+      base: true,
+      utils: true,
+      logs: true,
+      rtl: false,
+      prefix: '',
+      darkTheme: "dark",
+      themes: [
+          {
+              light: {
+                  primary: '#154666',
+                  'primary-content': '#fff',
+                  'primary-focus': '#3171e0',
+                  secondary: '#438F68',
+                  'secondary-content': '#fff',
+                  'secondary-focus': '#0bb8cc',
+                  tertiary: '#7044ff',
           'tertiary-content': '#fff',
           'tertiary-focus': '#633ce0',
           success: '#10dc60',

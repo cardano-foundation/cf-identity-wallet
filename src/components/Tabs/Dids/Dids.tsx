@@ -1,9 +1,10 @@
 import React, {useEffect} from 'react';
-import {IonGrid, IonPage, IonRow, IonSlide, IonSlides} from '@ionic/react';
+import {IonGrid, IonPage, IonRow, IonText} from '@ionic/react';
 import CustomPage from '../../../main/CustomPage';
 import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
 import {DidCard} from "../../Did/DidCard";
 import '../../Did/did.scss';
+import {Swiper, SwiperSlide} from 'swiper/react';
 
 const Dids = (props) => {
   const pageName = 'My Identity';
@@ -20,6 +21,7 @@ const Dids = (props) => {
     }
   }, [props.location]);
 
+
   return (
     <IonPage id={pageName}>
       <CustomPage
@@ -28,17 +30,48 @@ const Dids = (props) => {
         sideMenuPosition="start">
         <IonGrid>
           <IonRow className="ion-margin">
-            did:cardano
-            <IonSlides
-                options={{
-                  slidesPerView: 1.2,
-                  loop: true,
-                }}
+            <IonText color="dark">
+              <p className="title">DID:key</p>
+            </IonText>
+            <Swiper
+                spaceBetween={10}
+                slidesPerView={1.2}
+                loop={true}
+                onSlideChange={() => console.log('slide change')}
+                onSwiper={(swiper) => console.log(swiper)}
             >
-              <IonSlide><DidCard name={"hey1"}/></IonSlide>
-              <IonSlide><DidCard name={"hey2"}/></IonSlide>
-              <IonSlide><DidCard name={"hey3"}/></IonSlide>
-            </IonSlides>
+              <SwiperSlide>
+                <DidCard id="1" name={"Thomas A. Mayfield"} expDate="expiration date"/>
+              </SwiperSlide>
+              <SwiperSlide>
+                <DidCard id="2" name={"Thomas A. Mayfield"} expDate="expiration date"/>
+              </SwiperSlide>
+              <SwiperSlide>
+                <DidCard id="3" name={"Thomas A. Mayfield"} expDate="expiration date"/>
+              </SwiperSlide>
+            </Swiper>
+          </IonRow>
+          <IonRow className="ion-margin">
+            <IonText color="dark">
+              <p className="title">DID:key</p>
+            </IonText>
+            <Swiper
+                spaceBetween={10}
+                slidesPerView={1.2}
+                loop={true}
+                onSlideChange={() => console.log('slide change')}
+                onSwiper={(swiper) => console.log(swiper)}
+            >
+              <SwiperSlide>
+                <DidCard id="1" name={"Thomas A. Mayfield"} expDate="expiration date"/>
+              </SwiperSlide>
+              <SwiperSlide>
+                <DidCard id="2" name={"Thomas A. Mayfield"} expDate="expiration date"/>
+              </SwiperSlide>
+              <SwiperSlide>
+                <DidCard id="3" name={"Thomas A. Mayfield"} expDate="expiration date"/>
+              </SwiperSlide>
+            </Swiper>
           </IonRow>
         </IonGrid>
       </CustomPage>
