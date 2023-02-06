@@ -13,6 +13,7 @@ import {informationCircleOutline, qrCodeOutline} from "ionicons/icons";
 import {useHistory} from "react-router-dom";
 import './did.scss';
 import {isDarkMode} from "../../theme/handleTheme";
+import {addressSlice} from "../../utils/utils";
 
 export const DidCard = ({id, name, expDate}) => {
 
@@ -41,7 +42,7 @@ export const DidCard = ({id, name, expDate}) => {
             <IonCardContent>
                 <IonItem className="ion-activated" style={{borderRadius: '10px'}}>
                     <IonIcon icon={informationCircleOutline} slot="start"/>
-                    <IonLabel>{id}</IonLabel>
+                    <IonLabel>{addressSlice(id)}</IonLabel>
                     <IonIcon icon={qrCodeOutline} slot="end" onClick={() => handleNavigation(`/did/${id}`)}/>
                 </IonItem>
             </IonCardContent>

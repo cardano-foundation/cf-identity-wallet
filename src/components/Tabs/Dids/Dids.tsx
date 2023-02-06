@@ -5,6 +5,7 @@ import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
 import {DidCard} from "../../Did/DidCard";
 import '../../Did/did.scss';
 import {Swiper, SwiperSlide} from 'swiper/react';
+import didsMock from '../../../test/mock/dids.json';
 
 const Dids = (props) => {
   const pageName = 'My Identity';
@@ -21,75 +22,41 @@ const Dids = (props) => {
     }
   }, [props.location]);
 
+  console.log("didsMock");
+  console.log(didsMock);
 
   return (
-    <IonPage id={pageName}>
-      <CustomPage
-        name={pageName}
-        sideMenu={false}
-        sideMenuPosition="start">
-        <IonGrid>
-          <IonRow className="ion-margin">
-            <IonText color="dark">
-              <p className="title">DID:key</p>
-            </IonText>
-            <Swiper
-                spaceBetween={10}
-                slidesPerView={1.2}
-                loop={true}
-                onSlideChange={() => console.log('slide change')}
-                onSwiper={(swiper) => console.log(swiper)}
-            >
-              <SwiperSlide>
-                <DidCard id="1" name={"Thomas A. Mayfield"} expDate="expiration date"/>
-              </SwiperSlide>
-              <SwiperSlide>
-                <DidCard id="2" name={"Thomas A. Mayfield"} expDate="expiration date"/>
-              </SwiperSlide>
-              <SwiperSlide>
-                <DidCard id="3" name={"Thomas A. Mayfield"} expDate="expiration date"/>
-              </SwiperSlide>
-            </Swiper>
-          </IonRow>
-          <IonRow className="ion-margin">
-            <IonText color="dark">
-              <p className="title">DID:key</p>
-            </IonText>
-            <Swiper
-                spaceBetween={10}
-                slidesPerView={1.2}
-                loop={true}
-                onSlideChange={() => console.log('slide change')}
-                onSwiper={(swiper) => console.log(swiper)}
-            >
-              <SwiperSlide>
-                <DidCard id="1" name={"Thomas A. Mayfield"} expDate="expiration date"/>
-              </SwiperSlide>
-              <SwiperSlide>
-                <DidCard id="2" name={"Thomas A. Mayfield"} expDate="expiration date"/>
-              </SwiperSlide>
-              <SwiperSlide>
-                <DidCard id="3" name={"Thomas A. Mayfield"} expDate="expiration date"/>
-              </SwiperSlide>
-            </Swiper>
-          </IonRow>
-          <IonRow className="ion-margin">
-            <IonText color="dark">
-              <p className="title">DID:key</p>
-            </IonText>
-            <Swiper
-                spaceBetween={10}
-                slidesPerView={1}
-                loop={true}
-                onSlideChange={() => console.log('slide change')}
-                onSwiper={(swiper) => console.log(swiper)}
-            >
-              <SwiperSlide>
-                <DidCard id="1" name={"Thomas A. Mayfield"} expDate="expiration date"/>
-              </SwiperSlide>
-            </Swiper>
-          </IonRow>
-        </IonGrid>
+      <IonPage id={pageName}>
+        <CustomPage
+            name={pageName}
+            sideMenu={false}
+            sideMenuPosition="start">
+          <IonGrid>
+            {Object.keys(didsMock)?.map(key => {
+              console.log('didsMock[key]');
+              console.log(didsMock[key]);
+              return <IonRow className="ion-margin">
+                <IonText color="dark">
+                  <p className="title">DID:{key}</p>
+                </IonText>
+                <Swiper
+                    spaceBetween={10}
+                    slidesPerView={didsMock[key] && didsMock[key].length > 1 ? 1.2 : 1}
+                    loop={true}
+                    onSlideChange={() => console.log('slide change')}
+                    onSwiper={(swiper) => console.log(swiper)}
+                >
+                  {
+                    didsMock[key] && didsMock[key].map(did => {
+                      return <SwiperSlide>
+                        <DidCard id={did.id} name={did.name} expDate={did.createDate}/>
+                      </SwiperSlide>
+                    })
+                  }
+                </Swiper>
+              </IonRow>
+            })}
+          </IonGrid>
       </CustomPage>
     </IonPage>
   );

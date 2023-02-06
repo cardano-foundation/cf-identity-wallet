@@ -1,20 +1,58 @@
 import React, {useEffect, useState} from 'react';
-import {IonButton, IonPage,} from '@ionic/react';
+import {IonButton, IonPage, IonToast,} from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
 import {useLocation} from "react-router-dom";
 import {QRCode} from "react-qrcode-logo";
 import Barcode from "react-barcode";
+import {writeToClipboard} from "../utils/clipboard";
 
 const Did = (props) => {
 
     const location = useLocation();
     const pageName = location.state?.name || '';
+    const id = location.state?.id || '';
 
     const [showQrcode, setShowQrcode] = useState(true);
 
+    const [showToast, setShowToast] = useState(false);
+    const [toastMessage, setToastMessage] = useState('');
+    const [toastColor, setToastColor] = useState('success');
+
     useEffect(() => {
     }, []);
+
+    const onCopy = (content) => {
+        writeToClipboard(content).then(() => {
+            setToastColor('success');
+            setToastMessage(`Copied: ${content}`);
+            setShowToast(true);
+        });
+    };
+
+    const renderCode = () => {
+        if (!id || !id.length) return;
+        return showQrcode ? <QRCode
+            value={id}
+            size={250}
+            fgColor={'black'}
+            bgColor={'#FFFFFF'}
+            qrStyle={'squares'}
+            logoImage={'https://webisora.com/wp-content/uploads/2017/09/WebisoraLogo_B.png'}
+            logoWidth={180}
+            logoHeight={40}
+            logoOpacity={1}
+            quietZon={10} //The size of the quiet zone around the QR Code. This will have the same color as QR Code bgColor
+        /> : <Barcode
+            value={'c56d4cceb8a8550534968e1bf165137a'} // 32 chars
+            format={'CODE128'}
+            displayValue={false}
+            lineColor={'black'}
+            background={'white'}
+            width={1}
+        />
+    };
+
     return (
         <IonPage id={pageName}>
             <CustomPage
@@ -46,29 +84,12 @@ const Did = (props) => {
                             </span>
                         </p>
                         {
-                            showQrcode ? <QRCode
-                                value={pageName}
-                                size={250}
-                                fgColor={'black'}
-                                bgColor={'#FFFFFF'}
-                                qrStyle={'squares'}
-                                logoImage={'https://webisora.com/wp-content/uploads/2017/09/WebisoraLogo_B.png'}
-                                logoWidth={180}
-                                logoHeight={40}
-                                logoOpacity={1}
-                                quietZon={10} //The size of the quiet zone around the QR Code. This will have the same color as QR Code bgColor
-                            /> : <Barcode
-                                value={'c56d4cceb8a8550534968e1bf165137a'} // 32 chars
-                                format={'CODE128'}
-                                displayValue={false}
-                                lineColor={'black'}
-                                background={'white'}
-                                width={1}
-                            />
+                            renderCode()
                         }
                     </div>
                     <div className="flex flex-col text-center w-full p-4 items-center">
                         <IonButton
+                            onClick={() => onCopy(id)}
                             shape="round"
                             color="dark"
                             expand="block">
@@ -77,7 +98,15 @@ const Did = (props) => {
                     </div>
                 </div>
             </CustomPage>
-      </IonPage>
+            <IonToast
+                color={toastColor}
+                isOpen={showToast}
+                onDidDismiss={() => setShowToast(false)}
+                message={toastMessage}
+                position="bottom"
+                duration="3000"
+            />
+        </IonPage>
   );
 };
 

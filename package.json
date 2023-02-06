@@ -10,7 +10,7 @@
     "buildcap": "rimraf build && webpack --config webpack.prod.js && npx cap sync",
     "open:android": "npx cap open android",
     "open:ios": "npx cap open ios",
-    "test": "react-scripts test",
+    "test": "react-scripts src/test",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js,.ts,.jsx,.tsx src",
     "format": "npm run lint --fix & yarn prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
