@@ -11,10 +11,18 @@ import {tab1SideMenu, tab2SideMenu, tab3SideMenu} from '../PageSideMenus';
 
 //  Main tab children
 // import Settings from '../../pages/Settings';
+
 //  Sub pages
 // import InboxItem from '../../pages/InboxItem';
+
 //	Tab icons
-import {fingerPrintOutline, idCardOutline, scanOutline, settingsOutline, walletOutline,} from 'ionicons/icons';
+import {
+  idCardOutline,
+  fingerPrintOutline,
+  scanOutline,
+  settingsOutline,
+  walletOutline,
+} from 'ionicons/icons';
 
 //  Import custom tab menu
 import TabMenu from '../TabMenu';
@@ -37,7 +45,7 @@ export const tabRoutes = [
     component: Dids,
     customIcon: false,
     icon: fingerPrintOutline,
-    path: '/api/tabs/dids',
+    path: '/tabs/dids',
     default: true,
     isTab: true,
     sideMenu: true,
@@ -48,7 +56,7 @@ export const tabRoutes = [
     component: Credentials,
     customIcon: false,
     icon: idCardOutline,
-    path: '/api/tabs/credentials',
+    path: '/tabs/credentials',
     default: false,
     isTab: true,
     sideMenu: true,
@@ -59,7 +67,7 @@ export const tabRoutes = [
     component: Camera,
     customIcon: false,
     icon: scanOutline,
-    path: '/api/tabs/camera',
+    path: '/tabs/camera',
     default: false,
     isTab: true,
     sideMenu: true,
@@ -70,7 +78,7 @@ export const tabRoutes = [
     component: Crypto,
     customIcon: false,
     icon: walletOutline,
-    path: '/api/tabs/crypto',
+    path: '/tabs/crypto',
     default: false,
     isTab: true,
     sideMenu: true,
@@ -81,7 +89,7 @@ export const tabRoutes = [
     component: Settings,
     customIcon: false,
     icon: settingsOutline,
-    path: '/api/tabs/settings',
+    path: '/tabs/settings',
     default: false,
     isTab: true,
     sideMenu: true,

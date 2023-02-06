@@ -7,7 +7,7 @@ import Chat from '../../components/Chat/Chat';
 import Template from '../../pages/Template';
 import Payments from '../../pages/Payments';
 import Stuff from '../../pages/Stuff';
-import {SubPages, tabRoutes, Tabs} from './AllRoutes';
+import {SubPages, Tabs, tabRoutes} from './AllRoutes';
 import Chats from '../../components/Chat/Chats';
 import CreateWallet from '../../pages/CreateWallet';
 import RecoverySeedPhrase from '../../pages/RecoverySeedPhrase';
@@ -22,44 +22,44 @@ const NavRoutes = () => {
 
         <IonRouterOutlet id="main">
           <Route
-              path="/api/tabs"
-              render={() => <Tabs/>}
+            path="/tabs"
+            render={() => <Tabs />}
           />
           <Route
-              path="/api/createwallet"
-              render={() => <CreateWallet/>}
+            path="/createwallet"
+            render={() => <CreateWallet />}
           />
           <Route
-              path="/api/recoveryseedphrase"
-              render={() => <RecoverySeedPhrase/>}
+            path="/recoveryseedphrase"
+            render={() => <RecoverySeedPhrase />}
           />
           <Route
-              path="/api/termsandconditions"
-              render={() => <TermsAndConditions/>}
+            path="/termsandconditions"
+            render={() => <TermsAndConditions />}
           />
           <Route
-              path="/api/faceidsetup"
-              render={() => <FaceIdSetup/>}
+            path="/faceidsetup"
+            render={() => <FaceIdSetup />}
           />
           <Route
-              path="/api/template"
-              render={() => <Template/>}
+            path="/template"
+            render={() => <Template />}
           />
           <Route
-              path="/api/payments"
-              render={() => <Payments/>}
+            path="/payments"
+            render={() => <Payments />}
           />
           <Route
-              path="/api/stuff"
-              render={() => <Stuff/>}
+            path="/stuff"
+            render={() => <Stuff />}
           />
           <Route
-              path="/api/chats"
-              render={() => <Chats/>}
+            path="/chats"
+            render={() => <Chats />}
           />
           <Route
-              path="/api/chat/:channel_id"
-              render={() => <Chat/>}
+            path="/chat/:channel_id"
+            render={() => <Chat />}
           />
           <SubPages />
 
