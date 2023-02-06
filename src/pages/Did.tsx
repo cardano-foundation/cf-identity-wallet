@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {IonPage,} from '@ionic/react';
+import {IonButton, IonPage,} from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
 import {useLocation} from "react-router-dom";
@@ -9,9 +9,9 @@ import Barcode from "react-barcode";
 const Did = (props) => {
 
     const location = useLocation();
-    const pageName = location.state?.name;
+    const pageName = location.state?.name || '';
 
-    const [code, setCode] = useState("Hello world!");
+    const [showQrcode, setShowQrcode] = useState(true);
 
     useEffect(() => {
     }, []);
@@ -28,29 +28,52 @@ const Did = (props) => {
                 actionButtonIcon={addOutline}
                 actionButtonIconSize="1.7rem">
                 <div className=''>
-                    <div className="flex flex-col text-center w-full p-4 items-center">
-                        <QRCode
-                            value={pageName}
-                            size={250}
-                            fgColor={'black'}
-                            bgColor={'#FFFFFF'}
-                            qrStyle={'squares'}
-                            logoImage={'https://webisora.com/wp-content/uploads/2017/09/WebisoraLogo_B.png'}
-                            logoWidth={180}
-                            logoHeight={40}
-                            logoOpacity={1}
-                            quietZon={10} //The size of the quiet zone around the QR Code. This will have the same color as QR Code bgColor
-                        />
+                    <div className="flex flex-col text-center w-full py-8 items-center">
+                        <p>Share your identity with others</p>
                     </div>
                     <div className="flex flex-col text-center w-full p-4 items-center">
-                        <Barcode
-                            value={pageName}
-                            format={'CODE128'}
-                            displayValue={false}
-                            lineColor={'black'}
-                            background={'white'}
-                            width={1}
-                        />
+                        <p className='mb-4'>
+                            <span
+                                onClick={() => setShowQrcode(true)}
+                                className={!showQrcode ? 'text-gray-600 cursor-pointer' : ''}>
+                                Qrcode
+                            </span>
+                            <span className='text-gray-600'>{' '}/{' '}</span>
+                            <span
+                                onClick={() => setShowQrcode(false)}
+                                className={showQrcode ? 'text-gray-600 cursor-pointer' : ''}>
+                                Barcode
+                            </span>
+                        </p>
+                        {
+                            showQrcode ? <QRCode
+                                value={pageName}
+                                size={250}
+                                fgColor={'black'}
+                                bgColor={'#FFFFFF'}
+                                qrStyle={'squares'}
+                                logoImage={'https://webisora.com/wp-content/uploads/2017/09/WebisoraLogo_B.png'}
+                                logoWidth={180}
+                                logoHeight={40}
+                                logoOpacity={1}
+                                quietZon={10} //The size of the quiet zone around the QR Code. This will have the same color as QR Code bgColor
+                            /> : <Barcode
+                                value={'c56d4cceb8a8550534968e1bf165137a'} // 32 chars
+                                format={'CODE128'}
+                                displayValue={false}
+                                lineColor={'black'}
+                                background={'white'}
+                                width={1}
+                            />
+                        }
+                    </div>
+                    <div className="flex flex-col text-center w-full p-4 items-center">
+                        <IonButton
+                            shape="round"
+                            color="dark"
+                            expand="block">
+                            Copy
+                        </IonButton>
                     </div>
                 </div>
             </CustomPage>

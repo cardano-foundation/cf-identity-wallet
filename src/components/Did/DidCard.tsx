@@ -9,8 +9,10 @@ import {
     IonItem,
     IonLabel
 } from "@ionic/react";
-import {arrowForward, informationCircleOutline} from "ionicons/icons";
+import {informationCircleOutline, qrCodeOutline} from "ionicons/icons";
 import {useHistory} from "react-router-dom";
+import './did.scss';
+import {isDarkMode} from "../../theme/handleTheme";
 
 export const DidCard = ({id, name, expDate}) => {
 
@@ -30,17 +32,17 @@ export const DidCard = ({id, name, expDate}) => {
     };
 
     return <>
-        <IonCard color="secondary">
+        <IonCard style={{borderWidth: 5, borderColor: isDarkMode() ? 'white' : 'black'}}>
             <IonCardHeader>
                 <IonCardTitle style={{fontSize: '20px'}}>{name}</IonCardTitle>
                 <IonCardSubtitle>{expDate}</IonCardSubtitle>
             </IonCardHeader>
 
             <IonCardContent>
-                <IonItem className="ion-activated" color="secondary" style={{borderRadius: '10px'}}>
+                <IonItem className="ion-activated" style={{borderRadius: '10px'}}>
                     <IonIcon icon={informationCircleOutline} slot="start"/>
                     <IonLabel>{id}</IonLabel>
-                    <IonIcon icon={arrowForward} slot="end" onClick={() => handleNavigation(`/did/${id}`)}/>
+                    <IonIcon icon={qrCodeOutline} slot="end" onClick={() => handleNavigation(`/did/${id}`)}/>
                 </IonItem>
             </IonCardContent>
         </IonCard>
