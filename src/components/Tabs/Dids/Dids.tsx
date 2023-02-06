@@ -73,6 +73,22 @@ const Dids = (props) => {
               </SwiperSlide>
             </Swiper>
           </IonRow>
+          <IonRow className="ion-margin">
+            <IonText color="dark">
+              <p className="title">DID:key</p>
+            </IonText>
+            <Swiper
+                spaceBetween={10}
+                slidesPerView={1}
+                loop={true}
+                onSlideChange={() => console.log('slide change')}
+                onSwiper={(swiper) => console.log(swiper)}
+            >
+              <SwiperSlide>
+                <DidCard id="1" name={"Thomas A. Mayfield"} expDate="expiration date"/>
+              </SwiperSlide>
+            </Swiper>
+          </IonRow>
         </IonGrid>
       </CustomPage>
     </IonPage>
