@@ -22,9 +22,6 @@ const Dids = (props) => {
     }
   }, [props.location]);
 
-  console.log("didsMock");
-  console.log(didsMock);
-
   return (
       <IonPage id={pageName}>
         <CustomPage
@@ -33,9 +30,7 @@ const Dids = (props) => {
             sideMenuPosition="start">
           <IonGrid>
             {Object.keys(didsMock)?.map(key => {
-              console.log('didsMock[key]');
-              console.log(didsMock[key]);
-              return <IonRow className="ion-margin">
+              return <IonRow key={key} className="ion-margin">
                 <IonText color="dark">
                   <p className="title">DID:{key}</p>
                 </IonText>
@@ -48,8 +43,8 @@ const Dids = (props) => {
                 >
                   {
                     didsMock[key] && didsMock[key].map(did => {
-                      return <SwiperSlide>
-                        <DidCard id={did.id} name={did.name} expDate={did.createDate}/>
+                      return <SwiperSlide key={did.id}>
+                        <DidCard id={did.id} name={did.name} createdOn={did.createDate}/>
                       </SwiperSlide>
                     })
                   }

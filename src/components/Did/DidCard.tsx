@@ -15,7 +15,7 @@ import './did.scss';
 import {isDarkMode} from "../../theme/handleTheme";
 import {addressSlice} from "../../utils/utils";
 
-export const DidCard = ({id, name, expDate}) => {
+export const DidCard = ({id, name, createdOn}) => {
 
     const history = useHistory();
 
@@ -27,7 +27,7 @@ export const DidCard = ({id, name, expDate}) => {
                 // location state
                 id,
                 name,
-                expDate
+                createdOn
             },
         });
     };
@@ -36,7 +36,7 @@ export const DidCard = ({id, name, expDate}) => {
         <IonCard style={{borderWidth: 5, borderColor: isDarkMode() ? 'white' : 'black'}}>
             <IonCardHeader>
                 <IonCardTitle style={{fontSize: '20px'}}>{name}</IonCardTitle>
-                <IonCardSubtitle>{expDate}</IonCardSubtitle>
+                <IonCardSubtitle>{createdOn}</IonCardSubtitle>
             </IonCardHeader>
 
             <IonCardContent>

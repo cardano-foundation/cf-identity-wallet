@@ -6,12 +6,17 @@ import {useLocation} from "react-router-dom";
 import {QRCode} from "react-qrcode-logo";
 import Barcode from "react-barcode";
 import {writeToClipboard} from "../utils/clipboard";
+import {extendMoment} from 'moment-range';
+import Moment from 'moment';
+
+const moment = extendMoment(Moment);
 
 const Did = (props) => {
 
     const location = useLocation();
     const pageName = location.state?.name || '';
     const id = location.state?.id || '';
+    const createdOn = location.state?.createdOn || '';
 
     const [showQrcode, setShowQrcode] = useState(true);
 
@@ -86,14 +91,18 @@ const Did = (props) => {
                         {
                             renderCode()
                         }
+                        <p className='mb-4'><span
+                            className='text-gray-600'>Created on:</span> {moment(createdOn, "x").format("DD MMM YYYY hh:mm a")}
+                        </p>
                     </div>
-                    <div className="flex flex-col text-center w-full p-4 items-center">
+                    <div className="flex flex-col text-center w-full m-1 items-center">
+                        <p className='mb-4'>{id}</p>
                         <IonButton
                             onClick={() => onCopy(id)}
                             shape="round"
                             color="dark"
                             expand="block">
-                            Copy
+                            Copy ID
                         </IonButton>
                     </div>
                 </div>
