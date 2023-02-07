@@ -25,7 +25,11 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
-    "features/wallet/wallet.machine.js"
+    "features/wallet/wallet.machine.js",
+    "node_modules/@stencil/core/compiler/lib.es5.d.ts",
+    "node_modules/@stencil/core/compiler/lib.es5.d.ts",
+    "node_modules/@stencil/core/compiler/lib.es5.d.ts",
+    "node_modules/@stencil/core/compiler/lib.es5.d.ts"
   ],
   "exclude": ["node_modules"]
 }

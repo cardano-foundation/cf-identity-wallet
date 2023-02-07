@@ -49,7 +49,7 @@ const config = {
       ],
    },
    resolve: {
-      extensions: ['*', '.js', '.jsx', '.ts', '.tsx', '.scss'],
+      extensions: ['.js', '.jsx', '.ts', '.tsx', '.css', '.scss'],
       fallback: {
          crypto: require.resolve('crypto-browserify'),
          stream: require.resolve('stream-browserify'),
