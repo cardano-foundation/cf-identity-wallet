@@ -1,0 +1,36 @@
+{
+  "cardano": [
+    {
+      "id": "878b26d5-cf3e-47b5-8a68-03be60f12edf",
+      "createDate": "1675687786999",
+      "name": "Thomas A. Mayfield",
+      "keyType": "Ed25519",
+      "isVerified": true
+    }
+  ],
+  "key": [
+    {
+      "id": "92d4718c-d41e-4d9c-b123-14a7f601fe53",
+      "createDate": "1675687786999",
+      "name": "Anonymous",
+      "keyType": "Secp256k1",
+      "isVerified": true
+    },
+    {
+      "id": "gs5l718c-d41e-4d9c-b123-14a7f601hs8v",
+      "createDate": "1675687786999",
+      "name": "Anonymous",
+      "keyType": "Secp256k1",
+      "isVerified": true
+    }
+  ],
+  "peer": [
+    {
+      "id": "uopw54ca-3e6f-4f8b-99e0-bde1e3dcjd71",
+      "createDate": "1675687786999",
+      "name": "Anonymous",
+      "keyType": "Meerkat",
+      "isVerified": true
+    }
+  ]
+}
