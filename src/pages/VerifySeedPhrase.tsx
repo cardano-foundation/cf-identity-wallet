@@ -2,13 +2,14 @@ import React, {useEffect, useState} from 'react';
 import {
   IonCol,
   IonGrid,
-  IonItem,
   IonPage,
   IonProgressBar,
   IonRow,
   IonCard,
   IonButton,
   IonChip,
+  IonItem,
+  IonLabel,
 } from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
@@ -58,20 +59,28 @@ const VerifySeedPhrase = (props) => {
         <IonGrid className="min-h-[60vh]">
           <IonRow>
             <IonCol size="12">
-              <IonCard className="m-2">
-                <div className="grid grid-cols-3 gap-2 p-2">
-                  {seedMatch.map((word, index) => (
-                    <IonChip
-                      className="text-sm"
-                      key={index}
-                      onClick={() => {
-                        removeSeedMatch(index, event);
-                      }}>
-                      <span className="w-full text-center">{word}</span>
-                    </IonChip>
-                  ))}
-                </div>
-              </IonCard>
+              <IonItem>
+                <IonLabel className="my-2 disclaimer-text">
+                  Enter your secret recovery seed phrase in the correct order to
+                  continue to the next step.
+                </IonLabel>
+              </IonItem>
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol size="12">
+              <div className="grid grid-cols-3 gap-2 p-2 m-2 border min-h-[6rem]">
+                {seedMatch.map((word, index) => (
+                  <IonChip
+                    className="text-sm"
+                    key={index}
+                    onClick={() => {
+                      removeSeedMatch(index, event);
+                    }}>
+                    <span className="w-full text-center">{word}</span>
+                  </IonChip>
+                ))}
+              </div>
             </IonCol>
           </IonRow>
           <IonRow>

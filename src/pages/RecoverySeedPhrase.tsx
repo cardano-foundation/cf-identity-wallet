@@ -99,6 +99,18 @@ const RecoverySeedPhrase = (props) => {
           <IonRow>
             <IonCol size="12">
               <IonItem>
+                <IonLabel className="my-2 disclaimer-text">
+                  This is your wallet secret phrase, do not share this with
+                  anyone and do not store words unencrypted. We highly recommend
+                  writing these down by hand and securely storing the secret
+                  phrase offline.
+                </IonLabel>
+              </IonItem>
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol size="12">
+              <IonItem>
                 <IonSegment
                   value={`${seedPhrase.length}words`}
                   onIonChange={(event) => {
@@ -113,19 +125,6 @@ const RecoverySeedPhrase = (props) => {
                     <IonLabel>24 words</IonLabel>
                   </IonSegmentButton>
                 </IonSegment>
-              </IonItem>
-            </IonCol>
-          </IonRow>
-          <IonRow>
-            <IonCol size="12">
-              <IonItem>
-                <IonLabel>
-                  <h4>Write down this Secret Recovery Phrase</h4>
-                  <p className="mt-2">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry.
-                  </p>
-                </IonLabel>
               </IonItem>
             </IonCol>
           </IonRow>
@@ -152,6 +151,7 @@ const RecoverySeedPhrase = (props) => {
                   <IonCardHeader>
                     <IonIcon
                       size="large"
+                      className="mx-auto"
                       icon={eyeOffOutline}
                     />
                   </IonCardHeader>
@@ -188,12 +188,14 @@ const RecoverySeedPhrase = (props) => {
                   checked={checked}
                   onIonChange={(e) => setChecked(e.detail.checked)}
                 />
-                <IonLabel className="terms_and_conditions">
-                  I understand that if I lose my recovery phrase, I will not be
-                  able to access my account.
+                <IonLabel className="terms-and-conditions">
+                  I understand the recovery phrase cannot be provided by Cardano
+                  Foundation and I must maintain secure storage of my recovery
+                  phrase as detailed in the&nbsp;
                   <a href="/termsandconditions">
-                    <u>Terms</u>
+                    <u>Terms and Conditions</u>
                   </a>
+                  .
                 </IonLabel>
               </IonItem>
               <IonButton
