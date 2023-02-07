@@ -7,13 +7,14 @@ import Chat from '../../components/Chat/Chat';
 import Template from '../../pages/Template';
 import Payments from '../../pages/Payments';
 import Stuff from '../../pages/Stuff';
-import {SubPages, Tabs, tabRoutes} from './AllRoutes';
+import {SubPages, tabRoutes, Tabs} from './AllRoutes';
 import Chats from '../../components/Chat/Chats';
 import CreateWallet from '../../pages/CreateWallet';
 import RecoverySeedPhrase from '../../pages/RecoverySeedPhrase';
 import VerifySeedPhrase from '../../pages/VerifySeedPhrase';
 import FaceIdSetup from '../../pages/FaceIdSetup';
 import TermsAndConditions from '../../pages/TermsAndConditions';
+import Did from "../../pages/Did";
 
 const NavRoutes = () => {
   return (
@@ -23,16 +24,21 @@ const NavRoutes = () => {
 
         <IonRouterOutlet id="main">
           <Route
-            path="/tabs"
-            render={() => <Tabs />}
+              path="/tabs"
+              render={() => <Tabs/>}
+          />
+
+          <Route
+              path="/did/:did_id"
+              render={() => <Did/>}
           />
           <Route
-            path="/createwallet"
-            render={() => <CreateWallet />}
+              path="/createwallet"
+              render={() => <CreateWallet/>}
           />
           <Route
-            path="/recoveryseedphrase"
-            render={() => <RecoverySeedPhrase />}
+              path="/recoveryseedphrase"
+              render={() => <RecoverySeedPhrase/>}
           />
           <Route
             path="/verifyseedphrase"

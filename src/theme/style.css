@@ -4,6 +4,8 @@
 @import 'styles/ios.css';
 @import 'styles/ionComponents.css';
 
+@import 'swiper/css';
+
 .ion-toolbar {
   margin-top: var(--ion-safe-area-top);
 }
