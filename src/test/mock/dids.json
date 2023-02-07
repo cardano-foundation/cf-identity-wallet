@@ -1,5 +1,5 @@
 {
-  "cardano": [
+  "Cardano": [
     {
       "id": "878b26d5-cf3e-47b5-8a68-03be60f12edf",
       "createDate": "1675687786999",
@@ -8,7 +8,7 @@
       "isVerified": true
     }
   ],
-  "key": [
+  "Key": [
     {
       "id": "92d4718c-d41e-4d9c-b123-14a7f601fe53",
       "createDate": "1675687786999",
@@ -24,12 +24,12 @@
       "isVerified": true
     }
   ],
-  "peer": [
+  "Peer": [
     {
-      "id": "uopw54ca-3e6f-4f8b-99e0-bde1e3dcjd71",
+      "id": "878b26d5-cf3e-47b5-8a68-03be60f12edf",
       "createDate": "1675687786999",
       "name": "Anonymous",
-      "keyType": "Meerkat",
+      "keyType": "Ed25519",
       "isVerified": true
     }
   ]
