@@ -38,8 +38,10 @@ const Dids = (props) => {
                     spaceBetween={10}
                     slidesPerView={didsMock[key] && didsMock[key].length > 1 ? 1.2 : 1}
                     loop={true}
-                    onSlideChange={() => console.log('slide change')}
-                    onSwiper={(swiper) => console.log(swiper)}
+                    onSlideChange={() => {
+                    }}
+                    onSwiper={(swiper) => {
+                    }}
                 >
                   {
                     didsMock[key] && didsMock[key].map(did => {
