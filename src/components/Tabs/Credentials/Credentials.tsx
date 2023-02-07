@@ -8,13 +8,32 @@ import {
   IonThumbnail,
   IonLabel,
 } from '@ionic/react';
+import {useHistory} from 'react-router-dom';
 import CustomPage from '../../../main/CustomPage';
 import './Credentials.css';
 import CREDENTIALS_RESPONSE from '../../../api/mock/credentials.json';
 
-const Credentials = (props) => {
+const Credentials = (props: any) => {
   const pageName = 'My Credentials';
   const creds = CREDENTIALS_RESPONSE.data;
+
+  const history = useHistory();
+
+  const handleNavigation = (currentCred: {
+    id: any;
+    createDate?: string;
+    imageUrl?: string;
+    type?: string;
+    entity?: string;
+  }) => {
+    history.push({
+      pathname: `/creds/${currentCred.id}`,
+      state: {
+        currentCred,
+      },
+    });
+  };
+
   return (
     <IonPage id={pageName}>
       <CustomPage
@@ -25,8 +44,9 @@ const Credentials = (props) => {
           <IonRow className="ion-margin">
             <IonCol className="ion-align-self-start">
               {creds.map((cred, index) => (
-                <IonCard 
-                  key={index}>
+                <IonCard
+                  key={index}
+                  onClick={() => handleNavigation(cred)}>
                   <IonGrid fixed={true}>
                     <IonRow>
                       <IonCol size="auto">
