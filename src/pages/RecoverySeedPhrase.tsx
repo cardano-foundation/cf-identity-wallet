@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import {
   IonCol,
   IonGrid,
@@ -7,7 +8,6 @@ import {
   IonPage,
   IonProgressBar,
   IonRow,
-  IonList,
   IonCard,
   IonCardHeader,
   IonCardContent,
@@ -75,6 +75,17 @@ const RecoverySeedPhrase = (props) => {
   const [checked, setChecked] = useState(false);
   const [view, setView] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState<string[]>(seed15);
+  const history = useHistory();
+
+  const handleNavigation = (route: string) => {
+    history.push({
+      pathname: route,
+      search: '?update=true', // query string
+      state: {
+        seedPhrase,
+      },
+    });
+  };
 
   return (
     <IonPage id={pageName}>
@@ -96,6 +107,18 @@ const RecoverySeedPhrase = (props) => {
           <IonRow>
             <IonCol size="12">
               <IonItem>
+                <IonLabel className="my-2 disclaimer-text">
+                  This is your wallet secret phrase, do not share this with
+                  anyone and do not store words unencrypted. We highly recommend
+                  writing these down by hand and securely storing the secret
+                  phrase offline.
+                </IonLabel>
+              </IonItem>
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol size="12">
+              <IonItem>
                 <IonSegment
                   value={`${seedPhrase.length}words`}
                   onIonChange={(event) => {
@@ -114,23 +137,10 @@ const RecoverySeedPhrase = (props) => {
             </IonCol>
           </IonRow>
           <IonRow>
-            <IonCol size="12">
-              <IonItem>
-                <IonLabel>
-                  <h4>Write down this Secret Recovery Phrase</h4>
-                  <p className="mt-2">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry.
-                  </p>
-                </IonLabel>
-              </IonItem>
-            </IonCol>
-          </IonRow>
-          <IonRow>
             <IonCol
               size="12"
               className={`flex flex-col justify-center ${
-                view && seedPhrase.length === 15 && 'min-h-[40vh]'
+                view && seedPhrase.length === 15 && 'min-h-[42vh]'
               }`}>
               {view ? (
                 <div className="grid grid-cols-3 gap-2 px-2">
@@ -138,7 +148,10 @@ const RecoverySeedPhrase = (props) => {
                     <IonChip
                       className="text-sm"
                       key={index}>
-                      <span className="w-full text-center">{word}</span>
+                      <span className="w-full text-left">
+                        <span className="text-gray-500 mr-2">{index + 1}</span>
+                        <span>{word}</span>
+                      </span>
                     </IonChip>
                   ))}
                 </div>
@@ -149,6 +162,7 @@ const RecoverySeedPhrase = (props) => {
                   <IonCardHeader>
                     <IonIcon
                       size="large"
+                      className="mx-auto"
                       icon={eyeOffOutline}
                     />
                   </IonCardHeader>
@@ -165,7 +179,7 @@ const RecoverySeedPhrase = (props) => {
                   <IonButton
                     shape="round"
                     color="dark"
-                    className="w-2/6 mx-auto mb-6"
+                    className="w-2/6 mx-auto mb-6 reveal-button"
                     onClick={() => {
                       setView(true);
                     }}>
@@ -185,12 +199,14 @@ const RecoverySeedPhrase = (props) => {
                   checked={checked}
                   onIonChange={(e) => setChecked(e.detail.checked)}
                 />
-                <IonLabel className="terms_and_conditions">
-                  I understand that if I lose my recovery phrase, I will not be
-                  able to access my account.
+                <IonLabel className="terms-and-conditions">
+                  I understand the recovery phrase cannot be provided by Cardano
+                  Foundation and I must maintain secure storage of my recovery
+                  phrase as detailed in the&nbsp;
                   <a href="/termsandconditions">
-                    <u>Terms</u>
+                    <u>Terms and Conditions</u>
                   </a>
+                  .
                 </IonLabel>
               </IonItem>
               <IonButton
@@ -198,8 +214,8 @@ const RecoverySeedPhrase = (props) => {
                 color="dark"
                 expand="block"
                 className="h-auto my-4"
-                href="/recoveryseedphrase"
-                disabled={!checked}>
+                disabled={!checked}
+                onClick={() => handleNavigation('/verifyseedphrase')}>
                 Continue
               </IonButton>
               <IonButton
@@ -207,7 +223,7 @@ const RecoverySeedPhrase = (props) => {
                 color="light"
                 expand="block"
                 className="h-auto my-4"
-                href="/tabs/crypto">
+                onClick={() => handleNavigation('/tabs/crypto')}>
                 Cancel
               </IonButton>
             </IonCol>

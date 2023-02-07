@@ -6,7 +6,8 @@ ion-item::part(native) {
   border-bottom: none;
 }
 
-ion-label.terms_and_conditions {
+ion-label.terms-and-conditions,
+ion-label.disclaimer-text {
   margin-left: 1rem;
   white-space: break-spaces !important;
   font-size: 0.8rem !important;

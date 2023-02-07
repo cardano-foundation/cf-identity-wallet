@@ -90,10 +90,10 @@ ion-item {
   --transition: none;
 }
 
-ion-button {
-  --border-color: #000;
+ion-button.reveal-button {
+  --border-color: var(--ion-color-light-contrast);
 }
 
-ion-button[color='dark'] {
+ion-button.reveal-button[color='dark'] {
   --border-color: #fff;
 }
