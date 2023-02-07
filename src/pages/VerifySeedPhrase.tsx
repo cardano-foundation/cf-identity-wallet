@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
+import {useLocation} from 'react-router-dom';
 import {
   IonCol,
   IonGrid,
   IonPage,
   IonProgressBar,
   IonRow,
-  IonCard,
   IonButton,
   IonChip,
   IonItem,
@@ -18,9 +18,10 @@ const VerifySeedPhrase = (props) => {
   const pageName = 'Verify Seed Phrase';
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedMatch, setSeedMatch] = useState<string[]>([]);
+  const location = useLocation();
 
   useEffect(() => {
-    const seedPhrase = JSON.parse(localStorage.getItem('seedPhrase') as string);
+    const seedPhrase = location.state.seedPhrase as string[];
     if (seedPhrase) {
       setSeedPhrase(seedPhrase);
     }
@@ -35,8 +36,8 @@ const VerifySeedPhrase = (props) => {
       const tempPhrase = seedMatch;
       tempPhrase.splice(index, 1);
       setSeedMatch(tempPhrase);
-      //event.target.remove();
-      console.log(event);
+      event.target.parentElement.remove();
+      console.log(tempPhrase);
     }
   };
 
@@ -91,7 +92,8 @@ const VerifySeedPhrase = (props) => {
                     className="text-sm"
                     key={index}
                     onClick={(event) => {
-                      addSeedMatch(event.target.innerText);
+                      addSeedMatch(word);
+                      event.target.parentElement.remove();
                     }}>
                     <span className="w-full text-center">{word}</span>
                   </IonChip>

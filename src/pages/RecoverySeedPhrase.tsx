@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import {
   IonCol,
   IonGrid,
@@ -74,10 +75,17 @@ const RecoverySeedPhrase = (props) => {
   const [checked, setChecked] = useState(false);
   const [view, setView] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState<string[]>(seed15);
+  const history = useHistory();
 
-  useEffect(() => {
-    localStorage.setItem('seedPhrase', JSON.stringify(seedPhrase));
-  }, [seedPhrase]);
+  const handleNavigation = (route: string) => {
+    history.push({
+      pathname: route,
+      search: '?update=true', // query string
+      state: {
+        seedPhrase,
+      },
+    });
+  };
 
   return (
     <IonPage id={pageName}>
@@ -203,8 +211,8 @@ const RecoverySeedPhrase = (props) => {
                 color="dark"
                 expand="block"
                 className="h-auto my-4"
-                href="/verifyseedphrase"
-                disabled={!checked}>
+                disabled={!checked}
+                onClick={() => handleNavigation('/verifyseedphrase')}>
                 Continue
               </IonButton>
               <IonButton
