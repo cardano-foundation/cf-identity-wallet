@@ -140,7 +140,7 @@ const RecoverySeedPhrase = (props) => {
             <IonCol
               size="12"
               className={`flex flex-col justify-center ${
-                view && seedPhrase.length === 15 && 'min-h-[40vh]'
+                view && seedPhrase.length === 15 && 'min-h-[42vh]'
               }`}>
               {view ? (
                 <div className="grid grid-cols-3 gap-2 px-2">
@@ -148,7 +148,10 @@ const RecoverySeedPhrase = (props) => {
                     <IonChip
                       className="text-sm"
                       key={index}>
-                      <span className="w-full text-center">{word}</span>
+                      <span className="w-full text-left">
+                        <span className="text-gray-500 mr-2">{index + 1}</span>
+                        <span>{word}</span>
+                      </span>
                     </IonChip>
                   ))}
                 </div>
@@ -220,7 +223,7 @@ const RecoverySeedPhrase = (props) => {
                 color="light"
                 expand="block"
                 className="h-auto my-4"
-                href="/tabs/crypto">
+                onClick={() => handleNavigation('/tabs/crypto')}>
                 Cancel
               </IonButton>
             </IonCol>
