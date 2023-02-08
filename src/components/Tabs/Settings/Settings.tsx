@@ -50,7 +50,7 @@ const Settings = (props) => {
         sideMenu={false}
         sideMenuPosition="start">
         <IonGrid>
-          <IonRow className="my-6">
+          <IonRow className="py-6">
             <IonCol size="12">
               <IonItem>
                 <IonImg
@@ -59,8 +59,6 @@ const Settings = (props) => {
                   className="w-24 mx-auto"
                 />
               </IonItem>
-            </IonCol>
-            <IonCol size="12">
               <IonItem>
                 <IonLabel className="text-center mx-auto">
                   Cardano Identity Wallet v0.1.0
