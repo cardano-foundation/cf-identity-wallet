@@ -19,16 +19,21 @@ import {addOutline, copyOutline, ellipsisVertical, informationCircleOutline, tra
 import CustomPage from '../../../main/CustomPage';
 import './Crypto.css';
 import {subscribe} from '../../../utils/events';
-import {Account} from "../../../models/Account/Account";
+import {getCachedAccounts} from "../../../store/reducers/cache";
+import {useAppSelector} from "../../../store/hooks";
 
 const Crypto = (props) => {
   const pageName = 'My Wallets';
   const nav = useHistory();
   const modal = useRef(null);
-  const [walletsList, setWalletsList] = useState<string[]>([]);
+  const cachedAccounts = useAppSelector(getCachedAccounts);
+  console.log("cachedAccounts");
+  console.log((cachedAccounts));
+  const [walletsList, setWalletsList] = useState<string[]>(cachedAccounts);
   const [showAddWallet, setShowAddWallet] = useState(false);
   const popover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
+
 
   useEffect(() => {
     subscribe('ionBackButton', () => {
@@ -36,14 +41,14 @@ const Crypto = (props) => {
     });
   }, []);
   useEffect(() => {
-    Account.getAllAccountsIds().then(wallets => setWalletsList(wallets));
+    //Account.getAllAccountsIds().then(wallets => setWalletsList(wallets));
   }, []);
 
   console.log("walletsList");
   console.log((walletsList));
 
   const renderWallets = () => {
-    return walletsList.map((wallet, index) => (
+    return cachedAccounts.map((wallet, index) => (
         <IonRow
             className="ion-text-center"
             key={index}>
@@ -180,7 +185,7 @@ const Crypto = (props) => {
             <WalletButtons/>
           </IonContent>
         </IonModal>
-        {walletsList.length ? (
+        {cachedAccounts?.length ? (
             <IonGrid className="ion-margin">{renderWallets()}</IonGrid>
         ) : (
             <WalletButtons/>

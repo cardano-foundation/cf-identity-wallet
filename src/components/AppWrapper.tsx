@@ -6,7 +6,7 @@ import {useAppDispatch, useAppSelector} from "../store/hooks";
 import {selectCount} from "../store/reducers/counter";
 import {Cache} from "../models/Cache/Cache";
 import {Settings} from "../models/Settings/Settings";
-import {getCachedAccount, setCache} from "../store/reducers/cache";
+import {getCachedAccount, setAccountsIdsInCache, setCache} from "../store/reducers/cache";
 import {setCurrentAccount} from "../store/reducers/account";
 import {setSettings} from "../store/reducers/settings";
 import {Blockfrost} from "../api/ApiProvider/Blockfrost/BlockfrostApi";
@@ -70,6 +70,11 @@ const AppWrapper = (props: { children: any }) => {
     }
 
     dispatch(setSettings(Settings.get()));
+
+
+    const accountsIds: string[] = await Account.getAllAccountsIds() || [];
+    dispatch(setAccountsIdsInCache(accountsIds));
+
     const currentAccount = await Account.getAccount(cachedAccount);
     console.log("currAccount");
     console.log(currentAccount?.get());
@@ -77,6 +82,8 @@ const AppWrapper = (props: { children: any }) => {
       dispatch(setCurrentAccount(currentAccount.get()));
     } else {
       const firstAccount = await Account.getFirstAccount();
+      console.log("firstAccount");
+      console.log(firstAccount);
       if (firstAccount) dispatch(setCurrentAccount(firstAccount.get()));
     }
 
