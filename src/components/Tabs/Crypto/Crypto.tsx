@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import {
   IonCol,
@@ -8,16 +8,12 @@ import {
   IonButton,
   IonIcon,
   IonModal,
-  IonHeader,
-  IonToolbar,
-  IonTitle,
-  IonButtons,
   IonContent,
 } from '@ionic/react';
 import {addOutline, ellipsisVertical} from 'ionicons/icons';
 import CustomPage from '../../../main/CustomPage';
-import WalletButtons from './WalletButtons';
 import './Crypto.css';
+import {subscribe} from '../../../utils/events';
 
 const Crypto = (props) => {
   const pageName = 'My Wallets';
@@ -30,18 +26,11 @@ const Crypto = (props) => {
   const modal = useRef(null);
   const [showAddWallet, setShowAddWallet] = useState(false);
 
-  const openModal = () => {
-    nav.push(nav.location.pathname + '?modalOpened=true');
-  };
-
-  const closeModal = () => {
-    nav.replace('/tabs/crypto');
-    setShowAddWallet(false);
-  };
-
-  function onWillDismiss(ev) {
-    closeModal();
-  }
+  useEffect(() => {
+    subscribe('ionBackButton', () => {
+      nav.replace('/tabs/crypto');
+    });
+  }, []);
 
   const renderWallets = (wallets) => {
     return wallets.map((wallet, index) => (
@@ -63,6 +52,43 @@ const Crypto = (props) => {
     ));
   };
 
+  const history = useHistory();
+
+  const handleNavigation = (route: string) => {
+    setShowAddWallet(false);
+    history.push({
+      pathname: route,
+    });
+  };
+
+  const WalletButtons = () => {
+    return (
+      <IonGrid className="ion-margin buttons_grid">
+        <IonRow className="ion-text-center">
+          <IonCol>
+            <IonButton
+              shape="round"
+              color="dark"
+              expand="block"
+              onClick={() => {
+                handleNavigation('/createwallet');
+              }}
+              className="h-auto my-4">
+              Create New Wallet
+            </IonButton>
+            <IonButton
+              shape="round"
+              color="light"
+              expand="block"
+              className="h-auto my-4">
+              Recover Existing Wallet
+            </IonButton>
+          </IonCol>
+        </IonRow>
+      </IonGrid>
+    );
+  };
+
   return (
     <IonPage id={pageName}>
       <CustomPage
@@ -74,14 +100,14 @@ const Crypto = (props) => {
         actionButtonIconSize="1.7rem"
         actionButtonClickEvent={() => {
           setShowAddWallet(true);
-          openModal();
+          nav.push(nav.location.pathname + '?modalOpened=true');
         }}>
         <IonModal
           id="create-wallet-modal"
           isOpen={showAddWallet}
           ref={modal}
           trigger="open-create"
-          onWillDismiss={(ev) => onWillDismiss(ev)}
+          onWillDismiss={() => setShowAddWallet(false)}
           initialBreakpoint={0.6}
           breakpoints={[0, 0.6]}>
           <IonContent className="ion-padding">

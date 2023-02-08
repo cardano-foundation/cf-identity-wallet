@@ -27,6 +27,7 @@ const CreateWallet = (props) => {
   const [isPasswordValid, setIsPasswordValid] = useState<boolean>();
   const [isPasswordMatching, setIsPasswordMatching] = useState<boolean>();
   const [checked, setChecked] = useState(false);
+  const history = useHistory();
 
   const nameValidator = (text: string) => {
     // Lower and upper case alphanumeric between 2 and 16 characters
@@ -69,6 +70,12 @@ const CreateWallet = (props) => {
     passwordMatcher(value) !== null
       ? setIsPasswordMatching(true)
       : setIsPasswordMatching(false);
+  };
+
+  const handleNavigation = (route: string) => {
+    history.push({
+      pathname: route,
+    });
   };
 
   return (
@@ -189,7 +196,7 @@ const CreateWallet = (props) => {
                   <IonLabel className="terms-and-conditions">
                     I have read, understood, and agree to the privacy policy and
                     user agreement detailed in the&nbsp;
-                    <a href="/termsandconditions">
+                    <a onClick={() => handleNavigation('/termsandconditions')}>
                       <u>Terms and Conditions</u>
                     </a>
                     .
@@ -200,7 +207,9 @@ const CreateWallet = (props) => {
                   color="dark"
                   expand="block"
                   className="h-auto my-4"
-                  href="/recoveryseedphrase"
+                  onClick={() => {
+                    handleNavigation('/recoveryseedphrase');
+                  }}
                   disabled={
                     !(
                       isNameValid &&
@@ -216,7 +225,9 @@ const CreateWallet = (props) => {
                   color="light"
                   expand="block"
                   className="h-auto my-4"
-                  href="/tabs/crypto">
+                  onClick={() => {
+                    handleNavigation('/tabs/crypto');
+                  }}>
                   Cancel
                 </IonButton>
               </IonCol>
