@@ -21,7 +21,7 @@ import Moment from 'moment';
 
 const moment = extendMoment(Moment);
 
-export const IDWCard = ({id, qr, name, logo, createdOn}) => {
+export const IDWCard = ({type, id, qr, name, logo, createdOn, data}) => {
 
     const history = useHistory();
 
@@ -37,6 +37,15 @@ export const IDWCard = ({id, qr, name, logo, createdOn}) => {
         setPopoverOpen(true);
     };
 
+    const handleMoreDetails = (dataObject: { id: any; }) => {
+        history.push({
+          pathname: `/creds/${dataObject.id}`,
+          state: {
+            dataObject,
+          },
+        });
+    };
+
     const handleNavigation = (route: string) => {
         history.push({
             pathname: route,
@@ -50,7 +59,7 @@ export const IDWCard = ({id, qr, name, logo, createdOn}) => {
         });
     };
 
-    const onCopy = (content) => {
+    const onCopy = (content: string) => {
         writeToClipboard(content).then(() => {
             setToastColor('success');
             setToastMessage(`Copied: ${content}`);
@@ -86,12 +95,14 @@ export const IDWCard = ({id, qr, name, logo, createdOn}) => {
                         isOpen={popoverOpen}
                         onDidDismiss={() => setPopoverOpen(false)}>
                         <>
+                        { type === "CREDENTIAL" &&
                             <IonRow>
-                                <IonItem className="px-4 py-2" onClick={() => handleNavigation(`/did/${id}`)}>
+                                <IonItem className="px-4 py-2" onClick={() => handleMoreDetails(data)}>
                                     <IonIcon slot="start" icon={informationCircleOutline}/>
                                     <IonLabel> More details</IonLabel>
                                 </IonItem>
                             </IonRow>
+                        }
                             <IonRow>
                                 <IonItem className="px-4 py-2" onClick={() => onCopy(id)}>
                                     <IonIcon slot="start" icon={copyOutline}/>

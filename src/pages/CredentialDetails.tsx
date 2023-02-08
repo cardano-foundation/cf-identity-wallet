@@ -41,6 +41,11 @@ const CredentialDetails = (props) => {
                         </IonLabel>
                       </IonCol>
                     </IonRow>
+                    <IonRow>
+                      <IonCol size="auto">
+                        Details ....
+                      </IonCol>
+                    </IonRow>
                   </IonGrid>
                 </IonCard>
                 </div>
