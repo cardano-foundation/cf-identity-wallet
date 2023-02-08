@@ -2,8 +2,8 @@ import React, {useEffect} from 'react';
 import {IonGrid, IonPage, IonRow, IonText} from '@ionic/react';
 import CustomPage from '../../../main/CustomPage';
 import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
-import {DidCard} from '../../Did/DidCard';
-import '../../Did/did.scss';
+import {IDWCard} from "../../UI/IDWCard";
+import '../../UI/idwCard.scss';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import didsMock from '../../../test/mock/dids.json';
 
@@ -23,45 +23,37 @@ const Dids = (props) => {
   }, [props.location]);
 
   return (
-    <IonPage id={pageName}>
-      <CustomPage
-        name={pageName}
-        sideMenu={false}
-        sideMenuPosition="start">
-        <IonGrid>
-          {Object.keys(didsMock)?.map((key) => {
-            return (
-              <IonRow
-                key={key}
-                className="ion-margin">
+      <IonPage id={pageName}>
+        <CustomPage
+            name={pageName}
+            sideMenu={false}
+            sideMenuPosition="start">
+          <IonGrid>
+            {Object.keys(didsMock)?.map(key => {
+              return <IonRow key={key} className="ion-margin">
                 <IonText color="dark">
-                  <p className="title">DID:{key}</p>
+                  <p className="title font-extrabold">did:{key}</p>
                 </IonText>
                 <Swiper
-                  spaceBetween={10}
-                  slidesPerView={
-                    didsMock[key] && didsMock[key].length > 1 ? 1.2 : 1
+                    spaceBetween={10}
+                    slidesPerView={didsMock[key] && didsMock[key].length > 1 ? 1.2 : 1}
+                    loop={true}
+                    onSlideChange={() => {
+                    }}
+                    onSwiper={(swiper) => {
+                    }}
+                >
+                  {
+                    didsMock[key] && didsMock[key].map(did => {
+                      return <SwiperSlide key={did.id}>
+                        <IDWCard id={did.id} qr={did.id} name={did.name} createdOn={did.createDate}/>
+                      </SwiperSlide>
+                    })
                   }
-                  loop={true}
-                  onSlideChange={() => {}}
-                  onSwiper={(swiper) => {}}>
-                  {didsMock[key] &&
-                    didsMock[key].map((did) => {
-                      return (
-                        <SwiperSlide key={did.id}>
-                          <DidCard
-                            id={did.id}
-                            name={did.name}
-                            createdOn={did.createDate}
-                          />
-                        </SwiperSlide>
-                      );
-                    })}
                 </Swiper>
               </IonRow>
-            );
-          })}
-        </IonGrid>
+            })}
+          </IonGrid>
       </CustomPage>
     </IonPage>
   );

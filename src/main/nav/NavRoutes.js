@@ -1,13 +1,13 @@
 import React from 'react';
-import {IonRouterOutlet, IonSplitPane} from '@ionic/react';
-import {IonReactRouter} from '@ionic/react-router';
-import {Redirect, Route} from 'react-router-dom';
+import { IonRouterOutlet, IonSplitPane } from '@ionic/react';
+import { IonReactRouter } from '@ionic/react-router';
+import { Redirect, Route } from 'react-router-dom';
 import SideMenu from '../SideMenu';
 import Chat from '../../components/Chat/Chat';
 import Template from '../../pages/Template';
 import Payments from '../../pages/Payments';
 import Stuff from '../../pages/Stuff';
-import {SubPages, tabRoutes, Tabs} from './AllRoutes';
+import { SubPages, tabRoutes, Tabs } from './AllRoutes';
 import Chats from '../../components/Chat/Chats';
 import CreateWallet from '../../pages/CreateWallet';
 import RecoverySeedPhrase from '../../pages/RecoverySeedPhrase';
@@ -15,6 +15,7 @@ import VerifySeedPhrase from '../../pages/VerifySeedPhrase';
 import FaceIdSetup from '../../pages/FaceIdSetup';
 import TermsAndConditions from '../../pages/TermsAndConditions';
 import Did from "../../pages/Did";
+import CredentialDetails from "../../pages/CredentialDetails";
 
 const NavRoutes = () => {
   return (
@@ -24,21 +25,25 @@ const NavRoutes = () => {
 
         <IonRouterOutlet id="main">
           <Route
-              path="/tabs"
-              render={() => <Tabs/>}
+            path="/tabs"
+            render={() => <Tabs />}
           />
 
           <Route
-              path="/did/:did_id"
-              render={() => <Did/>}
+            path="/did/:did_id"
+            render={() => <Did />}
           />
           <Route
-              path="/createwallet"
-              render={() => <CreateWallet/>}
+            path="/creds/:cred_id"
+            render={() => <CredentialDetails />}
           />
           <Route
-              path="/recoveryseedphrase"
-              render={() => <RecoverySeedPhrase/>}
+            path="/createwallet"
+            render={() => <CreateWallet />}
+          />
+          <Route
+            path="/recoveryseedphrase"
+            render={() => <RecoverySeedPhrase />}
           />
           <Route
             path="/verifyseedphrase"

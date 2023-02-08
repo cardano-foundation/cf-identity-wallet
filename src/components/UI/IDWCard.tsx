@@ -1,10 +1,9 @@
 import React, {useRef, useState} from 'react';
 import {
+    IonAvatar,
     IonCard,
     IonCardContent,
     IonCardHeader,
-    IonCardSubtitle,
-    IonCardTitle,
     IonIcon,
     IonItem,
     IonLabel,
@@ -14,11 +13,15 @@ import {
 } from "@ionic/react";
 import {copyOutline, ellipsisVertical, informationCircleOutline, qrCodeOutline, trashOutline} from "ionicons/icons";
 import {useHistory} from "react-router-dom";
-import './did.scss';
+import './idwCard.scss';
 import {isDarkMode} from "../../theme/handleTheme";
 import {writeToClipboard} from "../../utils/clipboard";
+import {extendMoment} from 'moment-range';
+import Moment from 'moment';
 
-export const DidCard = ({id, name, createdOn}) => {
+const moment = extendMoment(Moment);
+
+export const IDWCard = ({id, qr, name, logo, createdOn}) => {
 
     const history = useHistory();
 
@@ -57,14 +60,25 @@ export const DidCard = ({id, name, createdOn}) => {
 
     return <>
         <IonCard style={{borderWidth: 0, borderColor: isDarkMode() ? 'white' : 'black'}}>
-
             <IonCardHeader>
-                <IonCardTitle style={{fontSize: '20px'}}>
-                    {name}
-                    <IonIcon id={`popover-button-${id}`} icon={ellipsisVertical} className="float-right"/>
+                <div className="py-2">
+                    <IonItem className="w-full">
+                        {logo && logo.length ?
+                            <IonAvatar slot="start">
+                                <img alt="Silhouette of a person's head" src={logo}/>
+                            </IonAvatar> : null}
+                        <IonRow className={`${!logo || !logo.length ? 'pl-4' : ''}`}>
+                            <IonLabel className="font-extrabold w-full">{name}</IonLabel>
+
+                            <IonLabel
+                                className="font-light text-gray-600 text-sm">{moment(createdOn, "x").format("DD MMM YYYY hh:mm a")}</IonLabel>
+                        </IonRow>
+                        <IonIcon id={`popover-button-${id}-${name}`} icon={ellipsisVertical} className="float-right"
+                                 slot="end"/>
+                    </IonItem>
                     <IonPopover
                         className='scroll-y-hidden'
-                        trigger={`popover-button-${id}`}
+                        trigger={`popover-button-${id}-${name}`}
                         dismissOnSelect={true}
                         size={'auto'}
                         side="bottom"
@@ -92,16 +106,16 @@ export const DidCard = ({id, name, createdOn}) => {
                             </IonRow>
                         </>
                     </IonPopover>
-                </IonCardTitle>
-                <IonCardSubtitle>{createdOn}</IonCardSubtitle>
+                </div>
             </IonCardHeader>
 
             <IonCardContent>
                 <IonItem className="ion-activated" style={{borderRadius: '10px'}}>
-                    <IonIcon icon={informationCircleOutline} slot="start"
-                             onClick={() => handleNavigation(`/did/${id}`)}/>
                     <IonLabel onClick={() => onCopy(id)}>{id}</IonLabel>
-                    <IonIcon icon={qrCodeOutline} slot="end" onClick={() => handleNavigation(`/did/${id}`)}/>
+                    {
+                        qr ? <IonIcon icon={qrCodeOutline} slot="end"
+                                      onClick={() => handleNavigation(`/did/${id}`)}/> : null
+                    }
                 </IonItem>
             </IonCardContent>
             <IonToast
