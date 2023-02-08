@@ -11,6 +11,7 @@ import { SubPages, tabRoutes, Tabs } from './AllRoutes';
 import Chats from '../../components/Chat/Chats';
 import CreateWallet from '../../pages/CreateWallet';
 import RecoverySeedPhrase from '../../pages/RecoverySeedPhrase';
+import VerifySeedPhrase from '../../pages/VerifySeedPhrase';
 import FaceIdSetup from '../../pages/FaceIdSetup';
 import TermsAndConditions from '../../pages/TermsAndConditions';
 import Did from "../../pages/Did";
@@ -43,6 +44,10 @@ const NavRoutes = () => {
           <Route
             path="/recoveryseedphrase"
             render={() => <RecoverySeedPhrase />}
+          />
+          <Route
+            path="/verifyseedphrase"
+            render={() => <VerifySeedPhrase />}
           />
           <Route
             path="/termsandconditions"

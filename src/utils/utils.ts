@@ -72,3 +72,7 @@ export const isJsonString = (str: string) => {
 
 export const md5 = (contents: string) =>
   crypto.createHash('md5').update(contents).digest('hex');
+
+export const shuffle = (array: any[]) => {
+  return array.sort(() => Math.random() - 0.5);
+};
