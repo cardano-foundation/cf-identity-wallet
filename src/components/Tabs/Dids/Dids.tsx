@@ -46,7 +46,7 @@ const Dids = (props) => {
                   {
                     didsMock[key] && didsMock[key].map(did => {
                       return <SwiperSlide key={did.id}>
-                        <DidCard id={did.id} name={did.name} createdOn={did.createDate}/>
+                        <DidCard id={did.id} qr={did.id} name={did.name} createdOn={did.createDate}/>
                       </SwiperSlide>
                     })
                   }

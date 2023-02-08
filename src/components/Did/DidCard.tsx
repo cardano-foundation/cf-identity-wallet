@@ -20,7 +20,7 @@ import Moment from 'moment';
 
 const moment = extendMoment(Moment);
 
-export const DidCard = ({id, name, logo, createdOn}) => {
+export const DidCard = ({id, qr, name, logo, createdOn}) => {
 
     const history = useHistory();
 
@@ -72,11 +72,11 @@ export const DidCard = ({id, name, logo, createdOn}) => {
                         <IonLabel
                             className="font-light text-gray-600 text-sm">{moment(createdOn, "x").format("DD MMM YYYY hh:mm a")}</IonLabel>
                     </IonRow>
-                    <IonIcon id={`popover-button-${id}`} icon={ellipsisVertical} className="float-right"/>
+                    <IonIcon id={`popover-button-${id}-${name}`} icon={ellipsisVertical} className="float-right"/>
                 </IonItem>
                 <IonPopover
                     className='scroll-y-hidden'
-                    trigger={`popover-button-${id}`}
+                    trigger={`popover-button-${id}-${name}`}
                     dismissOnSelect={true}
                     size={'auto'}
                     side="bottom"
@@ -111,7 +111,10 @@ export const DidCard = ({id, name, logo, createdOn}) => {
                     <IonIcon icon={informationCircleOutline} slot="start"
                              onClick={() => handleNavigation(`/did/${id}`)}/>
                     <IonLabel onClick={() => onCopy(id)}>{id}</IonLabel>
-                    <IonIcon icon={qrCodeOutline} slot="end" onClick={() => handleNavigation(`/did/${id}`)}/>
+                    {
+                        qr ? <IonIcon icon={qrCodeOutline} slot="end"
+                                      onClick={() => handleNavigation(`/did/${id}`)}/> : null
+                    }
                 </IonItem>
             </IonCardContent>
             <IonToast
