@@ -36,7 +36,7 @@ const Crypto = (props) => {
     });
   }, []);
   useEffect(() => {
-    Account.getAllAccountsIds().then(wallets => console.log(wallets));
+    Account.getAllAccountsIds().then(wallets => setWalletsList(wallets));
   }, []);
 
   console.log("walletsList");
@@ -54,7 +54,7 @@ const Crypto = (props) => {
                   <IonItem className="w-full">
                     <IonRow className={'pl-4'}>
                       <IonLabel className="font-extrabold w-full">
-                      {wallet.name}
+                        {wallet}
                     </IonLabel>
 
                       <IonLabel className="text-sm">
@@ -62,7 +62,7 @@ const Crypto = (props) => {
                       </IonLabel>
                   </IonRow>
                   <IonIcon
-                      id={`popover-button-${wallet.name}`}
+                      id={`popover-button-${wallet}`}
                       icon={ellipsisVertical}
                       className="float-right"
                       slot="end"
@@ -70,7 +70,7 @@ const Crypto = (props) => {
                 </IonItem>
                 <IonPopover
                     className="scroll-y-hidden"
-                    trigger={`popover-button-${wallet.name}`}
+                    trigger={`popover-button-${wallet}`}
                     dismissOnSelect={true}
                     size={'auto'}
                     side="bottom"
