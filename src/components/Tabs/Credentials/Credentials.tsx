@@ -1,23 +1,14 @@
 import React from 'react';
-import {
-  IonCol,
-  IonGrid,
-  IonPage,
-  IonRow,
-  IonCard,
-  IonThumbnail,
-  IonLabel,
-  IonText,
-} from '@ionic/react';
+import {IonGrid, IonPage, IonRow, IonText,} from '@ionic/react';
 import {useHistory} from 'react-router-dom';
 import CustomPage from '../../../main/CustomPage';
 import './Credentials.css';
-import CREDENTIALS_RESPONSE from '../../../api/mock/credentials.json';
-import { key } from 'ionicons/icons';
+import CREDENTIALS_RESPONSE from '../../../test/mock/credentials.json';
+import {Swiper, SwiperSlide} from "swiper/react";
+import {IDWCard} from "../../UI/IDWCard";
 
 const Credentials = (props: any) => {
   const pageName = 'My Credentials';
-  const creds = CREDENTIALS_RESPONSE.data;
 
   const history = useHistory();
 
@@ -43,38 +34,30 @@ const Credentials = (props: any) => {
         sideMenu={false}
         sideMenuPosition="start">
         <IonGrid>
-          <IonRow className="ion-margin">
-            <IonCol className="ion-align-self-start">
-              {creds.map((cred, index) => (
-                <IonRow
-                  key={index}
-                  className="ion-margin">
-                  <IonText>{cred.category}</IonText>
-                  <IonCard
-                    key={index}
-                    onClick={() => handleNavigation(cred)}>
-                    <IonGrid fixed={true}>
-                      <IonRow>
-                        <IonCol size="auto">
-                          <IonThumbnail className="w-24 py-3">
-                            <img src={cred.imageUrl} />
-                          </IonThumbnail>
-                        </IonCol>
-                        <IonCol>
-                          <IonLabel className="py-3">
-                            <h1>
-                              <strong>{cred.type}</strong>
-                            </h1>
-                            <p>{cred.entity}</p>
-                          </IonLabel>
-                        </IonCol>
-                      </IonRow>
-                    </IonGrid>
-                  </IonCard>
-                </IonRow>
-              ))}
-            </IonCol>
-          </IonRow>
+          {Object.keys(CREDENTIALS_RESPONSE)?.map(key => {
+            return <IonRow key={key} className="ion-margin">
+              <IonText color="dark">
+                <p className="title">{key}</p>
+              </IonText>
+              <Swiper
+                  spaceBetween={10}
+                  slidesPerView={CREDENTIALS_RESPONSE[key] && CREDENTIALS_RESPONSE[key].length > 1 ? 1.2 : 1}
+                  loop={true}
+                  onSlideChange={() => {
+                  }}
+                  onSwiper={(swiper) => {
+                  }}
+              >
+                {
+                  CREDENTIALS_RESPONSE[key] && CREDENTIALS_RESPONSE[key].map(cred => {
+                    return <SwiperSlide key={cred.id}>
+                      <IDWCard id={cred.id} name={cred.name} createdOn={cred.createDate} logo={cred.imageUrl} onClick={() => handleNavigation(cred)}/>
+                    </SwiperSlide>
+                  })
+                }
+              </Swiper>
+            </IonRow>
+          })}
         </IonGrid>
       </CustomPage>
     </IonPage>
