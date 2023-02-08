@@ -203,7 +203,7 @@ const RecoverySeedPhrase = (props) => {
                   I understand the recovery phrase cannot be provided by Cardano
                   Foundation and I must maintain secure storage of my recovery
                   phrase as detailed in the&nbsp;
-                  <a href="/termsandconditions">
+                  <a onClick={() => handleNavigation('/termsandconditions')}>
                     <u>Terms and Conditions</u>
                   </a>
                   .

@@ -7,7 +7,6 @@ import {
   IonPage,
   IonRow,
 } from '@ionic/react';
-import {addOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
 
 const TermsAndConditions = (props) => {
@@ -22,8 +21,6 @@ const TermsAndConditions = (props) => {
         backButton={true}
         backButtonText="Back"
         backButtonPath={'/createwallet'}
-        actionButton={false}
-        actionButtonIcon={addOutline}
         actionButtonIconSize="1.7rem">
         <IonGrid>
           <IonRow>
