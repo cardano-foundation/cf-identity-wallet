@@ -1,8 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
-import {CardanoAPI, ERA_PARAMS} from '../lib/CardanoAPI';
-import {createAccount} from '../lib/wallet';
-import {ERA} from '../models/types';
+import {CardanoAPI} from '../lib/CardanoAPI';
 import {Account} from '../models/Account/Account';
 import {useAppDispatch, useAppSelector} from "../store/hooks";
 import {selectCount} from "../store/reducers/counter";
@@ -104,6 +102,7 @@ const AppWrapper = (props: { children: any }) => {
       console.log(graphqlStatus);
 
       await CardanoAPI.init();
+      /*
       const seed = CardanoAPI.generateSeedPhrase(
           ERA_PARAMS[ERA.SHELLEY].mneSize[24]
       );
@@ -127,12 +126,7 @@ const AppWrapper = (props: { children: any }) => {
         console.log(e);
       }
 
-      // @ts-ignore
-      const acc: Account = await Account.getAccount('jaime2');
-      console.log('acc');
-      console.log(acc);
-      //acc.remove();
-      // Init Redux
+      */
     };
     if (isMounted.current) {
       // call the function

@@ -4,6 +4,9 @@ import {IonButton, IonChip, IonCol, IonGrid, IonItem, IonLabel, IonPage, IonProg
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
 import {equals, shuffle} from '../utils/utils';
+import {Account} from "../models/Account/Account";
+import {createAccount} from "../lib/wallet";
+import {ERA} from "../models/types";
 
 const VerifySeedPhrase = ({}) => {
   const pageName = 'Verify Seed Phrase';
@@ -23,30 +26,61 @@ const VerifySeedPhrase = ({}) => {
   };
 
   useEffect(() => {
+    //removeWordFromArray(originalSeedPhrase,"hold")
     if (originalSeedPhrase && originalSeedPhrase.length) {
       setSeedPhrase(shuffle(originalSeedPhrase));
     }
   }, []);
 
-  const addSeedMatch = (word: string, index: number) => {
+  const addSeedMatch = (word: string, i: number) => {
     setSeedMatch((seedMatch) => [...seedMatch, word]);
-    setSeedPhrase((seedPhrase) =>
-        seedPhrase.filter((arr, i) => arr !== word && index !== i)
-    );
+
+    const index = seedPhrase.indexOf(word);
+    if (index > -1) { // only splice array when item is found
+      seedPhrase.splice(index, 1); // 2nd parameter means remove one item only
+    }
+    setSeedPhrase(seedPhrase);
   };
 
-  const removeSeedMatch = (word: string, index: number) => {
-    setSeedPhrase((seedPhrase) => [...seedPhrase, word]);
-    setSeedMatch((seedMatch) =>
-        seedMatch.filter((arr, i) => arr !== word && index !== i)
-    );
-  };
+  // Remove last word in array
+  const removeWordFromArray = (array: string[], word: string) => {
+    const cp = [...array];
+    console.log(cp);
+    const index = cp.indexOf(word);
+    if (index > -1) { // only splice array when item is found
+      cp.splice(index, 1);
+    }
+    console.log(cp);
+    return cp;
 
-  const onVerifySeedPhrase = () => {
-
-
-    // handleNavigation('/tabs/crypto')
   }
+  const removeSeedMatch = (word: string, i: number) => {
+    setSeedPhrase((seedPhrase) => [...seedPhrase, word]);
+
+    setSeedMatch(seedMatch => removeWordFromArray(seedMatch, word));
+  }
+
+  const onVerifySeedPhrase = async () => {
+    try {
+      if (location.state?.walletName && location.state?.walletPassword) {
+        const account: Account = await createAccount(
+            location.state?.walletName,
+            originalSeedPhrase.join(' '),
+            ERA.SHELLEY,
+            location.state?.walletPassword
+        );
+        account.commit();
+        handleNavigation('/tabs/crypto');
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  }
+
+  console.log("originalSeedPhrase");
+  console.log(originalSeedPhrase);
+  console.log("seedMatch");
+  console.log(seedMatch);
 
   return (
       <IonPage id={pageName}>
@@ -57,19 +91,19 @@ const VerifySeedPhrase = ({}) => {
             backButton={true}
             backButtonText="Back"
             backButtonPath={'/recoveryseedphrase'}
-        actionButton={false}
-        actionButtonIcon={addOutline}
-        actionButtonIconSize="1.7rem">
-        <IonProgressBar
-          value={0.75}
-          buffer={1}
-        />
-        <IonGrid className="min-h-[60vh]">
-          <IonRow>
-            <IonCol size="12">
-              <IonItem>
-                <IonLabel className="my-2 disclaimer-text">
-                  Enter your secret recovery seed phrase in the correct order to
+            actionButton={false}
+            actionButtonIcon={addOutline}
+            actionButtonIconSize="1.7rem">
+          <IonProgressBar
+              value={0.75}
+              buffer={1}
+          />
+          <IonGrid className="min-h-[60vh]">
+            <IonRow>
+              <IonCol size="12">
+                <IonItem>
+                  <IonLabel className="my-2 disclaimer-text">
+                    Enter your secret recovery seed phrase in the correct order to
                   continue to the next step.
                 </IonLabel>
               </IonItem>
