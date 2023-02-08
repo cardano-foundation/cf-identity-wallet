@@ -32,19 +32,19 @@ const Crypto = (props) => {
     {
       name: 'Wallet #1',
       id: 'CW0001',
-      currency: 'ADA ₳',
+      currency: 'ADA',
       balance: '10,000.000000',
     },
     {
       name: 'Wallet #2',
       id: 'CW0002',
-      currency: 'ADA ₳',
+      currency: 'ADA',
       balance: '5,000.000000',
     },
     {
       name: 'Wallet #3',
       id: 'CW0003',
-      currency: 'ADA ₳',
+      currency: 'ADA',
       balance: '250.000000',
     },
   ];
@@ -76,8 +76,7 @@ const Crypto = (props) => {
                     </IonLabel>
 
                     <IonLabel className="text-sm">
-                      {wallet.currency}
-                      {wallet.balance}
+                      {wallet.currency} {wallet.balance}
                     </IonLabel>
                   </IonRow>
                   <IonIcon
