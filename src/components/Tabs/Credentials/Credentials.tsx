@@ -51,7 +51,7 @@ const Credentials = (props: any) => {
                 {
                   CREDENTIALS_RESPONSE[key] && CREDENTIALS_RESPONSE[key].map(cred => {
                     return <SwiperSlide key={cred.id}>
-                      <IDWCard id={cred.id} name={cred.name} createdOn={cred.createDate} logo={cred.imageUrl} onClick={() => handleNavigation(cred)}/>
+                      <IDWCard id={cred.id} qr={cred.id} name={cred.name} createdOn={cred.createDate} logo={cred.imageUrl} onClick={() => handleNavigation(cred)}/>
                     </SwiperSlide>
                   })
                 }
