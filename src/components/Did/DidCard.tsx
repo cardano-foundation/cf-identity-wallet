@@ -3,6 +3,7 @@ import {
     IonAvatar,
     IonCard,
     IonCardContent,
+    IonCardHeader,
     IonIcon,
     IonItem,
     IonLabel,
@@ -59,52 +60,54 @@ export const DidCard = ({id, qr, name, logo, createdOn}) => {
 
     return <>
         <IonCard style={{borderWidth: 0, borderColor: isDarkMode() ? 'white' : 'black'}}>
+            <IonCardHeader>
+                <div className="py-2">
+                    <IonItem className="w-full">
+                        {logo && logo.length ?
+                            <IonAvatar slot="start">
+                                <img alt="Silhouette of a person's head" src={logo}/>
+                            </IonAvatar> : null}
+                        <IonRow className={`${!logo || !logo.length ? 'pl-4' : ''}`}>
+                            <IonLabel className="font-extrabold w-full">{name}</IonLabel>
 
-            <div className="py-2">
-                <IonItem>
-                    {logo && logo.length ?
-                        <IonAvatar slot="start">
-                            <img alt="Silhouette of a person's head" src={logo}/>
-                        </IonAvatar> : null}
-                    <IonRow className={`${!logo || !logo.length ? 'pl-4' : ''}`}>
-                        <IonLabel className="font-extrabold w-full">{name}</IonLabel>
-
-                        <IonLabel
-                            className="font-light text-gray-600 text-sm">{moment(createdOn, "x").format("DD MMM YYYY hh:mm a")}</IonLabel>
-                    </IonRow>
-                    <IonIcon id={`popover-button-${id}-${name}`} icon={ellipsisVertical} className="float-right"/>
-                </IonItem>
-                <IonPopover
-                    className='scroll-y-hidden'
-                    trigger={`popover-button-${id}-${name}`}
-                    dismissOnSelect={true}
-                    size={'auto'}
-                    side="bottom"
-                    ref={popover}
-                    isOpen={popoverOpen}
-                    onDidDismiss={() => setPopoverOpen(false)}>
-                    <>
-                        <IonRow>
-                            <IonItem className="px-4 py-2" onClick={() => handleNavigation(`/did/${id}`)}>
-                                <IonIcon slot="start" icon={informationCircleOutline}/>
-                                <IonLabel> More details</IonLabel>
-                            </IonItem>
+                            <IonLabel
+                                className="font-light text-gray-600 text-sm">{moment(createdOn, "x").format("DD MMM YYYY hh:mm a")}</IonLabel>
                         </IonRow>
-                        <IonRow>
-                            <IonItem className="px-4 py-2" onClick={() => onCopy(id)}>
-                                <IonIcon slot="start" icon={copyOutline}/>
-                                <IonLabel> Copy ID</IonLabel>
-                            </IonItem>
-                        </IonRow>
-                        <IonRow>
-                            <IonItem className="px-4 py-2">
-                                <IonIcon slot="start" icon={trashOutline}/>
-                                <IonLabel>Delete</IonLabel>
-                            </IonItem>
-                        </IonRow>
-                    </>
-                </IonPopover>
-            </div>
+                        <IonIcon id={`popover-button-${id}-${name}`} icon={ellipsisVertical} className="float-right"
+                                 slot="end"/>
+                    </IonItem>
+                    <IonPopover
+                        className='scroll-y-hidden'
+                        trigger={`popover-button-${id}-${name}`}
+                        dismissOnSelect={true}
+                        size={'auto'}
+                        side="bottom"
+                        ref={popover}
+                        isOpen={popoverOpen}
+                        onDidDismiss={() => setPopoverOpen(false)}>
+                        <>
+                            <IonRow>
+                                <IonItem className="px-4 py-2" onClick={() => handleNavigation(`/did/${id}`)}>
+                                    <IonIcon slot="start" icon={informationCircleOutline}/>
+                                    <IonLabel> More details</IonLabel>
+                                </IonItem>
+                            </IonRow>
+                            <IonRow>
+                                <IonItem className="px-4 py-2" onClick={() => onCopy(id)}>
+                                    <IonIcon slot="start" icon={copyOutline}/>
+                                    <IonLabel> Copy ID</IonLabel>
+                                </IonItem>
+                            </IonRow>
+                            <IonRow>
+                                <IonItem className="px-4 py-2">
+                                    <IonIcon slot="start" icon={trashOutline}/>
+                                    <IonLabel>Delete</IonLabel>
+                                </IonItem>
+                            </IonRow>
+                        </>
+                    </IonPopover>
+                </div>
+            </IonCardHeader>
 
             <IonCardContent>
                 <IonItem className="ion-activated" style={{borderRadius: '10px'}}>
