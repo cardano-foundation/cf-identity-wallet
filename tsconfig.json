@@ -3,6 +3,7 @@
     "target": "es5",
     "baseUrl": ".",
     "lib": [
+      "es5",
       "dom",
       "dom.iterable",
       "es2015.core"
@@ -26,6 +27,7 @@
     "**/*.ts",
     "**/*.tsx",
     "features/wallet/wallet.machine.js",
+    "node_modules/@stencil/core/compiler/lib.es5.d.ts",
     "node_modules/@stencil/core/compiler/lib.es5.d.ts",
     "node_modules/@stencil/core/compiler/lib.es5.d.ts",
     "node_modules/@stencil/core/compiler/lib.es5.d.ts",

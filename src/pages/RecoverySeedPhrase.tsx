@@ -1,29 +1,29 @@
 import React, {useState} from 'react';
-import {useHistory} from 'react-router-dom';
+import {useHistory, useLocation} from 'react-router-dom';
 import {
+  IonButton,
+  IonCard,
+  IonCardContent,
+  IonCardHeader,
+  IonCheckbox,
+  IonChip,
   IonCol,
   IonGrid,
+  IonIcon,
   IonItem,
   IonLabel,
   IonPage,
   IonProgressBar,
   IonRow,
-  IonCard,
-  IonCardHeader,
-  IonCardContent,
-  IonButton,
-  IonIcon,
-  IonCheckbox,
   IonSegment,
   IonSegmentButton,
-  IonChip,
 } from '@ionic/react';
 import {addOutline, eyeOffOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
 
-/* 
+/*
   Hardcoding test values for seedphrases.
-  To be removed once the real seed phrase 
+  To be removed once the real seed phrase
   generating tool will be integrated.
   */
 const seed15 = [
@@ -76,13 +76,15 @@ const RecoverySeedPhrase = (props) => {
   const [view, setView] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState<string[]>(seed15);
   const history = useHistory();
+  const location = useLocation();
 
   const handleNavigation = (route: string) => {
     history.push({
       pathname: route,
-      search: '?update=true', // query string
       state: {
         seedPhrase,
+        walletName: location.state?.walletName,
+        walletPassword: location.state?.walletPassword
       },
     });
   };

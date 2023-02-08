@@ -1,31 +1,21 @@
 import React, {useEffect, useState} from 'react';
-import {useLocation, useHistory} from 'react-router-dom';
-import {
-  IonCol,
-  IonGrid,
-  IonPage,
-  IonProgressBar,
-  IonRow,
-  IonButton,
-  IonChip,
-  IonItem,
-  IonLabel,
-} from '@ionic/react';
+import {useHistory, useLocation} from 'react-router-dom';
+import {IonButton, IonChip, IonCol, IonGrid, IonItem, IonLabel, IonPage, IonProgressBar, IonRow,} from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
-import {shuffle} from '../utils/utils';
+import {equals, shuffle} from '../utils/utils';
 
-const VerifySeedPhrase = (props) => {
+const VerifySeedPhrase = ({}) => {
   const pageName = 'Verify Seed Phrase';
-  const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
-  const [seedMatch, setSeedMatch] = useState<string[]>([]);
   const location = useLocation();
   const history = useHistory();
+  const originalSeedPhrase = location.state?.seedPhrase;
+  const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
+  const [seedMatch, setSeedMatch] = useState<string[]>([]);
 
   const handleNavigation = (route: string) => {
     history.push({
       pathname: route,
-      search: '?update=true',
       state: {
         seedPhrase,
       },
@@ -33,35 +23,40 @@ const VerifySeedPhrase = (props) => {
   };
 
   useEffect(() => {
-    const seedPhrase = location.state.seedPhrase as string[];
-    if (seedPhrase.length) {
-      setSeedPhrase(shuffle(seedPhrase));
+    if (originalSeedPhrase && originalSeedPhrase.length) {
+      setSeedPhrase(shuffle(originalSeedPhrase));
     }
   }, []);
 
   const addSeedMatch = (word: string, index: number) => {
     setSeedMatch((seedMatch) => [...seedMatch, word]);
     setSeedPhrase((seedPhrase) =>
-      seedPhrase.filter((arr, i) => arr !== word && index !== i)
+        seedPhrase.filter((arr, i) => arr !== word && index !== i)
     );
   };
 
   const removeSeedMatch = (word: string, index: number) => {
     setSeedPhrase((seedPhrase) => [...seedPhrase, word]);
     setSeedMatch((seedMatch) =>
-      seedMatch.filter((arr, i) => arr !== word && index !== i)
+        seedMatch.filter((arr, i) => arr !== word && index !== i)
     );
   };
 
+  const onVerifySeedPhrase = () => {
+
+
+    // handleNavigation('/tabs/crypto')
+  }
+
   return (
-    <IonPage id={pageName}>
-      <CustomPage
-        name={pageName}
-        sideMenu={false}
-        sideMenuPosition="start"
-        backButton={true}
-        backButtonText="Back"
-        backButtonPath={'/recoveryseedphrase'}
+      <IonPage id={pageName}>
+        <CustomPage
+            name={pageName}
+            sideMenu={false}
+            sideMenuPosition="start"
+            backButton={true}
+            backButtonText="Back"
+            backButtonPath={'/recoveryseedphrase'}
         actionButton={false}
         actionButtonIcon={addOutline}
         actionButtonIconSize="1.7rem">
@@ -120,20 +115,20 @@ const VerifySeedPhrase = (props) => {
           <IonRow>
             <IonCol>
               <IonButton
-                shape="round"
-                color="dark"
-                expand="block"
-                className="h-auto my-4"
-                onClick={() => handleNavigation('/tabs/crypto')}
-                disabled={false}>
+                  shape="round"
+                  color="dark"
+                  expand="block"
+                  className="h-auto my-4"
+                  onClick={() => onVerifySeedPhrase()}
+                  disabled={!equals(originalSeedPhrase, seedMatch)}>
                 Continue
               </IonButton>
               <IonButton
-                shape="round"
-                color="light"
-                expand="block"
-                className="h-auto my-4"
-                onClick={() => handleNavigation('/tabs/crypto')}>
+                  shape="round"
+                  color="light"
+                  expand="block"
+                  className="h-auto my-4"
+                  onClick={() => handleNavigation('/tabs/crypto')}>
                 Cancel
               </IonButton>
             </IonCol>
