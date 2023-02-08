@@ -92,8 +92,10 @@ const CreateWallet = (props) => {
             <IonRow>
               <IonCol size="12">
                 <IonItem>
-                  <IonLabel>
-                    <h4>The password unlocks the wallet in this device...</h4>
+                  <IonLabel className="disclaimer-text">
+                    Enter a new wallet name, set and confirm your spending
+                    password, and agree to the Terms and Conditions before
+                    continuing to the next step.
                   </IonLabel>
                 </IonItem>
               </IonCol>
@@ -184,12 +186,13 @@ const CreateWallet = (props) => {
                     disabled={!isPasswordMatching}
                     onIonChange={(e) => setChecked(e.detail.checked)}
                   />
-                  <IonLabel className="terms_and_conditions">
-                    I understand that if I lose my recovery phrase, I will not
-                    be able to access my account.
+                  <IonLabel className="terms-and-conditions">
+                    I have read, understood, and agree to the privacy policy and
+                    user agreement detailed in the&nbsp;
                     <a href="/termsandconditions">
-                      <u>Terms</u>
+                      <u>Terms and Conditions</u>
                     </a>
+                    .
                   </IonLabel>
                 </IonItem>
                 <IonButton
