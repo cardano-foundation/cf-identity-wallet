@@ -1,6 +1,5 @@
 import React from 'react';
 import {IonGrid, IonPage, IonRow, IonText,} from '@ionic/react';
-import {useHistory} from 'react-router-dom';
 import CustomPage from '../../../main/CustomPage';
 import './Credentials.css';
 import CREDENTIALS_RESPONSE from '../../../test/mock/credentials.json';
@@ -9,23 +8,6 @@ import {IDWCard} from "../../UI/IDWCard";
 
 const Credentials = (props: any) => {
   const pageName = 'My Credentials';
-
-  const history = useHistory();
-
-  const handleNavigation = (currentCred: {
-    id: any;
-    createDate?: string;
-    imageUrl?: string;
-    type?: string;
-    entity?: string;
-  }) => {
-    history.push({
-      pathname: `/creds/${currentCred.id}`,
-      state: {
-        currentCred,
-      },
-    });
-  };
 
   return (
     <IonPage id={pageName}>
@@ -51,7 +33,7 @@ const Credentials = (props: any) => {
                 {
                   CREDENTIALS_RESPONSE[key] && CREDENTIALS_RESPONSE[key].map(cred => {
                     return <SwiperSlide key={cred.id}>
-                      <IDWCard id={cred.id} qr={cred.id} name={cred.name} createdOn={cred.createDate} logo={cred.imageUrl} onClick={() => handleNavigation(cred)}/>
+                      <IDWCard type="CREDENTIAL" id={cred.id} qr={cred.id} name={cred.name} createdOn={cred.createDate} logo={cred.imageUrl} data={cred}/>
                     </SwiperSlide>
                   })
                 }
