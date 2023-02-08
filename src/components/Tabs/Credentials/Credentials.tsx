@@ -7,11 +7,13 @@ import {
   IonCard,
   IonThumbnail,
   IonLabel,
+  IonText,
 } from '@ionic/react';
 import {useHistory} from 'react-router-dom';
 import CustomPage from '../../../main/CustomPage';
 import './Credentials.css';
 import CREDENTIALS_RESPONSE from '../../../api/mock/credentials.json';
+import { key } from 'ionicons/icons';
 
 const Credentials = (props: any) => {
   const pageName = 'My Credentials';
@@ -44,27 +46,32 @@ const Credentials = (props: any) => {
           <IonRow className="ion-margin">
             <IonCol className="ion-align-self-start">
               {creds.map((cred, index) => (
-                <IonCard
+                <IonRow
                   key={index}
-                  onClick={() => handleNavigation(cred)}>
-                  <IonGrid fixed={true}>
-                    <IonRow>
-                      <IonCol size="auto">
-                        <IonThumbnail className="w-24 py-3">
-                          <img src={cred.imageUrl} />
-                        </IonThumbnail>
-                      </IonCol>
-                      <IonCol>
-                        <IonLabel className="py-3">
-                          <h1>
-                            <strong>{cred.type}</strong>
-                          </h1>
-                          <p>{cred.entity}</p>
-                        </IonLabel>
-                      </IonCol>
-                    </IonRow>
-                  </IonGrid>
-                </IonCard>
+                  className="ion-margin">
+                  <IonText>{cred.category}</IonText>
+                  <IonCard
+                    key={index}
+                    onClick={() => handleNavigation(cred)}>
+                    <IonGrid fixed={true}>
+                      <IonRow>
+                        <IonCol size="auto">
+                          <IonThumbnail className="w-24 py-3">
+                            <img src={cred.imageUrl} />
+                          </IonThumbnail>
+                        </IonCol>
+                        <IonCol>
+                          <IonLabel className="py-3">
+                            <h1>
+                              <strong>{cred.type}</strong>
+                            </h1>
+                            <p>{cred.entity}</p>
+                          </IonLabel>
+                        </IonCol>
+                      </IonRow>
+                    </IonGrid>
+                  </IonCard>
+                </IonRow>
               ))}
             </IonCol>
           </IonRow>
