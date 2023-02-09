@@ -1,5 +1,4 @@
 export const isDarkMode = () => {
-  console.log(document.body.classList.contains('dark'));
   return document.body.classList.contains('dark');
 };
 
