@@ -69,11 +69,6 @@ const Settings = (props) => {
                   Cardano Identity Wallet v0.1.0
                 </IonLabel>
               </IonItem>
-              <IonItem>
-                <IonLabel className="text-center mx-auto">
-                  <h2>Upcoming Features:</h2>
-                </IonLabel>
-              </IonItem>
             </IonCol>
           </IonRow>
           <IonRow>
@@ -85,6 +80,11 @@ const Settings = (props) => {
                     onIonChange={(_) => handleTheme()}
                     slot="end"
                   />
+                </IonItem>
+                <IonItem>
+                  <IonLabel className="input-label text-center mx-auto">
+                    <h3>Upcoming Features</h3>
+                  </IonLabel>
                 </IonItem>
                 <IonItem>
                   <IonLabel onClick={() => handleNavigation('/chats')}>
