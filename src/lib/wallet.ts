@@ -14,8 +14,8 @@ export const createAccount = async (
   if (accountsNames && accountsNames.includes(name)) {
     throw  `account name already exists: ${name}`;
   }
-  const duplicatedName = await account.setName(name);
 
+  const duplicatedName = await account.setName(name);
   // @ts-ignore
   if (duplicatedName && duplicatedName.error) throw duplicatedName.error;
 

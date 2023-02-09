@@ -19,33 +19,64 @@ import {addOutline, copyOutline, ellipsisVertical, informationCircleOutline, tra
 import CustomPage from '../../../main/CustomPage';
 import './Crypto.css';
 import {subscribe} from '../../../utils/events';
-import {getCachedAccounts} from "../../../store/reducers/cache";
-import {useAppSelector} from "../../../store/hooks";
+import {getCachedAccounts, setAccountsIdsInCache} from "../../../store/reducers/cache";
+import {useAppDispatch, useAppSelector} from "../../../store/hooks";
+import {Account} from "../../../models/Account/Account";
 
-const Crypto = (props) => {
+const Crypto = ({}) => {
   const pageName = 'My Wallets';
   const nav = useHistory();
+  const dispatch = useAppDispatch();
   const modal = useRef(null);
   const cachedAccounts = useAppSelector(getCachedAccounts);
-  console.log("cachedAccounts");
-  console.log((cachedAccounts));
-  const [walletsList, setWalletsList] = useState<string[]>(cachedAccounts);
   const [showAddWallet, setShowAddWallet] = useState(false);
   const popover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
+  const useIsMounted = () => {
+    const isMounted = useRef(false);
+
+    // @ts-ignore
+    useEffect(() => {
+      isMounted.current = true;
+      return () => (isMounted.current = false);
+    }, []);
+    return isMounted;
+  };
+
+  const isMounted = useIsMounted();
 
   useEffect(() => {
     subscribe('ionBackButton', () => {
       nav.replace('/tabs/crypto');
     });
   }, []);
+
   useEffect(() => {
-    //Account.getAllAccountsIds().then(wallets => setWalletsList(wallets));
+    const init = async () => {
+
+    };
+    if (isMounted.current) {
+      // call the function
+      init()
+          // make sure to catch any error
+          .catch(console.error);
+    }
   }, []);
 
-  console.log("walletsList");
-  console.log((walletsList));
+
+  useEffect(() => {
+
+
+  }, []);
+
+  const removeWallet = async (id: string) => {
+    console.log("removeWallet");
+    console.log(id);
+    Account.removeAccount(id);
+
+    dispatch(setAccountsIdsInCache(cachedAccounts.filter(acc => acc !== id)));
+  }
 
   const renderWallets = () => {
     return cachedAccounts.map((wallet, index) => (
@@ -105,10 +136,10 @@ const Crypto = (props) => {
                       </IonItem>
                     </IonRow>
                     <IonRow>
-                      <IonItem className="px-4 py-2">
+                      <IonItem className="px-4 py-2" onClick={() => removeWallet(wallet)}>
                         <IonIcon
-                          slot="start"
-                          icon={trashOutline}
+                            slot="start"
+                            icon={trashOutline}
                         />
                         <IonLabel>Delete</IonLabel>
                       </IonItem>
@@ -166,7 +197,7 @@ const Crypto = (props) => {
           name={pageName}
           sideMenu={false}
           sideMenuPosition="start"
-          actionButton={!!walletsList.length}
+          actionButton={!!cachedAccounts.length}
           actionButtonIcon={addOutline}
           actionButtonIconSize="1.7rem"
           actionButtonClickEvent={() => {

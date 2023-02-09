@@ -5,7 +5,7 @@
   "scripts": {
     "prebuild": "rimraf build",
     "dev": "npm i && webpack serve --config webpack.dev.js --host 0.0.0.0 --port 3001",
-    "serve": "serve -s build",
+
     "build": "webpack --config webpack.prod.js ",
     "buildcap": "rimraf build && webpack --config webpack.prod.js && npx cap sync",
     "open:android": "npx cap open android",
@@ -34,6 +34,7 @@
     "@capacitor/ios": "^4.6.1",
     "@capacitor/local-notifications": "^4.0.1",
     "@capacitor/share": "^4.0.1",
+    "@capacitor/splash-screen": "^4.1.4",
     "@capacitor/status-bar": "^4.0.1",
     "@capacitor/toast": "^4.0.1",
     "@capawesome/capacitor-background-task": "^2.0.0",

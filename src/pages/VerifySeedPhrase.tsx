@@ -3,15 +3,19 @@ import {useHistory, useLocation} from 'react-router-dom';
 import {IonButton, IonChip, IonCol, IonGrid, IonItem, IonLabel, IonPage, IonProgressBar, IonRow,} from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
-import {equals, shuffle} from '../utils/utils';
+import {shuffle} from '../utils/utils';
 import {Account} from "../models/Account/Account";
 import {createAccount} from "../lib/wallet";
 import {ERA} from "../models/types";
+import {getCachedAccounts, setAccountsIdsInCache} from "../store/reducers/cache";
+import {useAppDispatch, useAppSelector} from "../store/hooks";
 
 const VerifySeedPhrase = ({}) => {
   const pageName = 'Verify Seed Phrase';
   const location = useLocation();
   const history = useHistory();
+  const dispatch = useAppDispatch();
+  const cachedAccounts = useAppSelector(getCachedAccounts);
   const originalSeedPhrase = location.state?.seedPhrase;
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedMatch, setSeedMatch] = useState<string[]>([]);
@@ -69,18 +73,17 @@ const VerifySeedPhrase = ({}) => {
             ERA.SHELLEY,
             location.state?.walletPassword
         );
-        account.commit();
-        handleNavigation('/tabs/crypto');
+
+        if (account?.id) {
+          account.commit();
+          dispatch(setAccountsIdsInCache(cachedAccounts ? [...cachedAccounts, account.id] : [account.id]));
+          handleNavigation('/tabs/crypto');
+        }
       }
     } catch (e) {
       console.log(e);
     }
   }
-
-  console.log("originalSeedPhrase");
-  console.log(originalSeedPhrase);
-  console.log("seedMatch");
-  console.log(seedMatch);
 
   return (
       <IonPage id={pageName}>
@@ -154,7 +157,7 @@ const VerifySeedPhrase = ({}) => {
                   expand="block"
                   className="h-auto my-4"
                   onClick={() => onVerifySeedPhrase()}
-                  disabled={!equals(originalSeedPhrase, seedMatch)}>
+                  disabled={false}> {/*!equals(originalSeedPhrase, seedMatch)*/}
                 Continue
               </IonButton>
               <IonButton
