@@ -72,7 +72,8 @@ body.dark {
   color: var(--ion-text-color, --ion-color-primary-contrast);
 }
 
-body.dark ion-modal#create-wallet-modal ion-content {
+body.dark ion-modal#create-wallet-modal ion-content,
+body.dark ion-card {
   --background: var(--ion-color-light-shade);
 }
 
