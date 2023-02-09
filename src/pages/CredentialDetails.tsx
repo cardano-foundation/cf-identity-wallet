@@ -90,14 +90,7 @@ const CredentialDetails = (props) => {
                           : cred.holderInformation.name}
                       </strong>
                     </h1>
-                    <p>
-                      {title()}
-                      {/* {cred.name === 'Proof Of Origin' &&
-                        cred.holderInformation.product}
-                      {cred.name === 'CBCA Certificate'
-                        ? cred.issuerInformation.curriculum
-                        : cred.holderInformation.title} */}
-                    </p>
+                    <p>{title()}</p>
                   </IonLabel>
                 </IonCol>
               </IonRow>
