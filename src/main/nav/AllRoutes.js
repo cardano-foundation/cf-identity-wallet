@@ -63,7 +63,7 @@ export const tabRoutes = [
     sideMenuOptions: tab2SideMenu,
   },
   {
-    label: 'Camera',
+    label: 'Scan',
     component: Camera,
     customIcon: false,
     icon: scanOutline,

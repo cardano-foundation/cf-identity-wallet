@@ -28,7 +28,7 @@
     {
       "id": "did:peer:d878b26d5-cf3e-47b5-8a68-03be60f12edf",
       "createDate": "1675687786999",
-      "name": "Anonymous",
+      "name": "P2P Chat",
       "keyType": "Ed25519",
       "isVerified": true
     }
