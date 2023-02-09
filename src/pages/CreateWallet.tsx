@@ -18,7 +18,7 @@ import {addOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
 import './CreateWallet.css';
 
-const CreateWallet = (props) => {
+const CreateWallet = ({}) => {
   const pageName = 'Create Wallet';
   const nav = useHistory();
   const [walletName, setWalletName] = useState<string>();
@@ -75,6 +75,10 @@ const CreateWallet = (props) => {
   const handleNavigation = (route: string) => {
     history.push({
       pathname: route,
+      state: {
+        walletName,
+        walletPassword
+      },
     });
   };
 
@@ -120,12 +124,13 @@ const CreateWallet = (props) => {
                     <strong>Enter Wallet Name</strong>
                   </IonLabel>
                   <IonInput
-                    type="text"
-                    placeholder="Enter text"
-                    onIonInput={(event) => validateName(event)}
-                    onIonBlur={(event) => validateName(event)}
-                    required={true}
-                    className="mb-0"
+                      value={walletName}
+                      type="text"
+                      placeholder="Enter text"
+                      onIonInput={(event) => validateName(event)}
+                      onIonBlur={(event) => validateName(event)}
+                      required={true}
+                      className="mb-0"
                   />
                   <IonNote slot="error">Invalid name</IonNote>
                 </IonItem>
@@ -138,13 +143,14 @@ const CreateWallet = (props) => {
                     <strong>Set Spending Password</strong>
                   </IonLabel>
                   <IonInput
-                    type="password"
-                    placeholder="Enter text"
-                    disabled={!isNameValid}
-                    onIonInput={(event) => validatePassword(event)}
-                    onIonBlur={(event) => validatePassword(event)}
-                    required={true}
-                    className="mb-0"
+                      value={walletPassword}
+                      type="password"
+                      placeholder="Enter text"
+                      disabled={!isNameValid}
+                      onIonInput={(event) => validatePassword(event)}
+                      onIonBlur={(event) => validatePassword(event)}
+                      required={true}
+                      className="mb-0"
                   />
                   <IonNote slot="error">Invalid password</IonNote>
                 </IonItem>

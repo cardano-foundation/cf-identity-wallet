@@ -1,4 +1,4 @@
-import { CapacitorConfig } from '@capacitor/cli';
+import {CapacitorConfig} from '@capacitor/cli';
 
 const config: CapacitorConfig = {
    appId: "com.idwallet",
@@ -7,7 +7,7 @@ const config: CapacitorConfig = {
    bundledWebRuntime: true,
    plugins: {
       SplashScreen: {
-         launchShowDuration: 0,
+         backgroundColor: "#488AFF"
       },
       LocalNotifications: {
          smallIcon: "ic_stat_icon_config_sample",
