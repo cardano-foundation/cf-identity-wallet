@@ -14,6 +14,8 @@ Incase of fatal error: 'vips/vips8' file not found:
 
 ```bash
     brew reinstall vips
+    brew install pkg-config glib zlib
+    brew install libjpeg-turbo libpng webp
 ```
 #### Mobile
 ```bash
