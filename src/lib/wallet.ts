@@ -16,83 +16,100 @@ export const createAccount = async (
   }
 
   const duplicatedName = await account.setName(name);
-  // @ts-ignore
-  if (duplicatedName && duplicatedName.error) throw duplicatedName.error;
 
-  let rootKey = await CardanoAPI.generateRootKey(mnemonic);
 
   // @ts-ignore
-  if (rootKey && rootKey.error) throw rootKey.error;
+  if (duplicatedName && duplicatedName.error) throw 'duplicatedName';
 
-  // @ts-ignore
-  const rootPublicKeyHex = Buffer.from(rootKey.to_public().as_bytes()).toString(
-    'hex'
-  );
-  // @ts-ignore
-  const rootKeyHex = Buffer.from(rootKey.as_bytes()).toString('hex');
+  /*
+ console.log("mnemonic");
+ console.log(mnemonic);
 
-  const excryptedRootKey = CardanoAPI.encrypt(spendingPassword, rootKeyHex);
-  // @ts-ignore
-  if (excryptedRootKey && excryptedRootKey.error) throw excryptedRootKey.error;
+ let rootKey = await CardanoAPI.generateRootKey(mnemonic);
 
-  // @ts-ignore
-  let accountKey = CardanoAPI.deriveRootKey(
-      rootKey,
-      ERA_PARAMS[era].purpose,
-      1815
-  );
-  account.era = era;
+ // @ts-ignore
+ if (rootKey && rootKey.error) throw 'rootKey.error';
 
-  // @ts-ignore
-  rootKey.free();
-  // @ts-ignore
-  rootKey = null;
+ // @ts-ignore
+ const rootPublicKeyHex = Buffer.from(rootKey.to_public().as_bytes()).toString(
+   'hex'
+ );
+ // @ts-ignore
+ const rootKeyHex = Buffer.from(rootKey.as_bytes()).toString('hex');
 
-  // @ts-ignore
-  account.setEncryptedRootKey(excryptedRootKey);
-  account.rootPublicKeyHex = rootPublicKeyHex;
+ const excryptedRootKey = CardanoAPI.encrypt(spendingPassword, rootKeyHex);
+ // @ts-ignore
+ if (excryptedRootKey && excryptedRootKey.error) throw excryptedRootKey.error;
 
-  // @ts-ignore
-  if (accountKey && accountKey.error) throw accountKey.error;
+ // @ts-ignore
+ let accountKey = CardanoAPI.deriveRootKey(
+     rootKey,
+     ERA_PARAMS[era].purpose,
+     1815
+ );
+ account.era = era;
 
-  // @ts-ignore
-  const testnetAddresses = await CardanoAPI.generateAddresses(accountKey, 0);
-  // @ts-ignore
-  if (testnetAddresses && testnetAddresses.error) throw testnetAddresses.error;
+ // @ts-ignore
+ rootKey.free();
+ // @ts-ignore
+ rootKey = null;
 
-  // @ts-ignore
-  const mainnetAddresses = await CardanoAPI.generateAddresses(accountKey, 1);
-  // @ts-ignore
-  if (mainnetAddresses && mainnetAddresses.error) throw mainnetAddresses.error;
+ // @ts-ignore
+ account.setEncryptedRootKey(excryptedRootKey);
+ account.rootPublicKeyHex = rootPublicKeyHex;
 
-  // @ts-ignore
-  accountKey.free();
-  // @ts-ignore
-  accountKey = null;
+ console.log("accountKey");
+ console.log(accountKey);
+ // @ts-ignore
+ if (accountKey && accountKey.error) throw 'accountKey.error';
 
-  let netObj = {
-    assets: {},
-    utxos: [],
-    collateral: [],
-    vault: [],
-    transactions: [],
-  };
-  const mainnetNetwork: INetwork = {
-    ...netObj,
-    stakeAddress: mainnetAddresses.stakeAddress,
-    addresses: mainnetAddresses.paymentAddresses,
-  };
+ // @ts-ignore
+ const testnetAddresses = await CardanoAPI.generateAddresses(accountKey, 0);
+ // @ts-ignore
+ if (testnetAddresses && testnetAddresses.error) throw testnetAddresses.error;
 
-  const testnetNetwork: INetwork = {
-    ...netObj,
-    stakeAddress: testnetAddresses.stakeAddress,
-    addresses: testnetAddresses.paymentAddresses,
-  };
+ // @ts-ignore
+ const mainnetAddresses = await CardanoAPI.generateAddresses(accountKey, 1);
+ // @ts-ignore
+ if (mainnetAddresses && mainnetAddresses.error) throw mainnetAddresses.error;
 
-  account.setNetwork('preview', testnetNetwork);
-  account.setNetwork('preprod', testnetNetwork);
-  account.setNetwork('custom', testnetNetwork);
-  account.setNetwork('mainnet', mainnetNetwork);
+ // @ts-ignore
+ accountKey.free();
+ // @ts-ignore
+ accountKey = null;
+
+ let netObj = {
+   assets: {},
+   utxos: [],
+   collateral: [],
+   vault: [],
+   transactions: [],
+ };
+
+ console.log("netObj");
+ console.log(netObj);
+ const mainnetNetwork: INetwork = {
+   ...netObj,
+   stakeAddress: mainnetAddresses.stakeAddress,
+   addresses: mainnetAddresses.paymentAddresses,
+ };
+
+ const testnetNetwork: INetwork = {
+   ...netObj,
+   stakeAddress: testnetAddresses.stakeAddress,
+   addresses: testnetAddresses.paymentAddresses,
+ };
+
+ console.log("account1");
+ console.log(account);
+
+ account.setNetwork('preview', testnetNetwork);
+ account.setNetwork('preprod', testnetNetwork);
+ account.setNetwork('custom', testnetNetwork);
+ account.setNetwork('mainnet', mainnetNetwork);
+
+
+  */
 
   return account;
 };

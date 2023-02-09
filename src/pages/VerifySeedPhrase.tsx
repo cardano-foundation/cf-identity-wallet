@@ -66,6 +66,10 @@ const VerifySeedPhrase = ({}) => {
 
   const onVerifySeedPhrase = async () => {
     try {
+      console.log("location.state?.walletName");
+      console.log(location.state?.walletName);
+      console.log("location.state?.walletPassword");
+      console.log(location.state?.walletPassword);
       if (location.state?.walletName && location.state?.walletPassword) {
         const account: Account = await createAccount(
             location.state?.walletName,
@@ -74,6 +78,9 @@ const VerifySeedPhrase = ({}) => {
             location.state?.walletPassword
         );
 
+        console.log("account");
+        console.log(account);
+
         if (account?.id) {
           account.commit();
           dispatch(setAccountsIdsInCache(cachedAccounts ? [...cachedAccounts, account.id] : [account.id]));
@@ -81,6 +88,7 @@ const VerifySeedPhrase = ({}) => {
         }
       }
     } catch (e) {
+      console.log("error");
       console.log(e);
     }
   }

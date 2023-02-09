@@ -38,16 +38,19 @@ export const CardanoAPI = {
   generateRootKey(seedPhrase: string) {
     try {
       const bip39entropy = mnemonicToEntropy(seedPhrase);
+      console.log("bip39entropy");
+      console.log(bip39entropy);
       const passphrase = Buffer.from('');
       // @ts-ignore
       return this._lib.Bip32PrivateKey.from_bip39_entropy(
           Buffer.from(bip39entropy, 'hex'),
           passphrase
       );
+
     } catch (error) {
-      return {
-        error,
-      };
+      console.log("error");
+      console.log(error);
+      return error
     }
   },
   encrypt(password: string, data: string) {

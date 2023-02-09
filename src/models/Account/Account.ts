@@ -47,7 +47,7 @@ export class Account {
   }
 
   setEncryptedRootKey(encryptedRootKey: string) {
-    if (Capacitor.getPlatform() !== 'web') {
+    if (false) { // Capacitor.getPlatform() !== 'web'
       setKeystore(`${this.id}:rootKey`, encryptedRootKey);
     } else {
       // web, extension and desktop
@@ -60,7 +60,7 @@ export class Account {
   }
 
   setCertificate(name: string, certificate: ICertificate) {
-    if (Capacitor.getPlatform() !== 'web') {
+    if (false) { // Capacitor.getPlatform() !== 'web'
       setKeystore(`${this.id}:certificate`, JSON.stringify(certificate));
     } else {
       // web, extension and desktop
