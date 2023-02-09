@@ -1,6 +1,6 @@
 import React from 'react';
 import {useHistory} from 'react-router-dom';
-import {useEffect} from 'react';
+import {useEffect, useState} from 'react';
 import {
   IonCol,
   IonGrid,
@@ -15,13 +15,17 @@ import {
 import CustomPage from '../../../main/CustomPage';
 import {changeTheme} from '../../../theme/handleTheme';
 import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
-import Logo from '../../../../public/assets/cardano-logo.png';
+import LogoDark from '../../../../public/assets/cardano-logo.png';
+import LogoLight from '../../../../public/assets/cardano-logo-white.png';
 
 const Settings = (props) => {
   const pageName = 'Settings';
   const {sideMenuOptions} = props;
   const setSideMenu = useSideMenuUpdate();
   const history = useHistory();
+  const [isDark, setIsDark] = useState(
+    document.body.classList.contains('dark')
+  );
 
   const handleNavigation = (route: string) => {
     history.push({
@@ -31,6 +35,7 @@ const Settings = (props) => {
 
   const handleTheme = () => {
     changeTheme();
+    setIsDark(document.body.classList.contains('dark'));
   };
 
   useEffect(() => {
@@ -54,7 +59,7 @@ const Settings = (props) => {
             <IonCol size="12">
               <IonItem>
                 <IonImg
-                  src={Logo}
+                  src={isDark ? LogoLight : LogoDark}
                   alt="Cardano Logo"
                   className="w-24 mx-auto"
                 />
