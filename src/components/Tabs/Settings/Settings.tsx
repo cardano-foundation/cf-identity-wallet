@@ -16,6 +16,7 @@ import CustomPage from '../../../main/CustomPage';
 import {changeTheme} from '../../../theme/handleTheme';
 import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
 import Logo from '../../../../public/assets/cardano-logo.png';
+import {isDarkMode} from '../../../theme/handleTheme';
 
 const Settings = (props) => {
   const pageName = 'Settings';
