@@ -11,6 +11,7 @@ import './theme/style.css';
 import './theme/structure.css';
 import AppWrapper from './components/AppWrapper';
 import {HandleConnect} from './api/p2p/HandleConnect';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 export const handleConnect = new HandleConnect();
 
@@ -38,8 +39,14 @@ const App = (isExtension?: boolean) => {
   const isMounted = useIsMounted();
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
-    const init = async () => {};
+    const init = async () => {
+      await SplashScreen.show({
+        showDuration: 2000,
+        fadeInDuration: 0,
+        fadeOutDuration: 0.5,
+        autoHide: true
+      });
+    };
     if (isMounted.current) {
       init().catch(console.error);
     }
