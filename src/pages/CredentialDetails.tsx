@@ -20,6 +20,17 @@ const CredentialDetails = (props) => {
   const location = useLocation();
   const cred = location.state?.dataObject;
 
+  const title = () => {
+    switch (cred.name) {
+      case 'Proof Of Origin':
+        return cred.holderInformation.product;
+      case 'CBCA Certificate':
+        return cred.issuerInformation.curriculum;
+      default:
+        return cred.holderInformation.title;
+    }
+  };
+
   return (
     cred && (
       <IonPage id={cred.name}>
@@ -80,9 +91,12 @@ const CredentialDetails = (props) => {
                       </strong>
                     </h1>
                     <p>
-                      {cred.name === 'Proof Of Origin'
-                        ? cred.holderInformation.product
-                        : cred.holderInformation.title}
+                      {title()}
+                      {/* {cred.name === 'Proof Of Origin' &&
+                        cred.holderInformation.product}
+                      {cred.name === 'CBCA Certificate'
+                        ? cred.issuerInformation.curriculum
+                        : cred.holderInformation.title} */}
                     </p>
                   </IonLabel>
                 </IonCol>
