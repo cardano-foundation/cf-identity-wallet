@@ -22,7 +22,7 @@ const Credentials = (props: any) => {
                 key={key}
                 className="ion-margin">
                 <IonText color="dark">
-                  <p className="title">{key}</p>
+                  <p className="title font-extrabold">{key}</p>
                 </IonText>
                 <Swiper
                   spaceBetween={10}
