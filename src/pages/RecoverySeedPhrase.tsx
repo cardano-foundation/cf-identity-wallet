@@ -26,23 +26,6 @@ import {ERA} from "../models/types";
 const RecoverySeedPhrase = ({}) => {
   const pageName = 'Create Seed Phrase';  // TODO
 
-  const tmp_seed = [
-    "upgrade",
-    "hold",
-    "tiger",
-    "effort",
-    "recall",
-    "hold",
-    "hard",
-    "devote",
-    "bone",
-    "escape",
-    "grow",
-    "release",
-    "jungle",
-    "indoor",
-    "mother"
-  ]
   const [checked, setChecked] = useState(false);
   const [view, setView] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
