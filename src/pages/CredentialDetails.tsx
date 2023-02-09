@@ -21,11 +21,13 @@ const CredentialDetails = (props) => {
   const cred = location.state?.dataObject;
 
   const title = () => {
-    switch (cred.name) {
-      case 'Proof Of Origin':
+    switch (cred.category) {
+      case 'Supply Chain':
         return cred.holderInformation.product;
-      case 'CBCA Certificate':
+      case 'Certification':
         return cred.issuerInformation.curriculum;
+      case 'Admissions':
+        return cred.holderInformation.event;
       default:
         return cred.holderInformation.title;
     }
@@ -85,19 +87,12 @@ const CredentialDetails = (props) => {
                   <IonLabel className="py-3">
                     <h1>
                       <strong className="capitalize pr-3">
-                        {cred.name === 'Proof Of Origin'
+                        {cred.category === 'Supply Chain'
                           ? cred.holderInformation.origin
                           : cred.holderInformation.name}
                       </strong>
                     </h1>
-                    <p>
-                      {title()}
-                      {/* {cred.name === 'Proof Of Origin' &&
-                        cred.holderInformation.product}
-                      {cred.name === 'CBCA Certificate'
-                        ? cred.issuerInformation.curriculum
-                        : cred.holderInformation.title} */}
-                    </p>
+                    <p>{title()}</p>
                   </IonLabel>
                 </IonCol>
               </IonRow>

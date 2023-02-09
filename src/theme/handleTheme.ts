@@ -1,6 +1,6 @@
 export const isDarkMode = () => {
   return document.body.classList.contains('dark');
-}
+};
 
 export const changeTheme = () => {
   // window.matchMedia('(prefers-color-scheme: dark)').matches, match OS preference
