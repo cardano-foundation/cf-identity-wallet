@@ -27,9 +27,7 @@ export type CardanoNetwork = 'mainnet' | 'testnet' | 'preview' | 'preprod';
 export const CardanoAPI = {
   _lib: undefined as undefined | typeof EmurgoSerializationLibrary,
   async init() {
-    console.log("tryyyyy00")
     this._lib = await EmurgoModule.CardanoWasm();
-    console.log("tryyyyy")
   },
   generateSeedPhrase(size: number): string {
     return generateMnemonic(size);
@@ -38,25 +36,18 @@ export const CardanoAPI = {
     return validateMne(seedPhrase);
   },
   generateRootKey(seedPhrase: string) {
-    console.log("generateRootKey");
     try {
       const bip39entropy = mnemonicToEntropy(seedPhrase);
-      console.log("bip39entropy");
-      console.log(bip39entropy);
       const passphrase = Buffer.from('');
       // @ts-ignore
-      const r =  this._lib.Bip32PrivateKey.from_bip39_entropy(
+      return this._lib.Bip32PrivateKey.from_bip39_entropy(
           Buffer.from(bip39entropy, 'hex'),
           passphrase
       );
-
-      console.log("rrrrrrrrr");
-      console.log(r);
-      return r;
     } catch (error) {
-      console.log("error");
-      console.log(error);
-      return error
+      return {
+        error
+      };
     }
   },
   encrypt(password: string, data: string) {
