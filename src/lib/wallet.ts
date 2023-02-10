@@ -1,6 +1,7 @@
 import {CardanoAPI, ERA_PARAMS} from './CardanoAPI';
 import {Account} from '../models/Account/Account';
 import {ERA, INetwork} from '../models/types';
+import {EmurgoModule} from "./emurgo";
 
 export const createAccount = async (
   name: string,
@@ -8,7 +9,7 @@ export const createAccount = async (
   era: ERA = ERA.SHELLEY,
   spendingPassword: string
 ) => {
-  const account = new Account();
+    const account = new Account();
 
   const accountsNames = await Account.getAllAccountsIds();
   if (accountsNames && accountsNames.includes(name)) {
@@ -20,10 +21,6 @@ export const createAccount = async (
 
   // @ts-ignore
   if (duplicatedName && duplicatedName.error) throw 'duplicatedName';
-
-  /*
- console.log("mnemonic");
- console.log(mnemonic);
 
  let rootKey = await CardanoAPI.generateRootKey(mnemonic);
 
@@ -58,8 +55,6 @@ export const createAccount = async (
  account.setEncryptedRootKey(excryptedRootKey);
  account.rootPublicKeyHex = rootPublicKeyHex;
 
- console.log("accountKey");
- console.log(accountKey);
  // @ts-ignore
  if (accountKey && accountKey.error) throw 'accountKey.error';
 
@@ -86,8 +81,6 @@ export const createAccount = async (
    transactions: [],
  };
 
- console.log("netObj");
- console.log(netObj);
  const mainnetNetwork: INetwork = {
    ...netObj,
    stakeAddress: mainnetAddresses.stakeAddress,
@@ -100,16 +93,10 @@ export const createAccount = async (
    addresses: testnetAddresses.paymentAddresses,
  };
 
- console.log("account1");
- console.log(account);
-
  account.setNetwork('preview', testnetNetwork);
  account.setNetwork('preprod', testnetNetwork);
  account.setNetwork('custom', testnetNetwork);
  account.setNetwork('mainnet', mainnetNetwork);
-
-
-  */
 
   return account;
 };
