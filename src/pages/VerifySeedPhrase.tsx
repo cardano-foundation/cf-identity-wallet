@@ -3,7 +3,7 @@ import {useHistory, useLocation} from 'react-router-dom';
 import {IonButton, IonChip, IonCol, IonGrid, IonItem, IonLabel, IonPage, IonProgressBar, IonRow,} from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../main/CustomPage';
-import {shuffle} from '../utils/utils';
+import {equals, shuffle} from '../utils/utils';
 import {Account} from "../models/Account/Account";
 import {createAccount} from "../lib/wallet";
 import {ERA} from "../models/types";
@@ -66,10 +66,6 @@ const VerifySeedPhrase = ({}) => {
 
   const onVerifySeedPhrase = async () => {
     try {
-      console.log("location.state?.walletName");
-      console.log(location.state?.walletName);
-      console.log("location.state?.walletPassword");
-      console.log(location.state?.walletPassword);
       if (location.state?.walletName && location.state?.walletPassword) {
         const account: Account = await createAccount(
             location.state?.walletName,
@@ -77,9 +73,6 @@ const VerifySeedPhrase = ({}) => {
             ERA.SHELLEY,
             location.state?.walletPassword
         );
-
-        console.log("account");
-        console.log(account);
 
         if (account?.id) {
           account.commit();
@@ -165,7 +158,7 @@ const VerifySeedPhrase = ({}) => {
                   expand="block"
                   className="h-auto my-4"
                   onClick={() => onVerifySeedPhrase()}
-                  disabled={false}> {/*!equals(originalSeedPhrase, seedMatch)*/}
+                  disabled={!equals(originalSeedPhrase, seedMatch)}>
                 Continue
               </IonButton>
               <IonButton
