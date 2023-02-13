@@ -1,0 +1,62 @@
+version: "3.8"
+
+services:
+  app:
+    restart: unless-stopped
+    build:
+      dockerfile: Dockerfile.app
+      context: ./
+      target: static
+    env_file:
+      - $PWD/.env.${ENVIRONMENT:-example}
+    ports:
+      - 127.0.0.1:3001:3001
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`${APP_HOSTNAME:-some.public.accessible.hostname.example.com}`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=myresolver"
+
+  traefik:
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    env_file:
+      - $PWD/.env.${ENVIRONMENT:-example}
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.myresolver.acme.tlschallenge=true"
+      - "--certificatesresolvers.myresolver.acme.email=${ACME_EMAIL_ADMIN:-acme@example.com}"
+      - "--certificatesresolvers.myresolver.acme.storage=/letsencrypt/acme.json"
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - "$PWD/letsencrypt:/letsencrypt"
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
+
+  tracker:
+    image: jarylc/bittorrent-tracker:latest
+    container_name: "bittorrent-tracker"
+    restart: unless-stopped
+    ports:
+      - 8000
+    env_file:
+      - $PWD/.env.${ENVIRONMENT:-example}
+    environment:
+      - PORT=8000
+      - HTTP=1
+      - UDP=1
+      - WS=1
+      - STATS=1
+      - INTERVAL=600000
+      - TRUST_PROXY=0
+      - QUIET=1
+      - SILENT=0
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=Host(`${TRACKER_HOSTNAME:-tracker.some.public.accessible.hostname.example.com}`)"
+      - "traefik.http.routers.whoami.entrypoints=websecure"
+      - "traefik.http.routers.whoami.tls.certresolver=myresolver"
