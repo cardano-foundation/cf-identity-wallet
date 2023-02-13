@@ -3,6 +3,8 @@ import {get, getObject, removeObject, set, setObject,} from '../../db/storage';
 import {Capacitor} from '@capacitor/core';
 import {getKeystore, setKeystore} from '../../db/keystore';
 
+const KEY_CHAIN_DEVICES = ['iphone', 'ipad', 'phablet', 'tablet', 'android'];
+
 export class Account {
   private table = 'accounts';
   private id: string | undefined;
@@ -47,7 +49,7 @@ export class Account {
   }
 
   setEncryptedRootKey(encryptedRootKey: string) {
-    if (false) { // Capacitor.getPlatform() !== 'web'
+    if (KEY_CHAIN_DEVICES.includes(Capacitor.getPlatform())) {
       setKeystore(`${this.id}:rootKey`, encryptedRootKey);
     } else {
       // web, extension and desktop
@@ -60,7 +62,7 @@ export class Account {
   }
 
   setCertificate(name: string, certificate: ICertificate) {
-    if (false) { // Capacitor.getPlatform() !== 'web'
+    if (KEY_CHAIN_DEVICES.includes(Capacitor.getPlatform())) {
       setKeystore(`${this.id}:certificate`, JSON.stringify(certificate));
     } else {
       // web, extension and desktop
