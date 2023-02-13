@@ -34,3 +34,4 @@ yarn.lock
 secrets.ts
 .secrets
 letsencrypt
+.env.*
