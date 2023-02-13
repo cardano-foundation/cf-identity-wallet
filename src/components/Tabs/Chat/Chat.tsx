@@ -23,7 +23,15 @@ import {
   IonToolbar,
   useIonViewWillEnter,
 } from '@ionic/react';
-import {alertOutline, send, shareOutline, starOutline, trash, trashOutline, wifiOutline,} from 'ionicons/icons';
+import {
+  alertOutline,
+  send,
+  shareOutline,
+  starOutline,
+  trash,
+  trashOutline,
+  wifiOutline,
+} from 'ionicons/icons';
 
 import {useParams} from 'react-router';
 import {useLongPress} from 'react-use';
@@ -31,13 +39,13 @@ import './Chat.css';
 import ReplyTo from './ReplyTo';
 import {ChatBottomDetails} from './ChatBottomDetails';
 import {ChatRepliedQuote} from './ChatRepliedQuote';
-import {getPeer, getPeerProfile, removeHost, removePeer} from '../../db';
+import {getPeer, getPeerProfile, removeHost, removePeer} from '../../../db';
 
-import {writeToClipboard} from '../../utils/clipboard';
+import {writeToClipboard} from '../../../utils/clipboard';
 import {useHistory, useLocation} from 'react-router-dom';
-import {addressSlice} from '../../utils/utils';
-import {handleConnect} from '../../App';
-import {subscribe} from '../../utils/events';
+import {addressSlice} from '../../../utils/utils';
+import {handleConnect} from '../../../App';
+import {subscribe} from '../../../utils/events';
 
 const Chat = () => {
   const params = useParams();
@@ -71,12 +79,11 @@ const Chat = () => {
   const actionSheetButtons = [
     {
       text:
-          actionMessage && actionMessage.starred
-              ? 'Unstar Message'
-              : 'Star Message',
+        actionMessage && actionMessage.starred
+          ? 'Unstar Message'
+          : 'Star Message',
       icon: starOutline,
-      handler: () => {
-      },
+      handler: () => {},
     },
     actionMessage && actionMessage.received
       ? {
@@ -110,36 +117,32 @@ const Chat = () => {
 
   useEffect(() => {
     subscribe('updateChat', () => {
-        console.log('subscribe updateChat, lets update!');
-        updateChat();
+      console.log('subscribe updateChat, lets update!');
+      updateChat();
     });
   }, []);
 
-    const updateChat = async () => {
-        if (!params) return;
-        const chat = await getPeer(`peer:${params.channel_id}`);
-        if (chat) serChat(chat);
-    };
-    const pingChat = async () => {
-        if (!params) return;
-        const name = params.channel_id.split(':')[0];
-        const identifier = params.channel_id.split(':')[1];
-        handleConnect.pingServer(
-            identifier,
-            `peer:${params.channel_id}`,
-            name
-        );
-    };
+  const updateChat = async () => {
+    if (!params) return;
+    const chat = await getPeer(`peer:${params.channel_id}`);
+    if (chat) serChat(chat);
+  };
+  const pingChat = async () => {
+    if (!params) return;
+    const name = params.channel_id.split(':')[0];
+    const identifier = params.channel_id.split(':')[1];
+    handleConnect.pingServer(identifier, `peer:${params.channel_id}`, name);
+  };
 
-    const history = useHistory();
-    const handleNavigation = (route) => {
-        history.push({
-            pathname: route,
-            search: '?update=true', // query string
-            state: {
-                // location state
-                update: true,
-            },
+  const history = useHistory();
+  const handleNavigation = (route) => {
+    history.push({
+      pathname: route,
+      search: '?update=true', // query string
+      state: {
+        // location state
+        update: true,
+      },
     });
   };
 
@@ -303,31 +306,31 @@ const Chat = () => {
     return () => clearInterval(updateState);
   }, []);
 
-    const removeChat = async () => {
-        const id = `${chat?.name}:${chat?.identifier}`;
-        await removePeer(id);
-        await removeHost(id.replace('peer', 'host'));
+  const removeChat = async () => {
+    const id = `${chat?.name}:${chat?.identifier}`;
+    await removePeer(id);
+    await removeHost(id.replace('peer', 'host'));
 
-        handleNavigation('/chats');
-    };
-    const sendMessage = async () => {
-        console.log('sendMessage');
-        if (message !== '') {
-            try {
-                const name = params.channel_id.split(':')[0];
-                const identifier = params.channel_id.split(':')[1];
+    handleNavigation('/chats');
+  };
+  const sendMessage = async () => {
+    console.log('sendMessage');
+    if (message !== '') {
+      try {
+        const name = params.channel_id.split(':')[0];
+        const identifier = params.channel_id.split(':')[1];
 
-                const profile = await getPeerProfile('global');
+        const profile = await getPeerProfile('global');
 
-                handleConnect.sendMessage(
-                    identifier,
-                    `peer:${params.channel_id}`,
-                    name,
-                    message,
-                    profile.username
-                );
-                setMessage('');
-                setMessageSent(true);
+        handleConnect.sendMessage(
+          identifier,
+          `peer:${params.channel_id}`,
+          name,
+          message,
+          profile.username
+        );
+        setMessage('');
+        setMessageSent(true);
         setTimeout(() => setMessageSent(false), 10);
         setTimeout(() => updateChat() && scrollToBottom(), 200);
       } catch (e) {
@@ -382,35 +385,37 @@ const Chat = () => {
               <div className="chat-contact-details">
                 <p>
                   {chat?.name}
-                    <span className="ml-3 color" onClick={() => pingChat()}>
+                  <span
+                    className="ml-3 color"
+                    onClick={() => pingChat()}>
                     {chat?.connected ? (
-                        <IonIcon
-                            size="small"
-                            icon={wifiOutline}
-                            color="success"
-                        />
+                      <IonIcon
+                        size="small"
+                        icon={wifiOutline}
+                        color="success"
+                      />
                     ) : (
-                        <IonIcon
-                            size="small"
-                            icon={wifiOutline}
-                            color="gray"
-                        />
+                      <IonIcon
+                        size="small"
+                        icon={wifiOutline}
+                        color="gray"
+                      />
                     )}
                   </span>
                 </p>
                 <IonText
-                    color="medium cursor-pointer"
-                    onClick={() => onCopy(chat?.identifier)}>
+                  color="medium cursor-pointer"
+                  onClick={() => onCopy(chat?.identifier)}>
                   {addressSlice(chat?.identifier, 10)}
                 </IonText>
               </div>
             </div>
           </IonTitle>
           <IonIcon
-              className="mx-2 cursor-pointer"
-              slot="end"
-              icon={trash}
-              onClick={() => removeChat()}
+            className="mx-2 cursor-pointer"
+            slot="end"
+            icon={trash}
+            onClick={() => removeChat()}
           />
         </IonToolbar>
       </IonHeader>
@@ -433,16 +438,22 @@ const Chat = () => {
                 id={`chatBubble_${index}`}
                 key={index}
                 className={`chat-bubble ${
-                    message.self ? 'bubble-sent' : 'bubble-received'
+                  message.self ? 'bubble-sent' : 'bubble-received'
                 }`}
                 {...longPressEvent}>
                 {message?.sender ? (
-                  <div className={`mr-2 ${message.self ? 'chat-bottom-details' : ''}`}>
+                  <div
+                    className={`mr-2 ${
+                      message.self ? 'chat-bottom-details' : ''
+                    }`}>
                     <span
-                        onClick={() => onCopy(message.sender.address)}
-                        className={`cursor-pointer text-sm rounded p-1 text-white opacity-75 bg-${message.self ? 'green' : 'gray'}-400`}
-                    >
-                      {message.username?.length ? `@${message.username}` : addressSlice(message.sender.address, 2)}
+                      onClick={() => onCopy(message.sender.address)}
+                      className={`cursor-pointer text-sm rounded p-1 text-white opacity-75 bg-${
+                        message.self ? 'green' : 'gray'
+                      }-400`}>
+                      {message.username?.length
+                        ? `@${message.username}`
+                        : addressSlice(message.sender.address, 2)}
                     </span>
                   </div>
                 ) : null}
@@ -456,7 +467,7 @@ const Chat = () => {
                   <ChatBottomDetails message={message} />
                 </div>
 
-                  <div className={`bubble-arrow ${message.self && 'alt'}`}></div>
+                <div className={`bubble-arrow ${message.self && 'alt'}`}></div>
               </div>
             );
           })}
@@ -492,17 +503,19 @@ const Chat = () => {
         <IonGrid>
           <IonRow className="ion-align-items-center">
             <IonItem color="transparent">
-              <IonCheckbox disabled={true} slot="start"></IonCheckbox>
+              <IonCheckbox
+                disabled={true}
+                slot="start"></IonCheckbox>
             </IonItem>
             <div className="chat-input-container">
               <CreateAnimation
                 ref={textareaRef}
                 {...textareaAnimation}>
                 <IonTextarea
-                    rows="1"
-                    disabled={!chat?.connected}
-                    value={message}
-                    onIonChange={(e) => setMessage(e.target.value)}
+                  rows="1"
+                  disabled={!chat?.connected}
+                  value={message}
+                  onIonChange={(e) => setMessage(e.target.value)}
                 />
               </CreateAnimation>
             </div>

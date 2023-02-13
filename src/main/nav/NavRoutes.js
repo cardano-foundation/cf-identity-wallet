@@ -1,34 +1,29 @@
 import React from 'react';
-import { IonRouterOutlet, IonSplitPane } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import { Redirect, Route } from 'react-router-dom';
+import {IonRouterOutlet, IonSplitPane} from '@ionic/react';
+import {IonReactRouter} from '@ionic/react-router';
+import {Redirect, Route} from 'react-router-dom';
 import SideMenu from '../SideMenu';
-import Chat from '../../components/Chat/Chat';
-import Template from '../../pages/Template';
-import Payments from '../../pages/Payments';
-import Stuff from '../../pages/Stuff';
-import { SubPages, tabRoutes, Tabs } from './AllRoutes';
-import Chats from '../../components/Chat/Chats';
+import Chat from '../../components/Tabs/Chat/Chat';
+import {SubPages, tabRoutes, Tabs} from './AllRoutes';
 import CreateWallet from '../../pages/CreateWallet';
 import RecoverySeedPhrase from '../../pages/RecoverySeedPhrase';
 import VerifySeedPhrase from '../../pages/VerifySeedPhrase';
 import FaceIdSetup from '../../pages/FaceIdSetup';
 import TermsAndConditions from '../../pages/TermsAndConditions';
-import Did from "../../pages/Did";
-import CredentialDetails from "../../pages/CredentialDetails";
+import Did from '../../pages/Did';
+import CredentialDetails from '../../pages/CredentialDetails';
+import UpcomingFeatures from '../../pages/UpcomingFeatures';
 
 const NavRoutes = () => {
   return (
     <IonReactRouter>
       <IonSplitPane contentId="main">
         <SideMenu />
-
         <IonRouterOutlet id="main">
           <Route
             path="/tabs"
             render={() => <Tabs />}
           />
-
           <Route
             path="/did/:did_id"
             render={() => <Did />}
@@ -58,27 +53,14 @@ const NavRoutes = () => {
             render={() => <FaceIdSetup />}
           />
           <Route
-            path="/template"
-            render={() => <Template />}
-          />
-          <Route
-            path="/payments"
-            render={() => <Payments />}
-          />
-          <Route
-            path="/stuff"
-            render={() => <Stuff />}
-          />
-          <Route
-            path="/chats"
-            render={() => <Chats />}
-          />
-          <Route
             path="/chat/:channel_id"
             render={() => <Chat />}
           />
+          <Route
+            path="/upcomingfeatures"
+            render={() => <UpcomingFeatures />}
+          />
           <SubPages />
-
           <Route
             path="/"
             component={tabRoutes.filter((t) => t.default)[0].component}
