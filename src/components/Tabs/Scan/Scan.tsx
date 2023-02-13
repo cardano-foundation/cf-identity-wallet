@@ -1,19 +1,17 @@
-import React from 'react';
-import {useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {IonCol, IonGrid, IonPage, IonRow} from '@ionic/react';
 import CustomPage from '../../../main/CustomPage';
 import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
 
-const Camera = (props) => {
-  const pageName = 'Camera';
+const Scan = (props) => {
+  const pageName = 'Scan';
   const {sideMenuOptions} = props;
   const setSideMenu = useSideMenuUpdate();
 
   useEffect(() => {
-    if (props.location.pathname === '/tabs/camera') {
+    if (props.location.pathname === '/tabs/scan') {
       setSideMenu({
         options: sideMenuOptions,
-        side: 'start',
         pageName: pageName,
       });
     }
@@ -23,8 +21,7 @@ const Camera = (props) => {
     <IonPage id={pageName}>
       <CustomPage
         name={pageName}
-        sideMenu={false}
-        sideMenuPosition="start">
+        sideMenu={true}>
         <IonGrid>
           <IonRow className="ion-margin">
             <IonCol className="ion-align-self-center ion-margin"></IonCol>
@@ -35,4 +32,4 @@ const Camera = (props) => {
   );
 };
 
-export default Camera;
+export default Scan;

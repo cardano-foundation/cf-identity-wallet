@@ -2,25 +2,14 @@ import React from 'react';
 //	Main Tabs
 import Dids from '../../components/Tabs/Dids/Dids';
 import Credentials from '../../components/Tabs/Credentials/Credentials';
-import Camera from '../../components/Tabs/Camera/Camera';
+import Scan from '../../components/Tabs/Scan/Scan';
 import Crypto from '../../components/Tabs/Crypto/Crypto';
-import Settings from '../../components/Tabs/Settings/Settings';
-
-//  Side Menus
-import {tab1SideMenu, tab2SideMenu, tab3SideMenu} from '../PageSideMenus';
-
-//  Main tab children
-// import Settings from '../../pages/Settings';
-
-//  Sub pages
-// import InboxItem from '../../pages/InboxItem';
-
-//	Tab icons
+import Chats from '../../components/Tabs/Chat/Chats';
 import {
   idCardOutline,
   fingerPrintOutline,
   scanOutline,
-  settingsOutline,
+  chatbubbleOutline,
   walletOutline,
 } from 'ionicons/icons';
 
@@ -49,7 +38,6 @@ export const tabRoutes = [
     default: true,
     isTab: true,
     sideMenu: true,
-    sideMenuOptions: tab1SideMenu,
   },
   {
     label: 'Creds',
@@ -60,18 +48,16 @@ export const tabRoutes = [
     default: false,
     isTab: true,
     sideMenu: true,
-    sideMenuOptions: tab2SideMenu,
   },
   {
     label: 'Scan',
-    component: Camera,
+    component: Scan,
     customIcon: false,
     icon: scanOutline,
-    path: '/tabs/camera',
+    path: '/tabs/scan',
     default: false,
     isTab: true,
     sideMenu: true,
-    sideMenuOptions: tab3SideMenu,
   },
   {
     label: 'Crypto',
@@ -82,18 +68,16 @@ export const tabRoutes = [
     default: false,
     isTab: true,
     sideMenu: true,
-    sideMenuOptions: tab1SideMenu,
   },
   {
-    label: 'Settings',
-    component: Settings,
+    label: 'Chat',
+    component: Chats,
     customIcon: false,
-    icon: settingsOutline,
-    path: '/tabs/settings',
+    icon: chatbubbleOutline,
+    path: '/tabs/chats',
     default: false,
     isTab: true,
     sideMenu: true,
-    sideMenuOptions: tab1SideMenu,
   },
 ];
 

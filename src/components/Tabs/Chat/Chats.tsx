@@ -19,6 +19,8 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
+import CustomPage from '../../../main/CustomPage';
+import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
 import {pencilOutline} from 'ionicons/icons';
 import './Chats.css';
 import ChatItem from './ChatItem';
@@ -27,14 +29,15 @@ import {
   getPeerList,
   getPeerProfile,
   setPeerProfile,
-} from '../../db';
-import {handleConnect} from '../../App';
+} from '../../../db';
+import {handleConnect} from '../../../App';
 import {useHistory} from 'react-router-dom';
-import {subscribe} from '../../utils/events';
-import CustomPage from '../../main/CustomPage';
+import {subscribe} from '../../../utils/events';
 
-const Chats = () => {
+const Chats = (props: any) => {
   const pageName = 'Chats';
+  const {sideMenuOptions} = props;
+  const setSideMenu = useSideMenuUpdate();
   const [results, setResults] = useState([]);
   const [userName, setUsername] = useState('');
   const [showCreateServer, setShowCreateServer] = useState(false);
@@ -45,6 +48,15 @@ const Chats = () => {
   const [showConnectDapp, setShowConnectDapp] = useState(false);
   const nav = useHistory();
   const modal = useRef(null);
+
+  useEffect(() => {
+    if (props.location.pathname === '/tabs/chats') {
+      setSideMenu({
+        options: sideMenuOptions,
+        pageName: pageName,
+      });
+    }
+  }, [props.location]);
 
   useEffect(() => {
     updateChats();
@@ -182,11 +194,7 @@ const Chats = () => {
     <IonPage id={pageName}>
       <CustomPage
         name={pageName}
-        sideMenu={false}
-        sideMenuPosition="start"
-        backButton={true}
-        backButtonText="Back"
-        backButtonPath={'/tabs/settings'}>
+        sideMenu={true}>
         <IonContent>
           <IonHeader>
             <IonToolbar className="ion-text-center">

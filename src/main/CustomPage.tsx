@@ -20,7 +20,6 @@ const CustomPage = (props) => {
   const {
     name,
     sideMenu = false,
-    sideMenuPosition = 'end',
     backButton = false,
     backButtonIcon = chevronBack,
     backButtonText = ' ',
@@ -40,7 +39,7 @@ const CustomPage = (props) => {
             <IonRow>
               <IonCol className="column_left">
                 {sideMenu && (
-                  <IonButtons slot={sideMenuPosition}>
+                  <IonButtons>
                     <IonMenuButton />
                   </IonButtons>
                 )}

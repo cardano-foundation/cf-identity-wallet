@@ -10,3 +10,7 @@ ion-button {
   font-size: 18px;
   text-transform: none;
 }
+
+ion-menu ion-item {
+  --padding-start: 0;
+}

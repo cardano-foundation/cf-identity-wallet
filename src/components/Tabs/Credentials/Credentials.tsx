@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {IonGrid, IonPage, IonRow, IonText} from '@ionic/react';
 import CustomPage from '../../../main/CustomPage';
+import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
 import './Credentials.css';
 import CREDENTIALS_RESPONSE from '../../../test/mock/credentials.json';
 import {Swiper, SwiperSlide} from 'swiper/react';
@@ -8,13 +9,23 @@ import {IDWCard} from '../../UI/IDWCard';
 
 const Credentials = (props: any) => {
   const pageName = 'My Credentials';
+  const {sideMenuOptions} = props;
+  const setSideMenu = useSideMenuUpdate();
+
+  useEffect(() => {
+    if (props.location.pathname === '/tabs/credentials') {
+      setSideMenu({
+        options: sideMenuOptions,
+        pageName: pageName,
+      });
+    }
+  }, [props.location]);
 
   return (
     <IonPage id={pageName}>
       <CustomPage
         name={pageName}
-        sideMenu={false}
-        sideMenuPosition="start">
+        sideMenu={true}>
         <IonGrid>
           {Object.keys(CREDENTIALS_RESPONSE)?.map((key) => {
             return (
