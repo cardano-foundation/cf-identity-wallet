@@ -30,6 +30,7 @@ module.exports = merge(require("./webpack.common.js"), {
          },
       ],
    },
+   devtool: "source-map",
    plugins: [
       new Dotenv({
          path: './.env.production', // load this now instead of the ones in '.env'
