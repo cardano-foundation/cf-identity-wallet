@@ -19,10 +19,9 @@ import {
   IonToggle,
   IonToolbar,
 } from '@ionic/react';
-import {changeTheme} from '../theme/handleTheme';
-import LogoDark from '../assets/cardano-logo.png';
-import LogoLight from '../assets/cardano-logo-white.png';
-import '../theme/SideMenu.css';
+import {changeTheme} from '../../theme/handleTheme';
+import LogoDark from '../../assets/cardano-logo.png';
+import LogoLight from '../../assets/cardano-logo-white.png';
 
 const SideMenu = () => {
   const history = useHistory();

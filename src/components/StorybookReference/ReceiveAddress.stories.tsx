@@ -1,21 +1,20 @@
 import React from 'react';
 import {ComponentStory, ComponentMeta} from '@storybook/react';
-
-import {ReceiveAddress} from './ReceiveAddress';
+import {StorybookReference} from './StorybookReference';
 
 // More on default export: https://storybook.js.org/docs/react/writing-stories/introduction#default-export
 export default {
-  title: 'Example/ReceiveAddress',
-  component: ReceiveAddress,
+  title: 'Example/StorybookReference',
+  component: StorybookReference,
   // More on argTypes: https://storybook.js.org/docs/react/api/argtypes
   argTypes: {
     backgroundColor: {control: 'color'},
   },
-} as ComponentMeta<typeof ReceiveAddress>;
+} as ComponentMeta<typeof StorybookReference>;
 
 // More on component templates: https://storybook.js.org/docs/react/writing-stories/introduction#using-args
-const Template: ComponentStory<typeof ReceiveAddress> = (args) => (
-  <ReceiveAddress {...args} />
+const Template: ComponentStory<typeof StorybookReference> = (args) => (
+  <StorybookReference {...args} />
 );
 
 export const Primary = Template.bind({});

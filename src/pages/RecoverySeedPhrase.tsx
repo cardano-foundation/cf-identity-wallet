@@ -19,12 +19,12 @@ import {
   IonSegmentButton,
 } from '@ionic/react';
 import {addOutline, eyeOffOutline} from 'ionicons/icons';
-import CustomPage from '../main/CustomPage';
-import {CardanoAPI, ERA_PARAMS} from "../lib/CardanoAPI";
-import {ERA} from "../models/types";
+import CustomPage from '../components/shared/CustomPage';
+import {CardanoAPI, ERA_PARAMS} from '../lib/CardanoAPI';
+import {ERA} from '../models/types';
 
 const RecoverySeedPhrase = ({}) => {
-  const pageName = 'Create Seed Phrase';  // TODO
+  const pageName = 'Create Seed Phrase'; // TODO
 
   const [checked, setChecked] = useState(false);
   const [view, setView] = useState(false);
@@ -33,7 +33,9 @@ const RecoverySeedPhrase = ({}) => {
   const location = useLocation();
 
   useEffect(() => {
-    const seed15ws: string = CardanoAPI.generateSeedPhrase(ERA_PARAMS[ERA.SHELLEY].mneSize[15]);
+    const seed15ws: string = CardanoAPI.generateSeedPhrase(
+      ERA_PARAMS[ERA.SHELLEY].mneSize[15]
+    );
     setSeedPhrase(seed15ws);
   }, []);
 
@@ -43,25 +45,29 @@ const RecoverySeedPhrase = ({}) => {
       state: {
         seedPhrase,
         walletName: location.state?.walletName,
-        walletPassword: location.state?.walletPassword
+        walletPassword: location.state?.walletPassword,
       },
     });
   };
 
-  const generateSeedPhrase = (length: number = 15) => {
-    const seed: string = CardanoAPI.generateSeedPhrase(length === 15 ? ERA_PARAMS[ERA.SHELLEY].mneSize[15] : ERA_PARAMS[ERA.SHELLEY].mneSize[24]);
+  const generateSeedPhrase = (length = 15) => {
+    const seed: string = CardanoAPI.generateSeedPhrase(
+      length === 15
+        ? ERA_PARAMS[ERA.SHELLEY].mneSize[15]
+        : ERA_PARAMS[ERA.SHELLEY].mneSize[24]
+    );
     setSeedPhrase(seed.split(' '));
-  }
+  };
 
   return (
-      <IonPage id={pageName}>
-        <CustomPage
-            name={pageName}
-            sideMenu={false}
-            sideMenuPosition="start"
-            backButton={true}
-            backButtonText="Back"
-            backButtonPath={'/createwallet'}
+    <IonPage id={pageName}>
+      <CustomPage
+        name={pageName}
+        sideMenu={false}
+        sideMenuPosition="start"
+        backButton={true}
+        backButtonText="Back"
+        backButtonPath={'/createwallet'}
         actionButton={false}
         actionButtonIcon={addOutline}
         actionButtonIconSize="1.7rem">
@@ -89,8 +95,8 @@ const RecoverySeedPhrase = ({}) => {
                   value={`${seedPhrase.length}words`}
                   onIonChange={(event) => {
                     (event.detail.value as string) === '15words'
-                        ? generateSeedPhrase(15)
-                        : generateSeedPhrase(24);
+                      ? generateSeedPhrase(15)
+                      : generateSeedPhrase(24);
                   }}>
                   <IonSegmentButton value="15words">
                     <IonLabel>15 words</IonLabel>

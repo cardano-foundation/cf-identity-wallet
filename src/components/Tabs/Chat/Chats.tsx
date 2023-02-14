@@ -19,8 +19,8 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import CustomPage from '../../../main/CustomPage';
-import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
+import CustomPage from '../../shared/CustomPage';
+import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
 import {pencilOutline} from 'ionicons/icons';
 import './Chats.css';
 import ChatItem from './ChatItem';
@@ -69,7 +69,6 @@ const Chats = (props: any) => {
   const handleUserName = async (username) => {
     setUsername(username);
     await getPeerProfile('global').then((profile) => {
-      console.log(profile);
       setPeerProfile(
         'global',
         profile.seed,

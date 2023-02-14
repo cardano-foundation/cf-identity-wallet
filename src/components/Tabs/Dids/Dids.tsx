@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {IonGrid, IonPage, IonRow, IonText} from '@ionic/react';
-import CustomPage from '../../../main/CustomPage';
-import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
+import CustomPage from '../../shared/CustomPage';
+import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
 import {IDWCard} from '../../UI/IDWCard';
 import '../../UI/idwCard.scss';
 import {Swiper, SwiperSlide} from 'swiper/react';
@@ -44,7 +44,7 @@ const Dids = (props: any) => {
                   onSlideChange={() => {}}
                   onSwiper={(swiper) => {}}>
                   {didsMock[key] &&
-                    didsMock[key].map((did) => {
+                    didsMock[key].map((did: any) => {
                       return (
                         <SwiperSlide key={did.id}>
                           <IDWCard

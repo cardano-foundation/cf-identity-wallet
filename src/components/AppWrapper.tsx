@@ -1,23 +1,23 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef} from 'react';
 import {useTranslation} from 'react-i18next';
 import {CardanoAPI} from '../lib/CardanoAPI';
 import {Account} from '../models/Account/Account';
-import {useAppDispatch, useAppSelector} from "../store/hooks";
-import {selectCount} from "../store/reducers/counter";
-import {Cache} from "../models/Cache/Cache";
-import {Settings} from "../models/Settings/Settings";
-import {getCachedAccount, setAccountsIdsInCache, setCache} from "../store/reducers/cache";
-import {setCurrentAccount} from "../store/reducers/account";
-import {setSettings} from "../store/reducers/settings";
-import {changeTheme} from "../theme/handleTheme";
+import {useAppDispatch, useAppSelector} from '../store/hooks';
+import {Cache} from '../models/Cache/Cache';
+import {Settings} from '../models/Settings/Settings';
+import {
+  getCachedAccount,
+  setAccountsIdsInCache,
+  setCache,
+} from '../store/reducers/cache';
+import {setCurrentAccount} from '../store/reducers/account';
+import {setSettings} from '../store/reducers/settings';
+import {changeTheme} from '../theme/handleTheme';
 
-const AppWrapper = (props: { children: any }) => {
+const AppWrapper = (props: {children: any}) => {
   const {t, i18n} = useTranslation();
-
-  const count = useAppSelector(selectCount);
   const cachedAccount = useAppSelector(getCachedAccount);
   const dispatch = useAppDispatch();
-  const [incrementAmount] = useState('2');
 
   const useIsMounted = () => {
     const isMounted = useRef(false);
@@ -35,13 +35,9 @@ const AppWrapper = (props: { children: any }) => {
   useEffect(() => {
     const init = async () => {
       await initApp();
-
     };
     if (isMounted.current) {
-      // call the function
-      init()
-          // make sure to catch any error
-          .catch(console.error);
+      init().catch(console.error);
     }
   }, []);
 
@@ -51,18 +47,12 @@ const AppWrapper = (props: { children: any }) => {
     dispatch(setCache(Cache.get()));
     await Settings.init();
 
-    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-      console.log("OS is dark mode")
-    } else {
-      console.log("OS is dark mode")
-    }
-
     if (Settings.theme?.length) {
       // Use matchMedia to check the user preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
       if (
-          (prefersDark.matches && Settings.theme !== 'dark')
-          || (!prefersDark.matches && Settings.theme !== 'light')
+        (prefersDark.matches && Settings.theme !== 'dark') ||
+        (!prefersDark.matches && Settings.theme !== 'light')
       ) {
         changeTheme();
       }
@@ -70,8 +60,7 @@ const AppWrapper = (props: { children: any }) => {
 
     dispatch(setSettings(Settings.get()));
 
-
-    const accountsIds: string[] = await Account.getAllAccountsIds() || [];
+    const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
     dispatch(setAccountsIdsInCache(accountsIds));
 
     const currentAccount = await Account.getAccount(cachedAccount);
@@ -82,8 +71,7 @@ const AppWrapper = (props: { children: any }) => {
       if (firstAccount) dispatch(setCurrentAccount(firstAccount.get()));
     }
 
-
-    /*
+    /* Debug - Do not delete
     console.log("lets init blockfrost");
     await Blockfrost.init('preview');
     const latestParameters = await Blockfrost.epochsLatestParameters();
@@ -93,43 +81,21 @@ const AppWrapper = (props: { children: any }) => {
     console.log("accountState");
     console.log(accountState);
     */
-
-
   };
 
   useEffect(() => {
-
-
     const init = async () => {
-      /*
+      /* Debug - Do not delete
      console.log("query graph");
      const graphqlStatus = await GraphQl.epochsLatestParameters();
      console.log("graphqlStatus");
      console.log(graphqlStatus);
      */
-
-
-      /*
-       const seed = CardanoAPI.generateSeedPhrase(
-           ERA_PARAMS[ERA.SHELLEY].mneSize[24]
-       );
-       const account: Account = await createAccount(
-           'jaime7',
-           seed,
-           ERA.SHELLEY,
-           'B1234567B'
-       );
-      account.commit();
-      */
     };
 
     if (isMounted.current) {
-      // call the function
-      init()
-        // make sure to catch any error
-        .catch(console.error);
+      init().catch(console.error);
     }
-
   }, []);
 
   return (

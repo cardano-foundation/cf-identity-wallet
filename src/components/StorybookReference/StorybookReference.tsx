@@ -1,7 +1,10 @@
-import React from 'react';
-import './button.css';
+// This is a reference for building Tailwind Storybook.
+// Do not delete.
 
-interface ButtonProps {
+import React from 'react';
+import './storybookReference.css';
+
+interface StorybookReferenceProps {
   /**
    * Is this the principal call to action on the page?
    */
@@ -27,25 +30,15 @@ interface ButtonProps {
 /**
  * Primary UI component for user interaction
  */
-export const Button = ({
+export const StorybookReference = ({
   primary = false,
   size = 'medium',
   backgroundColor,
   label,
   ...props
-}: ButtonProps) => {
+}: StorybookReferenceProps) => {
   const mode = primary
     ? 'storybook-button--primary'
     : 'storybook-button--secondary';
-  return (
-    <button
-      type="button"
-      className={['storybook-button', `storybook-button--${size}`, mode].join(
-        ' '
-      )}
-      style={{backgroundColor}}
-      {...props}>
-      {label}
-    </button>
-  );
+  return <button className="daisy-btn daisy-btn-success">Success</button>;
 };

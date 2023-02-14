@@ -1,6 +1,6 @@
 .column_left {
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
 }
 .column_center {
   display: flex;
@@ -9,5 +9,5 @@
 }
 .column_right {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
 }

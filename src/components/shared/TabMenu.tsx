@@ -10,11 +10,11 @@ import {
 import {Route} from 'react-router-dom';
 import './TabMenu.css';
 
-const TabMenu = (props) => {
+const TabMenu = (props: any) => {
   return (
     <IonTabs>
       <IonRouterOutlet>
-        {props.tabs.map((tab, i) => {
+        {props.tabs.map((tab: any, i: number) => {
           const TabComponent = tab.component;
           if (tab.isTab) {
             return (
@@ -57,7 +57,7 @@ const TabMenu = (props) => {
       <IonTabBar
         slot={props.position}
         color="dark">
-        {props.tabs.map((tab, i) => {
+        {props.tabs.map((tab: any, i: number) => {
           if (tab.isTab) {
             return (
               <IonTabButton

@@ -27,7 +27,15 @@ import Moment from 'moment';
 
 const moment = extendMoment(Moment);
 
-export const IDWCard = ({type, id, qr, name, logo, createdOn, data}) => {
+export const IDWCard = ({
+  type,
+  id,
+  qr,
+  name,
+  logo = null,
+  createdOn,
+  data = null,
+}) => {
   const history = useHistory();
 
   const popover = useRef<HTMLIonPopoverElement>(null);
@@ -78,7 +86,7 @@ export const IDWCard = ({type, id, qr, name, logo, createdOn, data}) => {
         <IonCardHeader>
           <div className="py-2">
             <IonItem className="w-full">
-              {logo && logo.length ? (
+              {logo ? (
                 <IonAvatar slot="start">
                   <img
                     alt="Silhouette of a person's head"

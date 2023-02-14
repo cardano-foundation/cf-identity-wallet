@@ -22,8 +22,8 @@ import {
   informationCircleOutline,
   trashOutline,
 } from 'ionicons/icons';
-import CustomPage from '../../../main/CustomPage';
-import {useSideMenuUpdate} from '../../../main/SideMenuProvider';
+import CustomPage from '../../shared/CustomPage';
+import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
 import './Crypto.css';
 import {subscribe} from '../../../utils/events';
 import {
@@ -84,8 +84,6 @@ const Crypto = (props: any) => {
   }, []);
 
   const removeWallet = async (id: string) => {
-    console.log('removeWallet');
-    console.log(id);
     Account.removeAccount(id);
 
     dispatch(setAccountsIdsInCache(cachedAccounts.filter((acc) => acc !== id)));

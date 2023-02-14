@@ -2,19 +2,19 @@ import React from 'react';
 import {IonRouterOutlet, IonSplitPane} from '@ionic/react';
 import {IonReactRouter} from '@ionic/react-router';
 import {Redirect, Route} from 'react-router-dom';
-import SideMenu from '../SideMenu';
-import Chat from '../../components/Tabs/Chat/Chat';
-import {SubPages, tabRoutes, Tabs} from './AllRoutes';
-import CreateWallet from '../../pages/CreateWallet';
-import RecoverySeedPhrase from '../../pages/RecoverySeedPhrase';
-import VerifySeedPhrase from '../../pages/VerifySeedPhrase';
-import FaceIdSetup from '../../pages/FaceIdSetup';
-import TermsAndConditions from '../../pages/TermsAndConditions';
-import Did from '../../pages/Did';
-import CredentialDetails from '../../pages/CredentialDetails';
-import UpcomingFeatures from '../../pages/UpcomingFeatures';
+import SideMenu from '../components/shared/SideMenu';
+import Chat from '../components/Tabs/Chat/Chat';
+import {tabRoutes, Tabs} from './TabRoutes';
+import CreateWallet from '../pages/CreateWallet';
+import RecoverySeedPhrase from '../pages/RecoverySeedPhrase';
+import VerifySeedPhrase from '../pages/VerifySeedPhrase';
+import FaceIdSetup from '../pages/FaceIdSetup';
+import TermsAndConditions from '../pages/TermsAndConditions';
+import Did from '../pages/Did';
+import CredentialDetails from '../pages/CredentialDetails';
+import UpcomingFeatures from '../pages/UpcomingFeatures';
 
-const NavRoutes = () => {
+const Routes = () => {
   return (
     <IonReactRouter>
       <IonSplitPane contentId="main">
@@ -60,7 +60,6 @@ const NavRoutes = () => {
             path="/upcomingfeatures"
             render={() => <UpcomingFeatures />}
           />
-          <SubPages />
           <Route
             path="/"
             component={tabRoutes.filter((t) => t.default)[0].component}
@@ -77,4 +76,4 @@ const NavRoutes = () => {
   );
 };
 
-export default NavRoutes;
+export default Routes;

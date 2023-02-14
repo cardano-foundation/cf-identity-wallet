@@ -1,4 +1,4 @@
-@import '../theme/style.css';
+@import '../../theme/style.css';
 :root {
   /* --ion-background-color: white; */
   --ion-tab-bar-color: var(--tab-color);
