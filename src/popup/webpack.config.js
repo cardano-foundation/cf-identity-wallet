@@ -6,7 +6,6 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const config = {
    entry:{
-      main: path.join(__dirname, "../", "index.jsx"),
       popup: path.join(__dirname, "../", "popup", "index.jsx"),
       background: path.join(__dirname, '../', 'api', 'background', 'index.ts'),
       contentScript: path.join(__dirname, '../', 'api', 'background', 'inject', 'index.js'),
@@ -86,8 +85,8 @@ const config = {
       new CopyPlugin({
          patterns: [
             {
-               from: path.join(__dirname, "../../public", 'manifest.json'),
-               to: path.join(__dirname, 'build-extension'),
+               from: path.join(__dirname, "./", 'manifest.json'),
+               to: path.join(__dirname,  "../../", 'build-extension'),
                force: true,
                transform: function (content, path) {
                   // generates the manifest file using the package.json informations
