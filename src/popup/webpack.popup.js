@@ -8,7 +8,6 @@ let { merge } = require("webpack-merge");
 module.exports = merge(require("./webpack.config.js"), {
    mode: "production",
    output: {
-      publicPath:path.resolve(__dirname, "../../", "build-extension"),
       path: path.resolve(__dirname, "../../","build-extension"),
       filename: '[name].bundle.js',
    },
