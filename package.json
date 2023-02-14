@@ -6,6 +6,7 @@
     "prebuild": "rimraf build",
     "dev": "npm i && webpack serve --config webpack.dev.js --host 0.0.0.0 --port 3001",
     "build": "webpack --config webpack.prod.js ",
+    "build-extension": "webpack --config ./src/popup/webpack.popup.js ",
     "buildcap": "rimraf build && webpack --config webpack.prod.js && npx cap sync",
     "open:android": "npx cap open android",
     "open:ios": "npx cap open ios",
