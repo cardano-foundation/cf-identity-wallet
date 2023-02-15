@@ -2,7 +2,7 @@
 // Do not delete.
 
 import React from 'react';
-import './storybookReference.css';
+import './example.css';
 
 interface StorybookReferenceProps {
   /**
