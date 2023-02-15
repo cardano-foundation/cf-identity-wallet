@@ -56,7 +56,7 @@ const Credentials = (props: any) => {
                             qr={cred.id}
                             name={cred.name}
                             createdOn={cred.createDate}
-                            logo={require(`../../../assets/${cred.imageUrl}`)}
+                            logo={require(`../../../assets/images/${cred.imageUrl}`)}
                             data={cred}
                           />
                         </SwiperSlide>
