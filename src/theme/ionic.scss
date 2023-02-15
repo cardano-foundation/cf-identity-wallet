@@ -13,20 +13,3 @@
 @use '@ionic/react/css/text-transformation';
 @use '@ionic/react/css/flex-utils';
 @use '@ionic/react/css/display';
-
-:root {
-  font-size: 0.9rem;
-}
-
-h3 {
-  font-size: 1.2rem !important;
-}
-
-h3,
-h4 {
-  font-weight: bold !important;
-}
-
-p {
-  white-space: break-spaces;
-}
