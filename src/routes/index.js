@@ -3,7 +3,7 @@ import {IonRouterOutlet, IonSplitPane} from '@ionic/react';
 import {IonReactRouter} from '@ionic/react-router';
 import {Redirect, Route} from 'react-router-dom';
 import SideMenu from '../components/shared/SideMenu';
-import Chat from '../components/tabs/chat/Chat';
+import Chat from '../components/navigation/chat/Chat';
 import {tabRoutes, Tabs} from './TabRoutes';
 import CreateWallet from '../pages/CreateWallet';
 import RecoverySeedPhrase from '../pages/RecoverySeedPhrase';
