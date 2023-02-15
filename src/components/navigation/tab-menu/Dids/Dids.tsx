@@ -1,11 +1,10 @@
 import React, {useEffect} from 'react';
 import {IonGrid, IonPage, IonRow, IonText} from '@ionic/react';
-import CustomPage from '../../layouts/CustomPage';
-import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
-import {IDWCard} from '../../custom/IDWCard';
-import '../../custom/idwCard.scss';
+import CustomPage from '../../../layouts/CustomPage';
+import {useSideMenuUpdate} from '../../side-menu/SideMenuProvider';
+import {IDWCard} from '../../../custom/IdentityCard';
 import {Swiper, SwiperSlide} from 'swiper/react';
-import didsMock from '../../../test/mock/dids.json';
+import didsMock from '../../../../test/mock/dids.json';
 
 const Dids = (props: any) => {
   const pageName = 'My Identity';

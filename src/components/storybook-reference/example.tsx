@@ -2,9 +2,9 @@
 // Do not delete.
 
 import React from 'react';
-import './example.css';
+import './Example.css';
 
-interface StorybookExampleProps {
+interface ExampleProps {
   /**
    * Is this the principal call to action on the page?
    */
@@ -30,13 +30,13 @@ interface StorybookExampleProps {
 /**
  * Primary UI component for user interaction
  */
-export const StorybookExample = ({
+export const Example = ({
   primary = false,
   size = 'medium',
   backgroundColor,
   label,
   ...props
-}: StorybookExampleProps) => {
+}: ExampleProps) => {
   const mode = primary
     ? 'storybook-button--primary'
     : 'storybook-button--secondary';

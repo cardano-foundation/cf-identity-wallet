@@ -19,8 +19,8 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import CustomPage from '../../layouts/CustomPage';
-import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
+import CustomPage from '../../../layouts/CustomPage';
+import {useSideMenuUpdate} from '../../side-menu/SideMenuProvider';
 import {pencilOutline} from 'ionicons/icons';
 import './Chats.css';
 import ChatItem from './ChatItem';
@@ -29,10 +29,10 @@ import {
   getPeerList,
   getPeerProfile,
   setPeerProfile,
-} from '../../../db';
-import {handleConnect} from '../../../App';
+} from '../../../../db';
+import {handleConnect} from '../../../../App';
 import {useHistory} from 'react-router-dom';
-import {subscribe} from '../../../utils/events';
+import {subscribe} from '../../../../utils/events';
 
 const Chats = (props: any) => {
   const pageName = 'Chats';

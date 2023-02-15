@@ -1,11 +1,11 @@
 import React, {useEffect} from 'react';
 import {IonGrid, IonPage, IonRow, IonText} from '@ionic/react';
-import CustomPage from '../../layouts/CustomPage';
-import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
+import CustomPage from '../../../layouts/CustomPage';
+import {useSideMenuUpdate} from '../../side-menu/SideMenuProvider';
 import './Credentials.css';
-import CREDENTIALS_RESPONSE from '../../../test/mock/credentials.json';
+import CREDENTIALS_RESPONSE from '../../../../test/mock/credentials.json';
 import {Swiper, SwiperSlide} from 'swiper/react';
-import {IDWCard} from '../../custom/IDWCard';
+import {IDWCard} from '../../../custom/IdentityCard';
 
 const Credentials = (props: any) => {
   const pageName = 'My Credentials';
@@ -56,7 +56,7 @@ const Credentials = (props: any) => {
                             qr={cred.id}
                             name={cred.name}
                             createdOn={cred.createDate}
-                            logo={require(`../../../assets/images/${cred.imageUrl}`)}
+                            logo={require(`../../../../assets/images/${cred.imageUrl}`)}
                             data={cred}
                           />
                         </SwiperSlide>

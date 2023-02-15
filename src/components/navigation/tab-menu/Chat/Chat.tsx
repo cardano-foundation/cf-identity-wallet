@@ -39,13 +39,13 @@ import './Chat.css';
 import ReplyTo from './ReplyTo';
 import {ChatBottomDetails} from './ChatBottomDetails';
 import {ChatRepliedQuote} from './ChatRepliedQuote';
-import {getPeer, getPeerProfile, removeHost, removePeer} from '../../../db';
+import {getPeer, getPeerProfile, removeHost, removePeer} from '../../../../db';
 
-import {writeToClipboard} from '../../../utils/clipboard';
+import {writeToClipboard} from '../../../../utils/clipboard';
 import {useHistory, useLocation} from 'react-router-dom';
-import {addressSlice} from '../../../utils/utils';
-import {handleConnect} from '../../../App';
-import {subscribe} from '../../../utils/events';
+import {addressSlice} from '../../../../utils/utils';
+import {handleConnect} from '../../../../App';
+import {subscribe} from '../../../../utils/events';
 
 const Chat = () => {
   const params = useParams();

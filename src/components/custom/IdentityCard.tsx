@@ -19,7 +19,6 @@ import {
   trashOutline,
 } from 'ionicons/icons';
 import {useHistory} from 'react-router-dom';
-import './idwCard.scss';
 import {isDarkMode} from '../../theme/handleTheme';
 import {writeToClipboard} from '../../utils/clipboard';
 import {extendMoment} from 'moment-range';
