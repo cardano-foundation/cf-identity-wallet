@@ -5,7 +5,7 @@ import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
 import './Credentials.css';
 import CREDENTIALS_RESPONSE from '../../../test/mock/credentials.json';
 import {Swiper, SwiperSlide} from 'swiper/react';
-import {IDWCard} from '../../ui/IDWCard';
+import {IDWCard} from '../../custom/IDWCard';
 
 const Credentials = (props: any) => {
   const pageName = 'My Credentials';
