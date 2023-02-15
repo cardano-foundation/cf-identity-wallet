@@ -8,9 +8,9 @@ import {
   IonRow,
 } from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
-import CustomPage from '../components/shared/CustomPage';
+import CustomPage from '../layouts/PageLayout';
 
-const FaceIdSetup = (props) => {
+const FaceIdSetup = () => {
   const pageName = 'Face ID Setup';
 
   return (

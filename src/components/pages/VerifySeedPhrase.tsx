@@ -12,16 +12,16 @@ import {
   IonRow,
 } from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
-import CustomPage from '../components/shared/CustomPage';
-import {equals, shuffle} from '../utils/utils';
-import {Account} from '../models/Account/Account';
-import {createAccount} from '../lib/wallet';
-import {ERA} from '../models/types';
+import CustomPage from '../layouts/PageLayout';
+import {equals, shuffle} from '../../utils/utils';
+import {Account} from '../../models/Account/Account';
+import {createAccount} from '../../lib/wallet';
+import {ERA} from '../../models/types';
 import {
   getCachedAccounts,
   setAccountsIdsInCache,
-} from '../store/reducers/cache';
-import {useAppDispatch, useAppSelector} from '../store/hooks';
+} from '../../store/reducers/cache';
+import {useAppDispatch, useAppSelector} from '../../store/hooks';
 
 const VerifySeedPhrase = ({}) => {
   const pageName = 'Verify Seed Phrase';

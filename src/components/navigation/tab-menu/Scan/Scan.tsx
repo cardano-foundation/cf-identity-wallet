@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {IonCol, IonGrid, IonPage, IonRow} from '@ionic/react';
-import CustomPage from '../../shared/CustomPage';
-import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
+import CustomPage from '../../../layouts/PageLayout';
+import {useSideMenuUpdate} from '../../side-menu/SideMenuProvider';
 
 const Scan = (props: any) => {
   const pageName = 'Scan';

@@ -3,7 +3,7 @@ import {IonApp, setupIonicReact} from '@ionic/react';
 import {useHistory} from 'react-router-dom';
 import {useEffect} from 'react';
 import Routes from './routes';
-import {SideMenuProvider} from './components/shared/SideMenuProvider';
+import {SideMenuProvider} from './components/navigation/side-menu/SideMenuProvider';
 /* Core CSS required for Ionic components to work properly */
 import './theme/tailwind.css';
 import './theme/ionic.scss';

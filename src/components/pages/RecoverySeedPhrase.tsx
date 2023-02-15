@@ -19,9 +19,9 @@ import {
   IonSegmentButton,
 } from '@ionic/react';
 import {addOutline, eyeOffOutline} from 'ionicons/icons';
-import CustomPage from '../components/shared/CustomPage';
-import {CardanoAPI, ERA_PARAMS} from '../lib/CardanoAPI';
-import {ERA} from '../models/types';
+import CustomPage from '../layouts/PageLayout';
+import {CardanoAPI, ERA_PARAMS} from '../../lib/CardanoAPI';
+import {ERA} from '../../models/types';
 
 const RecoverySeedPhrase = ({}) => {
   const pageName = 'Create Seed Phrase'; // TODO

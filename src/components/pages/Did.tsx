@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import {IonButton, IonPage, IonToast} from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
-import CustomPage from '../components/shared/CustomPage';
+import CustomPage from '../layouts/PageLayout';
 import {useLocation} from 'react-router-dom';
 import {QRCode} from 'react-qrcode-logo';
 import Barcode from 'react-barcode';
-import {writeToClipboard} from '../utils/clipboard';
+import {writeToClipboard} from '../../utils/clipboard';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
 

@@ -22,16 +22,16 @@ import {
   informationCircleOutline,
   trashOutline,
 } from 'ionicons/icons';
-import CustomPage from '../../shared/CustomPage';
-import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
+import CustomPage from '../../../layouts/PageLayout';
+import {useSideMenuUpdate} from '../../side-menu/SideMenuProvider';
 import './Crypto.css';
-import {subscribe} from '../../../utils/events';
+import {subscribe} from '../../../../utils/events';
 import {
   getCachedAccounts,
   setAccountsIdsInCache,
-} from '../../../store/reducers/cache';
-import {useAppDispatch, useAppSelector} from '../../../store/hooks';
-import {Account} from '../../../models/Account/Account';
+} from '../../../../store/reducers/cache';
+import {useAppDispatch, useAppSelector} from '../../../../store/hooks';
+import {Account} from '../../../../models/Account/Account';
 
 const Crypto = (props: any) => {
   const pageName = 'My Wallets';
@@ -124,9 +124,7 @@ const Crypto = (props: any) => {
                   onDidDismiss={() => setPopoverOpen(false)}>
                   <>
                     <IonRow>
-                      <IonItem
-                        className="px-4 py-2"
-                        onClick={() => {}}>
+                      <IonItem className="px-4 py-2">
                         <IonIcon
                           slot="start"
                           icon={informationCircleOutline}

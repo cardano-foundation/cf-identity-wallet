@@ -9,7 +9,7 @@ import {
   IonPage,
   IonRow,
 } from '@ionic/react';
-import CustomPage from '../components/shared/CustomPage';
+import CustomPage from '../layouts/PageLayout';
 import {checkmarkCircleOutline, closeCircleOutline} from 'ionicons/icons';
 
 const UpcomingFeatures = () => {

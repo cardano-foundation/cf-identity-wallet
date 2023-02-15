@@ -1,9 +1,9 @@
 import React from 'react';
-import Dids from '../components/navigation/dids/Dids';
-import Credentials from '../components/navigation/credentials/Credentials';
-import Scan from '../components/navigation/scan/Scan';
-import Crypto from '../components/navigation/crypto/Crypto';
-import Chats from '../components/navigation/chat/Chats';
+import Dids from '../components/navigation/tab-menu/Dids/Dids';
+import Credentials from '../components/navigation/tab-menu/Credentials/Credentials';
+import Scan from '../components/navigation/tab-menu/Scan/Scan';
+import Crypto from '../components/navigation/tab-menu/Crypto/Crypto';
+import Chats from '../components/navigation/tab-menu/Chat/Chats';
 import {
   idCardOutline,
   fingerPrintOutline,
@@ -11,7 +11,7 @@ import {
   chatbubbleOutline,
   walletOutline,
 } from 'ionicons/icons';
-import TabMenu from '../components/shared/TabMenu';
+import TabMenu from '../components/navigation/tab-menu/TabMenu';
 
 export const tabRoutes = [
   {
