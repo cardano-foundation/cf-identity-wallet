@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {IonGrid, IonPage, IonRow, IonText} from '@ionic/react';
-import CustomPage from '../../shared/CustomPage';
+import CustomPage from '../../layouts/CustomPage';
 import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
 import './Credentials.css';
 import CREDENTIALS_RESPONSE from '../../../test/mock/credentials.json';

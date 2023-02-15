@@ -12,7 +12,7 @@ import {
   IonRow,
 } from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
-import CustomPage from '../components/shared/CustomPage';
+import CustomPage from '../layouts/CustomPage';
 import {useLocation} from 'react-router-dom';
 import {checkmarkCircleOutline, closeCircleOutline} from 'ionicons/icons';
 
@@ -77,7 +77,7 @@ const CredentialDetails = (props) => {
                 <IonCol size="3">
                   <IonAvatar className="py-0 mx-auto">
                     <img
-                      src={require(`../assets/images/${cred.holderInformation.imageUrl}`)}
+                      src={require(`../../assets/images/${cred.holderInformation.imageUrl}`)}
                       alt=""
                       className="w-14 h-14"
                     />

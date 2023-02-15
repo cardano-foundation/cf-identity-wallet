@@ -4,7 +4,7 @@
 import React from 'react';
 import './example.css';
 
-interface StorybookReferenceProps {
+interface StorybookExampleProps {
   /**
    * Is this the principal call to action on the page?
    */
@@ -30,13 +30,13 @@ interface StorybookReferenceProps {
 /**
  * Primary UI component for user interaction
  */
-export const StorybookReference = ({
+export const StorybookExample = ({
   primary = false,
   size = 'medium',
   backgroundColor,
   label,
   ...props
-}: StorybookReferenceProps) => {
+}: StorybookExampleProps) => {
   const mode = primary
     ? 'storybook-button--primary'
     : 'storybook-button--secondary';

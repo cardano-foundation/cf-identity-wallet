@@ -3,16 +3,16 @@ import {IonRouterOutlet, IonSplitPane} from '@ionic/react';
 import {IonReactRouter} from '@ionic/react-router';
 import {Redirect, Route} from 'react-router-dom';
 import SideMenu from '../components/shared/SideMenu';
-import Chat from '../components/navigation/chat/Chat';
+import Chat from '../components/navigation/Chat/Chat';
 import {tabRoutes, Tabs} from './TabRoutes';
-import CreateWallet from '../pages/CreateWallet';
-import RecoverySeedPhrase from '../pages/RecoverySeedPhrase';
-import VerifySeedPhrase from '../pages/VerifySeedPhrase';
-import FaceIdSetup from '../pages/FaceIdSetup';
-import TermsAndConditions from '../pages/TermsAndConditions';
-import Did from '../pages/Did';
-import CredentialDetails from '../pages/CredentialDetails';
-import UpcomingFeatures from '../pages/UpcomingFeatures';
+import CreateWallet from '../components/pages/CreateWallet';
+import RecoverySeedPhrase from '../components/pages/RecoverySeedPhrase';
+import VerifySeedPhrase from '../components/pages/VerifySeedPhrase';
+import FaceIdSetup from '../components/pages/FaceIdSetup';
+import TermsAndConditions from '../components/pages/TermsAndConditions';
+import Did from '../components/pages/Did';
+import CredentialDetails from '../components/pages/CredentialDetails';
+import UpcomingFeatures from '../components/pages/UpcomingFeatures';
 
 const Routes = () => {
   return (

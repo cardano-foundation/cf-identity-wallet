@@ -19,7 +19,7 @@ import {
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import CustomPage from '../../shared/CustomPage';
+import CustomPage from '../../layouts/CustomPage';
 import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
 import {pencilOutline} from 'ionicons/icons';
 import './Chats.css';
