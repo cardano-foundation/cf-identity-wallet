@@ -1,5 +1,5 @@
 export function protocolParamsBody() {
-    return `
+  return `
     query protocolParamsBody {
       genesis {
         shelley {
@@ -32,5 +32,5 @@ export function protocolParamsBody() {
         }
       }
     }
-  `
+  `;
 }

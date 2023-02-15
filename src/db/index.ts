@@ -1,5 +1,10 @@
 import {createStore, get, getObject, set, setObject} from './storage';
-import {BLOCKFROST_DEFAULT_URL, BLOCKFROST_TOKEN, DEFAULT_NETWORK, SUBMIT_DEFAULT_URL,} from '../../config';
+import {
+  BLOCKFROST_DEFAULT_URL,
+  BLOCKFROST_TOKEN,
+  DEFAULT_NETWORK,
+  SUBMIT_DEFAULT_URL,
+} from '../../config';
 
 export const DB_NAME = 'ID_WALLET_DB';
 
@@ -300,13 +305,13 @@ export const getAllChannels = async () => {
 };
 
 export const setPeerProfile = async (
-    id: string,
-    seed: string,
-    identifier: string,
-    name: string,
-    announce: string[],
-    messages: string[] = [],
-    username = ''
+  id: string,
+  seed: string,
+  identifier: string,
+  name: string,
+  announce: string[],
+  messages: string[] = [],
+  username = ''
 ) => {
   await setObject('peer-profile-connect', id, {
     seed,
@@ -314,7 +319,7 @@ export const setPeerProfile = async (
     name,
     announce,
     messages,
-    username
+    username,
   });
 };
 
