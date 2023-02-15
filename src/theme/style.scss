@@ -3,13 +3,21 @@
 @import 'styles/md.css';
 @import 'styles/ios.css';
 @import 'styles/ionComponents.css';
-
 @import 'swiper/css';
 
-.ion-toolbar {
-  margin-top: var(--ion-safe-area-top);
+:root {
+  font-size: 0.9rem;
 }
 
-.ion-content {
-  padding-top: var(--ion-safe-area-top, 0);
+h3 {
+  font-size: 1.2rem !important;
+}
+
+h3,
+h4 {
+  font-weight: bold !important;
+}
+
+p {
+  white-space: break-spaces;
 }

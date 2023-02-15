@@ -2,18 +2,18 @@ import React, {useEffect} from 'react';
 import {IonGrid, IonPage, IonRow, IonText} from '@ionic/react';
 import CustomPage from '../../shared/CustomPage';
 import {useSideMenuUpdate} from '../../shared/SideMenuProvider';
-import {IDWCard} from '../../UI/IDWCard';
-import '../../UI/idwCard.scss';
+import './Credentials.css';
+import CREDENTIALS_RESPONSE from '../../../test/mock/credentials.json';
 import {Swiper, SwiperSlide} from 'swiper/react';
-import didsMock from '../../../test/mock/dids.json';
+import {IDWCard} from '../../custom/IDWCard';
 
-const Dids = (props: any) => {
-  const pageName = 'My Identity';
+const Credentials = (props: any) => {
+  const pageName = 'My Credentials';
   const {sideMenuOptions} = props;
   const setSideMenu = useSideMenuUpdate();
 
   useEffect(() => {
-    if (props.location.pathname === '/tabs/dids') {
+    if (props.location.pathname === '/tabs/credentials') {
       setSideMenu({
         options: sideMenuOptions,
         pageName: pageName,
@@ -27,32 +27,37 @@ const Dids = (props: any) => {
         name={pageName}
         sideMenu={true}>
         <IonGrid>
-          {Object.keys(didsMock)?.map((key) => {
+          {Object.keys(CREDENTIALS_RESPONSE)?.map((key) => {
             return (
               <IonRow
                 key={key}
                 className="ion-margin">
                 <IonText color="dark">
-                  <p className="title font-extrabold">did:{key}</p>
+                  <p className="title font-extrabold">{key}</p>
                 </IonText>
                 <Swiper
                   spaceBetween={10}
                   slidesPerView={
-                    didsMock[key] && didsMock[key].length > 1 ? 1.2 : 1
+                    CREDENTIALS_RESPONSE[key] &&
+                    CREDENTIALS_RESPONSE[key].length > 1
+                      ? 1.2
+                      : 1
                   }
                   loop={true}
                   onSlideChange={() => {}}
                   onSwiper={(swiper) => {}}>
-                  {didsMock[key] &&
-                    didsMock[key].map((did: any) => {
+                  {CREDENTIALS_RESPONSE[key] &&
+                    CREDENTIALS_RESPONSE[key].map((cred) => {
                       return (
-                        <SwiperSlide key={did.id}>
+                        <SwiperSlide key={cred.id}>
                           <IDWCard
-                            type="DID"
-                            id={did.id}
-                            qr={did.id}
-                            name={did.name}
-                            createdOn={did.createDate}
+                            type="CREDENTIAL"
+                            id={cred.id}
+                            qr={cred.id}
+                            name={cred.name}
+                            createdOn={cred.createDate}
+                            logo={require(`../../../assets/images/${cred.imageUrl}`)}
+                            data={cred}
                           />
                         </SwiperSlide>
                       );
@@ -67,4 +72,4 @@ const Dids = (props: any) => {
   );
 };
 
-export default Dids;
+export default Credentials;

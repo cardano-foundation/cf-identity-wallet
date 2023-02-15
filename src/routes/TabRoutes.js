@@ -1,10 +1,9 @@
 import React from 'react';
-//	Main Tabs
-import Dids from '../components/Tabs/Dids/Dids';
-import Credentials from '../components/Tabs/Credentials/Credentials';
-import Scan from '../components/Tabs/Scan/Scan';
-import Crypto from '../components/Tabs/Crypto/Crypto';
-import Chats from '../components/Tabs/Chat/Chats';
+import Dids from '../components/navigation/dids/Dids';
+import Credentials from '../components/navigation/credentials/Credentials';
+import Scan from '../components/navigation/scan/Scan';
+import Crypto from '../components/navigation/crypto/Crypto';
+import Chats from '../components/navigation/chat/Chats';
 import {
   idCardOutline,
   fingerPrintOutline,
