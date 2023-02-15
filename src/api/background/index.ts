@@ -15,7 +15,7 @@ import {
 import {Messaging} from './messaging';
 import {APIError, METHOD, POPUP, SENDER, TARGET} from './config';
 import Meerkat from '@fabianbormann/meerkat';
-import {getAccountFromDb, updateAccountByNameAndNetworkInDb,} from '../../db';
+import {getAccountFromDb, updateAccountByNameAndNetworkInDb} from '../../db';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
 // @ts-ignore

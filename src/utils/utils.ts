@@ -71,13 +71,12 @@ export const isJsonString = (str: string) => {
 };
 
 export const md5 = (contents: string) =>
-    crypto.createHash('md5').update(contents).digest('hex');
+  crypto.createHash('md5').update(contents).digest('hex');
 
 export const shuffle = (array: any[]) => {
-  const cp = [...array]
+  const cp = [...array];
   return cp.sort(() => Math.random() - 0.5);
 };
 
 export const equals = (a: any[], b: any[]) =>
-    a?.length === b?.length &&
-    a.every((v, i) => v === b[i]);
+  a?.length === b?.length && a.every((v, i) => v === b[i]);

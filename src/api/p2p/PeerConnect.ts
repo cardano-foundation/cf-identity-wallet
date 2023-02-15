@@ -1,5 +1,10 @@
 import {CardanoPeerConnect} from '@fabianbormann/cardano-peer-connect';
-import {Bytes, Cbor, Cip30DataSignature, Paginate,} from '@fabianbormann/cardano-peer-connect/types';
+import {
+  Bytes,
+  Cbor,
+  Cip30DataSignature,
+  Paginate,
+} from '@fabianbormann/cardano-peer-connect/types';
 import Meerkat from '@fabianbormann/meerkat';
 import {getPeer, setPeer} from '../../db';
 import {extendMoment} from 'moment-range';
@@ -52,13 +57,13 @@ export class PeerConnect extends CardanoPeerConnect {
       console.log(`[info]: connected to server 💬: ${this.meerkat.identifier}`);
       getPeer(this.id).then((peer) => {
         setPeer(
-            this.id,
-            peer.seed,
-            peer.identifier,
-            name,
-            peer.announce,
-            peer.messages,
-            true
+          this.id,
+          peer.seed,
+          peer.identifier,
+          name,
+          peer.announce,
+          peer.messages,
+          true
         ).then((_) => {
           publish('updateChat');
         });
@@ -123,25 +128,24 @@ export class PeerConnect extends CardanoPeerConnect {
    *
    */
   sendMessage(
-      identifier: string,
-      peerId: string,
-      name: string,
-      message: string,
-      username: string = ''
+    identifier: string,
+    peerId: string,
+    name: string,
+    message: string,
+    username: string = ''
   ): void {
     if (!this.meerkat) return;
     this.meerkat.rpc(
       identifier,
-        'text_message',
-        {
-          message,
-          username
-        },
-        (response: boolean) => {
-          try {
-          } catch (e) {
-          }
-        }
+      'text_message',
+      {
+        message,
+        username,
+      },
+      (response: boolean) => {
+        try {
+        } catch (e) {}
+      }
     );
   }
 
@@ -154,36 +158,26 @@ export class PeerConnect extends CardanoPeerConnect {
    * @param message - The text message to send
    *
    */
-  pingServer(
-      identifier: string,
-      peerId: string,
-      name: string
-  ): void {
+  pingServer(identifier: string, peerId: string, name: string): void {
     if (!this.meerkat) return;
 
-    this.meerkat.rpc(
-        identifier,
-        'ping_server',
-        {},
-        (response: boolean) => {
-          try {
-            getPeer(this.id).then((peer) => {
-              setPeer(
-                  this.id,
-                  peer.seed,
-                  peer.identifier,
-                  name,
-                  peer.announce,
-                  peer.messages,
-                  response
-              ).then((_) => {
-                publish('updateChat');
-              });
-            });
-          } catch (e) {
-          }
-        }
-    );
+    this.meerkat.rpc(identifier, 'ping_server', {}, (response: boolean) => {
+      try {
+        getPeer(this.id).then((peer) => {
+          setPeer(
+            this.id,
+            peer.seed,
+            peer.identifier,
+            name,
+            peer.announce,
+            peer.messages,
+            response
+          ).then((_) => {
+            publish('updateChat');
+          });
+        });
+      } catch (e) {}
+    });
   }
 
   getBalance(): Cbor {
@@ -194,7 +188,7 @@ export class PeerConnect extends CardanoPeerConnect {
     return '';
   }
 
-  getCollateral(params?: { amount?: Cbor }): Cbor[] | null {
+  getCollateral(params?: {amount?: Cbor}): Cbor[] | null {
     return [''];
   }
 

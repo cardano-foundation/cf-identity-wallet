@@ -11,26 +11,26 @@ import {Toast} from '@capacitor/toast';
 import {Provider} from 'react-redux';
 import {I18nextProvider} from 'react-i18next';
 import i18n from '../i18n';
-import {store} from "../store/store";
-import {BrowserRouter} from "react-router-dom";
+import {store} from '../store/store';
+import {BrowserRouter} from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root-popup'));
 root.render(
-    <React.StrictMode>
-      <SafeArea
-          top
-          bottom>
-        <Provider store={store}>
-          <I18nextProvider i18n={i18n}>
-            <div style={{height: '750px', width: '450px'}}>
-              <BrowserRouter>
-                <App isExtension={true}/>
-              </BrowserRouter>
-            </div>
-          </I18nextProvider>
-        </Provider>
-      </SafeArea>
-    </React.StrictMode>
+  <React.StrictMode>
+    <SafeArea
+      top
+      bottom>
+      <Provider store={store}>
+        <I18nextProvider i18n={i18n}>
+          <div style={{height: '750px', width: '450px'}}>
+            <BrowserRouter>
+              <App isExtension={true} />
+            </BrowserRouter>
+          </div>
+        </I18nextProvider>
+      </Provider>
+    </SafeArea>
+  </React.StrictMode>
 );
 
 // Enable PWA
@@ -43,7 +43,7 @@ if (Capacitor.getPlatform() === 'web') {
   origin = (error) => {
     if (/Loading chunk [\d]+ failed/.test(error.message)) {
       alert(
-          'A new version released. Need to reload the page to apply changes.'
+        'A new version released. Need to reload the page to apply changes.'
       );
       window.location.reload();
     } else {
@@ -110,7 +110,7 @@ const handleNotifications = async () => {
     const listChannel = await LocalNotifications.listChannels();
     const channels = listChannel.channels;
     const print = channels.filter(
-        (channels) => channels.id === 'pop-notifications'
+      (channels) => channels.id === 'pop-notifications'
     );
 
     if (JSON.stringify(print[0].importance) > 0) {
@@ -123,20 +123,20 @@ const handleNotifications = async () => {
   const permission = await LocalNotifications.checkPermissions();
   if (popNotif && permission.display === 'granted') {
     LocalNotifications.addListener(
-        'localNotificationReceived',
-        (notification) => {
-          Toast.show({text: 'You got a new notification!'});
-        }
+      'localNotificationReceived',
+      (notification) => {
+        Toast.show({text: 'You got a new notification!'});
+      }
     );
     LocalNotifications.addListener(
-        'localNotificationActionPerformed',
-        (notification) => {
-          Toast.show({
-            text: `Notification: ${JSON.stringify(
-                notification.notification.body
-            )}`,
-          });
-        }
+      'localNotificationActionPerformed',
+      (notification) => {
+        Toast.show({
+          text: `Notification: ${JSON.stringify(
+            notification.notification.body
+          )}`,
+        });
+      }
     );
   } else {
     await LocalNotifications.requestPermissions();
@@ -149,13 +149,13 @@ if (process.env.NODE_ENV === 'production') {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
-          .register('/service-worker.js')
-          .then((registration) => {
-            console.log('SW registered: ', registration);
-          })
-          .catch((registrationError) => {
-            console.log('SW registration failed: ', registrationError);
-          });
+        .register('/service-worker.js')
+        .then((registration) => {
+          console.log('SW registered: ', registration);
+        })
+        .catch((registrationError) => {
+          console.log('SW registration failed: ', registrationError);
+        });
     });
   }
 }

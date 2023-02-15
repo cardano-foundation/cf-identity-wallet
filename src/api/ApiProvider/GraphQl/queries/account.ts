@@ -1,5 +1,5 @@
 export function accountStateBody() {
-    return `
+  return `
     query accountStateBody (
     $addresses: [String!]
     ){
@@ -24,5 +24,5 @@ export function accountStateBody() {
         }
     }
   }
-   `
+   `;
 }

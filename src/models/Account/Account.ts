@@ -1,5 +1,14 @@
-import {ERA, IAccount, IAsset, ICertificate, INetwork, ITransaction, IUtxo, TX_STATUS,} from '../types';
-import {get, getObject, removeObject, set, setObject,} from '../../db/storage';
+import {
+  ERA,
+  IAccount,
+  IAsset,
+  ICertificate,
+  INetwork,
+  ITransaction,
+  IUtxo,
+  TX_STATUS,
+} from '../types';
+import {get, getObject, removeObject, set, setObject} from '../../db/storage';
 import {Capacitor} from '@capacitor/core';
 import {getKeystore, setKeystore} from '../../db/keystore';
 
@@ -205,6 +214,8 @@ export class Account {
   static async getFirstAccount() {
     const accounts = await get('accounts');
     if (!accounts || !Object.entries(accounts).length) return;
+    console.log("accounts");
+    console.log(accounts['bro']);
     return Account.new(Object.entries(accounts)[0]);
   }
 
