@@ -22,7 +22,7 @@ import {
   informationCircleOutline,
   trashOutline,
 } from 'ionicons/icons';
-import CustomPage from '../../../layouts/CustomPage';
+import CustomPage from '../../../layouts/PageLayout';
 import {useSideMenuUpdate} from '../../side-menu/SideMenuProvider';
 import './Crypto.css';
 import {subscribe} from '../../../../utils/events';

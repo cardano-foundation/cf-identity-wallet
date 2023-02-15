@@ -12,7 +12,7 @@ import {
   IonRow,
 } from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
-import CustomPage from '../layouts/CustomPage';
+import CustomPage from '../layouts/PageLayout';
 import {equals, shuffle} from '../../utils/utils';
 import {Account} from '../../models/Account/Account';
 import {createAccount} from '../../lib/wallet';

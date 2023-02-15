@@ -7,7 +7,7 @@ import {
   IonPage,
   IonRow,
 } from '@ionic/react';
-import CustomPage from '../layouts/CustomPage';
+import CustomPage from '../layouts/PageLayout';
 
 const TermsAndConditions = (props) => {
   const pageName = 'Terms And Conditions';

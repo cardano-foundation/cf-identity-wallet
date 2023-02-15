@@ -15,7 +15,7 @@ import {
   IonToggle,
 } from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
-import CustomPage from '../layouts/CustomPage';
+import CustomPage from '../layouts/PageLayout';
 import './CreateWallet.css';
 
 const CreateWallet = ({}) => {

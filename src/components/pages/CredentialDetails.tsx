@@ -12,7 +12,7 @@ import {
   IonRow,
 } from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
-import CustomPage from '../layouts/CustomPage';
+import CustomPage from '../layouts/PageLayout';
 import {useLocation} from 'react-router-dom';
 import {checkmarkCircleOutline, closeCircleOutline} from 'ionicons/icons';
 

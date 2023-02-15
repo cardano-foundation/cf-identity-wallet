@@ -13,9 +13,9 @@ import {
   IonCol,
 } from '@ionic/react';
 import {chevronBack} from 'ionicons/icons';
-import './CustomPage.css';
+import './PageLayout.css';
 
-const CustomPage = (props) => {
+const Pagelayout = (props) => {
   const mainContent = props.children;
   const {
     name,
@@ -81,4 +81,4 @@ const CustomPage = (props) => {
   );
 };
 
-export default CustomPage;
+export default Pagelayout;
