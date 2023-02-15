@@ -1,0 +1,23 @@
+@import 'styles/dark.css';
+@import 'styles/light.css';
+@import 'styles/md.css';
+@import 'styles/ios.css';
+@import 'styles/override.css';
+@import 'swiper/css';
+
+:root {
+  font-size: 0.9rem;
+}
+
+h3 {
+  font-size: 1.2rem !important;
+}
+
+h3,
+h4 {
+  font-weight: bold !important;
+}
+
+p {
+  white-space: break-spaces;
+}

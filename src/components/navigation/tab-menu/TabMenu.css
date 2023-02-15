@@ -1,0 +1,18 @@
+ion-tab-bar {
+  box-shadow: 0px 1px 8px rgba(0, 0, 0, 0.4);
+  border-radius: 25px 25px 0 0 !important;
+  height: 60px;
+  width: 92%;
+  padding-top: 5px;
+  padding-bottom: 10px;
+  padding-left: 10px;
+  padding-right: 10px;
+  bottom: 0px;
+  position: relative;
+  margin: 0 auto !important;
+  border-top: none;
+}
+
+ion-tab-button {
+  border-radius: 16px !important;
+}

@@ -2,16 +2,16 @@ import React, {useRef} from 'react';
 import {IonApp, setupIonicReact} from '@ionic/react';
 import {useHistory} from 'react-router-dom';
 import {useEffect} from 'react';
-import NavRoutes from './main/nav/NavRoutes';
-import {SideMenuProvider} from './main/SideMenuProvider';
+import Routes from './routes';
+import {SideMenuProvider} from './components/navigation/side-menu/SideMenuProvider';
 /* Core CSS required for Ionic components to work properly */
 import './theme/tailwind.css';
-import './theme/App.scss';
-import './theme/style.css';
+import './theme/ionic.scss';
+import './theme/style.scss';
 import './theme/structure.css';
 import AppWrapper from './components/AppWrapper';
 import {HandleConnect} from './api/p2p/HandleConnect';
-import { SplashScreen } from '@capacitor/splash-screen';
+import {SplashScreen} from '@capacitor/splash-screen';
 
 export const handleConnect = new HandleConnect();
 
@@ -44,7 +44,7 @@ const App = (isExtension?: boolean) => {
         showDuration: 2000,
         fadeInDuration: 0,
         fadeOutDuration: 0.5,
-        autoHide: true
+        autoHide: true,
       });
     };
     if (isMounted.current) {
@@ -56,7 +56,7 @@ const App = (isExtension?: boolean) => {
     <IonApp>
       <AppWrapper>
         <SideMenuProvider>
-          <NavRoutes />
+          <Routes />
         </SideMenuProvider>
       </AppWrapper>
     </IonApp>

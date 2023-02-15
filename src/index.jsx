@@ -11,29 +11,31 @@ import {LocalNotifications} from '@capacitor/local-notifications';
 
 import {I18nextProvider} from 'react-i18next';
 import i18n from './i18n';
-import {StatusBar, Style} from "@capacitor/status-bar";
+import {StatusBar, Style} from '@capacitor/status-bar';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <SafeArea
-        top
-        bottom>
+      top
+      bottom>
       <Provider store={store}>
         <I18nextProvider i18n={i18n}>
-          <App isExtension={false}/>
+          <App isExtension={false} />
         </I18nextProvider>
       </Provider>
-
     </SafeArea>
   </React.StrictMode>
 );
 
-if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+if (
+  window.matchMedia &&
+  window.matchMedia('(prefers-color-scheme: dark)').matches
+) {
   document.body.classList.toggle('dark');
   StatusBar.setStyle({style: Style.Dark});
 } else {
-  console.log("OS is light mode");
+  // OS is light mode
   StatusBar.setStyle({style: Style.Light});
 }
 

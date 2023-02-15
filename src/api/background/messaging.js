@@ -15,8 +15,6 @@ import {Browser} from '@capacitor/browser';
  * }
  */
 
-console.log('Browser');
-console.log(Browser);
 class InternalController {
   constructor() {
     this.port = chrome.runtime.connect({
