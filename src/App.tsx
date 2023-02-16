@@ -20,9 +20,8 @@ setupIonicReact();
 const App = (isExtension?: boolean) => {
   const history = useHistory();
 
+  // TODO: hotfix, refactor extension webpack
   if (isExtension && history) {
-    console.log('isExtension44');
-    console.log(window.location.pathname);
     history.push('/');
   }
 

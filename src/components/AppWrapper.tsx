@@ -1,5 +1,12 @@
 import React, {useEffect, useRef} from 'react';
 import {useTranslation} from 'react-i18next';
+// @ts-ignore
+import PouchDB from 'pouchdb';
+// @ts-ignore
+import find from "pouchdb-find";
+PouchDB.plugin(find)
+PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
+
 import {CardanoAPI} from '../lib/CardanoAPI';
 import {Account} from '../models/Account/Account';
 import {useAppDispatch, useAppSelector} from '../store/hooks';
@@ -13,6 +20,7 @@ import {
 import {setCurrentAccount} from '../store/reducers/account';
 import {setSettings} from '../store/reducers/settings';
 import {changeTheme} from '../theme/handleTheme';
+import {PouchAPI} from "../db/database";
 
 const AppWrapper = (props: {children: any}) => {
   const {t, i18n} = useTranslation();
@@ -85,12 +93,22 @@ const AppWrapper = (props: {children: any}) => {
 
   useEffect(() => {
     const init = async () => {
-      /* Debug - Do not delete
-     console.log("query graph");
-     const graphqlStatus = await GraphQl.epochsLatestParameters();
-     console.log("graphqlStatus");
-     console.log(graphqlStatus);
-     */
+
+      await PouchAPI.init("db-dev");
+
+      const ids = await PouchAPI.allIds("account");
+      console.log("ids");
+      console.log(ids);
+
+      const user = await PouchAPI.getByField("account","name", "bob");
+      console.log("user");
+      console.log(user);
+      const user3 = await PouchAPI.get("account","bob");
+      console.log("user3");
+      console.log(user3);
+
+      console.log("PouchAPI");
+      console.log(PouchAPI.db);
     };
 
     if (isMounted.current) {
