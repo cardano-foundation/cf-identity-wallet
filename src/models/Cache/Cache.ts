@@ -1,4 +1,4 @@
-import {get, set} from '../../db/storage';
+import { PreferencesAPI } from '../../db/preferences';
 
 export const Cache = {
   table: 'app.cache',
@@ -8,7 +8,7 @@ export const Cache = {
   accounts: [],
 
   async init() {
-    const cache = await get(this.table);
+    const cache = await PreferencesAPI.get(this.table);
     if (!cache) return;
     this.path = cache.path;
     this.payload = cache.payload;
@@ -36,7 +36,7 @@ export const Cache = {
     };
   },
   async commit() {
-    await set(this.table, {
+    await PreferencesAPI.set(this.table, {
       path: this.path,
       payload: this.payload,
       accountId: this.accountId,

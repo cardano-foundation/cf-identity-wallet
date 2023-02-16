@@ -1,50 +1,30 @@
 import {Storage, Drivers} from '@ionic/storage';
 
-
 export const PreferencesAPI = {
-    table: 'settings',
+    dbName: '',
     storage: undefined as undefined | typeof Storage,
-    async init(settings:any = null) {
+    async init(dbName:any = 'preferences') {
+        this.dbName = dbName;
         // @ts-ignore
-        this.storage = await createStore(`${this.table}.preferences`);
-        await this.set(settings);
+        this.storage = await createStore(this.table);
     },
-    async set(settings:any) {
-        if (settings && Object.keys(settings)?.length) {
+    async set(table:string, obj:any) {
+        if (obj && Object.keys(obj)?.length) {
             // @ts-ignore
-            await this.storage.set(this.table,settings);
+            await this.storage.set(table, obj);
         }
     },
-
+    async get(table:string) {
+        // @ts-ignore
+        return this.storage.get(table);
+    }
 }
 
-export const createStore = (name = 'preferences') => {
+export const createStore = (name = 'defaultDb') => {
     const storage = new Storage({
         name,
         driverOrder: [Drivers.IndexedDB, Drivers.LocalStorage],
     });
-
     storage.create();
-
     return storage;
-};
-
-export const set = async (key: string, val: any) => {
-    await storage.set(key, val);
-};
-
-export const get = async (key: string) => {
-    return await storage.get(key);
-};
-
-export const keys = async () => {
-    return await storage.keys();
-};
-
-export const remove = async (key: string) => {
-    await storage.remove(key);
-};
-
-export const clear = async () => {
-    await storage.clear();
 };

@@ -21,7 +21,7 @@ export const PouchAPI = {
         });
         return all.rows;
     },
-    async allIds(tableName:string) {
+    async getIDs(tableName:string) {
         const table = `${tableName}:`;
         const all = await this.db.allDocs({
             include_docs: true,

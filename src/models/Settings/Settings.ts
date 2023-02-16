@@ -1,4 +1,4 @@
-import {get, set} from '../../db/storage';
+import { PreferencesAPI } from '../../db/preferences';
 
 export const Settings = {
   table: 'settings',
@@ -7,7 +7,7 @@ export const Settings = {
   network: 'preprod',
 
   async init() {
-    const settings = await get(this.table);
+    const settings = await PreferencesAPI.get(this.table);
     if (!settings) return;
     this.theme = settings.theme;
     this.language = settings.language;
@@ -30,7 +30,7 @@ export const Settings = {
     };
   },
   async commit() {
-    await set(this.table, {
+    await PreferencesAPI.set(this.table, {
       theme: this.theme,
       language: this.language,
       network: this.network,

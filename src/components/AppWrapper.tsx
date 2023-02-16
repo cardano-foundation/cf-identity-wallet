@@ -21,6 +21,7 @@ import {setCurrentAccount} from '../store/reducers/account';
 import {setSettings} from '../store/reducers/settings';
 import {changeTheme} from '../theme/handleTheme';
 import {PouchAPI} from "../db/database";
+import { PreferencesAPI } from '../db/preferences';
 
 const AppWrapper = (props: {children: any}) => {
   const {t, i18n} = useTranslation();
@@ -53,10 +54,10 @@ const AppWrapper = (props: {children: any}) => {
     await CardanoAPI.init();
     await Cache.init();
     dispatch(setCache(Cache.get()));
-    await Settings.init();
 
+    await Settings.init();
     if (Settings.theme?.length) {
-      // Use matchMedia to check the user preference
+      // Use matchMedia to check the OS native preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
       if (
         (prefersDark.matches && Settings.theme !== 'dark') ||
@@ -95,8 +96,10 @@ const AppWrapper = (props: {children: any}) => {
     const init = async () => {
 
       await PouchAPI.init("db-dev");
+      await PreferencesAPI.init();
 
-      const ids = await PouchAPI.allIds("account");
+      //await PouchAPI.set("account","bob",{name: "bob"})
+      const ids = await PouchAPI.getIDs("account");
       console.log("ids");
       console.log(ids);
 

@@ -8,14 +8,14 @@ import {
   IUtxo,
   TX_STATUS,
 } from '../types';
-import {get, getObject, removeObject, set, setObject} from '../../db/storage';
 import {Capacitor} from '@capacitor/core';
 import {getKeystore, setKeystore} from '../../db/keystore';
+import { PouchAPI } from '../../db/database';
 
 const KEY_CHAIN_DEVICES = ['iphone', 'ipad', 'phablet', 'tablet', 'android'];
 
 export class Account {
-  private table = 'accounts';
+  private table = 'account';
   private id: string | undefined;
   private name: string | undefined;
   private encryptedRootKey: string | undefined;
@@ -169,13 +169,22 @@ export class Account {
   }
 
   commit() {
-    if (!this.id || !this.id.length) return {error: `id is ${typeof this.id}`};
-    setObject(this.table, this.id, this);
+    if (!this.id || !this.id.length) return {error: `Invalid id with type: ${typeof this.id}`};
+
+    try {
+      PouchAPI.set(this.table, this.id, this);
+    }
+    catch (e) {
+      // TODO: cath this error, if already exists in db, just update it
+      console.log(`[LOG]: account already exists: ${this.id}`);
+      console.log(e);
+      PouchAPI.update(this.table, this.id, this);
+    }
   }
 
   remove() {
     if (!this.id) return;
-    removeObject('accounts', this.id);
+    PouchAPI.remove(this.table, this.id);
   }
 
   toString() {
@@ -206,33 +215,28 @@ export class Account {
   }
 
   static async getAccount(id: string) {
-    const accountInDb = await getObject('accounts', id);
+    const accountInDb = await PouchAPI.get('account', id);
     if (!accountInDb) return;
     return Account.new(accountInDb);
   }
 
   static async getFirstAccount() {
-    const accounts = await get('accounts');
+    const accounts = await this.getAllAccounts();
     if (!accounts || !Object.entries(accounts).length) return;
     return Account.new(Object.entries(accounts)[0]);
   }
 
   static removeAccount(id: string) {
     if (!id) return;
-    removeObject('accounts', id);
-  }
-
-  static removeAllAccounts(id: string) {
-    if (!id) return;
-    set('accounts', {});
+    PouchAPI.remove('account', id);
   }
 
   static async getAllAccounts() {
-    return await get('accounts');
+    return await PouchAPI.getTable('account');
   }
 
   static async getAllAccountsIds() {
-    const accounts = await get('accounts');
+    const accounts = await PouchAPI.getIDs('account');
     if (!accounts) return;
     return Object.keys(accounts);
   }
