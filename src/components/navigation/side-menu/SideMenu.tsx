@@ -14,6 +14,7 @@ import {
   IonMenuButton,
   IonMenuToggle,
   IonPage,
+  IonPopover,
   IonRow,
   IonTitle,
   IonToggle,
@@ -75,6 +76,14 @@ const SideMenu = () => {
                 onIonChange={(_) => handleTheme()}
                 slot="end"
               />
+            </IonItem>
+            <IonItem>
+              <IonLabel id="click-trigger">Themes</IonLabel>
+              <IonPopover
+                trigger="click-trigger"
+                triggerAction="click">
+                <IonContent class="ion-padding">Hello World!</IonContent>
+              </IonPopover>
             </IonItem>
             <IonItem>
               <IonMenuToggle>
