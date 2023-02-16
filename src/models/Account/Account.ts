@@ -15,7 +15,7 @@ import { PouchAPI } from '../../db/database';
 const KEY_CHAIN_DEVICES = ['iphone', 'ipad', 'phablet', 'tablet', 'android'];
 
 export class Account {
-  private table = 'account';
+  static table = 'account';
   private id: string | undefined;
   private name: string | undefined;
   private encryptedRootKey: string | undefined;
@@ -172,19 +172,19 @@ export class Account {
     if (!this.id || !this.id.length) return {error: `Invalid id with type: ${typeof this.id}`};
 
     try {
-      PouchAPI.set(this.table, this.id, this);
+      PouchAPI.set(Account.table, this.id, this);
     }
     catch (e) {
       // TODO: cath this error, if already exists in db, just update it
       console.log(`[LOG]: account already exists: ${this.id}`);
       console.log(e);
-      PouchAPI.update(this.table, this.id, this);
+      PouchAPI.update(Account.table, this.id, this);
     }
   }
 
   remove() {
     if (!this.id) return;
-    PouchAPI.remove(this.table, this.id);
+    PouchAPI.remove(Account.table, this.id);
   }
 
   toString() {
@@ -215,9 +215,16 @@ export class Account {
   }
 
   static async getAccount(id: string) {
-    const accountInDb = await PouchAPI.get('account', id);
-    if (!accountInDb) return;
-    return Account.new(accountInDb);
+    const accountDoc = await PouchAPI.get(Account.table, id);
+    if (!accountDoc || !accountDoc.docs?.length) return;
+    const account = accountDoc.docs[0];
+
+    return Account.new(account);
+  }
+
+  static async accountAlreadyExists(id: string) {
+    const account = await this.getAccount(id);
+    return account !== undefined;
   }
 
   static async getFirstAccount() {
@@ -228,15 +235,16 @@ export class Account {
 
   static removeAccount(id: string) {
     if (!id) return;
-    PouchAPI.remove('account', id);
+    PouchAPI.remove(Account.table, id);
   }
 
   static async getAllAccounts() {
-    return await PouchAPI.getTable('account');
+    const accountDocs = await PouchAPI.getTable(Account.table);
+    return accountDocs.map((acc: { doc: any; }) => acc.doc);
   }
 
   static async getAllAccountsIds() {
-    const accounts = await PouchAPI.getIDs('account');
+    const accounts = await PouchAPI.getIDs(Account.table);
     if (!accounts) return;
     return Object.keys(accounts);
   }

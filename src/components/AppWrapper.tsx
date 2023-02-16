@@ -98,7 +98,12 @@ const AppWrapper = (props: {children: any}) => {
       await PouchAPI.init("db-dev");
       await PreferencesAPI.init();
 
-      //await PouchAPI.set("account","bob",{name: "bob"})
+      if (await Account.accountAlreadyExists("alice")){
+        console.log("account already exists");
+      } else {
+        console.log("set new account");
+        await PouchAPI.set("account","alice",{name: "alice"})
+      }
       const ids = await PouchAPI.getIDs("account");
       console.log("ids");
       console.log(ids);
@@ -112,6 +117,8 @@ const AppWrapper = (props: {children: any}) => {
 
       console.log("PouchAPI");
       console.log(PouchAPI.db);
+      console.log("All Accounts");
+      console.log(await Account.getAllAccounts());
     };
 
     if (isMounted.current) {

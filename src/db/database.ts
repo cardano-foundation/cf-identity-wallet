@@ -28,7 +28,7 @@ export const PouchAPI = {
             startkey: table,
             endkey: `${tableName}:\uffff`
         });
-        return all.rows.map(d => d.id.replace(table,''));
+        return all.rows.map((d: { id: string; }) => d.id.replace(table,''));
     },
     async get(tableName:string, id:string) {
         await this.db.createIndex({
