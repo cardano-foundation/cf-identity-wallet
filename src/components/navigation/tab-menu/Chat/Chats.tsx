@@ -33,11 +33,15 @@ import {
 import {handleConnect} from '../../../../App';
 import {useHistory} from 'react-router-dom';
 import {subscribe} from '../../../../utils/events';
+import { PouchAPI } from '../../../../db/database';
+import { PeerConnect } from '../../../../api/p2p/PeerConnect';
+import { HandleConnect } from '../../../../api/p2p/HandleConnect';
 
 const Chats = (props: any) => {
   const pageName = 'Chats';
   const {sideMenuOptions} = props;
   const setSideMenu = useSideMenuUpdate();
+  const [originalPeers, setOriginalPeers] = useState([]);
   const [results, setResults] = useState([]);
   const [userName, setUsername] = useState('');
   const [showCreateServer, setShowCreateServer] = useState(false);
@@ -92,25 +96,25 @@ const Chats = (props: any) => {
   }, []);
 
   const updateChats = () => {
-    getPeerProfile('global').then((profile) => {
+
+    PouchAPI.get(PeerConnect.table, 'default-profile').then(profile => {
       if (profile.username?.length) {
         setUsername(profile.username);
       }
     });
 
-    getPeerList().then((peers) => {
-      let peerList = [];
+    HandleConnect.getPeers().then(peers => {
+      let peerList: ((prevState: never[]) => never[]) | ({ id: number; identifier: any; key: string; name: string; contact_id: number; preview: any; messages: any; connected: boolean; host: boolean; } | undefined)[] = [];
       if (peers) {
-        peerList = Object.values(peers).map((peer, index) => {
-          if (!peer.messages) return;
+        peerList = peers.map((peer, index) => {
           const messages = peer?.messages?.length
-            ? peer?.messages.map((message, index) => {
+              ? peer?.messages.map((message, index) => {
                 return {
                   ...message,
                   id: index,
                 };
               })
-            : [];
+              : [];
           return {
             id: index,
             identifier: peer.identifier,
@@ -118,13 +122,14 @@ const Chats = (props: any) => {
             name: peer.name,
             contact_id: index,
             preview:
-              (messages.length && messages[messages.length - 1].preview) || '',
+                (messages.length && messages[messages.length - 1].preview) || '',
             messages,
             connected: peer.connected,
             host: false,
           };
         });
       }
+      setOriginalPeers(peerList);
       setResults(peerList);
     });
   };
@@ -143,11 +148,13 @@ const Chats = (props: any) => {
 
       const newResults = results.filter((chat) =>
         results
-          .filter((c) => c.id === chat.contact_id)[0]
+          .filter((c) => c.id === chat.id)[0]
           .name.toLowerCase()
           .includes(searchTermLower)
       );
       setResults(newResults);
+    } else {
+      setResults(originalPeers);
     }
   };
 

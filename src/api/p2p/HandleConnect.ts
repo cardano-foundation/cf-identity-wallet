@@ -2,12 +2,7 @@
 import Meerkat from '@fabianbormann/meerkat';
 import {PeerConnect} from './PeerConnect';
 import {HostConnect} from './HostConnect';
-import {
-  getHostList,
-  getPeerList,
-  getPeerProfile,
-  setPeerProfile,
-} from '../../db';
+import { PouchAPI } from '../../db/database';
 
 export class HandleConnect {
   profile: {identifier: string; seed: string} | undefined = undefined;
@@ -18,7 +13,8 @@ export class HandleConnect {
   whitelist: Array<string> = [];
 
   constructor() {
-    getPeerProfile('global').then((profile) => {
+
+    PouchAPI.get(PeerConnect.table, 'default-profile').then(profile => {
       if (profile) {
         this.profile = {
           identifier: profile.identifier,
@@ -30,36 +26,36 @@ export class HandleConnect {
           identifier: meerkat.identifier,
           seed: meerkat.seed,
         };
-        setPeerProfile('global', meerkat.seed, meerkat.identifier, '', []);
+        PouchAPI.set(PeerConnect.table, 'default-profile', this.profile);
       }
     });
 
-    getHostList().then((hosts) => {
-      if (!hosts) return;
-
-      for (const [_, value] of Object.entries(hosts)) {
+    PouchAPI.getTable(HostConnect.table).then(hostDocs => {
+      if (!hostDocs) return;
+      hostDocs = hostDocs.map((host: { doc: any; }) => host.doc);
+      for (const [_, value] of Object.entries(hostDocs)) {
         this.restoreChannel(
-          // @ts-ignore
-          value.seed,
-          // @ts-ignore
-          value.identifier,
-          // @ts-ignore
-          value.name,
-          // @ts-ignore
-          value.announce,
-          // @ts-ignore
-          value.messages
+            // @ts-ignore
+            value.seed,
+            // @ts-ignore
+            value.identifier,
+            // @ts-ignore
+            value.name,
+            // @ts-ignore
+            value.announce,
+            // @ts-ignore
+            value.messages
         );
       }
+      PouchAPI.getTable(PeerConnect.table).then(peerDocs => {
+        if (!peerDocs) return;
+        peerDocs = peerDocs.map((peer: { doc: any; }) => peer.doc);
+        for (let i = 0; i < peerDocs.length; i++) {
+          this.joinChannel(peerDocs[i].name, peerDocs[i].identifier, peerDocs[i].messages);
+        }
+      });
     });
 
-    getPeerList().then((peers) => {
-      if (!peers) return;
-      for (const [_, value] of Object.entries(peers)) {
-        // @ts-ignore
-        this.joinChannel(value.name, value.identifier, value.messages);
-      }
-    });
   }
 
   /**
@@ -181,5 +177,30 @@ export class HandleConnect {
         break;
       }
     }
+  }
+
+  /**
+   * Get host peers
+   */
+  static async getHosts() {
+    const hosts = await PouchAPI.getTable(HostConnect.table);
+    return hosts.map((host: { doc: any; }) => host.doc);
+  }
+
+  /**
+   * Get peers
+   */
+  static async getPeers() {
+    const peers = await PouchAPI.getTable(PeerConnect.table);
+    return peers.map((peer: { doc: any; }) => peer.doc);
+  }
+
+  /**
+   * Get full peer list(host+peer)   *
+   */
+  static async getAllPeers() {
+    const hosts = await PouchAPI.getTable(HostConnect.table);
+    const peers = await PouchAPI.getTable(PeerConnect.table);
+    return [...hosts.map((host: { doc: any; }) => host.doc), ...peers.map((peer: { doc: any; }) => peer.doc)]
   }
 }

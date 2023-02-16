@@ -3,11 +3,12 @@ import {getHost, setHost} from '../../db';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
 import {publish} from '../../utils/events';
+import { PouchAPI } from '../../db/database';
 // @ts-ignore
 const moment = extendMoment(Moment);
 
 export class HostConnect {
-  private table = 'host';
+  static table = 'host';
   private meerkat: Meerkat;
   id: string;
   name: string;
@@ -33,7 +34,7 @@ export class HostConnect {
         'https://tracker.boostpool.io',
       ],
     });
-    this.id = `${this.table}:${name}:${this.meerkat.identifier}`;
+    this.id = `${HostConnect.table}:${name}:${this.meerkat.identifier}`;
 
     //console.log(`Share this address ${this.meerkat.address()} with your clients`);
     let connected = false;
@@ -42,40 +43,37 @@ export class HostConnect {
       if (!connected) {
         connected = true;
         console.log(`[info]: server ready: ${this.meerkat.identifier}`);
-        // TODO: store clients
-
-        // TODO: remove store messages in server
         if (clients) {
-          getHost(this.id).then((host) => {
-            setHost(
-              this.id,
-              host.seed,
-              host.identifier,
+          PouchAPI.get(HostConnect.table, this.id).then(host => {
+            PouchAPI.set(HostConnect.table, this.id, {
+              id: this.id,
+              seed: host.seed,
+              identifier: host.identifier,
               name,
-              host.announce,
-              host.messages,
-              true
-            ).then((_) => {
-              console.log(
-                `[info]: the server is ready with address 💬: ${this.meerkat.identifier}`
-              );
-              publish('updateChat');
+              announce: host.announce,
+              messages: host.messages,
+              connected: true
             });
+          }).then(_ => {
+            console.log(
+                `[info]: the server is ready with address 💬: ${this.meerkat.identifier}`
+            );
+            publish('updateChat');
           });
         } else {
-          getHost(this.id).then((host) => {
-            setHost(
-              this.id,
-              host.seed,
-              host.identifier,
+          PouchAPI.get(HostConnect.table, this.id).then(host => {
+            PouchAPI.set(HostConnect.table, this.id, {
+              id: this.id,
+              seed: host.seed,
+              identifier: host.identifier,
               name,
-              host.announce,
-              host.messages,
-              false
-            ).then((_) => {
-              console.log(`[info]: loading server... 💬`);
-              publish('updateChat');
+              announce: host.announce,
+              messages: host.messages,
+              connected: false
             });
+          }).then(_ => {
+            console.log(`[info]: loading server... 💬`);
+            publish('updateChat');
           });
         }
       }
