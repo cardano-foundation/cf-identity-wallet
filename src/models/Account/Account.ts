@@ -1,5 +1,14 @@
-import {ERA, IAccount, IAsset, ICertificate, INetwork, ITransaction, IUtxo, TX_STATUS,} from '../types';
-import {get, getObject, removeObject, set, setObject,} from '../../db/storage';
+import {
+  ERA,
+  IAccount,
+  IAsset,
+  ICertificate,
+  INetwork,
+  ITransaction,
+  IUtxo,
+  TX_STATUS,
+} from '../types';
+import {get, getObject, removeObject, set, setObject} from '../../db/storage';
 import {Capacitor} from '@capacitor/core';
 import {getKeystore, setKeystore} from '../../db/keystore';
 

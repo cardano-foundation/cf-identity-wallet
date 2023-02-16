@@ -82,7 +82,7 @@ const Chats = (props: any) => {
   };
 
   const closeModal = () => {
-    nav.replace('/chats');
+    nav.replace('/tabs/chats');
   };
 
   useEffect(() => {

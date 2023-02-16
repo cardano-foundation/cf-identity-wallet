@@ -5,14 +5,14 @@ import App from '../App';
 import {Capacitor} from '@capacitor/core';
 import {App as CapacitorApp} from '@capacitor/app';
 import {defineCustomElements} from '@ionic/pwa-elements/loader';
-import {StatusBar, Style} from '@capacitor/status-bar';
+import {StatusBar} from '@capacitor/status-bar';
 import {LocalNotifications} from '@capacitor/local-notifications';
 import {Toast} from '@capacitor/toast';
-import {BrowserRouter} from 'react-router-dom';
-//import '../theme/style.css';
-
+import {Provider} from 'react-redux';
 import {I18nextProvider} from 'react-i18next';
 import i18n from '../i18n';
+import {store} from '../store/store';
+import {BrowserRouter} from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root-popup'));
 root.render(
@@ -20,13 +20,15 @@ root.render(
     <SafeArea
       top
       bottom>
-      <I18nextProvider i18n={i18n}>
-        <div style={{height: '650px', width: '400px'}}>
-          <BrowserRouter>
-            <App isExtension={true} />
-          </BrowserRouter>
-        </div>
-      </I18nextProvider>
+      <Provider store={store}>
+        <I18nextProvider i18n={i18n}>
+          <div style={{height: '750px', width: '450px'}}>
+            <BrowserRouter>
+              <App isExtension={true} />
+            </BrowserRouter>
+          </div>
+        </I18nextProvider>
+      </Provider>
     </SafeArea>
   </React.StrictMode>
 );
