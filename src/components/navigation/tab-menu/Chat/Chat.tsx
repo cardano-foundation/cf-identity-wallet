@@ -311,7 +311,7 @@ const Chat = () => {
     await removePeer(id);
     await removeHost(id.replace('peer', 'host'));
 
-    handleNavigation('/chats');
+    handleNavigation('/tabs/chats');
   };
   const sendMessage = async () => {
     console.log('sendMessage');
@@ -372,7 +372,7 @@ const Chat = () => {
       <IonHeader>
         <IonToolbar>
           <IonBackButton
-            defaultHref={'/chats'}
+            defaultHref={'/tabs/chats'}
             slot="start"
             text={notificationCount > 0 ? notificationCount : ''}
           />
