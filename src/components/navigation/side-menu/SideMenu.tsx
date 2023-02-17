@@ -1,7 +1,6 @@
 import React, {useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import {
-  IonButtons,
   IonCol,
   IonContent,
   IonGrid,
@@ -11,9 +10,7 @@ import {
   IonLabel,
   IonList,
   IonMenu,
-  IonMenuButton,
   IonMenuToggle,
-  IonPage,
   IonPopover,
   IonRow,
   IonTitle,
@@ -42,13 +39,17 @@ const SideMenu = () => {
   };
   return (
     <>
-      <IonMenu contentId="main-content">
+      <IonMenu contentId="main">
         <IonHeader>
           <IonToolbar>
             <IonTitle>Settings</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent className="ion-padding">
+
+        <IonContent
+          className="ion-padding"
+          id="main-content"
+          forceOverscroll={false}>
           <IonGrid className="px-0">
             <IonRow className="py-6">
               <IonCol
@@ -82,7 +83,8 @@ const SideMenu = () => {
               <IonPopover
                 trigger="click-trigger"
                 triggerAction="click">
-                <IonContent class="ion-padding">Hello World!</IonContent>
+                <IonContent class="ion-padding">Ocean</IonContent>
+                <IonContent class="ion-padding">Sunset</IonContent>
               </IonPopover>
             </IonItem>
             <IonItem>
@@ -95,17 +97,6 @@ const SideMenu = () => {
           </IonList>
         </IonContent>
       </IonMenu>
-      <IonPage id="main-content">
-        <IonHeader>
-          <IonToolbar>
-            <IonButtons slot="start">
-              <IonMenuButton />
-            </IonButtons>
-            {/* <IonTitle>Menu</IonTitle> */}
-          </IonToolbar>
-        </IonHeader>
-        <IonContent className="ion-padding"></IonContent>
-      </IonPage>
     </>
   );
 };

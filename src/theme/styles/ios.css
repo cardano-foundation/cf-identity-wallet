@@ -3,8 +3,8 @@
  * ----------------------------------------------------------------------------
  */
 .ios body.dark {
-  --ion-background-color: #000000;
-  --ion-background-color-rgb: 0, 0, 0;
+  --ion-background-color: var(--ion-color-primary-darkest);
+  --ion-background-color-rgb: 18, 18, 18;
 
   --ion-text-color: #ffffff;
   --ion-text-color-rgb: 255, 255, 255;
@@ -30,6 +30,6 @@
   --ion-color-step-950: #f2f2f2;
 
   --ion-toolbar-background: #0d0d0d;
-  --ion-item-background: #000000;
+  --ion-item-background: #transparent;
   --ion-border-color: #1a1a1a;
 }

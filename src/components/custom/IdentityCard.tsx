@@ -93,16 +93,19 @@ export const IDWCard = ({
                   />
                 </IonAvatar>
               ) : null}
-              <IonRow className={`${!logo || !logo.length ? 'pl-4' : ''}`}>
+              <IonRow>
                 <IonLabel className="font-extrabold w-full">{name}</IonLabel>
 
-                <IonLabel className="font-light text-gray-600 text-sm">
+                <IonLabel
+                  className="font-light text-sm"
+                  color="medium">
                   {moment(createdOn, 'x').format('DD MMM YYYY hh:mm a')}
                 </IonLabel>
               </IonRow>
               <IonIcon
                 id={`popover-button-${id}-${name}`}
                 icon={ellipsisVertical}
+                color="primary"
                 className="float-right"
                 slot="end"
               />
