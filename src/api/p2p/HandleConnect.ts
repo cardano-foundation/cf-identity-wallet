@@ -47,13 +47,14 @@ export class HandleConnect {
             value.messages
         );
       }
-      PouchAPI.getTable(PeerConnect.table).then(peerDocs => {
-        if (!peerDocs) return;
-        peerDocs = peerDocs.map((peer: { doc: any; }) => peer.doc);
-        for (let i = 0; i < peerDocs.length; i++) {
-          this.joinChannel(peerDocs[i].name, peerDocs[i].identifier, peerDocs[i].messages);
-        }
-      });
+    });
+
+    PouchAPI.getTable(PeerConnect.table).then(peerDocs => {
+      if (!peerDocs) return;
+      peerDocs = peerDocs.map((peer: { doc: any; }) => peer.doc);
+      for (let i = 0; i < peerDocs.length; i++) {
+        this.joinChannel(peerDocs[i].name, peerDocs[i].identifier, peerDocs[i].messages);
+      }
     });
 
   }
@@ -80,11 +81,13 @@ export class HandleConnect {
    */
   createChannel(name: string): void {
     if (!name || this.hosts.some((c) => c.name === name)) return;
+    console.log("createChannel in HandleConnect");
     const host = new HostConnect(name, {
       seed: undefined,
       identifier: undefined,
       announce: this.trackers,
     });
+    console.log("hey000000");
     this.hosts = [...this.hosts, host];
     this.joinChannel(name, host.getMeerkatIdentifier());
   }
@@ -126,6 +129,7 @@ export class HandleConnect {
     hostIdentifier: string,
     messages: string[] = []
   ): void {
+    console.log("join-channel")
     const peer = new PeerConnect(name, {
       seed: this.profile?.seed,
       identifier: hostIdentifier,
@@ -133,6 +137,8 @@ export class HandleConnect {
       messages,
     });
 
+    console.log("peer that joined");
+    console.log(peer);
     this.peers = [...this.peers, peer];
   }
 
@@ -180,6 +186,19 @@ export class HandleConnect {
   }
 
   /**
+   * Get any peers
+   */
+  static async getPeer(tableName:string, id:string) {
+    console.log("\n\ngetPeer");
+    console.log(tableName);
+    console.log(id);
+    const peer = await PouchAPI.get(tableName, id);
+    console.log("peer");
+    console.log(peer);
+    return peer?.doc;
+  }
+
+  /**
    * Get host peers
    */
   static async getHosts() {
@@ -192,7 +211,23 @@ export class HandleConnect {
    */
   static async getPeers() {
     const peers = await PouchAPI.getTable(PeerConnect.table);
+    console.log("peers");
+    console.log(peers);
     return peers.map((peer: { doc: any; }) => peer.doc);
+  }
+
+  /**
+   * Remove peer
+   */
+  static async removePeer(id:string) {
+     await PouchAPI.remove(PeerConnect.table, id);
+  }
+
+  /**
+   * Remove host
+   */
+  static async removeHost(id:string) {
+     await PouchAPI.remove(HostConnect.table, id);
   }
 
   /**

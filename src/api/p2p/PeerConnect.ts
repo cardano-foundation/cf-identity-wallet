@@ -37,6 +37,7 @@ export class PeerConnect extends CardanoPeerConnect {
   ) {
     super();
 
+    console.log("init PeerConnect constr")
     this.name = name;
 
     this.meerkat = new Meerkat({
@@ -51,20 +52,31 @@ export class PeerConnect extends CardanoPeerConnect {
       ],
     });
 
-    this.id = `${PeerConnect.table}:${name}:${config.identifier}`;
+    this.id = `${name}:${config.identifier}`;
 
     this.meerkat.on('server', () => {
-      console.log(`[info]: connected to server 💬: ${this.meerkat.identifier}`);
       PouchAPI.get(PeerConnect.table, this.id).then(peer => {
         PouchAPI.set(PeerConnect.table, this.id, {
           id: this.id,
-          seed: peer.seed,
-          identifier: peer.identifier,
+          seed: this.meerkat.seed,
+          identifier: this.meerkat.identifier,
           name,
           announce: peer.announce,
           messages: peer.messages,
           connected: true
         });
+      }).catch(err => {
+        if (err.name === 'not_found'){
+          PouchAPI.set(PeerConnect.table, this.id, {
+            id: this.id,
+            seed: this.meerkat.seed,
+            identifier: this.meerkat.identifier,
+            name,
+            announce: [],
+            messages: [],
+            connected: true
+          });
+        }
       });
     });
 
@@ -89,12 +101,12 @@ export class PeerConnect extends CardanoPeerConnect {
             };
             PouchAPI.set(PeerConnect.table, this.id, {
               id: this.id,
-              seed: peer.seed,
-              identifier: peer.identifier,
+              seed: this.meerkat.seed,
+              identifier: this.meerkat.identifier,
               name,
-              announce: peer.announce,
+              announce: peer.announce || [],
               messages: [...peer.messages, newMessage],
-              connected: peer.connected
+              connected: peer.connected || false
             }).then(_ => publish('updateChat'));
           });
         } catch (e) {
@@ -152,11 +164,11 @@ export class PeerConnect extends CardanoPeerConnect {
         PouchAPI.get(PeerConnect.table, this.id).then(peer => {
           PouchAPI.set(PeerConnect.table, this.id, {
             id: this.id,
-            seed: peer.seed,
-            identifier: peer.identifier,
+            seed: this.meerkat.seed,
+            identifier: this.meerkat.identifier,
             name,
-            announce: peer.announce,
-            messages: peer.messages,
+            announce: peer?.announce || [],
+            messages: peer?.messages || [],
             connected: response
           }).then(_ => publish('updateChat'));
         });

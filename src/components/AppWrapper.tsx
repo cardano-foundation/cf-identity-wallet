@@ -69,6 +69,7 @@ const AppWrapper = (props: {children: any}) => {
 
     dispatch(setSettings(SettingsAPI.get()));
 
+    /*
     const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
     dispatch(setAccountsIdsInCache(accountsIds));
 
@@ -80,6 +81,7 @@ const AppWrapper = (props: {children: any}) => {
       if (firstAccount) dispatch(setCurrentAccount(firstAccount.get()));
     }
 
+    */
     /* Debug - Do not delete
     console.log("lets init blockfrost");
     await Blockfrost.init('preview');
@@ -95,9 +97,12 @@ const AppWrapper = (props: {children: any}) => {
   useEffect(() => {
     const init = async () => {
 
-      await PouchAPI.init("db-dev");
+
+      await PouchAPI.init("database-dev");
+      //await PouchAPI.clear();
       await PreferencesAPI.init();
 
+      /*
       if (await Account.accountAlreadyExists("alice")){
         console.log("account already exists");
       } else {
@@ -119,6 +124,7 @@ const AppWrapper = (props: {children: any}) => {
       console.log(PouchAPI.db);
       console.log("All Accounts");
       console.log(await Account.getAllAccounts());
+      */
     };
 
     if (isMounted.current) {

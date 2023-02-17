@@ -64,18 +64,10 @@ const Chats = (props: any) => {
     nav.push(nav.location.pathname + '?modalOpened=true');
   };
 
-  const handleUserName = async (username) => {
+  const handleUserName = async (username:string) => {
     setUsername(username);
-    await getPeerProfile('global').then((profile) => {
-      setPeerProfile(
-        'global',
-        profile.seed,
-        profile.identifier,
-        profile.name,
-        profile.announce,
-        profile.messages,
-        username
-      );
+    PouchAPI.set(PeerConnect.table, 'default-profile', {
+      username
     });
   };
 
@@ -92,23 +84,27 @@ const Chats = (props: any) => {
   const updateChats = () => {
 
     PouchAPI.get(PeerConnect.table, 'default-profile').then(profile => {
-      if (profile.username?.length) {
+      if (profile?.username?.length) {
         setUsername(profile.username);
       }
     });
 
     HandleConnect.getPeers().then(peers => {
+      console.log("getPeers peers");
+      console.log(peers);
       let peerList: ((prevState: never[]) => never[]) | ({ id: number; identifier: any; key: string; name: string; contact_id: number; preview: any; messages: any; connected: boolean; host: boolean; } | undefined)[] = [];
       if (peers) {
-        peerList = peers.map((peer, index) => {
+        peerList = peers.map((peer, index:number) => {
           const messages = peer?.messages?.length
-              ? peer?.messages.map((message, index) => {
+              ? peer?.messages.map((message, index:number) => {
                 return {
                   ...message,
                   id: index,
                 };
               })
               : [];
+          console.log("peer");
+          console.log(peer);
           return {
             id: index,
             identifier: peer.identifier,
@@ -153,11 +149,14 @@ const Chats = (props: any) => {
   };
 
   const createNewChannel = async () => {
-    const hosts = await getHostList();
+
+    console.log("hola createNewChannel")
+    const hosts = await HandleConnect.getHosts();
+    console.log(hosts);
     if (
       !createServerNameInput?.length ||
       (hosts &&
-        Object.entries(hosts).some(
+          hosts.some(
           (host) => host.name === createServerNameInput
         ))
     )
@@ -168,11 +167,11 @@ const Chats = (props: any) => {
   };
 
   const joinNewChannel = async () => {
-    const peers = await getPeerList();
+    const peers = await HandleConnect.getPeers();
     if (
       (!joinServerNameInput?.length && !joinServerAddressInput?.length) ||
       (peers &&
-        Object.entries(peers).some((peer) => peer.name === joinServerNameInput))
+          peers.some((peer) => peer.name === joinServerNameInput))
     )
       return;
 

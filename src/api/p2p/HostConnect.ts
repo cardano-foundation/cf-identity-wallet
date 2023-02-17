@@ -33,7 +33,7 @@ export class HostConnect {
         'https://tracker.boostpool.io',
       ],
     });
-    this.id = `${HostConnect.table}:${name}:${this.meerkat.identifier}`;
+    this.id = `${name}:${this.meerkat.identifier}`;
 
     //console.log(`Share this address ${this.meerkat.address()} with your clients`);
     let connected = false;
@@ -46,11 +46,11 @@ export class HostConnect {
           PouchAPI.get(HostConnect.table, this.id).then(host => {
             PouchAPI.set(HostConnect.table, this.id, {
               id: this.id,
-              seed: host.seed,
-              identifier: host.identifier,
+              seed: this.meerkat.seed,
+              identifier: this.meerkat.identifier,
               name,
-              announce: host.announce,
-              messages: host.messages,
+              announce: host?.announce || [],
+              messages: host?.messages || [],
               connected: true
             });
           }).then(_ => {
@@ -63,11 +63,11 @@ export class HostConnect {
           PouchAPI.get(HostConnect.table, this.id).then(host => {
             PouchAPI.set(HostConnect.table, this.id, {
               id: this.id,
-              seed: host.seed,
-              identifier: host.identifier,
+              seed: this.meerkat.seed,
+              identifier: this.meerkat.identifier,
               name,
-              announce: host.announce,
-              messages: host.messages,
+              announce: host?.announce || [],
+              messages: host?.messages || [],
               connected: false
             });
           }).then(_ => {

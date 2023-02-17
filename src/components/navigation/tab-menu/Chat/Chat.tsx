@@ -45,6 +45,9 @@ import {useHistory, useLocation} from 'react-router-dom';
 import {addressSlice} from '../../../../utils/utils';
 import {handleConnect} from '../../../../App';
 import {subscribe} from '../../../../utils/events';
+import { HandleConnect } from '../../../../api/p2p/HandleConnect';
+import { PeerConnect } from '../../../../api/p2p/PeerConnect';
+import { PouchAPI } from '../../../../db/database';
 
 const Chat = () => {
   const params = useParams();
@@ -123,7 +126,9 @@ const Chat = () => {
 
   const updateChat = async () => {
     if (!params) return;
-    const chat = await getPeer(`peer:${params.channel_id}`);
+    console.log("params");
+    console.log(params);
+    const chat = await HandleConnect.getPeer(PeerConnect.table, params.channel_id);
     if (chat) serChat(chat);
   };
   const pingChat = async () => {
@@ -307,8 +312,13 @@ const Chat = () => {
 
   const removeChat = async () => {
     const id = `${chat?.name}:${chat?.identifier}`;
-    await removePeer(id);
-    await removeHost(id.replace('peer', 'host'));
+    console.log("removeChat");
+    console.log(id);
+    const css = await PouchAPI.getTable(PeerConnect.table)
+    console.log("css");
+    console.log(css);
+    await HandleConnect.removePeer(id);
+    await HandleConnect.removeHost(id.replace('peer', 'host'));
 
     handleNavigation('/tabs/chats');
   };
@@ -319,8 +329,7 @@ const Chat = () => {
         const name = params.channel_id.split(':')[0];
         const identifier = params.channel_id.split(':')[1];
 
-        const profile = await getPeerProfile('global');
-
+        const profile = await PouchAPI.getWithIndex(PeerConnect.table, 'default-profile');
         handleConnect.sendMessage(
           identifier,
           `peer:${params.channel_id}`,
