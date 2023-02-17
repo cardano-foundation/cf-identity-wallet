@@ -1,6 +1,6 @@
 import { PreferencesAPI } from '../../db/preferences';
 
-export const Settings = {
+export const SettingsAPI = {
   table: 'settings',
   theme: '',
   language: '',
@@ -28,6 +28,9 @@ export const Settings = {
       language: this.language,
       network: this.network,
     };
+  },
+  async getLanguage() {
+    return this.language
   },
   async commit() {
     await PreferencesAPI.set(this.table, {

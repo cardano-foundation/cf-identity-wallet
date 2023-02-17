@@ -10,8 +10,8 @@ PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
 import {CardanoAPI} from '../lib/CardanoAPI';
 import {Account} from '../models/Account/Account';
 import {useAppDispatch, useAppSelector} from '../store/hooks';
-import {Cache} from '../models/Cache/Cache';
-import {Settings} from '../models/Settings/Settings';
+import {CacheAPI} from '../models/Cache/CacheAPI';
+import {SettingsAPI} from '../models/Settings/Settings';
 import {
   getCachedAccount,
   setAccountsIdsInCache,
@@ -52,22 +52,22 @@ const AppWrapper = (props: {children: any}) => {
 
   const initApp = async () => {
     await CardanoAPI.init();
-    await Cache.init();
-    dispatch(setCache(Cache.get()));
+    await CacheAPI.init();
+    dispatch(setCache(CacheAPI.get()));
 
-    await Settings.init();
-    if (Settings.theme?.length) {
+    await SettingsAPI.init();
+    if (SettingsAPI.theme?.length) {
       // Use matchMedia to check the OS native preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
       if (
-        (prefersDark.matches && Settings.theme !== 'dark') ||
-        (!prefersDark.matches && Settings.theme !== 'light')
+        (prefersDark.matches && SettingsAPI.theme !== 'dark') ||
+        (!prefersDark.matches && SettingsAPI.theme !== 'light')
       ) {
         changeTheme();
       }
     }
 
-    dispatch(setSettings(Settings.get()));
+    dispatch(setSettings(SettingsAPI.get()));
 
     const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
     dispatch(setAccountsIdsInCache(accountsIds));

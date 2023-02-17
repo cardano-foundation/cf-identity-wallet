@@ -13,6 +13,7 @@ export const PouchAPI = {
         this.db = new PouchDB(`${databaseName}.db`, {adapter: 'cordova-sqlite'});
     },
     async getTable(tableName:string) {
+        if (!this.db) return;
         const table = `${tableName}:`;
         const all = await this.db.allDocs({
             include_docs: true,
@@ -22,6 +23,7 @@ export const PouchAPI = {
         return all.rows;
     },
     async getIDs(tableName:string) {
+        if (!this.db) return;
         const table = `${tableName}:`;
         const all = await this.db.allDocs({
             include_docs: true,
@@ -31,6 +33,7 @@ export const PouchAPI = {
         return all.rows.map((d: { id: string; }) => d.id.replace(table,''));
     },
     async get(tableName:string, id:string) {
+        if (!this.db) return;
         await this.db.createIndex({
             index: {fields: ['_id']}
         });
@@ -41,6 +44,7 @@ export const PouchAPI = {
         });
     },
     async getByField(tableName:string, field:string, value:string) {
+        if (!this.db) return;
         await this.db.createIndex({
             index: {fields: [field]}
         });
@@ -51,12 +55,14 @@ export const PouchAPI = {
         });
     },
     async set(tableName:string, id:string, obj:any) {
+        if (!this.db) return;
         await this.db.put({
             _id:  `${tableName}:${id}`,
             ...obj
         });
     },
     async update(tableName:string, id:string, obj:any) {
+        if (!this.db) return;
         const docToUpdate = await this.db.get(`${tableName}:${id}`);
         this.db.put({
             _id: `${tableName}:${id}`,
@@ -65,6 +71,7 @@ export const PouchAPI = {
         });
     },
     async remove(tableName:string, id:string) {
+        if (!this.db) return;
         const docToRemove = await this.db.get(`${tableName}:${id}`);
         await this.db.remove(docToRemove);
     },

@@ -1,5 +1,4 @@
 import Meerkat from '@fabianbormann/meerkat';
-import {getHost, setHost} from '../../db';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
 import {publish} from '../../utils/events';
@@ -120,14 +119,15 @@ export class HostConnect {
       }
     );
 
-    setHost(
-      this.id,
-      this.meerkat.seed,
-      this.meerkat.identifier,
+    PouchAPI.set(HostConnect.table, this.id, {
+      id: this.id,
+      seed: this.meerkat.seed,
+      identifier: this.meerkat.identifier,
       name,
-      this.meerkat.announce,
-      config.messages
-    );
+      announce: this.meerkat.announce,
+      messages:  config.messages,
+      connected: false
+    });
   }
 
   getMeerkatIdentifier() {

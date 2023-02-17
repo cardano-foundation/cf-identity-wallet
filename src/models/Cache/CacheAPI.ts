@@ -1,6 +1,6 @@
 import { PreferencesAPI } from '../../db/preferences';
 
-export const Cache = {
+export const CacheAPI = {
   table: 'app.cache',
   path: '/',
   payload: {},

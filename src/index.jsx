@@ -28,15 +28,17 @@ root.render(
   </React.StrictMode>
 );
 
+
+const isMobile = Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android';
 if (
   window.matchMedia &&
   window.matchMedia('(prefers-color-scheme: dark)').matches
 ) {
   document.body.classList.toggle('dark');
-  StatusBar.setStyle({style: Style.Dark});
+  if (isMobile) StatusBar.setStyle({style: Style.Dark});
 } else {
   // OS is light mode
-  StatusBar.setStyle({style: Style.Light});
+  if (isMobile) StatusBar.setStyle({style: Style.Light});
 }
 
 // Enable PWA
@@ -59,7 +61,7 @@ if (Capacitor.getPlatform() === 'web') {
 }
 
 // Capacitor App
-if (Capacitor.getPlatform() !== 'web') {
+if (isMobile) {
   // Display content under transparent status bar (Android only)
   //StatusBar.setOverlaysWebView({overlay: true});
 

@@ -24,12 +24,6 @@ import {useSideMenuUpdate} from '../../side-menu/SideMenuProvider';
 import {pencilOutline} from 'ionicons/icons';
 import './Chats.css';
 import ChatItem from './ChatItem';
-import {
-  getHostList,
-  getPeerList,
-  getPeerProfile,
-  setPeerProfile,
-} from '../../../../db';
 import {handleConnect} from '../../../../App';
 import {useHistory} from 'react-router-dom';
 import {subscribe} from '../../../../utils/events';

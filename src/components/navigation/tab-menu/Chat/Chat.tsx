@@ -39,7 +39,6 @@ import './Chat.css';
 import ReplyTo from './ReplyTo';
 import {ChatBottomDetails} from './ChatBottomDetails';
 import {ChatRepliedQuote} from './ChatRepliedQuote';
-import {getPeer, getPeerProfile, removeHost, removePeer} from '../../../../db';
 
 import {writeToClipboard} from '../../../../utils/clipboard';
 import {useHistory, useLocation} from 'react-router-dom';
