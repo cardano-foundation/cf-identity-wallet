@@ -79,6 +79,10 @@ body.dark ion-button.reveal-button[color='dark'] {
   --border-color: #000;
 }
 
+body.dark ion-popover ion-item {
+  --color: var(--ion-color-light-contrast);
+}
+
 ion-toolbar,
 ion-card {
   --background: var(--ion-color-primary-darker);

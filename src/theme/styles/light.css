@@ -97,3 +97,7 @@ ion-button.reveal-button {
 ion-button.reveal-button[color='dark'] {
   --border-color: #fff;
 }
+
+ion-popover ion-item {
+  --color: var(--ion-color-primary);
+}
