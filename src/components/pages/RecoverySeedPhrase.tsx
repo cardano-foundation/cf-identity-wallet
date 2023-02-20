@@ -150,7 +150,7 @@ const RecoverySeedPhrase = ({}) => {
                   </IonCardContent>
                   <IonButton
                     shape="round"
-                    color="dark"
+                    color="primary"
                     className="w-2/6 mx-auto mb-6 reveal-button"
                     onClick={() => {
                       setView(true);
@@ -183,7 +183,7 @@ const RecoverySeedPhrase = ({}) => {
               </IonItem>
               <IonButton
                 shape="round"
-                color="dark"
+                color="primary"
                 expand="block"
                 className="h-auto my-4"
                 disabled={!checked}
@@ -192,7 +192,7 @@ const RecoverySeedPhrase = ({}) => {
               </IonButton>
               <IonButton
                 shape="round"
-                color="light"
+                color="medium"
                 expand="block"
                 className="h-auto my-4"
                 onClick={() => handleNavigation('/tabs/crypto')}>

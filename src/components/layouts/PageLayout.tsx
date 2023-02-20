@@ -62,6 +62,7 @@ const Pagelayout = (props) => {
                     <IonIcon
                       style={{fontSize: actionButtonIconSize}}
                       icon={actionButtonIcon}
+                      color="primary"
                       className="ion-no-padding"
                       onClick={actionButtonClickEvent}></IonIcon>
                   </IonButtons>

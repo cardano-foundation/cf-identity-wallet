@@ -37,6 +37,7 @@ if (
 } else {
   // OS is light mode
   StatusBar.setStyle({style: Style.Light});
+  document.body.classList.toggle('light');
 }
 
 // Enable PWA

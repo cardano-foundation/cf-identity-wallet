@@ -1,0 +1,37 @@
+/*
+ * Light Theme
+ * ----------------------------------------------------------------------------
+ */
+
+body.light {
+  --ion-color-dark: #222428;
+  --ion-color-dark-rgb: 34, 34, 34;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #1e2023;
+  --ion-color-dark-tint: #383a3e;
+
+  --ion-color-light: #f4f5f8;
+  --ion-color-light-rgb: 244, 244, 244;
+  --ion-color-light-contrast: #000000;
+  --ion-color-light-contrast-rgb: 0, 0, 0;
+  --ion-color-light-shade: #d7d8da;
+  --ion-color-light-tint: #f5f6f9;
+
+  --ion-border-color: #efeff2;
+
+  ion-toolbar,
+  ion-card,
+  ion-content {
+    --background: var(--ion-color-primary-contrast);
+  }
+
+  ion-popover ion-item {
+    --color: var(--ion-color-light-contrast);
+  }
+
+  ion-popover::part(backdrop),
+  ion-modal::part(backdrop) {
+    background-color: var(--ion-color-light-contrast);
+  }
+}

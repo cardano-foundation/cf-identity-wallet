@@ -76,10 +76,7 @@ const Crypto = (props: any) => {
   useEffect(() => {
     const init = async () => {};
     if (isMounted.current) {
-      // call the function
-      init()
-        // make sure to catch any error
-        .catch(console.error);
+      init().catch(console.error);
     }
   }, []);
 
@@ -109,6 +106,7 @@ const Crypto = (props: any) => {
                   <IonIcon
                     id={`popover-button-${wallet}`}
                     icon={ellipsisVertical}
+                    color="primary"
                     className="float-right"
                     slot="end"
                   />
@@ -178,7 +176,7 @@ const Crypto = (props: any) => {
           <IonCol>
             <IonButton
               shape="round"
-              color="dark"
+              color="primary"
               expand="block"
               onClick={() => {
                 handleNavigation('/createwallet');
@@ -188,7 +186,7 @@ const Crypto = (props: any) => {
             </IonButton>
             <IonButton
               shape="round"
-              color="light"
+              color="medium"
               expand="block"
               className="h-auto my-4">
               Recover Existing Wallet
