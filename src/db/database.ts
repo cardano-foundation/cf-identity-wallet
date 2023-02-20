@@ -6,11 +6,16 @@ PouchDB.plugin(find)
 PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
 
 export const PouchAPI = {
-    databaseName: '',
+    databaseName: 'database-dev',
     db: undefined as undefined | typeof PouchDB,
-    init(databaseName:string) {
-        this.databaseName = databaseName;
-        this.db = new PouchDB(`${databaseName}.db`, {adapter: 'cordova-sqlite'});
+    async init(databaseName?:string) {
+        try {
+            this.databaseName = databaseName || 'database-dev';
+            this.db = await new PouchDB(`${databaseName}.db`, {adapter: 'cordova-sqlite'});
+            console.log("[INFO] Init PouchAPI")
+        } catch (error) {
+            console.log("[ERROR] Init PouchAPI")
+        }
     },
     async getTable(tableName:string) {
         if (!this.db) return;
@@ -20,11 +25,6 @@ export const PouchAPI = {
             startkey: table,
             endkey: `${tableName}\uffff`
         });
-        const ll = await this.IDs();
-        console.log("ll");
-        console.log(ll);
-        console.log("all");
-        console.log(all);
         return all.rows;
     },
     async IDs() {
@@ -44,23 +44,16 @@ export const PouchAPI = {
     },
     async get(tableName:string, id:string) {
         if (!this.db) return;
-        const ids = await this.getIDs(tableName);
-        const result = await this.db.get(`${tableName}:${id}`);
-        return result.length ? result[0] : undefined
-    },
-    async getWithIndex(tableName:string, id:string) {
-        if (!this.db) return;
-        await this.db.createIndex({
-            index: {fields: ['_id']}
-        });
-
-        const ids = await this.getIDs(tableName);
-        const result = await this.db.find({
-            selector: {
-                _id: `${tableName}:${id}`
-            }
-        });
-        return result?.docs;
+        return this.db.get(`${tableName}:${id}`)
+            .then(result => {
+                return result
+            })
+            .catch(error => {
+                if (error.name === "not_found" && error.status === 404){
+                    return undefined;
+                }
+                return error;
+            });
     },
     async getByField(tableName:string, field:string, value:string) {
         if (!this.db) return;
@@ -76,59 +69,46 @@ export const PouchAPI = {
     async set(tableName:string, id:string, obj:any) {
         if (!this.db) return;
 
-        console.log("id in set");
-        console.log(id);
-        console.log(tableName);
-        this.db.put({
+        await this.db.put({
             _id:  `${tableName}:${id}`,
             ...obj
-        }).then(function () {
-            // success
-        }).catch((err: { name: string; status: number; }) => {
-            if (err.name === 'conflict' && err.status === 409) {
-                this.update(tableName, id, obj)
-            } else {
-                // some other error
+        }).catch(async (error) => {
+            if (error.name === 'conflict' && error.status === 409) {
+                await this.update(tableName, id, obj);
             }
         });
     },
     async update(tableName:string, id:string, obj:any) {
         if (!this.db) return;
-        const docToUpdate = await this.db.get(`${tableName}:${id}`);
-        this.db.put({
+        const docToUpdate = await this.get(tableName, id);
+
+        await this.db.put({
             _id: `${tableName}:${id}`,
             _rev: docToUpdate._rev,
             ...obj
+        }).catch(error => {
+            //console.log("error434w:",error)
         });
     },
     async remove(tableName:string, id:string) {
         if (!this.db) return;
-        const ids = await this.getIDs(tableName);
-        const u = await this.getWithIndex(tableName, id);
-        //const u2 = await this.get(tableName, id);
-        console.log(u);
-        //console.log(u2);
-
-        return this.db.remove(`${tableName}:${id}`);
-        /*
         this.db.get(`${tableName}:${id}`).then((doc) => {
-            console.log("docToRemove");
-            console.log(doc);
-            return this.db.remove(doc);
-        }).then( (result) => {
-            console.log("result");
-            console.log(result);
-            // handle result
-        }).catch( (err) => {
-            console.log("err");
-            console.log(err);
+            this.db.remove(doc);
+        }).catch(error => {
+            if (error.name === 'not_found' && error.status === 404){
+                // handle error
+            }
         });
-        */
     },
     async clear() {
         if (!this.db) return;
-        await this.db.compact();
-        await this.db.destroy();
+        try {
+            await this.db.compact();
+            await this.db.destroy();
+        } catch (e) {
+            // handle error
+            return e;
+        }
     },
     async close() {
         await this.db.close();
