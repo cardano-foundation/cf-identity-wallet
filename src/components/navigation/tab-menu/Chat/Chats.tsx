@@ -11,20 +11,20 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonModal,
-  IonPage,
+  IonModal, IonNote,
+  IonPage, IonPopover,
   IonRefresher,
-  IonRefresherContent,
+  IonRefresherContent, IonRow,
   IonSearchbar,
   IonTitle,
   IonToolbar,
 } from '@ionic/react';
-import CustomPage from '../../../layouts/PageLayout';
+import PageLayout from '../../../layouts/PageLayout';
 import {useSideMenuUpdate} from '../../side-menu/SideMenuProvider';
-import {pencilOutline} from 'ionicons/icons';
-import './Chats.css';
+import {people, createOutline, pencilOutline, qrCodeOutline, addCircleOutline} from 'ionicons/icons';
+import './Chats.scss';
 import ChatItem from './ChatItem';
-import {handleConnect} from '../../../../App';
+import {handleConnect} from '../../../AppWrapper';
 import {useHistory} from 'react-router-dom';
 import {subscribe} from '../../../../utils/events';
 import { PouchAPI } from '../../../../db/database';
@@ -37,7 +37,8 @@ const Chats = (props: any) => {
   const setSideMenu = useSideMenuUpdate();
   const [originalPeers, setOriginalPeers] = useState([]);
   const [results, setResults] = useState([]);
-  const [userName, setUsername] = useState('');
+  const [username, setUsername] = useState('');
+  const [usernameIsValid, setUsernameIsValid] = useState(undefined);
   const [showCreateServer, setShowCreateServer] = useState(false);
   const [showJoinServer, setShowJoinServer] = useState(false);
   const [createServerNameInput, setCreateServerNameInput] = useState('');
@@ -46,6 +47,9 @@ const Chats = (props: any) => {
   const [showConnectDapp, setShowConnectDapp] = useState(false);
   const nav = useHistory();
   const modal = useRef(null);
+
+  const popover = useRef<HTMLIonPopoverElement>(null);
+  const [popoverOpen, setPopoverOpen] = useState(false);
 
   useEffect(() => {
     if (props.location.pathname === '/tabs/chats') {
@@ -64,14 +68,9 @@ const Chats = (props: any) => {
     nav.push(nav.location.pathname + '?modalOpened=true');
   };
 
-  const handleUserName = async (username:string) => {
-    setUsername(username);
-    PouchAPI.set(PeerConnect.table, 'default-profile', {
-      username
-    });
-  };
-
   const closeModal = () => {
+    setShowJoinServer(false);
+    setShowCreateServer(false);
     nav.replace('/tabs/chats');
   };
 
@@ -82,7 +81,6 @@ const Chats = (props: any) => {
   }, []);
 
   const updateChats = () => {
-
     PouchAPI.get(PeerConnect.table, 'default-profile').then(profile => {
       if (profile?.username?.length) {
         setUsername(profile.username);
@@ -90,9 +88,7 @@ const Chats = (props: any) => {
     });
 
     HandleConnect.getPeers().then(peers => {
-      console.log("getPeers peers");
-      console.log(peers);
-      let peerList: ((prevState: never[]) => never[]) | ({ id: number; identifier: any; key: string; name: string; contact_id: number; preview: any; messages: any; connected: boolean; host: boolean; } | undefined)[] = [];
+      let peerList = [];
       if (peers) {
         peerList = peers.map((peer, index:number) => {
           const messages = peer?.messages?.length
@@ -103,8 +99,6 @@ const Chats = (props: any) => {
                 };
               })
               : [];
-          console.log("peer");
-          console.log(peer);
           return {
             id: index,
             identifier: peer.identifier,
@@ -119,6 +113,9 @@ const Chats = (props: any) => {
           };
         });
       }
+      peerList = peerList.filter(peer => peer.name !== undefined);
+      console.log("peerList");
+      console.log(peerList);
       setOriginalPeers(peerList);
       setResults(peerList);
     });
@@ -149,10 +146,7 @@ const Chats = (props: any) => {
   };
 
   const createNewChannel = async () => {
-
-    console.log("hola createNewChannel")
     const hosts = await HandleConnect.getHosts();
-    console.log(hosts);
     if (
       !createServerNameInput?.length ||
       (hosts &&
@@ -161,9 +155,10 @@ const Chats = (props: any) => {
         ))
     )
       return;
-
-    handleConnect.createChannel(createServerNameInput);
-    updateChats();
+    if (handleConnect){
+      handleConnect.createChannel(createServerNameInput);
+      updateChats();
+    }
   };
 
   const joinNewChannel = async () => {
@@ -175,8 +170,11 @@ const Chats = (props: any) => {
     )
       return;
 
-    handleConnect.joinChannel(joinServerNameInput, joinServerAddressInput);
-    updateChats();
+    if (handleConnect){
+      handleConnect.joinChannel(joinServerNameInput, joinServerAddressInput);
+      updateChats();
+    }
+
   };
 
   useEffect(() => {
@@ -189,197 +187,192 @@ const Chats = (props: any) => {
     closeModal();
   }
 
+  const nameValidator = (text: string) => {
+    // Lower and upper case alphanumeric between 2 and 16 characters
+    return text.match(/^[a-zA-Z0-9_& -]{2,16}$/);
+  };
+
+  const validateUsername = (ev: Event) => {
+    const value = (ev.target as HTMLInputElement).value;
+    setUsername(value);
+    setUsernameIsValid(undefined);
+    if (value === '') return;
+    nameValidator(value) !== null
+        ? setUsernameIsValid(true)
+        : setUsernameIsValid(false);
+
+    if(nameValidator(value) || nameValidator(value) === undefined) {
+      PouchAPI.set(PeerConnect.table, 'default-profile', {
+        username: value
+      });
+    }
+  };
+
   return (
     <IonPage id={pageName}>
-      <CustomPage
+      <PageLayout
         name={pageName}
+        fullscreen={false}
         sideMenu={true}>
         <IonContent>
           <IonHeader>
             <IonToolbar className="ion-text-center">
-              <IonChip className="">
-                <IonAvatar>
-                  <img
-                    alt="Silhouette of a person's head"
-                    src="https://ionicframework.com/docs/img/demos/avatar.svg"
-                  />
-                </IonAvatar>
-                <IonLabel>
-                  <IonItem>
-                    <IonInput
-                      value={userName}
-                      onIonChange={(e) => handleUserName(e.target.value)}
-                      placeholder="Enter user name"
-                    />
-                  </IonItem>
-                </IonLabel>
-                <IonIcon icon={pencilOutline} />
-              </IonChip>
+              <IonItem
+                className={`${usernameIsValid && 'ion-valid'} ${
+                    usernameIsValid === false && 'ion-invalid'
+                }`}
+              >
+                <IonLabel position="fixed" className="text-gray-600">Public name:</IonLabel>
+                <IonInput
+                    value={username}
+                    onIonInput={(event) => validateUsername(event)}
+                    placeholder="Enter your username 💬"/>
+                <IonNote slot="error">Invalid name</IonNote>
+              </IonItem>
             </IonToolbar>
-            <IonToolbar className="ion-text-center">
-              <IonButton
-                class="ion-margin-horizontal"
-                size="small"
-                onClick={() => {
-                  setShowCreateServer(true);
-                  openModal();
-                }}
-                id="open-create">
-                Create
-              </IonButton>
+
+            <div className="flex flex-wrap">
+              <IonSearchbar onIonChange={(e) => search(e)} slot="start" className="inline-block w-11/12" />
+              <IonIcon
+                  className="text-2xl mt-5 cursor-pointer"
+                  id={`popover-button-chats`}
+                  icon={addCircleOutline}
+                  slot="end"
+              />
+              <IonPopover
+                  className="scroll-y-hidden"
+                  trigger={`popover-button-chats`}
+                  dismissOnSelect={true}
+                  size={'auto'}
+                  side="bottom"
+                  ref={popover}
+                  isOpen={popoverOpen}
+                  onDidDismiss={() => setPopoverOpen(false)}>
+                <>
+                  <IonRow
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setShowCreateServer(true);
+                        openModal();
+                      }}
+                  >
+                    <IonItem className="px-4 py-2">
+                      <IonIcon
+                          slot="start"
+                          icon={createOutline}
+                      />
+                      <IonLabel
+                      >Create</IonLabel>
+                    </IonItem>
+                  </IonRow>
+                  <IonRow
+                      className="cursor-pointer"
+                      onClick={() => {
+                        setShowJoinServer(true);
+                        openModal();
+                      }}>
+                    <IonItem className="px-4 py-2">
+                      <IonIcon
+                          slot="start"
+                          icon={people}
+                      />
+                      <IonLabel
+                      >Join</IonLabel>
+                    </IonItem>
+                  </IonRow>
+                </>
+              </IonPopover>
               <IonModal
-                isOpen={showCreateServer}
-                ref={modal}
-                trigger="open-create"
-                onWillDismiss={(ev) => onWillDismiss(ev)}>
+                  isOpen={showCreateServer}
+                  ref={modal}
+                  trigger="open-create-chats"
+                  onWillDismiss={(ev) => onWillDismiss(ev)}
+                  initialBreakpoint={0.75} breakpoints={[0, 0.25, 0.5, 0.75]}
+              >
                 <IonHeader>
                   <IonToolbar>
-                    <IonTitle>Create Channel</IonTitle>
-                    <IonButtons slot="end">
-                      <IonButton
-                        onClick={() => {
-                          setShowCreateServer(false);
-                          closeModal();
-                        }}>
-                        Close
-                      </IonButton>
-                    </IonButtons>
+                    <IonTitle>Create Chat</IonTitle>
                   </IonToolbar>
                 </IonHeader>
                 <IonContent className="ion-padding p-8 px-12">
                   <IonList>
                     <IonLabel
-                      class="ion-text-wrap"
-                      position="stacked">
+                        class="ion-text-wrap"
+                        position="stacked">
                       Create a new p2p channel with WebRTC and WebTorrent
                       trackers.
                     </IonLabel>
                     <IonInput
-                      value={createServerNameInput}
-                      onIonChange={(e) =>
-                        setCreateServerNameInput(e.target.value)
-                      }
-                      placeholder="Name"
-                      type="text"
-                      required
+                        value={createServerNameInput}
+                        onIonChange={(e) =>
+                            setCreateServerNameInput(e.target.value)
+                        }
+                        placeholder="Name"
+                        type="text"
+                        required
                     />
                     <IonButton
-                      disabled={!createServerNameInput?.length}
-                      expand="block"
-                      onClick={() => createNewChannel()}>
+                        disabled={!createServerNameInput?.length}
+                        expand="block"
+                        onClick={() => createNewChannel()}>
                       Create
                     </IonButton>
                   </IonList>
                 </IonContent>
               </IonModal>
-              <IonButton
-                class="ion-margin-horizontal"
-                size="small"
-                onClick={() => {
-                  setShowJoinServer(true);
-                  openModal();
-                }}
-                id="open-join">
-                Join
-              </IonButton>
+
               <IonModal
-                isOpen={showJoinServer}
-                ref={modal}
-                trigger="open-join"
-                onWillDismiss={(ev) => onWillDismiss(ev)}>
+                  isOpen={showJoinServer}
+                  ref={modal}
+                  trigger="open-join-chats"
+                  onWillDismiss={(ev) => onWillDismiss(ev)}
+                  initialBreakpoint={0.75} breakpoints={[0, 0.25, 0.5, 0.75]}
+              >
                 <IonHeader>
                   <IonToolbar>
-                    <IonTitle>Join Server</IonTitle>
-                    <IonButtons slot="end">
-                      <IonButton
-                        onClick={() => {
-                          setShowJoinServer(false);
-                          closeModal();
-                        }}>
-                        Close
-                      </IonButton>
-                    </IonButtons>
+                    <IonTitle>Join</IonTitle>
                   </IonToolbar>
                 </IonHeader>
                 <IonContent className="ion-padding">
                   <IonList>
                     <IonLabel
-                      class="ion-text-wrap"
-                      position="stacked">
+                        class="ion-text-wrap"
+                        position="stacked">
                       Connect through WebRTC and WebTorrent trackers.
                     </IonLabel>
                     <IonInput
-                      value={joinServerNameInput}
-                      onIonChange={(e) =>
-                        setJoinServerNameInput(e.target.value)
-                      }
-                      placeholder="Name"
-                      type="text"
-                      required
+                        value={joinServerNameInput}
+                        onIonChange={(e) =>
+                            setJoinServerNameInput(e.target.value)
+                        }
+                        placeholder="Name"
+                        type="text"
+                        required
                     />
                     <IonInput
-                      value={joinServerAddressInput}
-                      onIonChange={(e) =>
-                        setJoinServerAddressInput(e.target.value)
-                      }
-                      placeholder="Address"
-                      type="text"
-                      required
+                        value={joinServerAddressInput}
+                        onIonChange={(e) =>
+                            setJoinServerAddressInput(e.target.value)
+                        }
+                        placeholder="Address"
+                        type="text"
+                        required
                     />
 
                     <IonButton
-                      disabled={
-                        !joinServerNameInput?.length ||
-                        !joinServerAddressInput?.length
-                      }
-                      expand="block"
-                      onClick={() => joinNewChannel()}>
-                      Join
+                        disabled={
+                            !joinServerNameInput?.length ||
+                            !joinServerAddressInput?.length
+                        }
+                        expand="block"
+                        onClick={() => joinNewChannel()}>
+                      Join Chat
                     </IonButton>
                   </IonList>
                 </IonContent>
-              </IonModal>
-              <IonButton
-                class="ion-margin-horizontal"
-                size="small"
-                onClick={() => {
-                  setShowConnectDapp(true);
-                  openModal();
-                }}
-                id="open-dapp">
-                dApp
-              </IonButton>
-              <IonModal
-                isOpen={showConnectDapp}
-                ref={modal}
-                trigger="open-dapp"
-                onWillDismiss={(ev) => onWillDismiss(ev)}>
-                <IonHeader>
-                  <IonToolbar>
-                    <IonTitle>Connect dApp</IonTitle>
-                    <IonButtons slot="end">
-                      <IonButton
-                        onClick={() => {
-                          setShowConnectDapp(false);
-                          closeModal();
-                        }}>
-                        Close
-                      </IonButton>
-                    </IonButtons>
-                  </IonToolbar>
-                </IonHeader>
-                <IonContent className="ion-padding">
-                  <IonList>
-                    <IonLabel
-                      class="ion-text-wrap"
-                      position="stacked">
-                      This is a work in progress...
-                    </IonLabel>
-                  </IonList>
-                </IonContent>
-              </IonModal>
-            </IonToolbar>
-            <IonSearchbar onIonChange={(e) => search(e)} />
+              </IonModal
+              >
+            </div>
           </IonHeader>
 
           <IonRefresher
@@ -396,7 +389,7 @@ const Chats = (props: any) => {
             );
           })}
         </IonContent>
-      </CustomPage>
+      </PageLayout>
     </IonPage>
   );
 };

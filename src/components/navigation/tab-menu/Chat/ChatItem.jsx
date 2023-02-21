@@ -11,8 +11,6 @@ const ChatItem = ({chat}) => {
     0;
 
   const history = useHistory();
-  console.log("chat");
-  console.log(chat);
   const handleNavigation = (route) => {
     history.push({
       pathname: route,
