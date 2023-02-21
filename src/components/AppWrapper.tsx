@@ -18,7 +18,6 @@ const AppWrapper = (props: {children: any}) => {
   const {t, i18n} = useTranslation();
   const cachedAccount = useAppSelector(getCachedAccount);
   const dispatch = useAppDispatch();
-  const theme = localStorage.getItem('theme') || 'ocean';
 
   const useIsMounted = () => {
     const isMounted = useRef(false);
@@ -102,8 +101,7 @@ const AppWrapper = (props: {children: any}) => {
   return (
     <div
       id="appWrapper"
-      data-theme="light"
-      theme-color={theme}>
+      data-theme="light">
       {props.children}
     </div>
   );

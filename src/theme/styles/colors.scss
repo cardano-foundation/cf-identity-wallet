@@ -26,7 +26,7 @@
   --ion-color-danger-contrast-rgb: 255, 255, 255;
 }
 
-#appWrapper {
+body {
   &[theme-color='ocean'] {
     --ion-color-primary: #0072bc;
     --ion-color-primary-rgb: 48, 112, 182;
@@ -62,8 +62,4 @@
     --ion-color-primary-darker: #333333;
     --ion-color-primary-darkest: #000000;
   }
-}
-
-ion-segment {
-  --background: var(--ion-color-primary);
 }

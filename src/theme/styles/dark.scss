@@ -21,16 +21,16 @@ body.dark {
   --ion-text-color: #ffffff;
   --ion-text-color-rgb: 255, 255, 255;
 
-  --ion-toolbar-background: #0d0d0d;
-  --ion-item-background: #transparent;
 
+  --ion-item-background: #transparent;
   --ion-background-color: var(--ion-color-primary-darkest);
-  --ion-background-color-rgb: 18, 18, 18;
+
 
   --ion-border-color: #1a1a1a;
 
   ion-toolbar,
-  ion-card {
+  ion-card,
+  ion-tab-bar {
     --background: var(--ion-color-primary-darker);
   }
 

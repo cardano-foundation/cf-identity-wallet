@@ -40,6 +40,10 @@ if (
   document.body.classList.toggle('light');
 }
 
+const theme = localStorage.getItem('theme') || 'ocean';
+const body = document.querySelector('body');
+body.setAttribute('theme-color', theme);
+
 // Enable PWA
 defineCustomElements(window);
 

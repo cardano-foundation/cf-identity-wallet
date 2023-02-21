@@ -19,9 +19,9 @@ export const currentTheme = () => {
 };
 
 export const changeTheme = (theme: string) => {
-  const div = document.getElementById('appWrapper');
-  if (!div) return;
+  const body = document.querySelector('body');
+  if (!body) return;
 
   localStorage.setItem('theme', theme);
-  div.setAttribute('theme-color', theme);
+  body.setAttribute('theme-color', theme);
 };
