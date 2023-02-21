@@ -12,12 +12,13 @@ import {
 } from '../store/reducers/cache';
 import {setCurrentAccount} from '../store/reducers/account';
 import {setSettings} from '../store/reducers/settings';
-import {changeTheme} from '../theme/handleTheme';
+import {toggleDark} from '../utils/handleTheme';
 
 const AppWrapper = (props: {children: any}) => {
   const {t, i18n} = useTranslation();
   const cachedAccount = useAppSelector(getCachedAccount);
   const dispatch = useAppDispatch();
+  const theme = localStorage.getItem('theme') || 'ocean';
 
   const useIsMounted = () => {
     const isMounted = useRef(false);
@@ -54,7 +55,7 @@ const AppWrapper = (props: {children: any}) => {
         (prefersDark.matches && Settings.theme !== 'dark') ||
         (!prefersDark.matches && Settings.theme !== 'light')
       ) {
-        changeTheme();
+        toggleDark();
       }
     }
 
@@ -101,7 +102,8 @@ const AppWrapper = (props: {children: any}) => {
   return (
     <div
       id="appWrapper"
-      data-theme="light">
+      data-theme="light"
+      theme-color={theme}>
       {props.children}
     </div>
   );

@@ -2,20 +2,26 @@ export const isDarkMode = () => {
   return document.body.classList.contains('dark');
 };
 
-export const changeTheme = () => {
+export const toggleDark = () => {
   // window.matchMedia('(prefers-color-scheme: dark)').matches, match OS preference
-  const div = document.getElementById('appWrapper');
-  if (!div) return;
 
   if (document.body.classList.contains('dark')) {
-    // Ionic
     document.body.classList.remove('dark');
     document.body.classList.toggle('light', true);
-    // Tailwind
-    div.setAttribute('data-theme', 'light');
   } else {
     document.body.classList.remove('light');
     document.body.classList.toggle('dark', true);
-    div.setAttribute('data-theme', 'dark');
   }
+};
+
+export const currentTheme = () => {
+  return localStorage.getItem('theme') || 'ocean';
+};
+
+export const changeTheme = (theme: string) => {
+  const div = document.getElementById('appWrapper');
+  if (!div) return;
+
+  localStorage.setItem('theme', theme);
+  div.setAttribute('theme-color', theme);
 };

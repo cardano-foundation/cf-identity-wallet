@@ -2,21 +2,13 @@
 @import './dark.scss';
 
 :root {
-  --ion-color-primary: #0072bc;
-  --ion-color-primary-rgb: 48, 112, 182;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 206, 223, 240;
-  --ion-color-primary-shade: #8cb8dc;
-  --ion-color-primary-tint: #5495cd;
-  --ion-color-primary-darker: #0f2544;
-  --ion-color-primary-darkest: #0b121e;
 
   --ion-color-medium: #989aa2;
   --ion-color-medium-rgb: 152, 154, 162;
   --ion-color-medium-contrast: #ffffff;
   --ion-color-medium-contrast-rgb: 255, 255, 255;
-  --ion-color-medium-shade: #86888f;
-  --ion-color-medium-tint: #a2a4ab;
 
   --ion-color-success: #10dc60;
   --ion-color-success-rgb: 16, 220, 96;
@@ -32,6 +24,44 @@
   --ion-color-danger-rgb: 245, 61, 61;
   --ion-color-danger-contrast: #ffffff;
   --ion-color-danger-contrast-rgb: 255, 255, 255;
+}
+
+#appWrapper {
+  &[theme-color='ocean'] {
+    --ion-color-primary: #0072bc;
+    --ion-color-primary-rgb: 48, 112, 182;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 206, 223, 240;
+    --ion-color-primary-darker: #0f2544;
+    --ion-color-primary-darkest: #0b121e;
+  }
+
+  &[theme-color='sunset'] {
+    --ion-color-primary: #FD841F;
+    --ion-color-primary-rgb: 48, 112, 182;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 206, 223, 240;
+    --ion-color-primary-darker: #DC3535;
+    --ion-color-primary-darkest: #820000;
+  }
+
+  &[theme-color='forest'] {
+    --ion-color-primary: #76ab89;
+    --ion-color-primary-rgb: 48, 112, 182;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 206, 223, 240;
+    --ion-color-primary-darker: #3C6255;
+    --ion-color-primary-darkest: #3D5656;
+  }
+
+  &[theme-color='saver'] {
+    --ion-color-primary: #999999;
+    --ion-color-primary-rgb: 48, 112, 182;
+    --ion-color-primary-contrast: #ffffff;
+    --ion-color-primary-contrast-rgb: 206, 223, 240;
+    --ion-color-primary-darker: #333333;
+    --ion-color-primary-darkest: #000000;
+  }
 }
 
 ion-segment {

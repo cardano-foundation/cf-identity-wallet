@@ -19,7 +19,6 @@ import {
   trashOutline,
 } from 'ionicons/icons';
 import {useHistory} from 'react-router-dom';
-import {isDarkMode} from '../../theme/handleTheme';
 import {writeToClipboard} from '../../utils/clipboard';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
@@ -88,8 +87,9 @@ export const IDWCard = ({
               {logo ? (
                 <IonAvatar slot="start">
                   <img
-                    alt="Silhouette of a person's head"
                     src={logo}
+                    className="h-full"
+                    alt="Credential logo"
                   />
                 </IonAvatar>
               ) : null}
