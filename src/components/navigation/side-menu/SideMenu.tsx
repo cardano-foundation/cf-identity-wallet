@@ -75,6 +75,7 @@ const SideMenu = () => {
               <IonLabel>Dark Mode</IonLabel>
               <IonToggle
                 onIonChange={(_) => handleTheme()}
+                checked={isDark ? true : false}
                 slot="end"
               />
             </IonItem>
