@@ -13,9 +13,9 @@ import AppWrapper from './components/AppWrapper';
 import {HandleConnect} from './api/p2p/HandleConnect';
 import {SplashScreen} from '@capacitor/splash-screen';
 
-export const handleConnect = new HandleConnect();
-
-setupIonicReact();
+setupIonicReact({
+  swipeBackEnabled: false,
+});
 
 const App = (isExtension?: boolean) => {
   const history = useHistory();
@@ -52,13 +52,13 @@ const App = (isExtension?: boolean) => {
   }, []);
 
   return (
-    <IonApp>
-      <AppWrapper>
-        <SideMenuProvider>
-          <Routes />
-        </SideMenuProvider>
-      </AppWrapper>
-    </IonApp>
+      <IonApp>
+        <AppWrapper>
+          <SideMenuProvider>
+            <Routes />
+          </SideMenuProvider>
+        </AppWrapper>
+      </IonApp>
   );
 };
 

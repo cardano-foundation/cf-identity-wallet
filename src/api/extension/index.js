@@ -1,12 +1,5 @@
 import {POPUP_WINDOW, STORAGE} from '../background/config';
-import {
-  addOriginToWhitelist,
-  getAccountFromDb,
-  getNetworkFromDb,
-  getWhitelistInDb,
-  removeOriginFromWhitelist,
-  updateAccountByNetworkInDb,
-} from '../../db';
+
 import {EmurgoModule} from '../../lib/emurgo';
 import Meerkat from '@fabianbormann/meerkat';
 import {p2p_clients_dict} from '../background';
@@ -21,20 +14,22 @@ export const getStorage = (key) => {};
 export const setStorage = (item) => {};
 
 export const getWhitelisted = async () => {
-  return await getWhitelistInDb();
+  //return await getWhitelistInDb();
 };
 
 export const isWhitelisted = async (origin) => {
+  /*
   const whitelisted = await getWhitelistInDb();
   return whitelisted.includes(origin);
+  */
 };
 
 export const setWhitelisted = async (origin) => {
-  await addOriginToWhitelist(origin);
+  //await addOriginToWhitelist(origin);
 };
 
 export const removeWhitelisted = async (origin) => {
-  await removeOriginFromWhitelist(origin);
+  //await removeOriginFromWhitelist(origin);
 };
 
 export const getCurrency = () => getStorage(STORAGE.currency);
@@ -84,6 +79,7 @@ export const getCollateral = async () => {};
 export const getAddress = async () => {};
 
 export const getRewardAddress = async () => {
+  /*
   const Cardano = await EmurgoModule.CardanoWasm();
   const currentAccount = await getAccountFromDb();
   const network = await getNetworkFromDb();
@@ -92,6 +88,7 @@ export const getRewardAddress = async () => {
     Cardano.Address.from_bech32(account.stakeAddress).to_bytes(),
     'hex'
   ).toString('hex');
+  */
 };
 
 export const getCurrentAccountIndex = () => {};
@@ -124,8 +121,8 @@ export const createPopup = async (popup) => {
     });
     top = lastFocused.top;
     left =
-      lastFocused.left +
-      Math.round((lastFocused.width - POPUP_WINDOW.width) / 2);
+        lastFocused.left +
+        Math.round((lastFocused.width - POPUP_WINDOW.width) / 2);
   } catch (_) {
     // The following properties are more than likely 0, due to being
     // opened from the background chrome process for the extension that
@@ -138,27 +135,27 @@ export const createPopup = async (popup) => {
   console.log('chrome.tabs.create');
   console.log(popup);
   const {popupWindow, tab} = await new Promise((res, rej) =>
-    chrome.tabs.create(
-      {
-        url: chrome.runtime.getURL(popup + '.html'),
-        active: false,
-      },
-      function (tab) {
-        chrome.windows.create(
+      chrome.tabs.create(
           {
-            tabId: tab.id,
-            type: 'popup',
-            focused: true,
-            ...POPUP_WINDOW,
-            left,
-            top,
+            url: chrome.runtime.getURL(popup + '.html'),
+            active: false,
           },
-          function (newWindow) {
-            return res({popupWindow: newWindow, tab});
+          function (tab) {
+            chrome.windows.create(
+                {
+                  tabId: tab.id,
+                  type: 'popup',
+                  focused: true,
+                  ...POPUP_WINDOW,
+                  left,
+                  top,
+                },
+                function (newWindow) {
+                  return res({popupWindow: newWindow, tab});
+                }
+            );
           }
-        );
-      }
-    )
+      )
   );
 
   if (popupWindow.left !== left && popupWindow.state !== 'fullscreen') {
@@ -172,51 +169,51 @@ export const createPopup = async (popup) => {
 };
 
 export const createTab = (tab, query = '') =>
-  new Promise((res, rej) =>
-    chrome.tabs.create(
-      {
-        url: chrome.runtime.getURL(tab + '.html' + query),
-        active: true,
-      },
-      function (tab) {
-        chrome.windows.create(
-          {
-            tabId: tab.id,
-            focused: true,
-          },
-          function () {
-            res(tab);
-          }
-        );
-      }
-    )
-  );
+    new Promise((res, rej) =>
+        chrome.tabs.create(
+            {
+              url: chrome.runtime.getURL(tab + '.html' + query),
+              active: true,
+            },
+            function (tab) {
+              chrome.windows.create(
+                  {
+                    tabId: tab.id,
+                    focused: true,
+                  },
+                  function () {
+                    res(tab);
+                  }
+              );
+            }
+        )
+    );
 
 export const getCurrentWebpage = () =>
-  new Promise((res, rej) => {
-    chrome.tabs.query(
-      {
-        active: true,
-        lastFocusedWindow: true,
-        status: 'complete',
-        windowType: 'normal',
-      },
-      function (tabs) {
-        res({
-          url: new URL(tabs[0].url).origin,
-          favicon: tabs[0].favIconUrl,
-          tabId: tabs[0].id,
-        });
-      }
-    );
-  });
+    new Promise((res, rej) => {
+      chrome.tabs.query(
+          {
+            active: true,
+            lastFocusedWindow: true,
+            status: 'complete',
+            windowType: 'normal',
+          },
+          function (tabs) {
+            res({
+              url: new URL(tabs[0].url).origin,
+              favicon: tabs[0].favIconUrl,
+              tabId: tabs[0].id,
+            });
+          }
+      );
+    });
 
 const harden = (num) => {
   return 0x80000000 + num;
 };
 
 export const bytesAddressToBinary = (bytes) =>
-  bytes.reduce((str, byte) => str + byte.toString(2).padStart(8, '0'), '');
+    bytes.reduce((str, byte) => str + byte.toString(2).padStart(8, '0'), '');
 
 export const isValidAddress = async (address) => {};
 
@@ -244,10 +241,10 @@ export const verifyTx = async (tx) => {};
 export const signData = async (address, payload, password, accountIndex) => {};
 
 export const signDataCIP30 = async (
-  address,
-  payload,
-  password,
-  accountIndex
+    address,
+    payload,
+    password,
+    accountIndex
 ) => {};
 
 /**
@@ -258,19 +255,19 @@ export const signDataCIP30 = async (
  * @returns {string} witness set as hex string
  */
 export const signTx = async (
-  tx,
-  keyHashes,
-  password,
-  accountIndex,
-  partialSign = false
+    tx,
+    keyHashes,
+    password,
+    accountIndex,
+    partialSign = false
 ) => {};
 
 export const signTxHW = async (
-  tx,
-  keyHashes,
-  account,
-  hw,
-  partialSign = false
+    tx,
+    keyHashes,
+    account,
+    hw,
+    partialSign = false
 ) => {};
 
 /**
@@ -361,17 +358,41 @@ export const SendP2PMessage = async (room, message) => {
     meerkat.on('server', () => {
       console.log('[info]: connected to server');
       meerkat.rpc(
-        room.clientAddress,
-        'message',
-        {data: message},
-        (response) => {
-          console.log(response);
-          console.log('[info]: message sent');
+          room.clientAddress,
+          'message',
+          {data: message},
+          (response) => {
+            console.log(response);
+            console.log('[info]: message sent');
 
-          getAccountFromDb().then((acc) => {
-            getNetworkFromDb().then((network) => {
-              const rooms = acc[network.net].rooms || {};
-              if (Object.keys(rooms).length) {
+            /*getAccountFromDb().then((acc) => {
+              getNetworkFromDb().then((network) => {
+                const rooms = acc[network.net].rooms || {};
+                if (Object.keys(rooms).length) {
+                  Object.keys(rooms).map((roomName) => {
+                    if (roomName === room.name) {
+                      const messages = rooms[roomName].messages || [];
+                      rooms[roomName] = {
+                        ...rooms[roomName],
+                        messages: [
+                          ...messages,
+                          {
+                            message: message,
+                            sender: 'SELF',
+                            sent: true,
+                            time: moment.utc().format('YYYY-MM-DD h:mm:ss'),
+                          },
+                        ],
+                      };
+                    }
+                  });
+                }
+              });
+            });*/
+
+
+            get('cardano-peers-client').then((rooms) => {
+              if (rooms) {
                 Object.keys(rooms).map((roomName) => {
                   if (roomName === room.name) {
                     const messages = rooms[roomName].messages || [];
@@ -389,38 +410,17 @@ export const SendP2PMessage = async (room, message) => {
                     };
                   }
                 });
+                /*
+                getAccountFromDb().then((acc) => {
+                  getNetworkFromDb().then((network) => {
+                    acc = {...acc, rooms: rooms};
+                    updateAccountByNetworkInDb(network.net, acc);
+                  });
+                });
+                */
               }
             });
-          });
-
-          get('cardano-peers-client').then((rooms) => {
-            if (rooms) {
-              Object.keys(rooms).map((roomName) => {
-                if (roomName === room.name) {
-                  const messages = rooms[roomName].messages || [];
-                  rooms[roomName] = {
-                    ...rooms[roomName],
-                    messages: [
-                      ...messages,
-                      {
-                        message: message,
-                        sender: 'SELF',
-                        sent: true,
-                        time: moment.utc().format('YYYY-MM-DD h:mm:ss'),
-                      },
-                    ],
-                  };
-                }
-              });
-              getAccountFromDb().then((acc) => {
-                getNetworkFromDb().then((network) => {
-                  acc = {...acc, rooms: rooms};
-                  updateAccountByNetworkInDb(network.net, acc);
-                });
-              });
-            }
-          });
-        }
+          }
       );
     });
   } else {
@@ -429,40 +429,42 @@ export const SendP2PMessage = async (room, message) => {
     meerkat.on('server', () => {
       console.log('[info]: connected to server');
       meerkat.rpc(
-        room.clientAddress,
-        'message',
-        {data: message},
-        (response) => {
-          console.log(response);
-          console.log('[info]: message sent');
-          get('cardano-peers-client').then((rooms) => {
-            if (rooms) {
-              Object.keys(rooms).map((roomName) => {
-                if (roomName === room.name) {
-                  const messages = rooms[roomName].messages || [];
-                  rooms[roomName] = {
-                    ...rooms[roomName],
-                    messages: [
-                      ...messages,
-                      {
-                        message: message,
-                        sender: 'SELF',
-                        sent: true,
-                        time: moment.utc().format('YYYY-MM-DD h:mm:ss'),
-                      },
-                    ],
-                  };
-                }
-              });
-              getAccountFromDb().then((acc) => {
-                getNetworkFromDb().then((network) => {
-                  acc = {...acc, rooms: rooms};
-                  updateAccountByNetworkInDb(network.net, acc);
+          room.clientAddress,
+          'message',
+          {data: message},
+          (response) => {
+            console.log(response);
+            console.log('[info]: message sent');
+            get('cardano-peers-client').then((rooms) => {
+              if (rooms) {
+                Object.keys(rooms).map((roomName) => {
+                  if (roomName === room.name) {
+                    const messages = rooms[roomName].messages || [];
+                    rooms[roomName] = {
+                      ...rooms[roomName],
+                      messages: [
+                        ...messages,
+                        {
+                          message: message,
+                          sender: 'SELF',
+                          sent: true,
+                          time: moment.utc().format('YYYY-MM-DD h:mm:ss'),
+                        },
+                      ],
+                    };
+                  }
                 });
-              });
-            }
-          });
-        }
+                /*
+                getAccountFromDb().then((acc) => {
+                  getNetworkFromDb().then((network) => {
+                    acc = {...acc, rooms: rooms};
+                    updateAccountByNetworkInDb(network.net, acc);
+                  });
+                });
+                */
+              }
+            });
+          }
       );
     });
   }

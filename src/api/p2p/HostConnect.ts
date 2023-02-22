@@ -13,13 +13,13 @@ export class HostConnect {
   name: string;
 
   constructor(
-    name: string,
-    config: {
-      seed: string | undefined;
-      identifier: string | undefined;
-      announce: string[];
-      messages?: string[];
-    }
+      name: string,
+      config: {
+        seed: string | undefined;
+        identifier: string | undefined;
+        announce: string[];
+        messages?: string[];
+      }
   ) {
     this.name = name;
 
@@ -79,44 +79,44 @@ export class HostConnect {
     });
 
     this.meerkat.register(
-      'text_message',
-      (address: string, message: {[key: string]: any}, callback: Function) => {
-        try {
-          console.log(`[info]: an message arrived to the server: ${message}`);
-          console.log(`[info]: sent by: ${address}`);
+        'text_message',
+        (address: string, message: {[key: string]: any}, callback: Function) => {
+          try {
+            console.log(`[info]: an message arrived to the server: ${message}`);
+            console.log(`[info]: sent by: ${address}`);
 
-          console.log(
-            `[info]: Broadcast message to: ${JSON.stringify(
-              this.meerkat.peers
-            )}`
-          );
-          for (let key in this.meerkat.peers) {
-            // do something for each key in the object
-            // 2. Make a rpc call for each client with the message just received
-            this.meerkat.rpc(
-              key,
-              'text_receive',
-              {
-                ...message,
-                sender: {address, publicKey: this.meerkat.peers[key].publicKey},
-              },
-              (response: boolean) => {
-                console.log(`[info]: message transmitted to: ${key}`);
-              }
+            console.log(
+                `[info]: Broadcast message to: ${JSON.stringify(
+                    this.meerkat.peers
+                )}`
             );
-          }
-        } catch (e) {}
-      }
+            for (let key in this.meerkat.peers) {
+              // do something for each key in the object
+              // 2. Make a rpc call for each client with the message just received
+              this.meerkat.rpc(
+                  key,
+                  'text_receive',
+                  {
+                    ...message,
+                    sender: {address, publicKey: this.meerkat.peers[key].publicKey},
+                  },
+                  (response: boolean) => {
+                    console.log(`[info]: message transmitted to: ${key}`);
+                  }
+              );
+            }
+          } catch (e) {}
+        }
     );
     this.meerkat.register(
-      'ping_server',
-      (address: string, message: any, callback: Function) => {
-        try {
-          callback(true);
-        } catch (e) {
-          callback(false);
+        'ping_server',
+        (address: string, message: any, callback: Function) => {
+          try {
+            callback(true);
+          } catch (e) {
+            callback(false);
+          }
         }
-      }
     );
 
     PouchAPI.set(HostConnect.table, this.id, {
