@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {useTranslation} from 'react-i18next';
 // @ts-ignore
 import PouchDB from 'pouchdb';
@@ -17,51 +17,47 @@ import {
   setAccountsIdsInCache,
   setCache,
 } from '../store/reducers/cache';
-import {setCurrentAccount} from '../store/reducers/account';
 import {setSettings} from '../store/reducers/settings';
 import {changeTheme} from '../theme/handleTheme';
 import {PouchAPI} from "../db/database";
 import { PreferencesAPI } from '../db/preferences';
+import {HandleConnect} from "../api/p2p/HandleConnect";
+
+export let handleConnect:HandleConnect | undefined = undefined;
 
 const AppWrapper = (props: {children: any}) => {
-  const {t, i18n} = useTranslation();
+
   const cachedAccount = useAppSelector(getCachedAccount);
   const dispatch = useAppDispatch();
 
-  const useIsMounted = () => {
-    const isMounted = useRef(false);
-
-    // @ts-ignore
-    useEffect(() => {
-      isMounted.current = true;
-      return () => (isMounted.current = false);
-    }, []);
-    return isMounted;
-  };
-
-  const isMounted = useIsMounted();
+  const {t, i18n} = useTranslation();
+  const [child, setChild] = useState(null);
 
   useEffect(() => {
-    const init = async () => {
-      await initApp();
-    };
-    if (isMounted.current) {
-      init().catch(console.error);
-    }
+    initApp().then(() => {
+      renderChild();
+    });
+
   }, []);
 
   const initApp = async () => {
-    await CardanoAPI.init();
-    await CacheAPI.init();
-    dispatch(setCache(CacheAPI.get()));
+    console.log("Init App")
 
+    await PouchAPI.init();
+    //await PouchAPI.clear();
+    await PreferencesAPI.init();
+    await CacheAPI.init();
+    await CardanoAPI.init();
+
+    handleConnect = new HandleConnect();
+    dispatch(setCache(CacheAPI.get()));
     await SettingsAPI.init();
     if (SettingsAPI.theme?.length) {
       // Use matchMedia to check the OS native preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
       if (
-        (prefersDark.matches && SettingsAPI.theme !== 'dark') ||
-        (!prefersDark.matches && SettingsAPI.theme !== 'light')
+          (prefersDark.matches && SettingsAPI.theme !== 'dark') ||
+          (!prefersDark.matches && SettingsAPI.theme !== 'light')
       ) {
         changeTheme();
       }
@@ -69,6 +65,9 @@ const AppWrapper = (props: {children: any}) => {
 
     dispatch(setSettings(SettingsAPI.get()));
 
+    const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
+    dispatch(setAccountsIdsInCache(accountsIds));
+    
     /*
     const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
     dispatch(setAccountsIdsInCache(accountsIds));
@@ -92,17 +91,8 @@ const AppWrapper = (props: {children: any}) => {
     console.log("accountState");
     console.log(accountState);
     */
-  };
 
-  useEffect(() => {
-    const init = async () => {
-
-
-      await PouchAPI.init("database-dev");
-      //await PouchAPI.clear();
-      await PreferencesAPI.init();
-
-      /*
+    /*
       if (await Account.accountAlreadyExists("alice")){
         console.log("account already exists");
       } else {
@@ -125,19 +115,17 @@ const AppWrapper = (props: {children: any}) => {
       console.log("All Accounts");
       console.log(await Account.getAllAccounts());
       */
-    };
+  };
 
-    if (isMounted.current) {
-      init().catch(console.error);
-    }
-  }, []);
+  const renderChild = () => {
+    setChild(props.children)
+  }
 
   return (
-    <div
-      id="appWrapper"
-      data-theme="light">
-      {props.children}
-    </div>
+      <div
+          id="appWrapper">
+        { child ? child : <p>Loading</p>}
+      </div>
   );
 };
 

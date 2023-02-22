@@ -114,8 +114,6 @@ const Chats = (props: any) => {
         });
       }
       peerList = peerList.filter(peer => peer.name !== undefined);
-      console.log("peerList");
-      console.log(peerList);
       setOriginalPeers(peerList);
       setResults(peerList);
     });
@@ -155,6 +153,7 @@ const Chats = (props: any) => {
         ))
     )
       return;
+
     if (handleConnect){
       handleConnect.createChannel(createServerNameInput);
       updateChats();

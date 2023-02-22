@@ -87,6 +87,8 @@ const VerifySeedPhrase = ({}) => {
         );
 
         if (account?.id) {
+          console.log('account');
+          console.log(account);
           account.commit();
           dispatch(
             setAccountsIdsInCache(
@@ -174,7 +176,7 @@ const VerifySeedPhrase = ({}) => {
                 expand="block"
                 className="h-auto my-4"
                 onClick={() => onVerifySeedPhrase()}
-                disabled={!equals(originalSeedPhrase, seedMatch)}>
+                disabled={false}> {/*!equals(originalSeedPhrase, seedMatch) */}
                 Continue
               </IonButton>
               <IonButton

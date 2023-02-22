@@ -178,7 +178,7 @@ export class Account {
       // TODO: cath this error, if already exists in db, just update it
       console.log(`[LOG]: account already exists: ${this.id}`);
       console.log(e);
-      PouchAPI.update(Account.table, this.id, this);
+      PouchAPI.set(Account.table, this.id, this);
     }
   }
 
@@ -246,6 +246,6 @@ export class Account {
   static async getAllAccountsIds() {
     const accounts = await PouchAPI.getIDs(Account.table);
     if (!accounts) return;
-    return Object.keys(accounts);
+    return accounts;
   }
 }
