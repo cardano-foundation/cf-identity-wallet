@@ -84,7 +84,9 @@ const CredentialDetails = (props) => {
                   </IonAvatar>
                 </IonCol>
                 <IonCol size="9">
-                  <IonLabel className="py-3">
+                  <IonLabel
+                    color="primary"
+                    className="pt-3">
                     <h1>
                       <strong className="capitalize pr-3">
                         {cred.category === 'Supply Chain'
@@ -92,6 +94,8 @@ const CredentialDetails = (props) => {
                           : cred.holderInformation.name}
                       </strong>
                     </h1>
+                  </IonLabel>
+                  <IonLabel className="pb-3">
                     <p>{title()}</p>
                   </IonLabel>
                 </IonCol>

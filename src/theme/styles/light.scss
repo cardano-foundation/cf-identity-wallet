@@ -20,10 +20,14 @@ body.light {
 
   --ion-border-color: #efeff2;
 
-  ion-toolbar,
   ion-card,
-  ion-content {
-    --background: var(--ion-color-primary-contrast);
+  ion-content,
+  ion-item {
+    --background: var(--ion-color-light);
+  }
+
+  ion-toolbar {
+    --background: rgba(var(--ion-color-primary-rgb), 0.3);
   }
 
   ion-popover ion-item {

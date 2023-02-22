@@ -116,7 +116,7 @@ const SideMenu = () => {
                   class="ion-padding"
                   color={theme === 'saver' ? 'primary' : ''}
                   onClick={() => handleTheme('saver')}>
-                  Power
+                  Power Saver
                 </IonContent>
               </IonPopover>
             </IonItem>

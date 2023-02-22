@@ -2,9 +2,6 @@
 @import './dark.scss';
 
 :root {
-  --ion-color-primary-contrast: #ffffff;
-  --ion-color-primary-contrast-rgb: 206, 223, 240;
-
   --ion-color-medium: #989aa2;
   --ion-color-medium-rgb: 152, 154, 162;
   --ion-color-medium-contrast: #ffffff;
@@ -30,36 +27,36 @@ body {
   &[theme-color='ocean'] {
     --ion-color-primary: #0072bc;
     --ion-color-primary-rgb: 48, 112, 182;
-    --ion-color-primary-contrast: #ffffff;
-    --ion-color-primary-contrast-rgb: 206, 223, 240;
+    --ion-color-primary-contrast: #7ED6B7;
+    --ion-color-primary-contrast-rgb: 126, 214, 183;
     --ion-color-primary-darker: #0f2544;
     --ion-color-primary-darkest: #0b121e;
   }
 
   &[theme-color='sunset'] {
-    --ion-color-primary: #FD841F;
-    --ion-color-primary-rgb: 48, 112, 182;
-    --ion-color-primary-contrast: #ffffff;
-    --ion-color-primary-contrast-rgb: 206, 223, 240;
-    --ion-color-primary-darker: #DC3535;
-    --ion-color-primary-darkest: #820000;
+    --ion-color-primary: #d74b3b;
+    --ion-color-primary-rgb: 215, 75, 59;
+    --ion-color-primary-contrast: #EFAB57;
+    --ion-color-primary-contrast-rgb: 239, 171, 87;
+    --ion-color-primary-darker: #713C35;
+    --ion-color-primary-darkest: #3F2E31;
   }
 
   &[theme-color='forest'] {
-    --ion-color-primary: #76ab89;
-    --ion-color-primary-rgb: 48, 112, 182;
-    --ion-color-primary-contrast: #ffffff;
-    --ion-color-primary-contrast-rgb: 206, 223, 240;
-    --ion-color-primary-darker: #3C6255;
-    --ion-color-primary-darkest: #3D5656;
+    --ion-color-primary: #638567;
+    --ion-color-primary-rgb: 99, 133, 103;
+    --ion-color-primary-contrast: #E1E5A6;
+    --ion-color-primary-contrast-rgb: 225, 229, 166;
+    --ion-color-primary-darker: #446457;
+    --ion-color-primary-darkest: #1E2F32;
   }
 
   &[theme-color='saver'] {
     --ion-color-primary: #999999;
-    --ion-color-primary-rgb: 48, 112, 182;
+    --ion-color-primary-rgb: 153, 153, 153;
     --ion-color-primary-contrast: #ffffff;
-    --ion-color-primary-contrast-rgb: 206, 223, 240;
-    --ion-color-primary-darker: #333333;
+    --ion-color-primary-contrast-rgb: 255, 255, 255;
+    --ion-color-primary-darker: #1e2023;
     --ion-color-primary-darkest: #000000;
   }
 }

@@ -4,6 +4,7 @@ import {
   IonCard,
   IonCardContent,
   IonCardHeader,
+  IonContent,
   IonIcon,
   IonItem,
   IonLabel,
@@ -119,41 +120,33 @@ export const IDWCard = ({
               ref={popover}
               isOpen={popoverOpen}
               onDidDismiss={() => setPopoverOpen(false)}>
-              <>
-                {type === 'CREDENTIAL' && (
-                  <IonRow>
-                    <IonItem
-                      className="px-4 py-2"
-                      onClick={() => handleMoreDetails(data)}>
-                      <IonIcon
-                        slot="start"
-                        icon={informationCircleOutline}
-                      />
-                      <IonLabel> More details</IonLabel>
-                    </IonItem>
-                  </IonRow>
-                )}
-                <IonRow>
-                  <IonItem
-                    className="px-4 py-2"
-                    onClick={() => onCopy(id)}>
-                    <IonIcon
-                      slot="start"
-                      icon={copyOutline}
-                    />
-                    <IonLabel> Copy ID</IonLabel>
-                  </IonItem>
-                </IonRow>
-                <IonRow>
-                  <IonItem className="px-4 py-2">
-                    <IonIcon
-                      slot="start"
-                      icon={trashOutline}
-                    />
-                    <IonLabel>Delete</IonLabel>
-                  </IonItem>
-                </IonRow>
-              </>
+              {type === 'CREDENTIAL' && (
+                <IonContent
+                  class="ion-padding"
+                  onClick={() => handleMoreDetails(data)}>
+                  <IonIcon
+                    slot="start"
+                    icon={informationCircleOutline}
+                  />
+                  <IonLabel> More details</IonLabel>
+                </IonContent>
+              )}
+              <IonContent
+                class="ion-padding"
+                onClick={() => onCopy(id)}>
+                <IonIcon
+                  slot="start"
+                  icon={copyOutline}
+                />
+                <IonLabel> Copy ID</IonLabel>
+              </IonContent>
+              <IonContent class="ion-padding">
+                <IonIcon
+                  slot="start"
+                  icon={trashOutline}
+                />
+                <IonLabel>Delete</IonLabel>
+              </IonContent>
             </IonPopover>
           </div>
         </IonCardHeader>
