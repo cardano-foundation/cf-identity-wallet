@@ -11,7 +11,7 @@ import {CardanoAPI} from '../lib/CardanoAPI';
 import {Account} from '../models/Account/Account';
 import {useAppDispatch, useAppSelector} from '../store/hooks';
 import {CacheAPI} from '../models/Cache/CacheAPI';
-import {SettingsAPI} from '../models/Settings/Settings';
+import {SettingsAPI} from '../models/Settings/SettingsAPI';
 import {
   getCachedAccount,
   setAccountsIdsInCache,
@@ -67,7 +67,7 @@ const AppWrapper = (props: {children: any}) => {
 
     const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
     dispatch(setAccountsIdsInCache(accountsIds));
-    
+
     /*
     const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
     dispatch(setAccountsIdsInCache(accountsIds));

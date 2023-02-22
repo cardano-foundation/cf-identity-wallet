@@ -12,6 +12,8 @@ import './theme/structure.css';
 import AppWrapper from './components/AppWrapper';
 import {HandleConnect} from './api/p2p/HandleConnect';
 import {SplashScreen} from '@capacitor/splash-screen';
+import { useAppDispatch } from './store/hooks';
+import {setIsExtension} from './store/reducers/settings';
 
 setupIonicReact({
   swipeBackEnabled: false,
@@ -23,6 +25,8 @@ const App = (isExtension?: boolean) => {
   // TODO: hotfix, refactor extension webpack
   if (isExtension && history) {
     history.push('/');
+    const dispatch = useAppDispatch();
+    dispatch(setIsExtension(isExtension));
   }
 
   const useIsMounted = () => {
