@@ -5,6 +5,7 @@ import {
   IonContent,
   IonGrid,
   IonHeader,
+  IonIcon,
   IonImg,
   IonItem,
   IonLabel,
@@ -17,6 +18,7 @@ import {
   IonToggle,
   IonToolbar,
 } from '@ionic/react';
+import {colorPaletteOutline} from 'ionicons/icons';
 import {
   toggleDark,
   isDarkMode,
@@ -91,6 +93,10 @@ const SideMenu = () => {
             </IonItem>
             <IonItem>
               <IonLabel id="click-trigger">Themes</IonLabel>
+              <IonIcon
+                icon={colorPaletteOutline}
+                className="pr-2.5"
+              />
               <IonPopover
                 trigger="click-trigger"
                 triggerAction="click">
@@ -130,7 +136,7 @@ const SideMenu = () => {
             <IonItem>
               <IonLabel className="flex justify-between">
                 <span>App version</span>
-                <span>0.1.0</span>
+                <span>0.2.0</span>
               </IonLabel>
             </IonItem>
           </IonList>
