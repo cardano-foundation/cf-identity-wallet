@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import {
+  IonAvatar,
   IonButton,
   IonCard,
   IonCardHeader,
@@ -44,6 +45,8 @@ const Crypto = (props: any) => {
   const [showAddWallet, setShowAddWallet] = useState(false);
   const popover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
+  // TODO: Crypto wallet logo upload
+  const logo = ''; // Placeholder for future logo url
 
   useEffect(() => {
     if (props.location.pathname === '/tabs/crypto') {
@@ -94,65 +97,70 @@ const Crypto = (props: any) => {
         <IonCol>
           <IonCard>
             <IonCardHeader>
-              <div className="py-2">
-                <IonItem className="w-full">
-                  <IonRow className={'pl-4'}>
-                    <IonLabel className="font-extrabold w-full">
-                      {wallet}
-                    </IonLabel>
-
-                    <IonLabel className="text-sm">ADA {0}</IonLabel>
-                  </IonRow>
+              <IonRow>
+                {logo && (
+                  <IonCol size="2">
+                    <IonAvatar>
+                      <img
+                        src={logo}
+                        className="h-full"
+                        alt="Crypto wallet logo"
+                      />
+                    </IonAvatar>
+                  </IonCol>
+                )}
+                <IonCol size={logo ? '9' : '11'}>
+                  <IonItem>
+                    <IonRow>
+                      <IonLabel className="font-extrabold w-full">
+                        {wallet}
+                      </IonLabel>
+                      <IonLabel className="text-sm">ADA {0}</IonLabel>
+                    </IonRow>
+                  </IonItem>
+                </IonCol>
+                <IonCol size="1">
                   <IonIcon
                     id={`popover-button-${wallet}`}
                     icon={ellipsisVertical}
                     color="primary"
                     className="float-right"
-                    slot="end"
                   />
-                </IonItem>
-                <IonPopover
-                  className="scroll-y-hidden"
-                  trigger={`popover-button-${wallet}`}
-                  dismissOnSelect={true}
-                  size={'auto'}
-                  side="bottom"
-                  ref={popover}
-                  isOpen={popoverOpen}
-                  onDidDismiss={() => setPopoverOpen(false)}>
-                  <>
-                    <IonRow>
-                      <IonItem className="px-4 py-2">
-                        <IonIcon
-                          slot="start"
-                          icon={informationCircleOutline}
-                        />
-                        <IonLabel> More details</IonLabel>
-                      </IonItem>
-                    </IonRow>
-                    <IonRow>
-                      <IonItem className="px-4 py-2">
-                        <IonIcon
-                          slot="start"
-                          icon={copyOutline}
-                        />
-                        <IonLabel> Copy Address</IonLabel>
-                      </IonItem>
-                    </IonRow>
-                    <IonRow>
-                      <IonItem
-                        className="px-4 py-2"
-                        onClick={() => removeWallet(wallet)}>
-                        <IonIcon
-                          slot="start"
-                          icon={trashOutline}
-                        />
-                        <IonLabel>Delete</IonLabel>
-                      </IonItem>
-                    </IonRow>
-                  </>
-                </IonPopover>
-              </div>
+                  <IonPopover
+                    className="scroll-y-hidden"
+                    trigger={`popover-button-${wallet}`}
+                    dismissOnSelect={true}
+                    size={'auto'}
+                    side="bottom"
+                    ref={popover}
+                    isOpen={popoverOpen}
+                    onDidDismiss={() => setPopoverOpen(false)}>
+                    <IonContent class="ion-padding">
+                      <IonIcon
+                        className="align-middle  pr-4"
+                        icon={informationCircleOutline}
+                      />
+                      <IonLabel className="align-middle">More details</IonLabel>
+                    </IonContent>
+                    <IonContent class="ion-padding">
+                      <IonIcon
+                        className="align-middle  pr-4"
+                        icon={copyOutline}
+                      />
+                      <IonLabel className="align-middle">Copy Address</IonLabel>
+                    </IonContent>
+                    <IonContent
+                      class="ion-padding"
+                      onClick={() => removeWallet(wallet)}>
+                      <IonIcon
+                        className="align-middle  pr-4"
+                        icon={trashOutline}
+                      />
+                      <IonLabel className="align-middle">Delete</IonLabel>
+                    </IonContent>
+                  </IonPopover>
+                </IonCol>
+              </IonRow>
             </IonCardHeader>
           </IonCard>
         </IonCol>

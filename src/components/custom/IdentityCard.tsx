@@ -4,6 +4,7 @@ import {
   IonCard,
   IonCardContent,
   IonCardHeader,
+  IonCol,
   IonContent,
   IonIcon,
   IonItem,
@@ -80,20 +81,22 @@ export const IDWCard = ({
   };
 
   return (
-    <>
-      <IonCard>
-        <IonCardHeader>
-          <div className="py-2">
-            <IonItem className="w-full">
-              {logo ? (
-                <IonAvatar slot="start">
-                  <img
-                    src={logo}
-                    className="h-full"
-                    alt="Credential logo"
-                  />
-                </IonAvatar>
-              ) : null}
+    <IonCard>
+      <IonCardHeader>
+        <IonRow>
+          {logo && (
+            <IonCol size="2">
+              <IonAvatar>
+                <img
+                  src={logo}
+                  className="h-full"
+                  alt="Credential logo"
+                />
+              </IonAvatar>
+            </IonCol>
+          )}
+          <IonCol size={logo ? '9' : '11'}>
+            <IonItem>
               <IonRow>
                 <IonLabel className="font-extrabold w-full">{name}</IonLabel>
                 <IonLabel
@@ -102,14 +105,15 @@ export const IDWCard = ({
                   {moment(createdOn, 'x').format('DD MMM YYYY hh:mm a')}
                 </IonLabel>
               </IonRow>
-              <IonIcon
-                id={`popover-button-${id}-${name}`}
-                icon={ellipsisVertical}
-                color="primary"
-                className="float-right"
-                slot="end"
-              />
             </IonItem>
+          </IonCol>
+          <IonCol size="1">
+            <IonIcon
+              id={`popover-button-${id}-${name}`}
+              icon={ellipsisVertical}
+              color="primary"
+              className="float-right"
+            />
             <IonPopover
               className="scroll-y-hidden"
               trigger={`popover-button-${id}-${name}`}
@@ -124,55 +128,54 @@ export const IDWCard = ({
                   class="ion-padding"
                   onClick={() => handleMoreDetails(data)}>
                   <IonIcon
-                    slot="start"
+                    className="align-middle pr-4"
                     icon={informationCircleOutline}
                   />
-                  <IonLabel> More details</IonLabel>
+                  <IonLabel className="align-middle">More details</IonLabel>
                 </IonContent>
               )}
               <IonContent
                 class="ion-padding"
                 onClick={() => onCopy(id)}>
                 <IonIcon
-                  slot="start"
+                  className="align-middle  pr-4"
                   icon={copyOutline}
                 />
-                <IonLabel> Copy ID</IonLabel>
+                <IonLabel className="align-middle">Copy ID</IonLabel>
               </IonContent>
               <IonContent class="ion-padding">
                 <IonIcon
-                  slot="start"
+                  className="align-middle  pr-4"
                   icon={trashOutline}
                 />
-                <IonLabel>Delete</IonLabel>
+                <IonLabel className="align-middle">Delete</IonLabel>
               </IonContent>
             </IonPopover>
-          </div>
-        </IonCardHeader>
-
-        <IonCardContent>
-          <IonItem
-            className="ion-activated"
-            style={{borderRadius: '10px'}}>
-            <IonLabel onClick={() => onCopy(id)}>{id}</IonLabel>
-            {qr ? (
-              <IonIcon
-                icon={qrCodeOutline}
-                slot="end"
-                onClick={() => handleNavigation(`/did/${id}`)}
-              />
-            ) : null}
-          </IonItem>
-        </IonCardContent>
-        <IonToast
-          color={toastColor}
-          isOpen={showToast}
-          onDidDismiss={() => setShowToast(false)}
-          message={toastMessage}
-          position="top"
-          duration="3000"
-        />
-      </IonCard>
-    </>
+          </IonCol>
+        </IonRow>
+      </IonCardHeader>
+      <IonCardContent>
+        <IonItem
+          className="ion-activated"
+          style={{borderRadius: '10px'}}>
+          <IonLabel onClick={() => onCopy(id)}>{id}</IonLabel>
+          {qr ? (
+            <IonIcon
+              icon={qrCodeOutline}
+              slot="end"
+              onClick={() => handleNavigation(`/did/${id}`)}
+            />
+          ) : null}
+        </IonItem>
+      </IonCardContent>
+      <IonToast
+        color={toastColor}
+        isOpen={showToast}
+        onDidDismiss={() => setShowToast(false)}
+        message={toastMessage}
+        position="top"
+        duration="3000"
+      />
+    </IonCard>
   );
 };
