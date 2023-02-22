@@ -60,3 +60,11 @@ body {
     --ion-color-primary-darkest: #000000;
   }
 }
+
+ion-button::part(native) {
+  color: var(--ion-color-medium-contrast);
+}
+
+ion-checkbox::part(container) {
+  --checkmark-color: var(--ion-color-medium-contrast);
+}

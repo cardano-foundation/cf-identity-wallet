@@ -96,7 +96,6 @@ export const IDWCard = ({
               ) : null}
               <IonRow>
                 <IonLabel className="font-extrabold w-full">{name}</IonLabel>
-
                 <IonLabel
                   className="font-light text-sm"
                   color="medium">

@@ -23,14 +23,14 @@ Incase of fatal error: 'vips/vips8' file not found:
 ```
 
 ```bash
-    yarn buildcap
+    npm run build:cap
 ```
 
 Finally, run the app:
 
 ```
-    npx cap run ios
-    npx cap run android
+    npm run open:ios
+    npm run open:android
 ```
 
 Or open Android Studio:

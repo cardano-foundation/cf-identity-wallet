@@ -16,3 +16,7 @@ ion-menu ion-item {
 ion-item {
   --transition: none;
 }
+
+ion-popover ion-content::part(scroll) {
+  overflow-y: hidden;
+}
