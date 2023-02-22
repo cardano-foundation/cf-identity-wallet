@@ -23,7 +23,7 @@ Incase of fatal error: 'vips/vips8' file not found:
 ```
 
 ```bash
-    yarn buildcap
+    yarn build:cap
 ```
 
 Finally, run the app:
