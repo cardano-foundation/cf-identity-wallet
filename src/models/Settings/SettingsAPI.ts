@@ -5,8 +5,7 @@ export const SettingsAPI = {
   theme: '',
   language: '',
   network: 'preprod',
-  isExtension: false
-
+  isExtension: false,
   async init() {
     const settings = await PreferencesAPI.get(this.table);
     if (!settings) return;
