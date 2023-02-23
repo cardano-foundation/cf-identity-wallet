@@ -15,24 +15,22 @@ import {StatusBar, Style} from '@capacitor/status-bar';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-  <React.StrictMode>
     <SafeArea
-      top
-      bottom>
+        top
+        bottom>
       <Provider store={store}>
         <I18nextProvider i18n={i18n}>
           <App isExtension={false} />
         </I18nextProvider>
       </Provider>
     </SafeArea>
-  </React.StrictMode>
 );
 
 
 const isMobile = Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android';
 if (
-  window.matchMedia &&
-  window.matchMedia('(prefers-color-scheme: dark)').matches
+    window.matchMedia &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
 ) {
   document.body.classList.toggle('dark');
   if (isMobile) StatusBar.setStyle({style: Style.Dark});
@@ -51,7 +49,7 @@ if (Capacitor.getPlatform() === 'web') {
   origin = (error) => {
     if (/Loading chunk [\d]+ failed/.test(error.message)) {
       alert(
-        'A new version released. Need to reload the page to apply changes.'
+          'A new version released. Need to reload the page to apply changes.'
       );
       window.location.reload();
     } else {
@@ -114,16 +112,16 @@ if (process.env.NODE_ENV === 'production') {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
-        .register('/service-worker.js')
-        .then((registration) => {
-          console.log('SW registered service-worker.js: ', registration);
-        })
-        .catch((registrationError) => {
-          console.log(
-            'SW registration failed service-worker.js: ',
-            registrationError
-          );
-        });
+          .register('/service-worker.js')
+          .then((registration) => {
+            console.log('SW registered service-worker.js: ', registration);
+          })
+          .catch((registrationError) => {
+            console.log(
+                'SW registration failed service-worker.js: ',
+                registrationError
+            );
+          });
     });
   }
 }

@@ -3,6 +3,7 @@ import Meerkat from '@fabianbormann/meerkat';
 import {PeerConnect} from './PeerConnect';
 import {HostConnect} from './HostConnect';
 import {PouchAPI} from '../../db/database';
+import { publish } from '../../utils/events';
 
 export class HandleConnect {
   profile: {identifier: string; seed: string} | undefined = undefined;
@@ -31,7 +32,7 @@ export class HandleConnect {
     }).catch(error => console.log("errrr:",error));
 
     PouchAPI.getTable(HostConnect.table).then(hostDocs => {
-      if (!hostDocs) return;
+      if(!hostDocs) return
       hostDocs = hostDocs.map((host: { doc: any; }) => host.doc);
       for (let i = 0; i < hostDocs.length; i++) {
         this.restoreChannel(
@@ -45,13 +46,14 @@ export class HandleConnect {
     });
 
     PouchAPI.getTable(PeerConnect.table).then(peerDocs => {
-      if (!peerDocs) return;
+      if(!peerDocs) return
       peerDocs = peerDocs.filter(peer => peer.doc.name !== undefined).map((peer: { doc: any; }) => peer.doc);
       for (let i = 0; i < peerDocs.length; i++) {
+
         this.joinChannel(peerDocs[i].name, peerDocs[i].identifier, peerDocs[i].messages);
+
       }
     });
-
   }
 
   /**
@@ -129,8 +131,6 @@ export class HandleConnect {
       messages,
     });
 
-    console.log("peer");
-    console.log(peer);
     this.peers = [...this.peers, peer];
   }
 

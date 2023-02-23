@@ -27,7 +27,7 @@ SettingsAPI.getLanguage().then((language) => {
 
       fallbackLng: 'en',
 
-      debug: true,
+      debug: false,
 
       // have a common namespace used around the full app
 

@@ -57,7 +57,7 @@ export class HostConnect {
             console.log(
                 `[info]: the server is ready with address 💬: ${this.meerkat.identifier}`
             );
-            publish('updateChat');
+            /*publish('updateChat')*/
           });
         } else {
           PouchAPI.get(HostConnect.table, this.id).then(host => {
@@ -72,7 +72,7 @@ export class HostConnect {
             });
           }).then(_ => {
             console.log(`[info]: loading server... 💬`);
-            publish('updateChat');
+            /*publish('updateChat')*/
           });
         }
       }

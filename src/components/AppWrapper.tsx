@@ -21,9 +21,9 @@ import {setSettings} from '../store/reducers/settings';
 import {changeTheme} from '../theme/handleTheme';
 import {PouchAPI} from "../db/database";
 import { PreferencesAPI } from '../db/preferences';
-import {HandleConnect} from "../api/p2p/HandleConnect";
+import { HandleConnect } from '../api/p2p/HandleConnect';
 
-export let handleConnect:HandleConnect | undefined = undefined;
+export let handleConnect: HandleConnect | undefined = undefined;
 
 const AppWrapper = (props: {children: any}) => {
 
@@ -50,6 +50,7 @@ const AppWrapper = (props: {children: any}) => {
     await CardanoAPI.init();
 
     handleConnect = new HandleConnect();
+
     dispatch(setCache(CacheAPI.get()));
     await SettingsAPI.init();
     if (SettingsAPI.theme?.length) {
