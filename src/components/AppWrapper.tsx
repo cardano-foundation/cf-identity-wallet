@@ -45,7 +45,6 @@ const AppWrapper = (props: {children: any}) => {
 
     await PouchAPI.init();
     //await PouchAPI.clear();
-    await PreferencesAPI.init();
     await CacheAPI.init();
     await CardanoAPI.init();
 
@@ -53,6 +52,8 @@ const AppWrapper = (props: {children: any}) => {
 
     dispatch(setCache(CacheAPI.get()));
     await SettingsAPI.init();
+    await SettingsAPI.commit();
+    console.log(SettingsAPI.get())
     if (SettingsAPI.theme?.length) {
       // Use matchMedia to check the OS native preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');

@@ -1,30 +1,24 @@
-import {Storage, Drivers} from '@ionic/storage';
+import { Preferences } from '@capacitor/preferences';
 
 export const PreferencesAPI = {
-    dbName: '',
-    storage: undefined as undefined | typeof Storage,
-    async init(dbName:any = 'preferences') {
-        this.dbName = dbName;
-        // @ts-ignore
-        this.storage = await createStore(this.table);
-    },
     async set(table:string, obj:any) {
         if (obj && Object.keys(obj)?.length) {
-            // @ts-ignore
-            await this.storage.set(table, obj);
+            console.log("set PreferencesAPI")
+            console.log(obj);
+            await Preferences.set({
+                key: table,
+                value: JSON.stringify(obj),
+            });
         }
     },
     async get(table:string) {
-        // @ts-ignore
-        return this.storage.get(table);
+        const { value } =  await Preferences.get({ key: table });
+        if (!value) return;
+        console.log("get PreferencesAPI")
+        console.log(value);
+        return JSON.parse(value)
+    },
+    async remove(table:string) {
+        await Preferences.remove({ key: table });
     }
 }
-
-export const createStore = (name = 'defaultDb') => {
-    const storage = new Storage({
-        name,
-        driverOrder: [Drivers.IndexedDB, Drivers.LocalStorage],
-    });
-    storage.create();
-    return storage;
-};
