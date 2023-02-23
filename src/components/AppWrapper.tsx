@@ -12,7 +12,7 @@ import {
 } from '../store/reducers/cache';
 import {setCurrentAccount} from '../store/reducers/account';
 import {setSettings} from '../store/reducers/settings';
-import {changeTheme} from '../theme/handleTheme';
+import {toggleDark} from '../theme/helpers/theme-helper';
 
 const AppWrapper = (props: {children: any}) => {
   const {t, i18n} = useTranslation();
@@ -54,7 +54,7 @@ const AppWrapper = (props: {children: any}) => {
         (prefersDark.matches && Settings.theme !== 'dark') ||
         (!prefersDark.matches && Settings.theme !== 'light')
       ) {
-        changeTheme();
+        toggleDark();
       }
     }
 

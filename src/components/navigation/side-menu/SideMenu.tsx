@@ -1,33 +1,37 @@
 import React, {useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import {
-  IonButtons,
   IonCol,
   IonContent,
   IonGrid,
   IonHeader,
+  IonIcon,
   IonImg,
   IonItem,
   IonLabel,
   IonList,
   IonMenu,
-  IonMenuButton,
   IonMenuToggle,
-  IonPage,
+  IonPopover,
   IonRow,
   IonTitle,
   IonToggle,
   IonToolbar,
 } from '@ionic/react';
-import {changeTheme} from '../../../theme/handleTheme';
+import {colorPaletteOutline} from 'ionicons/icons';
+import {
+  toggleDark,
+  isDarkMode,
+  currentTheme,
+  changeTheme,
+} from '../../../theme/helpers/theme-helper';
 import LogoDark from '../../../assets/images/cardano-logo.png';
 import LogoLight from '../../../assets/images/cardano-logo-white.png';
 
 const SideMenu = () => {
   const history = useHistory();
-  const [isDark, setIsDark] = useState(
-    document.body.classList.contains('dark')
-  );
+  const [isDark, setIsDark] = useState<boolean>(isDarkMode);
+  const [theme, setTheme] = useState<string>(currentTheme);
 
   const handleNavigation = (route: string) => {
     history.push({
@@ -35,19 +39,29 @@ const SideMenu = () => {
     });
   };
 
-  const handleTheme = () => {
-    changeTheme();
-    setIsDark(document.body.classList.contains('dark'));
+  const handleToggleDark = () => {
+    toggleDark();
+    setIsDark(isDarkMode);
   };
+
+  const handleTheme = (color: string) => {
+    setTheme(color);
+    changeTheme(color);
+  };
+
   return (
     <>
-      <IonMenu contentId="main-content">
+      <IonMenu contentId="main">
         <IonHeader>
           <IonToolbar>
             <IonTitle>Settings</IonTitle>
           </IonToolbar>
         </IonHeader>
-        <IonContent className="ion-padding">
+
+        <IonContent
+          className="ion-padding"
+          id="main-content"
+          forceOverscroll={false}>
           <IonGrid className="px-0">
             <IonRow className="py-6">
               <IonCol
@@ -62,7 +76,7 @@ const SideMenu = () => {
                 </IonItem>
                 <IonItem>
                   <IonLabel className="text-center mx-auto">
-                    Cardano Identity Wallet v0.1.0
+                    Cardano Identity Wallet
                   </IonLabel>
                 </IonItem>
               </IonCol>
@@ -72,9 +86,45 @@ const SideMenu = () => {
             <IonItem>
               <IonLabel>Dark Mode</IonLabel>
               <IonToggle
-                onIonChange={(_) => handleTheme()}
+                onIonChange={(_) => handleToggleDark()}
+                checked={isDark}
                 slot="end"
               />
+            </IonItem>
+            <IonItem>
+              <IonLabel id="click-trigger">Themes</IonLabel>
+              <IonIcon
+                icon={colorPaletteOutline}
+                className="pr-2.5"
+              />
+              <IonPopover
+                trigger="click-trigger"
+                triggerAction="click">
+                <IonContent
+                  class="ion-padding"
+                  color={theme === 'ocean' ? 'primary' : ''}
+                  onClick={() => handleTheme('ocean')}>
+                  Ocean
+                </IonContent>
+                <IonContent
+                  class="ion-padding"
+                  color={theme === 'sunset' ? 'primary' : ''}
+                  onClick={() => handleTheme('sunset')}>
+                  Sunset
+                </IonContent>
+                <IonContent
+                  class="ion-padding"
+                  color={theme === 'forest' ? 'primary' : ''}
+                  onClick={() => handleTheme('forest')}>
+                  Forest
+                </IonContent>
+                <IonContent
+                  class="ion-padding"
+                  color={theme === 'saver' ? 'primary' : ''}
+                  onClick={() => handleTheme('saver')}>
+                  Power Saver
+                </IonContent>
+              </IonPopover>
             </IonItem>
             <IonItem>
               <IonMenuToggle>
@@ -83,20 +133,15 @@ const SideMenu = () => {
                 </IonLabel>
               </IonMenuToggle>
             </IonItem>
+            <IonItem>
+              <IonLabel className="flex justify-between">
+                <span>App version</span>
+                <span>0.2.0</span>
+              </IonLabel>
+            </IonItem>
           </IonList>
         </IonContent>
       </IonMenu>
-      <IonPage id="main-content">
-        <IonHeader>
-          <IonToolbar>
-            <IonButtons slot="start">
-              <IonMenuButton />
-            </IonButtons>
-            {/* <IonTitle>Menu</IonTitle> */}
-          </IonToolbar>
-        </IonHeader>
-        <IonContent className="ion-padding"></IonContent>
-      </IonPage>
     </>
   );
 };

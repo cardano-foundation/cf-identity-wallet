@@ -210,7 +210,7 @@ const CreateWallet = ({}) => {
                 </IonItem>
                 <IonButton
                   shape="round"
-                  color="dark"
+                  color="primary"
                   expand="block"
                   className="h-auto my-4"
                   onClick={() => {
@@ -228,7 +228,7 @@ const CreateWallet = ({}) => {
                 </IonButton>
                 <IonButton
                   shape="round"
-                  color="light"
+                  color="medium"
                   expand="block"
                   className="h-auto my-4"
                   onClick={() => {
