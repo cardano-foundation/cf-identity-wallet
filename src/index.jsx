@@ -28,6 +28,7 @@ root.render(
   </React.StrictMode>
 );
 
+// window.matchMedia('(prefers-color-scheme: dark)').matches, match OS preference
 if (
   window.matchMedia &&
   window.matchMedia('(prefers-color-scheme: dark)').matches

@@ -24,7 +24,7 @@ import {
   isDarkMode,
   currentTheme,
   changeTheme,
-} from '../../../utils/handleTheme';
+} from '../../../theme/helpers/theme-helper';
 import LogoDark from '../../../assets/images/cardano-logo.png';
 import LogoLight from '../../../assets/images/cardano-logo-white.png';
 

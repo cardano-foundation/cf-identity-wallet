@@ -3,8 +3,6 @@ export const isDarkMode = () => {
 };
 
 export const toggleDark = () => {
-  // window.matchMedia('(prefers-color-scheme: dark)').matches, match OS preference
-
   if (document.body.classList.contains('dark')) {
     document.body.classList.remove('dark');
     document.body.classList.toggle('light', true);
