@@ -123,8 +123,7 @@ const Crypto = (props: any) => {
                   <IonIcon
                     id={`popover-button-${wallet}`}
                     icon={ellipsisVertical}
-                    color="primary"
-                    className="float-right"
+                    className="float-right themed-button"
                   />
                   <IonPopover
                     className="scroll-y-hidden"

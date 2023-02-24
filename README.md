@@ -39,6 +39,18 @@ Or open Android Studio:
     npx cap open android
 ```
 
+#### Build Chrome Extension
+
+```
+    npm run build:extension
+```
+
+#### Rebuild Styles (Tailwind)
+
+```
+    npm run build:css
+```
+
 ### Styles between Ionic and Tailwind
 Requirements: install `cssutils` and `jsbeautifier`.
 

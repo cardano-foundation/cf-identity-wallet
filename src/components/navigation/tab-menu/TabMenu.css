@@ -3,16 +3,12 @@ ion-tab-bar {
   border-radius: 25px 25px 0 0 !important;
   height: 60px;
   width: 92%;
-  padding-top: 5px;
-  padding-bottom: 10px;
-  padding-left: 10px;
-  padding-right: 10px;
+  padding: 0 10px 15px 10px;
   bottom: 0px;
   position: relative;
   margin: 0 auto !important;
-  border-top: none;
 }
 
 ion-tab-button {
-  border-radius: 16px !important;
+  padding-top: 5px;
 }
