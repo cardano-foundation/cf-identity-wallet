@@ -40,7 +40,7 @@ const Pagelayout = (props: any) => {
               <IonCol className="column_left">
                 {sideMenu && (
                   <IonButtons>
-                    <IonMenuButton />
+                    <IonMenuButton className="themed-button" />
                   </IonButtons>
                 )}
                 {backButton && (
@@ -48,6 +48,7 @@ const Pagelayout = (props: any) => {
                     <IonBackButton
                       icon={backButtonIcon}
                       text={backButtonText}
+                      className="themed-button"
                       defaultHref={backButtonPath}
                     />
                   </IonButtons>
@@ -62,8 +63,7 @@ const Pagelayout = (props: any) => {
                     <IonIcon
                       style={{fontSize: actionButtonIconSize}}
                       icon={actionButtonIcon}
-                      color="primary"
-                      className="ion-no-padding"
+                      className="ion-no-padding themed-button"
                       onClick={actionButtonClickEvent}></IonIcon>
                   </IonButtons>
                 )}

@@ -15,6 +15,7 @@ import {addOutline} from 'ionicons/icons';
 import CustomPage from '../layouts/PageLayout';
 import {useLocation} from 'react-router-dom';
 import {checkmarkCircleOutline, closeCircleOutline} from 'ionicons/icons';
+import {isDarkMode} from '../../theme/helpers/theme-helper';
 
 const CredentialDetails = (props) => {
   const location = useLocation();
@@ -89,7 +90,7 @@ const CredentialDetails = (props) => {
                 </IonCol>
                 <IonCol size="9">
                   <IonLabel
-                    color="primary"
+                    color={isDarkMode() ? 'dark' : 'primary'}
                     className="pt-3">
                     <h1>
                       <strong className="capitalize pr-3">

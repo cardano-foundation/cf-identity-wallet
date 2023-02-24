@@ -37,10 +37,8 @@ export const IDWCard = ({
   data = null,
 }) => {
   const history = useHistory();
-
   const popover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
-
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastColor, setToastColor] = useState('success');
@@ -89,7 +87,7 @@ export const IDWCard = ({
               <IonAvatar>
                 <img
                   src={logo}
-                  className="h-full"
+                  className="h-full p-0.5"
                   alt="Credential logo"
                 />
               </IonAvatar>
@@ -111,8 +109,7 @@ export const IDWCard = ({
             <IonIcon
               id={`popover-button-${id}-${name}`}
               icon={ellipsisVertical}
-              color="primary"
-              className="float-right"
+              className="float-right themed-button"
             />
             <IonPopover
               className="scroll-y-hidden"
