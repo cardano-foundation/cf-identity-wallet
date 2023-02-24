@@ -1,4 +1,4 @@
-import { PreferencesAPI } from '../../db/preferences';
+import {PreferencesAPI} from '../../db/preferences';
 
 export const CacheAPI = {
   table: 'app.cache',

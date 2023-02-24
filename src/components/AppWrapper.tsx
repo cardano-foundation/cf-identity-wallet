@@ -3,8 +3,8 @@ import {useTranslation} from 'react-i18next';
 // @ts-ignore
 import PouchDB from 'pouchdb';
 // @ts-ignore
-import find from "pouchdb-find";
-PouchDB.plugin(find)
+import find from 'pouchdb-find';
+PouchDB.plugin(find);
 PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
 
 import {CardanoAPI} from '../lib/CardanoAPI';
@@ -19,14 +19,13 @@ import {
 } from '../store/reducers/cache';
 import {setSettings} from '../store/reducers/settings';
 import {changeTheme} from '../theme/helpers/theme-helper';
-import {PouchAPI} from "../db/database";
-import { PreferencesAPI } from '../db/preferences';
-import { HandleConnect } from '../api/p2p/HandleConnect';
+import {PouchAPI} from '../db/database';
+import {PreferencesAPI} from '../db/preferences';
+import {HandleConnect} from '../api/p2p/HandleConnect';
 
 export let handleConnect: HandleConnect | undefined = undefined;
 
 const AppWrapper = (props: {children: any}) => {
-
   const cachedAccount = useAppSelector(getCachedAccount);
   const dispatch = useAppDispatch();
 
@@ -37,11 +36,10 @@ const AppWrapper = (props: {children: any}) => {
     initApp().then(() => {
       renderChild();
     });
-
   }, []);
 
   const initApp = async () => {
-    console.log("Init App")
+    console.log('Init App');
 
     await PouchAPI.init();
     //await PouchAPI.clear();
@@ -53,13 +51,13 @@ const AppWrapper = (props: {children: any}) => {
     dispatch(setCache(CacheAPI.get()));
     await SettingsAPI.init();
     await SettingsAPI.commit();
-    console.log(SettingsAPI.get())
+    console.log(SettingsAPI.get());
     if (SettingsAPI.theme?.length) {
       // Use matchMedia to check the OS native preference
       const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
       if (
-          (prefersDark.matches && SettingsAPI.theme !== 'dark') ||
-          (!prefersDark.matches && SettingsAPI.theme !== 'light')
+        (prefersDark.matches && SettingsAPI.theme !== 'dark') ||
+        (!prefersDark.matches && SettingsAPI.theme !== 'light')
       ) {
         changeTheme();
       }
@@ -120,15 +118,10 @@ const AppWrapper = (props: {children: any}) => {
   };
 
   const renderChild = () => {
-    setChild(props.children)
-  }
+    setChild(props.children);
+  };
 
-  return (
-      <div
-          id="appWrapper">
-        { child ? child : <p>Loading</p>}
-      </div>
-  );
+  return <div id="appWrapper">{child ? child : <p>Loading</p>}</div>;
 };
 
 export default AppWrapper;

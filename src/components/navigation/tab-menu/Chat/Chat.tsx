@@ -3,16 +3,25 @@ import {
   CreateAnimation,
   createGesture,
   IonActionSheet,
-  IonBackButton, IonButton, IonButtons,
+  IonBackButton,
+  IonButton,
+  IonButtons,
   IonCheckbox,
   IonCol,
   IonContent,
   IonFooter,
   IonGrid,
   IonHeader,
-  IonIcon, IonInfiniteScroll, IonInfiniteScrollContent, IonInput,
-  IonItem, IonLabel, IonList, IonModal,
-  IonPage, IonPopover,
+  IonIcon,
+  IonInfiniteScroll,
+  IonInfiniteScrollContent,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonPage,
+  IonPopover,
   IonRefresher,
   IonRefresherContent,
   IonRow,
@@ -31,7 +40,11 @@ import {
   trash,
   qrCodeOutline,
   trashOutline,
-  wifiOutline, informationCircleOutline, copyOutline, ellipsisVertical, refreshCircleSharp
+  wifiOutline,
+  informationCircleOutline,
+  copyOutline,
+  ellipsisVertical,
+  refreshCircleSharp,
 } from 'ionicons/icons';
 
 import {useParams} from 'react-router';
@@ -46,16 +59,15 @@ import {useHistory, useLocation} from 'react-router-dom';
 import {addressSlice} from '../../../../utils/utils';
 import {handleConnect} from '../../../AppWrapper';
 import {subscribe} from '../../../../utils/events';
-import { HandleConnect } from '../../../../api/p2p/HandleConnect';
-import { PeerConnect } from '../../../../api/p2p/PeerConnect';
-import { PouchAPI } from '../../../../db/database';
-import {QRCode} from "react-qrcode-logo";
+import {HandleConnect} from '../../../../api/p2p/HandleConnect';
+import {PeerConnect} from '../../../../api/p2p/PeerConnect';
+import {PouchAPI} from '../../../../db/database';
+import {QRCode} from 'react-qrcode-logo';
 
 const Chat = () => {
   const params = useParams();
   const location = useLocation();
   const nav = useHistory();
-
 
   //  Global State
   const notificationCount = 0;
@@ -91,31 +103,31 @@ const Chat = () => {
   const actionSheetButtons = [
     {
       text:
-          actionMessage && actionMessage.starred
-              ? 'Unstar Message'
-              : 'Star Message',
+        actionMessage && actionMessage.starred
+          ? 'Unstar Message'
+          : 'Star Message',
       icon: starOutline,
       handler: () => {},
     },
     actionMessage && actionMessage.received
-        ? {
+      ? {
           text: 'Reply To Message',
           icon: shareOutline,
           handler: () => showReplyToMessage(actionMessage),
         }
-        : {
+      : {
           text: 'Unsend Message',
           icon: alertOutline,
           handler: () =>
-              toaster(
-                  "I haven't implemented unsend :) Simple store update though"
-              ),
+            toaster(
+              "I haven't implemented unsend :) Simple store update though"
+            ),
         },
     {
       text: 'Delete Message',
       icon: trashOutline,
       handler: () =>
-          toaster("I haven't implemented delete :) Simple store update though"),
+        toaster("I haven't implemented delete :) Simple store update though"),
       role: 'destructive',
     },
   ];
@@ -128,7 +140,6 @@ const Chat = () => {
   }, [showActionSheet]);
 
   useEffect(() => {
-
     subscribe('updateChat', () => {
       updateChat();
     });
@@ -140,7 +151,10 @@ const Chat = () => {
 
   const updateChat = async () => {
     if (!params) return;
-    const chat = await HandleConnect.getPeer(PeerConnect.table, params.channel_id);
+    const chat = await HandleConnect.getPeer(
+      PeerConnect.table,
+      params.channel_id
+    );
     if (chat) setChat(chat);
   };
   const pingChat = async () => {
@@ -195,10 +209,10 @@ const Chat = () => {
   const onLongPress = (e) => {
     const elementID = e.target.id;
     const chatMessageID = elementID.includes('chatText')
-        ? parseInt(elementID.replace('chatText_', ''))
-        : elementID.includes('chatTime')
-            ? parseInt(elementID.replace('chatTime_', ''))
-            : parseInt(elementID.replace('chatBubble_', ''));
+      ? parseInt(elementID.replace('chatText_', ''))
+      : elementID.includes('chatTime')
+      ? parseInt(elementID.replace('chatTime_', ''))
+      : parseInt(elementID.replace('chatBubble_', ''));
 
     /*
     const chatMessage = chat.filter(
@@ -317,12 +331,15 @@ const Chat = () => {
       try {
         const identifier = params.channel_id.split(':')[1];
 
-        const profile = await PouchAPI.get(PeerConnect.table, 'default-profile');
+        const profile = await PouchAPI.get(
+          PeerConnect.table,
+          'default-profile'
+        );
         handleConnect.sendMessage(
-            identifier,
-            params.channel_id,
-            message,
-            profile?.username
+          identifier,
+          params.channel_id,
+          message,
+          profile?.username
         );
         setMessage('');
         setMessageSent(true);
@@ -354,7 +371,7 @@ const Chat = () => {
 
   const onWillDismiss = (ev) => {
     closeModal();
-  }
+  };
 
   const closeModal = () => {
     setShowQrCode(false);
@@ -366,172 +383,168 @@ const Chat = () => {
   };
 
   return (
-      <IonPage className="">
-        <IonHeader>
-          <IonToolbar>
-            <IonBackButton
-                defaultHref={'/tabs/chats'}
-                onClick={() => {
-                  setShowFooter(false);
-                  history.goBack();
-                }}
-                slot="start"
-                text={notificationCount > 0 ? notificationCount : ''}
-            />
-            <IonTitle>
-              <div className="chat-contact ">
-                <img
-                    src={'https://via.placeholder.com/150'}
-                    alt="avatar"
-                />
-                <div className="chat-contact-details">
-                  <p>
-                    {chat?.name}
-                    <span
-                        className="ml-3 color animate-fade"
-                        onClick={() => pingChat()}>
+    <IonPage className="">
+      <IonHeader>
+        <IonToolbar>
+          <IonBackButton
+            defaultHref={'/tabs/chats'}
+            onClick={() => {
+              setShowFooter(false);
+              history.goBack();
+            }}
+            slot="start"
+            text={notificationCount > 0 ? notificationCount : ''}
+          />
+          <IonTitle>
+            <div className="chat-contact ">
+              <img
+                src={'https://via.placeholder.com/150'}
+                alt="avatar"
+              />
+              <div className="chat-contact-details">
+                <p>
+                  {chat?.name}
+                  <span
+                    className="ml-3 color animate-fade"
+                    onClick={() => pingChat()}>
                     {chat?.connected ? (
-                        <IonIcon
-                            size="small"
-                            icon={wifiOutline}
-                            color="success"
-                        />
+                      <IonIcon
+                        size="small"
+                        icon={wifiOutline}
+                        color="success"
+                      />
                     ) : (
-                        <IonIcon
-                            size="small"
-                            icon={wifiOutline}
-                            color="gray"
-                        />
+                      <IonIcon
+                        size="small"
+                        icon={wifiOutline}
+                        color="gray"
+                      />
                     )}
                   </span>
-                  </p>
-                  <IonText
-                      color="medium cursor-pointer"
-                      onClick={() => onCopy(chat?.identifier)}>
-                    {addressSlice(chat?.identifier, 15)}
-                  </IonText>
-                </div>
+                </p>
+                <IonText
+                  color="medium cursor-pointer"
+                  onClick={() => onCopy(chat?.identifier)}>
+                  {addressSlice(chat?.identifier, 15)}
+                </IonText>
               </div>
-            </IonTitle>
-            <div className="ion-text-end">
-              <IonIcon
-                  className="text-2xl mt-2"
-                  id={`popover-button-chat`}
-                  icon={ellipsisVertical}
-                  slot="end"
-              />
-              <IonPopover
-                  className="scroll-y-hidden"
-                  trigger={`popover-button-chat`}
-                  dismissOnSelect={true}
-                  size={'auto'}
-                  side="bottom"
-                  ref={popover}
-                  isOpen={popoverOpen}
-                  onDidDismiss={() => setPopoverOpen(false)}>
-                <>
-                  <IonRow>
-                    <IonItem
-                        className="px-4 py-2"
-                        onClick={() => updateChat()}>
-                      <IonIcon
-                          slot="start"
-                          icon={refreshCircleSharp}
-                      />
-                      <IonLabel> Update</IonLabel>
-                    </IonItem>
-                  </IonRow>
-                  <IonRow>
-                    <IonItem
-                        className="px-4 py-2"
-                        onClick={() => onCopy(chat?.identifier)}>
-                      <IonIcon
-                          slot="start"
-                          icon={copyOutline}
-                      />
-                      <IonLabel> Copy ID</IonLabel>
-                    </IonItem>
-                  </IonRow>
-                  <IonRow>
-                    <IonItem className="px-4 py-2">
-                      <IonIcon
-                          slot="start"
-                          icon={qrCodeOutline}
-                      />
-                      <IonLabel
-                          onClick={() => {
-                            setShowQrCode(true);
-                            openModal();
-                          }}
-                      >QR Code</IonLabel>
-                    </IonItem>
-                  </IonRow>
-                  <IonRow>
-                    <IonItem className="px-4 py-2">
-                      <IonIcon
-                          slot="start"
-                          icon={trashOutline}
-                      />
-                      <IonLabel
-                          onClick={() => removeChat()}
-                      >Delete</IonLabel>
-                    </IonItem>
-                  </IonRow>
-                </>
-              </IonPopover>
-              <IonModal
-                  isOpen={showQrCode}
-                  ref={modal}
-                  trigger="open-create-chat"
-                  onWillDismiss={(ev) => onWillDismiss(ev)}>
-                <IonHeader>
-                  <IonToolbar>
-                    <IonTitle>QR Code</IonTitle>
-                    <IonButtons slot="end">
-                      <IonButton
-                          onClick={() => {
-                            setShowQrCode(false);
-                            closeModal();
-                          }}>
-                        Close
-                      </IonButton>
-                    </IonButtons>
-                  </IonToolbar>
-                </IonHeader>
-                <IonContent className="ion-padding">
-                  <div className="flex flex-col text-center w-full p-4 items-center">
-                    <QRCode
-                        value={JSON.stringify({
-                          id: params.channel_id.split(':')[1],
-                          name: params.channel_id.split(':')[0]
-                        })}
-                        size={250}
-                        fgColor={'black'}
-                        bgColor={'#FFFFFF'}
-                        qrStyle={'squares'}
-                        logoImage={
-                          'https://webisora.com/wp-content/uploads/2017/09/WebisoraLogo_B.png'
-                        }
-                        logoWidth={180}
-                        logoHeight={40}
-                        logoOpacity={1}
-                        quietZon={10} //The size of the quiet zone around the QR Code. This will have the same color as QR Code bgColor
-                    />
-                    <p className="my-2 text-lg">
-                      Scan Chat ID
-                    </p>
-                  </div>
-
-                </IonContent>
-              </IonModal>
             </div>
-          </IonToolbar>
-        </IonHeader>
+          </IonTitle>
+          <div className="ion-text-end">
+            <IonIcon
+              className="text-2xl mt-2"
+              id={`popover-button-chat`}
+              icon={ellipsisVertical}
+              slot="end"
+            />
+            <IonPopover
+              className="scroll-y-hidden"
+              trigger={`popover-button-chat`}
+              dismissOnSelect={true}
+              size={'auto'}
+              side="bottom"
+              ref={popover}
+              isOpen={popoverOpen}
+              onDidDismiss={() => setPopoverOpen(false)}>
+              <>
+                <IonRow>
+                  <IonItem
+                    className="px-4 py-2"
+                    onClick={() => updateChat()}>
+                    <IonIcon
+                      slot="start"
+                      icon={refreshCircleSharp}
+                    />
+                    <IonLabel> Update</IonLabel>
+                  </IonItem>
+                </IonRow>
+                <IonRow>
+                  <IonItem
+                    className="px-4 py-2"
+                    onClick={() => onCopy(chat?.identifier)}>
+                    <IonIcon
+                      slot="start"
+                      icon={copyOutline}
+                    />
+                    <IonLabel> Copy ID</IonLabel>
+                  </IonItem>
+                </IonRow>
+                <IonRow>
+                  <IonItem className="px-4 py-2">
+                    <IonIcon
+                      slot="start"
+                      icon={qrCodeOutline}
+                    />
+                    <IonLabel
+                      onClick={() => {
+                        setShowQrCode(true);
+                        openModal();
+                      }}>
+                      QR Code
+                    </IonLabel>
+                  </IonItem>
+                </IonRow>
+                <IonRow>
+                  <IonItem className="px-4 py-2">
+                    <IonIcon
+                      slot="start"
+                      icon={trashOutline}
+                    />
+                    <IonLabel onClick={() => removeChat()}>Delete</IonLabel>
+                  </IonItem>
+                </IonRow>
+              </>
+            </IonPopover>
+            <IonModal
+              isOpen={showQrCode}
+              ref={modal}
+              trigger="open-create-chat"
+              onWillDismiss={(ev) => onWillDismiss(ev)}>
+              <IonHeader>
+                <IonToolbar>
+                  <IonTitle>QR Code</IonTitle>
+                  <IonButtons slot="end">
+                    <IonButton
+                      onClick={() => {
+                        setShowQrCode(false);
+                        closeModal();
+                      }}>
+                      Close
+                    </IonButton>
+                  </IonButtons>
+                </IonToolbar>
+              </IonHeader>
+              <IonContent className="ion-padding">
+                <div className="flex flex-col text-center w-full p-4 items-center">
+                  <QRCode
+                    value={JSON.stringify({
+                      id: params.channel_id.split(':')[1],
+                      name: params.channel_id.split(':')[0],
+                    })}
+                    size={250}
+                    fgColor={'black'}
+                    bgColor={'#FFFFFF'}
+                    qrStyle={'squares'}
+                    logoImage={
+                      'https://webisora.com/wp-content/uploads/2017/09/WebisoraLogo_B.png'
+                    }
+                    logoWidth={180}
+                    logoHeight={40}
+                    logoOpacity={1}
+                    quietZon={10} //The size of the quiet zone around the QR Code. This will have the same color as QR Code bgColor
+                  />
+                  <p className="my-2 text-lg">Scan Chat ID</p>
+                </div>
+              </IonContent>
+            </IonModal>
+          </div>
+        </IonToolbar>
+      </IonHeader>
 
-        <IonContent
-            id="main-chat-content"
-            ref={contentRef}>
-          {chat &&
+      <IonContent
+        id="main-chat-content"
+        ref={contentRef}>
+        {chat &&
           Object.keys(chat).length &&
           chat?.messages.map((message, index) => {
             /*
@@ -541,108 +554,107 @@ const Chat = () => {
           )[0];
           */
             return (
-                <div
-                    ref={(ref) => (swiperRefs.current[index] = ref)}
-                    id={`chatBubble_${index}`}
-                    key={index}
-                    className={`chat-bubble ${
-                        message.self ? 'bubble-sent' : 'bubble-received'
-                    }`}
-                    {...longPressEvent}>
-                  {message?.sender ? (
-                      <div
-                          className={`mr-2 ${
-                              message.self ? 'chat-bottom-details' : ''
-                          }`}>
+              <div
+                ref={(ref) => (swiperRefs.current[index] = ref)}
+                id={`chatBubble_${index}`}
+                key={index}
+                className={`chat-bubble ${
+                  message.self ? 'bubble-sent' : 'bubble-received'
+                }`}
+                {...longPressEvent}>
+                {message?.sender ? (
+                  <div
+                    className={`mr-2 ${
+                      message.self ? 'chat-bottom-details' : ''
+                    }`}>
                     <span
-                        onClick={() => onCopy(message.sender.address)}
-                        className={`cursor-pointer text-sm rounded p-1 text-white opacity-75 bg-${
-                            message.self ? 'green' : 'gray'
-                        }-400`}>
+                      onClick={() => onCopy(message.sender.address)}
+                      className={`cursor-pointer text-sm rounded p-1 text-white opacity-75 bg-${
+                        message.self ? 'green' : 'gray'
+                      }-400`}>
                       {message.username?.length
-                          ? `@${message.username}`
-                          : addressSlice(message.sender.address, 2)}
+                        ? `@${message.username}`
+                        : addressSlice(message.sender.address, 2)}
                     </span>
-                      </div>
-                  ) : null}
-                  <div id={`chatText_${index}`}>
-                    <ChatRepliedQuote
-                        message={message?.preview}
-                        contact={null}
-                        //repliedMessage={repliedMessage}
-                    />
-                    {message?.preview}
-                    <ChatBottomDetails message={message} />
                   </div>
-
-                  <div className={`bubble-arrow ${message.self && 'alt'}`}></div>
+                ) : null}
+                <div id={`chatText_${index}`}>
+                  <ChatRepliedQuote
+                    message={message?.preview}
+                    contact={null}
+                    //repliedMessage={repliedMessage}
+                  />
+                  {message?.preview}
+                  <ChatBottomDetails message={message} />
                 </div>
+
+                <div className={`bubble-arrow ${message.self && 'alt'}`}></div>
+              </div>
             );
           })}
 
-          <IonRefresher
-              slot="fixed"
-              onIonRefresh={handleRefresh}>
-            <IonRefresherContent />
-          </IonRefresher>
+        <IonRefresher
+          slot="fixed"
+          onIonRefresh={handleRefresh}>
+          <IonRefresherContent />
+        </IonRefresher>
 
-          <IonActionSheet
-              header="Message Actions"
-              subHeader={actionMessage && actionMessage.preview?.message}
-              isOpen={showActionSheet}
-              onDidDismiss={() => setShowActionSheet(false)}
-              buttons={actionSheetButtons}
-          />
-          <IonToast
-              color={toastColor}
-              isOpen={showToast}
-              onDidDismiss={() => setShowToast(false)}
-              message={toastMessage}
-              position="bottom"
-              duration="3000"
-          />
-        </IonContent>
+        <IonActionSheet
+          header="Message Actions"
+          subHeader={actionMessage && actionMessage.preview?.message}
+          isOpen={showActionSheet}
+          onDidDismiss={() => setShowActionSheet(false)}
+          buttons={actionSheetButtons}
+        />
+        <IonToast
+          color={toastColor}
+          isOpen={showToast}
+          onDidDismiss={() => setShowToast(false)}
+          message={toastMessage}
+          position="bottom"
+          duration="3000"
+        />
+      </IonContent>
 
+      {showFooter ? (
+        <IonFooter
+          className="chat-footer animate-fadeOut "
+          id="chat-footer">
+          <IonGrid>
+            <IonRow className="ion-align-items-center">
+              <IonItem color="transparent">
+                <IonCheckbox
+                  disabled={true}
+                  slot="start"></IonCheckbox>
+              </IonItem>
+              <div className="chat-input-container">
+                <CreateAnimation
+                  ref={textareaRef}
+                  {...textareaAnimation}>
+                  <IonTextarea
+                    rows="1"
+                    disabled={!chat?.connected}
+                    value={message}
+                    onIonChange={(e) => setMessage(e.target.value)}
+                  />
+                </CreateAnimation>
+              </div>
 
-        {showFooter ?
-            <IonFooter
-                className="chat-footer animate-fadeOut "
-                id="chat-footer">
-
-              <IonGrid>
-                <IonRow className="ion-align-items-center">
-                  <IonItem color="transparent">
-                    <IonCheckbox
-                        disabled={true}
-                        slot="start"></IonCheckbox>
-                  </IonItem>
-                  <div className="chat-input-container">
-                    <CreateAnimation
-                        ref={textareaRef}
-                        {...textareaAnimation}>
-                      <IonTextarea
-                          rows="1"
-                          disabled={!chat?.connected}
-                          value={message}
-                          onIonChange={(e) => setMessage(e.target.value)}
-                      />
-                    </CreateAnimation>
-                  </div>
-
-                  <CreateAnimation
-                      ref={sendRef}
-                      {...sendButtonAnimation}>
-                    <IonCol
-                        size="1"
-                        className="chat-send-button"
-                        onClick={sendMessage}>
-                      <IonIcon icon={send} />
-                    </IonCol>
-                  </CreateAnimation>
-                </IonRow>
-              </IonGrid>
-            </IonFooter>: null}
-      </IonPage>
+              <CreateAnimation
+                ref={sendRef}
+                {...sendButtonAnimation}>
+                <IonCol
+                  size="1"
+                  className="chat-send-button"
+                  onClick={sendMessage}>
+                  <IonIcon icon={send} />
+                </IonCol>
+              </CreateAnimation>
+            </IonRow>
+          </IonGrid>
+        </IonFooter>
+      ) : null}
+    </IonPage>
   );
 };
 

@@ -12,7 +12,7 @@ import './theme/structure.css';
 import AppWrapper from './components/AppWrapper';
 //import {HandleConnect} from './api/p2p/HandleConnect';
 import {SplashScreen} from '@capacitor/splash-screen';
-import { useAppDispatch } from './store/hooks';
+import {useAppDispatch} from './store/hooks';
 import {setIsExtension} from './store/reducers/settings';
 
 //export const handleConnect = new HandleConnect();
@@ -58,13 +58,13 @@ const App = (isExtension?: boolean) => {
   }, []);
 
   return (
-      <IonApp>
-        <AppWrapper>
-          <SideMenuProvider>
-            <Routes />
-          </SideMenuProvider>
-        </AppWrapper>
-      </IonApp>
+    <IonApp>
+      <AppWrapper>
+        <SideMenuProvider>
+          <Routes />
+        </SideMenuProvider>
+      </AppWrapper>
+    </IonApp>
   );
 };
 

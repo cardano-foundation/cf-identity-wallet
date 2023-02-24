@@ -9,7 +9,7 @@ import Meerkat from '@fabianbormann/meerkat';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
 import {publish} from '../../utils/events';
-import { PouchAPI } from '../../db/database';
+import {PouchAPI} from '../../db/database';
 // @ts-ignore
 const moment = extendMoment(Moment);
 
@@ -29,13 +29,13 @@ export class PeerConnect extends CardanoPeerConnect {
   conected = false;
 
   constructor(
-      name: string,
-      config: {
-        seed: string | undefined;
-        identifier: string | undefined;
-        announce: string[];
-        messages?: string[];
-      }
+    name: string,
+    config: {
+      seed: string | undefined;
+      identifier: string | undefined;
+      announce: string[];
+      messages?: string[];
+    }
   ) {
     super();
 
@@ -57,7 +57,7 @@ export class PeerConnect extends CardanoPeerConnect {
 
     this.meerkat.on('server', () => {
       console.log(`[info]: connected to server 💬: ${this.meerkat.identifier}`);
-      PouchAPI.get(PeerConnect.table, this.id).then(peer => {
+      PouchAPI.get(PeerConnect.table, this.id).then((peer) => {
         PouchAPI.set(PeerConnect.table, this.id, {
           id: this.id,
           seed: peer.seed,
@@ -65,46 +65,47 @@ export class PeerConnect extends CardanoPeerConnect {
           name,
           announce: peer.announce,
           messages: peer.messages,
-          connected: true
+          connected: true,
         }).then(() => publish('updateChat'));
       });
     });
 
     this.meerkat.register(
-        'text_receive',
-        (address: string, message: {[key: string]: any}, callback: Function) => {
-          try {
-            console.log(`[info]: message received: ${JSON.stringify(message)}`);
-            console.log(`[info]: transmitted by the server: ${address}`);
+      'text_receive',
+      (address: string, message: {[key: string]: any}, callback: Function) => {
+        try {
+          console.log(`[info]: message received: ${JSON.stringify(message)}`);
+          console.log(`[info]: transmitted by the server: ${address}`);
 
-            PouchAPI.get(PeerConnect.table, this.id).then(p => {
-              const newMessage = {
-                preview: message?.message,
-                sender: message?.sender,
-                self: this.meerkat.peers[message?.sender?.address] === undefined,
-                username: message?.username,
-                received: true,
-                sent: true,
-                read: false,
-                starred: false,
-                date: moment.utc().format('MM-DD HH:mm:ss'),
-              };
-              PouchAPI.set(PeerConnect.table, this.id, {
-                id: this.id,
-                seed: this.meerkat.seed,
-                identifier: this.meerkat.identifier,
-                name,
-                announce: p.announce || [],
-                messages: [...p.messages, newMessage],
-                connected: p.connected || false
-              }).then(_ => {publish('updateChat')});
+          PouchAPI.get(PeerConnect.table, this.id).then((p) => {
+            const newMessage = {
+              preview: message?.message,
+              sender: message?.sender,
+              self: this.meerkat.peers[message?.sender?.address] === undefined,
+              username: message?.username,
+              received: true,
+              sent: true,
+              read: false,
+              starred: false,
+              date: moment.utc().format('MM-DD HH:mm:ss'),
+            };
+            PouchAPI.set(PeerConnect.table, this.id, {
+              id: this.id,
+              seed: this.meerkat.seed,
+              identifier: this.meerkat.identifier,
+              name,
+              announce: p.announce || [],
+              messages: [...p.messages, newMessage],
+              connected: p.connected || false,
+            }).then((_) => {
+              publish('updateChat');
             });
-          } catch (e) {
-            callback(false);
-          }
+          });
+        } catch (e) {
+          callback(false);
         }
+      }
     );
-
 
     PouchAPI.set(PeerConnect.table, this.id, {
       id: this.id,
@@ -113,7 +114,7 @@ export class PeerConnect extends CardanoPeerConnect {
       name,
       announce: this.meerkat.announce,
       messages: config.messages,
-      connected: false
+      connected: false,
     }).then(() => {
       console.log(`[info]: store in DB peer: ${this.id}`);
     });
@@ -129,22 +130,22 @@ export class PeerConnect extends CardanoPeerConnect {
    *
    */
   sendMessage(
-      identifier: string,
-      message: string,
-      username: string = ''
+    identifier: string,
+    message: string,
+    username: string = ''
   ): void {
     if (!this.meerkat) return;
     this.meerkat.rpc(
-        identifier,
-        'text_message',
-        {
-          message,
-          username,
-        },
-        (response: boolean) => {
-          try {
-          } catch (e) {}
-        }
+      identifier,
+      'text_message',
+      {
+        message,
+        username,
+      },
+      (response: boolean) => {
+        try {
+        } catch (e) {}
+      }
     );
   }
 
@@ -162,7 +163,7 @@ export class PeerConnect extends CardanoPeerConnect {
 
     this.meerkat.rpc(identifier, 'ping_server', {}, (response: boolean) => {
       try {
-        PouchAPI.get(PeerConnect.table, this.id).then(peer => {
+        PouchAPI.get(PeerConnect.table, this.id).then((peer) => {
           PouchAPI.set(PeerConnect.table, this.id, {
             id: this.id,
             seed: this.meerkat.seed,
@@ -170,8 +171,8 @@ export class PeerConnect extends CardanoPeerConnect {
             name,
             announce: peer?.announce || [],
             messages: peer?.messages || [],
-            connected: response
-          }).then(_ => publish('updateChat'));
+            connected: response,
+          }).then((_) => publish('updateChat'));
         });
       } catch (e) {}
     });

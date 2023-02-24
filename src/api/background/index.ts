@@ -28,33 +28,45 @@ const app = Messaging.createBackgroundController();
 
 app.add(METHOD.getBalance, (request, sendResponse) => {
   getBalance()
-      .then((value) => {
-        sendResponse({
-          // @ts-ignore
-          id: request.id,
-          // @ts-ignore
-          data: Buffer.from(value.to_bytes(), 'hex').toString('hex'),
-          target: TARGET,
-          sender: SENDER.extension,
-        });
-      })
-      .catch((e) => {
-        sendResponse({
-          // @ts-ignore
-          id: request.id,
-          error: e,
-          target: TARGET,
-          sender: SENDER.extension,
-        });
+    .then((value) => {
+      sendResponse({
+        // @ts-ignore
+        id: request.id,
+        // @ts-ignore
+        data: Buffer.from(value.to_bytes(), 'hex').toString('hex'),
+        target: TARGET,
+        sender: SENDER.extension,
       });
+    })
+    .catch((e) => {
+      sendResponse({
+        // @ts-ignore
+        id: request.id,
+        error: e,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    });
 });
 
 app.add(METHOD.enable, async (request, sendResponse) => {
   // @ts-ignore
   isWhitelisted(request.origin)
-      .then(async (whitelisted) => {
-        // @ts-ignore
-        if (whitelisted) {
+    .then(async (whitelisted) => {
+      // @ts-ignore
+      if (whitelisted) {
+        sendResponse({
+          // @ts-ignore
+          id: request.id,
+          data: true,
+          target: TARGET,
+          sender: SENDER.extension,
+        });
+      } else {
+        const response = await createPopup(POPUP.internal)
+          .then((tab) => Messaging.sendToPopupInternal(tab, request))
+          .then((response) => response);
+        if (response.data === true) {
           sendResponse({
             // @ts-ignore
             id: request.id,
@@ -62,69 +74,57 @@ app.add(METHOD.enable, async (request, sendResponse) => {
             target: TARGET,
             sender: SENDER.extension,
           });
+        } else if (response.error) {
+          sendResponse({
+            // @ts-ignore
+            id: request.id,
+            error: response.error,
+            target: TARGET,
+            sender: SENDER.extension,
+          });
         } else {
-          const response = await createPopup(POPUP.internal)
-              .then((tab) => Messaging.sendToPopupInternal(tab, request))
-              .then((response) => response);
-          if (response.data === true) {
-            sendResponse({
-              // @ts-ignore
-              id: request.id,
-              data: true,
-              target: TARGET,
-              sender: SENDER.extension,
-            });
-          } else if (response.error) {
-            sendResponse({
-              // @ts-ignore
-              id: request.id,
-              error: response.error,
-              target: TARGET,
-              sender: SENDER.extension,
-            });
-          } else {
-            sendResponse({
-              // @ts-ignore
-              id: request.id,
-              error: APIError.InternalError,
-              target: TARGET,
-              sender: SENDER.extension,
-            });
-          }
-        }
-      })
-      .catch(() =>
           sendResponse({
             // @ts-ignore
             id: request.id,
             error: APIError.InternalError,
             target: TARGET,
             sender: SENDER.extension,
-          })
-      );
+          });
+        }
+      }
+    })
+    .catch(() =>
+      sendResponse({
+        // @ts-ignore
+        id: request.id,
+        error: APIError.InternalError,
+        target: TARGET,
+        sender: SENDER.extension,
+      })
+    );
 });
 
 app.add(METHOD.isEnabled, (request, sendResponse) => {
   // @ts-ignore
   isWhitelisted(request.origin)
-      .then((whitelisted) => {
-        sendResponse({
-          // @ts-ignore
-          id: request.id,
-          data: whitelisted,
-          target: TARGET,
-          sender: SENDER.extension,
-        });
-      })
-      .catch(() => {
-        sendResponse({
-          // @ts-ignore
-          id: request.id,
-          error: APIError.InternalError,
-          target: TARGET,
-          sender: SENDER.extension,
-        });
+    .then((whitelisted) => {
+      sendResponse({
+        // @ts-ignore
+        id: request.id,
+        data: whitelisted,
+        target: TARGET,
+        sender: SENDER.extension,
       });
+    })
+    .catch(() => {
+      sendResponse({
+        // @ts-ignore
+        id: request.id,
+        error: APIError.InternalError,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    });
 });
 
 app.add(METHOD.getAddress, async (request, sendResponse) => {
@@ -184,80 +184,80 @@ app.add(METHOD.getRewardAddress, async (request, sendResponse) => {
 app.add(METHOD.getUtxos, (request, sendResponse) => {
   // @ts-ignore
   getUtxos(request.data.amount, request.data.paginate)
-      .then((utxos) => {
+    .then((utxos) => {
+      // @ts-ignore
+      utxos = utxos
+        ? // @ts-ignore
+          utxos.map((utxo) =>
+            Buffer.from(utxo.to_bytes(), 'hex').toString('hex')
+          )
+        : null;
+      sendResponse({
         // @ts-ignore
-        utxos = utxos
-            ? // @ts-ignore
-            utxos.map((utxo) =>
-                Buffer.from(utxo.to_bytes(), 'hex').toString('hex')
-            )
-            : null;
-        sendResponse({
-          // @ts-ignore
-          id: request.id,
-          data: utxos,
-          target: TARGET,
-          sender: SENDER.extension,
-        });
-      })
-      .catch((e) => {
-        sendResponse({
-          // @ts-ignore
-          id: request.id,
-          error: e,
-          target: TARGET,
-          sender: SENDER.extension,
-        });
+        id: request.id,
+        data: utxos,
+        target: TARGET,
+        sender: SENDER.extension,
       });
+    })
+    .catch((e) => {
+      sendResponse({
+        // @ts-ignore
+        id: request.id,
+        error: e,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    });
 });
 
 app.add(METHOD.getCollateral, (request, sendResponse) => {
   getCollateral()
-      .then((utxos) => {
+    .then((utxos) => {
+      // @ts-ignore
+      utxos = utxos.map((utxo) =>
+        Buffer.from(utxo.to_bytes(), 'hex').toString('hex')
+      );
+      sendResponse({
         // @ts-ignore
-        utxos = utxos.map((utxo) =>
-            Buffer.from(utxo.to_bytes(), 'hex').toString('hex')
-        );
-        sendResponse({
-          // @ts-ignore
-          id: request.id,
-          data: utxos,
-          target: TARGET,
-          sender: SENDER.extension,
-        });
-      })
-      .catch((e) => {
-        sendResponse({
-          // @ts-ignore
-          id: request.id,
-          error: e,
-          target: TARGET,
-          sender: SENDER.extension,
-        });
+        id: request.id,
+        data: utxos,
+        target: TARGET,
+        sender: SENDER.extension,
       });
+    })
+    .catch((e) => {
+      sendResponse({
+        // @ts-ignore
+        id: request.id,
+        error: e,
+        target: TARGET,
+        sender: SENDER.extension,
+      });
+    });
 });
 
 app.add(METHOD.submitTx, (request, sendResponse) => {
   // @ts-ignore
   submitTx(request.data)
-      .then((txHash) => {
-        sendResponse({
-          // @ts-ignore
-          id: request.id,
-          data: txHash,
-          target: TARGET,
-          sender: SENDER.extension,
-        });
-      })
-      .catch((e) => {
-        sendResponse({
-          // @ts-ignore
-          id: request.id,
-          target: TARGET,
-          error: e,
-          sender: SENDER.extension,
-        });
+    .then((txHash) => {
+      sendResponse({
+        // @ts-ignore
+        id: request.id,
+        data: txHash,
+        target: TARGET,
+        sender: SENDER.extension,
       });
+    })
+    .catch((e) => {
+      sendResponse({
+        // @ts-ignore
+        id: request.id,
+        target: TARGET,
+        error: e,
+        sender: SENDER.extension,
+      });
+    });
 });
 
 app.add(METHOD.isWhitelisted, async (request, sendResponse) => {
@@ -310,8 +310,8 @@ app.add(METHOD.signData, async (request, sendResponse) => {
     await extractKeyHash(request.data.address);
 
     const response = await createPopup(POPUP.internal)
-        .then((tab) => Messaging.sendToPopupInternal(tab, request))
-        .then((response) => response);
+      .then((tab) => Messaging.sendToPopupInternal(tab, request))
+      .then((response) => response);
 
     if (response.data) {
       sendResponse({
@@ -354,8 +354,8 @@ app.add(METHOD.signTx, async (request, sendResponse) => {
     // @ts-ignore
     await verifyTx(request.data.tx);
     const response = await createPopup(POPUP.internal)
-        .then((tab) => Messaging.sendToPopupInternal(tab, request))
-        .then((response) => response);
+      .then((tab) => Messaging.sendToPopupInternal(tab, request))
+      .then((response) => response);
 
     if (response.data) {
       sendResponse({
@@ -423,20 +423,20 @@ app.add(METHOD.sendMessageP2P, async (request, sendResponse) => {
 
     meerkat.on('server', () => {
       console.log(
-          `[info]: SendMessage-> connected to server: ${clientAddress}`
+        `[info]: SendMessage-> connected to server: ${clientAddress}`
       );
       meerkat.rpc(
-          clientAddress,
-          'message',
-          {message},
-          (response: (arg0: string) => void) => {
-            console.log(`Message sent :${message}`);
-            console.log(`To server :${clientAddress}`);
-            console.log(`By user :${meerkat.address()}`);
-            //response(`Message sent: ${message}`);
-            meerkat.close();
-            console.log(`Connection is closed`);
-          }
+        clientAddress,
+        'message',
+        {message},
+        (response: (arg0: string) => void) => {
+          console.log(`Message sent :${message}`);
+          console.log(`To server :${clientAddress}`);
+          console.log(`By user :${meerkat.address()}`);
+          //response(`Message sent: ${message}`);
+          meerkat.close();
+          console.log(`Connection is closed`);
+        }
       );
     });
 
@@ -512,13 +512,13 @@ app.add(METHOD.joinServerP2P, async (request, sendResponse) => {
     });
 
     meerkat.register(
-        'message',
-        (address: any, args: any, callback: (arg0: string) => void) => {
-          console.log(
-              `[info]:joinServerP2P message rpc call invoked by address ${address} into window.cardano`
-          );
+      'message',
+      (address: any, args: any, callback: (arg0: string) => void) => {
+        console.log(
+          `[info]:joinServerP2P message rpc call invoked by address ${address} into window.cardano`
+        );
 
-          /*
+        /*
           getAccountFromDb().then((account) => {
             let acc = account[network];
             let serverRooms = acc?.rooms?.server || {};
@@ -540,8 +540,8 @@ app.add(METHOD.joinServerP2P, async (request, sendResponse) => {
             //updateAccountByNameAndNetworkInDb(network, accountName, acc);
           });
           */
-          callback('callback from message in joinServerP2P');
-        }
+        callback('callback from message in joinServerP2P');
+      }
     );
     // Update background state
     // @ts-ignore
@@ -628,13 +628,13 @@ app.add(METHOD.createServerP2P, async (request, sendResponse) => {
     });
 
     meerkat.register(
-        'message',
-        (address: any, args: any, callback: (arg0: string) => void) => {
-          console.log(
-              `[info]:createServerP2P message rpc call invoked by address ${address} into window.cardano`
-          );
+      'message',
+      (address: any, args: any, callback: (arg0: string) => void) => {
+        console.log(
+          `[info]:createServerP2P message rpc call invoked by address ${address} into window.cardano`
+        );
 
-          /*
+        /*
           getAccountFromDb(accountName).then((account) => {
             let acc = account[network];
             let serverRooms = acc?.rooms?.server || {};
@@ -663,8 +663,8 @@ app.add(METHOD.createServerP2P, async (request, sendResponse) => {
           });
           */
 
-          callback('callback from message');
-        }
+        callback('callback from message');
+      }
     );
 
     // Update background state

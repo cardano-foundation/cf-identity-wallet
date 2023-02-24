@@ -11,19 +11,19 @@ import {BrowserRouter} from 'react-router-dom';
 
 const root = ReactDOM.createRoot(document.getElementById('root-popup'));
 root.render(
-    <SafeArea
-        top
-        bottom>
-      <Provider store={store}>
-        <I18nextProvider i18n={i18n}>
-          <div style={{height: '600px', width: '400px'}}>
-            <BrowserRouter>
-              <App isExtension={true} />
-            </BrowserRouter>
-          </div>
-        </I18nextProvider>
-      </Provider>
-    </SafeArea>
+  <SafeArea
+    top
+    bottom>
+    <Provider store={store}>
+      <I18nextProvider i18n={i18n}>
+        <div style={{height: '600px', width: '400px'}}>
+          <BrowserRouter>
+            <App isExtension={true} />
+          </BrowserRouter>
+        </div>
+      </I18nextProvider>
+    </Provider>
+  </SafeArea>
 );
 
 // Enable PWA
@@ -34,13 +34,13 @@ if (process.env.NODE_ENV === 'production') {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
-          .register('/service-worker.js')
-          .then((registration) => {
-            console.log('SW registered: ', registration);
-          })
-          .catch((registrationError) => {
-            console.log('SW registration failed: ', registrationError);
-          });
+        .register('/service-worker.js')
+        .then((registration) => {
+          console.log('SW registered: ', registration);
+        })
+        .catch((registrationError) => {
+          console.log('SW registration failed: ', registrationError);
+        });
     });
   }
 }

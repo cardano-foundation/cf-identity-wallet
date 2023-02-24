@@ -1,4 +1,4 @@
-import { PreferencesAPI } from '../../db/preferences';
+import {PreferencesAPI} from '../../db/preferences';
 
 export const SettingsAPI = {
   table: 'settings',
@@ -35,7 +35,7 @@ export const SettingsAPI = {
     };
   },
   async getLanguage() {
-    return this.language
+    return this.language;
   },
   async commit() {
     await PreferencesAPI.set(this.table, {

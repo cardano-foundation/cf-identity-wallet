@@ -176,7 +176,9 @@ const VerifySeedPhrase = ({}) => {
                 expand="block"
                 className="h-auto my-4"
                 onClick={() => onVerifySeedPhrase()}
-                disabled={false}> {/*!equals(originalSeedPhrase, seedMatch) */}
+                disabled={false}>
+                {' '}
+                {/*!equals(originalSeedPhrase, seedMatch) */}
                 Continue
               </IonButton>
               <IonButton

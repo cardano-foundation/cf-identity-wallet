@@ -15,20 +15,21 @@ import {StatusBar, Style} from '@capacitor/status-bar';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
-    <SafeArea
-        top
-        bottom>
-      <Provider store={store}>
-        <I18nextProvider i18n={i18n}>
-          <App isExtension={false} />
-        </I18nextProvider>
-      </Provider>
-    </SafeArea>
+  <SafeArea
+    top
+    bottom>
+    <Provider store={store}>
+      <I18nextProvider i18n={i18n}>
+        <App isExtension={false} />
+      </I18nextProvider>
+    </Provider>
+  </SafeArea>
 );
 
 // window.matchMedia('(prefers-color-scheme: dark)').matches, match OS preference
 
-const isMobile = Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android';
+const isMobile =
+  Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android';
 if (
   window.matchMedia &&
   window.matchMedia('(prefers-color-scheme: dark)').matches
@@ -56,7 +57,7 @@ if (Capacitor.getPlatform() === 'web') {
   origin = (error) => {
     if (/Loading chunk [\d]+ failed/.test(error.message)) {
       alert(
-          'A new version released. Need to reload the page to apply changes.'
+        'A new version released. Need to reload the page to apply changes.'
       );
       window.location.reload();
     } else {
@@ -119,16 +120,16 @@ if (process.env.NODE_ENV === 'production') {
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
-          .register('/service-worker.js')
-          .then((registration) => {
-            console.log('SW registered service-worker.js: ', registration);
-          })
-          .catch((registrationError) => {
-            console.log(
-                'SW registration failed service-worker.js: ',
-                registrationError
-            );
-          });
+        .register('/service-worker.js')
+        .then((registration) => {
+          console.log('SW registered service-worker.js: ', registration);
+        })
+        .catch((registrationError) => {
+          console.log(
+            'SW registration failed service-worker.js: ',
+            registrationError
+          );
+        });
     });
   }
 }

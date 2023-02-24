@@ -12,7 +12,7 @@ const initialState: ISettingsState = {
   theme: 'dark',
   language: 'en',
   network: 'preprod',
-  isExtension: false
+  isExtension: false,
 };
 
 export const settingsSlice = createSlice({
@@ -41,7 +41,7 @@ export const settingsSlice = createSlice({
 });
 
 export const {setSettings, setTheme, setLanguage, setNetwork, setIsExtension} =
-    settingsSlice.actions;
+  settingsSlice.actions;
 
 export const getSettings = (state: RootState) => state.settings;
 export const getTheme = (state: RootState) => state.settings.theme;

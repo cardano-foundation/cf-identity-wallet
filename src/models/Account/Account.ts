@@ -10,7 +10,7 @@ import {
 } from '../types';
 import {Capacitor} from '@capacitor/core';
 import {getKeystore, setKeystore} from '../../db/keystore';
-import { PouchAPI } from '../../db/database';
+import {PouchAPI} from '../../db/database';
 
 const KEY_CHAIN_DEVICES = ['iphone', 'ipad', 'phablet', 'tablet', 'android'];
 
@@ -169,12 +169,12 @@ export class Account {
   }
 
   commit() {
-    if (!this.id || !this.id.length) return {error: `Invalid id with type: ${typeof this.id}`};
+    if (!this.id || !this.id.length)
+      return {error: `Invalid id with type: ${typeof this.id}`};
 
     try {
       PouchAPI.set(Account.table, this.id, this);
-    }
-    catch (e) {
+    } catch (e) {
       // TODO: cath this error, if already exists in db, just update it
       console.log(`[LOG]: account already exists: ${this.id}`);
       console.log(e);
@@ -240,7 +240,7 @@ export class Account {
 
   static async getAllAccounts() {
     const accountDocs = await PouchAPI.getTable(Account.table);
-    return accountDocs.map((acc: { doc: any; }) => acc.doc);
+    return accountDocs.map((acc: {doc: any}) => acc.doc);
   }
 
   static async getAllAccountsIds() {
