@@ -18,7 +18,7 @@ import {
   setCache,
 } from '../store/reducers/cache';
 import {setSettings} from '../store/reducers/settings';
-import {changeTheme} from '../theme/handleTheme';
+import {changeTheme} from '../theme/helpers/theme-helper';
 import {PouchAPI} from "../db/database";
 import { PreferencesAPI } from '../db/preferences';
 import { HandleConnect } from '../api/p2p/HandleConnect';
