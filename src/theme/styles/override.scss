@@ -3,8 +3,6 @@ ion-label {
 }
 
 ion-button {
-  --border-style: solid;
-  --border-width: 1px;
   --padding-top: 18px;
   --padding-bottom: 18px;
   font-size: 18px;
@@ -13,4 +11,12 @@ ion-button {
 
 ion-menu ion-item {
   --padding-start: 0;
+}
+
+ion-item {
+  --transition: none;
+}
+
+ion-popover ion-content::part(scroll) {
+  overflow-y: hidden;
 }

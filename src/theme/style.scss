@@ -1,8 +1,5 @@
-@import 'styles/dark.css';
-@import 'styles/light.css';
-@import 'styles/md.css';
-@import 'styles/ios.css';
-@import 'styles/override.css';
+@import 'styles/colors.scss';
+@import 'styles/override.scss';
 @import 'swiper/css';
 
 :root {

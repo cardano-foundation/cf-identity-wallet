@@ -48,7 +48,7 @@ const CredentialDetails = (props) => {
           actionButtonIconSize="1.7rem">
           <IonGrid fixed={true}>
             <IonRow>
-              <IonCol className="flex flex-row-reverse">
+              <IonCol className="flex flex-row-reverse p-0">
                 {cred.isVerified ? (
                   <IonItem>
                     <IonIcon
@@ -57,7 +57,9 @@ const CredentialDetails = (props) => {
                       color="success"
                       className="mr-2"
                     />
-                    verified on Cardano
+                    <IonLabel className="mb-4">
+                      <p>verified on Cardano</p>
+                    </IonLabel>
                   </IonItem>
                 ) : (
                   <IonItem>
@@ -67,7 +69,9 @@ const CredentialDetails = (props) => {
                       color="danger"
                       className="mr-2"
                     />
-                    unverified
+                    <IonLabel>
+                      <p>unverified</p>
+                    </IonLabel>
                   </IonItem>
                 )}
               </IonCol>
@@ -78,13 +82,15 @@ const CredentialDetails = (props) => {
                   <IonAvatar className="py-0 mx-auto">
                     <img
                       src={require(`../../assets/images/${cred.holderInformation.imageUrl}`)}
-                      alt=""
+                      alt="Credential holder"
                       className="w-14 h-14"
                     />
                   </IonAvatar>
                 </IonCol>
                 <IonCol size="9">
-                  <IonLabel className="py-3">
+                  <IonLabel
+                    color="primary"
+                    className="pt-3">
                     <h1>
                       <strong className="capitalize pr-3">
                         {cred.category === 'Supply Chain'
@@ -92,6 +98,8 @@ const CredentialDetails = (props) => {
                           : cred.holderInformation.name}
                       </strong>
                     </h1>
+                  </IonLabel>
+                  <IonLabel className="pb-3">
                     <p>{title()}</p>
                   </IonLabel>
                 </IonCol>
@@ -114,7 +122,9 @@ const CredentialDetails = (props) => {
                           <strong className="capitalize pr-3">
                             {Object.keys(cred.holderInformation)[key]}:
                           </strong>
-                          {cred.holderInformation[value]}
+                          <span className="text-base">
+                            {cred.holderInformation[value]}
+                          </span>
                         </IonLabel>
                       </IonItem>
                     )
@@ -136,7 +146,9 @@ const CredentialDetails = (props) => {
                       <strong className="capitalize pr-3">
                         {Object.keys(cred.issuerInformation)[key]}:
                       </strong>
-                      {cred.issuerInformation[value]}
+                      <span className="text-base">
+                        {cred.issuerInformation[value]}
+                      </span>
                     </IonLabel>
                   </IonItem>
                 ))}
@@ -157,7 +169,9 @@ const CredentialDetails = (props) => {
                       <strong className="capitalize pr-3">
                         {Object.keys(cred.attachments)[key]}:
                       </strong>
-                      {cred.attachments[value]}
+                      <span className="text-base">
+                        {cred.attachments[value]}
+                      </span>
                     </IonLabel>
                   </IonItem>
                 ))}

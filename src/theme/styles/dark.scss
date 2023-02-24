@@ -1,0 +1,53 @@
+/*
+ * Dark Theme
+ * ----------------------------------------------------------------------------
+ */
+
+body.dark {
+  --ion-color-dark: #f4f5f8;
+  --ion-color-dark-rgb: 244, 245, 248;
+  --ion-color-dark-contrast: #000000;
+  --ion-color-dark-contrast-rgb: 0, 0, 0;
+  --ion-color-dark-shade: #d7d8da;
+  --ion-color-dark-tint: #f5f6f9;
+
+  --ion-color-light: #222428;
+  --ion-color-light-rgb: 34, 36, 40;
+  --ion-color-light-contrast: #ffffff;
+  --ion-color-light-contrast-rgb: 255, 255, 255;
+  --ion-color-light-shade: #1e2023;
+  --ion-color-light-tint: #383a3e;
+
+  --ion-text-color: #ffffff;
+  --ion-text-color-rgb: 255, 255, 255;
+
+
+  --ion-item-background: #transparent;
+  --ion-background-color: var(--ion-color-primary-darkest);
+
+
+  --ion-border-color: #1a1a1a;
+
+  ion-toolbar,
+  ion-card,
+  ion-tab-bar {
+    --background: var(--ion-color-primary-darker);
+  }
+
+  ion-content {
+    --background: var(--ion-color-primary-darkest);
+  }
+
+  ion-popover ion-item {
+    --color: var(--ion-color-light-contrast);
+  }
+
+  ion-popover::part(backdrop),
+  ion-modal::part(backdrop) {
+    background-color: var(--ion-color-light-contrast);
+  }
+
+  ion-segment {
+    --background: var(--ion-color-primary);
+  }
+}

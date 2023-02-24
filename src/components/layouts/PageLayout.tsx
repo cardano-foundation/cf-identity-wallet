@@ -15,7 +15,7 @@ import {
 import {chevronBack} from 'ionicons/icons';
 import './PageLayout.css';
 
-const Pagelayout = (props) => {
+const Pagelayout = (props: any) => {
   const mainContent = props.children;
   const {
     name,
@@ -62,6 +62,7 @@ const Pagelayout = (props) => {
                     <IonIcon
                       style={{fontSize: actionButtonIconSize}}
                       icon={actionButtonIcon}
+                      color="primary"
                       className="ion-no-padding"
                       onClick={actionButtonClickEvent}></IonIcon>
                   </IonButtons>

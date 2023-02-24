@@ -26,18 +26,25 @@ root.render(
     </SafeArea>
 );
 
+// window.matchMedia('(prefers-color-scheme: dark)').matches, match OS preference
 
 const isMobile = Capacitor.getPlatform() === 'ios' || Capacitor.getPlatform() === 'android';
 if (
-    window.matchMedia &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
+  window.matchMedia &&
+  window.matchMedia('(prefers-color-scheme: dark)').matches
 ) {
   document.body.classList.toggle('dark');
   if (isMobile) StatusBar.setStyle({style: Style.Dark});
 } else {
   // OS is light mode
+  StatusBar.setStyle({style: Style.Light});
+  document.body.classList.toggle('light');
   if (isMobile) StatusBar.setStyle({style: Style.Light});
 }
+
+const theme = localStorage.getItem('theme') || 'ocean';
+const body = document.querySelector('body');
+body.setAttribute('theme-color', theme);
 
 // Enable PWA
 defineCustomElements(window);
