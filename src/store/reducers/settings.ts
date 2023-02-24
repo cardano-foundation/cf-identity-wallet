@@ -3,6 +3,7 @@ import {RootState} from '../store';
 
 export interface ISettingsState {
   theme: string;
+  isDarkMode: boolean;
   language: string;
   network: string;
   isExtension: boolean;
@@ -10,6 +11,7 @@ export interface ISettingsState {
 
 const initialState: ISettingsState = {
   theme: 'dark',
+  isDarkMode: false,
   language: 'en',
   network: 'preprod',
   isExtension: false,
@@ -21,12 +23,16 @@ export const settingsSlice = createSlice({
   reducers: {
     setSettings: (state, action: PayloadAction<ISettingsState>) => {
       state.theme = action.payload.theme;
+      state.isDarkMode = action.payload.isDarkMode;
       state.language = action.payload.language;
       state.network = action.payload.network;
       state.isExtension = action.payload.isExtension;
     },
     setTheme: (state, action: PayloadAction<ISettingsState>) => {
       state.theme = action.payload.theme;
+    },
+    setIsDarkMode: (state, action: PayloadAction<ISettingsState>) => {
+      state.isDarkMode = action.payload.isDarkMode;
     },
     setLanguage: (state, action: PayloadAction<ISettingsState>) => {
       state.language = action.payload.language;
@@ -40,11 +46,12 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const {setSettings, setTheme, setLanguage, setNetwork, setIsExtension} =
+export const {setSettings, setTheme, setIsDarkMode, setLanguage, setNetwork, setIsExtension} =
   settingsSlice.actions;
 
 export const getSettings = (state: RootState) => state.settings;
 export const getTheme = (state: RootState) => state.settings.theme;
+export const getIsDarkMode = (state: RootState) => state.settings.isDarkMode;
 export const getLanguage = (state: RootState) => state.settings.language;
 export const getNetwork = (state: RootState) => state.settings.network;
 export const getIsExtension = (state: RootState) => state.settings.isExtension;

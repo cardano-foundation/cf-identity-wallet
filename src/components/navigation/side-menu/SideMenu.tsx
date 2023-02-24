@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import {
   IonCol,
@@ -20,15 +20,17 @@ import {
 } from '@ionic/react';
 import {colorPaletteOutline} from 'ionicons/icons';
 import {
-  toggleDark,
-  isDarkMode,
-  currentTheme,
+  toggleDarkMode,
   changeTheme,
 } from '../../../theme/helpers/theme-helper';
 import LogoDark from '../../../assets/images/cardano-logo.png';
 import LogoLight from '../../../assets/images/cardano-logo-white.png';
-
+import {SettingsAPI} from "../../../models/Settings/SettingsAPI";
+import {useAppSelector} from "../../../store/hooks";
+import {getIsDarkMode, getTheme} from "../../../store/reducers/settings";
 const SideMenu = () => {
+  const isDarkMode = useAppSelector(getIsDarkMode);
+  const currentTheme = useAppSelector(getTheme);
   const history = useHistory();
   const [isDark, setIsDark] = useState<boolean>(isDarkMode);
   const [theme, setTheme] = useState<string>(currentTheme);
@@ -40,7 +42,7 @@ const SideMenu = () => {
   };
 
   const handleToggleDark = () => {
-    toggleDark();
+    toggleDarkMode();
     setIsDark(isDarkMode);
   };
 

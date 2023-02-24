@@ -18,7 +18,7 @@ import {
   setCache,
 } from '../store/reducers/cache';
 import {setSettings} from '../store/reducers/settings';
-import {changeTheme} from '../theme/helpers/theme-helper';
+import {changeTheme, setDarkMode} from '../theme/helpers/theme-helper';
 import {PouchAPI} from '../db/database';
 import {PreferencesAPI} from '../db/preferences';
 import {HandleConnect} from '../api/p2p/HandleConnect';
@@ -44,27 +44,20 @@ const AppWrapper = (props: {children: any}) => {
     await PouchAPI.init();
     //await PouchAPI.clear();
     await CacheAPI.init();
+    dispatch(setCache(CacheAPI.get()));
     await CardanoAPI.init();
 
     handleConnect = new HandleConnect();
 
-    dispatch(setCache(CacheAPI.get()));
     await SettingsAPI.init();
     await SettingsAPI.commit();
-    console.log(SettingsAPI.get());
-    if (SettingsAPI.theme?.length) {
-      // Use matchMedia to check the OS native preference
-      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-      if (
-        (prefersDark.matches && SettingsAPI.theme !== 'dark') ||
-        (!prefersDark.matches && SettingsAPI.theme !== 'light')
-      ) {
-        changeTheme();
-      }
-    }
+
+    const theme = SettingsAPI.getTheme() || 'ocean';
+    changeTheme(theme);
+    const isDarkMode = SettingsAPI.getIsDarkMode();
+    setDarkMode(isDarkMode);
 
     dispatch(setSettings(SettingsAPI.get()));
-
     const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
     dispatch(setAccountsIdsInCache(accountsIds));
 

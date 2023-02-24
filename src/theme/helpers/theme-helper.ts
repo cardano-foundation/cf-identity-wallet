@@ -1,25 +1,46 @@
+import {SettingsAPI} from "../../models/Settings/SettingsAPI";
+
 export const isDarkMode = () => {
   return document.body.classList.contains('dark');
 };
 
-export const toggleDark = () => {
-  if (document.body.classList.contains('dark')) {
-    document.body.classList.remove('dark');
-    document.body.classList.toggle('light', true);
-  } else {
+export const setDarkMode = (isDarkMode:boolean) => {
+  if (isDarkMode){
     document.body.classList.remove('light');
     document.body.classList.toggle('dark', true);
+  } else {
+    document.body.classList.remove('dark');
+    document.body.classList.toggle('light', true);
+  }
+}
+export const toggleDarkMode = () => {
+
+  if (document.body.classList.contains('dark')) {
+    SettingsAPI.setIsDarkMode(false);
+    SettingsAPI.commit().then(() => {
+      document.body.classList.remove('dark');
+      document.body.classList.toggle('light', true);
+    });
+
+  } else {
+    SettingsAPI.setIsDarkMode(true);
+    SettingsAPI.commit().then(() => {
+      document.body.classList.remove('light');
+      document.body.classList.toggle('dark', true);
+    });
   }
 };
 
 export const currentTheme = () => {
-  return localStorage.getItem('theme') || 'ocean';
+  return SettingsAPI.getTheme();
 };
 
 export const changeTheme = (theme: string) => {
-  const body = document.querySelector('body');
-  if (!body) return;
 
-  localStorage.setItem('theme', theme);
-  body.setAttribute('theme-color', theme);
+  SettingsAPI.setTheme(theme);
+  SettingsAPI.commit().then(() => {
+    const body = document.querySelector('body');
+    if (!body) return;
+    body.setAttribute('theme-color', theme)
+  });
 };
