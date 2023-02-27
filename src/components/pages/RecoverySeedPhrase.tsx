@@ -24,8 +24,7 @@ import {CardanoAPI, ERA_PARAMS} from '../../lib/CardanoAPI';
 import {ERA} from '../../models/types';
 
 const RecoverySeedPhrase = ({}) => {
-  const pageName = 'Create Seed Phrase'; // TODO
-
+  const pageName = 'Create Seed Phrase';
   const [checked, setChecked] = useState(false);
   const [view, setView] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);

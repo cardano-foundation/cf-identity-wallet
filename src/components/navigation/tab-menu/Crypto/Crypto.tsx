@@ -185,17 +185,20 @@ const Crypto = (props: any) => {
               shape="round"
               color="primary"
               expand="block"
+              className="h-auto my-4"
               onClick={() => {
                 handleNavigation('/createwallet');
-              }}
-              className="h-auto my-4">
+              }}>
               Create New Wallet
             </IonButton>
             <IonButton
               shape="round"
               color="medium"
               expand="block"
-              className="h-auto my-4">
+              className="h-auto my-4"
+              onClick={() => {
+                handleNavigation('/recoverwallet');
+              }}>
               Recover Existing Wallet
             </IonButton>
           </IonCol>
