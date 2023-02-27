@@ -5,6 +5,7 @@ import {
   IonChip,
   IonCol,
   IonGrid,
+  IonInput,
   IonItem,
   IonLabel,
   IonPage,
@@ -22,6 +23,7 @@ import {
   setAccountsIdsInCache,
 } from '../../store/reducers/cache';
 import {useAppDispatch, useAppSelector} from '../../store/hooks';
+import {autoCompleteData} from '../../test/mock/data';
 
 const SubmitSeedPhrase = ({}) => {
   const pageName = 'Verify Seed Phrase';
@@ -32,6 +34,9 @@ const SubmitSeedPhrase = ({}) => {
   const originalSeedPhrase = location.state?.seedPhrase;
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedMatch, setSeedMatch] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestionsActive, setSuggestionsActive] = useState(false);
+  const [value, setValue] = useState('');
 
   const handleNavigation = (route: string) => {
     history.push({
@@ -58,6 +63,9 @@ const SubmitSeedPhrase = ({}) => {
       seedPhrase.splice(index, 1); // 2nd parameter means remove one item only
     }
     setSeedPhrase(seedPhrase);
+    setSuggestions([]);
+    setValue('');
+    setSuggestionsActive(false);
   };
 
   // Remove last word in array
@@ -72,7 +80,6 @@ const SubmitSeedPhrase = ({}) => {
   };
   const removeSeedMatch = (word: string, i: number) => {
     setSeedPhrase((seedPhrase) => [...seedPhrase, word]);
-
     setSeedMatch((seedMatch) => removeWordFromArray(seedMatch, word));
   };
 
@@ -100,6 +107,37 @@ const SubmitSeedPhrase = ({}) => {
       console.log('error');
       console.log(e);
     }
+  };
+
+  const handleChange = (e) => {
+    const query = e.target.value.toLowerCase();
+    setValue(query);
+    if (query.length > 1) {
+      const filterSuggestions = autoCompleteData.filter(
+        (suggestion: string) => suggestion.toLowerCase().indexOf(query) > -1
+      );
+      setSuggestions(filterSuggestions);
+      setSuggestionsActive(true);
+    } else {
+      setSuggestionsActive(false);
+    }
+  };
+
+  const Suggestions = () => {
+    return (
+      <div className="grid grid-cols-3 gap-2 px-2 m-2">
+        {suggestions.map((suggestion, index) => (
+          <IonChip
+            className="text-sm"
+            key={index}
+            onClick={(event) => {
+              addSeedMatch(suggestion, index);
+            }}>
+            <span className="w-full text-center">{suggestion}</span>
+          </IonChip>
+        ))}
+      </div>
+    );
   };
 
   return (
@@ -149,19 +187,15 @@ const SubmitSeedPhrase = ({}) => {
             </IonCol>
           </IonRow>
           <IonRow>
-            <IonCol size="12">
-              <div className="grid grid-cols-3 gap-2 px-2 m-2">
-                {seedPhrase.map((word, index) => (
-                  <IonChip
-                    className="text-sm"
-                    key={index}
-                    onClick={(event) => {
-                      addSeedMatch(word, index);
-                    }}>
-                    <span className="w-full text-center">{word}</span>
-                  </IonChip>
-                ))}
-              </div>
+            <IonCol className="m-2">
+              <IonInput
+                type="text"
+                value={value}
+                placeholder="Start typing here"
+                className="bg-white text-black placeholder:text-gray-500"
+                onIonChange={handleChange}
+              />
+              {suggestionsActive && <Suggestions />}
             </IonCol>
           </IonRow>
         </IonGrid>
