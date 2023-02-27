@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "prebuild": "rimraf build",
-    "dev": "npm i && webpack serve --config webpack.dev.js --host 0.0.0.0 --port 3001",
+    "dev": "webpack serve --config webpack.dev.js --host 0.0.0.0 --port 3001",
     "build": "webpack --config webpack.prod.js ",
     "build:extension": "webpack --config ./src/popup/webpack.popup.js ",
     "build:cap": "rimraf build && webpack --config webpack.prod.js && npx cap sync",
+    "build:sdk": "npm run build --workspace ./packages/sdk",
     "open:android": "npx cap open android",
     "open:ios": "npx cap open ios",
     "test": "react-scripts src/test",
@@ -38,6 +39,7 @@
     "@capacitor/status-bar": "^4.0.1",
     "@capacitor/toast": "^4.0.1",
     "@capawesome/capacitor-background-task": "^2.0.0",
+    "@cf-identity-tools/sdk": "^0.0.1",
     "@dcspark/cardano-multiplatform-lib-browser": "^3.1.0",
     "@emurgo/cardano-serialization-lib-browser": "11.1.0",
     "@emurgo/cip14-js": "^3.0.1",
@@ -61,6 +63,7 @@
     "@types/react-dom": "^18.0.9",
     "@types/react-transition-group": "^4.4.5",
     "@types/styled-components": "^5.1.26",
+    "async-mutex": "^0.4.0",
     "autoprefixer": "^10.4.13",
     "axios": "^1.1.2",
     "bignumber.js": "^9.0.0",
@@ -187,5 +190,8 @@
         }
       }
     ]
-  }
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

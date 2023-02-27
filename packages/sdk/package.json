@@ -1,0 +1,19 @@
+{
+  "name": "@cf-identity-tools/sdk",
+  "version": "0.0.1",
+  "description": "DID and VC tools on Cardano",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc --build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "json2typescript": "1.5.1",
+    "uuid": "9.0.0"
+  },
+  "devDependencies": {
+    "@types/uuid": "9.0.0"
+  }
+}

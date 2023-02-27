@@ -1,13 +1,13 @@
 import {SecureStoragePlugin} from 'capacitor-secure-storage-plugin';
 
 export const getKeystore = async (key: string) => {
-  return await SecureStoragePlugin.get({key});
+  return SecureStoragePlugin.get({key});
 };
 
-export const setKeystore = (key: string, encryptedKey: string) => {
-  SecureStoragePlugin.set({key: key, value: encryptedKey});
+export const setKeystore = async (key: string, encryptedKey: string) => {
+  await SecureStoragePlugin.set({key: key, value: encryptedKey});
 };
 
-export const removeKeystore = (key: string) => {
-  SecureStoragePlugin.remove({key});
+export const removeKeystore = async (key: string) => {
+  await SecureStoragePlugin.remove({key});
 };

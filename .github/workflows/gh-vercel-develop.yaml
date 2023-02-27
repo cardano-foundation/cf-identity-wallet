@@ -52,7 +52,7 @@ jobs:
 
     - name: 🔨 Build project
       run: |
-        npm i
+        npm ci
         npm run build
 
     - name: Configure vercel.json

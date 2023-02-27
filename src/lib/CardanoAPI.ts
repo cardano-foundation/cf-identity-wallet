@@ -8,10 +8,11 @@ import {
   BaseAddress,
   Bip32PrivateKey,
   Ed25519KeyHash,
-  PrivateKey,
+  PrivateKey
 } from '@emurgo/cardano-serialization-lib-browser';
 import {EmurgoModule} from './emurgo';
 import cryptoRandomString from 'crypto-random-string';
+import { DERIVE_COIN_TYPE } from './config';
 
 export const ERA_PARAMS = {
   BYRON: {
@@ -30,8 +31,16 @@ export const ERA_PARAMS = {
   MULTISIG: {
     purpose: 1854,
   },
+  IDENTITY: {
+    purpose: 1856
+  }
 };
 export type CardanoNetwork = 'mainnet' | 'testnet' | 'preview' | 'preprod';
+
+type KeyPairHex = {
+  publicKey: string,
+  privateKey: string
+};
 
 export const CardanoAPI = {
   _lib: undefined as undefined | typeof EmurgoSerializationLibrary,
@@ -77,7 +86,8 @@ export const CardanoAPI = {
     try {
       const passwordHex = Buffer.from(password, 'utf8').toString('hex');
       // @ts-ignore
-      return this._lib.decrypt_with_password(passwordHex, data);
+      const result = this._lib.decrypt_with_password(passwordHex, data);
+      return { result }
     } catch (error) {
       return {
         error,
@@ -280,6 +290,20 @@ export const CardanoAPI = {
   sendTx() {
     // TODO
   },
+  hexToBip32PrivateKey(keyHex: string): Bip32PrivateKey {
+    // @TODO - foconnor: _lib should be removed, ticket pending to test on mobile.
+    // If there's an issue on mobile this file should maybe be some factory class to make sure init is called rather than ts-ignoring.
+    // @ts-ignore
+    return this._lib.Bip32PrivateKey.from_hex(keyHex);
+  },
+  deriveIdentityKeyPairHex(rootKey: Bip32PrivateKey, accountIndex: number, keyIndex: number): KeyPairHex {
+    const privateKey = rootKey.derive(harden(ERA_PARAMS.IDENTITY.purpose)).derive(harden(DERIVE_COIN_TYPE)).derive(harden(accountIndex)).derive(0).derive(keyIndex).to_raw_key();
+    const publicKey = privateKey.to_public();
+    return { publicKey: publicKey.to_hex(), privateKey: privateKey.to_hex() }
+  },
+  hexPrivateToHexPublic(privateKeyHex: string): string {
+    return PrivateKey.from_hex(privateKeyHex).to_public().to_hex();
+  }
 };
 
 export const harden = (num: number) => {

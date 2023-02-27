@@ -12,7 +12,7 @@ import {get, getObject, removeObject, set, setObject} from '../../db/storage';
 import {Capacitor} from '@capacitor/core';
 import {getKeystore, setKeystore} from '../../db/keystore';
 
-const KEY_CHAIN_DEVICES = ['iphone', 'ipad', 'phablet', 'tablet', 'android'];
+export const KEY_CHAIN_DEVICES = ['iphone', 'ipad', 'phablet', 'tablet', 'android'];
 
 export class Account {
   private table = 'accounts';
@@ -57,22 +57,26 @@ export class Account {
     this.certificates = account.certificates;
   }
 
-  setEncryptedRootKey(encryptedRootKey: string) {
+  async setEncryptedRootKey(encryptedRootKey: string) {
     if (KEY_CHAIN_DEVICES.includes(Capacitor.getPlatform())) {
-      setKeystore(`${this.id}:rootKey`, encryptedRootKey);
+      await setKeystore(`${this.id}:rootKey`, encryptedRootKey);
     } else {
       // web, extension and desktop
       this.encryptedRootKey = encryptedRootKey;
     }
   }
 
-  async getEncryptedRootKey() {
-    return await this.getCertificate(`${this.id}:rootKey`);
+  async getEncryptedRootKey(): Promise<string | undefined> {
+    if (Capacitor.getPlatform() !== "web") {
+      return (await getKeystore(`${this.id}:rootKey`)).value;
+    } else {
+      return this.encryptedRootKey;
+    }
   }
 
-  setCertificate(name: string, certificate: ICertificate) {
+  async setCertificate(name: string, certificate: ICertificate) {
     if (KEY_CHAIN_DEVICES.includes(Capacitor.getPlatform())) {
-      setKeystore(`${this.id}:certificate`, JSON.stringify(certificate));
+      await setKeystore(`${this.id}:certificate`, JSON.stringify(certificate));
     } else {
       // web, extension and desktop
       this.certificates[name] = certificate;
@@ -214,8 +218,6 @@ export class Account {
   static async getFirstAccount() {
     const accounts = await get('accounts');
     if (!accounts || !Object.entries(accounts).length) return;
-    console.log("accounts");
-    console.log(accounts['bro']);
     return Account.new(Object.entries(accounts)[0]);
   }
 

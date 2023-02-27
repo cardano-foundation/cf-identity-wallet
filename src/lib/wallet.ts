@@ -51,7 +51,7 @@ export const createAccount = async (
   rootKey = null;
 
   // @ts-ignore
-  account.setEncryptedRootKey(excryptedRootKey);
+  await account.setEncryptedRootKey(excryptedRootKey);
   account.rootPublicKeyHex = rootPublicKeyHex;
 
   // @ts-ignore

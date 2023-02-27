@@ -32,6 +32,10 @@ export const clear = async () => {
   await storage.clear();
 };
 
+export const forEach = async (iterationCallback: (value: any, key: string, iterationNumber: Number) => any) => {
+  await storage.forEach(iterationCallback);
+}
+
 export const setObject = async (table: string, id: string, val: any) => {
   try {
     const objs = (await get(table)) || {};
