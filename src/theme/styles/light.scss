@@ -55,4 +55,9 @@ body.light {
   .themed-button {
     color: var(--ion-color-primary);
   }
+
+  ion-button.secondary-button {
+    --color: var(--ion-color-primary);
+    --border-color: var(--ion-color-primary);
+  }
 }

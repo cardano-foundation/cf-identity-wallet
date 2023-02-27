@@ -228,9 +228,8 @@ const RecoverWallet = ({}) => {
                 </IonButton>
                 <IonButton
                   shape="round"
-                  color="medium"
                   expand="block"
-                  className="h-auto my-4"
+                  className="h-auto my-4 secondary-button"
                   onClick={() => {
                     handleNavigation('/tabs/crypto');
                   }}>
