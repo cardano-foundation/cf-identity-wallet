@@ -1,6 +1,4 @@
-// @ts-ignore
 import PouchDB from 'pouchdb';
-// @ts-ignore
 import find from 'pouchdb-find';
 PouchDB.plugin(find);
 PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
@@ -10,7 +8,7 @@ export const PouchAPI = {
   db: undefined as undefined | typeof PouchDB,
   async init(databaseName?: string) {
     try {
-      this.databaseName = databaseName || 'database-dev';
+      this.databaseName = databaseName || this.databaseName;
       this.db = await new PouchDB(`${databaseName}.db`, {
         adapter: 'cordova-sqlite',
       });

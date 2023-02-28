@@ -144,6 +144,8 @@
     "@storybook/preset-create-react-app": "^4.1.2",
     "@storybook/react": "^6.5.15",
     "@storybook/testing-library": "^0.0.13",
+    "@types/pouchdb": "^6.4.0",
+    "@types/pouchdb-find": "^7.3.0",
     "@types/react-router-dom": "^5.3.3",
     "@types/rx": "4.1.2",
     "babel-loader": "^9.1.0",
