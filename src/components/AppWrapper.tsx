@@ -9,11 +9,10 @@ PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
 
 import {CardanoAPI} from '../lib/CardanoAPI';
 import {Account} from '../models/Account/Account';
-import {useAppDispatch, useAppSelector} from '../store/hooks';
+import {useAppDispatch} from '../store/hooks';
 import {CacheAPI} from '../models/Cache/CacheAPI';
 import {SettingsAPI} from '../models/Settings/SettingsAPI';
 import {
-  getCachedAccount,
   setAccountsIdsInCache,
   setCache,
 } from '../store/reducers/cache';
@@ -59,19 +58,7 @@ const AppWrapper = (props: {children: any}) => {
     const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
     dispatch(setAccountsIdsInCache(accountsIds));
 
-    /*
-    const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
-    dispatch(setAccountsIdsInCache(accountsIds));
 
-    const currentAccount = await Account.getAccount(cachedAccount);
-    if (currentAccount) {
-      dispatch(setCurrentAccount(currentAccount.get()));
-    } else {
-      const firstAccount = await Account.getFirstAccount();
-      if (firstAccount) dispatch(setCurrentAccount(firstAccount.get()));
-    }
-
-    */
     /* Debug - Do not delete
     console.log("lets init blockfrost");
     await Blockfrost.init('preview');
@@ -83,29 +70,6 @@ const AppWrapper = (props: {children: any}) => {
     console.log(accountState);
     */
 
-    /*
-      if (await Account.accountAlreadyExists("alice")){
-        console.log("account already exists");
-      } else {
-        console.log("set new account");
-        await PouchAPI.set("account","alice",{name: "alice"})
-      }
-      const ids = await PouchAPI.getIDs("account");
-      console.log("ids");
-      console.log(ids);
-
-      const user = await PouchAPI.getByField("account","name", "bob");
-      console.log("user");
-      console.log(user);
-      const user3 = await PouchAPI.get("account","bob");
-      console.log("user3");
-      console.log(user3);
-
-      console.log("PouchAPI");
-      console.log(PouchAPI.db);
-      console.log("All Accounts");
-      console.log(await Account.getAllAccounts());
-      */
   };
 
   const renderChild = () => {
