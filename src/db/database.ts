@@ -37,12 +37,8 @@ export const PouchAPI = {
   async getIDs(tableName: string) {
     if (!this.db) return;
     const table = `${tableName}:`;
-    const all = await this.db.allDocs({
-      include_docs: true,
-      startkey: table,
-      endkey: `${tableName}:\uffff`,
-    });
-    return all.rows.map((d: {id: string}) => d.id.replace(table, ''));
+    const all = await this.getTable(table);
+    return all.map((d: {id: string}) => d.id.replace(table, ''));
   },
   async get(tableName: string, id: string) {
     if (!this.db) return;

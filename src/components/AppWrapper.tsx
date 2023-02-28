@@ -20,13 +20,11 @@ import {
 import {setSettings} from '../store/reducers/settings';
 import {changeTheme, setDarkMode} from '../theme/helpers/theme-helper';
 import {PouchAPI} from '../db/database';
-import {PreferencesAPI} from '../db/preferences';
 import {HandleConnect} from '../api/p2p/HandleConnect';
 
 export let handleConnect: HandleConnect | undefined = undefined;
 
 const AppWrapper = (props: {children: any}) => {
-  const cachedAccount = useAppSelector(getCachedAccount);
   const dispatch = useAppDispatch();
 
   const {t, i18n} = useTranslation();

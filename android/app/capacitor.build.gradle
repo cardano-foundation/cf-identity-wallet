@@ -16,6 +16,7 @@ dependencies {
     implementation project(':capacitor-clipboard')
     implementation project(':capacitor-geolocation')
     implementation project(':capacitor-local-notifications')
+    implementation project(':capacitor-preferences')
     implementation project(':capacitor-share')
     implementation project(':capacitor-splash-screen')
     implementation project(':capacitor-status-bar')
