@@ -18,7 +18,7 @@ import {
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../layouts/PageLayout';
 import {CardanoAPI} from '../../lib/CardanoAPI';
-import {autoCompleteData} from '../../test/mock/data';
+import {autoCompleteData} from '../../test/mock/autoCompleteData';
 
 const SubmitSeedPhrase = ({}) => {
   const pageName = 'Verify Seed Phrase';
