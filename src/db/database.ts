@@ -59,7 +59,7 @@ export const PouchAPI = {
     });
     const selector: {[key: string]: string} = {};
     selector[field] = value;
-    return await this.db.find({
+    return this.db.find({
       selector,
     });
   },
