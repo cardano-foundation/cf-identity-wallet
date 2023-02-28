@@ -52,7 +52,7 @@ export const PouchAPI = {
         return error;
       });
   },
-  async getByField(tableName: string, field: string, value: string) {
+  async getByField(field: string, value: string) {
     if (!this.db) return;
     await this.db.createIndex({
       index: {fields: [field]},
