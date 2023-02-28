@@ -1,5 +1,5 @@
-import React, {useEffect, useState} from 'react';
-import {useHistory, useLocation} from 'react-router-dom';
+import React, {useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import {
   IonButton,
   IonChip,
@@ -11,107 +11,54 @@ import {
   IonPage,
   IonProgressBar,
   IonRow,
+  IonSegment,
+  IonSegmentButton,
+  useIonAlert,
 } from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../layouts/PageLayout';
-import {equals, shuffle} from '../../utils/utils';
-import {Account} from '../../models/Account/Account';
-import {createAccount} from '../../lib/wallet';
-import {ERA} from '../../models/types';
-import {
-  getCachedAccounts,
-  setAccountsIdsInCache,
-} from '../../store/reducers/cache';
-import {useAppDispatch, useAppSelector} from '../../store/hooks';
+import {CardanoAPI} from '../../lib/CardanoAPI';
 import {autoCompleteData} from '../../test/mock/data';
 
 const SubmitSeedPhrase = ({}) => {
   const pageName = 'Verify Seed Phrase';
-  const location = useLocation();
   const history = useHistory();
-  const dispatch = useAppDispatch();
-  const cachedAccounts = useAppSelector(getCachedAccounts);
-  const originalSeedPhrase = location.state?.seedPhrase;
-  const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
-  const [seedMatch, setSeedMatch] = useState<string[]>([]);
+  const [inputValue, setInputValue] = useState('');
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [suggestionsActive, setSuggestionsActive] = useState(false);
-  const [value, setValue] = useState('');
+  const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
+  const [seedPhraseLength, setSeedPhraseLength] = useState<string>('15');
+  const [presentAlert] = useIonAlert();
 
   const handleNavigation = (route: string) => {
     history.push({
       pathname: route,
-      state: {
-        seedPhrase,
-      },
     });
   };
 
-  useEffect(() => {
-    //removeWordFromArray(originalSeedPhrase,"hold")
-    if (originalSeedPhrase && originalSeedPhrase.length) {
-      setSeedPhrase(shuffle(originalSeedPhrase));
-    }
-  }, []);
-
-  const addSeedMatch = (word: string, i: number) => {
-    setSeedMatch((seedMatch) => [...seedMatch, word]);
-
-    const index = seedPhrase.indexOf(word);
-    if (index > -1) {
-      // only splice array when item is found
-      seedPhrase.splice(index, 1); // 2nd parameter means remove one item only
-    }
-    setSeedPhrase(seedPhrase);
+  const addWord = (word: string, i: number) => {
+    setSeedPhrase((seedPhrase) => [...seedPhrase, word]);
     setSuggestions([]);
-    setValue('');
+    setInputValue('');
     setSuggestionsActive(false);
   };
 
-  // Remove last word in array
   const removeWordFromArray = (array: string[], word: string) => {
     const cp = [...array];
     const index = cp.indexOf(word);
     if (index > -1) {
-      // only splice array when item is found
       cp.splice(index, 1);
     }
     return cp;
   };
-  const removeSeedMatch = (word: string, i: number) => {
-    setSeedPhrase((seedPhrase) => [...seedPhrase, word]);
-    setSeedMatch((seedMatch) => removeWordFromArray(seedMatch, word));
-  };
 
-  const onSubmitSeedPhrase = async () => {
-    try {
-      if (location.state?.walletName && location.state?.walletPassword) {
-        const account: Account = await createAccount(
-          location.state?.walletName,
-          originalSeedPhrase.join(' '),
-          ERA.SHELLEY,
-          location.state?.walletPassword
-        );
-
-        if (account?.id) {
-          account.commit();
-          dispatch(
-            setAccountsIdsInCache(
-              cachedAccounts ? [...cachedAccounts, account.id] : [account.id]
-            )
-          );
-          handleNavigation('/tabs/crypto');
-        }
-      }
-    } catch (e) {
-      console.log('error');
-      console.log(e);
-    }
+  const removeWord = (word: string, i: number) => {
+    setSeedPhrase((seedPhrase) => removeWordFromArray(seedPhrase, word));
   };
 
   const handleChange = (e) => {
     const query = e.target.value.toLowerCase();
-    setValue(query);
+    setInputValue(query);
     if (query.length > 1) {
       const filterSuggestions = autoCompleteData.filter(
         (suggestion: string) => suggestion.toLowerCase().indexOf(query) > -1
@@ -131,13 +78,26 @@ const SubmitSeedPhrase = ({}) => {
             className="text-sm"
             key={index}
             onClick={(event) => {
-              addSeedMatch(suggestion, index);
+              addWord(suggestion, index);
             }}>
             <span className="w-full text-center">{suggestion}</span>
           </IonChip>
         ))}
       </div>
     );
+  };
+
+  const submitWalletRecovery = () => {
+    const validateMnemonic = CardanoAPI.validateSeedPhrase(
+      seedPhrase.join(' ')
+    );
+    validateMnemonic
+      ? handleNavigation('/tabs/crypto')
+      : presentAlert({
+          header: 'Error',
+          message: `Please check your Seed Phrase and try again.`,
+          buttons: ['OK'],
+        });
   };
 
   return (
@@ -169,13 +129,34 @@ const SubmitSeedPhrase = ({}) => {
           </IonRow>
           <IonRow>
             <IonCol size="12">
+              <IonItem>
+                <IonSegment
+                  value={seedPhraseLength}
+                  onIonChange={(event) => {
+                    setSeedPhraseLength(event.detail.value as string);
+                  }}>
+                  <IonSegmentButton value="12">
+                    <IonLabel>12 words</IonLabel>
+                  </IonSegmentButton>
+                  <IonSegmentButton value="15">
+                    <IonLabel>15 words</IonLabel>
+                  </IonSegmentButton>
+                  <IonSegmentButton value="24">
+                    <IonLabel>24 words</IonLabel>
+                  </IonSegmentButton>
+                </IonSegment>
+              </IonItem>
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol size="12">
               <div className="grid grid-cols-3 gap-2 p-2 m-2 border min-h-[6rem]">
-                {seedMatch.map((word, index) => (
+                {seedPhrase.map((word, index) => (
                   <IonChip
                     className="text-sm"
                     key={index}
                     onClick={(event) => {
-                      removeSeedMatch(word, index);
+                      removeWord(word, index);
                     }}>
                     <span className="w-full text-left">
                       <span className="text-gray-500 mr-2">{index + 1}</span>
@@ -190,7 +171,7 @@ const SubmitSeedPhrase = ({}) => {
             <IonCol className="m-2">
               <IonInput
                 type="text"
-                value={value}
+                value={inputValue}
                 placeholder="Start typing here"
                 className="bg-white text-black placeholder:text-gray-500"
                 onIonChange={handleChange}
@@ -207,8 +188,8 @@ const SubmitSeedPhrase = ({}) => {
                 color="primary"
                 expand="block"
                 className="h-auto my-4"
-                onClick={() => onSubmitSeedPhrase()}
-                disabled={!equals(originalSeedPhrase, seedMatch)}>
+                onClick={() => submitWalletRecovery()}
+                disabled={seedPhrase.length !== Number(seedPhraseLength)}>
                 Continue
               </IonButton>
               <IonButton

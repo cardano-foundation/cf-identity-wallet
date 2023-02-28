@@ -60,4 +60,14 @@ body.light {
     --color: var(--ion-color-primary);
     --border-color: var(--ion-color-primary);
   }
+
+  ion-alert {
+    ion-backdrop {
+      background-color: var(--ion-color-dark);
+    }
+
+    .alert-wrapper {
+      background-color: var(--ion-color-light);
+    }
+  }
 }
