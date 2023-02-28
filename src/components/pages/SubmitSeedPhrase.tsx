@@ -18,7 +18,7 @@ import {
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../layouts/PageLayout';
 import {CardanoAPI} from '../../lib/CardanoAPI';
-import {autoCompleteData} from '../../test/mock/autoCompleteData';
+import {bip39Seeds} from '../../test/mock/bip39Seeds';
 
 const SubmitSeedPhrase = ({}) => {
   const pageName = 'Verify Seed Phrase';
@@ -60,7 +60,7 @@ const SubmitSeedPhrase = ({}) => {
     const query = e.target.value.toLowerCase();
     setInputValue(query);
     if (query.length > 1) {
-      const filterSuggestions = autoCompleteData.filter(
+      const filterSuggestions = bip39Seeds.filter(
         (suggestion: string) => suggestion.toLowerCase().indexOf(query) > -1
       );
       setSuggestions(filterSuggestions);
@@ -150,7 +150,7 @@ const SubmitSeedPhrase = ({}) => {
           </IonRow>
           <IonRow>
             <IonCol size="12">
-              <div className="grid grid-cols-3 gap-2 p-2 m-2 border min-h-[6rem]">
+              <div className="grid grid-cols-3 gap-2 p-2 m-2 border min-h-[6rem] rounded-lg">
                 {seedPhrase.map((word, index) => (
                   <IonChip
                     className="text-sm"
@@ -173,7 +173,7 @@ const SubmitSeedPhrase = ({}) => {
                 type="text"
                 value={inputValue}
                 placeholder="Start typing here"
-                className="bg-white text-black placeholder:text-gray-500"
+                className="bg-white text-black placeholder:text-gray-500 rounded-lg"
                 onIonChange={handleChange}
               />
               {suggestionsActive && <Suggestions />}

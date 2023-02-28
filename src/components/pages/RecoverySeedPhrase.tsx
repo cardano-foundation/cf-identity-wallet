@@ -114,7 +114,7 @@ const RecoverySeedPhrase = ({}) => {
                 view && seedPhrase.length === 15 && 'min-h-[42vh]'
               }`}>
               {view ? (
-                <div className="grid grid-cols-3 gap-2 px-2">
+                <div className="grid grid-cols-3 gap-2 px-2 rounded-lg">
                   {seedPhrase.map((word, index) => (
                     <IonChip
                       className="text-sm"

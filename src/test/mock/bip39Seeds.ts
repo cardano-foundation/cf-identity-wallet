@@ -1,4 +1,4 @@
-export const autoCompleteData = [
+export const bip39Seeds = [
   'abandon',
   'ability',
   'able',

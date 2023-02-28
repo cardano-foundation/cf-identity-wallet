@@ -131,7 +131,7 @@ const VerifySeedPhrase = ({}) => {
           </IonRow>
           <IonRow>
             <IonCol size="12">
-              <div className="grid grid-cols-3 gap-2 p-2 m-2 border min-h-[6rem]">
+              <div className="grid grid-cols-3 gap-2 p-2 m-2 border min-h-[6rem] rounded-lg">
                 {seedMatch.map((word, index) => (
                   <IonChip
                     className="text-sm"

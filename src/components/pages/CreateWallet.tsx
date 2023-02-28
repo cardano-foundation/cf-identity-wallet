@@ -130,7 +130,7 @@ const CreateWallet = ({}) => {
                     onIonInput={(event) => validateName(event)}
                     onIonBlur={(event) => validateName(event)}
                     required={true}
-                    className="mb-0"
+                    className="mb-0 bg-white text-black placeholder:text-gray-500 rounded-lg"
                   />
                   <IonNote slot="error">Invalid name</IonNote>
                 </IonItem>
@@ -150,7 +150,7 @@ const CreateWallet = ({}) => {
                     onIonInput={(event) => validatePassword(event)}
                     onIonBlur={(event) => validatePassword(event)}
                     required={true}
-                    className="mb-0"
+                    className="mb-0 bg-white text-black placeholder:text-gray-500 rounded-lg"
                   />
                   <IonNote slot="error">Invalid password</IonNote>
                 </IonItem>
@@ -169,7 +169,7 @@ const CreateWallet = ({}) => {
                     onIonInput={(event) => matchPassword(event)}
                     onIonBlur={(event) => matchPassword(event)}
                     required={true}
-                    className="mb-0"
+                    className="mb-0 bg-white text-black placeholder:text-gray-500 rounded-lg"
                   />
                   <IonNote slot="error">Password not matching</IonNote>
                 </IonItem>
