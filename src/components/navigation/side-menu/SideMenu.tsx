@@ -19,15 +19,12 @@ import {
   IonToolbar,
 } from '@ionic/react';
 import {colorPaletteOutline} from 'ionicons/icons';
-import {
-  toggleDarkMode,
-  changeTheme,
-} from '../../../theme/helpers/theme-helper';
+import {toggleDarkMode, changeTheme} from '../../../theme/helpers/theme-helper';
 import LogoDark from '../../../assets/images/cardano-logo.png';
 import LogoLight from '../../../assets/images/cardano-logo-white.png';
-import {SettingsAPI} from "../../../models/Settings/SettingsAPI";
-import {useAppSelector} from "../../../store/hooks";
-import {getIsDarkMode, getTheme} from "../../../store/reducers/settings";
+import {SettingsAPI} from '../../../models/Settings/SettingsAPI';
+import {useAppSelector} from '../../../store/hooks';
+import {getIsDarkMode, getTheme} from '../../../store/reducers/settings';
 const SideMenu = () => {
   const isDarkMode = useAppSelector(getIsDarkMode);
   const currentTheme = useAppSelector(getTheme);

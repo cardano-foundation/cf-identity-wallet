@@ -46,8 +46,14 @@ export const settingsSlice = createSlice({
   },
 });
 
-export const {setSettings, setTheme, setIsDarkMode, setLanguage, setNetwork, setIsExtension} =
-  settingsSlice.actions;
+export const {
+  setSettings,
+  setTheme,
+  setIsDarkMode,
+  setLanguage,
+  setNetwork,
+  setIsExtension,
+} = settingsSlice.actions;
 
 export const getSettings = (state: RootState) => state.settings;
 export const getTheme = (state: RootState) => state.settings.theme;
