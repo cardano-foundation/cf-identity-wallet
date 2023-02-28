@@ -43,17 +43,17 @@ const SubmitSeedPhrase = ({}) => {
     setSuggestionsActive(false);
   };
 
-  const removeWordFromArray = (array: string[], word: string) => {
-    const cp = [...array];
-    const index = cp.indexOf(word);
+  const removeWordFromSeedPhrase = (array: string[], word: string) => {
+    const seedPhrase = [...array];
+    const index = seedPhrase.indexOf(word);
     if (index > -1) {
-      cp.splice(index, 1);
+      seedPhrase.splice(index, 1);
     }
-    return cp;
+    return seedPhrase;
   };
 
   const removeWord = (word: string, i: number) => {
-    setSeedPhrase((seedPhrase) => removeWordFromArray(seedPhrase, word));
+    setSeedPhrase((seedPhrase) => removeWordFromSeedPhrase(seedPhrase, word));
   };
 
   const handleChange = (e) => {
@@ -113,7 +113,7 @@ const SubmitSeedPhrase = ({}) => {
         actionButtonIcon={addOutline}
         actionButtonIconSize="1.7rem">
         <IonProgressBar
-          value={0.75}
+          value={0.66}
           buffer={1}
         />
         <IonGrid className="min-h-[60vh]">

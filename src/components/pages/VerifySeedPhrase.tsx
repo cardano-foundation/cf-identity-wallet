@@ -26,7 +26,7 @@ import {useAppDispatch, useAppSelector} from '../../store/hooks';
 const VerifySeedPhrase = ({}) => {
   const pageName = 'Verify Seed Phrase';
   const location = useLocation();
-  const history = useHistory();
+  const nav = useHistory();
   const dispatch = useAppDispatch();
   const cachedAccounts = useAppSelector(getCachedAccounts);
   const originalSeedPhrase = location.state?.seedPhrase;
@@ -34,7 +34,7 @@ const VerifySeedPhrase = ({}) => {
   const [seedMatch, setSeedMatch] = useState<string[]>([]);
 
   const handleNavigation = (route: string) => {
-    history.push({
+    nav.push({
       pathname: route,
       state: {
         seedPhrase,
@@ -43,7 +43,6 @@ const VerifySeedPhrase = ({}) => {
   };
 
   useEffect(() => {
-    //removeWordFromArray(originalSeedPhrase,"hold")
     if (originalSeedPhrase && originalSeedPhrase.length) {
       setSeedPhrase(shuffle(originalSeedPhrase));
     }
@@ -54,26 +53,23 @@ const VerifySeedPhrase = ({}) => {
 
     const index = seedPhrase.indexOf(word);
     if (index > -1) {
-      // only splice array when item is found
-      seedPhrase.splice(index, 1); // 2nd parameter means remove one item only
+      seedPhrase.splice(index, 1);
     }
     setSeedPhrase(seedPhrase);
   };
 
-  // Remove last word in array
-  const removeWordFromArray = (array: string[], word: string) => {
-    const cp = [...array];
-    const index = cp.indexOf(word);
+  const removeWordFromSeedPhrase = (array: string[], word: string) => {
+    const seedPhrase = [...array];
+    const index = seedPhrase.indexOf(word);
     if (index > -1) {
-      // only splice array when item is found
-      cp.splice(index, 1);
+      seedPhrase.splice(index, 1);
     }
-    return cp;
+    return seedPhrase;
   };
   const removeSeedMatch = (word: string, i: number) => {
     setSeedPhrase((seedPhrase) => [...seedPhrase, word]);
 
-    setSeedMatch((seedMatch) => removeWordFromArray(seedMatch, word));
+    setSeedMatch((seedMatch) => removeWordFromSeedPhrase(seedMatch, word));
   };
 
   const onVerifySeedPhrase = async () => {
@@ -96,9 +92,8 @@ const VerifySeedPhrase = ({}) => {
           handleNavigation('/tabs/crypto');
         }
       }
-    } catch (e) {
-      console.log('error');
-      console.log(e);
+    } catch (err) {
+      console.log('Error: ', err);
     }
   };
 
