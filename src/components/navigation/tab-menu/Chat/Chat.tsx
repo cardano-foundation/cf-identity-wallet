@@ -99,9 +99,6 @@ const Chat = () => {
   useEffect(() => {
     updateChat();
   }, []);
-  useEffect(() => {
-    !showActionSheet && setActionMessage(false);
-  }, [showActionSheet]);
 
   useEffect(() => {
     subscribe('updateChat', () => {
