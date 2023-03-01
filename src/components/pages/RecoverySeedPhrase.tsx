@@ -24,8 +24,7 @@ import {CardanoAPI, ERA_PARAMS} from '../../lib/CardanoAPI';
 import {ERA} from '../../models/types';
 
 const RecoverySeedPhrase = ({}) => {
-  const pageName = 'Create Seed Phrase'; // TODO
-
+  const pageName = 'Create Seed Phrase';
   const [checked, setChecked] = useState(false);
   const [view, setView] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
@@ -115,7 +114,7 @@ const RecoverySeedPhrase = ({}) => {
                 view && seedPhrase.length === 15 && 'min-h-[42vh]'
               }`}>
               {view ? (
-                <div className="grid grid-cols-3 gap-2 px-2">
+                <div className="grid grid-cols-3 gap-2 px-2 rounded-lg">
                   {seedPhrase.map((word, index) => (
                     <IonChip
                       className="text-sm"
@@ -192,9 +191,8 @@ const RecoverySeedPhrase = ({}) => {
               </IonButton>
               <IonButton
                 shape="round"
-                color="medium"
                 expand="block"
-                className="h-auto my-4"
+                className="h-auto my-4 secondary-button"
                 onClick={() => handleNavigation('/tabs/crypto')}>
                 Cancel
               </IonButton>

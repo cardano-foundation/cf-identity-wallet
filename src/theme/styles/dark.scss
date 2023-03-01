@@ -65,4 +65,19 @@ body.dark {
   ion-segment {
     --background: var(--ion-color-primary);
   }
+
+  ion-button.secondary-button {
+    --color: var(--ion-color-dark);
+    --border-color: var(--ion-color-dark);
+  }
+
+  ion-alert {
+    ion-backdrop {
+      background-color: var(--ion-color-dark);
+    }
+
+    .alert-wrapper {
+      --background: var(--ion-color-primary-darkest);
+    }
+  }
 }

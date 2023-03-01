@@ -16,10 +16,10 @@ import {
 } from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../layouts/PageLayout';
-import './CreateWallet.css';
+import './RecoverWallet.css';
 
-const CreateWallet = ({}) => {
-  const pageName = 'Create Wallet';
+const RecoverWallet = ({}) => {
+  const pageName = 'Recover Wallet';
   const [walletName, setWalletName] = useState<string>();
   const [walletPassword, setWalletPassword] = useState<string>();
   const [isValidName, setIsValidName] = useState<boolean>();
@@ -94,7 +94,7 @@ const CreateWallet = ({}) => {
         actionButtonIcon={addOutline}
         actionButtonIconSize="1.7rem">
         <IonProgressBar
-          value={0.25}
+          value={0.33}
           buffer={1}
         />
         <form>
@@ -103,7 +103,7 @@ const CreateWallet = ({}) => {
               <IonCol size="12">
                 <IonItem>
                   <IonLabel className="disclaimer-text">
-                    Enter a new wallet name, set and confirm your spending
+                    Enter your wallet name, set and confirm your spending
                     password and agree to the Terms and Conditions before
                     continuing to the next step.
                   </IonLabel>
@@ -213,7 +213,7 @@ const CreateWallet = ({}) => {
                   expand="block"
                   className="h-auto my-4"
                   onClick={() => {
-                    handleNavigation('/recoveryseedphrase');
+                    handleNavigation('/submitseedphrase');
                   }}
                   disabled={
                     !(
@@ -243,4 +243,4 @@ const CreateWallet = ({}) => {
   );
 };
 
-export default CreateWallet;
+export default RecoverWallet;
