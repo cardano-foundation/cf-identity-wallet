@@ -1,7 +1,7 @@
 import PouchDB from 'pouchdb';
 import find from 'pouchdb-find';
-import {IResponse} from './types';
-import {NOT_INITIALIZED_DB_ERROR, ON_INIT_DB_ERROR} from './errors';
+import {IError, IResponse} from './types';
+import {GET_DOC_ERROR, NOT_INITIALIZED_DB_ERROR, ON_INIT_DB_ERROR, SET_DOC_ERROR} from './errors';
 PouchDB.plugin(find);
 PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
 
@@ -18,7 +18,7 @@ export const PouchAPI = {
       throw {
         success: false,
         error: {
-          code: error.status,
+          ...error,
           description: ON_INIT_DB_ERROR,
         },
       };
@@ -26,10 +26,10 @@ export const PouchAPI = {
   },
   async getTable(tableName: string): Promise<IResponse> {
     if (!this.db)
-      throw {
+      return {
         success: false,
         error: {
-          code: 500,
+          status: 500,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
@@ -46,10 +46,10 @@ export const PouchAPI = {
   },
   async getIDs(): Promise<IResponse> {
     if (!this.db)
-      throw {
+      return {
         success: false,
         error: {
-          code: 500,
+          status: 500,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
@@ -62,10 +62,10 @@ export const PouchAPI = {
   },
   async getTableIDs(tableName?: string): Promise<IResponse> {
     if (!this.db)
-      throw {
+      return {
         success: false,
         error: {
-          code: 500,
+          status: 500,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
@@ -80,10 +80,10 @@ export const PouchAPI = {
   },
   async get(tableName: string, id: string): Promise<IResponse> {
     if (!this.db)
-      throw {
+      return {
         success: false,
         error: {
-          code: 500,
+          status: 500,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
@@ -99,8 +99,8 @@ export const PouchAPI = {
         return {
           success: false,
           error: {
-            code: error.status,
-            description: error.name,
+            ...error,
+            description: GET_DOC_ERROR,
           },
         };
       });
@@ -110,7 +110,7 @@ export const PouchAPI = {
       throw {
         success: false,
         error: {
-          code: 500,
+          status: 500,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
@@ -131,8 +131,8 @@ export const PouchAPI = {
           throw {
             success: false,
             error: {
-              code: error.status,
-              description: error.name,
+              ...error,
+              description: SET_DOC_ERROR,
             },
           };
         }
@@ -143,7 +143,7 @@ export const PouchAPI = {
       throw {
         success: false,
         error: {
-          code: 500,
+          status: 500,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
@@ -154,17 +154,20 @@ export const PouchAPI = {
             _rev: docToUpdate.data._rev,
             ...obj,
           })
-          .catch((error: { status: number; name: string }) => {
+          .catch((error: IError) => {
             throw {
               success: false,
               error: {
-                code: error.status,
-                description: error.name,
+                ...error,
+                description: GET_DOC_ERROR,
               },
             };
           });
     }).catch(error => {
-      throw error;
+      throw {
+        ...error,
+        description: GET_DOC_ERROR,
+      };
     });
   },
   async remove(tableName: string, id: string):Promise<void> {
@@ -172,7 +175,7 @@ export const PouchAPI = {
       throw {
         success: false,
         error: {
-          code: 500,
+          status: 500,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
@@ -185,8 +188,8 @@ export const PouchAPI = {
         throw {
           success: false,
           error: {
-            code: error.status,
-            description: error.name,
+            ...error,
+            description: GET_DOC_ERROR,
           },
         };
       });
@@ -196,7 +199,7 @@ export const PouchAPI = {
       throw {
         success: false,
         error: {
-          code: 500,
+          status: 500,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
@@ -207,7 +210,7 @@ export const PouchAPI = {
       throw {
         success: false,
         error: {
-          code: 500,
+          status: 500,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
