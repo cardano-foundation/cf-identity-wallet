@@ -17,7 +17,6 @@ export const PouchAPI = {
     } catch (error: any) {
       throw {
         success: false,
-        data: undefined,
         error: {
           code: error.status,
           description: ON_INIT_DB_ERROR,
@@ -29,7 +28,6 @@ export const PouchAPI = {
     if (!this.db)
       throw {
         success: false,
-        data: undefined,
         error: {
           code: 500,
           description: NOT_INITIALIZED_DB_ERROR,
@@ -50,7 +48,6 @@ export const PouchAPI = {
     if (!this.db)
       throw {
         success: false,
-        data: undefined,
         error: {
           code: 500,
           description: NOT_INITIALIZED_DB_ERROR,
@@ -67,7 +64,6 @@ export const PouchAPI = {
     if (!this.db)
       throw {
         success: false,
-        data: undefined,
         error: {
           code: 500,
           description: NOT_INITIALIZED_DB_ERROR,
@@ -86,7 +82,6 @@ export const PouchAPI = {
     if (!this.db)
       throw {
         success: false,
-        data: undefined,
         error: {
           code: 500,
           description: NOT_INITIALIZED_DB_ERROR,
@@ -103,7 +98,6 @@ export const PouchAPI = {
       .catch((error: {status: number; name: string}) => {
         return {
           success: false,
-          data: undefined,
           error: {
             code: error.status,
             description: error.name,
@@ -115,7 +109,6 @@ export const PouchAPI = {
     if (!this.db)
       throw {
         success: false,
-        data: undefined,
         error: {
           code: 500,
           description: NOT_INITIALIZED_DB_ERROR,
@@ -137,7 +130,6 @@ export const PouchAPI = {
         } else {
           throw {
             success: false,
-            data: undefined,
             error: {
               code: error.status,
               description: error.name,
@@ -150,7 +142,6 @@ export const PouchAPI = {
     if (!this.db)
       throw {
         success: false,
-        data: undefined,
         error: {
           code: 500,
           description: NOT_INITIALIZED_DB_ERROR,
@@ -166,7 +157,6 @@ export const PouchAPI = {
           .catch((error: { status: number; name: string }) => {
             throw {
               success: false,
-              data: undefined,
               error: {
                 code: error.status,
                 description: error.name,
@@ -181,7 +171,6 @@ export const PouchAPI = {
     if (!this.db)
       throw {
         success: false,
-        data: undefined,
         error: {
           code: 500,
           description: NOT_INITIALIZED_DB_ERROR,
@@ -195,7 +184,6 @@ export const PouchAPI = {
       .catch((error: {status: number; name: string}) => {
         throw {
           success: false,
-          data: undefined,
           error: {
             code: error.status,
             description: error.name,
@@ -207,7 +195,6 @@ export const PouchAPI = {
     if (!this.db)
       throw {
         success: false,
-        data: undefined,
         error: {
           code: 500,
           description: NOT_INITIALIZED_DB_ERROR,
@@ -219,7 +206,6 @@ export const PouchAPI = {
     if (!this.db)
       throw {
         success: false,
-        data: undefined,
         error: {
           code: 500,
           description: NOT_INITIALIZED_DB_ERROR,
