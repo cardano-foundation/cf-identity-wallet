@@ -50,7 +50,6 @@ import {
 import {useParams} from 'react-router';
 import {useLongPress} from 'react-use';
 import './Chat.css';
-import ReplyTo from './ReplyTo';
 import {ChatBottomDetails} from './ChatBottomDetails';
 import {ChatRepliedQuote} from './ChatRepliedQuote';
 
@@ -77,13 +76,10 @@ const Chat = () => {
 
   const [message, setMessage] = useState('');
   const [showSendButton, setShowSendButton] = useState(false);
-  const [replyToMessage, setReplyToMessage] = useState(false);
-  const [messageSent, setMessageSent] = useState(false);
 
   const [showFooter, setShowFooter] = useState(true);
   const [showQrCode, setShowQrCode] = useState(false);
   const [showActionSheet, setShowActionSheet] = useState(false);
-  const [actionMessage, setActionMessage] = useState(false);
 
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
@@ -93,7 +89,6 @@ const Chat = () => {
   const contentRef = useRef();
   const swiperRefs = useRef([]);
   const textareaRef = useRef();
-  const sideRef = useRef();
   const sendRef = useRef();
   const replyToAnimationRef = useRef();
   const modal = useRef(null);
@@ -144,12 +139,6 @@ const Chat = () => {
     // markAllAsRead(params.contact_id);
     setSwipeEvents();
   });
-
-  //  For displaying toast messages
-  const toaster = (message) => {
-    setToastMessage(message);
-    setShowToast(true);
-  };
 
   //  Scroll to end of content
   const scrollToBottom = async () => {
