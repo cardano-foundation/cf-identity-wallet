@@ -1,7 +1,6 @@
 import {CardanoAPI, ERA_PARAMS} from './CardanoAPI';
 import {Account} from '../models/Account/Account';
 import {ERA, INetwork} from '../models/types';
-import {EmurgoModule} from './emurgo';
 
 export const createAccount = async (
   name: string,

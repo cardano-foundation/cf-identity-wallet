@@ -93,8 +93,8 @@ const Chats = (props: any) => {
 
   const updateChats = () => {
     PouchAPI.get(PeerConnect.table, 'default-profile').then((profile) => {
-      if (profile?.username?.length) {
-        setUsername(profile.username);
+      if (profile.data?.username?.length) {
+        setUsername(profile.data.username);
       }
     });
 
@@ -112,8 +112,8 @@ const Chats = (props: any) => {
             : [];
           return {
             id: index,
-            identifier: peer.identifier,
-            key: `${peer.name}:${peer.identifier}`,
+            identifier: peer.id,
+            key: peer.id,
             name: peer.name,
             contact_id: index,
             preview:
@@ -124,6 +124,7 @@ const Chats = (props: any) => {
           };
         });
       }
+
       peerList = peerList.filter((peer) => peer.name !== undefined);
       setOriginalPeers(peerList);
       setResults(peerList);
@@ -195,19 +196,19 @@ const Chats = (props: any) => {
     const value = (ev.target as HTMLInputElement).value;
     setUsername(value);
     setUsernameIsValid(undefined);
-    if (value === '') return;
+
     nameValidator(value) !== null
       ? setUsernameIsValid(true)
       : setUsernameIsValid(false);
 
-    if (nameValidator(value) || nameValidator(value) === undefined) {
+    if (nameValidator(value) || nameValidator(value) === undefined || value === '') {
       PouchAPI.set(PeerConnect.table, 'default-profile', {
         username: value,
-      });
+      }).then(() => setUsernameIsValid(true));
     }
   };
 
-  const handleNavigation2 = (chat, key) => {
+  const handleNavigation = (chat, key) => {
     history.push({
       pathname: `/chat/${chat.key}`,
       search: '?update=true', // query string
@@ -398,7 +399,7 @@ const Chats = (props: any) => {
             return (
               <div
                 key={index}
-                onClick={() => handleNavigation2(chat, index)}>
+                onClick={() => handleNavigation(chat, index)}>
                 <ChatItem chat={chat} />
               </div>
             );

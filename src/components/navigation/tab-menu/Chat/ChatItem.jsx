@@ -32,7 +32,6 @@ const ChatItem = ({chat}) => {
       />
       <IonItem
         className="chat-content-container"
-        //onClick={() => handleNavigation()}
         detail={false}>
         <div className="chat-content">
           <div className="chat-name-date">

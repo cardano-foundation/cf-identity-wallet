@@ -4,7 +4,7 @@ import CustomPage from '../../../layouts/PageLayout';
 import {useSideMenuUpdate} from '../../side-menu/SideMenuProvider';
 import {IDWCard} from '../../../custom/IdentityCard';
 import {Swiper, SwiperSlide} from 'swiper/react';
-import didsMock from '../../../../test/mock/dids.json';
+import didsMock from '../../../../__test__/mock/dids.json';
 
 const Dids = (props: any) => {
   const pageName = 'My Identity';

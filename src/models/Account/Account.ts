@@ -1,13 +1,4 @@
-import {
-  ERA,
-  IAccount,
-  IAsset,
-  ICertificate,
-  INetwork,
-  ITransaction,
-  IUtxo,
-  TX_STATUS,
-} from '../types';
+import {ERA, IAccount, IAsset, ICertificate, INetwork, ITransaction, IUtxo, TX_STATUS,} from '../types';
 import {Capacitor} from '@capacitor/core';
 import {getKeystore, setKeystore} from '../../db/keystore';
 import {PouchAPI} from '../../db/database';
@@ -43,7 +34,6 @@ export class Account {
   }
 
   get(): IAccount {
-    // TODO: try catch undefined attributes
     return JSON.parse(<string>this.toString());
   }
 
@@ -168,23 +158,22 @@ export class Account {
     this.networks[network].transactions[index <= 0 ? 0 : index] = tx;
   }
 
-  commit() {
+  async commit() {
     if (!this.id || !this.id.length)
-      return {error: `Invalid id with type: ${typeof this.id}`};
+      return {success: false, error: `Invalid id with type: ${typeof this.id}`};
 
     try {
-      PouchAPI.set(Account.table, this.id, this);
-    } catch (e) {
-      // TODO: cath this error, if already exists in db, just update it
-      console.log(`[LOG]: account already exists: ${this.id}`);
-      console.log(e);
-      PouchAPI.set(Account.table, this.id, this);
+      await PouchAPI.set(Account.table, this.id, this);
+    } catch (e:any) {
+      return {
+        error: e.error.description
+      }
     }
   }
 
-  remove() {
+  async remove() {
     if (!this.id) return;
-    PouchAPI.remove(Account.table, this.id);
+    await PouchAPI.remove(Account.table, this.id);
   }
 
   toString() {
@@ -200,6 +189,7 @@ export class Account {
   static new(acc: any) {
     const account = new Account();
     account.set(acc);
+
     return account;
   }
 
@@ -216,8 +206,8 @@ export class Account {
 
   static async getAccount(id: string) {
     const accountDoc = await PouchAPI.get(Account.table, id);
-    if (!accountDoc || !accountDoc.docs?.length) return;
-    const account = accountDoc.docs[0];
+    if (!accountDoc || !accountDoc.data.docs?.length) return;
+    const account = accountDoc.data.docs[0];
 
     return Account.new(account);
   }
@@ -233,19 +223,19 @@ export class Account {
     return Account.new(Object.entries(accounts)[0]);
   }
 
-  static removeAccount(id: string) {
+  static async removeAccount(id: string) {
     if (!id) return;
-    PouchAPI.remove(Account.table, id);
+    await PouchAPI.remove(Account.table, id);
   }
 
   static async getAllAccounts() {
     const accountDocs = await PouchAPI.getTable(Account.table);
-    return accountDocs.map((acc: {doc: any}) => acc.doc);
+    return accountDocs.map((acc: { doc: any }) => acc.doc);
   }
 
   static async getAllAccountsIds() {
-    const accounts = await PouchAPI.getIDs(Account.table);
+    const accounts = await PouchAPI.getTableIDs(Account.table);
     if (!accounts) return;
-    return accounts;
+    return accounts.data;
   }
 }

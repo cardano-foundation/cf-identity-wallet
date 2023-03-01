@@ -6,26 +6,24 @@ export const isDarkMode = () => {
 
 export const setDarkMode = (isDarkMode: boolean) => {
   if (isDarkMode) {
-    document.body.classList.remove('light');
-    document.body.classList.toggle('dark', true);
-  } else {
-    document.body.classList.remove('dark');
-    document.body.classList.toggle('light', true);
-  }
-};
-export const toggleDarkMode = () => {
-  if (document.body.classList.contains('dark')) {
-    SettingsAPI.setIsDarkMode(false);
-    SettingsAPI.commit().then(() => {
-      document.body.classList.remove('dark');
-      document.body.classList.toggle('light', true);
-    });
-  } else {
     SettingsAPI.setIsDarkMode(true);
     SettingsAPI.commit().then(() => {
       document.body.classList.remove('light');
       document.body.classList.toggle('dark', true);
     });
+  } else {
+    SettingsAPI.setIsDarkMode(false);
+    SettingsAPI.commit().then(() => {
+      document.body.classList.remove('dark');
+      document.body.classList.toggle('light', true);
+    });
+  }
+};
+export const toggleDarkMode = () => {
+  if (document.body.classList.contains('dark')) {
+    setDarkMode(false);
+  } else {
+    setDarkMode(true);
   }
 };
 

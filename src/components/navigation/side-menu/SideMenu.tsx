@@ -135,7 +135,8 @@ const SideMenu = () => {
             <IonItem>
               <IonLabel className="flex justify-between">
                 <span>App version</span>
-                <span>0.2.0</span>
+                {/* @ts-ignore version from package.json using DefinePlugin*/}
+                <span>{VERSION}</span>
               </IonLabel>
             </IonItem>
           </IonList>

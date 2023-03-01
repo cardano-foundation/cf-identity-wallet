@@ -3,7 +3,7 @@ import {IonGrid, IonPage, IonRow, IonText} from '@ionic/react';
 import CustomPage from '../../../layouts/PageLayout';
 import {useSideMenuUpdate} from '../../side-menu/SideMenuProvider';
 import './Credentials.css';
-import CREDENTIALS_RESPONSE from '../../../../test/mock/credentials.json';
+import CREDENTIALS_RESPONSE from '../../../../__test__/mock/credentials.json';
 import {Swiper, SwiperSlide} from 'swiper/react';
 import {IDWCard} from '../../../custom/IdentityCard';
 

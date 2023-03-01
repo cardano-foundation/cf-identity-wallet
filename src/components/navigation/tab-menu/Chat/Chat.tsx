@@ -74,6 +74,7 @@ const Chat = () => {
 
   //  Local state
   const [chat, setChat] = useState(location?.state?.chat || {});
+
   const [message, setMessage] = useState('');
   const [showSendButton, setShowSendButton] = useState(false);
   const [replyToMessage, setReplyToMessage] = useState(false);
@@ -100,38 +101,6 @@ const Chat = () => {
   const popover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
-  const actionSheetButtons = [
-    {
-      text:
-        actionMessage && actionMessage.starred
-          ? 'Unstar Message'
-          : 'Star Message',
-      icon: starOutline,
-      handler: () => {},
-    },
-    actionMessage && actionMessage.received
-      ? {
-          text: 'Reply To Message',
-          icon: shareOutline,
-          handler: () => showReplyToMessage(actionMessage),
-        }
-      : {
-          text: 'Unsend Message',
-          icon: alertOutline,
-          handler: () =>
-            toaster(
-              "I haven't implemented unsend :) Simple store update though"
-            ),
-        },
-    {
-      text: 'Delete Message',
-      icon: trashOutline,
-      handler: () =>
-        toaster("I haven't implemented delete :) Simple store update though"),
-      role: 'destructive',
-    },
-  ];
-
   useEffect(() => {
     updateChat();
   }, []);
@@ -155,7 +124,7 @@ const Chat = () => {
       PeerConnect.table,
       params.channel_id
     );
-    if (chat) setChat(chat);
+    if (chat.success) setChat(chat.data);
   };
   const pingChat = async () => {
     if (!params) return;
@@ -546,7 +515,7 @@ const Chat = () => {
         ref={contentRef}>
         {chat &&
           Object.keys(chat).length &&
-          chat?.messages.map((message, index) => {
+          chat?.messages?.map((message, index) => {
             /*
           const repliedMessage = chat.filter(
             (subMessage) =>
@@ -599,13 +568,6 @@ const Chat = () => {
           <IonRefresherContent />
         </IonRefresher>
 
-        <IonActionSheet
-          header="Message Actions"
-          subHeader={actionMessage && actionMessage.preview?.message}
-          isOpen={showActionSheet}
-          onDidDismiss={() => setShowActionSheet(false)}
-          buttons={actionSheetButtons}
-        />
         <IonToast
           color={toastColor}
           isOpen={showToast}

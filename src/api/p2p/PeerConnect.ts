@@ -26,8 +26,6 @@ export class PeerConnect extends CardanoPeerConnect {
     seed: '',
   };
 
-  conected = false;
-
   constructor(
     name: string,
     config: {
@@ -60,11 +58,11 @@ export class PeerConnect extends CardanoPeerConnect {
       PouchAPI.get(PeerConnect.table, this.id).then((peer) => {
         PouchAPI.set(PeerConnect.table, this.id, {
           id: this.id,
-          seed: peer.seed,
-          identifier: peer.identifier,
+          seed: peer.data.seed,
+          identifier: peer.data.identifier,
           name,
-          announce: peer.announce,
-          messages: peer.messages,
+          announce: peer.data.announce,
+          messages: peer.data.messages,
           connected: true,
         }).then(() => publish('updateChat'));
       });
@@ -89,14 +87,15 @@ export class PeerConnect extends CardanoPeerConnect {
               starred: false,
               date: moment.utc().format('MM-DD HH:mm:ss'),
             };
+            console.log()
             PouchAPI.set(PeerConnect.table, this.id, {
               id: this.id,
               seed: this.meerkat.seed,
               identifier: this.meerkat.identifier,
               name,
-              announce: p.announce || [],
-              messages: [...p.messages, newMessage],
-              connected: p.connected || false,
+              announce: p.data.announce || [],
+              messages: p.data.messages?.length ? [...p.data.messages, newMessage] : [newMessage],
+              connected: true,
             }).then((_) => {
               publish('updateChat');
             });
@@ -115,8 +114,6 @@ export class PeerConnect extends CardanoPeerConnect {
       announce: this.meerkat.announce,
       messages: config.messages,
       connected: false,
-    }).then(() => {
-      console.log(`[info]: store in DB peer: ${this.id}`);
     });
   }
 

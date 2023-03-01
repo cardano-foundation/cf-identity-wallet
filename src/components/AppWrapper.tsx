@@ -12,10 +12,7 @@ import {Account} from '../models/Account/Account';
 import {useAppDispatch} from '../store/hooks';
 import {CacheAPI} from '../models/Cache/CacheAPI';
 import {SettingsAPI} from '../models/Settings/SettingsAPI';
-import {
-  setAccountsIdsInCache,
-  setCache,
-} from '../store/reducers/cache';
+import {setAccountsIdsInCache, setCache} from '../store/reducers/cache';
 import {setSettings} from '../store/reducers/settings';
 import {changeTheme, setDarkMode} from '../theme/helpers/theme-helper';
 import {PouchAPI} from '../db/database';
@@ -37,7 +34,6 @@ const AppWrapper = (props: {children: any}) => {
 
   const initApp = async () => {
     console.log('Init App');
-
     await PouchAPI.init();
     //await PouchAPI.clear();
     await CacheAPI.init();
@@ -58,7 +54,6 @@ const AppWrapper = (props: {children: any}) => {
     const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
     dispatch(setAccountsIdsInCache(accountsIds));
 
-
     /* Debug - Do not delete
     console.log("lets init blockfrost");
     await Blockfrost.init('preview');
@@ -69,7 +64,6 @@ const AppWrapper = (props: {children: any}) => {
     console.log("accountState");
     console.log(accountState);
     */
-
   };
 
   const renderChild = () => {

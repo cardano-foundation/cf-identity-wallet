@@ -1,9 +1,5 @@
 import {POPUP_WINDOW, STORAGE} from '../background/config';
 
-import {EmurgoModule} from '../../lib/emurgo';
-import Meerkat from '@fabianbormann/meerkat';
-import {p2p_clients_dict} from '../background';
-import {get} from '../../db/storage';
 import Moment from 'moment';
 // @ts-ignore
 import {extendMoment} from 'moment-range';
@@ -352,7 +348,7 @@ export const SendP2PMessage = async (room, message) => {
   console.log('SendP2PMessage');
   console.log('room');
   console.log(room);
-  if (p2p_clients_dict && p2p_clients_dict[room.name] !== undefined) {
+  /*if (p2p_clients_dict && p2p_clients_dict[room.name] !== undefined) {
     console.log('meerkat instance already exists');
     const meerkat = p2p_clients_dict[room.name];
     meerkat.on('server', () => {
@@ -388,7 +384,7 @@ export const SendP2PMessage = async (room, message) => {
                   });
                 }
               });
-            });*/
+            });
 
           get('cardano-peers-client').then((rooms) => {
             if (rooms) {
@@ -409,22 +405,23 @@ export const SendP2PMessage = async (room, message) => {
                   };
                 }
               });
-              /*
+
                 getAccountFromDb().then((acc) => {
                   getNetworkFromDb().then((network) => {
                     acc = {...acc, rooms: rooms};
                     updateAccountByNetworkInDb(network.net, acc);
                   });
                 });
-                */
             }
           });
+
         }
       );
     });
   } else {
     console.log('meerkat new instance ');
     const meerkat = new Meerkat({identifier: room.clientAddress});
+
     meerkat.on('server', () => {
       console.log('[info]: connected to server');
       meerkat.rpc(
@@ -453,18 +450,19 @@ export const SendP2PMessage = async (room, message) => {
                   };
                 }
               });
-              /*
+
                 getAccountFromDb().then((acc) => {
                   getNetworkFromDb().then((network) => {
                     acc = {...acc, rooms: rooms};
                     updateAccountByNetworkInDb(network.net, acc);
                   });
                 });
-                */
+
             }
           });
         }
       );
     });
   }
+  */
 };
