@@ -38,7 +38,7 @@ const Crypto = (props: any) => {
   const pageName = 'My Wallets';
   const {sideMenuOptions} = props;
   const setSideMenu = useSideMenuUpdate();
-  const nav = useHistory();
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const modal = useRef(null);
   const cachedAccounts = useAppSelector(getCachedAccounts);
@@ -72,7 +72,7 @@ const Crypto = (props: any) => {
 
   useEffect(() => {
     subscribe('ionBackButton', () => {
-      nav.replace('/tabs/crypto');
+      history.replace('/tabs/crypto');
     });
   }, []);
 
@@ -167,8 +167,6 @@ const Crypto = (props: any) => {
     ));
   };
 
-  const history = useHistory();
-
   const handleNavigation = (route: string) => {
     setShowAddWallet(false);
     history.push({
@@ -216,7 +214,7 @@ const Crypto = (props: any) => {
         actionButtonIconSize="1.7rem"
         actionButtonClickEvent={() => {
           setShowAddWallet(true);
-          nav.push(nav.location.pathname + '?modalOpened=true');
+          history.push(history.location.pathname + '?modalOpened=true');
         }}>
         <IonModal
           id="create-wallet-modal"

@@ -26,7 +26,7 @@ const CreateWallet = ({}) => {
   const [isValidPassword, setIsValidPassword] = useState<boolean>();
   const [isMatchingPassword, setIsMatchingPassword] = useState<boolean>();
   const [checked, setChecked] = useState(false);
-  const nav = useHistory();
+  const history = useHistory();
 
   const nameValidator = (text: string) => {
     // Lower and uppercase alphanumeric between 2 and 16 characters
@@ -72,7 +72,7 @@ const CreateWallet = ({}) => {
   };
 
   const handleNavigation = (route: string) => {
-    nav.push({
+    history.push({
       pathname: route,
       state: {
         walletName,
@@ -182,7 +182,7 @@ const CreateWallet = ({}) => {
                   </IonLabel>
                   <IonToggle
                     slot="end"
-                    onIonChange={() => nav.replace('/faceidsetup')}
+                    onIonChange={() => history.replace('/faceidsetup')}
                   />
                 </IonItem>
               </IonCol>

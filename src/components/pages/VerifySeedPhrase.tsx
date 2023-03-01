@@ -26,7 +26,7 @@ import {useAppDispatch, useAppSelector} from '../../store/hooks';
 const VerifySeedPhrase = ({}) => {
   const pageName = 'Verify Seed Phrase';
   const location = useLocation();
-  const nav = useHistory();
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const cachedAccounts = useAppSelector(getCachedAccounts);
   const originalSeedPhrase = location.state?.seedPhrase;
@@ -34,7 +34,7 @@ const VerifySeedPhrase = ({}) => {
   const [seedMatch, setSeedMatch] = useState<string[]>([]);
 
   const handleNavigation = (route: string) => {
-    nav.push({
+    history.push({
       pathname: route,
       state: {
         seedPhrase,
