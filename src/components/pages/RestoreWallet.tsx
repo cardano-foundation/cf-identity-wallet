@@ -16,10 +16,10 @@ import {
 } from '@ionic/react';
 import {addOutline} from 'ionicons/icons';
 import CustomPage from '../layouts/PageLayout';
-import './RecoverWallet.css';
+import './RestoreWallet.css';
 
-const RecoverWallet = ({}) => {
-  const pageName = 'Recover Wallet';
+const RestoreWallet = ({}) => {
+  const pageName = 'Restore Wallet';
   const [walletName, setWalletName] = useState<string>();
   const [walletPassword, setWalletPassword] = useState<string>();
   const [isValidName, setIsValidName] = useState<boolean>();
@@ -243,4 +243,4 @@ const RecoverWallet = ({}) => {
   );
 };
 
-export default RecoverWallet;
+export default RestoreWallet;

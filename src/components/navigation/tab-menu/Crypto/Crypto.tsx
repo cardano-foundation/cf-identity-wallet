@@ -194,9 +194,9 @@ const Crypto = (props: any) => {
               expand="block"
               className="h-auto my-4 secondary-button"
               onClick={() => {
-                handleNavigation('/recoverwallet');
+                handleNavigation('/restorewallet');
               }}>
-              Recover Existing Wallet
+              Restore Existing Wallet
             </IonButton>
           </IonCol>
         </IonRow>

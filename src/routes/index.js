@@ -6,7 +6,7 @@ import SideMenu from '../components/navigation/side-menu/SideMenu';
 import Chat from '../components/navigation/tab-menu/Chat/Chat';
 import {tabRoutes, Tabs} from './tabRoutes';
 import CreateWallet from '../components/pages/CreateWallet';
-import RecoverWallet from '../components/pages/RecoverWallet';
+import RestoreWallet from '../components/pages/RestoreWallet';
 import RecoverySeedPhrase from '../components/pages/RecoverySeedPhrase';
 import SubmitSeedPhrase from '../components/pages/SubmitSeedPhrase';
 import VerifySeedPhrase from '../components/pages/VerifySeedPhrase';
@@ -39,8 +39,8 @@ const Routes = () => {
             render={() => <CreateWallet />}
           />
           <Route
-            path="/recoverwallet"
-            render={() => <RecoverWallet />}
+            path="/restorewallet"
+            render={() => <RestoreWallet />}
           />
           <Route
             path="/recoveryseedphrase"
