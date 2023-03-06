@@ -23,7 +23,7 @@ import CustomPage from '../layouts/PageLayout';
 import {CardanoAPI, ERA_PARAMS} from '../../lib/CardanoAPI';
 import {ERA} from '../../models/types';
 
-const RecoverySeedPhrase = ({}) => {
+const CreateSeedPhrase = ({}) => {
   const pageName = 'Create Seed Phrase';
   const [checked, setChecked] = useState(false);
   const [view, setView] = useState(false);
@@ -204,4 +204,4 @@ const RecoverySeedPhrase = ({}) => {
   );
 };
 
-export default RecoverySeedPhrase;
+export default CreateSeedPhrase;

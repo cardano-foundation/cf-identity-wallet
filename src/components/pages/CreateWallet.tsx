@@ -213,7 +213,7 @@ const CreateWallet = ({}) => {
                   expand="block"
                   className="h-auto my-4"
                   onClick={() => {
-                    handleNavigation('/recoveryseedphrase');
+                    handleNavigation('/createseedphrase');
                   }}
                   disabled={
                     !(

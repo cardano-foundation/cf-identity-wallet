@@ -105,7 +105,7 @@ const VerifySeedPhrase = ({}) => {
         sideMenuPosition="start"
         backButton={true}
         backButtonText="Back"
-        backButtonPath={'/restoreseedphrase'}
+        backButtonPath={'/createseedphrase'}
         actionButton={false}
         actionButtonIcon={addOutline}
         actionButtonIconSize="1.7rem">

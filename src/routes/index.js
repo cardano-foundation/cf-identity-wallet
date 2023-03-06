@@ -7,7 +7,7 @@ import Chat from '../components/navigation/tab-menu/Chat/Chat';
 import {tabRoutes, Tabs} from './tabRoutes';
 import CreateWallet from '../components/pages/CreateWallet';
 import RestoreWallet from '../components/pages/RestoreWallet';
-import RecoverySeedPhrase from '../components/pages/RecoverySeedPhrase';
+import CreateSeedPhrase from '../components/pages/CreateSeedPhrase';
 import SubmitSeedPhrase from '../components/pages/SubmitSeedPhrase';
 import VerifySeedPhrase from '../components/pages/VerifySeedPhrase';
 import FaceIdSetup from '../components/pages/FaceIdSetup';
@@ -43,8 +43,8 @@ const Routes = () => {
             render={() => <RestoreWallet />}
           />
           <Route
-            path="/recoveryseedphrase"
-            render={() => <RecoverySeedPhrase />}
+            path="/createseedphrase"
+            render={() => <CreateSeedPhrase />}
           />
           <Route
             path="/verifyseedphrase"
