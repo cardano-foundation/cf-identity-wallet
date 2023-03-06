@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import {
   IonButton,
@@ -29,6 +29,7 @@ const SubmitSeedPhrase = ({}) => {
   const [suggestionsActive, setSuggestionsActive] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhraseLength, setSeedPhraseLength] = useState<string>('15');
+  const [wordsLeft, setWordsLeft] = useState<number>(0);
   const [presentAlert] = useIonAlert();
 
   const handleNavigation = (route: string) => {
@@ -90,6 +91,10 @@ const SubmitSeedPhrase = ({}) => {
       </div>
     );
   };
+
+  useEffect(() => {
+    setWordsLeft(Number(seedPhraseLength) - seedPhrase.length);
+  }, [seedPhrase, seedPhraseLength]);
 
   const submitWalletRecovery = () => {
     const validateMnemonic = CardanoAPI.validateSeedPhrase(
@@ -199,8 +204,10 @@ const SubmitSeedPhrase = ({}) => {
                 expand="block"
                 className="h-auto my-4"
                 onClick={() => submitWalletRecovery()}
-                disabled={seedPhrase.length !== Number(seedPhraseLength)}>
-                Continue
+                disabled={wordsLeft !== 0}>
+                {wordsLeft > 0
+                  ? wordsLeft + ` word${wordsLeft > 1 ? 's' : ''} left`
+                  : 'Continue'}
               </IonButton>
               <IonButton
                 shape="round"
