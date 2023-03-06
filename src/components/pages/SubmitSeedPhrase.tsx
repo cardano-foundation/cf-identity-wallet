@@ -5,6 +5,7 @@ import {
   IonChip,
   IonCol,
   IonGrid,
+  IonIcon,
   IonInput,
   IonItem,
   IonLabel,
@@ -15,7 +16,7 @@ import {
   IonSegmentButton,
   useIonAlert,
 } from '@ionic/react';
-import {addOutline} from 'ionicons/icons';
+import {addOutline, closeCircleOutline} from 'ionicons/icons';
 import CustomPage from '../layouts/PageLayout';
 import {CardanoAPI} from '../../lib/CardanoAPI';
 import {bip39Seeds} from '../../test/mock/bip39Seeds';
@@ -108,7 +109,7 @@ const SubmitSeedPhrase = ({}) => {
         sideMenuPosition="start"
         backButton={true}
         backButtonText="Back"
-        backButtonPath={'/recoverwallet'}
+        backButtonPath={'/restorewallet'}
         actionButton={false}
         actionButtonIcon={addOutline}
         actionButtonIconSize="1.7rem">
@@ -158,9 +159,15 @@ const SubmitSeedPhrase = ({}) => {
                     onClick={(event) => {
                       removeWord(word, index);
                     }}>
-                    <span className="w-full text-left">
-                      <span className="text-gray-500 mr-2">{index + 1}</span>
-                      <span>{word}</span>
+                    <span className="w-full flex justify-between">
+                      <span className="align-left leading-6">
+                        <span className="text-gray-500 mr-2">{index + 1}</span>
+                        <span className="text-sm">{word}</span>
+                      </span>
+                      <IonIcon
+                        className="text-2xl"
+                        icon={closeCircleOutline}
+                      />
                     </span>
                   </IonChip>
                 ))}
@@ -173,7 +180,7 @@ const SubmitSeedPhrase = ({}) => {
                 type="text"
                 value={inputValue}
                 placeholder="Start typing here"
-                className="bg-white text-black placeholder:text-gray-500 rounded-lg"
+                className="bg-white text-black placeholder:text-gray-500 rounded-lg text-lg"
                 onIonChange={handleChange}
               />
               {suggestionsActive && <Suggestions />}
