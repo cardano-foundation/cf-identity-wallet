@@ -60,7 +60,7 @@ import {handleConnect} from '../../../AppWrapper';
 import {subscribe} from '../../../../utils/events';
 import {HandleConnect} from '../../../../api/p2p/HandleConnect';
 import {PeerConnect} from '../../../../api/p2p/PeerConnect';
-import {PouchAPI} from '../../../../db/database';
+import { pouchAPI } from '../../../AppWrapper';
 import {QRCode} from 'react-qrcode-logo';
 
 const Chat = () => {
@@ -286,7 +286,7 @@ const Chat = () => {
       try {
         const identifier = params.channel_id.split(':')[1];
 
-        const profile = await PouchAPI.get(
+        const profile = await pouchAPI.get(
           PeerConnect.table,
           'default-profile'
         );
@@ -297,8 +297,6 @@ const Chat = () => {
           profile?.username
         );
         setMessage('');
-        setMessageSent(true);
-        setTimeout(() => setMessageSent(false), 10);
         setTimeout(() => updateChat() && scrollToBottom(), 200);
       } catch (e) {
         setToastMessage(`Error: ${e}`);

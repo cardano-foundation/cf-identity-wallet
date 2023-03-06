@@ -17,8 +17,10 @@ import {setSettings} from '../store/reducers/settings';
 import {changeTheme, setDarkMode} from '../theme/helpers/theme-helper';
 import {PouchAPI} from '../db/database';
 import {HandleConnect} from '../api/p2p/HandleConnect';
+import { DB } from '../db/db';
 
 export let handleConnect: HandleConnect | undefined = undefined;
+export const pouchAPI: DB = new DB();
 
 const AppWrapper = (props: {children: any}) => {
   const dispatch = useAppDispatch();
@@ -34,12 +36,14 @@ const AppWrapper = (props: {children: any}) => {
 
   const initApp = async () => {
     console.log('Init App');
-    await PouchAPI.init();
+    //await PouchAPI.init();
     //await PouchAPI.clear();
     await CacheAPI.init();
     dispatch(setCache(CacheAPI.get()));
     await CardanoAPI.init();
 
+    console.log("pouchAPI");
+    console.log(pouchAPI);
     handleConnect = new HandleConnect();
 
     await SettingsAPI.init();

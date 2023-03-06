@@ -36,7 +36,7 @@ import ChatItem from './ChatItem';
 import {handleConnect} from '../../../AppWrapper';
 import {useHistory} from 'react-router-dom';
 import {subscribe} from '../../../../utils/events';
-import {PouchAPI} from '../../../../db/database';
+import { pouchAPI } from '../../../AppWrapper';
 import {PeerConnect} from '../../../../api/p2p/PeerConnect';
 import {HandleConnect} from '../../../../api/p2p/HandleConnect';
 
@@ -92,7 +92,7 @@ const Chats = (props: any) => {
   }, []);
 
   const updateChats = () => {
-    PouchAPI.get(PeerConnect.table, 'default-profile').then((profile) => {
+    pouchAPI.get(PeerConnect.table, 'default-profile').then((profile) => {
       if (profile.data?.username?.length) {
         setUsername(profile.data.username);
       }
@@ -202,7 +202,7 @@ const Chats = (props: any) => {
       : setUsernameIsValid(false);
 
     if (nameValidator(value) || nameValidator(value) === undefined || value === '') {
-      PouchAPI.set(PeerConnect.table, 'default-profile', {
+      pouchAPI.set(PeerConnect.table, 'default-profile', {
         username: value,
       }).then(() => setUsernameIsValid(true));
     }

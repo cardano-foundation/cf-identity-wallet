@@ -9,7 +9,7 @@ import Meerkat from '@fabianbormann/meerkat';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
 import {publish} from '../../utils/events';
-import {PouchAPI} from '../../db/database';
+import { pouchAPI } from '../../components/AppWrapper';
 // @ts-ignore
 const moment = extendMoment(Moment);
 
@@ -55,8 +55,8 @@ export class PeerConnect extends CardanoPeerConnect {
 
     this.meerkat.on('server', () => {
       console.log(`[info]: connected to server 💬: ${this.meerkat.identifier}`);
-      PouchAPI.get(PeerConnect.table, this.id).then((peer) => {
-        PouchAPI.set(PeerConnect.table, this.id, {
+      pouchAPI.get(PeerConnect.table, this.id).then((peer) => {
+        pouchAPI.set(PeerConnect.table, this.id, {
           id: this.id,
           seed: peer.data.seed,
           identifier: peer.data.identifier,
@@ -75,7 +75,7 @@ export class PeerConnect extends CardanoPeerConnect {
           console.log(`[info]: message received: ${JSON.stringify(message)}`);
           console.log(`[info]: transmitted by the server: ${address}`);
 
-          PouchAPI.get(PeerConnect.table, this.id).then((p) => {
+          pouchAPI.get(PeerConnect.table, this.id).then((p) => {
             const newMessage = {
               preview: message?.message,
               sender: message?.sender,
@@ -87,8 +87,7 @@ export class PeerConnect extends CardanoPeerConnect {
               starred: false,
               date: moment.utc().format('MM-DD HH:mm:ss'),
             };
-            console.log()
-            PouchAPI.set(PeerConnect.table, this.id, {
+            pouchAPI.set(PeerConnect.table, this.id, {
               id: this.id,
               seed: this.meerkat.seed,
               identifier: this.meerkat.identifier,
@@ -106,7 +105,7 @@ export class PeerConnect extends CardanoPeerConnect {
       }
     );
 
-    PouchAPI.set(PeerConnect.table, this.id, {
+    pouchAPI.set(PeerConnect.table, this.id, {
       id: this.id,
       seed: this.meerkat.seed,
       identifier: this.meerkat.identifier,
@@ -160,8 +159,8 @@ export class PeerConnect extends CardanoPeerConnect {
 
     this.meerkat.rpc(identifier, 'ping_server', {}, (response: boolean) => {
       try {
-        PouchAPI.get(PeerConnect.table, this.id).then((peer) => {
-          PouchAPI.set(PeerConnect.table, this.id, {
+        pouchAPI.get(PeerConnect.table, this.id).then((peer) => {
+          pouchAPI.set(PeerConnect.table, this.id, {
             id: this.id,
             seed: this.meerkat.seed,
             identifier: this.meerkat.identifier,

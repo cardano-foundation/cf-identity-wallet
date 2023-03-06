@@ -2,8 +2,8 @@
 import Meerkat from '@fabianbormann/meerkat';
 import {PeerConnect} from './PeerConnect';
 import {HostConnect} from './HostConnect';
-import {PouchAPI} from '../../db/database';
 import {publish} from '../../utils/events';
+import { pouchAPI } from '../../components/AppWrapper';
 
 export class HandleConnect {
   profile: {identifier: string; seed: string} | undefined = undefined;
@@ -14,7 +14,7 @@ export class HandleConnect {
   whitelist: Array<string> = [];
 
   constructor() {
-    PouchAPI.get(PeerConnect.table, 'default-profile')
+    pouchAPI.get(PeerConnect.table, 'default-profile')
       .then((profile) => {
         if (profile.success) {
           this.profile = {
@@ -27,11 +27,11 @@ export class HandleConnect {
             identifier: meerkat.identifier,
             seed: meerkat.seed,
           };
-          PouchAPI.set(PeerConnect.table, 'default-profile', this.profile);
+          pouchAPI.set(PeerConnect.table, 'default-profile', this.profile);
         }
       });
 
-    PouchAPI.getTable(HostConnect.table).then((hostDocs) => {
+    pouchAPI.getTable(HostConnect.table).then((hostDocs) => {
       if (!hostDocs) return;
       const hostsList = hostDocs.data.map((host: {doc: any}) => host.doc);
       for (let i = 0; i < hostsList.length; i++) {
@@ -45,7 +45,7 @@ export class HandleConnect {
       }
     });
 
-    PouchAPI.getTable(PeerConnect.table).then((peerDocs) => {
+    pouchAPI.getTable(PeerConnect.table).then((peerDocs) => {
       if (!peerDocs) return;
       const peersList = peerDocs.data
         .filter((peer: { doc: { name: string }; }) => peer.doc.name !== undefined)
@@ -186,14 +186,14 @@ export class HandleConnect {
    * Get any peers
    */
   static async getPeer(tableName: string, id: string) {
-    return await PouchAPI.get(tableName, id);
+    return await pouchAPI.get(tableName, id);
   }
 
   /**
    * Get host peers
    */
   static async getHosts() {
-    const hosts = await PouchAPI.getTable(HostConnect.table);
+    const hosts = await pouchAPI.getTable(HostConnect.table);
     return hosts.data?.map((host: {doc: any}) => host.doc) || [];
   }
 
@@ -201,7 +201,7 @@ export class HandleConnect {
    * Get peers
    */
   static async getPeers() {
-    const peers = await PouchAPI.getTable(PeerConnect.table);
+    const peers = await pouchAPI.getTable(PeerConnect.table);
     return peers.data?.map((peer: {doc: any}) => peer.doc) || [];
   }
 
@@ -209,22 +209,22 @@ export class HandleConnect {
    * Remove peer
    */
   static async removePeer(id: string) {
-    await PouchAPI.remove(PeerConnect.table, id);
+    await pouchAPI.remove(PeerConnect.table, id);
   }
 
   /**
    * Remove host
    */
   static async removeHost(id: string) {
-    await PouchAPI.remove(HostConnect.table, id);
+    await pouchAPI.remove(HostConnect.table, id);
   }
 
   /**
    * Get full peer list(host+peer)   *
    */
   static async getAllPeers() {
-    const hosts = await PouchAPI.getTable(HostConnect.table);
-    const peers = await PouchAPI.getTable(PeerConnect.table);
+    const hosts = await pouchAPI.getTable(HostConnect.table);
+    const peers = await pouchAPI.getTable(PeerConnect.table);
     return [
       ...hosts.data.map((host: {doc: any}) => host.doc),
       ...peers.data.map((peer: {doc: any}) => peer.doc),

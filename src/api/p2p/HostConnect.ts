@@ -2,7 +2,7 @@ import Meerkat from '@fabianbormann/meerkat';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
 import {publish} from '../../utils/events';
-import {PouchAPI} from '../../db/database';
+import { pouchAPI } from '../../components/AppWrapper';
 // @ts-ignore
 const moment = extendMoment(Moment);
 
@@ -43,9 +43,9 @@ export class HostConnect {
         connected = true;
         console.log(`[info]: server ready: ${this.meerkat.identifier}`);
         if (clients) {
-          PouchAPI.get(HostConnect.table, this.id)
+          pouchAPI.get(HostConnect.table, this.id)
             .then((host) => {
-              PouchAPI.set(HostConnect.table, this.id, {
+              pouchAPI.set(HostConnect.table, this.id, {
                 id: this.id,
                 seed: this.meerkat.seed,
                 identifier: this.meerkat.identifier,
@@ -62,9 +62,9 @@ export class HostConnect {
               /*publish('updateChat')*/
             });
         } else {
-          PouchAPI.get(HostConnect.table, this.id)
+          pouchAPI.get(HostConnect.table, this.id)
             .then((host) => {
-              PouchAPI.set(HostConnect.table, this.id, {
+              pouchAPI.set(HostConnect.table, this.id, {
                 id: this.id,
                 seed: this.meerkat.seed,
                 identifier: this.meerkat.identifier,
@@ -123,7 +123,7 @@ export class HostConnect {
       }
     );
 
-    PouchAPI.set(HostConnect.table, this.id, {
+    pouchAPI.set(HostConnect.table, this.id, {
       id: this.id,
       seed: this.meerkat.seed,
       identifier: this.meerkat.identifier,
