@@ -64,6 +64,9 @@ const SubmitSeedPhrase = ({}) => {
       const filterSuggestions = bip39Seeds.filter(
         (suggestion: string) => suggestion.toLowerCase().indexOf(query) > -1
       );
+      if (filterSuggestions.length >= 13) {
+        filterSuggestions.length = 12;
+      }
       setSuggestions(filterSuggestions);
       setSuggestionsActive(true);
     } else {
@@ -73,7 +76,7 @@ const SubmitSeedPhrase = ({}) => {
 
   const Suggestions = () => {
     return (
-      <div className="grid grid-cols-3 gap-2 px-2 m-2">
+      <div className="grid grid-cols-3 gap-2 px-2 m-2 mt-6">
         {suggestions.map((suggestion, index) => (
           <IonChip
             className="text-sm"
