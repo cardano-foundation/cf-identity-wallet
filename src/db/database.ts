@@ -4,16 +4,17 @@ import {IError, IResponse} from './types';
 import {GET_DOC_ERROR, GET_TABLE_ERROR, NOT_INITIALIZED_DB_ERROR, ON_INIT_DB_ERROR, SET_DOC_ERROR} from './errors';
 PouchDB.plugin(find);
 PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
+PouchDB.plugin(require('pouchdb-adapter-memory'));
 
 export class Database {
   private dbName:string = 'database-dev';
   private db: typeof PouchDB;
 
-  constructor(dbName?:string) {
+  constructor(dbName?:string, memory?:boolean) {
     if (dbName) this.dbName = dbName;
     try {
       this.db = new PouchDB(`${this.dbName}.db`, {
-        adapter: 'cordova-sqlite'
+        adapter: memory ? 'memory' : 'cordova-sqlite'
       });
     } catch (error: any) {
       throw {

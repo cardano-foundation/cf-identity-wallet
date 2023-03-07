@@ -13,6 +13,7 @@ module.exports = {
             {
                 "useBuiltIns": "entry"
             },
-        ]
+        ],
+        '@babel/preset-typescript'
     ],
 }
