@@ -14,8 +14,6 @@ export class Database {
   constructor(dbName?:string, memory?:boolean) {
     if (dbName) this.dbName = dbName;
     try {
-      console.log("memory");
-      console.log(memory);
       this.db = new PouchDB(`${this.dbName}.db`, {
         adapter: memory ? 'memory' : 'cordova-sqlite'
       });
