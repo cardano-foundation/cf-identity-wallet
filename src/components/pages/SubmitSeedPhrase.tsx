@@ -18,6 +18,7 @@ import {
 } from '@ionic/react';
 import {addOutline, closeCircleOutline} from 'ionicons/icons';
 import CustomPage from '../layouts/PageLayout';
+import SeedCounterButton from '../custom/SeedCounterButton';
 import {CardanoAPI} from '../../lib/CardanoAPI';
 import {bip39Seeds} from '../../test/mock/bip39Seeds';
 
@@ -196,17 +197,12 @@ const SubmitSeedPhrase = ({}) => {
         <IonGrid className="mt-3">
           <IonRow>
             <IonCol>
-              <IonButton
-                shape="round"
-                color="primary"
-                expand="block"
-                className="h-auto my-4"
-                onClick={() => submitWalletRecovery()}
-                disabled={wordsLeft !== 0}>
-                {wordsLeft > 0
-                  ? wordsLeft + ` word${wordsLeft > 1 ? 's' : ''} left`
-                  : 'Continue'}
-              </IonButton>
+              <SeedCounterButton
+                handlerFunction={submitWalletRecovery}
+                title="Submit button"
+                label="Continue"
+                wordsLeft={wordsLeft}
+              />
               <IonButton
                 shape="round"
                 expand="block"
