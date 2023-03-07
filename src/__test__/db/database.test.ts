@@ -1,6 +1,6 @@
 import { Database } from "../../db/database";
 
-describe("PouchDb Unit Testing", () => {
+describe("Database Unit Testing", () => {
 
    const pouchAPI: Database = new Database('db-test', true);
 
