@@ -65,9 +65,7 @@ const SubmitSeedPhrase = ({}) => {
       const filterSuggestions = bip39Seeds.filter(
         (suggestion: string) => suggestion.toLowerCase().indexOf(query) > -1
       );
-      if (filterSuggestions.length >= 13) {
-        filterSuggestions.length = 12;
-      }
+      filterSuggestions.length = 12;
       setSuggestions(filterSuggestions);
       setSuggestionsActive(true);
     } else {
