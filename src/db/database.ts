@@ -29,14 +29,6 @@ export class Database {
   }
 
   async getTable(tableName: string): Promise<IResponse> {
-    if (!this.db)
-      return {
-        success: false,
-        error: {
-          status: 500,
-          description: GET_TABLE_ERROR,
-        },
-      };
     const table = `${tableName}:`;
     return this.db.allDocs({
       include_docs: true,
@@ -59,14 +51,6 @@ export class Database {
   }
 
   async getIDs(): Promise<IResponse> {
-    if (!this.db)
-      return {
-        success: false,
-        error: {
-          status: 500,
-          description: NOT_INITIALIZED_DB_ERROR,
-        },
-      };
     return this.db.allDocs()
         .then((all: { rows: { id: string; }[] }) => {
           return {
@@ -86,14 +70,6 @@ export class Database {
   }
 
   async getTableIDs(tableName?: string): Promise<IResponse> {
-    if (!this.db)
-      return {
-        success: false,
-        error: {
-          status: 500,
-          description: NOT_INITIALIZED_DB_ERROR,
-        },
-      };
     const table = `${tableName}:`;
     const all = await this.getTable(table);
     const result = all.data.map((d: {id: string}) => d.id.replace(table, ''));
@@ -105,14 +81,6 @@ export class Database {
   }
 
   async get(tableName: string, id: string): Promise<IResponse> {
-    if (!this.db)
-      return {
-        success: false,
-        error: {
-          status: 500,
-          description: NOT_INITIALIZED_DB_ERROR,
-        },
-      };
     return this.db
         .get(`${tableName}:${id}`)
         .then((result) => {
@@ -133,15 +101,6 @@ export class Database {
   }
 
   async set(tableName: string, id: string, obj: any):Promise<IResponse> {
-    if (!this.db)
-      return {
-        success: false,
-        error: {
-          status: 500,
-          description: NOT_INITIALIZED_DB_ERROR,
-        },
-      };
-
     return this.db
         .put({
           _id: `${tableName}:${id}`,
@@ -168,14 +127,6 @@ export class Database {
   }
 
   async update(tableName: string, id: string, obj: any):Promise<IResponse> {
-    if (!this.db)
-      return {
-        success: false,
-        error: {
-          status: 500,
-          description: NOT_INITIALIZED_DB_ERROR,
-        },
-      };
     return this.get(tableName, id).then(docToUpdate => {
       this.db
           .put({
@@ -206,14 +157,6 @@ export class Database {
   }
 
   async remove(tableName: string, id: string):Promise<IResponse> {
-    if (!this.db)
-      return  {
-        success: false,
-        error: {
-          status: 500,
-          description: NOT_INITIALIZED_DB_ERROR,
-        },
-      };
     return this.db
         .get(`${tableName}:${id}`)
         .then((doc) => {
@@ -234,14 +177,6 @@ export class Database {
   }
 
   async clear():Promise<IResponse> {
-    if (!this.db)
-      return  {
-        success: false,
-        error: {
-          status: 500,
-          description: NOT_INITIALIZED_DB_ERROR,
-        },
-      };
     await this.db.destroy();
     return  {
       success: true
@@ -249,14 +184,6 @@ export class Database {
   }
 
   async close():Promise<IResponse> {
-    if (!this.db)
-      return  {
-        success: false,
-        error: {
-          status: 500,
-          description: NOT_INITIALIZED_DB_ERROR,
-        },
-      };
     await this.db.close();
     return  {
       success: true
