@@ -36,3 +36,7 @@ secrets.ts
 .secrets
 letsencrypt
 .env.*
+
+
+# playground
+/src/__test__/playground.ts
