@@ -43,7 +43,7 @@ export class Database {
       return {
         success: false,
         error: {
-          status: error.status,
+          ...error,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
