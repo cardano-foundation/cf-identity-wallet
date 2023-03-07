@@ -1,17 +1,18 @@
 import PouchDB from 'pouchdb';
 import find from 'pouchdb-find';
 import {IError, IResponse} from './types';
-import {GET_DOC_ERROR, NOT_INITIALIZED_DB_ERROR, ON_INIT_DB_ERROR, SET_DOC_ERROR} from './errors';
+import {GET_DOC_ERROR, GET_TABLE_ERROR, NOT_INITIALIZED_DB_ERROR, ON_INIT_DB_ERROR, SET_DOC_ERROR} from './errors';
 PouchDB.plugin(find);
 PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
 
-export const PouchAPI = {
-  databaseName: 'database-dev',
-  db: undefined as undefined | typeof PouchDB,
-  init(databaseName?: string) {
+export class Database {
+  private dbName:string = 'database-dev';
+  private db: typeof PouchDB;
+
+  constructor(dbName?:string) {
+    if (dbName) this.dbName = dbName;
     try {
-      this.databaseName = databaseName || this.databaseName;
-      this.db = new PouchDB(`${databaseName}.db`, {
+      this.db = new PouchDB(`${this.dbName}.db`, {
         adapter: 'cordova-sqlite'
       });
     } catch (error: any) {
@@ -20,30 +21,41 @@ export const PouchAPI = {
         error: {
           ...error,
           description: ON_INIT_DB_ERROR,
-        },
+        }
       };
     }
-  },
+  }
+
   async getTable(tableName: string): Promise<IResponse> {
     if (!this.db)
       return {
         success: false,
         error: {
           status: 500,
-          description: NOT_INITIALIZED_DB_ERROR,
+          description: GET_TABLE_ERROR,
         },
       };
     const table = `${tableName}:`;
-    const all = await this.db.allDocs({
+    return this.db.allDocs({
       include_docs: true,
       startkey: table,
       endkey: `${tableName}\uffff`,
+    }).then((all: { rows: any[] }) => {
+      return {
+        success: true,
+        data: all.rows
+      };
+    }).catch((error: { status: any; }) => {
+      return {
+        success: false,
+        error: {
+          status: error.status,
+          description: NOT_INITIALIZED_DB_ERROR,
+        },
+      };
     });
-    return {
-      success: true,
-      data: all.rows
-    };
-  },
+  }
+
   async getIDs(): Promise<IResponse> {
     if (!this.db)
       return {
@@ -53,13 +65,24 @@ export const PouchAPI = {
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
-    const all = await this.db.allDocs();
-    const result = all.rows.map((d: {id: string}) => d.id);
-    return {
-      success: true,
-      data: result,
-    };
-  },
+    return this.db.allDocs()
+        .then((all: { rows: { id: string; }[] }) => {
+          return {
+            success: true,
+            data: all.rows.map((d: {id: string}) => d.id),
+          };
+        })
+        .catch((error:IError) => {
+          return {
+            success: false,
+            error: {
+              status: error.status,
+              description: NOT_INITIALIZED_DB_ERROR,
+            },
+          };
+        });
+  }
+
   async getTableIDs(tableName?: string): Promise<IResponse> {
     if (!this.db)
       return {
@@ -77,7 +100,8 @@ export const PouchAPI = {
       success: true,
       data: result,
     };
-  },
+  }
+
   async get(tableName: string, id: string): Promise<IResponse> {
     if (!this.db)
       return {
@@ -88,26 +112,27 @@ export const PouchAPI = {
         },
       };
     return this.db
-      .get(`${tableName}:${id}`)
-      .then((result) => {
-        return {
-          success: true,
-          data: result,
-        };
-      })
-      .catch((error: {status: number; name: string}) => {
-        return {
-          success: false,
-          error: {
-            ...error,
-            description: GET_DOC_ERROR,
-          },
-        };
-      });
-  },
-  async set(tableName: string, id: string, obj: any):Promise<void> {
+        .get(`${tableName}:${id}`)
+        .then((result) => {
+          return {
+            success: true,
+            data: result,
+          };
+        })
+        .catch((error: IError) => {
+          return {
+            success: false,
+            error: {
+              ...error,
+              description: GET_DOC_ERROR,
+            },
+          };
+        });
+  }
+
+  async set(tableName: string, id: string, obj: any):Promise<IResponse> {
     if (!this.db)
-      throw {
+      return {
         success: false,
         error: {
           status: 500,
@@ -115,47 +140,54 @@ export const PouchAPI = {
         },
       };
 
-    await this.db
-      .put({
-        _id: `${tableName}:${id}`,
-        ...obj,
-      })
-      .catch(async (error: {name: string; status: number}) => {
-        if (error.name === 'conflict' && error.status === 409) {
-          await this.update(tableName, id, obj).catch(
-            (err: IResponse) => {
-              throw err
-            }
-          );
-        } else {
-          throw {
-            success: false,
-            error: {
-              ...error,
-              description: SET_DOC_ERROR,
-            },
+    return this.db
+        .put({
+          _id: `${tableName}:${id}`,
+          ...obj,
+        })
+        .then(() => {
+          return {
+            success: true
           };
-        }
-      });
-  },
-  update: async function (tableName: string, id: string, obj: any):Promise<void> {
+        })
+        .catch(async (error: IError) => {
+          if (error.name === 'conflict' && error.status === 409) {
+            return this.update(tableName, id, obj);
+          } else {
+            return {
+              success: false,
+              error: {
+                ...error,
+                description: SET_DOC_ERROR,
+              },
+            };
+          }
+        });
+  }
+
+  async update(tableName: string, id: string, obj: any):Promise<IResponse> {
     if (!this.db)
-      throw {
+      return {
         success: false,
         error: {
           status: 500,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
-    await this.get(tableName, id).then(async docToUpdate => {
-      await this.db
+    return this.get(tableName, id).then(docToUpdate => {
+      this.db
           .put({
             _id: `${tableName}:${id}`,
             _rev: docToUpdate.data._rev,
             ...obj,
           })
+          .then(() => {
+            return {
+              success: true
+            };
+          })
           .catch((error: IError) => {
-            throw {
+            return  {
               success: false,
               error: {
                 ...error,
@@ -164,39 +196,44 @@ export const PouchAPI = {
             };
           });
     }).catch(error => {
-      throw {
+      return  {
         ...error,
         description: GET_DOC_ERROR,
       };
     });
-  },
-  async remove(tableName: string, id: string):Promise<void> {
+  }
+
+  async remove(tableName: string, id: string):Promise<IResponse> {
     if (!this.db)
-      throw {
+      return  {
         success: false,
         error: {
           status: 500,
           description: NOT_INITIALIZED_DB_ERROR,
         },
       };
-    this.db
-      .get(`${tableName}:${id}`)
-      .then((doc) => {
-        this.db.remove(doc);
-      })
-      .catch((error: {status: number; name: string}) => {
-        throw {
-          success: false,
-          error: {
-            ...error,
-            description: GET_DOC_ERROR,
-          },
-        };
-      });
-  },
-  async clear():Promise<void> {
+    return this.db
+        .get(`${tableName}:${id}`)
+        .then((doc) => {
+          this.db.remove(doc);
+          return  {
+            success: true
+          };
+        })
+        .catch((error: IError) => {
+          return {
+            success: false,
+            error: {
+              ...error,
+              description: GET_DOC_ERROR,
+            },
+          };
+        });
+  }
+
+  async clear():Promise<IResponse> {
     if (!this.db)
-      throw {
+      return  {
         success: false,
         error: {
           status: 500,
@@ -204,10 +241,14 @@ export const PouchAPI = {
         },
       };
     await this.db.destroy();
-  },
-  async close():Promise<void> {
+    return  {
+      success: true
+    };
+  }
+
+  async close():Promise<IResponse> {
     if (!this.db)
-      throw {
+      return  {
         success: false,
         error: {
           status: 500,
@@ -215,5 +256,8 @@ export const PouchAPI = {
         },
       };
     await this.db.close();
-  },
-};
+    return  {
+      success: true
+    };
+  }
+}
