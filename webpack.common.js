@@ -88,6 +88,9 @@ const config = {
       new webpack.ProvidePlugin({
          Buffer: ['buffer', 'Buffer'],
       }),
+      new webpack.ProvidePlugin({
+         process: 'process/browser',
+      }),
       new webpack.DefinePlugin({
          VERSION: JSON.stringify(require("./package.json").version)
       })

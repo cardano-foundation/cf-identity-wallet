@@ -42,6 +42,8 @@ const Crypto = (props: any) => {
   const dispatch = useAppDispatch();
   const modal = useRef(null);
   const cachedAccounts = useAppSelector(getCachedAccounts);
+  console.log('cachedAccounts');
+  console.log(cachedAccounts);
   const [showAddWallet, setShowAddWallet] = useState(false);
   const popover = useRef<HTMLIonPopoverElement>(null);
   const [popoverOpen, setPopoverOpen] = useState(false);
