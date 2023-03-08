@@ -142,6 +142,7 @@ export class Database {
         };
       })
       .catch(async (error: IError) => {
+
         if (error.name === 'conflict' && error.status === 409) {
           return this.update(tableName, id, obj);
         } else {

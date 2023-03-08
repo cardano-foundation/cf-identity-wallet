@@ -1,7 +1,9 @@
 import {Database} from '../../db/database';
 
 describe('Database Unit Testing', () => {
-  const pouchAPI: Database = new Database('db-test', true);
+  let pouchAPI: Database;
+
+  beforeAll(() => pouchAPI = new Database('db-test', true));
 
   test('Insert doc successfully', () => {
     pouchAPI
@@ -10,4 +12,7 @@ describe('Database Unit Testing', () => {
         expect(result).toEqual({success: true});
       });
   });
+
+  afterAll(() => pouchAPI.close());
+
 });

@@ -34,6 +34,7 @@ const AppWrapper = (props: {children: any}) => {
   }, []);
 
   const initApp = async () => {
+
     await CacheAPI.init();
     dispatch(setCache(CacheAPI.get()));
     await CardanoAPI.init();
