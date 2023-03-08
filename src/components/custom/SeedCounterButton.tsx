@@ -3,22 +3,29 @@ import React from 'react';
 
 interface buttonProps {
   handlerFunction: () => void;
-  title: string;
+  shape: string;
+  color: string;
+  expand: string;
+  classes: string;
   label: string;
   wordsLeft: number;
 }
 
 const SeedCounterButton = ({
   handlerFunction,
+  shape,
+  color,
+  expand,
+  classes,
   label,
   wordsLeft,
 }: buttonProps) => {
   return (
     <IonButton
-      shape="round"
-      color="primary"
-      expand="block"
-      className="h-auto my-4"
+      shape={shape}
+      color={color}
+      expand={expand}
+      className={classes}
       onClick={
         handlerFunction
           ? () => handlerFunction()

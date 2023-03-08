@@ -198,8 +198,11 @@ const SubmitSeedPhrase = ({}) => {
           <IonRow>
             <IonCol>
               <SeedCounterButton
+                shape="round"
+                color="primary"
+                expand="block"
+                classes="h-auto my-4"
                 handlerFunction={submitWalletRecovery}
-                title="Submit button"
                 label="Continue"
                 wordsLeft={wordsLeft}
               />
