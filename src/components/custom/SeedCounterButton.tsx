@@ -11,6 +11,9 @@ interface buttonProps {
   wordsLeft: number;
 }
 
+type Shape = 'round' | undefined;
+type Expand = 'block' | 'full' | undefined;
+
 const SeedCounterButton = ({
   handlerFunction,
   shape,
@@ -22,9 +25,9 @@ const SeedCounterButton = ({
 }: buttonProps) => {
   return (
     <IonButton
-      shape={shape}
+      shape={shape as Shape}
       color={color}
-      expand={expand}
+      expand={expand as Expand}
       className={classes}
       onClick={
         handlerFunction
