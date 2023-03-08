@@ -124,8 +124,8 @@ const config = {
       process: 'process/browser',
     }),
     new webpack.DefinePlugin({
-      VERSION: JSON.stringify(require("../../package.json").version)
-    })
+      VERSION: JSON.stringify(require('../../package.json').version),
+    }),
   ],
   infrastructureLogging: {
     level: 'info',

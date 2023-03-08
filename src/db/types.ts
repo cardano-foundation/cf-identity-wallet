@@ -5,11 +5,11 @@ export interface IResponse {
 }
 
 export interface IError {
-  docId?: string,
-  error?: boolean,
-  id?: string,
-  message?: string,
-  name?: string,
-  status: number,
+  docId?: string;
+  error?: boolean;
+  id?: string;
+  message?: string;
+  name?: string;
+  status: number;
   description?: string;
 }

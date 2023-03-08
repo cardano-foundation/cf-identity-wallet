@@ -16,7 +16,7 @@ import {setAccountsIdsInCache, setCache} from '../store/reducers/cache';
 import {setSettings} from '../store/reducers/settings';
 import {changeTheme, setDarkMode} from '../theme/helpers/theme-helper';
 import {HandleConnect} from '../api/p2p/HandleConnect';
-import { Database } from '../db/database';
+import {Database} from '../db/database';
 
 export let handleConnect: HandleConnect | undefined = undefined;
 export const pouchAPI: Database = new Database();
@@ -50,7 +50,6 @@ const AppWrapper = (props: {children: any}) => {
     dispatch(setSettings(SettingsAPI.get()));
     const accountsIds: string[] = (await Account.getAllAccountsIds()) || [];
     dispatch(setAccountsIdsInCache(accountsIds));
-
   };
 
   const renderChild = () => {

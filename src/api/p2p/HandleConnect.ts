@@ -3,7 +3,7 @@ import Meerkat from '@fabianbormann/meerkat';
 import {PeerConnect} from './PeerConnect';
 import {HostConnect} from './HostConnect';
 import {publish} from '../../utils/events';
-import { pouchAPI } from '../../components/AppWrapper';
+import {pouchAPI} from '../../components/AppWrapper';
 
 export class HandleConnect {
   profile: {identifier: string; seed: string} | undefined = undefined;
@@ -14,33 +14,32 @@ export class HandleConnect {
   whitelist: Array<string> = [];
 
   constructor() {
-    pouchAPI.get(PeerConnect.table, 'default-profile')
-      .then((profile) => {
-        if (profile.success) {
-          this.profile = {
-            identifier: profile.data.identifier,
-            seed: profile.data.seed,
-          };
-        } else {
-          const meerkat = new Meerkat();
-          this.profile = {
-            identifier: meerkat.identifier,
-            seed: meerkat.seed,
-          };
-          pouchAPI.set(PeerConnect.table, 'default-profile', this.profile);
-        }
-      });
+    pouchAPI.get(PeerConnect.table, 'default-profile').then((profile) => {
+      if (profile.success) {
+        this.profile = {
+          identifier: profile.data.identifier,
+          seed: profile.data.seed,
+        };
+      } else {
+        const meerkat = new Meerkat();
+        this.profile = {
+          identifier: meerkat.identifier,
+          seed: meerkat.seed,
+        };
+        pouchAPI.set(PeerConnect.table, 'default-profile', this.profile);
+      }
+    });
 
     pouchAPI.getTable(HostConnect.table).then((hostDocs) => {
       if (!hostDocs) return;
       const hostsList = hostDocs.data.map((host: {doc: any}) => host.doc);
       for (let i = 0; i < hostsList.length; i++) {
         this.restoreChannel(
-            hostsList[i].seed,
-            hostsList[i].identifier,
-            hostsList[i].name,
-            hostsList[i].announce,
-            hostsList[i].messages
+          hostsList[i].seed,
+          hostsList[i].identifier,
+          hostsList[i].name,
+          hostsList[i].announce,
+          hostsList[i].messages
         );
       }
     });
@@ -48,14 +47,14 @@ export class HandleConnect {
     pouchAPI.getTable(PeerConnect.table).then((peerDocs) => {
       if (!peerDocs) return;
       const peersList = peerDocs.data
-        .filter((peer: { doc: { name: string }; }) => peer.doc.name !== undefined)
+        .filter((peer: {doc: {name: string}}) => peer.doc.name !== undefined)
         .map((peer: {doc: any}) => peer.doc);
 
       for (let i = 0; i < peersList.length; i++) {
         this.joinChannel(
-            peersList[i].name,
-            peersList[i].identifier,
-            peersList[i].messages
+          peersList[i].name,
+          peersList[i].identifier,
+          peersList[i].messages
         );
       }
     });
@@ -129,7 +128,6 @@ export class HandleConnect {
     hostIdentifier: string,
     messages: string[] = []
   ): void {
-
     const peer = new PeerConnect(name, {
       seed: this.profile?.seed,
       identifier: hostIdentifier,

@@ -1,7 +1,16 @@
-import {ERA, IAccount, IAsset, ICertificate, INetwork, ITransaction, IUtxo, TX_STATUS,} from '../types';
+import {
+  ERA,
+  IAccount,
+  IAsset,
+  ICertificate,
+  INetwork,
+  ITransaction,
+  IUtxo,
+  TX_STATUS,
+} from '../types';
 import {Capacitor} from '@capacitor/core';
 import {getKeystore, setKeystore} from '../../db/keystore';
-import { pouchAPI } from '../../components/AppWrapper';
+import {pouchAPI} from '../../components/AppWrapper';
 
 const KEY_CHAIN_DEVICES = ['iphone', 'ipad', 'phablet', 'tablet', 'android'];
 
@@ -164,10 +173,10 @@ export class Account {
 
     try {
       await pouchAPI.set(Account.table, this.id, this);
-    } catch (e:any) {
+    } catch (e: any) {
       return {
-        error: e.error.description
-      }
+        error: e.error.description,
+      };
     }
   }
 
@@ -230,7 +239,7 @@ export class Account {
 
   static async getAllAccounts() {
     const accountDocs = await pouchAPI.getTable(Account.table);
-    return accountDocs.map((acc: { doc: any }) => acc.doc);
+    return accountDocs.map((acc: {doc: any}) => acc.doc);
   }
 
   static async getAllAccountsIds() {

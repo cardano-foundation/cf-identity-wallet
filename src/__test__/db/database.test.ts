@@ -1,12 +1,13 @@
-import { Database } from "../../db/database";
+import {Database} from '../../db/database';
 
-describe("Database Unit Testing", () => {
+describe('Database Unit Testing', () => {
+  const pouchAPI: Database = new Database('db-test', true);
 
-   const pouchAPI: Database = new Database('db-test', true);
-
-   test("Insert doc successfully", () => {
-      pouchAPI.set("test-table", "unit-test-1", {data: "this is a unit test"}).then(result => {
-         expect(result).toEqual({success: true});
+  test('Insert doc successfully', () => {
+    pouchAPI
+      .set('test-table', 'unit-test-1', {data: 'this is a unit test'})
+      .then((result) => {
+        expect(result).toEqual({success: true});
       });
-   });
+  });
 });

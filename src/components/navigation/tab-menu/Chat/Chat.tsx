@@ -60,7 +60,7 @@ import {handleConnect} from '../../../AppWrapper';
 import {subscribe} from '../../../../utils/events';
 import {HandleConnect} from '../../../../api/p2p/HandleConnect';
 import {PeerConnect} from '../../../../api/p2p/PeerConnect';
-import { pouchAPI } from '../../../AppWrapper';
+import {pouchAPI} from '../../../AppWrapper';
 import {QRCode} from 'react-qrcode-logo';
 
 const Chat = () => {
