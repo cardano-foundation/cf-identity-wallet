@@ -14,7 +14,7 @@ test('Button should have a label of Continue', () => {
         return;
       }}
       label="Continue"
-      wordsLeft="0"
+      wordsLeft={0}
     />
   );
   expect(screen.getByText('Continue')).toBeVisible();
