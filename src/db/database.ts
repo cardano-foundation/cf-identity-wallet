@@ -9,6 +9,9 @@ import {
   GET_IDS_ERROR,
   GET_TABLE_ERROR,
   NOT_INITIALIZED_DB_ERROR,
+  NOT_VALID_ID_DOC_ERROR,
+  NOT_VALID_TABLE_NAME_ERROR,
+  NULL_OR_EMPTY_DOC_ERROR,
   ON_INIT_DB_ERROR,
   REMOVE_DOC_ERROR,
   SET_DOC_ERROR,
@@ -131,6 +134,38 @@ export class Database {
   }
 
   async set(tableName: string, id: string, obj: any): Promise<IResponse> {
+
+    if (!tableName 
+        || tableName.length === 0)
+      return {
+        success: false,
+        error: {
+          status: 400,
+          description: NOT_VALID_TABLE_NAME_ERROR
+        },
+      };
+    
+    if (!id 
+        || id.length === 0)
+      return {
+        success: false,
+        error: {
+          status: 400,
+          description: NOT_VALID_ID_DOC_ERROR
+        },
+      };
+    
+    if (!obj 
+        || obj
+        && Object.keys(obj).length === 0
+        && Object.getPrototypeOf(obj) === Object.prototype)
+      return {
+        success: false,
+        error: {
+          status: 400,
+          description: NULL_OR_EMPTY_DOC_ERROR
+        },
+      };
     return this.db
       .put({
         _id: `${tableName}:${id}`,
