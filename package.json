@@ -10,7 +10,7 @@
     "build:cap": "rimraf build && webpack --config webpack.prod.js && npx cap sync",
     "open:android": "npx cap run android",
     "open:ios": "npx cap run ios",
-    "test": "react-scripts src/test",
+    "test": "react-scripts test --transformIgnorePatterns \"node_modules/(?!stencil)/\"",
     "eject": "react-scripts eject",
     "lint": "eslint --ext .js,.ts,.jsx,.tsx src",
     "format": "npm run lint --fix & yarn prettier --write 'src/**/*.{js,jsx,ts,tsx}'",
@@ -51,8 +51,7 @@
     "@ionic/storage": "^3.0.6",
     "@martifylabs/mesh": "^1.2.0",
     "@reduxjs/toolkit": "^1.9.1",
-    "@testing-library/jest-dom": "^5.16.4",
-    "@testing-library/react": "^13.3.0",
+    "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/chrome": "^0.0.203",
     "@types/jest": "^29.2.3",
@@ -140,6 +139,7 @@
     "@storybook/preset-create-react-app": "^4.1.2",
     "@storybook/react": "^6.5.15",
     "@storybook/testing-library": "^0.0.13",
+    "@testing-library/jest-dom": "^5.16.5",
     "@types/react-router-dom": "^5.3.3",
     "@types/rx": "4.1.2",
     "babel-loader": "^9.1.0",
@@ -160,6 +160,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-storybook": "^0.6.10",
     "html-webpack-plugin": "^5.5.0",
+    "jest-cli": "^29.5.0",
     "mini-css-extract-plugin": "^2.6.1",
     "node-sass": "^7.0.1",
     "postcss-loader": "^7.0.1",
@@ -177,6 +178,10 @@
     "yarn": "^1.22.19"
   },
   "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
     "overrides": [
       {
         "files": [
