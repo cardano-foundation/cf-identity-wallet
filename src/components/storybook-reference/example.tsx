@@ -2,7 +2,7 @@
 // Do not delete.
 
 import React from 'react';
-import './Example.css';
+import './example.css';
 
 interface ExampleProps {
   /**
