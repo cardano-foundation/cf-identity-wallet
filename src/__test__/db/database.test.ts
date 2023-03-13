@@ -1,6 +1,6 @@
 import {Database} from '../../db/database';
 
-describe('Database Unit Testing', () => {
+describe('Database: Set Operation', () => {
   let pouchAPI: Database;
 
   beforeAll(() => pouchAPI = new Database('db-test', true));
@@ -20,7 +20,7 @@ describe('Database Unit Testing', () => {
         expect(result.success).toEqual(false);
       });
   });
-  
+
   test('Insert doc with empty table name failed', () => {
     pouchAPI
       .set('', 'unit-test-1', {data: 'this is a unit test'})
@@ -36,7 +36,7 @@ describe('Database Unit Testing', () => {
         expect(result.success).toEqual(false);
       });
   });
-  
+
   test('Insert doc with empty id failed', () => {
     pouchAPI
       .set('test-table', '', {data: 'this is a unit test'})
@@ -60,7 +60,7 @@ describe('Database Unit Testing', () => {
           expect(result.success).toEqual(false);
         });
   });
-  
+
   test('Insert empty doc failed', () => {
     pouchAPI
       .set('test-table', 'unit-test-1', {})
@@ -70,5 +70,30 @@ describe('Database Unit Testing', () => {
   });
 
   afterAll(() => pouchAPI.close());
+
+});
+
+describe('Database: Get Operation', () => {
+    let pouchAPI: Database;
+
+    beforeAll(() => {
+        pouchAPI = new Database('db-test', true);
+
+        pouchAPI
+            .set('test-table', 'unit-test-1', {data: 'this is a unit test'})
+            .then((result) => {
+                expect(result.success).toEqual(true);
+            });
+    });
+
+    test('Get doc successfully', () => {
+        pouchAPI
+            .get('test-table', 'unit-test-1')
+            .then((result) => {
+                expect(result.success).toEqual(true);
+            });
+    });
+
+    afterAll(() => pouchAPI.close());
 
 });
