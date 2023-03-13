@@ -94,6 +94,37 @@ describe('Database: Get Operation', () => {
             });
     });
 
-    afterAll(() => pouchAPI.close());
+    test('Get doc with null table name failed', () => {
+        pouchAPI
+            .get(null, 'unit-test-1')
+            .then((result) => {
+                expect(result.success).toEqual(false);
+            });
+    });
 
+    test('Get doc with undefined table name failed', () => {
+        pouchAPI
+            .get(null, 'unit-test-1')
+            .then((result) => {
+                expect(result.success).toEqual(false);
+            });
+    });
+
+    test('Get doc with null id failed', () => {
+        pouchAPI
+            .get(null, 'unit-test-1')
+            .then((result) => {
+                expect(result.success).toEqual(false);
+            });
+    });
+
+    test('Get doc with undefined id failed', () => {
+        pouchAPI
+            .get(undefined, 'unit-test-1')
+            .then((result) => {
+                expect(result.success).toEqual(false);
+            });
+    });
+
+    afterAll(() => pouchAPI.close());
 });

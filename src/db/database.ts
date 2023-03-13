@@ -111,6 +111,26 @@ export class Database {
   }
 
   async get(tableName: string, id: string): Promise<IResponse> {
+    if (!tableName
+        || tableName.length === 0)
+      return {
+        success: false,
+        error: {
+          status: 400,
+          description: NOT_VALID_TABLE_NAME_ERROR
+        },
+      };
+
+    if (!id
+        || id.length === 0)
+      return {
+        success: false,
+        error: {
+          status: 400,
+          description: NOT_VALID_ID_DOC_ERROR
+        },
+      };
+
     return this.db
       .get(`${tableName}:${id}`)
       .then((result) => {
@@ -135,7 +155,7 @@ export class Database {
 
   async set(tableName: string, id: string, obj: any): Promise<IResponse> {
 
-    if (!tableName 
+    if (!tableName
         || tableName.length === 0)
       return {
         success: false,
@@ -144,8 +164,8 @@ export class Database {
           description: NOT_VALID_TABLE_NAME_ERROR
         },
       };
-    
-    if (!id 
+
+    if (!id
         || id.length === 0)
       return {
         success: false,
@@ -154,8 +174,8 @@ export class Database {
           description: NOT_VALID_ID_DOC_ERROR
         },
       };
-    
-    if (!obj 
+
+    if (!obj
         || obj
         && Object.keys(obj).length === 0
         && Object.getPrototypeOf(obj) === Object.prototype)
