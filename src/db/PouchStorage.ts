@@ -17,14 +17,15 @@ import {
   SET_DOC_ERROR,
   UPDATE_DOC_ERROR,
 } from './errors';
+import {PluggableStorage} from './PluggableStorage';
 PouchDB.plugin(find);
 PouchDB.plugin(require('pouchdb-adapter-cordova-sqlite'));
 // required for unit testing
 PouchDB.plugin(require('pouchdb-adapter-memory'));
 
-export class Database {
+export class PouchStorage implements PluggableStorage {
   private dbName: string = 'database-dev';
-  private db: typeof PouchDB;
+  private db: PouchDB.Database;
 
   constructor(dbName?: string, inMemory?: boolean) {
     if (dbName) this.dbName = dbName;
@@ -41,6 +42,14 @@ export class Database {
         },
       };
     }
+  }
+
+  getType(): string {
+    return 'pouchdb';
+  }
+
+  async init(): Promise<void> {
+    // no initialization required for PouchDB
   }
 
   async getTable(tableName: string): Promise<IResponse> {
@@ -111,23 +120,21 @@ export class Database {
   }
 
   async get(tableName: string, id: string): Promise<IResponse> {
-    if (!tableName
-        || tableName.length === 0)
+    if (!tableName || tableName.length === 0)
       return {
         success: false,
         error: {
           status: 400,
-          description: NOT_VALID_TABLE_NAME_ERROR
+          description: NOT_VALID_TABLE_NAME_ERROR,
         },
       };
 
-    if (!id
-        || id.length === 0)
+    if (!id || id.length === 0)
       return {
         success: false,
         error: {
           status: 400,
-          description: NOT_VALID_ID_DOC_ERROR
+          description: NOT_VALID_ID_DOC_ERROR,
         },
       };
 
@@ -153,43 +160,42 @@ export class Database {
       });
   }
 
-  async set(tableName: string, id: string, obj: any): Promise<IResponse> {
-
-    if (!tableName
-        || tableName.length === 0)
+  async set(tableName: string, id: string, value: any): Promise<IResponse> {
+    if (!tableName || tableName.length === 0)
       return {
         success: false,
         error: {
           status: 400,
-          description: NOT_VALID_TABLE_NAME_ERROR
+          description: NOT_VALID_TABLE_NAME_ERROR,
         },
       };
 
-    if (!id
-        || id.length === 0)
+    if (!id || id.length === 0)
       return {
         success: false,
         error: {
           status: 400,
-          description: NOT_VALID_ID_DOC_ERROR
+          description: NOT_VALID_ID_DOC_ERROR,
         },
       };
 
-    if (!obj
-        || obj
-        && Object.keys(obj).length === 0
-        && Object.getPrototypeOf(obj) === Object.prototype)
+    if (
+      !value ||
+      (value &&
+        Object.keys(value).length === 0 &&
+        Object.getPrototypeOf(value) === Object.prototype)
+    )
       return {
         success: false,
         error: {
           status: 400,
-          description: NULL_OR_EMPTY_DOC_ERROR
+          description: NULL_OR_EMPTY_DOC_ERROR,
         },
       };
     return this.db
       .put({
         _id: `${tableName}:${id}`,
-        ...obj,
+        ...value,
       })
       .then(() => {
         return {
@@ -197,9 +203,8 @@ export class Database {
         };
       })
       .catch(async (error: IError) => {
-
         if (error.name === 'conflict' && error.status === 409) {
-          return this.update(tableName, id, obj);
+          return this.update(tableName, id, value);
         } else {
           return {
             success: false,

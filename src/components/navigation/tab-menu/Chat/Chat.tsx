@@ -60,7 +60,7 @@ import {handleConnect} from '../../../AppWrapper';
 import {subscribe} from '../../../../utils/events';
 import {HandleConnect} from '../../../../api/p2p/HandleConnect';
 import {PeerConnect} from '../../../../api/p2p/PeerConnect';
-import {pouchAPI} from '../../../AppWrapper';
+import {databaseAPI} from '../../../AppWrapper';
 import {QRCode} from 'react-qrcode-logo';
 
 const Chat = () => {
@@ -286,7 +286,7 @@ const Chat = () => {
       try {
         const identifier = params.channel_id.split(':')[1];
 
-        const profile = await pouchAPI.get(
+        const profile = await databaseAPI.get(
           PeerConnect.table,
           'default-profile'
         );

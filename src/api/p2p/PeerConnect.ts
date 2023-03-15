@@ -9,7 +9,7 @@ import Meerkat from '@fabianbormann/meerkat';
 import {extendMoment} from 'moment-range';
 import Moment from 'moment';
 import {publish} from '../../utils/events';
-import {pouchAPI} from '../../components/AppWrapper';
+import {databaseAPI} from '../../components/AppWrapper';
 // @ts-ignore
 const moment = extendMoment(Moment);
 
@@ -55,8 +55,8 @@ export class PeerConnect extends CardanoPeerConnect {
 
     this.meerkat.on('server', () => {
       console.log(`[info]: connected to server 💬: ${this.meerkat.identifier}`);
-      pouchAPI.get(PeerConnect.table, this.id).then((peer) => {
-        pouchAPI
+      databaseAPI.get(PeerConnect.table, this.id).then((peer) => {
+        databaseAPI
           .set(PeerConnect.table, this.id, {
             id: this.id,
             seed: peer.data.seed,
@@ -77,7 +77,7 @@ export class PeerConnect extends CardanoPeerConnect {
           console.log(`[info]: message received: ${JSON.stringify(message)}`);
           console.log(`[info]: transmitted by the server: ${address}`);
 
-          pouchAPI.get(PeerConnect.table, this.id).then((p) => {
+          databaseAPI.get(PeerConnect.table, this.id).then((p) => {
             const newMessage = {
               preview: message?.message,
               sender: message?.sender,
@@ -89,7 +89,7 @@ export class PeerConnect extends CardanoPeerConnect {
               starred: false,
               date: moment.utc().format('MM-DD HH:mm:ss'),
             };
-            pouchAPI
+            databaseAPI
               .set(PeerConnect.table, this.id, {
                 id: this.id,
                 seed: this.meerkat.seed,
@@ -111,7 +111,7 @@ export class PeerConnect extends CardanoPeerConnect {
       }
     );
 
-    pouchAPI.set(PeerConnect.table, this.id, {
+    databaseAPI.set(PeerConnect.table, this.id, {
       id: this.id,
       seed: this.meerkat.seed,
       identifier: this.meerkat.identifier,
@@ -165,8 +165,8 @@ export class PeerConnect extends CardanoPeerConnect {
 
     this.meerkat.rpc(identifier, 'ping_server', {}, (response: boolean) => {
       try {
-        pouchAPI.get(PeerConnect.table, this.id).then((peer) => {
-          pouchAPI
+        databaseAPI.get(PeerConnect.table, this.id).then((peer) => {
+          databaseAPI
             .set(PeerConnect.table, this.id, {
               id: this.id,
               seed: this.meerkat.seed,

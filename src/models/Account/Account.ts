@@ -10,7 +10,7 @@ import {
 } from '../types';
 import {Capacitor} from '@capacitor/core';
 import {getKeystore, setKeystore} from '../../db/keystore';
-import {pouchAPI} from '../../components/AppWrapper';
+import {databaseAPI} from '../../components/AppWrapper';
 
 const KEY_CHAIN_DEVICES = ['iphone', 'ipad', 'phablet', 'tablet', 'android'];
 
@@ -172,7 +172,7 @@ export class Account {
       return {success: false, error: `Invalid id with type: ${typeof this.id}`};
 
     try {
-      await pouchAPI.set(Account.table, this.id, this);
+      await databaseAPI.set(Account.table, this.id, this);
     } catch (e: any) {
       return {
         error: e.error.description,
@@ -182,7 +182,7 @@ export class Account {
 
   async remove() {
     if (!this.id) return;
-    await pouchAPI.remove(Account.table, this.id);
+    await databaseAPI.remove(Account.table, this.id);
   }
 
   toString() {
@@ -214,7 +214,7 @@ export class Account {
   }
 
   static async getAccount(id: string) {
-    const accountDoc = await pouchAPI.get(Account.table, id);
+    const accountDoc = await databaseAPI.get(Account.table, id);
     if (!accountDoc || !accountDoc.data.docs?.length) return;
     const account = accountDoc.data.docs[0];
 
@@ -234,16 +234,16 @@ export class Account {
 
   static async removeAccount(id: string) {
     if (!id) return;
-    await pouchAPI.remove(Account.table, id);
+    await databaseAPI.remove(Account.table, id);
   }
 
   static async getAllAccounts() {
-    const accountDocs = await pouchAPI.getTable(Account.table);
+    const accountDocs = await databaseAPI.getTable(Account.table);
     return accountDocs.map((acc: {doc: any}) => acc.doc);
   }
 
   static async getAllAccountsIds() {
-    const accounts = await pouchAPI.getTableIDs(Account.table);
+    const accounts = await databaseAPI.getTableIDs(Account.table);
     if (!accounts) return;
     return accounts.data;
   }
