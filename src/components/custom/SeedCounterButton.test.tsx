@@ -31,7 +31,7 @@ test('Button should have a label of 10 words left', () => {
         return;
       }}
       label="Continue"
-      wordsLeft="10"
+      wordsLeft={10}
     />
   );
   expect(screen.getByText('10 words left')).toBeVisible();

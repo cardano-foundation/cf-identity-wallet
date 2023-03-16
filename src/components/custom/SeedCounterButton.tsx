@@ -1,15 +1,14 @@
 import {IonButton} from '@ionic/react';
-import React from 'react';
-
-interface buttonProps {
-  handlerFunction: () => void;
+import React, {MouseEventHandler} from 'react';
+type buttonProps = {
+  handlerFunction: MouseEventHandler<HTMLIonButtonElement>;
   shape: string;
   color: string;
   expand: string;
   classes: string;
   label: string;
   wordsLeft: number;
-}
+};
 
 type Shape = 'round' | undefined;
 type Expand = 'block' | 'full' | undefined;
@@ -29,13 +28,7 @@ const SeedCounterButton = ({
       color={color}
       expand={expand as Expand}
       className={classes}
-      onClick={
-        handlerFunction
-          ? () => handlerFunction()
-          : () => {
-              return;
-            }
-      }
+      onClick={handlerFunction}
       disabled={wordsLeft !== 0}>
       {wordsLeft > 0
         ? wordsLeft + ` word${wordsLeft > 1 ? 's' : ''} left`
