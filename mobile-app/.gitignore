@@ -10,7 +10,6 @@
 
 # production
 /build
-/build-extension
 
 # misc
 .DS_Store
@@ -32,9 +31,6 @@ yarn.lock
 /.idea
 
 # secret keys
-secrets.ts
-.secrets
-letsencrypt
 .env.*
 
 
