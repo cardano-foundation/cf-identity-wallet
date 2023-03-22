@@ -1,0 +1,18 @@
+#!/bin/bash
+
+COLOR_RED=$(tput setaf 1)
+COLOR_GREEN=$(tput setaf 2)
+COLOR_RESET=$(tput sgr0)
+
+COMMIT_MESSAGE=$(head -1 $1)
+TYPES_REGEXP="build|ci|docs|feat|fix|perf|refactor|style|test|chore|revert"
+COMPLETE_REGEXP="^($TYPES_REGEXP)(\(.+\))?: "
+
+if [[ ! ${COMMIT_MESSAGE} =~ ${COMPLETE_REGEXP} ]]
+then
+  echo -e "${COLOR_RED}[!] INVALID COMMIT MESSAGE ${COLOR_RESET}"
+  echo -e "${COLOR_GREEN}[+]${COLOR_RESET} It needs to follow conventional commits structure:"
+  echo -e "    type(scope): message"
+  echo -e "${COLOR_GREEN}[+]${COLOR_RESET} Following types are supported: $TYPES_REGEXP"
+  exit 1
+fi
