@@ -7,7 +7,10 @@ function App() {
     <div className="App">
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
-        <span className="App-slogan" title="slogan" >Cardano Blockchain's OS Decentralised Identity (DID) &amp; Verifiable Credential (VC) Wallet</span>
+        <span className="App-slogan" title="slogan">
+          Cardano Blockchain's OS Decentralised Identity (DID) &amp; Verifiable
+          Credential (VC) Wallet
+        </span>
       </header>
     </div>
   );
