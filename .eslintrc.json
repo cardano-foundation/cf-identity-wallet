@@ -21,7 +21,22 @@
         "@typescript-eslint"
     ],
     "rules": {
-        "react/no-unescaped-entities": 0
+        "react/no-unescaped-entities": 0,
+        "no-console": "error",
+        "no-unused-vars": "error",
+        "no-undef": "error",
+        "indent": ["warn", 2],
+        "quotes": ["warn", "double"],
+        "import/order": [
+            "warn",
+            {
+                "groups": [
+                    ["builtin", "external"],
+                    "internal",
+                    ["parent", "sibling", "index"]
+                ]
+            }
+        ]
     },
     "settings": {
         "react": {
