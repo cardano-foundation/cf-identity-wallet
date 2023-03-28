@@ -51,7 +51,7 @@ const config = {
                to: path.join(__dirname, "..", "build"),
                force: true,
                transform: function (content, path) {
-                  // generates the manifest file using the package.json informations
+                  // generates the manifest file using the package.json information
                   return Buffer.from(
                       JSON.stringify({
                          description: process.env.npm_package_description,
