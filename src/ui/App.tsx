@@ -1,6 +1,6 @@
 import React from "react";
 import "./styles/ionic.scss";
-import {setupIonicReact, IonApp} from '@ionic/react';
+import { setupIonicReact, IonApp } from "@ionic/react";
 import Routes from "./routes";
 import "./App.css";
 
@@ -8,10 +8,10 @@ setupIonicReact();
 
 const App = () => {
   return (
-      <IonApp>
-        <Routes />
-      </IonApp>
+    <IonApp>
+      <Routes />
+    </IonApp>
   );
-}
+};
 
 export default App;
