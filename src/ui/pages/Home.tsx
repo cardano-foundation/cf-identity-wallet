@@ -19,7 +19,6 @@ const Home = () => {
             Cardano Blockchain's OS Decentralised Identity (DID) &amp;
             Verifiable Credential (VC) Wallet
           </span>
-          <span>{VERSION}</span>
         </header>
       </div>
     </>
