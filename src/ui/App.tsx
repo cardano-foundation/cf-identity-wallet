@@ -1,7 +1,7 @@
 import { setupIonicReact, IonApp } from "@ionic/react";
 import Routes from "../routes";
 import "./styles/ionic.scss";
-import "./index.css";
+import "./style.scss";
 
 setupIonicReact();
 
