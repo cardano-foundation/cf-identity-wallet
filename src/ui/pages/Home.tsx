@@ -5,15 +5,15 @@ import logo from "../assets/images/logo.png";
 const Home = () => {
   return (
     <>
-      <div className="App">
-        <header className="App-header">
+      <div className="Home">
+        <header className="Home-header">
           <img
             src={logo}
-            className="App-logo"
+            className="Home-logo"
             alt="logo"
           />
           <span
-            className="App-slogan"
+            className="Home-slogan"
             title="slogan"
           >
             Cardano Blockchain's OS Decentralised Identity (DID) &amp;

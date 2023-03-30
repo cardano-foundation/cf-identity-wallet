@@ -1,8 +1,8 @@
-import React from "react";
+
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
 import { Route } from "react-router-dom";
-import Home from "../pages/Home";
+import Home from "../ui/pages/Home";
 
 const Routes = () => {
   return (

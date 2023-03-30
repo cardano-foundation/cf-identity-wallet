@@ -1,8 +1,8 @@
 import React from "react";
 import { setupIonicReact, IonApp } from "@ionic/react";
-import Routes from "./routes";
+import Routes from "../routes";
 import "./styles/ionic.scss";
-import "./App.css";
+import "./index.css";
 
 setupIonicReact();
 
