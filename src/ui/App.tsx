@@ -4,7 +4,6 @@ import Routes from "./routes";
 import "./styles/ionic.scss";
 import "./App.css";
 
-
 setupIonicReact();
 
 const App = () => {
