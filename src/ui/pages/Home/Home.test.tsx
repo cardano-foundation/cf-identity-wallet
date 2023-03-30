@@ -1,9 +1,9 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import Home from "./Home";
+import Index from "./index";
 
 test("renders Home page", () => {
-  render(<Home />);
+  render(<Index />);
   const linkElement = screen.getByText(/Cardano Blockchain/i);
   expect(linkElement).toBeInTheDocument();
 });

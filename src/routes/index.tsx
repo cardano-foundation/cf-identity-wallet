@@ -1,4 +1,3 @@
-
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
 import { Route } from "react-router-dom";
