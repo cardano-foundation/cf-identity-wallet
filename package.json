@@ -4,12 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "webpack serve --config webpack/webpack.dev.js --host 0.0.0.0 --port 3003",
-    "build": "webpack --config webpack/webpack.prod.js ",
+    "build": "webpack --config webpack/webpack.prod.js",
+    "build:cap": "npm run build && npx cap sync",
     "prettier": "npx prettier --write 'src/**/*.{ts,tsx}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest"
   },
   "dependencies": {
+    "@capacitor/android": "^4.7.1",
+    "@capacitor/core": "^4.7.1",
+    "@capacitor/ios": "^4.7.1",
     "@ionic/react": "^6.7.0",
     "@ionic/react-router": "^6.7.0",
     "@testing-library/jest-dom": "^5.16.5",
@@ -21,6 +25,7 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
+    "@capacitor/cli": "^4.7.1",
     "@types/jest": "^27.5.2",
     "@types/node": "^16.18.18",
     "@types/react": "^18.0.28",
