@@ -1,0 +1,54 @@
+ion-toolbar {
+  --background: transparent;
+  --border-color: transparent;
+}
+
+.column_right,
+.column_left {
+  display: flex;
+}
+
+.column_left {
+  justify-content: flex-start;
+}
+
+.column_right {
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 1.5rem;
+}
+
+ion-back-button {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 1rem;
+  background: var(--color-light-grey);
+
+  &::part(native) {
+    padding: 0.6rem;
+  }
+}
+
+ion-progress-bar,
+ion-progress-bar::part(progress) {
+  height: 6px;
+  border-radius: 6px;
+}
+
+ion-toolbar ion-grid {
+  padding: 0;
+}
+
+ion-header {
+  margin: 0 auto;
+  max-width: 95vw;
+}
+
+ion-content {
+  --padding-start: 0.7rem;
+  --padding-end: 0.7rem;
+}
+
+h1 {
+  margin-top: 0;
+}

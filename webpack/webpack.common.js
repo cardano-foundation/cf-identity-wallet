@@ -28,7 +28,9 @@ const config = {
   },
   resolve: {
     extensions: [".js", ".tsx", ".ts"],
-    fallback: {},
+    fallback: {
+      buffer: require.resolve("buffer/"),
+    },
   },
   plugins: [
     new webpack.ProgressPlugin(),
@@ -63,6 +65,9 @@ const config = {
     }),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(require("../package.json").version),
+    }),
+    new webpack.ProvidePlugin({
+      Buffer: ["buffer", "Buffer"],
     }),
   ],
   infrastructureLogging: {

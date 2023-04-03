@@ -1,0 +1,42 @@
+ion-card {
+  margin: 0;
+  text-align: center;
+}
+
+.overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: fixed;
+  z-index: 2;
+  height: 100%;
+  background: var(--color-blurry-night);
+  backdrop-filter: blur(10px);
+
+  >* {
+    padding: 0.3rem 2.7rem;
+  }
+
+  ion-button {
+    color: white;
+    --border-color: white;
+    margin: 0 auto;
+  }
+
+  &.hidden {
+    display: none;
+  }
+}
+
+.seed-phrase-container {
+  padding: 1rem 0;
+}
+
+ion-card,
+ion-icon {
+  color: white;
+}
+
+ion-chip {
+  border-radius: 8px;
+}
