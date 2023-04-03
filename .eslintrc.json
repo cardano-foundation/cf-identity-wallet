@@ -1,0 +1,51 @@
+{
+    "env": {
+        "browser": true,
+        "es2021": true,
+        "jest": true
+    },
+    "extends": [
+        "eslint:recommended",
+        "plugin:react/recommended",
+        "plugin:@typescript-eslint/recommended",
+        "plugin:react-hooks/recommended",
+        "plugin:import/warnings"
+    ],
+    "overrides": [
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+    },
+    "plugins": [
+        "react",
+        "@typescript-eslint",
+        "import",
+        "jest"
+    ],
+    "rules": {
+        "react/no-unescaped-entities": 0,
+        "react/react-in-jsx-scope": "off",
+        "no-console": "error",
+        "no-unused-vars": "error",
+        "no-undef": "error",
+        "indent": ["warn", 2],
+        "quotes": ["warn", "double"],
+        "import/order": [
+            "warn",
+            {
+                "groups": [
+                    ["builtin", "external"],
+                    "internal",
+                    ["parent", "sibling", "index"]
+                ]
+            }
+        ]
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    }
+}
