@@ -98,6 +98,7 @@ $font-color: #030321;
     #92ffc0 28.76%,
     #00a5e6 119.14%
   ) !important;
+  --background-activated: none;
   --border-radius: 30px;
   color: $font-color;
   height: 52px;
@@ -157,3 +158,4 @@ ion-content::part(scroll) {
     transform: translateY(0);
   }
 }
+
