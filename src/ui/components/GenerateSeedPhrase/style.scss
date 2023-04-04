@@ -1,6 +1,11 @@
-ion-card {
-  margin: 0;
-  text-align: center;
+ion-segment {
+  --background: var(--color-dark-grey);
+
+  ion-segment-button.segment-button-checked {
+    &::part(indicator-background) {
+      background: var(--color-accent-gradient);
+    }
+  }
 }
 
 .overlay {
@@ -9,12 +14,13 @@ ion-card {
   justify-content: center;
   position: fixed;
   z-index: 2;
-  height: 100%;
-  background: var(--color-blurry-night);
+  height: -webkit-fill-available;
+  text-align: center;
+  background: rgba(var(--ion-color-primary-rgb), 0.65);
   backdrop-filter: blur(10px);
 
   >* {
-    padding: 0.3rem 2.7rem;
+    padding: 0.3rem 2.2rem;
   }
 
   ion-button {
@@ -29,14 +35,28 @@ ion-card {
 }
 
 .seed-phrase-container {
-  padding: 1rem 0;
+  padding: 0.5rem;
 }
 
 ion-card,
+ion-card p,
 ion-icon {
   color: white;
+  margin: 0;
 }
 
 ion-chip {
   border-radius: 8px;
+
+  .index {
+    margin-right: 4px;
+  }
+}
+
+.footer ion-button {
+  margin: 0.5rem 0;
+
+  &.accent-gradient {
+    --background: var(--color-accent-gradient);
+  }
 }

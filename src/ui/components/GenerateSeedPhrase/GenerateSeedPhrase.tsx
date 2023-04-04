@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
 import {
   IonButton,
   IonCard,
   IonCardContent,
   IonCardHeader,
-  IonCheckbox,
   IonChip,
   IonCol,
   IonGrid,
   IonIcon,
-  IonItem,
   IonLabel,
   IonRow,
   IonSegment,
@@ -26,8 +23,6 @@ const GenerateSeedPhrase = () => {
   const [checked, setChecked] = useState(false);
   const [view, setView] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
-  const history = useHistory();
-  const location = useLocation();
 
   const generateSeedPhrase = (size: number) => {
     const seed: string = generateMnemonic(size);
@@ -38,15 +33,8 @@ const GenerateSeedPhrase = () => {
     generateSeedPhrase(160);
   }, []);
 
-  const handleNavigation = (route: string) => {
-    history.push({
-      pathname: route,
-      state: {
-        seedPhrase,
-        // walletName: location.state?.walletName,
-        // walletPassword: location.state?.walletPassword,
-      },
-    });
+  const toggleLength = (value: string) => {
+    value === "15words" ? generateSeedPhrase(160) : generateSeedPhrase(256);
   };
 
   return (
@@ -75,11 +63,9 @@ const GenerateSeedPhrase = () => {
           <IonCol size="12">
             <IonSegment
               value={`${seedPhrase.length}words`}
-              // onIonChange={(event) => {
-              //   (event.detail.value as string) === "15words"
-              //     ? generateSeedPhrase(15)
-              //     : generateSeedPhrase(24);
-              // }}
+              onIonChange={(event) =>
+                toggleLength(event.detail.value as string)
+              }
             >
               <IonSegmentButton value="15words">
                 <IonLabel>15 words</IonLabel>
@@ -91,12 +77,7 @@ const GenerateSeedPhrase = () => {
           </IonCol>
         </IonRow>
         <IonRow>
-          <IonCol
-            size="12"
-            className={`flex flex-col justify-center ${
-              view && seedPhrase.length === 15 && "min-h-[42vh]"
-            }`}
-          >
+          <IonCol size="12">
             <IonCard>
               <div className={`overlay ${view ? "hidden" : "visible"}`}>
                 <IonCardHeader>
@@ -124,9 +105,8 @@ const GenerateSeedPhrase = () => {
               <div className="seed-phrase-container">
                 {seedPhrase.map((word, index) => (
                   <IonChip key={index}>
-                    <span>
-                      <span>{word}</span>
-                    </span>
+                    <span className="index">{index + 1}.</span>
+                    <span>{word}</span>
                   </IonChip>
                 ))}
               </div>
@@ -145,14 +125,13 @@ const GenerateSeedPhrase = () => {
           </IonCol>
         </IonRow>
       </IonGrid>
-      <IonGrid>
+      <IonGrid className="footer">
         <IonRow>
           <IonCol>
             <IonButton
               shape="round"
               fill="outline"
               expand="block"
-              className=""
               disabled={!checked}
               onClick={() => {
                 return;
@@ -163,8 +142,8 @@ const GenerateSeedPhrase = () => {
             <IonButton
               shape="round"
               expand="block"
-              className=""
-              disabled={true}
+              disabled={!checked}
+              className={`${checked && "accent-gradient"}`}
               onClick={() => {
                 return;
               }}
