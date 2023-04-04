@@ -6,7 +6,11 @@
 $font-color: #030321;
 
 .content {
-
+    height: 100%;
+    overflow-y: scroll;
+}
+.swiper-container2 {
+    margin-top: 20px;
 }
 .swiper-container {
     width: 100%;
@@ -110,6 +114,7 @@ $font-color: #030321;
     font-size: 16px;
     line-height: 22px;
     color: $font-color;
+    margin-bottom: 50px;
 }
 
 .text-fadein {
