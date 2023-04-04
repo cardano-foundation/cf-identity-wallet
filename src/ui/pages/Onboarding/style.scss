@@ -53,16 +53,40 @@ $font-color: #030321;
 
 }
 
-.text-fadein {
-    animation-name: fadeIn;
-    animation-duration: 1s;
-    animation-timing-function: ease-in-out;
+// Style the pagination
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.text-fadein-down {
-    animation-name: fadeInDown;
-    animation-duration: 1s;
-    animation-timing-function: ease-in-out;
+.page-indicator,
+.page-indicator-active {
+    margin: 0 0.25rem;
+    background: #BBBBBB;
+    opacity: 0.5;
+    width: 15px;
+    height: 15px;
+    border-radius: 8px;
+}
+.play-container{
+    position: absolute;
+    right: 25px;
+}
+.play-indicator {
+    color: #BBBBBB;
+    width: 33px;
+    height: 33px;
+    transition: transform 0.3s ease-out;
+}
+.play-indicator.clicked {
+    transform: scale(1.2);
+}
+
+.page-indicator-active {
+    width: 30px !important;
+    opacity: 1 !important;
+    transition: width 1s;
 }
 
 .next-button {
@@ -88,35 +112,16 @@ $font-color: #030321;
     color: $font-color;
 }
 
-// Style the pagination
-.pagination {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+.text-fadein {
+    animation-name: fadeIn;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
 }
 
-.page-indicator,
-.page-indicator-active {
-    margin: 0 0.25rem;
-    background: #BBBBBB;
-    opacity: 0.5;
-    width: 15px;
-    height: 15px;
-    border-radius: 8px;
-}
-
-.play-indicator {
-    opacity: 0.5;
-    width: 33px;
-    height: 33px;
-    margin-left: 250%;
-    padding-top: 5%;
-}
-
-.page-indicator-active {
-    width: 30px !important;
-    opacity: 1 !important;
-    transition: width 1s;
+.text-fadein-down {
+    animation-name: fadeInDown;
+    animation-duration: 1s;
+    animation-timing-function: ease-in-out;
 }
 
 @keyframes fadeIn {

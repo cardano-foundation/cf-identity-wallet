@@ -10,6 +10,7 @@ const Onboarding = () => {
   const [swiper, setSwiper] = useState<any>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
+  const [autoplayIsClicked, setAutoplayIsClicked] = useState(false);
 
   const slides = [
     {
@@ -54,6 +55,11 @@ const Onboarding = () => {
       swiper.autoplay?.start();
       setAutoplay(true);
     }
+
+    setAutoplayIsClicked(true);
+    setTimeout(() => {
+      setAutoplayIsClicked(false);
+    }, 300);
   };
 
   const handleSlideChange = () => {
@@ -71,7 +77,7 @@ const Onboarding = () => {
             onSlideChange={handleSlideChange}
             slidesPerView={1}
             autoplay={{
-              delay: 9000,
+              delay: 3000,
               disableOnInteraction: false,
             }}
             loop={true}
@@ -104,9 +110,11 @@ const Onboarding = () => {
                 }
               />
             ))}
-            <div>
+            <div className="play-container">
               <IonIcon
-                className="play-indicator"
+                className={`play-indicator ${
+                  autoplayIsClicked ? "clicked" : ""
+                }`}
                 icon={autoplay ? pauseCircleOutline : playCircleOutline}
                 onClick={handleAutoplay}
               />
