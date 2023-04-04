@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { IonButton, IonContent, IonIcon, IonPage } from "@ionic/react";
+import { IonButton, IonIcon, IonPage } from "@ionic/react";
 import { Swiper, SwiperSlide } from "swiper/react";
-import { arrowForward } from "ionicons/icons";
+import { playCircleOutline, pauseCircleOutline } from "ionicons/icons";
 import { Autoplay } from "swiper";
 
 import "./style.scss";
@@ -9,9 +9,8 @@ import "./style.scss";
 const Onboarding = () => {
   const [swiper, setSwiper] = useState<any>(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [slidesSeen] = useState<Set<number>>(new Set());
+  const [autoplay, setAutoplay] = useState(true);
 
-  slidesSeen.add(0);
   const slides = [
     {
       title: "Welcome to your Cardano Foundation Identity Wallet",
@@ -45,73 +44,77 @@ const Onboarding = () => {
     },
   ];
 
-  const handleNext = () => {
-    if (swiper !== null) {
-      swiper.slideNext();
+  const handleAutoplay = () => {
+    if (!swiper) return;
+
+    if (autoplay) {
+      swiper.autoplay?.stop();
+      setAutoplay(false);
+    } else {
+      swiper.autoplay?.start();
+      setAutoplay(true);
     }
   };
 
   const handleSlideChange = () => {
-    if (swiper !== null) {
-      setActiveIndex(swiper.realIndex);
-      slidesSeen.add(swiper.realIndex);
-    }
+    if (!swiper) return;
+    setActiveIndex(swiper.realIndex);
   };
 
   return (
     <>
       <IonPage>
-
         <div className="content">
           <Swiper
-              className="swiper-container"
-              onSwiper={(swiper) => setSwiper(swiper)}
-              onSlideChange={handleSlideChange}
-              slidesPerView={1}
-              autoplay={true}
-              loop={true}
-              modules={[Autoplay]}
+            className="swiper-container"
+            onSwiper={(swiper) => setSwiper(swiper)}
+            onSlideChange={handleSlideChange}
+            slidesPerView={1}
+            autoplay={{
+              delay: 9000,
+              disableOnInteraction: false,
+            }}
+            loop={true}
+            modules={[Autoplay]}
           >
             {slides.map((slide, index) => (
-                <SwiperSlide key={index}>
-                  <img
-                      src={slide.image}
-                      alt={slide.title}
-                      className={
-                        activeIndex === index
-                            ? "text-fadein-down"
-                            : ""
-                      }
-                  />
-                  <h2 className={
-                    activeIndex === index
-                        ? "text-fadein"
-                        : ""
-                  }>{slide.title}</h2>
-                  <p className={
-                    activeIndex === index
-                        ? "text-fadein"
-                        : ""
-                  }>{slide.description}</p>
-                </SwiperSlide>
+              <SwiperSlide key={index}>
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className={activeIndex === index ? "text-fadein-down" : ""}
+                />
+                <h2 className={activeIndex === index ? "text-fadein" : ""}>
+                  {slide.title}
+                </h2>
+                <p className={activeIndex === index ? "text-fadein" : ""}>
+                  {slide.description}
+                </p>
+              </SwiperSlide>
             ))}
           </Swiper>
           <div className="pagination">
             {slides.map((_, index) => (
-                <div
-                    key={index}
-                    className={
-                      activeIndex === index
-                          ? "page-indicator-active"
-                          : "page-indicator"
-                    }
-                />
+              <div
+                key={index}
+                className={
+                  activeIndex === index
+                    ? "page-indicator-active"
+                    : "page-indicator"
+                }
+              />
             ))}
+            <div>
+              <IonIcon
+                className="play-indicator"
+                icon={autoplay ? pauseCircleOutline : playCircleOutline}
+                onClick={handleAutoplay}
+              />
+            </div>
           </div>
           <IonButton
-              className="next-button"
-              onClick={() => {}}
-              disabled={!(slidesSeen.size === slides.length)}
+            className="next-button"
+            onClick={() => {}}
           >
             Get Started
           </IonButton>

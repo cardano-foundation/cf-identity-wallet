@@ -105,6 +105,14 @@ $font-color: #030321;
     border-radius: 8px;
 }
 
+.play-indicator {
+    opacity: 0.5;
+    width: 33px;
+    height: 33px;
+    margin-left: 250%;
+    padding-top: 5%;
+}
+
 .page-indicator-active {
     width: 30px !important;
     opacity: 1 !important;
