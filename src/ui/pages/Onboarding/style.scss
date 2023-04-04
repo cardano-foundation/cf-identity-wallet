@@ -9,12 +9,8 @@ $font-color: #030321;
     height: 100%;
     overflow-y: scroll;
 }
-.swiper-container2 {
-    margin-top: 20px;
-}
+
 .swiper-container {
-    width: 100%;
-    height: 100%;
     margin-top: 50px;
 }
 
@@ -101,7 +97,7 @@ $font-color: #030321;
     --border-radius: 30px;
     color: $font-color;
     height: 52px;
-    padding: 15px 25px;
+    margin: 15px 25px;
 }
 
 .already-wallet {
@@ -116,6 +112,14 @@ $font-color: #030321;
     color: $font-color;
     margin-bottom: 50px;
 }
+
+ion-content {
+    width: calc(100% + 15px);
+}
+ion-content::part(scroll) {
+    padding-right: 15px;
+}
+
 
 .text-fadein {
     animation-name: fadeIn;

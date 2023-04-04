@@ -72,7 +72,7 @@ const Onboarding = () => {
       <IonPage>
         <IonContent>
           <Swiper
-              className="swiper-container2"
+              className="swiper-container"
               onSwiper={(swiper) => setSwiper(swiper)}
               onSlideChange={handleSlideChange}
               slidesPerView={1}
