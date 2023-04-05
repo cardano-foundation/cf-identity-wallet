@@ -1,9 +1,11 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
-import Index from "./index";
+import { Onboarding } from "./index";
 
-test("renders Home page", () => {
-  render(<Index />);
-  const linkElement = screen.getByText(/Get Started/i);
+test("renders Onboarding page", () => {
+  render(<Onboarding />);
+  const linkElement = screen.getByText(
+    /Welcome to your Cardano Foundation Identity Wallet/i
+  );
   expect(linkElement).toBeInTheDocument();
 });
