@@ -16,7 +16,7 @@ import {
 import "./style.scss";
 import { eyeOffOutline } from "ionicons/icons";
 import { generateMnemonic } from "bip39";
-import PageLayout from "../common/PageLayout";
+import PageLayout from "../common/PageLayout/PageLayout";
 
 const GenerateSeedPhrase = () => {
   const pageName = "Generate Seed Phrase";
