@@ -1,15 +1,14 @@
 /* Core CSS required for Ionic components to work properly */
-@use '@ionic/react/css/core';
+@import "@ionic/react/css/core.css";
 
 /* Basic CSS for apps built with Ionic */
-@use '@ionic/react/css/normalize';
-@use '@ionic/react/css/structure';
-@use '@ionic/react/css/typography';
+@import "@ionic/react/css/normalize.css";
+@import "@ionic/react/css/structure.css";
+@import "@ionic/react/css/typography.css";
 
-/* Optional CSS utils that can be commented out */
-@use '@ionic/react/css/padding';
-@use '@ionic/react/css/float-elements';
-@use '@ionic/react/css/text-alignment';
-@use '@ionic/react/css/text-transformation';
-@use '@ionic/react/css/flex-utils';
-@use '@ionic/react/css/display';
+@import "@ionic/react/css/padding.css";
+@import "@ionic/react/css/float-elements.css";
+@import "@ionic/react/css/text-alignment.css";
+@import "@ionic/react/css/text-transformation.css";
+@import "@ionic/react/css/flex-utils.css";
+@import "@ionic/react/css/display.css";
