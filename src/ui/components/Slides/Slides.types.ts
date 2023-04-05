@@ -3,4 +3,3 @@ export interface ISlide {
   description: string;
   title: string;
 }
-

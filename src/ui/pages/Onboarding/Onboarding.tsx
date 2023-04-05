@@ -44,7 +44,6 @@ const Onboarding = () => {
           <Slides slides={slides} />
           <IonButton
             className="next-button"
-            onClick={() => {}}
           >
             Get Started
           </IonButton>

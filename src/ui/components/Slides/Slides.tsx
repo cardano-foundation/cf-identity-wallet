@@ -24,14 +24,7 @@ const Slides = ({ slides }: { slides: ISlide[] }) => {
     }
 
     setAutoplayIsClicked(true);
-    setTimeout(() => {
-      setAutoplayIsClicked(false);
-    }, 300);
-  };
-
-  const handleSlideChange = () => {
-    if (!swiper) return;
-    setActiveIndex(swiper.realIndex);
+    setTimeout(() => setAutoplayIsClicked(false), 300);
   };
 
   return (
@@ -39,7 +32,7 @@ const Slides = ({ slides }: { slides: ISlide[] }) => {
       <Swiper
         className="swiper-container"
         onSwiper={(swiper) => setSwiper(swiper)}
-        onSlideChange={handleSlideChange}
+        onSlideChange={() => (swiper ? setActiveIndex(swiper.realIndex) : null)}
         slidesPerView={1}
         autoplay={{
           delay: 3000,
@@ -75,6 +68,7 @@ const Slides = ({ slides }: { slides: ISlide[] }) => {
         ))}
         <div className="play-container">
           <IonIcon
+            data-testid="play-indicator"
             className={`play-indicator ${autoplayIsClicked ? "clicked" : ""}`}
             icon={autoplay ? pauseCircleOutline : playCircleOutline}
             onClick={handleAutoplay}
