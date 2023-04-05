@@ -8,6 +8,7 @@ import {
   IonRow,
   IonCol,
   IonProgressBar,
+  IonPage,
 } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
 import "./style.scss";
@@ -25,7 +26,7 @@ const Pagelayout = ({
   const mainContent = children;
 
   return (
-    <>
+    <IonPage>
       <IonHeader translucent={true}>
         <IonToolbar>
           <IonGrid>
@@ -61,7 +62,7 @@ const Pagelayout = ({
       </IonHeader>
 
       <IonContent className={contentClasses}>{mainContent}</IonContent>
-    </>
+    </IonPage>
   );
 };
 

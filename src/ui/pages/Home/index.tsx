@@ -18,6 +18,7 @@ const Home = () => {
             Cardano Blockchain's OS Decentralised Identity (DID) &amp;
             Verifiable Credential (VC) Wallet
           </span>
+          <a href="/generateseedphrase">CLICK</a>
         </header>
       </div>
     </>
