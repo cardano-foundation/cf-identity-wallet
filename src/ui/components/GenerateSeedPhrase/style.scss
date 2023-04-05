@@ -17,7 +17,6 @@ ion-segment {
   height: -webkit-fill-available;
   text-align: center;
   background: rgba(var(--ion-color-primary-rgb), 0.65);
-  backdrop-filter: blur(10px);
 
   >* {
     padding: 0.3rem 2.2rem;
@@ -36,6 +35,14 @@ ion-segment {
 
 .seed-phrase-container {
   padding: 0.5rem;
+
+  &.seed-phrase-visible {
+    filter: none;
+  }
+
+  &.seed-phrase-blurred {
+    filter: blur(5px);
+  }
 }
 
 ion-card,

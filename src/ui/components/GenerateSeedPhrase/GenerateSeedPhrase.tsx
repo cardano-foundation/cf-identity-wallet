@@ -20,9 +20,8 @@ import PageLayout from "../common/PageLayout/PageLayout";
 
 const GenerateSeedPhrase = () => {
   const pageName = "Generate Seed Phrase";
-  const [checked, setChecked] = useState(false);
-  const [view, setView] = useState(false);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
+  const [showSeedPhrase, setShowSeedPhrase] = useState(false);
 
   const generateSeedPhrase = (size: number) => {
     const seed: string = generateMnemonic(size);
@@ -62,6 +61,7 @@ const GenerateSeedPhrase = () => {
         <IonRow>
           <IonCol size="12">
             <IonSegment
+              data-testid="segment"
               value={`${seedPhrase.length}words`}
               onIonChange={(event) =>
                 toggleLength(event.detail.value as string)
@@ -79,7 +79,10 @@ const GenerateSeedPhrase = () => {
         <IonRow>
           <IonCol size="12">
             <IonCard>
-              <div className={`overlay ${view ? "hidden" : "visible"}`}>
+              <div
+                data-testid="overlay"
+                className={`overlay ${showSeedPhrase ? "hidden" : "visible"}`}
+              >
                 <IonCardHeader>
                   <IonIcon
                     size="large"
@@ -95,14 +98,21 @@ const GenerateSeedPhrase = () => {
                 <IonButton
                   shape="round"
                   fill="outline"
+                  data-testid="overlay-button"
                   onClick={() => {
-                    setView(true);
+                    setShowSeedPhrase(true);
                   }}
                 >
                   View seed phrase
                 </IonButton>
               </div>
-              <div className="seed-phrase-container">
+              <div
+                data-testid="seed-phrase-container"
+                className={`seed-phrase-container ${
+                  showSeedPhrase ? "seed-phrase-visible" : "seed-phrase-blurred"
+                }
+                }`}
+              >
                 {seedPhrase.map((word, index) => (
                   <IonChip key={index}>
                     <span className="index">{index + 1}.</span>
@@ -132,21 +142,14 @@ const GenerateSeedPhrase = () => {
               shape="round"
               fill="outline"
               expand="block"
-              disabled={!checked}
-              onClick={() => {
-                return;
-              }}
+              disabled={true}
             >
               Back up your seed phrase
             </IonButton>
             <IonButton
               shape="round"
               expand="block"
-              disabled={!checked}
-              className={`${checked && "accent-gradient"}`}
-              onClick={() => {
-                return;
-              }}
+              disabled={true}
             >
               Continue
             </IonButton>
