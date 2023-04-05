@@ -4,6 +4,6 @@ import Index from "./index";
 
 test("renders Home page", () => {
   render(<Index />);
-  const linkElement = screen.getByText(/Cardano Blockchain/i);
+  const linkElement = screen.getByText(/Get Started/i);
   expect(linkElement).toBeInTheDocument();
 });
