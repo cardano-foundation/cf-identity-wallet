@@ -1,6 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import GenerateSeedPhrase from "./GenerateSeedPhrase";
-jest.useFakeTimers();
 
 test("It renders Title and Overlay", () => {
   render(<GenerateSeedPhrase />);
@@ -32,22 +31,22 @@ test("User can toggle the segment", () => {
   const toggleLength = jest.fn();
   const generateSeedPhrase = jest.fn();
 
-  expect(segment).toHaveValue("15words");
+  expect(segment).toHaveValue("160");
   expect(seedPhraseContainer.childNodes.length).toBe(15);
 
-  fireEvent.change(segment, { target: { value: "24words" } });
+  fireEvent.change(segment, { target: { value: "256" } });
   setTimeout(() => {
-    expect(toggleLength).toHaveBeenCalledWidth("24words");
+    expect(toggleLength.mock.calls[0][0].detail).toStrictEqual("256");
     expect(generateSeedPhrase).toHaveBeenCalledWidth(256);
-    expect(segment).toHaveValue("24words");
+    expect(segment).toHaveValue("256");
     expect(seedPhraseContainer.childNodes.length).toHaveValue(24);
   }, 1);
 
-  fireEvent.change(segment, { target: { value: "15words" } });
+  fireEvent.change(segment, { target: { value: "160" } });
   setTimeout(() => {
-    expect(toggleLength).toHaveBeenCalledWidth("15words");
+    expect(toggleLength.mock.calls[0][0].detail).toStrictEqual("160");
     expect(generateSeedPhrase).toHaveBeenCalledWidth(160);
-    expect(segment).toHaveValue("15words");
+    expect(segment).toHaveValue("160");
     expect(seedPhraseContainer.childNodes.length).toHaveValue(15);
   }, 1);
 });

@@ -32,10 +32,6 @@ const GenerateSeedPhrase = () => {
     generateSeedPhrase(160);
   }, []);
 
-  const toggleLength = (value: string) => {
-    value === "15words" ? generateSeedPhrase(160) : generateSeedPhrase(256);
-  };
-
   return (
     <PageLayout
       backButton={true}
@@ -62,15 +58,15 @@ const GenerateSeedPhrase = () => {
           <IonCol size="12">
             <IonSegment
               data-testid="segment"
-              value={`${seedPhrase.length}words`}
+              value={`${seedPhrase.length === 15 ? 160 : 256}`}
               onIonChange={(event) =>
-                toggleLength(event.detail.value as string)
+                generateSeedPhrase(event.detail.value as unknown as number)
               }
             >
-              <IonSegmentButton value="15words">
+              <IonSegmentButton value="160">
                 <IonLabel>15 words</IonLabel>
               </IonSegmentButton>
-              <IonSegmentButton value="24words">
+              <IonSegmentButton value="256">
                 <IonLabel>24 words</IonLabel>
               </IonSegmentButton>
             </IonSegment>
