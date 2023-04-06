@@ -1,26 +1,28 @@
 import "./style.scss";
+import { IonPage } from "@ionic/react";
 import logo from "../../assets/images/logo.png";
 
 const Home = () => {
   return (
     <>
-      <div className="Home">
-        <header className="Home-header">
-          <img
-            src={logo}
-            className="Home-logo"
-            alt="logo"
-          />
-          <span
-            className="Home-slogan"
-            title="slogan"
-          >
-            Cardano Blockchain's OS Decentralised Identity (DID) &amp;
-            Verifiable Credential (VC) Wallet
-          </span>
-          <a href="/generateseedphrase">CLICK</a>
-        </header>
-      </div>
+      <IonPage>
+        <div className="Home">
+          <header className="Home-header">
+            <img
+              src={logo}
+              className="Home-logo"
+              alt="logo"
+            />
+            <span
+              className="Home-slogan"
+              title="slogan"
+            >
+              Cardano Blockchain's OS Decentralised Identity (DID) &amp;
+              Verifiable Credential (VC) Wallet
+            </span>
+          </header>
+        </div>
+      </IonPage>
     </>
   );
 };
