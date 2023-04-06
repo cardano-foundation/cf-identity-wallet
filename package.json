@@ -16,6 +16,7 @@
     "@capacitor/ios": "^4.7.1",
     "@ionic/react": "^6.7.0",
     "@ionic/react-router": "^6.7.0",
+    "@ionic/react-test-utils": "^0.4.0",
     "bip39": "^3.0.4",
     "buffer": "^6.0.3",
     "react": "^18.2.0",

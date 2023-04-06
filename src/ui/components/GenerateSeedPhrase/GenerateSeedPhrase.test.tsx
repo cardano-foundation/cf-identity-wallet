@@ -1,4 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
+import { ionFireEvent as fireEvent } from "@ionic/react-test-utils";
 import GenerateSeedPhrase from "./GenerateSeedPhrase";
 
 test("User can see Title and Overlay", () => {
@@ -28,22 +29,15 @@ test("User can toggle the segment", () => {
 
   const segment = screen.getByTestId("segment");
   const seedPhraseContainer = screen.getByTestId("seed-phrase-container");
-  const generateSeedPhrase = jest.fn();
 
   expect(segment).toHaveValue("160");
   expect(seedPhraseContainer.childNodes.length).toBe(15);
 
-  fireEvent.change(segment, { target: { value: "256" } });
-  setTimeout(() => {
-    expect(generateSeedPhrase).toHaveBeenCalledWidth(256);
-    expect(segment).toHaveValue("256");
-    expect(seedPhraseContainer.childNodes.length).toHaveValue(24);
-  }, 1);
+  fireEvent.ionChange(segment, "256");
+  expect(segment).toHaveValue("256");
+  expect(seedPhraseContainer.childNodes.length).toBe(24);
 
-  fireEvent.change(segment, { target: { value: "160" } });
-  setTimeout(() => {
-    expect(generateSeedPhrase).toHaveBeenCalledWidth(160);
-    expect(segment).toHaveValue("160");
-    expect(seedPhraseContainer.childNodes.length).toHaveValue(15);
-  }, 1);
+  fireEvent.ionChange(segment, "160");
+  expect(segment).toHaveValue("160");
+  expect(seedPhraseContainer.childNodes.length).toBe(15);
 });
