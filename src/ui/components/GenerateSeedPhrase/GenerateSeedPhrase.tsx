@@ -21,16 +21,24 @@ import PageLayout from "../common/PageLayout/PageLayout";
 const GenerateSeedPhrase = () => {
   const pageName = "Generate Seed Phrase";
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
+  const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
+  const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
 
-  const generateSeedPhrase = (size: number) => {
-    const seed: string = generateMnemonic(size);
-    setSeedPhrase(seed.split(" "));
-  };
-
   useEffect(() => {
-    generateSeedPhrase(160);
+    const seed160 = generateMnemonic(160).split(" ");
+    setSeedPhrase160(seed160);
+    setSeedPhrase(seed160);
+    setSeedPhrase256(generateMnemonic(256).split(" "));
   }, []);
+
+  const toggleSeedPhrase = (length: number) => {
+    if (length === 160) {
+      setSeedPhrase(seedPhrase160);
+    } else {
+      setSeedPhrase(seedPhrase256);
+    }
+  };
 
   return (
     <PageLayout
@@ -58,9 +66,9 @@ const GenerateSeedPhrase = () => {
           <IonCol size="12">
             <IonSegment
               data-testid="segment"
-              value={`${seedPhrase.length === 15 ? 160 : 256}`}
+              value={`${seedPhrase.length === 24 ? 256 : 160}`}
               onIonChange={(event) =>
-                generateSeedPhrase(Number(event.detail.value))
+                toggleSeedPhrase(Number(event.detail.value))
               }
             >
               <IonSegmentButton value="160">
