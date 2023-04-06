@@ -27,13 +27,17 @@ const Pagelayout = ({
 
   return (
     <IonPage>
-      <IonHeader translucent={true}>
+      <IonHeader
+        translucent={true}
+        collapse="fade"
+        className="ion-no-border"
+      >
         <IonToolbar>
           <IonGrid>
             <IonRow>
               <IonCol
                 size="1"
-                className="column_left"
+                className="column-left"
               >
                 {backButton && (
                   <IonButtons>
@@ -47,7 +51,7 @@ const Pagelayout = ({
               </IonCol>
               <IonCol
                 size="11"
-                className="column_right"
+                className="column-right"
               >
                 {progressBar && (
                   <IonProgressBar

@@ -8,15 +8,26 @@ ion-segment {
   }
 }
 
+ion-card {
+  position: relative;
+}
+
 .overlay {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  position: fixed;
-  z-index: 2;
-  height: -webkit-fill-available;
-  text-align: center;
-  background: rgba(var(--ion-color-primary-rgb), 0.65);
+  &.visible {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: absolute;
+    top: 0;
+    z-index: 2;
+    height: -webkit-fill-available;
+    text-align: center;
+    background: rgba(var(--ion-color-primary-rgb), 0.65);
+  }
+
+  &.hidden {
+    display: none;
+  }
 
   >* {
     padding: 0.3rem 2.2rem;
@@ -26,10 +37,6 @@ ion-segment {
     color: white;
     --border-color: white;
     margin: 0 auto;
-  }
-
-  &.hidden {
-    display: none;
   }
 }
 

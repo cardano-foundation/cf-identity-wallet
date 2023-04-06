@@ -1,18 +1,13 @@
-ion-toolbar {
-  --background: transparent;
-  --border-color: transparent;
-}
-
-.column_right,
-.column_left {
+.column-right,
+.column-left {
   display: flex;
 }
 
-.column_left {
+.column-left {
   justify-content: flex-start;
 }
 
-.column_right {
+.column-right {
   flex-direction: column;
   justify-content: center;
   padding-left: 1.5rem;

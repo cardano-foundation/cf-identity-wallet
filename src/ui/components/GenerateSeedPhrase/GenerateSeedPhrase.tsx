@@ -60,7 +60,7 @@ const GenerateSeedPhrase = () => {
               data-testid="segment"
               value={`${seedPhrase.length === 15 ? 160 : 256}`}
               onIonChange={(event) =>
-                generateSeedPhrase(event.detail.value as unknown as number)
+                generateSeedPhrase(Number(event.detail.value))
               }
             >
               <IonSegmentButton value="160">
