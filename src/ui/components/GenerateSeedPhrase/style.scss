@@ -20,7 +20,7 @@ ion-card {
     position: absolute;
     top: 0;
     z-index: 2;
-    height: -webkit-fill-available;
+    height: 100%;
     text-align: center;
     background: rgba(var(--ion-color-primary-rgb), 0.65);
   }
