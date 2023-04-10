@@ -4,7 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { playCircleOutline, pauseCircleOutline } from "ionicons/icons";
 import { Autoplay } from "swiper";
 import { ISlide } from "./Slides.types";
-import "./style.scss";
+import "./Slides.scss";
 
 const Slides = ({ slides }: { slides: ISlide[] }) => {
   const [swiper, setSwiper] = useState<any>(null);

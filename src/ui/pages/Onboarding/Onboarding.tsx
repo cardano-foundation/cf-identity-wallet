@@ -1,6 +1,6 @@
 import { IonButton, IonContent, IonPage } from "@ionic/react";
 
-import "./style.scss";
+import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 
 const Onboarding = () => {

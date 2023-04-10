@@ -22,13 +22,27 @@ const slides: ISlide[] = [
   },
 ];
 
-test("renders Onboarding page", () => {
-  render(<Slides slides={slides} />);
-  const linkElement = screen.getByText(/Slide 1/i);
-  expect(linkElement).toBeInTheDocument();
+describe("Slides Component", () => {
+  test("Render slide 1", () => {
+    render(<Slides slides={slides}/>);
+    const linkElement = screen.getByText(/Slide 1/i);
+    expect(linkElement).toBeInTheDocument();
+  });
+
+  test("Renders the slides images", () => {
+    render(<Slides slides={slides} />);
+    const images = screen.getAllByRole("img");
+    expect(images.length).toBe(3);
+  });
+
+  test("Renders the slides titles", () => {
+    render(<Slides slides={slides} />);
+    const titles = screen.getAllByRole("heading", { level: 2 });
+    expect(titles.length).toBe(3);
+  });
 });
 
-describe("handleAutoplay function", () => {
+describe("handleAutoplay function for slides", () => {
   test("handleAutoplay() should stop autoplay when pause icon is clicked", () => {
     const { getByTestId } = render(<Slides slides={slides} />);
     const playIcon = getByTestId("play-indicator");
