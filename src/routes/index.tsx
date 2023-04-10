@@ -2,6 +2,7 @@ import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
 import { Route } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
+import Home from "../ui/pages/Home";
 
 const Routes = () => {
   return (
@@ -10,7 +11,7 @@ const Routes = () => {
         <Route
           path="/"
           exact
-          component={Onboarding}
+          component={Home}
         />
         <Route
           path="/onboarding"
