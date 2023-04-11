@@ -13,13 +13,12 @@ const Slides = ({ slides }: { slides: ISlide[] }) => {
   const [autoplayIsClicked, setAutoplayIsClicked] = useState(false);
 
   const handleAutoplay = () => {
-    if (!swiper) return;
 
     if (autoplay) {
-      swiper.autoplay?.stop();
+      swiper?.autoplay?.stop();
       setAutoplay(false);
     } else {
-      swiper.autoplay?.start();
+      swiper?.autoplay?.start();
       setAutoplay(true);
     }
 
