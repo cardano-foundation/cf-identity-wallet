@@ -1,13 +1,13 @@
 import { render, screen } from "@testing-library/react";
 import { ionFireEvent as fireEvent } from "@ionic/react-test-utils";
-import { validateMnemonic, generateMnemonic } from "bip39";
+import { validateMnemonic } from "bip39";
 import GenerateSeedPhrase from "./GenerateSeedPhrase";
 
 test("User can see Title and Overlay", () => {
   render(<GenerateSeedPhrase />);
 
   const title = screen.getByText(/Generate Seed Phrase/i);
-  const overlay = screen.getByTestId("overlay");
+  const overlay = screen.getByTestId("seed-phrase-overlay");
 
   expect(title).toBeInTheDocument();
   expect(overlay).toBeInTheDocument();
@@ -16,8 +16,8 @@ test("User can see Title and Overlay", () => {
 test("User can dismiss the Overlay", () => {
   render(<GenerateSeedPhrase />);
 
-  const overlay = screen.getByTestId("overlay");
-  const overlayButton = screen.getByTestId("overlay-button");
+  const overlay = screen.getByTestId("seed-phrase-overlay");
+  const overlayButton = screen.getByTestId("seed-phrase-overlay-button");
 
   expect(overlay).toHaveClass("visible");
 
@@ -28,7 +28,7 @@ test("User can dismiss the Overlay", () => {
 test("User can toggle the segment", () => {
   render(<GenerateSeedPhrase />);
 
-  const segment = screen.getByTestId("segment");
+  const segment = screen.getByTestId("mnemonic-length-segment");
   const seedPhraseContainer = screen.getByTestId("seed-phrase-container");
 
   expect(segment).toHaveValue("160");

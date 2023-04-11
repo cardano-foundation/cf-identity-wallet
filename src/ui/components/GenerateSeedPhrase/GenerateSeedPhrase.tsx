@@ -65,7 +65,7 @@ const GenerateSeedPhrase = () => {
         <IonRow>
           <IonCol size="12">
             <IonSegment
-              data-testid="segment"
+              data-testid="mnemonic-length-segment"
               value={`${seedPhrase.length === 24 ? 256 : 160}`}
               onIonChange={(event) =>
                 toggleSeedPhrase(Number(event.detail.value))
@@ -84,7 +84,7 @@ const GenerateSeedPhrase = () => {
           <IonCol size="12">
             <IonCard>
               <div
-                data-testid="overlay"
+                data-testid="seed-phrase-overlay"
                 className={`overlay ${showSeedPhrase ? "hidden" : "visible"}`}
               >
                 <IonCardHeader>
@@ -102,7 +102,7 @@ const GenerateSeedPhrase = () => {
                 <IonButton
                   shape="round"
                   fill="outline"
-                  data-testid="overlay-button"
+                  data-testid="seed-phrase-overlay-button"
                   onClick={() => {
                     setShowSeedPhrase(true);
                   }}
