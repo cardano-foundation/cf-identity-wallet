@@ -11,7 +11,7 @@ import {
   IonPage,
 } from "@ionic/react";
 import { arrowBackOutline } from "ionicons/icons";
-import "./style.scss";
+import "./PageLayout.scss";
 import { PageLayoutProps } from "./PageLayout.types";
 
 export const PageLayout = ({
