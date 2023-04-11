@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-export type PageLayoutProps = {
+export interface PageLayoutProps {
   backButton: boolean;
   backButtonPath: string;
   children: ReactNode;
@@ -8,4 +8,4 @@ export type PageLayoutProps = {
   progressBar: boolean;
   progressBarValue: number;
   progressBarBuffer: number;
-};
+}
