@@ -18,7 +18,7 @@ import { eyeOffOutline } from "ionicons/icons";
 import { generateMnemonic } from "bip39";
 import PageLayout from "../common/PageLayout/PageLayout";
 
-const GenerateSeedPhrase = () => {
+export const GenerateSeedPhrase = () => {
   const pageName = "Generate Seed Phrase";
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
@@ -163,5 +163,3 @@ const GenerateSeedPhrase = () => {
     </PageLayout>
   );
 };
-
-export default GenerateSeedPhrase;

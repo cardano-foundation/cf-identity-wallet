@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import { ionFireEvent as fireEvent } from "@ionic/react-test-utils";
 import { validateMnemonic } from "bip39";
-import GenerateSeedPhrase from "./GenerateSeedPhrase";
+import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
 
 test("User can see Title and Overlay", () => {
   render(<GenerateSeedPhrase />);
