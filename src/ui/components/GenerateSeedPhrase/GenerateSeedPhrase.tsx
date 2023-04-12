@@ -17,7 +17,9 @@ import "./GenerateSeedPhrase.scss";
 import { eyeOffOutline } from "ionicons/icons";
 import { generateMnemonic } from "bip39";
 import {
+  FIFTEEN,
   FIFTEEN_WORDS_BIT_LENGTH,
+  TWENTYFOUR,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
 import { PageLayout } from "../common/PageLayout";
@@ -71,7 +73,7 @@ const GenerateSeedPhrase = () => {
             <IonSegment
               data-testid="mnemonic-length-segment"
               value={`${
-                seedPhrase.length === 24
+                seedPhrase.length === TWENTYFOUR
                   ? TWENTYFOUR_WORDS_BIT_LENGTH
                   : FIFTEEN_WORDS_BIT_LENGTH
               }`}
@@ -80,10 +82,10 @@ const GenerateSeedPhrase = () => {
               }
             >
               <IonSegmentButton value={String(FIFTEEN_WORDS_BIT_LENGTH)}>
-                <IonLabel>15 words</IonLabel>
+                <IonLabel>{FIFTEEN} words</IonLabel>
               </IonSegmentButton>
               <IonSegmentButton value={String(TWENTYFOUR_WORDS_BIT_LENGTH)}>
-                <IonLabel>24 words</IonLabel>
+                <IonLabel>{TWENTYFOUR} words</IonLabel>
               </IonSegmentButton>
             </IonSegment>
           </IonCol>

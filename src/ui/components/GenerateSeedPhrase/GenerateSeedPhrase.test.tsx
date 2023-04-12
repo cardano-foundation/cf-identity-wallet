@@ -3,7 +3,9 @@ import { ionFireEvent as fireEvent } from "@ionic/react-test-utils";
 import { validateMnemonic } from "bip39";
 import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
 import {
+  FIFTEEN,
   FIFTEEN_WORDS_BIT_LENGTH,
+  TWENTYFOUR,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
 
@@ -37,11 +39,11 @@ describe("Generate Seed Phrase screen", () => {
     const seedPhraseContainer = screen.getByTestId("seed-phrase-container");
 
     expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH));
-    expect(seedPhraseContainer.childNodes.length).toBe(15);
+    expect(seedPhraseContainer.childNodes.length).toBe(FIFTEEN);
 
     fireEvent.ionChange(segment, String(TWENTYFOUR_WORDS_BIT_LENGTH));
     expect(segment).toHaveValue(String(TWENTYFOUR_WORDS_BIT_LENGTH));
-    expect(seedPhraseContainer.childNodes.length).toBe(24);
+    expect(seedPhraseContainer.childNodes.length).toBe(TWENTYFOUR);
 
     const seedPhrase256 = [];
     for (let i = 0, len = seedPhraseContainer.childNodes.length; i < len; i++) {
@@ -56,7 +58,7 @@ describe("Generate Seed Phrase screen", () => {
 
     fireEvent.ionChange(segment, String(FIFTEEN_WORDS_BIT_LENGTH));
     expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH));
-    expect(seedPhraseContainer.childNodes.length).toBe(15);
+    expect(seedPhraseContainer.childNodes.length).toBe(FIFTEEN);
 
     const seedPhrase160 = [];
     for (let i = 0, len = seedPhraseContainer.childNodes.length; i < len; i++) {
