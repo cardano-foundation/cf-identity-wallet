@@ -7,7 +7,6 @@ import { Swiper as SwiperClass } from "swiper/types";
 import { SlideProps } from "./Slides.types";
 import "./Slides.scss";
 
-
 const Slides = ({ items }: SlideProps) => {
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);

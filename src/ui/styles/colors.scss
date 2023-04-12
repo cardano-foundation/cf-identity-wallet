@@ -1,0 +1,16 @@
+:root {
+  --ion-color-primary: #030321;
+  --ion-color-primary-rgb: 3, 3, 33;
+
+  --ion-color-secondary: #363C4A;
+  --ion-color-secondary-rgb: 54, 60, 74;
+
+  --ion-text-color: var(--ion-color-primary);
+  --ion-text-color-rgb: var(--ion-color-primary-rgb);
+
+  --color-light-grey: #EEEEEE;
+  --color-medium-grey: #D9D9D9;
+  --color-dark-grey: #BBBBBB;
+
+  --color-accent-gradient: linear-gradient(94.29deg, #92FFC0 20.19%, #00A5E6 119.98%);
+}
