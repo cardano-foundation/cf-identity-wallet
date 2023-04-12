@@ -2,7 +2,7 @@ import { IonButton, IonContent, IonPage } from "@ionic/react";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 
-const items = [
+const ITEMS = [
   {
     title: "Welcome to your Cardano Foundation Identity Wallet",
     description:
@@ -35,21 +35,21 @@ const items = [
   },
 ];
 
-const buttonLabel = "Get Started";
-const alreadyWalletLabel = "I already have a wallet";
+const BUTTON_LABEL = "Get Started";
+const ALREADY_WALLET_LABEL = "I already have a wallet";
 
 const Onboarding = () => {
   return (
     <>
       <IonPage>
         <IonContent>
-          <Slides items={items} />
-          <IonButton className="next-button">{buttonLabel}</IonButton>
-          <div className="already-wallet">{alreadyWalletLabel}</div>
+          <Slides items={ITEMS} />
+          <IonButton className="next-button">{BUTTON_LABEL}</IonButton>
+          <div className="already-wallet">{ALREADY_WALLET_LABEL}</div>
         </IonContent>
       </IonPage>
     </>
   );
 };
 
-export { Onboarding, buttonLabel, alreadyWalletLabel, items };
+export { Onboarding, BUTTON_LABEL, ALREADY_WALLET_LABEL, ITEMS };
