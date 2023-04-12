@@ -53,4 +53,4 @@ const Onboarding = () => {
   );
 };
 
-export { Onboarding, buttonLabel, alreadyWalletLabel };
+export { Onboarding, buttonLabel, alreadyWalletLabel, items };
