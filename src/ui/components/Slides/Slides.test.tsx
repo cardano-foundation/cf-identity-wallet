@@ -2,9 +2,8 @@ import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { playCircleOutline, pauseCircleOutline } from "ionicons/icons";
 import { Slides } from "./index";
-import { ISlide } from "./Slides.types";
 
-const slides: ISlide[] = [
+const items = [
   {
     image: "https://placehold.co/290x290",
     title: "Slide 1",
@@ -24,19 +23,19 @@ const slides: ISlide[] = [
 
 describe("Slides Component", () => {
   test("Render slide 1", () => {
-    render(<Slides slides={slides}/>);
+    render(<Slides items={items} />);
     const linkElement = screen.getByText(/Slide 1/i);
     expect(linkElement).toBeInTheDocument();
   });
 
   test("Renders the slides images", () => {
-    render(<Slides slides={slides} />);
+    render(<Slides items={items} />);
     const images = screen.getAllByRole("img");
     expect(images.length).toBe(3);
   });
 
   test("Renders the slides titles", () => {
-    render(<Slides slides={slides} />);
+    render(<Slides items={items} />);
     const titles = screen.getAllByRole("heading", { level: 2 });
     expect(titles.length).toBe(3);
   });
@@ -44,7 +43,7 @@ describe("Slides Component", () => {
 
 describe("handleAutoplay function for slides", () => {
   test("handleAutoplay() should stop autoplay when pause icon is clicked", () => {
-    const { getByTestId } = render(<Slides slides={slides} />);
+    const { getByTestId } = render(<Slides items={items} />);
     const playIcon = getByTestId("play-indicator");
 
     // Pause
@@ -54,7 +53,7 @@ describe("handleAutoplay function for slides", () => {
   });
 
   test("handleAutoplay() should start autoplay when play icon is clicked", () => {
-    const { getByTestId } = render(<Slides slides={slides} />);
+    const { getByTestId } = render(<Slides items={items} />);
     const playIcon = getByTestId("play-indicator");
 
     // Pause
@@ -65,5 +64,3 @@ describe("handleAutoplay function for slides", () => {
     expect(playIcon).toHaveAttribute("icon", pauseCircleOutline);
   });
 });
-
-

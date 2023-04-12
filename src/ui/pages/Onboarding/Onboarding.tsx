@@ -1,10 +1,9 @@
 import { IonButton, IonContent, IonPage } from "@ionic/react";
-
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 
 const Onboarding = () => {
-  const slides = [
+  const items = [
     {
       title: "Welcome to your Cardano Foundation Identity Wallet",
       description:
@@ -41,12 +40,8 @@ const Onboarding = () => {
     <>
       <IonPage>
         <IonContent>
-          <Slides slides={slides} />
-          <IonButton
-            className="next-button"
-          >
-            Get Started
-          </IonButton>
+          <Slides items={items} />
+          <IonButton className="next-button">Get Started</IonButton>
           <div className="already-wallet">I already have a wallet</div>
         </IonContent>
       </IonPage>

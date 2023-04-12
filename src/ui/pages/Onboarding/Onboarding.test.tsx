@@ -4,13 +4,9 @@ import { Onboarding } from "./index";
 
 test("renders Onboarding page", () => {
   render(<Onboarding />);
-  const button = screen.getByText(
-    /Get Started/i
-  );
+  const button = screen.getByText(/Get Started/i);
   expect(button).toBeInTheDocument();
 
-  const alreadyWallet = screen.getByText(
-    /I already have a wallet/i
-  );
+  const alreadyWallet = screen.getByText(/I already have a wallet/i);
   expect(alreadyWallet).toBeInTheDocument();
 });

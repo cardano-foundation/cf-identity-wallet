@@ -3,18 +3,18 @@ import { IonIcon } from "@ionic/react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { playCircleOutline, pauseCircleOutline } from "ionicons/icons";
 import { Autoplay } from "swiper";
-import { ISlide } from "./Slides.types";
+import { Swiper as SwiperClass } from "swiper/types";
+import { SlideProps } from "./Slides.types";
 import "./Slides.scss";
-import {Swiper as SwiperClass} from "swiper/types";
 
-const Slides = ({ slides }: { slides: ISlide[] }) => {
+
+const Slides = ({ items }: SlideProps) => {
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
   const [autoplayIsClicked, setAutoplayIsClicked] = useState(false);
 
   const handleAutoplay = () => {
-
     if (autoplay) {
       swiper?.autoplay?.stop();
       setAutoplay(false);
@@ -41,7 +41,7 @@ const Slides = ({ slides }: { slides: ISlide[] }) => {
         loop={true}
         modules={[Autoplay]}
       >
-        {slides.map((slide, index) => (
+        {items.map((slide, index) => (
           <SwiperSlide key={index}>
             <img
               src={slide.image}
@@ -58,7 +58,7 @@ const Slides = ({ slides }: { slides: ISlide[] }) => {
         ))}
       </Swiper>
       <div className="pagination">
-        {slides.map((_, index) => (
+        {items.map((_, index) => (
           <div
             key={index}
             className={
