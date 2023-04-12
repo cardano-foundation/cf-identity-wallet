@@ -1,0 +1,35 @@
+@import "swiper/css";
+@import "swiper/css/autoplay";
+@import "@ionic/react/css/ionic-swiper.css";
+
+// Define some colors
+$font-color: #030321;
+
+.next-button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  --background: linear-gradient(
+                  91.86deg,
+                  #92ffc0 28.76%,
+                  #00a5e6 119.14%
+  ) !important;
+  --background-activated: none;
+  --border-radius: 30px;
+  color: $font-color;
+  height: 52px;
+  margin: 30px 25px;
+}
+
+.already-wallet {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  font-style: normal;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 22px;
+  color: $font-color;
+  margin-bottom: 50px;
+}
