@@ -14,7 +14,7 @@ import { arrowBackOutline } from "ionicons/icons";
 import "./PageLayout.scss";
 import { PageLayoutProps } from "./PageLayout.types";
 
-export const PageLayout = ({
+const PageLayout = ({
   backButton,
   backButtonPath,
   children,
@@ -69,3 +69,5 @@ export const PageLayout = ({
     </IonPage>
   );
 };
+
+export { PageLayout };

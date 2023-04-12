@@ -2,6 +2,10 @@ import { render, screen } from "@testing-library/react";
 import { ionFireEvent as fireEvent } from "@ionic/react-test-utils";
 import { validateMnemonic } from "bip39";
 import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
+import {
+  FIFTEEN_WORDS_BIT_LENGTH,
+  TWENTYFOUR_WORDS_BIT_LENGTH,
+} from "../../../constants/appConstants";
 
 describe("Generate Seed Phrase screen", () => {
   test("User can see Title and Overlay", () => {
@@ -32,11 +36,11 @@ describe("Generate Seed Phrase screen", () => {
     const segment = screen.getByTestId("mnemonic-length-segment");
     const seedPhraseContainer = screen.getByTestId("seed-phrase-container");
 
-    expect(segment).toHaveValue("160");
+    expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH));
     expect(seedPhraseContainer.childNodes.length).toBe(15);
 
-    fireEvent.ionChange(segment, "256");
-    expect(segment).toHaveValue("256");
+    fireEvent.ionChange(segment, String(TWENTYFOUR_WORDS_BIT_LENGTH));
+    expect(segment).toHaveValue(String(TWENTYFOUR_WORDS_BIT_LENGTH));
     expect(seedPhraseContainer.childNodes.length).toBe(24);
 
     const seedPhrase256 = [];
@@ -50,8 +54,8 @@ describe("Generate Seed Phrase screen", () => {
       validateMnemonic(seedPhrase256.toString().split(",").join(" "))
     ).toBe(true);
 
-    fireEvent.ionChange(segment, "160");
-    expect(segment).toHaveValue("160");
+    fireEvent.ionChange(segment, String(FIFTEEN_WORDS_BIT_LENGTH));
+    expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH));
     expect(seedPhraseContainer.childNodes.length).toBe(15);
 
     const seedPhrase160 = [];

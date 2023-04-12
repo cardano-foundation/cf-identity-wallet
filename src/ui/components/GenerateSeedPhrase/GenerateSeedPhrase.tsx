@@ -16,9 +16,13 @@ import {
 import "./GenerateSeedPhrase.scss";
 import { eyeOffOutline } from "ionicons/icons";
 import { generateMnemonic } from "bip39";
+import {
+  FIFTEEN_WORDS_BIT_LENGTH,
+  TWENTYFOUR_WORDS_BIT_LENGTH,
+} from "../../../constants/appConstants";
 import { PageLayout } from "../common/PageLayout";
 
-export const GenerateSeedPhrase = () => {
+const GenerateSeedPhrase = () => {
   const pageName = "Generate Seed Phrase";
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
@@ -26,14 +30,14 @@ export const GenerateSeedPhrase = () => {
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
 
   useEffect(() => {
-    const seed160 = generateMnemonic(160).split(" ");
+    const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
     setSeedPhrase160(seed160);
     setSeedPhrase(seed160);
-    setSeedPhrase256(generateMnemonic(256).split(" "));
+    setSeedPhrase256(generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" "));
   }, []);
 
   const toggleSeedPhrase = (length: number) => {
-    if (length === 160) {
+    if (length === FIFTEEN_WORDS_BIT_LENGTH) {
       setSeedPhrase(seedPhrase160);
     } else {
       setSeedPhrase(seedPhrase256);
@@ -66,15 +70,19 @@ export const GenerateSeedPhrase = () => {
           <IonCol size="12">
             <IonSegment
               data-testid="mnemonic-length-segment"
-              value={`${seedPhrase.length === 24 ? 256 : 160}`}
+              value={`${
+                seedPhrase.length === 24
+                  ? TWENTYFOUR_WORDS_BIT_LENGTH
+                  : FIFTEEN_WORDS_BIT_LENGTH
+              }`}
               onIonChange={(event) =>
                 toggleSeedPhrase(Number(event.detail.value))
               }
             >
-              <IonSegmentButton value="160">
+              <IonSegmentButton value={String(FIFTEEN_WORDS_BIT_LENGTH)}>
                 <IonLabel>15 words</IonLabel>
               </IonSegmentButton>
-              <IonSegmentButton value="256">
+              <IonSegmentButton value={String(TWENTYFOUR_WORDS_BIT_LENGTH)}>
                 <IonLabel>24 words</IonLabel>
               </IonSegmentButton>
             </IonSegment>
@@ -163,3 +171,5 @@ export const GenerateSeedPhrase = () => {
     </PageLayout>
   );
 };
+
+export { GenerateSeedPhrase };
