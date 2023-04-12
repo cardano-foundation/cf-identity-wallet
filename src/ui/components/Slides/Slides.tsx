@@ -5,9 +5,10 @@ import { playCircleOutline, pauseCircleOutline } from "ionicons/icons";
 import { Autoplay } from "swiper";
 import { ISlide } from "./Slides.types";
 import "./Slides.scss";
+import {Swiper as SwiperClass} from "swiper/types";
 
 const Slides = ({ slides }: { slides: ISlide[] }) => {
-  const [swiper, setSwiper] = useState<any>(null);
+  const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
   const [autoplayIsClicked, setAutoplayIsClicked] = useState(false);
