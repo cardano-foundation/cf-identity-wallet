@@ -23,7 +23,7 @@
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
-    "@capacitor/cli": "^4.7.1",
+    "@capacitor/cli": "^4.7.3",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^12.6.3",

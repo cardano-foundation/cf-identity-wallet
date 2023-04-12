@@ -65,3 +65,5 @@ describe("handleAutoplay function for slides", () => {
     expect(playIcon).toHaveAttribute("icon", pauseCircleOutline);
   });
 });
+
+
