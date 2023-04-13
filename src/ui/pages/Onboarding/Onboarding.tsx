@@ -1,4 +1,4 @@
-import { IonButton, IonContent, IonPage } from "@ionic/react";
+import {IonButton, IonContent, IonGrid, IonPage, IonRow} from "@ionic/react";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 
@@ -42,6 +42,7 @@ const Onboarding = () => {
   return (
     <>
       <IonPage>
+        <IonRow className="h100px"/>
         <IonContent>
           <Slides items={ITEMS} />
           <IonButton className="next-button">{BUTTON_LABEL}</IonButton>
