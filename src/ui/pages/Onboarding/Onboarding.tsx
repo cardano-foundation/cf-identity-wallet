@@ -41,8 +41,8 @@ const ALREADY_WALLET_LABEL = "I already have a wallet";
 const Onboarding = () => {
   return (
     <>
-      <IonPage>
-        <IonRow className="h100px"/>
+      <IonPage className="onboarding-page">
+        <IonRow />
         <IonContent>
           <Slides items={ITEMS} />
           <IonButton className="next-button">{BUTTON_LABEL}</IonButton>

@@ -5,8 +5,12 @@
 // Define some colors
 $font-color: #030321;
 
-.h100px {
-  height: 100px;
+.ios .onboarding-page {
+  top: 100px !important;
+}
+
+.md .onboarding-page {
+  top: 50px !important;
 }
 
 .next-button {
