@@ -42,7 +42,6 @@ const Onboarding = () => {
   return (
     <>
       <IonPage className="onboarding-page">
-        <IonRow />
         <IonContent>
           <Slides items={ITEMS} />
           <IonButton className="next-button">{BUTTON_LABEL}</IonButton>
