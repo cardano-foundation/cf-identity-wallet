@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import {
+  IonAlert,
   IonButton,
   IonCard,
   IonCardContent,
@@ -30,6 +31,7 @@ const GenerateSeedPhrase = () => {
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
@@ -158,12 +160,34 @@ const GenerateSeedPhrase = () => {
               expand="block"
               className="ion-primary-button"
               disabled={!showSeedPhrase}
+              onClick={() => setIsOpen(true)}
             >
               Continue
             </IonButton>
           </IonCol>
         </IonRow>
       </IonGrid>
+      <IonAlert
+        isOpen={isOpen}
+        header="Have you double-checked you've copied your 15 word phrase correctly?"
+        buttons={[
+          {
+            text: "Yes, I've copied these correctly!",
+            role: "confirm",
+            handler: () => {
+              setIsOpen(false);
+            },
+          },
+          {
+            text: "I'll take another look",
+            role: "cancel",
+            handler: () => {
+              setIsOpen(false);
+            },
+          },
+        ]}
+        onDidDismiss={() => setIsOpen(false)}
+      />
     </PageLayout>
   );
 };

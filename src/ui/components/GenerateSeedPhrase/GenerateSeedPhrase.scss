@@ -70,3 +70,37 @@ ion-chip {
 .footer ion-button {
   margin: 0.5rem 0;
 }
+
+.alert-wrapper {
+  max-width: 90% !important;
+  padding-bottom: 20px !important;
+
+  .alert-title.sc-ion-alert-md {
+    text-align: center;
+  }
+}
+
+.alert-button-group.sc-ion-alert-md {
+  flex-wrap: wrap;
+  justify-content: center;
+
+  button {
+    width: 100%;
+
+    span {
+      justify-content: center;
+    }
+  }
+}
+
+.alert-button {
+  font-weight: 500 !important;
+  border: solid var(--color-medium-grey) 2px !important;
+  border-radius: 20px !important;
+  margin: 5px 20px !important;
+
+  &:first-child {
+    border: none !important;
+    background: var(--color-accent-gradient) !important;
+  }
+}
