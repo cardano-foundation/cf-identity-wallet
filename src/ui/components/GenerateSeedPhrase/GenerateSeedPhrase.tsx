@@ -155,14 +155,6 @@ const GenerateSeedPhrase = () => {
           <IonCol>
             <IonButton
               shape="round"
-              fill="outline"
-              expand="block"
-              disabled={true}
-            >
-              Back up your seed phrase
-            </IonButton>
-            <IonButton
-              shape="round"
               expand="block"
               disabled={true}
             >
