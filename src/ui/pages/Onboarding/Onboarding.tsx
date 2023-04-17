@@ -44,7 +44,9 @@ const Onboarding = () => {
       <IonPage>
         <IonContent>
           <Slides items={ITEMS} />
-          <IonButton className="next-button">{BUTTON_LABEL}</IonButton>
+          <IonButton className="ion-primary-button next-button">
+            {BUTTON_LABEL}
+          </IonButton>
           <div className="already-wallet">{ALREADY_WALLET_LABEL}</div>
         </IonContent>
       </IonPage>
