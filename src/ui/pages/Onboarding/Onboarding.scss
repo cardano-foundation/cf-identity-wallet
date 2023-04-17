@@ -2,8 +2,9 @@
 @import "swiper/css/autoplay";
 @import "@ionic/react/css/ionic-swiper.css";
 
-// Define some colors
-$font-color: #030321;
+.ion-page {
+  margin-top: 50px;
+}
 
 .next-button {
   display: flex;
@@ -23,6 +24,6 @@ $font-color: #030321;
   font-weight: 500;
   font-size: 16px;
   line-height: 22px;
-  color: $font-color;
+  color: var(--ion-color-primary);
   margin-bottom: 50px;
 }
