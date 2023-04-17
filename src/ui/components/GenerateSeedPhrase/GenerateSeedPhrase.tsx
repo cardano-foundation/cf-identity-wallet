@@ -77,9 +77,10 @@ const GenerateSeedPhrase = () => {
                   ? TWENTYFOUR_WORDS_BIT_LENGTH
                   : FIFTEEN_WORDS_BIT_LENGTH
               }`}
-              onIonChange={(event) =>
-                toggleSeedPhrase(Number(event.detail.value))
-              }
+              onIonChange={(event) => {
+                setShowSeedPhrase(false);
+                toggleSeedPhrase(Number(event.detail.value));
+              }}
             >
               <IonSegmentButton value={String(FIFTEEN_WORDS_BIT_LENGTH)}>
                 <IonLabel>{MNEMONIC_FIFTEEN_WORDS} words</IonLabel>
