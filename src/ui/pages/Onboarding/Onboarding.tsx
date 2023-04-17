@@ -1,4 +1,4 @@
-import {IonButton, IonContent, IonGrid, IonPage, IonRow} from "@ionic/react";
+import { IonButton, IonContent, IonGrid, IonPage, IonRow } from "@ionic/react";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 
