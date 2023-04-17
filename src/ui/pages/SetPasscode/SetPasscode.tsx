@@ -1,5 +1,5 @@
 import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
-import {useHistory} from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 import { backspaceOutline } from "ionicons/icons";
 import "./SetPasscode.scss";
 import { PageLayout } from "../../components/common/PageLayout";
@@ -24,7 +24,7 @@ const SetPasscode = () => {
       if (passcodeIsSet && length === 5) {
         if (originalPassCode === passcode + digit) {
           console.log("passcode set ok!! next page ->");
-          history.push("/generateseedphrase")
+          history.push("/generateseedphrase");
         }
       }
       setPasscode(passcode + digit);
@@ -199,7 +199,10 @@ const SetPasscode = () => {
           </IonRow>
           <IonRow className="numbers-row">
             <IonCol>
-              <IonButton data-testid="backspace-button" onClick={() => handleRemove()}>
+              <IonButton
+                data-testid="backspace-button"
+                onClick={() => handleRemove()}
+              >
                 <IonIcon
                   slot="icon-only"
                   icon={backspaceOutline}

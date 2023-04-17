@@ -1,15 +1,15 @@
 import React from "react";
 import { MemoryRouter, Route } from "react-router-dom";
 
-import {fireEvent, render, screen} from "@testing-library/react";
+import { fireEvent, render, screen } from "@testing-library/react";
 import {
   ENTER_PASSCODE_DESCRIPTION,
   ENTER_PASSCODE_ERROR,
   ENTER_PASSCODE_LABEL,
   REENTER_PASSCODE_LABEL,
-  SetPasscode
+  SetPasscode,
 } from "./SetPasscode";
-import {GenerateSeedPhrase} from "../../components/GenerateSeedPhrase";
+import { GenerateSeedPhrase } from "../../components/GenerateSeedPhrase";
 
 describe("SetPasscode Page", () => {
   test("renders create passcode label when passcode is not set", () => {
@@ -23,11 +23,9 @@ describe("SetPasscode Page", () => {
     const descriptionElement = getByText(ENTER_PASSCODE_DESCRIPTION);
     expect(descriptionElement).toBeInTheDocument();
   });
-
 });
 
 describe("SetPasscode input", () => {
-
   test("clicking on a number button adds a digit to the passcode", () => {
     const { getByText, getByTestId } = render(<SetPasscode />);
     const buttonElement = getByText(/1/);
@@ -93,14 +91,19 @@ describe("SetPasscode input", () => {
     expect(errorMessage).toBeInTheDocument();
   });
 
-
   test("sets passcode and redirects to next page when passcode is entered correctly", () => {
-
     const { getByTestId, getByText, queryByText } = render(
-        <MemoryRouter initialEntries={["/setpasscode"]}>
-          <Route exact path="/setpasscode" component={SetPasscode} />
-          <Route path="/generateseedphrase" component={GenerateSeedPhrase} />
-        </MemoryRouter>
+      <MemoryRouter initialEntries={["/setpasscode"]}>
+        <Route
+          exact
+          path="/setpasscode"
+          component={SetPasscode}
+        />
+        <Route
+          path="/generateseedphrase"
+          component={GenerateSeedPhrase}
+        />
+      </MemoryRouter>
     );
 
     const buttonElement = getByText(/1/);
@@ -129,5 +132,4 @@ describe("SetPasscode input", () => {
     expect(title).toBeInTheDocument();
     expect(overlay).toBeInTheDocument();
   });
-
 });
