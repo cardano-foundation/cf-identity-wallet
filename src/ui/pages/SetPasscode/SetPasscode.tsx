@@ -14,7 +14,7 @@ const SetPasscode = () => {
     if (length < 6) {
       if (passcodeIsSet && length === 5) {
         if (originalPassCode === passcode + digit) {
-          console.log("passcode set ok!!");
+          console.log("passcode set ok!! next page ->");
         }
       }
       setPasscode(passcode + digit);
@@ -78,85 +78,116 @@ const SetPasscode = () => {
               ) : null}
             </IonCol>
           </IonRow>
-          <IonRow>
+          <IonRow className="numbers-row">
             <IonCol>
-              <IonButton
-                onClick={() => handlePinChange(1)}
-                className="number"
-              >
-                1
+              <IonButton onClick={() => handlePinChange(1)}>
+                <div className="number-button">1</div>
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton
-                onClick={() => handlePinChange(2)}
-                className="number"
-              >
-                2
+              <IonButton onClick={() => handlePinChange(2)}>
+                <div className="number-button">
+                  2
+                  <div className="number-labels">
+                    <span>A</span>
+                    <span>B</span>
+                    <span>C</span>
+                  </div>
+                </div>
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton
-                onClick={() => handlePinChange(3)}
-                className="number"
-              >
-                3
-              </IonButton>
-            </IonCol>
-          </IonRow>
-          <IonRow>
-            <IonCol>
-              <IonButton
-                onClick={() => handlePinChange(4)}
-                className="number"
-              >
-                4
-              </IonButton>
-            </IonCol>
-            <IonCol>
-              <IonButton
-                onClick={() => handlePinChange(5)}
-                className="number"
-              >
-                5
-              </IonButton>
-            </IonCol>
-            <IonCol>
-              <IonButton
-                onClick={() => handlePinChange(6)}
-                className="number"
-              >
-                6
+              <IonButton onClick={() => handlePinChange(3)}>
+                <div className="number-button">
+                  3
+                  <div className="number-labels">
+                    <span>D</span>
+                    <span>E</span>
+                    <span>F</span>
+                  </div>
+                </div>
               </IonButton>
             </IonCol>
           </IonRow>
-          <IonRow>
+          <IonRow className="numbers-row">
             <IonCol>
-              <IonButton
-                onClick={() => handlePinChange(7)}
-                className="number"
-              >
-                7
+              <IonButton onClick={() => handlePinChange(4)}>
+                <div className="number-button">
+                  4
+                  <div className="number-labels">
+                    <span>G</span>
+                    <span>H</span>
+                    <span>I</span>
+                  </div>
+                </div>
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton
-                onClick={() => handlePinChange(8)}
-                className="number"
-              >
-                8
+              <IonButton onClick={() => handlePinChange(5)}>
+                <div className="number-button">
+                  5
+                  <div className="number-labels">
+                    <span>J</span>
+                    <span>K</span>
+                    <span>L</span>
+                  </div>
+                </div>
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton
-                onClick={() => handlePinChange(9)}
-                className="number"
-              >
-                9
+              <IonButton onClick={() => handlePinChange(6)}>
+                <div className="number-button">
+                  6
+                  <div className="number-labels">
+                    <span>M</span>
+                    <span>N</span>
+                    <span>O</span>
+                  </div>
+                </div>
               </IonButton>
             </IonCol>
           </IonRow>
-          <IonRow>
+          <IonRow className="numbers-row">
+            <IonCol>
+              <IonButton onClick={() => handlePinChange(7)}>
+                <div className="number-button">
+                  7
+                  <div className="number-labels">
+                    <span>P</span>
+                    <span>Q</span>
+                    <span>R</span>
+                    <span>S</span>
+                  </div>
+                </div>
+              </IonButton>
+            </IonCol>
+            <IonCol>
+              <IonButton onClick={() => handlePinChange(8)}>
+                <div className="number-button">
+                  8
+                  <div className="number-labels">
+                    <span>T</span>
+                    <span>U</span>
+                    <span>V</span>
+                  </div>
+                </div>
+              </IonButton>
+            </IonCol>
+            <IonCol>
+              <IonButton onClick={() => handlePinChange(9)}>
+                <div className="number-button">
+                  9
+                  <div className="number-labels">
+                    <span>W</span>
+                    <span>X</span>
+                    <span>Y</span>
+                    <span>Z</span>
+                  </div>
+                </div>
+              </IonButton>
+            </IonCol>
+          </IonRow>
+          <IonRow className="numbers-row">
             <IonCol>
               <IonButton onClick={() => handleRemove()}>
                 <IonIcon
@@ -166,14 +197,11 @@ const SetPasscode = () => {
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton
-                onClick={() => handlePinChange(0)}
-                className="number"
-              >
-                0
+              <IonButton onClick={() => handlePinChange(0)}>
+                <div className="number-button">0</div>
               </IonButton>
             </IonCol>
-            <IonCol/>
+            <IonCol />
           </IonRow>
         </IonGrid>
         <IonGrid>

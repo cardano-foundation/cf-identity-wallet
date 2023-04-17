@@ -12,6 +12,9 @@
     line-height: 22px;
     text-align: center;
   }
+  .numbers-row {
+    margin-left: 20px;
+  }
   .circle-row {
     display: flex;
     justify-content: center;
@@ -24,11 +27,11 @@
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    border: 1px solid #363C4A;
+    border: 1px solid #363c4a;
     margin: 0 8px;
   }
   .circle-fill {
-    background: #363C4A;
+    background: #363c4a;
   }
   .pin-error {
     font-style: normal;
@@ -36,20 +39,42 @@
     font-size: 16px;
     line-height: 22px;
     text-align: center;
-    color: #FF5553;
+    color: #ff5553;
     margin-bottom: 35px;
     height: 16px;
   }
-  ion-button.number {
+
+  .number-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    text-align: center;
+    cursor: pointer;
     font-size: 44px;
-    --color: #000000;
+    color: #000000;
   }
+
+  .number-labels {
+    display: flex;
+    margin-top: 3px;
+    margin-left: 2px;
+    text-align: center;
+  }
+
+  .number-labels span {
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-right: 2px;
+  }
+
   ion-button {
     width: 88px;
     height: 88px;
     --border-radius: 50px;
-    --background: #D9D9D9;
-    --background-activated: #BBB;
+    --background: #d9d9d9;
+    --background-activated: #bbb;
     ion-icon {
       width: 44px;
       height: 44px;
@@ -60,13 +85,13 @@
     font-size: 44px;
     --color: #000000;
   }
-
 }
 .continue-col {
   text-align: center;
   margin-top: 55px;
 }
-.continue-button{
+.continue-button {
   font-size: 16px;
   line-height: 22px;
 }
+
