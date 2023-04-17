@@ -23,3 +23,13 @@ p {
     --safe-area-inset-bottom: env(safe-area-inset-bottom);
     height: calc(100% + (var(--safe-area-inset-top) + var(--safe-area-inset-bottom)));
 }
+
+.ion-primary-button {
+    color: black;
+    --background: var(--color-accent-gradient);
+    --background-activated: none;
+
+    &.button-disabled {
+        --background: var(--color-medium-grey);
+    }
+}

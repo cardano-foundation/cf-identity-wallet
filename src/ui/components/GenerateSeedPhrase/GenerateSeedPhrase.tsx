@@ -156,7 +156,8 @@ const GenerateSeedPhrase = () => {
             <IonButton
               shape="round"
               expand="block"
-              disabled={true}
+              className="ion-primary-button"
+              disabled={!showSeedPhrase}
             >
               Continue
             </IonButton>
