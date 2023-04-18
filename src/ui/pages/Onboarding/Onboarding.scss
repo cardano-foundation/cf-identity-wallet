@@ -5,23 +5,13 @@
 // Define some colors
 $font-color: #030321;
 
-.ios .onboarding-page {
-  top: 100px !important;
-}
-
-.md .onboarding-page {
-  top: 50px !important;
-}
-
 .next-button {
   display: flex;
   align-items: center;
   gap: 10px;
-  --background: linear-gradient(
-                  91.86deg,
-                  #92ffc0 28.76%,
-                  #00a5e6 119.14%
-  ) !important;
+  --background: linear-gradient(91.86deg,
+      #92ffc0 28.76%,
+      #00a5e6 119.14%) !important;
   --background-activated: none;
   --border-radius: 30px;
   color: $font-color;
