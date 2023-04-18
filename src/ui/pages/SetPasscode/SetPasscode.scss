@@ -75,15 +75,15 @@
     --border-radius: 50px;
     --background: #d9d9d9;
     --background-activated: #bbb;
-    ion-icon {
-      width: 44px;
-      height: 44px;
-      color: #000000;
-    }
   }
-  ion-button.continue {
-    font-size: 44px;
-    --color: #000000;
+
+  .backspace-button {
+    --background: #030321;
+    --color: white;
+  }
+  .backspace-icon {
+    width: 50px;
+    height: 50px;
   }
 }
 .continue-col {
@@ -91,6 +91,26 @@
   margin-top: 55px;
 }
 .continue-button {
-  font-size: 16px;
-  line-height: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  --background: linear-gradient(
+    91.86deg,
+    #92ffc0 28.76%,
+    #00a5e6 119.14%
+  ) !important;
+  --background-activated: none;
+  --border-radius: 30px;
+  color: #030321;
+  height: 52px;
+  margin: 30px 25px;
+}
+
+.error-message {
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.error-message.visible {
+  opacity: 1;
 }

@@ -1,8 +1,8 @@
 import React from "react";
 import { MemoryRouter, Route } from "react-router-dom";
 
-import { fireEvent, render, screen } from "@testing-library/react";
-import {
+import { fireEvent, render, act } from "@testing-library/react";
+import ErrorMessage, {
   ENTER_PASSCODE_DESCRIPTION,
   ENTER_PASSCODE_ERROR,
   ENTER_PASSCODE_LABEL,
@@ -131,5 +131,27 @@ describe("SetPasscode input", () => {
 
     expect(title).toBeInTheDocument();
     expect(overlay).toBeInTheDocument();
+  });
+});
+
+describe("ErrorMessage Component", () => {
+  test("renders error message", () => {
+    const { getByText } = render(<ErrorMessage message="Test error message" />);
+    const message = getByText("Test error message");
+    expect(message).toBeInTheDocument();
+  });
+
+  test("sets visibility to false after 2 seconds", async () => {
+    jest.useFakeTimers();
+    const { getByTestId } = render(
+      <ErrorMessage message="Test error message" />
+    );
+
+    const errorContainer = getByTestId("error-messsage");
+    expect(errorContainer).toHaveClass("visible");
+    await act(async () => {
+      jest.advanceTimersByTime(2000);
+    });
+    expect(errorContainer).not.toHaveClass("visible");
   });
 });

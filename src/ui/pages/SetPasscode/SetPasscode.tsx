@@ -1,15 +1,40 @@
+import { useEffect, useState } from "react";
 import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { backspaceOutline } from "ionicons/icons";
+import { backspaceSharp } from "ionicons/icons";
 import "./SetPasscode.scss";
 import { PageLayout } from "../../components/common/PageLayout";
-import { useState } from "react";
 
 const ENTER_PASSCODE_LABEL = "Create a passcode";
 const REENTER_PASSCODE_LABEL = "Re-enter your passcode";
 const ENTER_PASSCODE_DESCRIPTION =
   "Create a passcode to secure your wallet and to continue setting up your seed phrase";
 const ENTER_PASSCODE_ERROR = "Passcode didnt match";
+
+const ErrorMessage = ({ message }: { message: string }) => {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setVisible(false);
+    }, 2000);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+
+  return (
+    <div
+      data-testid="error-messsage"
+      className={`error-message ${visible ? "visible" : ""}`}
+    >
+      <span className="text-fadein">{message}</span>
+    </div>
+  );
+};
+
+export default ErrorMessage;
 
 const SetPasscode = () => {
   const history = useHistory();
@@ -23,7 +48,6 @@ const SetPasscode = () => {
     if (length < 6) {
       if (passcodeIsSet && length === 5) {
         if (originalPassCode === passcode + digit) {
-          console.log("passcode set ok!! next page ->");
           history.push("/generateseedphrase");
         }
       }
@@ -83,7 +107,7 @@ const SetPasscode = () => {
             <IonCol className="pin-error">
               {passcodeIsSet ? (
                 passcode.length === 6 && originalPassCode !== passcode ? (
-                  <span className="text-fadein">{ENTER_PASSCODE_ERROR}</span>
+                  <ErrorMessage message={ENTER_PASSCODE_ERROR} />
                 ) : null
               ) : null}
             </IonCol>
@@ -200,12 +224,14 @@ const SetPasscode = () => {
           <IonRow className="numbers-row">
             <IonCol>
               <IonButton
+                className="backspace-button"
                 data-testid="backspace-button"
                 onClick={() => handleRemove()}
               >
                 <IonIcon
                   slot="icon-only"
-                  icon={backspaceOutline}
+                  className="backspace-icon"
+                  icon={backspaceSharp}
                 />
               </IonButton>
             </IonCol>
