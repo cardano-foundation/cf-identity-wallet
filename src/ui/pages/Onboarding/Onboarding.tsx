@@ -44,7 +44,7 @@ const Onboarding = () => {
     <PageLayout
       backButton={false}
       backButtonPath={"/"}
-      contentClasses=""
+      contentClasses="test"
       progressBar={false}
       progressBarValue={0}
       progressBarBuffer={1}
