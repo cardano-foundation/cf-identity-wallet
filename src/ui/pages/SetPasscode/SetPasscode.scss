@@ -12,9 +12,6 @@
     line-height: 22px;
     text-align: center;
   }
-  .numbers-row {
-    margin-left: 20px;
-  }
   .circle-row {
     display: flex;
     justify-content: center;
@@ -78,7 +75,7 @@
   }
 
   .backspace-button {
-    --background: #030321;
+    --background: var(--ion-color-primary);
     --color: white;
   }
   .backspace-icon {
@@ -94,14 +91,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  --background: linear-gradient(
-    91.86deg,
-    #92ffc0 28.76%,
-    #00a5e6 119.14%
-  ) !important;
-  --background-activated: none;
   --border-radius: 30px;
-  color: #030321;
   height: 52px;
   margin: 30px 25px;
 }

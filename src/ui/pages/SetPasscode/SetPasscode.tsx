@@ -252,7 +252,7 @@ const SetPasscode = () => {
                   disabled={passcode.length < 6}
                   shape="round"
                   expand="block"
-                  className="continue-button"
+                  className="ion-primary-button continue-button"
                   data-testid="continue-button"
                 >
                   Continue
