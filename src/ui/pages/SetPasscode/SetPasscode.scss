@@ -66,15 +66,18 @@
     margin-right: 2px;
   }
 
-  ion-button {
+  .board-button {
     width: 88px;
     height: 88px;
     --border-radius: 50px;
-    --background: #d9d9d9;
-    --background-activated: #bbb;
+    --background: var(--color-medium-grey);
+    --background-activated: var(--color-dark-grey);
   }
 
   .backspace-button {
+    width: 88px;
+    height: 88px;
+    --border-radius: 50px;
     --background: var(--ion-color-primary);
     --color: white;
   }
