@@ -24,11 +24,11 @@
     width: 25px;
     height: 25px;
     border-radius: 50%;
-    border: 1px solid #363c4a;
+    border: 1px solid var(--ion-color-secondary);
     margin: 0 8px;
   }
   .circle-fill {
-    background: #363c4a;
+    background: var(--ion-color-secondary);
   }
   .pin-error {
     font-style: normal;
