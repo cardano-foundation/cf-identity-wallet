@@ -1,6 +1,7 @@
-import { IonButton, IonContent, IonPage } from "@ionic/react";
+import { IonButton } from "@ionic/react";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
+import { PageLayout } from "../../components/common/PageLayout";
 
 const ITEMS = [
   {
@@ -40,15 +41,20 @@ const ALREADY_WALLET_LABEL = "I already have a wallet";
 
 const Onboarding = () => {
   return (
-    <>
-      <IonPage>
-        <IonContent>
-          <Slides items={ITEMS} />
-          <IonButton className="next-button">{BUTTON_LABEL}</IonButton>
-          <div className="already-wallet">{ALREADY_WALLET_LABEL}</div>
-        </IonContent>
-      </IonPage>
-    </>
+    <PageLayout
+      backButton={false}
+      backButtonPath={"/"}
+      contentClasses=""
+      progressBar={false}
+      progressBarValue={0}
+      progressBarBuffer={1}
+    >
+      <Slides items={ITEMS} />
+      <IonButton className="ion-primary-button next-button">
+        {BUTTON_LABEL}
+      </IonButton>
+      <div className="already-wallet">{ALREADY_WALLET_LABEL}</div>
+    </PageLayout>
   );
 };
 
