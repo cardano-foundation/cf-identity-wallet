@@ -50,7 +50,10 @@ const Onboarding = () => {
       progressBarBuffer={1}
     >
       <Slides items={ITEMS} />
-      <IonButton routerLink="/setpasscode" className="ion-primary-button next-button">
+      <IonButton
+        routerLink="/setpasscode"
+        className="ion-primary-button next-button"
+      >
         {BUTTON_LABEL}
       </IonButton>
       <div className="already-wallet">{ALREADY_WALLET_LABEL}</div>
