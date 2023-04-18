@@ -115,7 +115,7 @@ const GenerateSeedPhrase = () => {
                 <IonButton
                   shape="round"
                   fill="outline"
-                  data-testid="seed-phrase-overlay-button"
+                  data-testid="reveal-seed-phrase-button"
                   onClick={() => {
                     setShowSeedPhrase(true);
                   }}
@@ -159,6 +159,7 @@ const GenerateSeedPhrase = () => {
               shape="round"
               expand="block"
               className="ion-primary-button"
+              data-testid="generate-seed-phrase-continue-button"
               disabled={!showSeedPhrase}
               onClick={() => setIsOpen(true)}
             >
@@ -167,27 +168,32 @@ const GenerateSeedPhrase = () => {
           </IonCol>
         </IonRow>
       </IonGrid>
-      <IonAlert
-        isOpen={isOpen}
-        header="Have you double-checked you've copied your 15 word phrase correctly?"
-        buttons={[
-          {
-            text: "Yes, I've copied these correctly!",
-            role: "confirm",
-            handler: () => {
-              setIsOpen(false);
+      <div
+        data-testid="alert-wrapper"
+        className={isOpen ? "alert-visible" : "alert-invisible"}
+      >
+        <IonAlert
+          isOpen={isOpen}
+          header="Have you double-checked you've copied your 15 word phrase correctly?"
+          buttons={[
+            {
+              text: "Yes, I've copied these correctly!",
+              role: "confirm",
+              handler: () => {
+                setIsOpen(false);
+              },
             },
-          },
-          {
-            text: "I'll take another look",
-            role: "cancel",
-            handler: () => {
-              setIsOpen(false);
+            {
+              text: "I'll take another look",
+              role: "cancel",
+              handler: () => {
+                setIsOpen(false);
+              },
             },
-          },
-        ]}
-        onDidDismiss={() => setIsOpen(false)}
-      />
+          ]}
+          onDidDismiss={() => setIsOpen(false)}
+        />
+      </div>
     </PageLayout>
   );
 };
