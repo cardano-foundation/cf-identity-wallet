@@ -41,11 +41,14 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '18'
+    
+    - name: Run unit tests
+      run: |
+        npm ci
+        npm test
 
     - name: 🔨 Build project
-      run: |
-        npm i
-        npm run build
+      run: npm run build
 
     - name: Configure vercel.json
       run: |
