@@ -11,7 +11,7 @@ import { useHistory } from "react-router-dom";
 import { backspaceSharp, closeOutline } from "ionicons/icons";
 import "./SetPasscode.scss";
 import { PageLayout } from "../../components/common/PageLayout";
-import {ErrorMessage} from "../../components/ErrorMessage";
+import { ErrorMessage } from "../../components/ErrorMessage";
 
 const ENTER_PASSCODE_LABEL = "Create a passcode";
 const REENTER_PASSCODE_LABEL = "Re-enter your passcode";

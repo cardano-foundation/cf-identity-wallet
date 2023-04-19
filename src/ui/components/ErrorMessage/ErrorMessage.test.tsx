@@ -1,5 +1,5 @@
 import { act, render } from "@testing-library/react";
-import { ErrorMessage } from "./ErrorMessage";
+import { ErrorMessage, MESSAGE_MILLISECONDS } from "./ErrorMessage";
 import React from "react";
 
 describe("ErrorMessage Component", () => {
@@ -18,7 +18,7 @@ describe("ErrorMessage Component", () => {
     const errorContainer = getByTestId("error-messsage");
     expect(errorContainer).toHaveClass("visible");
     await act(async () => {
-      jest.advanceTimersByTime(2000);
+      jest.advanceTimersByTime(MESSAGE_MILLISECONDS);
     });
     expect(errorContainer).not.toHaveClass("visible");
   });
