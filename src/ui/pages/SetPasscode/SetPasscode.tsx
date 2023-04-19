@@ -277,7 +277,7 @@ const SetPasscode = () => {
             <IonCol>
               <IonButton
                 className="backspace-button"
-                data-testid="backspace-button"
+                data-testid="setpasscode-backspace-button"
                 onClick={() => handleRemove()}
               >
                 <IonIcon
@@ -299,7 +299,7 @@ const SetPasscode = () => {
                   shape="round"
                   expand="block"
                   className="ion-primary-button continue-button"
-                  data-testid="continue-button"
+                  data-testid="setpasscode-continue-button"
                 >
                   Continue
                 </IonButton>
@@ -310,7 +310,6 @@ const SetPasscode = () => {
                   expand="block"
                   fill="outline"
                   className="continue-button"
-                  data-testid="continue-button"
                 >
                   {START_OVER_LABEL}
                 </IonButton>

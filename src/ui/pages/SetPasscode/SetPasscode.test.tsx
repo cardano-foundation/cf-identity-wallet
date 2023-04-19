@@ -79,7 +79,7 @@ describe("SetPasscode input", () => {
     const { getByText, getByTestId } = render(<SetPasscode />);
     const buttonElement = getByText(/1/);
     fireEvent.click(buttonElement);
-    const backspaceButton = getByTestId("backspace-button");
+    const backspaceButton = getByTestId("setpasscode-backspace-button");
     fireEvent.click(backspaceButton);
     const circleElement = getByTestId("circle-0");
     expect(circleElement.classList).not.toContain("circle-fill");
@@ -98,7 +98,7 @@ describe("SetPasscode input", () => {
     fireEvent.click(button9Element);
     fireEvent.click(button9Element);
 
-    const continueButton = getByTestId("continue-button");
+    const continueButton = getByTestId("setpasscode-continue-button");
     fireEvent.click(continueButton);
 
     const reenter2ButtonElement = getByText(/2/);
@@ -140,7 +140,7 @@ describe("SetPasscode input", () => {
     fireEvent.click(buttonElement);
     fireEvent.click(buttonElement);
 
-    const continueButton = getByTestId("continue-button");
+    const continueButton = getByTestId("setpasscode-continue-button");
     fireEvent.click(continueButton);
 
     fireEvent.click(buttonElement);
@@ -183,7 +183,7 @@ test("displays error message if passcode doesn't match, backspace and re-enter c
   fireEvent.click(buttonElement);
   fireEvent.click(buttonElement);
 
-  const continueButton = getByTestId("continue-button");
+  const continueButton = getByTestId("setpasscode-continue-button");
   fireEvent.click(continueButton);
 
   fireEvent.click(buttonElement);
@@ -198,7 +198,7 @@ test("displays error message if passcode doesn't match, backspace and re-enter c
   const errorMessage = getByText(ENTER_PASSCODE_ERROR);
   expect(errorMessage).toBeInTheDocument();
 
-  const backspaceButton = getByTestId("backspace-button");
+  const backspaceButton = getByTestId("setpasscode-backspace-button");
   fireEvent.click(backspaceButton);
   fireEvent.click(buttonElement);
 
