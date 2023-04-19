@@ -222,25 +222,25 @@ const SetPasscode = () => {
             </IonCol>
           </IonRow>
           <IonRow className="numbers-row">
-            <IonCol>
-              <IonButton
-                className="backspace-button"
-                data-testid="backspace-button"
-                onClick={() => handleRemove()}
-              >
-                <IonIcon
-                  slot="icon-only"
-                  className="backspace-icon"
-                  icon={backspaceSharp}
-                />
-              </IonButton>
-            </IonCol>
+            <IonCol/>
             <IonCol>
               <IonButton className="board-button" onClick={() => handlePinChange(0)}>
                 <div className="number-button">0</div>
               </IonButton>
             </IonCol>
-            <IonCol />
+            <IonCol>
+              <IonButton
+                  className="backspace-button"
+                  data-testid="backspace-button"
+                  onClick={() => handleRemove()}
+              >
+                <IonIcon
+                    slot="icon-only"
+                    className="backspace-icon"
+                    icon={backspaceSharp}
+                />
+              </IonButton>
+            </IonCol>
           </IonRow>
         </IonGrid>
         <IonGrid>
