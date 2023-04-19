@@ -17,8 +17,8 @@ describe("ErrorMessage Component", () => {
 
     const errorContainer = getByTestId("error-messsage");
     expect(errorContainer).toHaveClass("visible");
-    await act(async () => {
-      jest.advanceTimersByTime(MESSAGE_MILLISECONDS);
+    act(() => {
+      jest.advanceTimersByTime(2000);
     });
     expect(errorContainer).not.toHaveClass("visible");
   });
