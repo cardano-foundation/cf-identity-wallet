@@ -11,6 +11,7 @@ import { useHistory } from "react-router-dom";
 import { backspaceSharp, closeOutline } from "ionicons/icons";
 import "./SetPasscode.scss";
 import { PageLayout } from "../../components/common/PageLayout";
+import {ErrorMessage} from "../../components/ErrorMessage";
 
 const ENTER_PASSCODE_LABEL = "Create a passcode";
 const REENTER_PASSCODE_LABEL = "Re-enter your passcode";
@@ -18,34 +19,6 @@ const START_OVER_LABEL = "I cant remember, can I start over?";
 const ENTER_PASSCODE_DESCRIPTION =
   "Create a passcode to secure your wallet and to continue setting up your seed phrase";
 const ENTER_PASSCODE_ERROR = "Passcode didnt match";
-
-const ErrorMessage = ({ message }: { message: string }) => {
-  const [visible, setVisible] = useState(true);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setVisible(false);
-    }, 2000);
-
-    return () => {
-      clearTimeout(timer);
-    };
-  }, []);
-
-  return (
-    <div
-      data-testid="error-messsage"
-      className={`error-message ${visible ? "visible" : ""}`}
-    >
-      <IonLabel
-        className="text-fadein"
-        color="danger"
-      >
-        {message}
-      </IonLabel>
-    </div>
-  );
-};
 
 const SetPasscode = () => {
   const history = useHistory();
@@ -325,7 +298,6 @@ const SetPasscode = () => {
 };
 
 export {
-  ErrorMessage,
   SetPasscode,
   ENTER_PASSCODE_LABEL,
   REENTER_PASSCODE_LABEL,

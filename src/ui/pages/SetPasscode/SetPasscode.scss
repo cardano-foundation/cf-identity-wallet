@@ -94,16 +94,3 @@
   height: 52px;
   margin: 30px 25px;
 }
-
-.error-message {
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 22px;
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-}
-
-.error-message.visible {
-  opacity: 1;
-}

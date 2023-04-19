@@ -7,7 +7,6 @@ import {
   ENTER_PASSCODE_ERROR,
   ENTER_PASSCODE_LABEL,
   REENTER_PASSCODE_LABEL,
-  ErrorMessage,
   SetPasscode,
   START_OVER_LABEL,
 } from "./SetPasscode";
@@ -209,26 +208,4 @@ test("displays error message if passcode doesn't match, backspace and re-enter c
 
   expect(title).toBeInTheDocument();
   expect(overlay).toBeInTheDocument();
-});
-
-describe("ErrorMessage Component", () => {
-  test("renders error message", () => {
-    const { getByText } = render(<ErrorMessage message="Test error message" />);
-    const message = getByText("Test error message");
-    expect(message).toBeInTheDocument();
-  });
-
-  test("sets visibility to false after 2 seconds", async () => {
-    jest.useFakeTimers();
-    const { getByTestId } = render(
-      <ErrorMessage message="Test error message" />
-    );
-
-    const errorContainer = getByTestId("error-messsage");
-    expect(errorContainer).toHaveClass("visible");
-    await act(async () => {
-      jest.advanceTimersByTime(2000);
-    });
-    expect(errorContainer).not.toHaveClass("visible");
-  });
 });
