@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
+import {IonButton, IonCol, IonGrid, IonIcon, IonLabel, IonRow} from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { backspaceSharp } from "ionicons/icons";
 import "./SetPasscode.scss";
@@ -29,7 +29,7 @@ const ErrorMessage = ({ message }: { message: string }) => {
       data-testid="error-messsage"
       className={`error-message ${visible ? "visible" : ""}`}
     >
-      <span className="text-fadein">{message}</span>
+      <IonLabel className="text-fadein" color="danger">{message}</IonLabel>
     </div>
   );
 };
