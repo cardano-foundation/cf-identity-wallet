@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import {IonButton, IonCol, IonGrid, IonIcon, IonLabel, IonRow} from "@ionic/react";
+import {
+  IonButton,
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonLabel,
+  IonRow,
+} from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { backspaceSharp } from "ionicons/icons";
 import "./SetPasscode.scss";
@@ -29,12 +36,15 @@ const ErrorMessage = ({ message }: { message: string }) => {
       data-testid="error-messsage"
       className={`error-message ${visible ? "visible" : ""}`}
     >
-      <IonLabel className="text-fadein" color="danger">{message}</IonLabel>
+      <IonLabel
+        className="text-fadein"
+        color="danger"
+      >
+        {message}
+      </IonLabel>
     </div>
   );
 };
-
-export default ErrorMessage;
 
 const SetPasscode = () => {
   const history = useHistory();
@@ -114,12 +124,18 @@ const SetPasscode = () => {
           </IonRow>
           <IonRow className="numbers-row">
             <IonCol>
-              <IonButton className="board-button" onClick={() => handlePinChange(1)}>
+              <IonButton
+                className="board-button"
+                onClick={() => handlePinChange(1)}
+              >
                 <div className="number-button">1</div>
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton className="board-button" onClick={() => handlePinChange(2)}>
+              <IonButton
+                className="board-button"
+                onClick={() => handlePinChange(2)}
+              >
                 <div className="number-button">
                   2
                   <div className="number-labels">
@@ -131,7 +147,10 @@ const SetPasscode = () => {
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton className="board-button" onClick={() => handlePinChange(3)}>
+              <IonButton
+                className="board-button"
+                onClick={() => handlePinChange(3)}
+              >
                 <div className="number-button">
                   3
                   <div className="number-labels">
@@ -145,7 +164,10 @@ const SetPasscode = () => {
           </IonRow>
           <IonRow className="numbers-row">
             <IonCol>
-              <IonButton className="board-button" onClick={() => handlePinChange(4)}>
+              <IonButton
+                className="board-button"
+                onClick={() => handlePinChange(4)}
+              >
                 <div className="number-button">
                   4
                   <div className="number-labels">
@@ -157,7 +179,10 @@ const SetPasscode = () => {
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton className="board-button" onClick={() => handlePinChange(5)}>
+              <IonButton
+                className="board-button"
+                onClick={() => handlePinChange(5)}
+              >
                 <div className="number-button">
                   5
                   <div className="number-labels">
@@ -169,7 +194,10 @@ const SetPasscode = () => {
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton className="board-button" onClick={() => handlePinChange(6)}>
+              <IonButton
+                className="board-button"
+                onClick={() => handlePinChange(6)}
+              >
                 <div className="number-button">
                   6
                   <div className="number-labels">
@@ -183,7 +211,10 @@ const SetPasscode = () => {
           </IonRow>
           <IonRow className="numbers-row">
             <IonCol>
-              <IonButton className="board-button" onClick={() => handlePinChange(7)}>
+              <IonButton
+                className="board-button"
+                onClick={() => handlePinChange(7)}
+              >
                 <div className="number-button">
                   7
                   <div className="number-labels">
@@ -196,7 +227,10 @@ const SetPasscode = () => {
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton className="board-button" onClick={() => handlePinChange(8)}>
+              <IonButton
+                className="board-button"
+                onClick={() => handlePinChange(8)}
+              >
                 <div className="number-button">
                   8
                   <div className="number-labels">
@@ -208,7 +242,10 @@ const SetPasscode = () => {
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton className="board-button" onClick={() => handlePinChange(9)}>
+              <IonButton
+                className="board-button"
+                onClick={() => handlePinChange(9)}
+              >
                 <div className="number-button">
                   9
                   <div className="number-labels">
@@ -222,22 +259,25 @@ const SetPasscode = () => {
             </IonCol>
           </IonRow>
           <IonRow className="numbers-row">
-            <IonCol/>
+            <IonCol />
             <IonCol>
-              <IonButton className="board-button" onClick={() => handlePinChange(0)}>
+              <IonButton
+                className="board-button"
+                onClick={() => handlePinChange(0)}
+              >
                 <div className="number-button">0</div>
               </IonButton>
             </IonCol>
             <IonCol>
               <IonButton
-                  className="backspace-button"
-                  data-testid="backspace-button"
-                  onClick={() => handleRemove()}
+                className="backspace-button"
+                data-testid="backspace-button"
+                onClick={() => handleRemove()}
               >
                 <IonIcon
-                    slot="icon-only"
-                    className="backspace-icon"
-                    icon={backspaceSharp}
+                  slot="icon-only"
+                  className="backspace-icon"
+                  icon={backspaceSharp}
                 />
               </IonButton>
             </IonCol>
@@ -267,6 +307,7 @@ const SetPasscode = () => {
 };
 
 export {
+  ErrorMessage,
   SetPasscode,
   ENTER_PASSCODE_LABEL,
   REENTER_PASSCODE_LABEL,

@@ -2,11 +2,12 @@ import React from "react";
 import { MemoryRouter, Route } from "react-router-dom";
 
 import { fireEvent, render, act } from "@testing-library/react";
-import ErrorMessage, {
+import {
   ENTER_PASSCODE_DESCRIPTION,
   ENTER_PASSCODE_ERROR,
   ENTER_PASSCODE_LABEL,
   REENTER_PASSCODE_LABEL,
+  ErrorMessage,
   SetPasscode,
 } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../../components/GenerateSeedPhrase";
