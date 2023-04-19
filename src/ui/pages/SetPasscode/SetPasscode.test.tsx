@@ -135,6 +135,58 @@ describe("SetPasscode input", () => {
   });
 });
 
+  test("displays error message if passcode doesn't match, backspace and re-enter correct passcode redirects to next page", () => {
+    const { getByTestId, getByText, queryByText } = render(
+      <MemoryRouter initialEntries={["/setpasscode"]}>
+        <Route
+          exact
+          path="/setpasscode"
+          component={SetPasscode}
+        />
+        <Route
+          path="/generateseedphrase"
+          component={GenerateSeedPhrase}
+        />
+      </MemoryRouter>
+    );
+
+    const buttonElement = getByText(/1/);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+
+    const continueButton = getByTestId("continue-button");
+    fireEvent.click(continueButton);
+
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+
+    const button2Element = getByText(/2/);
+    fireEvent.click(button2Element);
+
+    const errorMessage = getByText(ENTER_PASSCODE_ERROR);
+    expect(errorMessage).toBeInTheDocument();
+
+    const backspaceButton = getByTestId("backspace-button");
+    fireEvent.click(backspaceButton);
+    fireEvent.click(buttonElement);
+
+    expect(queryByText(ENTER_PASSCODE_DESCRIPTION)).not.toBeInTheDocument();
+
+    const title = getByText(/Generate Seed Phrase/i);
+    const overlay = getByTestId("seed-phrase-overlay");
+
+    expect(title).toBeInTheDocument();
+    expect(overlay).toBeInTheDocument();
+
+});
+
 describe("ErrorMessage Component", () => {
   test("renders error message", () => {
     const { getByText } = render(<ErrorMessage message="Test error message" />);
