@@ -9,6 +9,7 @@ import {
   REENTER_PASSCODE_LABEL,
   ErrorMessage,
   SetPasscode,
+  START_OVER_LABEL,
 } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../../components/GenerateSeedPhrase";
 
@@ -35,7 +36,7 @@ describe("SetPasscode input", () => {
     expect(circleElement.classList).toContain("circle-fill");
   });
 
-  test("renders re-enter passcode label when passcode is set", () => {
+  test("renders re-enter passcode label and start over button when passcode is set", () => {
     const { getByText } = render(<SetPasscode />);
     const buttonElement = getByText(/1/);
     fireEvent.click(buttonElement);
@@ -48,6 +49,30 @@ describe("SetPasscode input", () => {
     fireEvent.click(buttonContinue);
     const labelElement = getByText(REENTER_PASSCODE_LABEL);
     expect(labelElement).toBeInTheDocument();
+    const startOverElement = getByText(START_OVER_LABEL);
+    expect(startOverElement).toBeInTheDocument();
+  });
+
+  test("renders enter passcode restarting the process when start over button is clicked", () => {
+    const { getByText } = render(<SetPasscode />);
+    const buttonElement = getByText(/1/);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+
+    const buttonContinue = getByText(/Continue/);
+    fireEvent.click(buttonContinue);
+    const labelElement = getByText(REENTER_PASSCODE_LABEL);
+    expect(labelElement).toBeInTheDocument();
+
+    const startOverElement = getByText(START_OVER_LABEL);
+    fireEvent.click(startOverElement);
+
+    const passcodeLabel = getByText(ENTER_PASSCODE_LABEL);
+    expect(passcodeLabel).toBeInTheDocument();
   });
 
   test("clicking on the backspace button removes a digit from the passcode", () => {
@@ -135,56 +160,55 @@ describe("SetPasscode input", () => {
   });
 });
 
-  test("displays error message if passcode doesn't match, backspace and re-enter correct passcode redirects to next page", () => {
-    const { getByTestId, getByText, queryByText } = render(
-      <MemoryRouter initialEntries={["/setpasscode"]}>
-        <Route
-          exact
-          path="/setpasscode"
-          component={SetPasscode}
-        />
-        <Route
-          path="/generateseedphrase"
-          component={GenerateSeedPhrase}
-        />
-      </MemoryRouter>
-    );
+test("displays error message if passcode doesn't match, backspace and re-enter correct passcode redirects to next page", () => {
+  const { getByTestId, getByText, queryByText } = render(
+    <MemoryRouter initialEntries={["/setpasscode"]}>
+      <Route
+        exact
+        path="/setpasscode"
+        component={SetPasscode}
+      />
+      <Route
+        path="/generateseedphrase"
+        component={GenerateSeedPhrase}
+      />
+    </MemoryRouter>
+  );
 
-    const buttonElement = getByText(/1/);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
+  const buttonElement = getByText(/1/);
+  fireEvent.click(buttonElement);
+  fireEvent.click(buttonElement);
+  fireEvent.click(buttonElement);
+  fireEvent.click(buttonElement);
+  fireEvent.click(buttonElement);
+  fireEvent.click(buttonElement);
 
-    const continueButton = getByTestId("continue-button");
-    fireEvent.click(continueButton);
+  const continueButton = getByTestId("continue-button");
+  fireEvent.click(continueButton);
 
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
+  fireEvent.click(buttonElement);
+  fireEvent.click(buttonElement);
+  fireEvent.click(buttonElement);
+  fireEvent.click(buttonElement);
+  fireEvent.click(buttonElement);
 
-    const button2Element = getByText(/2/);
-    fireEvent.click(button2Element);
+  const button2Element = getByText(/2/);
+  fireEvent.click(button2Element);
 
-    const errorMessage = getByText(ENTER_PASSCODE_ERROR);
-    expect(errorMessage).toBeInTheDocument();
+  const errorMessage = getByText(ENTER_PASSCODE_ERROR);
+  expect(errorMessage).toBeInTheDocument();
 
-    const backspaceButton = getByTestId("backspace-button");
-    fireEvent.click(backspaceButton);
-    fireEvent.click(buttonElement);
+  const backspaceButton = getByTestId("backspace-button");
+  fireEvent.click(backspaceButton);
+  fireEvent.click(buttonElement);
 
-    expect(queryByText(ENTER_PASSCODE_DESCRIPTION)).not.toBeInTheDocument();
+  expect(queryByText(ENTER_PASSCODE_DESCRIPTION)).not.toBeInTheDocument();
 
-    const title = getByText(/Generate Seed Phrase/i);
-    const overlay = getByTestId("seed-phrase-overlay");
+  const title = getByText(/Generate Seed Phrase/i);
+  const overlay = getByTestId("seed-phrase-overlay");
 
-    expect(title).toBeInTheDocument();
-    expect(overlay).toBeInTheDocument();
-
+  expect(title).toBeInTheDocument();
+  expect(overlay).toBeInTheDocument();
 });
 
 describe("ErrorMessage Component", () => {
