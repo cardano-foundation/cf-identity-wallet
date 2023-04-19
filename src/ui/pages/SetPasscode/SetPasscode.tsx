@@ -275,17 +275,19 @@ const SetPasscode = () => {
               </IonButton>
             </IonCol>
             <IonCol>
-              <IonButton
-                className="backspace-button"
-                data-testid="setpasscode-backspace-button"
-                onClick={() => handleRemove()}
-              >
-                <IonIcon
-                  slot="icon-only"
-                  className="backspace-icon"
-                  icon={backspaceSharp}
-                />
-              </IonButton>
+              {passcode.length ? (
+                <IonButton
+                  className="backspace-button"
+                  data-testid="setpasscode-backspace-button"
+                  onClick={() => handleRemove()}
+                >
+                  <IonIcon
+                    slot="icon-only"
+                    className="backspace-icon"
+                    icon={backspaceSharp}
+                  />
+                </IonButton>
+              ) : null}
             </IonCol>
           </IonRow>
         </IonGrid>
