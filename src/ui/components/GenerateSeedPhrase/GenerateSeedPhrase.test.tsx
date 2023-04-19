@@ -19,7 +19,7 @@ describe("Generate Seed Phrase screen", () => {
     const title = screen.getByText(/Generate Seed Phrase/i);
     const overlay = screen.getByTestId("seed-phrase-overlay");
 
-    expect(title).toBeInTheDocument();
+    expect(title).not.toBeInTheDocument();
     expect(overlay).toBeInTheDocument();
   });
 
