@@ -10,7 +10,7 @@ import {
   SetPasscode,
   START_OVER_LABEL,
 } from "./SetPasscode";
-import { GenerateSeedPhrase } from "../../components/GenerateSeedPhrase";
+import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 
 describe("SetPasscode Page", () => {
   test("renders create passcode label when passcode is not set", () => {

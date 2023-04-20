@@ -1,7 +1,7 @@
 import { IonButton } from "@ionic/react";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
-import { PageLayout } from "../../components/common/PageLayout";
+import { PageLayout } from "../../components/layout/PageLayout";
 
 const ITEMS = [
   {

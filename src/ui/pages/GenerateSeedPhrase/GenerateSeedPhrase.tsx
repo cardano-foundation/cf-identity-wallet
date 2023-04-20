@@ -23,7 +23,7 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
-import { PageLayout } from "../common/PageLayout";
+import { PageLayout } from "../../components/layout/PageLayout";
 
 const GenerateSeedPhrase = () => {
   const pageName = "Generate Seed Phrase";
