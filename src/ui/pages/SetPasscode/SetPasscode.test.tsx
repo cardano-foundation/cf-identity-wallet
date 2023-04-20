@@ -1,26 +1,23 @@
 import { MemoryRouter, Route } from "react-router-dom";
-
 import { fireEvent, render } from "@testing-library/react";
-import {
-  ENTER_PASSCODE_DESCRIPTION,
-  ENTER_PASSCODE_ERROR,
-  ENTER_PASSCODE_LABEL,
-  REENTER_PASSCODE_LABEL,
-  SetPasscode,
-  START_OVER_LABEL,
-} from "./SetPasscode";
+import { SetPasscode } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
+import EN_TRANSLATIONS from "../../../i18n/en.json";
 
 describe("SetPasscode Page", () => {
   test("renders create passcode label when passcode is not set", () => {
     const { getByText } = render(<SetPasscode />);
-    const labelElement = getByText(ENTER_PASSCODE_LABEL);
+    const labelElement = getByText(
+      EN_TRANSLATIONS["setpasscode.enterpasscode.label"]
+    );
     expect(labelElement).toBeInTheDocument();
   });
 
   test("renders create passcode description", () => {
     const { getByText } = render(<SetPasscode />);
-    const descriptionElement = getByText(ENTER_PASSCODE_DESCRIPTION);
+    const descriptionElement = getByText(
+      EN_TRANSLATIONS["setpasscode.enterpasscode.description"]
+    );
     expect(descriptionElement).toBeInTheDocument();
   });
 });
@@ -45,9 +42,13 @@ describe("SetPasscode input", () => {
     fireEvent.click(buttonElement);
     const buttonContinue = getByText(/Continue/);
     fireEvent.click(buttonContinue);
-    const labelElement = getByText(REENTER_PASSCODE_LABEL);
+    const labelElement = getByText(
+      EN_TRANSLATIONS["setpasscode.reenterpasscode.label"]
+    );
     expect(labelElement).toBeInTheDocument();
-    const startOverElement = getByText(START_OVER_LABEL);
+    const startOverElement = getByText(
+      EN_TRANSLATIONS["setpasscode.startover.label"]
+    );
     expect(startOverElement).toBeInTheDocument();
   });
 
@@ -63,13 +64,19 @@ describe("SetPasscode input", () => {
 
     const buttonContinue = getByText(/Continue/);
     fireEvent.click(buttonContinue);
-    const labelElement = getByText(REENTER_PASSCODE_LABEL);
+    const labelElement = getByText(
+      EN_TRANSLATIONS["setpasscode.reenterpasscode.label"]
+    );
     expect(labelElement).toBeInTheDocument();
 
-    const startOverElement = getByText(START_OVER_LABEL);
+    const startOverElement = getByText(
+      EN_TRANSLATIONS["setpasscode.startover.label"]
+    );
     fireEvent.click(startOverElement);
 
-    const passcodeLabel = getByText(ENTER_PASSCODE_LABEL);
+    const passcodeLabel = getByText(
+      EN_TRANSLATIONS["setpasscode.enterpasscode.label"]
+    );
     expect(passcodeLabel).toBeInTheDocument();
   });
 
@@ -111,7 +118,9 @@ describe("SetPasscode input", () => {
     fireEvent.click(reenter6ButtonElement);
     const reenter7ButtonElement = getByText(/7/);
     fireEvent.click(reenter7ButtonElement);
-    const errorMessage = getByText(ENTER_PASSCODE_ERROR);
+    const errorMessage = getByText(
+      EN_TRANSLATIONS["setpasscode.enterpasscode.error"]
+    );
     expect(errorMessage).toBeInTheDocument();
   });
 
@@ -148,7 +157,9 @@ describe("SetPasscode input", () => {
     fireEvent.click(buttonElement);
     fireEvent.click(buttonElement);
 
-    expect(queryByText(ENTER_PASSCODE_DESCRIPTION)).not.toBeInTheDocument();
+    expect(
+      queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.description"])
+    ).not.toBeInTheDocument();
 
     const title = getByText(/Generate Seed Phrase/i);
     const overlay = getByTestId("seed-phrase-overlay");
@@ -193,14 +204,18 @@ test("displays error message if passcode doesn't match, backspace and re-enter c
   const button2Element = getByText(/2/);
   fireEvent.click(button2Element);
 
-  const errorMessage = getByText(ENTER_PASSCODE_ERROR);
+  const errorMessage = getByText(
+    EN_TRANSLATIONS["setpasscode.enterpasscode.error"]
+  );
   expect(errorMessage).toBeInTheDocument();
 
   const backspaceButton = getByTestId("setpasscode-backspace-button");
   fireEvent.click(backspaceButton);
   fireEvent.click(buttonElement);
 
-  expect(queryByText(ENTER_PASSCODE_DESCRIPTION)).not.toBeInTheDocument();
+  expect(
+    queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.description"])
+  ).not.toBeInTheDocument();
 
   const title = getByText(/Generate Seed Phrase/i);
   const overlay = getByTestId("seed-phrase-overlay");

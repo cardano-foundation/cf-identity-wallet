@@ -2,22 +2,22 @@ import { useState } from "react";
 import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { backspaceSharp } from "ionicons/icons";
+import { i18n } from "../../../i18n";
 import "./SetPasscode.scss";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
 
-const ENTER_PASSCODE_LABEL = "Create a passcode";
-const REENTER_PASSCODE_LABEL = "Re-enter your passcode";
-const START_OVER_LABEL = "I cant remember, can I start over?";
-const ENTER_PASSCODE_DESCRIPTION =
-  "Create a passcode to secure your wallet and to continue setting up your seed phrase";
-const ENTER_PASSCODE_ERROR = "Passcode didnt match";
-
 const SetPasscode = () => {
   const history = useHistory();
-
   const [passcode, setPasscode] = useState("");
   const [originalPassCode, setOriginalPassCode] = useState("");
+  const enterpasscodeLabel = i18n.t("setpasscode.enterpasscode.label");
+  const reenterpasscodeLabel = i18n.t("setpasscode.reenterpasscode.label");
+  const startoverLabel = i18n.t("setpasscode.startover.label");
+  const enterpasscodeDescription = i18n.t(
+    "setpasscode.enterpasscode.description"
+  );
+  const enterpasscodeError = i18n.t("setpasscode.enterpasscode.error");
 
   const handlePinChange = (digit: number) => {
     const length = passcode.length;
@@ -63,14 +63,12 @@ const SetPasscode = () => {
           <IonRow>
             <IonCol className="title">
               {originalPassCode !== ""
-                ? REENTER_PASSCODE_LABEL
-                : ENTER_PASSCODE_LABEL}
+                ? reenterpasscodeLabel
+                : enterpasscodeLabel}
             </IonCol>
           </IonRow>
           <IonRow>
-            <IonCol className="description">
-              {ENTER_PASSCODE_DESCRIPTION}
-            </IonCol>
+            <IonCol className="description">{enterpasscodeDescription}</IonCol>
           </IonRow>
           <IonRow className="circle-row">
             {Array.from({ length: 6 }, (_, index) => {
@@ -89,7 +87,7 @@ const SetPasscode = () => {
             <IonCol className="pin-error">
               {originalPassCode !== "" ? (
                 passcode.length === 6 && originalPassCode !== passcode ? (
-                  <ErrorMessage message={ENTER_PASSCODE_ERROR} />
+                  <ErrorMessage message={enterpasscodeError} />
                 ) : null
               ) : null}
             </IonCol>
@@ -279,7 +277,7 @@ const SetPasscode = () => {
                   fill="outline"
                   className="continue-button"
                 >
-                  {START_OVER_LABEL}
+                  {startoverLabel}
                 </IonButton>
               )}
             </IonCol>
@@ -290,11 +288,4 @@ const SetPasscode = () => {
   );
 };
 
-export {
-  SetPasscode,
-  ENTER_PASSCODE_LABEL,
-  REENTER_PASSCODE_LABEL,
-  START_OVER_LABEL,
-  ENTER_PASSCODE_DESCRIPTION,
-  ENTER_PASSCODE_ERROR,
-};
+export { SetPasscode };

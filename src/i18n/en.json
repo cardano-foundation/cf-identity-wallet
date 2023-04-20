@@ -23,5 +23,10 @@
     }
   ],
   "onboarding.getstarted.button.label": "Get Started",
-  "onboarding.alreadywallet.button.label": "I already have a wallet"
+  "onboarding.alreadywallet.button.label": "I already have a wallet",
+  "setpasscode.enterpasscode.label": "Create a passcode",
+  "setpasscode.reenterpasscode.label": "Re-enter your passcode",
+  "setpasscode.startover.label": "I cant remember, can I start over?",
+  "setpasscode.enterpasscode.description": "Create a passcode to secure your wallet and to continue setting up your seed phrase",
+  "setpasscode.enterpasscode.error": "Passcode didn't match"
 }
