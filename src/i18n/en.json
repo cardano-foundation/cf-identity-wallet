@@ -1,3 +1,25 @@
 {
-  "test": "Cardano Foundation is the best"
+  "test": "Cardano Foundation is the best",
+  "onboarding.slides": [
+    {
+      "title": "Welcome to your Cardano Foundation Identity Wallet",
+      "description": "A secure and easy-to-use tool that allows you to manage your digital identity and control your personal data"
+    },
+    {
+      "title": "Securerly manage your digital identity",
+      "description": "Securely manage your digital identity and share your personal data with confidence"
+    },
+    {
+      "title": "Take control of your personal data",
+      "description": "Say goodbye to the days of handing over your personal data to third-party companies"
+    },
+    {
+      "title": "Verify your identity with ease",
+      "description": "Verify your identity for various online services, without sharing unnecessary personal information"
+    },
+    {
+      "title": "Experience the power of decentralized identity",
+      "description": "As a decentralized identity platform, you take control of your digital identity and your personal data"
+    }
+  ]
 }

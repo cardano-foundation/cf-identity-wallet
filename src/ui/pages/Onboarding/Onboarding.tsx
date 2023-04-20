@@ -1,45 +1,46 @@
 import { IonButton } from "@ionic/react";
+import { i18n } from "../../../i18n";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
+import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
-
-const ITEMS = [
-  {
-    title: "Welcome to your Cardano Foundation Identity Wallet",
-    description:
-      "A secure and easy-to-use tool that allows you to manage your digital identity and control your personal data",
-    image: "https://placehold.co/290x290",
-  },
-  {
-    title: "Securerly manage your digital identity",
-    description:
-      "Securely manage your digital identity and share your personal data with confidence",
-    image: "https://placehold.co/290x290",
-  },
-  {
-    title: "Take control of your personal data",
-    description:
-      "Say goodbye to the days of handing over your personal data to third-party companies",
-    image: "https://placehold.co/290x290",
-  },
-  {
-    title: "Verify your identity with ease",
-    description:
-      "Verify your identity for various online services, without sharing unnecessary personal information",
-    image: "https://placehold.co/290x290",
-  },
-  {
-    title: "Experience the power of decentralized identity",
-    description:
-      "As a decentralized identity platform, you take control of your digital identity and your personal data",
-    image: "https://placehold.co/290x290",
-  },
-];
 
 const BUTTON_LABEL = "Get Started";
 const ALREADY_WALLET_LABEL = "I already have a wallet";
 
 const Onboarding = () => {
+  const slides = i18n.t("onboarding.slides", {
+    returnObjects: true,
+  }) as SlideItem[];
+
+  const ITEMS = [
+    {
+      title: slides[0].title,
+      description: slides[0].description,
+      image: "https://placehold.co/290x290",
+    },
+    {
+      title: slides[1].title,
+      description: slides[1].description,
+      image: "https://placehold.co/290x290",
+    },
+    {
+      title: slides[2].title,
+      description: slides[2].description,
+      image: "https://placehold.co/290x290",
+    },
+    {
+      title: slides[3].title,
+      description: slides[3].description,
+      image: "https://placehold.co/290x290",
+    },
+    {
+      title: slides[4].title,
+      description: slides[4].description,
+      image: "https://placehold.co/290x290",
+    },
+  ];
+
   return (
     <PageLayout
       backButton={false}
@@ -61,4 +62,4 @@ const Onboarding = () => {
   );
 };
 
-export { Onboarding, BUTTON_LABEL, ALREADY_WALLET_LABEL, ITEMS };
+export { Onboarding, BUTTON_LABEL, ALREADY_WALLET_LABEL };
