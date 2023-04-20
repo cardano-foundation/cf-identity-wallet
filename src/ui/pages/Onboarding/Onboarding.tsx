@@ -5,41 +5,19 @@ import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
 
-const BUTTON_LABEL = "Get Started";
-const ALREADY_WALLET_LABEL = "I already have a wallet";
-
 const Onboarding = () => {
-  const slides = i18n.t("onboarding.slides", {
-    returnObjects: true,
-  }) as SlideItem[];
-
-  const ITEMS = [
-    {
-      title: slides[0].title,
-      description: slides[0].description,
+  const items: SlideItem[] = [];
+  for (let i = 0; i < 5; i++) {
+    items.push({
+      title: i18n.t(`onboarding.slides.${i}.title`),
+      description: i18n.t(`onboarding.slides.${i}.description`),
       image: "https://placehold.co/290x290",
-    },
-    {
-      title: slides[1].title,
-      description: slides[1].description,
-      image: "https://placehold.co/290x290",
-    },
-    {
-      title: slides[2].title,
-      description: slides[2].description,
-      image: "https://placehold.co/290x290",
-    },
-    {
-      title: slides[3].title,
-      description: slides[3].description,
-      image: "https://placehold.co/290x290",
-    },
-    {
-      title: slides[4].title,
-      description: slides[4].description,
-      image: "https://placehold.co/290x290",
-    },
-  ];
+    });
+  }
+  const getStartedButtonLabel = i18n.t("onboarding.getstarted.button.label");
+  const alreadyWalletButtonLabel = i18n.t(
+    "onboarding.alreadywallet.button.label"
+  );
 
   return (
     <PageLayout
@@ -50,16 +28,16 @@ const Onboarding = () => {
       progressBarValue={0}
       progressBarBuffer={1}
     >
-      <Slides items={ITEMS} />
+      <Slides items={items} />
       <IonButton
         routerLink="/setpasscode"
         className="ion-primary-button next-button"
       >
-        {BUTTON_LABEL}
+        {getStartedButtonLabel}
       </IonButton>
-      <div className="already-wallet">{ALREADY_WALLET_LABEL}</div>
+      <div className="already-wallet">{alreadyWalletButtonLabel}</div>
     </PageLayout>
   );
 };
 
-export { Onboarding, BUTTON_LABEL, ALREADY_WALLET_LABEL };
+export { Onboarding };

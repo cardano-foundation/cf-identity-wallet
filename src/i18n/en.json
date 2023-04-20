@@ -21,5 +21,7 @@
       "title": "Experience the power of decentralized identity",
       "description": "As a decentralized identity platform, you take control of your digital identity and your personal data"
     }
-  ]
+  ],
+  "onboarding.getstarted.button.label": "Get Started",
+  "onboarding.alreadywallet.button.label": "I already have a wallet"
 }
