@@ -5,7 +5,7 @@ const lngs: { [key: string]: any } = {
   de: { nativeName: "Deutsch" },
 };
 
-const LanguageSwitch = () => {
+const LanguageSwitcher = () => {
   const { t, i18n } = useTranslation();
   return (
     <div>
@@ -24,4 +24,4 @@ const LanguageSwitch = () => {
   );
 };
 
-export { LanguageSwitch };
+export { LanguageSwitcher };
