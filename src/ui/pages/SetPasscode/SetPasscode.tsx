@@ -1,14 +1,7 @@
-import { useEffect, useState } from "react";
-import {
-  IonButton,
-  IonCol,
-  IonGrid,
-  IonIcon,
-  IonLabel,
-  IonRow,
-} from "@ionic/react";
+import { useState } from "react";
+import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { backspaceSharp, closeOutline } from "ionicons/icons";
+import { backspaceSharp } from "ionicons/icons";
 import "./SetPasscode.scss";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";

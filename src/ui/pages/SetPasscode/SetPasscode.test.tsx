@@ -1,7 +1,6 @@
-import React from "react";
 import { MemoryRouter, Route } from "react-router-dom";
 
-import { fireEvent, render, act } from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import {
   ENTER_PASSCODE_DESCRIPTION,
   ENTER_PASSCODE_ERROR,
