@@ -171,17 +171,17 @@ const GenerateSeedPhrase = () => {
       >
         <IonAlert
           isOpen={isOpen}
-          header={String(i18n.t("generateseedphrase.alert.text"))}
+          header={i18n.t("generateseedphrase.alert.text") || undefined}
           buttons={[
             {
-              text: String(i18n.t("generateseedphrase.alert.button.confirm")),
+              text: i18n.t("generateseedphrase.alert.button.confirm"),
               role: "confirm",
               handler: () => {
                 setIsOpen(false);
               },
             },
             {
-              text: String(i18n.t("generateseedphrase.alert.button.cancel")),
+              text: i18n.t("generateseedphrase.alert.button.cancel"),
               role: "cancel",
               handler: () => {
                 setIsOpen(false);
