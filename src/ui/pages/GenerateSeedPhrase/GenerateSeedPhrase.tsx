@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { i18n } from "../../../i18n";
 import {
   IonAlert,
   IonButton,
@@ -18,6 +17,7 @@ import {
 import "./GenerateSeedPhrase.scss";
 import { eyeOffOutline } from "ionicons/icons";
 import { generateMnemonic } from "bip39";
+import { i18n } from "../../../i18n";
 import {
   MNEMONIC_FIFTEEN_WORDS,
   MNEMONIC_TWENTYFOUR_WORDS,
