@@ -166,7 +166,7 @@ describe("SetPasscode input", () => {
     ).not.toBeInTheDocument();
 
     const title = getByText(EN_TRANSLATIONS["generateseedphrase.title"]);
-    const overlay = getByTestId("seed-phrase-overlay");
+    const overlay = getByTestId("seed-phrase-privacy-overlay");
 
     expect(title).toBeInTheDocument();
     expect(overlay).toBeInTheDocument();
