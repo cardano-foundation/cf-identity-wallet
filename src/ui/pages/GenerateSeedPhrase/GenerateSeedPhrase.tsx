@@ -82,14 +82,16 @@ const GenerateSeedPhrase = () => {
             >
               <IonSegmentButton value={String(FIFTEEN_WORDS_BIT_LENGTH)}>
                 <IonLabel>
-                  {MNEMONIC_FIFTEEN_WORDS}{" "}
-                  {i18n.t("generateseedphrase.segment")}
+                  {i18n.t("generateseedphrase.segment", {
+                    length: MNEMONIC_FIFTEEN_WORDS,
+                  })}
                 </IonLabel>
               </IonSegmentButton>
               <IonSegmentButton value={String(TWENTYFOUR_WORDS_BIT_LENGTH)}>
                 <IonLabel>
-                  {MNEMONIC_TWENTYFOUR_WORDS}{" "}
-                  {i18n.t("generateseedphrase.segment")}
+                  {i18n.t("generateseedphrase.segment", {
+                    length: MNEMONIC_TWENTYFOUR_WORDS,
+                  })}
                 </IonLabel>
               </IonSegmentButton>
             </IonSegment>
