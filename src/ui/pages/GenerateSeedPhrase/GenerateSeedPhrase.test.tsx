@@ -11,13 +11,14 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
+import EN_TRANSLATIONS from "../../../i18n/en.json";
 
 describe("Generate Seed Phrase screen", () => {
   test("User can see Title and Security Overlay", () => {
     render(<GenerateSeedPhrase />);
 
-    const title = screen.getByText(/Generate Seed Phrase/i);
-    const overlay = screen.getByTestId("seed-phrase-overlay");
+    const title = screen.getByText(EN_TRANSLATIONS["generateseedphrase.title"]);
+    const overlay = screen.getByTestId("seed-phrase-privacy-overlay");
 
     expect(title).toBeInTheDocument();
     expect(overlay).toBeInTheDocument();
@@ -26,7 +27,7 @@ describe("Generate Seed Phrase screen", () => {
   test("User can dismiss the Security Overlay", () => {
     render(<GenerateSeedPhrase />);
 
-    const overlay = screen.getByTestId("seed-phrase-overlay");
+    const overlay = screen.getByTestId("seed-phrase-privacy-overlay");
     const revealSeedPhraseButton = screen.getByTestId(
       "reveal-seed-phrase-button"
     );
@@ -118,7 +119,7 @@ describe("Generate Seed Phrase screen", () => {
     // ...the alert wrapper is visible...
     expect(alertWrapper).toHaveClass("alert-visible");
     const alertTitle = screen.getByText(
-      "Have you double-checked you've copied your 15 word phrase correctly?"
+      EN_TRANSLATIONS["generateseedphrase.alert.text"]
     );
     // ...and we see the title.
     expect(alertTitle).toBeVisible();
@@ -145,7 +146,11 @@ describe("Generate Seed Phrase screen", () => {
     await waitForIonicReact();
 
     // ...and we click on the first button...
-    fireEvent.click(screen.getByText("Yes, I've copied these correctly!"));
+    fireEvent.click(
+      screen.getByText(
+        EN_TRANSLATIONS["generateseedphrase.alert.button.confirm"]
+      )
+    );
     await waitForIonicReact();
 
     // ...the alert is no longer visible
@@ -173,7 +178,11 @@ describe("Generate Seed Phrase screen", () => {
     await waitForIonicReact();
 
     // ...and we click on the second button...
-    fireEvent.click(screen.getByText("I'll take another look"));
+    fireEvent.click(
+      screen.getByText(
+        EN_TRANSLATIONS["generateseedphrase.alert.button.cancel"]
+      )
+    );
     await waitForIonicReact();
 
     // ...the alert is no longer visible

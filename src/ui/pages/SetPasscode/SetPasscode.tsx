@@ -11,13 +11,6 @@ const SetPasscode = () => {
   const history = useHistory();
   const [passcode, setPasscode] = useState("");
   const [originalPassCode, setOriginalPassCode] = useState("");
-  const enterpasscodeLabel = i18n.t("setpasscode.enterpasscode.label");
-  const reenterpasscodeLabel = i18n.t("setpasscode.reenterpasscode.label");
-  const startoverLabel = i18n.t("setpasscode.startover.label");
-  const enterpasscodeDescription = i18n.t(
-    "setpasscode.enterpasscode.description"
-  );
-  const enterpasscodeError = i18n.t("setpasscode.enterpasscode.error");
 
   const handlePinChange = (digit: number) => {
     const length = passcode.length;
@@ -63,12 +56,14 @@ const SetPasscode = () => {
           <IonRow>
             <IonCol className="title">
               {originalPassCode !== ""
-                ? reenterpasscodeLabel
-                : enterpasscodeLabel}
+                ? i18n.t("setpasscode.reenterpasscode.label")
+                : i18n.t("setpasscode.enterpasscode.label")}
             </IonCol>
           </IonRow>
           <IonRow>
-            <IonCol className="description">{enterpasscodeDescription}</IonCol>
+            <IonCol className="description">
+              {i18n.t("setpasscode.enterpasscode.description")}
+            </IonCol>
           </IonRow>
           <IonRow className="circle-row">
             {Array.from({ length: 6 }, (_, index) => {
@@ -87,7 +82,9 @@ const SetPasscode = () => {
             <IonCol className="pin-error">
               {originalPassCode !== "" ? (
                 passcode.length === 6 && originalPassCode !== passcode ? (
-                  <ErrorMessage message={enterpasscodeError} />
+                  <ErrorMessage
+                    message={i18n.t("setpasscode.enterpasscode.error")}
+                  />
                 ) : null
               ) : null}
             </IonCol>
@@ -267,7 +264,7 @@ const SetPasscode = () => {
                   className="ion-primary-button continue-button"
                   data-testid="setpasscode-continue-button"
                 >
-                  Continue
+                  {i18n.t("setpasscode.continue.button")}
                 </IonButton>
               ) : (
                 <IonButton
@@ -277,7 +274,7 @@ const SetPasscode = () => {
                   fill="outline"
                   className="continue-button"
                 >
-                  {startoverLabel}
+                  {i18n.t("setpasscode.startover.label")}
                 </IonButton>
               )}
             </IonCol>

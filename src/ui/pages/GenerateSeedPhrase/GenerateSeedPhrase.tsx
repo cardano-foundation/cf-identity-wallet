@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { i18n } from "../../../i18n";
 import {
   IonAlert,
   IonButton,
@@ -26,7 +27,6 @@ import {
 import { PageLayout } from "../../components/layout/PageLayout";
 
 const GenerateSeedPhrase = () => {
-  const pageName = "Generate Seed Phrase";
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
@@ -60,12 +60,8 @@ const GenerateSeedPhrase = () => {
       <IonGrid>
         <IonRow>
           <IonCol size="12">
-            <h1>{pageName}</h1>
-            <p>
-              Think of your secret recovery phrase as a safety net for your
-              identity. If you ever lose your phone or switch to a new wallet,
-              this phrase will help you recover your identity.
-            </p>
+            <h1>{i18n.t("generateseedphrase.title")}</h1>
+            <p>{i18n.t("generateseedphrase.paragraph.top")}</p>
           </IonCol>
         </IonRow>
       </IonGrid>
@@ -85,10 +81,16 @@ const GenerateSeedPhrase = () => {
               }}
             >
               <IonSegmentButton value={String(FIFTEEN_WORDS_BIT_LENGTH)}>
-                <IonLabel>{MNEMONIC_FIFTEEN_WORDS} words</IonLabel>
+                <IonLabel>
+                  {MNEMONIC_FIFTEEN_WORDS}{" "}
+                  {i18n.t("generateseedphrase.segment")}
+                </IonLabel>
               </IonSegmentButton>
               <IonSegmentButton value={String(TWENTYFOUR_WORDS_BIT_LENGTH)}>
-                <IonLabel>{MNEMONIC_TWENTYFOUR_WORDS} words</IonLabel>
+                <IonLabel>
+                  {MNEMONIC_TWENTYFOUR_WORDS}{" "}
+                  {i18n.t("generateseedphrase.segment")}
+                </IonLabel>
               </IonSegmentButton>
             </IonSegment>
           </IonCol>
@@ -97,7 +99,7 @@ const GenerateSeedPhrase = () => {
           <IonCol size="12">
             <IonCard>
               <div
-                data-testid="seed-phrase-overlay"
+                data-testid="seed-phrase-privacy-overlay"
                 className={`overlay ${showSeedPhrase ? "hidden" : "visible"}`}
               >
                 <IonCardHeader>
@@ -107,10 +109,7 @@ const GenerateSeedPhrase = () => {
                   />
                 </IonCardHeader>
                 <IonCardContent>
-                  <p>
-                    Press the ‘view’ button when you’re ready to see your seed
-                    phrase. Remember to make sure nobody is looking!
-                  </p>
+                  <p>{i18n.t("generateseedphrase.privacy.overlay.text")}</p>
                 </IonCardContent>
                 <IonButton
                   shape="round"
@@ -120,7 +119,7 @@ const GenerateSeedPhrase = () => {
                     setShowSeedPhrase(true);
                   }}
                 >
-                  View seed phrase
+                  {i18n.t("generateseedphrase.privacy.overlay.button")}
                 </IonButton>
               </div>
               <div
@@ -144,11 +143,7 @@ const GenerateSeedPhrase = () => {
       <IonGrid>
         <IonRow>
           <IonCol size="12">
-            <p>
-              It's important to keep these words safe and sound! Store them in a
-              secure location, like a password manager, and remember to never
-              share them with anyone.
-            </p>
+            <p>{i18n.t("generateseedphrase.paragraph.bottom")}</p>
           </IonCol>
         </IonRow>
       </IonGrid>
@@ -163,7 +158,7 @@ const GenerateSeedPhrase = () => {
               disabled={!showSeedPhrase}
               onClick={() => setIsOpen(true)}
             >
-              Continue
+              {i18n.t("generateseedphrase.continue.button")}
             </IonButton>
           </IonCol>
         </IonRow>
@@ -174,17 +169,17 @@ const GenerateSeedPhrase = () => {
       >
         <IonAlert
           isOpen={isOpen}
-          header="Have you double-checked you've copied your 15 word phrase correctly?"
+          header={String(i18n.t("generateseedphrase.alert.text"))}
           buttons={[
             {
-              text: "Yes, I've copied these correctly!",
+              text: String(i18n.t("generateseedphrase.alert.button.confirm")),
               role: "confirm",
               handler: () => {
                 setIsOpen(false);
               },
             },
             {
-              text: "I'll take another look",
+              text: String(i18n.t("generateseedphrase.alert.button.cancel")),
               role: "cancel",
               handler: () => {
                 setIsOpen(false);

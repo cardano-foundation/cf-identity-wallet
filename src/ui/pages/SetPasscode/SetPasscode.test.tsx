@@ -40,7 +40,9 @@ describe("SetPasscode input", () => {
     fireEvent.click(buttonElement);
     fireEvent.click(buttonElement);
     fireEvent.click(buttonElement);
-    const buttonContinue = getByText(/Continue/);
+    const buttonContinue = getByText(
+      EN_TRANSLATIONS["setpasscode.continue.button"]
+    );
     fireEvent.click(buttonContinue);
     const labelElement = getByText(
       EN_TRANSLATIONS["setpasscode.reenterpasscode.label"]
@@ -62,7 +64,9 @@ describe("SetPasscode input", () => {
     fireEvent.click(buttonElement);
     fireEvent.click(buttonElement);
 
-    const buttonContinue = getByText(/Continue/);
+    const buttonContinue = getByText(
+      EN_TRANSLATIONS["setpasscode.continue.button"]
+    );
     fireEvent.click(buttonContinue);
     const labelElement = getByText(
       EN_TRANSLATIONS["setpasscode.reenterpasscode.label"]
@@ -161,7 +165,7 @@ describe("SetPasscode input", () => {
       queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.description"])
     ).not.toBeInTheDocument();
 
-    const title = getByText(/Generate Seed Phrase/i);
+    const title = getByText(EN_TRANSLATIONS["generateseedphrase.title"]);
     const overlay = getByTestId("seed-phrase-overlay");
 
     expect(title).toBeInTheDocument();
@@ -217,8 +221,8 @@ test("displays error message if passcode doesn't match, backspace and re-enter c
     queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.description"])
   ).not.toBeInTheDocument();
 
-  const title = getByText(/Generate Seed Phrase/i);
-  const overlay = getByTestId("seed-phrase-overlay");
+  const title = getByText(EN_TRANSLATIONS["generateseedphrase.title"]);
+  const overlay = getByTestId("seed-phrase-privacy-overlay");
 
   expect(title).toBeInTheDocument();
   expect(overlay).toBeInTheDocument();

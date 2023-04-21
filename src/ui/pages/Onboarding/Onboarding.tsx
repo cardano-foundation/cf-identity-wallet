@@ -14,10 +14,6 @@ const Onboarding = () => {
       image: "https://placehold.co/290x290",
     });
   }
-  const getStartedButtonLabel = i18n.t("onboarding.getstarted.button.label");
-  const alreadyWalletButtonLabel = i18n.t(
-    "onboarding.alreadywallet.button.label"
-  );
 
   return (
     <PageLayout
@@ -33,9 +29,11 @@ const Onboarding = () => {
         routerLink="/setpasscode"
         className="ion-primary-button next-button"
       >
-        {getStartedButtonLabel}
+        {i18n.t("onboarding.getstarted.button.label")}
       </IonButton>
-      <div className="already-wallet">{alreadyWalletButtonLabel}</div>
+      <div className="already-wallet">
+        {i18n.t("onboarding.alreadywallet.button.label")}
+      </div>
     </PageLayout>
   );
 };
