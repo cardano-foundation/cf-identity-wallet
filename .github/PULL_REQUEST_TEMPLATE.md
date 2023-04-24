@@ -10,7 +10,7 @@ Please include a summary of the changes and a brief description about this PR
 
 ### Testing & Validation
 
-- [ ] This PR has been tested/validated in ios, andriod and desktop.
+- [ ] This PR has been tested/validated in IOS, Android and browser.
 - [ ] The code has been tested locally with test coverage match expectations.
 - [ ] Added new Unit/Component testing (if relevant).
 
@@ -38,7 +38,7 @@ Please include a summary of the changes and a brief description about this PR
 
 [comment]: <> (Add screenshots)
 
-#### Andriod
+#### Android
 ##### _Before_
 
 [comment]: <> (Add screenshots)
@@ -47,7 +47,7 @@ Please include a summary of the changes and a brief description about this PR
 
 [comment]: <> (Add screenshots)
 
-#### Desktop
+#### Browser
 ##### _Before_
 
 [comment]: <> (Add screenshots)
