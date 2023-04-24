@@ -2,7 +2,7 @@ import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
 import { Route } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
-import { GenerateSeedPhrase } from "../ui/components/GenerateSeedPhrase";
+import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode/SetPasscode";
 
 const PASSCODE_ROUTE = "/setpasscode";
