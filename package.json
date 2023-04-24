@@ -18,8 +18,11 @@
     "@ionic/react-router": "^6.7.0",
     "bip39": "^3.0.4",
     "buffer": "^6.0.3",
+    "i18next": "^22.4.14",
+    "i18next-browser-languagedetector": "^7.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-i18next": "^12.2.0",
     "react-router-dom": "^5.3.4",
     "swiper": "^9.2.0",
     "web-vitals": "^2.1.4"
