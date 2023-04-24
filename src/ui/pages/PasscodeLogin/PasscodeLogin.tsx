@@ -4,7 +4,7 @@ import { useHistory } from "react-router-dom";
 import { randomBytes } from "crypto";
 import { Argon2, Argon2Mode } from "@sphereon/isomorphic-argon2";
 import { i18n } from "../../../i18n";
-import "./SetPasscode.scss";
+import "./PasscodeLogin.scss";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import {
@@ -22,7 +22,7 @@ const ARGON2ID_OPTIONS = {
   parallelism: 1,
 };
 
-const SetPasscode = () => {
+const PasscodeLogin = () => {
   const history = useHistory();
   const [passcode, setPasscode] = useState("");
   const [originalPassCode, setOriginalPassCode] = useState("");
@@ -130,4 +130,4 @@ const SetPasscode = () => {
   );
 };
 
-export { SetPasscode, ARGON2ID_OPTIONS };
+export { PasscodeLogin, ARGON2ID_OPTIONS };
