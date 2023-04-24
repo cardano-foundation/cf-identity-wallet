@@ -2,6 +2,7 @@ import { IonButton } from "@ionic/react";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 import { PageLayout } from "../../components/common/PageLayout";
+import { PASSCODE_ROUTE } from "../../../routes";
 
 const ITEMS = [
   {
@@ -51,7 +52,7 @@ const Onboarding = () => {
     >
       <Slides items={ITEMS} />
       <IonButton
-        routerLink="/setpasscode"
+        routerLink={PASSCODE_ROUTE}
         className="ion-primary-button next-button"
       >
         {BUTTON_LABEL}

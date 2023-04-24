@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
-import {
-  IonButton,
-  IonCol,
-  IonGrid,
-  IonIcon,
-  IonLabel,
-  IonRow,
-} from "@ionic/react";
+import { useState } from "react";
+import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { backspaceSharp, closeOutline } from "ionicons/icons";
+import { backspaceSharp } from "ionicons/icons";
+import { randomBytes } from "crypto";
+import { Argon2, Argon2Mode } from "@sphereon/isomorphic-argon2";
 import "./SetPasscode.scss";
 import { PageLayout } from "../../components/common/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
+import {
+  SecureStorage,
+  KeyStoreKeys,
+} from "../../../core/storage/secureStorage";
+import { GENERATE_SEED_PHRASE_ROUTE } from "../../../routes";
 
 const ENTER_PASSCODE_LABEL = "Create a passcode";
 const REENTER_PASSCODE_LABEL = "Re-enter your passcode";
@@ -19,6 +19,14 @@ const START_OVER_LABEL = "I cant remember, can I start over?";
 const ENTER_PASSCODE_DESCRIPTION =
   "Create a passcode to secure your wallet and to continue setting up your seed phrase";
 const ENTER_PASSCODE_ERROR = "Passcode didnt match";
+
+// Based on OWASP recommendations
+const ARGON2ID_OPTIONS = {
+  mode: Argon2Mode.Argon2id,
+  memory: 19456,
+  iterations: 2,
+  parallelism: 1,
+};
 
 const SetPasscode = () => {
   const history = useHistory();
@@ -31,7 +39,17 @@ const SetPasscode = () => {
     if (length < 6) {
       if (originalPassCode !== "" && length === 5) {
         if (originalPassCode === passcode + digit) {
-          history.push("/generateseedphrase");
+          Argon2.hash(originalPassCode, randomBytes(16), ARGON2ID_OPTIONS).then(
+            (hash) => {
+              SecureStorage.set(KeyStoreKeys.APP_PASSCODE, hash.encoded).then(
+                () => {
+                  handleClear();
+                  history.push(GENERATE_SEED_PHRASE_ROUTE);
+                  return;
+                }
+              );
+            }
+          );
         }
       }
       setPasscode(passcode + digit);
@@ -304,4 +322,5 @@ export {
   START_OVER_LABEL,
   ENTER_PASSCODE_DESCRIPTION,
   ENTER_PASSCODE_ERROR,
+  ARGON2ID_OPTIONS,
 };

@@ -1,7 +1,8 @@
-import React from "react";
 import { MemoryRouter, Route } from "react-router-dom";
 
-import { fireEvent, render, act } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
+import { Argon2 } from "@sphereon/isomorphic-argon2";
+import { Buffer } from "buffer";
 import {
   ENTER_PASSCODE_DESCRIPTION,
   ENTER_PASSCODE_ERROR,
@@ -9,8 +10,18 @@ import {
   REENTER_PASSCODE_LABEL,
   SetPasscode,
   START_OVER_LABEL,
+  ARGON2ID_OPTIONS,
 } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../../components/GenerateSeedPhrase";
+import { GENERATE_SEED_PHRASE_ROUTE, PASSCODE_ROUTE } from "../../../routes";
+import {
+  SecureStorage,
+  KeyStoreKeys,
+} from "../../../core/storage/secureStorage";
+
+const ARGON2ID_HASH = { encoded: "hashedPasscode", hex: "0xHashedPasscode" };
+const argon2Spy = jest.spyOn(Argon2, "hash").mockResolvedValue(ARGON2ID_HASH);
+const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 
 describe("SetPasscode Page", () => {
   test("renders create passcode label when passcode is not set", () => {
@@ -116,16 +127,16 @@ describe("SetPasscode input", () => {
     expect(errorMessage).toBeInTheDocument();
   });
 
-  test("sets passcode and redirects to next page when passcode is entered correctly", () => {
+  test("sets passcode and redirects to next page when passcode is entered correctly", async () => {
     const { getByTestId, getByText, queryByText } = render(
-      <MemoryRouter initialEntries={["/setpasscode"]}>
+      <MemoryRouter initialEntries={[PASSCODE_ROUTE]}>
         <Route
           exact
-          path="/setpasscode"
+          path={PASSCODE_ROUTE}
           component={SetPasscode}
         />
         <Route
-          path="/generateseedphrase"
+          path={GENERATE_SEED_PHRASE_ROUTE}
           component={GenerateSeedPhrase}
         />
       </MemoryRouter>
@@ -149,7 +160,18 @@ describe("SetPasscode input", () => {
     fireEvent.click(buttonElement);
     fireEvent.click(buttonElement);
 
-    expect(queryByText(ENTER_PASSCODE_DESCRIPTION)).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(queryByText(ENTER_PASSCODE_DESCRIPTION)).not.toBeInTheDocument()
+    );
+    expect(argon2Spy).toBeCalledWith(
+      "111111",
+      expect.any(Buffer),
+      ARGON2ID_OPTIONS
+    );
+    expect(setKeyStoreSpy).toBeCalledWith(
+      KeyStoreKeys.APP_PASSCODE,
+      ARGON2ID_HASH.encoded
+    );
 
     const title = getByText(/Generate Seed Phrase/i);
     const overlay = getByTestId("seed-phrase-overlay");
@@ -157,55 +179,66 @@ describe("SetPasscode input", () => {
     expect(title).toBeInTheDocument();
     expect(overlay).toBeInTheDocument();
   });
-});
 
-test("displays error message if passcode doesn't match, backspace and re-enter correct passcode redirects to next page", () => {
-  const { getByTestId, getByText, queryByText } = render(
-    <MemoryRouter initialEntries={["/setpasscode"]}>
-      <Route
-        exact
-        path="/setpasscode"
-        component={SetPasscode}
-      />
-      <Route
-        path="/generateseedphrase"
-        component={GenerateSeedPhrase}
-      />
-    </MemoryRouter>
-  );
+  test("displays error message if passcode doesn't match, backspace and re-enter correct passcode redirects to next page", async () => {
+    const { getByTestId, getByText, queryByText } = render(
+      <MemoryRouter initialEntries={[PASSCODE_ROUTE]}>
+        <Route
+          exact
+          path={PASSCODE_ROUTE}
+          component={SetPasscode}
+        />
+        <Route
+          path={GENERATE_SEED_PHRASE_ROUTE}
+          component={GenerateSeedPhrase}
+        />
+      </MemoryRouter>
+    );
 
-  const buttonElement = getByText(/1/);
-  fireEvent.click(buttonElement);
-  fireEvent.click(buttonElement);
-  fireEvent.click(buttonElement);
-  fireEvent.click(buttonElement);
-  fireEvent.click(buttonElement);
-  fireEvent.click(buttonElement);
+    const buttonElement = getByText(/1/);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
 
-  const continueButton = getByTestId("setpasscode-continue-button");
-  fireEvent.click(continueButton);
+    const continueButton = getByTestId("setpasscode-continue-button");
+    fireEvent.click(continueButton);
 
-  fireEvent.click(buttonElement);
-  fireEvent.click(buttonElement);
-  fireEvent.click(buttonElement);
-  fireEvent.click(buttonElement);
-  fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
+    fireEvent.click(buttonElement);
 
-  const button2Element = getByText(/2/);
-  fireEvent.click(button2Element);
+    const button2Element = getByText(/2/);
+    fireEvent.click(button2Element);
 
-  const errorMessage = getByText(ENTER_PASSCODE_ERROR);
-  expect(errorMessage).toBeInTheDocument();
+    const errorMessage = getByText(ENTER_PASSCODE_ERROR);
+    expect(errorMessage).toBeInTheDocument();
 
-  const backspaceButton = getByTestId("setpasscode-backspace-button");
-  fireEvent.click(backspaceButton);
-  fireEvent.click(buttonElement);
+    const backspaceButton = getByTestId("setpasscode-backspace-button");
+    fireEvent.click(backspaceButton);
+    fireEvent.click(buttonElement);
 
-  expect(queryByText(ENTER_PASSCODE_DESCRIPTION)).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(queryByText(ENTER_PASSCODE_DESCRIPTION)).not.toBeInTheDocument()
+    );
+    expect(argon2Spy).toBeCalledWith(
+      "111111",
+      expect.any(Buffer),
+      ARGON2ID_OPTIONS
+    );
+    expect(setKeyStoreSpy).toBeCalledWith(
+      KeyStoreKeys.APP_PASSCODE,
+      ARGON2ID_HASH.encoded
+    );
 
-  const title = getByText(/Generate Seed Phrase/i);
-  const overlay = getByTestId("seed-phrase-overlay");
+    const title = getByText(/Generate Seed Phrase/i);
+    const overlay = getByTestId("seed-phrase-overlay");
 
-  expect(title).toBeInTheDocument();
-  expect(overlay).toBeInTheDocument();
+    expect(title).toBeInTheDocument();
+    expect(overlay).toBeInTheDocument();
+  });
 });

@@ -37,11 +37,11 @@ p {
 }
 
 .ion-primary-button {
-    color: var(--ion-color-primary);
-    --background: var(--color-accent-gradient);
-    --background-activated: none;
+  color: var(--ion-color-primary);
+  --background: var(--color-accent-gradient);
+  --background-activated: none;
 
-    &.button-disabled {
-        --background: var(--color-medium-grey);
-    }
+  &.button-disabled {
+    --background: var(--color-medium-grey);
+  }
 }

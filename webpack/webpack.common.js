@@ -30,6 +30,8 @@ const config = {
     extensions: [".js", ".tsx", ".ts"],
     fallback: {
       buffer: require.resolve("buffer/"),
+      crypto: require.resolve("crypto-browserify"),
+      stream: require.resolve("stream-browserify")
     },
   },
   plugins: [

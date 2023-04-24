@@ -5,6 +5,9 @@ import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/components/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode/SetPasscode";
 
+const PASSCODE_ROUTE = "/setpasscode";
+const GENERATE_SEED_PHRASE_ROUTE = "/generateseedphrase";
+
 const Routes = () => {
   return (
     <IonReactRouter>
@@ -15,12 +18,12 @@ const Routes = () => {
           component={Onboarding}
         />
         <Route
-          path="/setpasscode"
+          path={PASSCODE_ROUTE}
           exact
           component={SetPasscode}
         />
         <Route
-          path="/generateseedphrase"
+          path={GENERATE_SEED_PHRASE_ROUTE}
           render={() => <GenerateSeedPhrase />}
         />
       </IonRouterOutlet>
@@ -28,4 +31,4 @@ const Routes = () => {
   );
 };
 
-export default Routes;
+export { Routes, PASSCODE_ROUTE, GENERATE_SEED_PHRASE_ROUTE };

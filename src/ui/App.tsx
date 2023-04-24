@@ -1,5 +1,5 @@
 import { setupIonicReact, IonApp } from "@ionic/react";
-import Routes from "../routes";
+import { Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./style.scss";
 
@@ -13,4 +13,4 @@ const App = () => {
   );
 };
 
-export default App;
+export { App };
