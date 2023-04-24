@@ -3,10 +3,8 @@ import { IonRouterOutlet } from "@ionic/react";
 import { Route } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
-import { SetPasscode } from "../ui/pages/SetPasscode";
-import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
+import { SetPasscode } from "../ui/pages/SetPasscode/SetPasscode";
 
-const PASSCODE_LOGIN = "/passcodelogin";
 const PASSCODE_ROUTE = "/setpasscode";
 const GENERATE_SEED_PHRASE_ROUTE = "/generateseedphrase";
 
@@ -23,11 +21,6 @@ const Routes = () => {
           path={PASSCODE_ROUTE}
           exact
           component={SetPasscode}
-        />
-        <Route
-          path={PASSCODE_LOGIN}
-          exact
-          component={PasscodeLogin}
         />
         <Route
           path={GENERATE_SEED_PHRASE_ROUTE}
