@@ -11,7 +11,7 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
-import EN_TRANSLATIONS from "../../../i18n/en.json";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 describe("Generate Seed Phrase screen", () => {
   test("User can see Title and Security Overlay", () => {

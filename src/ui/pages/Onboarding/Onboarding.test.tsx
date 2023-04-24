@@ -1,6 +1,6 @@
 import { render, screen } from "@testing-library/react";
 import { Onboarding } from "./index";
-import EN_TRANSLATIONS from "../../../i18n/en.json";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {

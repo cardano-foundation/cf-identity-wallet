@@ -2,7 +2,7 @@ import { MemoryRouter, Route } from "react-router-dom";
 import { fireEvent, render } from "@testing-library/react";
 import { SetPasscode } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
-import EN_TRANSLATIONS from "../../../i18n/en.json";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 describe("SetPasscode Page", () => {
   test("renders create passcode label when passcode is not set", () => {
