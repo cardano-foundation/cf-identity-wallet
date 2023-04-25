@@ -8,13 +8,13 @@ enum KeyStoreKeys {
 }
 
 class SecureStorage {
-  static readonly UNEXPECTED_NOT_FOUND =
+  static readonly KEY_NOT_FOUND =
     "Secure Storage does not contain an item with specified key";
 
   static async get(key: string): Promise<DataType | null> {
     const item = await CapacitorSecureStorage.get(key);
     if (item === null) {
-      throw new Error(`${SecureStorage.UNEXPECTED_NOT_FOUND} ${key}`);
+      throw new Error(`${SecureStorage.KEY_NOT_FOUND} ${key}`);
     }
     return item;
   }

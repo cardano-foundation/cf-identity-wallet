@@ -20,7 +20,7 @@ describe("Secure Storage Facade", () => {
   test("will throw if an item is missing from the secure storage or return the value if not", async () => {
     expect(await SecureStorage.get(EXISTING_KEY)).toEqual(EXISTING_VALUE);
     expect(SecureStorage.get(NON_EXISTING_KEY)).rejects.toThrow(
-      `${SecureStorage.UNEXPECTED_NOT_FOUND} ${NON_EXISTING_KEY}`
+      `${SecureStorage.KEY_NOT_FOUND} ${NON_EXISTING_KEY}`
     );
   });
 });
