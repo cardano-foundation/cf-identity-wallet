@@ -21,7 +21,7 @@ const ARGON2ID_OPTIONS = {
   parallelism: 1,
 };
 
-const SetPasscode = () => {
+const PasscodeLogin = () => {
   const history = useHistory();
   const [passcode, setPasscode] = useState("");
   const [originalPassCode, setOriginalPassCode] = useState("");
@@ -59,37 +59,28 @@ const SetPasscode = () => {
     setOriginalPassCode("");
   };
 
-  const handleContinue = () => {
-    if (passcode.length === 6) {
-      setOriginalPassCode(passcode);
-      setPasscode("");
-    }
+  const handleForgotten = () => {
+    return;
   };
 
   return (
     <>
       <PageLayout
-        backButton={true}
+        backButton={false}
         backButtonPath={"/"}
         contentClasses=""
-        progressBar={true}
+        progressBar={false}
         progressBarValue={0.3}
         progressBarBuffer={1}
       >
         <PasscodeModule
-          title={
-            originalPassCode !== ""
-              ? i18n.t("setpasscode.reenterpasscode.label")
-              : i18n.t("setpasscode.enterpasscode.label")
-          }
-          description={i18n.t("setpasscode.enterpasscode.description")}
+          title={i18n.t("passcodelogin.title")}
+          description={i18n.t("passcodelogin.description")}
           error={
             originalPassCode !== "" &&
             passcode.length === 6 &&
             originalPassCode !== passcode && (
-              <ErrorMessage
-                message={i18n.t("setpasscode.enterpasscode.error")}
-              />
+              <ErrorMessage message={i18n.t("passcodelogin.error")} />
             )
           }
           passcode={passcode}
@@ -99,28 +90,15 @@ const SetPasscode = () => {
         <IonGrid>
           <IonRow>
             <IonCol className="continue-col">
-              {!(originalPassCode !== "") ? (
-                <IonButton
-                  onClick={() => handleContinue()}
-                  disabled={passcode.length < 6}
-                  shape="round"
-                  expand="block"
-                  className="ion-primary-button"
-                  data-testid="setpasscode-continue-button"
-                >
-                  {i18n.t("setpasscode.continue.button")}
-                </IonButton>
-              ) : (
-                <IonButton
-                  onClick={() => handleClear()}
-                  shape="round"
-                  expand="block"
-                  fill="outline"
-                  className="secondary-button"
-                >
-                  {i18n.t("setpasscode.startover.label")}
-                </IonButton>
-              )}
+              <IonButton
+                onClick={handleForgotten}
+                shape="round"
+                expand="block"
+                fill="outline"
+                className="secondary-button"
+              >
+                {i18n.t("passcodelogin.forgotten.button")}
+              </IonButton>
             </IonCol>
           </IonRow>
         </IonGrid>
@@ -129,4 +107,4 @@ const SetPasscode = () => {
   );
 };
 
-export { SetPasscode, ARGON2ID_OPTIONS };
+export { PasscodeLogin, ARGON2ID_OPTIONS };

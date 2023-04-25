@@ -38,5 +38,14 @@
   "generateseedphrase.continue.button": "Continue",
   "generateseedphrase.alert.text": "Have you double-checked you've copied your 15 word phrase correctly?",
   "generateseedphrase.alert.button.confirm": "Yes, I've copied these correctly!",
-  "generateseedphrase.alert.button.cancel": "I'll take another look"
+  "generateseedphrase.alert.button.cancel": "I'll take another look",
+  "passcodelogin.title": "Welcome back",
+  "passcodelogin.description": "Please enter your passcode to login",
+  "passcodelogin.error": "Incorrect passcode",
+  "passcodelogin.forgotten.button": "I've forgotten my passcode",
+  "passcodelogin.alert.text.verify": "If you've forgotten your passcode, please verify your seed phrase to gain access to your wallet",
+  "passcodelogin.alert.text.restart": "You currently haven't generated a seed phrase, would you like to start your onboarding again?",
+  "passcodelogin.alert.button.verify": "Verify your seed phrase",
+  "passcodelogin.forgotten.button.restart": "Start again",
+  "passcodelogin.forgotten.button.cancel": "Cancel"
 }
