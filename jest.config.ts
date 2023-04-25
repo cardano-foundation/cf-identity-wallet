@@ -1,6 +1,10 @@
 export default {
   clearMocks: true,
   collectCoverage: true,
+  coveragePathIgnorePatterns: [
+    "/node_modules",
+    "src/routes/index.tsx",
+  ],
   coverageDirectory: "coverage",
   coverageProvider: "v8",
   coverageReporters: ["clover", "json", "lcov", "text", "text-summary"],

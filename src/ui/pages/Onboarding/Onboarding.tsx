@@ -4,6 +4,7 @@ import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
+import { PASSCODE_ROUTE } from "../../../routes";
 
 const Onboarding = () => {
   const items: SlideItem[] = [];
@@ -26,7 +27,7 @@ const Onboarding = () => {
     >
       <Slides items={items} />
       <IonButton
-        routerLink="/setpasscode"
+        routerLink={PASSCODE_ROUTE}
         className="ion-primary-button next-button"
       >
         {i18n.t("onboarding.getstarted.button.label")}

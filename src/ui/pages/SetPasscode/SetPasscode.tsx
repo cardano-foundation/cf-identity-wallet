@@ -2,10 +2,25 @@ import { useState } from "react";
 import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { backspaceSharp } from "ionicons/icons";
+import { randomBytes } from "crypto";
+import { Argon2, Argon2Mode } from "@sphereon/isomorphic-argon2";
 import { i18n } from "../../../i18n";
 import "./SetPasscode.scss";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
+import {
+  SecureStorage,
+  KeyStoreKeys,
+} from "../../../core/storage/secureStorage";
+import { GENERATE_SEED_PHRASE_ROUTE } from "../../../routes";
+
+// Based on OWASP recommendations
+const ARGON2ID_OPTIONS = {
+  mode: Argon2Mode.Argon2id,
+  memory: 19456,
+  iterations: 2,
+  parallelism: 1,
+};
 
 const SetPasscode = () => {
   const history = useHistory();
@@ -17,7 +32,17 @@ const SetPasscode = () => {
     if (length < 6) {
       if (originalPassCode !== "" && length === 5) {
         if (originalPassCode === passcode + digit) {
-          history.push("/generateseedphrase");
+          Argon2.hash(originalPassCode, randomBytes(16), ARGON2ID_OPTIONS).then(
+            (hash) => {
+              SecureStorage.set(KeyStoreKeys.APP_PASSCODE, hash.encoded).then(
+                () => {
+                  handleClear();
+                  history.push(GENERATE_SEED_PHRASE_ROUTE);
+                  return;
+                }
+              );
+            }
+          );
         }
       }
       setPasscode(passcode + digit);
@@ -285,4 +310,7 @@ const SetPasscode = () => {
   );
 };
 
-export { SetPasscode };
+export {
+  SetPasscode,
+  ARGON2ID_OPTIONS,
+};

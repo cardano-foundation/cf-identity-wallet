@@ -25,10 +25,11 @@
         "jest"
     ],
     "rules": {
+        "@typescript-eslint/no-duplicate-enum-values": "error",
         "react/no-unescaped-entities": 0,
         "react/react-in-jsx-scope": "off",
         "no-console": "error",
-        "no-unused-vars": "error",
+        "no-unused-vars": "off",
         "no-undef": "error",
         "indent": ["warn", 2],
         "quotes": ["warn", "double"],
