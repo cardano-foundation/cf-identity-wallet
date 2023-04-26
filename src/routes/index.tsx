@@ -1,6 +1,8 @@
+import { useEffect, useState } from "react";
+import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
-import { Route } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode/SetPasscode";
@@ -11,29 +13,41 @@ const SET_PASSCODE_ROUTE = "/setpasscode";
 const PASSCODE_LOGIN_ROUTE = "/passcodelogin";
 const GENERATE_SEED_PHRASE_ROUTE = "/generateseedphrase";
 
-const Routes = ({ storedPasscode }: { storedPasscode: string }) => {
+const Routes = () => {
+  const [storedPasscode, setStoredPasscode] = useState("");
+
+  useEffect(() => {
+    async function getStoredPasscode() {
+      const loginPasscode = await SecureStorage.get("app-login-passcode");
+      loginPasscode && setStoredPasscode(`${loginPasscode}`);
+    }
+    getStoredPasscode();
+  }, [storedPasscode]);
+
   return (
     <IonReactRouter>
       <IonRouterOutlet>
-        <Route
-          path="/"
+        <Redirect
           exact
-          component={storedPasscode ? PasscodeLogin : Onboarding}
+          from="/"
+          to={storedPasscode ? PASSCODE_LOGIN_ROUTE : ONBOARDING_ROUTE}
         />
         <Route
           path={ONBOARDING_ROUTE}
-          exact
           component={Onboarding}
         />
         <Route
           path={SET_PASSCODE_ROUTE}
-          exact
           component={SetPasscode}
         />
         <Route
           path={PASSCODE_LOGIN_ROUTE}
-          exact
-          component={PasscodeLogin}
+          render={(props) => (
+            <PasscodeLogin
+              {...props}
+              storedPasscode={storedPasscode}
+            />
+          )}
         />
         <Route
           path={GENERATE_SEED_PHRASE_ROUTE}
