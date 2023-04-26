@@ -24,6 +24,7 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
+import { ONBOARDING_ROUTE } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 
 const GenerateSeedPhrase = () => {
@@ -51,10 +52,10 @@ const GenerateSeedPhrase = () => {
   return (
     <PageLayout
       backButton={true}
-      backButtonPath={"/"}
+      backButtonPath={ONBOARDING_ROUTE}
       contentClasses=""
       progressBar={true}
-      progressBarValue={0.2}
+      progressBarValue={0.66}
       progressBarBuffer={1}
     >
       <IonGrid>
