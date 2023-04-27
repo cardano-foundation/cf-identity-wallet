@@ -52,8 +52,11 @@ const GenerateSeedPhrase = () => {
   };
 
   const handleContinue = () => {
+    setIsOpen(false);
     // TODO: Go to Verify your Seed Phrase
-    history.push("/verifyseedphrase");
+    history.push({
+      pathname: "/verifyseedphrase",
+    });
   };
 
   return (

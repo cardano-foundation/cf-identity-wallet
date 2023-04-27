@@ -1,3 +1,4 @@
+import { useHistory } from "react-router-dom";
 import { IonButton } from "@ionic/react";
 import { i18n } from "../../../i18n";
 import "./Onboarding.scss";
@@ -10,6 +11,7 @@ import {
 } from "../../../routes";
 
 const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
+  const history = useHistory();
   const items: SlideItem[] = [];
   for (let i = 0; i < 5; i++) {
     items.push({
@@ -18,6 +20,14 @@ const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
       image: "https://placehold.co/290x290",
     });
   }
+
+  const handleNavigation = () => {
+    history.push({
+      pathname: storedPasscode
+        ? GENERATE_SEED_PHRASE_ROUTE
+        : SET_PASSCODE_ROUTE,
+    });
+  };
 
   return (
     <PageLayout
@@ -30,9 +40,9 @@ const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
     >
       <Slides items={items} />
       <IonButton
-        routerLink={
-          storedPasscode ? GENERATE_SEED_PHRASE_ROUTE : SET_PASSCODE_ROUTE
-        }
+        onClick={() => {
+          handleNavigation();
+        }}
         className="ion-primary-button next-button"
         data-testid="get-started-button"
       >

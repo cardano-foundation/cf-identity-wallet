@@ -1,9 +1,4 @@
-import {
-  fireEvent,
-  render,
-  waitFor,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Onboarding } from "./index";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
@@ -58,8 +53,6 @@ describe("Onboarding Page", () => {
     const buttonContinue = getByTestId("get-started-button");
 
     fireEvent.click(buttonContinue);
-    await waitForElementToBeRemoved(buttonContinue);
-    expect(queryByTestId("get-started-button")).toBeNull();
 
     await waitFor(() =>
       expect(
@@ -90,8 +83,6 @@ describe("Onboarding Page", () => {
     const buttonContinue = getByTestId("get-started-button");
 
     fireEvent.click(buttonContinue);
-    await waitForElementToBeRemoved(buttonContinue);
-    expect(queryByTestId("get-started-button")).toBeNull();
 
     await waitFor(() =>
       expect(

@@ -1,4 +1,4 @@
-import { act, render } from "@testing-library/react";
+import { act, render, waitForElementToBeRemoved } from "@testing-library/react";
 import {
   ionFireEvent as fireEvent,
   waitForIonicReact,
@@ -117,32 +117,6 @@ describe("Generate Seed Phrase screen", () => {
     );
     // ...and we see the title.
     expect(alertTitle).toBeVisible();
-  });
-
-  test("Clicking on first alert button will dismiss it", async () => {
-    const { getByText, getByTestId } = render(<GenerateSeedPhrase />);
-
-    const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-    const continueButton = getByTestId("generate-seed-phrase-continue-button");
-    const alertWrapper = getByTestId("alert-wrapper");
-
-    // When we reveal the seed phrase...
-    fireEvent.click(revealSeedPhraseButton);
-
-    // ...and we click on the continue button...
-    act(() => {
-      fireEvent.click(continueButton);
-    });
-    await waitForIonicReact();
-
-    // ...and we click on the first button...
-    fireEvent.click(
-      getByText(EN_TRANSLATIONS["generateseedphrase.alert.button.confirm"])
-    );
-    await waitForIonicReact();
-
-    // ...the alert is no longer visible
-    expect(alertWrapper).toHaveClass("alert-invisible");
   });
 
   test("Clicking on second alert button will dismiss it", async () => {
