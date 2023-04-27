@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { IonButton, IonCol, IonGrid, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { randomBytes } from "crypto";
-import { Argon2, Argon2Mode } from "@sphereon/isomorphic-argon2";
+import { hash, ArgonType } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
@@ -15,10 +15,11 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 
 // Based on OWASP recommendations
 const ARGON2ID_OPTIONS = {
-  mode: Argon2Mode.Argon2id,
-  memory: 19456,
-  iterations: 2,
+  type: ArgonType.Argon2id,
+  mem: 19456,
+  time: 2,
   parallelism: 1,
+  hashLen: 32
 };
 
 const SetPasscode = () => {
@@ -31,7 +32,7 @@ const SetPasscode = () => {
     if (length < 6) {
       if (originalPassCode !== "" && length === 5) {
         if (originalPassCode === passcode + digit) {
-          Argon2.hash(originalPassCode, randomBytes(16), ARGON2ID_OPTIONS).then(
+          hash({ pass: originalPassCode, salt: randomBytes(16), ...ARGON2ID_OPTIONS }).then(
             (hash) => {
               SecureStorage.set(KeyStoreKeys.APP_PASSCODE, hash.encoded).then(
                 () => {

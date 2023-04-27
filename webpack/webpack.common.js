@@ -24,6 +24,11 @@ const config = {
         include: path.resolve(__dirname, "..", "src"),
         use: ["style-loader", "css-loader", "postcss-loader"],
       },
+      {
+        test: /\.wasm$/,
+        loader: "base64-loader",
+        type: "javascript/auto"
+    },
     ],
   },
   resolve: {
@@ -31,7 +36,9 @@ const config = {
     fallback: {
       buffer: require.resolve("buffer/"),
       crypto: require.resolve("crypto-browserify"),
-      stream: require.resolve("stream-browserify")
+      stream: require.resolve("stream-browserify"),
+      path: false,
+      fs: false
     },
   },
   plugins: [
