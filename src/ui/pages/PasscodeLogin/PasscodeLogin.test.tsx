@@ -1,8 +1,9 @@
 import { MemoryRouter, Route } from "react-router-dom";
 import { fireEvent, render } from "@testing-library/react";
 import { PasscodeLogin } from "./PasscodeLogin";
-import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
+import { Onboarding } from "../Onboarding";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { ONBOARDING_ROUTE, PASSCODE_LOGIN_ROUTE } from "../../../routes";
 
 describe("Passcode Login Page", () => {
   const storedPasscode =
@@ -31,11 +32,11 @@ describe("Passcode Login Page", () => {
     expect(circleElement.classList).not.toContain("circle-fill");
   });
 
-  test("Renders Generate Seed Phrase page when passcode is entered correctly", () => {
-    const { getByText } = render(
-      <MemoryRouter initialEntries={["/passcodelogin"]}>
+  test("Renders Generate Seed Phrase page when passcode is entered correctly", async () => {
+    const { getByText, findByText } = render(
+      <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
         <Route
-          path="/passcodelogin"
+          path={PASSCODE_LOGIN_ROUTE}
           render={(props) => (
             <PasscodeLogin
               {...props}
@@ -44,8 +45,8 @@ describe("Passcode Login Page", () => {
           )}
         />
         <Route
-          path="/generateseedphrase"
-          component={GenerateSeedPhrase}
+          path={ONBOARDING_ROUTE}
+          component={Onboarding}
         />
       </MemoryRouter>
     );
@@ -57,7 +58,7 @@ describe("Passcode Login Page", () => {
     fireEvent.click(getByText(/1/));
 
     expect(
-      getByText(EN_TRANSLATIONS["generateseedphrase.title"])
+      await findByText(EN_TRANSLATIONS["onboarding.getstarted.button.label"])
     ).toBeInTheDocument();
   });
 });

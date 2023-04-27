@@ -4,13 +4,24 @@ import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { GENERATE_SEED_PHRASE_ROUTE } from "../../../routes";
+import { ONBOARDING_ROUTE } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
+import Alert from "../../components/Alert/Alert";
 
 const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
   const history = useHistory();
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
+  const [isOpen, setIsOpen] = useState(false);
+  const headerText =
+    seedPhrase !== null
+      ? i18n.t("passcodelogin.alert.text.verify")
+      : i18n.t("passcodelogin.alert.text.restart");
+  const confirmButtonText =
+    seedPhrase !== null
+      ? i18n.t("passcodelogin.alert.button.verify")
+      : i18n.t("passcodelogin.alert.button.restart");
+  const cancelButtonText = i18n.t("passcodelogin.alert.button.cancel");
 
   const handlePinChange = (digit: number) => {
     if (passcode.length < 6) {
@@ -25,12 +36,16 @@ const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
   };
 
   const handleForgotten = () => {
-    return;
+    seedPhrase !== null
+      ? alert("Verify your Seed Phrase")
+      : alert("Delete current passcode and restart journey");
   };
 
   useEffect(() => {
     if (passcode.length === 6) {
-      history.push(GENERATE_SEED_PHRASE_ROUTE);
+      seedPhrase !== null
+        ? alert("Proceed to main landing page")
+        : history.push(ONBOARDING_ROUTE);
     }
   }, [history, passcode, seedPhrase, storedPasscode]);
 
@@ -60,17 +75,25 @@ const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
         <IonRow>
           <IonCol className="continue-col">
             <IonButton
-              onClick={handleForgotten}
               shape="round"
               expand="block"
               fill="outline"
               className="secondary-button"
+              onClick={() => setIsOpen(true)}
             >
               {i18n.t("passcodelogin.forgotten.button")}
             </IonButton>
           </IonCol>
         </IonRow>
       </IonGrid>
+      <Alert
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        headerText={headerText}
+        confirmButtonText={confirmButtonText}
+        cancelButtonText={cancelButtonText}
+        actionConfirm={handleForgotten}
+      />
     </PageLayout>
   );
 };

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  IonAlert,
   IonButton,
   IonCard,
   IonCardContent,
@@ -14,6 +13,7 @@ import {
   IonSegment,
   IonSegmentButton,
 } from "@ionic/react";
+import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
 import { eyeOffOutline } from "ionicons/icons";
 import { generateMnemonic } from "bip39";
@@ -26,8 +26,10 @@ import {
 } from "../../../constants/appConstants";
 import { ONBOARDING_ROUTE } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
+import Alert from "../../components/Alert/Alert";
 
 const GenerateSeedPhrase = () => {
+  const history = useHistory();
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
@@ -47,6 +49,10 @@ const GenerateSeedPhrase = () => {
     } else {
       setSeedPhrase(seedPhrase256);
     }
+  };
+
+  const handleContinue = () => {
+    alert("Proceed to verification page");
   };
 
   return (
@@ -166,32 +172,14 @@ const GenerateSeedPhrase = () => {
           </IonCol>
         </IonRow>
       </IonGrid>
-      <div
-        data-testid="alert-wrapper"
-        className={isOpen ? "alert-visible" : "alert-invisible"}
-      >
-        <IonAlert
-          isOpen={isOpen}
-          header={i18n.t("generateseedphrase.alert.text") || undefined}
-          buttons={[
-            {
-              text: i18n.t("generateseedphrase.alert.button.confirm"),
-              role: "confirm",
-              handler: () => {
-                setIsOpen(false);
-              },
-            },
-            {
-              text: i18n.t("generateseedphrase.alert.button.cancel"),
-              role: "cancel",
-              handler: () => {
-                setIsOpen(false);
-              },
-            },
-          ]}
-          onDidDismiss={() => setIsOpen(false)}
-        />
-      </div>
+      <Alert
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        headerText={i18n.t("generateseedphrase.alert.text")}
+        confirmButtonText={i18n.t("generateseedphrase.alert.button.confirm")}
+        cancelButtonText={i18n.t("generateseedphrase.alert.button.cancel")}
+        actionConfirm={handleContinue}
+      />
     </PageLayout>
   );
 };

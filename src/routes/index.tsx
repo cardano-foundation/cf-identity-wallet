@@ -34,7 +34,12 @@ const Routes = () => {
         />
         <Route
           path={ONBOARDING_ROUTE}
-          component={Onboarding}
+          render={(props) => (
+            <Onboarding
+              {...props}
+              storedPasscode={storedPasscode}
+            />
+          )}
         />
         <Route
           path={SET_PASSCODE_ROUTE}
