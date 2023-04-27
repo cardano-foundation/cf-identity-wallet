@@ -78,8 +78,8 @@ const SetPasscode = () => {
       <PasscodeModule
         title={
           originalPassCode !== ""
-            ? i18n.t("setpasscode.reenterpasscode.label")
-            : i18n.t("setpasscode.enterpasscode.label")
+            ? i18n.t("setpasscode.reenterpasscode.title")
+            : i18n.t("setpasscode.enterpasscode.title")
         }
         description={i18n.t("setpasscode.enterpasscode.description")}
         error={
