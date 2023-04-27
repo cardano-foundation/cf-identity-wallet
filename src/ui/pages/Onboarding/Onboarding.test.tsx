@@ -5,7 +5,6 @@ import {
   waitForElementToBeRemoved,
 } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router-dom";
-import { waitForIonicReact } from "@ionic/react-test-utils";
 import { Onboarding } from "./index";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
@@ -35,5 +34,69 @@ describe("Onboarding Page", () => {
       EN_TRANSLATIONS["onboarding.alreadywallet.button.label"]
     );
     expect(alreadyWallet).toBeInTheDocument();
+  });
+
+  test("If the user hasn't set a passcode yet, they will be asked to create one", async () => {
+    const { getByTestId, queryByTestId, queryByText } = render(
+      <MemoryRouter initialEntries={[ONBOARDING_ROUTE]}>
+        <Route
+          path={ONBOARDING_ROUTE}
+          render={(props) => (
+            <Onboarding
+              {...props}
+              storedPasscode=""
+            />
+          )}
+        />
+        <Route
+          path={SET_PASSCODE_ROUTE}
+          component={SetPasscode}
+        />
+      </MemoryRouter>
+    );
+
+    const buttonContinue = getByTestId("get-started-button");
+
+    fireEvent.click(buttonContinue);
+    await waitForElementToBeRemoved(buttonContinue);
+    expect(queryByTestId("get-started-button")).toBeNull();
+
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.title"])
+      ).toBeVisible()
+    );
+  });
+
+  test("If the user has already set a passcode but they haven't created a profile, they will be asked to generate a seed phrase", async () => {
+    const { getByTestId, queryByTestId, queryByText } = render(
+      <MemoryRouter initialEntries={[ONBOARDING_ROUTE]}>
+        <Route
+          path={ONBOARDING_ROUTE}
+          render={(props) => (
+            <Onboarding
+              {...props}
+              storedPasscode="mysecretpasscode"
+            />
+          )}
+        />
+        <Route
+          path={GENERATE_SEED_PHRASE_ROUTE}
+          component={GenerateSeedPhrase}
+        />
+      </MemoryRouter>
+    );
+
+    const buttonContinue = getByTestId("get-started-button");
+
+    fireEvent.click(buttonContinue);
+    await waitForElementToBeRemoved(buttonContinue);
+    expect(queryByTestId("get-started-button")).toBeNull();
+
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS["generateseedphrase.title"])
+      ).toBeVisible()
+    );
   });
 });

@@ -52,7 +52,8 @@ const GenerateSeedPhrase = () => {
   };
 
   const handleContinue = () => {
-    alert("Proceed to verification page");
+    // TODO: Go to Verify your Seed Phrase
+    history.push("/verifyseedphrase");
   };
 
   return (

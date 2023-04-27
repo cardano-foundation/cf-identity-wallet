@@ -1,18 +1,21 @@
 import { useEffect, useState } from "react";
 import { IonButton, IonCol, IonGrid, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
+import { verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { ONBOARDING_ROUTE } from "../../../routes";
+import { ONBOARDING_ROUTE, SET_PASSCODE_ROUTE } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import Alert from "../../components/Alert/Alert";
+import { SecureStorage } from "../../../core/storage/secureStorage";
 
 const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
   const history = useHistory();
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
   const [isOpen, setIsOpen] = useState(false);
+  const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const headerText =
     seedPhrase !== null
       ? i18n.t("passcodelogin.alert.text.verify")
@@ -37,15 +40,26 @@ const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
 
   const handleForgotten = () => {
     seedPhrase !== null
-      ? alert("Verify your Seed Phrase")
-      : alert("Delete current passcode and restart journey");
+      ? // TODO: Go to Verify your Seed Phrase
+        history.push("/verifyseedphrase")
+      : resetPasscode();
+  };
+
+  const resetPasscode = () => {
+    SecureStorage.delete("app-login-passcode");
+    history.push(SET_PASSCODE_ROUTE);
   };
 
   useEffect(() => {
     if (passcode.length === 6) {
-      seedPhrase !== null
-        ? alert("Proceed to main landing page")
-        : history.push(ONBOARDING_ROUTE);
+      verify({ encoded: storedPasscode, pass: passcode })
+        .then(() =>
+          seedPhrase !== null
+            ? // TODO: Proceed to main landing page
+              history.push("/dids")
+            : history.push(ONBOARDING_ROUTE)
+        )
+        .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
     }
   }, [history, passcode, seedPhrase, storedPasscode]);
 
@@ -63,7 +77,7 @@ const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
         description={i18n.t("passcodelogin.description")}
         error={
           passcode.length === 6 &&
-          storedPasscode !== passcode && (
+          passcodeIncorrect && (
             <ErrorMessage message={i18n.t("passcodelogin.error")} />
           )
         }

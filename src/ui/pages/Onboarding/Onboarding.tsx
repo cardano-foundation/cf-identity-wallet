@@ -34,6 +34,7 @@ const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
           storedPasscode ? GENERATE_SEED_PHRASE_ROUTE : SET_PASSCODE_ROUTE
         }
         className="ion-primary-button next-button"
+        data-testid="get-started-button"
       >
         {i18n.t("onboarding.getstarted.button.label")}
       </IonButton>
