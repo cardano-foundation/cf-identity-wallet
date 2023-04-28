@@ -6,7 +6,7 @@ import {
   initialState,
   seedPhraseCacheSlice,
   setSeedPhraseCache,
-} from "./index";
+} from "./SeedPhraseCache";
 import { RootState } from "../../index";
 
 describe("SeedPhraseCache", () => {
