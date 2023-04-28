@@ -36,5 +36,3 @@ export {
   clearSeedPhraseCache,
   getSeedPhraseCache
 };
-
-export default seedPhraseCacheSlice.reducer;
