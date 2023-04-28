@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import seedPhraseCache from "./reducers/SeedPhraseCache";
+import {seedPhraseCacheSlice} from "./reducers/SeedPhraseCache";
 
 const store = configureStore({
   reducer: {
-    seedPhraseCache,
-  },
+    seedPhraseCache: seedPhraseCacheSlice.reducer,
+  }
 });
 
 type RootState = ReturnType<typeof store.getState>;

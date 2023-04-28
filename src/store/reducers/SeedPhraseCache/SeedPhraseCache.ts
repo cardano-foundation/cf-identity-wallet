@@ -36,3 +36,4 @@ export {
   clearSeedPhraseCache,
   getSeedPhraseCache
 };
+
