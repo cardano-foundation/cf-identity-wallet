@@ -31,7 +31,8 @@ const config = {
     fallback: {
       buffer: require.resolve("buffer/"),
       crypto: require.resolve("crypto-browserify"),
-      stream: require.resolve("stream-browserify")
+      stream: require.resolve("stream-browserify"),
+      url: require.resolve("url")
     },
   },
   plugins: [
