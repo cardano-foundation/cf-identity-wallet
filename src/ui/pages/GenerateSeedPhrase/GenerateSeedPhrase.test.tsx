@@ -1,4 +1,4 @@
-import { act, render, waitForElementToBeRemoved } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import {
   ionFireEvent as fireEvent,
   waitForIonicReact,

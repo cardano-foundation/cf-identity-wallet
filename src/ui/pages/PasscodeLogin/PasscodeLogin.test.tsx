@@ -8,7 +8,6 @@ import {
   PASSCODE_LOGIN_ROUTE,
   SET_PASSCODE_ROUTE,
 } from "../../../routes";
-import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "../SetPasscode";
 
 describe("Passcode Login Page", () => {
