@@ -3,7 +3,13 @@ import { fireEvent, render } from "@testing-library/react";
 import { PasscodeLogin } from "./PasscodeLogin";
 import { Onboarding } from "../Onboarding";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { ONBOARDING_ROUTE, PASSCODE_LOGIN_ROUTE } from "../../../routes";
+import {
+  ONBOARDING_ROUTE,
+  PASSCODE_LOGIN_ROUTE,
+  SET_PASSCODE_ROUTE,
+} from "../../../routes";
+import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
+import { SetPasscode } from "../SetPasscode";
 
 describe("Passcode Login Page", () => {
   const storedPasscode =
@@ -32,7 +38,7 @@ describe("Passcode Login Page", () => {
     expect(circleElement.classList).not.toContain("circle-fill");
   });
 
-  test("Renders Generate Seed Phrase page when passcode is entered correctly", async () => {
+  test("If no seed phrase was stored, once the passcode is entered correctly it renders Generate Seed Phrase page", async () => {
     const { getByText, findByText } = render(
       <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
         <Route
@@ -60,5 +66,50 @@ describe("Passcode Login Page", () => {
     expect(
       await findByText(EN_TRANSLATIONS["onboarding.getstarted.button.label"])
     ).toBeInTheDocument();
+  });
+
+  test("If no seed phrase was stored and I click on I forgot my passcode, I can start over", async () => {
+    const { getByText, findByText } = render(
+      <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
+        <Route
+          path={PASSCODE_LOGIN_ROUTE}
+          render={(props) => (
+            <PasscodeLogin
+              {...props}
+              storedPasscode={storedPasscode}
+            />
+          )}
+        />
+        <Route
+          path={SET_PASSCODE_ROUTE}
+          component={SetPasscode}
+        />
+      </MemoryRouter>
+    );
+    // User gets the passcode wrong
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/2/));
+    fireEvent.click(getByText(/3/));
+    fireEvent.click(getByText(/4/));
+    fireEvent.click(getByText(/5/));
+    fireEvent.click(getByText(/6/));
+    expect(
+      await findByText(EN_TRANSLATIONS["passcodelogin.error"])
+    ).toBeVisible();
+    // User clicks on "I've forgotten my passcode"
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS["passcodelogin.forgotten.button"])
+    );
+    // User sees the pop up
+    expect(
+      await findByText(EN_TRANSLATIONS["passcodelogin.alert.text.restart"])
+    ).toBeVisible();
+    // User can choose to start again
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS["passcodelogin.alert.button.restart"])
+    );
+    expect(
+      await findByText(EN_TRANSLATIONS["setpasscode.enterpasscode.title"])
+    ).toBeVisible();
   });
 });
