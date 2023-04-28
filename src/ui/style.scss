@@ -21,7 +21,9 @@ p {
 .ion-app {
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
-  height: calc(100% + (var(--safe-area-inset-top) + var(--safe-area-inset-bottom)));
+  height: calc(
+    100% + (var(--safe-area-inset-top) + var(--safe-area-inset-bottom))
+  );
 }
 
 .ion-primary-button {

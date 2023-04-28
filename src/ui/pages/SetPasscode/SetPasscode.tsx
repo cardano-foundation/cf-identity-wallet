@@ -19,7 +19,7 @@ const ARGON2ID_OPTIONS = {
   mem: 19456,
   time: 2,
   parallelism: 1,
-  hashLen: 32
+  hashLen: 32,
 };
 
 const SetPasscode = () => {
@@ -32,17 +32,19 @@ const SetPasscode = () => {
     if (length < 6) {
       if (originalPassCode !== "" && length === 5) {
         if (originalPassCode === passcode + digit) {
-          hash({ pass: originalPassCode, salt: randomBytes(16), ...ARGON2ID_OPTIONS }).then(
-            (hash) => {
-              SecureStorage.set(KeyStoreKeys.APP_PASSCODE, hash.encoded).then(
-                () => {
-                  handleClear();
-                  history.push(GENERATE_SEED_PHRASE_ROUTE);
-                  return;
-                }
-              );
-            }
-          );
+          hash({
+            pass: originalPassCode,
+            salt: randomBytes(16),
+            ...ARGON2ID_OPTIONS,
+          }).then((hash) => {
+            SecureStorage.set(KeyStoreKeys.APP_PASSCODE, hash.encoded).then(
+              () => {
+                handleClear();
+                history.push(GENERATE_SEED_PHRASE_ROUTE);
+                return;
+              }
+            );
+          });
         }
       }
       setPasscode(passcode + digit);
