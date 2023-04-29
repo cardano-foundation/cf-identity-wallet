@@ -22,6 +22,10 @@ class SecureStorage {
   static async set(key: string, value: string): Promise<void> {
     await CapacitorSecureStorage.set(key, value, true, false);
   }
+
+  static async delete(key: string) {
+    await CapacitorSecureStorage.remove(key);
+  }
 }
 
 // This is just to allow us to make change libs if needed without refactoring other code.

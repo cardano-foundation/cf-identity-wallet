@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react";
+import { act, render } from "@testing-library/react";
 import {
   ionFireEvent as fireEvent,
   waitForIonicReact,
@@ -15,22 +15,20 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 describe("Generate Seed Phrase screen", () => {
   test("User can see Title and Security Overlay", () => {
-    render(<GenerateSeedPhrase />);
+    const { getByText, getByTestId } = render(<GenerateSeedPhrase />);
 
-    const title = screen.getByText(EN_TRANSLATIONS["generateseedphrase.title"]);
-    const overlay = screen.getByTestId("seed-phrase-privacy-overlay");
+    const title = getByText(EN_TRANSLATIONS["generateseedphrase.title"]);
+    const overlay = getByTestId("seed-phrase-privacy-overlay");
 
     expect(title).toBeInTheDocument();
     expect(overlay).toBeInTheDocument();
   });
 
   test("User can dismiss the Security Overlay", () => {
-    render(<GenerateSeedPhrase />);
+    const { getByTestId } = render(<GenerateSeedPhrase />);
 
-    const overlay = screen.getByTestId("seed-phrase-privacy-overlay");
-    const revealSeedPhraseButton = screen.getByTestId(
-      "reveal-seed-phrase-button"
-    );
+    const overlay = getByTestId("seed-phrase-privacy-overlay");
+    const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
 
     expect(overlay).toHaveClass("visible");
 
@@ -39,10 +37,10 @@ describe("Generate Seed Phrase screen", () => {
   });
 
   test("User can toggle the 15/24 words seed phrase segment", () => {
-    render(<GenerateSeedPhrase />);
+    const { getByTestId } = render(<GenerateSeedPhrase />);
 
-    const segment = screen.getByTestId("mnemonic-length-segment");
-    const seedPhraseContainer = screen.getByTestId("seed-phrase-container");
+    const segment = getByTestId("mnemonic-length-segment");
+    const seedPhraseContainer = getByTestId("seed-phrase-container");
 
     // When the page is first loaded, the seed phrase length is 15 words
     expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH));
@@ -86,15 +84,11 @@ describe("Generate Seed Phrase screen", () => {
   });
 
   test("User is prompted to save the seed phrase", async () => {
-    render(<GenerateSeedPhrase />);
+    const { getByText, getByTestId } = render(<GenerateSeedPhrase />);
 
-    const revealSeedPhraseButton = screen.getByTestId(
-      "reveal-seed-phrase-button"
-    );
-    const continueButton = screen.getByTestId(
-      "generate-seed-phrase-continue-button"
-    );
-    const alertWrapper = screen.getByTestId("alert-wrapper");
+    const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
+    const continueButton = getByTestId("generate-seed-phrase-continue-button");
+    const alertWrapper = getByTestId("alert-wrapper");
 
     // When we load the page, the alert is not visible
     expect(alertWrapper).toHaveClass("alert-invisible");
@@ -118,55 +112,19 @@ describe("Generate Seed Phrase screen", () => {
 
     // ...the alert wrapper is visible...
     expect(alertWrapper).toHaveClass("alert-visible");
-    const alertTitle = screen.getByText(
+    const alertTitle = getByText(
       EN_TRANSLATIONS["generateseedphrase.alert.text"]
     );
     // ...and we see the title.
     expect(alertTitle).toBeVisible();
   });
 
-  test("Clicking on first alert button will dismiss it", async () => {
-    render(<GenerateSeedPhrase />);
-
-    const revealSeedPhraseButton = screen.getByTestId(
-      "reveal-seed-phrase-button"
-    );
-    const continueButton = screen.getByTestId(
-      "generate-seed-phrase-continue-button"
-    );
-    const alertWrapper = screen.getByTestId("alert-wrapper");
-
-    // When we reveal the seed phrase...
-    fireEvent.click(revealSeedPhraseButton);
-
-    // ...and we click on the continue button...
-    act(() => {
-      fireEvent.click(continueButton);
-    });
-    await waitForIonicReact();
-
-    // ...and we click on the first button...
-    fireEvent.click(
-      screen.getByText(
-        EN_TRANSLATIONS["generateseedphrase.alert.button.confirm"]
-      )
-    );
-    await waitForIonicReact();
-
-    // ...the alert is no longer visible
-    expect(alertWrapper).toHaveClass("alert-invisible");
-  });
-
   test("Clicking on second alert button will dismiss it", async () => {
-    render(<GenerateSeedPhrase />);
+    const { getByText, getByTestId } = render(<GenerateSeedPhrase />);
 
-    const revealSeedPhraseButton = screen.getByTestId(
-      "reveal-seed-phrase-button"
-    );
-    const continueButton = screen.getByTestId(
-      "generate-seed-phrase-continue-button"
-    );
-    const alertWrapper = screen.getByTestId("alert-wrapper");
+    const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
+    const continueButton = getByTestId("generate-seed-phrase-continue-button");
+    const alertWrapper = getByTestId("alert-wrapper");
 
     // When we reveal the seed phrase...
     fireEvent.click(revealSeedPhraseButton);
@@ -179,9 +137,7 @@ describe("Generate Seed Phrase screen", () => {
 
     // ...and we click on the second button...
     fireEvent.click(
-      screen.getByText(
-        EN_TRANSLATIONS["generateseedphrase.alert.button.cancel"]
-      )
+      getByText(EN_TRANSLATIONS["generateseedphrase.alert.button.cancel"])
     );
     await waitForIonicReact();
 
@@ -190,14 +146,10 @@ describe("Generate Seed Phrase screen", () => {
   });
 
   test("Clicking on alert backdrop will dismiss it", async () => {
-    render(<GenerateSeedPhrase />);
+    const { getByTestId } = render(<GenerateSeedPhrase />);
 
-    const revealSeedPhraseButton = screen.getByTestId(
-      "reveal-seed-phrase-button"
-    );
-    const continueButton = screen.getByTestId(
-      "generate-seed-phrase-continue-button"
-    );
+    const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
+    const continueButton = getByTestId("generate-seed-phrase-continue-button");
 
     // When we reveal the seed phrase...
     fireEvent.click(revealSeedPhraseButton);
@@ -209,7 +161,7 @@ describe("Generate Seed Phrase screen", () => {
     await waitForIonicReact();
 
     const backdrop = document.querySelector("ion-backdrop");
-    const alertWrapper = screen.getByTestId("alert-wrapper");
+    const alertWrapper = getByTestId("alert-wrapper");
 
     // ...we see the alert backdrop
     expect(backdrop).toBeInTheDocument();

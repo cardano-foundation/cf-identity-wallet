@@ -1,34 +1,73 @@
+import { useEffect, useState } from "react";
+import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
-import { Route } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode/SetPasscode";
+import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 
-const PASSCODE_ROUTE = "/setpasscode";
+const ONBOARDING_ROUTE = "/onboarding";
+const SET_PASSCODE_ROUTE = "/setpasscode";
+const PASSCODE_LOGIN_ROUTE = "/passcodelogin";
 const GENERATE_SEED_PHRASE_ROUTE = "/generateseedphrase";
 
 const Routes = () => {
+  const [storedPasscode, setStoredPasscode] = useState("");
+
+  useEffect(() => {
+    async function getStoredPasscode() {
+      const loginPasscode = await SecureStorage.get("app-login-passcode");
+      loginPasscode && setStoredPasscode(`${loginPasscode}`);
+    }
+    getStoredPasscode();
+  }, [storedPasscode]);
+
   return (
     <IonReactRouter>
       <IonRouterOutlet>
-        <Route
-          path="/"
+        <Redirect
           exact
-          component={Onboarding}
+          from="/"
+          to={storedPasscode ? PASSCODE_LOGIN_ROUTE : ONBOARDING_ROUTE}
         />
         <Route
-          path={PASSCODE_ROUTE}
-          exact
+          path={ONBOARDING_ROUTE}
+          render={(props) => (
+            <Onboarding
+              {...props}
+              storedPasscode={storedPasscode}
+            />
+          )}
+        />
+        <Route
+          path={SET_PASSCODE_ROUTE}
           component={SetPasscode}
         />
         <Route
+          path={PASSCODE_LOGIN_ROUTE}
+          render={(props) => (
+            <PasscodeLogin
+              {...props}
+              storedPasscode={storedPasscode}
+            />
+          )}
+        />
+        <Route
           path={GENERATE_SEED_PHRASE_ROUTE}
-          render={() => <GenerateSeedPhrase />}
+          exact
+          component={GenerateSeedPhrase}
         />
       </IonRouterOutlet>
     </IonReactRouter>
   );
 };
 
-export { Routes, PASSCODE_ROUTE, GENERATE_SEED_PHRASE_ROUTE };
+export {
+  Routes,
+  ONBOARDING_ROUTE,
+  SET_PASSCODE_ROUTE,
+  PASSCODE_LOGIN_ROUTE,
+  GENERATE_SEED_PHRASE_ROUTE,
+};

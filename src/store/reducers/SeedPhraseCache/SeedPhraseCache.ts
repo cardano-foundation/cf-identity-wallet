@@ -34,6 +34,5 @@ export {
   seedPhraseCacheSlice,
   setSeedPhraseCache,
   clearSeedPhraseCache,
-  getSeedPhraseCache
+  getSeedPhraseCache,
 };
-

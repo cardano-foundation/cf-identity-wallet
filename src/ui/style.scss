@@ -39,9 +39,18 @@ p {
 .ion-primary-button {
   color: var(--ion-color-primary);
   --background: var(--color-accent-gradient);
-  --background-activated: none;
+  --background-activated: var(--color-medium-grey);
 
   &.button-disabled {
-    --background: var(--color-medium-grey);
+    --background: var(--color-dark-grey);
   }
+}
+
+.secondary-button {
+  --border-color: var(--color-dark-grey);
+  --background-activated: var(--color-dark-grey);
+}
+
+.continue-col {
+  text-align: center;
 }
