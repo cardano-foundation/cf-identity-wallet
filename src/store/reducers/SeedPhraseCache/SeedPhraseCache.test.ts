@@ -4,7 +4,7 @@ import {
   clearSeedPhraseCache,
   getSeedPhraseCache,
   initialState,
-  seedPhraseCacheSlice,
+  SeedPhraseCacheSlice,
   setSeedPhraseCache,
 } from "./SeedPhraseCache";
 import { RootState } from "../../index";
@@ -12,14 +12,14 @@ import { RootState } from "../../index";
 describe("SeedPhraseCache", () => {
   test("should return the initial state on first run", () => {
     expect(
-      seedPhraseCacheSlice.reducer(undefined, {} as PayloadAction)
+      SeedPhraseCacheSlice.reducer(undefined, {} as PayloadAction)
     ).toEqual(initialState);
   });
 
   test("should set the seed phrase cache", () => {
     const seedPhrase = "test seed phrase";
     const action = setSeedPhraseCache(seedPhrase);
-    const nextState = seedPhraseCacheSlice.reducer(initialState, action);
+    const nextState = SeedPhraseCacheSlice.reducer(initialState, action);
 
     expect(nextState.seedPhrase).toEqual(seedPhrase);
     expect(nextState).not.toBe(initialState);
@@ -32,11 +32,11 @@ describe("SeedPhraseCache", () => {
     const seedPhrase = "test seed phrase";
 
     const setAction = setSeedPhraseCache(seedPhrase);
-    let nextState = seedPhraseCacheSlice.reducer(initialState, setAction);
+    let nextState = SeedPhraseCacheSlice.reducer(initialState, setAction);
     expect(nextState.seedPhrase).toEqual(seedPhrase);
 
     const clearAction = clearSeedPhraseCache();
-    nextState = seedPhraseCacheSlice.reducer(initialState, clearAction);
+    nextState = SeedPhraseCacheSlice.reducer(initialState, clearAction);
     expect(nextState).toBe(initialState);
 
     const rootState = { seedPhraseCache: nextState } as RootState;

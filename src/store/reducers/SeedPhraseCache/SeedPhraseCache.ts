@@ -9,8 +9,8 @@ const initialState: SeedPhraseCacheProps = {
   seedPhrase: "",
 };
 
-const seedPhraseCacheSlice = createSlice({
-  name: "seedPhraseCache",
+const SeedPhraseCacheSlice = createSlice({
+  name: "SeedPhraseCache",
   initialState,
   reducers: {
     setSeedPhraseCache: (state, action: PayloadAction<string>) => {
@@ -23,7 +23,7 @@ const seedPhraseCacheSlice = createSlice({
 });
 
 const { setSeedPhraseCache, clearSeedPhraseCache } =
-  seedPhraseCacheSlice.actions;
+  SeedPhraseCacheSlice.actions;
 
 const getSeedPhraseCache = (state: RootState) => state.seedPhraseCache;
 
@@ -31,7 +31,7 @@ export type { SeedPhraseCacheProps };
 
 export {
   initialState,
-  seedPhraseCacheSlice,
+  SeedPhraseCacheSlice,
   setSeedPhraseCache,
   clearSeedPhraseCache,
   getSeedPhraseCache,
