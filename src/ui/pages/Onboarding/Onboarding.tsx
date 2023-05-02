@@ -40,10 +40,12 @@ const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
     >
       <Slides items={items} />
       <IonButton
+        shape="round"
+        expand="block"
+        className="ion-primary-button get-started-button"
         onClick={() => {
           handleNavigation();
         }}
-        className="ion-primary-button next-button"
         data-testid="get-started-button"
       >
         {i18n.t("onboarding.getstarted.button.label")}

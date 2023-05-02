@@ -26,7 +26,7 @@ const PageLayout = ({
   const mainContent = children;
 
   return (
-    <IonPage>
+    <IonPage className="page-layout">
       <IonHeader
         translucent={true}
         collapse="fade"
@@ -36,8 +36,8 @@ const PageLayout = ({
           <IonGrid>
             <IonRow>
               <IonCol
-                size="1"
-                className="column-left"
+                size="2"
+                className="header-column-left"
               >
                 {backButton && (
                   <IonButtons>
@@ -50,8 +50,8 @@ const PageLayout = ({
                 )}
               </IonCol>
               <IonCol
-                size="11"
-                className="column-right"
+                size="10"
+                className="header-column-right"
               >
                 {progressBar && (
                   <IonProgressBar

@@ -4,10 +4,12 @@ import {
   IonCard,
   IonCardContent,
   IonCardHeader,
+  IonCheckbox,
   IonChip,
   IonCol,
   IonGrid,
   IonIcon,
+  IonItem,
   IonLabel,
   IonRow,
   IonSegment,
@@ -27,6 +29,7 @@ import {
 import { ONBOARDING_ROUTE } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
+import { TermsAndConditions } from "../TermsAndConditions";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -34,7 +37,9 @@ const GenerateSeedPhrase = () => {
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [checked, setChecked] = useState(false);
 
   useEffect(() => {
     const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
@@ -52,7 +57,7 @@ const GenerateSeedPhrase = () => {
   };
 
   const handleContinue = () => {
-    setIsOpen(false);
+    setAlertIsOpen(false);
     // TODO: Go to Verify your Seed Phrase
     history.push({
       pathname: "/verifyseedphrase",
@@ -63,7 +68,7 @@ const GenerateSeedPhrase = () => {
     <PageLayout
       backButton={true}
       backButtonPath={ONBOARDING_ROUTE}
-      contentClasses=""
+      contentClasses="generate-seedphrase"
       progressBar={true}
       progressBarValue={0.66}
       progressBarBuffer={1}
@@ -160,6 +165,38 @@ const GenerateSeedPhrase = () => {
           </IonCol>
         </IonRow>
       </IonGrid>
+      <IonGrid>
+        <IonRow>
+          <IonCol size="12">
+            <IonItem lines="none">
+              <IonCheckbox
+                slot="start"
+                checked={checked}
+                onIonChange={(e) => setChecked(e.detail.checked)}
+              />
+              <IonLabel
+                slot="end"
+                className="ion-text-wrap"
+              >
+                I have read and agree to the&nbsp;
+                <a
+                  onClick={() => {
+                    setChecked(true);
+                    setModalIsOpen(true);
+                  }}
+                >
+                  <u>terms and conditions</u>
+                </a>
+                .
+              </IonLabel>
+            </IonItem>
+            <TermsAndConditions
+              isOpen={modalIsOpen}
+              setIsOpen={setModalIsOpen}
+            />
+          </IonCol>
+        </IonRow>
+      </IonGrid>
       <IonGrid className="footer">
         <IonRow>
           <IonCol>
@@ -168,8 +205,8 @@ const GenerateSeedPhrase = () => {
               expand="block"
               className="ion-primary-button"
               data-testid="generate-seed-phrase-continue-button"
-              disabled={!showSeedPhrase}
-              onClick={() => setIsOpen(true)}
+              disabled={!(showSeedPhrase && checked)}
+              onClick={() => setAlertIsOpen(true)}
             >
               {i18n.t("generateseedphrase.continue.button")}
             </IonButton>
@@ -177,8 +214,8 @@ const GenerateSeedPhrase = () => {
         </IonRow>
       </IonGrid>
       <Alert
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
+        isOpen={alertIsOpen}
+        setIsOpen={setAlertIsOpen}
         headerText={i18n.t("generateseedphrase.alert.text")}
         confirmButtonText={i18n.t("generateseedphrase.alert.button.confirm")}
         cancelButtonText={i18n.t("generateseedphrase.alert.button.cancel")}

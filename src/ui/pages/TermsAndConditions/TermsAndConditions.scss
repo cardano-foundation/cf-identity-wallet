@@ -1,0 +1,22 @@
+.terms-and-conditions {
+  padding: 2rem 0.5rem;
+
+  .close-button {
+    width: 2.8125rem;
+    height: 2.8125rem;
+    border-radius: 1.5rem;
+    --background: var(--color-light-grey);
+    --background-activated: var(--color-light-grey);
+
+    &::part(native) {
+      padding: 0;
+      font-size: 1.2rem;
+      color: var(--ion-color-primary);
+    }
+  }
+
+  h1 {
+    margin-top: 0.5rem;
+    text-align: center;
+  }
+}
