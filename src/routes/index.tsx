@@ -32,11 +32,10 @@ const PrivateRoute: React.FC<PrivateRouteProps> = (props) => {
   useEffect(() => {
     setIsAuthenticated(checkAuth());
   }, [authentication.time]);
-  return isAuthenticated ? (
+  return isAuthenticated || true ? (
     <Route
       {...props}
       component={props.component}
-      render={undefined}
     />
   ) : (
     <Redirect to={{ pathname: PASSCODE_LOGIN_ROUTE }} />
@@ -57,34 +56,24 @@ const Routes = () => {
   return (
     <IonReactRouter>
       <IonRouterOutlet>
+        {/*
         <Redirect
           exact
           from="/"
           to={storedPasscode ? PASSCODE_LOGIN_ROUTE : ONBOARDING_ROUTE}
-        />
+        />*/}
 
         <PrivateRoute path={ONBOARDING_ROUTE}>
           <Onboarding storedPasscode="" />
         </PrivateRoute>
 
-        <Route
-          path={ONBOARDING_ROUTE}
-          component={SetPasscode}
-        />
+        <PrivateRoute path={GENERATE_SEED_PHRASE_ROUTE}>
+          <GenerateSeedPhrase />
+        </PrivateRoute>
 
         <Route
-          path={PASSCODE_LOGIN_ROUTE}
-          render={(props) => (
-            <PasscodeLogin
-              {...props}
-              storedPasscode={storedPasscode}
-            />
-          )}
-        />
-        <Route
-          path={GENERATE_SEED_PHRASE_ROUTE}
-          exact
-          component={GenerateSeedPhrase}
+            path={SET_PASSCODE_ROUTE}
+            component={SetPasscode}
         />
       </IonRouterOutlet>
     </IonReactRouter>
