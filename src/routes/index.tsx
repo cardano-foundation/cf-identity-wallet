@@ -18,17 +18,12 @@ const GENERATE_SEED_PHRASE_ROUTE = "/generateseedphrase";
 
 const MAX_LOCK_TIME = 3000; // 3 sec
 
-export interface PrivateRouteProps extends RouteProps {}
-
-const PrivateRoute: React.FC<PrivateRouteProps> = (props) => {
+const PrivateRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
 
   const checkAuth = () => {
     // Auth logic here
-    console.log("checkAuth");
-    console.log("authentication.time");
-    console.log(authentication.time);
     return MAX_LOCK_TIME < Moment.utc().millisecond() - authentication.time;
   };
 
@@ -37,7 +32,8 @@ const PrivateRoute: React.FC<PrivateRouteProps> = (props) => {
   useEffect(() => {
     setIsAuthenticated(checkAuth());
   }, [authentication.time]);
-  return isAuthenticated || true ? (
+
+  return isAuthenticated ? (
     <Route
       {...props}
       component={props.component}
