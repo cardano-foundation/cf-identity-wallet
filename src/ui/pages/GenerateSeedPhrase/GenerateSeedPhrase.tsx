@@ -30,7 +30,7 @@ import {
 import { ONBOARDING_ROUTE } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
-import { TermsAndConditions } from "../TermsAndConditions";
+import { TermsAndConditions } from "../../components/TermsAndConditions";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -78,7 +78,9 @@ const GenerateSeedPhrase = () => {
           <IonRow>
             <IonCol size="12">
               <h1>{i18n.t("generateseedphrase.title")}</h1>
-              <p>{i18n.t("generateseedphrase.paragraph.top")}</p>
+              <p className="paragraph">
+                {i18n.t("generateseedphrase.paragraph.top")}
+              </p>
             </IonCol>
           </IonRow>
         </IonGrid>
@@ -164,7 +166,9 @@ const GenerateSeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <p>{i18n.t("generateseedphrase.paragraph.bottom")}</p>
+              <p className="paragraph">
+                {i18n.t("generateseedphrase.paragraph.bottom")}
+              </p>
             </IonCol>
           </IonRow>
         </IonGrid>
@@ -183,6 +187,7 @@ const GenerateSeedPhrase = () => {
                 <IonLabel
                   slot="end"
                   className="ion-text-wrap"
+                  color="primary"
                 >
                   I have read and agree to the&nbsp;
                   <a

@@ -1,4 +1,8 @@
 .generate-seedphrase {
+  .paragraph {
+    margin: 0;
+  }
+
   ion-segment {
     --background: var(--color-dark-grey);
 
@@ -37,8 +41,8 @@
     }
 
     ion-button {
-      color: white;
-      --border-color: white;
+      color: var(--ion-color-light);
+      --border-color: var(--ion-color-light);
       margin: 0 auto;
     }
   }
@@ -58,7 +62,7 @@
   ion-card,
   ion-card p,
   ion-icon {
-    color: white;
+    color: var(--ion-color-light);
     margin: 0;
   }
 

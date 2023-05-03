@@ -1,7 +1,7 @@
 import { IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
 import "./TermsAndConditions.scss";
 import { TermsAndConditionsProps } from "./TermsAndConditions.types";
-import { PageLayout } from "../../components/layout/PageLayout";
+import { PageLayout } from "../layout/PageLayout";
 
 const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
   return (
