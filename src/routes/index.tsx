@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from "react";
+import React, { FC, useEffect, useState } from "react";
 import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
@@ -18,18 +18,30 @@ const GENERATE_SEED_PHRASE_ROUTE = "/generateseedphrase";
 
 const MAX_LOCK_TIME = 3000; // 3 sec
 
-export interface IPrivateRouteProps extends RouteProps {
-  isAuth: boolean // is authenticate route
-  redirectPath: string // redirect path if don't authenticate route
-}
+export interface PrivateRouteProps extends RouteProps {}
 
-const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
-  return props.isAuth ? (
-      <Route {...props} component={props.component} render={undefined} />
+const PrivateRoute: React.FC<PrivateRouteProps> = (props) => {
+  const authentication = useAppSelector(getAuthentication);
+
+  const checkAuth = () => {
+    return MAX_LOCK_TIME < Moment.utc().millisecond() - authentication.time;
+  };
+
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(checkAuth());
+
+  useEffect(() => {
+    setIsAuthenticated(checkAuth());
+  }, [authentication.time]);
+  return isAuthenticated ? (
+    <Route
+      {...props}
+      component={props.component}
+      render={undefined}
+    />
   ) : (
-      <Redirect to={{pathname: props.redirectPath}} />
-  )
-}
+    <Redirect to={{ pathname: PASSCODE_LOGIN_ROUTE }} />
+  );
+};
 
 const Routes = () => {
   const [storedPasscode, setStoredPasscode] = useState("");
@@ -51,9 +63,8 @@ const Routes = () => {
           to={storedPasscode ? PASSCODE_LOGIN_ROUTE : ONBOARDING_ROUTE}
         />
 
-
-        <PrivateRoute isAuth={false} redirectPath={PASSCODE_LOGIN_ROUTE} path={ONBOARDING_ROUTE}>
-          <Onboarding  storedPasscode=""/>
+        <PrivateRoute path={ONBOARDING_ROUTE}>
+          <Onboarding storedPasscode="" />
         </PrivateRoute>
 
         <Route
