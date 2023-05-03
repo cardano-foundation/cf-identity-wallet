@@ -55,18 +55,3 @@ p {
 .continue-col {
   text-align: center;
 }
-
-.header-column-right,
-.header-column-left {
-  display: flex;
-}
-
-.header-column-left {
-  justify-content: flex-start;
-}
-
-.header-column-right {
-  flex-direction: column;
-  justify-content: center;
-  padding-left: 0.5rem;
-}

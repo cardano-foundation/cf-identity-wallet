@@ -1,13 +1,22 @@
 .page-layout {
-  ion-back-button {
-    width: 2.8125rem;
-    height: 2.8125rem;
-    border-radius: 1.5rem;
-    background: var(--color-light-grey);
-
-    &::part(native) {
-      padding: 0.6rem;
+  ion-toolbar {
+    padding: 0 0.6rem;
+    ion-button,
+    ion-back-button {
+      width: 2.8125rem;
+      height: 2.8125rem;
+      border-radius: 1.5rem;
+      background: var(--color-light-grey);
     }
+
+    ion-icon {
+      font-size: 1.85em !important;
+    }
+  }
+
+  .progress-bar-container,
+  ion-title {
+    margin-left: 1rem;
   }
 
   ion-progress-bar,
@@ -16,21 +25,11 @@
     border-radius: 6px;
   }
 
-  ion-toolbar ion-grid {
+  ion-title {
     padding: 0;
   }
 
-  ion-header {
+  h2 {
     margin: 0 auto;
-    max-width: 95vw;
-  }
-
-  ion-content {
-    --padding-start: 0.7rem;
-    --padding-end: 0.7rem;
-  }
-
-  h1 {
-    margin-top: 0;
   }
 }

@@ -18,9 +18,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 25px;
-    margin-right: 15px;
-    margin-bottom: 15px;
+    margin: 1.5rem 1rem 0.8rem;
   }
 
   .circle {
@@ -37,8 +35,13 @@
 
   .pin-error {
     text-align: center;
-    margin-bottom: 35px;
+    margin-bottom: 1.5rem;
     height: 16px;
+  }
+
+  .numbers-row ion-col {
+    display: flex;
+    justify-content: center;
   }
 
   .number-button {
