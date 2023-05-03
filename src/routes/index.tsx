@@ -2,7 +2,7 @@ import React, { FC, useEffect, useState } from "react";
 import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
-import { Redirect, Route, RouteProps } from "react-router-dom";
+import { Redirect, Route, RouteProps, useLocation } from "react-router-dom";
 import Moment from "moment";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
@@ -22,8 +22,10 @@ export interface PrivateRouteProps extends RouteProps {}
 
 const PrivateRoute: React.FC<PrivateRouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
+  const location = useLocation();
 
   const checkAuth = () => {
+    // Auth logic here
     return MAX_LOCK_TIME < Moment.utc().millisecond() - authentication.time;
   };
 
@@ -38,43 +40,25 @@ const PrivateRoute: React.FC<PrivateRouteProps> = (props) => {
       component={props.component}
     />
   ) : (
-    <Redirect to={{ pathname: PASSCODE_LOGIN_ROUTE }} />
+    <Redirect from={location.pathname} to={{ pathname: PASSCODE_LOGIN_ROUTE }} />
   );
 };
 
 const Routes = () => {
-  const [storedPasscode, setStoredPasscode] = useState("");
-
-  useEffect(() => {
-    async function getStoredPasscode() {
-      const loginPasscode = await SecureStorage.get("app-login-passcode");
-      loginPasscode && setStoredPasscode(`${loginPasscode}`);
-    }
-    getStoredPasscode();
-  }, [storedPasscode]);
 
   return (
     <IonReactRouter>
       <IonRouterOutlet>
-        {/*
-        <Redirect
-          exact
-          from="/"
-          to={storedPasscode ? PASSCODE_LOGIN_ROUTE : ONBOARDING_ROUTE}
-        />*/}
-
-        <PrivateRoute path={ONBOARDING_ROUTE}>
-          <Onboarding storedPasscode="" />
-        </PrivateRoute>
-
-        <PrivateRoute path={GENERATE_SEED_PHRASE_ROUTE}>
-          <GenerateSeedPhrase />
-        </PrivateRoute>
 
         <Route
             path={SET_PASSCODE_ROUTE}
             component={SetPasscode}
         />
+
+        {/* Private Routes */}
+        <PrivateRoute path={ONBOARDING_ROUTE} component={Onboarding} />
+        <PrivateRoute path={GENERATE_SEED_PHRASE_ROUTE} component={GenerateSeedPhrase} />
+
       </IonRouterOutlet>
     </IonReactRouter>
   );
