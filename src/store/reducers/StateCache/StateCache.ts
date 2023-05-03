@@ -9,6 +9,7 @@ interface CurrentRouteCacheProps {
 interface AuthenticationCacheProps {
   loggedIn: boolean;
   time: number;
+  passcodeIsSet: boolean;
 }
 
 interface StateCacheProps {
@@ -24,6 +25,7 @@ const initialState: StateCacheProps = {
   authentication: {
     loggedIn: false,
     time: 0,
+    passcodeIsSet: false,
   },
 };
 

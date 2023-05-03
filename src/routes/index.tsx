@@ -26,6 +26,9 @@ const PrivateRoute: React.FC<PrivateRouteProps> = (props) => {
 
   const checkAuth = () => {
     // Auth logic here
+    console.log("checkAuth");
+    console.log("authentication.time");
+    console.log(authentication.time);
     return MAX_LOCK_TIME < Moment.utc().millisecond() - authentication.time;
   };
 
@@ -40,25 +43,41 @@ const PrivateRoute: React.FC<PrivateRouteProps> = (props) => {
       component={props.component}
     />
   ) : (
-    <Redirect from={location.pathname} to={{ pathname: PASSCODE_LOGIN_ROUTE }} />
+    <Redirect
+      from={location.pathname}
+      to={{
+        pathname: authentication.passcodeIsSet
+          ? PASSCODE_LOGIN_ROUTE
+          : SET_PASSCODE_ROUTE,
+      }}
+    />
   );
 };
 
 const Routes = () => {
-
   return (
     <IonReactRouter>
       <IonRouterOutlet>
+        <Redirect
+          exact
+          from="/"
+          to={ONBOARDING_ROUTE}
+        />
 
         <Route
-            path={SET_PASSCODE_ROUTE}
-            component={SetPasscode}
+          path={SET_PASSCODE_ROUTE}
+          component={SetPasscode}
         />
 
         {/* Private Routes */}
-        <PrivateRoute path={ONBOARDING_ROUTE} component={Onboarding} />
-        <PrivateRoute path={GENERATE_SEED_PHRASE_ROUTE} component={GenerateSeedPhrase} />
-
+        <PrivateRoute
+          path={ONBOARDING_ROUTE}
+          component={Onboarding}
+        />
+        <PrivateRoute
+          path={GENERATE_SEED_PHRASE_ROUTE}
+          component={GenerateSeedPhrase}
+        />
       </IonRouterOutlet>
     </IonReactRouter>
   );

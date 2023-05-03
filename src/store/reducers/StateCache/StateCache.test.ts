@@ -40,6 +40,7 @@ describe("State Cache", () => {
     const authentication: AuthenticationCacheProps = {
       loggedIn: false,
       time: 0,
+      passcodeIsSet: false,
     };
     const action = setAuthentication(authentication);
     const nextState = StateCacheSlice.reducer(initialState, action);
