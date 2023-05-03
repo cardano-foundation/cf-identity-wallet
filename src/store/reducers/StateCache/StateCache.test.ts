@@ -4,8 +4,10 @@ import {
   AuthenticationCacheProps,
   CurrentRouteCacheProps,
   getAuthentication,
-  getCurrentRoute, getStateCache,
-  initialState, setAuthentication,
+  getCurrentRoute,
+  getStateCache,
+  initialState,
+  setAuthentication,
   setCurrentRoute,
   StateCacheSlice,
 } from "./StateCache";
@@ -37,7 +39,7 @@ describe("State Cache", () => {
   test("should set the authentication cache", () => {
     const authentication: AuthenticationCacheProps = {
       loggedIn: false,
-      time: "",
+      time: 0,
     };
     const action = setAuthentication(authentication);
     const nextState = StateCacheSlice.reducer(initialState, action);

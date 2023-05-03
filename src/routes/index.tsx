@@ -1,17 +1,35 @@
-import { useEffect, useState } from "react";
+import React, {FC, useEffect, useState} from "react";
 import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
-import { Redirect, Route } from "react-router-dom";
+import { Redirect, Route, RouteProps } from "react-router-dom";
+import Moment from "moment";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
+import { useAppSelector } from "../store/hooks";
+import { getAuthentication } from "../store/reducers/StateCache";
 
 const ONBOARDING_ROUTE = "/onboarding";
 const SET_PASSCODE_ROUTE = "/setpasscode";
 const PASSCODE_LOGIN_ROUTE = "/passcodelogin";
 const GENERATE_SEED_PHRASE_ROUTE = "/generateseedphrase";
+
+const MAX_LOCK_TIME = 3000; // 3 sec
+
+export interface IPrivateRouteProps extends RouteProps {
+  isAuth: boolean // is authenticate route
+  redirectPath: string // redirect path if don't authenticate route
+}
+
+const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
+  return props.isAuth ? (
+      <Route {...props} component={props.component} render={undefined} />
+  ) : (
+      <Redirect to={{pathname: props.redirectPath}} />
+  )
+}
 
 const Routes = () => {
   const [storedPasscode, setStoredPasscode] = useState("");
@@ -32,19 +50,17 @@ const Routes = () => {
           from="/"
           to={storedPasscode ? PASSCODE_LOGIN_ROUTE : ONBOARDING_ROUTE}
         />
+
+
+        <PrivateRoute isAuth={false} redirectPath={PASSCODE_LOGIN_ROUTE} path={ONBOARDING_ROUTE}>
+          <Onboarding  storedPasscode=""/>
+        </PrivateRoute>
+
         <Route
           path={ONBOARDING_ROUTE}
-          render={(props) => (
-            <Onboarding
-              {...props}
-              storedPasscode={storedPasscode}
-            />
-          )}
-        />
-        <Route
-          path={SET_PASSCODE_ROUTE}
           component={SetPasscode}
         />
+
         <Route
           path={PASSCODE_LOGIN_ROUTE}
           render={(props) => (
