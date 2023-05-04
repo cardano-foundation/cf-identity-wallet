@@ -1,5 +1,6 @@
-import { MemoryRouter, Route } from "react-router-dom";
+import {MemoryRouter, Route, useHistory} from "react-router-dom";
 import { fireEvent, render } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import { PasscodeLogin } from "./PasscodeLogin";
 import { Onboarding } from "../Onboarding";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
@@ -13,6 +14,8 @@ import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 import { Provider } from "react-redux";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
+import { setAuthentication } from "../../../store/reducers/StateCache";
+import {useAppDispatch} from "../../../store/hooks";
 
 describe("Passcode Login Page", () => {
   const storedPasscode =
@@ -51,10 +54,7 @@ describe("Passcode Login Page", () => {
         <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
           <Route
             path={PASSCODE_LOGIN_ROUTE}
-            render={(props) => (
-              <PasscodeLogin
-              />
-            )}
+            render={(props) => <PasscodeLogin />}
           />
           <Route
             path={SET_PASSCODE_ROUTE}
@@ -89,48 +89,61 @@ describe("Passcode Login Page", () => {
   });
 
   // TODO: There is not passcode set yet, we dont know what is the next page bc this is dynamic.
+});
 
-  /*
+/*
+describe("PasscodeLogin", () => {
   jest.mock("argon2-browser", () => ({
-    verify: jest.fn().mockResolvedValue(true),
+    verify: jest.fn().mockResolvedValue(undefined),
   }));
-  test("If no seed phrase was stored, once the passcode is entered correctly it renders Generate Seed Phrase page", async () => {
+
+  jest.mock("../../../core/storage/secureStorage", () => ({
+    SecureStorage: {
+      get: jest
+        .fn()
+        .mockResolvedValue(
+          "$argon2id$v=19$m=19456,t=2,p=1$mFkMWD9WnB2/l45kWIGxdg$QuHN8g1KePzXCyD1NnHTouf0nmJcujxZrgE/7yvMHpU"
+        ),
+    },
+  }));
+
+  jest.mock("./PasscodeLogin", () => ({
+    ...jest.requireActual("./PasscodeLogin"),
+    verifyPasscode: jest.fn(() => true),
+  }));
+
+  test("should log in user on correct passcode and redirect to correct route", async () => {
+    const history = createMemoryHistory({
+      initialEntries: [PASSCODE_LOGIN_ROUTE],
+    });
 
     const { getByText, findByText } = render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
-
-          <Route
-            path={PASSCODE_LOGIN_ROUTE}
-            render={(props) => (
-              <PasscodeLogin
-                {...props}
-                storedPasscode={storedPasscode}
-              />
-            )}
-          />
-          <Route
-            path={GENERATE_SEED_PHRASE_ROUTE}
-            component={GenerateSeedPhrase}
-          />
-
-        </MemoryRouter>
-      </Provider>
+        <Provider store={store}>
+          <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE, GENERATE_SEED_PHRASE_ROUTE]}>
+            <Route
+                path={PASSCODE_LOGIN_ROUTE}
+                component={PasscodeLogin}
+            />
+            <Route
+                path={GENERATE_SEED_PHRASE_ROUTE}
+                component={GenerateSeedPhrase}
+            />
+          </MemoryRouter>
+        </Provider>
     );
 
-    // Set passcode
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
-
 
     expect(
-      await findByText(EN_TRANSLATIONS["generateseedphrase.title"])
-    ).toBeInTheDocument();
-  });
-  */
+        await findByText(EN_TRANSLATIONS["generateseedphrase.title"])
+    ).toBeVisible();
 
+    expect(history.location.pathname).toBe(GENERATE_SEED_PHRASE_ROUTE);
+  });
 });
+*/

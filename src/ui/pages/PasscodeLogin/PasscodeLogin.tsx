@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { IonButton, IonCol, IonGrid, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { verify } from "argon2-browser";
+import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
@@ -20,7 +20,7 @@ import {
 } from "../../../store/reducers/StateCache";
 import Moment from "moment";
 
-const PasscodeLogin = ({ }) => {
+const PasscodeLogin = ({}) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -41,6 +41,26 @@ const PasscodeLogin = ({ }) => {
   const handlePinChange = (digit: number) => {
     if (passcode.length < 6) {
       setPasscode(passcode + digit);
+      if (passcode.length === 5) {
+        verifyPasscode(passcode + digit)
+            .then(() => {
+              dispatch(
+                  setAuthentication({
+                    ...authentication,
+                    loggedIn: true,
+                    time: Moment().valueOf(),
+                  })
+              );
+
+              history.push(GENERATE_SEED_PHRASE_ROUTE);
+
+              !seedPhrase
+                  ? // TODO: Proceed to main landing page
+                  history.push(GENERATE_SEED_PHRASE_ROUTE)
+                  : history.push('/dids');
+            })
+            .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
+      }
     }
   };
 
@@ -57,42 +77,21 @@ const PasscodeLogin = ({ }) => {
       : resetPasscode();
   };
 
-  const verifyPasscode = async () => {
+  const verifyPasscode = async (pass:string) => {
     const storedPass = await SecureStorage.get("app-login-passcode");
 
-    return !!(
-      storedPass &&
-      (await verify({ encoded: storedPass.toString(), pass: passcode }))
-    );
+    if (!storedPass) return false;
+    return verify({
+      encoded: storedPass,
+      pass: pass,
+    } as Argon2VerifyOptions);
   };
   const resetPasscode = () => {
     SecureStorage.delete("app-login-passcode");
     history.push(SET_PASSCODE_ROUTE);
   };
 
-  useEffect(() => {
-    if (passcode.length === 6) {
-      verifyPasscode()
-        .then((verified) => {
-          if (verified) {
-            dispatch(
-              setAuthentication({
-                ...authentication,
-                loggedIn: true,
-                time: Moment().valueOf(),
-              })
-            );
-            seedPhrase === null
-              ? // TODO: Proceed to main landing page
-                history.push(GENERATE_SEED_PHRASE_ROUTE)
-              : history.push(ONBOARDING_ROUTE);
-          } else {
-            setPasscodeIncorrect(true);
-          }
-        })
-        .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
-    }
-  }, [history, passcode, seedPhrase, authentication.passcodeIsSet]);
+  useEffect(() => {}, []);
 
   return (
     <PageLayout
