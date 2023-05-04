@@ -20,6 +20,7 @@ import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
 import { eyeOffOutline } from "ionicons/icons";
 import { generateMnemonic } from "bip39";
+import { Trans } from "react-i18next";
 import { i18n } from "../../../i18n";
 import {
   MNEMONIC_FIFTEEN_WORDS,
@@ -41,6 +42,8 @@ const GenerateSeedPhrase = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
+  const TERMS_TEXT = i18n.t("generateseedphrase.termsandconditions.text");
+  const TERMS_LINK = i18n.t("generateseedphrase.termsandconditions.link");
 
   useEffect(() => {
     const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
@@ -55,6 +58,19 @@ const GenerateSeedPhrase = () => {
     } else {
       setSeedPhrase(seedPhrase256);
     }
+  };
+
+  const HandleTerms = () => {
+    return (
+      <a
+        onClick={() => {
+          setChecked(true);
+          setModalIsOpen(true);
+        }}
+      >
+        <u>{TERMS_LINK}</u>
+      </a>
+    );
   };
 
   const handleContinue = () => {
@@ -189,16 +205,10 @@ const GenerateSeedPhrase = () => {
                   className="ion-text-wrap"
                   color="primary"
                 >
-                  I have read and agree to the&nbsp;
-                  <a
-                    onClick={() => {
-                      setChecked(true);
-                      setModalIsOpen(true);
-                    }}
-                  >
-                    <u>terms and conditions</u>
-                  </a>
-                  .
+                  <Trans
+                    i18nKey={TERMS_TEXT}
+                    components={[<HandleTerms key="" />]}
+                  />
                 </IonLabel>
               </IonItem>
               <TermsAndConditions
