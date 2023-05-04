@@ -5,7 +5,11 @@ import { verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { ONBOARDING_ROUTE, SET_PASSCODE_ROUTE } from "../../../routes";
+import {
+  GENERATE_SEED_PHRASE_ROUTE,
+  ONBOARDING_ROUTE,
+  SET_PASSCODE_ROUTE,
+} from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import Alert from "../../components/Alert/Alert";
 import { SecureStorage } from "../../../core/storage/secureStorage";
@@ -16,7 +20,7 @@ import {
 } from "../../../store/reducers/StateCache";
 import Moment from "moment";
 
-const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
+const PasscodeLogin = ({ }) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -53,6 +57,14 @@ const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
       : resetPasscode();
   };
 
+  const verifyPasscode = async () => {
+    const storedPass = await SecureStorage.get("app-login-passcode");
+
+    return !!(
+      storedPass &&
+      (await verify({ encoded: storedPass.toString(), pass: passcode }))
+    );
+  };
   const resetPasscode = () => {
     SecureStorage.delete("app-login-passcode");
     history.push(SET_PASSCODE_ROUTE);
@@ -60,20 +72,27 @@ const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
 
   useEffect(() => {
     if (passcode.length === 6) {
-      verify({ encoded: storedPasscode, pass: passcode })
-        .then(() => {
-          dispatch(setAuthentication({
-            ...authentication,
-            time: Moment().valueOf(),
-          }));
-          seedPhrase !== null
-            ? // TODO: Proceed to main landing page
-              history.push("/dids")
-            : history.push(ONBOARDING_ROUTE);
+      verifyPasscode()
+        .then((verified) => {
+          if (verified) {
+            dispatch(
+              setAuthentication({
+                ...authentication,
+                loggedIn: true,
+                time: Moment().valueOf(),
+              })
+            );
+            seedPhrase === null
+              ? // TODO: Proceed to main landing page
+                history.push(GENERATE_SEED_PHRASE_ROUTE)
+              : history.push(ONBOARDING_ROUTE);
+          } else {
+            setPasscodeIncorrect(true);
+          }
         })
         .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
     }
-  }, [history, passcode, seedPhrase, storedPasscode]);
+  }, [history, passcode, seedPhrase, authentication.passcodeIsSet]);
 
   return (
     <PageLayout

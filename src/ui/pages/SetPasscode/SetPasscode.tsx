@@ -12,9 +12,12 @@ import {
 } from "../../../core/storage/secureStorage";
 import { GENERATE_SEED_PHRASE_ROUTE } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import {getAuthentication, setAuthentication} from "../../../store/reducers/StateCache";
+import {
+  getAuthentication,
+  setAuthentication,
+} from "../../../store/reducers/StateCache";
 import Moment from "moment/moment";
-import {useAppDispatch, useAppSelector} from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 
 // Based on OWASP recommendations
 const ARGON2ID_OPTIONS = {
@@ -45,10 +48,13 @@ const SetPasscode = () => {
             SecureStorage.set(KeyStoreKeys.APP_PASSCODE, hash.encoded).then(
               () => {
                 handleClear();
-                dispatch(setAuthentication({
-                  ...authentication,
-                  time: Moment().valueOf(),
-                }));
+                dispatch(
+                  setAuthentication({
+                    ...authentication,
+                    loggedIn: true,
+                    time: Moment().valueOf(),
+                  })
+                );
                 history.push(GENERATE_SEED_PHRASE_ROUTE);
                 return;
               }

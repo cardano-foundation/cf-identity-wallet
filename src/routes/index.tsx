@@ -27,10 +27,12 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
     return MAX_LOCK_TIME < Moment().valueOf() - authentication.time;
   };
 
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(checkAuth());
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    authentication.loggedIn
+  );
 
   useEffect(() => {
-    setIsAuthenticated(checkAuth());
+    setIsAuthenticated(authentication.loggedIn);
   }, [authentication.time]);
 
   return isAuthenticated ? (
