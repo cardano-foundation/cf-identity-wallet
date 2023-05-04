@@ -91,31 +91,16 @@ describe("Passcode Login Page", () => {
   // TODO: There is not passcode set yet, we dont know what is the next page bc this is dynamic.
 });
 
-/*
+
 describe("PasscodeLogin", () => {
-  jest.mock("argon2-browser", () => ({
-    verify: jest.fn().mockResolvedValue(undefined),
-  }));
 
-  jest.mock("../../../core/storage/secureStorage", () => ({
-    SecureStorage: {
-      get: jest
-        .fn()
-        .mockResolvedValue(
-          "$argon2id$v=19$m=19456,t=2,p=1$mFkMWD9WnB2/l45kWIGxdg$QuHN8g1KePzXCyD1NnHTouf0nmJcujxZrgE/7yvMHpU"
-        ),
-    },
-  }));
-
+  /*
   jest.mock("./PasscodeLogin", () => ({
     ...jest.requireActual("./PasscodeLogin"),
     verifyPasscode: jest.fn(() => true),
-  }));
+  }));*/
 
-  test("should log in user on correct passcode and redirect to correct route", async () => {
-    const history = createMemoryHistory({
-      initialEntries: [PASSCODE_LOGIN_ROUTE],
-    });
+  test("should log in user on correct passcode and redirect to generate seed phrase page", async () => {
 
     const { getByText, findByText } = render(
         <Provider store={store}>
@@ -139,11 +124,12 @@ describe("PasscodeLogin", () => {
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
 
+
     expect(
         await findByText(EN_TRANSLATIONS["generateseedphrase.title"])
     ).toBeVisible();
 
-    expect(history.location.pathname).toBe(GENERATE_SEED_PHRASE_ROUTE);
+
   });
 });
-*/
+

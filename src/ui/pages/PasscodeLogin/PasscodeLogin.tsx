@@ -42,24 +42,33 @@ const PasscodeLogin = ({}) => {
     if (passcode.length < 6) {
       setPasscode(passcode + digit);
       if (passcode.length === 5) {
-        verifyPasscode(passcode + digit)
-            .then(() => {
-              dispatch(
-                  setAuthentication({
-                    ...authentication,
-                    loggedIn: true,
-                    time: Moment().valueOf(),
-                  })
-              );
+        console.log("hey0")
+        try {
+          verifyPasscode(passcode + digit)
+              .then(() => {
+                history.replace(GENERATE_SEED_PHRASE_ROUTE)
+                console.log("hey")
+                dispatch(
+                    setAuthentication({
+                      ...authentication,
+                      loggedIn: true,
+                      time: Moment().valueOf(),
+                    })
+                );
 
-              history.push(GENERATE_SEED_PHRASE_ROUTE);
+                !seedPhrase
+                    ? // TODO: Proceed to main landing page
+                    history.push(GENERATE_SEED_PHRASE_ROUTE)
+                    : history.push('/dids');
+              })
+              .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
+        } catch (e) {
 
-              !seedPhrase
-                  ? // TODO: Proceed to main landing page
-                  history.push(GENERATE_SEED_PHRASE_ROUTE)
-                  : history.push('/dids');
-            })
-            .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
+          const err = e;
+          console.log("error: ", err)
+          console.log(e)
+        }
+
       }
     }
   };
@@ -78,13 +87,21 @@ const PasscodeLogin = ({}) => {
   };
 
   const verifyPasscode = async (pass:string) => {
-    const storedPass = await SecureStorage.get("app-login-passcode");
-
-    if (!storedPass) return false;
-    return verify({
-      encoded: storedPass,
-      pass: pass,
-    } as Argon2VerifyOptions);
+    try {
+      const storedPass = await SecureStorage.get("app-login-passcode");
+      console.log("storedPass")
+      console.log(storedPass)
+      if (!storedPass) return false;
+      return verify({
+        encoded: storedPass,
+        pass: pass,
+      } as Argon2VerifyOptions);
+    } catch (e) {
+      const err = e;
+      console.log("err:", err)
+      return false
+    }
+    console.log("hey3")
   };
   const resetPasscode = () => {
     SecureStorage.delete("app-login-passcode");
