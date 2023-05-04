@@ -32,9 +32,12 @@ import { ONBOARDING_ROUTE } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
+import { useAppDispatch } from "../../../store/hooks";
+import { setSeedPhraseCache } from "../../../store/reducers/SeedPhraseCache";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
@@ -74,8 +77,8 @@ const GenerateSeedPhrase = () => {
   };
 
   const handleContinue = () => {
+    dispatch(setSeedPhraseCache(seedPhrase));
     setAlertIsOpen(false);
-    // TODO: Go to Verify your Seed Phrase
     history.push({
       pathname: "/verifyseedphrase",
     });
