@@ -14,16 +14,6 @@ const AppWrapper = (props: { children: any }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
 
-  const history = useHistory();
-
-  const [child, setChild] = useState(null);
-
-  useIonViewWillEnter(() => {
-    console.log("heeeey");
-    initApp().then(() => {
-      setChild(props.children);
-    });
-  });
   useEffect(() => {
     initApp();
   }, []);

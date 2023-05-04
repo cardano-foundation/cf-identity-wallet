@@ -9,8 +9,11 @@ import { ONBOARDING_ROUTE, SET_PASSCODE_ROUTE } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import Alert from "../../components/Alert/Alert";
 import { SecureStorage } from "../../../core/storage/secureStorage";
-import {useAppDispatch, useAppSelector} from "../../../store/hooks";
-import {getAuthentication, setAuthentication} from "../../../store/reducers/StateCache";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getAuthentication,
+  setAuthentication,
+} from "../../../store/reducers/StateCache";
 import Moment from "moment";
 
 const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
@@ -58,15 +61,16 @@ const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
   useEffect(() => {
     if (passcode.length === 6) {
       verify({ encoded: storedPasscode, pass: passcode })
-        .then(() =>
-            {
-              setAuthentication({ ...authentication, time: Moment.utc().millisecond() })
-              seedPhrase !== null
-                  ? // TODO: Proceed to main landing page
-                  history.push("/dids")
-                  : history.push(ONBOARDING_ROUTE)
-            }
-        )
+        .then(() => {
+          dispatch(setAuthentication({
+            ...authentication,
+            time: Moment().valueOf(),
+          }));
+          seedPhrase !== null
+            ? // TODO: Proceed to main landing page
+              history.push("/dids")
+            : history.push(ONBOARDING_ROUTE);
+        })
         .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
     }
   }, [history, passcode, seedPhrase, storedPasscode]);

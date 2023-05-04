@@ -9,6 +9,8 @@ import {
   SET_PASSCODE_ROUTE,
   ONBOARDING_ROUTE,
 } from "../../../routes";
+import {store} from "../../../store";
+import {Provider} from "react-redux";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
@@ -43,10 +45,12 @@ describe("Onboarding Page", () => {
             />
           )}
         />
+        <Provider store={store}>
         <Route
           path={SET_PASSCODE_ROUTE}
           component={SetPasscode}
         />
+        </Provider>
       </MemoryRouter>
     );
 

@@ -9,13 +9,17 @@ import {
   SET_PASSCODE_ROUTE,
 } from "../../../routes";
 import { SetPasscode } from "../SetPasscode";
+import { store } from "../../../store";
+import { Provider } from "react-redux";
 
 describe("Passcode Login Page", () => {
   const storedPasscode =
     "$argon2id$v=19$m=19456,t=2,p=1$9rNY0Jq12CTkSsZNkWp8Jg$CXvjykDaCagRyUc9TrA/N45iTHb3SlGcXICpw2Rrzp0";
   test("Renders Passcode Login page with title and description", () => {
     const { getByText } = render(
-      <PasscodeLogin storedPasscode={storedPasscode} />
+      <Provider store={store}>
+        <PasscodeLogin storedPasscode={storedPasscode} />
+      </Provider>
     );
     expect(
       getByText(EN_TRANSLATIONS["passcodelogin.title"])
@@ -27,7 +31,9 @@ describe("Passcode Login Page", () => {
 
   test("The user can add and remove digits from the passcode", () => {
     const { getByText, getByTestId } = render(
-      <PasscodeLogin storedPasscode={storedPasscode} />
+      <Provider store={store}>
+        <PasscodeLogin storedPasscode={storedPasscode} />
+      </Provider>
     );
     fireEvent.click(getByText(/1/));
     const circleElement = getByTestId("circle-0");
@@ -39,21 +45,23 @@ describe("Passcode Login Page", () => {
 
   test("If no seed phrase was stored, once the passcode is entered correctly it renders Generate Seed Phrase page", async () => {
     const { getByText, findByText } = render(
-      <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
-        <Route
-          path={PASSCODE_LOGIN_ROUTE}
-          render={(props) => (
-            <PasscodeLogin
-              {...props}
-              storedPasscode={storedPasscode}
-            />
-          )}
-        />
-        <Route
-          path={ONBOARDING_ROUTE}
-          component={Onboarding}
-        />
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
+          <Route
+            path={PASSCODE_LOGIN_ROUTE}
+            render={(props) => (
+              <PasscodeLogin
+                {...props}
+                storedPasscode={storedPasscode}
+              />
+            )}
+          />
+          <Route
+            path={ONBOARDING_ROUTE}
+            component={Onboarding}
+          />
+        </MemoryRouter>
+      </Provider>
     );
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
@@ -69,21 +77,23 @@ describe("Passcode Login Page", () => {
 
   test("If no seed phrase was stored and I click on I forgot my passcode, I can start over", async () => {
     const { getByText, findByText } = render(
-      <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
-        <Route
-          path={PASSCODE_LOGIN_ROUTE}
-          render={(props) => (
-            <PasscodeLogin
-              {...props}
-              storedPasscode={storedPasscode}
-            />
-          )}
-        />
-        <Route
-          path={SET_PASSCODE_ROUTE}
-          component={SetPasscode}
-        />
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
+          <Route
+            path={PASSCODE_LOGIN_ROUTE}
+            render={(props) => (
+              <PasscodeLogin
+                {...props}
+                storedPasscode={storedPasscode}
+              />
+            )}
+          />
+          <Route
+            path={SET_PASSCODE_ROUTE}
+            component={SetPasscode}
+          />
+        </MemoryRouter>
+      </Provider>
     );
     // User gets the passcode wrong
     fireEvent.click(getByText(/1/));

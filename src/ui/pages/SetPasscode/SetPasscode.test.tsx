@@ -13,6 +13,8 @@ import {
   KeyStoreKeys,
 } from "../../../core/storage/secureStorage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import {store} from "../../../store";
+import {Provider} from "react-redux";
 
 const ARGON2ID_HASH = {
   encoded: "encodedHash",
@@ -24,7 +26,7 @@ const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 
 describe("SetPasscode Page", () => {
   test("Renders Create Passcode page with title and description", () => {
-    const { getByText } = render(<SetPasscode />);
+    const { getByText } = render(<Provider store={store}><SetPasscode /></Provider>);
     expect(
       getByText(EN_TRANSLATIONS["setpasscode.enterpasscode.title"])
     ).toBeInTheDocument();
@@ -34,7 +36,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("The user can add and remove digits from the passcode", () => {
-    const { getByText, getByTestId } = render(<SetPasscode />);
+    const { getByText, getByTestId } = render(<Provider store={store}><SetPasscode /></Provider>);
     fireEvent.click(getByText(/1/));
     const circleElement = getByTestId("circle-0");
     expect(circleElement.classList).toContain("circle-fill");
@@ -44,7 +46,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("Renders Re-enter Passcode title and start over button when passcode is set", () => {
-    const { getByText } = render(<SetPasscode />);
+    const { getByText } = render(<Provider store={store}><SetPasscode /></Provider>);
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
@@ -61,7 +63,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("renders enter passcode restarting the process when start over button is clicked", () => {
-    const { getByText } = render(<SetPasscode />);
+    const { getByText } = render(<Provider store={store}><SetPasscode /></Provider>);
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/1/));
@@ -86,7 +88,7 @@ describe("SetPasscode Page", () => {
   });
 
   test("Entering a wrong passcode at the passcode confirmation returns an error", () => {
-    const { getByText } = render(<SetPasscode />);
+    const { getByText } = render(<Provider store={store}><SetPasscode /></Provider>);
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/2/));
     fireEvent.click(getByText(/1/));
@@ -115,11 +117,13 @@ describe("SetPasscode Page", () => {
   test("Redirects to next page when passcode is entered correctly", async () => {
     const { getByText, queryByText } = render(
       <MemoryRouter initialEntries={[SET_PASSCODE_ROUTE]}>
+        <Provider store={store}>
         <Route
           exact
           path={SET_PASSCODE_ROUTE}
           component={SetPasscode}
         />
+        </Provider>
         <Route
           path={GENERATE_SEED_PHRASE_ROUTE}
           component={GenerateSeedPhrase}

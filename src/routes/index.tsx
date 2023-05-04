@@ -24,7 +24,7 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
 
   const checkAuth = () => {
     // Auth logic here
-    return MAX_LOCK_TIME < Moment.utc().millisecond() - authentication.time;
+    return MAX_LOCK_TIME < Moment().valueOf() - authentication.time;
   };
 
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(checkAuth());
@@ -58,6 +58,11 @@ const Routes = () => {
           exact
           from="/"
           to={ONBOARDING_ROUTE}
+        />
+
+        <Route
+          path={PASSCODE_LOGIN_ROUTE}
+          component={PasscodeLogin}
         />
 
         <Route
