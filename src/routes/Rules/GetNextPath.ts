@@ -5,13 +5,13 @@ import { RootState } from "../../store";
 export const getNextPath = (
   currentPath: string,
   store: RootState,
-  state: any,
-  payload: any
+  state?: any,
+  payload?: any
 ) => {
   const [nextPath, updateRedux] = routeRules[currentPath];
 
   return {
     nextPath: nextPath(store, state, payload),
-    updateRedux,
+    updateRedux: updateRedux(store),
   };
 };

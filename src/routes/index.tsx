@@ -16,6 +16,7 @@ export const ROUTES = {
   SET_PASSCODE_ROUTE: "/setpasscode",
   PASSCODE_LOGIN_ROUTE: "/passcodelogin",
   GENERATE_SEED_PHRASE_ROUTE: "/generateseedphrase",
+  DIDS_ROUTE: "/dids",
 };
 
 const ONBOARDING_ROUTE = "/onboarding";

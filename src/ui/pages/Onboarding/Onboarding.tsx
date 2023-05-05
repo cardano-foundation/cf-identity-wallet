@@ -29,14 +29,10 @@ const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
 
   const handleNavigation = () => {
 
-    const { nextPath, updateRedux } = getNextPath(
+    const { nextPath } = getNextPath(
       ROUTES.ONBOARDING_ROUTE,
-        storeState,
-      {},
-      {}
+        storeState
     );
-    console.log("nextPath");
-    console.log(nextPath);
 
     if (nextPath.canNavigate){
       history.push(nextPath.pathname)
