@@ -45,21 +45,22 @@ const PasscodeLogin = ({}) => {
         console.log("hey0")
         try {
           verifyPasscode(passcode + digit)
-              .then(() => {
-                history.replace(GENERATE_SEED_PHRASE_ROUTE)
-                console.log("hey")
-                dispatch(
-                    setAuthentication({
-                      ...authentication,
-                      loggedIn: true,
-                      time: Moment().valueOf(),
-                    })
-                );
+              .then((verified) => {
+                if (verified){
+                  console.log("hey")
+                  dispatch(
+                      setAuthentication({
+                        ...authentication,
+                        loggedIn: true,
+                        time: Moment().valueOf(),
+                      })
+                  );
 
-                !seedPhrase
-                    ? // TODO: Proceed to main landing page
-                    history.push(GENERATE_SEED_PHRASE_ROUTE)
-                    : history.push('/dids');
+                  !seedPhrase
+                      ? // TODO: Proceed to main landing page
+                      history.push(GENERATE_SEED_PHRASE_ROUTE)
+                      : history.push('/dids');
+                }
               })
               .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
         } catch (e) {
@@ -89,19 +90,17 @@ const PasscodeLogin = ({}) => {
   const verifyPasscode = async (pass:string) => {
     try {
       const storedPass = await SecureStorage.get("app-login-passcode");
-      console.log("storedPass")
-      console.log(storedPass)
+
       if (!storedPass) return false;
-      return verify({
+      await verify({
         encoded: storedPass,
         pass: pass,
       } as Argon2VerifyOptions);
+      return true;
     } catch (e) {
-      const err = e;
-      console.log("err:", err)
+
       return false
     }
-    console.log("hey3")
   };
   const resetPasscode = () => {
     SecureStorage.delete("app-login-passcode");

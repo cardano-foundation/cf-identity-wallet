@@ -94,13 +94,31 @@ describe("Passcode Login Page", () => {
 
 describe("PasscodeLogin", () => {
 
-  /*
-  jest.mock("./PasscodeLogin", () => ({
-    ...jest.requireActual("./PasscodeLogin"),
-    verifyPasscode: jest.fn(() => true),
-  }));*/
+  //let mockDateNow;
 
+  beforeEach(() => {
+    jest.mock("./PasscodeLogin", () => {
+      const originalModule = jest.requireActual("./PasscodeLogin");
+      return {
+        ...originalModule,
+        verifyPasscode: jest.fn(() => true),
+      };
+    });
+  });
+
+  afterEach(() => {
+    //mockDateNow.mockRestore();
+  });
   test("should log in user on correct passcode and redirect to generate seed phrase page", async () => {
+
+    /*
+    jest.mock("./PasscodeLogin", () => {
+      const originalModule = jest.requireActual("./PasscodeLogin");
+      return {
+        ...originalModule,
+        verifyPasscode: jest.fn(() => true),
+      };
+    });*/
 
     const { getByText, findByText } = render(
         <Provider store={store}>
