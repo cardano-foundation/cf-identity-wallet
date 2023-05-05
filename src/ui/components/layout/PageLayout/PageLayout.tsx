@@ -40,6 +40,7 @@ const PageLayout = ({
                 text=""
                 defaultHref={backButtonPath}
                 color="primary"
+                data-testid="back-button"
               />
             )}
             {closeButton && (
@@ -47,6 +48,7 @@ const PageLayout = ({
                 shape="round"
                 className="close-button"
                 onClick={closeButtonAction}
+                data-testid="close-button"
               >
                 <IonIcon
                   slot="icon-only"
