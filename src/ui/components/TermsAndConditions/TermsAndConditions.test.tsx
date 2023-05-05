@@ -6,28 +6,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 
 describe("Terms and conditions screen", () => {
-  test("User can see Terms and conditions checkbox and label", () => {
-    const { getByText, getByTestId } = render(
-      <Provider store={store}>
-        <GenerateSeedPhrase />
-      </Provider>
-    );
-    const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    const termsText = getByTestId("termsandconditions-label");
-    const termsLink = getByText(
-      EN_TRANSLATIONS["generateseedphrase.termsandconditions.link"]
-    );
-    expect(termsCheckbox).toBeInTheDocument();
-    expect(termsText).toContainHTML(
-      EN_TRANSLATIONS["generateseedphrase.termsandconditions.text"].substring(
-        0,
-        20
-      )
-    );
-    expect(termsLink).toBeVisible();
-  });
-
-  test("User can open/close Terms and conditions and trigger checkbox", async () => {
+  test("Opening Terms and conditions modal triggers the checkbox", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
         <GenerateSeedPhrase />
@@ -41,7 +20,7 @@ describe("Terms and conditions screen", () => {
     // The checkbox is not checked by default
     expect(termsCheckbox.hasAttribute('[checked="false"]'));
 
-    // When the user clicks on the link
+    // When the user opens the modal
     act(() => {
       fireEvent.click(termsLink);
     });
@@ -49,10 +28,27 @@ describe("Terms and conditions screen", () => {
     await waitFor(() => {
       // The checkbox is ticked
       expect(termsCheckbox.hasAttribute('[checked="true"]'));
-      // And the modal shows up
+    });
+  });
+
+  test("User can close the modal clicking on the backdrop", async () => {
+    const { getByText, queryByText } = render(
+      <Provider store={store}>
+        <GenerateSeedPhrase />
+      </Provider>
+    );
+    const termsLink = getByText(
+      EN_TRANSLATIONS["generateseedphrase.termsandconditions.link"]
+    );
+
+    // When the user opens the modal
+    act(() => {
+      fireEvent.click(termsLink);
+    });
+
+    await waitFor(() => {
+      // The modal shows up
       expect(document.querySelector("ion-modal")).toBeInTheDocument();
-      // And the close button is visible
-      expect(getByTestId("close-button")).toBeVisible();
     });
 
     // When we click on the modal backdrop...
@@ -61,9 +57,47 @@ describe("Terms and conditions screen", () => {
       backdrop && fireEvent.click(backdrop);
     });
 
+    // ...the backdrop is no longer visible...
+    await waitFor(() => {
+      expect(backdrop).not.toBeInTheDocument();
+    });
+
+    // ...and the modal is no longer visible
+    expect(
+      queryByText(EN_TRANSLATIONS["termsandconditions.title"])
+    ).not.toBeInTheDocument();
+  });
+
+  test("User can close the modal clicking on the close button", async () => {
+    const { getByText, getByTestId, queryByText } = render(
+      <Provider store={store}>
+        <GenerateSeedPhrase />
+      </Provider>
+    );
+    const termsLink = getByText(
+      EN_TRANSLATIONS["generateseedphrase.termsandconditions.link"]
+    );
+
+    // When the user opens the modal..
+    act(() => {
+      fireEvent.click(termsLink);
+    });
+
+    await waitFor(() => {
+      // ...the close button is visible
+      expect(getByTestId("close-button")).toBeVisible();
+    });
+
+    // When we click on the close button...
+    act(() => {
+      fireEvent.click(getByTestId("close-button"));
+    });
+
     // ...the modal is no longer visible
     await waitFor(() => {
-      expect(document.querySelector("ion-modal")).toBeInTheDocument();
+      expect(
+        queryByText(EN_TRANSLATIONS["termsandconditions.title"])
+      ).not.toBeInTheDocument();
     });
   });
 });
