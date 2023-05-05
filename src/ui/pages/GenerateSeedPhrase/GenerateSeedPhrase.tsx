@@ -24,12 +24,17 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
-import { ONBOARDING_ROUTE } from "../../../routes";
+import { ONBOARDING_ROUTE, ROUTES } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
+import { getNextPath } from "../../../routes/Rules/GetNextPath";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getState } from "../../../store/reducers/StateCache";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
@@ -53,10 +58,15 @@ const GenerateSeedPhrase = () => {
 
   const handleContinue = () => {
     setIsOpen(false);
-    // TODO: Go to Verify your Seed Phrase
-    history.push({
-      pathname: "/verifyseedphrase",
-    });
+    const { nextPath, updateRedux } = getNextPath(
+      ROUTES.GENERATE_SEED_PHRASE_ROUTE,
+      storeState,
+      { seedPhrase: seedPhrase.join(" ") }
+    );
+    if (nextPath.canNavigate) {
+      dispatch(updateRedux());
+      history.push(nextPath.pathname);
+    }
   };
 
   return (

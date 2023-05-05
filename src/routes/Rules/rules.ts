@@ -2,6 +2,7 @@ import { ROUTES } from "../index";
 import { RootState } from "../../store";
 import { setAuthentication } from "../../store/reducers/StateCache";
 import Moment from "moment";
+import { setSeedPhraseCache } from "../../store/reducers/SeedPhraseCache";
 
 type RouteRulesType = Record<string, any>;
 const routeRules: RouteRulesType = {
@@ -19,6 +20,11 @@ const routeRules: RouteRulesType = {
     (store: RootState, state?: any, payload?: any) =>
       getNextPasscodeLoginRoute(store, state, payload),
     (store: RootState) => () => updateStoreAfterPasscodeLoginRoute(store),
+  ],
+  "/generateseedphrase": [
+    () => getNextGenerateSeedPhraseRoute(),
+    (store: RootState, state: any) => () =>
+      updateStoreAfterGenerateSeedPhraseRoute(store, state),
   ],
 };
 
@@ -71,6 +77,17 @@ const updateStoreAfterPasscodeLoginRoute = (store: RootState) => {
     loggedIn: true,
     time: Moment().valueOf(),
   });
+};
+
+const getNextGenerateSeedPhraseRoute = () => {
+  return { canNavigate: true, pathname: ROUTES.VERIFY_SEED_PHRASE_ROUTE };
+};
+
+const updateStoreAfterGenerateSeedPhraseRoute = (
+  store: RootState,
+  state: any
+) => {
+  return setSeedPhraseCache(state.seedPhrase);
 };
 
 export { routeRules };

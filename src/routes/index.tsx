@@ -6,7 +6,7 @@ import { Redirect, Route, RouteProps, useLocation } from "react-router-dom";
 import Moment from "moment";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
-import { SetPasscode } from "../ui/pages/SetPasscode/SetPasscode";
+import { SetPasscode } from "../ui/pages/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
@@ -19,6 +19,7 @@ export const ROUTES = {
   SET_PASSCODE_ROUTE: "/setpasscode",
   PASSCODE_LOGIN_ROUTE: "/passcodelogin",
   GENERATE_SEED_PHRASE_ROUTE: "/generateseedphrase",
+  VERIFY_SEED_PHRASE_ROUTE: "/verifyseedphrase",
   DIDS_ROUTE: "/dids",
 };
 

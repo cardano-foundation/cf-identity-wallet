@@ -12,10 +12,16 @@ import {
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { store } from "../../../store";
+import { Provider } from "react-redux";
 
 describe("Generate Seed Phrase screen", () => {
   test("User can see Title and Security Overlay", () => {
-    const { getByText, getByTestId } = render(<GenerateSeedPhrase />);
+    const { getByText, getByTestId } = render(
+      <Provider store={store}>
+        <GenerateSeedPhrase />
+      </Provider>
+    );
 
     const title = getByText(EN_TRANSLATIONS["generateseedphrase.title"]);
     const overlay = getByTestId("seed-phrase-privacy-overlay");
@@ -25,7 +31,11 @@ describe("Generate Seed Phrase screen", () => {
   });
 
   test("User can dismiss the Security Overlay", () => {
-    const { getByTestId } = render(<GenerateSeedPhrase />);
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <GenerateSeedPhrase />
+      </Provider>
+    );
 
     const overlay = getByTestId("seed-phrase-privacy-overlay");
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
@@ -37,7 +47,11 @@ describe("Generate Seed Phrase screen", () => {
   });
 
   test("User can toggle the 15/24 words seed phrase segment", () => {
-    const { getByTestId } = render(<GenerateSeedPhrase />);
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <GenerateSeedPhrase />
+      </Provider>
+    );
 
     const segment = getByTestId("mnemonic-length-segment");
     const seedPhraseContainer = getByTestId("seed-phrase-container");
@@ -84,7 +98,11 @@ describe("Generate Seed Phrase screen", () => {
   });
 
   test("User is prompted to save the seed phrase", async () => {
-    const { getByText, getByTestId } = render(<GenerateSeedPhrase />);
+    const { getByText, getByTestId } = render(
+      <Provider store={store}>
+        <GenerateSeedPhrase />
+      </Provider>
+    );
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByTestId("generate-seed-phrase-continue-button");
@@ -120,7 +138,11 @@ describe("Generate Seed Phrase screen", () => {
   });
 
   test("Clicking on second alert button will dismiss it", async () => {
-    const { getByText, getByTestId } = render(<GenerateSeedPhrase />);
+    const { getByText, getByTestId } = render(
+      <Provider store={store}>
+        <GenerateSeedPhrase />
+      </Provider>
+    );
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByTestId("generate-seed-phrase-continue-button");
@@ -146,7 +168,11 @@ describe("Generate Seed Phrase screen", () => {
   });
 
   test("Clicking on alert backdrop will dismiss it", async () => {
-    const { getByTestId } = render(<GenerateSeedPhrase />);
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <GenerateSeedPhrase />
+      </Provider>
+    );
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByTestId("generate-seed-phrase-continue-button");

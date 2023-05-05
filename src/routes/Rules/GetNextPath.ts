@@ -11,7 +11,7 @@ const getNextPath = (
 
   return {
     nextPath: nextPath(store, state, payload),
-    updateRedux: updateRedux(store),
+    updateRedux: updateRedux(store, state),
   };
 };
 
