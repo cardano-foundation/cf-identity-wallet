@@ -42,12 +42,10 @@ const PasscodeLogin = ({}) => {
     if (passcode.length < 6) {
       setPasscode(passcode + digit);
       if (passcode.length === 5) {
-        console.log("hey0")
         try {
           verifyPasscode(passcode + digit)
               .then((verified) => {
                 if (verified){
-                  console.log("hey")
                   dispatch(
                       setAuthentication({
                         ...authentication,
@@ -64,10 +62,7 @@ const PasscodeLogin = ({}) => {
               })
               .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
         } catch (e) {
-
-          const err = e;
-          console.log("error: ", err)
-          console.log(e)
+          setPasscodeIncorrect(true)
         }
 
       }

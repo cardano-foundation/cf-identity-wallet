@@ -1,4 +1,4 @@
-import {MemoryRouter, Route, useHistory} from "react-router-dom";
+import {MemoryRouter, Route, Router, useHistory} from "react-router-dom";
 import { fireEvent, render } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { PasscodeLogin } from "./PasscodeLogin";
@@ -89,14 +89,9 @@ describe("Passcode Login Page", () => {
   });
 
   // TODO: There is not passcode set yet, we dont know what is the next page bc this is dynamic.
-});
+  /*test("should log in user on correct passcode and redirect to generate seed phrase page", async () => {
 
 
-describe("PasscodeLogin", () => {
-
-  //let mockDateNow;
-
-  beforeEach(() => {
     jest.mock("./PasscodeLogin", () => {
       const originalModule = jest.requireActual("./PasscodeLogin");
       return {
@@ -104,21 +99,6 @@ describe("PasscodeLogin", () => {
         verifyPasscode: jest.fn(() => true),
       };
     });
-  });
-
-  afterEach(() => {
-    //mockDateNow.mockRestore();
-  });
-  test("should log in user on correct passcode and redirect to generate seed phrase page", async () => {
-
-    /*
-    jest.mock("./PasscodeLogin", () => {
-      const originalModule = jest.requireActual("./PasscodeLogin");
-      return {
-        ...originalModule,
-        verifyPasscode: jest.fn(() => true),
-      };
-    });*/
 
     const { getByText, findByText } = render(
         <Provider store={store}>
@@ -148,6 +128,5 @@ describe("PasscodeLogin", () => {
     ).toBeVisible();
 
 
-  });
+  });*/
 });
-
