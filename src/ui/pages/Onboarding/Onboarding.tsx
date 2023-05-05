@@ -12,10 +12,13 @@ import {
 } from "../../../routes";
 import { getNextPath } from "../../../routes/Rules/GetNextPath";
 import { store } from "../../../store";
-import {useAppSelector} from "../../../store/hooks";
-import {getAuthentication, getState} from "../../../store/reducers/StateCache";
+import { useAppSelector } from "../../../store/hooks";
+import {
+  getAuthentication,
+  getState,
+} from "../../../store/reducers/StateCache";
 
-const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
+const Onboarding = ({}) => {
   const history = useHistory();
   const storeState = useAppSelector(getState);
   const items: SlideItem[] = [];
@@ -28,16 +31,11 @@ const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
   }
 
   const handleNavigation = () => {
+    const { nextPath } = getNextPath(ROUTES.ONBOARDING_ROUTE, storeState);
 
-    const { nextPath } = getNextPath(
-      ROUTES.ONBOARDING_ROUTE,
-        storeState
-    );
-
-    if (nextPath.canNavigate){
-      history.push(nextPath.pathname)
+    if (nextPath.canNavigate) {
+      history.push(nextPath.pathname);
     }
-
   };
 
   return (

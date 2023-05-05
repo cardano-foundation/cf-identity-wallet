@@ -81,12 +81,12 @@ const Routes = () => {
         />
 
         <Route
-            path={ONBOARDING_ROUTE}
-            component={Onboarding}
+          path={ONBOARDING_ROUTE}
+          component={Onboarding}
         />
 
         {/* Private Routes */}
-        <PrivateRoute
+        <Route
           path={GENERATE_SEED_PHRASE_ROUTE}
           component={GenerateSeedPhrase}
         />

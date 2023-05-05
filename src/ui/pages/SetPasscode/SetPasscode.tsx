@@ -10,16 +10,17 @@ import {
   SecureStorage,
   KeyStoreKeys,
 } from "../../../core/storage/secureStorage";
-import {GENERATE_SEED_PHRASE_ROUTE, ROUTES} from "../../../routes";
+import { GENERATE_SEED_PHRASE_ROUTE, ROUTES } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import {
-  getAuthentication, getState,
+  getAuthentication,
+  getState,
   setAuthentication,
 } from "../../../store/reducers/StateCache";
 import Moment from "moment/moment";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {getNextPath} from "../../../routes/Rules/GetNextPath";
-import {RootState} from "../../../store";
+import { getNextPath } from "../../../routes/Rules/GetNextPath";
+import { RootState } from "../../../store";
 
 // Based on OWASP recommendations
 const ARGON2ID_OPTIONS = {
@@ -52,12 +53,12 @@ const SetPasscode = () => {
                 handleClear();
 
                 const { nextPath, updateRedux } = getNextPath(
-                    ROUTES.SET_PASSCODE_ROUTE,
-                    storeState
+                  ROUTES.SET_PASSCODE_ROUTE,
+                  storeState
                 );
-                if (nextPath.canNavigate){
+                if (nextPath.canNavigate) {
                   dispatch(updateRedux());
-                  history.push(nextPath.pathname)
+                  history.push(nextPath.pathname);
                 }
               }
             );
