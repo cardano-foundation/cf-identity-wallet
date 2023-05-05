@@ -77,7 +77,7 @@ const GenerateSeedPhrase = () => {
   };
 
   const handleContinue = () => {
-    dispatch(setSeedPhraseCache(seedPhrase));
+    dispatch(setSeedPhraseCache(seedPhrase.join(" ")));
     setAlertIsOpen(false);
     history.push({
       pathname: "/verifyseedphrase",
@@ -201,12 +201,14 @@ const GenerateSeedPhrase = () => {
                 <IonCheckbox
                   slot="start"
                   checked={checked}
+                  data-testid="termsandconditions-checkbox"
                   onIonChange={(e) => setChecked(e.detail.checked)}
                 />
                 <IonLabel
                   slot="end"
                   className="ion-text-wrap"
                   color="primary"
+                  data-testid="termsandconditions-label"
                 >
                   <Trans
                     i18nKey={TERMS_TEXT}
