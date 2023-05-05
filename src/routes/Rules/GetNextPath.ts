@@ -1,5 +1,6 @@
-import { routeRules } from "./rules";
+
 import { RootState } from "../../store";
+import {NextRules} from "./NextRules";
 
 const getNextPath = (
   currentPath: string,
@@ -7,7 +8,7 @@ const getNextPath = (
   state?: any,
   payload?: any
 ) => {
-  const [nextPath, updateRedux] = routeRules[currentPath];
+  const [nextPath, updateRedux] = NextRules[currentPath];
 
   return {
     nextPath: nextPath(store, state, payload),
