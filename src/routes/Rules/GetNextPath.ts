@@ -1,8 +1,7 @@
 import { routeRules } from "./rules";
-import { ROUTES } from "../index";
 import { RootState } from "../../store";
 
-export const getNextPath = (
+const getNextPath = (
   currentPath: string,
   store: RootState,
   state?: any,
@@ -15,3 +14,7 @@ export const getNextPath = (
     updateRedux: updateRedux(store),
   };
 };
+
+export {
+  getNextPath
+}

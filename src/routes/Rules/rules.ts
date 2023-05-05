@@ -4,7 +4,7 @@ import { setAuthentication } from "../../store/reducers/StateCache";
 import Moment from "moment";
 
 type RouteRulesType = Record<string, any>;
-export const routeRules: RouteRulesType = {
+const routeRules: RouteRulesType = {
   "/onboarding": [
     (store: RootState, state?: any, payload?: any) =>
       getNextOnboardingRoute(store, state, payload),
@@ -47,3 +47,7 @@ const updateStoreAfterSetPasscodeRoute = (store: RootState) => {
     passcodeIsSet: true
   });
 };
+
+export {
+  routeRules
+}
