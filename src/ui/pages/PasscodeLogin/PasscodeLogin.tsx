@@ -7,7 +7,7 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import {
   GENERATE_SEED_PHRASE_ROUTE,
-  ONBOARDING_ROUTE,
+  ONBOARDING_ROUTE, ROUTES,
   SET_PASSCODE_ROUTE,
 } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
@@ -15,15 +15,18 @@ import Alert from "../../components/Alert/Alert";
 import { SecureStorage } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getAuthentication,
+  getAuthentication, getCurrentRoute, getState,
   setAuthentication,
 } from "../../../store/reducers/StateCache";
 import Moment from "moment";
+import {getNextPath} from "../../../routes/Rules/GetNextPath";
 
 const PasscodeLogin = ({}) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
   const authentication = useAppSelector(getAuthentication);
+  const prevPath = useAppSelector(getCurrentRoute);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
   const [isOpen, setIsOpen] = useState(false);
@@ -38,6 +41,10 @@ const PasscodeLogin = ({}) => {
       : i18n.t("passcodelogin.alert.button.restart");
   const cancelButtonText = i18n.t("passcodelogin.alert.button.cancel");
 
+
+  console.log("prevPath");
+  console.log(prevPath);
+
   const handlePinChange = (digit: number) => {
     if (passcode.length < 6) {
       setPasscode(passcode + digit);
@@ -46,18 +53,14 @@ const PasscodeLogin = ({}) => {
           verifyPasscode(passcode + digit)
             .then((verified) => {
               if (verified) {
-                dispatch(
-                  setAuthentication({
-                    ...authentication,
-                    loggedIn: true,
-                    time: Moment().valueOf(),
-                  })
+                const { nextPath, updateRedux } = getNextPath(
+                    ROUTES.SET_PASSCODE_ROUTE,
+                    storeState
                 );
-
-                !seedPhrase
-                  ? // TODO: Proceed to main landing page
-                    history.push(GENERATE_SEED_PHRASE_ROUTE)
-                  : history.push("/dids");
+                if (nextPath.canNavigate) {
+                  dispatch(updateRedux());
+                  history.push(nextPath.pathname);
+                }
               }
             })
             .catch((e) => e.code === -35 && setPasscodeIncorrect(true));

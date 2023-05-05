@@ -15,6 +15,11 @@ const routeRules: RouteRulesType = {
       getNextSetPasscodeRoute(store, state, payload),
     (store: RootState) => () => updateStoreAfterSetPasscodeRoute(store),
   ],
+  "/passcodelogin": [
+    (store: RootState, state?: any, payload?: any) =>
+        getNextPasscodeLoginRoute(store, state, payload),
+    (store: RootState) => () => updateStoreAfterPasscodeLoginRoute(store),
+  ],
 };
 
 const getNextOnboardingRoute = (store: RootState, state: any, payload: any) => {
@@ -45,6 +50,21 @@ const updateStoreAfterSetPasscodeRoute = (store: RootState) => {
     loggedIn: true,
     time: Moment().valueOf(),
     passcodeIsSet: true
+  });
+};
+
+const getNextPasscodeLoginRoute = (store: RootState, state: any, payload: any) => {
+  const nextPath: string = store.stateCache.currentRoute.path?.length
+      ? store.stateCache.currentRoute.path
+      : "/";
+  return { canNavigate: true, pathname: nextPath };
+};
+
+const updateStoreAfterPasscodeLoginRoute = (store: RootState) => {
+  return setAuthentication({
+    ...store.stateCache.authentication,
+    loggedIn: true,
+    time: Moment().valueOf()
   });
 };
 
