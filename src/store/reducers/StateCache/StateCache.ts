@@ -47,6 +47,7 @@ const StateCacheSlice = createSlice({
 
 const { setCurrentRoute, setAuthentication } = StateCacheSlice.actions;
 
+const getState = (state: RootState) => state;
 const getStateCache = (state: RootState) => state.stateCache;
 const getCurrentRoute = (state: RootState) => state.stateCache.currentRoute;
 const getAuthentication = (state: RootState) => state.stateCache.authentication;
@@ -62,6 +63,7 @@ export {
   StateCacheSlice,
   setCurrentRoute,
   setAuthentication,
+  getState,
   getStateCache,
   getCurrentRoute,
   getAuthentication,

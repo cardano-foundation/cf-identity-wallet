@@ -1,4 +1,4 @@
-import { routeRules } from "./index";
+import { routeRules } from "./rules";
 import { ROUTES } from "../index";
 import { RootState } from "../../store";
 
@@ -10,11 +10,8 @@ export const getNextPath = (
 ) => {
   const [nextPath, updateRedux] = routeRules[currentPath];
 
-  if (nextPath) {
-    return {
-      nextPath: nextPath(store),
-      updateRedux,
-    };
-  }
-  return ROUTES.PASSCODE_LOGIN_ROUTE;
+  return {
+    nextPath: nextPath(store, state, payload),
+    updateRedux,
+  };
 };

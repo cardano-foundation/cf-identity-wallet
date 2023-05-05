@@ -12,9 +12,12 @@ import {
 } from "../../../routes";
 import { getNextPath } from "../../../routes/Rules/GetNextPath";
 import { store } from "../../../store";
+import {useAppSelector} from "../../../store/hooks";
+import {getAuthentication, getState} from "../../../store/reducers/StateCache";
 
 const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
   const history = useHistory();
+  const storeState = useAppSelector(getState);
   const items: SlideItem[] = [];
   for (let i = 0; i < 5; i++) {
     items.push({
@@ -25,17 +28,20 @@ const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
   }
 
   const handleNavigation = () => {
+
     const { nextPath, updateRedux } = getNextPath(
       ROUTES.ONBOARDING_ROUTE,
-      store,
+        storeState,
       {},
       {}
     );
-    history.push({
-      pathname: storedPasscode
-        ? GENERATE_SEED_PHRASE_ROUTE
-        : SET_PASSCODE_ROUTE,
-    });
+    console.log("nextPath");
+    console.log(nextPath);
+
+    if (nextPath.canNavigate){
+      history.push(nextPath.pathname)
+    }
+
   };
 
   return (

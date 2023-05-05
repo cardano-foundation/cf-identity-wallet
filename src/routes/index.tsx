@@ -79,11 +79,12 @@ const Routes = () => {
           component={SetPasscode}
         />
 
-        {/* Private Routes */}
-        <PrivateRoute
-          path={ONBOARDING_ROUTE}
-          component={Onboarding}
+        <Route
+            path={ONBOARDING_ROUTE}
+            component={Onboarding}
         />
+
+        {/* Private Routes */}
         <PrivateRoute
           path={GENERATE_SEED_PHRASE_ROUTE}
           component={GenerateSeedPhrase}
