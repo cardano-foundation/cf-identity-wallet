@@ -15,6 +15,4 @@ const getNextPath = (
   };
 };
 
-export {
-  getNextPath
-}
+export { getNextPath };

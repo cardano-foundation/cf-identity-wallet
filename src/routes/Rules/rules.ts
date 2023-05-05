@@ -17,7 +17,7 @@ const routeRules: RouteRulesType = {
   ],
   "/passcodelogin": [
     (store: RootState, state?: any, payload?: any) =>
-        getNextPasscodeLoginRoute(store, state, payload),
+      getNextPasscodeLoginRoute(store, state, payload),
     (store: RootState) => () => updateStoreAfterPasscodeLoginRoute(store),
   ],
 };
@@ -25,9 +25,10 @@ const routeRules: RouteRulesType = {
 const getNextOnboardingRoute = (store: RootState, state: any, payload: any) => {
   const seedPhraseIsSet: boolean = !!localStorage.getItem("seedPhrase");
 
-  const nextPath: string = store.stateCache.authentication.passcodeIsSet && !seedPhraseIsSet
-    ? ROUTES.GENERATE_SEED_PHRASE_ROUTE
-    : ROUTES.SET_PASSCODE_ROUTE;
+  const nextPath: string =
+    store.stateCache.authentication.passcodeIsSet && !seedPhraseIsSet
+      ? ROUTES.GENERATE_SEED_PHRASE_ROUTE
+      : ROUTES.SET_PASSCODE_ROUTE;
   return { canNavigate: true, pathname: nextPath };
 };
 
@@ -49,14 +50,18 @@ const updateStoreAfterSetPasscodeRoute = (store: RootState) => {
     ...store.stateCache.authentication,
     loggedIn: true,
     time: Moment().valueOf(),
-    passcodeIsSet: true
+    passcodeIsSet: true,
   });
 };
 
-const getNextPasscodeLoginRoute = (store: RootState, state: any, payload: any) => {
+const getNextPasscodeLoginRoute = (
+  store: RootState,
+  state: any,
+  payload: any
+) => {
   const nextPath: string = store.stateCache.currentRoute.path?.length
-      ? store.stateCache.currentRoute.path
-      : "/";
+    ? store.stateCache.currentRoute.path
+    : "/";
   return { canNavigate: true, pathname: nextPath };
 };
 
@@ -64,10 +69,8 @@ const updateStoreAfterPasscodeLoginRoute = (store: RootState) => {
   return setAuthentication({
     ...store.stateCache.authentication,
     loggedIn: true,
-    time: Moment().valueOf()
+    time: Moment().valueOf(),
   });
 };
 
-export {
-  routeRules
-}
+export { routeRules };

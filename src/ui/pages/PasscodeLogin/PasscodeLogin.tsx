@@ -7,7 +7,8 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import {
   GENERATE_SEED_PHRASE_ROUTE,
-  ONBOARDING_ROUTE, ROUTES,
+  ONBOARDING_ROUTE,
+  ROUTES,
   SET_PASSCODE_ROUTE,
 } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
@@ -15,11 +16,13 @@ import Alert from "../../components/Alert/Alert";
 import { SecureStorage } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getAuthentication, getCurrentRoute, getState,
+  getAuthentication,
+  getCurrentRoute,
+  getState,
   setAuthentication,
 } from "../../../store/reducers/StateCache";
 import Moment from "moment";
-import {getNextPath} from "../../../routes/Rules/GetNextPath";
+import { getNextPath } from "../../../routes/Rules/GetNextPath";
 
 const PasscodeLogin = ({}) => {
   const history = useHistory();
@@ -41,10 +44,6 @@ const PasscodeLogin = ({}) => {
       : i18n.t("passcodelogin.alert.button.restart");
   const cancelButtonText = i18n.t("passcodelogin.alert.button.cancel");
 
-
-  console.log("prevPath");
-  console.log(prevPath);
-
   const handlePinChange = (digit: number) => {
     if (passcode.length < 6) {
       setPasscode(passcode + digit);
@@ -54,13 +53,15 @@ const PasscodeLogin = ({}) => {
             .then((verified) => {
               if (verified) {
                 const { nextPath, updateRedux } = getNextPath(
-                    ROUTES.SET_PASSCODE_ROUTE,
-                    storeState
+                  ROUTES.SET_PASSCODE_ROUTE,
+                  storeState
                 );
                 if (nextPath.canNavigate) {
                   dispatch(updateRedux());
                   history.push(nextPath.pathname);
                 }
+              } else {
+                setPasscodeIncorrect(true);
               }
             })
             .catch((e) => e.code === -35 && setPasscodeIncorrect(true));

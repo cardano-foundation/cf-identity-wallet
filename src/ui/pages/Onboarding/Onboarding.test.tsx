@@ -11,9 +11,9 @@ import {
 } from "../../../routes";
 import { store } from "../../../store";
 import { Provider } from "react-redux";
-import {setAuthentication} from "../../../store/reducers/StateCache";
+import { setAuthentication } from "../../../store/reducers/StateCache";
 import Moment from "moment/moment";
-import configureStore from 'redux-mock-store';
+import configureStore from "redux-mock-store";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
@@ -77,22 +77,19 @@ describe("Onboarding Page", () => {
   });
 
   test("If the user has already set a passcode but they haven't created a profile, they will be asked to generate a seed phrase", async () => {
-
-
-    const mockStore = configureStore()
+    const mockStore = configureStore();
     const initialState = {
       stateCache: {
         authentication: {
           loggedIn: true,
           time: Moment().valueOf(),
-          passcodeIsSet: true
-        }
-      }
-    }
-    const storeMocked = mockStore(initialState)
+          passcodeIsSet: true,
+        },
+      },
+    };
+    const storeMocked = mockStore(initialState);
 
     const { getByTestId, queryByText } = render(
-
       <MemoryRouter initialEntries={[ONBOARDING_ROUTE]}>
         <Provider store={storeMocked}>
           <Route

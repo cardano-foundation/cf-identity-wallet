@@ -8,8 +8,11 @@ import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
-import {useAppDispatch, useAppSelector} from "../store/hooks";
-import {getAuthentication, setCurrentRoute} from "../store/reducers/StateCache";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import {
+  getAuthentication,
+  setCurrentRoute,
+} from "../store/reducers/StateCache";
 
 export const ROUTES = {
   ONBOARDING_ROUTE: "/onboarding",
@@ -43,7 +46,7 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
 
   useEffect(() => {
     setIsAuthenticated(authentication.loggedIn);
-    dispatch(setCurrentRoute({path: location.pathname}));
+    dispatch(setCurrentRoute({ path: location.pathname }));
   }, [authentication.time]);
 
   return isAuthenticated ? (
@@ -51,7 +54,7 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
       {...props}
       component={props.component}
     />
-  ) :
+  ) : (
     <Redirect
       from={location.pathname}
       to={{
@@ -60,7 +63,7 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
           : SET_PASSCODE_ROUTE,
       }}
     />
-  ;
+  );
 };
 
 const Routes = () => {
