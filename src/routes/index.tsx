@@ -11,6 +11,13 @@ import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { useAppSelector } from "../store/hooks";
 import { getAuthentication } from "../store/reducers/StateCache";
 
+export const ROUTES = {
+  ONBOARDING_ROUTE: "/onboarding",
+  SET_PASSCODE_ROUTE: "/setpasscode",
+  PASSCODE_LOGIN_ROUTE: "/passcodelogin",
+  GENERATE_SEED_PHRASE_ROUTE: "/generateseedphrase",
+};
+
 const ONBOARDING_ROUTE = "/onboarding";
 const SET_PASSCODE_ROUTE = "/setpasscode";
 const PASSCODE_LOGIN_ROUTE = "/passcodelogin";

@@ -1,4 +1,4 @@
-import {MemoryRouter, Route, Router, useHistory} from "react-router-dom";
+import { MemoryRouter, Route, Router, useHistory } from "react-router-dom";
 import { fireEvent, render } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { PasscodeLogin } from "./PasscodeLogin";
@@ -15,7 +15,7 @@ import { store } from "../../../store";
 import { Provider } from "react-redux";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { setAuthentication } from "../../../store/reducers/StateCache";
-import {useAppDispatch} from "../../../store/hooks";
+import { useAppDispatch } from "../../../store/hooks";
 
 describe("Passcode Login Page", () => {
   const storedPasscode =

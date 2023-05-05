@@ -8,7 +8,10 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import {
   SET_PASSCODE_ROUTE,
   GENERATE_SEED_PHRASE_ROUTE,
+  ROUTES,
 } from "../../../routes";
+import { getNextPath } from "../../../routes/Rules/GetNextPath";
+import { store } from "../../../store";
 
 const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
   const history = useHistory();
@@ -22,6 +25,12 @@ const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
   }
 
   const handleNavigation = () => {
+    const { nextPath, updateRedux } = getNextPath(
+      ROUTES.ONBOARDING_ROUTE,
+      store,
+      {},
+      {}
+    );
     history.push({
       pathname: storedPasscode
         ? GENERATE_SEED_PHRASE_ROUTE

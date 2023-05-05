@@ -44,27 +44,26 @@ const PasscodeLogin = ({}) => {
       if (passcode.length === 5) {
         try {
           verifyPasscode(passcode + digit)
-              .then((verified) => {
-                if (verified){
-                  dispatch(
-                      setAuthentication({
-                        ...authentication,
-                        loggedIn: true,
-                        time: Moment().valueOf(),
-                      })
-                  );
+            .then((verified) => {
+              if (verified) {
+                dispatch(
+                  setAuthentication({
+                    ...authentication,
+                    loggedIn: true,
+                    time: Moment().valueOf(),
+                  })
+                );
 
-                  !seedPhrase
-                      ? // TODO: Proceed to main landing page
-                      history.push(GENERATE_SEED_PHRASE_ROUTE)
-                      : history.push('/dids');
-                }
-              })
-              .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
+                !seedPhrase
+                  ? // TODO: Proceed to main landing page
+                    history.push(GENERATE_SEED_PHRASE_ROUTE)
+                  : history.push("/dids");
+              }
+            })
+            .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
         } catch (e) {
-          setPasscodeIncorrect(true)
+          setPasscodeIncorrect(true);
         }
-
       }
     }
   };
@@ -82,7 +81,7 @@ const PasscodeLogin = ({}) => {
       : resetPasscode();
   };
 
-  const verifyPasscode = async (pass:string) => {
+  const verifyPasscode = async (pass: string) => {
     try {
       const storedPass = await SecureStorage.get("app-login-passcode");
 
@@ -93,8 +92,7 @@ const PasscodeLogin = ({}) => {
       } as Argon2VerifyOptions);
       return true;
     } catch (e) {
-
-      return false
+      return false;
     }
   };
   const resetPasscode = () => {
