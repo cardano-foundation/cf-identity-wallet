@@ -1,2 +1,2 @@
-export * from "./Rules";
+export * from "./NextRules";
 export * from "./GetNextPath";

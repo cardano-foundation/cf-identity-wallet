@@ -1,6 +1,5 @@
-
 import { RootState } from "../../store";
-import {NextRules} from "./NextRules";
+import { NextRules } from "./NextRules";
 
 const getNextPath = (
   currentPath: string,
