@@ -43,6 +43,8 @@ const PasscodeLogin = ({}) => {
       : i18n.t("passcodelogin.alert.button.restart");
   const cancelButtonText = i18n.t("passcodelogin.alert.button.cancel");
 
+  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+
   const handlePinChange = (digit: number) => {
     if (passcode.length < 6) {
       setPasscode(passcode + digit);
@@ -58,6 +60,7 @@ const PasscodeLogin = ({}) => {
                 if (nextPath.canNavigate) {
                   dispatch(updateRedux());
                   history.push(nextPath.pathname);
+                  delay(500).then(() => setPasscode(""));
                 }
               } else {
                 setPasscodeIncorrect(true);

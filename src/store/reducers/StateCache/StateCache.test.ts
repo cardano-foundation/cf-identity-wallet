@@ -16,7 +16,7 @@ import { RootState } from "../../index";
 describe("State Cache", () => {
   test("should return the initial state on first run", () => {
     expect(StateCacheSlice.reducer(undefined, {} as PayloadAction)).toEqual(
-      initialState
+        initialState
     );
   });
 
@@ -28,11 +28,11 @@ describe("State Cache", () => {
     const action = setCurrentRoute(currentRoute);
     const nextState = StateCacheSlice.reducer(initialState, action);
 
-    expect(nextState.currentRoute).toEqual(currentRoute);
+    expect(nextState.routes[0]).toEqual(currentRoute);
     expect(nextState).not.toBe(initialState);
 
     const rootState = { stateCache: nextState } as RootState;
-    expect(getCurrentRoute(rootState)).toEqual(nextState.currentRoute);
+    expect(getCurrentRoute(rootState)).toEqual(nextState.routes[0]);
     expect(getStateCache(rootState)).toEqual(nextState);
   });
 

@@ -70,9 +70,12 @@ const updateStoreAfterSetPasscodeRoute = (store: RootState) => {
 };
 
 const getNextPasscodeLoginRoute = (store: RootState) => {
-  const nextPath: string = store.stateCache.currentRoute.path?.length
-    ? store.stateCache.currentRoute.path
-    : "/";
+  const nextPath: string =
+      store.stateCache.routes.length && store.stateCache.routes[0].path?.length
+          ? store.stateCache.routes[0].path
+          : ROUTES.ONBOARDING_ROUTE;
+  console.log(store.stateCache.routes);
+  console.log("getNextPasscodeLoginRoute", nextPath);
   return { canNavigate: true, pathname: nextPath };
 };
 
