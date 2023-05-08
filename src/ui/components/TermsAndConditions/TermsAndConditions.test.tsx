@@ -45,7 +45,9 @@ describe("Terms and conditions screen", () => {
     });
 
     // When we click on the close button...
-    fireEvent.click(getByTestId("close-button"));
+    act(() => {
+      fireEvent.click(getByTestId("close-button"));
+    });
 
     // ...the function is called...
     expect(mockSetIsOpen.mock.calls.length).toEqual(1);
