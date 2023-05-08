@@ -1,55 +1,17 @@
 import { render, waitFor, fireEvent } from "@testing-library/react";
-import { Provider } from "react-redux";
 import { act } from "react-dom/test-utils";
-import { GenerateSeedPhrase } from "../../pages/GenerateSeedPhrase";
+import { TermsAndConditions } from "./TermsAndConditions";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { store } from "../../../store";
 
 describe("Terms and conditions screen", () => {
-  test("Opening Terms and conditions modal triggers the checkbox", async () => {
-    const { getByText, getByTestId } = render(
-      <Provider store={store}>
-        <GenerateSeedPhrase />
-      </Provider>
+  test("User can close the modal by clicking on the backdrop", async () => {
+    const mockSetIsOpen = jest.fn();
+    const { queryByText } = render(
+      <TermsAndConditions
+        isOpen={true}
+        setIsOpen={mockSetIsOpen}
+      />
     );
-    const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    const termsLink = getByText(
-      EN_TRANSLATIONS["generateseedphrase.termsandconditions.link"]
-    );
-
-    // The checkbox is not checked by default
-    expect(termsCheckbox.hasAttribute('[checked="false"]'));
-
-    // When the user opens the modal
-    act(() => {
-      fireEvent.click(termsLink);
-    });
-
-    await waitFor(() => {
-      // The checkbox is ticked
-      expect(termsCheckbox.hasAttribute('[checked="true"]'));
-    });
-  });
-
-  test("User can close the modal clicking on the backdrop", async () => {
-    const { getByText, queryByText } = render(
-      <Provider store={store}>
-        <GenerateSeedPhrase />
-      </Provider>
-    );
-    const termsLink = getByText(
-      EN_TRANSLATIONS["generateseedphrase.termsandconditions.link"]
-    );
-
-    // When the user opens the modal
-    act(() => {
-      fireEvent.click(termsLink);
-    });
-
-    await waitFor(() => {
-      // The modal shows up
-      expect(document.querySelector("ion-modal")).toBeInTheDocument();
-    });
 
     // When we click on the modal backdrop...
     const backdrop = document.querySelector("ion-backdrop");
@@ -69,19 +31,13 @@ describe("Terms and conditions screen", () => {
   });
 
   test("User can close the modal clicking on the close button", async () => {
-    const { getByText, getByTestId, queryByText } = render(
-      <Provider store={store}>
-        <GenerateSeedPhrase />
-      </Provider>
+    const mockSetIsOpen = jest.fn();
+    const { queryByText, getByTestId } = render(
+      <TermsAndConditions
+        isOpen={true}
+        setIsOpen={mockSetIsOpen}
+      />
     );
-    const termsLink = getByText(
-      EN_TRANSLATIONS["generateseedphrase.termsandconditions.link"]
-    );
-
-    // When the user opens the modal..
-    act(() => {
-      fireEvent.click(termsLink);
-    });
 
     await waitFor(() => {
       // ...the close button is visible
@@ -89,15 +45,19 @@ describe("Terms and conditions screen", () => {
     });
 
     // When we click on the close button...
-    act(() => {
-      fireEvent.click(getByTestId("close-button"));
+    fireEvent.click(getByTestId("close-button"));
+
+    // ...the function is called...
+    expect(mockSetIsOpen.mock.calls.length).toEqual(1);
+
+    // ...the backdrop is no longer visible...
+    await waitFor(() => {
+      expect(document.querySelector("ion-backdrop")).not.toBeInTheDocument();
     });
 
-    // ...the modal is no longer visible
-    await waitFor(() => {
-      expect(
-        queryByText(EN_TRANSLATIONS["termsandconditions.title"])
-      ).not.toBeInTheDocument();
-    });
+    // ...and the modal is no longer visible
+    expect(
+      queryByText(EN_TRANSLATIONS["termsandconditions.title"])
+    ).not.toBeInTheDocument();
   });
 });

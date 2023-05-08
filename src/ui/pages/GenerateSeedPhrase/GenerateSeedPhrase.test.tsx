@@ -219,4 +219,45 @@ describe("Generate Seed Phrase screen", () => {
       expect(backdrop).not.toBeInTheDocument();
     });
   });
+
+  test("User can toggle the checkbox", async () => {
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <GenerateSeedPhrase />
+      </Provider>
+    );
+    const termsCheckbox = getByTestId("termsandconditions-checkbox");
+    // The checkbox is not checked by default
+    expect(termsCheckbox.hasAttribute('[checked="false"]'));
+    // User can toggle the checkbox
+    fireEvent.click(termsCheckbox);
+    expect(termsCheckbox.hasAttribute('[checked="true"]'));
+    fireEvent.click(termsCheckbox);
+    expect(termsCheckbox.hasAttribute('[checked="false"]'));
+  });
+
+  test("Opening Terms and conditions modal triggers the checkbox", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={store}>
+        <GenerateSeedPhrase />
+      </Provider>
+    );
+    const termsCheckbox = getByTestId("termsandconditions-checkbox");
+    const termsLink = getByText(
+      EN_TRANSLATIONS["generateseedphrase.termsandconditions.link"]
+    );
+
+    // The checkbox is not checked by default
+    expect(termsCheckbox.hasAttribute('[checked="false"]'));
+
+    // When the user opens the modal
+    act(() => {
+      fireEvent.click(termsLink);
+    });
+
+    await waitFor(() => {
+      // The checkbox is ticked
+      expect(termsCheckbox.hasAttribute('[checked="true"]'));
+    });
+  });
 });
