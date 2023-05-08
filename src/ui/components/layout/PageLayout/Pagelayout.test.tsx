@@ -1,0 +1,30 @@
+import { fireEvent, render } from "@testing-library/react";
+import { PageLayout } from "./PageLayout";
+
+describe("Page Layout", () => {
+  test("Renders Page Layout", () => {
+    const mockCloseButton = jest.fn();
+    const { getByText, getByTestId } = render(
+      <PageLayout
+        backButton={true}
+        backButtonPath={"/path"}
+        closeButton={true}
+        closeButtonAction={mockCloseButton}
+        progressBar={true}
+        progressBarValue={0.5}
+        progressBarBuffer={1}
+        title={"Title"}
+      >
+        <p>Content</p>
+      </PageLayout>
+    );
+
+    // User can see Title and Content
+    expect(getByText("Title")).toBeInTheDocument();
+    expect(getByText("Content")).toBeInTheDocument();
+
+    // Testing close button
+    fireEvent.click(getByTestId("close-button"));
+    expect(mockCloseButton.mock.calls.length).toEqual(1);
+  });
+});
