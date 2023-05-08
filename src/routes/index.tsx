@@ -36,11 +36,6 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
 
-  const checkAuth = () => {
-    // Auth logic here
-    return MAX_LOCK_TIME < Moment().valueOf() - authentication.time;
-  };
-
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
     authentication.loggedIn
   );
@@ -48,7 +43,7 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
   useEffect(() => {
     setIsAuthenticated(authentication.loggedIn);
     dispatch(setCurrentRoute({ path: location.pathname }));
-  }, [authentication.time]);
+  }, [location.pathname]);
 
   return isAuthenticated ? (
     <Route
