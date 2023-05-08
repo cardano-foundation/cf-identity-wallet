@@ -69,13 +69,16 @@ const updateStoreAfterSetPasscodeRoute = (store: RootState) => {
 };
 
 const getNextPasscodeLoginRoute = (store: RootState) => {
+
+  const routesIncludeOnboarding = store.stateCache.routes.some(route => route.path === ROUTES.ONBOARDING_ROUTE);
+  const nextPath2: string = routesIncludeOnboarding ? ROUTES.GENERATE_SEED_PHRASE_ROUTE : store.stateCache.routes.length && store.stateCache.routes[0].path?.length ? store.stateCache.routes[0].path : ROUTES.ONBOARDING_ROUTE;
+
   const nextPath: string =
     store.stateCache.routes.length && store.stateCache.routes[0].path?.length
       ? store.stateCache.routes[0].path
-      : ROUTES.ONBOARDING_ROUTE;
-  console.log(store.stateCache.routes);
-  console.log("getNextPasscodeLoginRoute", nextPath);
-  return { canNavigate: true, pathname: nextPath };
+      : routesIncludeOnboarding ? ROUTES.GENERATE_SEED_PHRASE_ROUTE : ROUTES.ONBOARDING_ROUTE;
+
+  return { canNavigate: true, pathname: nextPath2 };
 };
 
 const updateStoreAfterPasscodeLoginRoute = (store: RootState) => {

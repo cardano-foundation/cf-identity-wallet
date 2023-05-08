@@ -64,17 +64,14 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
 const Routes = () => {
   const dispatch = useAppDispatch();
   const location = useLocation();
-
-  useEffect(() => {
-    dispatch(setCurrentRoute({ path: location.pathname }));
-  }, [location.pathname]);
+  
   return (
     <IonReactRouter>
       <IonRouterOutlet>
         <Redirect
           exact
           from="/"
-          to={ONBOARDING_ROUTE}
+          to={dispatch(setCurrentRoute({ path: ONBOARDING_ROUTE })) && ONBOARDING_ROUTE}
         />
 
         <Route

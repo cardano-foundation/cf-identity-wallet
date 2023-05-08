@@ -11,15 +11,16 @@ import {
   ROUTES,
 } from "../../../routes";
 import { store } from "../../../store";
-import { useAppSelector } from "../../../store/hooks";
+import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {
   getAuthentication,
-  getState,
+  getState, setCurrentRoute,
 } from "../../../store/reducers/StateCache";
 import { getNextRoute } from "../../../routes/Rules";
 
 const Onboarding = ({}) => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
   const items: SlideItem[] = [];
   for (let i = 0; i < 5; i++) {
@@ -34,6 +35,7 @@ const Onboarding = ({}) => {
     const { nextPath } = getNextRoute(ROUTES.ONBOARDING_ROUTE, storeState);
 
     if (nextPath.canNavigate) {
+      dispatch(setCurrentRoute({ path: nextPath.pathname }))
       history.push(nextPath.pathname);
     }
   };

@@ -15,7 +15,7 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 import {
   getAuthentication,
   getState,
-  setAuthentication,
+  setAuthentication, setCurrentRoute,
 } from "../../../store/reducers/StateCache";
 import Moment from "moment/moment";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -58,6 +58,7 @@ const SetPasscode = () => {
                 );
                 if (nextPath.canNavigate) {
                   dispatch(updateRedux());
+                  dispatch(setCurrentRoute({ path: nextPath.pathname }));
                   history.push(nextPath.pathname);
                 }
               }

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { IonButton, IonCol, IonGrid, IonRow } from "@ionic/react";
-import { useHistory } from "react-router-dom";
+import {useHistory, useLocation} from "react-router-dom";
 import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
@@ -19,13 +19,14 @@ import {
   getAuthentication,
   getCurrentRoute,
   getState,
-  setAuthentication,
+  setAuthentication, setCurrentRoute,
 } from "../../../store/reducers/StateCache";
 import { getNextRoute } from "../../../routes/Rules";
 
 const PasscodeLogin = ({}) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+
   const storeState = useAppSelector(getState);
   const authentication = useAppSelector(getAuthentication);
   const prevPath = useAppSelector(getCurrentRoute);
@@ -54,11 +55,12 @@ const PasscodeLogin = ({}) => {
             .then((verified) => {
               if (verified) {
                 const { nextPath, updateRedux } = getNextRoute(
-                  ROUTES.SET_PASSCODE_ROUTE,
+                  ROUTES.PASSCODE_LOGIN_ROUTE,
                   storeState
                 );
                 if (nextPath.canNavigate) {
                   dispatch(updateRedux());
+                  dispatch(setCurrentRoute({ path: nextPath.pathname }))
                   history.push(nextPath.pathname);
                   delay(500).then(() => setPasscode(""));
                 }
