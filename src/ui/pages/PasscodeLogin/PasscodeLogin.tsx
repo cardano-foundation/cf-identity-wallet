@@ -21,8 +21,7 @@ import {
   getState,
   setAuthentication,
 } from "../../../store/reducers/StateCache";
-import Moment from "moment";
-import { getNextPath } from "../../../routes/Rules/GetNextPath";
+import {getNextPath} from "../../../routes/Rules";
 
 const PasscodeLogin = ({}) => {
   const history = useHistory();

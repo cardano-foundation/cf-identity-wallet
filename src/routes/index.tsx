@@ -42,7 +42,6 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
 
   useEffect(() => {
     setIsAuthenticated(authentication.loggedIn);
-    dispatch(setCurrentRoute({ path: location.pathname }));
   }, [location.pathname]);
 
   return isAuthenticated ? (
@@ -63,6 +62,12 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
 };
 
 const Routes = () => {
+  const dispatch = useAppDispatch();
+  const location = useLocation();
+
+  useEffect(() => {
+    dispatch(setCurrentRoute({ path: location.pathname }));
+  }, [location.pathname]);
   return (
     <IonReactRouter>
       <IonRouterOutlet>

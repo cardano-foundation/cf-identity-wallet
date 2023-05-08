@@ -10,13 +10,13 @@ import {
   GENERATE_SEED_PHRASE_ROUTE,
   ROUTES,
 } from "../../../routes";
-import { getNextPath } from "../../../routes/Rules/GetNextPath";
 import { store } from "../../../store";
 import { useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
   getState,
 } from "../../../store/reducers/StateCache";
+import {getNextPath} from "../../../routes/Rules";
 
 const Onboarding = ({}) => {
   const history = useHistory();

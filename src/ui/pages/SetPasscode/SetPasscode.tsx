@@ -19,8 +19,8 @@ import {
 } from "../../../store/reducers/StateCache";
 import Moment from "moment/moment";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getNextPath } from "../../../routes/Rules/GetNextPath";
 import { RootState } from "../../../store";
+import {getNextPath} from "../../../routes/Rules";
 
 // Based on OWASP recommendations
 const ARGON2ID_OPTIONS = {

@@ -27,9 +27,9 @@ import {
 import { ONBOARDING_ROUTE, ROUTES } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
-import { getNextPath } from "../../../routes/Rules/GetNextPath";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState } from "../../../store/reducers/StateCache";
+import {getNextPath} from "../../../routes/Rules";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();

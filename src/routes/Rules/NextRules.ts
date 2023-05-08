@@ -5,6 +5,22 @@ import { setAuthentication } from "../../store/reducers/StateCache";
 import { setSeedPhraseCache } from "../../store/reducers/SeedPhraseCache";
 
 type RouteRulesType = Record<string, any>;
+
+const getNextPath = (
+    currentPath: string,
+    store: RootState,
+    state?: any,
+    payload?: any
+) => {
+  const [nextPath, updateRedux] = NextRules[currentPath];
+
+  return {
+    nextPath: nextPath(store, state, payload),
+    updateRedux: updateRedux(store, state),
+  };
+};
+
+
 const NextRules: RouteRulesType = {
   "/onboarding": [
     (store: RootState) => getNextOnboardingRoute(store),
@@ -79,4 +95,4 @@ const updateStoreAfterGenerateSeedPhraseRoute = (
   return setSeedPhraseCache(state.seedPhrase);
 };
 
-export { NextRules };
+export { getNextPath, NextRules };
