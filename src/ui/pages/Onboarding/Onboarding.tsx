@@ -16,7 +16,7 @@ import {
   getAuthentication,
   getState,
 } from "../../../store/reducers/StateCache";
-import {getNextPath} from "../../../routes/Rules";
+import { getNextRoute } from "../../../routes/Rules";
 
 const Onboarding = ({}) => {
   const history = useHistory();
@@ -31,7 +31,7 @@ const Onboarding = ({}) => {
   }
 
   const handleNavigation = () => {
-    const { nextPath } = getNextPath(ROUTES.ONBOARDING_ROUTE, storeState);
+    const { nextPath } = getNextRoute(ROUTES.ONBOARDING_ROUTE, storeState);
 
     if (nextPath.canNavigate) {
       history.push(nextPath.pathname);

@@ -16,7 +16,7 @@ import { RootState } from "../../index";
 describe("State Cache", () => {
   test("should return the initial state on first run", () => {
     expect(StateCacheSlice.reducer(undefined, {} as PayloadAction)).toEqual(
-        initialState
+      initialState
     );
   });
 

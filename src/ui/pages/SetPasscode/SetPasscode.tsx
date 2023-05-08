@@ -20,7 +20,7 @@ import {
 import Moment from "moment/moment";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { RootState } from "../../../store";
-import {getNextPath} from "../../../routes/Rules";
+import { getNextRoute } from "../../../routes/Rules";
 
 // Based on OWASP recommendations
 const ARGON2ID_OPTIONS = {
@@ -52,7 +52,7 @@ const SetPasscode = () => {
               () => {
                 handleClear();
 
-                const { nextPath, updateRedux } = getNextPath(
+                const { nextPath, updateRedux } = getNextRoute(
                   ROUTES.SET_PASSCODE_ROUTE,
                   storeState
                 );

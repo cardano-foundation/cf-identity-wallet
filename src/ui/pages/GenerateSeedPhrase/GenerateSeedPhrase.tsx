@@ -29,7 +29,7 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState } from "../../../store/reducers/StateCache";
-import {getNextPath} from "../../../routes/Rules";
+import { getNextRoute } from "../../../routes/Rules";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -58,7 +58,7 @@ const GenerateSeedPhrase = () => {
 
   const handleContinue = () => {
     setIsOpen(false);
-    const { nextPath, updateRedux } = getNextPath(
+    const { nextPath, updateRedux } = getNextRoute(
       ROUTES.GENERATE_SEED_PHRASE_ROUTE,
       storeState,
       { seedPhrase: seedPhrase.join(" ") }

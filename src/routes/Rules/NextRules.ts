@@ -6,11 +6,11 @@ import { setSeedPhraseCache } from "../../store/reducers/SeedPhraseCache";
 
 type RouteRulesType = Record<string, any>;
 
-const getNextPath = (
-    currentPath: string,
-    store: RootState,
-    state?: any,
-    payload?: any
+const getNextRoute = (
+  currentPath: string,
+  store: RootState,
+  state?: any,
+  payload?: any
 ) => {
   const [nextPath, updateRedux] = NextRules[currentPath];
 
@@ -19,7 +19,6 @@ const getNextPath = (
     updateRedux: updateRedux(store, state),
   };
 };
-
 
 const NextRules: RouteRulesType = {
   "/onboarding": [
@@ -71,9 +70,9 @@ const updateStoreAfterSetPasscodeRoute = (store: RootState) => {
 
 const getNextPasscodeLoginRoute = (store: RootState) => {
   const nextPath: string =
-      store.stateCache.routes.length && store.stateCache.routes[0].path?.length
-          ? store.stateCache.routes[0].path
-          : ROUTES.ONBOARDING_ROUTE;
+    store.stateCache.routes.length && store.stateCache.routes[0].path?.length
+      ? store.stateCache.routes[0].path
+      : ROUTES.ONBOARDING_ROUTE;
   console.log(store.stateCache.routes);
   console.log("getNextPasscodeLoginRoute", nextPath);
   return { canNavigate: true, pathname: nextPath };
@@ -98,4 +97,14 @@ const updateStoreAfterGenerateSeedPhraseRoute = (
   return setSeedPhraseCache(state.seedPhrase);
 };
 
-export { getNextPath, NextRules };
+export {
+  getNextRoute,
+  NextRules,
+  getNextOnboardingRoute,
+  getNextSetPasscodeRoute,
+  updateStoreAfterSetPasscodeRoute,
+  getNextPasscodeLoginRoute,
+  updateStoreAfterPasscodeLoginRoute,
+  getNextGenerateSeedPhraseRoute,
+  updateStoreAfterGenerateSeedPhraseRoute,
+};

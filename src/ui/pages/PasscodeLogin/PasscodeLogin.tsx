@@ -21,7 +21,7 @@ import {
   getState,
   setAuthentication,
 } from "../../../store/reducers/StateCache";
-import {getNextPath} from "../../../routes/Rules";
+import { getNextRoute } from "../../../routes/Rules";
 
 const PasscodeLogin = ({}) => {
   const history = useHistory();
@@ -53,7 +53,7 @@ const PasscodeLogin = ({}) => {
           verifyPasscode(passcode + digit)
             .then((verified) => {
               if (verified) {
-                const { nextPath, updateRedux } = getNextPath(
+                const { nextPath, updateRedux } = getNextRoute(
                   ROUTES.SET_PASSCODE_ROUTE,
                   storeState
                 );

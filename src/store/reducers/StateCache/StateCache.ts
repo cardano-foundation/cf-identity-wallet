@@ -34,13 +34,13 @@ const StateCacheSlice = createSlice({
     setCurrentRoute: (state, action: PayloadAction<CurrentRouteCacheProps>) => {
       if (action.payload.path === ROUTES.PASSCODE_LOGIN_ROUTE) return;
       const filteredRoutes = state.routes.filter(
-          (route) => action.payload.path !== route.path
+        (route) => action.payload.path !== route.path
       );
       state.routes = [action.payload, ...filteredRoutes];
     },
     setAuthentication: (
-        state,
-        action: PayloadAction<AuthenticationCacheProps>
+      state,
+      action: PayloadAction<AuthenticationCacheProps>
     ) => {
       state.authentication = action.payload;
     },
@@ -53,7 +53,7 @@ const getState = (state: RootState) => state;
 const getStateCache = (state: RootState) => state.stateCache;
 const getRoutes = (state: RootState) => state.stateCache.routes;
 const getCurrentRoute = (state: RootState) =>
-    state.stateCache.routes.length ? state.stateCache.routes[0] : {};
+  state.stateCache.routes.length ? state.stateCache.routes[0] : {};
 const getAuthentication = (state: RootState) => state.stateCache.authentication;
 
 export type {
