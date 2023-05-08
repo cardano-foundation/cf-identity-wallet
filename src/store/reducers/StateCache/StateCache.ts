@@ -32,7 +32,7 @@ const StateCacheSlice = createSlice({
   initialState,
   reducers: {
     setCurrentRoute: (state, action: PayloadAction<CurrentRouteCacheProps>) => {
-      //if (action.payload.path === ROUTES.PASSCODE_LOGIN_ROUTE) return;
+      if (action.payload.path === ROUTES.PASSCODE_LOGIN_ROUTE) return;
       const filteredRoutes = state.routes.filter(
           (route) => action.payload.path !== route.path
       );
