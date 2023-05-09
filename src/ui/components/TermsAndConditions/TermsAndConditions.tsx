@@ -1,11 +1,11 @@
 import { IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
-import { Trans } from "react-i18next";
 import { i18n } from "../../../i18n";
 import "./TermsAndConditions.scss";
 import { TermsAndConditionsProps } from "./TermsAndConditions.types";
 import { PageLayout } from "../layout/PageLayout";
 
 const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
+  const paragraphs:string[] = i18n.t("termsandconditions.body", { returnObjects: true });
   return (
     <IonModal
       isOpen={isOpen}
@@ -26,10 +26,9 @@ const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
                 size="12"
                 className="terms-and-conditions-body"
               >
-                <Trans
-                  i18nKey="termsandconditions.body"
-                  components={{ p: <p /> }}
-                />
+                {paragraphs.map((paragraph:string, index:number) => (
+                  <p key={index}>{paragraph}</p>
+                ))}
               </IonCol>
             </IonRow>
           </IonGrid>
