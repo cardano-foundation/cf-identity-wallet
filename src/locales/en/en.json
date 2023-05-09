@@ -35,7 +35,7 @@
   "generateseedphrase.privacy.overlay.text": "Press the 'view' button when you're ready to see your seed phrase. Remember to make sure nobody is looking!",
   "generateseedphrase.privacy.overlay.button": "View seed phrase",
   "generateseedphrase.continue.button": "Continue",
-  "generateseedphrase.alert.text": "Have you double-checked you've copied your 15 word phrase correctly?",
+  "generateseedphrase.alert.text": "Have you double-checked you've copied your seed phrase correctly?",
   "generateseedphrase.alert.button.confirm": "Yes, I've copied these correctly!",
   "generateseedphrase.alert.button.cancel": "I'll take another look",
   "generateseedphrase.termsandconditions.text": "I have read and agree to the <0>{{clickableText}}</0>.",
