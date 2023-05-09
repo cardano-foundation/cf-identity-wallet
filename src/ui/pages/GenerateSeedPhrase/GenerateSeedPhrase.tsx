@@ -45,8 +45,6 @@ const GenerateSeedPhrase = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
-  const TERMS_TEXT = i18n.t("generateseedphrase.termsandconditions.text");
-  const TERMS_LINK = i18n.t("generateseedphrase.termsandconditions.link");
 
   useEffect(() => {
     const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
@@ -71,7 +69,7 @@ const GenerateSeedPhrase = () => {
           setModalIsOpen(true);
         }}
       >
-        <u>{TERMS_LINK}</u>
+        <u>{i18n.t("generateseedphrase.termsandconditions.link")}</u>
       </a>
     );
   };
@@ -211,7 +209,9 @@ const GenerateSeedPhrase = () => {
                   data-testid="termsandconditions-label"
                 >
                   <Trans
-                    i18nKey={TERMS_TEXT}
+                    i18nKey={i18n.t(
+                      "generateseedphrase.termsandconditions.text"
+                    )}
                     components={[<HandleTerms key="" />]}
                   />
                 </IonLabel>
