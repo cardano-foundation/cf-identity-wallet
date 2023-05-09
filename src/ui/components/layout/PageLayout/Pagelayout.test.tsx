@@ -19,11 +19,9 @@ describe("Page Layout", () => {
       </PageLayout>
     );
 
-    // User can see Title and Content
     expect(getByText("Title")).toBeInTheDocument();
     expect(getByText("Content")).toBeInTheDocument();
 
-    // Testing close button
     fireEvent.click(getByTestId("close-button"));
     expect(mockCloseButton.mock.calls.length).toEqual(1);
   });

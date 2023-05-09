@@ -85,7 +85,6 @@ describe("Passcode Login Page", () => {
         />
       </MemoryRouter>
     );
-    // User gets the passcode wrong
     fireEvent.click(getByText(/1/));
     fireEvent.click(getByText(/2/));
     fireEvent.click(getByText(/3/));
@@ -95,15 +94,12 @@ describe("Passcode Login Page", () => {
     expect(
       await findByText(EN_TRANSLATIONS["passcodelogin.error"])
     ).toBeVisible();
-    // User clicks on "I've forgotten my passcode"
     fireEvent.click(
       getByText(EN_TRANSLATIONS["passcodelogin.forgotten.button"])
     );
-    // User sees the pop up
     expect(
       await findByText(EN_TRANSLATIONS["passcodelogin.alert.text.restart"])
     ).toBeVisible();
-    // User can choose to start again
     fireEvent.click(
       getByText(EN_TRANSLATIONS["passcodelogin.alert.button.restart"])
     );
