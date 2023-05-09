@@ -17,9 +17,6 @@ const AppWrapper = (props: { children: any }) => {
   const initApp = async () => {
     const passcodeIsSet = await SecureStorage.get("app-login-passcode");
 
-    console.log("passcodeIsSet");
-    console.log(!!passcodeIsSet);
-    console.log(passcodeIsSet);
     dispatch(
       setAuthentication({ ...authentication, passcodeIsSet: !!passcodeIsSet })
     );

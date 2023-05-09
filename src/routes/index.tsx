@@ -5,7 +5,6 @@ import {
   Redirect,
   Route,
   RouteProps,
-  useHistory,
   useLocation,
 } from "react-router-dom";
 import Moment from "moment";
@@ -13,12 +12,10 @@ import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
-import { useAppDispatch, useAppSelector } from "../store/hooks";
+import { useAppSelector } from "../store/hooks";
 import {
-  getAuthentication,
-  setAuthentication
+  getAuthentication
 } from "../store/reducers/StateCache";
-import {SecureStorage} from "@aparajita/capacitor-secure-storage";
 
 export const ROUTES = {
   ONBOARDING_ROUTE: "/onboarding",
@@ -72,67 +69,6 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
 };
 
 const Routes = () => {
-  const dispatch = useAppDispatch();
-  const history = useHistory();
-  const authentication = useAppSelector(getAuthentication);
-  const [lockTimer, setLockTimer] = useState<
-    NodeJS.Timeout | string | number | undefined
-  >(undefined);
-
-  useEffect(() => {
-    startLockTimer();
-    const onInteraction = () => {
-      resetLockTimer();
-    };
-    const interactionEvents = ["onClick", "keypress", "scroll", "touchstart"];
-    interactionEvents.forEach((event) => {
-      document.addEventListener(event, onInteraction);
-    });
-    return () => {
-      stopLockTimer();
-      interactionEvents.forEach((event) => {
-        document.removeEventListener(event, onInteraction);
-      });
-    };
-  }, []);
-
-  const startLockTimer = () => {
-    const timer = setTimeout(() => {
-      lockApp(); // Lock after 5 min
-    }, MAX_LOCK_TIME);
-    setLockTimer(timer);
-  };
-
-  const resetLockTimer = () => {
-    clearTimeout(lockTimer);
-    startLockTimer();
-    /*
-    SecureStorage.get("app-login-passcode").then((passcodeIsSet) => {
-      dispatch(
-          setAuthentication({
-            ...authentication,
-            time: Moment().valueOf(),
-            passcodeIsSet: !!passcodeIsSet
-          })
-      );
-    });*/
-  };
-
-  const stopLockTimer = () => {
-    clearTimeout(lockTimer);
-  };
-
-  const lockApp = () => {
-    dispatch(
-      setAuthentication({
-        ...authentication,
-        loggedIn: false,
-        time: 0,
-      })
-    );
-    history.push(ROUTES.PASSCODE_LOGIN_ROUTE);
-  };
-
   return (
     <IonReactRouter>
       <IonRouterOutlet>
@@ -152,7 +88,7 @@ const Routes = () => {
           component={SetPasscode}
         />
 
-        <Route
+        <PrivateRoute
           path={ONBOARDING_ROUTE}
           component={Onboarding}
         />
