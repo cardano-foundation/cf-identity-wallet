@@ -1,25 +1,19 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IonButton, IonCol, IonGrid, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import {
-  ROUTES,
-  SET_PASSCODE_ROUTE,
-} from "../../../routes";
+import { ROUTES, SET_PASSCODE_ROUTE } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import Alert from "../../components/Alert/Alert";
 import { SecureStorage } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getState,
-  setCurrentRoute,
-} from "../../../store/reducers/StateCache";
+import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
 import { getNextRoute } from "../../../routes/Rules";
 
-const PasscodeLogin = ({}) => {
+const PasscodeLogin = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
 
@@ -101,8 +95,6 @@ const PasscodeLogin = ({}) => {
     SecureStorage.delete("app-login-passcode");
     history.push(SET_PASSCODE_ROUTE);
   };
-
-  useEffect(() => {}, []);
 
   return (
     <PageLayout

@@ -10,17 +10,10 @@ import {
   SecureStorage,
   KeyStoreKeys,
 } from "../../../core/storage/secureStorage";
-import { GENERATE_SEED_PHRASE_ROUTE, ROUTES } from "../../../routes";
+import { ROUTES } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import {
-  getAuthentication,
-  getState,
-  setAuthentication,
-  setCurrentRoute,
-} from "../../../store/reducers/StateCache";
-import Moment from "moment/moment";
+import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { RootState } from "../../../store";
 import { getNextRoute } from "../../../routes/Rules";
 
 // Based on OWASP recommendations

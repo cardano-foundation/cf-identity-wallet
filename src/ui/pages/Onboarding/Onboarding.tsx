@@ -5,17 +5,12 @@ import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
-import {
-  ROUTES,
-} from "../../../routes";
+import { ROUTES } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getState,
-  setCurrentRoute,
-} from "../../../store/reducers/StateCache";
+import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
 import { getNextRoute } from "../../../routes/Rules";
 
-const Onboarding = ({}) => {
+const Onboarding = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);

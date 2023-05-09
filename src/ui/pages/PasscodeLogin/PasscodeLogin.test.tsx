@@ -1,18 +1,13 @@
-import { MemoryRouter, Route} from "react-router-dom";
+import { MemoryRouter, Route } from "react-router-dom";
 import { fireEvent, render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { PasscodeLogin } from "./PasscodeLogin";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import {
-  PASSCODE_LOGIN_ROUTE,
-  SET_PASSCODE_ROUTE,
-} from "../../../routes";
+import { PASSCODE_LOGIN_ROUTE, SET_PASSCODE_ROUTE } from "../../../routes";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 
 describe("Passcode Login Page", () => {
-  const storedPasscode =
-    "$argon2id$v=19$m=19456,t=2,p=1$9rNY0Jq12CTkSsZNkWp8Jg$CXvjykDaCagRyUc9TrA/N45iTHb3SlGcXICpw2Rrzp0";
   test("Renders Passcode Login page with title and description", () => {
     const { getByText } = render(
       <Provider store={store}>
@@ -47,7 +42,7 @@ describe("Passcode Login Page", () => {
         <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
           <Route
             path={PASSCODE_LOGIN_ROUTE}
-            render={(props) => <PasscodeLogin />}
+            component={PasscodeLogin}
           />
           <Route
             path={SET_PASSCODE_ROUTE}

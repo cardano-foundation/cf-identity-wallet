@@ -52,7 +52,6 @@ const { setCurrentRoute, setAuthentication } = StateCacheSlice.actions;
 
 const getState = (state: RootState) => state;
 const getStateCache = (state: RootState) => state.stateCache;
-const getRoutes = (state: RootState) => state.stateCache.routes;
 const getCurrentRoute = (state: RootState) =>
   state.stateCache.routes.length ? state.stateCache.routes[0] : {};
 const getAuthentication = (state: RootState) => state.stateCache.authentication;

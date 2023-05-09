@@ -41,7 +41,7 @@ const NextRules: RouteRulesType = {
 };
 
 const getNextOnboardingRoute = (store: RootState) => {
-  const seedPhraseIsSet: boolean = !!store.seedPhraseCache?.seedPhrase;
+  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase;
 
   let path;
   if (!store.stateCache.authentication.passcodeIsSet) {
@@ -56,7 +56,7 @@ const getNextOnboardingRoute = (store: RootState) => {
 };
 
 const getNextSetPasscodeRoute = (store: RootState) => {
-  const seedPhraseIsSet: boolean = !!store.seedPhraseCache?.seedPhrase;
+  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase;
 
   const nextPath: string = seedPhraseIsSet
     ? ROUTES.DIDS_ROUTE

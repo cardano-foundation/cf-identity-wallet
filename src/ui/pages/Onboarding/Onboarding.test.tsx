@@ -1,6 +1,7 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router-dom";
 import Moment from "moment/moment";
+import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Onboarding } from "./index";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
@@ -12,7 +13,6 @@ import {
   ONBOARDING_ROUTE,
 } from "../../../routes";
 import { store } from "../../../store";
-import { Provider } from "react-redux";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
@@ -48,7 +48,7 @@ describe("Onboarding Page", () => {
   });
 
   test("If the user hasn't set a passcode yet, they will be asked to create one", async () => {
-    const { getByTestId, queryByTestId, queryByText } = render(
+    const { getByTestId, queryByText } = render(
       <MemoryRouter initialEntries={[ONBOARDING_ROUTE]}>
         <Provider store={store}>
           <Route
