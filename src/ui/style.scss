@@ -36,16 +36,6 @@ ion-app {
 .ion-primary-button {
   color: var(--ion-color-primary);
   --background: var(--color-accent-gradient);
-  --background-activated: none;
-
-  &.button-disabled {
-    --background: var(--color-medium-grey);
-  }
-}
-
-.ion-primary-button {
-  color: var(--ion-color-primary);
-  --background: var(--color-accent-gradient);
   --background-activated: var(--color-medium-grey);
 
   &.button-disabled {
@@ -58,6 +48,27 @@ ion-app {
   --background-activated: var(--color-dark-grey);
 }
 
+.page-paragraph {
+  margin: 0;
+}
+
 .continue-col {
   text-align: center;
+}
+
+.seed-phrase-container {
+  padding: 0.5rem;
+  display: flex;
+  flex-wrap: wrap;
+
+  ion-chip {
+    border-radius: 8px;
+    font-weight: 400;
+    width: 30%;
+    padding-inline: 0.475rem;
+
+    .index {
+      margin-right: 4px;
+    }
+  }
 }

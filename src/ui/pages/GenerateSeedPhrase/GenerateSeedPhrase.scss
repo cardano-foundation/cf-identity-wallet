@@ -1,8 +1,4 @@
 .generate-seedphrase {
-  .paragraph {
-    margin: 0;
-  }
-
   ion-segment {
     --background: var(--color-dark-grey);
 
@@ -48,8 +44,6 @@
   }
 
   .seed-phrase-container {
-    padding: 0.5rem;
-
     &.seed-phrase-visible {
       filter: none;
     }
@@ -64,15 +58,6 @@
   ion-icon {
     color: var(--ion-color-light);
     margin: 0;
-  }
-
-  ion-chip {
-    border-radius: 8px;
-    font-weight: 400;
-
-    .index {
-      margin-right: 4px;
-    }
   }
 
   ion-item::part(native) {

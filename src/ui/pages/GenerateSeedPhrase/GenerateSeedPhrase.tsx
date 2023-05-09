@@ -101,7 +101,7 @@ const GenerateSeedPhrase = () => {
           <IonRow>
             <IonCol size="12">
               <h1>{i18n.t("generateseedphrase.title")}</h1>
-              <p className="paragraph">
+              <p className="page-paragraph">
                 {i18n.t("generateseedphrase.paragraph.top")}
               </p>
             </IonCol>
@@ -189,7 +189,7 @@ const GenerateSeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <p className="paragraph">
+              <p className="page-paragraph">
                 {i18n.t("generateseedphrase.paragraph.bottom")}
               </p>
             </IonCol>

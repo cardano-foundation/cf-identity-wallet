@@ -1,0 +1,18 @@
+.verify-seedphrase {
+  ion-card {
+    margin: 0;
+    position: relative;
+    &.container-top {
+      border: 1px solid var(--color-dark-grey);
+    --background: var(--color-light-grey);
+    }
+    &.container-bottom {
+      --background: transparent;
+        box-shadow: none;
+    }
+    .empty-word {
+      border: 1px dashed var(--color-dark-grey);
+      background-color: transparent;
+    }
+  }
+}
