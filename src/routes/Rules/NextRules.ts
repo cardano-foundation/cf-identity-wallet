@@ -6,25 +6,32 @@ import { setSeedPhraseCache } from "../../store/reducers/SeedPhraseCache";
 
 type RouteRulesType = Record<string, any>;
 
+interface PageState {
+  [key: string]: any;
+}
+interface PayloadProps {
+  [key: string]: any;
+}
 const getNextRoute = (
   currentPath: string,
   store: RootState,
-  state?: any,
-  payload?: any
-) => {
+  state?: PageState,
+  payload?: PayloadProps
+): {
+  nextPath: { pathname: string; canNavigate: boolean };
+  updateRedux?: any;
+} => {
   const [nextPath, updateRedux] = NextRules[currentPath];
 
-  return {
+  let r = {
     nextPath: nextPath(store, state, payload),
-    updateRedux: updateRedux(store, state),
   };
+  if (updateRedux) r = { ...nextPath, updateRedux: updateRedux(store, state) };
+  return r;
 };
 
 const NextRules: RouteRulesType = {
-  "/onboarding": [
-    (store: RootState) => getNextOnboardingRoute(store),
-    () => () => {},
-  ],
+  "/onboarding": [(store: RootState) => getNextOnboardingRoute(store)],
   "/setpasscode": [
     (store: RootState) => getNextSetPasscodeRoute(store),
     (store: RootState) => () => updateStoreAfterSetPasscodeRoute(store),
@@ -35,7 +42,7 @@ const NextRules: RouteRulesType = {
   ],
   "/generateseedphrase": [
     () => getNextGenerateSeedPhraseRoute(),
-    (store: RootState, state: any) => () =>
+    (store: RootState, state: PageState) => () =>
       updateStoreAfterGenerateSeedPhraseRoute(store, state),
   ],
 };
@@ -100,7 +107,7 @@ const getNextGenerateSeedPhraseRoute = () => {
 
 const updateStoreAfterGenerateSeedPhraseRoute = (
   store: RootState,
-  state: any
+  state: PageState
 ) => {
   return setSeedPhraseCache(state.seedPhrase);
 };

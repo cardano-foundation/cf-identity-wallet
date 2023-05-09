@@ -50,7 +50,7 @@ const SetPasscode = () => {
                   ROUTES.SET_PASSCODE_ROUTE,
                   storeState
                 );
-                if (nextPath.canNavigate) {
+                if (nextPath?.canNavigate) {
                   dispatch(updateRedux());
                   dispatch(setCurrentRoute({ path: nextPath.pathname }));
                   history.push(nextPath.pathname);

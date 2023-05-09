@@ -141,49 +141,39 @@ describe("NextRules", () => {
   });
 });
 
-describe("getNextPath", () => {
-  let storeMock: RootState;
-  let stateMock: any;
-  let payloadMock: any;
+describe("getNextRoute", () => {
+  const currentPath = "/currentPath";
+  const store: RootState = {
+    stateCache: {
+      routes: [],
+      authentication: {
+        loggedIn: false,
+        time: 0,
+        passcodeIsSet: false,
+      },
+    },
+    seedPhraseCache: {
+      seedPhrase: "",
+    },
+  };
+  const state = {};
+  const payload = {};
 
-  beforeEach(() => {
-    storeMock = {
-      stateCache: {
-        routes: [],
-        authentication: {
-          loggedIn: false,
-          time: 0,
-          passcodeIsSet: false,
-        },
-      },
-      seedPhraseCache: {
-        seedPhrase: "",
-      },
+  test("should return the correct next path", () => {
+    const nextPath = {
+      pathname: "/nextPath",
+      canNavigate: true,
     };
-  });
 
-  afterEach(() => {
-    jest.resetAllMocks();
-  });
+    NextRules[currentPath] = [jest.fn().mockReturnValue(nextPath)];
 
-  test("should return the correct nextPath and updateRedux functions", () => {
-    // Define la ruta actual y las funciones nextPath y updateRedux correspondientes
-    const currentPath = "/onboarding";
-    const nextPathFunc = jest.fn();
-    const updateReduxFunc = jest.fn();
-    NextRules[currentPath] = [nextPathFunc, updateReduxFunc];
-
-    const result = getNextRoute(currentPath, storeMock, stateMock, payloadMock);
+    const result = getNextRoute(currentPath, store, state, payload);
 
     expect(result).toEqual({
-      nextPath: nextPathFunc(storeMock, stateMock, payloadMock),
-      updateRedux: updateReduxFunc(storeMock, stateMock),
+      nextPath: {
+        pathname: "/nextPath",
+        canNavigate: true,
+      },
     });
-    expect(nextPathFunc).toHaveBeenCalledWith(
-      storeMock,
-      stateMock,
-      payloadMock
-    );
-    expect(updateReduxFunc).toHaveBeenCalledWith(storeMock, stateMock);
   });
 });
