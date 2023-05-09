@@ -44,8 +44,6 @@ const getNextOnboardingRoute = (store: RootState) => {
   const seedPhraseIsSet: boolean = !!store.seedPhraseCache?.seedPhrase;
 
   let path;
-  console.log("store.stateCache");
-  console.log(store.stateCache);
   if (!store.stateCache.authentication.passcodeIsSet) {
     path = ROUTES.SET_PASSCODE_ROUTE;
   } else if (store.stateCache.authentication.passcodeIsSet && seedPhraseIsSet) {

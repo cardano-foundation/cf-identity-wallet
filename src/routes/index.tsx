@@ -69,13 +69,14 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
 };
 
 const Routes = () => {
+  const authentication = useAppSelector(getAuthentication);
   return (
     <IonReactRouter>
       <IonRouterOutlet>
         <Redirect
           exact
           from="/"
-          to={ONBOARDING_ROUTE}
+          to={authentication.passcodeIsSet && !authentication.loggedIn ? ROUTES.PASSCODE_LOGIN_ROUTE : ROUTES.ONBOARDING_ROUTE}
         />
 
         <Route
@@ -88,7 +89,7 @@ const Routes = () => {
           component={SetPasscode}
         />
 
-        <PrivateRoute
+        <Route
           path={ONBOARDING_ROUTE}
           component={Onboarding}
         />
