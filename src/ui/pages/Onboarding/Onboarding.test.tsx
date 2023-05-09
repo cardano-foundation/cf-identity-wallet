@@ -1,5 +1,6 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router-dom";
+import { Provider } from "react-redux";
 import { Onboarding } from "./index";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
@@ -9,6 +10,7 @@ import {
   SET_PASSCODE_ROUTE,
   ONBOARDING_ROUTE,
 } from "../../../routes";
+import { store } from "../../../store";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
@@ -32,7 +34,7 @@ describe("Onboarding Page", () => {
   });
 
   test("If the user hasn't set a passcode yet, they will be asked to create one", async () => {
-    const { getByTestId, queryByTestId, queryByText } = render(
+    const { getByTestId, queryByText } = render(
       <MemoryRouter initialEntries={[ONBOARDING_ROUTE]}>
         <Route
           path={ONBOARDING_ROUTE}
@@ -62,22 +64,24 @@ describe("Onboarding Page", () => {
   });
 
   test("If the user has already set a passcode but they haven't created a profile, they will be asked to generate a seed phrase", async () => {
-    const { getByTestId, queryByTestId, queryByText } = render(
-      <MemoryRouter initialEntries={[ONBOARDING_ROUTE]}>
-        <Route
-          path={ONBOARDING_ROUTE}
-          render={(props) => (
-            <Onboarding
-              {...props}
-              storedPasscode="mysecretpasscode"
-            />
-          )}
-        />
-        <Route
-          path={GENERATE_SEED_PHRASE_ROUTE}
-          component={GenerateSeedPhrase}
-        />
-      </MemoryRouter>
+    const { getByTestId, queryByText } = render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[ONBOARDING_ROUTE]}>
+          <Route
+            path={ONBOARDING_ROUTE}
+            render={(props) => (
+              <Onboarding
+                {...props}
+                storedPasscode="mysecretpasscode"
+              />
+            )}
+          />
+          <Route
+            path={GENERATE_SEED_PHRASE_ROUTE}
+            component={GenerateSeedPhrase}
+          />
+        </MemoryRouter>
+      </Provider>
     );
 
     const buttonContinue = getByTestId("get-started-button");

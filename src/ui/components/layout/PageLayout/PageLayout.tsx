@@ -4,13 +4,12 @@ import {
   IonToolbar,
   IonButtons,
   IonBackButton,
-  IonGrid,
-  IonRow,
-  IonCol,
   IonProgressBar,
-  IonPage,
+  IonButton,
+  IonIcon,
+  IonTitle,
 } from "@ionic/react";
-import { arrowBackOutline } from "ionicons/icons";
+import { arrowBackOutline, closeOutline } from "ionicons/icons";
 import "./PageLayout.scss";
 import { PageLayoutProps } from "./PageLayout.types";
 
@@ -18,55 +17,66 @@ const PageLayout = ({
   backButton,
   backButtonPath,
   children,
-  contentClasses,
+  closeButton,
+  closeButtonAction,
   progressBar,
   progressBarValue,
   progressBarBuffer,
+  title,
 }: PageLayoutProps) => {
   const mainContent = children;
 
   return (
-    <IonPage>
+    <>
       <IonHeader
         translucent={true}
-        collapse="fade"
         className="ion-no-border"
       >
-        <IonToolbar>
-          <IonGrid>
-            <IonRow>
-              <IonCol
-                size="1"
-                className="column-left"
+        <IonToolbar color="light">
+          <IonButtons slot="start">
+            {backButton && (
+              <IonBackButton
+                icon={arrowBackOutline}
+                text=""
+                defaultHref={backButtonPath}
+                color="primary"
+                data-testid="back-button"
+              />
+            )}
+            {closeButton && (
+              <IonButton
+                shape="round"
+                className="close-button"
+                onClick={closeButtonAction}
+                data-testid="close-button"
               >
-                {backButton && (
-                  <IonButtons>
-                    <IonBackButton
-                      icon={arrowBackOutline}
-                      text=""
-                      defaultHref={backButtonPath}
-                    />
-                  </IonButtons>
-                )}
-              </IonCol>
-              <IonCol
-                size="11"
-                className="column-right"
-              >
-                {progressBar && (
-                  <IonProgressBar
-                    value={progressBarValue}
-                    buffer={progressBarBuffer}
-                  />
-                )}
-              </IonCol>
-            </IonRow>
-          </IonGrid>
+                <IonIcon
+                  slot="icon-only"
+                  icon={closeOutline}
+                  color="primary"
+                ></IonIcon>
+              </IonButton>
+            )}
+          </IonButtons>
+
+          {title && (
+            <IonTitle>
+              <h2>{title}</h2>
+            </IonTitle>
+          )}
+          {progressBar && (
+            <div className="progress-bar-container">
+              <IonProgressBar
+                value={progressBarValue}
+                buffer={progressBarBuffer}
+              />
+            </div>
+          )}
         </IonToolbar>
       </IonHeader>
 
-      <IonContent className={contentClasses}>{mainContent}</IonContent>
-    </IonPage>
+      <IonContent color="light">{mainContent}</IonContent>
+    </>
   );
 };
 

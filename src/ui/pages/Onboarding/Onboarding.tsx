@@ -1,5 +1,5 @@
 import { useHistory } from "react-router-dom";
-import { IonButton } from "@ionic/react";
+import { IonButton, IonPage } from "@ionic/react";
 import { i18n } from "../../../i18n";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
@@ -30,28 +30,25 @@ const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
   };
 
   return (
-    <PageLayout
-      backButton={false}
-      backButtonPath={"/"}
-      contentClasses=""
-      progressBar={false}
-      progressBarValue={0}
-      progressBarBuffer={1}
-    >
-      <Slides items={items} />
-      <IonButton
-        onClick={() => {
-          handleNavigation();
-        }}
-        className="ion-primary-button next-button"
-        data-testid="get-started-button"
-      >
-        {i18n.t("onboarding.getstarted.button.label")}
-      </IonButton>
-      <div className="already-wallet">
-        {i18n.t("onboarding.alreadywallet.button.label")}
-      </div>
-    </PageLayout>
+    <IonPage className="page-layout">
+      <PageLayout>
+        <Slides items={items} />
+        <IonButton
+          shape="round"
+          expand="block"
+          className="ion-primary-button get-started-button"
+          onClick={() => {
+            handleNavigation();
+          }}
+          data-testid="get-started-button"
+        >
+          {i18n.t("onboarding.getstarted.button.label")}
+        </IonButton>
+        <div className="already-wallet">
+          {i18n.t("onboarding.alreadywallet.button.label")}
+        </div>
+      </PageLayout>
+    </IonPage>
   );
 };
 
