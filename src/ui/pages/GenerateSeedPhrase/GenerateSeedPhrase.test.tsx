@@ -1,4 +1,5 @@
 import { act, render } from "@testing-library/react";
+import { Provider } from "react-redux";
 import {
   ionFireEvent as fireEvent,
   waitForIonicReact,
@@ -13,7 +14,6 @@ import {
 } from "../../../constants/appConstants";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
-import { Provider } from "react-redux";
 
 describe("Generate Seed Phrase screen", () => {
   test("User can see Title and Security Overlay", () => {

@@ -1,33 +1,14 @@
-import { MemoryRouter, Route, Router, useHistory } from "react-router-dom";
+import { MemoryRouter, Route} from "react-router-dom";
 import { fireEvent, render } from "@testing-library/react";
-import { createMemoryHistory } from "history";
+import { Provider } from "react-redux";
 import { PasscodeLogin } from "./PasscodeLogin";
-import { Onboarding } from "../Onboarding";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
-  GENERATE_SEED_PHRASE_ROUTE,
-  ONBOARDING_ROUTE,
   PASSCODE_LOGIN_ROUTE,
   SET_PASSCODE_ROUTE,
 } from "../../../routes";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
-import { Provider } from "react-redux";
-import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
-import { setAuthentication } from "../../../store/reducers/StateCache";
-import { useAppDispatch } from "../../../store/hooks";
-
-/*
-jest.mock('react-router-dom', () => ({
-  useLocation: jest.fn().mockReturnValue({
-    pathname: '/another-route',
-    search: '',
-    hash: '',
-    state: null,
-    key: '5nvxpbdafa',
-  }),
-}));*/
-
 
 describe("Passcode Login Page", () => {
   const storedPasscode =

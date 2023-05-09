@@ -1,8 +1,13 @@
-import React, { FC, useEffect, useState } from "react";
-import { SecureStorage } from "@aparajita/capacitor-secure-storage";
+import React, { useEffect, useState } from "react";
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
-import {Redirect, Route, RouteProps, useHistory, useLocation} from "react-router-dom";
+import {
+  Redirect,
+  Route,
+  RouteProps,
+  useHistory,
+  useLocation,
+} from "react-router-dom";
 import Moment from "moment";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
@@ -10,9 +15,10 @@ import { SetPasscode } from "../ui/pages/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
-  getAuthentication, setAuthentication,
-  setCurrentRoute,
+  getAuthentication,
+  setAuthentication
 } from "../store/reducers/StateCache";
+import {SecureStorage} from "@aparajita/capacitor-secure-storage";
 
 export const ROUTES = {
   ONBOARDING_ROUTE: "/onboarding",
@@ -31,7 +37,6 @@ const GENERATE_SEED_PHRASE_ROUTE = "/generateseedphrase";
 const MAX_LOCK_TIME = 300000; // 3 sec
 
 const PrivateRoute: React.FC<RouteProps> = (props) => {
-  const dispatch = useAppDispatch();
 
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
@@ -59,8 +64,8 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
       from={location.pathname}
       to={{
         pathname: authentication.passcodeIsSet
-          ? PASSCODE_LOGIN_ROUTE
-          : SET_PASSCODE_ROUTE,
+          ? ROUTES.PASSCODE_LOGIN_ROUTE
+          : ROUTES.ONBOARDING_ROUTE,
       }}
     />
   );
@@ -71,7 +76,7 @@ const Routes = () => {
   const history = useHistory();
   const authentication = useAppSelector(getAuthentication);
   const [lockTimer, setLockTimer] = useState<
-      NodeJS.Timeout | string | number | undefined
+    NodeJS.Timeout | string | number | undefined
   >(undefined);
 
   useEffect(() => {
@@ -101,6 +106,16 @@ const Routes = () => {
   const resetLockTimer = () => {
     clearTimeout(lockTimer);
     startLockTimer();
+    /*
+    SecureStorage.get("app-login-passcode").then((passcodeIsSet) => {
+      dispatch(
+          setAuthentication({
+            ...authentication,
+            time: Moment().valueOf(),
+            passcodeIsSet: !!passcodeIsSet
+          })
+      );
+    });*/
   };
 
   const stopLockTimer = () => {
@@ -108,12 +123,13 @@ const Routes = () => {
   };
 
   const lockApp = () => {
-    //setIsAuthenticated(false);
-    dispatch(setAuthentication({
-      ...authentication,
-      loggedIn: false,
-      time: 0
-    }))
+    dispatch(
+      setAuthentication({
+        ...authentication,
+        loggedIn: false,
+        time: 0,
+      })
+    );
     history.push(ROUTES.PASSCODE_LOGIN_ROUTE);
   };
 
@@ -123,7 +139,7 @@ const Routes = () => {
         <Redirect
           exact
           from="/"
-          to={dispatch(setCurrentRoute({ path: ONBOARDING_ROUTE })) && ONBOARDING_ROUTE}
+          to={ONBOARDING_ROUTE}
         />
 
         <Route

@@ -15,7 +15,8 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 import {
   getAuthentication,
   getState,
-  setAuthentication, setCurrentRoute,
+  setAuthentication,
+  setCurrentRoute,
 } from "../../../store/reducers/StateCache";
 import Moment from "moment/moment";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";

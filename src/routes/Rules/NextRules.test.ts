@@ -9,10 +9,10 @@ import {
   updateStoreAfterPasscodeLoginRoute,
   updateStoreAfterSetPasscodeRoute,
 } from "./NextRules";
-import {RootState} from "../../store";
-import {ROUTES} from "../index";
-import {setAuthentication} from "../../store/reducers/StateCache";
-import {setSeedPhraseCache} from "../../store/reducers/SeedPhraseCache";
+import { RootState } from "../../store";
+import { ROUTES } from "../index";
+import { setAuthentication } from "../../store/reducers/StateCache";
+import { setSeedPhraseCache } from "../../store/reducers/SeedPhraseCache";
 
 describe("NextRules", () => {
   let localStorageMock: any;
@@ -65,7 +65,7 @@ describe("NextRules", () => {
   test("should return correct route for /setpasscode when seedPhrase is not set", () => {
     localStorageMock.getItem = jest.fn().mockReturnValue("someSeedPhrase");
 
-    const result = getNextSetPasscodeRoute();
+    const result = getNextSetPasscodeRoute(storeMock);
 
     expect(result).toEqual({
       canNavigate: true,

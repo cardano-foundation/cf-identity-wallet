@@ -1,10 +1,6 @@
-import { useEffect, useState } from "react";
-import { Redirect, Route, RouteProps, useHistory } from "react-router-dom";
-
-import { useIonViewWillEnter } from "@ionic/react";
+import { useEffect } from "react";
 import { SecureStorage } from "@aparajita/capacitor-secure-storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { SET_PASSCODE_ROUTE } from "../../../routes";
 import {
   getAuthentication,
   setAuthentication,
@@ -21,6 +17,9 @@ const AppWrapper = (props: { children: any }) => {
   const initApp = async () => {
     const passcodeIsSet = await SecureStorage.get("app-login-passcode");
 
+    console.log("passcodeIsSet");
+    console.log(!!passcodeIsSet);
+    console.log(passcodeIsSet);
     dispatch(
       setAuthentication({ ...authentication, passcodeIsSet: !!passcodeIsSet })
     );

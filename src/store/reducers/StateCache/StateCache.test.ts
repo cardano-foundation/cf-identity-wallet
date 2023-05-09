@@ -12,7 +12,7 @@ import {
   StateCacheSlice,
 } from "./StateCache";
 import { RootState } from "../../index";
-import {ROUTES} from "../../../routes";
+import { ROUTES } from "../../../routes";
 
 describe("State Cache", () => {
   test("should return the initial state on first run", () => {

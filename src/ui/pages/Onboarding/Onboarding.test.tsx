@@ -1,5 +1,7 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router-dom";
+import Moment from "moment/moment";
+import configureStore from "redux-mock-store";
 import { Onboarding } from "./index";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
@@ -11,9 +13,6 @@ import {
 } from "../../../routes";
 import { store } from "../../../store";
 import { Provider } from "react-redux";
-import { setAuthentication } from "../../../store/reducers/StateCache";
-import Moment from "moment/moment";
-import configureStore from "redux-mock-store";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {

@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { IonButton, IonCol, IonGrid, IonRow } from "@ionic/react";
-import {useHistory, useLocation} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import {
-  GENERATE_SEED_PHRASE_ROUTE,
-  ONBOARDING_ROUTE,
   ROUTES,
   SET_PASSCODE_ROUTE,
 } from "../../../routes";
@@ -16,10 +14,8 @@ import Alert from "../../components/Alert/Alert";
 import { SecureStorage } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getAuthentication,
-  getCurrentRoute,
   getState,
-  setAuthentication, setCurrentRoute,
+  setCurrentRoute,
 } from "../../../store/reducers/StateCache";
 import { getNextRoute } from "../../../routes/Rules";
 
@@ -28,8 +24,6 @@ const PasscodeLogin = ({}) => {
   const dispatch = useAppDispatch();
 
   const storeState = useAppSelector(getState);
-  const authentication = useAppSelector(getAuthentication);
-  const prevPath = useAppSelector(getCurrentRoute);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
   const [isOpen, setIsOpen] = useState(false);
@@ -60,7 +54,7 @@ const PasscodeLogin = ({}) => {
                 );
                 if (nextPath.canNavigate) {
                   dispatch(updateRedux());
-                  dispatch(setCurrentRoute({ path: nextPath.pathname }))
+                  dispatch(setCurrentRoute({ path: nextPath.pathname }));
                   history.push(nextPath.pathname);
                   delay(500).then(() => setPasscode(""));
                 }

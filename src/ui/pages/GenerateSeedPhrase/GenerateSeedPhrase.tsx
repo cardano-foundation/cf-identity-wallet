@@ -28,7 +28,7 @@ import { ONBOARDING_ROUTE, ROUTES } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {getState, setCurrentRoute} from "../../../store/reducers/StateCache";
+import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
 import { getNextRoute } from "../../../routes/Rules";
 
 const GenerateSeedPhrase = () => {

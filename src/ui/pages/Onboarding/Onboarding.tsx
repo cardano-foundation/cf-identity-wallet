@@ -6,15 +6,12 @@ import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
-  SET_PASSCODE_ROUTE,
-  GENERATE_SEED_PHRASE_ROUTE,
   ROUTES,
 } from "../../../routes";
-import { store } from "../../../store";
-import {useAppDispatch, useAppSelector} from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getAuthentication,
-  getState, setCurrentRoute,
+  getState,
+  setCurrentRoute,
 } from "../../../store/reducers/StateCache";
 import { getNextRoute } from "../../../routes/Rules";
 
@@ -35,7 +32,7 @@ const Onboarding = ({}) => {
     const { nextPath } = getNextRoute(ROUTES.ONBOARDING_ROUTE, storeState);
 
     if (nextPath.canNavigate) {
-      dispatch(setCurrentRoute({ path: nextPath.pathname }))
+      dispatch(setCurrentRoute({ path: nextPath.pathname }));
       history.push(nextPath.pathname);
     }
   };

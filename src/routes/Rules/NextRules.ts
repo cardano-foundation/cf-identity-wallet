@@ -26,7 +26,7 @@ const NextRules: RouteRulesType = {
     () => () => {},
   ],
   "/setpasscode": [
-    () => getNextSetPasscodeRoute(),
+    (store: RootState) => getNextSetPasscodeRoute(store),
     (store: RootState) => () => updateStoreAfterSetPasscodeRoute(store),
   ],
   "/passcodelogin": [
@@ -41,17 +41,24 @@ const NextRules: RouteRulesType = {
 };
 
 const getNextOnboardingRoute = (store: RootState) => {
-  const seedPhraseIsSet: boolean = !!localStorage.getItem("seedPhrase");
+  const seedPhraseIsSet: boolean = !!store.seedPhraseCache?.seedPhrase;
 
-  const nextPath: string =
-    store.stateCache.authentication.passcodeIsSet && !seedPhraseIsSet
-      ? ROUTES.GENERATE_SEED_PHRASE_ROUTE
-      : ROUTES.SET_PASSCODE_ROUTE;
-  return { canNavigate: true, pathname: nextPath };
+  let path;
+  console.log("store.stateCache");
+  console.log(store.stateCache);
+  if (!store.stateCache.authentication.passcodeIsSet) {
+    path = ROUTES.SET_PASSCODE_ROUTE;
+  } else if (store.stateCache.authentication.passcodeIsSet && seedPhraseIsSet) {
+    path = ROUTES.DIDS_ROUTE;
+  } else {
+    path = ROUTES.GENERATE_SEED_PHRASE_ROUTE;
+  }
+
+  return { canNavigate: true, pathname: path };
 };
 
-const getNextSetPasscodeRoute = () => {
-  const seedPhraseIsSet: boolean = !!localStorage.getItem("seedPhrase");
+const getNextSetPasscodeRoute = (store: RootState) => {
+  const seedPhraseIsSet: boolean = !!store.seedPhraseCache?.seedPhrase;
 
   const nextPath: string = seedPhraseIsSet
     ? ROUTES.DIDS_ROUTE
@@ -69,16 +76,16 @@ const updateStoreAfterSetPasscodeRoute = (store: RootState) => {
 };
 
 const getNextPasscodeLoginRoute = (store: RootState) => {
+  const routesIncludeOnboarding = store.stateCache.routes.some(
+    (route) => route.path === ROUTES.ONBOARDING_ROUTE
+  );
+  const nextPath: string = routesIncludeOnboarding
+    ? ROUTES.GENERATE_SEED_PHRASE_ROUTE
+    : store.stateCache.routes.length && store.stateCache.routes[0].path?.length
+    ? store.stateCache.routes[0].path
+    : ROUTES.ONBOARDING_ROUTE;
 
-  const routesIncludeOnboarding = store.stateCache.routes.some(route => route.path === ROUTES.ONBOARDING_ROUTE);
-  const nextPath2: string = routesIncludeOnboarding ? ROUTES.GENERATE_SEED_PHRASE_ROUTE : store.stateCache.routes.length && store.stateCache.routes[0].path?.length ? store.stateCache.routes[0].path : ROUTES.ONBOARDING_ROUTE;
-
-  const nextPath: string =
-    store.stateCache.routes.length && store.stateCache.routes[0].path?.length
-      ? store.stateCache.routes[0].path
-      : routesIncludeOnboarding ? ROUTES.GENERATE_SEED_PHRASE_ROUTE : ROUTES.ONBOARDING_ROUTE;
-
-  return { canNavigate: true, pathname: nextPath2 };
+  return { canNavigate: true, pathname: nextPath };
 };
 
 const updateStoreAfterPasscodeLoginRoute = (store: RootState) => {

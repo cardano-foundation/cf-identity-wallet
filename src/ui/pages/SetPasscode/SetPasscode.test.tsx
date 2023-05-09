@@ -2,6 +2,7 @@ import { MemoryRouter, Route } from "react-router-dom";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import Argon2 from "argon2-browser";
 import { Buffer } from "buffer";
+import { Provider } from "react-redux";
 import { SetPasscode, ARGON2ID_OPTIONS } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import {
@@ -14,7 +15,6 @@ import {
 } from "../../../core/storage/secureStorage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
-import { Provider } from "react-redux";
 
 const ARGON2ID_HASH = {
   encoded: "encodedHash",
