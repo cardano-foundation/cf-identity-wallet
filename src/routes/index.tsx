@@ -36,7 +36,7 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
 
   useEffect(() => {
     setIsAuthenticated(authentication.loggedIn);
-  }, [location.pathname]);
+  }, [authentication.loggedIn]);
 
   const sessionExpired = () => {
     // Timeout logic here

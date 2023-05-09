@@ -2,9 +2,12 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import { ROUTES } from "../../../routes";
 
+interface PayloadData<T = any> {
+  [key: string]: T;
+}
 interface CurrentRouteCacheProps {
   path: string;
-  payload?: { [key: string]: any };
+  payload?: { [key: string]: PayloadData };
 }
 
 interface AuthenticationCacheProps {
