@@ -79,16 +79,18 @@
     padding: 0;
   }
 
-  ion-label {
-    font-size: 1rem !important;
-    margin: 0 !important;
-  }
-
   ion-checkbox {
     --size: 32px;
     --background-checked: transparent;
     --checkmark-color: var(--ion-color-primary);
     --border-radius: 4px;
+  }
+
+  ion-label {
+    font-size: 1rem !important;
+    margin: 0 !important;
+    position: absolute;
+    z-index: 2;
   }
 
   .footer ion-button {
