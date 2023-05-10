@@ -110,8 +110,6 @@ describe("Passcode Login Page", () => {
     });
   });
   test.skip("verifies passcode and navigates to next route", async () => {
-    const storedPass = "storedPass";
-
     const { getByText, queryByText } = render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[ROUTES.PASSCODE_LOGIN_ROUTE]}>
@@ -138,7 +136,7 @@ describe("Passcode Login Page", () => {
     await waitFor(() => {
       expect(
         queryByText(EN_TRANSLATIONS["generateseedphrase.title"])
-      ).toBeVisible()
+      ).toBeVisible();
     });
   });
 });
