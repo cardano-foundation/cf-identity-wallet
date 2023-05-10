@@ -7,7 +7,7 @@ import {
   updateStoreAfterGenerateSeedPhraseRoute,
   updateStoreAfterPasscodeLoginRoute,
   updateStoreAfterSetPasscodeRoute,
-} from "./NextRules";
+} from "./NextRoute";
 import { RootState } from "../../store";
 import { ROUTES } from "../index";
 import { setAuthentication } from "../../store/reducers/StateCache";

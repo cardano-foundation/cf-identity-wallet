@@ -22,7 +22,7 @@ const getNextRoute = (
   nextPath: { pathname: string; canNavigate: boolean };
   updateRedux?: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
-  const [nextPath, ...updateRedux] = NextRules[currentPath];
+  const [nextPath, ...updateRedux] = NextRoute[currentPath];
 
   return {
     nextPath: nextPath(store, state, payload),
@@ -42,7 +42,7 @@ const getNextRoute = (
   };
 };
 
-const NextRules: RouteRulesType = {
+const NextRoute: RouteRulesType = {
   "/onboarding": [(store: RootState) => getNextOnboardingRoute(store)],
   "/setpasscode": [
     (store: RootState) => getNextSetPasscodeRoute(store),
@@ -126,7 +126,7 @@ const updateStoreAfterGenerateSeedPhraseRoute = (
 
 export {
   getNextRoute,
-  NextRules,
+  NextRoute,
   getNextOnboardingRoute,
   getNextSetPasscodeRoute,
   updateStoreAfterSetPasscodeRoute,
