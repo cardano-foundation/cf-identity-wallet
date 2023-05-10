@@ -1,7 +1,5 @@
 interface SeedPhraseCacheProps {
-    seedPhrase: string;
+  seedPhrase: string;
 }
 
-export type {
-    SeedPhraseCacheProps
-}
+export type { SeedPhraseCacheProps };

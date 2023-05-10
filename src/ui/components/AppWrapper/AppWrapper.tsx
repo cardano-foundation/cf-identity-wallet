@@ -4,7 +4,10 @@ import {
   getAuthentication,
   setAuthentication,
 } from "../../../store/reducers/stateCache";
-import {KeyStoreKeys, SecureStorage} from "../../../core/storage/secureStorage";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+} from "../../../core/storage/secureStorage";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -21,8 +24,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(
         setAuthentication({ ...authentication, passcodeIsSet: !!passcodeIsSet })
       );
-    } catch (e) { /* empty */ }
-
+    } catch (e) {
+      /* empty */
+    }
   };
 
   return <>{props.children}</>;

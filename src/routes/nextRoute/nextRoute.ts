@@ -3,8 +3,7 @@ import { ROUTES } from "../index";
 import { RootState } from "../../store";
 import { setAuthentication } from "../../store/reducers/stateCache";
 import { setSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
-import {PageState, PayloadProps, RouteRulesType} from "./nextRoute.types";
-
+import { PageState, PayloadProps, RouteRulesType } from "./nextRoute.types";
 
 const getNextRoute = (
   currentPath: string,
@@ -21,16 +20,16 @@ const getNextRoute = (
     nextPath: nextPath(store, state, payload),
     updateRedux: updateRedux
       ? updateRedux.map(
-        (
-          fn:
+          (
+            fn:
               | ((
                   store: RootState,
                   state: PageState | undefined,
                   payload: PayloadProps | undefined
                 ) => void)
               | undefined
-        ) => fn && fn(store, state, payload)
-      )
+          ) => fn && fn(store, state, payload)
+        )
       : [],
   };
 };
@@ -92,8 +91,8 @@ const getNextPasscodeLoginRoute = (store: RootState) => {
   const nextPath: string = routesIncludeOnboarding
     ? ROUTES.GENERATE_SEED_PHRASE_ROUTE
     : store.stateCache.routes.length && store.stateCache.routes[0].path?.length
-      ? store.stateCache.routes[0].path
-      : ROUTES.ONBOARDING_ROUTE;
+    ? store.stateCache.routes[0].path
+    : ROUTES.ONBOARDING_ROUTE;
 
   return { canNavigate: true, pathname: nextPath };
 };
