@@ -7,7 +7,7 @@ import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 
 import { SecureStorage } from "../../../core/storage/secureStorage";
-import {ROUTES} from "../../../routes";
+import { ROUTES } from "../../../routes";
 
 describe("Passcode Login Page", () => {
   test("Renders Passcode Login page with title and description", () => {

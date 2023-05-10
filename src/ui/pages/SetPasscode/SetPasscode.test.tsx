@@ -11,7 +11,7 @@ import {
 } from "../../../core/storage/secureStorage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
-import {ROUTES} from "../../../routes";
+import { ROUTES } from "../../../routes";
 
 const ARGON2ID_HASH = {
   encoded: "encodedHash",

@@ -19,7 +19,6 @@ const ROUTES = {
   DIDS_ROUTE: "/dids",
 };
 
-
 const MAX_LOCK_TIME = 300000; // 3 sec
 
 const PrivateRoute: React.FC<RouteProps> = (props) => {
@@ -96,7 +95,4 @@ const Routes = () => {
   );
 };
 
-export {
-  Routes,
-  ROUTES
-};
+export { Routes, ROUTES };

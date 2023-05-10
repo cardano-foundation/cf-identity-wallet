@@ -8,7 +8,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
-import {ROUTES} from "../../../routes";
+import { ROUTES } from "../../../routes";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {

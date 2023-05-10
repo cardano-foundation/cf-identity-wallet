@@ -35,7 +35,7 @@ import { getNextRoute } from "../../../routes/Rules";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { updateReduxState } from "../../../store/utils";
-import {ROUTES} from "../../../routes";
+import { ROUTES } from "../../../routes";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
