@@ -142,14 +142,13 @@ describe("NextRules", () => {
 });
 
 describe("getNextRoute", () => {
-  const currentPath = "/currentPath";
   const store: RootState = {
     stateCache: {
       routes: [],
       authentication: {
         loggedIn: false,
         time: 0,
-        passcodeIsSet: false,
+        passcodeIsSet: true,
       },
     },
     seedPhraseCache: {
@@ -159,21 +158,42 @@ describe("getNextRoute", () => {
   const state = {};
   const payload = {};
 
-  test("should return the correct next path", () => {
-    const nextPath = {
-      pathname: "/nextPath",
-      canNavigate: true,
-    };
+  test("should return the correct Onboarding next route", () => {
 
-    NextRules[currentPath] = [jest.fn().mockReturnValue(nextPath)];
-
-    const result = getNextRoute(currentPath, store, state, payload);
+    let result = getNextRoute(ROUTES.ONBOARDING_ROUTE, store, state, payload);
 
     expect(result).toEqual({
       nextPath: {
-        pathname: "/nextPath",
+        pathname: ROUTES.GENERATE_SEED_PHRASE_ROUTE,
         canNavigate: true,
       },
+      updateRedux: []
     });
+
+    store.stateCache.authentication.passcodeIsSet = false;
+
+    result = getNextRoute(ROUTES.ONBOARDING_ROUTE, store, state, payload);
+
+    expect(result).toEqual({
+      nextPath: {
+        pathname: ROUTES.SET_PASSCODE_ROUTE,
+        canNavigate: true,
+      },
+      updateRedux: []
+    });
+
+    store.stateCache.authentication.passcodeIsSet = true;
+    store.seedPhraseCache.seedPhrase = "example-seed-phrase";
+
+    result = getNextRoute(ROUTES.ONBOARDING_ROUTE, store, state, payload);
+
+    expect(result).toEqual({
+      nextPath: {
+        pathname: ROUTES.DIDS_ROUTE,
+        canNavigate: true,
+      },
+      updateRedux: []
+    });
+
   });
 });

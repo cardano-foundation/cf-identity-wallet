@@ -31,10 +31,18 @@ import {
 import { ONBOARDING_ROUTE, ROUTES } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
-import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
+import {
+  getState,
+  setCurrentRoute,
+  StateCacheProps,
+} from "../../../store/reducers/StateCache";
 import { getNextRoute } from "../../../routes/Rules";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
+import { SeedPhraseCacheProps } from "../../../store/reducers/SeedPhraseCache";
+import { RootState } from "../../../store";
+import { updateReduxState } from "../../../store/utils";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -84,7 +92,7 @@ const GenerateSeedPhrase = () => {
       { seedPhrase: seedPhrase.join(" ") }
     );
     if (nextPath.canNavigate) {
-      dispatch(updateRedux());
+      if (updateRedux?.length) updateReduxState(dispatch, updateRedux);
       dispatch(setCurrentRoute({ path: nextPath.pathname }));
       history.push(nextPath.pathname);
     }

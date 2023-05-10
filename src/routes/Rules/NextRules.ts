@@ -3,6 +3,7 @@ import { ROUTES } from "../index";
 import { RootState } from "../../store";
 import { setAuthentication } from "../../store/reducers/StateCache";
 import { setSeedPhraseCache } from "../../store/reducers/SeedPhraseCache";
+import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 
 type RouteRulesType = Record<string, any>;
 
@@ -19,15 +20,26 @@ const getNextRoute = (
   payload?: PayloadProps
 ): {
   nextPath: { pathname: string; canNavigate: boolean };
-  updateRedux?: any;
+  updateRedux?: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
-  const [nextPath, updateRedux] = NextRules[currentPath];
+  const [nextPath, ...updateRedux] = NextRules[currentPath];
 
-  let r = {
+  return {
     nextPath: nextPath(store, state, payload),
+    updateRedux: updateRedux
+      ? updateRedux.map(
+          (
+            fn:
+              | ((
+                  store: RootState,
+                  state: PageState | undefined,
+                  payload: PayloadProps | undefined
+                ) => void)
+              | undefined
+          ) => fn && fn(store, state, payload)
+        )
+      : [],
   };
-  if (updateRedux) r = { ...nextPath, updateRedux: updateRedux(store, state) };
-  return r;
 };
 
 const NextRules: RouteRulesType = {
