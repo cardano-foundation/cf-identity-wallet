@@ -19,8 +19,6 @@ const ROUTES = {
   DIDS_ROUTE: "/dids",
 };
 
-const MAX_LOCK_TIME = 300000; // 3 sec
-
 const PrivateRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
@@ -33,12 +31,7 @@ const PrivateRoute: React.FC<RouteProps> = (props) => {
     setIsAuthenticated(authentication.loggedIn);
   }, [authentication.loggedIn]);
 
-  const sessionExpired = () => {
-    // Timeout logic here
-    return MAX_LOCK_TIME < Moment().valueOf() - authentication.time;
-  };
-
-  return isAuthenticated && !sessionExpired() ? (
+  return isAuthenticated ? (
     <Route
       {...props}
       component={props.component}
