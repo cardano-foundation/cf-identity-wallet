@@ -16,7 +16,7 @@ describe("Utils functions", () => {
     "fresh",
     "quit",
     "then",
-    "wave"
+    "wave",
   ];
   const seed2 = [
     "wall",
@@ -33,25 +33,17 @@ describe("Utils functions", () => {
     "people",
     "tunnel",
     "muffin",
-    "green"
+    "green",
   ];
-  test("Verifies if two variables are the same", () => {   
-    expect(
-      equals(seed1,seed1)
-    ).toBeTruthy();
+  test("Verifies if two variables are the same", () => {
+    expect(equals(seed1, seed1)).toBeTruthy();
 
-    expect(
-      equals(seed1,seed2)
-    ).toBeFalsy();
+    expect(equals(seed1, seed2)).toBeFalsy();
   });
 
-  test("Shuffles the elements of an array", () => {   
-    expect(
-      equals(seed1,seed1)
-    ).toBeTruthy();
+  test("Shuffles the elements of an array", () => {
+    expect(equals(seed1, seed1)).toBeTruthy();
 
-    expect(
-      equals(seed1,shuffle(seed1))
-    ).toBeFalsy();
+    expect(equals(seed1, shuffle(seed1))).toBeFalsy();
   });
 });

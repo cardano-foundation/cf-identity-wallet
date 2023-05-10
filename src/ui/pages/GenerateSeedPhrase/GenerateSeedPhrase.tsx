@@ -100,7 +100,7 @@ const GenerateSeedPhrase = () => {
         footer={true}
         primaryButtonText={`${i18n.t("generateseedphrase.continue.button")}`}
         primaryButtonAction={() => setAlertIsOpen(true)}
-        primaryButtonDisabled={!(showSeedPhrase && checked)}  
+        primaryButtonDisabled={!(showSeedPhrase && checked)}
       >
         <IonGrid>
           <IonRow>
@@ -152,9 +152,7 @@ const GenerateSeedPhrase = () => {
                   className={`overlay ${showSeedPhrase ? "hidden" : "visible"}`}
                 >
                   <IonCardHeader>
-                    <IonIcon
-                      icon={eyeOffOutline}
-                    />
+                    <IonIcon icon={eyeOffOutline} />
                   </IonCardHeader>
                   <IonCardContent>
                     {i18n.t("generateseedphrase.privacy.overlay.text")}
@@ -233,7 +231,7 @@ const GenerateSeedPhrase = () => {
             </IonCol>
           </IonRow>
         </IonGrid>
-        
+
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}

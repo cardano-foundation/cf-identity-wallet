@@ -1,1 +1,1 @@
-export * from "./VerifySeedPhrase"
+export * from "./VerifySeedPhrase";

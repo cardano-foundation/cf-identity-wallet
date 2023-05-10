@@ -20,7 +20,10 @@ import { i18n } from "../../../i18n";
 import { GENERATE_SEED_PHRASE_ROUTE } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { clearSeedPhraseCache, getSeedPhraseCache } from "../../../store/reducers/SeedPhraseCache";
+import {
+  clearSeedPhraseCache,
+  getSeedPhraseCache,
+} from "../../../store/reducers/SeedPhraseCache";
 
 const ARGON2ID_OPTIONS = {
   type: ArgonType.Argon2id,
@@ -33,7 +36,8 @@ const ARGON2ID_OPTIONS = {
 const VerifySeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const originalSeedPhrase = useAppSelector(getSeedPhraseCache).seedPhrase.split(" ");
+  const originalSeedPhrase =
+    useAppSelector(getSeedPhraseCache).seedPhrase.split(" ");
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedMatch, setSeedMatch] = useState<string[]>([]);
 
@@ -74,10 +78,10 @@ const VerifySeedPhrase = () => {
   const removeSeedMatch = (index: number) => {
     const removingQuantity = seedMatch.length - index;
     const newMatch = [...seedMatch];
-    let words:string[] = [];
+    let words: string[] = [];
 
     for (let i = 0; i < removingQuantity; i++) {
-      words = [...words, newMatch[newMatch.length -1]]
+      words = [...words, newMatch[newMatch.length - 1]];
       newMatch.pop();
     }
 
@@ -97,7 +101,7 @@ const VerifySeedPhrase = () => {
         footer={true}
         primaryButtonText={`${i18n.t("verifyseedphrase.continue.button")}`}
         primaryButtonAction={() => handleContinue()}
-        primaryButtonDisabled={!equals(originalSeedPhrase, seedMatch)}             
+        primaryButtonDisabled={!equals(originalSeedPhrase, seedMatch)}
       >
         <IonGrid>
           <IonRow>
@@ -118,23 +122,27 @@ const VerifySeedPhrase = () => {
                   className="seed-phrase-container"
                 >
                   {seedMatch.map((word, index) => (
-                    <IonChip key={index}
+                    <IonChip
+                      key={index}
                       onClick={() => {
                         removeSeedMatch(index);
-                      }}>
+                      }}
+                    >
                       <span className="index">{index + 1}.</span>
                       <span>{word}</span>
                     </IonChip>
                   ))}
-                  {seedPhrase.length ? <IonChip className="empty-word">
-                    <span className="index">{seedMatch.length + 1}.</span>
-                  </IonChip> : null}
+                  {seedPhrase.length ? (
+                    <IonChip className="empty-word">
+                      <span className="index">{seedMatch.length + 1}.</span>
+                    </IonChip>
+                  ) : null}
                 </div>
               </IonCard>
             </IonCol>
           </IonRow>
         </IonGrid>
-        {seedPhrase.length ?
+        {seedPhrase.length ? (
           <IonGrid>
             <IonRow>
               <IonCol size="12">
@@ -144,9 +152,12 @@ const VerifySeedPhrase = () => {
                     className="seed-phrase-container"
                   >
                     {seedPhrase.map((word, index) => (
-                      <IonChip key={index} onClick={() => {
-                        addSeedMatch(word);
-                      }}>
+                      <IonChip
+                        key={index}
+                        onClick={() => {
+                          addSeedMatch(word);
+                        }}
+                      >
                         <span>{word}</span>
                       </IonChip>
                     ))}
@@ -154,7 +165,8 @@ const VerifySeedPhrase = () => {
                 </IonCard>
               </IonCol>
             </IonRow>
-          </IonGrid> : null}
+          </IonGrid>
+        ) : null}
       </PageLayout>
     </IonPage>
   );

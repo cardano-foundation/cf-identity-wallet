@@ -115,7 +115,9 @@ describe("Generate Seed Phrase screen", () => {
     );
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-    const continueButton = getByText(EN_TRANSLATIONS["generateseedphrase.continue.button"]);
+    const continueButton = getByText(
+      EN_TRANSLATIONS["generateseedphrase.continue.button"]
+    );
     const alertWrapper = getByTestId("alert-wrapper");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
 
@@ -152,7 +154,9 @@ describe("Generate Seed Phrase screen", () => {
     );
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-    const continueButton = getByText(EN_TRANSLATIONS["generateseedphrase.continue.button"]);
+    const continueButton = getByText(
+      EN_TRANSLATIONS["generateseedphrase.continue.button"]
+    );
     const alertWrapper = getByTestId("alert-wrapper");
 
     act(() => {
@@ -178,7 +182,9 @@ describe("Generate Seed Phrase screen", () => {
     );
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-    const continueButton = getByText(EN_TRANSLATIONS["generateseedphrase.continue.button"]);
+    const continueButton = getByText(
+      EN_TRANSLATIONS["generateseedphrase.continue.button"]
+    );
 
     act(() => {
       fireEvent.click(revealSeedPhraseButton);
