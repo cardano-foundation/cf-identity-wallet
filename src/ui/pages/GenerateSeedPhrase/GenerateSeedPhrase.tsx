@@ -31,7 +31,7 @@ import {
 import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
 import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
-import { getNextRoute } from "../../../routes/Rules";
+import { getNextRoute } from "../../../routes/NextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { updateReduxState } from "../../../store/utils";

@@ -11,7 +11,7 @@ import Alert from "../../components/Alert/Alert";
 import { SecureStorage } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
-import { getNextRoute } from "../../../routes/Rules";
+import { getNextRoute } from "../../../routes/NextRoute";
 import { updateReduxState } from "../../../store/utils";
 
 const PasscodeLogin = () => {

@@ -8,7 +8,7 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import { ROUTES } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
-import { getNextRoute } from "../../../routes/Rules";
+import { getNextRoute } from "../../../routes/NextRoute";
 
 const Onboarding = () => {
   const history = useHistory();
