@@ -1,12 +1,10 @@
 import { useEffect, ReactNode } from "react";
-import { SecureStorage } from "@aparajita/capacitor-secure-storage";
-
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
   setAuthentication,
 } from "../../../store/reducers/StateCache";
-import {KeyStoreKeys} from "../../../core/storage/secureStorage";
+import {KeyStoreKeys, SecureStorage} from "../../../core/storage/secureStorage";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
