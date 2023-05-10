@@ -76,47 +76,41 @@ describe("Passcode Login Page", () => {
     ).toBeVisible();
   });
 
-  describe("PasscodeLogin2", () => {
-    /*jest.mock("argon2-browser", () => ({
-      verify: jest.fn().mockResolvedValue(true),
-    }));*/
-
-    test("verifies passcode and navigates to next route", async () => {
-      const storedPass = "storedPass";
-      const secureStorageGetMock = jest
+  test("verifies passcode and navigates to next route", async () => {
+    const storedPass = "storedPass";
+    const secureStorageGetMock = jest
         .spyOn(SecureStorage, "get")
         .mockResolvedValue(storedPass);
 
-      const { getByText } = render(
+    const { getByText } = render(
         <Provider store={store}>
           <MemoryRouter initialEntries={[ROUTES.PASSCODE_LOGIN_ROUTE]}>
             <Route
-              path={ROUTES.PASSCODE_LOGIN_ROUTE}
-              component={PasscodeLogin}
+                path={ROUTES.PASSCODE_LOGIN_ROUTE}
+                component={PasscodeLogin}
             />
             <Route
-              path={ROUTES.SET_PASSCODE_ROUTE}
-              component={SetPasscode}
+                path={ROUTES.SET_PASSCODE_ROUTE}
+                component={SetPasscode}
             />
           </MemoryRouter>
         </Provider>
-      );
+    );
 
-      fireEvent.click(getByText(/1/));
-      fireEvent.click(getByText(/1/));
-      fireEvent.click(getByText(/1/));
-      fireEvent.click(getByText(/1/));
-      fireEvent.click(getByText(/1/));
-      fireEvent.click(getByText(/1/));
-      fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
 
-      await waitFor(() => {
-        expect(secureStorageGetMock).toHaveBeenCalledWith("app-login-passcode");
-        /*
-        expect(
-            queryByText(EN_TRANSLATIONS["generateseedphrase.title"])
-        ).toBeVisible()*/
-      });
+    await waitFor(() => {
+      expect(secureStorageGetMock).toHaveBeenCalledWith("app-login-passcode");
+      /*
+      expect(
+          queryByText(EN_TRANSLATIONS["generateseedphrase.title"])
+      ).toBeVisible()*/
     });
   });
 });
