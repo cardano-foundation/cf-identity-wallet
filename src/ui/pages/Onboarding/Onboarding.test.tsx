@@ -1,6 +1,5 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router-dom";
-import Moment from "moment/moment";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Onboarding } from "./index";
@@ -77,7 +76,7 @@ describe("Onboarding Page", () => {
       stateCache: {
         authentication: {
           loggedIn: true,
-          time: Moment().valueOf(),
+          time: Date.now(),
           passcodeIsSet: true,
         },
       },

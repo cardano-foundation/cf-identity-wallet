@@ -1,4 +1,4 @@
-import Moment from "moment";
+
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { ROUTES } from "../index";
 import { RootState } from "../../store";
@@ -87,7 +87,7 @@ const updateStoreAfterSetPasscodeRoute = (store: RootState) => {
   return setAuthentication({
     ...store.stateCache.authentication,
     loggedIn: true,
-    time: Moment().valueOf(),
+    time: Date.now(),
     passcodeIsSet: true,
   });
 };
@@ -109,7 +109,7 @@ const updateStoreAfterPasscodeLoginRoute = (store: RootState) => {
   return setAuthentication({
     ...store.stateCache.authentication,
     loggedIn: true,
-    time: Moment().valueOf(),
+    time: Date.now(),
   });
 };
 
