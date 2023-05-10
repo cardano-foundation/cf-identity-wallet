@@ -23,7 +23,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
   };
 
-  return <div id="appWrapper">{props.children}</div>;
+  return <>{props.children}</>;
 };
 
 export { AppWrapper };

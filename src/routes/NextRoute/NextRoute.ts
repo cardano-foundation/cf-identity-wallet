@@ -1,4 +1,3 @@
-
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { ROUTES } from "../index";
 import { RootState } from "../../store";
