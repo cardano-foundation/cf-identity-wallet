@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IonButton, IonCol, IonGrid, IonRow } from "@ionic/react";
+import { IonButton, IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
@@ -97,51 +97,46 @@ const PasscodeLogin = () => {
   };
 
   return (
-    <PageLayout
-      backButton={false}
-      backButtonPath={"/"}
-      contentClasses=""
-      progressBar={false}
-      progressBarValue={0}
-      progressBarBuffer={1}
-    >
-      <PasscodeModule
-        title={i18n.t("passcodelogin.title")}
-        description={i18n.t("passcodelogin.description")}
-        error={
-          passcode.length === 6 &&
-          passcodeIncorrect && (
-            <ErrorMessage message={i18n.t("passcodelogin.error")} />
-          )
-        }
-        passcode={passcode}
-        handlePinChange={handlePinChange}
-        handleRemove={handleRemove}
-      />
-      <IonGrid>
-        <IonRow>
-          <IonCol className="continue-col">
-            <IonButton
-              shape="round"
-              expand="block"
-              fill="outline"
-              className="secondary-button"
-              onClick={() => setIsOpen(true)}
-            >
-              {i18n.t("passcodelogin.forgotten.button")}
-            </IonButton>
-          </IonCol>
-        </IonRow>
-      </IonGrid>
-      <Alert
-        isOpen={isOpen}
-        setIsOpen={setIsOpen}
-        headerText={headerText}
-        confirmButtonText={confirmButtonText}
-        cancelButtonText={cancelButtonText}
-        actionConfirm={handleForgotten}
-      />
-    </PageLayout>
+    <IonPage className="page-layout">
+      <PageLayout>
+        <PasscodeModule
+          title={i18n.t("passcodelogin.title")}
+          description={i18n.t("passcodelogin.description")}
+          error={
+            passcode.length === 6 &&
+            passcodeIncorrect && (
+              <ErrorMessage message={i18n.t("passcodelogin.error")} />
+            )
+          }
+          passcode={passcode}
+          handlePinChange={handlePinChange}
+          handleRemove={handleRemove}
+        />
+        <IonGrid>
+          <IonRow>
+            <IonCol className="continue-col">
+              <IonButton
+                shape="round"
+                expand="block"
+                fill="outline"
+                className="secondary-button"
+                onClick={() => setIsOpen(true)}
+              >
+                {i18n.t("passcodelogin.forgotten.button")}
+              </IonButton>
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+        <Alert
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          headerText={headerText}
+          confirmButtonText={confirmButtonText}
+          cancelButtonText={cancelButtonText}
+          actionConfirm={handleForgotten}
+        />
+      </PageLayout>
+    </IonPage>
   );
 };
 

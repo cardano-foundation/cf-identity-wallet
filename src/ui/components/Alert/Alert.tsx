@@ -1,5 +1,6 @@
 import { IonAlert } from "@ionic/react";
 import { AlertProps } from "./Alert.types";
+import "./Alert.scss";
 
 const Alert = ({
   isOpen,

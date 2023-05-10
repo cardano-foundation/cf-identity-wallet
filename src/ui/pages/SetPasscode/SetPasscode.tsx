@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { IonButton, IonCol, IonGrid, IonRow } from "@ionic/react";
+import { IonButton, IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { randomBytes } from "crypto";
 import { hash, ArgonType } from "argon2-browser";
@@ -83,50 +83,53 @@ const SetPasscode = () => {
   }, [originalPassCode, passcode]);
 
   return (
-    <PageLayout
-      backButton={true}
-      backButtonPath={"/"}
-      contentClasses=""
-      progressBar={true}
-      progressBarValue={0.33}
-      progressBarBuffer={1}
-    >
-      <PasscodeModule
-        title={
-          originalPassCode !== ""
-            ? i18n.t("setpasscode.reenterpasscode.title")
-            : i18n.t("setpasscode.enterpasscode.title")
-        }
-        description={i18n.t("setpasscode.enterpasscode.description")}
-        error={
-          originalPassCode !== "" &&
-          passcode.length === 6 &&
-          originalPassCode !== passcode && (
-            <ErrorMessage message={i18n.t("setpasscode.enterpasscode.error")} />
-          )
-        }
-        passcode={passcode}
-        handlePinChange={handlePinChange}
-        handleRemove={handleRemove}
-      />
-      <IonGrid>
-        <IonRow>
-          <IonCol className="continue-col">
-            {originalPassCode !== "" && (
-              <IonButton
-                onClick={() => handleClear()}
-                shape="round"
-                expand="block"
-                fill="outline"
-                className="secondary-button"
-              >
-                {i18n.t("setpasscode.startover.label")}
-              </IonButton>
-            )}
-          </IonCol>
-        </IonRow>
-      </IonGrid>
-    </PageLayout>
+    <IonPage className="page-layout">
+      <PageLayout
+        backButton={true}
+        backButtonPath={"/"}
+        progressBar={true}
+        progressBarValue={0.33}
+        progressBarBuffer={1}
+      >
+        <PasscodeModule
+          title={
+            originalPassCode !== ""
+              ? i18n.t("setpasscode.reenterpasscode.title")
+              : i18n.t("setpasscode.enterpasscode.title")
+          }
+          description={i18n.t("setpasscode.enterpasscode.description")}
+          error={
+            originalPassCode !== "" &&
+            passcode.length === 6 &&
+            originalPassCode !== passcode && (
+              <ErrorMessage
+                message={i18n.t("setpasscode.enterpasscode.error")}
+              />
+            )
+          }
+          passcode={passcode}
+          handlePinChange={handlePinChange}
+          handleRemove={handleRemove}
+        />
+        <IonGrid>
+          <IonRow>
+            <IonCol className="continue-col">
+              {originalPassCode !== "" && (
+                <IonButton
+                  onClick={() => handleClear()}
+                  shape="round"
+                  expand="block"
+                  fill="outline"
+                  className="secondary-button"
+                >
+                  {i18n.t("setpasscode.startover.label")}
+                </IonButton>
+              )}
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+      </PageLayout>
+    </IonPage>
   );
 };
 
