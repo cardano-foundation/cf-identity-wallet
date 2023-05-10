@@ -79,22 +79,22 @@ describe("Passcode Login Page", () => {
   test("verifies passcode and navigates to next route", async () => {
     const storedPass = "storedPass";
     const secureStorageGetMock = jest
-        .spyOn(SecureStorage, "get")
-        .mockResolvedValue(storedPass);
+      .spyOn(SecureStorage, "get")
+      .mockResolvedValue(storedPass);
 
     const { getByText } = render(
-        <Provider store={store}>
-          <MemoryRouter initialEntries={[ROUTES.PASSCODE_LOGIN_ROUTE]}>
-            <Route
-                path={ROUTES.PASSCODE_LOGIN_ROUTE}
-                component={PasscodeLogin}
-            />
-            <Route
-                path={ROUTES.SET_PASSCODE_ROUTE}
-                component={SetPasscode}
-            />
-          </MemoryRouter>
-        </Provider>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[ROUTES.PASSCODE_LOGIN_ROUTE]}>
+          <Route
+            path={ROUTES.PASSCODE_LOGIN_ROUTE}
+            component={PasscodeLogin}
+          />
+          <Route
+            path={ROUTES.SET_PASSCODE_ROUTE}
+            component={SetPasscode}
+          />
+        </MemoryRouter>
+      </Provider>
     );
 
     fireEvent.click(getByText(/1/));
