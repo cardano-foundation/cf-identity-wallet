@@ -158,7 +158,6 @@ describe("getNextRoute", () => {
   const payload = {};
 
   test("should return the correct Onboarding next route", () => {
-
     let result = getNextRoute(ROUTES.ONBOARDING_ROUTE, store, state, payload);
 
     expect(result).toEqual({
@@ -166,7 +165,7 @@ describe("getNextRoute", () => {
         pathname: ROUTES.GENERATE_SEED_PHRASE_ROUTE,
         canNavigate: true,
       },
-      updateRedux: []
+      updateRedux: [],
     });
 
     store.stateCache.authentication.passcodeIsSet = false;
@@ -178,7 +177,7 @@ describe("getNextRoute", () => {
         pathname: ROUTES.SET_PASSCODE_ROUTE,
         canNavigate: true,
       },
-      updateRedux: []
+      updateRedux: [],
     });
 
     store.stateCache.authentication.passcodeIsSet = true;
@@ -191,8 +190,7 @@ describe("getNextRoute", () => {
         pathname: ROUTES.DIDS_ROUTE,
         canNavigate: true,
       },
-      updateRedux: []
+      updateRedux: [],
     });
-
   });
 });

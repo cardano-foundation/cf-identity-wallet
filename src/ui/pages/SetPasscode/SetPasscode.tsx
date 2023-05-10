@@ -15,7 +15,7 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/Rules";
-import {updateReduxState} from "../../../store/utils";
+import { updateReduxState } from "../../../store/utils";
 
 // Based on OWASP recommendations
 const ARGON2ID_OPTIONS = {
@@ -52,7 +52,8 @@ const SetPasscode = () => {
                   storeState
                 );
                 if (nextPath?.canNavigate) {
-                  if (updateRedux?.length) updateReduxState(dispatch, updateRedux);
+                  if (updateRedux?.length)
+                    updateReduxState(dispatch, updateRedux);
                   dispatch(setCurrentRoute({ path: nextPath.pathname }));
                   history.push(nextPath.pathname);
                 }

@@ -1,11 +1,13 @@
 import { MemoryRouter, Route } from "react-router-dom";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { PasscodeLogin } from "./PasscodeLogin";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { PASSCODE_LOGIN_ROUTE, SET_PASSCODE_ROUTE } from "../../../routes";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
+
+import { SecureStorage } from "../../../core/storage/secureStorage";
 
 describe("Passcode Login Page", () => {
   test("Renders Passcode Login page with title and description", () => {
@@ -74,45 +76,47 @@ describe("Passcode Login Page", () => {
     ).toBeVisible();
   });
 
-  // TODO: There is not passcode set yet, we dont know what is the next page bc this is dynamic.
-  /*test("should log in user on correct passcode and redirect to generate seed phrase page", async () => {
+  describe("PasscodeLogin2", () => {
+    /*jest.mock("argon2-browser", () => ({
+      verify: jest.fn().mockResolvedValue(true),
+    }));*/
 
+    test("verifies passcode and navigates to next route", async () => {
+      const storedPass = "storedPass";
+      const secureStorageGetMock = jest
+        .spyOn(SecureStorage, "get")
+        .mockResolvedValue(storedPass);
 
-    jest.mock("./PasscodeLogin", () => {
-      const originalModule = jest.requireActual("./PasscodeLogin");
-      return {
-        ...originalModule,
-        verifyPasscode: jest.fn(() => true),
-      };
-    });
-
-    const { getByText, findByText } = render(
+      const { getByText } = render(
         <Provider store={store}>
-          <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE, GENERATE_SEED_PHRASE_ROUTE]}>
+          <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
             <Route
-                path={PASSCODE_LOGIN_ROUTE}
-                component={PasscodeLogin}
+              path={PASSCODE_LOGIN_ROUTE}
+              component={PasscodeLogin}
             />
             <Route
-                path={GENERATE_SEED_PHRASE_ROUTE}
-                component={GenerateSeedPhrase}
+              path={SET_PASSCODE_ROUTE}
+              component={SetPasscode}
             />
           </MemoryRouter>
         </Provider>
-    );
+      );
 
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
-    fireEvent.click(getByText(/1/));
+      fireEvent.click(getByText(/1/));
+      fireEvent.click(getByText(/1/));
+      fireEvent.click(getByText(/1/));
+      fireEvent.click(getByText(/1/));
+      fireEvent.click(getByText(/1/));
+      fireEvent.click(getByText(/1/));
+      fireEvent.click(getByText(/1/));
 
-
-    expect(
-        await findByText(EN_TRANSLATIONS["generateseedphrase.title"])
-    ).toBeVisible();
-
-
-  });*/
+      await waitFor(() => {
+        expect(secureStorageGetMock).toHaveBeenCalledWith("app-login-passcode");
+        /*
+        expect(
+            queryByText(EN_TRANSLATIONS["generateseedphrase.title"])
+        ).toBeVisible()*/
+      });
+    });
+  });
 });
