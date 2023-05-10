@@ -103,6 +103,7 @@ const PageLayout = ({
               shape="round"
               expand="block"
               className="ion-primary-button"
+              data-testid="continue-button"
               onClick={primaryButtonAction}
               disabled={primaryButtonDisabled}
             >

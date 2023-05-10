@@ -118,7 +118,7 @@ const VerifySeedPhrase = () => {
             <IonCol size="12">
               <IonCard className="container-top">
                 <div
-                  data-testid="seed-phrase-container"
+                  data-testid="matching-seed-phrase-container"
                   className="seed-phrase-container"
                 >
                   {seedMatch.map((word, index) => (
@@ -148,7 +148,7 @@ const VerifySeedPhrase = () => {
               <IonCol size="12">
                 <IonCard className="container-bottom">
                   <div
-                    data-testid="seed-phrase-container"
+                    data-testid="original-seed-phrase-container"
                     className="seed-phrase-container"
                   >
                     {seedPhrase.map((word, index) => (
