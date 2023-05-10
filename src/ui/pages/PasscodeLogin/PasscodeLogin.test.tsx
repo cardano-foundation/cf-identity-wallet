@@ -107,10 +107,38 @@ describe("Passcode Login Page", () => {
 
     await waitFor(() => {
       expect(secureStorageGetMock).toHaveBeenCalledWith("app-login-passcode");
-      /*
+    });
+  });
+  test.skip("verifies passcode and navigates to next route", async () => {
+    const storedPass = "storedPass";
+
+    const { getByText, queryByText } = render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[ROUTES.PASSCODE_LOGIN_ROUTE]}>
+          <Route
+            path={ROUTES.PASSCODE_LOGIN_ROUTE}
+            component={PasscodeLogin}
+          />
+          <Route
+            path={ROUTES.SET_PASSCODE_ROUTE}
+            component={SetPasscode}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+
+    await waitFor(() => {
       expect(
-          queryByText(EN_TRANSLATIONS["generateseedphrase.title"])
-      ).toBeVisible()*/
+        queryByText(EN_TRANSLATIONS["generateseedphrase.title"])
+      ).toBeVisible()
     });
   });
 });
