@@ -7,11 +7,11 @@ import {
   updateStoreAfterGenerateSeedPhraseRoute,
   updateStoreAfterPasscodeLoginRoute,
   updateStoreAfterSetPasscodeRoute,
-} from "./NextRoute";
+} from "./nextRoute";
 import { RootState } from "../../store";
 import { ROUTES } from "../index";
-import { setAuthentication } from "../../store/reducers/StateCache";
-import { setSeedPhraseCache } from "../../store/reducers/SeedPhraseCache";
+import { setAuthentication } from "../../store/reducers/stateCache";
+import { setSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 
 describe("NextRules", () => {
   let localStorageMock: any;

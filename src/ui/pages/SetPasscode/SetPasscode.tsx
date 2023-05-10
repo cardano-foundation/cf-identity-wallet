@@ -12,9 +12,9 @@ import {
 } from "../../../core/storage/secureStorage";
 import { ROUTES } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
+import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getNextRoute } from "../../../routes/NextRoute";
+import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 
 // Based on OWASP recommendations

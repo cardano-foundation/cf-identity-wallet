@@ -1,9 +1,9 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { ROUTES } from "../index";
 import { RootState } from "../../store";
-import { setAuthentication } from "../../store/reducers/StateCache";
-import { setSeedPhraseCache } from "../../store/reducers/SeedPhraseCache";
-import {PageState, PayloadProps, RouteRulesType} from "./NextRoute.types";
+import { setAuthentication } from "../../store/reducers/stateCache";
+import { setSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
+import {PageState, PayloadProps, RouteRulesType} from "./nextRoute.types";
 
 
 const getNextRoute = (

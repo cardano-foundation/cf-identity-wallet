@@ -7,8 +7,8 @@ import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ROUTES } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
-import { getNextRoute } from "../../../routes/NextRoute";
+import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import { getNextRoute } from "../../../routes/nextRoute";
 
 const Onboarding = () => {
   const history = useHistory();

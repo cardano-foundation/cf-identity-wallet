@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
-import { SeedPhraseCacheProps } from "./SeedPhraseCache.types"
+import { SeedPhraseCacheProps } from "./seedPhraseCache.types"
 const initialState: SeedPhraseCacheProps = {
   seedPhrase: "",
 };

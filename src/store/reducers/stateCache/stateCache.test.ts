@@ -10,7 +10,7 @@ import {
   setAuthentication,
   setCurrentRoute,
   stateCacheSlice,
-} from "./StateCache";
+} from "./stateCache";
 import { RootState } from "../../index";
 import { ROUTES } from "../../../routes";
 

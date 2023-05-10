@@ -3,7 +3,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
   setAuthentication,
-} from "../../../store/reducers/StateCache";
+} from "../../../store/reducers/stateCache";
 import {KeyStoreKeys, SecureStorage} from "../../../core/storage/secureStorage";
 
 const AppWrapper = (props: { children: ReactNode }) => {

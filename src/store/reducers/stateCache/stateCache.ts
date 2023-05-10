@@ -4,7 +4,7 @@ import { ROUTES } from "../../../routes";
 import {
   StateCacheProps,
   AuthenticationCacheProps,
-  CurrentRouteCacheProps } from "./StateCache.types";
+  CurrentRouteCacheProps } from "./stateCache.types";
 
 const initialState: StateCacheProps = {
   routes: [],

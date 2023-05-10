@@ -7,7 +7,7 @@ import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { useAppSelector } from "../store/hooks";
-import { getAuthentication } from "../store/reducers/StateCache";
+import { getAuthentication } from "../store/reducers/stateCache";
 
 const ROUTES = {
   ONBOARDING_ROUTE: "/onboarding",

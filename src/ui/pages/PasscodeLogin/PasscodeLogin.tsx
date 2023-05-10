@@ -10,8 +10,8 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 import Alert from "../../components/Alert/Alert";
 import {KeyStoreKeys, SecureStorage} from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
-import { getNextRoute } from "../../../routes/NextRoute";
+import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 
 const PasscodeLogin = () => {
