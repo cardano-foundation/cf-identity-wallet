@@ -8,12 +8,17 @@ import {
   IonButton,
   IonIcon,
   IonTitle,
+  IonFooter,
+  IonGrid,
+  IonRow,
+  IonCol,
 } from "@ionic/react";
 import { arrowBackOutline, closeOutline } from "ionicons/icons";
 import "./PageLayout.scss";
 import { PageLayoutProps } from "./PageLayout.types";
 
 const PageLayout = ({
+  header,
   backButton,
   backButtonPath,
   children,
@@ -23,14 +28,18 @@ const PageLayout = ({
   progressBarValue,
   progressBarBuffer,
   title,
+  footer,
+  primaryButtonText,
+  primaryButtonAction,
+  primaryButtonDisabled
 }: PageLayoutProps) => {
   const mainContent = children;
 
   return (
     <>
-      <IonHeader
+      {header && <IonHeader
         translucent={true}
-        className="ion-no-border"
+        className="ion-no-border page-header"
       >
         <IonToolbar color="light">
           <IonButtons slot="start">
@@ -73,9 +82,28 @@ const PageLayout = ({
             </div>
           )}
         </IonToolbar>
-      </IonHeader>
+      </IonHeader>}
 
-      <IonContent color="light">{mainContent}</IonContent>
+      <IonContent className="page-content" color="light">{mainContent}</IonContent>
+
+      {
+        footer && <IonFooter
+          collapse="fade"
+        >
+          <IonToolbar color="light" className="page-footer">
+            <IonButton
+              shape="round"
+              expand="block"
+              className="ion-primary-button"
+              onClick={primaryButtonAction}
+              disabled={primaryButtonDisabled}
+            >
+              {primaryButtonText}
+            </IonButton>
+          </IonToolbar>         
+        </IonFooter>
+      }
+      
     </>
   );
 };

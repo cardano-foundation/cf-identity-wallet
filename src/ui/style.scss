@@ -15,8 +15,9 @@ code {
     monospace;
 }
 
-h1,
 h2 {
+  margin: 0 0 1rem;
+  font-weight: 700;
   color: var(--ion-color-primary);
 }
 
@@ -38,6 +39,11 @@ ion-app {
   --background: var(--color-accent-gradient);
   --background-activated: var(--color-medium-grey);
 
+  &:target {
+    // margin: 0.8rem 0.5rem;
+    // font-size: 0.9rem;
+  }
+
   &.button-disabled {
     --background: var(--color-dark-grey);
   }
@@ -58,13 +64,14 @@ ion-app {
 
 .seed-phrase-container {
   padding: 0.5rem;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 33.3% 33.3% 33.3%;
 
   ion-chip {
     border-radius: 8px;
     font-weight: 400;
-    width: 30%;
+    width: 92%;
+    margin: 0.3rem auto;
     padding-inline: 0.475rem;
 
     .index {

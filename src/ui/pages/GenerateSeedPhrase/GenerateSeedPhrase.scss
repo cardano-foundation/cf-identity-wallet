@@ -32,8 +32,16 @@
       display: none;
     }
 
-    > * {
-      padding: 0.3rem 2.2rem;
+    ion-card-header {
+      padding: 0 0 0.7rem;
+      ion-icon {
+        height: 1.4rem;
+        width: 1.4rem;
+      }
+    }
+
+    ion-card-content {
+      padding-inline: 1rem;
     }
 
     ion-button {
@@ -71,14 +79,10 @@
     --border-radius: 4px;
   }
 
-  ion-label {
+  .termsandconditions-label {
     font-size: 1rem !important;
     margin: 0 !important;
     position: absolute;
     z-index: 2;
-  }
-
-  .footer ion-button {
-    margin: 0.5rem 0;
   }
 }

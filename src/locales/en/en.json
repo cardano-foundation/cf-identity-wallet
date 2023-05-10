@@ -55,5 +55,6 @@
   "passcodelogin.alert.button.restart": "Start again",
   "passcodelogin.alert.button.cancel": "Cancel",
   "verifyseedphrase.title": "Verify your seed phrase",
-  "verifyseedphrase.paragraph.top": "Please select each word in the order it was presented to you."
+  "verifyseedphrase.paragraph.top": "Please select each word in the order it was presented to you.",
+  "verifyseedphrase.continue.button": "Continue"
 }

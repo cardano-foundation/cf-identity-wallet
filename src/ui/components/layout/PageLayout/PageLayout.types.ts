@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 
 interface PageLayoutProps {
+  header?: boolean;
   backButton?: boolean;
   backButtonPath?: string;
   children?: ReactNode;
@@ -10,6 +11,10 @@ interface PageLayoutProps {
   progressBarValue?: number;
   progressBarBuffer?: number;
   title?: string;
+  footer?: boolean;
+  primaryButtonText?: string;
+  primaryButtonAction?: () => void;
+  primaryButtonDisabled?: boolean;
 }
 
 export type { PageLayoutProps };

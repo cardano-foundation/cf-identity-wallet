@@ -3,9 +3,14 @@
 @import "@ionic/react/css/ionic-swiper.css";
 
 .onboarding {
+  .swiper {
+    padding-top: 2.5rem;
+  }
+  
   .get-started-button {
     margin: 30px 25px;
   }
+  
   .already-wallet {
     display: flex;
     justify-content: center;

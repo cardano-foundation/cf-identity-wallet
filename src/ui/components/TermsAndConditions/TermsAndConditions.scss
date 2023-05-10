@@ -4,6 +4,15 @@
   ion-toolbar {
     padding-top: 1.5rem !important;
   }
+  
+  ion-content {
+    height: 90vh;
+  }
+
+  h2 {
+    margin: 0 auto;
+  }
+
   .terms-and-conditions-body p {
     margin: 0 0.5rem 1rem;
   }

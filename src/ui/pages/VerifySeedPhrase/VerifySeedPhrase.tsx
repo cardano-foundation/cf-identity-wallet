@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  IonButton,
   IonCard,
   IonChip,
   IonCol,
@@ -67,16 +66,21 @@ const VerifySeedPhrase = () => {
   return (
     <IonPage className="page-layout verify-seedphrase">
       <PageLayout
+        header={true}
         backButton={true}
         backButtonPath={GENERATE_SEED_PHRASE_ROUTE}
         progressBar={true}
         progressBarValue={1}
         progressBarBuffer={1}
+        footer={true}
+        primaryButtonText={`${i18n.t("verifyseedphrase.continue.button")}`}
+        primaryButtonAction={() => handleContinue()}
+        primaryButtonDisabled={!equals(originalSeedPhrase, seedMatch)}             
       >
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <h1>{i18n.t("verifyseedphrase.title")}</h1>
+              <h2>{i18n.t("verifyseedphrase.title")}</h2>
               <p className="page-paragraph">
                 {i18n.t("verifyseedphrase.paragraph.top")}
               </p>
@@ -129,22 +133,6 @@ const VerifySeedPhrase = () => {
               </IonCol>
             </IonRow>
           </IonGrid> : null}
-        <IonGrid className="footer">
-          <IonRow>
-            <IonCol>
-              <IonButton
-                shape="round"
-                expand="block"
-                className="ion-primary-button"
-                data-testid="generate-seed-phrase-continue-button"
-                onClick={() => handleContinue()}
-                disabled={!equals(originalSeedPhrase, seedMatch)}
-              >
-                {i18n.t("generateseedphrase.continue.button")}
-              </IonButton>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
       </PageLayout>
     </IonPage>
   );
