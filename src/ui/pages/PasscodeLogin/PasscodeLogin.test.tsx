@@ -3,11 +3,11 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { PasscodeLogin } from "./PasscodeLogin";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { PASSCODE_LOGIN_ROUTE, SET_PASSCODE_ROUTE } from "../../../routes";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 
 import { SecureStorage } from "../../../core/storage/secureStorage";
+import {ROUTES} from "../../../routes";
 
 describe("Passcode Login Page", () => {
   test("Renders Passcode Login page with title and description", () => {
@@ -41,13 +41,13 @@ describe("Passcode Login Page", () => {
   test("If no seed phrase was stored and I click on I forgot my passcode, I can start over", async () => {
     const { getByText, findByText } = render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
+        <MemoryRouter initialEntries={[ROUTES.PASSCODE_LOGIN_ROUTE]}>
           <Route
-            path={PASSCODE_LOGIN_ROUTE}
+            path={ROUTES.PASSCODE_LOGIN_ROUTE}
             component={PasscodeLogin}
           />
           <Route
-            path={SET_PASSCODE_ROUTE}
+            path={ROUTES.SET_PASSCODE_ROUTE}
             component={SetPasscode}
           />
         </MemoryRouter>
@@ -89,13 +89,13 @@ describe("Passcode Login Page", () => {
 
       const { getByText } = render(
         <Provider store={store}>
-          <MemoryRouter initialEntries={[PASSCODE_LOGIN_ROUTE]}>
+          <MemoryRouter initialEntries={[ROUTES.PASSCODE_LOGIN_ROUTE]}>
             <Route
-              path={PASSCODE_LOGIN_ROUTE}
+              path={ROUTES.PASSCODE_LOGIN_ROUTE}
               component={PasscodeLogin}
             />
             <Route
-              path={SET_PASSCODE_ROUTE}
+              path={ROUTES.SET_PASSCODE_ROUTE}
               component={SetPasscode}
             />
           </MemoryRouter>

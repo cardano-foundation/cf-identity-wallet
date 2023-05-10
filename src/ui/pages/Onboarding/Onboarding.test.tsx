@@ -7,12 +7,8 @@ import { Onboarding } from "./index";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "../SetPasscode";
-import {
-  GENERATE_SEED_PHRASE_ROUTE,
-  SET_PASSCODE_ROUTE,
-  ONBOARDING_ROUTE,
-} from "../../../routes";
 import { store } from "../../../store";
+import {ROUTES} from "../../../routes";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
@@ -49,15 +45,15 @@ describe("Onboarding Page", () => {
 
   test("If the user hasn't set a passcode yet, they will be asked to create one", async () => {
     const { getByTestId, queryByText } = render(
-      <MemoryRouter initialEntries={[ONBOARDING_ROUTE]}>
+      <MemoryRouter initialEntries={[ROUTES.ONBOARDING_ROUTE]}>
         <Provider store={store}>
           <Route
-            path={ONBOARDING_ROUTE}
+            path={ROUTES.ONBOARDING_ROUTE}
             component={Onboarding}
           />
 
           <Route
-            path={SET_PASSCODE_ROUTE}
+            path={ROUTES.SET_PASSCODE_ROUTE}
             component={SetPasscode}
           />
         </Provider>
@@ -89,14 +85,14 @@ describe("Onboarding Page", () => {
     const storeMocked = mockStore(initialState);
 
     const { getByTestId, queryByText } = render(
-      <MemoryRouter initialEntries={[ONBOARDING_ROUTE]}>
+      <MemoryRouter initialEntries={[ROUTES.ONBOARDING_ROUTE]}>
         <Provider store={storeMocked}>
           <Route
-            path={ONBOARDING_ROUTE}
+            path={ROUTES.ONBOARDING_ROUTE}
             component={Onboarding}
           />
           <Route
-            path={GENERATE_SEED_PHRASE_ROUTE}
+            path={ROUTES.GENERATE_SEED_PHRASE_ROUTE}
             component={GenerateSeedPhrase}
           />
         </Provider>

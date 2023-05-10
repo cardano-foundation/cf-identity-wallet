@@ -10,7 +10,7 @@ import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { useAppSelector } from "../store/hooks";
 import { getAuthentication } from "../store/reducers/StateCache";
 
-export const ROUTES = {
+const ROUTES = {
   ONBOARDING_ROUTE: "/onboarding",
   SET_PASSCODE_ROUTE: "/setpasscode",
   PASSCODE_LOGIN_ROUTE: "/passcodelogin",
@@ -19,10 +19,6 @@ export const ROUTES = {
   DIDS_ROUTE: "/dids",
 };
 
-const ONBOARDING_ROUTE = "/onboarding";
-const SET_PASSCODE_ROUTE = "/setpasscode";
-const PASSCODE_LOGIN_ROUTE = "/passcodelogin";
-const GENERATE_SEED_PHRASE_ROUTE = "/generateseedphrase";
 
 const MAX_LOCK_TIME = 300000; // 3 sec
 
@@ -76,23 +72,23 @@ const Routes = () => {
         />
 
         <Route
-          path={PASSCODE_LOGIN_ROUTE}
+          path={ROUTES.PASSCODE_LOGIN_ROUTE}
           component={PasscodeLogin}
         />
 
         <Route
-          path={SET_PASSCODE_ROUTE}
+          path={ROUTES.SET_PASSCODE_ROUTE}
           component={SetPasscode}
         />
 
         <Route
-          path={ONBOARDING_ROUTE}
+          path={ROUTES.ONBOARDING_ROUTE}
           component={Onboarding}
         />
 
         {/* Private Routes */}
         <PrivateRoute
-          path={GENERATE_SEED_PHRASE_ROUTE}
+          path={ROUTES.GENERATE_SEED_PHRASE_ROUTE}
           component={GenerateSeedPhrase}
         />
       </IonRouterOutlet>
@@ -102,8 +98,5 @@ const Routes = () => {
 
 export {
   Routes,
-  ONBOARDING_ROUTE,
-  SET_PASSCODE_ROUTE,
-  PASSCODE_LOGIN_ROUTE,
-  GENERATE_SEED_PHRASE_ROUTE,
+  ROUTES
 };

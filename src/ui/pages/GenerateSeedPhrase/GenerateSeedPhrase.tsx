@@ -28,7 +28,6 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
-import { ONBOARDING_ROUTE, ROUTES } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
 import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
@@ -36,6 +35,7 @@ import { getNextRoute } from "../../../routes/Rules";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { updateReduxState } from "../../../store/utils";
+import {ROUTES} from "../../../routes";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -95,7 +95,7 @@ const GenerateSeedPhrase = () => {
     <IonPage className="page-layout generate-seedphrase">
       <PageLayout
         backButton={true}
-        backButtonPath={ONBOARDING_ROUTE}
+        backButtonPath={ROUTES.ONBOARDING_ROUTE}
         progressBar={true}
         progressBarValue={0.66}
         progressBarBuffer={1}

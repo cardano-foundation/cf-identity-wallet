@@ -5,7 +5,7 @@ import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { ROUTES, SET_PASSCODE_ROUTE } from "../../../routes";
+import { ROUTES } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import Alert from "../../components/Alert/Alert";
 import { SecureStorage } from "../../../core/storage/secureStorage";
@@ -95,7 +95,7 @@ const PasscodeLogin = () => {
   };
   const resetPasscode = () => {
     SecureStorage.delete("app-login-passcode");
-    history.push(SET_PASSCODE_ROUTE);
+    history.push(ROUTES.SET_PASSCODE_ROUTE);
   };
 
   return (

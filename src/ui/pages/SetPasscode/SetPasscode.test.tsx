@@ -6,15 +6,12 @@ import { Provider } from "react-redux";
 import { SetPasscode, ARGON2ID_OPTIONS } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import {
-  GENERATE_SEED_PHRASE_ROUTE,
-  SET_PASSCODE_ROUTE,
-} from "../../../routes";
-import {
   SecureStorage,
   KeyStoreKeys,
 } from "../../../core/storage/secureStorage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
+import {ROUTES} from "../../../routes";
 
 const ARGON2ID_HASH = {
   encoded: "encodedHash",
@@ -136,16 +133,16 @@ describe("SetPasscode Page", () => {
 
   test("Redirects to next page when passcode is entered correctly", async () => {
     const { getByText, queryByText } = render(
-      <MemoryRouter initialEntries={[SET_PASSCODE_ROUTE]}>
+      <MemoryRouter initialEntries={[ROUTES.SET_PASSCODE_ROUTE]}>
         <Provider store={store}>
           <Route
             exact
-            path={SET_PASSCODE_ROUTE}
+            path={ROUTES.SET_PASSCODE_ROUTE}
             component={SetPasscode}
           />
         </Provider>
         <Route
-          path={GENERATE_SEED_PHRASE_ROUTE}
+          path={ROUTES.GENERATE_SEED_PHRASE_ROUTE}
           component={GenerateSeedPhrase}
         />
       </MemoryRouter>
