@@ -4,4 +4,4 @@ export const shuffle = (array: any[]) => {
 };
 
 export const equals = (a: any[], b: any[]) =>
-  a?.length === b?.length && a.every((v, i) => v === b[i]);
+  a.length === b.length && a.every((v, i) => v === b[i]);
