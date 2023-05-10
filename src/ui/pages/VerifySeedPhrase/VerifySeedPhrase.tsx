@@ -9,12 +9,26 @@ import {
 } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import "./VerifySeedPhrase.scss";
+import { randomBytes } from "crypto";
+import { hash, ArgonType } from "argon2-browser";
+import {
+  SecureStorage,
+  KeyStoreKeys,
+} from "../../../core/storage/secureStorage";
 import { equals, shuffle } from "../../../utils/utils";
 import { i18n } from "../../../i18n";
 import { GENERATE_SEED_PHRASE_ROUTE } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { clearSeedPhraseCache, getSeedPhraseCache } from "../../../store/reducers/SeedPhraseCache";
+
+const ARGON2ID_OPTIONS = {
+  type: ArgonType.Argon2id,
+  mem: 19456,
+  time: 2,
+  parallelism: 1,
+  hashLen: 32,
+};
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
@@ -24,11 +38,19 @@ const VerifySeedPhrase = () => {
   const [seedMatch, setSeedMatch] = useState<string[]>([]);
 
   const handleContinue = async () => {
-
     if (equals(originalSeedPhrase, seedMatch)) {
-      dispatch(clearSeedPhraseCache());
-      history.push({
-        pathname: "/dids",
+      hash({
+        pass: originalSeedPhrase.join(" "),
+        salt: randomBytes(16),
+        ...ARGON2ID_OPTIONS,
+      }).then((hash) => {
+        SecureStorage.set(KeyStoreKeys.APP_SEEDPHRASE, hash.encoded).then(
+          () => {
+            dispatch(clearSeedPhraseCache());
+            history.push("/dids");
+            return;
+          }
+        );
       });
     }
   };
