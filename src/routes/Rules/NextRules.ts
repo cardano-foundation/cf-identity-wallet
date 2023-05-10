@@ -1,9 +1,9 @@
 import Moment from "moment";
+import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { ROUTES } from "../index";
 import { RootState } from "../../store";
 import { setAuthentication } from "../../store/reducers/StateCache";
 import { setSeedPhraseCache } from "../../store/reducers/SeedPhraseCache";
-import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 
 type RouteRulesType = Record<string, any>;
 

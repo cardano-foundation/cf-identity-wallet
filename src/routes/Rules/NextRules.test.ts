@@ -3,7 +3,6 @@ import {
   getNextOnboardingRoute,
   getNextPasscodeLoginRoute,
   getNextSetPasscodeRoute,
-  NextRules,
   getNextRoute,
   updateStoreAfterGenerateSeedPhraseRoute,
   updateStoreAfterPasscodeLoginRoute,

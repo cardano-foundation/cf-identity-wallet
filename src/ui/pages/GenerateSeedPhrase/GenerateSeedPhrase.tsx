@@ -34,14 +34,10 @@ import Alert from "../../components/Alert/Alert";
 import {
   getState,
   setCurrentRoute,
-  StateCacheProps,
 } from "../../../store/reducers/StateCache";
 import { getNextRoute } from "../../../routes/Rules";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
-import { SeedPhraseCacheProps } from "../../../store/reducers/SeedPhraseCache";
-import { RootState } from "../../../store";
 import { updateReduxState } from "../../../store/utils";
 
 const GenerateSeedPhrase = () => {
