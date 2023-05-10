@@ -8,7 +8,7 @@ import { ErrorMessage } from "../../components/ErrorMessage";
 import { ROUTES } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import Alert from "../../components/Alert/Alert";
-import { SecureStorage } from "../../../core/storage/secureStorage";
+import {KeyStoreKeys, SecureStorage} from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState, setCurrentRoute } from "../../../store/reducers/StateCache";
 import { getNextRoute } from "../../../routes/NextRoute";
@@ -81,7 +81,7 @@ const PasscodeLogin = () => {
 
   const verifyPasscode = async (pass: string) => {
     try {
-      const storedPass = await SecureStorage.get("app-login-passcode");
+      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
 
       if (!storedPass) return false;
       await verify({
@@ -94,7 +94,7 @@ const PasscodeLogin = () => {
     }
   };
   const resetPasscode = () => {
-    SecureStorage.delete("app-login-passcode");
+    SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
     history.push(ROUTES.SET_PASSCODE_ROUTE);
   };
 

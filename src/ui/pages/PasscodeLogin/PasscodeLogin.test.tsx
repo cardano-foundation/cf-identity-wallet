@@ -6,7 +6,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 
-import { SecureStorage } from "../../../core/storage/secureStorage";
+import {KeyStoreKeys, SecureStorage} from "../../../core/storage/secureStorage";
 import { ROUTES } from "../../../routes";
 
 describe("Passcode Login Page", () => {
@@ -106,7 +106,7 @@ describe("Passcode Login Page", () => {
     fireEvent.click(getByText(/1/));
 
     await waitFor(() => {
-      expect(secureStorageGetMock).toHaveBeenCalledWith("app-login-passcode");
+      expect(secureStorageGetMock).toHaveBeenCalledWith(KeyStoreKeys.APP_PASSCODE);
     });
   });
   test.skip("verifies passcode and navigates to next route", async () => {

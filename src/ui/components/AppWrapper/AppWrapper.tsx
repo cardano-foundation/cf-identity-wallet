@@ -6,6 +6,7 @@ import {
   getAuthentication,
   setAuthentication,
 } from "../../../store/reducers/StateCache";
+import {KeyStoreKeys} from "../../../core/storage/secureStorage";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -16,7 +17,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, []);
 
   const initApp = async () => {
-    const passcodeIsSet = await SecureStorage.get("app-login-passcode");
+    const passcodeIsSet = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
 
     dispatch(
       setAuthentication({ ...authentication, passcodeIsSet: !!passcodeIsSet })
