@@ -15,11 +15,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
   }, []);
 
   const initApp = async () => {
-    const passcodeIsSet = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
+    try {
+      const passcodeIsSet = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
 
-    dispatch(
-      setAuthentication({ ...authentication, passcodeIsSet: !!passcodeIsSet })
-    );
+      dispatch(
+        setAuthentication({ ...authentication, passcodeIsSet: !!passcodeIsSet })
+      );
+    } catch (e) { /* empty */ }
+
   };
 
   return <>{props.children}</>;
