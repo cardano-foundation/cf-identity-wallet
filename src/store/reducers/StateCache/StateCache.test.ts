@@ -9,14 +9,14 @@ import {
   initialState,
   setAuthentication,
   setCurrentRoute,
-  StateCacheSlice,
+  stateCacheSlice,
 } from "./StateCache";
 import { RootState } from "../../index";
 import { ROUTES } from "../../../routes";
 
 describe("State Cache", () => {
   test("should return the initial state on first run", () => {
-    expect(StateCacheSlice.reducer(undefined, {} as PayloadAction)).toEqual(
+    expect(stateCacheSlice.reducer(undefined, {} as PayloadAction)).toEqual(
       initialState
     );
   });
@@ -27,7 +27,7 @@ describe("State Cache", () => {
       payload: {},
     };
     const action = setCurrentRoute(currentRoute);
-    const nextState = StateCacheSlice.reducer(initialState, action);
+    const nextState = stateCacheSlice.reducer(initialState, action);
 
     expect(nextState.routes[0]).toEqual(currentRoute);
     expect(nextState).not.toBe(initialState);
@@ -44,7 +44,7 @@ describe("State Cache", () => {
       passcodeIsSet: false,
     };
     const action = setAuthentication(authentication);
-    const nextState = StateCacheSlice.reducer(initialState, action);
+    const nextState = stateCacheSlice.reducer(initialState, action);
 
     expect(nextState.authentication).toEqual(authentication);
     expect(nextState).not.toBe(initialState);

@@ -1,11 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { SeedPhraseCacheSlice } from "./reducers/SeedPhraseCache";
-import { StateCacheSlice } from "./reducers/StateCache";
+import { seedPhraseCacheSlice } from "./reducers/SeedPhraseCache";
+import { stateCacheSlice } from "./reducers/StateCache";
 
 const store = configureStore({
   reducer: {
-    stateCache: StateCacheSlice.reducer,
-    seedPhraseCache: SeedPhraseCacheSlice.reducer,
+    stateCache: stateCacheSlice.reducer,
+    seedPhraseCache: seedPhraseCacheSlice.reducer,
   },
 });
 

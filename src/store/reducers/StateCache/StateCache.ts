@@ -1,25 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import { ROUTES } from "../../../routes";
-
-interface PayloadData<T = any> {
-  [key: string]: T;
-}
-interface CurrentRouteCacheProps {
-  path: string;
-  payload?: { [key: string]: PayloadData };
-}
-
-interface AuthenticationCacheProps {
-  loggedIn: boolean;
-  time: number;
-  passcodeIsSet: boolean;
-}
-
-interface StateCacheProps {
-  routes: CurrentRouteCacheProps[];
-  authentication: AuthenticationCacheProps;
-}
+import {
+  StateCacheProps,
+  AuthenticationCacheProps,
+  CurrentRouteCacheProps } from "./StateCache.types";
 
 const initialState: StateCacheProps = {
   routes: [],
@@ -30,7 +15,7 @@ const initialState: StateCacheProps = {
   },
 };
 
-const StateCacheSlice = createSlice({
+const stateCacheSlice = createSlice({
   name: "stateCache",
   initialState,
   reducers: {
@@ -51,7 +36,7 @@ const StateCacheSlice = createSlice({
   },
 });
 
-const { setCurrentRoute, setAuthentication } = StateCacheSlice.actions;
+const { setCurrentRoute, setAuthentication } = stateCacheSlice.actions;
 
 const getState = (state: RootState) => state;
 const getStateCache = (state: RootState) => state.stateCache;
@@ -67,7 +52,7 @@ export type {
 
 export {
   initialState,
-  StateCacheSlice,
+  stateCacheSlice,
   setCurrentRoute,
   setAuthentication,
   getState,
