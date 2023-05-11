@@ -1,49 +1,41 @@
 import type { InitConfig } from '@aries-framework/core'
 import { Agent } from '@aries-framework/core'
-import { agentDependencies } from '@aries-framework/node'
-/*import { HttpOutboundTransport, WsOutboundTransport } from '@aries-framework/core'
-import { HttpInboundTransport } from '@aries-framework/node'
-import { AskarModule } from '@aries-framework/askar'
-import { ariesAskar } from '@hyperledger/aries-askar-nodejs'*/
+import { CapacitorFileSystem } from './capacitorFileSystem'
+import EventEmitter from 'events'
+import type { AgentDependencies } from '@aries-framework/core'
 
 class ArisAgent {
-    constructor() {
+  constructor() {
 
+  }
+
+  async start(): Promise<void> {
+    const config: InitConfig = {
+      label: 'docs-agent-nodejs',
+      walletConfig: {
+        id: 'wallet-id',
+        key: 'testkey0000000000000000000000000',
+      },
     }
 
-    async start(): Promise<void> {
-        const config: InitConfig = {
-            label: 'docs-agent-nodejs',
-            walletConfig: {
-              id: 'wallet-id',
-              key: 'testkey0000000000000000000000000',
-            },
-          }
-          
-          const agent = new Agent({
-            config,
-            dependencies: agentDependencies,
-            /*modules: {
-              // Register the Askar module on the agent
-              askar: new AskarModule({
-                ariesAskar,
-              }),
-            },*/
-          })
+    const agent = new Agent({
+      config,
+      dependencies: {
+        FileSystem: CapacitorFileSystem,
+        EventEmitterClass: EventEmitter,
+        fetch: global.fetch as unknown as AgentDependencies['fetch'],
+        WebSocketClass: global.WebSocket as unknown as AgentDependencies['WebSocketClass']
+      },
+    })
 
-          /*agent.registerOutboundTransport(new HttpOutboundTransport())
-          agent.registerOutboundTransport(new WsOutboundTransport())
-          agent.registerInboundTransport(new HttpInboundTransport({ port: 3000 }))*/
-
-          agent
-          .initialize()
-          .then(() => {
-            console.log('Agent initialized!')
-          })
-          .catch((e) => {
-            console.error(`Something went wrong while setting up the agent! Message: ${e}`)
-          })
+    try {
+      await agent.initialize();
+      console.log("Agent initialised!");
+    } catch (e) {
+      console.error(`Something went wrong while setting up the agent! Message: ${e}`);
     }
+    console.log("WE ARE DONE");
+  }
 }
 
 export { ArisAgent };
