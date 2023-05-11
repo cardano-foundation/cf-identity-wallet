@@ -1,17 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IonButton, IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { verify } from "argon2-browser";
+import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { ONBOARDING_ROUTE, SET_PASSCODE_ROUTE } from "../../../routes";
+import { RoutePath } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import Alert from "../../components/Alert/Alert";
-import { SecureStorage } from "../../../core/storage/secureStorage";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+} from "../../../core/storage/secureStorage";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { updateReduxState } from "../../../store/utils";
 
-const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
+const PasscodeLogin = () => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
   const [isOpen, setIsOpen] = useState(false);
@@ -29,6 +38,26 @@ const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
   const handlePinChange = (digit: number) => {
     if (passcode.length < 6) {
       setPasscode(passcode + digit);
+      if (passcode.length === 5) {
+        verifyPasscode(passcode + digit)
+          .then((verified) => {
+            if (verified) {
+              const { nextPath, updateRedux } = getNextRoute(
+                RoutePath.PASSCODE_LOGIN,
+                { store: storeState }
+              );
+              if (updateRedux?.length) {
+                updateReduxState(dispatch, updateRedux);
+              }
+              dispatch(setCurrentRoute({ path: nextPath.pathname }));
+              history.push(nextPath.pathname);
+              setPasscode("");
+            } else {
+              setPasscodeIncorrect(true);
+            }
+          })
+          .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
+      }
     }
   };
 
@@ -39,29 +68,48 @@ const PasscodeLogin = ({ storedPasscode }: { storedPasscode: string }) => {
   };
 
   const handleForgotten = () => {
-    seedPhrase !== null
-      ? // TODO: Go to Verify your Seed Phrase
-        history.push("/verifyseedphrase")
-      : resetPasscode();
+    resetPasscode();
   };
 
-  const resetPasscode = () => {
-    SecureStorage.delete("app-login-passcode");
-    history.push(SET_PASSCODE_ROUTE);
-  };
+  const verifyPasscode = async (pass: string) => {
+    try {
+      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
 
-  useEffect(() => {
-    if (passcode.length === 6) {
-      verify({ encoded: storedPasscode, pass: passcode })
-        .then(() =>
-          seedPhrase !== null
-            ? // TODO: Proceed to main landing page
-              history.push("/dids")
-            : history.push(ONBOARDING_ROUTE)
-        )
-        .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
+      if (!storedPass) return false;
+      await verify({
+        encoded: storedPass,
+        pass: pass,
+      } as Argon2VerifyOptions);
+      return true;
+    } catch (e) {
+      return false;
     }
-  }, [history, passcode, seedPhrase, storedPasscode]);
+  };
+  const resetPasscode = () => {
+    SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
+      const copyStore = JSON.parse(JSON.stringify(storeState));
+      copyStore.stateCache = {
+        ...copyStore.stateCache,
+        authentication: {
+          ...copyStore.stateCache.authentication,
+          passcodeIsSet: false,
+        },
+      };
+      const { nextPath, updateRedux } = getNextRoute(RoutePath.PASSCODE_LOGIN, {
+        store: copyStore,
+        state: {
+          resetPasscode: true,
+        },
+      });
+
+      if (updateRedux?.length) {
+        updateReduxState(dispatch, updateRedux);
+      }
+      dispatch(setCurrentRoute({ path: nextPath.pathname }));
+      history.push(nextPath.pathname);
+      setPasscode("");
+    });
+  };
 
   return (
     <IonPage className="page-layout">

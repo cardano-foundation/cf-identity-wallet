@@ -1,32 +1,41 @@
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
 import { Onboarding } from "./index";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "../SetPasscode";
-import {
-  GENERATE_SEED_PHRASE_ROUTE,
-  SET_PASSCODE_ROUTE,
-  ONBOARDING_ROUTE,
-} from "../../../routes";
 import { store } from "../../../store";
+import { RoutePath } from "../../../routes";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
-    const { getByText } = render(<Onboarding storedPasscode="" />);
+    const { getByText } = render(
+      <Provider store={store}>
+        <Onboarding />
+      </Provider>
+    );
     const slide1 = getByText(EN_TRANSLATIONS["onboarding.slides"][0].title);
     expect(slide1).toBeInTheDocument();
   });
   test("Render 'Get Started' button", () => {
-    const { getByText } = render(<Onboarding storedPasscode="" />);
+    const { getByText } = render(
+      <Provider store={store}>
+        <Onboarding />
+      </Provider>
+    );
     const button = getByText(
       EN_TRANSLATIONS["onboarding.getstarted.button.label"]
     );
     expect(button).toBeInTheDocument();
   });
   test("Render 'I already have a wallet' option", () => {
-    const { getByText } = render(<Onboarding storedPasscode="" />);
+    const { getByText } = render(
+      <Provider store={store}>
+        <Onboarding />
+      </Provider>
+    );
     const alreadyWallet = getByText(
       EN_TRANSLATIONS["onboarding.alreadywallet.button.label"]
     );
@@ -35,20 +44,18 @@ describe("Onboarding Page", () => {
 
   test("If the user hasn't set a passcode yet, they will be asked to create one", async () => {
     const { getByTestId, queryByText } = render(
-      <MemoryRouter initialEntries={[ONBOARDING_ROUTE]}>
-        <Route
-          path={ONBOARDING_ROUTE}
-          render={(props) => (
-            <Onboarding
-              {...props}
-              storedPasscode=""
-            />
-          )}
-        />
-        <Route
-          path={SET_PASSCODE_ROUTE}
-          component={SetPasscode}
-        />
+      <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
+        <Provider store={store}>
+          <Route
+            path={RoutePath.ONBOARDING}
+            component={Onboarding}
+          />
+
+          <Route
+            path={RoutePath.SET_PASSCODE}
+            component={SetPasscode}
+          />
+        </Provider>
       </MemoryRouter>
     );
 
@@ -64,24 +71,31 @@ describe("Onboarding Page", () => {
   });
 
   test("If the user has already set a passcode but they haven't created a profile, they will be asked to generate a seed phrase", async () => {
+    const mockStore = configureStore();
+    const initialState = {
+      stateCache: {
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+    };
+    const storeMocked = mockStore(initialState);
+
     const { getByTestId, queryByText } = render(
-      <Provider store={store}>
-        <MemoryRouter initialEntries={[ONBOARDING_ROUTE]}>
+      <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
+        <Provider store={storeMocked}>
           <Route
-            path={ONBOARDING_ROUTE}
-            render={(props) => (
-              <Onboarding
-                {...props}
-                storedPasscode="mysecretpasscode"
-              />
-            )}
+            path={RoutePath.ONBOARDING}
+            component={Onboarding}
           />
           <Route
-            path={GENERATE_SEED_PHRASE_ROUTE}
+            path={RoutePath.GENERATE_SEED_PHRASE}
             component={GenerateSeedPhrase}
           />
-        </MemoryRouter>
-      </Provider>
+        </Provider>
+      </MemoryRouter>
     );
 
     const buttonContinue = getByTestId("get-started-button");

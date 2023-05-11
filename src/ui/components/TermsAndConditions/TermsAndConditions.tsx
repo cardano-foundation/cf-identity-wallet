@@ -5,7 +5,9 @@ import { TermsAndConditionsProps } from "./TermsAndConditions.types";
 import { PageLayout } from "../layout/PageLayout";
 
 const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
-  const paragraphs:string[] = i18n.t("termsandconditions.body", { returnObjects: true });
+  const paragraphs: string[] = i18n.t("termsandconditions.body", {
+    returnObjects: true,
+  });
   return (
     <IonModal
       isOpen={isOpen}
@@ -26,7 +28,7 @@ const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
                 size="12"
                 className="terms-and-conditions-body"
               >
-                {paragraphs.map((paragraph:string, index:number) => (
+                {paragraphs.map((paragraph: string, index: number) => (
                   <p key={index}>{paragraph}</p>
                 ))}
               </IonCol>

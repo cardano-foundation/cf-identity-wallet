@@ -10,8 +10,12 @@ import {
   SecureStorage,
   KeyStoreKeys,
 } from "../../../core/storage/secureStorage";
-import { GENERATE_SEED_PHRASE_ROUTE } from "../../../routes";
+import { RoutePath } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
+import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { updateReduxState } from "../../../store/utils";
 
 // Based on OWASP recommendations
 const ARGON2ID_OPTIONS = {
@@ -21,12 +25,12 @@ const ARGON2ID_OPTIONS = {
   parallelism: 1,
   hashLen: 32,
 };
-
 const SetPasscode = () => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
   const [passcode, setPasscode] = useState("");
   const [originalPassCode, setOriginalPassCode] = useState("");
-
   const handlePinChange = (digit: number) => {
     const length = passcode.length;
     if (length < 6) {
@@ -40,8 +44,16 @@ const SetPasscode = () => {
             SecureStorage.set(KeyStoreKeys.APP_PASSCODE, hash.encoded).then(
               () => {
                 handleClear();
-                history.push(GENERATE_SEED_PHRASE_ROUTE);
-                return;
+
+                const { nextPath, updateRedux } = getNextRoute(
+                  RoutePath.SET_PASSCODE,
+                  { store: storeState }
+                );
+                if (updateRedux?.length){
+                  updateReduxState(dispatch, updateRedux);
+                }
+                dispatch(setCurrentRoute({ path: nextPath.pathname }));
+                history.push(nextPath.pathname);
               }
             );
           });

@@ -207,11 +207,11 @@ describe("Generate Seed Phrase screen", () => {
       </Provider>
     );
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    expect(termsCheckbox.hasAttribute("[checked=\"false\"]"));
+    expect(termsCheckbox.hasAttribute('[checked="false"]'));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"true\"]"));
+    expect(termsCheckbox.hasAttribute('[checked="true"]'));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"false\"]"));
+    expect(termsCheckbox.hasAttribute('[checked="false"]'));
   });
 
   test("Opening Terms and conditions modal triggers the checkbox", async () => {
@@ -225,14 +225,14 @@ describe("Generate Seed Phrase screen", () => {
       EN_TRANSLATIONS["generateseedphrase.termsandconditions.link"]
     );
 
-    expect(termsCheckbox.hasAttribute("[checked=\"false\"]"));
+    expect(termsCheckbox.hasAttribute('[checked="false"]'));
 
     act(() => {
       fireEvent.click(termsLink);
     });
 
     await waitFor(() => {
-      expect(termsCheckbox.hasAttribute("[checked=\"true\"]"));
+      expect(termsCheckbox.hasAttribute('[checked="true"]'));
     });
   });
 });

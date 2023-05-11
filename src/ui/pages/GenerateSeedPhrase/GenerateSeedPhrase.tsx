@@ -28,16 +28,19 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
-import { ONBOARDING_ROUTE } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
+import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
-import { useAppDispatch } from "../../../store/hooks";
-import { setSeedPhraseCache } from "../../../store/reducers/SeedPhraseCache";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { updateReduxState } from "../../../store/utils";
+import { RoutePath } from "../../../routes";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
@@ -75,18 +78,21 @@ const GenerateSeedPhrase = () => {
   };
 
   const handleContinue = () => {
-    dispatch(setSeedPhraseCache(seedPhrase.join(" ")));
     setAlertIsOpen(false);
-    history.push({
-      pathname: "/verifyseedphrase",
-    });
+    const { nextPath, updateRedux } = getNextRoute(
+      RoutePath.GENERATE_SEED_PHRASE,
+      { store: storeState, state: { seedPhrase: seedPhrase.join(" ") } }
+    );
+    if (updateRedux?.length) updateReduxState(dispatch, updateRedux);
+    dispatch(setCurrentRoute({ path: nextPath.pathname }));
+    history.push(nextPath.pathname);
   };
 
   return (
     <IonPage className="page-layout generate-seedphrase">
       <PageLayout
         backButton={true}
-        backButtonPath={ONBOARDING_ROUTE}
+        backButtonPath={RoutePath.ONBOARDING}
         progressBar={true}
         progressBarValue={0.66}
         progressBarBuffer={1}

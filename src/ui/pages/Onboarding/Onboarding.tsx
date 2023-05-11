@@ -5,13 +5,15 @@ import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
-import {
-  SET_PASSCODE_ROUTE,
-  GENERATE_SEED_PHRASE_ROUTE,
-} from "../../../routes";
+import { RoutePath } from "../../../routes";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import { getNextRoute } from "../../../routes/nextRoute";
 
-const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
+const Onboarding = () => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
   const items: SlideItem[] = [];
   for (let i = 0; i < 5; i++) {
     items.push({
@@ -22,15 +24,16 @@ const Onboarding = ({ storedPasscode }: { storedPasscode: string }) => {
   }
 
   const handleNavigation = () => {
-    history.push({
-      pathname: storedPasscode
-        ? GENERATE_SEED_PHRASE_ROUTE
-        : SET_PASSCODE_ROUTE,
+    const { nextPath } = getNextRoute(RoutePath.ONBOARDING, {
+      store: storeState,
     });
+
+    dispatch(setCurrentRoute({ path: nextPath.pathname }));
+    history.push(nextPath.pathname);
   };
 
   return (
-    <IonPage className="page-layout">
+    <IonPage className="page-layout onboarding">
       <PageLayout>
         <Slides items={items} />
         <IonButton
