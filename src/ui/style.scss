@@ -25,7 +25,7 @@ p {
   color: var(--ion-color-secondary);
 }
 
-ion-app {
+.ion-app {
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
   height: calc(
@@ -38,11 +38,6 @@ ion-app {
   color: var(--ion-color-primary);
   --background: var(--color-accent-gradient);
   --background-activated: var(--color-medium-grey);
-
-  &:target {
-    // margin: 0.8rem 0.5rem;
-    // font-size: 0.9rem;
-  }
 
   &.button-disabled {
     --background: var(--color-dark-grey);
