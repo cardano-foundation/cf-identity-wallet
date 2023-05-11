@@ -1,5 +1,5 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
-import { RoutePaths } from "../index";
+import { RoutePath } from "../index";
 import { RootState } from "../../store";
 import { setAuthentication } from "../../store/reducers/stateCache";
 import { setSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
@@ -60,10 +60,10 @@ const getNextRootRoute = (store: RootState) => {
 
   let path;
   if (authentication.passcodeIsSet && !authentication.loggedIn) {
-    path = RoutePaths.PASSCODE_LOGIN_ROUTE;
+    path = RoutePath.PASSCODE_LOGIN;
   } else {
     if (initialRoute) {
-      path = RoutePaths.ONBOARDING_ROUTE;
+      path = RoutePath.ONBOARDING;
     } else {
       path = routes[0].path;
     }
@@ -75,11 +75,11 @@ const getNextOnboardingRoute = (store: RootState) => {
 
   let path;
   if (!store.stateCache.authentication.passcodeIsSet) {
-    path = RoutePaths.SET_PASSCODE_ROUTE;
+    path = RoutePath.SET_PASSCODE;
   } else if (store.stateCache.authentication.passcodeIsSet && seedPhraseIsSet) {
-    path = RoutePaths.DIDS_ROUTE;
+    path = RoutePath.DIDS;
   } else {
-    path = RoutePaths.GENERATE_SEED_PHRASE_ROUTE;
+    path = RoutePath.GENERATE_SEED_PHRASE;
   }
 
   return { canNavigate: true, pathname: path };
@@ -89,8 +89,8 @@ const getNextSetPasscodeRoute = (store: RootState) => {
   const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase;
 
   const nextPath: string = seedPhraseIsSet
-    ? RoutePaths.DIDS_ROUTE
-    : RoutePaths.GENERATE_SEED_PHRASE_ROUTE;
+    ? RoutePath.DIDS
+    : RoutePath.GENERATE_SEED_PHRASE;
 
   return { canNavigate: true, pathname: nextPath };
 };
@@ -110,18 +110,18 @@ const getNextPasscodeLoginRoute = (
 ) => {
   const seedPhraseISet = !!store.seedPhraseCache.seedPhrase;
   if (state?.resetPasscode && seedPhraseISet) {
-    return { canNavigate: true, pathname: RoutePaths.VERIFY_SEED_PHRASE_ROUTE };
+    return { canNavigate: true, pathname: RoutePath.VERIFY_SEED_PHRASE };
   } else if (state?.resetPasscode) {
-    return { canNavigate: true, pathname: RoutePaths.SET_PASSCODE_ROUTE };
+    return { canNavigate: true, pathname: RoutePath.SET_PASSCODE };
   } else {
     const routesIncludeOnboarding = store.stateCache.routes.some(
-      (route) => route.path === RoutePaths.ONBOARDING_ROUTE
+      (route) => route.path === RoutePath.ONBOARDING
     );
     let nextPath;
     if (routesIncludeOnboarding && store.stateCache.routes.length === 1) {
-      nextPath = RoutePaths.ONBOARDING_ROUTE;
+      nextPath = RoutePath.ONBOARDING;
     } else {
-      nextPath = RoutePaths.GENERATE_SEED_PHRASE_ROUTE;
+      nextPath = RoutePath.GENERATE_SEED_PHRASE;
     }
 
     return { canNavigate: true, pathname: nextPath };
@@ -156,7 +156,7 @@ const updateStoreAfterPasscodeLoginRoute = (
 };
 
 const getNextGenerateSeedPhraseRoute = () => {
-  return { canNavigate: true, pathname: RoutePaths.VERIFY_SEED_PHRASE_ROUTE };
+  return { canNavigate: true, pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
 
 const updateStoreAfterGenerateSeedPhraseRoute = (
@@ -167,7 +167,6 @@ const updateStoreAfterGenerateSeedPhraseRoute = (
 
 export {
   getNextRoute,
-  NextRoute,
   getNextOnboardingRoute,
   getNextSetPasscodeRoute,
   updateStoreAfterSetPasscodeRoute,

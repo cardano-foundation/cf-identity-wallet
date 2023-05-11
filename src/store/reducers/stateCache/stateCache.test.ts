@@ -12,7 +12,7 @@ import {
   stateCacheSlice,
 } from "./stateCache";
 import { RootState } from "../../index";
-import { RoutePaths } from "../../../routes";
+import { RoutePath } from "../../../routes";
 
 describe("State Cache", () => {
   test("should return the initial state on first run", () => {
@@ -23,7 +23,7 @@ describe("State Cache", () => {
 
   test("should set the current route cache", () => {
     const currentRoute: CurrentRouteCacheProps = {
-      path: RoutePaths.ONBOARDING_ROUTE,
+      path: RoutePath.ONBOARDING,
       payload: {},
     };
     const action = setCurrentRoute(currentRoute);

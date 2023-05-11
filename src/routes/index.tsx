@@ -9,14 +9,14 @@ import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { useAppSelector } from "../store/hooks";
 import { getAuthentication, getState } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
-enum RoutePaths {
-  ROOT_ROUTE = "/",
-  ONBOARDING_ROUTE = "/onboarding",
-  SET_PASSCODE_ROUTE = "/setpasscode",
-  PASSCODE_LOGIN_ROUTE = "/passcodelogin",
-  GENERATE_SEED_PHRASE_ROUTE = "/generateseedphrase",
-  VERIFY_SEED_PHRASE_ROUTE = "/verifyseedphrase",
-  DIDS_ROUTE = "/dids",
+enum RoutePath {
+  ROOT = "/",
+  ONBOARDING = "/onboarding",
+  SET_PASSCODE = "/setpasscode",
+  PASSCODE_LOGIN = "/passcodelogin",
+  GENERATE_SEED_PHRASE = "/generateseedphrase",
+  VERIFY_SEED_PHRASE = "/verifyseedphrase",
+  DIDS = "/dids",
 }
 
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
@@ -41,8 +41,8 @@ const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
       from={location.pathname}
       to={{
         pathname: authentication.passcodeIsSet
-          ? RoutePaths.PASSCODE_LOGIN_ROUTE
-          : RoutePaths.ONBOARDING_ROUTE,
+          ? RoutePath.PASSCODE_LOGIN
+          : RoutePath.ONBOARDING,
       }}
     />
   );
@@ -51,7 +51,7 @@ const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
 const Routes = () => {
   const storeState = useAppSelector(getState);
 
-  const { nextPath } = getNextRoute(RoutePaths.ROOT_ROUTE, {
+  const { nextPath } = getNextRoute(RoutePath.ROOT, {
     store: storeState,
   });
 
@@ -65,23 +65,23 @@ const Routes = () => {
         />
 
         <Route
-          path={RoutePaths.PASSCODE_LOGIN_ROUTE}
+          path={RoutePath.PASSCODE_LOGIN}
           component={PasscodeLogin}
         />
 
         <Route
-          path={RoutePaths.SET_PASSCODE_ROUTE}
+          path={RoutePath.SET_PASSCODE}
           component={SetPasscode}
         />
 
         <Route
-          path={RoutePaths.ONBOARDING_ROUTE}
+          path={RoutePath.ONBOARDING}
           component={Onboarding}
         />
 
         {/* Private Routes */}
         <AuthenticatedRoute
-          path={RoutePaths.GENERATE_SEED_PHRASE_ROUTE}
+          path={RoutePath.GENERATE_SEED_PHRASE}
           component={GenerateSeedPhrase}
         />
       </IonRouterOutlet>
@@ -89,4 +89,4 @@ const Routes = () => {
   );
 };
 
-export { Routes, RoutePaths };
+export { Routes, RoutePath };

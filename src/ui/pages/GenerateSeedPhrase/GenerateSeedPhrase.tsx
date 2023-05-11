@@ -35,7 +35,7 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { updateReduxState } from "../../../store/utils";
-import { RoutePaths } from "../../../routes";
+import { RoutePath } from "../../../routes";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -80,7 +80,7 @@ const GenerateSeedPhrase = () => {
   const handleContinue = () => {
     setAlertIsOpen(false);
     const { nextPath, updateRedux } = getNextRoute(
-      RoutePaths.GENERATE_SEED_PHRASE_ROUTE,
+      RoutePath.GENERATE_SEED_PHRASE,
       { store: storeState, state: { seedPhrase: seedPhrase.join(" ") } }
     );
     if (nextPath.canNavigate) {
@@ -94,7 +94,7 @@ const GenerateSeedPhrase = () => {
     <IonPage className="page-layout generate-seedphrase">
       <PageLayout
         backButton={true}
-        backButtonPath={RoutePaths.ONBOARDING_ROUTE}
+        backButtonPath={RoutePath.ONBOARDING}
         progressBar={true}
         progressBarValue={0.66}
         progressBarBuffer={1}

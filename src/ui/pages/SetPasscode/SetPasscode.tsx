@@ -10,7 +10,7 @@ import {
   SecureStorage,
   KeyStoreKeys,
 } from "../../../core/storage/secureStorage";
-import { RoutePaths } from "../../../routes";
+import { RoutePath } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -48,7 +48,7 @@ const SetPasscode = () => {
                 handleClear();
 
                 const { nextPath, updateRedux } = getNextRoute(
-                  RoutePaths.SET_PASSCODE_ROUTE,
+                  RoutePath.SET_PASSCODE,
                   { store: storeState }
                 );
                 if (nextPath?.canNavigate) {

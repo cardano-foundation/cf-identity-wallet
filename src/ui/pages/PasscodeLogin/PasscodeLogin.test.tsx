@@ -10,7 +10,7 @@ import {
   KeyStoreKeys,
   SecureStorage,
 } from "../../../core/storage/secureStorage";
-import { RoutePaths } from "../../../routes";
+import { RoutePath } from "../../../routes";
 
 describe("Passcode Login Page", () => {
   test("Renders Passcode Login page with title and description", () => {
@@ -44,13 +44,13 @@ describe("Passcode Login Page", () => {
   test("If no seed phrase was stored and I click on I forgot my passcode, I can start over", async () => {
     const { getByText, findByText } = render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[RoutePaths.PASSCODE_LOGIN_ROUTE]}>
+        <MemoryRouter initialEntries={[RoutePath.PASSCODE_LOGIN]}>
           <Route
-            path={RoutePaths.PASSCODE_LOGIN_ROUTE}
+            path={RoutePath.PASSCODE_LOGIN}
             component={PasscodeLogin}
           />
           <Route
-            path={RoutePaths.SET_PASSCODE_ROUTE}
+            path={RoutePath.SET_PASSCODE}
             component={SetPasscode}
           />
         </MemoryRouter>
@@ -87,13 +87,13 @@ describe("Passcode Login Page", () => {
 
     const { getByText } = render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[RoutePaths.PASSCODE_LOGIN_ROUTE]}>
+        <MemoryRouter initialEntries={[RoutePath.PASSCODE_LOGIN]}>
           <Route
-            path={RoutePaths.PASSCODE_LOGIN_ROUTE}
+            path={RoutePath.PASSCODE_LOGIN}
             component={PasscodeLogin}
           />
           <Route
-            path={RoutePaths.SET_PASSCODE_ROUTE}
+            path={RoutePath.SET_PASSCODE}
             component={SetPasscode}
           />
         </MemoryRouter>
@@ -117,13 +117,13 @@ describe("Passcode Login Page", () => {
   test.skip("verifies passcode and navigates to next route", async () => {
     const { getByText, queryByText } = render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[RoutePaths.PASSCODE_LOGIN_ROUTE]}>
+        <MemoryRouter initialEntries={[RoutePath.PASSCODE_LOGIN]}>
           <Route
-            path={RoutePaths.PASSCODE_LOGIN_ROUTE}
+            path={RoutePath.PASSCODE_LOGIN}
             component={PasscodeLogin}
           />
           <Route
-            path={RoutePaths.SET_PASSCODE_ROUTE}
+            path={RoutePath.SET_PASSCODE}
             component={SetPasscode}
           />
         </MemoryRouter>
