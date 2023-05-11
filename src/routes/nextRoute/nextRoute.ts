@@ -21,12 +21,14 @@ const getNextRoute = (
     updateRedux: updateRedux.map(
       (
         fn: (
-          store: RootState,
-          state: PageState | undefined,
-          payload: PayloadProps | undefined
+            data: {
+              store: RootState,
+              state: PageState | undefined,
+              payload: PayloadProps | undefined
+            }
         ) => void
-      ) => fn(store, state, payload)
-    )
+      ) => fn({store, state, payload})
+    ),
   };
 };
 
@@ -38,20 +40,20 @@ const NextRoute: RouteRulesType = {
   "/setpasscode": {
     nextPath: (store: RootState) => getNextSetPasscodeRoute(store),
     updateRedux: [
-      (store: RootState) => () => updateStoreAfterSetPasscodeRoute(store),
+      (data:{store: RootState}) => () => updateStoreAfterSetPasscodeRoute(data.store),
     ],
   },
   "/passcodelogin": {
     nextPath: (store: RootState) => getNextPasscodeLoginRoute(store),
     updateRedux: [
-      (store: RootState) => () => updateStoreAfterPasscodeLoginRoute(store),
+      (data:{store: RootState}) => () => updateStoreAfterPasscodeLoginRoute(data.store),
     ],
   },
   "/generateseedphrase": {
     nextPath: () => getNextGenerateSeedPhraseRoute(),
     updateRedux: [
-      (store: RootState, state: PageState) => () =>
-        updateStoreAfterGenerateSeedPhraseRoute(store, state),
+      (data:{store: RootState, state: PageState}) => () =>
+        updateStoreAfterGenerateSeedPhraseRoute(data.store, data.state),
     ],
   },
 };
