@@ -48,7 +48,7 @@ const PasscodeLogin = () => {
               if (verified) {
                 const { nextPath, updateRedux } = getNextRoute(
                   ROUTES.PASSCODE_LOGIN_ROUTE,
-                  storeState
+                  { store: storeState }
                 );
                 if (nextPath.canNavigate) {
                   if (updateRedux?.length)

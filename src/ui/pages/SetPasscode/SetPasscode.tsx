@@ -49,7 +49,7 @@ const SetPasscode = () => {
 
                 const { nextPath, updateRedux } = getNextRoute(
                   ROUTES.SET_PASSCODE_ROUTE,
-                  storeState
+                  { store: storeState }
                 );
                 if (nextPath?.canNavigate) {
                   if (updateRedux?.length)

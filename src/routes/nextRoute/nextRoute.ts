@@ -3,57 +3,45 @@ import { ROUTES } from "../index";
 import { RootState } from "../../store";
 import { setAuthentication } from "../../store/reducers/stateCache";
 import { setSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
-import { PageState, PayloadProps, RouteRulesType } from "./nextRoute.types";
+import { DataProps, PageState, RouteRulesType } from "./nextRoute.types";
 
 const getNextRoute = (
   currentPath: string,
-  store: RootState,
-  state?: PageState,
-  payload?: PayloadProps
+  data: DataProps
 ): {
   nextPath: { pathname: string; canNavigate: boolean };
-  updateRedux?: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
+  updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
   const { nextPath, updateRedux } = NextRoute[currentPath];
 
   return {
-    nextPath: nextPath(store, state, payload),
-    updateRedux: updateRedux.map(
-      (
-        fn: (
-            data: {
-              store: RootState,
-              state: PageState | undefined,
-              payload: PayloadProps | undefined
-            }
-        ) => void
-      ) => fn({store, state, payload})
-    ),
+    nextPath: nextPath(data),
+    updateRedux: updateRedux.map((fn: (data: DataProps) => void) => fn(data)),
   };
 };
 
 const NextRoute: RouteRulesType = {
   "/onboarding": {
-    nextPath: (store: RootState) => getNextOnboardingRoute(store),
+    nextPath: (data: DataProps) => getNextOnboardingRoute(data.store),
     updateRedux: [],
   },
   "/setpasscode": {
-    nextPath: (store: RootState) => getNextSetPasscodeRoute(store),
+    nextPath: (data: DataProps) => getNextSetPasscodeRoute(data.store),
     updateRedux: [
-      (data:{store: RootState}) => () => updateStoreAfterSetPasscodeRoute(data.store),
+      (data: DataProps) => () => updateStoreAfterSetPasscodeRoute(data.store),
     ],
   },
   "/passcodelogin": {
-    nextPath: (store: RootState) => getNextPasscodeLoginRoute(store),
+    nextPath: (data: DataProps) => getNextPasscodeLoginRoute(data.store),
     updateRedux: [
-      (data:{store: RootState}) => () => updateStoreAfterPasscodeLoginRoute(data.store),
+      (data: DataProps) => () => updateStoreAfterPasscodeLoginRoute(data.store),
     ],
   },
   "/generateseedphrase": {
     nextPath: () => getNextGenerateSeedPhraseRoute(),
     updateRedux: [
-      (data:{store: RootState, state: PageState}) => () =>
-        updateStoreAfterGenerateSeedPhraseRoute(data.store, data.state),
+      (data: DataProps) => () =>
+        updateStoreAfterGenerateSeedPhraseRoute(data.state),
     ],
   },
 };
@@ -117,10 +105,9 @@ const getNextGenerateSeedPhraseRoute = () => {
 };
 
 const updateStoreAfterGenerateSeedPhraseRoute = (
-  store: RootState,
-  state: PageState
+  state: PageState | undefined
 ) => {
-  return setSeedPhraseCache(state.seedPhrase);
+  if (state) return setSeedPhraseCache(state.seedPhrase);
 };
 
 export {

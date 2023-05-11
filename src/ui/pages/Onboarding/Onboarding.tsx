@@ -24,7 +24,9 @@ const Onboarding = () => {
   }
 
   const handleNavigation = () => {
-    const { nextPath } = getNextRoute(ROUTES.ONBOARDING_ROUTE, storeState);
+    const { nextPath } = getNextRoute(ROUTES.ONBOARDING_ROUTE, {
+      store: storeState,
+    });
 
     if (nextPath.canNavigate) {
       dispatch(setCurrentRoute({ path: nextPath.pathname }));

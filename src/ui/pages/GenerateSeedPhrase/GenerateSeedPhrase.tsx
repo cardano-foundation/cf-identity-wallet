@@ -81,8 +81,7 @@ const GenerateSeedPhrase = () => {
     setAlertIsOpen(false);
     const { nextPath, updateRedux } = getNextRoute(
       ROUTES.GENERATE_SEED_PHRASE_ROUTE,
-      storeState,
-      { seedPhrase: seedPhrase.join(" ") }
+      { store: storeState, state: { seedPhrase: seedPhrase.join(" ") } }
     );
     if (nextPath.canNavigate) {
       if (updateRedux?.length) updateReduxState(dispatch, updateRedux);
