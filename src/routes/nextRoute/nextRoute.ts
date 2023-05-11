@@ -3,7 +3,7 @@ import { RoutePath } from "../index";
 import { RootState } from "../../store";
 import { setAuthentication } from "../../store/reducers/stateCache";
 import { setSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
-import { DataProps, PageState, RouteRulesType } from "./nextRoute.types";
+import { DataProps, PageState } from "./nextRoute.types";
 
 const getNextRoute = (
   currentPath: string,
@@ -20,7 +20,7 @@ const getNextRoute = (
   };
 };
 
-const NextRoute: RouteRulesType = {
+const NextRoute:Record<string, any> = {
   "/": {
     nextPath: (data: DataProps) => getNextRootRoute(data.store),
     updateRedux: [],

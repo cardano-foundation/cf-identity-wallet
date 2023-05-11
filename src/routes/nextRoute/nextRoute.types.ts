@@ -1,7 +1,5 @@
 import { RootState } from "../../store";
 
-type RouteRulesType = Record<string, any>;
-
 interface PageState {
   [key: string]: any;
 }
@@ -14,4 +12,4 @@ interface DataProps {
   payload?: PayloadProps;
 }
 
-export type { RouteRulesType, PageState, PayloadProps, DataProps };
+export type { PageState, PayloadProps, DataProps };
