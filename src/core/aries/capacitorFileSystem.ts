@@ -4,6 +4,8 @@ import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { Capacitor } from "@capacitor/core";
 
 class CapacitorFileSystem implements FileSystem {
+    private static readonly dataBasePath = Directory.Data;
+    
     public readonly dataPath;
     public readonly cachePath;
     public readonly tempPath;
@@ -17,7 +19,7 @@ class CapacitorFileSystem implements FileSystem {
         this.cachePath = Directory.Cache;
         this.tempPath = Directory.Cache;
 
-        this.dataPath = `${options?.baseDataPath ?? Directory.Data}/.afj`;
+        this.dataPath = `${CapacitorFileSystem.dataBasePath}/.afj}`;
         this.cachePath = options?.baseCachePath
             ? `${options?.baseCachePath}/.afj`
             : `${Directory.Cache}/.afj${Capacitor.getPlatform() === "android" ? "/cache" : ""
@@ -30,17 +32,16 @@ class CapacitorFileSystem implements FileSystem {
 
     public async exists(path: string): Promise<boolean> {
         try {
-            await Filesystem.stat({ path, directory: Directory.Data });
+            await Filesystem.stat({ path, directory: CapacitorFileSystem.dataBasePath });
             return true;
         } catch (e) {
-            console.error(e);
             return false;
         }
     }
 
     public async createDirectory(path: string): Promise<void> {
         if (!await this.exists(path)) {
-            await Filesystem.mkdir({ path: path, directory: Directory.Data, recursive: true });
+            await Filesystem.mkdir({ path: path, directory: CapacitorFileSystem.dataBasePath, recursive: true });
         }
     }
 
@@ -48,8 +49,12 @@ class CapacitorFileSystem implements FileSystem {
         sourcePath: string,
         destinationPath: string
     ): Promise<void> {
-        await this.createDirectory(getDirFromFilePath(destinationPath));
-        await Filesystem.copy({ from: sourcePath, to: destinationPath, directory: Directory.Data, toDirectory: Directory.Data });
+        if ((await Filesystem.stat({ path: sourcePath, directory: CapacitorFileSystem.dataBasePath })).type === 'file') {
+            await this.createDirectory(getDirFromFilePath(destinationPath));
+            await Filesystem.copy({ from: sourcePath, to: destinationPath, directory: CapacitorFileSystem.dataBasePath, toDirectory: CapacitorFileSystem.dataBasePath });
+        } else {
+            throw new Error('It is not possible to copy folders');
+        }
     }
 
     public async write(path: string, data: string): Promise<void> {
@@ -57,21 +62,21 @@ class CapacitorFileSystem implements FileSystem {
         await Filesystem.writeFile({
             path: path,
             data: data,
-            directory: Directory.Data,
+            directory: CapacitorFileSystem.dataBasePath,
             encoding: Encoding.UTF8,
         });
     }
 
     public async read(path: string): Promise<string> {
-        return (await Filesystem.readFile({ path: path, directory: Directory.Data, encoding: Encoding.UTF8 }))
+        return (await Filesystem.readFile({ path: path, directory: CapacitorFileSystem.dataBasePath, encoding: Encoding.UTF8 }))
             .data;
     }
 
     public async delete(path: string): Promise<void> {
         try {
-            await Filesystem.rmdir({ path: path, directory: Directory.Data, recursive: true });
+            await Filesystem.rmdir({ path: path, directory: CapacitorFileSystem.dataBasePath, recursive: true });
         } catch (e: any) {
-            await Filesystem.deleteFile({ path: path, directory: Directory.Data });
+            await Filesystem.deleteFile({ path: path, directory: CapacitorFileSystem.dataBasePath });
         }
     }
 
@@ -81,40 +86,6 @@ class CapacitorFileSystem implements FileSystem {
         options?: DownloadToFileOptions
     ) {
         throw new AriesFrameworkError("downloadToFile not implemented yet");
-
-        /*
-        // Make sure parent directories exist
-        await this.createDirectory(getDirFromFilePath(path));
-
-        try {
-            const file_request = await fetch(url, {
-                method: 'GET',
-                credentials: 'include',
-                mode: 'no-cors'
-            });
-            const file_blob = await file_request.blob();
-
-            const reader = new FileReader();
-            reader.readAsDataURL(file_blob);
-            reader.onloadend = async () => {
-                try {
-                    try {
-                        if (typeof reader.result === 'string') {
-                            await this.write(path, reader.result);
-                        } else {
-                            console.error('Unexpected type for reader.result');
-                        }
-                    } catch (err) {
-                        console.error(err);
-                    }
-                } catch (err) {
-                    console.error(err);
-                }
-            }
-        } catch (err) {
-            console.error(err);
-        }*/
-
     }
 }
 
