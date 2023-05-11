@@ -170,7 +170,7 @@ describe("getNextRoute", () => {
         pathname: ROUTES.GENERATE_SEED_PHRASE_ROUTE,
         canNavigate: true,
       },
-      updateRedux: [],
+      updateRedux: undefined,
     });
 
     storeMock.stateCache.authentication.passcodeIsSet = false;
@@ -182,7 +182,7 @@ describe("getNextRoute", () => {
         pathname: ROUTES.SET_PASSCODE_ROUTE,
         canNavigate: true,
       },
-      updateRedux: [],
+      updateRedux: undefined,
     });
 
     storeMock.stateCache.authentication.passcodeIsSet = true;
@@ -195,7 +195,7 @@ describe("getNextRoute", () => {
         pathname: ROUTES.DIDS_ROUTE,
         canNavigate: true,
       },
-      updateRedux: [],
+      updateRedux: undefined,
     });
   });
 

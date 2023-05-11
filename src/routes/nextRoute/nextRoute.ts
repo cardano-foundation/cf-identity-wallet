@@ -14,41 +14,49 @@ const getNextRoute = (
   nextPath: { pathname: string; canNavigate: boolean };
   updateRedux?: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
-  const [nextPath, ...updateRedux] = NextRoute[currentPath];
+  const { nextPath, updateRedux } = NextRoute[currentPath];
 
   return {
     nextPath: nextPath(store, state, payload),
-    updateRedux: updateRedux
-      ? updateRedux.map(
-          (
-            fn:
-              | ((
-                  store: RootState,
-                  state: PageState | undefined,
-                  payload: PayloadProps | undefined
-                ) => void)
-              | undefined
-          ) => fn && fn(store, state, payload)
-        )
-      : [],
+    updateRedux:
+      updateRedux &&
+      updateRedux.map(
+        (
+          fn:
+            | ((
+                store: RootState,
+                state: PageState | undefined,
+                payload: PayloadProps | undefined
+              ) => void)
+            | undefined
+        ) => fn && fn(store, state, payload)
+      ),
   };
 };
 
 const NextRoute: RouteRulesType = {
-  "/onboarding": [(store: RootState) => getNextOnboardingRoute(store)],
-  "/setpasscode": [
-    (store: RootState) => getNextSetPasscodeRoute(store),
-    (store: RootState) => () => updateStoreAfterSetPasscodeRoute(store),
-  ],
-  "/passcodelogin": [
-    (store: RootState) => getNextPasscodeLoginRoute(store),
-    (store: RootState) => () => updateStoreAfterPasscodeLoginRoute(store),
-  ],
-  "/generateseedphrase": [
-    () => getNextGenerateSeedPhraseRoute(),
-    (store: RootState, state: PageState) => () =>
-      updateStoreAfterGenerateSeedPhraseRoute(store, state),
-  ],
+  "/onboarding": {
+    nextPath: (store: RootState) => getNextOnboardingRoute(store),
+  },
+  "/setpasscode": {
+    nextPath: (store: RootState) => getNextSetPasscodeRoute(store),
+    updateRedux: [
+      (store: RootState) => () => updateStoreAfterSetPasscodeRoute(store),
+    ],
+  },
+  "/passcodelogin": {
+    nextPath: (store: RootState) => getNextPasscodeLoginRoute(store),
+    updateRedux: [
+      (store: RootState) => () => updateStoreAfterPasscodeLoginRoute(store),
+    ],
+  },
+  "/generateseedphrase": {
+    nextPath: () => getNextGenerateSeedPhraseRoute(),
+    updateRedux: [
+      (store: RootState, state: PageState) => () =>
+        updateStoreAfterGenerateSeedPhraseRoute(store, state),
+    ],
+  },
 };
 
 const getNextOnboardingRoute = (store: RootState) => {
