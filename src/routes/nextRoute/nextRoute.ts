@@ -9,7 +9,7 @@ const getNextRoute = (
   currentPath: string,
   data: DataProps
 ): {
-  nextPath: { pathname: string; canNavigate: boolean };
+  nextPath: { pathname: string};
   updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
   const { nextPath, updateRedux } = NextRoute[currentPath];
