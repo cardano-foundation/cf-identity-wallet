@@ -13,10 +13,7 @@ import {
   SecureStorage,
 } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getState,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
+import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 
@@ -49,14 +46,12 @@ const PasscodeLogin = () => {
                 RoutePath.PASSCODE_LOGIN,
                 { store: storeState }
               );
-              if (nextPath.canNavigate) {
-                if (updateRedux?.length) {
-                  updateReduxState(dispatch, updateRedux);
-                }
-                dispatch(setCurrentRoute({ path: nextPath.pathname }));
-                history.push(nextPath.pathname);
-                setPasscode("");
+              if (updateRedux?.length) {
+                updateReduxState(dispatch, updateRedux);
               }
+              dispatch(setCurrentRoute({ path: nextPath.pathname }));
+              history.push(nextPath.pathname);
+              setPasscode("");
             } else {
               setPasscodeIncorrect(true);
             }
@@ -100,24 +95,19 @@ const PasscodeLogin = () => {
           passcodeIsSet: false,
         },
       };
-      const { nextPath, updateRedux } = getNextRoute(
-        RoutePath.PASSCODE_LOGIN,
-        {
-          store: copyStore,
-          state: {
-            resetPasscode: true,
-          },
-        }
-      );
+      const { nextPath, updateRedux } = getNextRoute(RoutePath.PASSCODE_LOGIN, {
+        store: copyStore,
+        state: {
+          resetPasscode: true,
+        },
+      });
 
-      if (nextPath.canNavigate) {
-        if (updateRedux?.length) {
-          updateReduxState(dispatch, updateRedux);
-        }
-        dispatch(setCurrentRoute({ path: nextPath.pathname }));
-        history.push(nextPath.pathname);
-        setPasscode("")
+      if (updateRedux?.length) {
+        updateReduxState(dispatch, updateRedux);
       }
+      dispatch(setCurrentRoute({ path: nextPath.pathname }));
+      history.push(nextPath.pathname);
+      setPasscode("");
     });
   };
 

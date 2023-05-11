@@ -28,10 +28,8 @@ const Onboarding = () => {
       store: storeState,
     });
 
-    if (nextPath.canNavigate) {
-      dispatch(setCurrentRoute({ path: nextPath.pathname }));
-      history.push(nextPath.pathname);
-    }
+    dispatch(setCurrentRoute({ path: nextPath.pathname }));
+    history.push(nextPath.pathname);
   };
 
   return (

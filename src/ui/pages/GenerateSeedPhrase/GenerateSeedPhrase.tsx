@@ -83,11 +83,9 @@ const GenerateSeedPhrase = () => {
       RoutePath.GENERATE_SEED_PHRASE,
       { store: storeState, state: { seedPhrase: seedPhrase.join(" ") } }
     );
-    if (nextPath.canNavigate) {
-      if (updateRedux?.length) updateReduxState(dispatch, updateRedux);
-      dispatch(setCurrentRoute({ path: nextPath.pathname }));
-      history.push(nextPath.pathname);
-    }
+    if (updateRedux?.length) updateReduxState(dispatch, updateRedux);
+    dispatch(setCurrentRoute({ path: nextPath.pathname }));
+    history.push(nextPath.pathname);
   };
 
   return (

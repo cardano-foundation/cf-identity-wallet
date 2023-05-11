@@ -25,14 +25,12 @@ const ARGON2ID_OPTIONS = {
   parallelism: 1,
   hashLen: 32,
 };
-
 const SetPasscode = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
   const [passcode, setPasscode] = useState("");
   const [originalPassCode, setOriginalPassCode] = useState("");
-
   const handlePinChange = (digit: number) => {
     const length = passcode.length;
     if (length < 6) {
@@ -51,12 +49,10 @@ const SetPasscode = () => {
                   RoutePath.SET_PASSCODE,
                   { store: storeState }
                 );
-                if (nextPath?.canNavigate) {
-                  if (updateRedux?.length)
-                    updateReduxState(dispatch, updateRedux);
-                  dispatch(setCurrentRoute({ path: nextPath.pathname }));
-                  history.push(nextPath.pathname);
-                }
+                if (updateRedux?.length)
+                  updateReduxState(dispatch, updateRedux);
+                dispatch(setCurrentRoute({ path: nextPath.pathname }));
+                history.push(nextPath.pathname);
               }
             );
           });
