@@ -17,7 +17,7 @@ enum RoutePaths {
   DIDS_ROUTE = "/dids",
 }
 
-const PrivateRoute: React.FC<RouteProps> = (props) => {
+const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
 
@@ -77,7 +77,7 @@ const Routes = () => {
         />
 
         {/* Private Routes */}
-        <PrivateRoute
+        <AuthenticatedRoute
           path={RoutePaths.GENERATE_SEED_PHRASE_ROUTE}
           component={GenerateSeedPhrase}
         />
