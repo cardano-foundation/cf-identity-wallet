@@ -5,7 +5,7 @@ import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { ROUTES } from "../../../routes";
+import { RoutePaths } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import Alert from "../../components/Alert/Alert";
 import {
@@ -47,7 +47,7 @@ const PasscodeLogin = () => {
             .then((verified) => {
               if (verified) {
                 const { nextPath, updateRedux } = getNextRoute(
-                  ROUTES.PASSCODE_LOGIN_ROUTE,
+                  RoutePaths.PASSCODE_LOGIN_ROUTE,
                   { store: storeState }
                 );
                 if (nextPath.canNavigate) {
@@ -98,7 +98,7 @@ const PasscodeLogin = () => {
   };
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-    history.push(ROUTES.SET_PASSCODE_ROUTE);
+    history.push(RoutePaths.SET_PASSCODE_ROUTE);
   };
 
   return (

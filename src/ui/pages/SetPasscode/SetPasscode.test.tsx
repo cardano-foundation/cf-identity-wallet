@@ -11,7 +11,7 @@ import {
 } from "../../../core/storage/secureStorage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
-import { ROUTES } from "../../../routes";
+import { RoutePaths } from "../../../routes";
 
 const ARGON2ID_HASH = {
   encoded: "encodedHash",
@@ -133,16 +133,16 @@ describe("SetPasscode Page", () => {
 
   test("Redirects to next page when passcode is entered correctly", async () => {
     const { getByText, queryByText } = render(
-      <MemoryRouter initialEntries={[ROUTES.SET_PASSCODE_ROUTE]}>
+      <MemoryRouter initialEntries={[RoutePaths.SET_PASSCODE_ROUTE]}>
         <Provider store={store}>
           <Route
             exact
-            path={ROUTES.SET_PASSCODE_ROUTE}
+            path={RoutePaths.SET_PASSCODE_ROUTE}
             component={SetPasscode}
           />
         </Provider>
         <Route
-          path={ROUTES.GENERATE_SEED_PHRASE_ROUTE}
+          path={RoutePaths.GENERATE_SEED_PHRASE_ROUTE}
           component={GenerateSeedPhrase}
         />
       </MemoryRouter>

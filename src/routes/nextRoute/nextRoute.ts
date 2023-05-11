@@ -1,5 +1,5 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
-import { ROUTES } from "../index";
+import { RoutePaths } from "../index";
 import { RootState } from "../../store";
 import { setAuthentication } from "../../store/reducers/stateCache";
 import { setSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
@@ -51,11 +51,11 @@ const getNextOnboardingRoute = (store: RootState) => {
 
   let path;
   if (!store.stateCache.authentication.passcodeIsSet) {
-    path = ROUTES.SET_PASSCODE_ROUTE;
+    path = RoutePaths.SET_PASSCODE_ROUTE;
   } else if (store.stateCache.authentication.passcodeIsSet && seedPhraseIsSet) {
-    path = ROUTES.DIDS_ROUTE;
+    path = RoutePaths.DIDS_ROUTE;
   } else {
-    path = ROUTES.GENERATE_SEED_PHRASE_ROUTE;
+    path = RoutePaths.GENERATE_SEED_PHRASE_ROUTE;
   }
 
   return { canNavigate: true, pathname: path };
@@ -65,8 +65,8 @@ const getNextSetPasscodeRoute = (store: RootState) => {
   const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase;
 
   const nextPath: string = seedPhraseIsSet
-    ? ROUTES.DIDS_ROUTE
-    : ROUTES.GENERATE_SEED_PHRASE_ROUTE;
+    ? RoutePaths.DIDS_ROUTE
+    : RoutePaths.GENERATE_SEED_PHRASE_ROUTE;
   return { canNavigate: true, pathname: nextPath };
 };
 
@@ -81,13 +81,13 @@ const updateStoreAfterSetPasscodeRoute = (store: RootState) => {
 
 const getNextPasscodeLoginRoute = (store: RootState) => {
   const routesIncludeOnboarding = store.stateCache.routes.some(
-    (route) => route.path === ROUTES.ONBOARDING_ROUTE
+    (route) => route.path === RoutePaths.ONBOARDING_ROUTE
   );
   const nextPath: string = routesIncludeOnboarding
-    ? ROUTES.GENERATE_SEED_PHRASE_ROUTE
+    ? RoutePaths.GENERATE_SEED_PHRASE_ROUTE
     : store.stateCache.routes.length && store.stateCache.routes[0].path?.length
     ? store.stateCache.routes[0].path
-    : ROUTES.ONBOARDING_ROUTE;
+    : RoutePaths.ONBOARDING_ROUTE;
 
   return { canNavigate: true, pathname: nextPath };
 };
@@ -101,7 +101,7 @@ const updateStoreAfterPasscodeLoginRoute = (store: RootState) => {
 };
 
 const getNextGenerateSeedPhraseRoute = () => {
-  return { canNavigate: true, pathname: ROUTES.VERIFY_SEED_PHRASE_ROUTE };
+  return { canNavigate: true, pathname: RoutePaths.VERIFY_SEED_PHRASE_ROUTE };
 };
 
 const updateStoreAfterGenerateSeedPhraseRoute = (

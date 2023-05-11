@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
-import { ROUTES } from "../../../routes";
+import { RoutePaths } from "../../../routes";
 import {
   StateCacheProps,
   AuthenticationCacheProps,
@@ -21,7 +21,7 @@ const stateCacheSlice = createSlice({
   initialState,
   reducers: {
     setCurrentRoute: (state, action: PayloadAction<CurrentRouteCacheProps>) => {
-      if ([ROUTES.PASSCODE_LOGIN_ROUTE, "/"].includes(action.payload.path))
+      if ([RoutePaths.PASSCODE_LOGIN_ROUTE, "/"].includes(action.payload.path))
         return;
       const filteredRoutes = state.routes.filter(
         (route) => action.payload.path !== route.path

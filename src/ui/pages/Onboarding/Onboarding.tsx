@@ -5,7 +5,7 @@ import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
-import { ROUTES } from "../../../routes";
+import { RoutePaths } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -24,7 +24,7 @@ const Onboarding = () => {
   }
 
   const handleNavigation = () => {
-    const { nextPath } = getNextRoute(ROUTES.ONBOARDING_ROUTE, {
+    const { nextPath } = getNextRoute(RoutePaths.ONBOARDING_ROUTE, {
       store: storeState,
     });
 

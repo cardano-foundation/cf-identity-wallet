@@ -9,7 +9,7 @@ import {
   updateStoreAfterSetPasscodeRoute,
 } from "./nextRoute";
 import { RootState } from "../../store";
-import { ROUTES } from "../index";
+import { RoutePaths } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
 import { setSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 
@@ -46,7 +46,7 @@ describe("NextRules", () => {
 
     expect(result).toEqual({
       canNavigate: true,
-      pathname: ROUTES.GENERATE_SEED_PHRASE_ROUTE,
+      pathname: RoutePaths.GENERATE_SEED_PHRASE_ROUTE,
     });
   });
 
@@ -57,7 +57,7 @@ describe("NextRules", () => {
 
     expect(result).toEqual({
       canNavigate: true,
-      pathname: ROUTES.SET_PASSCODE_ROUTE,
+      pathname: RoutePaths.SET_PASSCODE_ROUTE,
     });
   });
 
@@ -68,7 +68,7 @@ describe("NextRules", () => {
 
     expect(result).toEqual({
       canNavigate: true,
-      pathname: ROUTES.GENERATE_SEED_PHRASE_ROUTE,
+      pathname: RoutePaths.GENERATE_SEED_PHRASE_ROUTE,
     });
   });
 
@@ -102,7 +102,7 @@ describe("NextRules", () => {
 
     expect(result).toEqual({
       canNavigate: true,
-      pathname: ROUTES.ONBOARDING_ROUTE,
+      pathname: RoutePaths.ONBOARDING_ROUTE,
     });
   });
 
@@ -123,7 +123,7 @@ describe("NextRules", () => {
 
     expect(result).toEqual({
       canNavigate: true,
-      pathname: ROUTES.VERIFY_SEED_PHRASE_ROUTE,
+      pathname: RoutePaths.VERIFY_SEED_PHRASE_ROUTE,
     });
   });
 
@@ -158,7 +158,7 @@ describe("getNextRoute", () => {
   const payload = {};
 
   test("should return the correct Onboarding next route", () => {
-    let result = getNextRoute(ROUTES.ONBOARDING_ROUTE, {
+    let result = getNextRoute(RoutePaths.ONBOARDING_ROUTE, {
       store: storeMock,
       state,
       payload,
@@ -166,7 +166,7 @@ describe("getNextRoute", () => {
 
     expect(result).toEqual({
       nextPath: {
-        pathname: ROUTES.GENERATE_SEED_PHRASE_ROUTE,
+        pathname: RoutePaths.GENERATE_SEED_PHRASE_ROUTE,
         canNavigate: true,
       },
       updateRedux: [],
@@ -174,7 +174,7 @@ describe("getNextRoute", () => {
 
     storeMock.stateCache.authentication.passcodeIsSet = false;
 
-    result = getNextRoute(ROUTES.ONBOARDING_ROUTE, {
+    result = getNextRoute(RoutePaths.ONBOARDING_ROUTE, {
       store: storeMock,
       state,
       payload,
@@ -182,7 +182,7 @@ describe("getNextRoute", () => {
 
     expect(result).toEqual({
       nextPath: {
-        pathname: ROUTES.SET_PASSCODE_ROUTE,
+        pathname: RoutePaths.SET_PASSCODE_ROUTE,
         canNavigate: true,
       },
       updateRedux: [],
@@ -191,7 +191,7 @@ describe("getNextRoute", () => {
     storeMock.stateCache.authentication.passcodeIsSet = true;
     storeMock.seedPhraseCache.seedPhrase = "example-seed-phrase";
 
-    result = getNextRoute(ROUTES.ONBOARDING_ROUTE, {
+    result = getNextRoute(RoutePaths.ONBOARDING_ROUTE, {
       store: storeMock,
       state,
       payload,
@@ -199,7 +199,7 @@ describe("getNextRoute", () => {
 
     expect(result).toEqual({
       nextPath: {
-        pathname: ROUTES.DIDS_ROUTE,
+        pathname: RoutePaths.DIDS_ROUTE,
         canNavigate: true,
       },
       updateRedux: [],
@@ -214,7 +214,7 @@ describe("getNextRoute", () => {
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({
       canNavigate: true,
-      pathname: ROUTES.DIDS_ROUTE,
+      pathname: RoutePaths.DIDS_ROUTE,
     });
   });
 
@@ -224,30 +224,30 @@ describe("getNextRoute", () => {
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({
       canNavigate: true,
-      pathname: ROUTES.GENERATE_SEED_PHRASE_ROUTE,
+      pathname: RoutePaths.GENERATE_SEED_PHRASE_ROUTE,
     });
   });
 
   test("getNextPasscodeLoginRoute should return the correct next path when routes include onboarding", () => {
-    storeMock.stateCache.routes = [{ path: ROUTES.ONBOARDING_ROUTE }];
+    storeMock.stateCache.routes = [{ path: RoutePaths.ONBOARDING_ROUTE }];
 
     const result = getNextPasscodeLoginRoute(storeMock);
     expect(result).toEqual({
       canNavigate: true,
-      pathname: ROUTES.GENERATE_SEED_PHRASE_ROUTE,
+      pathname: RoutePaths.GENERATE_SEED_PHRASE_ROUTE,
     });
   });
 
   test("getNextPasscodeLoginRoute should return the correct next path when routes do not include onboarding", () => {
     storeMock.stateCache.routes = [
-      { path: ROUTES.GENERATE_SEED_PHRASE_ROUTE },
+      { path: RoutePaths.GENERATE_SEED_PHRASE_ROUTE },
       { path: "/" },
     ];
 
     const result = getNextPasscodeLoginRoute(storeMock);
     expect(result).toEqual({
       canNavigate: true,
-      pathname: ROUTES.GENERATE_SEED_PHRASE_ROUTE,
+      pathname: RoutePaths.GENERATE_SEED_PHRASE_ROUTE,
     });
   });
 
@@ -255,7 +255,7 @@ describe("getNextRoute", () => {
     const result = getNextGenerateSeedPhraseRoute();
     expect(result).toEqual({
       canNavigate: true,
-      pathname: ROUTES.VERIFY_SEED_PHRASE_ROUTE,
+      pathname: RoutePaths.VERIFY_SEED_PHRASE_ROUTE,
     });
   });
 
