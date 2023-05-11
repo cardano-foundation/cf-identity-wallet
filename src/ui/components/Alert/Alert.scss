@@ -1,9 +1,18 @@
 .alert-wrapper {
   max-width: 90% !important;
-  padding-bottom: 20px !important;
+  padding: 25px 20px !important;
+  border-radius: 1rem !important;
 
   .alert-title.sc-ion-alert-md {
     text-align: center;
+  }
+
+  .alert-head {
+    padding: 0;
+
+    h2 {
+      margin: 0;
+    }
   }
 }
 
@@ -25,10 +34,11 @@
   font-weight: 500 !important;
   border: solid var(--color-medium-grey) 2px !important;
   border-radius: 20px !important;
-  margin: 5px 20px !important;
+  margin: 0;
 
   &:first-child {
     border: none !important;
     background: var(--color-accent-gradient) !important;
+    margin-bottom: 0.5rem;
   }
 }

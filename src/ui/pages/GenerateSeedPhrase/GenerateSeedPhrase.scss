@@ -12,7 +12,9 @@
   ion-card {
     position: relative;
     border: 1px solid var(--color-dark-grey);
+    border-radius: 1rem;
     --background: var(--color-light-grey);
+    box-shadow: none;
   }
 
   .overlay {

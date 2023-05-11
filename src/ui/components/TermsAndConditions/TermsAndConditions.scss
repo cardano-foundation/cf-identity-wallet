@@ -1,8 +1,9 @@
 .terms-and-conditions {
-  height: 100%;
+  padding-inline: 20px;
+  background-color: var(--ion-color-light);
 
   ion-toolbar {
-    padding-top: 1.5rem !important;
+    padding: 1.5rem 0 0 !important;
   }
 
   ion-content {
@@ -11,9 +12,5 @@
 
   h2 {
     margin: 0 auto;
-  }
-
-  .terms-and-conditions-body p {
-    margin: 0 0.5rem 1rem;
   }
 }

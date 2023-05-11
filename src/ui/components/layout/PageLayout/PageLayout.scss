@@ -1,11 +1,15 @@
 .page-layout {
+  padding-inline: 20px;
   ion-toolbar,
-  .page-content ion-grid {
-    padding-inline: 0.5rem !important;
+  .toolbar-container,
+  ion-grid,
+  ion-col {
+    padding-inline: 0;
+    --padding-start: 0;
+    --padding-end: 0;
   }
 
   ion-header ion-toolbar {
-    padding: 0 6px;
     ion-button,
     ion-back-button {
       width: 2.8125rem;
@@ -35,6 +39,6 @@
   }
 
   .page-footer ion-button {
-    margin: 0.75rem auto;
+    margin: 0.75rem auto 2.1875rem;
   }
 }
