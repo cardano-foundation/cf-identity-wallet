@@ -113,7 +113,7 @@ const PasscodeLogin = () => {
   };
 
   return (
-    <IonPage className="page-layout passcode-login">
+    <IonPage className="page-layout passcode-login safe-area">
       <PageLayout>
         <PasscodeModule
           title={i18n.t("passcodelogin.title")}

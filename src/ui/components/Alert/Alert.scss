@@ -7,8 +7,9 @@
     text-align: center;
   }
 
-  .alert-head {
-    padding: 0;
+  .alert-head,
+  .alert-message {
+    padding: 0 !important;
 
     h2 {
       margin: 0;
@@ -16,22 +17,29 @@
   }
 }
 
-.alert-button-group.sc-ion-alert-md {
-  flex-wrap: wrap;
-  justify-content: center;
+.alert-button-group {
+  flex-direction: column !important;
+  padding: 0 !important;
+  margin-top: 1rem;
 
-  button {
-    width: 100%;
-    text-align: center;
+  &.sc-ion-alert-md {
+    flex-wrap: wrap;
+    justify-content: center;
 
-    span {
-      justify-content: center;
+    button {
+      width: 100%;
+      text-align: center;
+
+      span {
+        justify-content: center;
+      }
     }
   }
 }
 
 .alert-button {
   font-weight: 500 !important;
+  text-transform: none;
   border: solid var(--color-medium-grey) 2px !important;
   border-radius: 20px !important;
   margin: 0;
