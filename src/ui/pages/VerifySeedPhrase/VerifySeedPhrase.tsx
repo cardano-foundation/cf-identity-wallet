@@ -24,6 +24,7 @@ import {
   clearSeedPhraseCache,
   getSeedPhraseCache,
 } from "../../../store/reducers/SeedPhraseCache";
+import Alert from "../../components/Alert/Alert";
 
 const ARGON2ID_OPTIONS = {
   type: ArgonType.Argon2id,
@@ -40,6 +41,7 @@ const VerifySeedPhrase = () => {
     useAppSelector(getSeedPhraseCache).seedPhrase.split(" ");
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedMatch, setSeedMatch] = useState<string[]>([]);
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   const handleContinue = async () => {
     if (equals(originalSeedPhrase, seedMatch)) {
@@ -56,6 +58,8 @@ const VerifySeedPhrase = () => {
           }
         );
       });
+    } else {
+      setAlertIsOpen(true);
     }
   };
 
@@ -101,7 +105,7 @@ const VerifySeedPhrase = () => {
         footer={true}
         primaryButtonText={`${i18n.t("verifyseedphrase.continue.button")}`}
         primaryButtonAction={() => handleContinue()}
-        primaryButtonDisabled={!equals(originalSeedPhrase, seedMatch)}
+        primaryButtonDisabled={!(originalSeedPhrase.length == seedMatch.length)}
       >
         <IonGrid>
           <IonRow>
@@ -167,6 +171,13 @@ const VerifySeedPhrase = () => {
             </IonRow>
           </IonGrid>
         ) : null}
+
+        <Alert
+          isOpen={alertIsOpen}
+          setIsOpen={setAlertIsOpen}
+          headerText={i18n.t("verifyseedphrase.alert.text")}
+          cancelButtonText={`${i18n.t("verifyseedphrase.alert.button.cancel")}`}
+        />
       </PageLayout>
     </IonPage>
   );

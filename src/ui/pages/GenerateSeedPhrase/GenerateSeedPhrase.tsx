@@ -236,8 +236,12 @@ const GenerateSeedPhrase = () => {
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
           headerText={i18n.t("generateseedphrase.alert.text")}
-          confirmButtonText={i18n.t("generateseedphrase.alert.button.confirm")}
-          cancelButtonText={i18n.t("generateseedphrase.alert.button.cancel")}
+          confirmButtonText={`${i18n.t(
+            "generateseedphrase.alert.button.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "generateseedphrase.alert.button.cancel"
+          )}`}
           actionConfirm={handleContinue}
         />
       </PageLayout>

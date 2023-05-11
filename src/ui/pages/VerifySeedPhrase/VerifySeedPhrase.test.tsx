@@ -67,7 +67,7 @@ describe("Verify Seed Phrase Page", () => {
   });
 
   test("The user can Verify the Seed Phrase", async () => {
-    const { getByTestId, getByText, queryByText } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[VERIFY_SEED_PHRASE_ROUTE]}>
           <Route

@@ -9,9 +9,6 @@ import {
   IonIcon,
   IonTitle,
   IonFooter,
-  IonGrid,
-  IonRow,
-  IonCol,
 } from "@ionic/react";
 import { arrowBackOutline, closeOutline } from "ionicons/icons";
 import "./PageLayout.scss";
@@ -64,7 +61,7 @@ const PageLayout = ({
                     slot="icon-only"
                     icon={closeOutline}
                     color="primary"
-                  ></IonIcon>
+                  />
                 </IonButton>
               )}
             </IonButtons>
