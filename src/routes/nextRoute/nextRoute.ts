@@ -20,15 +20,13 @@ const getNextRoute = (
     nextPath: nextPath(store, state, payload),
     updateRedux: updateRedux.map(
       (
-        fn:
-          | ((
-              store: RootState,
-              state: PageState | undefined,
-              payload: PayloadProps | undefined
-            ) => void)
-          | undefined
-      ) => fn && fn(store, state, payload)
-    ),
+        fn: (
+          store: RootState,
+          state: PageState | undefined,
+          payload: PayloadProps | undefined
+        ) => void
+      ) => fn(store, state, payload)
+    )
   };
 };
 
