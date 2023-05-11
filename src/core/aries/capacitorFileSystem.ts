@@ -1,5 +1,5 @@
 import type { FileSystem, DownloadToFileOptions } from "@aries-framework/core";
-import { getDirFromFilePath } from "@aries-framework/core";
+import { getDirFromFilePath, AriesFrameworkError } from "@aries-framework/core";
 import { Filesystem, Directory, Encoding } from "@capacitor/filesystem";
 import { Capacitor } from "@capacitor/core";
 
@@ -80,6 +80,9 @@ class CapacitorFileSystem implements FileSystem {
         path: string,
         options?: DownloadToFileOptions
     ) {
+        throw new AriesFrameworkError("downloadToFile not implemented yet");
+
+        /*
         // Make sure parent directories exist
         await this.createDirectory(getDirFromFilePath(path));
 
@@ -110,7 +113,7 @@ class CapacitorFileSystem implements FileSystem {
             }
         } catch (err) {
             console.error(err);
-        }
+        }*/
 
     }
 }
