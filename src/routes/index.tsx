@@ -7,8 +7,10 @@ import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { useAppSelector } from "../store/hooks";
-import { getAuthentication } from "../store/reducers/stateCache";
+import { getAuthentication, getState } from "../store/reducers/stateCache";
+import { getNextRoute } from "./nextRoute";
 enum RoutePaths {
+  ROOT_ROUTE = "/",
   ONBOARDING_ROUTE = "/onboarding",
   SET_PASSCODE_ROUTE = "/setpasscode",
   PASSCODE_LOGIN_ROUTE = "/passcodelogin",
@@ -47,18 +49,19 @@ const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
 };
 
 const Routes = () => {
-  const authentication = useAppSelector(getAuthentication);
+  const storeState = useAppSelector(getState);
+
+  const { nextPath } = getNextRoute(RoutePaths.ROOT_ROUTE, {
+    store: storeState,
+  });
+
   return (
     <IonReactRouter>
-      <IonRouterOutlet>
+      <IonRouterOutlet animated={false}>
         <Redirect
           exact
           from="/"
-          to={
-            authentication.passcodeIsSet && !authentication.loggedIn
-              ? RoutePaths.PASSCODE_LOGIN_ROUTE
-              : RoutePaths.ONBOARDING_ROUTE
-          }
+          to={nextPath}
         />
 
         <Route

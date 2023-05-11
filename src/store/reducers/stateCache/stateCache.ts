@@ -1,6 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
-import { RoutePaths } from "../../../routes";
 import {
   StateCacheProps,
   AuthenticationCacheProps,
@@ -21,8 +20,6 @@ const stateCacheSlice = createSlice({
   initialState,
   reducers: {
     setCurrentRoute: (state, action: PayloadAction<CurrentRouteCacheProps>) => {
-      if ([RoutePaths.PASSCODE_LOGIN_ROUTE, "/"].includes(action.payload.path))
-        return;
       const filteredRoutes = state.routes.filter(
         (route) => action.payload.path !== route.path
       );
@@ -41,6 +38,7 @@ const { setCurrentRoute, setAuthentication } = stateCacheSlice.actions;
 
 const getState = (state: RootState) => state;
 const getStateCache = (state: RootState) => state.stateCache;
+const getRoutes = (state: RootState) => state.stateCache.routes;
 const getCurrentRoute = (state: RootState) =>
   state.stateCache.routes.length ? state.stateCache.routes[0] : {};
 const getAuthentication = (state: RootState) => state.stateCache.authentication;
@@ -54,6 +52,7 @@ export type {
 export {
   initialState,
   stateCacheSlice,
+  getRoutes,
   setCurrentRoute,
   setAuthentication,
   getState,

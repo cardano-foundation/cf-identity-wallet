@@ -13,14 +13,16 @@ import {
   SecureStorage,
 } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  getState,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 
 const PasscodeLogin = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-
   const storeState = useAppSelector(getState);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
@@ -36,8 +38,6 @@ const PasscodeLogin = () => {
       : i18n.t("passcodelogin.alert.button.restart");
   const cancelButtonText = i18n.t("passcodelogin.alert.button.cancel");
 
-  const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-
   const handlePinChange = (digit: number) => {
     if (passcode.length < 6) {
       setPasscode(passcode + digit);
@@ -50,11 +50,12 @@ const PasscodeLogin = () => {
                 { store: storeState }
               );
               if (nextPath.canNavigate) {
-                if (updateRedux?.length)
+                if (updateRedux?.length) {
                   updateReduxState(dispatch, updateRedux);
+                }
                 dispatch(setCurrentRoute({ path: nextPath.pathname }));
                 history.push(nextPath.pathname);
-                delay(500).then(() => setPasscode(""));
+                setPasscode("");
               }
             } else {
               setPasscodeIncorrect(true);
@@ -72,10 +73,7 @@ const PasscodeLogin = () => {
   };
 
   const handleForgotten = () => {
-    seedPhrase !== null
-      ? // TODO: Go to Verify your Seed Phrase
-        history.push("/verifyseedphrase")
-      : resetPasscode();
+    resetPasscode();
   };
 
   const verifyPasscode = async (pass: string) => {
@@ -93,8 +91,34 @@ const PasscodeLogin = () => {
     }
   };
   const resetPasscode = () => {
-    SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
-    history.push(RoutePaths.SET_PASSCODE_ROUTE);
+    SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
+      const copyStore = JSON.parse(JSON.stringify(storeState));
+      copyStore.stateCache = {
+        ...copyStore.stateCache,
+        authentication: {
+          ...copyStore.stateCache.authentication,
+          passcodeIsSet: false,
+        },
+      };
+      const { nextPath, updateRedux } = getNextRoute(
+        RoutePaths.PASSCODE_LOGIN_ROUTE,
+        {
+          store: copyStore,
+          state: {
+            resetPasscode: true,
+          },
+        }
+      );
+
+      if (nextPath.canNavigate) {
+        if (updateRedux?.length) {
+          updateReduxState(dispatch, updateRedux);
+        }
+        dispatch(setCurrentRoute({ path: nextPath.pathname }));
+        history.push(nextPath.pathname);
+        setPasscode("")
+      }
+    });
   };
 
   return (
