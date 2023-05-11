@@ -42,29 +42,25 @@ const PasscodeLogin = () => {
     if (passcode.length < 6) {
       setPasscode(passcode + digit);
       if (passcode.length === 5) {
-        try {
-          verifyPasscode(passcode + digit)
-            .then((verified) => {
-              if (verified) {
-                const { nextPath, updateRedux } = getNextRoute(
-                  RoutePaths.PASSCODE_LOGIN_ROUTE,
-                  { store: storeState }
-                );
-                if (nextPath.canNavigate) {
-                  if (updateRedux?.length)
-                    updateReduxState(dispatch, updateRedux);
-                  dispatch(setCurrentRoute({ path: nextPath.pathname }));
-                  history.push(nextPath.pathname);
-                  delay(500).then(() => setPasscode(""));
-                }
-              } else {
-                setPasscodeIncorrect(true);
+        verifyPasscode(passcode + digit)
+          .then((verified) => {
+            if (verified) {
+              const { nextPath, updateRedux } = getNextRoute(
+                RoutePaths.PASSCODE_LOGIN_ROUTE,
+                { store: storeState }
+              );
+              if (nextPath.canNavigate) {
+                if (updateRedux?.length)
+                  updateReduxState(dispatch, updateRedux);
+                dispatch(setCurrentRoute({ path: nextPath.pathname }));
+                history.push(nextPath.pathname);
+                delay(500).then(() => setPasscode(""));
               }
-            })
-            .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
-        } catch (e) {
-          setPasscodeIncorrect(true);
-        }
+            } else {
+              setPasscodeIncorrect(true);
+            }
+          })
+          .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
       }
     }
   };
