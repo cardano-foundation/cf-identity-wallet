@@ -18,25 +18,24 @@ const getNextRoute = (
 
   return {
     nextPath: nextPath(store, state, payload),
-    updateRedux:
-      updateRedux &&
-      updateRedux.map(
-        (
-          fn:
-            | ((
-                store: RootState,
-                state: PageState | undefined,
-                payload: PayloadProps | undefined
-              ) => void)
-            | undefined
-        ) => fn && fn(store, state, payload)
-      ),
+    updateRedux: updateRedux.map(
+      (
+        fn:
+          | ((
+              store: RootState,
+              state: PageState | undefined,
+              payload: PayloadProps | undefined
+            ) => void)
+          | undefined
+      ) => fn && fn(store, state, payload)
+    ),
   };
 };
 
 const NextRoute: RouteRulesType = {
   "/onboarding": {
     nextPath: (store: RootState) => getNextOnboardingRoute(store),
+    updateRedux: [],
   },
   "/setpasscode": {
     nextPath: (store: RootState) => getNextSetPasscodeRoute(store),
