@@ -43,42 +43,45 @@ const VerifySeedPhrase = () => {
   const storeState = useAppSelector(getState);
   const originalSeedPhrase =
     useAppSelector(getSeedPhraseCache).seedPhrase.split(" ");
-  const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
-  const [seedMatch, setSeedMatch] = useState<string[]>([]);
+  const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
+  const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   useEffect(() => {
     if (originalSeedPhrase && originalSeedPhrase.length) {
-      setSeedPhrase(shuffle(originalSeedPhrase));
+      setSeedPhraseRemaining(shuffle(originalSeedPhrase));
     }
   }, []);
 
-  const addSeedMatch = (word: string) => {
-    setSeedMatch((seedMatch) => [...seedMatch, word]);
+  const addSeedPhraseSelected = (word: string) => {
+    setSeedPhraseSelected((seedPhraseSelected) => [
+      ...seedPhraseSelected,
+      word,
+    ]);
 
-    const index = seedPhrase.indexOf(word);
+    const index = seedPhraseRemaining.indexOf(word);
     if (index > -1) {
-      seedPhrase.splice(index, 1);
+      seedPhraseRemaining.splice(index, 1);
     }
-    setSeedPhrase(seedPhrase);
+    setSeedPhraseRemaining(seedPhraseRemaining);
   };
 
-  const removeSeedMatch = (index: number) => {
-    const removingQuantity = seedMatch.length - index;
-    const newMatch = [...seedMatch];
-    let words: string[] = [];
+  const removeseedPhraseSelected = (index: number) => {
+    const removingQuantity = seedPhraseSelected.length - index;
+    const newMatch = seedPhraseSelected;
+    const words = [];
 
     for (let i = 0; i < removingQuantity; i++) {
-      words = [...words, newMatch[newMatch.length - 1]];
+      words.push(newMatch[newMatch.length - 1]);
       newMatch.pop();
     }
 
-    setSeedPhrase(seedPhrase.concat(words));
-    setSeedMatch(newMatch);
+    setSeedPhraseRemaining(seedPhraseRemaining.concat(words));
+    setSeedPhraseSelected(newMatch);
   };
 
   const handleContinue = async () => {
-    if (equals(originalSeedPhrase, seedMatch)) {
+    if (equals(originalSeedPhrase, seedPhraseSelected)) {
       hash({
         pass: originalSeedPhrase.join(" "),
         salt: randomBytes(16),
@@ -89,7 +92,10 @@ const VerifySeedPhrase = () => {
             dispatch(clearSeedPhraseCache());
             const { nextPath, updateRedux } = getNextRoute(
               RoutePath.VERIFY_SEED_PHRASE,
-              { store: storeState, state: { seedPhrase: seedPhrase.join(" ") } }
+              {
+                store: storeState,
+                state: { seedPhrase: seedPhraseRemaining.join(" ") },
+              }
             );
             if (updateRedux?.length) updateReduxState(dispatch, updateRedux);
             dispatch(setCurrentRoute({ path: nextPath.pathname }));
@@ -115,7 +121,9 @@ const VerifySeedPhrase = () => {
         footer={true}
         primaryButtonText={`${i18n.t("verifyseedphrase.continue.button")}`}
         primaryButtonAction={() => handleContinue()}
-        primaryButtonDisabled={!(originalSeedPhrase.length == seedMatch.length)}
+        primaryButtonDisabled={
+          !(originalSeedPhrase.length == seedPhraseSelected.length)
+        }
       >
         <IonGrid>
           <IonRow>
@@ -135,20 +143,22 @@ const VerifySeedPhrase = () => {
                   data-testid="matching-seed-phrase-container"
                   className="seed-phrase-container"
                 >
-                  {seedMatch.map((word, index) => (
+                  {seedPhraseSelected.map((word, index) => (
                     <IonChip
                       key={index}
                       onClick={() => {
-                        removeSeedMatch(index);
+                        removeseedPhraseSelected(index);
                       }}
                     >
                       <span className="index">{index + 1}.</span>
                       <span>{word}</span>
                     </IonChip>
                   ))}
-                  {seedPhrase.length ? (
+                  {seedPhraseRemaining.length ? (
                     <IonChip className="empty-word">
-                      <span className="index">{seedMatch.length + 1}.</span>
+                      <span className="index">
+                        {seedPhraseSelected.length + 1}.
+                      </span>
                     </IonChip>
                   ) : null}
                 </div>
@@ -156,7 +166,7 @@ const VerifySeedPhrase = () => {
             </IonCol>
           </IonRow>
         </IonGrid>
-        {seedPhrase.length ? (
+        {seedPhraseRemaining.length ? (
           <IonGrid>
             <IonRow>
               <IonCol size="12">
@@ -165,11 +175,11 @@ const VerifySeedPhrase = () => {
                     data-testid="original-seed-phrase-container"
                     className="seed-phrase-container"
                   >
-                    {seedPhrase.map((word, index) => (
+                    {seedPhraseRemaining.map((word, index) => (
                       <IonChip
                         key={index}
                         onClick={() => {
-                          addSeedMatch(word);
+                          addSeedPhraseSelected(word);
                         }}
                       >
                         <span>{word}</span>
