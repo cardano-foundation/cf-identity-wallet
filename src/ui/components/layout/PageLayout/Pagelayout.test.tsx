@@ -8,6 +8,7 @@ describe("Page Layout", () => {
       <PageLayout
         backButton={true}
         backButtonPath={"/path"}
+        currentPath={"/"}
         closeButton={true}
         closeButtonAction={mockCloseButton}
         progressBar={true}

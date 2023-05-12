@@ -3,7 +3,6 @@ import {
   IonContent,
   IonToolbar,
   IonButtons,
-  IonBackButton,
   IonProgressBar,
   IonButton,
   IonIcon,
@@ -11,11 +10,18 @@ import {
 } from "@ionic/react";
 import { arrowBackOutline, closeOutline } from "ionicons/icons";
 import "./PageLayout.scss";
+import { useHistory } from "react-router-dom";
 import { PageLayoutProps } from "./PageLayout.types";
+import {useAppDispatch, useAppSelector} from "../../../../store/hooks";
+import {getState, setCurrentRoute} from "../../../../store/reducers/stateCache";
+import {updateReduxState} from "../../../../store/utils";
+import {getBackRoute} from "../../../../routes/backRoute";
 
 const PageLayout = ({
   backButton,
   backButtonPath,
+  currentPath,
+  onBack,
   children,
   closeButton,
   closeButtonAction,
@@ -24,24 +30,43 @@ const PageLayout = ({
   progressBarBuffer,
   title,
 }: PageLayoutProps) => {
-  const mainContent = children;
+  const history = useHistory();
+  const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
+
+  const handleOnBack = () => {
+    if (!currentPath) return;
+    const { nextPath, updateRedux } = getBackRoute(currentPath, {
+      store: storeState,
+    });
+    if (updateRedux?.length) {
+      updateReduxState(dispatch, updateRedux);
+    }
+    dispatch(setCurrentRoute({ path: nextPath.pathname }));
+    history.push(nextPath.pathname);
+  };
 
   return (
     <>
       <IonHeader
         translucent={true}
-        className="ion-no-border"
+        className="ion-no-border page-layout"
       >
         <IonToolbar color="light">
           <IonButtons slot="start">
             {backButton && (
-              <IonBackButton
-                icon={arrowBackOutline}
-                text=""
-                defaultHref={backButtonPath}
-                color="primary"
+              <IonButton
+                slot="start"
+                fill="clear"
+                onClick={handleOnBack}
+                className="back-button"
                 data-testid="back-button"
-              />
+              >
+                <IonIcon
+                  icon={arrowBackOutline}
+                  color="primary"
+                />
+              </IonButton>
             )}
             {closeButton && (
               <IonButton
@@ -75,7 +100,7 @@ const PageLayout = ({
         </IonToolbar>
       </IonHeader>
 
-      <IonContent color="light">{mainContent}</IonContent>
+      <IonContent color="light">{children}</IonContent>
     </>
   );
 };

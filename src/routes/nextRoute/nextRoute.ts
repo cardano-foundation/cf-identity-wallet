@@ -9,7 +9,7 @@ const getNextRoute = (
   currentPath: string,
   data: DataProps
 ): {
-  nextPath: { pathname: string};
+  nextPath: { pathname: string };
   updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
   const { nextPath, updateRedux } = NextRoute[currentPath];
@@ -20,7 +20,7 @@ const getNextRoute = (
   };
 };
 
-const NextRoute:Record<string, any> = {
+const NextRoute: Record<string, any> = {
   "/": {
     nextPath: (data: DataProps) => getNextRootRoute(data.store),
     updateRedux: [],

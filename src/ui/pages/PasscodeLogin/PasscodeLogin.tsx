@@ -113,7 +113,7 @@ const PasscodeLogin = () => {
 
   return (
     <IonPage className="page-layout">
-      <PageLayout>
+      <PageLayout currentPath={RoutePath.PASSCODE_LOGIN}>
         <PasscodeModule
           title={i18n.t("passcodelogin.title")}
           description={i18n.t("passcodelogin.description")}

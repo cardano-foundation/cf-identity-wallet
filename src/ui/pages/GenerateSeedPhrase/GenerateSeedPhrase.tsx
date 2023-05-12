@@ -93,6 +93,7 @@ const GenerateSeedPhrase = () => {
       <PageLayout
         backButton={true}
         backButtonPath={RoutePath.ONBOARDING}
+        currentPath={RoutePath.GENERATE_SEED_PHRASE}
         progressBar={true}
         progressBarValue={0.66}
         progressBarBuffer={1}

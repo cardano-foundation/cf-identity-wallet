@@ -34,7 +34,7 @@ const Onboarding = () => {
 
   return (
     <IonPage className="page-layout onboarding">
-      <PageLayout>
+      <PageLayout currentPath={RoutePath.ONBOARDING}>
         <Slides items={items} />
         <IonButton
           shape="round"
