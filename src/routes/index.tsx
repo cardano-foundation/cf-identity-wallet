@@ -85,7 +85,7 @@ const Routes = () => {
           component={GenerateSeedPhrase}
         />
         <Route
-          path={VERIFY_SEED_PHRASE_ROUTE}
+          path={RoutePath.VERIFY_SEED_PHRASE}
           exact
           component={VerifySeedPhrase}
         />

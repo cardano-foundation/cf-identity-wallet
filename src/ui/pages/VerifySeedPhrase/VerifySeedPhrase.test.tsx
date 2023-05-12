@@ -5,10 +5,7 @@ import { act } from "react-dom/test-utils";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { VerifySeedPhrase } from "../VerifySeedPhrase";
-import {
-  GENERATE_SEED_PHRASE_ROUTE,
-  VERIFY_SEED_PHRASE_ROUTE,
-} from "../../../routes";
+import { RoutePath } from "../../../routes";
 import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { MNEMONIC_FIFTEEN_WORDS } from "../../../constants/appConstants";
@@ -18,13 +15,13 @@ describe("Verify Seed Phrase Page", () => {
   test("The user can navigate from Generate to Verify Seed Phrase page", async () => {
     const { getByTestId, queryByText, getByText } = render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[GENERATE_SEED_PHRASE_ROUTE]}>
+        <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
           <Route
-            path={GENERATE_SEED_PHRASE_ROUTE}
+            path={RoutePath.GENERATE_SEED_PHRASE}
             component={GenerateSeedPhrase}
           />
           <Route
-            path={VERIFY_SEED_PHRASE_ROUTE}
+            path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
         </MemoryRouter>
@@ -69,9 +66,9 @@ describe("Verify Seed Phrase Page", () => {
   test("The user can Verify the Seed Phrase", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[VERIFY_SEED_PHRASE_ROUTE]}>
+        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
           <Route
-            path={VERIFY_SEED_PHRASE_ROUTE}
+            path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
         </MemoryRouter>

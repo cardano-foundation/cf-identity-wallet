@@ -17,14 +17,14 @@ import {
 } from "../../../core/storage/secureStorage";
 import { equals, shuffle } from "../../../utils/utils";
 import { i18n } from "../../../i18n";
-import { GENERATE_SEED_PHRASE_ROUTE } from "../../../routes";
+import { RoutePath } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import Alert from "../../components/Alert/Alert";
 import {
   clearSeedPhraseCache,
   getSeedPhraseCache,
-} from "../../../store/reducers/SeedPhraseCache";
-import Alert from "../../components/Alert/Alert";
+} from "../../../store/reducers/seedPhraseCache";
 
 const ARGON2ID_OPTIONS = {
   type: ArgonType.Argon2id,
@@ -98,7 +98,7 @@ const VerifySeedPhrase = () => {
       <PageLayout
         header={true}
         backButton={true}
-        backButtonPath={GENERATE_SEED_PHRASE_ROUTE}
+        backButtonPath={RoutePath.GENERATE_SEED_PHRASE}
         progressBar={true}
         progressBarValue={1}
         progressBarBuffer={1}
