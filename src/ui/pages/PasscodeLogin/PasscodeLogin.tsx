@@ -16,6 +16,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
+import "./PasscodeLogin.scss";
 
 const PasscodeLogin = () => {
   const history = useHistory();
@@ -112,7 +113,7 @@ const PasscodeLogin = () => {
   };
 
   return (
-    <IonPage className="page-layout">
+    <IonPage className="page-layout passcode-login safe-area">
       <PageLayout currentPath={RoutePath.PASSCODE_LOGIN}>
         <PasscodeModule
           title={i18n.t("passcodelogin.title")}

@@ -91,18 +91,23 @@ const GenerateSeedPhrase = () => {
   return (
     <IonPage className="page-layout generate-seedphrase">
       <PageLayout
+        header={true}
         backButton={true}
         backButtonPath={RoutePath.ONBOARDING}
         currentPath={RoutePath.GENERATE_SEED_PHRASE}
         progressBar={true}
         progressBarValue={0.66}
         progressBarBuffer={1}
+        footer={true}
+        primaryButtonText={`${i18n.t("generateseedphrase.continue.button")}`}
+        primaryButtonAction={() => setAlertIsOpen(true)}
+        primaryButtonDisabled={!(showSeedPhrase && checked)}
       >
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <h1>{i18n.t("generateseedphrase.title")}</h1>
-              <p className="paragraph">
+              <h2>{i18n.t("generateseedphrase.title")}</h2>
+              <p className="page-paragraph">
                 {i18n.t("generateseedphrase.paragraph.top")}
               </p>
             </IonCol>
@@ -148,13 +153,10 @@ const GenerateSeedPhrase = () => {
                   className={`overlay ${showSeedPhrase ? "hidden" : "visible"}`}
                 >
                   <IonCardHeader>
-                    <IonIcon
-                      size="large"
-                      icon={eyeOffOutline}
-                    />
+                    <IonIcon icon={eyeOffOutline} />
                   </IonCardHeader>
                   <IonCardContent>
-                    <p>{i18n.t("generateseedphrase.privacy.overlay.text")}</p>
+                    {i18n.t("generateseedphrase.privacy.overlay.text")}
                   </IonCardContent>
                   <IonButton
                     shape="round"
@@ -190,7 +192,7 @@ const GenerateSeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <p className="paragraph">
+              <p className="page-paragraph">
                 {i18n.t("generateseedphrase.paragraph.bottom")}
               </p>
             </IonCol>
@@ -211,7 +213,7 @@ const GenerateSeedPhrase = () => {
                 />
                 <IonLabel
                   slot="end"
-                  className="ion-text-wrap"
+                  className="ion-text-wrap termsandconditions-label"
                   color="primary"
                   data-testid="termsandconditions-label"
                 >
@@ -230,28 +232,17 @@ const GenerateSeedPhrase = () => {
             </IonCol>
           </IonRow>
         </IonGrid>
-        <IonGrid className="footer">
-          <IonRow>
-            <IonCol>
-              <IonButton
-                shape="round"
-                expand="block"
-                className="ion-primary-button"
-                data-testid="generate-seed-phrase-continue-button"
-                disabled={!(showSeedPhrase && checked)}
-                onClick={() => setAlertIsOpen(true)}
-              >
-                {i18n.t("generateseedphrase.continue.button")}
-              </IonButton>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
           headerText={i18n.t("generateseedphrase.alert.text")}
-          confirmButtonText={i18n.t("generateseedphrase.alert.button.confirm")}
-          cancelButtonText={i18n.t("generateseedphrase.alert.button.cancel")}
+          confirmButtonText={`${i18n.t(
+            "generateseedphrase.alert.button.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "generateseedphrase.alert.button.cancel"
+          )}`}
           actionConfirm={handleContinue}
         />
       </PageLayout>

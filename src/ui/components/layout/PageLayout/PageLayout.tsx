@@ -7,6 +7,7 @@ import {
   IonButton,
   IonIcon,
   IonTitle,
+  IonFooter,
 } from "@ionic/react";
 import { arrowBackOutline, closeOutline } from "ionicons/icons";
 import "./PageLayout.scss";
@@ -18,6 +19,7 @@ import {updateReduxState} from "../../../../store/utils";
 import {getBackRoute} from "../../../../routes/backRoute";
 
 const PageLayout = ({
+  header,
   backButton,
   backButtonPath,
   currentPath,
@@ -29,6 +31,10 @@ const PageLayout = ({
   progressBarValue,
   progressBarBuffer,
   title,
+  footer,
+  primaryButtonText,
+  primaryButtonAction,
+  primaryButtonDisabled,
 }: PageLayoutProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -48,59 +54,86 @@ const PageLayout = ({
 
   return (
     <>
-      <IonHeader
-        translucent={true}
-        className="ion-no-border page-layout"
-      >
-        <IonToolbar color="light">
-          <IonButtons slot="start">
-            {backButton && (
-              <IonButton
-                slot="start"
-                fill="clear"
-                onClick={handleOnBack}
-                className="back-button"
-                data-testid="back-button"
-              >
-                <IonIcon
-                  icon={arrowBackOutline}
-                  color="primary"
+      {header && (
+        <IonHeader
+          translucent={true}
+          className="ion-no-border page-header"
+        >
+          <IonToolbar color="light">
+            <IonButtons slot="start">
+              {backButton && (
+                  <IonButton
+                      slot="start"
+                      fill="clear"
+                      onClick={handleOnBack}
+                      className="back-button"
+                      data-testid="back-button"
+                  >
+                    <IonIcon
+                        icon={arrowBackOutline}
+                        color="primary"
+                    />
+                  </IonButton>
+              )}
+              {closeButton && (
+                <IonButton
+                  shape="round"
+                  className="close-button"
+                  onClick={closeButtonAction}
+                  data-testid="close-button"
+                >
+                  <IonIcon
+                    slot="icon-only"
+                    icon={closeOutline}
+                    color="primary"
+                  />
+                </IonButton>
+              )}
+            </IonButtons>
+
+            {title && (
+              <IonTitle>
+                <h2>{title}</h2>
+              </IonTitle>
+            )}
+            {progressBar && (
+              <div className="progress-bar-container">
+                <IonProgressBar
+                  value={progressBarValue}
+                  buffer={progressBarBuffer}
                 />
-              </IonButton>
+              </div>
             )}
-            {closeButton && (
-              <IonButton
-                shape="round"
-                className="close-button"
-                onClick={closeButtonAction}
-                data-testid="close-button"
-              >
-                <IonIcon
-                  slot="icon-only"
-                  icon={closeOutline}
-                  color="primary"
-                ></IonIcon>
-              </IonButton>
-            )}
-          </IonButtons>
+          </IonToolbar>
+        </IonHeader>
+      )}
 
-          {title && (
-            <IonTitle>
-              <h2>{title}</h2>
-            </IonTitle>
-          )}
-          {progressBar && (
-            <div className="progress-bar-container">
-              <IonProgressBar
-                value={progressBarValue}
-                buffer={progressBarBuffer}
-              />
-            </div>
-          )}
-        </IonToolbar>
-      </IonHeader>
+      <IonContent
+        className="page-content"
+        color="light"
+      >
+        {children}
+      </IonContent>
 
-      <IonContent color="light">{children}</IonContent>
+      {footer && (
+        <IonFooter collapse="fade">
+          <IonToolbar
+            color="light"
+            className="page-footer"
+          >
+            <IonButton
+              shape="round"
+              expand="block"
+              className="ion-primary-button"
+              data-testid="continue-button"
+              onClick={primaryButtonAction}
+              disabled={primaryButtonDisabled}
+            >
+              {primaryButtonText}
+            </IonButton>
+          </IonToolbar>
+        </IonFooter>
+      )}
     </>
   );
 };

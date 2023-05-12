@@ -27,7 +27,7 @@ const Slides = ({ items }: SlideProps) => {
   };
 
   return (
-    <>
+    <div className="slides">
       <Swiper
         className="swiper-container"
         onSwiper={(swiper) => setSwiper(swiper)}
@@ -74,7 +74,7 @@ const Slides = ({ items }: SlideProps) => {
           />
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

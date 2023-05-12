@@ -115,7 +115,9 @@ describe("Generate Seed Phrase screen", () => {
     );
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-    const continueButton = getByTestId("generate-seed-phrase-continue-button");
+    const continueButton = getByText(
+      EN_TRANSLATIONS["generateseedphrase.continue.button"]
+    );
     const alertWrapper = getByTestId("alert-wrapper");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
 
@@ -152,7 +154,9 @@ describe("Generate Seed Phrase screen", () => {
     );
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-    const continueButton = getByTestId("generate-seed-phrase-continue-button");
+    const continueButton = getByText(
+      EN_TRANSLATIONS["generateseedphrase.continue.button"]
+    );
     const alertWrapper = getByTestId("alert-wrapper");
 
     act(() => {
@@ -171,14 +175,16 @@ describe("Generate Seed Phrase screen", () => {
   });
 
   test("Clicking on alert backdrop will dismiss it", async () => {
-    const { getByTestId } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={store}>
         <GenerateSeedPhrase />
       </Provider>
     );
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-    const continueButton = getByTestId("generate-seed-phrase-continue-button");
+    const continueButton = getByText(
+      EN_TRANSLATIONS["generateseedphrase.continue.button"]
+    );
 
     act(() => {
       fireEvent.click(revealSeedPhraseButton);

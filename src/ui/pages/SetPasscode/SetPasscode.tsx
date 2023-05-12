@@ -84,6 +84,7 @@ const SetPasscode = () => {
   return (
     <IonPage className="page-layout">
       <PageLayout
+        header={true}
         backButton={true}
         backButtonPath={"/"}
         currentPath={RoutePath.SET_PASSCODE}

@@ -28,7 +28,7 @@
   "setpasscode.startover.label": "I cant remember, can I start over?",
   "setpasscode.enterpasscode.description": "Create a passcode to secure your wallet and to continue setting up your seed phrase",
   "setpasscode.enterpasscode.error": "Passcode didn't match",
-  "generateseedphrase.title": "Generate Seed Phrase",
+  "generateseedphrase.title": "Generate seed phrase",
   "generateseedphrase.paragraph.top": "Think of your secret recovery phrase as a safety net for your identity. If you ever lose your phone or switch to a new wallet, this phrase will help you recover your identity.",
   "generateseedphrase.paragraph.bottom": "It's important to keep these words safe and sound! Store them in a secure location, like a password manager, and remember to never share them with anyone.",
   "generateseedphrase.segment": "{{length}} words",
@@ -53,5 +53,10 @@
   "passcodelogin.alert.text.restart": "You currently haven't generated a seed phrase, would you like to start your onboarding again?",
   "passcodelogin.alert.button.verify": "Verify your seed phrase",
   "passcodelogin.alert.button.restart": "Start again",
-  "passcodelogin.alert.button.cancel": "Cancel"
+  "passcodelogin.alert.button.cancel": "Cancel",
+  "verifyseedphrase.title": "Verify your seed phrase",
+  "verifyseedphrase.paragraph.top": "Please select each word in the order it was presented to you.",
+  "verifyseedphrase.continue.button": "Continue",
+  "verifyseedphrase.alert.text": "Sorry, the seed phrase you have entered is incorrect!",
+  "verifyseedphrase.alert.button.cancel": "Try again"
 }
