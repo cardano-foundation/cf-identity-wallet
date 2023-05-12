@@ -7,7 +7,6 @@ import {
   IonPage,
   IonRow,
 } from "@ionic/react";
-import { equals, shuffle } from "../../../utils/utils";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
@@ -25,7 +24,9 @@ const VerifySeedPhrase = () => {
 
   useEffect(() => {
     if (originalSeedPhrase && originalSeedPhrase.length) {
-      setSeedPhraseRemaining(shuffle(originalSeedPhrase));
+      setSeedPhraseRemaining(
+        [...originalSeedPhrase].sort(() => Math.random() - 0.5)
+      );
     }
   }, []);
 
@@ -57,7 +58,10 @@ const VerifySeedPhrase = () => {
   };
 
   const handleContinue = async () => {
-    if (equals(originalSeedPhrase, seedPhraseSelected)) {
+    if (
+      originalSeedPhrase.length === seedPhraseSelected.length &&
+      originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
+    ) {
       // TODO: Store Seed Phrase, clear cache and navigate to the next page
     } else {
       setAlertIsOpen(true);
