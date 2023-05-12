@@ -13,10 +13,13 @@ import { arrowBackOutline, closeOutline } from "ionicons/icons";
 import "./PageLayout.scss";
 import { useHistory } from "react-router-dom";
 import { PageLayoutProps } from "./PageLayout.types";
-import {useAppDispatch, useAppSelector} from "../../../../store/hooks";
-import {getState, setCurrentRoute} from "../../../../store/reducers/stateCache";
-import {updateReduxState} from "../../../../store/utils";
-import {getBackRoute} from "../../../../routes/backRoute";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import {
+  getState,
+  setCurrentRoute,
+} from "../../../../store/reducers/stateCache";
+import { updateReduxState } from "../../../../store/utils";
+import { getBackRoute } from "../../../../routes/backRoute";
 
 const PageLayout = ({
   header,
@@ -62,18 +65,18 @@ const PageLayout = ({
           <IonToolbar color="light">
             <IonButtons slot="start">
               {backButton && (
-                  <IonButton
-                      slot="start"
-                      fill="clear"
-                      onClick={handleOnBack}
-                      className="back-button"
-                      data-testid="back-button"
-                  >
-                    <IonIcon
-                        icon={arrowBackOutline}
-                        color="primary"
-                    />
-                  </IonButton>
+                <IonButton
+                  slot="start"
+                  fill="clear"
+                  onClick={handleOnBack}
+                  className="back-button"
+                  data-testid="back-button"
+                >
+                  <IonIcon
+                    icon={arrowBackOutline}
+                    color="primary"
+                  />
+                </IonButton>
               )}
               {closeButton && (
                 <IonButton
