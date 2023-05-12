@@ -7,40 +7,16 @@ import {
   IonPage,
   IonRow,
 } from "@ionic/react";
-import { useHistory } from "react-router-dom";
-import "./VerifySeedPhrase.scss";
-import { randomBytes } from "crypto";
-import { hash, ArgonType } from "argon2-browser";
-import {
-  SecureStorage,
-  KeyStoreKeys,
-} from "../../../core/storage/secureStorage";
 import { equals, shuffle } from "../../../utils/utils";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppSelector } from "../../../store/hooks";
 import Alert from "../../components/Alert/Alert";
-import {
-  clearSeedPhraseCache,
-  getSeedPhraseCache,
-} from "../../../store/reducers/seedPhraseCache";
-import { getNextRoute } from "../../../routes/nextRoute";
-import { updateReduxState } from "../../../store/utils";
-import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
-
-const ARGON2ID_OPTIONS = {
-  type: ArgonType.Argon2id,
-  mem: 19456,
-  time: 2,
-  parallelism: 1,
-  hashLen: 32,
-};
+import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
+import "./VerifySeedPhrase.scss";
 
 const VerifySeedPhrase = () => {
-  const history = useHistory();
-  const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
   const originalSeedPhrase =
     useAppSelector(getSeedPhraseCache).seedPhrase.split(" ");
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
@@ -82,28 +58,7 @@ const VerifySeedPhrase = () => {
 
   const handleContinue = async () => {
     if (equals(originalSeedPhrase, seedPhraseSelected)) {
-      hash({
-        pass: originalSeedPhrase.join(" "),
-        salt: randomBytes(16),
-        ...ARGON2ID_OPTIONS,
-      }).then((hash) => {
-        SecureStorage.set(KeyStoreKeys.APP_SEEDPHRASE, hash.encoded).then(
-          () => {
-            dispatch(clearSeedPhraseCache());
-            const { nextPath, updateRedux } = getNextRoute(
-              RoutePath.VERIFY_SEED_PHRASE,
-              {
-                store: storeState,
-                state: { seedPhrase: seedPhraseRemaining.join(" ") },
-              }
-            );
-            if (updateRedux?.length) updateReduxState(dispatch, updateRedux);
-            dispatch(setCurrentRoute({ path: nextPath.pathname }));
-            history.push(nextPath.pathname);
-            return;
-          }
-        );
-      });
+      // TODO: Store Seed Phrase, clear cache and navigate to the next page
     } else {
       setAlertIsOpen(true);
     }

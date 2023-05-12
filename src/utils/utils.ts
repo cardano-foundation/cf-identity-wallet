@@ -1,6 +1,5 @@
 export const shuffle = (array: any[]) => {
-  const cp = [...array];
-  return cp.sort(() => Math.random() - 0.5);
+  return array.sort(() => Math.random() - 0.5);
 };
 
 export const equals = (a: any[], b: any[]) =>
