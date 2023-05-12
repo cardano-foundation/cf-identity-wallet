@@ -33,7 +33,7 @@ const Onboarding = () => {
   };
 
   return (
-    <IonPage className="page-layout onboarding">
+    <IonPage className="page-layout onboarding safe-area">
       <PageLayout>
         <Slides items={items} />
         <IonButton

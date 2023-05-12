@@ -1,4 +1,4 @@
-import { IonAlert } from "@ionic/react";
+import { AlertButton, IonAlert } from "@ionic/react";
 import { AlertProps } from "./Alert.types";
 import "./Alert.scss";
 
@@ -10,6 +10,29 @@ const Alert = ({
   cancelButtonText,
   actionConfirm,
 }: AlertProps) => {
+  const buttons: AlertButton[] = [];
+
+  if (confirmButtonText && actionConfirm) {
+    buttons.push({
+      text: confirmButtonText,
+      role: "confirm",
+      handler: () => {
+        setIsOpen(false);
+        actionConfirm && actionConfirm();
+      },
+    });
+  }
+
+  if (cancelButtonText) {
+    buttons.push({
+      text: cancelButtonText,
+      role: "cancel",
+      handler: () => {
+        setIsOpen(false);
+      },
+    });
+  }
+
   return (
     <div
       data-testid="alert-wrapper"
@@ -18,23 +41,7 @@ const Alert = ({
       <IonAlert
         isOpen={isOpen}
         header={headerText}
-        buttons={[
-          {
-            text: confirmButtonText,
-            role: "confirm",
-            handler: () => {
-              setIsOpen(false);
-              actionConfirm();
-            },
-          },
-          {
-            text: cancelButtonText,
-            role: "cancel",
-            handler: () => {
-              setIsOpen(false);
-            },
-          },
-        ]}
+        buttons={buttons}
         onDidDismiss={() => setIsOpen(false)}
       />
     </div>

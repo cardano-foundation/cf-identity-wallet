@@ -6,6 +6,7 @@ import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
+import { VerifySeedPhrase } from "../ui/pages/VerifySeedPhrase";
 import { useAppSelector } from "../store/hooks";
 import { getAuthentication, getState } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
@@ -22,7 +23,6 @@ enum RoutePath {
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
-
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
     authentication.loggedIn
   );
@@ -83,6 +83,11 @@ const Routes = () => {
         <AuthenticatedRoute
           path={RoutePath.GENERATE_SEED_PHRASE}
           component={GenerateSeedPhrase}
+        />
+        <AuthenticatedRoute
+          path={RoutePath.VERIFY_SEED_PHRASE}
+          exact
+          component={VerifySeedPhrase}
         />
       </IonRouterOutlet>
     </IonReactRouter>

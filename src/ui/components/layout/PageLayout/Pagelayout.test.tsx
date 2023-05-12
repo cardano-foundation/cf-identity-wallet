@@ -6,6 +6,7 @@ describe("Page Layout", () => {
     const mockCloseButton = jest.fn();
     const { getByText, getByTestId } = render(
       <PageLayout
+        header={true}
         backButton={true}
         backButtonPath={"/path"}
         closeButton={true}

@@ -18,6 +18,7 @@ const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
     >
       <div className="terms-and-conditions">
         <PageLayout
+          header={true}
           closeButton={true}
           closeButtonAction={() => setIsOpen(false)}
           title={`${i18n.t("termsandconditions.title")}`}
