@@ -25,6 +25,9 @@ import {
   clearSeedPhraseCache,
   getSeedPhraseCache,
 } from "../../../store/reducers/seedPhraseCache";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { updateReduxState } from "../../../store/utils";
+import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
 
 const ARGON2ID_OPTIONS = {
   type: ArgonType.Argon2id,
@@ -37,31 +40,12 @@ const ARGON2ID_OPTIONS = {
 const VerifySeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
   const originalSeedPhrase =
     useAppSelector(getSeedPhraseCache).seedPhrase.split(" ");
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedMatch, setSeedMatch] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-
-  const handleContinue = async () => {
-    if (equals(originalSeedPhrase, seedMatch)) {
-      hash({
-        pass: originalSeedPhrase.join(" "),
-        salt: randomBytes(16),
-        ...ARGON2ID_OPTIONS,
-      }).then((hash) => {
-        SecureStorage.set(KeyStoreKeys.APP_SEEDPHRASE, hash.encoded).then(
-          () => {
-            dispatch(clearSeedPhraseCache());
-            history.push("/dids");
-            return;
-          }
-        );
-      });
-    } else {
-      setAlertIsOpen(true);
-    }
-  };
 
   useEffect(() => {
     if (originalSeedPhrase && originalSeedPhrase.length) {
@@ -91,6 +75,32 @@ const VerifySeedPhrase = () => {
 
     setSeedPhrase(seedPhrase.concat(words));
     setSeedMatch(newMatch);
+  };
+
+  const handleContinue = async () => {
+    if (equals(originalSeedPhrase, seedMatch)) {
+      hash({
+        pass: originalSeedPhrase.join(" "),
+        salt: randomBytes(16),
+        ...ARGON2ID_OPTIONS,
+      }).then((hash) => {
+        SecureStorage.set(KeyStoreKeys.APP_SEEDPHRASE, hash.encoded).then(
+          () => {
+            dispatch(clearSeedPhraseCache());
+            const { nextPath, updateRedux } = getNextRoute(
+              RoutePath.VERIFY_SEED_PHRASE,
+              { store: storeState, state: { seedPhrase: seedPhrase.join(" ") } }
+            );
+            if (updateRedux?.length) updateReduxState(dispatch, updateRedux);
+            dispatch(setCurrentRoute({ path: nextPath.pathname }));
+            history.push(nextPath.pathname);
+            return;
+          }
+        );
+      });
+    } else {
+      setAlertIsOpen(true);
+    }
   };
 
   return (

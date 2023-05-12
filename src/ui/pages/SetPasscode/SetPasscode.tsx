@@ -49,7 +49,7 @@ const SetPasscode = () => {
                   RoutePath.SET_PASSCODE,
                   { store: storeState }
                 );
-                if (updateRedux?.length){
+                if (updateRedux?.length) {
                   updateReduxState(dispatch, updateRedux);
                 }
                 dispatch(setCurrentRoute({ path: nextPath.pathname }));
