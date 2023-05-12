@@ -7,13 +7,13 @@ const getBackRoute = (
   currentPath: string,
   data: DataProps
 ): {
-  nextPath: { pathname: string };
+  backPath: { pathname: string };
   updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
-  const { nextPath, updateRedux } = BackRoute[currentPath];
+  const { backPath: backPath, updateRedux } = BackRoute[currentPath];
 
   return {
-    nextPath: nextPath(data),
+    backPath: backPath(data),
     updateRedux: updateRedux.map((fn: (data: DataProps) => void) => fn(data)),
   };
 };

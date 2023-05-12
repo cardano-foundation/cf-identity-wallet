@@ -36,14 +36,14 @@ const PageLayout = ({
 
   const handleOnBack = () => {
     if (!currentPath) return;
-    const { nextPath, updateRedux } = getBackRoute(currentPath, {
+    const { backPath, updateRedux } = getBackRoute(currentPath, {
       store: storeState,
     });
     if (updateRedux?.length) {
       updateReduxState(dispatch, updateRedux);
     }
-    dispatch(setCurrentRoute({ path: nextPath.pathname }));
-    history.push(nextPath.pathname);
+    dispatch(setCurrentRoute({ path: backPath.pathname }));
+    history.push(backPath.pathname);
   };
 
   return (
