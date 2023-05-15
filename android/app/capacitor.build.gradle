@@ -10,6 +10,7 @@ android {
 apply from: "../capacitor-cordova-android-plugins/cordova.variables.gradle"
 dependencies {
     implementation project(':aparajita-capacitor-secure-storage')
+    implementation project(':capacitor-filesystem')
 
 }
 

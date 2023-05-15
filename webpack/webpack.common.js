@@ -3,6 +3,7 @@ const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
+const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 
 const config = {
   entry: {
@@ -34,12 +35,8 @@ const config = {
   resolve: {
     extensions: [".js", ".tsx", ".ts"],
     fallback: {
-      buffer: require.resolve("buffer/"),
-      crypto: require.resolve("crypto-browserify"),
-      stream: require.resolve("stream-browserify"),
-      path: false,
       fs: false
-    },
+    }
   },
   plugins: [
     new webpack.ProgressPlugin(),
@@ -78,10 +75,11 @@ const config = {
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
     }),
+    new NodePolyfillPlugin()
   ],
   infrastructureLogging: {
     level: "info",
-  },
+  }
 };
 
 module.exports = config;
