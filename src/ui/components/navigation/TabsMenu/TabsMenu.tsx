@@ -44,38 +44,41 @@ const TabsMenu = () => {
           />
           <Route
             path={TabsRoutePath.DIDS}
-            render={() => <Dids />}
+            component={Dids}
             exact={true}
           />
           <Route
             path={TabsRoutePath.CREDS}
-            render={() => <Creds />}
+            component={Creds}
             exact={true}
           />
           <Route
             path={TabsRoutePath.SCAN}
-            render={() => <Scan />}
+            component={Scan}
             exact={true}
           />
           <Route
             path={TabsRoutePath.CRYPTO}
-            render={() => <Crypto />}
+            component={Crypto}
             exact={true}
           />
           <Route
             path={TabsRoutePath.CHAT}
-            render={() => <Chat />}
+            component={Chat}
             exact={true}
           />
         </IonRouterOutlet>
 
-        <IonTabBar slot="bottom">
+        <IonTabBar
+          slot="bottom"
+          data-testid="tabs-menu"
+        >
           <IonTabButton
             tab="dids"
             href={TabsRoutePath.DIDS}
           >
             <IonIcon icon={fingerPrintOutline} />
-            <IonLabel>{i18n.t("tabs.label.dids")}</IonLabel>
+            <IonLabel>{i18n.t("tabsmenu.label.dids")}</IonLabel>
           </IonTabButton>
 
           <IonTabButton
@@ -83,7 +86,7 @@ const TabsMenu = () => {
             href={TabsRoutePath.CREDS}
           >
             <IonIcon icon={idCardOutline} />
-            <IonLabel>{i18n.t("tabs.label.creds")}</IonLabel>
+            <IonLabel>{i18n.t("tabsmenu.label.creds")}</IonLabel>
           </IonTabButton>
 
           <IonTabButton
@@ -91,7 +94,7 @@ const TabsMenu = () => {
             href={TabsRoutePath.SCAN}
           >
             <IonIcon icon={scanOutline} />
-            <IonLabel>{i18n.t("tabs.label.scan")}</IonLabel>
+            <IonLabel>{i18n.t("tabsmenu.label.scan")}</IonLabel>
           </IonTabButton>
 
           <IonTabButton
@@ -99,7 +102,7 @@ const TabsMenu = () => {
             href={TabsRoutePath.CRYPTO}
           >
             <IonIcon icon={walletOutline} />
-            <IonLabel>{i18n.t("tabs.label.crypto")}</IonLabel>
+            <IonLabel>{i18n.t("tabsmenu.label.crypto")}</IonLabel>
           </IonTabButton>
 
           <IonTabButton
@@ -107,7 +110,7 @@ const TabsMenu = () => {
             href={TabsRoutePath.CHAT}
           >
             <IonIcon icon={chatbubbleOutline} />
-            <IonLabel>{i18n.t("tabs.label.chat")}</IonLabel>
+            <IonLabel>{i18n.t("tabsmenu.label.chat")}</IonLabel>
           </IonTabButton>
         </IonTabBar>
       </IonTabs>

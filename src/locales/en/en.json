@@ -59,9 +59,9 @@
   "verifyseedphrase.continue.button": "Continue",
   "verifyseedphrase.alert.text": "Sorry, the seed phrase you have entered is incorrect!",
   "verifyseedphrase.alert.button.cancel": "Try again",
-  "tabs.label.dids": "DIDs",
-  "tabs.label.creds": "Creds",
-  "tabs.label.scan": "Scan",
-  "tabs.label.crypto": "Crypto",
-  "tabs.label.chat": "Chat"
+  "tabsmenu.label.dids": "DIDs",
+  "tabsmenu.label.creds": "Creds",
+  "tabsmenu.label.scan": "Scan",
+  "tabsmenu.label.crypto": "Crypto",
+  "tabsmenu.label.chat": "Chat"
 }

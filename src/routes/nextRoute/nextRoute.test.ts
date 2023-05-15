@@ -183,7 +183,7 @@ describe("getNextRoute", () => {
 
     expect(result).toEqual({
       nextPath: {
-        pathname: RoutePath.TABS,
+        pathname: RoutePath.TABS_MENU,
       },
       updateRedux: [],
     });
@@ -196,7 +196,7 @@ describe("getNextRoute", () => {
 
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({
-      pathname: RoutePath.TABS,
+      pathname: RoutePath.TABS_MENU,
     });
   });
 
