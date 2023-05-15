@@ -1,5 +1,17 @@
+import { IonPage } from "@ionic/react";
+import { PageLayout } from "../../components/layout/PageLayout";
+
 const Scan = () => {
-  return <div>Scan</div>;
+  return (
+    <IonPage className="page-layout scan-page">
+      <PageLayout
+        header={true}
+        menuButton={true}
+      >
+        <div>Scan</div>
+      </PageLayout>
+    </IonPage>
+  );
 };
 
 export { Scan };

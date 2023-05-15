@@ -1,4 +1,3 @@
-import React from "react";
 import {
   IonTabs,
   IonTabBar,
@@ -16,6 +15,7 @@ import {
   chatbubbleOutline,
   walletOutline,
 } from "ionicons/icons";
+import "./Tabs.scss";
 import { Dids } from "../../pages/Dids";
 import { Creds } from "../../pages/Creds";
 import { Crypto } from "../../pages/Crypto";
@@ -64,15 +64,15 @@ const Tabs = () => {
             tab="dids"
             href="/tabs/dids"
           >
-            <IonIcon icon={idCardOutline} />
-            <IonLabel>Dids</IonLabel>
+            <IonIcon icon={fingerPrintOutline} />
+            <IonLabel>DIDs</IonLabel>
           </IonTabButton>
 
           <IonTabButton
             tab="creds"
             href="/tabs/creds"
           >
-            <IonIcon icon={fingerPrintOutline} />
+            <IonIcon icon={idCardOutline} />
             <IonLabel>Creds</IonLabel>
           </IonTabButton>
 
