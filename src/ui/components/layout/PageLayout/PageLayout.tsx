@@ -26,7 +26,6 @@ const PageLayout = ({
   backButton,
   backButtonPath,
   currentPath,
-  onBack,
   children,
   closeButton,
   closeButtonAction,

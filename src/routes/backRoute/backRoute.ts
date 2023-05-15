@@ -54,34 +54,22 @@ const backRoute: Record<string, any> = {
 };
 
 const updateStoreSetCurrentRoute = (store: RootState) => {
-  const routes = store.stateCache.routes;
-  const prevPath = calcPreviousRoute(routes);
-
+  const prevPath = calcPreviousRoute(store.stateCache.routes);
   let path;
   if (prevPath) {
     path = prevPath.path;
   } else {
-    path = routes[0].path;
+    path = store.stateCache.routes[0].path;
   }
 
   return setCurrentRoute({ path });
-};
-
-const calcPreviousRoute = (
-  routes: { path: string; payload?: PayloadProps }[]
-) => {
-  return routes
-    .slice(1)
-    .find((element) => element.path !== RoutePath.PASSCODE_LOGIN);
 };
 const getPreviousRoute = (store: RootState) => {
   const { routes, authentication } = store.stateCache;
 
   const prevPath = calcPreviousRoute(routes);
   let path;
-  if (authentication.passcodeIsSet && !authentication.loggedIn) {
-    path = RoutePath.PASSCODE_LOGIN;
-  } else if (routes.length === 0) {
+  if (routes.length === 0) {
     path = RoutePath.ROOT;
   } else if (prevPath) {
     path = prevPath.path;
@@ -91,4 +79,12 @@ const getPreviousRoute = (store: RootState) => {
   return { pathname: path };
 };
 
-export { getBackRoute };
+const calcPreviousRoute = (
+  routes: { path: string; payload?: PayloadProps }[]
+) => {
+  return routes
+    .slice(1)
+    .find((element) => element.path !== RoutePath.PASSCODE_LOGIN);
+};
+
+export { getBackRoute, calcPreviousRoute };

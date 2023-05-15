@@ -151,7 +151,7 @@ describe("getNextRoute", () => {
     });
 
     expect(result).toEqual({
-      backPath: {
+      nextPath: {
         pathname: RoutePath.GENERATE_SEED_PHRASE,
       },
       updateRedux: [],
@@ -166,7 +166,7 @@ describe("getNextRoute", () => {
     });
 
     expect(result).toEqual({
-      backPath: {
+      nextPath: {
         pathname: RoutePath.SET_PASSCODE,
       },
       updateRedux: [],
@@ -182,7 +182,7 @@ describe("getNextRoute", () => {
     });
 
     expect(result).toEqual({
-      backPath: {
+      nextPath: {
         pathname: RoutePath.DIDS,
       },
       updateRedux: [],
