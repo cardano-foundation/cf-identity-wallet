@@ -11,4 +11,7 @@ ion-tab-button {
   &::part(native) {
     margin-top: 0.75rem;
   }
+  ion-label {
+    max-width: 20vw;
+  }
 }
