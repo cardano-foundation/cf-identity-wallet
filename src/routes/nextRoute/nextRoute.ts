@@ -77,7 +77,7 @@ const getNextOnboardingRoute = (store: RootState) => {
   if (!store.stateCache.authentication.passcodeIsSet) {
     path = RoutePath.SET_PASSCODE;
   } else if (store.stateCache.authentication.passcodeIsSet && seedPhraseIsSet) {
-    path = RoutePath.DIDS;
+    path = RoutePath.TABS;
   } else {
     path = RoutePath.GENERATE_SEED_PHRASE;
   }
@@ -89,7 +89,7 @@ const getNextSetPasscodeRoute = (store: RootState) => {
   const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase;
 
   const nextPath: string = seedPhraseIsSet
-    ? RoutePath.DIDS
+    ? RoutePath.TABS
     : RoutePath.GENERATE_SEED_PHRASE;
 
   return { pathname: nextPath };

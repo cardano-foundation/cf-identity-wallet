@@ -10,11 +10,7 @@ import { VerifySeedPhrase } from "../ui/pages/VerifySeedPhrase";
 import { useAppSelector } from "../store/hooks";
 import { getAuthentication, getState } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
-import { Dids } from "../ui/pages/Dids";
-import { Creds } from "../ui/pages/Creds";
-import { Crypto } from "../ui/pages/Crypto";
-import { Scan } from "../ui/pages/Scan";
-import { Chat } from "../ui/pages/Chat";
+import { Tabs } from "../ui/components/Tabs";
 enum RoutePath {
   ROOT = "/",
   ONBOARDING = "/onboarding",
@@ -22,11 +18,7 @@ enum RoutePath {
   PASSCODE_LOGIN = "/passcodelogin",
   GENERATE_SEED_PHRASE = "/generateseedphrase",
   VERIFY_SEED_PHRASE = "/verifyseedphrase",
-  DIDS = "/dids",
-  CREDS = "/creds",
-  SCAN = "/scan",
-  CRYPTO = "/crypto",
-  CHAT = "/chat",
+  TABS = "/tabs",
 }
 
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
@@ -99,33 +91,9 @@ const Routes = () => {
           component={VerifySeedPhrase}
         />
         <AuthenticatedRoute
-          path={RoutePath.DIDS}
+          path={RoutePath.TABS}
           exact
-          component={Dids}
-        />
-
-        <AuthenticatedRoute
-          path={RoutePath.CREDS}
-          exact
-          component={Creds}
-        />
-
-        <AuthenticatedRoute
-          path={RoutePath.SCAN}
-          exact
-          component={Scan}
-        />
-
-        <AuthenticatedRoute
-          path={RoutePath.CRYPTO}
-          exact
-          component={Crypto}
-        />
-
-        <AuthenticatedRoute
-          path={RoutePath.CHAT}
-          exact
-          component={Chat}
+          component={Tabs}
         />
       </IonRouterOutlet>
     </IonReactRouter>
