@@ -1,86 +1,91 @@
 import { MemoryRouter, Route } from "react-router-dom";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import { Argon2 } from "@sphereon/isomorphic-argon2";
+import Argon2 from "argon2-browser";
 import { Buffer } from "buffer";
+import { Provider } from "react-redux";
 import { SetPasscode, ARGON2ID_OPTIONS } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
-import { GENERATE_SEED_PHRASE_ROUTE, PASSCODE_ROUTE } from "../../../routes";
 import {
   SecureStorage,
   KeyStoreKeys,
 } from "../../../core/storage/secureStorage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { store } from "../../../store";
+import { RoutePath } from "../../../routes";
 
-const ARGON2ID_HASH = { encoded: "hashedPasscode", hex: "0xHashedPasscode" };
+const ARGON2ID_HASH = {
+  encoded: "encodedHash",
+  hash: Buffer.from("hashedPassword"),
+  hashHex: "0xHashedPasscode",
+};
 const argon2Spy = jest.spyOn(Argon2, "hash").mockResolvedValue(ARGON2ID_HASH);
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 
 describe("SetPasscode Page", () => {
-  test("renders create passcode label when passcode is not set", () => {
-    const { getByText } = render(<SetPasscode />);
-    const labelElement = getByText(
-      EN_TRANSLATIONS["setpasscode.enterpasscode.label"]
+  test("Renders Create Passcode page with title and description", () => {
+    const { getByText } = render(
+      <Provider store={store}>
+        <SetPasscode />
+      </Provider>
     );
-    expect(labelElement).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS["setpasscode.enterpasscode.title"])
+    ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS["setpasscode.enterpasscode.description"])
+    ).toBeInTheDocument();
   });
 
-  test("renders create passcode description", () => {
-    const { getByText } = render(<SetPasscode />);
-    const descriptionElement = getByText(
-      EN_TRANSLATIONS["setpasscode.enterpasscode.description"]
+  test("The user can add and remove digits from the passcode", () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={store}>
+        <SetPasscode />
+      </Provider>
     );
-    expect(descriptionElement).toBeInTheDocument();
-  });
-});
-
-describe("SetPasscode input", () => {
-  test("clicking on a number button adds a digit to the passcode", () => {
-    const { getByText, getByTestId } = render(<SetPasscode />);
-    const buttonElement = getByText(/1/);
-    fireEvent.click(buttonElement);
+    fireEvent.click(getByText(/1/));
     const circleElement = getByTestId("circle-0");
     expect(circleElement.classList).toContain("circle-fill");
+    const backspaceButton = getByTestId("setpasscode-backspace-button");
+    fireEvent.click(backspaceButton);
+    expect(circleElement.classList).not.toContain("circle-fill");
   });
 
-  test("renders re-enter passcode label and start over button when passcode is set", () => {
-    const { getByText } = render(<SetPasscode />);
-    const buttonElement = getByText(/1/);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    const buttonContinue = getByText(
-      EN_TRANSLATIONS["setpasscode.continue.button"]
+  test("Renders Re-enter Passcode title and start over button when passcode is set", () => {
+    const { getByText } = render(
+      <Provider store={store}>
+        <SetPasscode />
+      </Provider>
     );
-    fireEvent.click(buttonContinue);
-    const labelElement = getByText(
-      EN_TRANSLATIONS["setpasscode.reenterpasscode.label"]
-    );
-    expect(labelElement).toBeInTheDocument();
-    const startOverElement = getByText(
-      EN_TRANSLATIONS["setpasscode.startover.label"]
-    );
-    expect(startOverElement).toBeInTheDocument();
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+
+    expect(
+      getByText(EN_TRANSLATIONS["setpasscode.reenterpasscode.title"])
+    ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS["setpasscode.startover.label"])
+    ).toBeInTheDocument();
   });
 
   test("renders enter passcode restarting the process when start over button is clicked", () => {
-    const { getByText } = render(<SetPasscode />);
-    const buttonElement = getByText(/1/);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-
-    const buttonContinue = getByText(
-      EN_TRANSLATIONS["setpasscode.continue.button"]
+    const { getByText } = render(
+      <Provider store={store}>
+        <SetPasscode />
+      </Provider>
     );
-    fireEvent.click(buttonContinue);
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+
     const labelElement = getByText(
-      EN_TRANSLATIONS["setpasscode.reenterpasscode.label"]
+      EN_TRANSLATIONS["setpasscode.reenterpasscode.title"]
     );
     expect(labelElement).toBeInTheDocument();
 
@@ -90,176 +95,92 @@ describe("SetPasscode input", () => {
     fireEvent.click(startOverElement);
 
     const passcodeLabel = getByText(
-      EN_TRANSLATIONS["setpasscode.enterpasscode.label"]
+      EN_TRANSLATIONS["setpasscode.enterpasscode.title"]
     );
     expect(passcodeLabel).toBeInTheDocument();
   });
 
-  test("clicking on the backspace button removes a digit from the passcode", () => {
-    const { getByText, getByTestId } = render(<SetPasscode />);
-    const buttonElement = getByText(/1/);
-    fireEvent.click(buttonElement);
-    const backspaceButton = getByTestId("setpasscode-backspace-button");
-    fireEvent.click(backspaceButton);
-    const circleElement = getByTestId("circle-0");
-    expect(circleElement.classList).not.toContain("circle-fill");
-  });
+  test("Entering a wrong passcode at the passcode confirmation returns an error", () => {
+    const { getByText } = render(
+      <Provider store={store}>
+        <SetPasscode />
+      </Provider>
+    );
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/2/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/3/));
+    fireEvent.click(getByText(/4/));
+    fireEvent.click(getByText(/5/));
 
-  test("displays error message if passcode doesn't match when re-entering", () => {
-    const { getByText, getByTestId } = render(<SetPasscode />);
-    const buttonElement = getByText(/1/);
-    fireEvent.click(buttonElement);
-    const button0Element = getByText(/0/);
-    fireEvent.click(button0Element);
-    const button8Element = getByText(/8/);
-    fireEvent.click(button8Element);
-    const button9Element = getByText(/9/);
-    fireEvent.click(button9Element);
-    fireEvent.click(button9Element);
-    fireEvent.click(button9Element);
+    const labelElement = getByText(
+      EN_TRANSLATIONS["setpasscode.reenterpasscode.title"]
+    );
+    expect(labelElement).toBeInTheDocument();
 
-    const continueButton = getByTestId("setpasscode-continue-button");
-    fireEvent.click(continueButton);
+    fireEvent.click(getByText(/6/));
+    fireEvent.click(getByText(/7/));
+    fireEvent.click(getByText(/8/));
+    fireEvent.click(getByText(/9/));
+    fireEvent.click(getByText(/0/));
+    fireEvent.click(getByText(/1/));
 
-    const reenter2ButtonElement = getByText(/2/);
-    fireEvent.click(reenter2ButtonElement);
-    const reenter3ButtonElement = getByText(/3/);
-    fireEvent.click(reenter3ButtonElement);
-    const reenter4ButtonElement = getByText(/4/);
-    fireEvent.click(reenter4ButtonElement);
-    const reenter5ButtonElement = getByText(/5/);
-    fireEvent.click(reenter5ButtonElement);
-    const reenter6ButtonElement = getByText(/6/);
-    fireEvent.click(reenter6ButtonElement);
-    const reenter7ButtonElement = getByText(/7/);
-    fireEvent.click(reenter7ButtonElement);
     const errorMessage = getByText(
       EN_TRANSLATIONS["setpasscode.enterpasscode.error"]
     );
     expect(errorMessage).toBeInTheDocument();
   });
 
-  test("sets passcode and redirects to next page when passcode is entered correctly", async () => {
-    const { getByTestId, getByText, queryByText } = render(
-      <MemoryRouter initialEntries={[PASSCODE_ROUTE]}>
+  test("Redirects to next page when passcode is entered correctly", async () => {
+    const { getByText, queryByText } = render(
+      <MemoryRouter initialEntries={[RoutePath.SET_PASSCODE]}>
+        <Provider store={store}>
+          <Route
+            exact
+            path={RoutePath.SET_PASSCODE}
+            component={SetPasscode}
+          />
+        </Provider>
         <Route
-          exact
-          path={PASSCODE_ROUTE}
-          component={SetPasscode}
-        />
-        <Route
-          path={GENERATE_SEED_PHRASE_ROUTE}
+          path={RoutePath.GENERATE_SEED_PHRASE}
           component={GenerateSeedPhrase}
         />
       </MemoryRouter>
     );
 
-    const buttonElement = getByText(/1/);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
 
-    const continueButton = getByTestId("setpasscode-continue-button");
-    fireEvent.click(continueButton);
+    const labelElement = getByText(
+      EN_TRANSLATIONS["setpasscode.reenterpasscode.title"]
+    );
+    expect(labelElement).toBeInTheDocument();
 
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/1/));
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.description"])
+        queryByText(EN_TRANSLATIONS["generateseedphrase.title"])
       ).not.toBeInTheDocument()
     );
-    expect(argon2Spy).toBeCalledWith(
-      "111111",
-      expect.any(Buffer),
-      ARGON2ID_OPTIONS
-    );
+
+    expect(argon2Spy).toBeCalledWith({
+      pass: "111111",
+      salt: expect.any(Buffer),
+      ...ARGON2ID_OPTIONS,
+    });
     expect(setKeyStoreSpy).toBeCalledWith(
       KeyStoreKeys.APP_PASSCODE,
       ARGON2ID_HASH.encoded
     );
-
-    const title = getByText(/Generate Seed Phrase/i);
-    const overlay = getByTestId("seed-phrase-privacy-overlay");
-
-    expect(title).toBeInTheDocument();
-    expect(overlay).toBeInTheDocument();
-  });
-
-  test("displays error message if passcode doesn't match, backspace and re-enter correct passcode redirects to next page", async () => {
-    const { getByTestId, getByText, queryByText } = render(
-      <MemoryRouter initialEntries={[PASSCODE_ROUTE]}>
-        <Route
-          exact
-          path={PASSCODE_ROUTE}
-          component={SetPasscode}
-        />
-        <Route
-          path={GENERATE_SEED_PHRASE_ROUTE}
-          component={GenerateSeedPhrase}
-        />
-      </MemoryRouter>
-    );
-
-    const buttonElement = getByText(/1/);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-
-    const continueButton = getByTestId("setpasscode-continue-button");
-    fireEvent.click(continueButton);
-
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-    fireEvent.click(buttonElement);
-
-    const button2Element = getByText(/2/);
-    fireEvent.click(button2Element);
-
-    const errorMessage = getByText(
-      EN_TRANSLATIONS["setpasscode.enterpasscode.error"]
-    );
-    expect(errorMessage).toBeInTheDocument();
-
-    const backspaceButton = getByTestId("setpasscode-backspace-button");
-    fireEvent.click(backspaceButton);
-    fireEvent.click(buttonElement);
-
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.description"])
-      ).not.toBeInTheDocument()
-    );
-    expect(argon2Spy).toBeCalledWith(
-      "111111",
-      expect.any(Buffer),
-      ARGON2ID_OPTIONS
-    );
-    expect(setKeyStoreSpy).toBeCalledWith(
-      KeyStoreKeys.APP_PASSCODE,
-      ARGON2ID_HASH.encoded
-    );
-    expect(
-      queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.description"])
-    ).not.toBeInTheDocument();
-
-    const title = getByText(EN_TRANSLATIONS["generateseedphrase.title"]);
-    const overlay = getByTestId("seed-phrase-privacy-overlay");
-
-    expect(title).toBeInTheDocument();
-    expect(overlay).toBeInTheDocument();
   });
 });

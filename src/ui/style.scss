@@ -7,6 +7,17 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-weight: 500;
+  background-color: var(--ion-color-light);
+}
+
+ion-content {
+  --offset-bottom: auto !important;
+  --overflow: hidden;
+  overflow: auto;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 code {
@@ -14,34 +25,67 @@ code {
     monospace;
 }
 
+h2 {
+  margin: 0 0 1rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.756rem;
+  color: var(--ion-color-primary);
+}
+
 p {
+  font-size: 1rem;
+  line-height: 1.375rem;
   color: var(--ion-color-secondary);
 }
 
-.ion-app {
-  --safe-area-inset-top: env(safe-area-inset-top);
-  --safe-area-inset-bottom: env(safe-area-inset-bottom);
-  height: calc(
-    100% + (var(--safe-area-inset-top) + var(--safe-area-inset-bottom))
-  );
-}
-
 .ion-primary-button {
+  text-transform: none;
+  font-size: 1rem;
   color: var(--ion-color-primary);
   --background: var(--color-accent-gradient);
-  --background-activated: none;
+  --background-activated: var(--color-medium-grey);
 
   &.button-disabled {
-    --background: var(--color-medium-grey);
+    --background: var(--color-dark-grey);
   }
 }
 
-.ion-primary-button {
-  color: var(--ion-color-primary);
-  --background: var(--color-accent-gradient);
-  --background-activated: none;
+.secondary-button {
+  --border-color: var(--color-dark-grey);
+  --background-activated: var(--color-dark-grey);
+}
 
-  &.button-disabled {
-    --background: var(--color-medium-grey);
+.page-paragraph {
+  margin: 0;
+}
+
+.continue-col {
+  text-align: center;
+}
+
+.safe-area {
+  margin-top: constant(safe-area-inset-top);
+  margin-top: env(safe-area-inset-top);
+  --safe-area-inset-top: env(safe-area-inset-top);
+  --safe-area-inset-bottom: env(safe-area-inset-bottom);
+  height: calc(100% - var(--safe-area-inset-bottom));
+}
+
+.seed-phrase-container {
+  padding: 0.5rem;
+  display: grid;
+  grid-template-columns: 33.3% 33.3% 33.3%;
+
+  ion-chip {
+    border-radius: 0.5rem;
+    font-weight: 400;
+    width: 92%;
+    margin: 0.3rem auto;
+    padding-inline: 0.475rem;
+
+    .index {
+      margin-right: 4px;
+    }
   }
 }

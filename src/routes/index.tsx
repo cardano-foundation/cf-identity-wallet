@@ -1,34 +1,97 @@
+import React, { useEffect, useState } from "react";
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
-import { Route } from "react-router-dom";
+import { Redirect, Route, RouteProps, useLocation } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
-import { SetPasscode } from "../ui/pages/SetPasscode/SetPasscode";
+import { SetPasscode } from "../ui/pages/SetPasscode";
+import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
+import { VerifySeedPhrase } from "../ui/pages/VerifySeedPhrase";
+import { useAppSelector } from "../store/hooks";
+import { getAuthentication, getState } from "../store/reducers/stateCache";
+import { getNextRoute } from "./nextRoute";
+enum RoutePath {
+  ROOT = "/",
+  ONBOARDING = "/onboarding",
+  SET_PASSCODE = "/setpasscode",
+  PASSCODE_LOGIN = "/passcodelogin",
+  GENERATE_SEED_PHRASE = "/generateseedphrase",
+  VERIFY_SEED_PHRASE = "/verifyseedphrase",
+  DIDS = "/dids",
+}
 
-const PASSCODE_ROUTE = "/setpasscode";
-const GENERATE_SEED_PHRASE_ROUTE = "/generateseedphrase";
+const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
+  const authentication = useAppSelector(getAuthentication);
+  const location = useLocation();
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(
+    authentication.loggedIn
+  );
+
+  useEffect(() => {
+    setIsAuthenticated(authentication.loggedIn);
+  }, [authentication.loggedIn]);
+
+  return isAuthenticated ? (
+    <Route
+      {...props}
+      component={props.component}
+    />
+  ) : (
+    <Redirect
+      from={location.pathname}
+      to={{
+        pathname: authentication.passcodeIsSet
+          ? RoutePath.PASSCODE_LOGIN
+          : RoutePath.ONBOARDING,
+      }}
+    />
+  );
+};
 
 const Routes = () => {
+  const storeState = useAppSelector(getState);
+
+  const { nextPath } = getNextRoute(RoutePath.ROOT, {
+    store: storeState,
+  });
+
   return (
     <IonReactRouter>
-      <IonRouterOutlet>
-        <Route
-          path="/"
+      <IonRouterOutlet animated={false}>
+        <Redirect
           exact
-          component={Onboarding}
+          from="/"
+          to={nextPath}
         />
+
         <Route
-          path={PASSCODE_ROUTE}
-          exact
+          path={RoutePath.PASSCODE_LOGIN}
+          component={PasscodeLogin}
+        />
+
+        <Route
+          path={RoutePath.SET_PASSCODE}
           component={SetPasscode}
         />
+
         <Route
-          path={GENERATE_SEED_PHRASE_ROUTE}
-          render={() => <GenerateSeedPhrase />}
+          path={RoutePath.ONBOARDING}
+          component={Onboarding}
+        />
+
+        {/* Private Routes */}
+        <AuthenticatedRoute
+          path={RoutePath.GENERATE_SEED_PHRASE}
+          component={GenerateSeedPhrase}
+        />
+        <AuthenticatedRoute
+          path={RoutePath.VERIFY_SEED_PHRASE}
+          exact
+          component={VerifySeedPhrase}
         />
       </IonRouterOutlet>
     </IonReactRouter>
   );
 };
 
-export { Routes, PASSCODE_ROUTE, GENERATE_SEED_PHRASE_ROUTE };
+export { Routes, RoutePath };

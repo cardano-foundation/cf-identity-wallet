@@ -1,49 +1,44 @@
-.column-right,
-.column-left {
-  display: flex;
-}
-
-.column-left {
-  justify-content: flex-start;
-}
-
-.column-right {
-  flex-direction: column;
-  justify-content: center;
-  padding-left: 1.5rem;
-}
-
-ion-back-button {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 1rem;
-  background: var(--color-light-grey);
-
-  &::part(native) {
-    padding: 0.6rem;
+.page-layout {
+  padding-inline: 20px;
+  ion-toolbar,
+  .toolbar-container,
+  ion-grid,
+  ion-col {
+    padding-inline: 0;
+    --padding-start: 0;
+    --padding-end: 0;
   }
-}
 
-ion-progress-bar,
-ion-progress-bar::part(progress) {
-  height: 6px;
-  border-radius: 6px;
-}
+  ion-header ion-toolbar {
+    ion-button,
+    ion-back-button {
+      width: 2.8125rem;
+      height: 2.8125rem;
+      border-radius: 1.5rem;
+      background: var(--color-light-grey);
+    }
 
-ion-toolbar ion-grid {
-  padding: 0;
-}
+    ion-icon {
+      font-size: 1.85em !important;
+    }
+  }
 
-ion-header {
-  margin: 0 auto;
-  max-width: 95vw;
-}
+  .progress-bar-container,
+  ion-title {
+    margin-left: 1rem;
+  }
 
-ion-content {
-  --padding-start: 0.7rem;
-  --padding-end: 0.7rem;
-}
+  ion-progress-bar,
+  ion-progress-bar::part(progress) {
+    height: 6px;
+    border-radius: 6px;
+  }
 
-h1 {
-  margin-top: 0;
+  ion-title {
+    padding: 0;
+  }
+
+  .page-footer ion-button {
+    margin: 0.75rem auto 2.1875rem;
+  }
 }

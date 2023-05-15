@@ -5,6 +5,7 @@ import {
 
 enum KeyStoreKeys {
   APP_PASSCODE = "app-login-passcode",
+  APP_SEEDPHRASE = "app-seed-phrase",
 }
 
 class SecureStorage {
@@ -21,6 +22,10 @@ class SecureStorage {
 
   static async set(key: string, value: string): Promise<void> {
     await CapacitorSecureStorage.set(key, value, true, false);
+  }
+
+  static async delete(key: string) {
+    await CapacitorSecureStorage.remove(key);
   }
 }
 

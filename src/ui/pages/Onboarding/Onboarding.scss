@@ -2,24 +2,25 @@
 @import "swiper/css/autoplay";
 @import "@ionic/react/css/ionic-swiper.css";
 
-.next-button {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  --border-radius: 30px;
-  height: 52px;
-  margin: 30px 25px;
-}
+.onboarding {
+  .swiper {
+    padding-top: 2.5rem;
+  }
 
-.already-wallet {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 22px;
-  color: var(--ion-color-primary);
-  margin-bottom: 50px;
+  .get-started-button {
+    margin: 30px 0;
+  }
+
+  .already-wallet {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 16px;
+    line-height: 22px;
+    color: var(--ion-color-primary);
+    margin-bottom: 50px;
+  }
 }
