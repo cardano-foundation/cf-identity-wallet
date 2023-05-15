@@ -34,6 +34,9 @@ const config = {
   },
   resolve: {
     extensions: [".js", ".tsx", ".ts"],
+    fallback: {
+      fs: false
+    }
   },
   plugins: [
     new webpack.ProgressPlugin(),
