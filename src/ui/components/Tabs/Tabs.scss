@@ -1,5 +1,5 @@
 ion-tab-bar {
-  padding: 0 0.625rem 2rem;
+  padding: 0 0.625rem 2.5rem;
   justify-content: space-around;
 }
 
@@ -9,6 +9,6 @@ ion-tab-button {
     border-top: 2px solid var(--ion-color-primary);
   }
   &::part(native) {
-    margin-top: 0.5rem;
+    margin-top: 0.75rem;
   }
 }
