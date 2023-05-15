@@ -1,0 +1,17 @@
+ion-tab-bar {
+  padding: 0 0.625rem 2.5rem;
+  justify-content: space-around;
+}
+
+ion-tab-button {
+  max-width: 3.4rem;
+  &.tab-selected {
+    border-top: 2px solid var(--ion-color-primary);
+  }
+  &::part(native) {
+    margin-top: 0.75rem;
+  }
+  ion-label {
+    max-width: 20vw;
+  }
+}

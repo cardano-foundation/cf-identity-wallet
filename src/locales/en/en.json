@@ -58,5 +58,10 @@
   "verifyseedphrase.paragraph.top": "Please select each word in the order it was presented to you.",
   "verifyseedphrase.continue.button": "Continue",
   "verifyseedphrase.alert.text": "Sorry, the seed phrase you have entered is incorrect!",
-  "verifyseedphrase.alert.button.cancel": "Try again"
+  "verifyseedphrase.alert.button.cancel": "Try again",
+  "tabsmenu.label.dids": "DIDs",
+  "tabsmenu.label.creds": "Creds",
+  "tabsmenu.label.scan": "Scan",
+  "tabsmenu.label.crypto": "Crypto",
+  "tabsmenu.label.chat": "Chat"
 }

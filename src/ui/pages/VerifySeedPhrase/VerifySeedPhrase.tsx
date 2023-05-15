@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import {
   IonCard,
   IonChip,
@@ -16,6 +17,7 @@ import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
 
 const VerifySeedPhrase = () => {
+  const history = useHistory();
   const originalSeedPhrase =
     useAppSelector(getSeedPhraseCache).seedPhrase.split(" ");
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
@@ -63,6 +65,7 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
       // TODO: Store Seed Phrase, clear cache and navigate to the next page
+      history.push(RoutePath.TABS_MENU);
     } else {
       setAlertIsOpen(true);
     }
