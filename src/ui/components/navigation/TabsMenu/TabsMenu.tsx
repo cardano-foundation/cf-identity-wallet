@@ -15,45 +15,55 @@ import {
   chatbubbleOutline,
   walletOutline,
 } from "ionicons/icons";
-import "./Tabs.scss";
-import { Dids } from "../../pages/Dids";
-import { Creds } from "../../pages/Creds";
-import { Crypto } from "../../pages/Crypto";
-import { Scan } from "../../pages/Scan";
-import { Chat } from "../../pages/Chat";
+import { i18n } from "../../../../i18n";
+import "./TabsMenu.scss";
+import { Dids } from "../../../pages/Dids";
+import { Creds } from "../../../pages/Creds";
+import { Crypto } from "../../../pages/Crypto";
+import { Scan } from "../../../pages/Scan";
+import { Chat } from "../../../pages/Chat";
 
-const Tabs = () => {
+enum TabsRoutePath {
+  ROOT = "/tabs",
+  DIDS = "/tabs/dids",
+  CREDS = "/tabs/creds",
+  SCAN = "/tabs/scan",
+  CRYPTO = "/tabs/crypto",
+  CHAT = "/tabs/chat",
+}
+
+const TabsMenu = () => {
   return (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
           <Redirect
             exact
-            path="/tabs"
-            to="/tabs/dids"
+            path={TabsRoutePath.ROOT}
+            to={TabsRoutePath.DIDS}
           />
           <Route
-            path="/tabs/dids"
+            path={TabsRoutePath.DIDS}
             render={() => <Dids />}
             exact={true}
           />
           <Route
-            path="/tabs/creds"
+            path={TabsRoutePath.CREDS}
             render={() => <Creds />}
             exact={true}
           />
           <Route
-            path="/tabs/scan"
+            path={TabsRoutePath.SCAN}
             render={() => <Scan />}
             exact={true}
           />
           <Route
-            path="/tabs/crypto"
+            path={TabsRoutePath.CRYPTO}
             render={() => <Crypto />}
             exact={true}
           />
           <Route
-            path="/tabs/chat"
+            path={TabsRoutePath.CHAT}
             render={() => <Chat />}
             exact={true}
           />
@@ -62,42 +72,42 @@ const Tabs = () => {
         <IonTabBar slot="bottom">
           <IonTabButton
             tab="dids"
-            href="/tabs/dids"
+            href={TabsRoutePath.DIDS}
           >
             <IonIcon icon={fingerPrintOutline} />
-            <IonLabel>DIDs</IonLabel>
+            <IonLabel>{i18n.t("tabs.label.dids")}</IonLabel>
           </IonTabButton>
 
           <IonTabButton
             tab="creds"
-            href="/tabs/creds"
+            href={TabsRoutePath.CREDS}
           >
             <IonIcon icon={idCardOutline} />
-            <IonLabel>Creds</IonLabel>
+            <IonLabel>{i18n.t("tabs.label.creds")}</IonLabel>
           </IonTabButton>
 
           <IonTabButton
             tab="scan"
-            href="/tabs/scan"
+            href={TabsRoutePath.SCAN}
           >
             <IonIcon icon={scanOutline} />
-            <IonLabel>Scan</IonLabel>
+            <IonLabel>{i18n.t("tabs.label.scan")}</IonLabel>
           </IonTabButton>
 
           <IonTabButton
             tab="crypto"
-            href="/tabs/crypto"
+            href={TabsRoutePath.CRYPTO}
           >
             <IonIcon icon={walletOutline} />
-            <IonLabel>Crypto</IonLabel>
+            <IonLabel>{i18n.t("tabs.label.crypto")}</IonLabel>
           </IonTabButton>
 
           <IonTabButton
             tab="chat"
-            href="/tabs/chat"
+            href={TabsRoutePath.CHAT}
           >
             <IonIcon icon={chatbubbleOutline} />
-            <IonLabel>Chat</IonLabel>
+            <IonLabel>{i18n.t("tabs.label.chat")}</IonLabel>
           </IonTabButton>
         </IonTabBar>
       </IonTabs>
@@ -105,4 +115,4 @@ const Tabs = () => {
   );
 };
 
-export { Tabs };
+export { TabsMenu, TabsRoutePath };

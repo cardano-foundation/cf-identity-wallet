@@ -10,7 +10,7 @@ import { VerifySeedPhrase } from "../ui/pages/VerifySeedPhrase";
 import { useAppSelector } from "../store/hooks";
 import { getAuthentication, getState } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
-import { Tabs } from "../ui/components/Tabs";
+import { TabsMenu } from "../ui/components/navigation/TabsMenu";
 enum RoutePath {
   ROOT = "/",
   ONBOARDING = "/onboarding",
@@ -18,7 +18,7 @@ enum RoutePath {
   PASSCODE_LOGIN = "/passcodelogin",
   GENERATE_SEED_PHRASE = "/generateseedphrase",
   VERIFY_SEED_PHRASE = "/verifyseedphrase",
-  TABS = "/tabs",
+  TABS_MENU = "/tabs",
 }
 
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
@@ -91,9 +91,9 @@ const Routes = () => {
           component={VerifySeedPhrase}
         />
         <AuthenticatedRoute
-          path={RoutePath.TABS}
+          path={RoutePath.TABS_MENU}
           exact
-          component={Tabs}
+          component={TabsMenu}
         />
       </IonRouterOutlet>
     </IonReactRouter>

@@ -3,12 +3,15 @@ import { PageLayout } from "../../components/layout/PageLayout";
 
 const Dids = () => {
   return (
-    <IonPage className="page-layout dids-page">
+    <IonPage
+      className="page-layout dids-page"
+      data-testid="dids-page"
+    >
       <PageLayout
         header={true}
         menuButton={true}
       >
-        <div>Dids</div>
+        <div>DIDs</div>
       </PageLayout>
     </IonPage>
   );

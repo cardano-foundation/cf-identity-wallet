@@ -3,7 +3,10 @@ import { PageLayout } from "../../components/layout/PageLayout";
 
 const Creds = () => {
   return (
-    <IonPage className="page-layout creds-page">
+    <IonPage
+      className="page-layout creds-page"
+      data-testid="creds-page"
+    >
       <PageLayout
         header={true}
         menuButton={true}

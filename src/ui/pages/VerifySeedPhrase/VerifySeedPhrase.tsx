@@ -65,7 +65,7 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
       // TODO: Store Seed Phrase, clear cache and navigate to the next page
-      history.push(RoutePath.TABS);
+      history.push(RoutePath.TABS_MENU);
     } else {
       setAlertIsOpen(true);
     }
