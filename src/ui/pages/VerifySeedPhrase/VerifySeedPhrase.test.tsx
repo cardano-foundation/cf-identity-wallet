@@ -9,6 +9,7 @@ import { RoutePath } from "../../../routes";
 import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { MNEMONIC_FIFTEEN_WORDS } from "../../../constants/appConstants";
+import { TabsMenu } from "../../components/navigation/TabsMenu";
 
 describe("Verify Seed Phrase Page", () => {
   const seedPhrase: (string | null)[] = [];
@@ -121,6 +122,10 @@ describe("Verify Seed Phrase Page", () => {
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
+          <Route
+            path={RoutePath.TABS_MENU}
+            component={TabsMenu}
+          />
         </MemoryRouter>
       </Provider>
     );
@@ -163,5 +168,9 @@ describe("Verify Seed Phrase Page", () => {
     await waitFor(() =>
       expect(continueButton).toHaveAttribute("disabled", "false")
     );
+
+    fireEvent.click(continueButton);
+
+    await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
   });
 });
