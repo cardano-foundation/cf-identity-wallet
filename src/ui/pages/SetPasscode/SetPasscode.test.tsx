@@ -2,10 +2,7 @@ import { MemoryRouter, Route } from "react-router-dom";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Argon2 } from "@sphereon/isomorphic-argon2";
 import { Buffer } from "buffer";
-import {
-  SetPasscode,
-  ARGON2ID_OPTIONS,
-} from "./SetPasscode";
+import { SetPasscode, ARGON2ID_OPTIONS } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { GENERATE_SEED_PHRASE_ROUTE, PASSCODE_ROUTE } from "../../../routes";
 import {
@@ -176,7 +173,9 @@ describe("SetPasscode input", () => {
     fireEvent.click(buttonElement);
 
     await waitFor(() =>
-      expect(queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.description"])).not.toBeInTheDocument()
+      expect(
+        queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.description"])
+      ).not.toBeInTheDocument()
     );
     expect(argon2Spy).toBeCalledWith(
       "111111",

@@ -310,7 +310,4 @@ const SetPasscode = () => {
   );
 };
 
-export {
-  SetPasscode,
-  ARGON2ID_OPTIONS,
-};
+export { SetPasscode, ARGON2ID_OPTIONS };

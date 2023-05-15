@@ -14,3 +14,9 @@ root.render(
 );
 
 reportWebVitals();
+
+async function start() {
+  new Worker(new URL("./core/aries/agentWorker", import.meta.url));
+}
+
+start();
