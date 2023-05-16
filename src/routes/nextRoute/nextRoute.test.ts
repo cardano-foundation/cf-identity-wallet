@@ -10,7 +10,7 @@ import {
 } from "./nextRoute";
 import { RootState } from "../../store";
 import { RoutePath } from "../index";
-import {setAuthentication, setCurrentRoute} from "../../store/reducers/stateCache";
+import {setAuthentication} from "../../store/reducers/stateCache";
 
 describe("NextRoute", () => {
   let localStorageMock: any;

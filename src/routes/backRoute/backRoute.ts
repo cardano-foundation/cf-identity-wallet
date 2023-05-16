@@ -64,7 +64,7 @@ const updateStoreSetCurrentRoute = (store: RootState) => {
   return setCurrentRoute({ path });
 };
 const getPreviousRoute = (store: RootState) => {
-  const { routes, authentication } = store.stateCache;
+  const { routes } = store.stateCache;
 
   const prevPath = calcPreviousRoute(routes);
   let path;

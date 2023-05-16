@@ -24,7 +24,6 @@ import { getBackRoute } from "../../../../routes/backRoute";
 const PageLayout = ({
   header,
   backButton,
-  backButtonPath,
   currentPath,
   children,
   closeButton,
