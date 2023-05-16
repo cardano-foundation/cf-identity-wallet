@@ -1,13 +1,12 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RoutePath } from "../index";
 import { RootState } from "../../store";
-import { DataProps } from "./backRoute.types";
 import {
   removeCurrentRoute,
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
-import { PayloadProps } from "../nextRoute/nextRoute.types";
+import {DataProps, PayloadProps} from "../nextRoute/nextRoute.types";
 
 const getBackRoute = (
   currentPath: string,
