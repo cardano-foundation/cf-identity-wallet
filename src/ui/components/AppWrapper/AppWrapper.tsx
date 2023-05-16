@@ -25,7 +25,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(
         setAuthentication({ ...authentication, passcodeIsSet: !!passcodeIsSet })
       );
-      dispatch(setCurrentRoute({ path: window.location.pathname }));
     } catch (e) {
       /* empty */
     }

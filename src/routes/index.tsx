@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
-import { Redirect, Route, RouteProps, useLocation } from "react-router-dom";
+import {Redirect, Route, RouteProps, useLocation} from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { VerifySeedPhrase } from "../ui/pages/VerifySeedPhrase";
-import { useAppSelector } from "../store/hooks";
-import { getAuthentication, getState } from "../store/reducers/stateCache";
+import {useAppDispatch, useAppSelector} from "../store/hooks";
+import {getAuthentication, getRoutes, getState, setCurrentRoute} from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
 import { TabsMenu } from "../ui/components/navigation/TabsMenu";
 enum RoutePath {
@@ -51,9 +51,14 @@ const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
 
 const Routes = () => {
   const storeState = useAppSelector(getState);
-
+  const dispatch = useAppDispatch();
+  const routes = useAppSelector(getRoutes);
   const { nextPath } = getNextRoute(RoutePath.ROOT, {
     store: storeState,
+  });
+
+  useEffect(() => {
+    if (!routes.length) dispatch(setCurrentRoute({ path: nextPath.pathname }))
   });
 
   return (
