@@ -100,9 +100,7 @@ const PasscodeLogin = () => {
         },
       });
 
-      if (updateRedux?.length) {
-        updateReduxState(dispatch, updateRedux);
-      }
+      updateReduxState(dispatch, updateRedux);
       history.push(nextPath.pathname);
       setPasscode("");
     });
