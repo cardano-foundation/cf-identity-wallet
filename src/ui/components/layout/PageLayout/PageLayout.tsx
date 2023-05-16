@@ -9,7 +9,7 @@ import {
   IonTitle,
   IonFooter,
 } from "@ionic/react";
-import { arrowBackOutline, closeOutline } from "ionicons/icons";
+import { arrowBackOutline, closeOutline, menuOutline } from "ionicons/icons";
 import "./PageLayout.scss";
 import { useHistory } from "react-router-dom";
 import { PageLayoutProps } from "./PageLayout.types";
@@ -33,6 +33,7 @@ const PageLayout = ({
   progressBarValue,
   progressBarBuffer,
   title,
+  menuButton,
   footer,
   primaryButtonText,
   primaryButtonAction,
@@ -106,6 +107,22 @@ const PageLayout = ({
                 />
               </div>
             )}
+
+            <IonButtons slot="end">
+              {menuButton && (
+                <IonButton
+                  shape="round"
+                  className="menu-button"
+                  data-testid="menu-button"
+                >
+                  <IonIcon
+                    slot="icon-only"
+                    icon={menuOutline}
+                    color="primary"
+                  />
+                </IonButton>
+              )}
+            </IonButtons>
           </IonToolbar>
         </IonHeader>
       )}
