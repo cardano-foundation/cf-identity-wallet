@@ -10,7 +10,7 @@ import {
 } from "./nextRoute";
 import { RootState } from "../../store";
 import { RoutePath } from "../index";
-import {setAuthentication} from "../../store/reducers/stateCache";
+import { setAuthentication } from "../../store/reducers/stateCache";
 
 describe("NextRoute", () => {
   let localStorageMock: any;
@@ -145,7 +145,9 @@ describe("getNextRoute", () => {
       payload,
     });
 
-    expect(result.nextPath).toEqual(  {pathname: RoutePath.GENERATE_SEED_PHRASE});
+    expect(result.nextPath).toEqual({
+      pathname: RoutePath.GENERATE_SEED_PHRASE,
+    });
     expect(result.updateRedux).toHaveLength(1);
     expect(result.updateRedux[0]).toBeInstanceOf(Function);
 
@@ -157,7 +159,7 @@ describe("getNextRoute", () => {
       payload,
     });
 
-    expect(result.nextPath).toEqual(  {pathname: RoutePath.SET_PASSCODE});
+    expect(result.nextPath).toEqual({ pathname: RoutePath.SET_PASSCODE });
     expect(result.updateRedux).toHaveLength(2);
     expect(result.updateRedux[0]).toBeInstanceOf(Function);
     expect(result.updateRedux[1]).toBeInstanceOf(Function);
@@ -171,10 +173,9 @@ describe("getNextRoute", () => {
       payload,
     });
 
-    expect(result.nextPath).toEqual(  {pathname: RoutePath.TABS_MENU});
+    expect(result.nextPath).toEqual({ pathname: RoutePath.TABS_MENU });
     expect(result.updateRedux).toHaveLength(3);
     expect(result.updateRedux[0]).toBeInstanceOf(Function);
-
   });
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is set", () => {

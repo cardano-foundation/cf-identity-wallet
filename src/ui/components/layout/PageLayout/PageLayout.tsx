@@ -47,10 +47,7 @@ const PageLayout = ({
     const { backPath, updateRedux } = getBackRoute(currentPath, {
       store: storeState,
     });
-    if (updateRedux?.length) {
-      updateReduxState(dispatch, updateRedux);
-    }
-    dispatch(setCurrentRoute({ path: backPath.pathname }));
+    updateReduxState(dispatch, updateRedux);
     history.push(backPath.pathname);
   };
 

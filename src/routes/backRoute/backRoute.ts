@@ -6,7 +6,7 @@ import {
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
-import {DataProps, PayloadProps} from "../nextRoute/nextRoute.types";
+import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
 
 const getBackRoute = (
   currentPath: string,
