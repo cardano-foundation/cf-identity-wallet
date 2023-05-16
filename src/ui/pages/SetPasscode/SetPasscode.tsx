@@ -83,7 +83,6 @@ const SetPasscode = () => {
       <PageLayout
         header={true}
         backButton={true}
-        backButtonPath={"/"}
         currentPath={RoutePath.SET_PASSCODE}
         progressBar={true}
         progressBarValue={0.33}

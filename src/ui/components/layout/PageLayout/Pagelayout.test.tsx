@@ -11,7 +11,6 @@ describe("Page Layout", () => {
         <PageLayout
           header={true}
           backButton={true}
-          backButtonPath={"/path"}
           currentPath={"/"}
           closeButton={true}
           closeButtonAction={mockCloseButton}

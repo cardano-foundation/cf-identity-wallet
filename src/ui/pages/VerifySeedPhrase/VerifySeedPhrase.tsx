@@ -86,7 +86,6 @@ const VerifySeedPhrase = () => {
       <PageLayout
         header={true}
         backButton={true}
-        backButtonPath={RoutePath.GENERATE_SEED_PHRASE}
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
         progressBar={true}
         progressBarValue={1}
