@@ -12,7 +12,7 @@ import {
 } from "../../../core/storage/secureStorage";
 import { RoutePath } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import { getState } from "../../../store/reducers/stateCache";
+import {getState, removeCurrentRoute, removeRoute} from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";

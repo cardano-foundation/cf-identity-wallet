@@ -2,6 +2,7 @@ import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RoutePath } from "../index";
 import { RootState } from "../../store";
 import {
+  removeRoute,
   setAuthentication,
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
@@ -39,6 +40,7 @@ const NextRoute: Record<string, any> = {
   "/setpasscode": {
     nextPath: (data: DataProps) => getNextSetPasscodeRoute(data.store),
     updateRedux: [
+      () => () => removeRoute(RoutePath.SET_PASSCODE),
       (data: DataProps) => () => updateStoreAfterSetPasscodeRoute(data.store),
     ],
   },
