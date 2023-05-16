@@ -1,8 +1,14 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RoutePath } from "../index";
 import { RootState } from "../../store";
-import { setAuthentication } from "../../store/reducers/stateCache";
-import { setSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
+import {
+  setAuthentication,
+  setCurrentRoute,
+} from "../../store/reducers/stateCache";
+import {
+  clearSeedPhraseCache,
+  setSeedPhraseCache,
+} from "../../store/reducers/seedPhraseCache";
 import { DataProps, PageState } from "./nextRoute.types";
 
 const getNextRoute = (
@@ -13,9 +19,10 @@ const getNextRoute = (
   updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
   const { nextPath, updateRedux } = NextRoute[currentPath];
-
+  const path = nextPath(data);
+  updateRedux.push(() => () => setCurrentRoute({ path: path.pathname }));
   return {
-    nextPath: nextPath(data),
+    nextPath: path,
     updateRedux: updateRedux.map((fn: (data: DataProps) => void) => fn(data)),
   };
 };
@@ -46,9 +53,12 @@ const NextRoute: Record<string, any> = {
   "/generateseedphrase": {
     nextPath: () => getNextGenerateSeedPhraseRoute(),
     updateRedux: [
-      (data: DataProps) => () =>
-        updateStoreAfterGenerateSeedPhraseRoute(data.state),
+      (data: DataProps) => () => setSeedPhraseCache(data.state?.seedPhrase),
     ],
+  },
+  "/verifyseedphrase": {
+    nextPath: () => getNextVerifySeedPhraseRoute(),
+    updateRedux: [() => () => clearSeedPhraseCache()],
   },
 };
 
@@ -158,11 +168,8 @@ const updateStoreAfterPasscodeLoginRoute = (
 const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
-
-const updateStoreAfterGenerateSeedPhraseRoute = (
-  state: PageState | undefined
-) => {
-  if (state) return setSeedPhraseCache(state.seedPhrase);
+const getNextVerifySeedPhraseRoute = () => {
+  return { pathname: RoutePath.DIDS };
 };
 
 export {
@@ -173,5 +180,5 @@ export {
   getNextPasscodeLoginRoute,
   updateStoreAfterPasscodeLoginRoute,
   getNextGenerateSeedPhraseRoute,
-  updateStoreAfterGenerateSeedPhraseRoute,
+  getNextVerifySeedPhraseRoute,
 };

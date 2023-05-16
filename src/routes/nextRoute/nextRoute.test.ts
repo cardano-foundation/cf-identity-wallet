@@ -4,16 +4,15 @@ import {
   getNextPasscodeLoginRoute,
   getNextSetPasscodeRoute,
   getNextRoute,
-  updateStoreAfterGenerateSeedPhraseRoute,
   updateStoreAfterPasscodeLoginRoute,
   updateStoreAfterSetPasscodeRoute,
+  getNextVerifySeedPhraseRoute,
 } from "./nextRoute";
 import { RootState } from "../../store";
 import { RoutePath } from "../index";
-import { setAuthentication } from "../../store/reducers/stateCache";
-import { setSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
+import {setAuthentication, setCurrentRoute} from "../../store/reducers/stateCache";
 
-describe("NextRules", () => {
+describe("NextRoute", () => {
   let localStorageMock: any;
   let storeMock: RootState;
   const state = {};
@@ -113,16 +112,12 @@ describe("NextRules", () => {
     });
   });
 
-  test("should update store correctly after /generateseedphrase route", () => {
-    const expectedSeedPhrase = "yourSeedPhrase";
-    const state = {
-      seedPhrase: expectedSeedPhrase,
-    };
-    const expectedAction = setSeedPhraseCache(expectedSeedPhrase);
+  test("should return correct route for /verifyseedphrase", () => {
+    const result = getNextVerifySeedPhraseRoute();
 
-    const result = updateStoreAfterGenerateSeedPhraseRoute(state);
-
-    expect(result).toEqual(expectedAction);
+    expect(result).toEqual({
+      pathname: RoutePath.DIDS,
+    });
   });
 });
 
@@ -144,49 +139,42 @@ describe("getNextRoute", () => {
   const payload = {};
 
   test("should return the correct Onboarding next route", () => {
-    let result = getNextRoute(RoutePath.ONBOARDING, {
+    const result1 = getNextRoute(RoutePath.ONBOARDING, {
       store: storeMock,
       state,
       payload,
     });
 
-    expect(result).toEqual({
-      nextPath: {
-        pathname: RoutePath.GENERATE_SEED_PHRASE,
-      },
-      updateRedux: [],
-    });
+    expect(result1.nextPath).toEqual(  {pathname: RoutePath.GENERATE_SEED_PHRASE});
+    expect(result1.updateRedux).toHaveLength(1);
+    expect(result1.updateRedux[0]).toBeInstanceOf(Function);
 
     storeMock.stateCache.authentication.passcodeIsSet = false;
 
-    result = getNextRoute(RoutePath.ONBOARDING, {
+    const result2 = getNextRoute(RoutePath.ONBOARDING, {
       store: storeMock,
       state,
       payload,
     });
 
-    expect(result).toEqual({
-      nextPath: {
-        pathname: RoutePath.SET_PASSCODE,
-      },
-      updateRedux: [],
-    });
+    expect(result2.nextPath).toEqual(  {pathname: RoutePath.SET_PASSCODE});
+    expect(result2.updateRedux).toHaveLength(2);
+    expect(result2.updateRedux[0]).toBeInstanceOf(Function);
+    expect(result2.updateRedux[1]).toBeInstanceOf(Function);
 
     storeMock.stateCache.authentication.passcodeIsSet = true;
     storeMock.seedPhraseCache.seedPhrase = "example-seed-phrase";
 
-    result = getNextRoute(RoutePath.ONBOARDING, {
+    const result3 = getNextRoute(RoutePath.ONBOARDING, {
       store: storeMock,
       state,
       payload,
     });
 
-    expect(result).toEqual({
-      nextPath: {
-        pathname: RoutePath.DIDS,
-      },
-      updateRedux: [],
-    });
+    expect(result3.nextPath).toEqual(  {pathname: RoutePath.DIDS});
+    expect(result3.updateRedux).toHaveLength(3);
+    expect(result3.updateRedux[0]).toBeInstanceOf(Function);
+
   });
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is set", () => {
@@ -228,23 +216,5 @@ describe("getNextRoute", () => {
     expect(result).toEqual({
       pathname: RoutePath.GENERATE_SEED_PHRASE,
     });
-  });
-
-  test("getNextGenerateSeedPhraseRoute should return the correct next path", () => {
-    const result = getNextGenerateSeedPhraseRoute();
-    expect(result).toEqual({
-      pathname: RoutePath.VERIFY_SEED_PHRASE,
-    });
-  });
-
-  test("updateStoreAfterGenerateSeedPhraseRoute should return the updated store with the seed phrase", () => {
-    const seedPhrase = "example seed phrase";
-    const state = {
-      seedPhrase: seedPhrase,
-    };
-    const expectedAction = setSeedPhraseCache(seedPhrase);
-
-    const result = updateStoreAfterGenerateSeedPhraseRoute(state);
-    expect(result).toEqual(expectedAction);
   });
 });

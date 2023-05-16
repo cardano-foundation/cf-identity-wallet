@@ -1,9 +1,12 @@
 import { RootState } from "../../store";
 import { DataProps } from "../nextRoute/nextRoute.types";
-import {calcPreviousRoute, getBackRoute} from "./backRoute";
-import {removeCurrentRoute, setCurrentRoute} from "../../store/reducers/stateCache";
-import {clearSeedPhraseCache} from "../../store/reducers/seedPhraseCache";
-import {RoutePath} from "../index";
+import { calcPreviousRoute, getBackRoute } from "./backRoute";
+import {
+  removeCurrentRoute,
+  setCurrentRoute,
+} from "../../store/reducers/stateCache";
+import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
+import { RoutePath } from "../index";
 
 jest.mock("../../store/reducers/stateCache", () => ({
   removeCurrentRoute: jest.fn(),
@@ -112,7 +115,6 @@ describe("getBackRoute", () => {
     result.updateRedux[1]();
     expect(setCurrentRoute).toHaveBeenCalledWith({ path: "/route2" });
   });
-
 });
 
 describe("calcPreviousRoute", () => {
@@ -129,7 +131,6 @@ describe("calcPreviousRoute", () => {
   });
 
   test("should return undefined if no previous route found", () => {
-
     const result = calcPreviousRoute([]);
 
     expect(result).toBeUndefined();

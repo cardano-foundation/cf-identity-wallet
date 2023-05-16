@@ -30,7 +30,7 @@ import {
 } from "../../../constants/appConstants";
 import { PageLayout } from "../../components/layout/PageLayout";
 import Alert from "../../components/Alert/Alert";
-import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import { getState } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -83,8 +83,7 @@ const GenerateSeedPhrase = () => {
       RoutePath.GENERATE_SEED_PHRASE,
       { store: storeState, state: { seedPhrase: seedPhrase.join(" ") } }
     );
-    if (updateRedux?.length) updateReduxState(dispatch, updateRedux);
-    dispatch(setCurrentRoute({ path: nextPath.pathname }));
+    updateReduxState(dispatch, updateRedux);
     history.push(nextPath.pathname);
   };
 

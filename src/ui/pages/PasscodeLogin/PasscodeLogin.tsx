@@ -13,7 +13,7 @@ import {
   SecureStorage,
 } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import { getState } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
@@ -47,10 +47,7 @@ const PasscodeLogin = () => {
                 RoutePath.PASSCODE_LOGIN,
                 { store: storeState }
               );
-              if (updateRedux?.length) {
-                updateReduxState(dispatch, updateRedux);
-              }
-              dispatch(setCurrentRoute({ path: nextPath.pathname }));
+              updateReduxState(dispatch, updateRedux);
               history.push(nextPath.pathname);
               setPasscode("");
             } else {
@@ -106,7 +103,6 @@ const PasscodeLogin = () => {
       if (updateRedux?.length) {
         updateReduxState(dispatch, updateRedux);
       }
-      dispatch(setCurrentRoute({ path: nextPath.pathname }));
       history.push(nextPath.pathname);
       setPasscode("");
     });

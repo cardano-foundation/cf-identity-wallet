@@ -7,8 +7,9 @@ import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import { getState } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
+import { updateReduxState } from "../../../store/utils";
 
 const Onboarding = () => {
   const history = useHistory();
@@ -24,11 +25,10 @@ const Onboarding = () => {
   }
 
   const handleNavigation = () => {
-    const { nextPath } = getNextRoute(RoutePath.ONBOARDING, {
+    const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, {
       store: storeState,
     });
-
-    dispatch(setCurrentRoute({ path: nextPath.pathname }));
+    updateReduxState(dispatch, updateRedux);
     history.push(nextPath.pathname);
   };
 

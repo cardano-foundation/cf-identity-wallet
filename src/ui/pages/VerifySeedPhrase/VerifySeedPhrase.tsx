@@ -7,15 +7,22 @@ import {
   IonPage,
   IonRow,
 } from "@ionic/react";
+import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
-import { useAppSelector } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import Alert from "../../components/Alert/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { updateReduxState } from "../../../store/utils";
+import { getState } from "../../../store/reducers/stateCache";
 
 const VerifySeedPhrase = () => {
+  const history = useHistory();
+  const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
   const originalSeedPhrase =
     useAppSelector(getSeedPhraseCache).seedPhrase.split(" ");
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
@@ -43,7 +50,7 @@ const VerifySeedPhrase = () => {
     setSeedPhraseRemaining(seedPhraseRemaining);
   };
 
-  const removeseedPhraseSelected = (index: number) => {
+  const removeSeedPhraseSelected = (index: number) => {
     const removingQuantity = seedPhraseSelected.length - index;
     const newMatch = seedPhraseSelected;
     const words = [];
@@ -62,7 +69,13 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      // TODO: Store Seed Phrase, clear cache and navigate to the next page
+      const { nextPath, updateRedux } = getNextRoute(
+        RoutePath.VERIFY_SEED_PHRASE,
+        { store: storeState }
+      );
+      updateReduxState(dispatch, updateRedux);
+      history.push(nextPath.pathname);
+      // TODO: Store Seed Phrase in db/keystore
     } else {
       setAlertIsOpen(true);
     }
@@ -106,7 +119,7 @@ const VerifySeedPhrase = () => {
                     <IonChip
                       key={index}
                       onClick={() => {
-                        removeseedPhraseSelected(index);
+                        removeSeedPhraseSelected(index);
                       }}
                     >
                       <span className="index">{index + 1}.</span>

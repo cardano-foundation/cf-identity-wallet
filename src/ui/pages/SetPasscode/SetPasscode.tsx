@@ -12,7 +12,7 @@ import {
 } from "../../../core/storage/secureStorage";
 import { RoutePath } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import { getState } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -49,10 +49,7 @@ const SetPasscode = () => {
                   RoutePath.SET_PASSCODE,
                   { store: storeState }
                 );
-                if (updateRedux?.length) {
-                  updateReduxState(dispatch, updateRedux);
-                }
-                dispatch(setCurrentRoute({ path: nextPath.pathname }));
+                updateReduxState(dispatch, updateRedux);
                 history.push(nextPath.pathname);
               }
             );
