@@ -139,41 +139,41 @@ describe("getNextRoute", () => {
   const payload = {};
 
   test("should return the correct Onboarding next route", () => {
-    const result1 = getNextRoute(RoutePath.ONBOARDING, {
+    let result = getNextRoute(RoutePath.ONBOARDING, {
       store: storeMock,
       state,
       payload,
     });
 
-    expect(result1.nextPath).toEqual(  {pathname: RoutePath.GENERATE_SEED_PHRASE});
-    expect(result1.updateRedux).toHaveLength(1);
-    expect(result1.updateRedux[0]).toBeInstanceOf(Function);
+    expect(result.nextPath).toEqual(  {pathname: RoutePath.GENERATE_SEED_PHRASE});
+    expect(result.updateRedux).toHaveLength(1);
+    expect(result.updateRedux[0]).toBeInstanceOf(Function);
 
     storeMock.stateCache.authentication.passcodeIsSet = false;
 
-    const result2 = getNextRoute(RoutePath.ONBOARDING, {
+    result = getNextRoute(RoutePath.ONBOARDING, {
       store: storeMock,
       state,
       payload,
     });
 
-    expect(result2.nextPath).toEqual(  {pathname: RoutePath.SET_PASSCODE});
-    expect(result2.updateRedux).toHaveLength(2);
-    expect(result2.updateRedux[0]).toBeInstanceOf(Function);
-    expect(result2.updateRedux[1]).toBeInstanceOf(Function);
+    expect(result.nextPath).toEqual(  {pathname: RoutePath.SET_PASSCODE});
+    expect(result.updateRedux).toHaveLength(2);
+    expect(result.updateRedux[0]).toBeInstanceOf(Function);
+    expect(result.updateRedux[1]).toBeInstanceOf(Function);
 
     storeMock.stateCache.authentication.passcodeIsSet = true;
     storeMock.seedPhraseCache.seedPhrase = "example-seed-phrase";
 
-    const result3 = getNextRoute(RoutePath.ONBOARDING, {
+    result = getNextRoute(RoutePath.ONBOARDING, {
       store: storeMock,
       state,
       payload,
     });
 
-    expect(result3.nextPath).toEqual(  {pathname: RoutePath.TABS_MENU});
-    expect(result3.updateRedux).toHaveLength(3);
-    expect(result3.updateRedux[0]).toBeInstanceOf(Function);
+    expect(result.nextPath).toEqual(  {pathname: RoutePath.TABS_MENU});
+    expect(result.updateRedux).toHaveLength(3);
+    expect(result.updateRedux[0]).toBeInstanceOf(Function);
 
   });
 
