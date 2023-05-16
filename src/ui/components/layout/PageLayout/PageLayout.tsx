@@ -65,7 +65,7 @@ const PageLayout = ({
             <IonButtons slot="start">
               {backButton && (
                 <IonButton
-                  slot="start"
+                  slot="icon-only"
                   fill="clear"
                   onClick={handleOnBack}
                   className="back-button"
