@@ -2,7 +2,7 @@ import { Bip32PrivateKey } from "@emurgo/cardano-serialization-lib-browser";
 import { mnemonicToEntropy } from "bip39";
 import { SecureStorage } from "../storage/secureStorage";
 
-class Serializaton {
+class Addresses {
     
     static async storeSeedPhrase(seedPhrase: string) {
         try {
@@ -23,3 +23,5 @@ class Serializaton {
         }
     }
 }
+
+export { Addresses };
