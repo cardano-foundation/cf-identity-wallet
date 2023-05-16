@@ -23,9 +23,11 @@ const getBackRoute = (
   };
 };
 
+const backPath = (data: DataProps) => getPreviousRoute(data.store);
+
 const backRoute: Record<string, any> = {
   "/": {
-    backPath: (data: DataProps) => getPreviousRoute(data.store),
+    backPath,
     updateRedux: [],
   },
   "/generateseedphrase": {
@@ -36,7 +38,7 @@ const backRoute: Record<string, any> = {
     ],
   },
   "/verifyseedphrase": {
-    backPath: (data: DataProps) => getPreviousRoute(data.store),
+    backPath,
     updateRedux: [
       () => () => removeCurrentRoute(),
       (data: DataProps) => () => updateStoreSetCurrentRoute(data.store),
@@ -44,7 +46,7 @@ const backRoute: Record<string, any> = {
     ],
   },
   "/setpasscode": {
-    backPath: (data: DataProps) => getPreviousRoute(data.store),
+    backPath,
     updateRedux: [
       () => () => removeCurrentRoute(),
       (data: DataProps) => () => updateStoreSetCurrentRoute(data.store),
