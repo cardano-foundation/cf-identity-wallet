@@ -1,5 +1,7 @@
 import { IonPage } from "@ionic/react";
 import { PageLayout } from "../../components/layout/PageLayout";
+import {RoutePath} from "../../../routes";
+import {TabsRoutePath} from "../../components/navigation/TabsMenu";
 
 const Chat = () => {
   return (
@@ -10,6 +12,7 @@ const Chat = () => {
       <PageLayout
         header={true}
         menuButton={true}
+        currentPath={TabsRoutePath.CHAT}
       >
         <div>Chat</div>
       </PageLayout>

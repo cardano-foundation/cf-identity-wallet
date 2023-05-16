@@ -3,6 +3,8 @@ import { i18n } from "../../../i18n";
 import "./TermsAndConditions.scss";
 import { TermsAndConditionsProps } from "./TermsAndConditions.types";
 import { PageLayout } from "../layout/PageLayout";
+import {TabsRoutePath} from "../navigation/TabsMenu";
+import {RoutePath} from "../../../routes";
 
 const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
   const paragraphs: string[] = i18n.t("termsandconditions.body", {
@@ -21,6 +23,7 @@ const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
           header={true}
           closeButton={true}
           closeButtonAction={() => setIsOpen(false)}
+          currentPath={RoutePath.GENERATE_SEED_PHRASE}
           title={`${i18n.t("termsandconditions.title")}`}
         >
           <IonGrid>

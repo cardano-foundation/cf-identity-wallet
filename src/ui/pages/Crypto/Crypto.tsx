@@ -1,5 +1,6 @@
 import { IonPage } from "@ionic/react";
 import { PageLayout } from "../../components/layout/PageLayout";
+import {TabsRoutePath} from "../../components/navigation/TabsMenu";
 
 const Crypto = () => {
   return (
@@ -10,6 +11,7 @@ const Crypto = () => {
       <PageLayout
         header={true}
         menuButton={true}
+        currentPath={TabsRoutePath.CRYPTO}
       >
         <div>Crypto</div>
       </PageLayout>
