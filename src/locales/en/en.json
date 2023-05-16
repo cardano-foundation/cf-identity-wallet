@@ -63,5 +63,19 @@
   "tabsmenu.label.creds": "Creds",
   "tabsmenu.label.scan": "Scan",
   "tabsmenu.label.crypto": "Crypto",
-  "tabsmenu.label.chat": "Chat"
+  "tabsmenu.label.chat": "Chat",
+  "createpassword.title": "Create password",
+  "createpassword.description": "Set your operations password so you can access additional wallet features.",
+  "createpassword.input.first.title": "Create password",
+  "createpassword.input.first.placeholder": "Type password",
+  "createpassword.input.second.title": "Confirm password",
+  "createpassword.input.second.placeholder": "Retype your password",
+  "createpassword.input.third.title": "Create a hint (optional)",
+  "createpassword.input.third.placeholder": "Create a password hint",
+  "createpassword.regex.first": "8 - 64 characters long",
+  "createpassword.regex.second": "Contains an uppercase letter",
+  "createpassword.regex.third": "Contains a lowercase letter",
+  "createpassword.regex.fourth": "Contains a number",
+  "createpassword.regex.fifth": "Contains a symbol",
+  "createpassword.continue.button": "Create password"
 }

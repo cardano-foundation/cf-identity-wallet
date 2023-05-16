@@ -96,6 +96,11 @@ const Routes = () => {
           exact
           component={TabsMenu}
         />
+        <Route
+          path={RoutePath.CREATE_PASSWORD}
+          exact
+          component={CreatePassword}
+        />
       </IonRouterOutlet>
     </IonReactRouter>
   );
