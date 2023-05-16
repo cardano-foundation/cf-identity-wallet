@@ -1,6 +1,6 @@
 import { IonPage } from "@ionic/react";
 import { PageLayout } from "../../components/layout/PageLayout";
-import {TabsRoutePath} from "../../components/navigation/TabsMenu";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 
 const Dids = () => {
   return (

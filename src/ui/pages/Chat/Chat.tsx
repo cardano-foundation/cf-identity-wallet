@@ -1,7 +1,6 @@
 import { IonPage } from "@ionic/react";
 import { PageLayout } from "../../components/layout/PageLayout";
-import {RoutePath} from "../../../routes";
-import {TabsRoutePath} from "../../components/navigation/TabsMenu";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 
 const Chat = () => {
   return (

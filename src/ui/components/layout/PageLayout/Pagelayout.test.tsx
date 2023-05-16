@@ -1,12 +1,10 @@
-import {fireEvent, render, waitFor} from "@testing-library/react";
+import { fireEvent, render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
 import { PageLayout } from "./PageLayout";
 import { store } from "../../../../store";
 import { RoutePath } from "../../../../routes";
-import {removeCurrentRoute, setCurrentRoute} from "../../../../store/reducers/stateCache";
-import {MNEMONIC_FIFTEEN_WORDS} from "../../../../constants/appConstants";
 
 describe("Page Layout", () => {
   test("Renders Page Layout", () => {

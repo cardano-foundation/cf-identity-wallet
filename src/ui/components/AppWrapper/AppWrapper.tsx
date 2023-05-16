@@ -3,7 +3,6 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
   setAuthentication,
-  setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import {
   KeyStoreKeys,

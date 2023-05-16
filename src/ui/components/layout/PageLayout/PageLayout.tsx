@@ -14,9 +14,7 @@ import "./PageLayout.scss";
 import { useHistory } from "react-router-dom";
 import { PageLayoutProps } from "./PageLayout.types";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import {
-  getState
-} from "../../../../store/reducers/stateCache";
+import { getState } from "../../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../../store/utils";
 import { getBackRoute } from "../../../../routes/backRoute";
 

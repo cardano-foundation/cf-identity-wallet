@@ -3,8 +3,7 @@ import { i18n } from "../../../i18n";
 import "./TermsAndConditions.scss";
 import { TermsAndConditionsProps } from "./TermsAndConditions.types";
 import { PageLayout } from "../layout/PageLayout";
-import {TabsRoutePath} from "../navigation/TabsMenu";
-import {RoutePath} from "../../../routes";
+import { RoutePath } from "../../../routes";
 
 const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
   const paragraphs: string[] = i18n.t("termsandconditions.body", {
