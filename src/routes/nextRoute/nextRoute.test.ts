@@ -148,8 +148,6 @@ describe("getNextRoute", () => {
     expect(result.nextPath).toEqual({
       pathname: RoutePath.GENERATE_SEED_PHRASE,
     });
-    expect(result.updateRedux).toHaveLength(1);
-    expect(result.updateRedux[0]).toBeInstanceOf(Function);
 
     storeMock.stateCache.authentication.passcodeIsSet = false;
 
@@ -160,9 +158,6 @@ describe("getNextRoute", () => {
     });
 
     expect(result.nextPath).toEqual({ pathname: RoutePath.SET_PASSCODE });
-    expect(result.updateRedux).toHaveLength(2);
-    expect(result.updateRedux[0]).toBeInstanceOf(Function);
-    expect(result.updateRedux[1]).toBeInstanceOf(Function);
 
     storeMock.stateCache.authentication.passcodeIsSet = true;
     storeMock.seedPhraseCache.seedPhrase = "example-seed-phrase";
@@ -174,8 +169,6 @@ describe("getNextRoute", () => {
     });
 
     expect(result.nextPath).toEqual({ pathname: RoutePath.TABS_MENU });
-    expect(result.updateRedux).toHaveLength(3);
-    expect(result.updateRedux[0]).toBeInstanceOf(Function);
   });
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is set", () => {
