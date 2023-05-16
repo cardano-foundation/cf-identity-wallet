@@ -1,24 +1,18 @@
-import { useHistory } from "react-router-dom";
 import { useState } from "react";
-import {
-  IonButton,
-  IonCol,
-  IonGrid,
-  IonIcon,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonPage,
-  IonRow,
-} from "@ionic/react";
-import { eyeOffOutline } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
+import { IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import "./CreatePassword.scss";
+import { InputItem } from "../../components/InputItem";
 
 const CreatePassword = () => {
   const history = useHistory();
-  const [hiddenInput, setHiddenInput] = useState(false);
+  const [validated, setValidated] = useState(false);
+
+  const handleContinue = () => {
+    console.log("continue");
+  };
 
   return (
     <IonPage className="page-layout create-password">
@@ -27,6 +21,10 @@ const CreatePassword = () => {
         closeButton={true}
         closeButtonAction={() => history.goBack()}
         title={`${i18n.t("createpassword.title")}`}
+        footer={true}
+        primaryButtonText={`${i18n.t("createpassword.continue.button")}`}
+        primaryButtonAction={() => handleContinue()}
+        primaryButtonDisabled={!validated}
       >
         <IonGrid>
           <IonRow>
@@ -40,30 +38,34 @@ const CreatePassword = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <IonItem>
-                <IonLabel position="stacked">
-                  {i18n.t("createpassword.input.first.title")} -{" "}
-                  {hiddenInput ? "true" : "false"}
-                </IonLabel>
-                <IonInput
-                  placeholder={`${i18n.t(
-                    "createpassword.input.first.placeholder"
-                  )}`}
-                >
-                  <IonButton
-                    shape="round"
-                    onClick={() => {
-                      setHiddenInput(!hiddenInput);
-                    }}
-                  >
-                    <IonIcon
-                      slot="icon-only"
-                      icon={eyeOffOutline}
-                      color="primary"
-                    />
-                  </IonButton>
-                </IonInput>
-              </IonItem>
+              <InputItem
+                title={i18n.t("createpassword.input.first.title")}
+                placeholder={i18n.t("createpassword.input.first.placeholder")}
+                hiddenInput={true}
+              />
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+        <IonGrid>
+          <IonRow>
+            <IonCol size="12">
+              <InputItem
+                title={i18n.t("createpassword.input.second.title")}
+                placeholder={i18n.t("createpassword.input.second.placeholder")}
+                hiddenInput={true}
+              />
+            </IonCol>
+          </IonRow>
+        </IonGrid>
+        <IonGrid>
+          <IonRow>
+            <IonCol size="12">
+              <InputItem
+                title={i18n.t("createpassword.input.third.title")}
+                placeholder={i18n.t("createpassword.input.third.placeholder")}
+                hiddenInput={false}
+                optional={true}
+              />
             </IonCol>
           </IonRow>
         </IonGrid>
