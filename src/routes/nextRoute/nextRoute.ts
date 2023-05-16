@@ -169,7 +169,7 @@ const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
 const getNextVerifySeedPhraseRoute = () => {
-  return { pathname: RoutePath.DIDS };
+  return { pathname: RoutePath.TABS_MENU };
 };
 
 export {

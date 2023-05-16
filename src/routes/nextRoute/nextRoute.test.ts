@@ -116,7 +116,7 @@ describe("NextRoute", () => {
     const result = getNextVerifySeedPhraseRoute();
 
     expect(result).toEqual({
-      pathname: RoutePath.DIDS,
+      pathname: RoutePath.TABS_MENU,
     });
   });
 });
@@ -171,7 +171,7 @@ describe("getNextRoute", () => {
       payload,
     });
 
-    expect(result3.nextPath).toEqual(  {pathname: RoutePath.DIDS});
+    expect(result3.nextPath).toEqual(  {pathname: RoutePath.TABS_MENU});
     expect(result3.updateRedux).toHaveLength(3);
     expect(result3.updateRedux[0]).toBeInstanceOf(Function);
 
@@ -184,7 +184,7 @@ describe("getNextRoute", () => {
 
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({
-      pathname: RoutePath.DIDS,
+      pathname: RoutePath.TABS_MENU,
     });
   });
 
