@@ -12,7 +12,7 @@ const updateReduxState = (
     data: DataProps
   ) => ThunkAction<void, RootState, undefined, AnyAction>)[]
 ) => {
-  const dataWithCurrentRoute = {
+  const dataWithNextRoute = {
     ...data,
     state: {
       ...data.state,
@@ -20,9 +20,7 @@ const updateReduxState = (
     },
   };
   functions.forEach((fn) => {
-    if (fn){
-      dispatch(fn(dataWithCurrentRoute));
-    }
+    dispatch(fn(dataWithNextRoute));
   });
 };
 
