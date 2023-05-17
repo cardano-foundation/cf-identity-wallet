@@ -26,10 +26,10 @@ const config = {
         use: ["style-loader", "css-loader", "postcss-loader"],
       },
       {
-        test: /\.wasm$/,
+        test: /\argon2.wasm$/,
         loader: "base64-loader",
         type: "javascript/auto"
-    },
+      },
     ],
   },
   resolve: {
@@ -79,6 +79,9 @@ const config = {
   ],
   infrastructureLogging: {
     level: "info",
+  },
+  experiments: {
+    asyncWebAssembly: true
   }
 };
 
