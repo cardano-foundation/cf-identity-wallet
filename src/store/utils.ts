@@ -20,7 +20,9 @@ const updateReduxState = (
     },
   };
   functions.forEach((fn) => {
-    if (fn) dispatch(fn(dataWithCurrentRoute));
+    if (fn){
+      dispatch(fn(dataWithCurrentRoute));
+    }
   });
 };
 
