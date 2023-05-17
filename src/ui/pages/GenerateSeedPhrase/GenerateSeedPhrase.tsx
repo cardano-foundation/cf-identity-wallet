@@ -36,6 +36,7 @@ import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -79,11 +80,20 @@ const GenerateSeedPhrase = () => {
 
   const handleContinue = () => {
     setAlertIsOpen(false);
+    const data: DataProps = {
+      store: storeState,
+      state: { seedPhrase: seedPhrase.join(" ") },
+    };
     const { nextPath, updateRedux } = getNextRoute(
       RoutePath.GENERATE_SEED_PHRASE,
-      { store: storeState, state: { seedPhrase: seedPhrase.join(" ") } }
+      data
     );
-    updateReduxState(dispatch, updateRedux);
+    updateReduxState(
+      nextPath.pathname,
+      data,
+      dispatch,
+      updateRedux
+    );
     history.push(nextPath.pathname);
   };
 

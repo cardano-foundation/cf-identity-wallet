@@ -2,67 +2,14 @@ import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RoutePath } from "../index";
 import { RootState } from "../../store";
 import {
-  removeRoute,
+  removeSetPasscodeRoute,
   setAuthentication,
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
 import {
-  clearSeedPhraseCache,
-  setSeedPhraseCache,
+  clearSeedPhraseCache, setSeedPhraseCache
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PageState } from "./nextRoute.types";
-
-const getNextRoute = (
-  currentPath: string,
-  data: DataProps
-): {
-  nextPath: { pathname: string };
-  updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
-} => {
-  const { nextPath, updateRedux } = NextRoute[currentPath];
-  const path = nextPath(data);
-  updateRedux.push(() => () => setCurrentRoute({ path: path.pathname }));
-  return {
-    nextPath: path,
-    updateRedux: updateRedux.map((fn: (data: DataProps) => void) => fn(data)),
-  };
-};
-
-const NextRoute: Record<string, any> = {
-  "/": {
-    nextPath: (data: DataProps) => getNextRootRoute(data.store),
-    updateRedux: [],
-  },
-  "/onboarding": {
-    nextPath: (data: DataProps) => getNextOnboardingRoute(data.store),
-    updateRedux: [],
-  },
-  "/setpasscode": {
-    nextPath: (data: DataProps) => getNextSetPasscodeRoute(data.store),
-    updateRedux: [
-      () => () => removeRoute(RoutePath.SET_PASSCODE),
-      (data: DataProps) => () => updateStoreAfterSetPasscodeRoute(data.store),
-    ],
-  },
-  "/passcodelogin": {
-    nextPath: (data: DataProps) =>
-      getNextPasscodeLoginRoute(data.store, data.state),
-    updateRedux: [
-      (data: DataProps) => () =>
-        updateStoreAfterPasscodeLoginRoute(data.store, data.state),
-    ],
-  },
-  "/generateseedphrase": {
-    nextPath: () => getNextGenerateSeedPhraseRoute(),
-    updateRedux: [
-      (data: DataProps) => () => setSeedPhraseCache(data.state?.seedPhrase),
-    ],
-  },
-  "/verifyseedphrase": {
-    nextPath: () => getNextVerifySeedPhraseRoute(),
-    updateRedux: [() => () => clearSeedPhraseCache()],
-  },
-};
 
 const getNextRootRoute = (store: RootState) => {
   const authentication = store.stateCache.authentication;
@@ -107,9 +54,9 @@ const getNextSetPasscodeRoute = (store: RootState) => {
   return { pathname: nextPath };
 };
 
-const updateStoreAfterSetPasscodeRoute = (store: RootState) => {
+const updateStoreAfterSetPasscodeRoute = (data: DataProps) => {
   return setAuthentication({
-    ...store.stateCache.authentication,
+    ...data.store.stateCache.authentication,
     loggedIn: true,
     time: Date.now(),
     passcodeIsSet: true,
@@ -140,33 +87,6 @@ const getNextPasscodeLoginRoute = (
   }
 };
 
-const updateStoreAfterPasscodeLoginRoute = (
-  store: RootState,
-  state: PageState | undefined
-) => {
-  const seedPhraseISet = !!store.seedPhraseCache.seedPhrase;
-
-  if (state?.resetPasscode && seedPhraseISet) {
-    return setAuthentication({
-      ...store.stateCache.authentication,
-      loggedIn: false,
-      time: 0,
-    });
-  } else if (state?.resetPasscode) {
-    return setAuthentication({
-      ...store.stateCache.authentication,
-      loggedIn: false,
-      time: 0,
-    });
-  } else {
-    return setAuthentication({
-      ...store.stateCache.authentication,
-      loggedIn: true,
-      time: Date.now(),
-    });
-  }
-};
-
 const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
@@ -174,7 +94,84 @@ const getNextVerifySeedPhraseRoute = () => {
   return { pathname: RoutePath.TABS_MENU };
 };
 
+const updateStoreAfterPasscodeLoginRoute = (data: DataProps) => {
+  const seedPhraseISet = !!data.store.seedPhraseCache.seedPhrase;
+
+  if (data.state?.resetPasscode && seedPhraseISet) {
+    return setAuthentication({
+      ...data.store.stateCache.authentication,
+      loggedIn: false,
+      time: 0,
+    });
+  } else if (data.state?.resetPasscode) {
+    return setAuthentication({
+      ...data.store.stateCache.authentication,
+      loggedIn: false,
+      time: 0,
+    });
+  } else {
+    return setAuthentication({
+      ...data.store.stateCache.authentication,
+      loggedIn: true,
+      time: Date.now(),
+    });
+  }
+};
+
+const updateStoreSetSeedPhrase = (data: DataProps) => {
+  return setSeedPhraseCache(data.state?.seedPhrase);
+};
+const updateStoreCurrentRoute = (data: DataProps) => {
+  return setCurrentRoute({ path: data.state?.nextRoute });
+};
+
+const getNextRoute = (
+  currentPath: string,
+  data: DataProps
+): {
+  nextPath: { pathname: string };
+  updateRedux: ((
+    data: DataProps
+  ) => ThunkAction<void, RootState, undefined, AnyAction>)[];
+} => {
+  const { nextPath, updateRedux } = NextRoute[currentPath];
+  updateRedux.push(updateStoreCurrentRoute);
+  return {
+    nextPath: nextPath(data),
+    updateRedux,
+  };
+};
+
+const NextRoute: Record<string, any> = {
+  "/": {
+    nextPath: (data: DataProps) => getNextRootRoute(data.store),
+    updateRedux: [],
+  },
+  "/onboarding": {
+    nextPath: (data: DataProps) => getNextOnboardingRoute(data.store),
+    updateRedux: [],
+  },
+  "/setpasscode": {
+    nextPath: (data: DataProps) => getNextSetPasscodeRoute(data.store),
+    updateRedux: [removeSetPasscodeRoute, updateStoreAfterSetPasscodeRoute],
+  },
+  "/passcodelogin": {
+    nextPath: (data: DataProps) =>
+      getNextPasscodeLoginRoute(data.store, data.state),
+    updateRedux: [updateStoreAfterPasscodeLoginRoute],
+  },
+  "/generateseedphrase": {
+    nextPath: () => getNextGenerateSeedPhraseRoute(),
+    updateRedux: [updateStoreSetSeedPhrase],
+  },
+  "/verifyseedphrase": {
+    nextPath: () => getNextVerifySeedPhraseRoute(),
+    updateRedux: [clearSeedPhraseCache],
+  },
+};
+
 export {
+  getNextRootRoute,
   getNextRoute,
   getNextOnboardingRoute,
   getNextSetPasscodeRoute,
@@ -183,4 +180,6 @@ export {
   updateStoreAfterPasscodeLoginRoute,
   getNextGenerateSeedPhraseRoute,
   getNextVerifySeedPhraseRoute,
+  updateStoreCurrentRoute,
+  updateStoreSetSeedPhrase
 };

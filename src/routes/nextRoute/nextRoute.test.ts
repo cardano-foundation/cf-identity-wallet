@@ -77,7 +77,7 @@ describe("NextRoute", () => {
       passcodeIsSet: true,
     };
 
-    const result = updateStoreAfterSetPasscodeRoute(storeMock);
+    const result = updateStoreAfterSetPasscodeRoute({ store: storeMock });
 
     expect(result).toEqual(setAuthentication(expectedAuthentication));
   });
@@ -99,7 +99,10 @@ describe("NextRoute", () => {
       loggedIn: true,
       time: expect.any(Number),
     };
-    const result = updateStoreAfterPasscodeLoginRoute(storeMock, state);
+    const result = updateStoreAfterPasscodeLoginRoute({
+      store: storeMock,
+      state,
+    });
 
     expect(result).toEqual(setAuthentication(expectedAuthentication));
   });

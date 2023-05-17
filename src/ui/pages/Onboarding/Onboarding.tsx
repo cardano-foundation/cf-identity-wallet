@@ -10,6 +10,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
+import {DataProps} from "../../../routes/nextRoute/nextRoute.types";
 
 const Onboarding = () => {
   const history = useHistory();
@@ -25,10 +26,16 @@ const Onboarding = () => {
   }
 
   const handleNavigation = () => {
-    const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, {
-      store: storeState,
-    });
-    updateReduxState(dispatch, updateRedux);
+    const data: DataProps = {
+      store: storeState
+    };
+    const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
+    updateReduxState(
+      nextPath.pathname,
+      data,
+      dispatch,
+      updateRedux
+    );
     history.push(nextPath.pathname);
   };
 

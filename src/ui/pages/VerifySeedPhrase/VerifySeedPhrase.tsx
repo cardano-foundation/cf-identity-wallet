@@ -73,7 +73,12 @@ const VerifySeedPhrase = () => {
         RoutePath.VERIFY_SEED_PHRASE,
         { store: storeState }
       );
-      updateReduxState(dispatch, updateRedux);
+      updateReduxState(
+        nextPath.pathname,
+        { store: storeState },
+        dispatch,
+        updateRedux
+      );
       history.push(nextPath.pathname);
       // TODO: Store Seed Phrase in db/keystore
     } else {
