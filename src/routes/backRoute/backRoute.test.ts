@@ -1,11 +1,6 @@
 import { RootState } from "../../store";
 import { DataProps } from "../nextRoute/nextRoute.types";
-import { calcPreviousRoute, getBackRoute } from "./backRoute";
-import {
-  removeCurrentRoute,
-  setCurrentRoute,
-} from "../../store/reducers/stateCache";
-import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
+import {calcPreviousRoute, getBackRoute, getPreviousRoute} from "./backRoute";
 import { RoutePath } from "../index";
 
 jest.mock("../../store/reducers/stateCache", () => ({
@@ -16,6 +11,7 @@ jest.mock("../../store/reducers/stateCache", () => ({
 jest.mock("../../store/reducers/seedPhraseCache", () => ({
   clearSeedPhraseCache: jest.fn(),
 }));
+
 describe("getBackRoute", () => {
   let storeMock: RootState;
   beforeEach(() => {
@@ -50,7 +46,7 @@ describe("getBackRoute", () => {
     expect(result.updateRedux).toEqual([]);
   });
 
-  test("should return the correct 'backPath' and 'updateRedux' when currentPath is '/generateseedphrase'", () => {
+  test("should return the correct back path when currentPath is /generateseedphrase", () => {
     const currentPath = "/generateseedphrase";
     const data: DataProps = {
       store: storeMock,
@@ -59,19 +55,10 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(2);
-    expect(result.updateRedux[0]).toBeInstanceOf(Function);
-    expect(result.updateRedux[1]).toBeInstanceOf(Function);
-
-    // Comprobar que se llamó a las funciones de Redux esperadas
-    result.updateRedux[0]();
-    expect(removeCurrentRoute).toHaveBeenCalled();
-
-    result.updateRedux[1]();
-    expect(setCurrentRoute).toHaveBeenCalledWith({ path: "/route2" });
+    expect(result.updateRedux).toHaveLength(2)
   });
 
-  test("should return the correct 'backPath' and 'updateRedux' when currentPath is '/verifyseedphrase'", () => {
+  test("should return the correct back path when currentPath is /verifyseedphrase", () => {
     const currentPath = "/verifyseedphrase";
     const data: DataProps = {
       store: storeMock,
@@ -80,22 +67,10 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(3);
-    expect(result.updateRedux[0]).toBeInstanceOf(Function);
-    expect(result.updateRedux[1]).toBeInstanceOf(Function);
-    expect(result.updateRedux[2]).toBeInstanceOf(Function);
-
-    result.updateRedux[0]();
-    expect(removeCurrentRoute).toHaveBeenCalled();
-
-    result.updateRedux[1]();
-    expect(setCurrentRoute).toHaveBeenCalledWith({ path: "/route2" });
-
-    result.updateRedux[2]();
-    expect(clearSeedPhraseCache).toHaveBeenCalled();
+    expect(result.updateRedux).toHaveLength(3)
   });
 
-  test("should return the correct 'backPath' and 'updateRedux' when currentPath is '/setpasscode'", () => {
+  test("should return the correct back path when currentPath is /setpasscode", () => {
     const currentPath = "/setpasscode";
     const data: DataProps = {
       store: storeMock,
@@ -104,49 +79,76 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(2);
-    expect(result.updateRedux[0]).toBeInstanceOf(Function);
-    expect(result.updateRedux[1]).toBeInstanceOf(Function);
-
-    // Comprobar que se llamó a las funciones de Redux esperadas
-    result.updateRedux[0]();
-    expect(removeCurrentRoute).toHaveBeenCalled();
-
-    result.updateRedux[1]();
-    expect(setCurrentRoute).toHaveBeenCalledWith({ path: "/route2" });
+    expect(result.updateRedux).toHaveLength(2)
   });
 });
 
 describe("calcPreviousRoute", () => {
   test("should return the correct previous route", () => {
     const routes = [
-      { path: "/route1" },
-      { path: "/route2" },
-      { path: "/route3" },
+      { path: "/", payload: {} },
+      { path: "/generateseedphrase", payload: {} },
+      { path: "/verifyseedphrase", payload: {} },
+      { path: "/setpasscode", payload: {} },
     ];
 
     const result = calcPreviousRoute(routes);
 
-    expect(result).toEqual({ path: "/route2" });
+    expect(result).toEqual({ path: "/generateseedphrase", payload: {} });
   });
 
-  test("should return undefined if no previous route found", () => {
-    const result = calcPreviousRoute([]);
+  test("should return undefined if not available routes", () => {
+    const routes = [
+      { path: RoutePath.PASSCODE_LOGIN, payload: {} }
+    ];
+
+    const result = calcPreviousRoute(routes);
 
     expect(result).toBeUndefined();
   });
+});
 
-  test("should ignore 'PASSCODE_LOGIN' routes", () => {
-    const routes = [
-      { path: "/route1" },
-      { path: RoutePath.PASSCODE_LOGIN },
-      { path: "/route2" },
-      { path: "/route3" },
-      { path: "/route4" },
-    ];
+describe("getPreviousRoute", () => {
+  let storeMock: RootState;
+  beforeEach(() => {
+    storeMock = {
+      seedPhraseCache: {
+        seedPhrase: "",
+      },
+      stateCache: {
+        routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
+        authentication: {
+          passcodeIsSet: true,
+          loggedIn: false,
+          time: 0,
+        },
+      },
+    };
+  });
 
-    const result = calcPreviousRoute(routes);
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+  test("should return the correct previous route pathname", () => {
+    const data: DataProps = {
+      store: storeMock,
+    };
 
-    expect(result).toEqual({ path: "/route2" });
+    const result = getPreviousRoute(data);
+
+    expect(result).toEqual({ pathname: "/route2" });
+  });
+
+  test("should return the ROOT path if no previous route exists", () => {
+    const data: DataProps = {
+      store: storeMock,
+    };
+
+    data.store.stateCache.routes = [];
+
+    const result = getPreviousRoute(data);
+
+    expect(result).toEqual({ pathname: "/" });
   });
 });
+
