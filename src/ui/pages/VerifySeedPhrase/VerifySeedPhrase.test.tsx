@@ -10,6 +10,17 @@ import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { MNEMONIC_FIFTEEN_WORDS } from "../../../constants/appConstants";
 import { TabsMenu } from "../../components/navigation/TabsMenu";
+import { Addresses } from "../../../core/cardano/addresses";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage/secureStorage";
+
+const ARGON2ID_HASH = {
+  encoded: "encodedHash",
+  hash: Buffer.from("hashedPassword"),
+  hashHex: "0xHashedPasscode",
+};
+
+const setSeedStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
+const setAddressesSpy = jest.spyOn(Addresses, "convertToRootXPrivateKeyHex").mockResolvedValue;
 
 describe("Verify Seed Phrase Page", () => {
   const seedPhrase: (string | null)[] = [];
@@ -172,5 +183,14 @@ describe("Verify Seed Phrase Page", () => {
     fireEvent.click(continueButton);
 
     await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
+
+    expect(setAddressesSpy).toBeCalledWith(
+      seedPhrase
+    )
+
+    expect(setSeedStoreSpy).toBeCalledWith(
+      KeyStoreKeys.SEEDPHRASE,
+      ARGON2ID_HASH.encoded
+    );
   });
 });
