@@ -1,6 +1,6 @@
 import { RootState } from "../../store";
 import { DataProps } from "../nextRoute/nextRoute.types";
-import {calcPreviousRoute, getBackRoute, getPreviousRoute} from "./backRoute";
+import { calcPreviousRoute, getBackRoute, getPreviousRoute } from "./backRoute";
 import { RoutePath } from "../index";
 
 jest.mock("../../store/reducers/stateCache", () => ({
@@ -55,7 +55,7 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(2)
+    expect(result.updateRedux).toHaveLength(2);
   });
 
   test("should return the correct back path when currentPath is /verifyseedphrase", () => {
@@ -67,7 +67,7 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(3)
+    expect(result.updateRedux).toHaveLength(3);
   });
 
   test("should return the correct back path when currentPath is /setpasscode", () => {
@@ -79,7 +79,7 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(2)
+    expect(result.updateRedux).toHaveLength(2);
   });
 });
 
@@ -98,9 +98,7 @@ describe("calcPreviousRoute", () => {
   });
 
   test("should return undefined if not available routes", () => {
-    const routes = [
-      { path: RoutePath.PASSCODE_LOGIN, payload: {} }
-    ];
+    const routes = [{ path: RoutePath.PASSCODE_LOGIN, payload: {} }];
 
     const result = calcPreviousRoute(routes);
 
@@ -151,4 +149,3 @@ describe("getPreviousRoute", () => {
     expect(result).toEqual({ pathname: "/" });
   });
 });
-
