@@ -15,6 +15,11 @@ import { useAppSelector } from "../../../store/hooks";
 import Alert from "../../components/Alert/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+} from "../../../core/storage/secureStorage";
+import { Addresses } from "../../../core/cardano/addresses";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
@@ -64,7 +69,15 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      // TODO: Store Seed Phrase, clear cache and navigate to the next page
+      SecureStorage.set(KeyStoreKeys.SEEDPHRASE, originalSeedPhrase.join(" "));
+      SecureStorage.set(
+        KeyStoreKeys.X_PRIVATE_KEY,
+        await Addresses.convertToRootXPrivateKeyHex(
+          originalSeedPhrase.join(" ")
+        )
+      );
+
+      // TODO: Clear cache and navigate to the next page
       history.push(RoutePath.TABS_MENU);
     } else {
       setAlertIsOpen(true);

@@ -11,7 +11,10 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { MNEMONIC_FIFTEEN_WORDS } from "../../../constants/appConstants";
 import { TabsMenu } from "../../components/navigation/TabsMenu";
 import { Addresses } from "../../../core/cardano/addresses";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage/secureStorage";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+} from "../../../core/storage/secureStorage";
 
 const ARGON2ID_HASH = {
   encoded: "encodedHash",
@@ -19,8 +22,13 @@ const ARGON2ID_HASH = {
   hashHex: "0xHashedPasscode",
 };
 
+const rootKey =
+  "608621fb4c0101feb31f6f2fd7018bee54101ff67d555079671893225ee1a45e2331497029d885b5634405f350508cd95dce3991503b10f128d04f34b7b625783a1e3bd5dcf11fd4f989ec2cdcdea3a54db8997398174ecdcc87006c274176a0";
+
 const setSeedStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
-const setAddressesSpy = jest.spyOn(Addresses, "convertToRootXPrivateKeyHex").mockResolvedValue;
+const setAddressesSpy = jest
+  .spyOn(Addresses, "convertToRootXPrivateKeyHex")
+  .mockResolvedValue(rootKey);
 
 describe("Verify Seed Phrase Page", () => {
   const seedPhrase: (string | null)[] = [];
@@ -184,13 +192,10 @@ describe("Verify Seed Phrase Page", () => {
 
     await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
 
-    expect(setAddressesSpy).toBeCalledWith(
-      seedPhrase
-    )
+    expect(setAddressesSpy).toBeCalledWith(seedPhrase);
 
-    expect(setSeedStoreSpy).toBeCalledWith(
-      KeyStoreKeys.SEEDPHRASE,
-      ARGON2ID_HASH.encoded
-    );
+    expect(setSeedStoreSpy).toBeCalledWith(KeyStoreKeys.SEEDPHRASE, seedPhrase);
+
+    expect(setSeedStoreSpy).toBeCalledWith(KeyStoreKeys.X_PRIVATE_KEY, rootKey);
   });
 });
