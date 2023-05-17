@@ -9,9 +9,13 @@ const InputItem = ({
   title,
   placeholder,
   hiddenInput,
+  setValue,
   optional,
 }: InputItemProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
+  const handleInput = (e: any) => {
+    setValue(e.target.value);
+  };
   return (
     <IonItem className="input-item">
       <IonLabel position="stacked">
@@ -26,21 +30,22 @@ const InputItem = ({
         <IonInput
           type={hidden ? "password" : "text"}
           placeholder={placeholder}
+          onIonChange={(e) => handleInput(e)}
         />
-        <IonButton
-          shape="round"
-          onClick={() => {
-            setHidden(!hidden);
-          }}
-        >
-          {hiddenInput && (
+        {hiddenInput && (
+          <IonButton
+            shape="round"
+            onClick={() => {
+              setHidden(!hidden);
+            }}
+          >
             <IonIcon
               slot="icon-only"
               icon={hidden ? eyeOutline : eyeOffOutline}
               color="primary"
             />
-          )}
-        </IonButton>
+          </IonButton>
+        )}
       </div>
     </IonItem>
   );
