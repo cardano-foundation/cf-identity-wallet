@@ -7,7 +7,8 @@ import {
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
 import {
-  clearSeedPhraseCache, setSeedPhraseCache
+  clearSeedPhraseCache,
+  setSeedPhraseCache,
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PageState } from "./nextRoute.types";
 
@@ -181,5 +182,5 @@ export {
   getNextGenerateSeedPhraseRoute,
   getNextVerifySeedPhraseRoute,
   updateStoreCurrentRoute,
-  updateStoreSetSeedPhrase
+  updateStoreSetSeedPhrase,
 };

@@ -19,54 +19,23 @@ const getBackRoute = (
 
   return {
     backPath: backPath(data),
-    updateRedux: updateRedux.map((fn: (data: DataProps) => void) => fn(data)),
+    updateRedux,
   };
 };
 
-const backPath = (data: DataProps) => getPreviousRoute(data.store);
-
-const backRoute: Record<string, any> = {
-  "/": {
-    backPath,
-    updateRedux: [],
-  },
-  "/generateseedphrase": {
-    backPath: (data: DataProps) => getPreviousRoute(data.store),
-    updateRedux: [
-      () => () => removeCurrentRoute(),
-      (data: DataProps) => () => updateStoreSetCurrentRoute(data.store),
-    ],
-  },
-  "/verifyseedphrase": {
-    backPath,
-    updateRedux: [
-      () => () => removeCurrentRoute(),
-      (data: DataProps) => () => updateStoreSetCurrentRoute(data.store),
-      () => () => clearSeedPhraseCache(),
-    ],
-  },
-  "/setpasscode": {
-    backPath,
-    updateRedux: [
-      () => () => removeCurrentRoute(),
-      (data: DataProps) => () => updateStoreSetCurrentRoute(data.store),
-    ],
-  },
-};
-
-const updateStoreSetCurrentRoute = (store: RootState) => {
-  const prevPath = calcPreviousRoute(store.stateCache.routes);
+const updateStoreSetCurrentRoute = (data: DataProps) => {
+  const prevPath = calcPreviousRoute(data.store.stateCache.routes);
   let path;
   if (prevPath) {
     path = prevPath.path;
   } else {
-    path = store.stateCache.routes[0].path;
+    path = data.store.stateCache.routes[0].path;
   }
 
   return setCurrentRoute({ path });
 };
-const getPreviousRoute = (store: RootState) => {
-  const { routes } = store.stateCache;
+const getPreviousRoute = (data: DataProps) => {
+  const { routes } = data.store.stateCache;
 
   const prevPath = calcPreviousRoute(routes);
   let path;
@@ -88,4 +57,34 @@ const calcPreviousRoute = (
     .find((element) => element.path !== RoutePath.PASSCODE_LOGIN);
 };
 
-export { getBackRoute, calcPreviousRoute };
+const backPath = (data: DataProps) => getPreviousRoute(data);
+
+const backRoute: Record<string, any> = {
+  "/": {
+    backPath,
+    updateRedux: [],
+  },
+  "/generateseedphrase": {
+    backPath,
+    updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
+  },
+  "/verifyseedphrase": {
+    backPath,
+    updateRedux: [
+      removeCurrentRoute,
+      updateStoreSetCurrentRoute,
+      clearSeedPhraseCache,
+    ],
+  },
+  "/setpasscode": {
+    backPath,
+    updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
+  },
+};
+
+export {
+  getBackRoute,
+  calcPreviousRoute,
+  getPreviousRoute,
+  updateStoreSetCurrentRoute,
+};

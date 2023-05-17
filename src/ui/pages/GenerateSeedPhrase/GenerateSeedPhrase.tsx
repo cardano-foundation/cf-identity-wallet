@@ -88,12 +88,7 @@ const GenerateSeedPhrase = () => {
       RoutePath.GENERATE_SEED_PHRASE,
       data
     );
-    updateReduxState(
-      nextPath.pathname,
-      data,
-      dispatch,
-      updateRedux
-    );
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push(nextPath.pathname);
   };
 

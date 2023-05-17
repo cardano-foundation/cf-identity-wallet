@@ -16,7 +16,7 @@ import { getState } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import {DataProps} from "../../../routes/nextRoute/nextRoute.types";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 
 // Based on OWASP recommendations
 const ARGON2ID_OPTIONS = {
@@ -47,7 +47,7 @@ const SetPasscode = () => {
                 handleClear();
 
                 const data: DataProps = {
-                  store: storeState
+                  store: storeState,
                 };
                 const { nextPath, updateRedux } = getNextRoute(
                   RoutePath.SET_PASSCODE,
