@@ -10,7 +10,7 @@ import {
   clearSeedPhraseCache,
   setSeedPhraseCache,
 } from "../../store/reducers/seedPhraseCache";
-import { DataProps, PageState } from "./nextRoute.types";
+import { DataProps } from "./nextRoute.types";
 
 const getNextRootRoute = (store: RootState) => {
   const authentication = store.stateCache.authentication;
@@ -64,30 +64,6 @@ const updateStoreAfterSetPasscodeRoute = (data: DataProps) => {
   });
 };
 
-const getNextPasscodeLoginRoute = (
-  store: RootState,
-  state: PageState | undefined
-) => {
-  const seedPhraseISet = !!store.seedPhraseCache.seedPhrase;
-  if (state?.resetPasscode && seedPhraseISet) {
-    return { pathname: RoutePath.VERIFY_SEED_PHRASE };
-  } else if (state?.resetPasscode) {
-    return { pathname: RoutePath.SET_PASSCODE };
-  } else {
-    const routesIncludeOnboarding = store.stateCache.routes.some(
-      (route) => route.path === RoutePath.ONBOARDING
-    );
-    let nextPath;
-    if (routesIncludeOnboarding && store.stateCache.routes.length === 1) {
-      nextPath = RoutePath.ONBOARDING;
-    } else {
-      nextPath = RoutePath.GENERATE_SEED_PHRASE;
-    }
-
-    return { pathname: nextPath };
-  }
-};
-
 const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
@@ -132,11 +108,6 @@ const NextRoute: Record<string, any> = {
     nextPath: (data: DataProps) => getNextSetPasscodeRoute(data.store),
     updateRedux: [removeSetPasscodeRoute, updateStoreAfterSetPasscodeRoute],
   },
-  "/passcodelogin": {
-    nextPath: (data: DataProps) =>
-      getNextPasscodeLoginRoute(data.store, data.state),
-    updateRedux: [],
-  },
   "/generateseedphrase": {
     nextPath: () => getNextGenerateSeedPhraseRoute(),
     updateRedux: [updateStoreSetSeedPhrase],
@@ -153,7 +124,6 @@ export {
   getNextOnboardingRoute,
   getNextSetPasscodeRoute,
   updateStoreAfterSetPasscodeRoute,
-  getNextPasscodeLoginRoute,
   getNextGenerateSeedPhraseRoute,
   getNextVerifySeedPhraseRoute,
   updateStoreCurrentRoute,

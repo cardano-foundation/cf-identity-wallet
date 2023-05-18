@@ -1,7 +1,6 @@
 import {
   getNextGenerateSeedPhraseRoute,
   getNextOnboardingRoute,
-  getNextPasscodeLoginRoute,
   getNextSetPasscodeRoute,
   getNextRoute,
   updateStoreAfterSetPasscodeRoute,
@@ -79,16 +78,6 @@ describe("NextRoute", () => {
     const result = updateStoreAfterSetPasscodeRoute({ store: storeMock });
 
     expect(result).toEqual(setAuthentication(expectedAuthentication));
-  });
-
-  test("should return correct route for /passcodelogin when the current routes path is empty", () => {
-    storeMock.stateCache.routes = [];
-    storeMock.stateCache.authentication.passcodeIsSet = true;
-    const result = getNextPasscodeLoginRoute(storeMock, state);
-
-    expect(result).toEqual({
-      pathname: RoutePath.GENERATE_SEED_PHRASE,
-    });
   });
 
   test("should return correct route for /generateseedphrase", () => {
@@ -173,27 +162,6 @@ describe("getNextRoute", () => {
     storeMock.seedPhraseCache.seedPhrase = "";
 
     const result = getNextSetPasscodeRoute(storeMock);
-    expect(result).toEqual({
-      pathname: RoutePath.GENERATE_SEED_PHRASE,
-    });
-  });
-
-  test("getNextPasscodeLoginRoute should return the correct next path when routes include onboarding", () => {
-    storeMock.stateCache.routes = [{ path: RoutePath.ONBOARDING }];
-
-    const result = getNextPasscodeLoginRoute(storeMock, state);
-    expect(result).toEqual({
-      pathname: RoutePath.ONBOARDING,
-    });
-  });
-
-  test("getNextPasscodeLoginRoute should return the correct next path when routes do not include onboarding", () => {
-    storeMock.stateCache.routes = [
-      { path: RoutePath.GENERATE_SEED_PHRASE },
-      { path: "/" },
-    ];
-
-    const result = getNextPasscodeLoginRoute(storeMock, state);
     expect(result).toEqual({
       pathname: RoutePath.GENERATE_SEED_PHRASE,
     });

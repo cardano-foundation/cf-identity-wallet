@@ -101,25 +101,7 @@ const PasscodeLogin = () => {
           passcodeIsSet: false,
         },
       };
-      const { nextPath, updateRedux } = getNextRoute(RoutePath.PASSCODE_LOGIN, {
-        store: copyStore,
-        state: {
-          resetPasscode: true,
-        },
-      });
-
-      updateReduxState(
-        RoutePath.PASSCODE_LOGIN,
-        {
-          store: copyStore,
-          state: {
-            resetPasscode: true,
-          },
-        },
-        dispatch,
-        updateRedux
-      );
-      history.push(nextPath.pathname);
+      history.push(RoutePath.SET_PASSCODE);
       setPasscode("");
     });
   };
