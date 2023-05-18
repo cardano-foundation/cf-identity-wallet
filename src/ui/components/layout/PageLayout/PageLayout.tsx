@@ -40,7 +40,6 @@ const PageLayout = ({
   const storeState = useAppSelector(getState);
 
   const handleOnBack = () => {
-    if (!currentPath) return;
     const { backPath, updateRedux } = getBackRoute(currentPath, {
       store: storeState,
     });
