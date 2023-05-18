@@ -17,6 +17,7 @@ import { getState } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
+import { getBackRoute } from "../../../routes/backRoute";
 
 const PasscodeLogin = () => {
   const history = useHistory();
@@ -43,17 +44,19 @@ const PasscodeLogin = () => {
         verifyPasscode(passcode + digit)
           .then((verified) => {
             if (verified) {
-              const { nextPath, updateRedux } = getNextRoute(
+              const { backPath, updateRedux } = getBackRoute(
                 RoutePath.PASSCODE_LOGIN,
-                { store: storeState }
+                {
+                  store: storeState,
+                }
               );
               updateReduxState(
-                nextPath.pathname,
+                backPath.pathname,
                 { store: storeState },
                 dispatch,
                 updateRedux
               );
-              history.push(nextPath.pathname);
+              history.push(backPath.pathname);
               setPasscode("");
             } else {
               setPasscodeIncorrect(true);

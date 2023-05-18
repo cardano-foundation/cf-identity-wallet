@@ -7,6 +7,7 @@ import {
 } from "../../store/reducers/stateCache";
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
+import { updateStoreAfterPasscodeLoginRoute } from "../nextRoute";
 
 const getBackRoute = (
   currentPath: string,
@@ -75,6 +76,9 @@ const backRoute: Record<string, any> = {
   },
   "/setpasscode": {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
+  },
+  "/passcodelogin": {
+    updateRedux: [updateStoreAfterPasscodeLoginRoute],
   },
 };
 

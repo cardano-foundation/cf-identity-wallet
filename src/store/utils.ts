@@ -14,8 +14,7 @@ const updateReduxState = (
 ) => {
   if (data.state) {
     data.state.nextRoute = nextRoute;
-  }
-  else {
+  } else {
     data.state = { nextRoute };
   }
   functions.forEach((fn) => {
