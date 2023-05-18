@@ -7,8 +7,10 @@ import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import { getState } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
+import { updateReduxState } from "../../../store/utils";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 
 const Onboarding = () => {
   const history = useHistory();
@@ -24,17 +26,17 @@ const Onboarding = () => {
   }
 
   const handleNavigation = () => {
-    const { nextPath } = getNextRoute(RoutePath.ONBOARDING, {
+    const data: DataProps = {
       store: storeState,
-    });
-
-    dispatch(setCurrentRoute({ path: nextPath.pathname }));
+    };
+    const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push(nextPath.pathname);
   };
 
   return (
     <IonPage className="page-layout onboarding safe-area">
-      <PageLayout>
+      <PageLayout currentPath={RoutePath.ONBOARDING}>
         <Slides items={items} />
         <IonButton
           shape="round"

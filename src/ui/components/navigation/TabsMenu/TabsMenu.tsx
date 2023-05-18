@@ -22,16 +22,7 @@ import { Creds } from "../../../pages/Creds";
 import { Crypto } from "../../../pages/Crypto";
 import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
-
-enum TabsRoutePath {
-  ROOT = "/tabs",
-  DIDS = "/tabs/dids",
-  CREDS = "/tabs/creds",
-  SCAN = "/tabs/scan",
-  CRYPTO = "/tabs/crypto",
-  CHAT = "/tabs/chat",
-}
-
+import {TabsRoutePath} from "../../../../routes/paths";
 const TabsMenu = () => {
   return (
     <IonReactRouter>

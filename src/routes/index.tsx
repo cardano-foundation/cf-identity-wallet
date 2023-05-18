@@ -7,20 +7,16 @@ import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { VerifySeedPhrase } from "../ui/pages/VerifySeedPhrase";
-import { useAppSelector } from "../store/hooks";
-import { getAuthentication, getState } from "../store/reducers/stateCache";
+import { useAppDispatch, useAppSelector } from "../store/hooks";
+import {
+  getAuthentication,
+  getRoutes,
+  getState,
+  setCurrentRoute,
+} from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
 import { TabsMenu } from "../ui/components/navigation/TabsMenu";
-enum RoutePath {
-  ROOT = "/",
-  ONBOARDING = "/onboarding",
-  SET_PASSCODE = "/setpasscode",
-  PASSCODE_LOGIN = "/passcodelogin",
-  GENERATE_SEED_PHRASE = "/generateseedphrase",
-  VERIFY_SEED_PHRASE = "/verifyseedphrase",
-  TABS_MENU = "/tabs",
-}
-
+import {RoutePath} from "./paths";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
@@ -51,9 +47,14 @@ const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
 
 const Routes = () => {
   const storeState = useAppSelector(getState);
-
+  const dispatch = useAppDispatch();
+  const routes = useAppSelector(getRoutes);
   const { nextPath } = getNextRoute(RoutePath.ROOT, {
     store: storeState,
+  });
+
+  useEffect(() => {
+    if (!routes.length) dispatch(setCurrentRoute({ path: nextPath.pathname }));
   });
 
   return (

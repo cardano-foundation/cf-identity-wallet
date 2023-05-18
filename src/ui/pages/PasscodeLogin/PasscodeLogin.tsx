@@ -5,7 +5,6 @@ import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { RoutePath } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import Alert from "../../components/Alert/Alert";
 import {
@@ -13,10 +12,11 @@ import {
   SecureStorage,
 } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
-import { getNextRoute } from "../../../routes/nextRoute";
+import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
+import { getBackRoute } from "../../../routes/backRoute";
+import {RoutePath} from "../../../routes";
 
 const PasscodeLogin = () => {
   const history = useHistory();
@@ -43,15 +43,19 @@ const PasscodeLogin = () => {
         verifyPasscode(passcode + digit)
           .then((verified) => {
             if (verified) {
-              const { nextPath, updateRedux } = getNextRoute(
+              const { backPath, updateRedux } = getBackRoute(
                 RoutePath.PASSCODE_LOGIN,
-                { store: storeState }
+                {
+                  store: storeState,
+                }
               );
-              if (updateRedux?.length) {
-                updateReduxState(dispatch, updateRedux);
-              }
-              dispatch(setCurrentRoute({ path: nextPath.pathname }));
-              history.push(nextPath.pathname);
+              updateReduxState(
+                backPath.pathname,
+                { store: storeState },
+                dispatch,
+                updateRedux
+              );
+              history.push(backPath.pathname);
               setPasscode("");
             } else {
               setPasscodeIncorrect(true);
@@ -96,25 +100,14 @@ const PasscodeLogin = () => {
           passcodeIsSet: false,
         },
       };
-      const { nextPath, updateRedux } = getNextRoute(RoutePath.PASSCODE_LOGIN, {
-        store: copyStore,
-        state: {
-          resetPasscode: true,
-        },
-      });
-
-      if (updateRedux?.length) {
-        updateReduxState(dispatch, updateRedux);
-      }
-      dispatch(setCurrentRoute({ path: nextPath.pathname }));
-      history.push(nextPath.pathname);
+      history.push(RoutePath.SET_PASSCODE);
       setPasscode("");
     });
   };
 
   return (
     <IonPage className="page-layout passcode-login safe-area">
-      <PageLayout>
+      <PageLayout currentPath={RoutePath.PASSCODE_LOGIN}>
         <PasscodeModule
           title={i18n.t("passcodelogin.title")}
           description={i18n.t("passcodelogin.description")}
