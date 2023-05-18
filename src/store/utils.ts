@@ -12,15 +12,14 @@ const updateReduxState = (
     data: DataProps
   ) => ThunkAction<void, RootState, undefined, AnyAction>)[]
 ) => {
-  const dataWithNextRoute = {
-    ...data,
-    state: {
-      ...data.state,
-      nextRoute,
-    },
-  };
+  if (data.state) {
+    data.state.nextRoute = nextRoute;
+  }
+  else {
+    data.state = { nextRoute };
+  }
   functions.forEach((fn) => {
-    if (fn) dispatch(fn(dataWithNextRoute));
+    if (fn) dispatch(fn(data));
   });
 };
 
