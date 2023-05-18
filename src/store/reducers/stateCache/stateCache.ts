@@ -5,6 +5,7 @@ import {
   AuthenticationCacheProps,
   CurrentRouteCacheProps,
 } from "./stateCache.types";
+import { RoutePath } from "../../../routes";
 
 const initialState: StateCacheProps = {
   routes: [],
@@ -25,6 +26,19 @@ const stateCacheSlice = createSlice({
       );
       state.routes = [action.payload, ...filteredRoutes];
     },
+    removeCurrentRoute: (state) => {
+      state.routes = state.routes.slice(1);
+    },
+    removeRoute: (state, action: PayloadAction<string>) => {
+      state.routes = state.routes.filter(
+        (route) => route.path !== action.payload
+      );
+    },
+    removeSetPasscodeRoute: (state) => {
+      state.routes = state.routes.filter(
+        (route) => route.path !== RoutePath.SET_PASSCODE
+      );
+    },
     setAuthentication: (
       state,
       action: PayloadAction<AuthenticationCacheProps>
@@ -34,7 +48,13 @@ const stateCacheSlice = createSlice({
   },
 });
 
-const { setCurrentRoute, setAuthentication } = stateCacheSlice.actions;
+const {
+  setCurrentRoute,
+  removeCurrentRoute,
+  removeSetPasscodeRoute,
+  removeRoute,
+  setAuthentication,
+} = stateCacheSlice.actions;
 
 const getState = (state: RootState) => state;
 const getStateCache = (state: RootState) => state.stateCache;
@@ -54,6 +74,9 @@ export {
   stateCacheSlice,
   getRoutes,
   setCurrentRoute,
+  removeCurrentRoute,
+  removeRoute,
+  removeSetPasscodeRoute,
   setAuthentication,
   getState,
   getStateCache,

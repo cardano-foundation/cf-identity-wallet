@@ -1,5 +1,6 @@
 import { IonPage } from "@ionic/react";
 import { PageLayout } from "../../components/layout/PageLayout";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 
 const Dids = () => {
   return (
@@ -10,6 +11,7 @@ const Dids = () => {
       <PageLayout
         header={true}
         menuButton={true}
+        currentPath={TabsRoutePath.DIDS}
       >
         <div>DIDs</div>
       </PageLayout>

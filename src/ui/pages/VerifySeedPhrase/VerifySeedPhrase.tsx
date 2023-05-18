@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 import {
   IonCard,
   IonChip,
@@ -8,10 +7,11 @@ import {
   IonPage,
   IonRow,
 } from "@ionic/react";
+import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
-import { useAppSelector } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import Alert from "../../components/Alert/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
@@ -20,9 +20,14 @@ import {
   SecureStorage,
 } from "../../../core/storage/secureStorage";
 import { Addresses } from "../../../core/cardano/addresses";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { updateReduxState } from "../../../store/utils";
+import { getState } from "../../../store/reducers/stateCache";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
   const originalSeedPhrase =
     useAppSelector(getSeedPhraseCache).seedPhrase.split(" ");
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
@@ -50,7 +55,7 @@ const VerifySeedPhrase = () => {
     setSeedPhraseRemaining(seedPhraseRemaining);
   };
 
-  const removeseedPhraseSelected = (index: number) => {
+  const removeSeedPhraseSelected = (index: number) => {
     const removingQuantity = seedPhraseSelected.length - index;
     const newMatch = seedPhraseSelected;
     const words = [];
@@ -76,8 +81,18 @@ const VerifySeedPhrase = () => {
       );
       SecureStorage.set(KeyStoreKeys.IDENTITY_SEEDPHRASE, seedPhraseString);
 
-      // TODO: Clear cache and navigate to the next page
-      history.push(RoutePath.TABS_MENU);
+      const { nextPath, updateRedux } = getNextRoute(
+        RoutePath.VERIFY_SEED_PHRASE,
+        { store: storeState }
+      );
+      updateReduxState(
+        nextPath.pathname,
+        { store: storeState },
+        dispatch,
+        updateRedux
+      );
+      history.push(nextPath.pathname);
+      // TODO: Store Seed Phrase in db/keystore
     } else {
       setAlertIsOpen(true);
     }
@@ -88,7 +103,7 @@ const VerifySeedPhrase = () => {
       <PageLayout
         header={true}
         backButton={true}
-        backButtonPath={RoutePath.GENERATE_SEED_PHRASE}
+        currentPath={RoutePath.VERIFY_SEED_PHRASE}
         progressBar={true}
         progressBarValue={1}
         progressBarBuffer={1}
@@ -121,7 +136,7 @@ const VerifySeedPhrase = () => {
                     <IonChip
                       key={index}
                       onClick={() => {
-                        removeseedPhraseSelected(index);
+                        removeSeedPhraseSelected(index);
                       }}
                     >
                       <span className="index">{index + 1}.</span>
