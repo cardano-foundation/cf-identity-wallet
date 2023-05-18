@@ -75,11 +75,11 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
       const seedPhraseString = originalSeedPhrase.join(" ");
-      SecureStorage.set(
+      await SecureStorage.set(
         KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
         await Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
       );
-      SecureStorage.set(KeyStoreKeys.IDENTITY_SEEDPHRASE, seedPhraseString);
+      await SecureStorage.set(KeyStoreKeys.IDENTITY_SEEDPHRASE, seedPhraseString);
 
       const { nextPath, updateRedux } = getNextRoute(
         RoutePath.VERIFY_SEED_PHRASE,
