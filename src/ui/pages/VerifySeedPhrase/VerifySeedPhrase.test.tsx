@@ -16,17 +16,11 @@ import {
   SecureStorage,
 } from "../../../core/storage/secureStorage";
 
-const ARGON2ID_HASH = {
-  encoded: "encodedHash",
-  hash: Buffer.from("hashedPassword"),
-  hashHex: "0xHashedPasscode",
-};
-
-const rootKey =
-  "608621fb4c0101feb31f6f2fd7018bee54101ff67d555079671893225ee1a45e2331497029d885b5634405f350508cd95dce3991503b10f128d04f34b7b625783a1e3bd5dcf11fd4f989ec2cdcdea3a54db8997398174ecdcc87006c274176a0";
-
-const setSeedStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
-const setAddressesSpy = jest
+const rootKey = "rootKeyHex";
+const secureStorageSetSpy = jest
+  .spyOn(SecureStorage, "set")
+  .mockResolvedValue();
+const convertRootKeySpy = jest
   .spyOn(Addresses, "convertToRootXPrivateKeyHex")
   .mockResolvedValue(rootKey);
 
@@ -131,6 +125,9 @@ describe("Verify Seed Phrase Page", () => {
         queryByText(EN_TRANSLATIONS["verifyseedphrase.alert.text"])
       ).toBeVisible()
     );
+
+    expect(convertRootKeySpy).not.toBeCalled();
+    expect(secureStorageSetSpy).not.toBeCalled();
   });
 
   test("The user can Verify the Seed Phrase", async () => {
@@ -192,10 +189,15 @@ describe("Verify Seed Phrase Page", () => {
 
     await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
 
-    expect(setAddressesSpy).toBeCalledWith(seedPhrase);
-
-    expect(setSeedStoreSpy).toBeCalledWith(KeyStoreKeys.SEEDPHRASE, seedPhrase);
-
-    expect(setSeedStoreSpy).toBeCalledWith(KeyStoreKeys.X_PRIVATE_KEY, rootKey);
+    const seedPhraseString = seedPhrase.join(" ");
+    expect(convertRootKeySpy).toBeCalledWith(seedPhraseString);
+    expect(secureStorageSetSpy).toBeCalledWith(
+      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+      rootKey
+    );
+    expect(secureStorageSetSpy).toBeCalledWith(
+      KeyStoreKeys.IDENTITY_SEEDPHRASE,
+      seedPhraseString
+    );
   });
 });

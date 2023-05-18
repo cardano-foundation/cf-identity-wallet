@@ -37,6 +37,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^4.7.3",
+    "@emurgo/cardano-serialization-lib-nodejs": "^11.4.0",
     "@ionic/react-test-utils": "^0.4.0",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^13.3.0",

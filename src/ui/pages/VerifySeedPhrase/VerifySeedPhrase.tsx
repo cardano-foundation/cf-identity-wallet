@@ -69,13 +69,12 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      SecureStorage.set(KeyStoreKeys.SEEDPHRASE, originalSeedPhrase.join(" "));
+      const seedPhraseString = originalSeedPhrase.join(" ");
       SecureStorage.set(
-        KeyStoreKeys.X_PRIVATE_KEY,
-        await Addresses.convertToRootXPrivateKeyHex(
-          originalSeedPhrase.join(" ")
-        )
+        KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+        await Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
       );
+      SecureStorage.set(KeyStoreKeys.IDENTITY_SEEDPHRASE, seedPhraseString);
 
       // TODO: Clear cache and navigate to the next page
       history.push(RoutePath.TABS_MENU);

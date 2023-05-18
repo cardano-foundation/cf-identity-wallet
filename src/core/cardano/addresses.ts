@@ -6,11 +6,9 @@ class Addresses {
     seedPhrase: string
   ): Promise<string> {
     const bip39entropy = mnemonicToEntropy(seedPhrase);
-    const passphrase = Buffer.from("");
-
     const rootExtendedPrivateKey = Bip32PrivateKey.from_bip39_entropy(
       Buffer.from(bip39entropy, "hex"),
-      passphrase
+      Buffer.from("")
     );
 
     return rootExtendedPrivateKey.to_hex();
