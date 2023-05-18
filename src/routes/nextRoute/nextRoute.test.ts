@@ -4,7 +4,6 @@ import {
   getNextPasscodeLoginRoute,
   getNextSetPasscodeRoute,
   getNextRoute,
-  updateStoreAfterPasscodeLoginRoute,
   updateStoreAfterSetPasscodeRoute,
   getNextVerifySeedPhraseRoute,
 } from "./nextRoute";
@@ -90,21 +89,6 @@ describe("NextRoute", () => {
     expect(result).toEqual({
       pathname: RoutePath.GENERATE_SEED_PHRASE,
     });
-  });
-
-  test("should update store correctly after /passcodelogin route", () => {
-    storeMock.stateCache.authentication.passcodeIsSet = true;
-    const expectedAuthentication = {
-      ...storeMock.stateCache.authentication,
-      loggedIn: true,
-      time: expect.any(Number),
-    };
-    const result = updateStoreAfterPasscodeLoginRoute({
-      store: storeMock,
-      state,
-    });
-
-    expect(result).toEqual(setAuthentication(expectedAuthentication));
   });
 
   test("should return correct route for /generateseedphrase", () => {

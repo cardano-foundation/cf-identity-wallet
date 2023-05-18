@@ -95,30 +95,6 @@ const getNextVerifySeedPhraseRoute = () => {
   return { pathname: RoutePath.TABS_MENU };
 };
 
-const updateStoreAfterPasscodeLoginRoute = (data: DataProps) => {
-  const seedPhraseISet = !!data.store.seedPhraseCache.seedPhrase;
-
-  if (data.state?.resetPasscode && seedPhraseISet) {
-    return setAuthentication({
-      ...data.store.stateCache.authentication,
-      loggedIn: false,
-      time: 0,
-    });
-  } else if (data.state?.resetPasscode) {
-    return setAuthentication({
-      ...data.store.stateCache.authentication,
-      loggedIn: false,
-      time: 0,
-    });
-  } else {
-    return setAuthentication({
-      ...data.store.stateCache.authentication,
-      loggedIn: true,
-      time: Date.now(),
-    });
-  }
-};
-
 const updateStoreSetSeedPhrase = (data: DataProps) => {
   return setSeedPhraseCache(data.state?.seedPhrase);
 };
@@ -159,7 +135,7 @@ const NextRoute: Record<string, any> = {
   "/passcodelogin": {
     nextPath: (data: DataProps) =>
       getNextPasscodeLoginRoute(data.store, data.state),
-    updateRedux: [updateStoreAfterPasscodeLoginRoute],
+    updateRedux: [],
   },
   "/generateseedphrase": {
     nextPath: () => getNextGenerateSeedPhraseRoute(),
@@ -178,7 +154,6 @@ export {
   getNextSetPasscodeRoute,
   updateStoreAfterSetPasscodeRoute,
   getNextPasscodeLoginRoute,
-  updateStoreAfterPasscodeLoginRoute,
   getNextGenerateSeedPhraseRoute,
   getNextVerifySeedPhraseRoute,
   updateStoreCurrentRoute,

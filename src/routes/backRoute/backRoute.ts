@@ -2,12 +2,11 @@ import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
 import { RoutePath } from "../index";
 import { RootState } from "../../store";
 import {
-  removeCurrentRoute,
+  removeCurrentRoute, setAuthentication,
   setCurrentRoute,
 } from "../../store/reducers/stateCache";
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
-import { updateStoreAfterPasscodeLoginRoute } from "../nextRoute";
 
 const getBackRoute = (
   currentPath: string,
@@ -50,6 +49,30 @@ const getPreviousRoute = (data: DataProps) => {
   return { pathname: path };
 };
 
+const updateStoreAfterPasscodeLoginRoute = (data: DataProps) => {
+  const seedPhraseISet = !!data.store.seedPhraseCache.seedPhrase;
+
+  if (data.state?.resetPasscode && seedPhraseISet) {
+    return setAuthentication({
+      ...data.store.stateCache.authentication,
+      loggedIn: false,
+      time: 0,
+    });
+  } else if (data.state?.resetPasscode) {
+    return setAuthentication({
+      ...data.store.stateCache.authentication,
+      loggedIn: false,
+      time: 0,
+    });
+  } else {
+    return setAuthentication({
+      ...data.store.stateCache.authentication,
+      loggedIn: true,
+      time: Date.now(),
+    });
+  }
+};
+
 const calcPreviousRoute = (
   routes: { path: string; payload?: PayloadProps }[]
 ) => {
@@ -86,5 +109,6 @@ export {
   getBackRoute,
   calcPreviousRoute,
   getPreviousRoute,
+  updateStoreAfterPasscodeLoginRoute,
   updateStoreSetCurrentRoute,
 };

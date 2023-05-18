@@ -1,11 +1,13 @@
 import { RootState } from "../../store";
 import { DataProps } from "../nextRoute/nextRoute.types";
-import { calcPreviousRoute, getBackRoute, getPreviousRoute } from "./backRoute";
+import {calcPreviousRoute, getBackRoute, getPreviousRoute, updateStoreAfterPasscodeLoginRoute} from "./backRoute";
 import { RoutePath } from "../index";
+import {setAuthentication} from "../../store/reducers/stateCache";
 
 jest.mock("../../store/reducers/stateCache", () => ({
   removeCurrentRoute: jest.fn(),
   setCurrentRoute: jest.fn(),
+  setAuthentication: jest.fn(),
 }));
 
 jest.mock("../../store/reducers/seedPhraseCache", () => ({
@@ -14,6 +16,7 @@ jest.mock("../../store/reducers/seedPhraseCache", () => ({
 
 describe("getBackRoute", () => {
   let storeMock: RootState;
+  const state = {};
   beforeEach(() => {
     storeMock = {
       seedPhraseCache: {
@@ -81,6 +84,34 @@ describe("getBackRoute", () => {
     expect(result.backPath).toEqual({ pathname: "/route2" });
     expect(result.updateRedux).toHaveLength(2);
   });
+
+  test("should update store correctly after /passcodelogin route", () => {
+    storeMock = {
+      stateCache: {
+        routes: [],
+        authentication: {
+          loggedIn: false,
+          time: 0,
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "",
+      },
+    };
+    const expectedAuthentication = {
+      ...storeMock.stateCache.authentication,
+      loggedIn: true,
+      time: expect.any(Number),
+    };
+    const result = updateStoreAfterPasscodeLoginRoute({
+      store: storeMock,
+      state,
+    });
+
+    expect(result).toEqual(setAuthentication(expectedAuthentication));
+  });
+
 });
 
 describe("calcPreviousRoute", () => {
