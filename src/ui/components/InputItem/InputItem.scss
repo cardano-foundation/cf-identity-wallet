@@ -1,5 +1,6 @@
 ion-item.input-item {
   --background: var(--ion-color-light);
+  --border-width: 0;
   --inner-border-width: 0;
   --padding-start: 0;
   --inner-padding-end: 0;
@@ -37,6 +38,7 @@ ion-item.input-item {
       border-radius: 1.5rem;
       --background: transparent;
       --background-activated: var(--color-medium-grey);
+      --box-shadow: none;
 
       &::part(native) {
         padding: 0;
