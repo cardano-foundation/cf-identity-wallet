@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useState } from "react";
 import {
   IonCol,
   IonGrid,
@@ -17,24 +16,20 @@ import "./CreatePassword.scss";
 import { InputItem } from "../../components/InputItem";
 
 const CreatePassword = () => {
-  const history = useHistory();
   const [createPassword, setCreatePassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [createHint, setCreateHint] = useState("");
-  const [validated, setValidated] = useState(false);
-
-  const regexLength = /^.{8,64}$/;
-  const regexUppercase = /([A-Z])/;
-  const regexLowercase = /([a-z])/;
-  const regexNumber = /([0-9])/;
-  const regexSymbol = /[\W\S_]/;
-  const hasLength = regexLength.test(createPassword);
-  const hasUppercase = regexUppercase.test(createPassword);
-  const hasLowercase = regexLowercase.test(createPassword);
-  const hasNumber = regexNumber.test(createPassword);
-  const hasSymbol = regexSymbol.test(createPassword);
+  const hasLength = createPassword.match(/^.{8,64}$/);
+  const hasUppercase = createPassword.match(/([A-Z])/);
+  const hasLowercase = createPassword.match(/([a-z])/);
+  const hasNumber = createPassword.match(/([0-9])/);
+  const hasSymbol = createPassword.match(/[^\p{L}\d\s]/);
+  const combinedRegex =
+    hasLength && hasUppercase && hasLowercase && hasNumber && hasSymbol;
+  const validated = combinedRegex && createPassword === confirmPassword;
 
   const handleContinue = () => {
+    // TODO: this will need to be completed at a later stage
     console.log("continue");
   };
 
@@ -43,7 +38,10 @@ const CreatePassword = () => {
       <PageLayout
         header={true}
         closeButton={true}
-        closeButtonAction={() => history.goBack()}
+        closeButtonAction={() => {
+          // TODO: this will need to be completed at a later stage
+          console.log("close");
+        }}
         title={`${i18n.t("createpassword.title")}`}
         footer={true}
         primaryButtonText={`${i18n.t("createpassword.continue.button")}`}
