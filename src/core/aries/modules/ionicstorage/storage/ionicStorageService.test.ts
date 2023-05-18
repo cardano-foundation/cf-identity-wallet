@@ -46,7 +46,7 @@ const forEachMock = jest.fn().mockImplementation((fn: () => void) => {
         id: "test-0",
         updatedAt: startTime,
       }),
-      tags: { keyTag: "keyTag" },
+      tags: { firstTag: "exists", secondTag: "exists" },
     },
     {
       category: StorageVersionRecord.name,
@@ -245,9 +245,30 @@ describe("Aries - Ionic Storage Module: Storage Service", () => {
     expect(result[0].id).toEqual(existingRecord.id);
   });
 
-  // @TODO - foconnor: Tagging is currently not implemented fully - so this cannot be properly tested yet.
-  test.skip("should find an item by tag if it exists", async () => {
-    const tags = { keyTag: "doesNotExist" };
+  test("should find an item if every record tag is part of the query", async () => {
+    const tags = { firstTag: "exists", secondTag: "exists" };
+    const result = await storageService.findByQuery(
+      agentContext,
+      TestRecord,
+      tags
+    );
+    expect(forEachMock).toBeCalled();
+    expect(result.length).toEqual(1);
+  });
+
+  test("should find an item if every query tag is part of the record tags", async () => {
+    const tags = { firstTag: "exists" };
+    const result = await storageService.findByQuery(
+      agentContext,
+      TestRecord,
+      tags
+    );
+    expect(forEachMock).toBeCalled();
+    expect(result.length).toEqual(1);
+  });
+
+  test("should not find an item by tag that doesn't exist", async () => {
+    const tags = { doesNotExist: "doesNotExist" };
     const result = await storageService.findByQuery(
       agentContext,
       TestRecord,
@@ -257,8 +278,8 @@ describe("Aries - Ionic Storage Module: Storage Service", () => {
     expect(result.length).toEqual(0);
   });
 
-  test("should not find an item by tag that doesn't exist", async () => {
-    const tags = { keyTag: "doesNotExist" };
+  test("should only return an item if every tag matches", async () => {
+    const tags = { firstTag: "exists", secondTag: "doesNotExist" };
     const result = await storageService.findByQuery(
       agentContext,
       TestRecord,

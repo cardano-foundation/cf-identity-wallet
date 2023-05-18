@@ -3,6 +3,7 @@ import {
   JsonTransformer,
   Wallet,
   AriesFrameworkError,
+  TagsBase,
 } from "@aries-framework/core";
 import { IonicStorageWallet } from "../wallet";
 import { StorageObject } from "./ionicStorageService.types";
@@ -21,11 +22,13 @@ function deserializeRecord<T extends BaseRecord>(
   record: StorageObject,
   recordClass: BaseRecordConstructor<T>
 ): T {
-  // @TODO - foconnor: Tag conversion must be implemented when needed.
+  // Our tags aren't encrypted and for now we want to keep the WQL simple so they are directly transferred.
+  // This means we are incompatible with Askar, but a migration script can convert the tags.
   const instance = JsonTransformer.deserialize<T>(
     record.value as string,
     recordClass
   );
+  instance.replaceTags(record.tags as TagsBase);
   instance.id = record.name;
   return instance;
 }

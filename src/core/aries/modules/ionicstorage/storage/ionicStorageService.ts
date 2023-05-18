@@ -22,9 +22,8 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
 
     record.updatedAt = new Date();
 
-    // @TODO - foconnor: Tag conversion must be implemented when needed.
     const value = JsonTransformer.serialize(record);
-    const tags: Record<string, string> = {};
+    const tags = record.getTags() as Record<string, string>;
 
     if (await session.get(record.id)) {
       throw new RecordDuplicateError(
@@ -55,9 +54,8 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
 
     record.updatedAt = new Date();
 
-    // @TODO - foconnor: Tag conversion must be implemented when needed.
     const value = JsonTransformer.serialize(record);
-    const tags: Record<string, string> = {};
+    const tags = record.getTags() as Record<string, string>;
 
     await session.set(record.id, {
       category: record.type,
@@ -147,16 +145,14 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
 
     // Right now we just support SimpleQuery and not AdvancedQuery as it's not something we need right now.
     // This is also really inefficient but OK for now.
-    await session.forEach((value) => {
-      if (value.category && value.category === recordClass.type) {
-        const instance = deserializeRecord(value, recordClass);
-        for (const [key, value] of Object.entries(query)) {
-          const tagVal = instance.getTag(key);
-          if (!tagVal || tagVal !== value) {
+    await session.forEach((record) => {
+      if (record.category && record.category === recordClass.type) {
+        for (const [queryKey, queryVal] of Object.entries(query)) {
+          if (record.tags[queryKey] !== queryVal) {
             return;
           }
         }
-        instances.push(instance);
+        instances.push(deserializeRecord(record, recordClass));
       }
     });
     return instances;
