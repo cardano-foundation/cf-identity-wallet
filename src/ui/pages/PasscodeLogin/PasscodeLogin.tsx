@@ -5,7 +5,6 @@ import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { RoutePath } from "../../../routes";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import Alert from "../../components/Alert/Alert";
 import {
@@ -14,10 +13,10 @@ import {
 } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState } from "../../../store/reducers/stateCache";
-import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
 import { getBackRoute } from "../../../routes/backRoute";
+import {RoutePath} from "../../../routes";
 
 const PasscodeLogin = () => {
   const history = useHistory();

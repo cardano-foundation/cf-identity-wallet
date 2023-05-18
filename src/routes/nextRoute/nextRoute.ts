@@ -1,5 +1,4 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
-import { RoutePath } from "../index";
 import { RootState } from "../../store";
 import {
   removeSetPasscodeRoute,
@@ -11,6 +10,7 @@ import {
   setSeedPhraseCache,
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps } from "./nextRoute.types";
+import {RoutePath} from "../paths";
 
 const getNextRootRoute = (store: RootState) => {
   const authentication = store.stateCache.authentication;
@@ -96,23 +96,23 @@ const getNextRoute = (
 };
 
 const NextRoute: Record<string, any> = {
-  "/": {
+  [RoutePath.ROOT]: {
     nextPath: (data: DataProps) => getNextRootRoute(data.store),
     updateRedux: [],
   },
-  "/onboarding": {
+  [RoutePath.ONBOARDING]: {
     nextPath: (data: DataProps) => getNextOnboardingRoute(data.store),
     updateRedux: [],
   },
-  "/setpasscode": {
+  [RoutePath.SET_PASSCODE]: {
     nextPath: (data: DataProps) => getNextSetPasscodeRoute(data.store),
     updateRedux: [removeSetPasscodeRoute, updateStoreAfterSetPasscodeRoute],
   },
-  "/generateseedphrase": {
+  [RoutePath.GENERATE_SEED_PHRASE]: {
     nextPath: () => getNextGenerateSeedPhraseRoute(),
     updateRedux: [updateStoreSetSeedPhrase],
   },
-  "/verifyseedphrase": {
+  [RoutePath.VERIFY_SEED_PHRASE]: {
     nextPath: () => getNextVerifySeedPhraseRoute(),
     updateRedux: [clearSeedPhraseCache],
   },

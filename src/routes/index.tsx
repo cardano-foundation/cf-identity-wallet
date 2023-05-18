@@ -16,16 +16,7 @@ import {
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
 import { TabsMenu } from "../ui/components/navigation/TabsMenu";
-enum RoutePath {
-  ROOT = "/",
-  ONBOARDING = "/onboarding",
-  SET_PASSCODE = "/setpasscode",
-  PASSCODE_LOGIN = "/passcodelogin",
-  GENERATE_SEED_PHRASE = "/generateseedphrase",
-  VERIFY_SEED_PHRASE = "/verifyseedphrase",
-  TABS_MENU = "/tabs",
-}
-
+import {RoutePath} from "./paths";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();

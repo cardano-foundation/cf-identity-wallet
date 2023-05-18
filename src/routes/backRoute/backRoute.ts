@@ -1,5 +1,4 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
-import { RoutePath } from "../index";
 import { RootState } from "../../store";
 import {
   removeCurrentRoute, setAuthentication,
@@ -7,6 +6,7 @@ import {
 } from "../../store/reducers/stateCache";
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
+import {RoutePath} from "../paths";
 
 const getBackRoute = (
   currentPath: string,
@@ -84,23 +84,26 @@ const calcPreviousRoute = (
 const backPath = (data: DataProps) => getPreviousRoute(data);
 
 const backRoute: Record<string, any> = {
-  "/": {
+  [RoutePath.ROOT]: {
     updateRedux: [],
   },
-  "/generateseedphrase": {
+  [RoutePath.ONBOARDING]: {
+    updateRedux: [],
+  },
+  [RoutePath.GENERATE_SEED_PHRASE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
-  "/verifyseedphrase": {
+  [RoutePath.VERIFY_SEED_PHRASE]: {
     updateRedux: [
       removeCurrentRoute,
       updateStoreSetCurrentRoute,
       clearSeedPhraseCache,
     ],
   },
-  "/setpasscode": {
+  [RoutePath.SET_PASSCODE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
-  "/passcodelogin": {
+  [RoutePath.PASSCODE_LOGIN]: {
     updateRedux: [updateStoreAfterPasscodeLoginRoute],
   },
 };
