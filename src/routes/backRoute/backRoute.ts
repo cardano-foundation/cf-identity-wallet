@@ -15,7 +15,7 @@ const getBackRoute = (
   backPath: { pathname: string };
   updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
-  const { backPath: backPath, updateRedux } = backRoute[currentPath];
+  const { updateRedux } = backRoute[currentPath];
 
   return {
     backPath: backPath(data),
@@ -61,15 +61,12 @@ const backPath = (data: DataProps) => getPreviousRoute(data);
 
 const backRoute: Record<string, any> = {
   "/": {
-    backPath,
     updateRedux: [],
   },
   "/generateseedphrase": {
-    backPath,
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
   "/verifyseedphrase": {
-    backPath,
     updateRedux: [
       removeCurrentRoute,
       updateStoreSetCurrentRoute,
@@ -77,7 +74,6 @@ const backRoute: Record<string, any> = {
     ],
   },
   "/setpasscode": {
-    backPath,
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
 };
