@@ -1,32 +1,63 @@
-import { useState } from "react";
-import {
-  IonCol,
-  IonGrid,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-  IonPage,
-  IonRow,
-} from "@ionic/react";
-import { closeOutline, checkmarkOutline } from "ionicons/icons";
+import { useEffect, useState } from "react";
+import { IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import "./CreatePassword.scss";
+
 import { InputItem } from "../../components/InputItem";
+import { OperationsPasswordRegex } from "../../components/OperationsPasswordRegex";
+import { ErrorMessage } from "../../components/ErrorMessage";
 
 const CreatePassword = () => {
   const [createPassword, setCreatePassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [createHint, setCreateHint] = useState("");
-  const hasLength = createPassword.match(/^.{8,64}$/);
-  const hasUppercase = createPassword.match(/([A-Z])/);
-  const hasLowercase = createPassword.match(/([a-z])/);
-  const hasNumber = createPassword.match(/([0-9])/);
-  const hasSymbol = createPassword.match(/[^\p{L}\d\s]/);
-  const combinedRegex =
-    hasLength && hasUppercase && hasLowercase && hasNumber && hasSymbol;
-  const validated = combinedRegex && createPassword === confirmPassword;
+  const [regexState, setRegexState] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const validated =
+    createPassword.length &&
+    !regexState.length &&
+    createPassword === confirmPassword;
+  const errorMessages = {
+    hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
+    hasLength: {
+      tooShort: i18n.t("createpassword.error.hasLength.tooShort"),
+      tooLong: i18n.t("createpassword.error.hasLength.tooLong"),
+    },
+    hasUppercase: i18n.t("createpassword.error.hasUppercase"),
+    hasLowercase: i18n.t("createpassword.error.hasLowercase"),
+    hasNumber: i18n.t("createpassword.error.hasNumber"),
+    hasSymbol: i18n.t("createpassword.error.hasSymbol"),
+  };
+
+  useEffect(() => {
+    const errorMessageHandler = (errorType: string) => {
+      switch (errorType) {
+        case "hasSpecialChar":
+          return errorMessages.hasSpecialChar;
+        case "hasLength":
+          if (createPassword.length < 8) {
+            return errorMessages.hasLength.tooShort;
+          } else if (createPassword.length > 64) {
+            return errorMessages.hasLength.tooLong;
+          } else {
+            return;
+          }
+        case "hasUppercase":
+          return errorMessages.hasUppercase;
+        case "hasLowercase":
+          return errorMessages.hasLowercase;
+        case "hasNumber":
+          return errorMessages.hasNumber;
+        case "hasSymbol":
+          return errorMessages.hasSymbol;
+        default:
+          break;
+      }
+    };
+
+    setErrorMessage(String(errorMessageHandler(regexState) || ""));
+  }, [createPassword, regexState]);
 
   const handleContinue = () => {
     // TODO: this will need to be completed at a later stage
@@ -68,64 +99,32 @@ const CreatePassword = () => {
               />
             </IonCol>
           </IonRow>
+          {/* if there weren't enough chars 
+          or the confirmation of the password didn't match
+          the errors would appear when leaving focus
+
+          But for things like incorrect char like a space or special char, 
+          this should come up when entered 
+          and block the user from continuing until they delete the char
+
+          For the message, I think it should be in the order of priority. 
+          
+          So the char length would go first, then uppercase, lowercase, etc.
+
+          Ideally they would disappear once the error had been rectified */}
+          {createPassword.length && regexState.length ? (
+            <ErrorMessage
+              message={errorMessage}
+              timeout={false}
+            />
+          ) : null}
           {createPassword && (
             <IonRow>
-              <IonCol
-                size="12"
-                className="password-criteria"
-              >
-                <IonList lines="none">
-                  <IonItem>
-                    <IonIcon
-                      slot="start"
-                      icon={hasLength ? checkmarkOutline : closeOutline}
-                      className={`password-criteria-icon${
-                        hasLength ? " pass" : " fails"
-                      }`}
-                    />
-                    <IonLabel>8 - 64 characters long</IonLabel>
-                  </IonItem>
-                  <IonItem>
-                    <IonIcon
-                      slot="start"
-                      icon={hasUppercase ? checkmarkOutline : closeOutline}
-                      className={`password-criteria-icon${
-                        hasUppercase ? " pass" : " fails"
-                      }`}
-                    />
-                    <IonLabel>Contains an uppercase letter</IonLabel>
-                  </IonItem>
-                  <IonItem>
-                    <IonIcon
-                      slot="start"
-                      icon={hasLowercase ? checkmarkOutline : closeOutline}
-                      className={`password-criteria-icon${
-                        hasLowercase ? " pass" : " fails"
-                      }`}
-                    />
-                    <IonLabel>Contains a lowercase letter</IonLabel>
-                  </IonItem>
-                  <IonItem>
-                    <IonIcon
-                      slot="start"
-                      icon={hasNumber ? checkmarkOutline : closeOutline}
-                      className={`password-criteria-icon${
-                        hasNumber ? " pass" : " fails"
-                      }`}
-                    />
-                    <IonLabel>Contains a number</IonLabel>
-                  </IonItem>
-                  <IonItem>
-                    <IonIcon
-                      slot="start"
-                      icon={hasSymbol ? checkmarkOutline : closeOutline}
-                      className={`password-criteria-icon${
-                        hasSymbol ? " pass" : " fails"
-                      }`}
-                    />
-                    <IonLabel>Contains a symbol</IonLabel>
-                  </IonItem>
-                </IonList>
+              <IonCol size="12">
+                <OperationsPasswordRegex
+                  password={createPassword}
+                  setRegexState={setRegexState}
+                />
               </IonCol>
             </IonRow>
           )}

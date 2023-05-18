@@ -73,10 +73,17 @@
   "createpassword.input.second.placeholder": "Retype your password",
   "createpassword.input.third.title": "Create a hint",
   "createpassword.input.third.placeholder": "Create a password hint",
-  "createpassword.regex.first": "8 - 64 characters long",
-  "createpassword.regex.second": "Contains an uppercase letter",
-  "createpassword.regex.third": "Contains a lowercase letter",
-  "createpassword.regex.fourth": "Contains a number",
-  "createpassword.regex.fifth": "Contains a symbol",
-  "createpassword.continue.button": "Create password"
+  "createpassword.continue.button": "Create password",
+  "createpassword.error.hasSpecialChar": "Use only lowercase/uppercase letters, numbers & symbols for your password.",
+  "createpassword.error.hasLength.tooShort": "Must be more than 8 characters long",
+  "createpassword.error.hasLength.tooLong": "Must be less than 64 characters long",
+  "createpassword.error.hasUppercase": "Must contain an uppercase letter",
+  "createpassword.error.hasLowercase": "Must contain a lowercase letter",
+  "createpassword.error.hasNumber": "Must contain a number",
+  "createpassword.error.hasSymbol": "Must contain a a symbol",
+  "operationspasswordregex.label.hasLength": "8 - 64 characters long",
+  "operationspasswordregex.label.hasUppercase": "Contains an uppercase letter",
+  "operationspasswordregex.label.hasLowercase": "Contains a lowercase letter",
+  "operationspasswordregex.label.hasNumber": "Contains a number",
+  "operationspasswordregex.label.hasSymbol": "Contains a symbol"
 }
