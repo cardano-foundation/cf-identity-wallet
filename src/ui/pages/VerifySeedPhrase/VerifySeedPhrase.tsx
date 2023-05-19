@@ -72,7 +72,7 @@ const VerifySeedPhrase = () => {
 
   const handleOnBack = () => {
     handleClearState();
-  }
+  };
 
   const handleContinue = async () => {
     if (

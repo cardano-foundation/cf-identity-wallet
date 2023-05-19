@@ -23,7 +23,6 @@ const argon2Spy = jest.spyOn(Argon2, "hash").mockResolvedValue(ARGON2ID_HASH);
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 
 describe("SetPasscode Page", () => {
-
   test("Renders Create Passcode page with title and description", () => {
     const { getByText } = render(
       <Provider store={store}>

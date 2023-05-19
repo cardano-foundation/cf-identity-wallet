@@ -16,7 +16,7 @@ import {
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
 import { TabsMenu } from "../ui/components/navigation/TabsMenu";
-import {RoutePath} from "./paths";
+import { RoutePath } from "./paths";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();

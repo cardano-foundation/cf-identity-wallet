@@ -7,7 +7,7 @@ import {
 import { validateMnemonic } from "bip39";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import {MemoryRouter} from "react-router-dom";
+import { MemoryRouter } from "react-router-dom";
 import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
 import {
   MNEMONIC_FIFTEEN_WORDS,
@@ -17,8 +17,7 @@ import {
 } from "../../../constants/appConstants";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
-import {RoutePath} from "../../../routes";
-import {SetPasscode} from "../SetPasscode";
+import { RoutePath } from "../../../routes";
 
 describe("Generate Seed Phrase screen", () => {
   test("User can see Title and Security Overlay", () => {
@@ -217,11 +216,11 @@ describe("Generate Seed Phrase screen", () => {
       </Provider>
     );
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    expect(termsCheckbox.hasAttribute("[checked=\"false\"]"));
+    expect(termsCheckbox.hasAttribute('[checked="false"]'));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"true\"]"));
+    expect(termsCheckbox.hasAttribute('[checked="true"]'));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"false\"]"));
+    expect(termsCheckbox.hasAttribute('[checked="false"]'));
   });
 
   test("Opening Terms and conditions modal triggers the checkbox", async () => {
@@ -235,14 +234,14 @@ describe("Generate Seed Phrase screen", () => {
       EN_TRANSLATIONS["generateseedphrase.termsandconditions.link"]
     );
 
-    expect(termsCheckbox.hasAttribute("[checked=\"false\"]"));
+    expect(termsCheckbox.hasAttribute('[checked="false"]'));
 
     act(() => {
       fireEvent.click(termsLink);
     });
 
     await waitFor(() => {
-      expect(termsCheckbox.hasAttribute("[checked=\"true\"]"));
+      expect(termsCheckbox.hasAttribute('[checked="true"]'));
     });
   });
 
@@ -288,6 +287,5 @@ describe("Generate Seed Phrase screen", () => {
     });
 
     await waitFor(() => expect(overlay).toHaveClass("visible"));
-
   });
 });

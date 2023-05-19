@@ -16,7 +16,7 @@ import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
 import { getBackRoute } from "../../../routes/backRoute";
-import {RoutePath} from "../../../routes";
+import { RoutePath } from "../../../routes";
 
 const PasscodeLogin = () => {
   const history = useHistory();
@@ -96,9 +96,6 @@ const PasscodeLogin = () => {
       return false;
     }
   };
-  const handleOnBack = () => {
-    handleClearState();
-  }
 
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
@@ -117,7 +114,7 @@ const PasscodeLogin = () => {
 
   return (
     <IonPage className="page-layout passcode-login safe-area">
-      <PageLayout currentPath={RoutePath.PASSCODE_LOGIN} >
+      <PageLayout currentPath={RoutePath.PASSCODE_LOGIN}>
         <PasscodeModule
           title={i18n.t("passcodelogin.title")}
           description={i18n.t("passcodelogin.description")}

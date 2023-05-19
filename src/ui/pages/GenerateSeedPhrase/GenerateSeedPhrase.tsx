@@ -90,7 +90,7 @@ const GenerateSeedPhrase = () => {
 
   const handleOnBack = () => {
     handleClearState();
-  }
+  };
   const handleContinue = () => {
     setAlertIsOpen(false);
     const data: DataProps = {

@@ -13,7 +13,6 @@ import { setAuthentication } from "../../store/reducers/stateCache";
 describe("NextRoute", () => {
   let localStorageMock: any;
   let storeMock: RootState;
-  const state = {};
 
   beforeEach(() => {
     localStorageMock = {};

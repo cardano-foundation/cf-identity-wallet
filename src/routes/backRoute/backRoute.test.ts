@@ -1,8 +1,13 @@
 import { RootState } from "../../store";
 import { DataProps } from "../nextRoute/nextRoute.types";
-import {calcPreviousRoute, getBackRoute, getPreviousRoute, updateStoreAfterPasscodeLoginRoute} from "./backRoute";
+import {
+  calcPreviousRoute,
+  getBackRoute,
+  getPreviousRoute,
+  updateStoreAfterPasscodeLoginRoute,
+} from "./backRoute";
 import { RoutePath } from "../index";
-import {setAuthentication} from "../../store/reducers/stateCache";
+import { setAuthentication } from "../../store/reducers/stateCache";
 
 jest.mock("../../store/reducers/stateCache", () => ({
   removeCurrentRoute: jest.fn(),
@@ -111,7 +116,6 @@ describe("getBackRoute", () => {
 
     expect(result).toEqual(setAuthentication(expectedAuthentication));
   });
-
 });
 
 describe("calcPreviousRoute", () => {

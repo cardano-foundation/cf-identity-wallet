@@ -3,6 +3,7 @@ import { Provider } from "react-redux";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { waitForIonicReact } from "@ionic/react-test-utils";
+import configureStore from "redux-mock-store";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { VerifySeedPhrase } from "../VerifySeedPhrase";
 import { RoutePath } from "../../../routes";
@@ -10,7 +11,6 @@ import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { MNEMONIC_FIFTEEN_WORDS } from "../../../constants/appConstants";
 import { TabsMenu } from "../../components/navigation/TabsMenu";
-import configureStore from "redux-mock-store";
 
 describe("Verify Seed Phrase Page", () => {
   const seedPhrase: (string | null)[] = [];
@@ -188,15 +188,15 @@ describe("Verify Seed Phrase Page", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase: "example1 example2 example3 example4 example5"
-      }
+        seedPhrase: "example1 example2 example3 example4 example5",
+      },
     };
 
     const storeMocked = {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
-    const { getByTestId, queryByText, getByText } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
           <Route
@@ -207,14 +207,11 @@ describe("Verify Seed Phrase Page", () => {
       </Provider>
     );
 
-
     fireEvent.click(getByText(String("example1")));
     fireEvent.click(getByText(String("example2")));
     fireEvent.click(getByText(String("example3")));
     fireEvent.click(getByText(String("example4")));
     fireEvent.click(getByText(String("example5")));
-
-
 
     const continueButton = getByTestId("continue-button") as HTMLButtonElement; // Asegúrate de tener el atributo `data-testid="back-button"` en el botón de retroceso en tu componente PageLayout
 
