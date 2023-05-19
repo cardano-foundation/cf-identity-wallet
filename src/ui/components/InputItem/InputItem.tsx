@@ -10,11 +10,19 @@ const InputItem = ({
   placeholder,
   hiddenInput,
   setValue,
+  setFocus,
   optional,
 }: InputItemProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
+
   const handleInput = (e: any) => {
     setValue(e.target.value);
+  };
+
+  const handleFocus = (focus: boolean) => {
+    if (setFocus) {
+      setFocus(focus);
+    }
   };
   return (
     <IonItem className="input-item">
@@ -31,6 +39,8 @@ const InputItem = ({
           type={hidden ? "password" : "text"}
           placeholder={placeholder}
           onIonChange={(e) => handleInput(e)}
+          onIonFocus={() => handleFocus(true)}
+          onIonBlur={() => handleFocus(false)}
         />
         {hiddenInput && (
           <IonButton

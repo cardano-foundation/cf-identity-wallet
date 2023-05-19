@@ -9,42 +9,35 @@ const OperationsPasswordRegex = ({
   password,
   setRegexState,
 }: OperationsPasswordRegexProps) => {
-  const hasSpecialChar = password.match(/(^[A-Za-z0-9]|[^\p{L}\d\s])$/u);
-  const hasLength = password.match(/^.{8,64}$/);
-  const hasUppercase = password.match(/([A-Z])/);
-  const hasLowercase = password.match(/([a-z])/);
-  const hasNumber = password.match(/([0-9])/);
-  const hasSymbol = password.match(/[^\p{L}\d\s]/u);
+  const specialChar = password.match(/(^[A-Za-z0-9]|[^\p{L}\d\s])$/u);
+  const length = password.match(/^.{8,64}$/);
+  const uppercase = password.match(/([A-Z])/);
+  const lowercase = password.match(/([a-z])/);
+  const number = password.match(/([0-9])/);
+  const symbol = password.match(/[^\p{L}\d\s]/u);
 
   useEffect(() => {
     const regexState = (pass: boolean) => {
       switch (pass) {
-        case !!hasSpecialChar:
-          return "hasSpecialChar";
-        case !!hasLength:
-          return "hasLength";
-        case !!hasUppercase:
-          return "hasUppercase";
-        case !!hasLowercase:
-          return "hasLowercase";
-        case !!hasNumber:
-          return "hasNumber";
-        case !!hasSymbol:
-          return "hasSymbol";
+        case !!specialChar:
+          return "specialChar";
+        case !!length:
+          return "length";
+        case !!uppercase:
+          return "uppercase";
+        case !!lowercase:
+          return "lowercase";
+        case !!number:
+          return "number";
+        case !!symbol:
+          return "symbol";
         default:
           break;
       }
     };
 
     setRegexState(String(regexState(false) || ""));
-  }, [
-    hasSpecialChar,
-    hasLength,
-    hasLowercase,
-    hasNumber,
-    hasSymbol,
-    hasUppercase,
-  ]);
+  }, [specialChar, length, uppercase, lowercase, number, symbol]);
 
   const RegexItem = ({
     condition,
@@ -70,24 +63,24 @@ const OperationsPasswordRegex = ({
       className="operations-password-regex"
     >
       <RegexItem
-        condition={hasLength}
-        label={i18n.t("operationspasswordregex.label.hasLength")}
+        condition={length}
+        label={i18n.t("operationspasswordregex.label.length")}
       />
       <RegexItem
-        condition={hasUppercase}
-        label={i18n.t("operationspasswordregex.label.hasUppercase")}
+        condition={uppercase}
+        label={i18n.t("operationspasswordregex.label.uppercase")}
       />
       <RegexItem
-        condition={hasLowercase}
-        label={i18n.t("operationspasswordregex.label.hasLowercase")}
+        condition={lowercase}
+        label={i18n.t("operationspasswordregex.label.lowercase")}
       />
       <RegexItem
-        condition={hasNumber}
-        label={i18n.t("operationspasswordregex.label.hasNumber")}
+        condition={number}
+        label={i18n.t("operationspasswordregex.label.number")}
       />
       <RegexItem
-        condition={hasSymbol}
-        label={i18n.t("operationspasswordregex.label.hasSymbol")}
+        condition={symbol}
+        label={i18n.t("operationspasswordregex.label.symbol")}
       />
     </IonList>
   );

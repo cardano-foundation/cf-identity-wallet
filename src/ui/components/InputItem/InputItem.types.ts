@@ -5,6 +5,7 @@ interface InputItemProps {
   placeholder: string;
   hiddenInput: boolean;
   setValue: Dispatch<SetStateAction<string>>;
+  setFocus?: Dispatch<SetStateAction<boolean>>;
   optional?: boolean;
 }
 

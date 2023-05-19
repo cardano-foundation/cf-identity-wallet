@@ -10,55 +10,65 @@ import { ErrorMessage } from "../../components/ErrorMessage";
 import { RoutePath } from "../../../routes/paths";
 
 const CreatePassword = () => {
-  const [createPassword, setCreatePassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [createHint, setCreateHint] = useState("");
+  const [createPasswordValue, setCreatePasswordValue] = useState("");
+  const [createPasswordFocus, setCreatePasswordFocus] = useState(false);
+  const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
+  const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
+  const [createHintValue, setCreateHintValue] = useState("");
   const [regexState, setRegexState] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const passwordValueMatching =
+    createPasswordValue.length > 0 &&
+    confirmPasswordValue.length > 0 &&
+    createPasswordValue === confirmPasswordValue;
+  const passwordValueNotMatching =
+    createPasswordValue.length > 0 &&
+    confirmPasswordValue.length > 0 &&
+    createPasswordValue !== confirmPasswordValue;
   const validated =
-    createPassword.length &&
     !regexState.length &&
-    createPassword === confirmPassword;
+    passwordValueMatching &&
+    createHintValue !== createPasswordValue;
   const errorMessages = {
     hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
-    hasLength: {
-      tooShort: i18n.t("createpassword.error.hasLength.tooShort"),
-      tooLong: i18n.t("createpassword.error.hasLength.tooLong"),
-    },
-    hasUppercase: i18n.t("createpassword.error.hasUppercase"),
-    hasLowercase: i18n.t("createpassword.error.hasLowercase"),
-    hasNumber: i18n.t("createpassword.error.hasNumber"),
-    hasSymbol: i18n.t("createpassword.error.hasSymbol"),
+    isTooShort: i18n.t("createpassword.error.isTooShort"),
+    isTooLong: i18n.t("createpassword.error.isTooLong"),
+    hasNoUppercase: i18n.t("createpassword.error.hasNoUppercase"),
+    hasNoLowercase: i18n.t("createpassword.error.hasNoLowercase"),
+    hasNoNumber: i18n.t("createpassword.error.hasNoNumber"),
+    hasNoSymbol: i18n.t("createpassword.error.hasNoSymbol"),
+    hasNoMatch: i18n.t("createpassword.error.hasNoMatch"),
+    hintSameAsPassword: i18n.t("createpassword.error.hintSameAsPassword"),
   };
 
   useEffect(() => {
     const errorMessageHandler = (errorType: string) => {
       switch (errorType) {
-        case "hasSpecialChar":
+        case "specialChar":
           return errorMessages.hasSpecialChar;
-        case "hasLength":
-          if (createPassword.length < 8) {
-            return errorMessages.hasLength.tooShort;
-          } else if (createPassword.length > 64) {
-            return errorMessages.hasLength.tooLong;
+        case "length":
+          if (createPasswordValue.length < 8) {
+            return errorMessages.isTooShort;
+          } else if (createPasswordValue.length > 64) {
+            return errorMessages.isTooLong;
           } else {
             return;
           }
-        case "hasUppercase":
-          return errorMessages.hasUppercase;
-        case "hasLowercase":
-          return errorMessages.hasLowercase;
-        case "hasNumber":
-          return errorMessages.hasNumber;
-        case "hasSymbol":
-          return errorMessages.hasSymbol;
+        case "uppercase":
+          return errorMessages.hasNoUppercase;
+        case "lowercase":
+          return errorMessages.hasNoLowercase;
+        case "number":
+          return errorMessages.hasNoNumber;
+        case "symbol":
+          return errorMessages.hasNoSymbol;
         default:
           break;
       }
     };
-
+    console.log(regexState);
     setErrorMessage(String(errorMessageHandler(regexState) || ""));
-  }, [createPassword, regexState]);
+  }, [createPasswordValue, confirmPasswordValue, regexState]);
 
   const handleContinue = () => {
     // TODO: this will need to be completed at a later stage
@@ -97,34 +107,29 @@ const CreatePassword = () => {
                 title={i18n.t("createpassword.input.first.title")}
                 placeholder={i18n.t("createpassword.input.first.placeholder")}
                 hiddenInput={true}
-                setValue={setCreatePassword}
+                setValue={setCreatePasswordValue}
+                setFocus={setCreatePasswordFocus}
               />
             </IonCol>
           </IonRow>
-          {/* if there weren't enough chars 
-          or the confirmation of the password didn't match
-          the errors would appear when leaving focus
-
-          But for things like incorrect char like a space or special char, 
-          this should come up when entered 
-          and block the user from continuing until they delete the char
-
-          For the message, I think it should be in the order of priority. 
-          
-          So the char length would go first, then uppercase, lowercase, etc.
-
-          Ideally they would disappear once the error had been rectified */}
-          {createPassword.length && regexState.length ? (
+          {regexState === "specialChar" ? (
+            <ErrorMessage
+              message={errorMessage}
+              timeout={false}
+            />
+          ) : regexState &&
+            regexState !== "specialChar" &&
+            !createPasswordFocus ? (
             <ErrorMessage
               message={errorMessage}
               timeout={false}
             />
           ) : null}
-          {createPassword && (
+          {createPasswordValue && (
             <IonRow>
               <IonCol size="12">
                 <OperationsPasswordRegex
-                  password={createPassword}
+                  password={createPasswordValue}
                   setRegexState={setRegexState}
                 />
               </IonCol>
@@ -138,10 +143,17 @@ const CreatePassword = () => {
                 title={i18n.t("createpassword.input.second.title")}
                 placeholder={i18n.t("createpassword.input.second.placeholder")}
                 hiddenInput={true}
-                setValue={setConfirmPassword}
+                setValue={setConfirmPasswordValue}
+                setFocus={setConfirmPasswordFocus}
               />
             </IonCol>
           </IonRow>
+          {!confirmPasswordFocus && passwordValueNotMatching ? (
+            <ErrorMessage
+              message={errorMessages.hasNoMatch}
+              timeout={false}
+            />
+          ) : null}
         </IonGrid>
         <IonGrid>
           <IonRow>
@@ -150,11 +162,17 @@ const CreatePassword = () => {
                 title={i18n.t("createpassword.input.third.title")}
                 placeholder={i18n.t("createpassword.input.third.placeholder")}
                 hiddenInput={false}
-                setValue={setCreateHint}
+                setValue={setCreateHintValue}
                 optional={true}
               />
             </IonCol>
           </IonRow>
+          {createHintValue && createHintValue === createPasswordValue ? (
+            <ErrorMessage
+              message={errorMessages.hintSameAsPassword}
+              timeout={false}
+            />
+          ) : null}
         </IonGrid>
       </PageLayout>
     </IonPage>
