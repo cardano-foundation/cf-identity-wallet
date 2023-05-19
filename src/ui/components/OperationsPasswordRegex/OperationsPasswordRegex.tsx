@@ -19,8 +19,6 @@ const OperationsPasswordRegex = ({
   useEffect(() => {
     const regexState = (pass: boolean) => {
       switch (pass) {
-        case !!specialChar:
-          return "specialChar";
         case !!length:
           return "length";
         case !!uppercase:
@@ -31,6 +29,8 @@ const OperationsPasswordRegex = ({
           return "number";
         case !!symbol:
           return "symbol";
+        case !!specialChar:
+          return "specialChar";
         default:
           break;
       }
