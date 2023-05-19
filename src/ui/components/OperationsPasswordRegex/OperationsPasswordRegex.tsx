@@ -9,7 +9,7 @@ const OperationsPasswordRegex = ({
   password,
   setRegexState,
 }: OperationsPasswordRegexProps) => {
-  const hasSpecialChar = password.match(/[\w\s]{1,}$/);
+  const hasSpecialChar = password.match(/(^[A-Za-z0-9]|[^\p{L}\d\s])$/u);
   const hasLength = password.match(/^.{8,64}$/);
   const hasUppercase = password.match(/([A-Z])/);
   const hasLowercase = password.match(/([a-z])/);
@@ -23,19 +23,14 @@ const OperationsPasswordRegex = ({
           return "hasSpecialChar";
         case !!hasLength:
           return "hasLength";
-
         case !!hasUppercase:
           return "hasUppercase";
-
         case !!hasLowercase:
           return "hasLowercase";
-
         case !!hasNumber:
           return "hasNumber";
-
         case !!hasSymbol:
           return "hasSymbol";
-
         default:
           break;
       }
