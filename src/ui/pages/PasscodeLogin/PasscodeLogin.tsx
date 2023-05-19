@@ -117,7 +117,7 @@ const PasscodeLogin = () => {
 
   return (
     <IonPage className="page-layout passcode-login safe-area">
-      <PageLayout currentPath={RoutePath.PASSCODE_LOGIN} onBack={handleOnBack}>
+      <PageLayout currentPath={RoutePath.PASSCODE_LOGIN} >
         <PasscodeModule
           title={i18n.t("passcodelogin.title")}
           description={i18n.t("passcodelogin.description")}
