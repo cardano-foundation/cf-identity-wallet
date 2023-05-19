@@ -7,6 +7,7 @@ import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { VerifySeedPhrase } from "../ui/pages/VerifySeedPhrase";
+import { CreatePassword } from "../ui/pages/CreatePassword";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   getAuthentication,
@@ -16,7 +17,7 @@ import {
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
 import { TabsMenu } from "../ui/components/navigation/TabsMenu";
-import {RoutePath} from "./paths";
+import { RoutePath } from "./paths";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();

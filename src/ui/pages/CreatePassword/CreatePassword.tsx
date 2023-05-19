@@ -7,6 +7,7 @@ import "./CreatePassword.scss";
 import { InputItem } from "../../components/InputItem";
 import { OperationsPasswordRegex } from "../../components/OperationsPasswordRegex";
 import { ErrorMessage } from "../../components/ErrorMessage";
+import { RoutePath } from "../../../routes/paths";
 
 const CreatePassword = () => {
   const [createPassword, setCreatePassword] = useState("");
@@ -68,6 +69,7 @@ const CreatePassword = () => {
     <IonPage className="page-layout create-password">
       <PageLayout
         header={true}
+        currentPath={RoutePath.CREATE_PASSWORD}
         closeButton={true}
         closeButtonAction={() => {
           // TODO: this will need to be completed at a later stage
