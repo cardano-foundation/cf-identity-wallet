@@ -6,6 +6,8 @@ import {
 } from "@ionic/react-test-utils";
 import { validateMnemonic } from "bip39";
 import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
+import {MemoryRouter} from "react-router-dom";
 import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
 import {
   MNEMONIC_FIFTEEN_WORDS,
@@ -15,6 +17,8 @@ import {
 } from "../../../constants/appConstants";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
+import {RoutePath} from "../../../routes";
+import {SetPasscode} from "../SetPasscode";
 
 describe("Generate Seed Phrase screen", () => {
   test("User can see Title and Security Overlay", () => {
@@ -213,11 +217,11 @@ describe("Generate Seed Phrase screen", () => {
       </Provider>
     );
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    expect(termsCheckbox.hasAttribute('[checked="false"]'));
+    expect(termsCheckbox.hasAttribute("[checked=\"false\"]"));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute('[checked="true"]'));
+    expect(termsCheckbox.hasAttribute("[checked=\"true\"]"));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute('[checked="false"]'));
+    expect(termsCheckbox.hasAttribute("[checked=\"false\"]"));
   });
 
   test("Opening Terms and conditions modal triggers the checkbox", async () => {
@@ -231,14 +235,59 @@ describe("Generate Seed Phrase screen", () => {
       EN_TRANSLATIONS["generateseedphrase.termsandconditions.link"]
     );
 
-    expect(termsCheckbox.hasAttribute('[checked="false"]'));
+    expect(termsCheckbox.hasAttribute("[checked=\"false\"]"));
 
     act(() => {
       fireEvent.click(termsLink);
     });
 
     await waitFor(() => {
-      expect(termsCheckbox.hasAttribute('[checked="true"]'));
+      expect(termsCheckbox.hasAttribute("[checked=\"true\"]"));
     });
+  });
+
+  test("calls handleOnBack when back button is clicked", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.SET_PASSCODE, RoutePath.ONBOARDING],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
+        <Provider store={storeMocked}>
+          <GenerateSeedPhrase />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const overlay = getByTestId("seed-phrase-privacy-overlay");
+    const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
+
+    expect(overlay).toHaveClass("visible");
+
+    act(() => {
+      fireEvent.click(revealSeedPhraseButton);
+    });
+    await waitFor(() => expect(overlay).toHaveClass("hidden"));
+
+    const backButton = getByTestId("back-button"); // Asegúrate de tener el atributo `data-testid="back-button"` en el botón de retroceso en tu componente PageLayout
+    act(() => {
+      fireEvent.click(backButton);
+    });
+
+    await waitFor(() => expect(overlay).toHaveClass("visible"));
+
   });
 });
