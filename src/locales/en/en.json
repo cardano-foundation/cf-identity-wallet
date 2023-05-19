@@ -64,7 +64,7 @@
   "tabsmenu.label.scan": "Scan",
   "tabsmenu.label.crypto": "Crypto",
   "tabsmenu.label.chat": "Chat",
-  "inputitem.optional": "(optional)",
+  "custominput.optional": "(optional)",
   "createpassword.title": "Create password",
   "createpassword.description": "Set your operations password so you can access additional wallet features.",
   "createpassword.input.first.title": "Create password",

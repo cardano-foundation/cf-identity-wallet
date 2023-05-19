@@ -4,7 +4,7 @@ import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import "./CreatePassword.scss";
 
-import { InputItem } from "../../components/InputItem";
+import { CustomInput } from "../../components/CustomInput";
 import { OperationsPasswordRegex } from "../../components/OperationsPasswordRegex";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { RoutePath } from "../../../routes/paths";
@@ -66,13 +66,11 @@ const CreatePassword = () => {
           break;
       }
     };
-    console.log(regexState);
     setErrorMessage(String(errorMessageHandler(regexState) || ""));
   }, [createPasswordValue, confirmPasswordValue, regexState]);
 
   const handleContinue = () => {
     // TODO: this will need to be completed at a later stage
-    console.log("continue");
   };
 
   return (
@@ -83,7 +81,6 @@ const CreatePassword = () => {
         closeButton={true}
         closeButtonAction={() => {
           // TODO: this will need to be completed at a later stage
-          console.log("close");
         }}
         title={`${i18n.t("createpassword.title")}`}
         footer={true}
@@ -103,7 +100,7 @@ const CreatePassword = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <InputItem
+              <CustomInput
                 dataTestId="createPasswordValue"
                 title={i18n.t("createpassword.input.first.title")}
                 placeholder={i18n.t("createpassword.input.first.placeholder")}
@@ -140,7 +137,7 @@ const CreatePassword = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <InputItem
+              <CustomInput
                 dataTestId="confirmPasswordValue"
                 title={i18n.t("createpassword.input.second.title")}
                 placeholder={i18n.t("createpassword.input.second.placeholder")}
@@ -160,7 +157,7 @@ const CreatePassword = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <InputItem
+              <CustomInput
                 dataTestId="createHintValue"
                 title={i18n.t("createpassword.input.third.title")}
                 placeholder={i18n.t("createpassword.input.third.placeholder")}

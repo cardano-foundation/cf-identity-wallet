@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 
-interface InputItemProps {
+interface CustomInputProps {
   dataTestId: string;
   title: string;
   placeholder: string;
@@ -10,4 +10,4 @@ interface InputItemProps {
   optional?: boolean;
 }
 
-export type { InputItemProps };
+export type { CustomInputProps };

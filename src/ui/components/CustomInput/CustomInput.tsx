@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { IonButton, IonIcon, IonInput, IonItem, IonLabel } from "@ionic/react";
 import { eyeOutline, eyeOffOutline } from "ionicons/icons";
-import { InputItemProps } from "./InputItem.types";
-import "./InputItem.scss";
+import { CustomInputProps } from "./CustomInput.types";
+import "./CustomInput.scss";
 import { i18n } from "../../../i18n";
 
-const InputItem = ({
+const CustomInput = ({
   dataTestId,
   title,
   placeholder,
@@ -13,7 +13,7 @@ const InputItem = ({
   setValue,
   setFocus,
   optional,
-}: InputItemProps) => {
+}: CustomInputProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
 
   const handleInput = (e: any) => {
@@ -31,7 +31,7 @@ const InputItem = ({
         {title}
         {optional && (
           <span className="input-item-optional">
-            {i18n.t("inputitem.optional")}
+            {i18n.t("custominput.optional")}
           </span>
         )}
       </IonLabel>
@@ -63,4 +63,4 @@ const InputItem = ({
   );
 };
 
-export { InputItem };
+export { CustomInput };
