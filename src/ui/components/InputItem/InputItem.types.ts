@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 
 interface InputItemProps {
+  dataTestId: string;
   title: string;
   placeholder: string;
   hiddenInput: boolean;

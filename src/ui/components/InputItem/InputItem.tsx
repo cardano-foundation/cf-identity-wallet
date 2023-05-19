@@ -6,6 +6,7 @@ import "./InputItem.scss";
 import { i18n } from "../../../i18n";
 
 const InputItem = ({
+  dataTestId,
   title,
   placeholder,
   hiddenInput,
@@ -36,6 +37,7 @@ const InputItem = ({
       </IonLabel>
       <div className="input-line">
         <IonInput
+          data-testid={dataTestId}
           type={hidden ? "password" : "text"}
           placeholder={placeholder}
           onIonChange={(e) => handleInput(e)}

@@ -104,6 +104,7 @@ const CreatePassword = () => {
           <IonRow>
             <IonCol size="12">
               <InputItem
+                dataTestId="createPasswordValue"
                 title={i18n.t("createpassword.input.first.title")}
                 placeholder={i18n.t("createpassword.input.first.placeholder")}
                 hiddenInput={true}
@@ -140,6 +141,7 @@ const CreatePassword = () => {
           <IonRow>
             <IonCol size="12">
               <InputItem
+                dataTestId="confirmPasswordValue"
                 title={i18n.t("createpassword.input.second.title")}
                 placeholder={i18n.t("createpassword.input.second.placeholder")}
                 hiddenInput={true}
@@ -159,6 +161,7 @@ const CreatePassword = () => {
           <IonRow>
             <IonCol size="12">
               <InputItem
+                dataTestId="createHintValue"
                 title={i18n.t("createpassword.input.third.title")}
                 placeholder={i18n.t("createpassword.input.third.placeholder")}
                 hiddenInput={false}
