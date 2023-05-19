@@ -36,6 +36,12 @@ const PasscodeLogin = () => {
       : i18n.t("passcodelogin.alert.button.restart");
   const cancelButtonText = i18n.t("passcodelogin.alert.button.cancel");
 
+  const handleClearState = () => {
+    setPasscode("");
+    setIsOpen(false);
+    setPasscodeIncorrect(false);
+  };
+
   const handlePinChange = (digit: number) => {
     if (passcode.length < 6) {
       setPasscode(passcode + digit);
@@ -56,7 +62,7 @@ const PasscodeLogin = () => {
                 updateRedux
               );
               history.push(backPath.pathname);
-              setPasscode("");
+              handleClearState();
             } else {
               setPasscodeIncorrect(true);
             }
@@ -90,6 +96,10 @@ const PasscodeLogin = () => {
       return false;
     }
   };
+  const handleOnBack = () => {
+    handleClearState();
+  }
+
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
       const copyStore = JSON.parse(JSON.stringify(storeState));
@@ -101,13 +111,13 @@ const PasscodeLogin = () => {
         },
       };
       history.push(RoutePath.SET_PASSCODE);
-      setPasscode("");
+      handleClearState();
     });
   };
 
   return (
     <IonPage className="page-layout passcode-login safe-area">
-      <PageLayout currentPath={RoutePath.PASSCODE_LOGIN}>
+      <PageLayout currentPath={RoutePath.PASSCODE_LOGIN} onBack={handleOnBack}>
         <PasscodeModule
           title={i18n.t("passcodelogin.title")}
           description={i18n.t("passcodelogin.description")}

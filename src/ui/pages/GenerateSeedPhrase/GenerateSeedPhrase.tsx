@@ -57,6 +57,16 @@ const GenerateSeedPhrase = () => {
     setSeedPhrase256(generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" "));
   }, []);
 
+  const handleClearState = () => {
+    setSeedPhrase([]);
+    setSeedPhrase160([]);
+    setSeedPhrase256([]);
+    setShowSeedPhrase(false);
+    setAlertIsOpen(false);
+    setModalIsOpen(false);
+    setChecked(false);
+  };
+
   const toggleSeedPhrase = (length: number) => {
     if (length === FIFTEEN_WORDS_BIT_LENGTH) {
       setSeedPhrase(seedPhrase160);
@@ -78,6 +88,9 @@ const GenerateSeedPhrase = () => {
     );
   };
 
+  const handleOnBack = () => {
+    handleClearState();
+  }
   const handleContinue = () => {
     setAlertIsOpen(false);
     const data: DataProps = {
@@ -90,6 +103,7 @@ const GenerateSeedPhrase = () => {
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push(nextPath.pathname);
+    handleClearState();
   };
 
   return (
@@ -97,6 +111,7 @@ const GenerateSeedPhrase = () => {
       <PageLayout
         header={true}
         backButton={true}
+        onBack={handleOnBack}
         currentPath={RoutePath.GENERATE_SEED_PHRASE}
         progressBar={true}
         progressBarValue={0.66}

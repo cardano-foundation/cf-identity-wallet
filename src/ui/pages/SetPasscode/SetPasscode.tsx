@@ -44,7 +44,7 @@ const SetPasscode = () => {
           }).then((hash) => {
             SecureStorage.set(KeyStoreKeys.APP_PASSCODE, hash.encoded).then(
               () => {
-                handleClear();
+                handleClearState();
 
                 const data: DataProps = {
                   store: storeState,
@@ -75,10 +75,14 @@ const SetPasscode = () => {
     }
   };
 
-  const handleClear = () => {
+  const handleClearState = () => {
     setPasscode("");
     setOriginalPassCode("");
   };
+
+  const handleOnBack = () => {
+    handleClearState();
+  }
 
   useEffect(() => {
     if (passcode.length === 6 && originalPassCode === "") {
@@ -92,6 +96,7 @@ const SetPasscode = () => {
       <PageLayout
         header={true}
         backButton={true}
+        onBack={handleOnBack}
         currentPath={RoutePath.SET_PASSCODE}
         progressBar={true}
         progressBarValue={0.33}
@@ -122,7 +127,7 @@ const SetPasscode = () => {
             <IonCol className="continue-col">
               {originalPassCode !== "" && (
                 <IonButton
-                  onClick={() => handleClear()}
+                  onClick={() => handleClearState()}
                   shape="round"
                   expand="block"
                   fill="outline"

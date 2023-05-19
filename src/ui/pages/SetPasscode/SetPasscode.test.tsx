@@ -3,6 +3,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import Argon2 from "argon2-browser";
 import { Buffer } from "buffer";
 import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
 import { SetPasscode, ARGON2ID_OPTIONS } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import {
@@ -22,6 +23,7 @@ const argon2Spy = jest.spyOn(Argon2, "hash").mockResolvedValue(ARGON2ID_HASH);
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 
 describe("SetPasscode Page", () => {
+
   test("Renders Create Passcode page with title and description", () => {
     const { getByText } = render(
       <Provider store={store}>

@@ -37,6 +37,12 @@ const VerifySeedPhrase = () => {
     }
   }, []);
 
+  const handleClearState = () => {
+    setSeedPhraseRemaining([]);
+    setSeedPhraseSelected([]);
+    setAlertIsOpen(false);
+  };
+
   const addSeedPhraseSelected = (word: string) => {
     setSeedPhraseSelected((seedPhraseSelected) => [
       ...seedPhraseSelected,
@@ -63,6 +69,10 @@ const VerifySeedPhrase = () => {
     setSeedPhraseRemaining(seedPhraseRemaining.concat(words));
     setSeedPhraseSelected(newMatch);
   };
+
+  const handleOnBack = () => {
+    handleClearState();
+  }
 
   const handleContinue = async () => {
     if (
@@ -91,6 +101,7 @@ const VerifySeedPhrase = () => {
       <PageLayout
         header={true}
         backButton={true}
+        onBack={handleOnBack}
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
         progressBar={true}
         progressBarValue={1}
