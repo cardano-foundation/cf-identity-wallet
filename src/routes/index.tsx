@@ -97,7 +97,7 @@ const Routes = () => {
           exact
           component={TabsMenu}
         />
-        <Route
+        <AuthenticatedRoute
           path={RoutePath.CREATE_PASSWORD}
           exact
           component={CreatePassword}
