@@ -16,7 +16,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import {RoutePath} from "../../../routes";
+import { RoutePath } from "../../../routes";
 
 // Based on OWASP recommendations
 const ARGON2ID_OPTIONS = {
@@ -82,7 +82,7 @@ const SetPasscode = () => {
 
   const handleOnBack = () => {
     handleClearState();
-  }
+  };
 
   useEffect(() => {
     if (passcode.length === 6 && originalPassCode === "") {

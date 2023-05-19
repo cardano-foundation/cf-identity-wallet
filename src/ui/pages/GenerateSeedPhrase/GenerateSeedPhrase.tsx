@@ -58,9 +58,6 @@ const GenerateSeedPhrase = () => {
   }, []);
 
   const handleClearState = () => {
-    setSeedPhrase([]);
-    setSeedPhrase160([]);
-    setSeedPhrase256([]);
     setShowSeedPhrase(false);
     setAlertIsOpen(false);
     setModalIsOpen(false);
