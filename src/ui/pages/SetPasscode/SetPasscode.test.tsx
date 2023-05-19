@@ -185,4 +185,38 @@ describe("SetPasscode Page", () => {
       ARGON2ID_HASH.encoded
     );
   });
+  test("calls handleOnBack when back button is clicked", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.SET_PASSCODE, RoutePath.ONBOARDING],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { queryByText, getByTestId } = render(
+      <MemoryRouter initialEntries={[RoutePath.SET_PASSCODE]}>
+        <Provider store={storeMocked}>
+          <SetPasscode />
+        </Provider>
+      </MemoryRouter>
+    );
+    const backButton = getByTestId("back-button"); // Asegúrate de tener el atributo `data-testid="back-button"` en el botón de retroceso en tu componente PageLayout
+    fireEvent.click(backButton);
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.title"])
+      ).toBeInTheDocument()
+    );
+  });
 });
