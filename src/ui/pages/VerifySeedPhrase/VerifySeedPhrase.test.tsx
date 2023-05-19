@@ -10,6 +10,7 @@ import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { MNEMONIC_FIFTEEN_WORDS } from "../../../constants/appConstants";
 import { TabsMenu } from "../../components/navigation/TabsMenu";
+import configureStore from "redux-mock-store";
 
 describe("Verify Seed Phrase Page", () => {
   const seedPhrase: (string | null)[] = [];
@@ -172,5 +173,58 @@ describe("Verify Seed Phrase Page", () => {
     fireEvent.click(continueButton);
 
     await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
+  });
+
+  test("calls handleOnBack when back button is clicked", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.SET_PASSCODE, RoutePath.ONBOARDING],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase: "example1 example2 example3 example4 example5"
+      }
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, queryByText, getByText } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
+          <Route
+            path={RoutePath.VERIFY_SEED_PHRASE}
+            component={VerifySeedPhrase}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+
+    fireEvent.click(getByText(String("example1")));
+    fireEvent.click(getByText(String("example2")));
+    fireEvent.click(getByText(String("example3")));
+    fireEvent.click(getByText(String("example4")));
+    fireEvent.click(getByText(String("example5")));
+
+
+
+    const continueButton = getByTestId("continue-button") as HTMLButtonElement; // Asegúrate de tener el atributo `data-testid="back-button"` en el botón de retroceso en tu componente PageLayout
+
+    expect(continueButton.disabled).toBe(false);
+
+    const backButton = getByTestId("back-button"); // Asegúrate de tener el atributo `data-testid="back-button"` en el botón de retroceso en tu componente PageLayout
+    act(() => {
+      fireEvent.click(backButton);
+    });
+
+    expect(continueButton.disabled).toBe(true);
   });
 });

@@ -6,7 +6,7 @@ const initialState: SeedPhraseCacheProps = {
 };
 
 const seedPhraseCacheSlice = createSlice({
-  name: "SeedPhraseCache",
+  name: "seedPhraseCache",
   initialState,
   reducers: {
     setSeedPhraseCache: (state, action: PayloadAction<string>) => {
