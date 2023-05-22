@@ -40,7 +40,7 @@ const CustomInput = ({
           data-testid={dataTestId}
           type={hidden ? "password" : "text"}
           placeholder={placeholder}
-          onIonChange={(e) => handleInput(e)}
+          onIonChange={(e) => setValue(`${e.target.value ?? ""}`)}
           onIonFocus={() => handleFocus(true)}
           onIonBlur={() => handleFocus(false)}
         />
