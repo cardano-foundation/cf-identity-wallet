@@ -180,7 +180,7 @@ describe("Verify Seed Phrase Page", () => {
     const dispatchMock = jest.fn();
     const initialState = {
       stateCache: {
-        routes: [RoutePath.SET_PASSCODE, RoutePath.ONBOARDING],
+        routes: [RoutePath.VERIFY_SEED_PHRASE],
         authentication: {
           loggedIn: true,
           time: Date.now(),
@@ -188,7 +188,7 @@ describe("Verify Seed Phrase Page", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160: "",
+        seedPhrase160: "example1 example2 example3 example4 example5",
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
