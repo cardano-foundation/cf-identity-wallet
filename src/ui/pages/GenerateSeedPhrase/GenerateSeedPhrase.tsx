@@ -66,14 +66,15 @@ const GenerateSeedPhrase = () => {
           ? seedPhraseStore.seedPhrase256.split(" ")
           : fillArray(24)
       );
+
       setSeedPhrase(
         seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
           ? seedPhraseStore.seedPhrase160.length
             ? seedPhraseStore.seedPhrase160.split(" ")
             : fillArray(15)
           : seedPhraseStore.seedPhrase256.length
-          ? seedPhraseStore.seedPhrase256.split(" ")
-          : fillArray(24)
+            ? seedPhraseStore.seedPhrase256.split(" ")
+            : fillArray(24)
       );
     }
   }, [history?.location.pathname]);
@@ -128,11 +129,8 @@ const GenerateSeedPhrase = () => {
       setSeedPhrase160(seedPhraseStore.seedPhrase160.split(" "));
       setSeedPhrase256(seedPhraseStore.seedPhrase256.split(" "));
     } else if (!seedPhraseAlreadyGenerated) {
-      const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
-      const seed256 = generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ");
-      setSeedPhrase160(seed160);
-      setSeedPhrase256(seed256);
-      setSeedPhrase256(seed256);
+      setSeedPhrase160(generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" "));
+      setSeedPhrase256(generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" "));
       setSeedPhraseAlreadyGenerated(true);
     }
   };
