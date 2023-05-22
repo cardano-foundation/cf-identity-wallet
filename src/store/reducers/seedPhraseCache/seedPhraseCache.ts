@@ -2,18 +2,24 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import { SeedPhraseCacheProps } from "./seedPhraseCache.types";
 const initialState: SeedPhraseCacheProps = {
-  seedPhrase: "",
+  seedPhrase160: "",
+  seedPhrase256: "",
 };
 
 const seedPhraseCacheSlice = createSlice({
   name: "seedPhraseCache",
   initialState,
   reducers: {
-    setSeedPhraseCache: (state, action: PayloadAction<string>) => {
-      state.seedPhrase = action.payload;
+    setSeedPhraseCache: (
+      state,
+      action: PayloadAction<SeedPhraseCacheProps>
+    ) => {
+      state.seedPhrase160 = action.payload.seedPhrase160;
+      state.seedPhrase256 = action.payload.seedPhrase256;
     },
     clearSeedPhraseCache: (state) => {
-      state.seedPhrase = "";
+      state.seedPhrase160 = "";
+      state.seedPhrase256 = "";
     },
   },
 });

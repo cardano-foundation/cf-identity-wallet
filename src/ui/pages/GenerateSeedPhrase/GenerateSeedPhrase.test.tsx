@@ -86,7 +86,6 @@ describe("Generate Seed Phrase screen", () => {
     await waitFor(() =>
       expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS)
     );
-
   });
 
   test("User is prompted to save the seed phrase", async () => {

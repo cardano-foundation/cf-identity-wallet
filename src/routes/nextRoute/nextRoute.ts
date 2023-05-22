@@ -31,7 +31,7 @@ const getNextRootRoute = (store: RootState) => {
   return { pathname: path };
 };
 const getNextOnboardingRoute = (store: RootState) => {
-  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase;
+  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase160;
 
   let path;
   if (!store.stateCache.authentication.passcodeIsSet) {
@@ -46,7 +46,7 @@ const getNextOnboardingRoute = (store: RootState) => {
 };
 
 const getNextSetPasscodeRoute = (store: RootState) => {
-  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase;
+  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase160;
 
   const nextPath: string = seedPhraseIsSet
     ? RoutePath.TABS_MENU
@@ -72,7 +72,10 @@ const getNextVerifySeedPhraseRoute = () => {
 };
 
 const updateStoreSetSeedPhrase = (data: DataProps) => {
-  return setSeedPhraseCache(data.state?.seedPhrase);
+  return setSeedPhraseCache({
+    seedPhrase160: data.state?.seedPhrase160,
+    seedPhrase256: data.state?.seedPhrase256,
+  });
 };
 const updateStoreCurrentRoute = (data: DataProps) => {
   return setCurrentRoute({ path: data.state?.nextRoute });

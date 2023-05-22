@@ -45,7 +45,8 @@ const GenerateSeedPhrase = () => {
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
-  const [seedPhraseAlreadyGenerated, setSeedPhraseAlreadyGenerated] = useState(false);
+  const [seedPhraseAlreadyGenerated, setSeedPhraseAlreadyGenerated] =
+    useState(false);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -59,14 +60,14 @@ const GenerateSeedPhrase = () => {
   }, []);
 
   useEffect(() => {
-    if (seedPhrase160.length && seedPhrase256.length){
+    if (seedPhrase160.length && seedPhrase256.length) {
       setSeedPhrase(seedPhrase.length === 15 ? seedPhrase160 : seedPhrase256);
     }
   }, [seedPhraseAlreadyGenerated]);
 
-  const fillArray = (length:number) => {
-    return new Array(length).fill("*****")
-  }
+  const fillArray = (length: number) => {
+    return new Array(length).fill("*****");
+  };
 
   const handleClearState = () => {
     setSeedPhrase160(fillArray(15));
@@ -107,7 +108,7 @@ const GenerateSeedPhrase = () => {
       setSeedPhrase256(seed256);
       setSeedPhraseAlreadyGenerated(true);
     }
-  }
+  };
   const handleOnBack = () => {
     handleClearState();
   };
@@ -115,7 +116,10 @@ const GenerateSeedPhrase = () => {
     setAlertIsOpen(false);
     const data: DataProps = {
       store: storeState,
-      state: { seedPhrase: seedPhrase.join(" ") },
+      state: {
+        seedPhrase160: seedPhrase160.join(" "),
+        seedPhrase256: seedPhrase256.join(" "),
+      },
     };
     const { nextPath, updateRedux } = getNextRoute(
       RoutePath.GENERATE_SEED_PHRASE,
