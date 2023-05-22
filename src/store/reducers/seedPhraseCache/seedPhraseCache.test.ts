@@ -8,6 +8,7 @@ import {
   setSeedPhraseCache,
 } from "./seedPhraseCache";
 import { RootState } from "../../index";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
 describe("SeedPhraseCache", () => {
   test("should return the initial state on first run", () => {
@@ -19,7 +20,13 @@ describe("SeedPhraseCache", () => {
   test("should set the seed phrase cache", () => {
     const seedPhrase160 = "test seed phrase 160";
     const seedPhrase256 = "test seed phrase 256";
-    const action = setSeedPhraseCache({seedPhrase160, seedPhrase256});
+    const selected = FIFTEEN_WORDS_BIT_LENGTH;
+
+    const action = setSeedPhraseCache({
+      seedPhrase160,
+      seedPhrase256,
+      selected,
+    });
     const nextState = seedPhraseCacheSlice.reducer(initialState, action);
 
     expect(nextState.seedPhrase160).toEqual(seedPhrase160);
@@ -33,8 +40,13 @@ describe("SeedPhraseCache", () => {
   test("should clear the seed phrase cache", () => {
     const seedPhrase160 = "test seed phrase 160";
     const seedPhrase256 = "test seed phrase 256";
+    const selected = FIFTEEN_WORDS_BIT_LENGTH;
 
-    const action = setSeedPhraseCache({seedPhrase160, seedPhrase256});
+    const action = setSeedPhraseCache({
+      seedPhrase160,
+      seedPhrase256,
+      selected,
+    });
     let nextState = seedPhraseCacheSlice.reducer(initialState, action);
     expect(nextState.seedPhrase160).toEqual(seedPhrase160);
     expect(nextState.seedPhrase256).toEqual(seedPhrase256);

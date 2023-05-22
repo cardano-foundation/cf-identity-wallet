@@ -75,6 +75,7 @@ const updateStoreSetSeedPhrase = (data: DataProps) => {
   return setSeedPhraseCache({
     seedPhrase160: data.state?.seedPhrase160,
     seedPhrase256: data.state?.seedPhrase256,
+    selected: data.state?.selected,
   });
 };
 const updateStoreCurrentRoute = (data: DataProps) => {

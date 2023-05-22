@@ -8,6 +8,7 @@ import {
 } from "./backRoute";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
 
 jest.mock("../../store/reducers/stateCache", () => ({
   removeCurrentRoute: jest.fn(),
@@ -25,7 +26,9 @@ describe("getBackRoute", () => {
   beforeEach(() => {
     storeMock = {
       seedPhraseCache: {
-        seedPhrase: "",
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
@@ -101,7 +104,9 @@ describe("getBackRoute", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase: "",
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
     };
     const expectedAuthentication = {
@@ -146,7 +151,9 @@ describe("getPreviousRoute", () => {
   beforeEach(() => {
     storeMock = {
       seedPhraseCache: {
-        seedPhrase: "",
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],

@@ -37,11 +37,13 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
+  const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
@@ -53,11 +55,28 @@ const GenerateSeedPhrase = () => {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    const seed160 = fillArray(15);
-    setSeedPhrase160(seed160);
-    setSeedPhrase(seed160);
-    setSeedPhrase256(fillArray(24));
-  }, []);
+    if (history.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
+      setSeedPhrase160(
+        seedPhraseStore.seedPhrase160.length
+          ? seedPhraseStore.seedPhrase160.split(" ")
+          : fillArray(15)
+      );
+      setSeedPhrase256(
+        seedPhraseStore.seedPhrase256.length
+          ? seedPhraseStore.seedPhrase256.split(" ")
+          : fillArray(24)
+      );
+      setSeedPhrase(
+        seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
+          ? seedPhraseStore.seedPhrase160.length
+            ? seedPhraseStore.seedPhrase160.split(" ")
+            : fillArray(15)
+          : seedPhraseStore.seedPhrase256.length
+          ? seedPhraseStore.seedPhrase256.split(" ")
+          : fillArray(24)
+      );
+    }
+  }, [history.location.pathname]);
 
   useEffect(() => {
     if (seedPhrase160.length && seedPhrase256.length) {
@@ -72,6 +91,7 @@ const GenerateSeedPhrase = () => {
   const handleClearState = () => {
     setSeedPhrase160(fillArray(15));
     setSeedPhrase256(fillArray(24));
+    setSeedPhraseAlreadyGenerated(false);
     setShowSeedPhrase(false);
     setAlertIsOpen(false);
     setModalIsOpen(false);
@@ -101,16 +121,20 @@ const GenerateSeedPhrase = () => {
 
   const handleShowSeedPhrase = () => {
     setShowSeedPhrase(true);
-    if (!seedPhraseAlreadyGenerated) {
+    if (
+      seedPhraseStore.seedPhrase160.length &&
+      seedPhraseStore.seedPhrase256.length
+    ) {
+      setSeedPhrase160(seedPhraseStore.seedPhrase160.split(" "));
+      setSeedPhrase256(seedPhraseStore.seedPhrase256.split(" "));
+    } else if (!seedPhraseAlreadyGenerated) {
       const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
       const seed256 = generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ");
       setSeedPhrase160(seed160);
       setSeedPhrase256(seed256);
+      setSeedPhrase256(seed256);
       setSeedPhraseAlreadyGenerated(true);
     }
-  };
-  const handleOnBack = () => {
-    handleClearState();
   };
   const handleContinue = () => {
     setAlertIsOpen(false);
@@ -119,6 +143,10 @@ const GenerateSeedPhrase = () => {
       state: {
         seedPhrase160: seedPhrase160.join(" "),
         seedPhrase256: seedPhrase256.join(" "),
+        selected:
+          seedPhrase.length === 15
+            ? FIFTEEN_WORDS_BIT_LENGTH
+            : TWENTYFOUR_WORDS_BIT_LENGTH,
       },
     };
     const { nextPath, updateRedux } = getNextRoute(
@@ -135,7 +163,7 @@ const GenerateSeedPhrase = () => {
       <PageLayout
         header={true}
         backButton={true}
-        onBack={handleOnBack}
+        onBack={handleClearState}
         currentPath={RoutePath.GENERATE_SEED_PHRASE}
         progressBar={true}
         progressBarValue={0.66}

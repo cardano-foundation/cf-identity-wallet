@@ -9,6 +9,7 @@ import {
 import { RootState } from "../../store";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
 
 describe("NextRoute", () => {
   let localStorageMock: any;
@@ -26,7 +27,9 @@ describe("NextRoute", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase: "",
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
     };
   });
@@ -107,7 +110,9 @@ describe("getNextRoute", () => {
       },
     },
     seedPhraseCache: {
-      seedPhrase: "",
+      seedPhrase160: "",
+      seedPhrase256: "",
+      selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
   };
   const state = {};
@@ -135,7 +140,7 @@ describe("getNextRoute", () => {
     expect(result.nextPath).toEqual({ pathname: RoutePath.SET_PASSCODE });
 
     storeMock.stateCache.authentication.passcodeIsSet = true;
-    storeMock.seedPhraseCache.seedPhrase = "example-seed-phrase";
+    storeMock.seedPhraseCache.seedPhrase160 = "example-seed-phrase";
 
     result = getNextRoute(RoutePath.ONBOARDING, {
       store: storeMock,
@@ -148,7 +153,9 @@ describe("getNextRoute", () => {
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is set", () => {
     storeMock.seedPhraseCache = {
-      seedPhrase: "example seed phrase",
+      seedPhrase160: "example seed phrase 160",
+      seedPhrase256: "example seed phrase 256",
+      selected: FIFTEEN_WORDS_BIT_LENGTH,
     };
 
     const result = getNextSetPasscodeRoute(storeMock);
@@ -158,7 +165,8 @@ describe("getNextRoute", () => {
   });
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is not set", () => {
-    storeMock.seedPhraseCache.seedPhrase = "";
+    storeMock.seedPhraseCache.seedPhrase160 = "";
+    storeMock.seedPhraseCache.seedPhrase256 = "";
 
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({

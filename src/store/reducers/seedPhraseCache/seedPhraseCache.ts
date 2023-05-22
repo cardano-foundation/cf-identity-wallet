@@ -1,9 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
 import { SeedPhraseCacheProps } from "./seedPhraseCache.types";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 const initialState: SeedPhraseCacheProps = {
   seedPhrase160: "",
   seedPhrase256: "",
+  selected: FIFTEEN_WORDS_BIT_LENGTH,
 };
 
 const seedPhraseCacheSlice = createSlice({
@@ -16,10 +18,12 @@ const seedPhraseCacheSlice = createSlice({
     ) => {
       state.seedPhrase160 = action.payload.seedPhrase160;
       state.seedPhrase256 = action.payload.seedPhrase256;
+      state.selected = action.payload.selected;
     },
     clearSeedPhraseCache: (state) => {
       state.seedPhrase160 = "";
       state.seedPhrase256 = "";
+      state.selected = FIFTEEN_WORDS_BIT_LENGTH;
     },
   },
 });

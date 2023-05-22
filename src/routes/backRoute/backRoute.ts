@@ -51,7 +51,7 @@ const getPreviousRoute = (data: DataProps) => {
 };
 
 const updateStoreAfterPasscodeLoginRoute = (data: DataProps) => {
-  const seedPhraseISet = !!data.store.seedPhraseCache.seedPhrase;
+  const seedPhraseISet = !!data.store.seedPhraseCache.seedPhrase160;
 
   if (data.state?.resetPasscode && seedPhraseISet) {
     return setAuthentication({
@@ -92,14 +92,14 @@ const backRoute: Record<string, any> = {
     updateRedux: [],
   },
   [RoutePath.GENERATE_SEED_PHRASE]: {
-    updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
-  },
-  [RoutePath.VERIFY_SEED_PHRASE]: {
     updateRedux: [
       removeCurrentRoute,
       updateStoreSetCurrentRoute,
       clearSeedPhraseCache,
     ],
+  },
+  [RoutePath.VERIFY_SEED_PHRASE]: {
+    updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
   [RoutePath.SET_PASSCODE]: {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
