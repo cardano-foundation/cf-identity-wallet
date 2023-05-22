@@ -11,14 +11,14 @@ const CustomInput = ({
   placeholder,
   hiddenInput,
   onChangeInput,
-  setFocus,
+  onChangeFocus,
   optional,
 }: CustomInputProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
 
   const handleFocus = (focus: boolean) => {
-    if (setFocus) {
-      setFocus(focus);
+    if (onChangeFocus) {
+      onChangeFocus(focus);
     }
   };
   return (

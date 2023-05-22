@@ -191,7 +191,7 @@ const CreatePassword = () => {
                 placeholder={i18n.t("createpassword.input.first.placeholder")}
                 hiddenInput={true}
                 onChangeInput={setCreatePasswordValue}
-                setFocus={setCreatePasswordFocus}
+                onChangeFocus={setCreatePasswordFocus}
               />
             </IonCol>
           </IonRow>
@@ -228,7 +228,7 @@ const CreatePassword = () => {
                 placeholder={i18n.t("createpassword.input.second.placeholder")}
                 hiddenInput={true}
                 onChangeInput={setConfirmPasswordValue}
-                setFocus={setConfirmPasswordFocus}
+                onChangeFocus={setConfirmPasswordFocus}
               />
             </IonCol>
           </IonRow>
