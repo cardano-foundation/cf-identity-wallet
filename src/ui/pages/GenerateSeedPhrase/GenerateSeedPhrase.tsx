@@ -67,21 +67,26 @@ const GenerateSeedPhrase = () => {
           : fillArray(24)
       );
 
+      const isFifteenWordsSelected = seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
+      const isFifteenWordsInStore = seedPhraseStore.seedPhrase160.length > 0;
+      const isTwentyFourWordsInStore = seedPhraseStore.seedPhrase256.length > 0;
+
       setSeedPhrase(
-        seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
-          ? seedPhraseStore.seedPhrase160.length
+        isFifteenWordsSelected
+          ? isFifteenWordsInStore
             ? seedPhraseStore.seedPhrase160.split(" ")
             : fillArray(15)
-          : seedPhraseStore.seedPhrase256.length
+          : isTwentyFourWordsInStore
             ? seedPhraseStore.seedPhrase256.split(" ")
             : fillArray(24)
       );
     }
   }, [history?.location.pathname]);
 
+
   useEffect(() => {
     if (seedPhrase160.length && seedPhrase256.length) {
-      setSeedPhrase(seedPhrase.length === 15 ? seedPhrase160 : seedPhrase256);
+      setSeedPhrase(seedPhrase.length === MNEMONIC_FIFTEEN_WORDS ? seedPhrase160 : seedPhrase256);
     }
   }, [seedPhraseAlreadyGenerated]);
 
@@ -90,8 +95,11 @@ const GenerateSeedPhrase = () => {
   };
 
   const handleClearState = () => {
-    setSeedPhrase160(fillArray(15));
-    setSeedPhrase256(fillArray(24));
+    const simulated160Array = fillArray(15);
+    const simulated256Array = fillArray(24);
+    setSeedPhrase160(simulated160Array);
+    setSeedPhrase256(simulated256Array);
+    setSeedPhrase(seedPhrase.length === MNEMONIC_FIFTEEN_WORDS ? simulated160Array : simulated256Array);
     setSeedPhraseAlreadyGenerated(false);
     setShowSeedPhrase(false);
     setAlertIsOpen(false);
