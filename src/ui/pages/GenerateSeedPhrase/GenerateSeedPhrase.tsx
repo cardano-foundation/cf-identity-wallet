@@ -50,14 +50,9 @@ const GenerateSeedPhrase = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
-  useEffect(() => {
-    const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
-    setSeedPhrase160(seed160);
-    setSeedPhrase(seed160);
-    setSeedPhrase256(generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" "));
-  }, []);
-
   const handleClearState = () => {
+    setSeedPhrase160([]);
+    setSeedPhrase([]);
     setShowSeedPhrase(false);
     setAlertIsOpen(false);
     setModalIsOpen(false);
@@ -103,6 +98,9 @@ const GenerateSeedPhrase = () => {
     handleClearState();
   };
 
+  const seedPhraseToRender = seedPhrase.length ? seedPhrase : new Array(15).fill("*****");
+  console.log("seedPhraseToRender");
+  console.log(seedPhraseToRender);
   return (
     <IonPage className="page-layout generate-seedphrase">
       <PageLayout
@@ -179,6 +177,10 @@ const GenerateSeedPhrase = () => {
                     data-testid="reveal-seed-phrase-button"
                     onClick={() => {
                       setShowSeedPhrase(true);
+                      const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
+                      setSeedPhrase160(seed160);
+                      setSeedPhrase(seed160);
+                      setSeedPhrase256(generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" "));
                     }}
                   >
                     {i18n.t("generateseedphrase.privacy.overlay.button")}
@@ -193,7 +195,7 @@ const GenerateSeedPhrase = () => {
                   }
                 }`}
                 >
-                  {seedPhrase.map((word, index) => (
+                  {seedPhraseToRender.map((word, index) => (
                     <IonChip key={index}>
                       <span className="index">{index + 1}.</span>
                       <span>{word}</span>

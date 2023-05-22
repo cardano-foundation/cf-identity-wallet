@@ -213,11 +213,11 @@ describe("Verify Seed Phrase Page", () => {
     fireEvent.click(getByText(String("example4")));
     fireEvent.click(getByText(String("example5")));
 
-    const continueButton = getByTestId("continue-button") as HTMLButtonElement; // Asegúrate de tener el atributo `data-testid="back-button"` en el botón de retroceso en tu componente PageLayout
+    const continueButton = getByTestId("continue-button") as HTMLButtonElement;
 
     expect(continueButton.disabled).toBe(false);
 
-    const backButton = getByTestId("back-button"); // Asegúrate de tener el atributo `data-testid="back-button"` en el botón de retroceso en tu componente PageLayout
+    const backButton = getByTestId("back-button");
     act(() => {
       fireEvent.click(backButton);
     });
