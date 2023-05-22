@@ -25,18 +25,19 @@ const VerifySeedPhrase = () => {
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
-  const originalSeedPhrase =
-    seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
-      ? seedPhraseStore.seedPhrase160.split(" ")
-      : seedPhraseStore.seedPhrase256.split(" ");
+  const [originalSeedPhrase, setOriginalSeedPhrase] = useState<string[]>([]);
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
+      const originalSeed = seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
+        ? seedPhraseStore.seedPhrase160.split(" ")
+        : seedPhraseStore.seedPhrase256.split(" ");
+      setOriginalSeedPhrase(originalSeed);
       setSeedPhraseRemaining(
-        originalSeedPhrase.sort(() => Math.random() - 0.5)
+        originalSeed.sort(() => Math.random() - 0.5)
       );
     }
   }, [history?.location.pathname]);
@@ -44,6 +45,7 @@ const VerifySeedPhrase = () => {
   const handleClearState = () => {
     setSeedPhraseRemaining([]);
     setSeedPhraseSelected([]);
+    setOriginalSeedPhrase([]);
     setAlertIsOpen(false);
   };
 
