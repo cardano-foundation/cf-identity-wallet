@@ -34,12 +34,12 @@ const VerifySeedPhrase = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   useEffect(() => {
-    if (history.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
+    if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
       setSeedPhraseRemaining(
         originalSeedPhrase.sort(() => Math.random() - 0.5)
       );
     }
-  }, [history.location.pathname]);
+  }, [history?.location.pathname]);
 
   const handleClearState = () => {
     setSeedPhraseRemaining([]);

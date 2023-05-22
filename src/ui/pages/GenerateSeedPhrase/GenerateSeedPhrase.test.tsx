@@ -235,6 +235,11 @@ describe("Generate Seed Phrase screen", () => {
           passcodeIsSet: true,
         },
       },
+      seedPhraseCache: {
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
     };
 
     const storeMocked = {

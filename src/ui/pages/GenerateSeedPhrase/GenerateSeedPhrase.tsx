@@ -55,7 +55,7 @@ const GenerateSeedPhrase = () => {
   const [checked, setChecked] = useState(false);
 
   useEffect(() => {
-    if (history.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
+    if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
       setSeedPhrase160(
         seedPhraseStore.seedPhrase160.length
           ? seedPhraseStore.seedPhrase160.split(" ")
@@ -76,7 +76,7 @@ const GenerateSeedPhrase = () => {
           : fillArray(24)
       );
     }
-  }, [history.location.pathname]);
+  }, [history?.location.pathname]);
 
   useEffect(() => {
     if (seedPhrase160.length && seedPhrase256.length) {
