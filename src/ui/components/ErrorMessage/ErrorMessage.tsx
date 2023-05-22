@@ -1,20 +1,23 @@
 import { useEffect, useState } from "react";
 import { IonLabel } from "@ionic/react";
 import "./ErrorMessage.scss";
+import { ErrorMessageProps } from "./ErrorMessage.types";
 
 const MESSAGE_MILLISECONDS = 2000;
 
-const ErrorMessage = ({ message }: { message: string }) => {
+const ErrorMessage = ({ message, timeout }: ErrorMessageProps) => {
   const [visible, setVisible] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setVisible(false);
-    }, MESSAGE_MILLISECONDS);
+    if (timeout) {
+      const timer = setTimeout(() => {
+        setVisible(false);
+      }, MESSAGE_MILLISECONDS);
 
-    return () => {
-      clearTimeout(timer);
-    };
+      return () => {
+        clearTimeout(timer);
+      };
+    }
   }, []);
 
   return (
