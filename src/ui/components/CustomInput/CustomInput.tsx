@@ -13,6 +13,7 @@ const CustomInput = ({
   onChangeInput,
   onChangeFocus,
   optional,
+  value
 }: CustomInputProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
 
@@ -39,6 +40,7 @@ const CustomInput = ({
           onIonChange={(e) => onChangeInput(`${e.target.value ?? ""}`)}
           onIonFocus={() => handleFocus(true)}
           onIonBlur={() => handleFocus(false)}
+          value={value}
         />
         {hiddenInput && (
           <IonButton
