@@ -30,6 +30,12 @@ const config = {
         loader: "base64-loader",
         type: "javascript/auto"
       },
+      {
+        test: /\.m?js$/,
+        resolve: {
+          fullySpecified: false,
+        },
+      },
     ],
   },
   resolve: {
@@ -75,7 +81,11 @@ const config = {
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
     }),
-    new NodePolyfillPlugin()
+    new NodePolyfillPlugin(),
+    new webpack.NormalModuleReplacementPlugin(
+      /@dcspark\/cardano-multiplatform-lib-nodejs/,
+      '@dcspark/cardano-multiplatform-lib-browser'
+    )
   ],
   infrastructureLogging: {
     level: "info",
