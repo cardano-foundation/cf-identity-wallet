@@ -70,10 +70,6 @@ const VerifySeedPhrase = () => {
     setSeedPhraseSelected(newMatch);
   };
 
-  const handleOnBack = () => {
-    handleClearState();
-  };
-
   const handleContinue = async () => {
     if (
       originalSeedPhrase.length === seedPhraseSelected.length &&
@@ -101,7 +97,7 @@ const VerifySeedPhrase = () => {
       <PageLayout
         header={true}
         backButton={true}
-        onBack={handleOnBack}
+        onBack={handleClearState}
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
         progressBar={true}
         progressBarValue={1}
