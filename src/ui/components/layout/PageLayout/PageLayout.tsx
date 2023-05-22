@@ -136,7 +136,10 @@ const PageLayout = ({
       </IonContent>
 
       {footer && (
-        <IonFooter collapse="fade">
+        <IonFooter
+          collapse="fade"
+          className="ion-no-border"
+        >
           <IonToolbar
             color="light"
             className="page-footer"

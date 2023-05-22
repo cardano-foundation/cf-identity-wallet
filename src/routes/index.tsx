@@ -7,6 +7,7 @@ import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode";
 import { PasscodeLogin } from "../ui/pages/PasscodeLogin";
 import { VerifySeedPhrase } from "../ui/pages/VerifySeedPhrase";
+import { CreatePassword } from "../ui/pages/CreatePassword";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   getAuthentication,
@@ -95,6 +96,11 @@ const Routes = () => {
           path={RoutePath.TABS_MENU}
           exact
           component={TabsMenu}
+        />
+        <AuthenticatedRoute
+          path={RoutePath.CREATE_PASSWORD}
+          exact
+          component={CreatePassword}
         />
       </IonRouterOutlet>
     </IonReactRouter>

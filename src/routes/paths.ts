@@ -6,6 +6,7 @@ enum RoutePath {
   GENERATE_SEED_PHRASE = "/generateseedphrase",
   VERIFY_SEED_PHRASE = "/verifyseedphrase",
   TABS_MENU = "/tabs",
+  CREATE_PASSWORD = "/createpassword",
 }
 
 enum TabsRoutePath {
