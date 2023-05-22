@@ -45,14 +45,32 @@ const GenerateSeedPhrase = () => {
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
+  const [seedPhraseAlreadyGenerated, setSeedPhraseAlreadyGenerated] = useState(false);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
+  useEffect(() => {
+    const seed160 = fillArray(15);
+    setSeedPhrase160(seed160);
+    setSeedPhrase(seed160);
+    setSeedPhrase256(fillArray(24));
+  }, []);
+
+  useEffect(() => {
+    if (seedPhrase160.length && seedPhrase256.length){
+      setSeedPhrase(seedPhrase.length === 15 ? seedPhrase160 : seedPhrase256);
+    }
+  }, [seedPhraseAlreadyGenerated]);
+
+  const fillArray = (length:number) => {
+    return new Array(length).fill("*****")
+  }
+
   const handleClearState = () => {
-    setSeedPhrase160([]);
-    setSeedPhrase([]);
+    setSeedPhrase160(fillArray(15));
+    setSeedPhrase256(fillArray(24));
     setShowSeedPhrase(false);
     setAlertIsOpen(false);
     setModalIsOpen(false);
@@ -80,6 +98,16 @@ const GenerateSeedPhrase = () => {
     );
   };
 
+  const handleShowSeedPhrase = () => {
+    setShowSeedPhrase(true);
+    if (!seedPhraseAlreadyGenerated) {
+      const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
+      const seed256 = generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ");
+      setSeedPhrase160(seed160);
+      setSeedPhrase256(seed256);
+      setSeedPhraseAlreadyGenerated(true);
+    }
+  }
   const handleOnBack = () => {
     handleClearState();
   };
@@ -98,9 +126,6 @@ const GenerateSeedPhrase = () => {
     handleClearState();
   };
 
-  const seedPhraseToRender = seedPhrase.length ? seedPhrase : new Array(15).fill("*****");
-  console.log("seedPhraseToRender");
-  console.log(seedPhraseToRender);
   return (
     <IonPage className="page-layout generate-seedphrase">
       <PageLayout
@@ -175,13 +200,7 @@ const GenerateSeedPhrase = () => {
                     shape="round"
                     fill="outline"
                     data-testid="reveal-seed-phrase-button"
-                    onClick={() => {
-                      setShowSeedPhrase(true);
-                      const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
-                      setSeedPhrase160(seed160);
-                      setSeedPhrase(seed160);
-                      setSeedPhrase256(generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" "));
-                    }}
+                    onClick={() => handleShowSeedPhrase()}
                   >
                     {i18n.t("generateseedphrase.privacy.overlay.button")}
                   </IonButton>
@@ -195,7 +214,7 @@ const GenerateSeedPhrase = () => {
                   }
                 }`}
                 >
-                  {seedPhraseToRender.map((word, index) => (
+                  {seedPhrase.map((word, index) => (
                     <IonChip key={index}>
                       <span className="index">{index + 1}.</span>
                       <span>{word}</span>
