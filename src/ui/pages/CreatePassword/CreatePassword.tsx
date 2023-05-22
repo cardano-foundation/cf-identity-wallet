@@ -58,26 +58,22 @@ const PasswordRegex = ({ password, setRegexState }: PasswordRegexProps) => {
   const symbol = password.match(/[^\p{L}\d\s]/u);
 
   useEffect(() => {
-    const regexState = (pass: boolean) => {
-      switch (pass) {
-        case !!length:
-          return STRING_LENGTH;
-        case !!uppercase:
-          return STRING_UPPERCASE;
-        case !!lowercase:
-          return STRING_LOWERCASE;
-        case !!number:
-          return STRING_NUMBER;
-        case !!symbol:
-          return STRING_SYMBOL;
-        case !!specialChar:
-          return STRING_SPECIAL_CHAR;
-        default:
-          break;
-      }
-    };
+    let regexError = "";
+    if (!length) {
+      regexError = STRING_LENGTH;
+    } else if (!uppercase) {
+      regexError = STRING_UPPERCASE;
+    } else if (!lowercase) {
+      regexError = STRING_LOWERCASE;
+    } else if (!number) {
+      regexError = STRING_NUMBER;
+    } else if (!symbol) {
+      regexError = STRING_SYMBOL;
+    } else if (!specialChar) {
+      regexError = STRING_SPECIAL_CHAR;
+    }
 
-    setRegexState(regexState(false) || "");
+    setRegexState(regexError);
   }, [specialChar, length, uppercase, lowercase, number, symbol]);
 
   return (
