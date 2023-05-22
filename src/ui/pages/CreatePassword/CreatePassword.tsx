@@ -190,7 +190,7 @@ const CreatePassword = () => {
                 title={i18n.t("createpassword.input.first.title")}
                 placeholder={i18n.t("createpassword.input.first.placeholder")}
                 hiddenInput={true}
-                setValue={setCreatePasswordValue}
+                onChangeInput={setCreatePasswordValue}
                 setFocus={setCreatePasswordFocus}
               />
             </IonCol>
@@ -227,7 +227,7 @@ const CreatePassword = () => {
                 title={i18n.t("createpassword.input.second.title")}
                 placeholder={i18n.t("createpassword.input.second.placeholder")}
                 hiddenInput={true}
-                setValue={setConfirmPasswordValue}
+                onChangeInput={setConfirmPasswordValue}
                 setFocus={setConfirmPasswordFocus}
               />
             </IonCol>
@@ -247,7 +247,7 @@ const CreatePassword = () => {
                 title={i18n.t("createpassword.input.third.title")}
                 placeholder={i18n.t("createpassword.input.third.placeholder")}
                 hiddenInput={false}
-                setValue={setCreateHintValue}
+                onChangeInput={setCreateHintValue}
                 optional={true}
               />
             </IonCol>

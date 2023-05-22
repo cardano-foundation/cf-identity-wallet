@@ -10,15 +10,11 @@ const CustomInput = ({
   title,
   placeholder,
   hiddenInput,
-  setValue,
+  onChangeInput,
   setFocus,
   optional,
 }: CustomInputProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
-
-  const handleInput = (e: any) => {
-    setValue(e.target.value);
-  };
 
   const handleFocus = (focus: boolean) => {
     if (setFocus) {
@@ -40,7 +36,7 @@ const CustomInput = ({
           data-testid={dataTestId}
           type={hidden ? "password" : "text"}
           placeholder={placeholder}
-          onIonChange={(e) => setValue(`${e.target.value ?? ""}`)}
+          onIonChange={(e) => onChangeInput(`${e.target.value ?? ""}`)}
           onIonFocus={() => handleFocus(true)}
           onIonBlur={() => handleFocus(false)}
         />
