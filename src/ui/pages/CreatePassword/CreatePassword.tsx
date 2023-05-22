@@ -16,7 +16,7 @@ import "./CreatePassword.scss";
 import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { RoutePath } from "../../../routes/paths";
-import { RegexProps } from "./CreatePassword.types";
+import { PasswordRegexProps } from "./CreatePassword.types";
 
 const STRING_LENGTH = "length";
 const STRING_UPPERCASE = "uppercase";
@@ -36,7 +36,26 @@ const errorMessages = {
   hintSameAsPassword: i18n.t("createpassword.error.hintSameAsPassword"),
 };
 
-const PasswordRegex = ({ password, setRegexState }: RegexProps) => {
+const RegexItem = ({
+  condition,
+  label,
+}: {
+  condition: RegExpMatchArray | null;
+  label: string;
+}) => {
+  return (
+    <IonItem>
+      <IonIcon
+        slot="start"
+        icon={condition ? checkmarkOutline : closeOutline}
+        className={`password-criteria-icon${condition ? " pass" : " fails"}`}
+      />
+      <IonLabel>{label}</IonLabel>
+    </IonItem>
+  );
+};
+
+const PasswordRegex = ({ password, setRegexState }: PasswordRegexProps) => {
   const specialChar = password.match(/(^[A-Za-z0-9]|[^\p{L}\d\s])$/u);
   const length = password.match(/^.{8,64}$/);
   const uppercase = password.match(/([A-Z])/);
@@ -67,24 +86,6 @@ const PasswordRegex = ({ password, setRegexState }: RegexProps) => {
     setRegexState(regexState(false) || "");
   }, [specialChar, length, uppercase, lowercase, number, symbol]);
 
-  const RegexItem = ({
-    condition,
-    label,
-  }: {
-    condition: RegExpMatchArray | null;
-    label: string;
-  }) => {
-    return (
-      <IonItem>
-        <IonIcon
-          slot="start"
-          icon={condition ? checkmarkOutline : closeOutline}
-          className={`password-criteria-icon${condition ? " pass" : " fails"}`}
-        />
-        <IonLabel>{label}</IonLabel>
-      </IonItem>
-    );
-  };
   return (
     <IonList
       lines="none"

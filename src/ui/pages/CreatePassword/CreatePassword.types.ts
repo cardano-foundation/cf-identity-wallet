@@ -1,8 +1,12 @@
 import { Dispatch, SetStateAction } from "react";
 
-interface RegexProps {
+interface RegexItemProps {
+  condition: RegExpMatchArray | null;
+  label: string;
+}
+interface PasswordRegexProps {
   password: string;
   setRegexState: Dispatch<SetStateAction<string>>;
 }
 
-export type { RegexProps };
+export type { PasswordRegexProps, RegexItemProps };
