@@ -16,7 +16,7 @@ import "./CreatePassword.scss";
 import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { RoutePath } from "../../../routes/paths";
-import { PasswordRegexProps } from "./CreatePassword.types";
+import { PasswordRegexProps, RegexItemProps } from "./CreatePassword.types";
 
 const STRING_LENGTH = "length";
 const STRING_UPPERCASE = "uppercase";
@@ -36,13 +36,7 @@ const errorMessages = {
   hintSameAsPassword: i18n.t("createpassword.error.hintSameAsPassword"),
 };
 
-const RegexItem = ({
-  condition,
-  label,
-}: {
-  condition: RegExpMatchArray | null;
-  label: string;
-}) => {
+const RegexItem = ({ condition, label }: RegexItemProps) => {
   return (
     <IonItem>
       <IonIcon
@@ -205,13 +199,13 @@ const CreatePassword = () => {
               />
             </IonCol>
           </IonRow>
-          {regexState === "specialChar" ? (
+          {regexState === STRING_SPECIAL_CHAR ? (
             <ErrorMessage
               message={errorMessage}
               timeout={false}
             />
           ) : regexState &&
-            regexState !== "specialChar" &&
+            regexState !== STRING_SPECIAL_CHAR &&
             !createPasswordFocus ? (
             <ErrorMessage
               message={errorMessage}
