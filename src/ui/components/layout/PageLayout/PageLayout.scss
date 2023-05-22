@@ -11,6 +11,10 @@
 
   ion-header ion-toolbar {
     margin-top: 0.625rem;
+    ion-buttons {
+      margin-inline: 0;
+      width: 3rem;
+    }
     ion-button,
     ion-back-button {
       width: 2.8125rem;
@@ -26,7 +30,7 @@
 
   .progress-bar-container,
   ion-title {
-    margin-left: 1rem;
+    text-align: center;
   }
 
   ion-progress-bar,

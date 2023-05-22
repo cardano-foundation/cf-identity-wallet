@@ -114,7 +114,10 @@ const PasscodeLogin = () => {
           error={
             passcode.length === 6 &&
             passcodeIncorrect && (
-              <ErrorMessage message={i18n.t("passcodelogin.error")} />
+              <ErrorMessage
+                message={i18n.t("passcodelogin.error")}
+                timeout={true}
+              />
             )
           }
           passcode={passcode}

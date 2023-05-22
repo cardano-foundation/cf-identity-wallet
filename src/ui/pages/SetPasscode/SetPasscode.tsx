@@ -110,6 +110,7 @@ const SetPasscode = () => {
             originalPassCode !== passcode && (
               <ErrorMessage
                 message={i18n.t("setpasscode.enterpasscode.error")}
+                timeout={true}
               />
             )
           }
