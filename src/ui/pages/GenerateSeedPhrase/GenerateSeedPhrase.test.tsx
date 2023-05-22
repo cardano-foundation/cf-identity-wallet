@@ -4,7 +4,6 @@ import {
   ionFireEvent as fireEvent,
   waitForIonicReact,
 } from "@ionic/react-test-utils";
-import { validateMnemonic } from "bip39";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { MemoryRouter } from "react-router-dom";
@@ -53,16 +52,42 @@ describe("Generate Seed Phrase screen", () => {
   });
 
   test("User can toggle the 15/24 words seed phrase segment", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.GENERATE_SEED_PHRASE],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase160: "example example example example example example example example example example example example example example example",
+        seedPhrase256: "example example example example example example example example example example example example example example example example example example example example example example example example",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
     const { getByTestId } = render(
-      <Provider store={store}>
-        <GenerateSeedPhrase />
-      </Provider>
+      <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
+        <Provider store={storeMocked}>
+          <GenerateSeedPhrase />
+        </Provider>
+      </MemoryRouter>
     );
 
     const segment = getByTestId("mnemonic-length-segment");
     const seedPhraseContainer = getByTestId("seed-phrase-container");
 
     expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH));
+
     expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS);
 
     act(() => {
