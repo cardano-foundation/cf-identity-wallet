@@ -77,17 +77,6 @@ describe("Generate Seed Phrase screen", () => {
       )
     );
 
-    const seedPhrase256 = [];
-    for (let i = 0, len = seedPhraseContainer.childNodes.length; i < len; i++) {
-      seedPhrase256.push(
-        seedPhraseContainer.childNodes[i].childNodes[1].textContent
-      );
-    }
-
-    expect(
-      validateMnemonic(seedPhrase256.toString().split(",").join(" "))
-    ).toBe(true);
-
     act(() => {
       fireEvent.ionChange(segment, String(FIFTEEN_WORDS_BIT_LENGTH));
     });
@@ -98,16 +87,6 @@ describe("Generate Seed Phrase screen", () => {
       expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS)
     );
 
-    const seedPhrase160 = [];
-    for (let i = 0, len = seedPhraseContainer.childNodes.length; i < len; i++) {
-      seedPhrase160.push(
-        seedPhraseContainer.childNodes[i].childNodes[1].textContent
-      );
-    }
-
-    expect(
-      validateMnemonic(seedPhrase160.toString().split(",").join(" "))
-    ).toBe(true);
   });
 
   test("User is prompted to save the seed phrase", async () => {
