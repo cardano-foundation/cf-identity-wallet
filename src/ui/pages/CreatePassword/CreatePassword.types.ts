@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
 
-interface OperationsPasswordRegexProps {
+interface RegexProps {
   password: string;
   setRegexState: Dispatch<SetStateAction<string>>;
 }
 
-export type { OperationsPasswordRegexProps };
+export type { RegexProps };

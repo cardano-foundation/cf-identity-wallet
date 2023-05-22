@@ -1,13 +1,118 @@
 import { useEffect, useState } from "react";
-import { IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
+import {
+  IonCol,
+  IonGrid,
+  IonPage,
+  IonRow,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+} from "@ionic/react";
+import { closeOutline, checkmarkOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import "./CreatePassword.scss";
-
 import { CustomInput } from "../../components/CustomInput";
-import { OperationsPasswordRegex } from "../../components/OperationsPasswordRegex";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { RoutePath } from "../../../routes/paths";
+import { RegexProps } from "./CreatePassword.types";
+
+const STRING_LENGTH = "length";
+const STRING_UPPERCASE = "uppercase";
+const STRING_LOWERCASE = "lowercase";
+const STRING_NUMBER = "number";
+const STRING_SYMBOL = "symbol";
+const STRING_SPECIAL_CHAR = "specialChar";
+const errorMessages = {
+  hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
+  isTooShort: i18n.t("createpassword.error.isTooShort"),
+  isTooLong: i18n.t("createpassword.error.isTooLong"),
+  hasNoUppercase: i18n.t("createpassword.error.hasNoUppercase"),
+  hasNoLowercase: i18n.t("createpassword.error.hasNoLowercase"),
+  hasNoNumber: i18n.t("createpassword.error.hasNoNumber"),
+  hasNoSymbol: i18n.t("createpassword.error.hasNoSymbol"),
+  hasNoMatch: i18n.t("createpassword.error.hasNoMatch"),
+  hintSameAsPassword: i18n.t("createpassword.error.hintSameAsPassword"),
+};
+
+const PasswordRegex = ({ password, setRegexState }: RegexProps) => {
+  const specialChar = password.match(/(^[A-Za-z0-9]|[^\p{L}\d\s])$/u);
+  const length = password.match(/^.{8,64}$/);
+  const uppercase = password.match(/([A-Z])/);
+  const lowercase = password.match(/([a-z])/);
+  const number = password.match(/([0-9])/);
+  const symbol = password.match(/[^\p{L}\d\s]/u);
+
+  useEffect(() => {
+    const regexState = (pass: boolean) => {
+      switch (pass) {
+        case !!length:
+          return STRING_LENGTH;
+        case !!uppercase:
+          return STRING_UPPERCASE;
+        case !!lowercase:
+          return STRING_LOWERCASE;
+        case !!number:
+          return STRING_NUMBER;
+        case !!symbol:
+          return STRING_SYMBOL;
+        case !!specialChar:
+          return STRING_SPECIAL_CHAR;
+        default:
+          break;
+      }
+    };
+
+    setRegexState(regexState(false) || "");
+  }, [specialChar, length, uppercase, lowercase, number, symbol]);
+
+  const RegexItem = ({
+    condition,
+    label,
+  }: {
+    condition: RegExpMatchArray | null;
+    label: string;
+  }) => {
+    return (
+      <IonItem>
+        <IonIcon
+          slot="start"
+          icon={condition ? checkmarkOutline : closeOutline}
+          className={`password-criteria-icon${condition ? " pass" : " fails"}`}
+        />
+        <IonLabel>{label}</IonLabel>
+      </IonItem>
+    );
+  };
+  return (
+    <IonList
+      lines="none"
+      className="operations-password-regex"
+    >
+      <RegexItem
+        condition={length}
+        label={i18n.t("operationspasswordregex.label.length")}
+      />
+      <RegexItem
+        condition={uppercase}
+        label={i18n.t("operationspasswordregex.label.uppercase")}
+      />
+      <RegexItem
+        condition={lowercase}
+        label={i18n.t("operationspasswordregex.label.lowercase")}
+      />
+      <RegexItem
+        condition={number}
+        label={i18n.t("operationspasswordregex.label.number")}
+      />
+      <RegexItem
+        condition={symbol}
+        label={i18n.t("operationspasswordregex.label.symbol")}
+      />
+    </IonList>
+  );
+};
 
 const CreatePassword = () => {
   const [createPasswordValue, setCreatePasswordValue] = useState("");
@@ -29,24 +134,13 @@ const CreatePassword = () => {
     !regexState.length &&
     passwordValueMatching &&
     createHintValue !== createPasswordValue;
-  const errorMessages = {
-    hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
-    isTooShort: i18n.t("createpassword.error.isTooShort"),
-    isTooLong: i18n.t("createpassword.error.isTooLong"),
-    hasNoUppercase: i18n.t("createpassword.error.hasNoUppercase"),
-    hasNoLowercase: i18n.t("createpassword.error.hasNoLowercase"),
-    hasNoNumber: i18n.t("createpassword.error.hasNoNumber"),
-    hasNoSymbol: i18n.t("createpassword.error.hasNoSymbol"),
-    hasNoMatch: i18n.t("createpassword.error.hasNoMatch"),
-    hintSameAsPassword: i18n.t("createpassword.error.hintSameAsPassword"),
-  };
 
   useEffect(() => {
     const errorMessageHandler = (errorType: string) => {
       switch (errorType) {
-        case "specialChar":
+        case STRING_SPECIAL_CHAR:
           return errorMessages.hasSpecialChar;
-        case "length":
+        case STRING_LENGTH:
           if (createPasswordValue.length < 8) {
             return errorMessages.isTooShort;
           } else if (createPasswordValue.length > 64) {
@@ -54,19 +148,19 @@ const CreatePassword = () => {
           } else {
             return;
           }
-        case "uppercase":
+        case STRING_UPPERCASE:
           return errorMessages.hasNoUppercase;
-        case "lowercase":
+        case STRING_LOWERCASE:
           return errorMessages.hasNoLowercase;
-        case "number":
+        case STRING_NUMBER:
           return errorMessages.hasNoNumber;
-        case "symbol":
+        case STRING_SYMBOL:
           return errorMessages.hasNoSymbol;
         default:
           break;
       }
     };
-    setErrorMessage(String(errorMessageHandler(regexState) || ""));
+    setErrorMessage(errorMessageHandler(regexState) || "");
   }, [createPasswordValue, confirmPasswordValue, regexState]);
 
   const handleContinue = () => {
@@ -85,7 +179,7 @@ const CreatePassword = () => {
         title={`${i18n.t("createpassword.title")}`}
         footer={true}
         primaryButtonText={`${i18n.t("createpassword.continue.button")}`}
-        primaryButtonAction={() => handleContinue()}
+        primaryButtonAction={handleContinue}
         primaryButtonDisabled={!validated}
       >
         <IonGrid>
@@ -126,7 +220,7 @@ const CreatePassword = () => {
           {createPasswordValue && (
             <IonRow>
               <IonCol size="12">
-                <OperationsPasswordRegex
+                <PasswordRegex
                   password={createPasswordValue}
                   setRegexState={setRegexState}
                 />
@@ -179,4 +273,13 @@ const CreatePassword = () => {
   );
 };
 
-export { CreatePassword };
+export {
+  CreatePassword,
+  PasswordRegex,
+  STRING_LENGTH,
+  STRING_UPPERCASE,
+  STRING_LOWERCASE,
+  STRING_NUMBER,
+  STRING_SYMBOL,
+  STRING_SPECIAL_CHAR,
+};
