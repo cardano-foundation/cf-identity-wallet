@@ -52,34 +52,29 @@ const GenerateSeedPhrase = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
+  // We discarded using ionViewWillEnter since it does not work with Jest.
   useEffect(() => {
+    // We only execute this useEffect when the history matches this page, since Ionic keeps all pages in the background.
     if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
-      const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
-      setSeedPhrase160(
-        seedPhraseStore.seedPhrase160.length
-          ? seedPhraseStore.seedPhrase160.split(" ")
-          : seed160
-      );
-      const seed256 = generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ");
-      setSeedPhrase256(
-        seedPhraseStore.seedPhrase256.length
-          ? seedPhraseStore.seedPhrase256.split(" ")
-          : seed256
-      );
-
-      const isFifteenWordsSelected = seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
-      const isFifteenWordsInStore = seedPhraseStore.seedPhrase160.length > 0;
-      const isTwentyFourWordsInStore = seedPhraseStore.seedPhrase256.length > 0;
-
-      setSeedPhrase(
-        isFifteenWordsSelected
-          ? isFifteenWordsInStore
-            ? seedPhraseStore.seedPhrase160.split(" ")
-            : seed160
-          : isTwentyFourWordsInStore
-            ? seedPhraseStore.seedPhrase256.split(" ")
-            : seed256
-      );
+      const isFifteenWordsSelected =
+        seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
+      let seed160;
+      let seed256;
+      if (
+        seedPhraseStore.seedPhrase160.length > 0 &&
+        seedPhraseStore.seedPhrase256.length > 0
+      ) {
+        seed160 = seedPhraseStore.seedPhrase160.split(" ");
+        setSeedPhrase160(seed160);
+        seed256 = seedPhraseStore.seedPhrase256.split(" ");
+        setSeedPhrase256(seed256);
+      } else {
+        seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
+        setSeedPhrase160(seed160);
+        seed256 = generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ");
+        setSeedPhrase256(seed256);
+      }
+      setSeedPhrase(isFifteenWordsSelected ? seed160 : seed256);
     }
   }, [history?.location.pathname]);
 

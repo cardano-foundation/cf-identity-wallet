@@ -64,8 +64,10 @@ describe("Generate Seed Phrase screen", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase160: "example example example example example example example example example example example example example example example",
-        seedPhrase256: "example example example example example example example example example example example example example example example example example example example example example example example example",
+        seedPhrase160:
+          "example example example example example example example example example example example example example example example",
+        seedPhrase256:
+          "example example example example example example example example example example example example example example example example example example example example example example example example",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
     };

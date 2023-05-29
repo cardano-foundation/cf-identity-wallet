@@ -13,7 +13,7 @@ import {
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
-import {FIFTEEN_WORDS_BIT_LENGTH} from "../../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
 const ARGON2ID_HASH = {
   encoded: "encodedHash",
@@ -195,13 +195,13 @@ describe("SetPasscode Page", () => {
           loggedIn: true,
           time: Date.now(),
           passcodeIsSet: true,
-        }
+        },
       },
       seedPhraseCache: {
         seedPhrase160: "",
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
-      }
+      },
     };
 
     const storeMocked = {
