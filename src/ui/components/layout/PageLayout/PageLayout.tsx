@@ -100,6 +100,7 @@ const PageLayout = ({
                 <h2>{title}</h2>
               </IonTitle>
             )}
+
             {progressBar && (
               <div className="progress-bar-container">
                 <IonProgressBar
