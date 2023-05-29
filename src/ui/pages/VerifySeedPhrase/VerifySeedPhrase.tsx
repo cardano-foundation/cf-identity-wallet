@@ -18,24 +18,34 @@ import "./VerifySeedPhrase.scss";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getState } from "../../../store/reducers/stateCache";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
+  const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
-    useAppSelector(getSeedPhraseCache).seedPhrase.split(" ");
+    seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
+      ? seedPhraseStore.seedPhrase160.split(" ")
+      : seedPhraseStore.seedPhrase256.split(" ");
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   useEffect(() => {
-    if (originalSeedPhrase && originalSeedPhrase.length) {
+    if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
       setSeedPhraseRemaining(
-        [...originalSeedPhrase].sort(() => Math.random() - 0.5)
+        originalSeedPhrase.sort(() => Math.random() - 0.5)
       );
     }
-  }, []);
+  }, [history?.location.pathname]);
+
+  const handleClearState = () => {
+    setSeedPhraseRemaining([]);
+    setSeedPhraseSelected([]);
+    setAlertIsOpen(false);
+  };
 
   const addSeedPhraseSelected = (word: string) => {
     setSeedPhraseSelected((seedPhraseSelected) => [
@@ -91,6 +101,7 @@ const VerifySeedPhrase = () => {
       <PageLayout
         header={true}
         backButton={true}
+        onBack={handleClearState}
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
         progressBar={true}
         progressBarValue={1}

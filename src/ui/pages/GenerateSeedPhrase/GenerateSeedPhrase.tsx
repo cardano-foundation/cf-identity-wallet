@@ -37,11 +37,13 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
+  const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
@@ -50,12 +52,41 @@ const GenerateSeedPhrase = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
+  // We discarded using ionViewWillEnter since it does not work with Jest.
   useEffect(() => {
-    const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
-    setSeedPhrase160(seed160);
-    setSeedPhrase(seed160);
-    setSeedPhrase256(generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" "));
-  }, []);
+    // We only execute this useEffect when the history matches this page, since Ionic keeps all pages in the background.
+    if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
+      const isFifteenWordsSelected =
+        seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
+      let seed160;
+      let seed256;
+      if (
+        seedPhraseStore.seedPhrase160.length > 0 &&
+        seedPhraseStore.seedPhrase256.length > 0
+      ) {
+        seed160 = seedPhraseStore.seedPhrase160.split(" ");
+        setSeedPhrase160(seed160);
+        seed256 = seedPhraseStore.seedPhrase256.split(" ");
+        setSeedPhrase256(seed256);
+      } else {
+        seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
+        setSeedPhrase160(seed160);
+        seed256 = generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ");
+        setSeedPhrase256(seed256);
+      }
+      setSeedPhrase(isFifteenWordsSelected ? seed160 : seed256);
+    }
+  }, [history?.location.pathname]);
+
+  const handleClearState = () => {
+    setSeedPhrase160([]);
+    setSeedPhrase256([]);
+    setSeedPhrase([]);
+    setShowSeedPhrase(false);
+    setAlertIsOpen(false);
+    setModalIsOpen(false);
+    setChecked(false);
+  };
 
   const toggleSeedPhrase = (length: number) => {
     if (length === FIFTEEN_WORDS_BIT_LENGTH) {
@@ -78,11 +109,21 @@ const GenerateSeedPhrase = () => {
     );
   };
 
+  const handleShowSeedPhrase = () => {
+    setShowSeedPhrase(true);
+  };
   const handleContinue = () => {
     setAlertIsOpen(false);
     const data: DataProps = {
       store: storeState,
-      state: { seedPhrase: seedPhrase.join(" ") },
+      state: {
+        seedPhrase160: seedPhrase160.join(" "),
+        seedPhrase256: seedPhrase256.join(" "),
+        selected:
+          seedPhrase.length === 15
+            ? FIFTEEN_WORDS_BIT_LENGTH
+            : TWENTYFOUR_WORDS_BIT_LENGTH,
+      },
     };
     const { nextPath, updateRedux } = getNextRoute(
       RoutePath.GENERATE_SEED_PHRASE,
@@ -90,6 +131,7 @@ const GenerateSeedPhrase = () => {
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push(nextPath.pathname);
+    handleClearState();
   };
 
   return (
@@ -97,6 +139,7 @@ const GenerateSeedPhrase = () => {
       <PageLayout
         header={true}
         backButton={true}
+        onBack={handleClearState}
         currentPath={RoutePath.GENERATE_SEED_PHRASE}
         progressBar={true}
         progressBarValue={0.66}
@@ -165,9 +208,7 @@ const GenerateSeedPhrase = () => {
                     shape="round"
                     fill="outline"
                     data-testid="reveal-seed-phrase-button"
-                    onClick={() => {
-                      setShowSeedPhrase(true);
-                    }}
+                    onClick={() => handleShowSeedPhrase()}
                   >
                     {i18n.t("generateseedphrase.privacy.overlay.button")}
                   </IonButton>

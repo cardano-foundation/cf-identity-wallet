@@ -3,12 +3,16 @@ import { Provider } from "react-redux";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { waitForIonicReact } from "@ionic/react-test-utils";
+import configureStore from "redux-mock-store";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { VerifySeedPhrase } from "../VerifySeedPhrase";
 import { RoutePath } from "../../../routes";
 import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { MNEMONIC_FIFTEEN_WORDS } from "../../../constants/appConstants";
+import {
+  FIFTEEN_WORDS_BIT_LENGTH,
+  MNEMONIC_FIFTEEN_WORDS,
+} from "../../../constants/appConstants";
 import { TabsMenu } from "../../components/navigation/TabsMenu";
 
 describe("Verify Seed Phrase Page", () => {
@@ -172,5 +176,57 @@ describe("Verify Seed Phrase Page", () => {
     fireEvent.click(continueButton);
 
     await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
+  });
+
+  test("calls handleOnBack when back button is clicked", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.VERIFY_SEED_PHRASE],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase160: "example1 example2 example3 example4 example5",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
+          <Route
+            path={RoutePath.VERIFY_SEED_PHRASE}
+            component={VerifySeedPhrase}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    fireEvent.click(getByText(String("example1")));
+    fireEvent.click(getByText(String("example2")));
+    fireEvent.click(getByText(String("example3")));
+    fireEvent.click(getByText(String("example4")));
+    fireEvent.click(getByText(String("example5")));
+
+    const continueButton = getByTestId("continue-button") as HTMLButtonElement;
+
+    expect(continueButton.disabled).toBe(false);
+
+    const backButton = getByTestId("back-button");
+    act(() => {
+      fireEvent.click(backButton);
+    });
+
+    expect(continueButton.disabled).toBe(true);
   });
 });

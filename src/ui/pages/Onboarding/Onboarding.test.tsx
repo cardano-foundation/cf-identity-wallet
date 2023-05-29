@@ -8,6 +8,7 @@ import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
@@ -79,6 +80,11 @@ describe("Onboarding Page", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
+      },
+      seedPhraseCache: {
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
     };
     const storeMocked = mockStore(initialState);

@@ -21,6 +21,7 @@ import { getBackRoute } from "../../../../routes/backRoute";
 const PageLayout = ({
   header,
   backButton,
+  onBack,
   currentPath,
   children,
   closeButton,
@@ -50,6 +51,9 @@ const PageLayout = ({
       updateRedux
     );
     history.push(backPath.pathname);
+    if (onBack) {
+      onBack();
+    }
   };
 
   return (
