@@ -86,15 +86,15 @@ describe("Generate Seed Phrase screen", () => {
     const segment = getByTestId("mnemonic-length-segment");
     const seedPhraseContainer = getByTestId("seed-phrase-container");
 
-    expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH));
+    expect(segment).toHaveValue(`${FIFTEEN_WORDS_BIT_LENGTH}`);
 
     expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS);
 
     act(() => {
-      fireEvent.ionChange(segment, String(TWENTYFOUR_WORDS_BIT_LENGTH));
+      fireEvent.ionChange(segment, `${TWENTYFOUR_WORDS_BIT_LENGTH}`);
     });
     await waitFor(() =>
-      expect(segment).toHaveValue(String(TWENTYFOUR_WORDS_BIT_LENGTH))
+      expect(segment).toHaveValue(`${TWENTYFOUR_WORDS_BIT_LENGTH}`)
     );
     await waitFor(() =>
       expect(seedPhraseContainer.childNodes.length).toBe(
@@ -103,10 +103,10 @@ describe("Generate Seed Phrase screen", () => {
     );
 
     act(() => {
-      fireEvent.ionChange(segment, String(FIFTEEN_WORDS_BIT_LENGTH));
+      fireEvent.ionChange(segment, `${FIFTEEN_WORDS_BIT_LENGTH}`);
     });
     await waitFor(() =>
-      expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH))
+      expect(segment).toHaveValue(`${FIFTEEN_WORDS_BIT_LENGTH}`)
     );
     await waitFor(() =>
       expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS)
@@ -147,15 +147,15 @@ describe("Generate Seed Phrase screen", () => {
     const segment = getByTestId("mnemonic-length-segment");
     const seedPhraseContainer = getByTestId("seed-phrase-container");
 
-    expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH));
+    expect(segment).toHaveValue(`${FIFTEEN_WORDS_BIT_LENGTH}`);
 
     expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS);
 
     act(() => {
-      fireEvent.ionChange(segment, String(TWENTYFOUR_WORDS_BIT_LENGTH));
+      fireEvent.ionChange(segment, `${TWENTYFOUR_WORDS_BIT_LENGTH}`);
     });
     await waitFor(() =>
-      expect(segment).toHaveValue(String(TWENTYFOUR_WORDS_BIT_LENGTH))
+      expect(segment).toHaveValue(`${TWENTYFOUR_WORDS_BIT_LENGTH}`)
     );
     await waitFor(() =>
       expect(seedPhraseContainer.childNodes.length).toBe(
@@ -164,10 +164,10 @@ describe("Generate Seed Phrase screen", () => {
     );
 
     act(() => {
-      fireEvent.ionChange(segment, String(FIFTEEN_WORDS_BIT_LENGTH));
+      fireEvent.ionChange(segment, `${FIFTEEN_WORDS_BIT_LENGTH}`);
     });
     await waitFor(() =>
-      expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH))
+      expect(segment).toHaveValue(`${FIFTEEN_WORDS_BIT_LENGTH}`)
     );
     await waitFor(() =>
       expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS)
