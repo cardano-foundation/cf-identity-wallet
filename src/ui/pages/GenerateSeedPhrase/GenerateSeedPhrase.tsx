@@ -47,8 +47,6 @@ const GenerateSeedPhrase = () => {
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
-  const [seedPhraseAlreadyGenerated, setSeedPhraseAlreadyGenerated] =
-    useState(false);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -56,15 +54,17 @@ const GenerateSeedPhrase = () => {
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
+      const seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
       setSeedPhrase160(
         seedPhraseStore.seedPhrase160.length
           ? seedPhraseStore.seedPhrase160.split(" ")
-          : generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ")
+          : seed160
       );
+      const seed256 = generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ");
       setSeedPhrase256(
         seedPhraseStore.seedPhrase256.length
           ? seedPhraseStore.seedPhrase256.split(" ")
-          : generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ")
+          : seed256
       );
 
       const isFifteenWordsSelected = seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
@@ -75,26 +75,18 @@ const GenerateSeedPhrase = () => {
         isFifteenWordsSelected
           ? isFifteenWordsInStore
             ? seedPhraseStore.seedPhrase160.split(" ")
-            : generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ")
+            : seed160
           : isTwentyFourWordsInStore
             ? seedPhraseStore.seedPhrase256.split(" ")
-            : generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ")
+            : seed256
       );
     }
   }, [history?.location.pathname]);
-
-
-  useEffect(() => {
-    if (seedPhrase160.length && seedPhrase256.length) {
-      setSeedPhrase(seedPhrase.length === MNEMONIC_FIFTEEN_WORDS ? seedPhrase160 : seedPhrase256);
-    }
-  }, [seedPhraseAlreadyGenerated]);
 
   const handleClearState = () => {
     setSeedPhrase160([]);
     setSeedPhrase256([]);
     setSeedPhrase([]);
-    setSeedPhraseAlreadyGenerated(false);
     setShowSeedPhrase(false);
     setAlertIsOpen(false);
     setModalIsOpen(false);
@@ -124,17 +116,6 @@ const GenerateSeedPhrase = () => {
 
   const handleShowSeedPhrase = () => {
     setShowSeedPhrase(true);
-    if (
-      seedPhraseStore.seedPhrase160.length &&
-      seedPhraseStore.seedPhrase256.length
-    ) {
-      setSeedPhrase160(seedPhraseStore.seedPhrase160.split(" "));
-      setSeedPhrase256(seedPhraseStore.seedPhrase256.split(" "));
-    } else if (!seedPhraseAlreadyGenerated) {
-      setSeedPhrase160(generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" "));
-      setSeedPhrase256(generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" "));
-      setSeedPhraseAlreadyGenerated(true);
-    }
   };
   const handleContinue = () => {
     setAlertIsOpen(false);
