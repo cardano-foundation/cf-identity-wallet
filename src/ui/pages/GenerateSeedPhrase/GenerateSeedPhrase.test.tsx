@@ -289,7 +289,7 @@ describe("Generate Seed Phrase screen", () => {
     });
     await waitFor(() => expect(overlay).toHaveClass("hidden"));
 
-    const backButton = getByTestId("back-button"); // Asegúrate de tener el atributo `data-testid="back-button"` en el botón de retroceso en tu componente PageLayout
+    const backButton = getByTestId("back-button");
     act(() => {
       fireEvent.click(backButton);
     });
