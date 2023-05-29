@@ -59,12 +59,12 @@ const GenerateSeedPhrase = () => {
       setSeedPhrase160(
         seedPhraseStore.seedPhrase160.length
           ? seedPhraseStore.seedPhrase160.split(" ")
-          : fillArray(15)
+          : generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ")
       );
       setSeedPhrase256(
         seedPhraseStore.seedPhrase256.length
           ? seedPhraseStore.seedPhrase256.split(" ")
-          : fillArray(24)
+          : generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ")
       );
 
       const isFifteenWordsSelected = seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
@@ -75,10 +75,10 @@ const GenerateSeedPhrase = () => {
         isFifteenWordsSelected
           ? isFifteenWordsInStore
             ? seedPhraseStore.seedPhrase160.split(" ")
-            : fillArray(15)
+            : generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ")
           : isTwentyFourWordsInStore
             ? seedPhraseStore.seedPhrase256.split(" ")
-            : fillArray(24)
+            : generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ")
       );
     }
   }, [history?.location.pathname]);
@@ -90,16 +90,10 @@ const GenerateSeedPhrase = () => {
     }
   }, [seedPhraseAlreadyGenerated]);
 
-  const fillArray = (length: number) => {
-    return new Array(length).fill("*****");
-  };
-
   const handleClearState = () => {
-    const simulated160Array = fillArray(15);
-    const simulated256Array = fillArray(24);
-    setSeedPhrase160(simulated160Array);
-    setSeedPhrase256(simulated256Array);
-    setSeedPhrase(seedPhrase.length === MNEMONIC_FIFTEEN_WORDS ? simulated160Array : simulated256Array);
+    setSeedPhrase160([]);
+    setSeedPhrase256([]);
+    setSeedPhrase([]);
     setSeedPhraseAlreadyGenerated(false);
     setShowSeedPhrase(false);
     setAlertIsOpen(false);
