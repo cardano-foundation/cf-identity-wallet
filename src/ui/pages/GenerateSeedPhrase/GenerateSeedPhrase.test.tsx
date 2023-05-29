@@ -51,7 +51,7 @@ describe("Generate Seed Phrase screen", () => {
     await waitFor(() => expect(overlay).toHaveClass("hidden"));
   });
 
-  test("User can toggle the 15/24 words seed phrase segment", async () => {
+  test("User can toggle the 15/24 words seed phrase segment using the seed phrases from Redux", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -66,6 +66,67 @@ describe("Generate Seed Phrase screen", () => {
       seedPhraseCache: {
         seedPhrase160: "example example example example example example example example example example example example example example example",
         seedPhrase256: "example example example example example example example example example example example example example example example example example example example example example example example example",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
+        <Provider store={storeMocked}>
+          <GenerateSeedPhrase />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const segment = getByTestId("mnemonic-length-segment");
+    const seedPhraseContainer = getByTestId("seed-phrase-container");
+
+    expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH));
+
+    expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS);
+
+    act(() => {
+      fireEvent.ionChange(segment, String(TWENTYFOUR_WORDS_BIT_LENGTH));
+    });
+    await waitFor(() =>
+      expect(segment).toHaveValue(String(TWENTYFOUR_WORDS_BIT_LENGTH))
+    );
+    await waitFor(() =>
+      expect(seedPhraseContainer.childNodes.length).toBe(
+        MNEMONIC_TWENTYFOUR_WORDS
+      )
+    );
+
+    act(() => {
+      fireEvent.ionChange(segment, String(FIFTEEN_WORDS_BIT_LENGTH));
+    });
+    await waitFor(() =>
+      expect(segment).toHaveValue(String(FIFTEEN_WORDS_BIT_LENGTH))
+    );
+    await waitFor(() =>
+      expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS)
+    );
+  });
+  test("User can toggle the 15/24 words seed phrase segment", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.GENERATE_SEED_PHRASE],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase160: "",
+        seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
     };
