@@ -88,5 +88,6 @@
   "operationspasswordregex.label.lowercase": "Contains a lowercase letter",
   "operationspasswordregex.label.number": "Contains a number",
   "operationspasswordregex.label.symbol": "Contains a symbol",
-  "dids.label.create": "Create an identity"
+  "dids.label.create": "Create an identity",
+  "dids.card.created": "CREATED"
 }

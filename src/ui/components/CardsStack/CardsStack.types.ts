@@ -1,4 +1,4 @@
-interface DataProps {
+interface CardsStackProps {
   id: string;
   type: string;
   name: string;
@@ -8,4 +8,4 @@ interface DataProps {
   publicKeyBase58: string;
 }
 
-export type { DataProps };
+export type { CardsStackProps };
