@@ -3,12 +3,11 @@ import { peopleOutline, addOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { i18n } from "../../../i18n";
-import { identity } from "../../__mocks__/identityMock";
+import { didsMock } from "../../__mocks__/didsMock";
 import { DidsProps } from "./Dids.types";
 import "./Dids.scss";
 
-const identities = [];
-//identities.push(identity);
+const identities: DidsProps[] = [...didsMock];
 
 const OtherButtons = () => {
   return (
@@ -64,7 +63,28 @@ const IdentityPlaceholder = () => {
 };
 
 const IdentityCards = () => {
-  return <div>Cards</div>;
+  const cardBackground = [
+    "linear-gradient(91.86deg, #92FFC0 28.76%, #47FF94 119.14%)",
+    "linear-gradient(91.86deg, #FFBC60 28.76%, #FFA21F 119.14%)",
+    "linear-gradient(91.86deg, #D9EDDF 28.76%, #ACD8B9 119.14%)",
+    "linear-gradient(91.86deg, #47E0FF 28.76%, #00C6EF 119.14%)",
+    "linear-gradient(91.86deg, #B5C2FF 28.76%, #708AFF 119.14%)",
+    "linear-gradient(91.86deg, #FF9780 28.76%, #FF5833 119.14%)",
+  ];
+  const renderDids = (dids: DidsProps[]) => {
+    return dids.map((did, index) => (
+      <div
+        key={index}
+        className="card"
+        style={{ background: cardBackground[index] }}
+      >
+        <span>{did.type}</span>
+        <span>{did.name}</span>
+      </div>
+    ));
+  };
+
+  return <div className="container">{renderDids(identities)}</div>;
 };
 
 const Dids = () => {
