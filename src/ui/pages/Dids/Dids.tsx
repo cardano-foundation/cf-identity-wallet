@@ -63,7 +63,7 @@ const IdentityPlaceholder = () => {
 };
 
 const IdentityCards = () => {
-  const cardBackground = [
+  const cardBackgroundColor = [
     "linear-gradient(91.86deg, #92FFC0 28.76%, #47FF94 119.14%)",
     "linear-gradient(91.86deg, #FFBC60 28.76%, #FFA21F 119.14%)",
     "linear-gradient(91.86deg, #D9EDDF 28.76%, #ACD8B9 119.14%)",
@@ -71,12 +71,19 @@ const IdentityCards = () => {
     "linear-gradient(91.86deg, #B5C2FF 28.76%, #708AFF 119.14%)",
     "linear-gradient(91.86deg, #FF9780 28.76%, #FF5833 119.14%)",
   ];
+  const cardColorSelector = (index: number) => {
+    if (index > 5) {
+      return cardBackgroundColor[index % 6];
+    } else {
+      return cardBackgroundColor[index % 6];
+    }
+  };
   const renderDids = (dids: DidsProps[]) => {
     return dids.map((did, index) => (
       <div
         key={index}
         className="card"
-        style={{ background: cardBackground[index] }}
+        style={{ background: cardColorSelector(index) }}
       >
         <span>{did.type}</span>
         <span>{did.name}</span>
