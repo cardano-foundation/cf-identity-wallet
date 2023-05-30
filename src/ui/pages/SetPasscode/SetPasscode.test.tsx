@@ -1,10 +1,8 @@
 import { MemoryRouter, Route } from "react-router-dom";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import Argon2 from "argon2-browser";
-import { Buffer } from "buffer";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { SetPasscode, ARGON2ID_OPTIONS } from "./SetPasscode";
+import { SetPasscode } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import {
   SecureStorage,
@@ -15,12 +13,6 @@ import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
-const ARGON2ID_HASH = {
-  encoded: "encodedHash",
-  hash: Buffer.from("hashedPassword"),
-  hashHex: "0xHashedPasscode",
-};
-const argon2Spy = jest.spyOn(Argon2, "hash").mockResolvedValue(ARGON2ID_HASH);
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 
 describe("SetPasscode Page", () => {
@@ -175,14 +167,9 @@ describe("SetPasscode Page", () => {
       ).not.toBeInTheDocument()
     );
 
-    expect(argon2Spy).toBeCalledWith({
-      pass: "111111",
-      salt: expect.any(Buffer),
-      ...ARGON2ID_OPTIONS,
-    });
     expect(setKeyStoreSpy).toBeCalledWith(
       KeyStoreKeys.APP_PASSCODE,
-      ARGON2ID_HASH.encoded
+      "111111"
     );
   });
   test("calls handleOnBack when back button is clicked", async () => {

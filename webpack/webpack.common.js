@@ -25,11 +25,6 @@ const config = {
         include: path.resolve(__dirname, "..", "src"),
         use: ["style-loader", "css-loader", "postcss-loader"],
       },
-      {
-        test: /\.wasm$/,
-        loader: "base64-loader",
-        type: "javascript/auto"
-    },
     ],
   },
   resolve: {
