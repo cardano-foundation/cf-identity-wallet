@@ -1,17 +1,44 @@
 ion-tab-bar {
-  padding: 0 0.625rem 2.5rem;
+  padding-inline: 0.625rem;
+  height: 8vh;
   justify-content: space-around;
+
+  &.md {
+    padding-bottom: 0.75rem;
+  }
 }
 
 ion-tab-button {
-  max-width: 3.4rem;
-  &.tab-selected {
-    border-top: 2px solid var(--ion-color-primary);
+  max-width: 20%;
+  --ripple-color: transparent;
+
+  .borderTop {
+    height: 2px;
+    width: 65%;
+    position: absolute;
+    top: 0;
+    border-top: 2px solid transparent;
   }
-  &::part(native) {
-    margin-top: 0.75rem;
+
+  &.md .borderTop {
+    width: 90%;
   }
+
+  &.tab-selected .borderTop {
+    border-color: var(--ion-color-primary);
+  }
+
+  ion-icon {
+    font-size: 2rem;
+    margin-top: 0.5rem;
+  }
+
+  &.md ion-icon {
+    font-size: 1.8rem;
+  }
+
   ion-label {
     max-width: 20vw;
+    font-size: 0.75rem;
   }
 }

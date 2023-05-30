@@ -68,6 +68,7 @@ const TabsMenu = () => {
             tab="dids"
             href={TabsRoutePath.DIDS}
           >
+            <div className="borderTop" />
             <IonIcon icon={fingerPrintOutline} />
             <IonLabel>{i18n.t("tabsmenu.label.dids")}</IonLabel>
           </IonTabButton>
@@ -76,6 +77,7 @@ const TabsMenu = () => {
             tab="creds"
             href={TabsRoutePath.CREDS}
           >
+            <div className="borderTop" />
             <IonIcon icon={idCardOutline} />
             <IonLabel>{i18n.t("tabsmenu.label.creds")}</IonLabel>
           </IonTabButton>
@@ -84,6 +86,7 @@ const TabsMenu = () => {
             tab="scan"
             href={TabsRoutePath.SCAN}
           >
+            <div className="borderTop" />
             <IonIcon icon={scanOutline} />
             <IonLabel>{i18n.t("tabsmenu.label.scan")}</IonLabel>
           </IonTabButton>
@@ -92,6 +95,7 @@ const TabsMenu = () => {
             tab="crypto"
             href={TabsRoutePath.CRYPTO}
           >
+            <div className="borderTop" />
             <IonIcon icon={walletOutline} />
             <IonLabel>{i18n.t("tabsmenu.label.crypto")}</IonLabel>
           </IonTabButton>
@@ -100,6 +104,7 @@ const TabsMenu = () => {
             tab="chat"
             href={TabsRoutePath.CHAT}
           >
+            <div className="borderTop" />
             <IonIcon icon={chatbubbleOutline} />
             <IonLabel>{i18n.t("tabsmenu.label.chat")}</IonLabel>
           </IonTabButton>
