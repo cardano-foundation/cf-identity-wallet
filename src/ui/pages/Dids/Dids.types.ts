@@ -1,4 +1,4 @@
-interface DidsProps {
+interface DataProps {
   id: string;
   type: string;
   name: string;
@@ -8,4 +8,4 @@ interface DidsProps {
   publicKeyBase58: string;
 }
 
-export type { DidsProps };
+export type { DataProps };

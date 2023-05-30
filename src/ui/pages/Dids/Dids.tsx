@@ -4,10 +4,11 @@ import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { i18n } from "../../../i18n";
 import { didsMock } from "../../__mocks__/didsMock";
-import { DidsProps } from "./Dids.types";
+import { DataProps } from "./Dids.types";
 import "./Dids.scss";
+import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 
-const identities: DidsProps[] = [...didsMock];
+const identities: DataProps[] = didsMock;
 
 const OtherButtons = () => {
   return (
@@ -38,31 +39,11 @@ const OtherButtons = () => {
   );
 };
 
-const IdentityPlaceholder = () => {
-  return (
-    <div className="identity-placeholder">
-      <div className="identity-placeholder-cards">
-        <span className="back-card" />
-        <span className="front-card" />
-      </div>
-      <IonButton
-        shape="round"
-        expand="block"
-        className="ion-primary-button"
-      >
-        <IonIcon
-          slot="icon-only"
-          size="small"
-          icon={addOutline}
-          color="primary"
-        />
-        {i18n.t("dids.label.create")}
-      </IonButton>
-    </div>
-  );
+const handleCreateDid = () => {
+  // TODO: Function to create DID
 };
 
-const IdentityCards = () => {
+const CardsStack = () => {
   const cardBackgroundColor = [
     "linear-gradient(91.86deg, #92FFC0 28.76%, #47FF94 119.14%)",
     "linear-gradient(91.86deg, #FFBC60 28.76%, #FFA21F 119.14%)",
@@ -78,8 +59,8 @@ const IdentityCards = () => {
       return cardBackgroundColor[index % 6];
     }
   };
-  const renderDids = (dids: DidsProps[]) => {
-    return dids.map((did, index) => (
+  const renderCards = (data: DataProps[]) => {
+    return data.map((did, index) => (
       <div
         key={index}
         className="card"
@@ -91,7 +72,7 @@ const IdentityCards = () => {
     ));
   };
 
-  return <div className="container">{renderDids(identities)}</div>;
+  return <div className="container">{renderCards(identities)}</div>;
 };
 
 const Dids = () => {
@@ -107,7 +88,14 @@ const Dids = () => {
         menuButton={true}
         otherButtons={<OtherButtons />}
       >
-        {identities.length ? <IdentityCards /> : <IdentityPlaceholder />}
+        {identities.length ? (
+          <CardsStack />
+        ) : (
+          <CardsPlaceholder
+            buttonLabel={i18n.t("dids.label.create")}
+            buttonAction={handleCreateDid}
+          />
+        )}
       </TabLayout>
     </IonPage>
   );

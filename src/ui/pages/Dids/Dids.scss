@@ -1,46 +1,4 @@
 .dids-tab {
-  .identity-placeholder {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    height: 80vh;
-
-    .identity-placeholder-cards {
-      position: relative;
-      height: 38vh;
-      margin-bottom: 2rem;
-
-      span {
-        position: absolute;
-        width: 8.75rem;
-        height: 15.313rem;
-        border-radius: 1rem;
-
-        &.back-card {
-          left: calc(50% - 7rem);
-          top: calc(50% - 7rem);
-          background: var(--color-gradient-green);
-          box-shadow: 0 0.25rem 0.25rem
-            rgba(var(--ion-color-secondary-rgb), 0.2);
-          transform: rotate(-10deg);
-        }
-
-        &.front-card {
-          left: calc(50% - 2rem);
-          top: calc(50% - 8.5rem);
-          background: var(--color-gradient-blue);
-          box-shadow: 0 0.25rem 0.25rem
-            rgba(var(--ion-color-secondary-rgb), 0.2);
-          transform: rotate(10deg);
-        }
-      }
-    }
-
-    ion-icon {
-      margin-right: 0.5rem;
-    }
-  }
-
   .container {
     display: flex;
     flex-direction: column;
