@@ -5,6 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import { PageLayout } from "./PageLayout";
 import { store } from "../../../../store";
 import { RoutePath } from "../../../../routes";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../../constants/appConstants";
 
 describe("Page Layout", () => {
   test("Renders Page Layout", () => {
@@ -45,6 +46,11 @@ describe("Page Layout", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
+      },
+      seedPhraseCache: {
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
     };
 

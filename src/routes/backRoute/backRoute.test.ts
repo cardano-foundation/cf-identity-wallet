@@ -1,8 +1,14 @@
 import { RootState } from "../../store";
 import { DataProps } from "../nextRoute/nextRoute.types";
-import {calcPreviousRoute, getBackRoute, getPreviousRoute, updateStoreAfterPasscodeLoginRoute} from "./backRoute";
+import {
+  calcPreviousRoute,
+  getBackRoute,
+  getPreviousRoute,
+  updateStoreAfterPasscodeLoginRoute,
+} from "./backRoute";
 import { RoutePath } from "../index";
-import {setAuthentication} from "../../store/reducers/stateCache";
+import { setAuthentication } from "../../store/reducers/stateCache";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
 
 jest.mock("../../store/reducers/stateCache", () => ({
   removeCurrentRoute: jest.fn(),
@@ -20,7 +26,9 @@ describe("getBackRoute", () => {
   beforeEach(() => {
     storeMock = {
       seedPhraseCache: {
-        seedPhrase: "",
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
@@ -58,7 +66,7 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(2);
+    expect(result.updateRedux).toHaveLength(3);
   });
 
   test("should return the correct back path when currentPath is /verifyseedphrase", () => {
@@ -70,7 +78,7 @@ describe("getBackRoute", () => {
     const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
-    expect(result.updateRedux).toHaveLength(3);
+    expect(result.updateRedux).toHaveLength(2);
   });
 
   test("should return the correct back path when currentPath is /setpasscode", () => {
@@ -96,7 +104,9 @@ describe("getBackRoute", () => {
         },
       },
       seedPhraseCache: {
-        seedPhrase: "",
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
     };
     const expectedAuthentication = {
@@ -111,7 +121,6 @@ describe("getBackRoute", () => {
 
     expect(result).toEqual(setAuthentication(expectedAuthentication));
   });
-
 });
 
 describe("calcPreviousRoute", () => {
@@ -142,7 +151,9 @@ describe("getPreviousRoute", () => {
   beforeEach(() => {
     storeMock = {
       seedPhraseCache: {
-        seedPhrase: "",
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],

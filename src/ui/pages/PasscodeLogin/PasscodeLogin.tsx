@@ -16,7 +16,7 @@ import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
 import { getBackRoute } from "../../../routes/backRoute";
-import {RoutePath} from "../../../routes";
+import { RoutePath } from "../../../routes";
 
 const PasscodeLogin = () => {
   const history = useHistory();
@@ -35,6 +35,12 @@ const PasscodeLogin = () => {
       ? i18n.t("passcodelogin.alert.button.verify")
       : i18n.t("passcodelogin.alert.button.restart");
   const cancelButtonText = i18n.t("passcodelogin.alert.button.cancel");
+
+  const handleClearState = () => {
+    setPasscode("");
+    setIsOpen(false);
+    setPasscodeIncorrect(false);
+  };
 
   const handlePinChange = (digit: number) => {
     if (passcode.length < 6) {
@@ -56,7 +62,7 @@ const PasscodeLogin = () => {
                 updateRedux
               );
               history.push(backPath.pathname);
-              setPasscode("");
+              handleClearState();
             } else {
               setPasscodeIncorrect(true);
             }
@@ -90,6 +96,7 @@ const PasscodeLogin = () => {
       return false;
     }
   };
+
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
       const copyStore = JSON.parse(JSON.stringify(storeState));
@@ -101,7 +108,7 @@ const PasscodeLogin = () => {
         },
       };
       history.push(RoutePath.SET_PASSCODE);
-      setPasscode("");
+      handleClearState();
     });
   };
 

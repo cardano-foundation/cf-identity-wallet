@@ -8,6 +8,7 @@ import {
   setSeedPhraseCache,
 } from "./seedPhraseCache";
 import { RootState } from "../../index";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
 describe("SeedPhraseCache", () => {
   test("should return the initial state on first run", () => {
@@ -17,11 +18,19 @@ describe("SeedPhraseCache", () => {
   });
 
   test("should set the seed phrase cache", () => {
-    const seedPhrase = "test seed phrase";
-    const action = setSeedPhraseCache(seedPhrase);
+    const seedPhrase160 = "test seed phrase 160";
+    const seedPhrase256 = "test seed phrase 256";
+    const selected = FIFTEEN_WORDS_BIT_LENGTH;
+
+    const action = setSeedPhraseCache({
+      seedPhrase160,
+      seedPhrase256,
+      selected,
+    });
     const nextState = seedPhraseCacheSlice.reducer(initialState, action);
 
-    expect(nextState.seedPhrase).toEqual(seedPhrase);
+    expect(nextState.seedPhrase160).toEqual(seedPhrase160);
+    expect(nextState.seedPhrase256).toEqual(seedPhrase256);
     expect(nextState).not.toBe(initialState);
 
     const rootState = { seedPhraseCache: nextState } as RootState;
@@ -29,11 +38,18 @@ describe("SeedPhraseCache", () => {
   });
 
   test("should clear the seed phrase cache", () => {
-    const seedPhrase = "test seed phrase";
+    const seedPhrase160 = "test seed phrase 160";
+    const seedPhrase256 = "test seed phrase 256";
+    const selected = FIFTEEN_WORDS_BIT_LENGTH;
 
-    const setAction = setSeedPhraseCache(seedPhrase);
-    let nextState = seedPhraseCacheSlice.reducer(initialState, setAction);
-    expect(nextState.seedPhrase).toEqual(seedPhrase);
+    const action = setSeedPhraseCache({
+      seedPhrase160,
+      seedPhrase256,
+      selected,
+    });
+    let nextState = seedPhraseCacheSlice.reducer(initialState, action);
+    expect(nextState.seedPhrase160).toEqual(seedPhrase160);
+    expect(nextState.seedPhrase256).toEqual(seedPhrase256);
 
     const clearAction = clearSeedPhraseCache();
     nextState = seedPhraseCacheSlice.reducer(initialState, clearAction);

@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 interface PageLayoutProps {
   header?: boolean;
   backButton?: boolean;
+  onBack?: () => void;
   currentPath: string;
   children?: ReactNode;
   closeButton?: boolean;

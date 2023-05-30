@@ -16,7 +16,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import {RoutePath} from "../../../routes";
+import { RoutePath } from "../../../routes";
 
 // Based on OWASP recommendations
 const ARGON2ID_OPTIONS = {
@@ -44,7 +44,7 @@ const SetPasscode = () => {
           }).then((hash) => {
             SecureStorage.set(KeyStoreKeys.APP_PASSCODE, hash.encoded).then(
               () => {
-                handleClear();
+                handleClearState();
 
                 const data: DataProps = {
                   store: storeState,
@@ -75,9 +75,13 @@ const SetPasscode = () => {
     }
   };
 
-  const handleClear = () => {
+  const handleClearState = () => {
     setPasscode("");
     setOriginalPassCode("");
+  };
+
+  const handleOnBack = () => {
+    handleClearState();
   };
 
   useEffect(() => {
@@ -92,6 +96,7 @@ const SetPasscode = () => {
       <PageLayout
         header={true}
         backButton={true}
+        onBack={handleOnBack}
         currentPath={RoutePath.SET_PASSCODE}
         progressBar={true}
         progressBarValue={0.33}
@@ -123,7 +128,7 @@ const SetPasscode = () => {
             <IonCol className="continue-col">
               {originalPassCode !== "" && (
                 <IonButton
-                  onClick={() => handleClear()}
+                  onClick={() => handleClearState()}
                   shape="round"
                   expand="block"
                   fill="outline"
