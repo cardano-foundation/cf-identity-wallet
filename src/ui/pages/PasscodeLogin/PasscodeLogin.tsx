@@ -78,13 +78,13 @@ const PasscodeLogin = () => {
 
   const verifyPasscode = async (pass: string) => {
     try {
-      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
+      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE) as string;
 
       if (!storedPass) return false;
       await verify({
         encoded: storedPass,
         pass: pass,
-      } as Argon2VerifyOptions);
+      });
       return true;
     } catch (e) {
       return false;

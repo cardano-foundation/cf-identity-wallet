@@ -161,6 +161,7 @@ const CreatePassword = () => {
   }, [createPasswordValue, confirmPasswordValue, regexState]);
 
   const handleContinue = async () => {
+    // @TODO - foconnor: We should handle errors here and display something to the user as feedback to try again.
     const hashedPassword = await hash({
       pass: createPasswordValue,
       salt: randomBytes(16),
