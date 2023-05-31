@@ -6,11 +6,11 @@ import { Capacitor } from "@capacitor/core";
 class CapacitorFileSystem implements FileSystem {
   private static readonly dataBasePath = Directory.Data;
 
-  public readonly dataPath;
-  public readonly cachePath;
-  public readonly tempPath;
+  readonly dataPath;
+  readonly cachePath;
+  readonly tempPath;
 
-  public constructor(options?: {
+  constructor(options?: {
     baseDataPath?: string;
     baseCachePath?: string;
     baseTempPath?: string;
@@ -32,7 +32,7 @@ class CapacitorFileSystem implements FileSystem {
         }`;
   }
 
-  public async exists(path: string): Promise<boolean> {
+  async exists(path: string): Promise<boolean> {
     try {
       await Filesystem.stat({
         path,
@@ -44,7 +44,7 @@ class CapacitorFileSystem implements FileSystem {
     }
   }
 
-  public async createDirectory(path: string): Promise<void> {
+  async createDirectory(path: string): Promise<void> {
     if (!(await this.exists(path))) {
       await Filesystem.mkdir({
         path: path,
@@ -54,10 +54,7 @@ class CapacitorFileSystem implements FileSystem {
     }
   }
 
-  public async copyFile(
-    sourcePath: string,
-    destinationPath: string
-  ): Promise<void> {
+  async copyFile(sourcePath: string, destinationPath: string): Promise<void> {
     if (
       (
         await Filesystem.stat({
@@ -78,7 +75,7 @@ class CapacitorFileSystem implements FileSystem {
     }
   }
 
-  public async write(path: string, data: string): Promise<void> {
+  async write(path: string, data: string): Promise<void> {
     await this.createDirectory(getDirFromFilePath(path));
     await Filesystem.writeFile({
       path: path,
@@ -88,7 +85,7 @@ class CapacitorFileSystem implements FileSystem {
     });
   }
 
-  public async read(path: string): Promise<string> {
+  async read(path: string): Promise<string> {
     return (
       await Filesystem.readFile({
         path: path,
@@ -98,7 +95,7 @@ class CapacitorFileSystem implements FileSystem {
     ).data;
   }
 
-  public async delete(path: string): Promise<void> {
+  async delete(path: string): Promise<void> {
     // Skip anything related to backups as we don't support them yet.
     if (!path.startsWith(`${this.dataPath}/migration/backup`)) {
       try {
@@ -116,7 +113,7 @@ class CapacitorFileSystem implements FileSystem {
     }
   }
 
-  public async downloadToFile(
+  async downloadToFile(
     _url: string,
     _path: string,
     _options?: DownloadToFileOptions

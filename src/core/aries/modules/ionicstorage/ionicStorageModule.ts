@@ -8,10 +8,15 @@ import { IonicStorageService } from "./storage";
 import { IonicStorageWallet } from "./wallet";
 
 class IonicStorageModule implements Module {
-  public register(dependencyManager: DependencyManager) {
+  static readonly WALLET_ALREADY_REGISTERED_ERROR_MSG =
+    "There is an instance of Wallet already registered";
+  static readonly STORAGE_SERVICE_ALREADY_REGISTERED_ERROR_MSG =
+    "There is an instance of StorageService already registered";
+
+  register(dependencyManager: DependencyManager) {
     if (dependencyManager.isRegistered(InjectionSymbols.Wallet)) {
       throw new AriesFrameworkError(
-        "There is an instance of Wallet already registered"
+        IonicStorageModule.WALLET_ALREADY_REGISTERED_ERROR_MSG
       );
     } else {
       dependencyManager.registerContextScoped(
@@ -22,7 +27,7 @@ class IonicStorageModule implements Module {
 
     if (dependencyManager.isRegistered(InjectionSymbols.StorageService)) {
       throw new AriesFrameworkError(
-        "There is an instance of StorageService already registered"
+        IonicStorageModule.STORAGE_SERVICE_ALREADY_REGISTERED_ERROR_MSG
       );
     } else {
       dependencyManager.registerSingleton(

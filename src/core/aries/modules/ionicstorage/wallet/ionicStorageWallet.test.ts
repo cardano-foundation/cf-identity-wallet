@@ -131,7 +131,7 @@ describe("Aries - Ionic Storage Module: Wallet Key Creation", () => {
         privateKeyBase58: newPrivateKeyBase58,
         keyType: KeyType.Ed25519,
       }),
-      tags: {},
+      tags: { keyType: KeyType.Ed25519 },
     });
     expect(Key.fromPublicKey).toBeCalledWith(
       newKeyPair.publicKey,

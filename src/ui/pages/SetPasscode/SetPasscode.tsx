@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { IonButton, IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { randomBytes } from "crypto";
-import { hash, ArgonType } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
@@ -18,14 +16,6 @@ import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { RoutePath } from "../../../routes";
 
-// Based on OWASP recommendations
-const ARGON2ID_OPTIONS = {
-  type: ArgonType.Argon2id,
-  mem: 19456,
-  time: 2,
-  parallelism: 1,
-  hashLen: 32,
-};
 const SetPasscode = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -37,32 +27,26 @@ const SetPasscode = () => {
     if (length < 6) {
       if (originalPassCode !== "" && length === 5) {
         if (originalPassCode === passcode + digit) {
-          hash({
-            pass: originalPassCode,
-            salt: randomBytes(16),
-            ...ARGON2ID_OPTIONS,
-          }).then((hash) => {
-            SecureStorage.set(KeyStoreKeys.APP_PASSCODE, hash.encoded).then(
-              () => {
-                handleClearState();
+          SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode).then(
+            () => {
+              handleClearState();
 
-                const data: DataProps = {
-                  store: storeState,
-                };
-                const { nextPath, updateRedux } = getNextRoute(
-                  RoutePath.SET_PASSCODE,
-                  data
-                );
-                updateReduxState(
-                  nextPath.pathname,
-                  data,
-                  dispatch,
-                  updateRedux
-                );
-                history.push(nextPath.pathname);
-              }
-            );
-          });
+              const data: DataProps = {
+                store: storeState,
+              };
+              const { nextPath, updateRedux } = getNextRoute(
+                RoutePath.SET_PASSCODE,
+                data
+              );
+              updateReduxState(
+                nextPath.pathname,
+                data,
+                dispatch,
+                updateRedux
+              );
+              history.push(nextPath.pathname);
+            }
+          );
         }
       }
       setPasscode(passcode + digit);
@@ -145,4 +129,4 @@ const SetPasscode = () => {
   );
 };
 
-export { SetPasscode, ARGON2ID_OPTIONS };
+export { SetPasscode };

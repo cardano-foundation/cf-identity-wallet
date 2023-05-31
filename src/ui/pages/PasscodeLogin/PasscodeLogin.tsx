@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { IonButton, IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
@@ -84,14 +83,9 @@ const PasscodeLogin = () => {
 
   const verifyPasscode = async (pass: string) => {
     try {
-      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
-
+      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE) as string;
       if (!storedPass) return false;
-      await verify({
-        encoded: storedPass,
-        pass: pass,
-      } as Argon2VerifyOptions);
-      return true;
+      return storedPass === pass;
     } catch (e) {
       return false;
     }

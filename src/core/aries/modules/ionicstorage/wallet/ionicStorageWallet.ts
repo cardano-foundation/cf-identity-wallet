@@ -120,7 +120,7 @@ class IonicStorageWallet implements Wallet {
             privateKeyBase58,
             keyType: KeyType.Ed25519,
           }),
-          tags: {}, // @TODO - foconnor: Once tagging implemented, key type can go here.
+          tags: { keyType: KeyType.Ed25519 },
         };
         if (await this.store.get(publicKeyBase58)) {
           throw new WalletKeyExistsError(

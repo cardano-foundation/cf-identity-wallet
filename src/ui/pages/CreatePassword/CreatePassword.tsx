@@ -17,6 +17,9 @@ import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { RoutePath } from "../../../routes/paths";
 import { PasswordRegexProps, RegexItemProps } from "./CreatePassword.types";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { MiscRecordId } from "../../../core/aries/modules";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage/secureStorage";
 
 const STRING_LENGTH = "length";
 const STRING_UPPERCASE = "uppercase";
@@ -154,8 +157,14 @@ const CreatePassword = () => {
     setErrorMessage(errorMessageHandler(regexState) || "");
   }, [createPasswordValue, confirmPasswordValue, regexState]);
 
-  const handleContinue = () => {
-    // TODO: this will need to be completed at a later stage
+  const handleContinue = async () => {
+    // @TODO - foconnor: We should handle errors here and display something to the user as feedback to try again.
+    await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, createPasswordValue);
+    await AriesAgent.agent.storeMiscRecord(MiscRecordId.OP_PASS_HINT, createHintValue);
+    setCreatePasswordValue("");
+    setConfirmPasswordValue("");
+    setCreateHintValue("");
+    // TODO: this will need to be completed at a later stage (navigation)
   };
 
   return (
@@ -192,6 +201,7 @@ const CreatePassword = () => {
                 hiddenInput={true}
                 onChangeInput={setCreatePasswordValue}
                 onChangeFocus={setCreatePasswordFocus}
+                value={createPasswordValue}
               />
             </IonCol>
           </IonRow>
@@ -229,6 +239,7 @@ const CreatePassword = () => {
                 hiddenInput={true}
                 onChangeInput={setConfirmPasswordValue}
                 onChangeFocus={setConfirmPasswordFocus}
+                value={confirmPasswordValue}
               />
             </IonCol>
           </IonRow>
@@ -249,6 +260,7 @@ const CreatePassword = () => {
                 hiddenInput={false}
                 onChangeInput={setCreateHintValue}
                 optional={true}
+                value={createHintValue}
               />
             </IonCol>
           </IonRow>

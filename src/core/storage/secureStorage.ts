@@ -6,6 +6,7 @@ import {
 enum KeyStoreKeys {
   APP_PASSCODE = "app-login-passcode",
   APP_SEEDPHRASE = "app-seed-phrase",
+  APP_OP_PASSWORD = "app-operations-password"
 }
 
 class SecureStorage {

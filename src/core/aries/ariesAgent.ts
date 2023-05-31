@@ -1,7 +1,12 @@
 import { InitConfig, Agent, AgentDependencies } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { CapacitorFileSystem } from "./dependencies/capacitorFileSystem";
-import { IonicStorageModule } from "./modules/ionicstorage";
+import {
+  IonicStorageModule,
+  GeneralStorageModule,
+  MiscRecord,
+  MiscRecordId,
+} from "./modules";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -21,20 +26,35 @@ const agentDependencies: AgentDependencies = {
 };
 
 class AriesAgent {
-  agent: Agent;
+  private static instance: AriesAgent;
+  private readonly agent: Agent;
 
-  constructor() {
+  private constructor() {
     this.agent = new Agent({
       config,
       dependencies: agentDependencies,
       modules: {
         ionicStorage: new IonicStorageModule(),
+        generalStorage: new GeneralStorageModule(),
       },
     });
   }
 
+  static get agent() {
+    if (!this.instance) {
+      this.instance = new AriesAgent();
+    }
+    return this.instance;
+  }
+
   async start(): Promise<void> {
     await this.agent.initialize();
+  }
+
+  async storeMiscRecord(id: MiscRecordId, value: string) {
+    await this.agent.modules.generalStorage.saveMiscRecord(
+      new MiscRecord({ id, value })
+    );
   }
 }
 
