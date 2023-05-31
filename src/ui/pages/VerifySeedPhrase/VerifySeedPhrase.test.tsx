@@ -22,7 +22,7 @@ const secureStorageSetSpy = jest
   .mockResolvedValue();
 const convertRootKeySpy = jest
   .spyOn(Addresses, "convertToRootXPrivateKeyHex")
-  .mockResolvedValue(rootKey);
+  .mockReturnValue(rootKey);
 
 describe("Verify Seed Phrase Page", () => {
   const seedPhrase: (string | null)[] = [];

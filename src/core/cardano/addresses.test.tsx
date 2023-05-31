@@ -10,11 +10,11 @@ const INVALID_SEEDPHRASE = "INVALID_SEEDPHRASE";
 
 describe("Cardano seed phrase and address derivation", () => {
   test("can return a root extended private key hex from a seedphrase", async () => {
-    expect(await Addresses.convertToRootXPrivateKeyHex(VALID_SEEDPHRASE_15_WORDS)).toEqual(ROOT_XPRV_KEY_15_WORDS);
-    expect(await Addresses.convertToRootXPrivateKeyHex(VALID_SEEDPHRASE_24_WORDS)).toEqual(ROOT_XPRV_KEY_24_WORDS);
+    expect(Addresses.convertToRootXPrivateKeyHex(VALID_SEEDPHRASE_15_WORDS)).toEqual(ROOT_XPRV_KEY_15_WORDS);
+    expect(Addresses.convertToRootXPrivateKeyHex(VALID_SEEDPHRASE_24_WORDS)).toEqual(ROOT_XPRV_KEY_24_WORDS);
   });
 
-  test("should throw if an invalid mnemonic is provided", async () => {
-    await expect(Addresses.convertToRootXPrivateKeyHex(INVALID_SEEDPHRASE)).rejects.toThrowError();
+  test("should throw if an invalid mnemonic is provided", () => {
+    expect(() => Addresses.convertToRootXPrivateKeyHex(INVALID_SEEDPHRASE)).toThrowError();
   });
 });
