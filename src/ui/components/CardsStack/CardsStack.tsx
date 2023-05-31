@@ -1,6 +1,9 @@
+import { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { CardsStackProps } from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
+import { TabsRoutePath } from "../navigation/TabsMenu";
 
 const CardsStack = ({
   cardsType,
@@ -9,6 +12,8 @@ const CardsStack = ({
   cardsType: string;
   cardsData: CardsStackProps[];
 }) => {
+  const history = useHistory();
+  const [isActive, setIsActive] = useState(false);
   const cardsBackgroundColor = [
     "linear-gradient(91.86deg, #92FFC0 28.76%, #47FF94 119.14%)",
     "linear-gradient(91.86deg, #FFBC60 28.76%, #FFA21F 119.14%)",
@@ -30,8 +35,10 @@ const CardsStack = ({
     return cardsData.map((cardData, index) => (
       <div
         key={index}
-        className="cards-stack-card"
+        id={`card-index-${index}`}
+        className={`cards-stack-card ${isActive ? "selection-made" : ""}`}
         style={{ background: cardColorSelector(index) }}
+        onClick={() => handleShowCardDetails(index)}
       >
         {cardsType === "dids" && (
           <div className="cards-stack-did-layout">
@@ -52,6 +59,14 @@ const CardsStack = ({
         )}
       </div>
     ));
+  };
+
+  const handleShowCardDetails = (index: number) => {
+    setIsActive(true);
+    history.push({
+      pathname: TabsRoutePath.CARD_DETAILS,
+      state: cardsData[index],
+    });
   };
 
   return <div className="cards-stack-container">{renderCards(cardsData)}</div>;

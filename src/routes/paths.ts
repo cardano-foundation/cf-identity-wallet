@@ -16,6 +16,7 @@ enum TabsRoutePath {
   SCAN = "/tabs/scan",
   CRYPTO = "/tabs/crypto",
   CHAT = "/tabs/chat",
+  CARD_DETAILS = "/tabs/carddetails",
 }
 
 export { RoutePath, TabsRoutePath };

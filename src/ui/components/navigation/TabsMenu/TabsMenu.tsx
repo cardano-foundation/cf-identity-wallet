@@ -23,6 +23,7 @@ import { Crypto } from "../../../pages/Crypto";
 import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
 import { TabsRoutePath } from "../../../../routes/paths";
+import { CardDetails } from "../../../pages/CardDetails";
 const TabsMenu = () => {
   return (
     <IonReactRouter>
@@ -56,6 +57,11 @@ const TabsMenu = () => {
           <Route
             path={TabsRoutePath.CHAT}
             component={Chat}
+            exact={true}
+          />
+          <Route
+            path={TabsRoutePath.CARD_DETAILS}
+            component={CardDetails}
             exact={true}
           />
         </IonRouterOutlet>
