@@ -14,6 +14,19 @@ import {
   MNEMONIC_FIFTEEN_WORDS,
 } from "../../../constants/appConstants";
 import { TabsMenu } from "../../components/navigation/TabsMenu";
+import { Addresses } from "../../../core/cardano/addresses";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+} from "../../../core/storage/secureStorage";
+
+const rootKey = "rootKeyHex";
+const secureStorageSetSpy = jest
+  .spyOn(SecureStorage, "set")
+  .mockResolvedValue();
+const convertRootKeySpy = jest
+  .spyOn(Addresses, "convertToRootXPrivateKeyHex")
+  .mockReturnValue(rootKey);
 
 describe("Verify Seed Phrase Page", () => {
   const seedPhrase: (string | null)[] = [];
@@ -116,6 +129,9 @@ describe("Verify Seed Phrase Page", () => {
         queryByText(EN_TRANSLATIONS["verifyseedphrase.alert.text"])
       ).toBeVisible()
     );
+
+    expect(convertRootKeySpy).not.toBeCalled();
+    expect(secureStorageSetSpy).not.toBeCalled();
   });
 
   test("The user can Verify the Seed Phrase", async () => {
@@ -176,6 +192,17 @@ describe("Verify Seed Phrase Page", () => {
     fireEvent.click(continueButton);
 
     await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
+
+    const seedPhraseString = seedPhrase.join(" ");
+    expect(convertRootKeySpy).toBeCalledWith(seedPhraseString);
+    expect(secureStorageSetSpy).toBeCalledWith(
+      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+      rootKey
+    );
+    expect(secureStorageSetSpy).toBeCalledWith(
+      KeyStoreKeys.IDENTITY_SEEDPHRASE,
+      seedPhraseString
+    );
   });
 
   test("calls handleOnBack when back button is clicked", async () => {
