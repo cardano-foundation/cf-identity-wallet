@@ -89,5 +89,6 @@
   "operationspasswordregex.label.number": "Contains a number",
   "operationspasswordregex.label.symbol": "Contains a symbol",
   "dids.label.create": "Create an identity",
-  "dids.card.created": "CREATED"
+  "dids.card.created": "CREATED",
+  "carddetails.done": "Done"
 }

@@ -1,11 +1,14 @@
-import { useLocation } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { IonButton, IonIcon, IonPage } from "@ionic/react";
 import { shareOutline, ellipsisVertical } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { i18n } from "../../../i18n";
 import { CardsStack } from "../../components/CardsStack";
-import { CardsStackProps } from "../../components/CardsStack/CardsStack.types";
+import { RootState } from "../../../store";
+import { clearCardInfoCache } from "../../../store/reducers/cardInfoCache";
+import "./CardDetails.scss";
 
 const OtherButtons = () => {
   return (
@@ -37,23 +40,31 @@ const OtherButtons = () => {
 };
 
 const CardDetails = () => {
-  const location = useLocation();
-  const cardsData: CardsStackProps[] = [location.state as CardsStackProps];
+  const history = useHistory();
+  const cardProps = useSelector(
+    (state: RootState) => state.cardInfoCache.cardProps
+  );
+  const cardData = useSelector(
+    (state: RootState) => state.cardInfoCache.cardData
+  );
+  const path = TabsRoutePath.DIDS;
+
   return (
-    <IonPage
-      className="tab-layout dids-tab"
-      data-testid="dids-tab"
-    >
+    <IonPage className="tab-layout card-details">
       <TabLayout
-        currentPath={TabsRoutePath.CARD_DETAILS}
         header={true}
-        title="Card details"
+        title={`${i18n.t("carddetails.done")}`}
+        titleSize="h3"
+        titleAction={() => {
+          clearCardInfoCache();
+          history.replace(path);
+        }}
         menuButton={false}
         otherButtons={<OtherButtons />}
       >
         <CardsStack
-          cardsType="dids"
-          cardsData={cardsData}
+          cardsType={cardProps.cardType}
+          cardsData={cardData}
         />
       </TabLayout>
     </IonPage>

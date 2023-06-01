@@ -4,15 +4,15 @@
   height: 90vh;
 }
 
-.cards-stack-card.selection-made:not(:first-child):hover {
+.cards-stack-card.active:not(:first-child):hover {
   position: absolute;
   top: 11.5rem;
-  transition: 0.4s ease-out;
+  transition: top 1.5s;
 }
 
-.cards-stack-card.selection-made:not(:hover) {
+.cards-stack-card.active:not(:hover) {
   transform: translateY(100vh);
-  transition: 0.75s ease-out;
+  transition: 0.5s ease-out;
 }
 
 .cards-stack-card {

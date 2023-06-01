@@ -1,7 +1,6 @@
 import { IonButton, IonIcon, IonPage } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { i18n } from "../../../i18n";
 import { didsMock } from "../../__mocks__/didsMock";
 import "./Dids.scss";
@@ -50,7 +49,6 @@ const Dids = () => {
       data-testid="dids-tab"
     >
       <TabLayout
-        currentPath={TabsRoutePath.DIDS}
         header={true}
         title="Identities"
         menuButton={true}

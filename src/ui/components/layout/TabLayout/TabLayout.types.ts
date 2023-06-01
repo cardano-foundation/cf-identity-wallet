@@ -1,9 +1,10 @@
 import { ReactNode } from "react";
 
 interface TabLayoutProps {
-  currentPath: string;
   header?: boolean;
   title?: string;
+  titleSize?: string;
+  titleAction?: () => void;
   menuButton?: boolean;
   otherButtons?: ReactNode;
   children?: ReactNode;

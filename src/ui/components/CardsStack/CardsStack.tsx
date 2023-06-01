@@ -1,9 +1,12 @@
 import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
 import { CardsStackProps } from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../navigation/TabsMenu";
+import { setCardInfoCache } from "../../../store/reducers/cardInfoCache";
+import { RootState } from "../../../store";
 
 const CardsStack = ({
   cardsType,
@@ -13,6 +16,7 @@ const CardsStack = ({
   cardsData: CardsStackProps[];
 }) => {
   const history = useHistory();
+  const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(false);
   const cardsBackgroundColor = [
     "linear-gradient(91.86deg, #92FFC0 28.76%, #47FF94 119.14%)",
@@ -22,22 +26,22 @@ const CardsStack = ({
     "linear-gradient(91.86deg, #B5C2FF 28.76%, #708AFF 119.14%)",
     "linear-gradient(91.86deg, #FF9780 28.76%, #FF5833 119.14%)",
   ];
-
-  const cardColorSelector = (index: number) => {
-    if (index > 5) {
-      return cardsBackgroundColor[index % 6];
-    } else {
-      return cardsBackgroundColor[index % 6];
-    }
-  };
+  const cardColor = useSelector(
+    (state: RootState) => state.cardInfoCache.cardProps.cardColor
+  );
 
   const renderCards = (cardsData: CardsStackProps[]) => {
     return cardsData.map((cardData, index) => (
       <div
         key={index}
         id={`card-index-${index}`}
-        className={`cards-stack-card ${isActive ? "selection-made" : ""}`}
-        style={{ background: cardColorSelector(index) }}
+        className={`cards-stack-card ${isActive ? "active" : ""}`}
+        style={{
+          background:
+            cardColor && cardsData.length === 1
+              ? cardColor
+              : cardsBackgroundColor[index % 6],
+        }}
         onClick={() => handleShowCardDetails(index)}
       >
         {cardsType === "dids" && (
@@ -62,11 +66,22 @@ const CardsStack = ({
   };
 
   const handleShowCardDetails = (index: number) => {
+    dispatch(
+      setCardInfoCache({
+        cardProps: {
+          cardType: cardsType,
+          cardColor: cardsBackgroundColor[index % 6],
+        },
+        cardData: [cardsData[index]],
+      })
+    );
     setIsActive(true);
-    history.push({
-      pathname: TabsRoutePath.CARD_DETAILS,
-      state: cardsData[index],
-    });
+    setTimeout(() => {
+      history.replace(TabsRoutePath.CARD_DETAILS);
+    }, 250);
+    setTimeout(() => {
+      setIsActive(false);
+    }, 1000);
   };
 
   return <div className="cards-stack-container">{renderCards(cardsData)}</div>;

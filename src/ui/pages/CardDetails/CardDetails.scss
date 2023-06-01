@@ -1,0 +1,9 @@
+.card-details {
+  .tab-header {
+    opacity: 0;
+  }
+  .tab-header {
+    opacity: 1;
+    transition: opacity 1.5s;
+  }
+}

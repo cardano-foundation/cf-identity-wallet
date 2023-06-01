@@ -9,23 +9,17 @@ import {
 } from "@ionic/react";
 import { menuOutline } from "ionicons/icons";
 import "./TabLayout.scss";
-import { useHistory } from "react-router-dom";
 import { TabLayoutProps } from "./TabLayout.types";
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import { getState } from "../../../../store/reducers/stateCache";
 
 const TabLayout = ({
-  currentPath,
   header,
   title,
+  titleSize,
+  titleAction,
   menuButton,
   otherButtons,
   children,
 }: TabLayoutProps) => {
-  const history = useHistory();
-  const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
-
   return (
     <>
       {header && (
@@ -35,8 +29,9 @@ const TabLayout = ({
         >
           <IonToolbar color="light">
             {title && (
-              <IonTitle>
-                <h2>{title}</h2>
+              <IonTitle onClick={titleAction}>
+                {(titleSize === "h2" || !titleSize) && <h2>{title}</h2>}
+                {titleSize === "h3" && <h3>{title}</h3>}
               </IonTitle>
             )}
 

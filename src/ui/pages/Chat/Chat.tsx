@@ -1,6 +1,5 @@
 import { IonPage } from "@ionic/react";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 
 const Chat = () => {
   return (
@@ -9,7 +8,6 @@ const Chat = () => {
       data-testid="chat-tab"
     >
       <TabLayout
-        currentPath={TabsRoutePath.CHAT}
         header={true}
         title="Chat"
         menuButton={true}

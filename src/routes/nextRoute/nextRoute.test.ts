@@ -31,6 +31,13 @@ describe("NextRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
+      cardInfoCache: {
+        cardProps: {
+          cardType: "",
+          cardColor: "",
+        },
+        cardData: [],
+      },
     };
   });
 
@@ -113,6 +120,13 @@ describe("getNextRoute", () => {
       seedPhrase160: "",
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
+    },
+    cardInfoCache: {
+      cardProps: {
+        cardType: "",
+        cardColor: "",
+      },
+      cardData: [],
     },
   };
   const state = {};
