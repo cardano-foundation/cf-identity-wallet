@@ -74,6 +74,9 @@ const config = {
   ],
   infrastructureLogging: {
     level: "info",
+  },
+  experiments: {
+    asyncWebAssembly: true
   }
 };
 

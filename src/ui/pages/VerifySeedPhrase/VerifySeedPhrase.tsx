@@ -15,6 +15,11 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import Alert from "../../components/Alert/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+} from "../../../core/storage/secureStorage";
+import { Addresses } from "../../../core/cardano/addresses";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getState } from "../../../store/reducers/stateCache";
@@ -79,6 +84,13 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
+      const seedPhraseString = originalSeedPhrase.join(" ");
+      await SecureStorage.set(
+        KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+        await Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
+      );
+      await SecureStorage.set(KeyStoreKeys.IDENTITY_SEEDPHRASE, seedPhraseString);
+
       const { nextPath, updateRedux } = getNextRoute(
         RoutePath.VERIFY_SEED_PHRASE,
         { store: storeState }

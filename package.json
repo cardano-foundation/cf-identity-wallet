@@ -17,6 +17,7 @@
     "@capacitor/core": "^4.7.1",
     "@capacitor/filesystem": "^4.1.4",
     "@capacitor/ios": "^4.7.1",
+    "@emurgo/cardano-serialization-lib-browser": "^11.4.0",
     "@ionic/react": "^6.7.0",
     "@ionic/react-router": "^6.7.0",
     "@ionic/storage": "^3.0.6",
@@ -35,6 +36,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^4.7.3",
+    "@emurgo/cardano-serialization-lib-nodejs": "^11.4.0",
     "@ionic/react-test-utils": "^0.4.0",
     "@testing-library/jest-dom": "^5.11.9",
     "@testing-library/react": "^13.3.0",
