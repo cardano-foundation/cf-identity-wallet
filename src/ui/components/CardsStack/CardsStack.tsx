@@ -55,7 +55,7 @@ const CardsStack = ({
             </div>
             <div className="card-footer">
               <span className="card-created-label">
-                {i18n.t("dids.card.created")}
+                {i18n.t("dids.card.layout.created")}
               </span>
               <span>{cardData.date}</span>
             </div>

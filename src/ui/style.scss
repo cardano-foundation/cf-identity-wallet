@@ -61,6 +61,11 @@ p {
   --background-activated: var(--color-dark-grey);
 }
 
+.ion-primary-button,
+.secondary-button {
+  height: 3.25rem;
+}
+
 .page-paragraph {
   margin: 0;
 }

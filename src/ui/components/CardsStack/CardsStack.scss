@@ -1,7 +1,6 @@
 .cards-stack-container {
   display: flex;
   flex-direction: column;
-  height: 90vh;
 }
 
 .cards-stack-card.active:not(:first-child):hover {

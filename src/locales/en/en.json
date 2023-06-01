@@ -89,6 +89,11 @@
   "operationspasswordregex.label.number": "Contains a number",
   "operationspasswordregex.label.symbol": "Contains a symbol",
   "dids.label.create": "Create an identity",
-  "dids.card.created": "CREATED",
-  "carddetails.done": "Done"
+  "card.details.done": "Done",
+  "dids.card.layout.created": "CREATED",
+  "dids.card.details.information": "Information",
+  "dids.card.details.type": "Type",
+  "dids.card.details.controller": "Controller",
+  "dids.card.details.publickeybase": "Public Key Base 58",
+  "dids.card.details.delete": "Delete identity"
 }
