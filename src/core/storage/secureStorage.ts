@@ -7,6 +7,7 @@ enum KeyStoreKeys {
   APP_PASSCODE = "app-login-passcode",
   IDENTITY_SEEDPHRASE = "identity-seed-phrase",
   IDENTITY_ROOT_XPRV_KEY = "identity-root-xprv-key",
+  APP_OP_PASSWORD = "app-operations-password"
 }
 
 class SecureStorage {

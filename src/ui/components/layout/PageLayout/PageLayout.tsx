@@ -21,6 +21,7 @@ import { getBackRoute } from "../../../../routes/backRoute";
 const PageLayout = ({
   header,
   backButton,
+  onBack,
   currentPath,
   children,
   closeButton,
@@ -50,6 +51,9 @@ const PageLayout = ({
       updateRedux
     );
     history.push(backPath.pathname);
+    if (onBack) {
+      onBack();
+    }
   };
 
   return (
@@ -132,7 +136,10 @@ const PageLayout = ({
       </IonContent>
 
       {footer && (
-        <IonFooter collapse="fade">
+        <IonFooter
+          collapse="fade"
+          className="ion-no-border"
+        >
           <IonToolbar
             color="light"
             className="page-footer"

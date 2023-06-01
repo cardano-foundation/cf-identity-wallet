@@ -1,5 +1,7 @@
 interface SeedPhraseCacheProps {
-  seedPhrase: string;
+  seedPhrase160: string;
+  seedPhrase256: string;
+  selected: number;
 }
 
 export type { SeedPhraseCacheProps };

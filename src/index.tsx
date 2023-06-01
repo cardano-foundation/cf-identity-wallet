@@ -5,6 +5,7 @@ import { App } from "./ui/App";
 import reportWebVitals from "./reportWebVitals";
 import "./i18n";
 import { store } from "./store";
+import { AriesAgent } from "./core/aries/ariesAgent";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
@@ -19,8 +20,4 @@ root.render(
 
 reportWebVitals();
 
-async function start() {
-  new Worker(new URL("./core/aries/agentWorker", import.meta.url));
-}
-
-start();
+AriesAgent.agent.start();

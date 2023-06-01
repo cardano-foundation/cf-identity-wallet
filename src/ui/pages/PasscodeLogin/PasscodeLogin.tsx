@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { IonButton, IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { Argon2VerifyOptions, verify } from "argon2-browser";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
@@ -16,7 +15,7 @@ import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
 import { getBackRoute } from "../../../routes/backRoute";
-import {RoutePath} from "../../../routes";
+import { RoutePath } from "../../../routes";
 
 const PasscodeLogin = () => {
   const history = useHistory();
@@ -35,6 +34,12 @@ const PasscodeLogin = () => {
       ? i18n.t("passcodelogin.alert.button.verify")
       : i18n.t("passcodelogin.alert.button.restart");
   const cancelButtonText = i18n.t("passcodelogin.alert.button.cancel");
+
+  const handleClearState = () => {
+    setPasscode("");
+    setIsOpen(false);
+    setPasscodeIncorrect(false);
+  };
 
   const handlePinChange = (digit: number) => {
     if (passcode.length < 6) {
@@ -56,7 +61,7 @@ const PasscodeLogin = () => {
                 updateRedux
               );
               history.push(backPath.pathname);
-              setPasscode("");
+              handleClearState();
             } else {
               setPasscodeIncorrect(true);
             }
@@ -78,18 +83,14 @@ const PasscodeLogin = () => {
 
   const verifyPasscode = async (pass: string) => {
     try {
-      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
-
+      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE) as string;
       if (!storedPass) return false;
-      await verify({
-        encoded: storedPass,
-        pass: pass,
-      } as Argon2VerifyOptions);
-      return true;
+      return storedPass === pass;
     } catch (e) {
       return false;
     }
   };
+
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
       const copyStore = JSON.parse(JSON.stringify(storeState));
@@ -101,7 +102,7 @@ const PasscodeLogin = () => {
         },
       };
       history.push(RoutePath.SET_PASSCODE);
-      setPasscode("");
+      handleClearState();
     });
   };
 
@@ -114,7 +115,10 @@ const PasscodeLogin = () => {
           error={
             passcode.length === 6 &&
             passcodeIncorrect && (
-              <ErrorMessage message={i18n.t("passcodelogin.error")} />
+              <ErrorMessage
+                message={i18n.t("passcodelogin.error")}
+                timeout={true}
+              />
             )
           }
           passcode={passcode}

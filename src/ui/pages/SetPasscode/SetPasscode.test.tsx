@@ -1,9 +1,8 @@
 import { MemoryRouter, Route } from "react-router-dom";
 import { fireEvent, render, waitFor } from "@testing-library/react";
-import Argon2 from "argon2-browser";
-import { Buffer } from "buffer";
 import { Provider } from "react-redux";
-import { SetPasscode, ARGON2ID_OPTIONS } from "./SetPasscode";
+import configureStore from "redux-mock-store";
+import { SetPasscode } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import {
   SecureStorage,
@@ -12,13 +11,8 @@ import {
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
-const ARGON2ID_HASH = {
-  encoded: "encodedHash",
-  hash: Buffer.from("hashedPassword"),
-  hashHex: "0xHashedPasscode",
-};
-const argon2Spy = jest.spyOn(Argon2, "hash").mockResolvedValue(ARGON2ID_HASH);
 const setKeyStoreSpy = jest.spyOn(SecureStorage, "set").mockResolvedValue();
 
 describe("SetPasscode Page", () => {
@@ -173,14 +167,48 @@ describe("SetPasscode Page", () => {
       ).not.toBeInTheDocument()
     );
 
-    expect(argon2Spy).toBeCalledWith({
-      pass: "111111",
-      salt: expect.any(Buffer),
-      ...ARGON2ID_OPTIONS,
-    });
     expect(setKeyStoreSpy).toBeCalledWith(
       KeyStoreKeys.APP_PASSCODE,
-      ARGON2ID_HASH.encoded
+      "111111"
+    );
+  });
+  test("calls handleOnBack when back button is clicked", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.SET_PASSCODE, RoutePath.ONBOARDING],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { queryByText, getByTestId } = render(
+      <MemoryRouter initialEntries={[RoutePath.SET_PASSCODE]}>
+        <Provider store={storeMocked}>
+          <SetPasscode />
+        </Provider>
+      </MemoryRouter>
+    );
+    const backButton = getByTestId("back-button");
+    fireEvent.click(backButton);
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.title"])
+      ).toBeInTheDocument()
     );
   });
 });
