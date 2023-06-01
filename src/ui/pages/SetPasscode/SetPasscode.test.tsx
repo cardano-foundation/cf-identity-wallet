@@ -167,10 +167,7 @@ describe("SetPasscode Page", () => {
       ).not.toBeInTheDocument()
     );
 
-    expect(setKeyStoreSpy).toBeCalledWith(
-      KeyStoreKeys.APP_PASSCODE,
-      "111111"
-    );
+    expect(setKeyStoreSpy).toBeCalledWith(KeyStoreKeys.APP_PASSCODE, "111111");
   });
   test("calls handleOnBack when back button is clicked", async () => {
     const mockStore = configureStore();
