@@ -11,6 +11,7 @@ import {
   personCircleOutline,
   trashOutline,
 } from "ionicons/icons";
+import { useEffect, useRef } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { i18n } from "../../../i18n";
@@ -56,17 +57,13 @@ const CardDetails = () => {
   const cardData = useSelector(
     (state: RootState) => state.cardInfoCache.cardData
   );
-  let donePath = "";
+  const donePath = useRef("");
 
-  switch (cardProps.cardType) {
-    case "dids":
-      donePath = TabsRoutePath.DIDS;
-      break;
-
-    default:
-      "/";
-      break;
-  }
+  useEffect(() => {
+    if (cardProps.cardType) {
+      donePath.current = TabsRoutePath.DIDS;
+    }
+  }, [cardProps.cardType]);
 
   return (
     <IonPage className="tab-layout card-details">
@@ -76,7 +73,7 @@ const CardDetails = () => {
         titleSize="h3"
         titleAction={() => {
           clearCardInfoCache();
-          history.replace(donePath);
+          history.replace(donePath.current);
         }}
         menuButton={false}
         additionalButtons={<AdditionalButtons />}

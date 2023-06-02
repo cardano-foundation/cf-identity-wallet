@@ -5,7 +5,7 @@ const didsMock = [
     name: "Anonymous ID",
     date: "15/05/2023",
     keyType: "Ed25519",
-    controller: "did:key:z6MkpNyGdYK5Ey1pCf5cy1S9gbLD1857nQoZxVeeGifA1ZQv",
+    controller: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
     publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
   },
   {
@@ -27,12 +27,12 @@ const didsMock = [
     publicKeyBase58: "AviE3J4duRYoGNXZDGUjiSShXM6AEvHSUJqVnDB96LdY",
   },
   {
-    id: "did:key:z6MkpNyGdYK5Ey1pCf5cy1S9gbLD1857nQoZxVeeGifA1ZQv",
+    id: "did:key:z6MkpNyGd9gbLD1857nQoZYK5Ey1pCf5cy1SxVeeGifA1ZQv",
     type: "KERI",
     name: "Professional ID",
     date: "15/05/2023",
     keyType: "Ed25519",
-    controller: "did:key:z6MkpNyGdYK5Ey1pCf5cy1S9gbLD1857nQoZxVeeGifA1ZQv",
+    controller: "did:key:z6MkpNyGdYK5Ey1pCS9gbLD1857nQoZf5cy1xVeeGifA1ZQv",
     publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
   },
   {
@@ -54,12 +54,12 @@ const didsMock = [
     publicKeyBase58: "AviE3J4duRYoGNXZDGUjiSShXM6AEvHSUJqVnDB96LdY",
   },
   {
-    id: "did:key:z6MkpNyGdYK5Ey1pCf5cy1S9gbLD1857nQoZxVeeGifA1ZQv",
+    id: "did:key:z6MkpNyGdYK5Ecy1S9gbLDy1pCf51857nQoZxVeeGifA1ZQv",
     type: "DID:KEY",
     name: "Anonymous ID",
     date: "15/05/2023",
     keyType: "Ed25519",
-    controller: "did:key:z6MkpNyGdYK5Ey1pCf5cy1S9gbLD1857nQoZxVeeGifA1ZQv",
+    controller: "did:key:z6MkpNyGgbLD1857dYK5Ey1pCf5cy1S9nQoZxVeeGifA1ZQv",
     publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
   },
   {

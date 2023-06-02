@@ -29,7 +29,10 @@ const TabLayout = ({
         >
           <IonToolbar color="light">
             {title && (
-              <IonTitle onClick={titleAction}>
+              <IonTitle
+                onClick={titleAction}
+                data-testid="tab-title"
+              >
                 {(titleSize === "h2" || !titleSize) && <h2>{title}</h2>}
                 {titleSize === "h3" && <h3>{title}</h3>}
               </IonTitle>

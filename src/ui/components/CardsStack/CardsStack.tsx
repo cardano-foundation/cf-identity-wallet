@@ -8,6 +8,9 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import { setCardInfoCache } from "../../../store/reducers/cardInfoCache";
 import { RootState } from "../../../store";
 
+const NAVIGATION_DELAY = 250;
+const CLEAR_STATE_DELAY = 1000;
+
 const CardsStack = ({
   cardsType,
   cardsData,
@@ -34,7 +37,7 @@ const CardsStack = ({
     return cardsData.map((cardData, index) => (
       <div
         key={index}
-        id={`card-index-${index}`}
+        data-testid={`card-stack-index-${index}`}
         className={`cards-stack-card ${isActive ? "active" : ""}`}
         style={{
           background:
@@ -82,13 +85,13 @@ const CardsStack = ({
     setIsActive(true);
     setTimeout(() => {
       history.replace(TabsRoutePath.CARD_DETAILS);
-    }, 250);
+    }, NAVIGATION_DELAY);
     setTimeout(() => {
       setIsActive(false);
-    }, 1000);
+    }, CLEAR_STATE_DELAY);
   };
 
   return <div className="cards-stack-container">{renderCards(cardsData)}</div>;
 };
 
-export { CardsStack };
+export { CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };

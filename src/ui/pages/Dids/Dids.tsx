@@ -50,7 +50,7 @@ const Dids = () => {
     >
       <TabLayout
         header={true}
-        title="Identities"
+        title={`${i18n.t("dids.tab.title")}`}
         menuButton={true}
         additionalButtons={<AdditionalButtons />}
       >
@@ -61,7 +61,7 @@ const Dids = () => {
           />
         ) : (
           <CardsPlaceholder
-            buttonLabel={i18n.t("dids.label.create")}
+            buttonLabel={i18n.t("dids.tab.create")}
             buttonAction={handleCreateDid}
           />
         )}

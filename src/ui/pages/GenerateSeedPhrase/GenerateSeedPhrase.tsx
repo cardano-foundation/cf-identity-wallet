@@ -52,9 +52,7 @@ const GenerateSeedPhrase = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
-  // We discarded using ionViewWillEnter since it does not work with Jest.
   useEffect(() => {
-    // We only execute this useEffect when the history matches this page, since Ionic keeps all pages in the background.
     if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
       const isFifteenWordsSelected =
         seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
