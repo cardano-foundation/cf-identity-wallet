@@ -17,7 +17,7 @@ const TabLayout = ({
   titleSize,
   titleAction,
   menuButton,
-  otherButtons,
+  additionalButtons,
   children,
 }: TabLayoutProps) => {
   return (
@@ -36,7 +36,7 @@ const TabLayout = ({
             )}
 
             <IonButtons slot="end">
-              {otherButtons}
+              {additionalButtons}
 
               {menuButton && (
                 <IonButton

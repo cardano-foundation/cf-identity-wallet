@@ -26,7 +26,7 @@ const CardsStack = ({
     "linear-gradient(91.86deg, #B5C2FF 28.76%, #708AFF 119.14%)",
     "linear-gradient(91.86deg, #FF9780 28.76%, #FF5833 119.14%)",
   ];
-  const cardColor = useSelector(
+  const selectedCardColor = useSelector(
     (state: RootState) => state.cardInfoCache.cardProps.cardColor
   );
 
@@ -38,11 +38,15 @@ const CardsStack = ({
         className={`cards-stack-card ${isActive ? "active" : ""}`}
         style={{
           background:
-            cardColor && cardsData.length === 1
-              ? cardColor
+            selectedCardColor && cardsData.length === 1
+              ? selectedCardColor
               : cardsBackgroundColor[index % 6],
         }}
-        onClick={() => handleShowCardDetails(index)}
+        onClick={() => {
+          if (cardsData.length > 1) {
+            handleShowCardDetails(index);
+          }
+        }}
       >
         {cardsType === "dids" && (
           <div className="cards-stack-did-layout">

@@ -7,9 +7,9 @@ import "./Dids.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 
-const identities = didsMock;
+const didsData = didsMock;
 
-const OtherButtons = () => {
+const AdditionalButtons = () => {
   return (
     <>
       <IonButton
@@ -52,12 +52,12 @@ const Dids = () => {
         header={true}
         title="Identities"
         menuButton={true}
-        otherButtons={<OtherButtons />}
+        additionalButtons={<AdditionalButtons />}
       >
-        {identities.length ? (
+        {didsData.length ? (
           <CardsStack
             cardsType="dids"
-            cardsData={identities}
+            cardsData={didsData}
           />
         ) : (
           <CardsPlaceholder
@@ -70,4 +70,4 @@ const Dids = () => {
   );
 };
 
-export { Dids, OtherButtons };
+export { Dids, AdditionalButtons };

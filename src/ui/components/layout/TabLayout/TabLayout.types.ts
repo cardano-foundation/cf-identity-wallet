@@ -6,7 +6,7 @@ interface TabLayoutProps {
   titleSize?: string;
   titleAction?: () => void;
   menuButton?: boolean;
-  otherButtons?: ReactNode;
+  additionalButtons?: ReactNode;
   children?: ReactNode;
 }
 

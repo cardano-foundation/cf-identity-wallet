@@ -19,7 +19,7 @@ import { RootState } from "../../../store";
 import { clearCardInfoCache } from "../../../store/reducers/cardInfoCache";
 import "./CardDetails.scss";
 
-const OtherButtons = () => {
+const AdditionalButtons = () => {
   return (
     <>
       <IonButton
@@ -79,13 +79,13 @@ const CardDetails = () => {
           history.replace(donePath);
         }}
         menuButton={false}
-        otherButtons={<OtherButtons />}
+        additionalButtons={<AdditionalButtons />}
       >
         <CardsStack
           cardsType={cardProps.cardType}
           cardsData={cardData}
         />
-        {cardProps.cardType == "dids" && (
+        {cardProps.cardType === "dids" && (
           <div className="card-details-content">
             <div className="card-details-info-block">
               <h3>{i18n.t("dids.card.details.information")}</h3>
@@ -244,4 +244,4 @@ const CardDetails = () => {
   );
 };
 
-export { CardDetails, OtherButtons };
+export { CardDetails, AdditionalButtons };
