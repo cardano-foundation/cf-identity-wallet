@@ -7,12 +7,12 @@ const VerifyPassword = ({ isOpen, setIsOpen }: VerifyPasswordProps) => {
   return (
     <IonModal
       isOpen={isOpen}
-      initialBreakpoint={1}
-      breakpoints={[0, 0.5, 1]}
+      initialBreakpoint={0.5}
+      breakpoints={[0.5]}
       className="page-layout"
       onDidDismiss={() => setIsOpen(false)}
     >
-      <div className="verify-password">
+      <div className="verify-password modal">
         <PageLayout
           header={true}
           closeButton={true}

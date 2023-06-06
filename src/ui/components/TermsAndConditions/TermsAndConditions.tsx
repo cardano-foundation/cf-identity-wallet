@@ -1,9 +1,7 @@
 import { IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
 import { i18n } from "../../../i18n";
-import "./TermsAndConditions.scss";
 import { TermsAndConditionsProps } from "./TermsAndConditions.types";
 import { PageLayout } from "../layout/PageLayout";
-import { RoutePath } from "../../../routes";
 
 const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
   const paragraphs: string[] = i18n.t("termsandconditions.body", {
@@ -17,7 +15,7 @@ const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
       className="page-layout"
       onDidDismiss={() => setIsOpen(false)}
     >
-      <div className="terms-and-conditions">
+      <div className="terms-and-conditions modal">
         <PageLayout
           header={true}
           closeButton={true}
