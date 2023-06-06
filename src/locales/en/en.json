@@ -96,5 +96,8 @@
   "dids.card.details.type": "Type",
   "dids.card.details.controller": "Controller",
   "dids.card.details.publickeybase": "Public Key Base 58",
-  "dids.card.details.delete": "Delete identity"
+  "dids.card.details.delete": "Delete identity",
+  "verifypassword.title": "Enter password",
+  "verifypassword.button.forgot": "I've forgotten my password"
+
 }
