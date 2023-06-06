@@ -1,4 +1,11 @@
-import { InitConfig, Agent, AgentDependencies } from "@aries-framework/core";
+import {
+  InitConfig,
+  Agent,
+  AgentDependencies,
+  DidsModule,
+  KeyDidResolver,
+  KeyType,
+} from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { CapacitorFileSystem } from "./dependencies/capacitorFileSystem";
 import {
@@ -7,6 +14,8 @@ import {
   MiscRecord,
   MiscRecordId,
 } from "./modules";
+import { CustomKeyDidRegistrar } from "./dids";
+import { IdentityType } from "./ariesAgent.types";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -36,6 +45,10 @@ class AriesAgent {
       modules: {
         ionicStorage: new IonicStorageModule(),
         generalStorage: new GeneralStorageModule(),
+        dids: new DidsModule({
+          registrars: [new CustomKeyDidRegistrar()],
+          resolvers: [new KeyDidResolver()],
+        }),
       },
     });
   }
@@ -55,6 +68,14 @@ class AriesAgent {
     await this.agent.modules.generalStorage.saveMiscRecord(
       new MiscRecord({ id, value })
     );
+  }
+
+  async createIdentity(type: IdentityType, displayName: string) {
+    await this.agent.dids.create({
+      method: type,
+      displayName: displayName,
+      options: { keyType: KeyType.Ed25519 },
+    });
   }
 }
 
