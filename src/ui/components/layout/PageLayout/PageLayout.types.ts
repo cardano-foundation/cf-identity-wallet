@@ -4,7 +4,7 @@ interface PageLayoutProps {
   header?: boolean;
   backButton?: boolean;
   onBack?: () => void;
-  currentPath: string;
+  currentPath?: string;
   children?: ReactNode;
   closeButton?: boolean;
   closeButtonAction?: () => void;

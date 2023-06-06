@@ -22,7 +22,6 @@ const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
           header={true}
           closeButton={true}
           closeButtonAction={() => setIsOpen(false)}
-          currentPath={RoutePath.GENERATE_SEED_PHRASE}
           title={`${i18n.t("termsandconditions.title")}`}
         >
           <IonGrid>
