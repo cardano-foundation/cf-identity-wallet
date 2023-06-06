@@ -98,6 +98,6 @@
   "dids.card.details.publickeybase": "Public Key Base 58",
   "dids.card.details.delete": "Delete identity",
   "verifypassword.title": "Enter password",
-  "verifypassword.button.forgot": "I've forgotten my password"
-
+  "verifypassword.button.forgot": "I've forgotten my password",
+  "verifypassword.error.hasNoMatch": "Password didn't match"
 }

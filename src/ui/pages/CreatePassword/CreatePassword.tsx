@@ -202,8 +202,10 @@ const CreatePassword = () => {
             <IonCol size="12">
               <CustomInput
                 dataTestId="createPasswordValue"
-                title={i18n.t("createpassword.input.first.title")}
-                placeholder={i18n.t("createpassword.input.first.placeholder")}
+                title={`${i18n.t("createpassword.input.first.title")}`}
+                placeholder={`${i18n.t(
+                  "createpassword.input.first.placeholder"
+                )}`}
                 hiddenInput={true}
                 onChangeInput={setCreatePasswordValue}
                 onChangeFocus={setCreatePasswordFocus}
@@ -239,9 +241,11 @@ const CreatePassword = () => {
           <IonRow>
             <IonCol size="12">
               <CustomInput
-                dataTestId="confirmPasswordValue"
-                title={i18n.t("createpassword.input.second.title")}
-                placeholder={i18n.t("createpassword.input.second.placeholder")}
+                dataTestId="confirm-password-value"
+                title={`${i18n.t("createpassword.input.second.title")}`}
+                placeholder={`${i18n.t(
+                  "createpassword.input.second.placeholder"
+                )}`}
                 hiddenInput={true}
                 onChangeInput={setConfirmPasswordValue}
                 onChangeFocus={setConfirmPasswordFocus}
@@ -261,8 +265,10 @@ const CreatePassword = () => {
             <IonCol size="12">
               <CustomInput
                 dataTestId="createHintValue"
-                title={i18n.t("createpassword.input.third.title")}
-                placeholder={i18n.t("createpassword.input.third.placeholder")}
+                title={`${i18n.t("createpassword.input.third.title")}`}
+                placeholder={`${i18n.t(
+                  "createpassword.input.third.placeholder"
+                )}`}
                 hiddenInput={false}
                 onChangeInput={setCreateHintValue}
                 optional={true}
