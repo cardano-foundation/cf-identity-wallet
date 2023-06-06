@@ -1,20 +1,17 @@
 import { IonPage } from "@ionic/react";
-import { PageLayout } from "../../components/layout/PageLayout";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { TabLayout } from "../../components/layout/TabLayout";
 
 const Crypto = () => {
   return (
     <IonPage
-      className="page-layout crypto-page"
-      data-testid="crypto-page"
+      className="tab-layout"
+      data-testid="crypto-tab"
     >
-      <PageLayout
+      <TabLayout
         header={true}
+        title="Crypto"
         menuButton={true}
-        currentPath={TabsRoutePath.CRYPTO}
-      >
-        <div>Crypto</div>
-      </PageLayout>
+      ></TabLayout>
     </IonPage>
   );
 };

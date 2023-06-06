@@ -1,20 +1,17 @@
 import { IonPage } from "@ionic/react";
-import { PageLayout } from "../../components/layout/PageLayout";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { TabLayout } from "../../components/layout/TabLayout";
 
 const Creds = () => {
   return (
     <IonPage
-      className="page-layout creds-page"
-      data-testid="creds-page"
+      className="tab-layout"
+      data-testid="creds-tab"
     >
-      <PageLayout
+      <TabLayout
         header={true}
+        title="Credentials"
         menuButton={true}
-        currentPath={TabsRoutePath.CREDS}
-      >
-        <div>Creds</div>
-      </PageLayout>
+      ></TabLayout>
     </IonPage>
   );
 };

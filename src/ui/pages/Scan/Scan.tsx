@@ -1,20 +1,13 @@
 import { IonPage } from "@ionic/react";
-import { PageLayout } from "../../components/layout/PageLayout";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { TabLayout } from "../../components/layout/TabLayout";
 
 const Scan = () => {
   return (
     <IonPage
-      className="page-layout scan-page"
-      data-testid="scan-page"
+      className="tab-layout"
+      data-testid="scan-tab"
     >
-      <PageLayout
-        header={true}
-        menuButton={true}
-        currentPath={TabsRoutePath.SCAN}
-      >
-        <div>Scan</div>
-      </PageLayout>
+      <TabLayout header={false}></TabLayout>
     </IonPage>
   );
 };

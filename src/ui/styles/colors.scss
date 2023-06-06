@@ -14,10 +14,21 @@
   --color-medium-grey: #d9d9d9;
   --color-dark-grey: #bbbbbb;
 
+  --color-success: #438f68;
+
+  --color-gradient-blue: linear-gradient(
+    91.86deg,
+    #00a5e6 28.76%,
+    #0075a3 119.14%
+  );
+  --color-gradient-green: linear-gradient(
+    91.86deg,
+    #92ffc0 28.76%,
+    #47ff94 119.14%
+  );
   --color-accent-gradient: linear-gradient(
     94.29deg,
     #92ffc0 20.19%,
     #00a5e6 119.98%
   );
-  --color-success: #438f68;
 }

@@ -23,12 +23,19 @@ code {
     monospace;
 }
 
-h2 {
+h2,
+h3 {
   margin: 0 0 1rem;
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.756rem;
   color: var(--ion-color-primary);
+}
+
+h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.172rem;
 }
 
 p {
@@ -52,6 +59,11 @@ p {
 .secondary-button {
   --border-color: var(--color-dark-grey);
   --background-activated: var(--color-dark-grey);
+}
+
+.ion-primary-button,
+.secondary-button {
+  height: 3.25rem;
 }
 
 .page-paragraph {

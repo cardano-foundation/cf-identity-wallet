@@ -1,0 +1,48 @@
+.cards-stack-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.cards-stack-card.active:not(:first-child):hover {
+  position: absolute;
+  top: 11.5rem;
+  transition: top 1.5s;
+}
+
+.cards-stack-card.active:not(:hover) {
+  transform: translateY(100vh);
+  transition: 0.7s ease-out;
+}
+
+.cards-stack-card {
+  height: 12.5rem;
+  width: 100%;
+  margin-top: 1.5rem;
+  padding: 0.625rem 0.938rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  line-height: 1.375rem;
+
+  .cards-stack-did-layout {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+    }
+    .card-footer {
+      display: flex;
+      flex-direction: column;
+      .card-created-label {
+        font-size: 0.625rem;
+        color: var(--ion-color-secondary);
+      }
+    }
+  }
+}
+
+.cards-stack-card:not(:first-child) {
+  margin-top: -10rem;
+}

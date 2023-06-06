@@ -100,6 +100,7 @@ const PageLayout = ({
                 <h2>{title}</h2>
               </IonTitle>
             )}
+
             {progressBar && (
               <div className="progress-bar-container">
                 <IonProgressBar
@@ -109,21 +110,23 @@ const PageLayout = ({
               </div>
             )}
 
-            <IonButtons slot="end">
-              {menuButton && (
-                <IonButton
-                  shape="round"
-                  className="menu-button"
-                  data-testid="menu-button"
-                >
-                  <IonIcon
-                    slot="icon-only"
-                    icon={menuOutline}
-                    color="primary"
-                  />
-                </IonButton>
-              )}
-            </IonButtons>
+            {!progressBar && (
+              <IonButtons slot="end">
+                {menuButton && (
+                  <IonButton
+                    shape="round"
+                    className="menu-button"
+                    data-testid="menu-button"
+                  >
+                    <IonIcon
+                      slot="icon-only"
+                      icon={menuOutline}
+                      color="primary"
+                    />
+                  </IonButton>
+                )}
+              </IonButtons>
+            )}
           </IonToolbar>
         </IonHeader>
       )}

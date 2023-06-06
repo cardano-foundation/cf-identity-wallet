@@ -1,0 +1,44 @@
+.tab-layout {
+  padding-inline: 20px;
+  ion-toolbar,
+  .toolbar-container,
+  ion-grid,
+  ion-col {
+    padding-inline: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+
+  ion-header ion-toolbar {
+    margin-top: 0.625rem;
+
+    ion-buttons {
+      margin-inline: 0;
+    }
+
+    ion-button,
+    ion-button.md {
+      width: 2.8125rem;
+      height: 2.8125rem;
+      border-radius: 1.5rem;
+      background: var(--color-light-grey);
+      &:not(:first-child) {
+        margin-left: 0.5rem;
+      }
+    }
+
+    ion-icon {
+      font-size: 1.85em !important;
+    }
+  }
+
+  ion-title {
+    padding: 0;
+
+    h2,
+    h3 {
+      margin-bottom: 0;
+      text-align: left;
+    }
+  }
+}

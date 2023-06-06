@@ -1,20 +1,17 @@
 import { IonPage } from "@ionic/react";
-import { PageLayout } from "../../components/layout/PageLayout";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { TabLayout } from "../../components/layout/TabLayout";
 
 const Chat = () => {
   return (
     <IonPage
-      className="page-layout chat-page"
-      data-testid="chat-page"
+      className="tab-layout"
+      data-testid="chat-tab"
     >
-      <PageLayout
+      <TabLayout
         header={true}
+        title="Chat"
         menuButton={true}
-        currentPath={TabsRoutePath.CHAT}
-      >
-        <div>Chat</div>
-      </PageLayout>
+      ></TabLayout>
     </IonPage>
   );
 };
