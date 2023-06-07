@@ -43,9 +43,7 @@ const DidCard = ({
         onHandleShowCardDetails();
       }}
       style={{
-        background: `linear-gradient(91.86deg, ${
-            cardData.colors[0]
-        } 28.76%, ${cardData.colors[1]} 119.14%)`,
+        background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
       }}
     >
       <div className="cards-stack-did-layout">
@@ -57,9 +55,9 @@ const DidCard = ({
           <span>{cardData.id}</span>
         </div>
         <div className="card-footer">
-            <span className="card-created-label">
-              {i18n.t("dids.card.layout.created")}
-            </span>
+          <span className="card-created-label">
+            {i18n.t("dids.card.layout.created")}
+          </span>
           <span>{cardData.date}</span>
         </div>
       </div>
@@ -99,30 +97,11 @@ const CardsStack = ({
   };
 
   const handleShowCardDetails = (index: number) => {
-    const isDids = cardsType === "dids";
-    // fake db query based on did id
-    /*
-    let did;
-    if (isDids) {
-      did = didsMock.find((did) => did.id === cardsData[index].id);
-    } else {
-      // credentials
-      did = {};
-    }
-
-    did = {
-      cardProps: {
-        cardType: cardsType,
-        cardColor: cardsBackgroundColor[index % 6],
-      },
-      cardData: did,
-    };*/
-
     setIsActive(true);
 
     setTimeout(() => {
       history.push({
-        pathname: `/tabs/${isDids ? "dids" : "creds"}/${cardsData[index].id}`,
+        pathname: `/tabs/${cardsType === "dids" ? "dids" : "creds"}/${cardsData[index].id}`,
       });
     }, NAVIGATION_DELAY);
 
