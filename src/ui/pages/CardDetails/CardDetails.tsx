@@ -16,6 +16,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import "./CardDetails.scss";
 import { didsMock } from "../../__mocks__/didsMock";
+import {NAVIGATION_DELAY} from "../../components/CardsStack";
 
 const AdditionalButtons = () => {
   return (
@@ -89,7 +90,16 @@ const CardDetails = () => {
         additionalButtons={<AdditionalButtons />}
       >
         {cardData.name.length === 0 ? (
-          <IonSpinner/>
+            <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  height: '100vh',
+                }}
+            >
+              <IonSpinner name="dots" />
+            </div>
         ) : (
             <div className="card-details-content">
               <div className="card-details-info-block">
