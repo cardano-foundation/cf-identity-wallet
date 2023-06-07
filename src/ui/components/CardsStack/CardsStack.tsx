@@ -43,6 +43,9 @@ const CardsStack = ({
             handleShowCardDetails(index);
           }
         }}
+        style={{
+          background:cardsBackgroundColor[index % 6]
+        }}
       >
         {cardsType === "dids" && (
           <div className="cards-stack-did-layout">
@@ -89,9 +92,8 @@ const CardsStack = ({
 
     setTimeout(() => {
       history.push({
-      pathname: `/tabs/${isDids ? "dids" : "creds"}/${cardsData[index].id}`
-    });
-
+        pathname: `/tabs/${isDids ? "dids" : "creds"}/${cardsData[index].id}`,
+      });
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {

@@ -10,12 +10,12 @@ import {
   personCircleOutline,
   trashOutline,
 } from "ionicons/icons";
-import {useEffect, useRef, useState} from "react";
+import { useEffect, useRef, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import "./CardDetails.scss";
-import {didsMock} from "../../__mocks__/didsMock";
+import { didsMock } from "../../__mocks__/didsMock";
 
 const AdditionalButtons = () => {
   return (
@@ -48,7 +48,7 @@ const AdditionalButtons = () => {
 
 const CardDetails = () => {
   const history = useHistory();
-  const params:{id:string} = useParams();
+  const params: { id: string } = useParams();
   // TODO: set types
   const [cardData, setCardData] = useState<any>({
     id: "",
@@ -71,7 +71,7 @@ const CardDetails = () => {
 
   useEffect(() => {
     const c = didsMock.find((did) => did.id === params.id);
-    setCardData(c);
+    if (c) setCardData(c);
   }, []);
 
   const cardProps = {
@@ -97,159 +97,163 @@ const CardDetails = () => {
         menuButton={false}
         additionalButtons={<AdditionalButtons />}
       >
-        {cardProps.cardType === "dids" && (
-          <div className="card-details-content">
-            <div className="card-details-info-block">
-              <h3>{i18n.t("dids.card.details.information")}</h3>
-              <div className="card-details-info-block-inner">
-                <span className="card-details-info-block-line">
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={keyOutline}
-                      color="primary"
-                    />
-                  </span>
-
-                  <span className="card-details-info-block-data">
-                    {cardData?.id.substring(0, 13)}...
-                    {cardData?.id.slice(-5)}
-                  </span>
-                  <span>
-                    <IonButton
-                      shape="round"
-                      className="copy-button"
-                      data-testid="copy-button"
-                    >
+        {cardData.name.length === 0 ? (
+          <>Loading</>
+        ) : (
+          cardProps.cardType === "dids" && (
+            <div className="card-details-content">
+              <div className="card-details-info-block">
+                <h3>{i18n.t("dids.card.details.information")}</h3>
+                <div className="card-details-info-block-inner">
+                  <span className="card-details-info-block-line">
+                    <span>
                       <IonIcon
                         slot="icon-only"
-                        icon={copyOutline}
+                        icon={keyOutline}
+                        color="primary"
                       />
-                    </IonButton>
-                  </span>
-                </span>
-                <span className="card-details-info-block-line">
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={calendarNumberOutline}
-                      color="primary"
-                    />
-                  </span>
+                    </span>
 
-                  <span className="card-details-info-block-data">
-                    {cardData?.date}
+                    <span className="card-details-info-block-data">
+                      {cardData?.id.substring(0, 13)}...
+                      {cardData?.id.slice(-5)}
+                    </span>
+                    <span>
+                      <IonButton
+                        shape="round"
+                        className="copy-button"
+                        data-testid="copy-button"
+                      >
+                        <IonIcon
+                          slot="icon-only"
+                          icon={copyOutline}
+                        />
+                      </IonButton>
+                    </span>
                   </span>
-                </span>
-              </div>
-            </div>
-            <div className="card-details-info-block">
-              <h3>{i18n.t("dids.card.details.type")}</h3>
-              <div className="card-details-info-block-inner">
-                <span className="card-details-info-block-line">
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={pricetagOutline}
-                      color="primary"
-                    />
-                  </span>
-
-                  <span className="card-details-info-block-data">
-                    {cardData?.keyType}
-                  </span>
-                  <span>
-                    <IonButton
-                      shape="round"
-                      className="copy-button"
-                      data-testid="copy-button"
-                    >
+                  <span className="card-details-info-block-line">
+                    <span>
                       <IonIcon
                         slot="icon-only"
-                        icon={copyOutline}
+                        icon={calendarNumberOutline}
+                        color="primary"
                       />
-                    </IonButton>
-                  </span>
-                </span>
-              </div>
-            </div>
-            <div className="card-details-info-block">
-              <h3>{i18n.t("dids.card.details.controller")}</h3>
-              <div className="card-details-info-block-inner">
-                <span className="card-details-info-block-line">
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={personCircleOutline}
-                      color="primary"
-                    />
-                  </span>
+                    </span>
 
-                  <span className="card-details-info-block-data">
-                    {cardData?.controller.substring(0, 13)}...
-                    {cardData?.controller.slice(-5)}
+                    <span className="card-details-info-block-data">
+                      {cardData?.date}
+                    </span>
                   </span>
-                  <span>
-                    <IonButton
-                      shape="round"
-                      className="copy-button"
-                      data-testid="copy-button"
-                    >
+                </div>
+              </div>
+              <div className="card-details-info-block">
+                <h3>{i18n.t("dids.card.details.type")}</h3>
+                <div className="card-details-info-block-inner">
+                  <span className="card-details-info-block-line">
+                    <span>
                       <IonIcon
                         slot="icon-only"
-                        icon={copyOutline}
+                        icon={pricetagOutline}
+                        color="primary"
                       />
-                    </IonButton>
-                  </span>
-                </span>
-              </div>
-            </div>
-            <div className="card-details-info-block">
-              <h3>{i18n.t("dids.card.details.publickeybase")}</h3>
-              <div className="card-details-info-block-inner">
-                <span className="card-details-info-block-line">
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={keyOutline}
-                      color="primary"
-                    />
-                  </span>
+                    </span>
 
-                  <span className="card-details-info-block-data">
-                    {cardData?.publicKeyBase58.substring(0, 5)}...
-                    {cardData?.publicKeyBase58.slice(-5)}
+                    <span className="card-details-info-block-data">
+                      {cardData?.keyType}
+                    </span>
+                    <span>
+                      <IonButton
+                        shape="round"
+                        className="copy-button"
+                        data-testid="copy-button"
+                      >
+                        <IonIcon
+                          slot="icon-only"
+                          icon={copyOutline}
+                        />
+                      </IonButton>
+                    </span>
                   </span>
-                  <span>
-                    <IonButton
-                      shape="round"
-                      className="copy-button"
-                      data-testid="copy-button"
-                    >
+                </div>
+              </div>
+              <div className="card-details-info-block">
+                <h3>{i18n.t("dids.card.details.controller")}</h3>
+                <div className="card-details-info-block-inner">
+                  <span className="card-details-info-block-line">
+                    <span>
                       <IonIcon
                         slot="icon-only"
-                        icon={copyOutline}
+                        icon={personCircleOutline}
+                        color="primary"
                       />
-                    </IonButton>
+                    </span>
+
+                    <span className="card-details-info-block-data">
+                      {cardData?.controller.substring(0, 13)}...
+                      {cardData?.controller.slice(-5)}
+                    </span>
+                    <span>
+                      <IonButton
+                        shape="round"
+                        className="copy-button"
+                        data-testid="copy-button"
+                      >
+                        <IonIcon
+                          slot="icon-only"
+                          icon={copyOutline}
+                        />
+                      </IonButton>
+                    </span>
                   </span>
-                </span>
+                </div>
               </div>
+              <div className="card-details-info-block">
+                <h3>{i18n.t("dids.card.details.publickeybase")}</h3>
+                <div className="card-details-info-block-inner">
+                  <span className="card-details-info-block-line">
+                    <span>
+                      <IonIcon
+                        slot="icon-only"
+                        icon={keyOutline}
+                        color="primary"
+                      />
+                    </span>
+
+                    <span className="card-details-info-block-data">
+                      {cardData?.publicKeyBase58.substring(0, 5)}...
+                      {cardData?.publicKeyBase58.slice(-5)}
+                    </span>
+                    <span>
+                      <IonButton
+                        shape="round"
+                        className="copy-button"
+                        data-testid="copy-button"
+                      >
+                        <IonIcon
+                          slot="icon-only"
+                          icon={copyOutline}
+                        />
+                      </IonButton>
+                    </span>
+                  </span>
+                </div>
+              </div>
+              <IonButton
+                shape="round"
+                expand="block"
+                color="danger"
+                className="delete-button"
+              >
+                <IonIcon
+                  slot="icon-only"
+                  size="small"
+                  icon={trashOutline}
+                  color="primary"
+                />
+                {i18n.t("dids.card.details.delete")}
+              </IonButton>
             </div>
-            <IonButton
-              shape="round"
-              expand="block"
-              color="danger"
-              className="delete-button"
-            >
-              <IonIcon
-                slot="icon-only"
-                size="small"
-                icon={trashOutline}
-                color="primary"
-              />
-              {i18n.t("dids.card.details.delete")}
-            </IonButton>
-          </div>
+          )
         )}
       </TabLayout>
     </IonPage>

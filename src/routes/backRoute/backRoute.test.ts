@@ -38,7 +38,7 @@ describe("getBackRoute", () => {
           time: 0,
         },
       },
-      didsCache: { dids: [] }
+      didsCache: { dids: [] },
     };
   });
 
@@ -109,7 +109,7 @@ describe("getBackRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      didsCache: { dids: [] }
+      didsCache: { dids: [] },
     };
     const expectedAuthentication = {
       ...storeMock.stateCache.authentication,
@@ -165,7 +165,7 @@ describe("getPreviousRoute", () => {
           time: 0,
         },
       },
-      didsCache: { dids: [] }
+      didsCache: { dids: [] },
     };
   });
 
