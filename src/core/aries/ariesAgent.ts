@@ -62,7 +62,6 @@ class AriesAgent {
 
   async start(): Promise<void> {
     await this.agent.initialize();
-    await this.createIdentity(IdentityType.KEY, "HOla mundo");
   }
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
