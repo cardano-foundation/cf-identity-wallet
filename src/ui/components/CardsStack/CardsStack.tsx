@@ -87,7 +87,6 @@ const CardsStack = ({
 
   const handleShowCardDetails = (index: number) => {
     setIsActive(true);
-
     setTimeout(() => {
       history.push({
         pathname: `/tabs/${cardsType === "dids" ? "dids" : "creds"}/${cardsData[index].id}`,

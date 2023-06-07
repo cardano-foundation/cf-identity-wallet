@@ -7,14 +7,14 @@ const filteredDidsMock = [
     colors: ["#92FFC0", "#47FF94"],
   },
   {
-    id: "did:key:z6MkpNyGdYK5Ey1pCf5cyQoZxVeeGifA1ZQv1S9gbLD1857n",
+    id: "did:key:z6MkpNyGdYK5Ey1pCf5cyQoZxVeeGifA1ZQv1S9gbLD1857nz",
     type: "DID:KEY",
     name: "Public ID",
     date: "03/08/2023",
     colors: ["#FFBC60", "#FFA21F"],
   },
   {
-    id: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQv",
+    id: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQa",
     type: "DID:KEY",
     name: "P2P Chat ID",
     date: "01/03/2022",
@@ -35,7 +35,7 @@ const filteredDidsMock = [
     colors: ["#B5C2FF", "#708AFF"],
   },
   {
-    id: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQv",
+    id: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQvb",
     type: "KERI",
     name: "Offline ID",
     date: "01/03/2022",

@@ -24,6 +24,7 @@ import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
 import { TabsRoutePath } from "../../../../routes/paths";
 import { CardDetails } from "../../../pages/CardDetails";
+
 const TabsMenu = () => {
   return (
     <IonReactRouter>

@@ -10,13 +10,17 @@ import {
   personCircleOutline,
   trashOutline,
 } from "ionicons/icons";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import "./CardDetails.scss";
 import { didsMock } from "../../__mocks__/didsMock";
 import { DidCard } from "../../components/CardsStack";
+import {getBackRoute} from "../../../routes/backRoute";
+import {updateReduxState} from "../../../store/utils";
+import {useAppDispatch, useAppSelector} from "../../../store/hooks";
+import {getState} from "../../../store/reducers/stateCache";
 
 const AdditionalButtons = () => {
   return (
@@ -49,8 +53,9 @@ const AdditionalButtons = () => {
 
 const CardDetails = () => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
   const params: { id: string } = useParams();
-  // TODO: set types
   const [cardData, setCardData] = useState({
     id: "",
     type: "",
@@ -64,29 +69,30 @@ const CardDetails = () => {
 
   useEffect(() => {
     const c = didsMock.find((did) => did.id === params.id);
+    console.log("params?.id:", params?.id);
+    console.log("ccccc:",c);
     if (c) setCardData(c);
-  }, []);
+  }, [params?.id]);
 
-  const cardProps = {
-    cardType: "dids",
-  };
-  const donePath = useRef("");
-
-  useEffect(() => {
-    if (cardProps.cardType) {
-      donePath.current = TabsRoutePath.DIDS;
-    }
-  }, [cardProps.cardType]);
-
+  const onClickDone = () => {
+    const { updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
+      store: storeState,
+    });
+    updateReduxState(
+        TabsRoutePath.DIDS,
+        { store: storeState },
+        dispatch,
+        updateRedux
+    );
+    history.push(TabsRoutePath.DIDS);
+  }
   return (
     <IonPage className="tab-layout card-details">
       <TabLayout
         header={true}
         title={`${i18n.t("card.details.done")}`}
         titleSize="h3"
-        titleAction={() => {
-          history.replace(donePath.current);
-        }}
+        titleAction={() => onClickDone()}
         menuButton={false}
         additionalButtons={<AdditionalButtons />}
       >

@@ -10,7 +10,7 @@ const didsMock = [
     publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
   },
   {
-    id: "did:key:z6MkpNyGdYK5Ey1pCf5cyQoZxVeeGifA1ZQv1S9gbLD1857n",
+    id: "did:key:z6MkpNyGdYK5Ey1pCf5cyQoZxVeeGifA1ZQv1S9gbLD1857nz",
     type: "DID:KEY",
     name: "Public ID",
     date: "03/08/2023",
@@ -20,7 +20,7 @@ const didsMock = [
     publicKeyBase58: "AviE3J4dnDBYoGNXZDGUjiSSh96uRXM6AEvHSUJqVLdY",
   },
   {
-    id: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQk",
+    id: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQa",
     type: "DID:KEY",
     name: "P2P Chat ID",
     date: "01/03/2022",
@@ -50,7 +50,7 @@ const didsMock = [
     publicKeyBase58: "AviE3J4dnDBYoGNXZDGUjiSSh96uRXM6AEvHSUJqVLdY",
   },
   {
-    id: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQj",
+    id: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQvb",
     type: "KERI",
     name: "Offline ID",
     date: "01/03/2022",
