@@ -28,7 +28,7 @@ const TabsMenu = () => {
   return (
     <IonReactRouter>
       <IonTabs>
-        <IonRouterOutlet>
+        <IonRouterOutlet animated={true}>
           <Redirect
             exact
             path={TabsRoutePath.ROOT}
@@ -60,9 +60,8 @@ const TabsMenu = () => {
             exact={true}
           />
           <Route
-            path={TabsRoutePath.CARD_DETAILS}
+            path="/tabs/dids/:id"
             component={CardDetails}
-            exact={true}
           />
         </IonRouterOutlet>
 

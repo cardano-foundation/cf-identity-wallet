@@ -2,12 +2,11 @@ import { IonButton, IonIcon, IonPage } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
-import { didsMock } from "../../__mocks__/didsMock";
 import "./Dids.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
-
-const didsData = didsMock;
+import { useAppSelector } from "../../../store/hooks";
+import { getDidsCache } from "../../../store/reducers/didsCache";
 
 const AdditionalButtons = () => {
   return (
@@ -38,11 +37,12 @@ const AdditionalButtons = () => {
   );
 };
 
-const handleCreateDid = () => {
-  // TODO: Function to create DID
-};
-
 const Dids = () => {
+  const didsData = useAppSelector(getDidsCache);
+  const handleCreateDid = () => {
+    // TODO: Function to create DID
+  };
+
   return (
     <IonPage
       className="tab-layout dids-tab"

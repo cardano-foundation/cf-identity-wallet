@@ -8,7 +8,8 @@ import {
   KeyStoreKeys,
   SecureStorage,
 } from "../../../core/storage/secureStorage";
-
+import { setDidsCache } from "../../../store/reducers/didsCache";
+import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -24,6 +25,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(
         setAuthentication({ ...authentication, passcodeIsSet: !!passcodeIsSet })
       );
+
+      dispatch(setDidsCache(filteredDidsMock));
     } catch (e) {
       /* empty */
     }

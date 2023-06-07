@@ -1,6 +1,6 @@
 import { CardsStackProps } from "../../../ui/components/CardsStack/CardsStack.types";
 
-interface CardInfoCacheProps {
+interface DidProps {
   cardProps: {
     cardType: string;
     cardColor: string;
@@ -8,4 +8,4 @@ interface CardInfoCacheProps {
   cardData: CardsStackProps[];
 }
 
-export type { CardInfoCacheProps };
+export type { DidProps };

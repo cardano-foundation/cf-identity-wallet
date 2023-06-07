@@ -1,5 +1,4 @@
-import { useHistory } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useHistory, useParams } from "react-router-dom";
 import { IonButton, IonIcon, IonPage } from "@ionic/react";
 import {
   shareOutline,
@@ -11,14 +10,12 @@ import {
   personCircleOutline,
   trashOutline,
 } from "ionicons/icons";
-import { useEffect, useRef } from "react";
+import {useEffect, useRef, useState} from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
-import { CardsStack } from "../../components/CardsStack";
-import { RootState } from "../../../store";
-import { clearCardInfoCache } from "../../../store/reducers/cardInfoCache";
 import "./CardDetails.scss";
+import {didsMock} from "../../__mocks__/didsMock";
 
 const AdditionalButtons = () => {
   return (
@@ -51,12 +48,35 @@ const AdditionalButtons = () => {
 
 const CardDetails = () => {
   const history = useHistory();
-  const cardProps = useSelector(
+  const params:{id:string} = useParams();
+  // TODO: set types
+  const [cardData, setCardData] = useState<any>({
+    id: "",
+    type: "",
+    name: "",
+    date: "",
+    keyType: "",
+    controller: "",
+    publicKeyBase58: "",
+  });
+  /*
+    const cardProps = useSelector(
     (state: RootState) => state.cardInfoCache.cardProps
   );
   const cardData = useSelector(
     (state: RootState) => state.cardInfoCache.cardData
   );
+  const donePath = useRef("");
+  */
+
+  useEffect(() => {
+    const c = didsMock.find((did) => did.id === params.id);
+    setCardData(c);
+  }, []);
+
+  const cardProps = {
+    cardType: "dids",
+  };
   const donePath = useRef("");
 
   useEffect(() => {
@@ -72,16 +92,11 @@ const CardDetails = () => {
         title={`${i18n.t("card.details.done")}`}
         titleSize="h3"
         titleAction={() => {
-          clearCardInfoCache();
           history.replace(donePath.current);
         }}
         menuButton={false}
         additionalButtons={<AdditionalButtons />}
       >
-        <CardsStack
-          cardsType={cardProps.cardType}
-          cardsData={cardData}
-        />
         {cardProps.cardType === "dids" && (
           <div className="card-details-content">
             <div className="card-details-info-block">
@@ -97,8 +112,8 @@ const CardDetails = () => {
                   </span>
 
                   <span className="card-details-info-block-data">
-                    {cardData[0].id.substring(0, 13)}...
-                    {cardData[0].id.slice(-5)}
+                    {cardData?.id.substring(0, 13)}...
+                    {cardData?.id.slice(-5)}
                   </span>
                   <span>
                     <IonButton
@@ -123,7 +138,7 @@ const CardDetails = () => {
                   </span>
 
                   <span className="card-details-info-block-data">
-                    {cardData[0].date}
+                    {cardData?.date}
                   </span>
                 </span>
               </div>
@@ -141,7 +156,7 @@ const CardDetails = () => {
                   </span>
 
                   <span className="card-details-info-block-data">
-                    {cardData[0].keyType}
+                    {cardData?.keyType}
                   </span>
                   <span>
                     <IonButton
@@ -171,8 +186,8 @@ const CardDetails = () => {
                   </span>
 
                   <span className="card-details-info-block-data">
-                    {cardData[0].controller.substring(0, 13)}...
-                    {cardData[0].controller.slice(-5)}
+                    {cardData?.controller.substring(0, 13)}...
+                    {cardData?.controller.slice(-5)}
                   </span>
                   <span>
                     <IonButton
@@ -202,8 +217,8 @@ const CardDetails = () => {
                   </span>
 
                   <span className="card-details-info-block-data">
-                    {cardData[0].publicKeyBase58.substring(0, 5)}...
-                    {cardData[0].publicKeyBase58.slice(-5)}
+                    {cardData?.publicKeyBase58.substring(0, 5)}...
+                    {cardData?.publicKeyBase58.slice(-5)}
                   </span>
                   <span>
                     <IonButton

@@ -5,8 +5,6 @@ import { CardsStackProps } from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { setCardInfoCache } from "../../../store/reducers/cardInfoCache";
-import { RootState } from "../../../store";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -29,22 +27,17 @@ const CardsStack = ({
     "linear-gradient(91.86deg, #B5C2FF 28.76%, #708AFF 119.14%)",
     "linear-gradient(91.86deg, #FF9780 28.76%, #FF5833 119.14%)",
   ];
+  /*
   const selectedCardColor = useSelector(
     (state: RootState) => state.cardInfoCache.cardProps.cardColor
-  );
+  );*/
 
   const renderCards = (cardsData: CardsStackProps[]) => {
-    return cardsData.map((cardData, index) => (
+    return cardsData.map((cardData: CardsStackProps, index: number) => (
       <div
         key={index}
         data-testid={`card-stack-index-${index}`}
         className={`cards-stack-card ${isActive ? "active" : ""}`}
-        style={{
-          background:
-            selectedCardColor && cardsData.length === 1
-              ? selectedCardColor
-              : cardsBackgroundColor[index % 6],
-        }}
         onClick={() => {
           if (cardsData.length > 1) {
             handleShowCardDetails(index);
@@ -73,19 +66,34 @@ const CardsStack = ({
   };
 
   const handleShowCardDetails = (index: number) => {
-    dispatch(
-      setCardInfoCache({
-        cardProps: {
-          cardType: cardsType,
-          cardColor: cardsBackgroundColor[index % 6],
-        },
-        cardData: [cardsData[index]],
-      })
-    );
+    const isDids = cardsType === "dids";
+    // fake db query based on did id
+    /*
+    let did;
+    if (isDids) {
+      did = didsMock.find((did) => did.id === cardsData[index].id);
+    } else {
+      // credentials
+      did = {};
+    }
+
+    did = {
+      cardProps: {
+        cardType: cardsType,
+        cardColor: cardsBackgroundColor[index % 6],
+      },
+      cardData: did,
+    };*/
+
     setIsActive(true);
+
     setTimeout(() => {
-      history.replace(TabsRoutePath.CARD_DETAILS);
+      history.push({
+      pathname: `/tabs/${isDids ? "dids" : "creds"}/${cardsData[index].id}`
+    });
+
     }, NAVIGATION_DELAY);
+
     setTimeout(() => {
       setIsActive(false);
     }, CLEAR_STATE_DELAY);

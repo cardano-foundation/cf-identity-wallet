@@ -83,7 +83,9 @@ const PasscodeLogin = () => {
 
   const verifyPasscode = async (pass: string) => {
     try {
-      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE) as string;
+      const storedPass = (await SecureStorage.get(
+        KeyStoreKeys.APP_PASSCODE
+      )) as string;
       if (!storedPass) return false;
       return storedPass === pass;
     } catch (e) {

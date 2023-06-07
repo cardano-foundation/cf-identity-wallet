@@ -16,7 +16,7 @@ import {
   setCurrentRoute,
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
-import { TabsMenu } from "../ui/components/navigation/TabsMenu";
+import {TabsMenu, TabsRoutePath} from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
@@ -92,7 +92,7 @@ const Routes = () => {
           exact
           component={VerifySeedPhrase}
         />
-        <AuthenticatedRoute
+        <Route
           path={RoutePath.TABS_MENU}
           exact
           component={TabsMenu}

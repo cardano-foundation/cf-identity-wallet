@@ -3,9 +3,9 @@ interface CardsStackProps {
   type: string;
   name: string;
   date: string;
-  keyType: string;
-  controller: string;
-  publicKeyBase58: string;
+  keyType?: string;
+  controller?: string;
+  publicKeyBase58?: string;
 }
 
 export type { CardsStackProps };
