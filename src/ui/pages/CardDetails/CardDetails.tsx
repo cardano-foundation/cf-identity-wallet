@@ -69,8 +69,6 @@ const CardDetails = () => {
 
   useEffect(() => {
     const c = didsMock.find((did) => did.id === params.id);
-    console.log("params?.id:", params?.id);
-    console.log("ccccc:",c);
     if (c) setCardData(c);
   }, [params?.id]);
 
