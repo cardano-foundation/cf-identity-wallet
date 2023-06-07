@@ -17,20 +17,16 @@ const CardsStack = ({
   cardsData: CardsStackProps[];
 }) => {
   const history = useHistory();
-  const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(false);
+
   const cardsBackgroundColor = [
-    "linear-gradient(91.86deg, #92FFC0 28.76%, #47FF94 119.14%)",
-    "linear-gradient(91.86deg, #FFBC60 28.76%, #FFA21F 119.14%)",
-    "linear-gradient(91.86deg, #D9EDDF 28.76%, #ACD8B9 119.14%)",
-    "linear-gradient(91.86deg, #47E0FF 28.76%, #00C6EF 119.14%)",
-    "linear-gradient(91.86deg, #B5C2FF 28.76%, #708AFF 119.14%)",
-    "linear-gradient(91.86deg, #FF9780 28.76%, #FF5833 119.14%)",
+    ["#92FFC0", "#47FF94"],
+    ["#FFBC60", "#FFA21F"],
+    ["#D9EDDF", "#ACD8B9"],
+    ["#47E0FF", "#00C6EF"],
+    ["#B5C2FF", "#708AFF"],
+    ["#FF9780", "#FF5833"],
   ];
-  /*
-  const selectedCardColor = useSelector(
-    (state: RootState) => state.cardInfoCache.cardProps.cardColor
-  );*/
 
   const renderCards = (cardsData: CardsStackProps[]) => {
     return cardsData.map((cardData: CardsStackProps, index: number) => (
@@ -44,7 +40,9 @@ const CardsStack = ({
           }
         }}
         style={{
-          background:cardsBackgroundColor[index % 6]
+          background: `linear-gradient(91.86deg, ${
+            cardsBackgroundColor[index % 6][0]
+          } 28.76%, ${cardsBackgroundColor[index % 6][1]} 119.14%)`,
         }}
       >
         {cardsType === "dids" && (
