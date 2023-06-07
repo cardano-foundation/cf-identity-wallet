@@ -1,5 +1,5 @@
 import { useHistory, useParams } from "react-router-dom";
-import {IonButton, IonIcon, IonPage, IonSpinner} from "@ionic/react";
+import { IonButton, IonIcon, IonPage, IonSpinner } from "@ionic/react";
 import {
   shareOutline,
   ellipsisVertical,
@@ -16,7 +16,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import "./CardDetails.scss";
 import { didsMock } from "../../__mocks__/didsMock";
-import {NAVIGATION_DELAY} from "../../components/CardsStack";
+import { DidCard } from "../../components/CardsStack";
 
 const AdditionalButtons = () => {
   return (
@@ -56,6 +56,7 @@ const CardDetails = () => {
     type: "",
     name: "",
     date: "",
+    colors: ["", ""],
     keyType: "",
     controller: "",
     publicKeyBase58: "",
@@ -90,17 +91,24 @@ const CardDetails = () => {
         additionalButtons={<AdditionalButtons />}
       >
         {cardData.name.length === 0 ? (
-            <div
-                style={{
-                  display: 'flex',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  height: '100vh',
-                }}
-            >
-              <IonSpinner name="dots" />
-            </div>
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100vh",
+            }}
+          >
+            <IonSpinner name="dots" />
+          </div>
         ) : (
+          <>
+            <DidCard
+              cardData={cardData}
+              isActive={false}
+              onHandleShowCardDetails={() => {}}
+              index={0}
+            />
             <div className="card-details-content">
               <div className="card-details-info-block">
                 <h3>{i18n.t("dids.card.details.information")}</h3>
@@ -108,9 +116,9 @@ const CardDetails = () => {
                   <span className="card-details-info-block-line">
                     <span>
                       <IonIcon
-                          slot="icon-only"
-                          icon={keyOutline}
-                          color="primary"
+                        slot="icon-only"
+                        icon={keyOutline}
+                        color="primary"
                       />
                     </span>
 
@@ -120,13 +128,13 @@ const CardDetails = () => {
                     </span>
                     <span>
                       <IonButton
-                          shape="round"
-                          className="copy-button"
-                          data-testid="copy-button"
+                        shape="round"
+                        className="copy-button"
+                        data-testid="copy-button"
                       >
                         <IonIcon
-                            slot="icon-only"
-                            icon={copyOutline}
+                          slot="icon-only"
+                          icon={copyOutline}
                         />
                       </IonButton>
                     </span>
@@ -134,9 +142,9 @@ const CardDetails = () => {
                   <span className="card-details-info-block-line">
                     <span>
                       <IonIcon
-                          slot="icon-only"
-                          icon={calendarNumberOutline}
-                          color="primary"
+                        slot="icon-only"
+                        icon={calendarNumberOutline}
+                        color="primary"
                       />
                     </span>
 
@@ -152,9 +160,9 @@ const CardDetails = () => {
                   <span className="card-details-info-block-line">
                     <span>
                       <IonIcon
-                          slot="icon-only"
-                          icon={pricetagOutline}
-                          color="primary"
+                        slot="icon-only"
+                        icon={pricetagOutline}
+                        color="primary"
                       />
                     </span>
 
@@ -163,13 +171,13 @@ const CardDetails = () => {
                     </span>
                     <span>
                       <IonButton
-                          shape="round"
-                          className="copy-button"
-                          data-testid="copy-button"
+                        shape="round"
+                        className="copy-button"
+                        data-testid="copy-button"
                       >
                         <IonIcon
-                            slot="icon-only"
-                            icon={copyOutline}
+                          slot="icon-only"
+                          icon={copyOutline}
                         />
                       </IonButton>
                     </span>
@@ -182,9 +190,9 @@ const CardDetails = () => {
                   <span className="card-details-info-block-line">
                     <span>
                       <IonIcon
-                          slot="icon-only"
-                          icon={personCircleOutline}
-                          color="primary"
+                        slot="icon-only"
+                        icon={personCircleOutline}
+                        color="primary"
                       />
                     </span>
 
@@ -194,13 +202,13 @@ const CardDetails = () => {
                     </span>
                     <span>
                       <IonButton
-                          shape="round"
-                          className="copy-button"
-                          data-testid="copy-button"
+                        shape="round"
+                        className="copy-button"
+                        data-testid="copy-button"
                       >
                         <IonIcon
-                            slot="icon-only"
-                            icon={copyOutline}
+                          slot="icon-only"
+                          icon={copyOutline}
                         />
                       </IonButton>
                     </span>
@@ -213,25 +221,24 @@ const CardDetails = () => {
                   <span className="card-details-info-block-line">
                     <span>
                       <IonIcon
-                          slot="icon-only"
-                          icon={keyOutline}
-                          color="primary"
+                        slot="icon-only"
+                        icon={keyOutline}
+                        color="primary"
                       />
                     </span>
-
                     <span className="card-details-info-block-data">
                       {cardData?.publicKeyBase58.substring(0, 5)}...
                       {cardData?.publicKeyBase58.slice(-5)}
                     </span>
                     <span>
                       <IonButton
-                          shape="round"
-                          className="copy-button"
-                          data-testid="copy-button"
+                        shape="round"
+                        className="copy-button"
+                        data-testid="copy-button"
                       >
                         <IonIcon
-                            slot="icon-only"
-                            icon={copyOutline}
+                          slot="icon-only"
+                          icon={copyOutline}
                         />
                       </IonButton>
                     </span>
@@ -239,20 +246,21 @@ const CardDetails = () => {
                 </div>
               </div>
               <IonButton
-                  shape="round"
-                  expand="block"
-                  color="danger"
-                  className="delete-button"
+                shape="round"
+                expand="block"
+                color="danger"
+                className="delete-button"
               >
                 <IonIcon
-                    slot="icon-only"
-                    size="small"
-                    icon={trashOutline}
-                    color="primary"
+                  slot="icon-only"
+                  size="small"
+                  icon={trashOutline}
+                  color="primary"
                 />
                 {i18n.t("dids.card.details.delete")}
               </IonButton>
             </div>
+          </>
         )}
       </TabLayout>
     </IonPage>

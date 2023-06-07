@@ -8,57 +8,64 @@ import { i18n } from "../../../i18n";
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
 
-const cardsBackgroundColor = [
-  ["#92FFC0", "#47FF94"],
-  ["#FFBC60", "#FFA21F"],
-  ["#D9EDDF", "#ACD8B9"],
-  ["#47E0FF", "#00C6EF"],
-  ["#B5C2FF", "#708AFF"],
-  ["#FF9780", "#FF5833"],
-];
-
-const Card = ({
+const CredCard = ({
   cardData,
   isActive,
   index = 0,
-  onHandleShowCardDetails
+  onHandleShowCardDetails,
 }: {
   cardData: CardsStackProps;
   isActive: boolean;
   index: number;
+  onHandleShowCardDetails: (index: number) => void;
 }) => {
-  return <div
+  // TODO: Implement credential card
+  return null;
+};
+
+const DidCard = ({
+  cardData,
+  isActive,
+  index = 0,
+  onHandleShowCardDetails,
+}: {
+  cardData: CardsStackProps;
+  isActive: boolean;
+  index: number;
+  onHandleShowCardDetails: () => void;
+}) => {
+  return (
+    <div
       key={index}
       data-testid={`card-stack-index-${index}`}
       className={`cards-stack-card ${isActive ? "active" : ""}`}
       onClick={() => {
-        onHandleShowCardDetails(index);
+        onHandleShowCardDetails();
       }}
       style={{
         background: `linear-gradient(91.86deg, ${
-            cardsBackgroundColor[index % 6][0]
-        } 28.76%, ${cardsBackgroundColor[index % 6][1]} 119.14%)`,
+            cardData.colors[0]
+        } 28.76%, ${cardData.colors[1]} 119.14%)`,
       }}
-  >
-    {cardsType === "dids" && (
-        <div className="cards-stack-did-layout">
-          <div className="card-header">
-            <span>{cardData.type}</span>
-            <span>{cardData.name}</span>
-          </div>
-          <div className="card-body">
-            <span>{cardData.id}</span>
-          </div>
-          <div className="card-footer">
-              <span className="card-created-label">
-                {i18n.t("dids.card.layout.created")}
-              </span>
-            <span>{cardData.date}</span>
-          </div>
+    >
+      <div className="cards-stack-did-layout">
+        <div className="card-header">
+          <span>{cardData.type}</span>
+          <span>{cardData.name}</span>
         </div>
-    )}
-  </div>
-}
+        <div className="card-body">
+          <span>{cardData.id}</span>
+        </div>
+        <div className="card-footer">
+            <span className="card-created-label">
+              {i18n.t("dids.card.layout.created")}
+            </span>
+          <span>{cardData.date}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 const CardsStack = ({
   cardsType,
   cardsData,
@@ -70,41 +77,25 @@ const CardsStack = ({
   const [isActive, setIsActive] = useState(false);
 
   const renderCards = (cardsData: CardsStackProps[]) => {
-    return cardsData.map((cardData: CardsStackProps, index: number) => (
-      <div
-        key={index}
-        data-testid={`card-stack-index-${index}`}
-        className={`cards-stack-card ${isActive ? "active" : ""}`}
-        onClick={() => {
-          if (cardsData.length > 1) {
-            handleShowCardDetails(index);
-          }
-        }}
-        style={{
-          background: `linear-gradient(91.86deg, ${
-            cardsBackgroundColor[index % 6][0]
-          } 28.76%, ${cardsBackgroundColor[index % 6][1]} 119.14%)`,
-        }}
-      >
-        {cardsType === "dids" && (
-          <div className="cards-stack-did-layout">
-            <div className="card-header">
-              <span>{cardData.type}</span>
-              <span>{cardData.name}</span>
-            </div>
-            <div className="card-body">
-              <span>{cardData.id}</span>
-            </div>
-            <div className="card-footer">
-              <span className="card-created-label">
-                {i18n.t("dids.card.layout.created")}
-              </span>
-              <span>{cardData.date}</span>
-            </div>
-          </div>
-        )}
-      </div>
-    ));
+    return cardsData.map((cardData: CardsStackProps, index: number) =>
+      cardsType === "dids" ? (
+        <DidCard
+          key={index}
+          index={index}
+          cardData={cardData}
+          isActive={isActive}
+          onHandleShowCardDetails={() => handleShowCardDetails(index)}
+        />
+      ) : (
+        <CredCard
+          key={index}
+          index={index}
+          cardData={cardData}
+          isActive={isActive}
+          onHandleShowCardDetails={() => handleShowCardDetails(index)}
+        />
+      )
+    );
   };
 
   const handleShowCardDetails = (index: number) => {
@@ -143,4 +134,4 @@ const CardsStack = ({
   return <div className="cards-stack-container">{renderCards(cardsData)}</div>;
 };
 
-export { CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };
+export { DidCard, CredCard, CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };

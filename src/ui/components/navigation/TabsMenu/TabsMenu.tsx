@@ -28,7 +28,7 @@ const TabsMenu = () => {
   return (
     <IonReactRouter>
       <IonTabs>
-        <IonRouterOutlet animated={true}>
+        <IonRouterOutlet animated={false}>
           <Redirect
             exact
             path={TabsRoutePath.ROOT}
