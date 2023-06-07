@@ -5,6 +5,7 @@ import { PageLayout } from "../layout/PageLayout";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
+import "./VerifyPassword.scss";
 
 const VerifyPassword = ({ isOpen, setIsOpen }: VerifyPasswordProps) => {
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
