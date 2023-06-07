@@ -93,26 +93,25 @@ describe("LabelledKeyDidRegistrar", () => {
     });
 
     expect(JsonTransformer.toJSON(result)).toMatchObject({
-      didDocumentMetadata: {
-        didRegistrationMetadata: {},
-        didState: {
-          state: "finished",
-          did: did,
-          didDocument: {
-            id: did,
-            verificationMethod: [
-              {
-                type: "Ed25519VerificationKey2018",
-                publicKeyBase58: customKeyEd25519Base58,
-              },
-            ],
-            keyAgreement: [
-              {
-                type: "X25519KeyAgreementKey2019",
-                publicKeyBase58: keyAgreementPublicKeyBase58,
-              },
-            ],
-          },
+      didDocumentMetadata: {},
+      didRegistrationMetadata: {},
+      didState: {
+        state: "finished",
+        did: did,
+        didDocument: {
+          id: did,
+          verificationMethod: [
+            {
+              type: "Ed25519VerificationKey2018",
+              publicKeyBase58: customKeyEd25519Base58,
+            },
+          ],
+          keyAgreement: [
+            {
+              type: "X25519KeyAgreementKey2019",
+              publicKeyBase58: keyAgreementPublicKeyBase58,
+            },
+          ],
         },
       },
     });
