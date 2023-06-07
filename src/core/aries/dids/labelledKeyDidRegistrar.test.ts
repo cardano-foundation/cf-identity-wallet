@@ -8,7 +8,7 @@ import {
   JsonTransformer,
   Key,
   KeyType,
-  TypedArrayEncoder
+  TypedArrayEncoder,
 } from "@aries-framework/core";
 import { LabelledKeyDidRegistrar } from ".";
 import { agentDependencies } from "../ariesAgent";
@@ -16,9 +16,14 @@ import { IdentityType } from "../ariesAgent.types";
 import { IonicStorageWallet } from "../modules/ionicstorage/wallet";
 import { LabelledKeyDidCreateOptions } from "./labelledKeyDidRegistrar.types";
 
+const did = "did:key:z6Mkq2bTBxu5P4cxafpmMy3wDffsNtrW3BqbQvskvR7oPfFz";
+const customKeyEd25519Base58 = "BaLQbiee3X8VUAz4gQ66Na7sZKaedJbEiuxq699nUSUc";
+const keyAgreementPublicKeyBase58 =
+  "CuLYDoUXJ7xLzsDibMQcyqButyxjBCcgcbhEWb6gMAUR";
+
 // ------ MOCKS ------
 const labelledKey = Key.fromPublicKey(
-  TypedArrayEncoder.fromBase58("BaLQbiee3X8VUAz4gQ66Na7sZKaedJbEiuxq699nUSUc"),
+  TypedArrayEncoder.fromBase58(customKeyEd25519Base58),
   KeyType.Ed25519
 );
 jest.mock("../modules/ionicstorage/wallet", () => ({
@@ -72,47 +77,42 @@ beforeAll(async () => {
 
 describe("LabelledKeyDidRegistrar", () => {
   test("should create a did:key using a Ed25519 key type", async () => {
-    const did = "did:key:z6Mkq2bTBxu5P4cxafpmMy3wDffsNtrW3BqbQvskvR7oPfFz";
-    const verificationMethodPublicKeyBase58 = 'BaLQbiee3X8VUAz4gQ66Na7sZKaedJbEiuxq699nUSUc';
-    const keyAgreementPublicKeyBase58 = 'CuLYDoUXJ7xLzsDibMQcyqButyxjBCcgcbhEWb6gMAUR';
-
     const result = await labelledKeyDidRegistrar.create(
       agentContext,
       labelledKeyDidCreateOptions
     );
 
-    expect(didRepositoryMock.save).toBeCalledWith(
-      agentContext,
-      {
-        _tags: { displayName: 'Did Labelled Display Name Test' },
-        type: 'DidRecord',
-        metadata: { data: {} },
-        id: expect.any(String),
-        did: 'did:key:z6Mkq2bTBxu5P4cxafpmMy3wDffsNtrW3BqbQvskvR7oPfFz',
-        role: 'created',
-        didDocument: undefined,
-        createdAt: expect.any(Date)
-      }
-    );
+    expect(didRepositoryMock.save).toBeCalledWith(agentContext, {
+      _tags: { displayName: labelledKeyDidCreateOptions.displayName },
+      type: "DidRecord",
+      metadata: { data: {} },
+      id: expect.any(String),
+      did: did,
+      role: "created",
+      createdAt: expect.any(Date),
+    });
 
     expect(JsonTransformer.toJSON(result)).toMatchObject({
-      didDocumentMetadata: {},
-      didRegistrationMetadata: {},
-      didState: {
-        state: "finished",
-        did: did,
-        didDocument: {
-          id: did,
-          verificationMethod: [ {
-              type: 'Ed25519VerificationKey2018',
-              publicKeyBase58: verificationMethodPublicKeyBase58
-            }
-          ],
-          keyAgreement: [ {
-            type: 'X25519KeyAgreementKey2019',
-            publicKeyBase58: keyAgreementPublicKeyBase58
-          }
-        ],
+      didDocumentMetadata: {
+        didRegistrationMetadata: {},
+        didState: {
+          state: "finished",
+          did: did,
+          didDocument: {
+            id: did,
+            verificationMethod: [
+              {
+                type: "Ed25519VerificationKey2018",
+                publicKeyBase58: customKeyEd25519Base58,
+              },
+            ],
+            keyAgreement: [
+              {
+                type: "X25519KeyAgreementKey2019",
+                publicKeyBase58: keyAgreementPublicKeyBase58,
+              },
+            ],
+          },
         },
       },
     });
