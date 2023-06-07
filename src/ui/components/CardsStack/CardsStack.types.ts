@@ -9,4 +9,18 @@ interface CardsStackProps {
   publicKeyBase58?: string;
 }
 
-export type { CardsStackProps };
+interface DidCardProps {
+  cardData: CardsStackProps;
+  isActive: boolean;
+  index?: number;
+  onHandleShowCardDetails: (index: number | undefined) => void;
+}
+
+interface CredCardProps {
+  cardData: CardsStackProps;
+  isActive: boolean;
+  index?: number;
+  onHandleShowCardDetails: (index: number | undefined) => void;
+}
+
+export type { CardsStackProps, DidCardProps, CredCardProps };

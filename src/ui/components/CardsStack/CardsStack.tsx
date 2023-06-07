@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { CardsStackProps } from "./CardsStack.types";
+import {CardsStackProps, CredCardProps, DidCardProps} from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
 
@@ -13,12 +12,7 @@ const CredCard = ({
   isActive,
   index = 0,
   onHandleShowCardDetails,
-}: {
-  cardData: CardsStackProps;
-  isActive: boolean;
-  index: number;
-  onHandleShowCardDetails: (index: number) => void;
-}) => {
+}: CredCardProps) => {
   // TODO: Implement credential card
   return null;
 };
@@ -28,19 +22,14 @@ const DidCard = ({
   isActive,
   index = 0,
   onHandleShowCardDetails,
-}: {
-  cardData: CardsStackProps;
-  isActive: boolean;
-  index: number;
-  onHandleShowCardDetails: () => void;
-}) => {
+}: DidCardProps) => {
   return (
     <div
       key={index}
       data-testid={`card-stack-index-${index}`}
       className={`cards-stack-card ${isActive ? "active" : ""}`}
       onClick={() => {
-        onHandleShowCardDetails();
+        onHandleShowCardDetails(index);
       }}
       style={{
         background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
