@@ -8,23 +8,23 @@ import {
   JsonTransformer,
   Key,
   KeyType,
-  TypedArrayEncoder,
+  TypedArrayEncoder
 } from "@aries-framework/core";
-import { CustomKeyDidRegistrar } from ".";
+import { LabelledKeyDidRegistrar } from ".";
 import { agentDependencies } from "../ariesAgent";
 import { IdentityType } from "../ariesAgent.types";
 import { IonicStorageWallet } from "../modules/ionicstorage/wallet";
-import { CustomKeyDidCreateOptions } from "./customKeyDidRegistrar.types";
+import { LabelledKeyDidCreateOptions } from "./labelledKeyDidRegistrar.types";
 
 // ------ MOCKS ------
-const customKey = Key.fromPublicKey(
+const labelledKey = Key.fromPublicKey(
   TypedArrayEncoder.fromBase58("BaLQbiee3X8VUAz4gQ66Na7sZKaedJbEiuxq699nUSUc"),
   KeyType.Ed25519
 );
 jest.mock("../modules/ionicstorage/wallet", () => ({
   IonicStorageWallet: jest.fn().mockImplementation(() => {
     return {
-      createKey: jest.fn().mockResolvedValue(customKey),
+      createKey: jest.fn().mockResolvedValue(labelledKey),
     };
   }),
 }));
@@ -35,14 +35,14 @@ const didRepositoryMock = {
 
 // ------ TEST OBJECTS ------
 let agentContext: AgentContext;
-let customKeyDidCreateOptions: CustomKeyDidCreateOptions = {
+let labelledKeyDidCreateOptions: LabelledKeyDidCreateOptions = {
   method: IdentityType.KEY,
   options: {
     keyType: KeyType.Ed25519,
   },
-  displayName: "Did Custom Display Name Test",
+  displayName: "Did Labelled Display Name Test",
 };
-const customKeyDidRegistrar = new CustomKeyDidRegistrar();
+const labelledKeyDidRegistrar = new LabelledKeyDidRegistrar();
 
 beforeAll(async () => {
   const walletConfig = {
@@ -70,15 +70,29 @@ beforeAll(async () => {
   });
 });
 
-describe("CustomKeyDidRegistrar", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-
+describe("LabelledKeyDidRegistrar", () => {
   test("should create a did:key using a Ed25519 key type", async () => {
-    const result = await customKeyDidRegistrar.create(
+    const did = "did:key:z6Mkq2bTBxu5P4cxafpmMy3wDffsNtrW3BqbQvskvR7oPfFz";
+    const verificationMethodPublicKeyBase58 = 'BaLQbiee3X8VUAz4gQ66Na7sZKaedJbEiuxq699nUSUc';
+    const keyAgreementPublicKeyBase58 = 'CuLYDoUXJ7xLzsDibMQcyqButyxjBCcgcbhEWb6gMAUR';
+
+    const result = await labelledKeyDidRegistrar.create(
       agentContext,
-      customKeyDidCreateOptions
+      labelledKeyDidCreateOptions
+    );
+
+    expect(didRepositoryMock.save).toBeCalledWith(
+      agentContext,
+      {
+        _tags: { displayName: 'Did Labelled Display Name Test' },
+        type: 'DidRecord',
+        metadata: { data: {} },
+        id: expect.any(String),
+        did: 'did:key:z6Mkq2bTBxu5P4cxafpmMy3wDffsNtrW3BqbQvskvR7oPfFz',
+        role: 'created',
+        didDocument: undefined,
+        createdAt: expect.any(Date)
+      }
     );
 
     expect(JsonTransformer.toJSON(result)).toMatchObject({
@@ -86,9 +100,19 @@ describe("CustomKeyDidRegistrar", () => {
       didRegistrationMetadata: {},
       didState: {
         state: "finished",
-        did: "did:key:z6Mkq2bTBxu5P4cxafpmMy3wDffsNtrW3BqbQvskvR7oPfFz",
+        did: did,
         didDocument: {
-          id: "did:key:z6Mkq2bTBxu5P4cxafpmMy3wDffsNtrW3BqbQvskvR7oPfFz",
+          id: did,
+          verificationMethod: [ {
+              type: 'Ed25519VerificationKey2018',
+              publicKeyBase58: verificationMethodPublicKeyBase58
+            }
+          ],
+          keyAgreement: [ {
+            type: 'X25519KeyAgreementKey2019',
+            publicKeyBase58: keyAgreementPublicKeyBase58
+          }
+        ],
         },
       },
     });
@@ -98,25 +122,10 @@ describe("CustomKeyDidRegistrar", () => {
     });
   });
 
-  test("should store the created did", async () => {
-    const did = "did:key:z6Mkq2bTBxu5P4cxafpmMy3wDffsNtrW3BqbQvskvR7oPfFz";
-
-    await customKeyDidRegistrar.create(agentContext, customKeyDidCreateOptions);
-
-    expect(didRepositoryMock.save).toHaveBeenCalledTimes(1);
-    const didRecord = didRepositoryMock.save.mock.calls[0][1];
-    
-    expect(didRecord).toMatchObject({
-      did,
-      type: 'DidRecord',
-      _tags: { displayName: customKeyDidCreateOptions.displayName },
-      role: DidDocumentRole.Created,
-      didDocument: undefined,
-    })
-  });
-
   test("should return an error state when calling update", async () => {
-    const result = await customKeyDidRegistrar.update();
+    const result = await labelledKeyDidRegistrar.update();
+
+    expect(didRepositoryMock.save).not.toBeCalled();
 
     expect(result).toEqual({
       didDocumentMetadata: {},
@@ -129,7 +138,9 @@ describe("CustomKeyDidRegistrar", () => {
   });
 
   test("should return an error state when calling deactivate", async () => {
-    const result = await customKeyDidRegistrar.deactivate();
+    const result = await labelledKeyDidRegistrar.deactivate();
+
+    expect(didRepositoryMock.save).not.toBeCalled();
 
     expect(result).toEqual({
       didDocumentMetadata: {},

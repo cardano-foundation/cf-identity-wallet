@@ -8,14 +8,14 @@ import type {
 
 import { DidDocumentRole } from "@aries-framework/core";
 import { DidRepository, DidRecord, DidKey } from "@aries-framework/core";
-import { CustomKeyDidCreateOptions } from "./customKeyDidRegistrar.types";
+import { LabelledKeyDidCreateOptions } from "./labelledKeyDidRegistrar.types";
 
-class CustomKeyDidRegistrar implements DidRegistrar {
+class LabelledKeyDidRegistrar implements DidRegistrar {
   public readonly supportedMethods = ["key"];
 
   public async create(
     agentContext: AgentContext,
-    options: CustomKeyDidCreateOptions
+    options: LabelledKeyDidCreateOptions
   ): Promise<DidCreateResult> {
     const didRepository = agentContext.dependencyManager.resolve(DidRepository);
 
@@ -81,4 +81,4 @@ class CustomKeyDidRegistrar implements DidRegistrar {
   }
 }
 
-export { CustomKeyDidRegistrar };
+export { LabelledKeyDidRegistrar };

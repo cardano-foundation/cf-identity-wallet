@@ -1,1 +1,1 @@
-export * from "./customKeyDidRegistrar";
+export * from "./labelledKeyDidRegistrar";

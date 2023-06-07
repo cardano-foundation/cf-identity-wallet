@@ -1,7 +1,7 @@
 import { DidCreateOptions, KeyType } from "@aries-framework/core";
 import { IdentityType } from "../ariesAgent.types";
 
-interface CustomKeyDidCreateOptions extends DidCreateOptions {
+interface LabelledKeyDidCreateOptions extends DidCreateOptions {
   method: IdentityType.KEY;
   did?: never;
   didDocument?: never;
@@ -12,4 +12,4 @@ interface CustomKeyDidCreateOptions extends DidCreateOptions {
   displayName: string;
 }
 
-export type { CustomKeyDidCreateOptions };
+export type { LabelledKeyDidCreateOptions };

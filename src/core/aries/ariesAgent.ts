@@ -14,7 +14,7 @@ import {
   MiscRecord,
   MiscRecordId,
 } from "./modules";
-import { CustomKeyDidRegistrar } from "./dids";
+import { LabelledKeyDidRegistrar } from "./dids";
 import { IdentityType } from "./ariesAgent.types";
 
 const config: InitConfig = {
@@ -46,7 +46,7 @@ class AriesAgent {
         ionicStorage: new IonicStorageModule(),
         generalStorage: new GeneralStorageModule(),
         dids: new DidsModule({
-          registrars: [new CustomKeyDidRegistrar()],
+          registrars: [new LabelledKeyDidRegistrar()],
           resolvers: [new KeyDidResolver()],
         }),
       },
@@ -62,6 +62,7 @@ class AriesAgent {
 
   async start(): Promise<void> {
     await this.agent.initialize();
+    await this.createIdentity(IdentityType.KEY, "HOla mundo");
   }
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
