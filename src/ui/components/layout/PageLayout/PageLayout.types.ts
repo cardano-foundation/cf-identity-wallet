@@ -8,6 +8,12 @@ interface PageLayoutProps {
   children?: ReactNode;
   closeButton?: boolean;
   closeButtonAction?: () => void;
+  closeButtonLabel?: string;
+  actionButton?: boolean;
+  actionButtonDisabled?: boolean;
+  actionButtonAction?: () => void;
+  actionButtonLabel?: string;
+  actionButtonIcon?: string;
   progressBar?: boolean;
   progressBarValue?: number;
   progressBarBuffer?: number;

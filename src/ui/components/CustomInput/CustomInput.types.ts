@@ -3,6 +3,7 @@ import { Dispatch, SetStateAction } from "react";
 interface CustomInputProps {
   dataTestId: string;
   title?: string;
+  autofocus?: boolean;
   placeholder?: string;
   hiddenInput: boolean;
   value: string;

@@ -26,6 +26,12 @@ const PageLayout = ({
   children,
   closeButton,
   closeButtonAction,
+  closeButtonLabel,
+  actionButton,
+  actionButtonDisabled,
+  actionButtonAction,
+  actionButtonLabel,
+  actionButtonIcon,
   progressBar,
   progressBarValue,
   progressBarBuffer,
@@ -81,7 +87,8 @@ const PageLayout = ({
                   />
                 </IonButton>
               )}
-              {closeButton && (
+
+              {closeButton && !closeButtonLabel && (
                 <IonButton
                   shape="round"
                   className="close-button"
@@ -93,6 +100,16 @@ const PageLayout = ({
                     icon={closeOutline}
                     color="primary"
                   />
+                </IonButton>
+              )}
+
+              {closeButton && closeButtonLabel && (
+                <IonButton
+                  className="close-button-label"
+                  onClick={closeButtonAction}
+                  data-testid="close-button"
+                >
+                  {closeButtonLabel}
                 </IonButton>
               )}
             </IonButtons>
@@ -125,6 +142,33 @@ const PageLayout = ({
                       icon={menuOutline}
                       color="primary"
                     />
+                  </IonButton>
+                )}
+
+                {actionButton && !actionButtonLabel && (
+                  <IonButton
+                    shape="round"
+                    disabled={actionButtonDisabled}
+                    className="action-button"
+                    onClick={actionButtonAction}
+                    data-testid="action-button"
+                  >
+                    <IonIcon
+                      slot="icon-only"
+                      icon={actionButtonIcon}
+                      color="primary"
+                    />
+                  </IonButton>
+                )}
+
+                {actionButton && actionButtonLabel && (
+                  <IonButton
+                    disabled={actionButtonDisabled}
+                    className="action-button-label"
+                    onClick={actionButtonAction}
+                    data-testid="action-button"
+                  >
+                    {actionButtonLabel}
                   </IonButton>
                 )}
               </IonButtons>

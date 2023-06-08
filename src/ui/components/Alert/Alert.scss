@@ -50,3 +50,7 @@
     margin-bottom: 0.5rem;
   }
 }
+
+ion-alert {
+  --min-width: calc(100vw - 40px) !important;
+}

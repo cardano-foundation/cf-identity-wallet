@@ -6,9 +6,11 @@ const Alert = ({
   isOpen,
   setIsOpen,
   headerText,
+  subheaderText,
   confirmButtonText,
   cancelButtonText,
   actionConfirm,
+  actionDismiss,
 }: AlertProps) => {
   const buttons: AlertButton[] = [];
 
@@ -33,6 +35,13 @@ const Alert = ({
     });
   }
 
+  const handleDismiss = () => {
+    if (actionDismiss) {
+      actionDismiss;
+    }
+    setIsOpen(false);
+  };
+
   return (
     <div
       data-testid="alert-wrapper"
@@ -41,11 +50,12 @@ const Alert = ({
       <IonAlert
         isOpen={isOpen}
         header={headerText}
+        subHeader={subheaderText}
         buttons={buttons}
-        onDidDismiss={() => setIsOpen(false)}
+        onDidDismiss={handleDismiss}
       />
     </div>
   );
 };
 
-export default Alert;
+export { Alert };
