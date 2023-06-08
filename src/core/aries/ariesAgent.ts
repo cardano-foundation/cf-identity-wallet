@@ -56,6 +56,11 @@ class AriesAgent {
       new MiscRecord({ id, value })
     );
   }
+
+  async getMiscRecordValueById(id: MiscRecordId): Promise<string> {
+    return (await this.agent.modules.generalStorage.getMiscRecordById(id))
+      .value;
+  }
 }
 
 export { AriesAgent, agentDependencies };
