@@ -63,7 +63,7 @@ const CardDetails = () => {
   const storeState = useAppSelector(getState);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState({
-    id: "",
+    id: params.id,
     type: "",
     name: "",
     date: "",
