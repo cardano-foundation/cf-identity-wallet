@@ -5,7 +5,6 @@ import {
   Redirect,
   Route,
   RouteProps,
-  useHistory,
   useLocation,
 } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
@@ -22,7 +21,7 @@ import {
   setCurrentRoute,
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
-import { TabsMenu, TabsRoutePath } from "../ui/components/navigation/TabsMenu";
+import { TabsMenu } from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);

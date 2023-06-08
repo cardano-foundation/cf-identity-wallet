@@ -4,8 +4,7 @@ import {
   IonTabButton,
   IonIcon,
   IonLabel,
-  IonRouterOutlet,
-  useIonViewWillEnter,
+  IonRouterOutlet
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Route, Redirect } from "react-router";
@@ -16,8 +15,6 @@ import {
   chatbubbleOutline,
   walletOutline,
 } from "ionicons/icons";
-import { useEffect } from "react";
-import { useHistory, useLocation } from "react-router-dom";
 import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
 import { Dids } from "../../../pages/Dids";
@@ -27,8 +24,6 @@ import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
 import { TabsRoutePath } from "../../../../routes/paths";
 import { CardDetails } from "../../../pages/CardDetails";
-import { setCurrentRoute } from "../../../../store/reducers/stateCache";
-import { useAppDispatch } from "../../../../store/hooks";
 
 const TabsMenu = () => {
   return (
