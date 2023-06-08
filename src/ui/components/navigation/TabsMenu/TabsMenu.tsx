@@ -4,7 +4,7 @@ import {
   IonTabButton,
   IonIcon,
   IonLabel,
-  IonRouterOutlet
+  IonRouterOutlet,
 } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import { Route, Redirect } from "react-router";

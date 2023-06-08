@@ -1,5 +1,11 @@
 import { useHistory, useParams } from "react-router-dom";
-import { IonButton, IonIcon, IonPage, IonSpinner } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonPage,
+  IonSpinner,
+  useIonViewWillEnter,
+} from "@ionic/react";
 import {
   shareOutline,
   ellipsisVertical,
@@ -20,7 +26,7 @@ import { DidCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState } from "../../../store/reducers/stateCache";
+import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
 
 const AdditionalButtons = () => {
   return (
@@ -72,12 +78,16 @@ const CardDetails = () => {
     if (c) setCardData(c);
   }, [params?.id]);
 
+  useIonViewWillEnter(() => {
+    dispatch(setCurrentRoute({ path: history.location.pathname}));
+  });
+
   const onClickDone = () => {
-    const { updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
+    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
       store: storeState,
     });
     updateReduxState(
-      TabsRoutePath.DIDS,
+      backPath.pathname,
       { store: storeState },
       dispatch,
       updateRedux

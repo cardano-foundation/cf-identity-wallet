@@ -26,6 +26,7 @@ const getBackRoute = (
 
 const updateStoreSetCurrentRoute = (data: DataProps) => {
   const prevPath = calcPreviousRoute(data.store.stateCache.routes);
+
   let path;
   if (prevPath) {
     path = prevPath.path;
@@ -39,6 +40,8 @@ const getPreviousRoute = (data: DataProps) => {
   const { routes } = data.store.stateCache;
 
   const prevPath = calcPreviousRoute(routes);
+  console.log("prevPath");
+  console.log(prevPath);
   let path;
   if (routes.length === 0) {
     path = RoutePath.ROOT;
@@ -77,6 +80,7 @@ const updateStoreAfterPasscodeLoginRoute = (data: DataProps) => {
 const calcPreviousRoute = (
   routes: { path: string; payload?: PayloadProps }[]
 ) => {
+  console.log("calcPreviousRoute", routes);
   return routes
     .slice(1)
     .find((element) => element.path !== RoutePath.PASSCODE_LOGIN);
