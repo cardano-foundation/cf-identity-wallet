@@ -3,6 +3,9 @@ import {
   Agent,
   AgentDependencies,
   RecordNotFoundError,
+  DidsModule,
+  KeyDidResolver,
+  KeyType,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { CapacitorFileSystem } from "./dependencies/capacitorFileSystem";
@@ -12,6 +15,8 @@ import {
   MiscRecord,
   MiscRecordId,
 } from "./modules";
+import { LabelledKeyDidRegistrar } from "./dids";
+import { IdentityType } from "./ariesAgent.types";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -41,6 +46,10 @@ class AriesAgent {
       modules: {
         ionicStorage: new IonicStorageModule(),
         generalStorage: new GeneralStorageModule(),
+        dids: new DidsModule({
+          registrars: [new LabelledKeyDidRegistrar()],
+          resolvers: [new KeyDidResolver()],
+        }),
       },
     });
   }
@@ -72,6 +81,13 @@ class AriesAgent {
       }
       throw e;
     }
+    
+  async createIdentity(type: IdentityType, displayName: string) {
+    await this.agent.dids.create({
+      method: type,
+      displayName: displayName,
+      options: { keyType: KeyType.Ed25519 },
+    });
   }
 }
 

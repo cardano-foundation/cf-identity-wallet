@@ -21,7 +21,7 @@ describe("Misc Record", () => {
 
   test("should fallback to the current time if not supplied", async () => {
     const createdAt = new Date();
-    await new Promise((resolve) => setTimeout(resolve, 1));
+    await new Promise((resolve) => setTimeout(resolve, 10));
     const settingsRecord = new MiscRecord({
       id: recordId,
       value: recordValue,
