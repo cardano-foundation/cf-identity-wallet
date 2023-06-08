@@ -81,6 +81,7 @@ class AriesAgent {
       }
       throw e;
     }
+  }
     
   async createIdentity(type: IdentityType, displayName: string) {
     await this.agent.dids.create({
