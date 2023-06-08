@@ -79,6 +79,7 @@ const VerifyPassword = ({
       initialBreakpoint={0.5}
       breakpoints={[0.5]}
       className="page-layout"
+      data-testid="verify-password"
       onDidDismiss={() => resetModal()}
     >
       <div className="verify-password modal">
