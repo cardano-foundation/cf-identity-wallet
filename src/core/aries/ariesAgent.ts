@@ -2,6 +2,7 @@ import {
   InitConfig,
   Agent,
   AgentDependencies,
+  RecordNotFoundError,
   DidsModule,
   KeyDidResolver,
   KeyType,
@@ -70,6 +71,18 @@ class AriesAgent {
     );
   }
 
+  async getMiscRecordValueById(id: MiscRecordId): Promise<string | undefined> {
+    try {
+      return (await this.agent.modules.generalStorage.getMiscRecordById(id))
+        .value;
+    } catch (e) {
+      if (e instanceof RecordNotFoundError) {
+        return undefined;
+      }
+      throw e;
+    }
+  }
+    
   async createIdentity(type: IdentityType, displayName: string) {
     await this.agent.dids.create({
       method: type,
