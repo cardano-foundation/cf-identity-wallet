@@ -11,6 +11,8 @@ import {
   KeyStoreKeys,
   SecureStorage,
 } from "../../../core/storage/secureStorage";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { MiscRecordId } from "../../../core/aries/modules";
 
 const VerifyPassword = ({
   modalIsOpen,
@@ -32,6 +34,13 @@ const VerifyPassword = ({
     const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
     if (password) {
       setStoredPassword(`${password}`);
+    }
+
+    const hint = await AriesAgent.agent.getMiscRecordValueById(
+      MiscRecordId.OP_PASS_HINT
+    );
+    if (hint) {
+      setStoredHint(`${hint}`);
     }
   };
 
