@@ -79,7 +79,7 @@ const CardDetails = () => {
   }, [params?.id]);
 
   useIonViewWillEnter(() => {
-    dispatch(setCurrentRoute({ path: history.location.pathname}));
+    dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
 
   const onClickDone = () => {
