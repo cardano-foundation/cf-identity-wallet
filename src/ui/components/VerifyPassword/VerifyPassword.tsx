@@ -7,24 +7,49 @@ import { CustomInput } from "../CustomInput";
 import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
 import "./VerifyPassword.scss";
 import { Alert } from "../Alert";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+} from "../../../core/storage/secureStorage";
 
 const VerifyPassword = ({
   modalIsOpen,
   setModalIsOpen,
 }: VerifyPasswordProps) => {
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
-  const [verifyPasswordFocus, setVerifyPasswordFocus] = useState(false);
   const [attempts, setAttempts] = useState(6);
   const [alertChoiceIsOpen, setAlertChoiceIsOpen] = useState(false);
   const [alertHintIsOpen, setAlertHintIsOpen] = useState(false);
   const [showError, setShowError] = useState(false);
-  const storedPassword = "Cardano1$";
-  const storedHint = "Hello darkness my old friend";
+  const [storedPassword, setStoredPassword] = useState("");
+  const [storedHint, setStoredHint] = useState("");
+
   const errorMessages = {
     hasNoMatch: i18n.t("verifypassword.error.hasNoMatch"),
   };
 
+  const handleFetchStoredValues = async () => {
+    const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
+    if (password) {
+      setStoredPassword(`${password}`);
+    }
+  };
+
+  const resetModal = () => {
+    setModalIsOpen(false);
+    setVerifyPasswordValue("");
+  };
+
   useEffect(() => {
+    handleFetchStoredValues();
+  }, []);
+
+  useEffect(() => {
+    // @TODO - sdisalvo: display the available attempts remaining.
+    // Display count down timer of 1 minute if available attempts is equal to 0.
+    // Count down timer must be persistent if the user navigates away from the page
+    // or closes the application.
+    // The UI will disable password input fields during count down timer.
     if (
       verifyPasswordValue.length > 0 &&
       verifyPasswordValue !== storedPassword
@@ -38,12 +63,14 @@ const VerifyPassword = ({
       verifyPasswordValue.length > 0 &&
       verifyPasswordValue === storedPassword
     ) {
-      // TODO: navigate the user to whatever page thy need
+      resetModal();
+      // @TODO - sdisalvo: navigate the user to the required page
     }
   }, [attempts]);
 
   const handleReset = () => {
-    // TODO: navigate the user to the Reset Operations Password Screen
+    resetModal();
+    // @TODO - sdisalvo: navigate the user to the Reset Operations Password Screen
   };
 
   return (
@@ -52,7 +79,7 @@ const VerifyPassword = ({
       initialBreakpoint={0.5}
       breakpoints={[0.5]}
       className="page-layout"
-      onDidDismiss={() => setModalIsOpen(false)}
+      onDidDismiss={() => resetModal()}
     >
       <div className="verify-password modal">
         <PageLayout
@@ -74,7 +101,6 @@ const VerifyPassword = ({
                   hiddenInput={true}
                   autofocus={true}
                   onChangeInput={setVerifyPasswordValue}
-                  onChangeFocus={setVerifyPasswordFocus}
                   value={verifyPasswordValue}
                 />
               </IonCol>

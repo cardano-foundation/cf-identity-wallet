@@ -33,6 +33,10 @@
     .action-button-label {
       font-size: 1rem;
       font-weight: 700;
+
+      &.md {
+        font-size: 0.8rem;
+      }
     }
 
     .close-button-label {
@@ -47,10 +51,12 @@
     }
   }
 
-  .progress-bar-container,
+  .progress-bar-container {
+    margin-inline: 0.3rem;
+  }
+
   ion-title {
     text-align: center;
-    margin-inline: 0.3rem;
   }
 
   ion-progress-bar,

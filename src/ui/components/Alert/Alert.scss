@@ -51,6 +51,13 @@
   }
 }
 
-ion-alert {
+.custom-alert {
   --min-width: calc(100vw - 40px) !important;
+
+  &.md {
+    .alert-sub-title {
+      text-align: center;
+      color: grey;
+    }
+  }
 }

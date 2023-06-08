@@ -49,6 +49,7 @@ const Alert = ({
     >
       <IonAlert
         isOpen={isOpen}
+        cssClass="custom-alert"
         header={headerText}
         subHeader={subheaderText}
         buttons={buttons}
