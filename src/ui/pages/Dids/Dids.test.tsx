@@ -3,7 +3,7 @@ import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import { Dids } from "./Dids";
 import { store } from "../../../store";
-import { TabsRoutePath } from "../../../routes/paths";
+import {RoutePath, TabsRoutePath} from "../../../routes/paths";
 import { CardDetails } from "../CardDetails";
 import { didsMock } from "../../__mocks__/didsMock";
 import {
@@ -11,6 +11,9 @@ import {
   NAVIGATION_DELAY,
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import configureStore from "redux-mock-store";
+import {FIFTEEN_WORDS_BIT_LENGTH} from "../../../constants/appConstants";
+import {filteredDidsMock} from "../../__mocks__/filteredDidsMock";
 
 describe("Dids Tab", () => {
   test("Renders Dids Tab", () => {
@@ -28,15 +31,38 @@ describe("Dids Tab", () => {
   });
 
   test("Navigate from Dids Tab to Card Details and back", async () => {
+
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.DIDS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {
+      },
+      didsCache: {
+        dids: [filteredDidsMock[0]]
+      }
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
     jest.useFakeTimers();
     const { getByText, getByTestId, queryByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.DIDS]}>
-        <Provider store={store}>
+        <Provider store={storeMocked}>
           <Route
             path={TabsRoutePath.DIDS}
             component={Dids}
           />
-
           <Route
             path={TabsRoutePath.DID_DETAILS}
             component={CardDetails}
@@ -45,7 +71,7 @@ describe("Dids Tab", () => {
       </MemoryRouter>
     );
 
-    const firstCardId = getByText(didsMock[0].id);
+    const firstCardId = getByText(filteredDidsMock[0].id);
 
     act(() => {
       fireEvent.click(firstCardId);
@@ -55,15 +81,15 @@ describe("Dids Tab", () => {
     expect(getByText(EN_TRANSLATIONS["card.details.done"])).toBeVisible();
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
-    const firstCard = getByTestId("card-stack-index-0");
-    expect(firstCard).not.toHaveClass("active");
 
-    const tabTitle = getByTestId("tab-title");
+    const firstCardDetailsId = getByTestId("card-stack-index-undefined");
+    expect(firstCardDetailsId).not.toHaveClass("active");
+
+    const doneButton = getByTestId(`tab-title-${EN_TRANSLATIONS["card.details.done"]}`);
 
     act(() => {
-      fireEvent.click(tabTitle);
+      fireEvent.click(doneButton);
     });
-
-    expect(queryByText(EN_TRANSLATIONS["card.details.done"])).toBeNull();
+    expect(queryByText(EN_TRANSLATIONS["dids.tab.title"])).toBeVisible();
   });
 });

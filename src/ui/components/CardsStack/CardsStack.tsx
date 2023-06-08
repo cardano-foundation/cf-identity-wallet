@@ -24,7 +24,7 @@ const CredCard = ({
 const DidCard = ({
   cardData,
   isActive,
-  index = 0,
+  index = undefined,
   onHandleShowCardDetails,
 }: DidCardProps) => {
   return (

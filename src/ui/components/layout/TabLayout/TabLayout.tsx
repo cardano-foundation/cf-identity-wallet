@@ -31,7 +31,7 @@ const TabLayout = ({
             {title && (
               <IonTitle
                 onClick={titleAction}
-                data-testid="tab-title"
+                data-testid={`tab-title-${title}`}
               >
                 {(titleSize === "h2" || !titleSize) && <h2>{title}</h2>}
                 {titleSize === "h3" && <h3>{title}</h3>}

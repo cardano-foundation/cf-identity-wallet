@@ -92,7 +92,7 @@ const Routes = () => {
           exact
           component={VerifySeedPhrase}
         />
-        <Route
+        <AuthenticatedRoute
           path={RoutePath.TABS_MENU}
           exact
           component={TabsMenu}
