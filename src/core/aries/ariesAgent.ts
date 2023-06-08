@@ -1,4 +1,9 @@
-import { InitConfig, Agent, AgentDependencies, RecordNotFoundError } from "@aries-framework/core";
+import {
+  InitConfig,
+  Agent,
+  AgentDependencies,
+  RecordNotFoundError,
+} from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { CapacitorFileSystem } from "./dependencies/capacitorFileSystem";
 import {
@@ -57,14 +62,15 @@ class AriesAgent {
     );
   }
 
-  async getMiscRecordValueById(id: MiscRecordId): Promise<string|undefined> {
+  async getMiscRecordValueById(id: MiscRecordId): Promise<string | undefined> {
     try {
       return (await this.agent.modules.generalStorage.getMiscRecordById(id))
-      .value;
-    } catch(e) {
+        .value;
+    } catch (e) {
       if (e instanceof RecordNotFoundError) {
         return undefined;
       }
+      throw e;
     }
   }
 }
