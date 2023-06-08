@@ -1,6 +1,10 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import {CardsStackProps, CredCardProps, DidCardProps} from "./CardsStack.types";
+import {
+  CardsStackProps,
+  CredCardProps,
+  DidCardProps,
+} from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
 
@@ -89,7 +93,9 @@ const CardsStack = ({
     setIsActive(true);
     setTimeout(() => {
       history.push({
-        pathname: `/tabs/${cardsType === "dids" ? "dids" : "creds"}/${cardsData[index].id}`,
+        pathname: `/tabs/${cardsType === "dids" ? "dids" : "creds"}/${
+          cardsData[index].id
+        }`,
       });
     }, NAVIGATION_DELAY);
 

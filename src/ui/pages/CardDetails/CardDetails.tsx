@@ -17,10 +17,10 @@ import { i18n } from "../../../i18n";
 import "./CardDetails.scss";
 import { didsMock } from "../../__mocks__/didsMock";
 import { DidCard } from "../../components/CardsStack";
-import {getBackRoute} from "../../../routes/backRoute";
-import {updateReduxState} from "../../../store/utils";
-import {useAppDispatch, useAppSelector} from "../../../store/hooks";
-import {getState} from "../../../store/reducers/stateCache";
+import { getBackRoute } from "../../../routes/backRoute";
+import { updateReduxState } from "../../../store/utils";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getState } from "../../../store/reducers/stateCache";
 
 const AdditionalButtons = () => {
   return (
@@ -77,13 +77,13 @@ const CardDetails = () => {
       store: storeState,
     });
     updateReduxState(
-        TabsRoutePath.DIDS,
-        { store: storeState },
-        dispatch,
-        updateRedux
+      TabsRoutePath.DIDS,
+      { store: storeState },
+      dispatch,
+      updateRedux
     );
     history.push(TabsRoutePath.DIDS);
-  }
+  };
   return (
     <IonPage className="tab-layout card-details">
       <TabLayout
