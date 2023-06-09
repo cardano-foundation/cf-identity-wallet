@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { DidProps } from "./didsCache.types";
 import { CardsStackProps } from "../../../ui/components/CardsStack/CardsStack.types";
 import { RootState } from "../../index";
 const initialState: { dids: CardsStackProps[] } = {
@@ -14,8 +13,6 @@ const didsCacheSlice = createSlice({
     },
   },
 });
-
-export type { DidProps };
 
 export { initialState, didsCacheSlice };
 
