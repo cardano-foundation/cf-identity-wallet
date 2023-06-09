@@ -64,6 +64,10 @@ const TabsMenu = () => {
             path="/tabs/dids/:id"
             component={CardDetails}
           />
+          <Route
+            path="/tabs/creds/:id"
+            component={CardDetails}
+          />
         </IonRouterOutlet>
 
         <IonTabBar
