@@ -19,7 +19,10 @@ import { RoutePath } from "../../../routes/paths";
 import { PasswordRegexProps, RegexItemProps } from "./CreatePassword.types";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage/secureStorage";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+} from "../../../core/storage/secureStorage";
 
 const STRING_LENGTH = "length";
 const STRING_UPPERCASE = "uppercase";
@@ -160,7 +163,10 @@ const CreatePassword = () => {
   const handleContinue = async () => {
     // @TODO - foconnor: We should handle errors here and display something to the user as feedback to try again.
     await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, createPasswordValue);
-    await AriesAgent.agent.storeMiscRecord(MiscRecordId.OP_PASS_HINT, createHintValue);
+    await AriesAgent.agent.storeMiscRecord(
+      MiscRecordId.OP_PASS_HINT,
+      createHintValue
+    );
     setCreatePasswordValue("");
     setConfirmPasswordValue("");
     setCreateHintValue("");

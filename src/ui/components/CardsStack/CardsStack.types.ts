@@ -3,9 +3,24 @@ interface CardsStackProps {
   type: string;
   name: string;
   date: string;
-  keyType: string;
-  controller: string;
-  publicKeyBase58: string;
+  colors: string[];
+  keyType?: string;
+  controller?: string;
+  publicKeyBase58?: string;
 }
 
-export type { CardsStackProps };
+interface DidCardProps {
+  cardData: CardsStackProps;
+  isActive: boolean;
+  index?: number;
+  onHandleShowCardDetails?: (index: number | undefined) => void;
+}
+
+interface CredCardProps {
+  cardData: CardsStackProps;
+  isActive: boolean;
+  index?: number;
+  onHandleShowCardDetails: (index: number | undefined) => void;
+}
+
+export type { CardsStackProps, DidCardProps, CredCardProps };

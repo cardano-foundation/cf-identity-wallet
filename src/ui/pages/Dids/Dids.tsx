@@ -1,13 +1,14 @@
-import { IonButton, IonIcon, IonPage } from "@ionic/react";
+import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
-import { didsMock } from "../../__mocks__/didsMock";
 import "./Dids.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
-
-const didsData = didsMock;
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getDidsCache } from "../../../store/reducers/didsCache";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import { TabsRoutePath } from "../../../routes/paths";
 
 const AdditionalButtons = () => {
   return (
@@ -38,11 +39,17 @@ const AdditionalButtons = () => {
   );
 };
 
-const handleCreateDid = () => {
-  // TODO: Function to create DID
-};
-
 const Dids = () => {
+  const didsData = useAppSelector(getDidsCache);
+  const handleCreateDid = () => {
+    // TODO: Function to create DID
+  };
+
+  const dispatch = useAppDispatch();
+  useIonViewWillEnter(() =>
+    dispatch(setCurrentRoute({ path: TabsRoutePath.DIDS }))
+  );
+
   return (
     <IonPage
       className="tab-layout dids-tab"

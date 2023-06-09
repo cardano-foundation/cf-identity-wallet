@@ -24,11 +24,12 @@ import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
 import { TabsRoutePath } from "../../../../routes/paths";
 import { CardDetails } from "../../../pages/CardDetails";
+
 const TabsMenu = () => {
   return (
     <IonReactRouter>
       <IonTabs>
-        <IonRouterOutlet>
+        <IonRouterOutlet animated={false}>
           <Redirect
             exact
             path={TabsRoutePath.ROOT}
@@ -60,9 +61,12 @@ const TabsMenu = () => {
             exact={true}
           />
           <Route
-            path={TabsRoutePath.CARD_DETAILS}
+            path="/tabs/dids/:id"
             component={CardDetails}
-            exact={true}
+          />
+          <Route
+            path="/tabs/creds/:id"
+            component={CardDetails}
           />
         </IonRouterOutlet>
 

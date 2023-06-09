@@ -38,13 +38,7 @@ describe("getBackRoute", () => {
           time: 0,
         },
       },
-      cardInfoCache: {
-        cardProps: {
-          cardType: "",
-          cardColor: "",
-        },
-        cardData: [],
-      },
+      didsCache: { dids: [] },
     };
   });
 
@@ -115,13 +109,7 @@ describe("getBackRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      cardInfoCache: {
-        cardProps: {
-          cardType: "",
-          cardColor: "",
-        },
-        cardData: [],
-      },
+      didsCache: { dids: [] },
     };
     const expectedAuthentication = {
       ...storeMock.stateCache.authentication,
@@ -177,13 +165,7 @@ describe("getPreviousRoute", () => {
           time: 0,
         },
       },
-      cardInfoCache: {
-        cardProps: {
-          cardType: "",
-          cardColor: "",
-        },
-        cardData: [],
-      },
+      didsCache: { dids: [] },
     };
   });
 

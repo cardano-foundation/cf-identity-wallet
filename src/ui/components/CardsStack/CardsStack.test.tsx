@@ -31,7 +31,7 @@ describe("Cards Stack Component", () => {
             cardsData={didsMock}
           />
           <Route
-            path={TabsRoutePath.CARD_DETAILS}
+            path={TabsRoutePath.DID_DETAILS}
             component={CardDetails}
           />
         </Provider>

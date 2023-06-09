@@ -7,6 +7,13 @@
     animation: fadein 0.7s;
   }
 
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
   @keyframes fadein {
     from {
       opacity: 0;

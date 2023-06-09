@@ -13,7 +13,7 @@ const CustomInput = ({
   onChangeInput,
   onChangeFocus,
   optional,
-  value
+  value,
 }: CustomInputProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
 
