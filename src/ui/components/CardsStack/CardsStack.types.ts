@@ -13,7 +13,7 @@ interface DidCardProps {
   cardData: CardsStackProps;
   isActive: boolean;
   index?: number;
-  onHandleShowCardDetails: (index: number | undefined) => void;
+  onHandleShowCardDetails?: (index: number | undefined) => void;
 }
 
 interface CredCardProps {

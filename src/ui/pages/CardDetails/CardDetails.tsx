@@ -120,7 +120,6 @@ const CardDetails = () => {
             <DidCard
               cardData={cardData}
               isActive={false}
-              onHandleShowCardDetails={() => {}}
             />
             <div className="card-details-content">
               <div className="card-details-info-block">

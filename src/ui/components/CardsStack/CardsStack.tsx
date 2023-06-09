@@ -33,7 +33,9 @@ const DidCard = ({
       data-testid={`card-stack-index-${index}`}
       className={`cards-stack-card ${isActive ? "active" : ""}`}
       onClick={() => {
-        onHandleShowCardDetails(index);
+        if (onHandleShowCardDetails) {
+          onHandleShowCardDetails(index);
+        }
       }}
       style={{
         background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
