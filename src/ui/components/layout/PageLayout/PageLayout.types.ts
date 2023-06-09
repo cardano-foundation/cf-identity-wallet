@@ -4,10 +4,16 @@ interface PageLayoutProps {
   header?: boolean;
   backButton?: boolean;
   onBack?: () => void;
-  currentPath: string;
+  currentPath?: string;
   children?: ReactNode;
   closeButton?: boolean;
   closeButtonAction?: () => void;
+  closeButtonLabel?: string;
+  actionButton?: boolean;
+  actionButtonDisabled?: boolean;
+  actionButtonAction?: () => void;
+  actionButtonLabel?: string;
+  actionButtonIcon?: string;
   progressBar?: boolean;
   progressBarValue?: number;
   progressBarBuffer?: number;

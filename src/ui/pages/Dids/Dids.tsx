@@ -10,7 +10,11 @@ import { getDidsCache } from "../../../store/reducers/didsCache";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 
-const AdditionalButtons = () => {
+interface AdditionalButtonsProps {
+  handleCreateDid: () => void;
+}
+
+const AdditionalButtons = ({ handleCreateDid }: AdditionalButtonsProps) => {
   return (
     <>
       <IonButton
@@ -28,6 +32,7 @@ const AdditionalButtons = () => {
         shape="round"
         className="add-button"
         data-testid="add-button"
+        onClick={handleCreateDid}
       >
         <IonIcon
           slot="icon-only"
@@ -59,7 +64,9 @@ const Dids = () => {
         header={true}
         title={`${i18n.t("dids.tab.title")}`}
         menuButton={true}
-        additionalButtons={<AdditionalButtons />}
+        additionalButtons={
+          <AdditionalButtons handleCreateDid={handleCreateDid} />
+        }
       >
         {didsData.length ? (
           <CardsStack

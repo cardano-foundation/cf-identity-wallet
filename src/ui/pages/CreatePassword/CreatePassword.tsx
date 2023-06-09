@@ -163,14 +163,16 @@ const CreatePassword = () => {
   const handleContinue = async () => {
     // @TODO - foconnor: We should handle errors here and display something to the user as feedback to try again.
     await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, createPasswordValue);
-    await AriesAgent.agent.storeMiscRecord(
-      MiscRecordId.OP_PASS_HINT,
-      createHintValue
-    );
+    if (createHintValue) {
+      await AriesAgent.agent.storeMiscRecord(
+        MiscRecordId.OP_PASS_HINT,
+        createHintValue
+      );
+    }
     setCreatePasswordValue("");
     setConfirmPasswordValue("");
     setCreateHintValue("");
-    // TODO: this will need to be completed at a later stage (navigation)
+    // @TODO - sdisalvo: this will need to be completed at a later stage (navigation)
   };
 
   return (
@@ -202,8 +204,10 @@ const CreatePassword = () => {
             <IonCol size="12">
               <CustomInput
                 dataTestId="createPasswordValue"
-                title={i18n.t("createpassword.input.first.title")}
-                placeholder={i18n.t("createpassword.input.first.placeholder")}
+                title={`${i18n.t("createpassword.input.first.title")}`}
+                placeholder={`${i18n.t(
+                  "createpassword.input.first.placeholder"
+                )}`}
                 hiddenInput={true}
                 onChangeInput={setCreatePasswordValue}
                 onChangeFocus={setCreatePasswordFocus}
@@ -239,9 +243,11 @@ const CreatePassword = () => {
           <IonRow>
             <IonCol size="12">
               <CustomInput
-                dataTestId="confirmPasswordValue"
-                title={i18n.t("createpassword.input.second.title")}
-                placeholder={i18n.t("createpassword.input.second.placeholder")}
+                dataTestId="confirm-password-value"
+                title={`${i18n.t("createpassword.input.second.title")}`}
+                placeholder={`${i18n.t(
+                  "createpassword.input.second.placeholder"
+                )}`}
                 hiddenInput={true}
                 onChangeInput={setConfirmPasswordValue}
                 onChangeFocus={setConfirmPasswordFocus}
@@ -261,8 +267,10 @@ const CreatePassword = () => {
             <IonCol size="12">
               <CustomInput
                 dataTestId="createHintValue"
-                title={i18n.t("createpassword.input.third.title")}
-                placeholder={i18n.t("createpassword.input.third.placeholder")}
+                title={`${i18n.t("createpassword.input.third.title")}`}
+                placeholder={`${i18n.t(
+                  "createpassword.input.third.placeholder"
+                )}`}
                 hiddenInput={false}
                 onChangeInput={setCreateHintValue}
                 optional={true}
