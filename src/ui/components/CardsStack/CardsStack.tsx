@@ -24,13 +24,13 @@ const CredCard = ({
 const DidCard = ({
   cardData,
   isActive,
-  index = undefined,
+  index,
   onHandleShowCardDetails,
 }: DidCardProps) => {
   return (
     <div
       key={index}
-      data-testid={`card-stack-index-${index}`}
+      data-testid={`card-stack${index !== undefined ? `-index-${index}`: ""}`}
       className={`cards-stack-card ${isActive ? "active" : ""}`}
       onClick={() => {
         if (onHandleShowCardDetails) {

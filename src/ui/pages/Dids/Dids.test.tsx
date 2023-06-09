@@ -80,7 +80,7 @@ describe("Dids Tab", () => {
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 
-    const firstCardDetailsId = getByTestId("card-stack-index-undefined");
+    const firstCardDetailsId = getByTestId("card-stack");
     expect(firstCardDetailsId).not.toHaveClass("active");
 
     const doneButton = getByTestId(`tab-title-${EN_TRANSLATIONS["card.details.done"]}`);
