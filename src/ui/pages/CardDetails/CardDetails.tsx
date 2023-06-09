@@ -106,12 +106,7 @@ const CardDetails = () => {
       >
         {cardData.name.length === 0 ? (
           <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "100vh",
-            }}
+            className="spinner-container"
           >
             <IonSpinner name="dots" />
           </div>
