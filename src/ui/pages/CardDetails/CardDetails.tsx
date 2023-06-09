@@ -74,8 +74,8 @@ const CardDetails = () => {
   });
 
   useEffect(() => {
-    const c = didsMock.find((did) => did.id === params.id);
-    if (c) setCardData(c);
+    const cardDetails = didsMock.find((did) => did.id === params.id);
+    if (cardDetails) setCardData(cardDetails);
   }, [params?.id]);
 
   useIonViewWillEnter(() => {
