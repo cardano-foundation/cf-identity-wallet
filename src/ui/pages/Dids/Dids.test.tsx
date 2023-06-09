@@ -1,18 +1,16 @@
 import { act, fireEvent, render } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
 import { Dids } from "./Dids";
 import { store } from "../../../store";
-import {RoutePath, TabsRoutePath} from "../../../routes/paths";
+import {TabsRoutePath} from "../../../routes/paths";
 import { CardDetails } from "../CardDetails";
-import { didsMock } from "../../__mocks__/didsMock";
 import {
   CLEAR_STATE_DELAY,
   NAVIGATION_DELAY,
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import configureStore from "redux-mock-store";
-import {FIFTEEN_WORDS_BIT_LENGTH} from "../../../constants/appConstants";
 import {filteredDidsMock} from "../../__mocks__/filteredDidsMock";
 
 describe("Dids Tab", () => {
