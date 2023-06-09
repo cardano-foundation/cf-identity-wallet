@@ -83,7 +83,7 @@ describe("Dids Tab", () => {
     const firstCardDetailsId = getByTestId("card-stack");
     expect(firstCardDetailsId).not.toHaveClass("active");
 
-    const doneButton = getByTestId(`tab-title-${EN_TRANSLATIONS["card.details.done"]}`);
+    const doneButton = getByTestId(`tab-title-${(EN_TRANSLATIONS["card.details.done"]).toLowerCase()}`);
 
     act(() => {
       fireEvent.click(doneButton);
