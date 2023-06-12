@@ -5,5 +5,5 @@ export const Preferences = {
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   async set(data: { key: string; value: string }): Promise<void> {},
   // eslint-disable-next-line @typescript-eslint/no-empty-function
-  async clear(): Promise<void> {},
+  async remove(): Promise<void> {},
 };

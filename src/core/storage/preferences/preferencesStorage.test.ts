@@ -1,5 +1,5 @@
 import { Preferences, SetOptions } from "@capacitor/preferences";
-import { GetResult } from "@capacitor/preferences/dist/esm/definitions";
+import {GetResult, RemoveOptions} from "@capacitor/preferences/dist/esm/definitions";
 import { PreferencesStorage } from "./preferencesStorage";
 import { PreferencesStorageType } from "./preferencesStorage.type";
 
@@ -26,5 +26,30 @@ describe("Preferences Storage", () => {
     await expect(PreferencesStorage.get(NON_EXISTING_KEY)).rejects.toThrow(
       `${PreferencesStorage.KEY_NOT_FOUND} ${NON_EXISTING_KEY}`
     );
+  });
+
+  test("sets an item correctly", async () => {
+
+    Preferences.set = jest.fn().mockImplementation(async (data: SetOptions): Promise<void> => {
+      expect(data.key).toBe(EXISTING_KEY);
+      expect(data.value).toBe(JSON.stringify(EXISTING_VALUE));
+    });
+
+    await PreferencesStorage.set(EXISTING_KEY, EXISTING_VALUE);
+
+    expect(Preferences.set).toHaveBeenCalled();
+    expect(Preferences.set).toHaveBeenCalledWith({ key: EXISTING_KEY , value: JSON.stringify(EXISTING_VALUE)});
+  });
+
+  test("deletes an item correctly", async () => {
+
+    Preferences.remove = jest.fn().mockImplementation(async (data: RemoveOptions) => {
+      expect(data.key).toBe(EXISTING_KEY);
+    });
+
+    await PreferencesStorage.remove(EXISTING_KEY);
+
+    expect(Preferences.remove).toHaveBeenCalled();
+    expect(Preferences.remove).toHaveBeenCalledWith({ key: EXISTING_KEY});
   });
 });

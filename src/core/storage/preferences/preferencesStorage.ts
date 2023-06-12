@@ -1,5 +1,6 @@
 import { Preferences, GetResult } from "@capacitor/preferences";
 import { PreferencesStorageType } from "./preferencesStorage.type";
+import {RemoveOptions, SetOptions} from "@capacitor/preferences/dist/esm/definitions";
 
 enum PreferencesKeys {
   APP_STATE_FLAGS = "app-state-flags",
@@ -20,19 +21,15 @@ class PreferencesStorage {
   }
 
   static async set(key: string, obj: PreferencesStorageType): Promise<void> {
-    try {
-      const value = JSON.stringify(obj);
-      await Preferences.set({
-        key,
-        value,
-      });
-    } catch (e) {
-      throw new Error(`${PreferencesStorage.INVALID_OBJECT} ${obj}`);
-    }
+    const objStr:string = JSON.stringify(obj);
+    await Preferences.set({
+      key,
+      value: objStr,
+    } as SetOptions);
   }
 
-  static async delete(key: string) {
-    await Preferences.remove({ key });
+  static async remove(key: string): Promise<void> {
+    await Preferences.remove({ key } as RemoveOptions);
   }
 }
 
