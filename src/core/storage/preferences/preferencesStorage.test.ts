@@ -21,7 +21,6 @@ describe("Preferences Storage", () => {
         }
       );
     expect(await PreferencesStorage.get(EXISTING_KEY)).toEqual(EXISTING_VALUE);
-    expect(Preferences.get).toHaveBeenCalled();
     expect(Preferences.get).toHaveBeenCalledWith({ key: EXISTING_KEY });
     await expect(PreferencesStorage.get(NON_EXISTING_KEY)).rejects.toThrow(
       `${PreferencesStorage.KEY_NOT_FOUND} ${NON_EXISTING_KEY}`
@@ -37,7 +36,6 @@ describe("Preferences Storage", () => {
 
     await PreferencesStorage.set(EXISTING_KEY, EXISTING_VALUE);
 
-    expect(Preferences.set).toHaveBeenCalled();
     expect(Preferences.set).toHaveBeenCalledWith({ key: EXISTING_KEY , value: JSON.stringify(EXISTING_VALUE)});
   });
 
@@ -48,8 +46,7 @@ describe("Preferences Storage", () => {
     });
 
     await PreferencesStorage.remove(EXISTING_KEY);
-
-    expect(Preferences.remove).toHaveBeenCalled();
+    
     expect(Preferences.remove).toHaveBeenCalledWith({ key: EXISTING_KEY});
   });
 });
