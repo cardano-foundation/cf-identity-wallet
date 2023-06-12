@@ -125,7 +125,11 @@ const CardDetails = () => {
               <div className="card-details-info-block">
                 <h3>{i18n.t("dids.card.details.information")}</h3>
                 <div className="card-details-info-block-inner">
-                  <span className="card-details-info-block-line">
+                  <span
+                    className="card-details-info-block-line"
+                    data-testid="copy-button-id"
+                    onClick={() => writeToClipboard(cardData.id)}
+                  >
                     <span>
                       <IonIcon
                         slot="icon-only"
@@ -142,8 +146,6 @@ const CardDetails = () => {
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button-id"
-                        onClick={() => writeToClipboard(cardData.id)}
                       >
                         <IonIcon
                           slot="icon-only"
@@ -170,7 +172,11 @@ const CardDetails = () => {
               <div className="card-details-info-block">
                 <h3>{i18n.t("dids.card.details.type")}</h3>
                 <div className="card-details-info-block-inner">
-                  <span className="card-details-info-block-line">
+                  <span
+                    className="card-details-info-block-line"
+                    data-testid="copy-button-type"
+                    onClick={() => writeToClipboard(cardData.keyType)}
+                  >
                     <span>
                       <IonIcon
                         slot="icon-only"
@@ -186,8 +192,6 @@ const CardDetails = () => {
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button-type"
-                        onClick={() => writeToClipboard(cardData.keyType)}
                       >
                         <IonIcon
                           slot="icon-only"
@@ -201,7 +205,11 @@ const CardDetails = () => {
               <div className="card-details-info-block">
                 <h3>{i18n.t("dids.card.details.controller")}</h3>
                 <div className="card-details-info-block-inner">
-                  <span className="card-details-info-block-line">
+                  <span
+                    className="card-details-info-block-line"
+                    data-testid="copy-button-controller"
+                    onClick={() => writeToClipboard(cardData.controller)}
+                  >
                     <span>
                       <IonIcon
                         slot="icon-only"
@@ -218,8 +226,6 @@ const CardDetails = () => {
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button-controller"
-                        onClick={() => writeToClipboard(cardData.controller)}
                       >
                         <IonIcon
                           slot="icon-only"
@@ -233,7 +239,11 @@ const CardDetails = () => {
               <div className="card-details-info-block">
                 <h3>{i18n.t("dids.card.details.publickeybase")}</h3>
                 <div className="card-details-info-block-inner">
-                  <span className="card-details-info-block-line">
+                  <span
+                    className="card-details-info-block-line"
+                    data-testid="copy-button-base58"
+                    onClick={() => writeToClipboard(cardData.publicKeyBase58)}
+                  >
                     <span>
                       <IonIcon
                         slot="icon-only"
@@ -249,10 +259,6 @@ const CardDetails = () => {
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button-base58"
-                        onClick={() =>
-                          writeToClipboard(cardData.publicKeyBase58)
-                        }
                       >
                         <IonIcon
                           slot="icon-only"

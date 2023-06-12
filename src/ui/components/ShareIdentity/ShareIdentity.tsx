@@ -72,13 +72,13 @@ const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
           <IonGrid>
             <IonRow>
               <IonCol size="12">
-                <span className="share-identity-option">
+                <span
+                  className="share-identity-option"
+                  data-testid="share-identity-copy-button"
+                  onClick={() => writeToClipboard(id)}
+                >
                   <span>
-                    <IonButton
-                      shape="round"
-                      data-testid="share-identity-copy-button"
-                      onClick={() => writeToClipboard(id)}
-                    >
+                    <IonButton shape="round">
                       <IonIcon
                         slot="icon-only"
                         icon={copyOutline}
@@ -89,17 +89,17 @@ const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
                     {i18n.t("shareidentity.copykey")}
                   </span>
                 </span>
-                <span className="share-identity-option">
+                <span
+                  className="share-identity-option"
+                  data-testid="share-identity-share-button"
+                  onClick={async () => {
+                    await Share.share({
+                      text: name + " " + id,
+                    });
+                  }}
+                >
                   <span>
-                    <IonButton
-                      shape="round"
-                      data-testid="share-identity-share-button"
-                      onClick={async () => {
-                        await Share.share({
-                          text: name + " " + id,
-                        });
-                      }}
-                    >
+                    <IonButton shape="round">
                       <IonIcon
                         slot="icon-only"
                         icon={openOutline}
