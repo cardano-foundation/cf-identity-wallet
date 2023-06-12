@@ -1,11 +1,11 @@
 import { Preferences, SetOptions } from "@capacitor/preferences";
 import {GetResult, RemoveOptions} from "@capacitor/preferences/dist/esm/definitions";
 import { PreferencesStorage } from "./preferencesStorage";
-import { PreferencesStorageType } from "./preferencesStorage.type";
+import { PreferencesStorageItem } from "./preferencesStorage.type";
 
 const EXISTING_KEY = "keythatexists";
 const NON_EXISTING_KEY = "keythatdoesnotexist";
-const EXISTING_VALUE: PreferencesStorageType = { data: "test" };
+const EXISTING_VALUE: PreferencesStorageItem = { data: "test" };
 
 describe("Preferences Storage", () => {
   afterEach(jest.clearAllMocks);

@@ -1,5 +1,5 @@
 import { Preferences, GetResult } from "@capacitor/preferences";
-import { PreferencesStorageType } from "./preferencesStorage.type";
+import { PreferencesStorageItem } from "./preferencesStorage.type";
 import {RemoveOptions, SetOptions} from "@capacitor/preferences/dist/esm/definitions";
 
 enum PreferencesKeys {
@@ -12,7 +12,7 @@ class PreferencesStorage {
     "Preferences Storage does not contain an item with specified key";
   static readonly INVALID_OBJECT = "Object format cannot be parsed";
 
-  static async get(key: string): Promise<GetResult | null> {
+  static async get(key: string): Promise<PreferencesStorageItem> {
     const item = await Preferences.get({ key });
     if (!item || !item?.value) {
       throw new Error(`${PreferencesStorage.KEY_NOT_FOUND} ${key}`);
@@ -20,7 +20,7 @@ class PreferencesStorage {
     return JSON.parse(item.value);
   }
 
-  static async set(key: string, obj: PreferencesStorageType): Promise<void> {
+  static async set(key: string, obj: PreferencesStorageItem): Promise<void> {
     const objStr:string = JSON.stringify(obj);
     await Preferences.set({
       key,

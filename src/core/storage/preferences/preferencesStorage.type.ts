@@ -1,5 +1,5 @@
-interface PreferencesStorageType {
+interface PreferencesStorageItem {
   [key: string]: string | number | boolean;
 }
 
-export type { PreferencesStorageType };
+export type { PreferencesStorageItem };
