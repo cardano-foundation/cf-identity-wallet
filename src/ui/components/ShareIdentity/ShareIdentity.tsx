@@ -10,6 +10,7 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
+import { Share } from "@capacitor/share";
 import { copyOutline, openOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { ShareIdentityProps } from "./ShareIdentity.types";
@@ -49,8 +50,7 @@ const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
                   <span>
                     <IonButton
                       shape="round"
-                      className="copy-button"
-                      data-testid="copy-button-type"
+                      data-testid="share-identity-copy-button"
                       onClick={() => writeToClipboard(id)}
                     >
                       <IonIcon
@@ -67,10 +67,11 @@ const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
                   <span>
                     <IonButton
                       shape="round"
-                      className="copy-button"
-                      data-testid="copy-button-type"
-                      onClick={() => {
-                        return;
+                      data-testid="share-identity-share-button"
+                      onClick={async () => {
+                        await Share.share({
+                          text: name + " " + id,
+                        });
                       }}
                     >
                       <IonIcon
