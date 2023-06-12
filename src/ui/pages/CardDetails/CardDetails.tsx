@@ -29,12 +29,14 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { ShareIdentity } from "../../components/ShareIdentity";
+import { EditIdentity } from "../../components/EditIdentity";
 
 const CardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
   const [shareIsOpen, setShareIsOpen] = useState(false);
+  const [editIsOpen, setEditIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState({
     id: params.id,
@@ -88,8 +90,11 @@ const CardDetails = () => {
         </IonButton>
         <IonButton
           shape="round"
-          className="add-button"
-          data-testid="add-button"
+          className="edit-button"
+          data-testid="edit-button"
+          onClick={() => {
+            setEditIsOpen(true);
+          }}
         >
           <IonIcon
             slot="icon-only"
@@ -290,6 +295,12 @@ const CardDetails = () => {
       <ShareIdentity
         isOpen={shareIsOpen}
         setIsOpen={setShareIsOpen}
+        id={cardData.id}
+        name={cardData.name}
+      />
+      <EditIdentity
+        isOpen={editIsOpen}
+        setIsOpen={setEditIsOpen}
         id={cardData.id}
         name={cardData.name}
       />

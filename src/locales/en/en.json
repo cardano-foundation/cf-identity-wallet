@@ -110,5 +110,8 @@
   "shareidentity.title": "Share identity",
   "shareidentity.divider": "or",
   "shareidentity.copykey": "Copy identity key",
-  "shareidentity.more": "More share options"
+  "shareidentity.more": "More share options",
+  "editidentity.title": "Edit identity",
+  "editidentity.share": "Share identity",
+  "editidentity.delete": "Delete identity"
 }
