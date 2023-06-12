@@ -3,6 +3,7 @@ import { PreferencesStorageType } from "./preferencesStorage.type";
 
 enum PreferencesKeys {
   APP_STATE_FLAGS = "app-state-flags",
+  APP_LANGUAGE = "app-language",
 }
 
 class PreferencesStorage {
