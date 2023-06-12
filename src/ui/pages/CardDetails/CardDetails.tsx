@@ -105,9 +105,7 @@ const CardDetails = () => {
         additionalButtons={<AdditionalButtons />}
       >
         {cardData.name.length === 0 ? (
-          <div
-            className="spinner-container"
-          >
+          <div className="spinner-container">
             <IonSpinner name="dots" />
           </div>
         ) : (

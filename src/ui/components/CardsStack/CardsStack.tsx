@@ -30,7 +30,7 @@ const DidCard = ({
   return (
     <div
       key={index}
-      data-testid={`card-stack${index !== undefined ? `-index-${index}`: ""}`}
+      data-testid={`card-stack${index !== undefined ? `-index-${index}` : ""}`}
       className={`cards-stack-card ${isActive ? "active" : ""}`}
       onClick={() => {
         if (onHandleShowCardDetails) {
