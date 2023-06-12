@@ -21,6 +21,8 @@ describe("Preferences Storage", () => {
         }
       );
     expect(await PreferencesStorage.get(EXISTING_KEY)).toEqual(EXISTING_VALUE);
+    expect(Preferences.get).toHaveBeenCalled();
+    expect(Preferences.get).toHaveBeenCalledWith({ key: EXISTING_KEY });
     await expect(PreferencesStorage.get(NON_EXISTING_KEY)).rejects.toThrow(
       `${PreferencesStorage.KEY_NOT_FOUND} ${NON_EXISTING_KEY}`
     );
