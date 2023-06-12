@@ -21,11 +21,19 @@ class PreferencesStorage {
   }
 
   static async set(key: string, obj: PreferencesStorageItem): Promise<void> {
-    const objStr:string = JSON.stringify(obj);
-    await Preferences.set({
-      key,
-      value: objStr,
-    } as SetOptions);
+    try {
+      const objStr:string = JSON.stringify(obj);
+      await Preferences.set({
+        key,
+        value: objStr,
+      } as SetOptions);
+    } catch (error) {
+      if (error instanceof TypeError) {
+        throw new Error(`${PreferencesStorage.INVALID_OBJECT} with key: ${key}`);
+      } else {
+        throw new Error(`${error}`);
+      }
+    }
   }
 
   static async remove(key: string): Promise<void> {
