@@ -1,4 +1,5 @@
 import { useHistory, useParams } from "react-router-dom";
+import { Clipboard } from "@capacitor/clipboard";
 import {
   IonButton,
   IonIcon,
@@ -94,6 +95,13 @@ const CardDetails = () => {
     );
     history.push(TabsRoutePath.DIDS);
   };
+
+  const writeToClipboard = async (content: string) => {
+    await Clipboard.write({
+      string: content,
+    });
+  };
+
   return (
     <IonPage className="tab-layout card-details">
       <TabLayout
@@ -105,9 +113,7 @@ const CardDetails = () => {
         additionalButtons={<AdditionalButtons />}
       >
         {cardData.name.length === 0 ? (
-          <div
-            className="spinner-container"
-          >
+          <div className="spinner-container">
             <IonSpinner name="dots" />
           </div>
         ) : (
@@ -130,14 +136,15 @@ const CardDetails = () => {
                     </span>
 
                     <span className="card-details-info-block-data">
-                      {cardData?.id.substring(0, 13)}...
-                      {cardData?.id.slice(-5)}
+                      {cardData.id.substring(0, 13)}...
+                      {cardData.id.slice(-5)}
                     </span>
                     <span>
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button"
+                        data-testid="copy-button-id"
+                        onClick={() => writeToClipboard(cardData.id)}
                       >
                         <IonIcon
                           slot="icon-only"
@@ -174,13 +181,14 @@ const CardDetails = () => {
                     </span>
 
                     <span className="card-details-info-block-data">
-                      {cardData?.keyType}
+                      {cardData.keyType}
                     </span>
                     <span>
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button"
+                        data-testid="copy-button-type"
+                        onClick={() => writeToClipboard(cardData.keyType)}
                       >
                         <IonIcon
                           slot="icon-only"
@@ -204,14 +212,15 @@ const CardDetails = () => {
                     </span>
 
                     <span className="card-details-info-block-data">
-                      {cardData?.controller.substring(0, 13)}...
-                      {cardData?.controller.slice(-5)}
+                      {cardData.controller.substring(0, 13)}...
+                      {cardData.controller.slice(-5)}
                     </span>
                     <span>
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button"
+                        data-testid="copy-button-controller"
+                        onClick={() => writeToClipboard(cardData.controller)}
                       >
                         <IonIcon
                           slot="icon-only"
@@ -234,14 +243,17 @@ const CardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {cardData?.publicKeyBase58.substring(0, 5)}...
-                      {cardData?.publicKeyBase58.slice(-5)}
+                      {cardData.publicKeyBase58.substring(0, 5)}...
+                      {cardData.publicKeyBase58.slice(-5)}
                     </span>
                     <span>
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button"
+                        data-testid="copy-button-base58"
+                        onClick={() =>
+                          writeToClipboard(cardData.publicKeyBase58)
+                        }
                       >
                         <IonIcon
                           slot="icon-only"
