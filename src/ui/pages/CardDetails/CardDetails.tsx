@@ -74,8 +74,8 @@ const CardDetails = () => {
       <>
         <IonButton
           shape="round"
-          className="contacts-button"
-          data-testid="contacts-button"
+          className="share-button"
+          data-testid="share-button"
           onClick={() => {
             setShareIsOpen(true);
           }}

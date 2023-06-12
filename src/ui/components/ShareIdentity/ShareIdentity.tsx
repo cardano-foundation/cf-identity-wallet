@@ -14,6 +14,7 @@ import { copyOutline, openOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { ShareIdentityProps } from "./ShareIdentity.types";
 import { writeToClipboard } from "../../../utils/clipboard";
+import "./ShareIdentity.scss";
 
 const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
   return (
@@ -44,7 +45,7 @@ const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
           <IonGrid>
             <IonRow>
               <IonCol size="12">
-                <span className="card-details-info-block-line">
+                <span className="share-identity-line">
                   <span>
                     <IonButton
                       shape="round"
@@ -58,11 +59,11 @@ const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
                       />
                     </IonButton>
                   </span>
-                  <span className="card-details-info-block-data">
+                  <span className="share-identity-label">
                     {i18n.t("shareidentity.copykey")}
                   </span>
                 </span>
-                <span className="card-details-info-block-line">
+                <span className="share-identity-line">
                   <span>
                     <IonButton
                       shape="round"
@@ -78,7 +79,7 @@ const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
                       />
                     </IonButton>
                   </span>
-                  <span className="card-details-info-block-data">
+                  <span className="share-identity-info-block-data">
                     {i18n.t("shareidentity.more")}
                   </span>
                 </span>
