@@ -24,11 +24,11 @@ const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
       isOpen={isOpen}
       initialBreakpoint={0.66}
       breakpoints={[0.66]}
-      className="page-layout"
+      className="page-layout share-identity"
       data-testid="share-identity"
       onDidDismiss={() => setIsOpen(false)}
     >
-      <div className="share-identity modal">
+      <div className="modal">
         <IonHeader
           translucent={true}
           className="ion-no-border"

@@ -43,3 +43,26 @@
     }
   }
 }
+
+.edit-identity-inner {
+  #ion-react-wrapper {
+    background-color: var(--ion-color-light);
+  }
+
+  .modal {
+    display: flex;
+    flex-direction: column;
+    height: 35vh;
+    ion-content {
+      //height: unset;
+    }
+  }
+
+  .error-message {
+    text-align: center;
+  }
+
+  .error-placeholder {
+    height: 1.375rem;
+  }
+}

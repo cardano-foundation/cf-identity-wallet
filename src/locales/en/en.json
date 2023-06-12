@@ -113,5 +113,8 @@
   "shareidentity.more": "More share options",
   "editidentity.title": "Edit identity",
   "editidentity.share": "Share identity",
-  "editidentity.delete": "Delete identity"
+  "editidentity.delete": "Delete identity",
+  "editidentity.inner.label": "Display name",
+  "editidentity.inner.confirm": "Confirm changes",
+  "editidentity.inner.error": "Must be less than 32 characters long"
 }
