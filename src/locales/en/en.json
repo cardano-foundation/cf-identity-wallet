@@ -106,5 +106,9 @@
   "verifypassword.alert.button.seepasswordhint": "See my password hint",
   "verifypassword.alert.button.resetmypassword": "Reset my password",
   "verifypassword.alert.hint.title": "Your password hint is",
-  "verifypassword.alert.button.tryagain": "Great, I'll try again!"
+  "verifypassword.alert.button.tryagain": "Great, I'll try again!",
+  "shareidentity.title": "Share identity",
+  "shareidentity.divider": "or",
+  "shareidentity.copykey": "Copy identity key",
+  "shareidentity.more": "More share options"
 }

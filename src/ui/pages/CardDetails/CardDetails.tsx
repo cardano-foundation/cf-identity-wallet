@@ -1,5 +1,4 @@
 import { useHistory, useParams } from "react-router-dom";
-import { Clipboard } from "@capacitor/clipboard";
 import {
   IonButton,
   IonIcon,
@@ -28,40 +27,14 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
-
-const AdditionalButtons = () => {
-  return (
-    <>
-      <IonButton
-        shape="round"
-        className="contacts-button"
-        data-testid="contacts-button"
-      >
-        <IonIcon
-          slot="icon-only"
-          icon={shareOutline}
-          color="primary"
-        />
-      </IonButton>
-      <IonButton
-        shape="round"
-        className="add-button"
-        data-testid="add-button"
-      >
-        <IonIcon
-          slot="icon-only"
-          icon={ellipsisVertical}
-          color="primary"
-        />
-      </IonButton>
-    </>
-  );
-};
+import { writeToClipboard } from "../../../utils/clipboard";
+import { ShareIdentity } from "../../components/ShareIdentity";
 
 const CardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
+  const [shareIsOpen, setShareIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState({
     id: params.id,
@@ -96,10 +69,36 @@ const CardDetails = () => {
     history.push(TabsRoutePath.DIDS);
   };
 
-  const writeToClipboard = async (content: string) => {
-    await Clipboard.write({
-      string: content,
-    });
+  const AdditionalButtons = () => {
+    return (
+      <>
+        <IonButton
+          shape="round"
+          className="contacts-button"
+          data-testid="contacts-button"
+          onClick={() => {
+            setShareIsOpen(true);
+          }}
+        >
+          <IonIcon
+            slot="icon-only"
+            icon={shareOutline}
+            color="primary"
+          />
+        </IonButton>
+        <IonButton
+          shape="round"
+          className="add-button"
+          data-testid="add-button"
+        >
+          <IonIcon
+            slot="icon-only"
+            icon={ellipsisVertical}
+            color="primary"
+          />
+        </IonButton>
+      </>
+    );
   };
 
   return (
@@ -282,8 +281,14 @@ const CardDetails = () => {
           </>
         )}
       </TabLayout>
+      <ShareIdentity
+        isOpen={shareIsOpen}
+        setIsOpen={setShareIsOpen}
+        id={cardData.id}
+        name={cardData.name}
+      />
     </IonPage>
   );
 };
 
-export { CardDetails, AdditionalButtons };
+export { CardDetails };
