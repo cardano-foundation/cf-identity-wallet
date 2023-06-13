@@ -13,8 +13,11 @@ describe("Verify Password modal", () => {
       .mockResolvedValue(storedPass);
     const { queryByText, getByText, getByTestId } = render(
       <VerifyPassword
-        modalIsOpen={true}
-        setModalIsOpen={mockSetIsOpen}
+        isOpen={true}
+        setIsOpen={mockSetIsOpen}
+        action={() => {
+          return;
+        }}
       />
     );
 

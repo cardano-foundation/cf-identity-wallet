@@ -16,13 +16,15 @@ import { pencilOutline, shareOutline, trashOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { EditIdentityProps } from "./EditIdentity.types";
 import "./EditIdentity.scss";
-import { PageLayout } from "../layout/PageLayout";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
+import { VerifyPassword } from "../../components/VerifyPassword";
 
 const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(name);
+  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [actionType, setActionType] = useState("");
   const DISPLAY_NAME_LENGTH = 32;
   const verifyDisplayName =
     newDisplayName.length > 0 &&
@@ -33,18 +35,33 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
     setNewDisplayName(name);
   }, [name]);
 
-  const handleDelete = () => {
-    // TODO: handle delete identity
-  };
-
   const handleDismiss = () => {
     setEditIsOpen(false);
     setNewDisplayName(name);
     setIsOpen(false);
   };
 
-  const submitDisplayName = () => {
+  const handleDelete = () => {
+    setActionType("delete");
+    setIsOpen(false);
+    setVerifyPasswordIsOpen(true);
+    // TODO: handle delete identity
+  };
+
+  const handleSubmit = () => {
+    setActionType("edit");
     setEditIsOpen(false);
+    setIsOpen(false);
+    setVerifyPasswordIsOpen(true);
+  };
+
+  const verifyAction = () => {
+    if (actionType === "edit") {
+      //
+    } else if (actionType === "delete") {
+      // TODO: handle delete identity.
+      // Remember to update CardDetails file too.
+    }
   };
 
   return (
@@ -95,13 +112,12 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
                 ) : (
                   <div className="error-placeholder" />
                 )}
-
                 <IonButton
                   shape="round"
                   expand="block"
                   className="ion-primary-button"
                   data-testid="continue-button"
-                  onClick={submitDisplayName}
+                  onClick={handleSubmit}
                   disabled={!verifyDisplayName}
                 >
                   {i18n.t("editidentity.inner.confirm")}
@@ -173,6 +189,11 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
           </IonContent>
         </div>
       </IonModal>
+      <VerifyPassword
+        isOpen={verifyPasswordIsOpen}
+        setIsOpen={setVerifyPasswordIsOpen}
+        action={verifyAction}
+      />
     </>
   );
 };

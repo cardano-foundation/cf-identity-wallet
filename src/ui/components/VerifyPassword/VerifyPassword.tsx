@@ -14,10 +14,7 @@ import {
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
 
-const VerifyPassword = ({
-  modalIsOpen,
-  setModalIsOpen,
-}: VerifyPasswordProps) => {
+const VerifyPassword = ({ isOpen, setIsOpen, action }: VerifyPasswordProps) => {
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
   const [attempts, setAttempts] = useState(6);
   const [alertChoiceIsOpen, setAlertChoiceIsOpen] = useState(false);
@@ -45,7 +42,7 @@ const VerifyPassword = ({
   };
 
   const resetModal = () => {
-    setModalIsOpen(false);
+    setIsOpen(false);
     setVerifyPasswordValue("");
   };
 
@@ -73,6 +70,7 @@ const VerifyPassword = ({
       verifyPasswordValue === storedPassword
     ) {
       resetModal();
+      action();
       // @TODO - sdisalvo: navigate the user to the required page
     }
   }, [attempts]);
@@ -84,7 +82,7 @@ const VerifyPassword = ({
 
   return (
     <IonModal
-      isOpen={modalIsOpen}
+      isOpen={isOpen}
       initialBreakpoint={0.5}
       breakpoints={[0.5]}
       className="page-layout"
@@ -96,7 +94,7 @@ const VerifyPassword = ({
           header={true}
           closeButton={true}
           closeButtonLabel={`${i18n.t("verifypassword.cancel")}`}
-          closeButtonAction={() => setModalIsOpen(false)}
+          closeButtonAction={() => setIsOpen(false)}
           actionButton={true}
           actionButtonDisabled={!verifyPasswordValue.length}
           actionButtonAction={() => setAttempts(attempts - 1)}

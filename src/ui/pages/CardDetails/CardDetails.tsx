@@ -30,6 +30,7 @@ import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { ShareIdentity } from "../../components/ShareIdentity";
 import { EditIdentity } from "../../components/EditIdentity";
+import { VerifyPassword } from "../../components/VerifyPassword";
 
 const CardDetails = () => {
   const history = useHistory();
@@ -37,6 +38,7 @@ const CardDetails = () => {
   const storeState = useAppSelector(getState);
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [editIsOpen, setEditIsOpen] = useState(false);
+  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState({
     id: params.id,
@@ -58,7 +60,7 @@ const CardDetails = () => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
 
-  const onClickDone = () => {
+  const handleDone = () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
       store: storeState,
     });
@@ -69,6 +71,11 @@ const CardDetails = () => {
       updateRedux
     );
     history.push(TabsRoutePath.DIDS);
+  };
+
+  const handleDelete = () => {
+    // TODO: handle delete identity.
+    // Remember to update EditIdentity file too.
   };
 
   const AdditionalButtons = () => {
@@ -112,7 +119,7 @@ const CardDetails = () => {
         header={true}
         title={`${i18n.t("card.details.done")}`}
         titleSize="h3"
-        titleAction={() => onClickDone()}
+        titleAction={handleDone}
         menuButton={false}
         additionalButtons={<AdditionalButtons />}
       >
@@ -279,6 +286,7 @@ const CardDetails = () => {
                 expand="block"
                 color="danger"
                 className="delete-button"
+                onClick={() => setVerifyPasswordIsOpen(true)}
               >
                 <IonIcon
                   slot="icon-only"
@@ -303,6 +311,11 @@ const CardDetails = () => {
         setIsOpen={setEditIsOpen}
         id={cardData.id}
         name={cardData.name}
+      />
+      <VerifyPassword
+        isOpen={verifyPasswordIsOpen}
+        setIsOpen={setVerifyPasswordIsOpen}
+        action={handleDelete}
       />
     </IonPage>
   );
