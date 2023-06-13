@@ -28,16 +28,20 @@ const VerifyPassword = ({ isOpen, setIsOpen, action }: VerifyPasswordProps) => {
   };
 
   const handleFetchStoredValues = async () => {
-    const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
-    if (password) {
-      setStoredPassword(`${password}`);
-    }
+    try {
+      const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
+      if (password) {
+        setStoredPassword(`${password}`);
+      }
 
-    const hint = await AriesAgent.agent.getMiscRecordValueById(
-      MiscRecordId.OP_PASS_HINT
-    );
-    if (hint) {
-      setStoredHint(`${hint}`);
+      const hint = await AriesAgent.agent.getMiscRecordValueById(
+        MiscRecordId.OP_PASS_HINT
+      );
+      if (hint) {
+        setStoredHint(`${hint}`);
+      }
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
     }
   };
 

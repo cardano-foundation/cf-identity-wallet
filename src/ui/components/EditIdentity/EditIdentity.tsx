@@ -62,12 +62,12 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
 
   const verifyAction = () => {
     if (actionType === "edit") {
-      // TODO: Update Database
+      // @TODO - sdisalvo: Update Database
       //
       dispatch(setDidsCache(didsMock));
       // Navigate to DIDs
     } else if (actionType === "delete") {
-      // TODO: Update Database.
+      // @TODO - sdisalvo: Update Database.
       // Remember to update CardDetails file too.
       //
       // Update Redux
