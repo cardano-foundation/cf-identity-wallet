@@ -1,68 +1,62 @@
 .edit-identity {
-  h2 {
-    text-align: left;
-  }
-
-  ion-col {
-    display: flex;
-    flex-direction: column;
-  }
-
-  ion-button,
-  ion-button.md {
-    width: 2.8125rem;
-    height: 2.8125rem;
-    margin: 0;
-    --background: transparent;
-    --box-shadow: none;
-    --color: var(--ion-color-secondary);
-    --background-activated: var(--color-light-grey);
-
-    &::part(native) {
-      padding: 0;
+  .edit-identity-main {
+    h2 {
+      text-align: left;
     }
-  }
 
-  ion-icon {
-    width: 1.475rem;
-    height: 1.475rem;
-    margin: 0;
-  }
-
-  .edit-identity-option {
-    display: flex;
-
-    > * {
+    ion-col {
       display: flex;
       flex-direction: column;
-      justify-content: center;
     }
 
-    &:not(:last-child) {
-      margin-bottom: 0.5rem;
+    ion-button,
+    ion-button.md {
+      width: 2.8125rem;
+      height: 2.8125rem;
+      margin: 0;
+      --background: transparent;
+      --box-shadow: none;
+      --color: var(--ion-color-secondary);
+      --background-activated: var(--color-light-grey);
+
+      &::part(native) {
+        padding: 0;
+      }
+    }
+
+    ion-icon {
+      width: 1.475rem;
+      height: 1.475rem;
+      margin: 0;
+    }
+
+    .edit-identity-option {
+      display: flex;
+
+      > * {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 0.5rem;
+      }
     }
   }
-}
 
-.edit-identity-inner {
-  #ion-react-wrapper {
-    background-color: var(--ion-color-light);
-  }
-
-  .modal {
-    display: flex;
-    flex-direction: column;
-    height: 35vh;
-    ion-content {
-      //height: unset;
+  .edit-identity-inner {
+    h2 {
+      text-align: center;
     }
-  }
 
-  .error-message {
-    text-align: center;
-  }
+    .error-message,
+    .error-placeholder {
+      margin-bottom: 1rem;
+    }
 
-  .error-placeholder {
-    height: 1.375rem;
+    .error-placeholder {
+      height: 1.375rem;
+    }
   }
 }

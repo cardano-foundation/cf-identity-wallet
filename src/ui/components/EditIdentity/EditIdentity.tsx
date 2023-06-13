@@ -37,73 +37,27 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
     // TODO: handle delete identity
   };
 
-  const EditModal = () => {
-    const handleDismiss = () => {
-      setEditIsOpen(false);
-      setNewDisplayName(name);
-    };
+  const handleDismiss = () => {
+    setEditIsOpen(false);
+    setNewDisplayName(name);
+    setIsOpen(false);
+  };
 
-    const submitDisplayName = () => {
-      setEditIsOpen(false);
-    };
-
-    return (
-      <IonModal
-        isOpen={editIsOpen}
-        initialBreakpoint={0.3}
-        breakpoints={[0.3]}
-        className="page-layout edit-identity-inner"
-        data-testid="edit-identity-inner"
-        onDidDismiss={handleDismiss}
-      >
-        <div className="modal">
-          <PageLayout
-            header={true}
-            title={`${i18n.t("editidentity.title")}`}
-            footer={true}
-            primaryButtonText={`${i18n.t("editidentity.inner.confirm")}`}
-            primaryButtonAction={submitDisplayName}
-            primaryButtonDisabled={!verifyDisplayName}
-          >
-            <IonGrid>
-              <IonRow>
-                <IonCol size="12">
-                  <CustomInput
-                    dataTestId="edit-display-name"
-                    title={`${i18n.t("editidentity.inner.label")}`}
-                    hiddenInput={false}
-                    autofocus={true}
-                    onChangeInput={setNewDisplayName}
-                    value={newDisplayName}
-                  />
-                </IonCol>
-              </IonRow>
-              {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
-                <ErrorMessage
-                  message={i18n.t("editidentity.inner.error")}
-                  timeout={false}
-                />
-              ) : (
-                <div className="error-placeholder" />
-              )}
-            </IonGrid>
-          </PageLayout>
-        </div>
-      </IonModal>
-    );
+  const submitDisplayName = () => {
+    setEditIsOpen(false);
   };
 
   return (
     <>
       <IonModal
         isOpen={isOpen}
-        initialBreakpoint={0.3}
-        breakpoints={[0.3]}
+        initialBreakpoint={0.33}
+        breakpoints={[0.33]}
         className="page-layout"
         data-testid="edit-identity"
-        onDidDismiss={() => setIsOpen(false)}
+        onDidDismiss={handleDismiss}
       >
-        <div className="edit-identity modal">
+        <div className="modal edit-identity">
           <IonHeader
             translucent={true}
             className="ion-no-border"
@@ -119,71 +73,106 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
             className="edit-identity-body"
             color="light"
           >
-            <IonGrid>
-              <IonRow>
-                <IonCol size="12">
-                  <span
-                    className="edit-identity-option"
-                    data-testid="edit-identity-edit-button"
-                    onClick={() => setEditIsOpen(true)}
-                  >
-                    <span>
-                      <IonButton shape="round">
-                        <IonIcon
-                          slot="icon-only"
-                          icon={pencilOutline}
-                        />
-                      </IonButton>
+            {editIsOpen ? (
+              <IonGrid className="edit-identity-inner">
+                <IonRow>
+                  <IonCol size="12">
+                    <CustomInput
+                      dataTestId="edit-display-name"
+                      title={`${i18n.t("editidentity.inner.label")}`}
+                      hiddenInput={false}
+                      autofocus={true}
+                      onChangeInput={setNewDisplayName}
+                      value={newDisplayName}
+                    />
+                  </IonCol>
+                </IonRow>
+                {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
+                  <ErrorMessage
+                    message={i18n.t("editidentity.inner.error")}
+                    timeout={false}
+                  />
+                ) : (
+                  <div className="error-placeholder" />
+                )}
+
+                <IonButton
+                  shape="round"
+                  expand="block"
+                  className="ion-primary-button"
+                  data-testid="continue-button"
+                  onClick={submitDisplayName}
+                  disabled={!verifyDisplayName}
+                >
+                  {i18n.t("editidentity.inner.confirm")}
+                </IonButton>
+              </IonGrid>
+            ) : (
+              <IonGrid className="edit-identity-main">
+                <IonRow>
+                  <IonCol size="12">
+                    <span
+                      className="edit-identity-option"
+                      data-testid="edit-identity-edit-button"
+                      onClick={() => setEditIsOpen(true)}
+                    >
+                      <span>
+                        <IonButton shape="round">
+                          <IonIcon
+                            slot="icon-only"
+                            icon={pencilOutline}
+                          />
+                        </IonButton>
+                      </span>
+                      <span className="edit-identity-label">
+                        {i18n.t("editidentity.title")}
+                      </span>
                     </span>
-                    <span className="edit-identity-label">
-                      {i18n.t("editidentity.title")}
+                    <span
+                      className="edit-identity-option"
+                      data-testid="edit-identity-share-button"
+                      onClick={async () => {
+                        await Share.share({
+                          text: name + " " + id,
+                        });
+                      }}
+                    >
+                      <span>
+                        <IonButton shape="round">
+                          <IonIcon
+                            slot="icon-only"
+                            icon={shareOutline}
+                          />
+                        </IonButton>
+                      </span>
+                      <span className="edit-identity-info-block-data">
+                        {i18n.t("editidentity.share")}
+                      </span>
                     </span>
-                  </span>
-                  <span
-                    className="edit-identity-option"
-                    data-testid="edit-identity-share-button"
-                    onClick={async () => {
-                      await Share.share({
-                        text: name + " " + id,
-                      });
-                    }}
-                  >
-                    <span>
-                      <IonButton shape="round">
-                        <IonIcon
-                          slot="icon-only"
-                          icon={shareOutline}
-                        />
-                      </IonButton>
+                    <span
+                      className="edit-identity-option"
+                      data-testid="edit-identity-delete-button"
+                      onClick={handleDelete}
+                    >
+                      <span>
+                        <IonButton shape="round">
+                          <IonIcon
+                            slot="icon-only"
+                            icon={trashOutline}
+                          />
+                        </IonButton>
+                      </span>
+                      <span className="edit-identity-label">
+                        {i18n.t("editidentity.delete")}
+                      </span>
                     </span>
-                    <span className="edit-identity-info-block-data">
-                      {i18n.t("editidentity.share")}
-                    </span>
-                  </span>
-                  <span
-                    className="edit-identity-option"
-                    data-testid="edit-identity-delete-button"
-                    onClick={handleDelete}
-                  >
-                    <span>
-                      <IonButton shape="round">
-                        <IonIcon
-                          slot="icon-only"
-                          icon={trashOutline}
-                        />
-                      </IonButton>
-                    </span>
-                    <span className="edit-identity-label">
-                      {i18n.t("editidentity.delete")}
-                    </span>
-                  </span>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
+                  </IonCol>
+                </IonRow>
+              </IonGrid>
+            )}
           </IonContent>
         </div>
       </IonModal>
-      <EditModal />
     </>
   );
 };
