@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 import {
   IonButton,
   IonCol,
@@ -20,11 +21,18 @@ import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../Alert";
-import { useAppDispatch } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setDidsCache } from "../../../store/reducers/didsCache";
 import { didsMock } from "../../__mocks__/didsMock";
+import { getBackRoute } from "../../../routes/backRoute";
+import { TabsRoutePath } from "../navigation/TabsMenu";
+import { getState } from "../../../store/reducers/stateCache";
+import { updateReduxState } from "../../../store/utils";
 
 const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
+  const storeState = useAppSelector(getState);
+  const history = useHistory();
+  const [dids, setDids] = useState(didsMock);
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(name);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -60,18 +68,43 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
     setVerifyPasswordIsOpen(true);
   };
 
+  const handleDone = () => {
+    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
+      store: storeState,
+    });
+    updateReduxState(
+      backPath.pathname,
+      { store: storeState },
+      dispatch,
+      updateRedux
+    );
+    history.push(TabsRoutePath.DIDS);
+  };
+
   const verifyAction = () => {
     if (actionType === "edit") {
-      // @TODO - sdisalvo: Update Database
+      // @TODO - sdisalvo: Update Database.
+      // Remember to update CardDetails file too.
       //
-      dispatch(setDidsCache(didsMock));
-      // Navigate to DIDs
+      const updatedDids = dids;
+      // const foundIndex = dids.findIndex((x) => x.id == id);
+      // updatedDids[foundIndex].name = newDisplayName;
+      updatedDids.forEach((element, index) => {
+        if (element.id === id) {
+          updatedDids[index].name = newDisplayName;
+        }
+      });
+      setDids(updatedDids);
+      dispatch(setDidsCache(updatedDids));
+      handleDone();
     } else if (actionType === "delete") {
       // @TODO - sdisalvo: Update Database.
       // Remember to update CardDetails file too.
       //
-      // Update Redux
-      // Navigate to DIDs
+      const updatedDids = dids.filter((item) => item.id !== id);
+      setDids(updatedDids);
+      dispatch(setDidsCache(updatedDids));
+      handleDone();
     }
   };
 

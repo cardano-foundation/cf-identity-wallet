@@ -32,6 +32,7 @@ import { ShareIdentity } from "../../components/ShareIdentity";
 import { EditIdentity } from "../../components/EditIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
+import { setDidsCache } from "../../../store/reducers/didsCache";
 
 const CardDetails = () => {
   const history = useHistory();
@@ -41,6 +42,7 @@ const CardDetails = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [dids, setDids] = useState(didsMock);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState({
     id: params.id,
@@ -54,7 +56,7 @@ const CardDetails = () => {
   });
 
   useEffect(() => {
-    const cardDetails = didsMock.find((did) => did.id === params.id);
+    const cardDetails = dids.find((did) => did.id === params.id);
     if (cardDetails) setCardData(cardDetails);
   }, [params?.id]);
 
@@ -76,11 +78,12 @@ const CardDetails = () => {
   };
 
   const handleDelete = () => {
-    // TODO: Update Database.
+    // @TODO - sdisalvo: Update Database.
     // Remember to update EditIdentity file too.
     //
-    // Update Redux
-    // Navigate to DIDs
+    const updatedDids = dids.filter((item) => item.id !== cardData.id);
+    setDids(updatedDids);
+    dispatch(setDidsCache(updatedDids));
     handleDone();
   };
 
