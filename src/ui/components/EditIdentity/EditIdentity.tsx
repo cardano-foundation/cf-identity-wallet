@@ -28,11 +28,11 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
+import { CardsStackProps } from "../CardsStack/CardsStack.types";
 
 const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
   const storeState = useAppSelector(getState);
   const history = useHistory();
-  const [dids, setDids] = useState(didsMock);
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(name);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -51,7 +51,6 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
 
   const handleDismiss = () => {
     setEditIsOpen(false);
-    setNewDisplayName(name);
     setIsOpen(false);
   };
 
@@ -86,23 +85,21 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
       // @TODO - sdisalvo: Update Database.
       // Remember to update CardDetails file too.
       //
-      const updatedDids = dids;
-      // const foundIndex = dids.findIndex((x) => x.id == id);
-      // updatedDids[foundIndex].name = newDisplayName;
-      updatedDids.forEach((element, index) => {
+      const updatedDids: CardsStackProps[] = [];
+      didsMock.forEach((element) => {
+        const obj = { ...element };
         if (element.id === id) {
-          updatedDids[index].name = newDisplayName;
+          obj.name = newDisplayName;
         }
+        updatedDids.push(obj);
       });
-      setDids(updatedDids);
       dispatch(setDidsCache(updatedDids));
       handleDone();
     } else if (actionType === "delete") {
       // @TODO - sdisalvo: Update Database.
       // Remember to update CardDetails file too.
       //
-      const updatedDids = dids.filter((item) => item.id !== id);
-      setDids(updatedDids);
+      const updatedDids = didsMock.filter((item) => item.id !== id);
       dispatch(setDidsCache(updatedDids));
       handleDone();
     }
@@ -174,7 +171,10 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
                     <span
                       className="edit-identity-option"
                       data-testid="edit-identity-edit-button"
-                      onClick={() => setEditIsOpen(true)}
+                      onClick={() => {
+                        setNewDisplayName(name);
+                        setEditIsOpen(true);
+                      }}
                     >
                       <span>
                         <IonButton shape="round">
