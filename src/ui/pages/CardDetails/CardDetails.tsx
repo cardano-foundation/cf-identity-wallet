@@ -31,6 +31,7 @@ import { writeToClipboard } from "../../../utils/clipboard";
 import { ShareIdentity } from "../../components/ShareIdentity";
 import { EditIdentity } from "../../components/EditIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
+import { Alert } from "../../components/Alert";
 
 const CardDetails = () => {
   const history = useHistory();
@@ -38,6 +39,7 @@ const CardDetails = () => {
   const storeState = useAppSelector(getState);
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [editIsOpen, setEditIsOpen] = useState(false);
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState({
@@ -74,8 +76,12 @@ const CardDetails = () => {
   };
 
   const handleDelete = () => {
-    // TODO: handle delete identity.
+    // TODO: Update Database.
     // Remember to update EditIdentity file too.
+    //
+    // Update Redux
+    // Navigate to DIDs
+    handleDone();
   };
 
   const AdditionalButtons = () => {
@@ -286,7 +292,7 @@ const CardDetails = () => {
                 expand="block"
                 color="danger"
                 className="delete-button"
-                onClick={() => setVerifyPasswordIsOpen(true)}
+                onClick={() => setAlertIsOpen(true)}
               >
                 <IonIcon
                   slot="icon-only"
@@ -294,7 +300,7 @@ const CardDetails = () => {
                   icon={trashOutline}
                   color="primary"
                 />
-                {i18n.t("dids.card.details.delete")}
+                {i18n.t("dids.card.details.delete.button")}
               </IonButton>
             </div>
           </>
@@ -311,6 +317,16 @@ const CardDetails = () => {
         setIsOpen={setEditIsOpen}
         id={cardData.id}
         name={cardData.name}
+      />
+      <Alert
+        isOpen={alertIsOpen}
+        setIsOpen={setAlertIsOpen}
+        headerText={i18n.t("dids.card.details.delete.alert.title")}
+        confirmButtonText={`${i18n.t(
+          "dids.card.details.delete.alert.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t("dids.card.details.delete.alert.cancel")}`}
+        actionConfirm={() => setVerifyPasswordIsOpen(true)}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}

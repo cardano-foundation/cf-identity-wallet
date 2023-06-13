@@ -19,10 +19,12 @@ import "./EditIdentity.scss";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import { VerifyPassword } from "../../components/VerifyPassword";
+import { Alert } from "../Alert";
 
 const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(name);
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
   const DISPLAY_NAME_LENGTH = 32;
@@ -44,8 +46,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
   const handleDelete = () => {
     setActionType("delete");
     setIsOpen(false);
-    setVerifyPasswordIsOpen(true);
-    // TODO: handle delete identity
+    setAlertIsOpen(true);
   };
 
   const handleSubmit = () => {
@@ -57,10 +58,16 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
 
   const verifyAction = () => {
     if (actionType === "edit") {
+      // TODO: Update Database
       //
+      // Update Redux
+      // Navigate to DIDs
     } else if (actionType === "delete") {
-      // TODO: handle delete identity.
+      // TODO: Update Database.
       // Remember to update CardDetails file too.
+      //
+      // Update Redux
+      // Navigate to DIDs
     }
   };
 
@@ -189,6 +196,16 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
           </IonContent>
         </div>
       </IonModal>
+      <Alert
+        isOpen={alertIsOpen}
+        setIsOpen={setAlertIsOpen}
+        headerText={i18n.t("dids.card.details.delete.alert.title")}
+        confirmButtonText={`${i18n.t(
+          "dids.card.details.delete.alert.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t("dids.card.details.delete.alert.cancel")}`}
+        actionConfirm={() => setVerifyPasswordIsOpen(true)}
+      />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
