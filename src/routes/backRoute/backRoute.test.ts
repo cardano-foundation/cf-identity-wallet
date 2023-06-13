@@ -34,6 +34,8 @@ describe("getBackRoute", () => {
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
+          seedPhraseIsSet: false,
+          passwordIsSet: false,
           loggedIn: false,
           time: 0,
         },
@@ -102,6 +104,8 @@ describe("getBackRoute", () => {
           loggedIn: false,
           time: 0,
           passcodeIsSet: true,
+          seedPhraseIsSet: false,
+          passwordIsSet: false,
         },
       },
       seedPhraseCache: {
@@ -161,6 +165,8 @@ describe("getPreviousRoute", () => {
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
+          seedPhraseIsSet: false,
+          passwordIsSet: false,
           loggedIn: false,
           time: 0,
         },
