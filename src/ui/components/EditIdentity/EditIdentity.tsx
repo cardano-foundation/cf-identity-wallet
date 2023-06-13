@@ -20,6 +20,9 @@ import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../Alert";
+import { useAppDispatch } from "../../../store/hooks";
+import { setDidsCache } from "../../../store/reducers/didsCache";
+import { didsMock } from "../../__mocks__/didsMock";
 
 const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -32,6 +35,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
     newDisplayName.length > 0 &&
     newDisplayName.length <= DISPLAY_NAME_LENGTH &&
     newDisplayName !== name;
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setNewDisplayName(name);
@@ -60,7 +64,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
     if (actionType === "edit") {
       // TODO: Update Database
       //
-      // Update Redux
+      dispatch(setDidsCache(didsMock));
       // Navigate to DIDs
     } else if (actionType === "delete") {
       // TODO: Update Database.
