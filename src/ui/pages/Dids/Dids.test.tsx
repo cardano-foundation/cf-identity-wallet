@@ -4,14 +4,14 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Dids } from "./Dids";
 import { store } from "../../../store";
-import {TabsRoutePath} from "../../../routes/paths";
+import { TabsRoutePath } from "../../../routes/paths";
 import { CardDetails } from "../CardDetails";
 import {
   CLEAR_STATE_DELAY,
   NAVIGATION_DELAY,
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import {filteredDidsMock} from "../../__mocks__/filteredDidsMock";
+import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
 
 describe("Dids Tab", () => {
   test("Renders Dids Tab", () => {
@@ -29,7 +29,6 @@ describe("Dids Tab", () => {
   });
 
   test("Navigate from Dids Tab to Card Details and back", async () => {
-
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -41,11 +40,10 @@ describe("Dids Tab", () => {
           passcodeIsSet: true,
         },
       },
-      seedPhraseCache: {
-      },
+      seedPhraseCache: {},
       didsCache: {
-        dids: [filteredDidsMock[0]]
-      }
+        dids: [filteredDidsMock[0]],
+      },
     };
 
     const storeMocked = {
@@ -83,7 +81,9 @@ describe("Dids Tab", () => {
     const firstCardDetailsId = getByTestId("card-stack");
     expect(firstCardDetailsId).not.toHaveClass("active");
 
-    const doneButton = getByTestId(`tab-title-${(EN_TRANSLATIONS["card.details.done"]).toLowerCase()}`);
+    const doneButton = getByTestId(
+      `tab-title-${EN_TRANSLATIONS["card.details.done"].toLowerCase()}`
+    );
 
     act(() => {
       fireEvent.click(doneButton);
