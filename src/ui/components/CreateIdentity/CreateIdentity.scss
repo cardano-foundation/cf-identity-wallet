@@ -1,6 +1,6 @@
 .create-identity {
   .type-input-title,
-  ion-item.input-item ion-label[position=stacked] {
+  ion-item.input-item ion-label[position="stacked"] {
     font-size: 16px;
     font-weight: 500;
     line-height: 22px;
@@ -8,7 +8,7 @@
   ion-item.input-item .input-line ion-input input::placeholder {
     font-size: 16px;
   }
-  .hide-title ion-item.input-item ion-label[position=stacked] {
+  .hide-title ion-item.input-item ion-label[position="stacked"] {
     opacity: 0;
   }
   .type-input-title {
@@ -18,9 +18,13 @@
     --background: var(--ion-color-light);
     --inner-border-width: 0;
     border: 1px solid var(--color-dark-grey);
-    color: #363C4A;
+    color: #363c4a;
     border-radius: 8px;
     width: 100%;
+  }
+  .selectedType {
+    border: 1px solid #363C4A !important;
+    --background: #D9D9D9;
   }
   .col-left {
     margin-right: 5px;
@@ -33,5 +37,8 @@
     justify-content: center;
     align-items: center;
     width: 90%;
+  }
+  .continue-button-container {
+    margin-top: 27px;
   }
 }

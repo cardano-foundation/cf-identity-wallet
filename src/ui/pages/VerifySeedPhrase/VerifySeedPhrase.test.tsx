@@ -41,7 +41,8 @@ describe("Verify Seed Phrase Page", () => {
       },
     },
     seedPhraseCache: {
-      seedPhrase160: "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+      seedPhrase160:
+        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
@@ -187,9 +188,11 @@ describe("Verify Seed Phrase Page", () => {
 
     expect(continueButton).toBeDisabled();
 
-    initialState.seedPhraseCache.seedPhrase160.split(' ').forEach(async (word) => {
-      fireEvent.click(getByText(String(word)));
-    });
+    initialState.seedPhraseCache.seedPhrase160
+      .split(" ")
+      .forEach(async (word) => {
+        fireEvent.click(getByText(String(word)));
+      });
 
     await waitFor(() =>
       expect(matchingSeedPhraseContainer.childNodes.length).toBe(
@@ -197,7 +200,15 @@ describe("Verify Seed Phrase Page", () => {
       )
     );
 
-    fireEvent.click(getByText(String(initialState.seedPhraseCache.seedPhrase160.split(" ")[MNEMONIC_FIFTEEN_WORDS - 1])));
+    fireEvent.click(
+      getByText(
+        String(
+          initialState.seedPhraseCache.seedPhrase160.split(" ")[
+            MNEMONIC_FIFTEEN_WORDS - 1
+          ]
+        )
+      )
+    );
 
     await waitFor(() =>
       expect(matchingSeedPhraseContainer.childNodes.length).toBe(
@@ -205,7 +216,15 @@ describe("Verify Seed Phrase Page", () => {
       )
     );
 
-    fireEvent.click(getByText(String(initialState.seedPhraseCache.seedPhrase160.split(" ")[MNEMONIC_FIFTEEN_WORDS - 1])));
+    fireEvent.click(
+      getByText(
+        String(
+          initialState.seedPhraseCache.seedPhrase160.split(" ")[
+            MNEMONIC_FIFTEEN_WORDS - 1
+          ]
+        )
+      )
+    );
 
     await waitFor(() =>
       expect(continueButton).toHaveAttribute("disabled", "false")
@@ -226,8 +245,6 @@ describe("Verify Seed Phrase Page", () => {
       seedPhraseString
     );
   });
-
-
 
   test("calls handleOnBack when back button is clicked", async () => {
     const mockStore = configureStore();

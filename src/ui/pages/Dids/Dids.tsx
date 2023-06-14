@@ -1,6 +1,6 @@
 import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
-import {useState} from "react";
+import { useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Dids.scss";
@@ -10,7 +10,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getDidsCache } from "../../../store/reducers/didsCache";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
-import {CreateIdentity} from "../../components/CreateIdentity";
+import { CreateIdentity } from "../../components/CreateIdentity";
 
 interface AdditionalButtonsProps {
   handleCreateDid: () => void;
@@ -82,7 +82,10 @@ const Dids = () => {
             buttonAction={handleCreateDid}
           />
         )}
-        <CreateIdentity modalIsOpen={modalIsOpen} setModalIsOpen={(isOpen:boolean)=> setModalIsOpen(isOpen)}/>
+        <CreateIdentity
+          modalIsOpen={modalIsOpen}
+          setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
+        />
       </TabLayout>
     </IonPage>
   );
