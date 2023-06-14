@@ -106,5 +106,20 @@
   "verifypassword.alert.button.seepasswordhint": "See my password hint",
   "verifypassword.alert.button.resetmypassword": "Reset my password",
   "verifypassword.alert.hint.title": "Your password hint is",
-  "verifypassword.alert.button.tryagain": "Great, I'll try again!"
+  "verifypassword.alert.button.tryagain": "Great, I'll try again!",
+  "createIdentity": {
+    "title": "Create new identity",
+    "displayName": {
+      "title": "Display name",
+      "placeholder": "Create a name for this identity"
+    },
+    "identityType": {
+      "title": "Identity type",
+      "types": {
+        "type0": "did:key",
+        "type1": "KERI"
+      }
+    },
+    "confirmButton": "Create identity"
+  }
 }
