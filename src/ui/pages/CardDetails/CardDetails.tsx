@@ -81,7 +81,6 @@ const CardDetails = () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
     // Remember to update EditIdentity file too.
-    //
     const updatedDids = dids.filter((item) => item.id !== cardData.id);
     setDids(updatedDids);
     dispatch(setDidsCache(updatedDids));

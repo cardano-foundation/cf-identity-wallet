@@ -89,7 +89,6 @@ const VerifyPassword = ({ isOpen, setIsOpen, action }: VerifyPasswordProps) => {
     ) {
       resetModal();
       action();
-      // @TODO - sdisalvo: navigate the user to the required page
     }
   }, [attempts]);
 
