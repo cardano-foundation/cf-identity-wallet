@@ -1,6 +1,9 @@
 import { Preferences, GetResult } from "@capacitor/preferences";
 import { PreferencesStorageItem } from "./preferencesStorage.type";
-import {RemoveOptions, SetOptions} from "@capacitor/preferences/dist/esm/definitions";
+import {
+  RemoveOptions,
+  SetOptions,
+} from "@capacitor/preferences/dist/esm/definitions";
 
 enum PreferencesKeys {
   APP_STATE_FLAGS = "app-state-flags",
@@ -21,7 +24,7 @@ class PreferencesStorage {
   }
 
   static async set(key: string, obj: PreferencesStorageItem): Promise<void> {
-    const objStr:string = JSON.stringify(obj);
+    const objStr: string = JSON.stringify(obj);
     await Preferences.set({
       key,
       value: objStr,

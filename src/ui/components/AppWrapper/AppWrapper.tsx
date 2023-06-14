@@ -18,18 +18,29 @@ const AppWrapper = (props: { children: ReactNode }) => {
     initApp();
   }, []);
 
-  const initApp = async () => {
+  const checkKeyStore = async (key: string) => {
     try {
-      const passcodeIsSet = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE);
-
-      dispatch(
-        setAuthentication({ ...authentication, passcodeIsSet: !!passcodeIsSet })
-      );
-
-      dispatch(setDidsCache(filteredDidsMock));
+      const itemInKeyStore = await SecureStorage.get(key);
+      return !!itemInKeyStore;
     } catch (e) {
-      /* empty */
+      return false;
     }
+  }
+  const initApp = async () => {
+    const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
+    const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY)
+    const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
+
+    dispatch(
+      setAuthentication({
+        ...authentication,
+        passcodeIsSet,
+        seedPhraseIsSet,
+        passwordIsSet,
+      })
+    );
+
+    dispatch(setDidsCache(filteredDidsMock));
   };
 
   return <>{props.children}</>;
