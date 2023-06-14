@@ -29,8 +29,30 @@ const convertRootKeySpy = jest
   .mockReturnValue(rootKey);
 
 describe("Verify Seed Phrase Page", () => {
-  const seedPhrase: (string | null)[] = [];
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const initialState = {
+    stateCache: {
+      routes: [RoutePath.VERIFY_SEED_PHRASE],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+      },
+    },
+    seedPhraseCache: {
+      seedPhrase160: "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+      seedPhrase256: "",
+      selected: FIFTEEN_WORDS_BIT_LENGTH,
+    },
+  };
+
+  const storeMocked = {
+    ...mockStore(initialState),
+    dispatch: dispatchMock,
+  };
   test("The user can navigate from Generate to Verify Seed Phrase page", async () => {
+    const seedPhrase = [];
     const { getByTestId, queryByText, getByText } = render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
@@ -83,7 +105,7 @@ describe("Verify Seed Phrase Page", () => {
 
   test("The user can't Verify the Seed Phrase", async () => {
     const { getByTestId, queryByText } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
           <Route
             path={RoutePath.VERIFY_SEED_PHRASE}
@@ -136,7 +158,7 @@ describe("Verify Seed Phrase Page", () => {
 
   test("The user can Verify the Seed Phrase", async () => {
     const { getByTestId, getByText } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
           <Route
             path={RoutePath.VERIFY_SEED_PHRASE}
@@ -165,7 +187,7 @@ describe("Verify Seed Phrase Page", () => {
 
     expect(continueButton).toBeDisabled();
 
-    seedPhrase.forEach(async (word) => {
+    initialState.seedPhraseCache.seedPhrase160.split(' ').forEach(async (word) => {
       fireEvent.click(getByText(String(word)));
     });
 
@@ -175,7 +197,7 @@ describe("Verify Seed Phrase Page", () => {
       )
     );
 
-    fireEvent.click(getByText(String(seedPhrase[MNEMONIC_FIFTEEN_WORDS - 1])));
+    fireEvent.click(getByText(String(initialState.seedPhraseCache.seedPhrase160.split(" ")[MNEMONIC_FIFTEEN_WORDS - 1])));
 
     await waitFor(() =>
       expect(matchingSeedPhraseContainer.childNodes.length).toBe(
@@ -183,7 +205,7 @@ describe("Verify Seed Phrase Page", () => {
       )
     );
 
-    fireEvent.click(getByText(String(seedPhrase[MNEMONIC_FIFTEEN_WORDS - 1])));
+    fireEvent.click(getByText(String(initialState.seedPhraseCache.seedPhrase160.split(" ")[MNEMONIC_FIFTEEN_WORDS - 1])));
 
     await waitFor(() =>
       expect(continueButton).toHaveAttribute("disabled", "false")
@@ -193,7 +215,7 @@ describe("Verify Seed Phrase Page", () => {
 
     await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
 
-    const seedPhraseString = seedPhrase.join(" ");
+    const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
     expect(convertRootKeySpy).toBeCalledWith(seedPhraseString);
     expect(secureStorageSetSpy).toBeCalledWith(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
@@ -204,6 +226,8 @@ describe("Verify Seed Phrase Page", () => {
       seedPhraseString
     );
   });
+
+
 
   test("calls handleOnBack when back button is clicked", async () => {
     const mockStore = configureStore();

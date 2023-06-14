@@ -54,6 +54,7 @@ const Routes = () => {
     store: storeState,
   });
 
+
   useEffect(() => {
     if (!routes.length) dispatch(setCurrentRoute({ path: nextPath.pathname }));
   });

@@ -10,6 +10,8 @@ interface AuthenticationCacheProps {
   loggedIn: boolean;
   time: number;
   passcodeIsSet: boolean;
+  seedPhraseIsSet: boolean;
+  passwordIsSet: boolean;
 }
 
 interface StateCacheProps {
