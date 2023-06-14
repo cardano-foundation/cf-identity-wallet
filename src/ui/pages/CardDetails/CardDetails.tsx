@@ -78,6 +78,7 @@ const CardDetails = () => {
   };
 
   const handleDelete = () => {
+    setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
     // Remember to update EditIdentity file too.
     //
@@ -308,34 +309,36 @@ const CardDetails = () => {
             </div>
           </>
         )}
+        <ShareIdentity
+          isOpen={shareIsOpen}
+          setIsOpen={setShareIsOpen}
+          id={cardData.id}
+          name={cardData.name}
+        />
+        <EditIdentity
+          isOpen={editIsOpen}
+          setIsOpen={setEditIsOpen}
+          id={cardData.id}
+          name={cardData.name}
+        />
+        <Alert
+          isOpen={alertIsOpen}
+          setIsOpen={setAlertIsOpen}
+          headerText={i18n.t("dids.card.details.delete.alert.title")}
+          confirmButtonText={`${i18n.t(
+            "dids.card.details.delete.alert.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "dids.card.details.delete.alert.cancel"
+          )}`}
+          actionConfirm={() => setVerifyPasswordIsOpen(true)}
+        />
+        <VerifyPassword
+          isOpen={verifyPasswordIsOpen}
+          setIsOpen={setVerifyPasswordIsOpen}
+          action={handleDelete}
+        />
       </TabLayout>
-      <ShareIdentity
-        isOpen={shareIsOpen}
-        setIsOpen={setShareIsOpen}
-        id={cardData.id}
-        name={cardData.name}
-      />
-      <EditIdentity
-        isOpen={editIsOpen}
-        setIsOpen={setEditIsOpen}
-        id={cardData.id}
-        name={cardData.name}
-      />
-      <Alert
-        isOpen={alertIsOpen}
-        setIsOpen={setAlertIsOpen}
-        headerText={i18n.t("dids.card.details.delete.alert.title")}
-        confirmButtonText={`${i18n.t(
-          "dids.card.details.delete.alert.confirm"
-        )}`}
-        cancelButtonText={`${i18n.t("dids.card.details.delete.alert.cancel")}`}
-        actionConfirm={() => setVerifyPasswordIsOpen(true)}
-      />
-      <VerifyPassword
-        isOpen={verifyPasswordIsOpen}
-        setIsOpen={setVerifyPasswordIsOpen}
-        action={handleDelete}
-      />
     </IonPage>
   );
 };

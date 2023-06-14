@@ -14,6 +14,8 @@ import {
 } from "@ionic/react";
 import { Share } from "@capacitor/share";
 import { pencilOutline, shareOutline, trashOutline } from "ionicons/icons";
+import { Capacitor } from "@capacitor/core";
+import { Keyboard } from "@capacitor/keyboard";
 import { i18n } from "../../../i18n";
 import { EditIdentityProps } from "./EditIdentity.types";
 import "./EditIdentity.scss";
@@ -38,6 +40,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
+  const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
   const DISPLAY_NAME_LENGTH = 32;
   const verifyDisplayName =
     newDisplayName.length > 0 &&
@@ -81,6 +84,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
   };
 
   const verifyAction = () => {
+    handleDismiss();
     if (actionType === "edit") {
       // @TODO - sdisalvo: Update Database.
       // Remember to update CardDetails file too.
@@ -105,17 +109,30 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
     }
   };
 
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      Keyboard.addListener("keyboardWillShow", () => {
+        setkeyboardIsOpen(true);
+      });
+      Keyboard.addListener("keyboardWillHide", () => {
+        setkeyboardIsOpen(false);
+      });
+    }
+  }, []);
+
   return (
     <>
       <IonModal
         isOpen={isOpen}
-        initialBreakpoint={0.33}
-        breakpoints={[0.33]}
-        className="page-layout"
+        initialBreakpoint={0.35}
+        breakpoints={[0.35]}
+        className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
         data-testid="edit-identity"
         onDidDismiss={handleDismiss}
       >
-        <div className="modal edit-identity">
+        <div
+          className={`edit-identity modal ${editIsOpen ? "editor" : "menu"}`}
+        >
           <IonHeader
             translucent={true}
             className="ion-no-border"

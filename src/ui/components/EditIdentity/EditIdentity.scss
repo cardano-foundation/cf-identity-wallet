@@ -1,8 +1,14 @@
 .edit-identity {
+  h2 {
+    text-align: left;
+  }
+
+  &.editor h2 {
+    text-align: center;
+  }
+
   .edit-identity-main {
-    h2 {
-      text-align: left;
-    }
+    margin-top: 0.5rem;
 
     ion-col {
       display: flex;
@@ -46,10 +52,6 @@
   }
 
   .edit-identity-inner {
-    h2 {
-      text-align: center;
-    }
-
     .error-message,
     .error-placeholder {
       margin-bottom: 1rem;
