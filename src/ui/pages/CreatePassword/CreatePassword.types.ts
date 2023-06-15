@@ -6,7 +6,7 @@ interface RegexItemProps {
 }
 interface PasswordRegexProps {
   password: string;
-  setRegexState: Dispatch<SetStateAction<string>>;
+  setRegexState: Dispatch<SetStateAction<boolean>>;
 }
 
 export type { PasswordRegexProps, RegexItemProps };

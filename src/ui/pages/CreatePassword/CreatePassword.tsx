@@ -61,31 +61,20 @@ const RegexItem = ({ condition, label }: RegexItemProps) => {
 };
 
 const PasswordRegex = ({ password, setRegexState }: PasswordRegexProps) => {
-  const specialChar = password.match(/(^[A-Za-z0-9]|[^\p{L}\d\s])$/u);
   const length = password.match(/^.{8,64}$/);
   const uppercase = password.match(/([A-Z])/);
   const lowercase = password.match(/([a-z])/);
   const number = password.match(/([0-9])/);
   const symbol = password.match(/[^\p{L}\d\s]/u);
 
-  useEffect(() => {
-    let regexError = "";
-    if (!length) {
-      regexError = STRING_LENGTH;
-    } else if (!uppercase) {
-      regexError = STRING_UPPERCASE;
-    } else if (!lowercase) {
-      regexError = STRING_LOWERCASE;
-    } else if (!number) {
-      regexError = STRING_NUMBER;
-    } else if (!symbol) {
-      regexError = STRING_SYMBOL;
-    } else if (!specialChar) {
-      regexError = STRING_SPECIAL_CHAR;
-    }
+  const validatePassword = (password: string) => {
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return passwordRegex.test(password);
+  };
 
-    setRegexState(regexError);
-  }, [specialChar, length, uppercase, lowercase, number, symbol]);
+  useEffect(() => {
+    setRegexState(validatePassword(password));
+  }, [password]);
 
   return (
     <IonList
@@ -129,6 +118,7 @@ const CreatePassword = () => {
   const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
   const [createHintValue, setCreateHintValue] = useState("");
   const [regexState, setRegexState] = useState("");
+  const [passwordIsValid, setPasswordIsValid] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const passwordValueMatching =
     createPasswordValue.length > 0 &&
@@ -139,7 +129,7 @@ const CreatePassword = () => {
     confirmPasswordValue.length > 0 &&
     createPasswordValue !== confirmPasswordValue;
   const validated =
-    !regexState.length &&
+    passwordIsValid &&
     passwordValueMatching &&
     createHintValue !== createPasswordValue;
 
@@ -262,7 +252,7 @@ const CreatePassword = () => {
               <IonCol size="12">
                 <PasswordRegex
                   password={createPasswordValue}
-                  setRegexState={setRegexState}
+                  setRegexState={setPasswordIsValid}
                 />
               </IonCol>
             </IonRow>
