@@ -3,7 +3,6 @@ import { Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./style.scss";
 import { AppWrapper } from "./components/AppWrapper";
-import {Routes2} from "../routes/routes2";
 
 setupIonicReact();
 

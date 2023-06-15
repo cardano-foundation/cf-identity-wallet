@@ -11,8 +11,9 @@ import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { CreateIdentityProps } from "./CreateIdentity.types";
 import { CustomInput } from "../CustomInput";
-import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
+import { ErrorMessage } from "../ErrorMessage";
 import "./CreateIdentity.scss";
+import {VerifyPassword} from "../VerifyPassword";
 const CreateIdentity = ({
   modalIsOpen,
   setModalIsOpen,
@@ -21,18 +22,30 @@ const CreateIdentity = ({
   const [selectedType, setSelectedType] = useState<number | undefined>(
     undefined
   );
+  const [showVerifyPassword, setShowVerifyPassword] = useState(false);
+
+  const displayNameValueIsValid =
+      displayNameValue.length > 0 && displayNameValue.length <= 32;
+  const typeIsSelectedIsValid = selectedType !== undefined;
 
   const resetModal = () => {
     setModalIsOpen(false);
     setDisplayNameValue("");
+    setSelectedType(undefined);
   };
 
   const handleCreateIdentity = () => {
-
+    setShowVerifyPassword(true);
   };
 
-  const displayNameValueIsValid = displayNameValue.length > 0 && displayNameValue.length <= 32;
-  const typeIsSelectedIsValid = selectedType !== undefined;
+  const handleOnVerifyPassword = (isVerified:boolean) => {
+    if (isVerified) {
+      setShowVerifyPassword(false);
+      resetModal();
+      // add new did in redux
+    }
+  };
+
 
   return (
     <IonModal
@@ -66,6 +79,14 @@ const CreateIdentity = ({
                 />
               </IonCol>
             </IonRow>
+            <IonRow className="error-message-container">
+              {displayNameValue.length !== 0 && !displayNameValueIsValid ? (
+                <ErrorMessage
+                  message={`${i18n.t("createIdentity.error.maxLength")}`}
+                  timeout={true}
+                />
+              ) : null}
+            </IonRow>
             <IonRow>
               <span className="type-input-title">{`${i18n.t(
                 "createIdentity.identityType.title"
@@ -75,7 +96,9 @@ const CreateIdentity = ({
               <IonCol className="col-left">
                 <IonItem
                   onClick={() => setSelectedType(0)}
-                  className={`type-input ${selectedType === 0 ? "selectedType" : ""}`}
+                  className={`type-input ${
+                    selectedType === 0 ? "selectedType" : ""
+                  }`}
                 >
                   <div className="centered-text">
                     <span>{`${i18n.t(
@@ -87,7 +110,9 @@ const CreateIdentity = ({
               <IonCol className="col-right">
                 <IonItem
                   onClick={() => setSelectedType(1)}
-                  className={`type-input ${selectedType === 1 ? "selectedType" : ""}`}
+                  className={`type-input ${
+                    selectedType === 1 ? "selectedType" : ""
+                  }`}
                 >
                   <div className="centered-text">
                     <span>{`${i18n.t(
@@ -107,13 +132,16 @@ const CreateIdentity = ({
                   onClick={() => handleCreateIdentity()}
                   disabled={!(displayNameValueIsValid && typeIsSelectedIsValid)}
                 >
-                  {`${i18n.t(
-                    "createIdentity.confirmButton"
-                  )}`}
+                  {`${i18n.t("createIdentity.confirmButton")}`}
                 </IonButton>
               </IonCol>
             </IonRow>
           </IonGrid>
+          <VerifyPassword
+            modalIsOpen={showVerifyPassword}
+            onVerify={(isVerified:boolean) => handleOnVerifyPassword(isVerified)}
+            setModalIsOpen={(isOpen:boolean) => setShowVerifyPassword(isOpen)}
+          />
         </PageLayout>
       </div>
     </IonModal>

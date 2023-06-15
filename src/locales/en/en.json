@@ -121,6 +121,9 @@
         "type1": "KERI"
       }
     },
-    "confirmButton": "Create identity"
+    "confirmButton": "Create identity",
+    "error": {
+      "maxLength": "Must be less than 32 characters long"
+    }
   }
 }

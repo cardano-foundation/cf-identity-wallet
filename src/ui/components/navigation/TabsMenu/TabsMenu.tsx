@@ -18,45 +18,51 @@ import React from "react";
 import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
 import { TabsRoutePath } from "../../../../routes/paths";
-import {Dids} from "../../../pages/Dids";
-import {Creds} from "../../../pages/Creds";
-import {Scan} from "../../../pages/Scan";
-import {Crypto} from "../../../pages/Crypto";
-import {Chat} from "../../../pages/Chat";
+import { Dids } from "../../../pages/Dids";
+import { Creds } from "../../../pages/Creds";
+import { Scan } from "../../../pages/Scan";
+import { Crypto } from "../../../pages/Crypto";
+import { Chat } from "../../../pages/Chat";
 
 const tabsRoutes = [
   {
     label: i18n.t("tabsmenu.label.dids"),
     path: TabsRoutePath.DIDS,
     component: Dids,
-    icon: fingerPrintOutline
+    icon: fingerPrintOutline,
   },
   {
     label: i18n.t("tabsmenu.label.creds"),
     path: TabsRoutePath.CREDS,
     component: Creds,
-    icon: idCardOutline
+    icon: idCardOutline,
   },
   {
     label: i18n.t("tabsmenu.label.scan"),
     path: TabsRoutePath.SCAN,
     component: Scan,
-    icon: scanOutline
+    icon: scanOutline,
   },
   {
     label: i18n.t("tabsmenu.label.crypto"),
     path: TabsRoutePath.CRYPTO,
     component: Crypto,
-    icon: walletOutline
+    icon: walletOutline,
   },
   {
     label: i18n.t("tabsmenu.label.chat"),
     path: TabsRoutePath.CHAT,
     component: Chat,
-    icon: chatbubbleOutline
-  }
-]
-const TabsMenu = ({tab, path}:{tab: React.ComponentType<any>, path:string}) => {
+    icon: chatbubbleOutline,
+  },
+];
+const TabsMenu = ({
+  tab,
+  path,
+}: {
+  tab: React.ComponentType<any>;
+  path: string;
+}) => {
   return (
     <IonTabs>
       <IonRouterOutlet animated={false}>
@@ -75,9 +81,9 @@ const TabsMenu = ({tab, path}:{tab: React.ComponentType<any>, path:string}) => {
         slot="bottom"
         data-testid="tabs-menu"
       >
-        {
-          tabsRoutes.map((tab, index:number) => {
-            return <IonTabButton
+        {tabsRoutes.map((tab, index: number) => {
+          return (
+            <IonTabButton
               key={`${tab.label}-${index}`}
               tab={tab.label}
               href={tab.path}
@@ -86,8 +92,8 @@ const TabsMenu = ({tab, path}:{tab: React.ComponentType<any>, path:string}) => {
               <IonIcon icon={tab.icon} />
               <IonLabel>{tab.label}</IonLabel>
             </IonTabButton>
-          })
-        }
+          );
+        })}
       </IonTabBar>
     </IonTabs>
   );

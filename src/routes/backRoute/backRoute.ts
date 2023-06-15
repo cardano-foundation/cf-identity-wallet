@@ -122,5 +122,5 @@ export {
   getPreviousRoute,
   updateStoreAfterPasscodeLoginRoute,
   updateStoreSetCurrentRoute,
-  backPath
+  backPath,
 };

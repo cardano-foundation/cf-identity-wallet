@@ -17,6 +17,7 @@ import { MiscRecordId } from "../../../core/aries/modules";
 const VerifyPassword = ({
   modalIsOpen,
   setModalIsOpen,
+  onVerify
 }: VerifyPasswordProps) => {
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
   const [attempts, setAttempts] = useState(6);
@@ -74,6 +75,7 @@ const VerifyPassword = ({
     ) {
       resetModal();
       // @TODO - sdisalvo: navigate the user to the required page
+      onVerify(true);
     }
   }, [attempts]);
 

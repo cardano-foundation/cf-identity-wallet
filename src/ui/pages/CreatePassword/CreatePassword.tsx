@@ -7,16 +7,17 @@ import {
   IonIcon,
   IonItem,
   IonLabel,
-  IonList, useIonViewWillEnter,
+  IonList,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import { closeOutline, checkmarkOutline } from "ionicons/icons";
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import "./CreatePassword.scss";
 import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import {RoutePath, TabsRoutePath} from "../../../routes/paths";
+import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import { PasswordRegexProps, RegexItemProps } from "./CreatePassword.types";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
@@ -24,10 +25,14 @@ import {
   KeyStoreKeys,
   SecureStorage,
 } from "../../../core/storage/secureStorage";
-import {useAppDispatch, useAppSelector} from "../../../store/hooks";
-import {getRoutes, getState, setCurrentRoute} from "../../../store/reducers/stateCache";
-import {getNextRoute} from "../../../routes/nextRoute";
-import {getBackRoute} from "../../../routes/backRoute";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getRoutes,
+  getState,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { getBackRoute } from "../../../routes/backRoute";
 
 const STRING_LENGTH = "length";
 const STRING_UPPERCASE = "uppercase";
@@ -67,9 +72,9 @@ const PasswordRegex = ({ password, setRegexState }: PasswordRegexProps) => {
   const number = password.match(/([0-9])/);
   const symbol = password.match(/[^\p{L}\d\s]/u);
 
-  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+  const passwordRegex =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   const validatePassword = (password: string) => {
-
     return passwordRegex.test(password);
   };
 
@@ -82,12 +87,12 @@ const PasswordRegex = ({ password, setRegexState }: PasswordRegexProps) => {
       lines="none"
       className="operations-password-regex"
     >
-      {
-        !password.match(passwordRegex) ? <RegexItem
+      {!password.match(passwordRegex) ? (
+        <RegexItem
           condition={password.match(passwordRegex)}
           label={i18n.t("operationspasswordregex.label.invalid")}
-        /> : null
-      }
+        />
+      ) : null}
       <RegexItem
         condition={length}
         label={i18n.t("operationspasswordregex.label.length")}
@@ -113,11 +118,9 @@ const PasswordRegex = ({ password, setRegexState }: PasswordRegexProps) => {
 };
 
 const CreatePassword = () => {
-
   const storeState = useAppSelector(getState);
   const history = useHistory();
   const dispatch = useAppDispatch();
-
 
   const [createPasswordValue, setCreatePasswordValue] = useState("");
   const [createPasswordFocus, setCreatePasswordFocus] = useState(false);
@@ -147,26 +150,26 @@ const CreatePassword = () => {
   useEffect(() => {
     const errorMessageHandler = (errorType: string) => {
       switch (errorType) {
-      case STRING_SPECIAL_CHAR:
-        return errorMessages.hasSpecialChar;
-      case STRING_LENGTH:
-        if (createPasswordValue.length < 8) {
-          return errorMessages.isTooShort;
-        } else if (createPasswordValue.length > 64) {
-          return errorMessages.isTooLong;
-        } else {
-          return;
-        }
-      case STRING_UPPERCASE:
-        return errorMessages.hasNoUppercase;
-      case STRING_LOWERCASE:
-        return errorMessages.hasNoLowercase;
-      case STRING_NUMBER:
-        return errorMessages.hasNoNumber;
-      case STRING_SYMBOL:
-        return errorMessages.hasNoSymbol;
-      default:
-        break;
+        case STRING_SPECIAL_CHAR:
+          return errorMessages.hasSpecialChar;
+        case STRING_LENGTH:
+          if (createPasswordValue.length < 8) {
+            return errorMessages.isTooShort;
+          } else if (createPasswordValue.length > 64) {
+            return errorMessages.isTooLong;
+          } else {
+            return;
+          }
+        case STRING_UPPERCASE:
+          return errorMessages.hasNoUppercase;
+        case STRING_LOWERCASE:
+          return errorMessages.hasNoLowercase;
+        case STRING_NUMBER:
+          return errorMessages.hasNoNumber;
+        case STRING_SYMBOL:
+          return errorMessages.hasNoSymbol;
+        default:
+          break;
       }
     };
     setErrorMessage(errorMessageHandler(regexState) || "");
@@ -176,14 +179,14 @@ const CreatePassword = () => {
     setCreatePasswordValue("");
     setConfirmPasswordValue("");
     setCreateHintValue("");
-  }
+  };
   const handleClose = async () => {
     const { backPath } = getBackRoute(RoutePath.CREATE_PASSWORD, {
       store: storeState,
     });
     history.push(backPath.pathname);
     handleClearState();
-  }
+  };
   const handleContinue = async () => {
     // @TODO - foconnor: We should handle errors here and display something to the user as feedback to try again.
     await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, createPasswordValue);
@@ -249,11 +252,11 @@ const CreatePassword = () => {
           ) : regexState &&
             regexState !== STRING_SPECIAL_CHAR &&
             !createPasswordFocus ? (
-              <ErrorMessage
-                message={errorMessage}
-                timeout={false}
-              />
-            ) : null}
+            <ErrorMessage
+              message={errorMessage}
+              timeout={false}
+            />
+          ) : null}
           {createPasswordValue && (
             <IonRow>
               <IonCol size="12">

@@ -16,9 +16,9 @@ import {
   setCurrentRoute,
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
-import {TabsMenu, tabsRoutes} from "../ui/components/navigation/TabsMenu";
+import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
-import {CardDetails} from "../ui/pages/CardDetails";
+import { CardDetails } from "../ui/pages/CardDetails";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
@@ -100,16 +100,21 @@ const Routes = () => {
           exact
           component={CreatePassword}
         />
-        {
-          tabsRoutes.map((tab, index:number) => {
-            return <AuthenticatedRoute
+        {tabsRoutes.map((tab, index: number) => {
+          return (
+            <AuthenticatedRoute
               key={index}
               path={tab.path}
               exact
-              render={() => <TabsMenu tab={tab.component} path={tab.path}/>}
+              render={() => (
+                <TabsMenu
+                  tab={tab.component}
+                  path={tab.path}
+                />
+              )}
             />
-          })
-        }
+          );
+        })}
         <AuthenticatedRoute
           path="/tabs/dids/:id"
           component={CardDetails}
@@ -125,7 +130,6 @@ const Routes = () => {
           from="/"
           to={nextPath}
         />
-
       </IonRouterOutlet>
     </IonReactRouter>
   );

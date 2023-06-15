@@ -11,7 +11,7 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps } from "./nextRoute.types";
 import { RoutePath } from "../paths";
-import {backPath} from "../backRoute";
+import { backPath } from "../backRoute";
 
 const getNextRootRoute = (store: RootState) => {
   const authentication = store.stateCache.authentication;
@@ -93,7 +93,7 @@ const updateStoreCurrentRoute = (data: DataProps) => {
 };
 
 const getNextCreatePasswordRoute = (data: DataProps) => {
-  const backRoute = backPath(data)
+  const backRoute = backPath(data);
   return { pathname: backRoute.pathname };
 };
 const updateStoreAfterCreatePassword = (data: DataProps) => {
@@ -159,5 +159,5 @@ export {
   updateStoreSetSeedPhrase,
   updateStoreAfterVerifySeedPhraseRoute,
   getNextCreatePasswordRoute,
-  updateStoreAfterCreatePassword
+  updateStoreAfterCreatePassword,
 };
