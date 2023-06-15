@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from "react";
 
 interface RegexItemProps {
-  condition: RegExpMatchArray | null;
+  condition: RegExpMatchArray | boolean | null;
   label: string;
 }
 interface PasswordRegexProps {

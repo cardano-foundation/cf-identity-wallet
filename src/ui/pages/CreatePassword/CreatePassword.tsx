@@ -67,8 +67,9 @@ const PasswordRegex = ({ password, setRegexState }: PasswordRegexProps) => {
   const number = password.match(/([0-9])/);
   const symbol = password.match(/[^\p{L}\d\s]/u);
 
+  const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   const validatePassword = (password: string) => {
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+
     return passwordRegex.test(password);
   };
 
@@ -81,6 +82,12 @@ const PasswordRegex = ({ password, setRegexState }: PasswordRegexProps) => {
       lines="none"
       className="operations-password-regex"
     >
+      {
+        !password.match(passwordRegex) ? <RegexItem
+          condition={password.match(passwordRegex)}
+          label={i18n.t("operationspasswordregex.label.invalid")}
+        /> : null
+      }
       <RegexItem
         condition={length}
         label={i18n.t("operationspasswordregex.label.length")}

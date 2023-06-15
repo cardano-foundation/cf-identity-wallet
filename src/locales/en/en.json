@@ -83,6 +83,7 @@
   "createpassword.error.hasNoSymbol": "Must contain a a symbol",
   "createpassword.error.hasNoMatch": "Passwords do not match",
   "createpassword.error.hintSameAsPassword": "Your hint cannot be your password",
+  "operationspasswordregex.label.invalid": "Invalid character",
   "operationspasswordregex.label.length": "8 - 64 characters long",
   "operationspasswordregex.label.uppercase": "Contains an uppercase letter",
   "operationspasswordregex.label.lowercase": "Contains a lowercase letter",
