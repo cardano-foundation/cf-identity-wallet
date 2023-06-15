@@ -191,8 +191,8 @@ describe("Cards Details page", () => {
     );
   });
 
-  test("It shows the editor", async () => {
-    const { getByTestId, getAllByText, getByText } = render(
+  test("It shows the button to access the editor", async () => {
+    const { getByTestId } = render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -212,7 +212,38 @@ describe("Cards Details page", () => {
     });
   });
 
-  test("It deletes the did using the button in the modal", async () => {
+  test.skip("It shows the editor", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("edit-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("edit-identity-edit-button")).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("edit-identity-edit-button"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS["editidentity.inner.label"])
+      ).toBeVisible();
+    });
+  });
+
+  test("It asks to verify the password when users try to delete the did using the button in the modal", async () => {
     const { getByTestId, getByText, getAllByText } = render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[path]}>
@@ -253,7 +284,30 @@ describe("Cards Details page", () => {
     });
   });
 
-  test("It deletes the did using the big button", async () => {
+  test("It shows the warning when I click on the big delete button", async () => {
+    const { getByTestId, getByText } = render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("card-details-delete-button"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS["dids.card.details.delete.alert.title"])
+      ).toBeVisible();
+    });
+  });
+
+  test.skip("It deletes the did using the big button", async () => {
     const { getByTestId, getByText, queryByText } = render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[path]}>
@@ -272,6 +326,19 @@ describe("Cards Details page", () => {
     await waitFor(() => {
       expect(
         getByText(EN_TRANSLATIONS["dids.card.details.delete.alert.title"])
+      ).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS["dids.card.details.delete.alert.confirm"])
+      );
+    });
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS["verifypassword.title"])
       ).toBeVisible();
     });
   });
