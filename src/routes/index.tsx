@@ -16,7 +16,7 @@ import {
   setCurrentRoute,
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
-import {TabsMenu, TabsRoutePath} from "../ui/components/navigation/TabsMenu";
+import {TabsMenu, TabsRoutePath, tabsRoutes} from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
 import {CardDetails} from "../ui/pages/CardDetails";
 import {Dids} from "../ui/pages/Dids";
@@ -105,32 +105,16 @@ const Routes = () => {
           exact
           component={CreatePassword}
         />
-        <AuthenticatedRoute
-          path={TabsRoutePath.DIDS}
-          exact
-          render={() => <TabsMenu tab={Dids} path={TabsRoutePath.DIDS}/>}
-        />
-        <AuthenticatedRoute
-          path={TabsRoutePath.CREDS}
-          exact
-          render={() => <TabsMenu tab={Creds} path={TabsRoutePath.CREDS}/>}
-        />
-        <AuthenticatedRoute
-          path={TabsRoutePath.SCAN}
-          exact
-          render={() => <TabsMenu tab={Scan} path={TabsRoutePath.SCAN}/>}
-        />
-        <AuthenticatedRoute
-          path={TabsRoutePath.CRYPTO}
-          exact
-          render={() => <TabsMenu tab={Crypto} path={TabsRoutePath.CRYPTO}/>}
-        />
-        <AuthenticatedRoute
-          path={TabsRoutePath.CHAT}
-          exact
-          render={() => <TabsMenu tab={Chat} path={TabsRoutePath.CHAT}/>}
-        />
-
+        {
+          tabsRoutes.map((tab, index:number) => {
+            return <AuthenticatedRoute
+              key={index}
+              path={tab.path}
+              exact
+              render={() => <TabsMenu tab={tab.component} path={tab.path}/>}
+            />
+          })
+        }
         <AuthenticatedRoute
           path="/tabs/dids/:id"
           component={CardDetails}
@@ -141,8 +125,6 @@ const Routes = () => {
           component={CardDetails}
           exact
         />
-
-
         <Redirect
           exact
           from="/"
