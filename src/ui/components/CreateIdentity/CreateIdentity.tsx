@@ -14,10 +14,15 @@ import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import "./CreateIdentity.scss";
 import {VerifyPassword} from "../VerifyPassword";
+import {generateUUID} from "../../../utils";
+import {useAppDispatch, useAppSelector} from "../../../store/hooks";
+import {getDidsCache, setDidsCache} from "../../../store/reducers/didsCache";
 const CreateIdentity = ({
   modalIsOpen,
   setModalIsOpen,
 }: CreateIdentityProps) => {
+  const dispatch = useAppDispatch();
+  const didsData = useAppSelector(getDidsCache);
   const [displayNameValue, setDisplayNameValue] = useState("");
   const [selectedType, setSelectedType] = useState<number | undefined>(
     undefined
@@ -40,12 +45,24 @@ const CreateIdentity = ({
 
   const handleOnVerifyPassword = (isVerified:boolean) => {
     if (isVerified) {
+      const uuid = generateUUID();
+      const id = `did:key:${uuid}`;
+      const newDid = {
+        id,
+        type: selectedType === 0 ? `${i18n.t(
+          "createIdentity.identityType.types.type0"
+        )}` : `${i18n.t(
+          "createIdentity.identityType.types.type1"
+        )}`,
+        name: displayNameValue,
+        date: "15/05/2023",
+        colors: ["#92FFC0", "#47FF94"]
+      }
+      dispatch(setDidsCache([...didsData, newDid]))
       setShowVerifyPassword(false);
       resetModal();
-      // add new did in redux
     }
   };
-
 
   return (
     <IonModal
