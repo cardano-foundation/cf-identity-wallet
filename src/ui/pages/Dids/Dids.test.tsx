@@ -14,7 +14,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
 
 describe("Dids Tab", () => {
-  test("Renders Dids Tab", () => {
+  test("Renders Dids Tab and all elements in it", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
         <Dids />

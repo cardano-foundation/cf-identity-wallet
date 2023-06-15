@@ -125,7 +125,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
         initialBreakpoint={0.35}
         breakpoints={[0.35]}
         className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
-        data-testid="edit-identity"
+        data-testid="edit-identity-modal"
         onDidDismiss={handleDismiss}
       >
         <div
@@ -200,7 +200,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
                         </IonButton>
                       </span>
                       <span className="edit-identity-label">
-                        {i18n.t("editidentity.title")}
+                        {i18n.t("editidentity.name")}
                       </span>
                     </span>
                     <span

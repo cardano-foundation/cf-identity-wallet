@@ -133,7 +133,10 @@ const CardDetails = () => {
         additionalButtons={<AdditionalButtons />}
       >
         {cardData.name.length === 0 ? (
-          <div className="spinner-container">
+          <div
+            className="spinner-container"
+            data-testid="spinner-container"
+          >
             <IonSpinner name="dots" />
           </div>
         ) : (
@@ -262,7 +265,7 @@ const CardDetails = () => {
                 <div className="card-details-info-block-inner">
                   <span
                     className="card-details-info-block-line"
-                    data-testid="copy-button-base58"
+                    data-testid="copy-button-publicKeyBase58"
                     onClick={() => writeToClipboard(cardData.publicKeyBase58)}
                   >
                     <span>
@@ -294,6 +297,7 @@ const CardDetails = () => {
                 shape="round"
                 expand="block"
                 color="danger"
+                data-testid="card-details-delete-button"
                 className="delete-button"
                 onClick={() => setAlertIsOpen(true)}
               >

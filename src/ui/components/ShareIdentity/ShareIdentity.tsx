@@ -25,7 +25,7 @@ const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
       initialBreakpoint={0.66}
       breakpoints={[0.66]}
       className="page-layout share-identity"
-      data-testid="share-identity"
+      data-testid="share-identity-modal"
       onDidDismiss={() => setIsOpen(false)}
     >
       <div className="modal">
@@ -48,6 +48,7 @@ const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
             <IonRow>
               <IonCol size="12">
                 <QRCode
+                  data-testid="share-identity-qr-code"
                   value={id}
                   size={250}
                   fgColor={"black"}
