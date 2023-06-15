@@ -16,8 +16,14 @@ import {
   setCurrentRoute,
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
-import { TabsMenu } from "../ui/components/navigation/TabsMenu";
+import {TabsMenu, TabsRoutePath} from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
+import {CardDetails} from "../ui/pages/CardDetails";
+import {Dids} from "../ui/pages/Dids";
+import {Creds} from "../ui/pages/Creds";
+import {Scan} from "../ui/pages/Scan";
+import {Crypto} from "../ui/pages/Crypto";
+import {Chat} from "../ui/pages/Chat";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
@@ -61,25 +67,22 @@ const Routes = () => {
   return (
     <IonReactRouter>
       <IonRouterOutlet animated={false}>
-        <Redirect
-          exact
-          from="/"
-          to={nextPath}
-        />
-
         <Route
           path={RoutePath.PASSCODE_LOGIN}
           component={PasscodeLogin}
+          exact
         />
 
         <Route
           path={RoutePath.SET_PASSCODE}
           component={SetPasscode}
+          exact
         />
 
         <Route
           path={RoutePath.ONBOARDING}
           component={Onboarding}
+          exact
         />
 
         {/* Private Routes */}
@@ -102,6 +105,50 @@ const Routes = () => {
           exact
           component={CreatePassword}
         />
+        <AuthenticatedRoute
+          path={TabsRoutePath.DIDS}
+          exact
+          render={() => <TabsMenu tab={Dids} path={TabsRoutePath.DIDS}/>}
+        />
+        <AuthenticatedRoute
+          path={TabsRoutePath.CREDS}
+          exact
+          render={() => <TabsMenu tab={Creds} path={TabsRoutePath.CREDS}/>}
+        />
+        <AuthenticatedRoute
+          path={TabsRoutePath.SCAN}
+          exact
+          render={() => <TabsMenu tab={Scan} path={TabsRoutePath.SCAN}/>}
+        />
+        <AuthenticatedRoute
+          path={TabsRoutePath.CRYPTO}
+          exact
+          render={() => <TabsMenu tab={Crypto} path={TabsRoutePath.CRYPTO}/>}
+        />
+        <AuthenticatedRoute
+          path={TabsRoutePath.CHAT}
+          exact
+          render={() => <TabsMenu tab={Chat} path={TabsRoutePath.CHAT}/>}
+        />
+
+        <AuthenticatedRoute
+          path="/tabs/dids/:id"
+          component={CardDetails}
+          exact
+        />
+        <AuthenticatedRoute
+          path="/tabs/creds/:id"
+          component={CardDetails}
+          exact
+        />
+
+
+        <Redirect
+          exact
+          from="/"
+          to={nextPath}
+        />
+
       </IonRouterOutlet>
     </IonReactRouter>
   );

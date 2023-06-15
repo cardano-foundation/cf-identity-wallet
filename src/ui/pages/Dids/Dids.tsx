@@ -1,6 +1,7 @@
 import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { useState } from "react";
+import {useHistory} from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Dids.scss";
@@ -8,8 +9,8 @@ import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getDidsCache } from "../../../store/reducers/didsCache";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
+import {getAuthentication, setCurrentRoute} from "../../../store/reducers/stateCache";
+import {RoutePath, TabsRoutePath} from "../../../routes/paths";
 import { CreateIdentity } from "../../components/CreateIdentity";
 
 interface AdditionalButtonsProps {
@@ -47,13 +48,22 @@ const AdditionalButtons = ({ handleCreateDid }: AdditionalButtonsProps) => {
 };
 
 const Dids = () => {
+
   const didsData = useAppSelector(getDidsCache);
+  const authentication = useAppSelector(getAuthentication);
+  const dispatch = useAppDispatch();
+  const history = useHistory();
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const handleCreateDid = () => {
-    setModalIsOpen(true);
+    if (!authentication.passwordIsSet) {
+      history.replace(RoutePath.CREATE_PASSWORD);
+      dispatch(setCurrentRoute({ path: RoutePath.CREATE_PASSWORD }))
+    } else {
+      setModalIsOpen(true);
+    }
   };
 
-  const dispatch = useAppDispatch();
+
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.DIDS }))
   );
