@@ -11,6 +11,7 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps } from "./nextRoute.types";
 import { RoutePath } from "../paths";
+import {backPath} from "../backRoute";
 
 const getNextRootRoute = (store: RootState) => {
   const authentication = store.stateCache.authentication;
@@ -91,6 +92,17 @@ const updateStoreCurrentRoute = (data: DataProps) => {
   return setCurrentRoute({ path: data.state?.nextRoute });
 };
 
+const getNextCreatePasswordRoute = (data: DataProps) => {
+  const backRoute = backPath(data)
+  return { pathname: backRoute.pathname };
+};
+const updateStoreAfterCreatePassword = (data: DataProps) => {
+  return setAuthentication({
+    ...data.store.stateCache.authentication,
+    passwordIsSet: true,
+  });
+};
+
 const getNextRoute = (
   currentPath: string,
   data: DataProps
@@ -129,6 +141,10 @@ const NextRoute: Record<string, any> = {
     nextPath: () => getNextVerifySeedPhraseRoute(),
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
+  [RoutePath.CREATE_PASSWORD]: {
+    nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
+    updateRedux: [updateStoreAfterCreatePassword],
+  },
 };
 
 export {
@@ -142,4 +158,6 @@ export {
   updateStoreCurrentRoute,
   updateStoreSetSeedPhrase,
   updateStoreAfterVerifySeedPhraseRoute,
+  getNextCreatePasswordRoute,
+  updateStoreAfterCreatePassword
 };
