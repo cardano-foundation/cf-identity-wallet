@@ -16,14 +16,9 @@ import {
   setCurrentRoute,
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
-import {TabsMenu, TabsRoutePath, tabsRoutes} from "../ui/components/navigation/TabsMenu";
+import {TabsMenu, tabsRoutes} from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
 import {CardDetails} from "../ui/pages/CardDetails";
-import {Dids} from "../ui/pages/Dids";
-import {Creds} from "../ui/pages/Creds";
-import {Scan} from "../ui/pages/Scan";
-import {Crypto} from "../ui/pages/Crypto";
-import {Chat} from "../ui/pages/Chat";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
