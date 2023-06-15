@@ -16,7 +16,11 @@ import {
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
 
-const VerifyPassword = ({ isOpen, setIsOpen, action }: VerifyPasswordProps) => {
+const VerifyPassword = ({
+  isOpen,
+  setIsOpen,
+  onVerify,
+}: VerifyPasswordProps) => {
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
   const [attempts, setAttempts] = useState(6);
   const [alertChoiceIsOpen, setAlertChoiceIsOpen] = useState(false);
@@ -88,7 +92,7 @@ const VerifyPassword = ({ isOpen, setIsOpen, action }: VerifyPasswordProps) => {
       verifyPasswordValue === storedPassword
     ) {
       resetModal();
-      action();
+      onVerify();
     }
   }, [attempts]);
 

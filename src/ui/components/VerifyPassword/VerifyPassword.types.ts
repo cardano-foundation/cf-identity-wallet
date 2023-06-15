@@ -1,7 +1,7 @@
 interface VerifyPasswordProps {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
-  action: () => void;
+  onVerify: () => void;
 }
 
 export type { VerifyPasswordProps };

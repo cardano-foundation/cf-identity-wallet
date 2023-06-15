@@ -261,7 +261,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
-        action={verifyAction}
+        onVerify={verifyAction}
       />
     </>
   );

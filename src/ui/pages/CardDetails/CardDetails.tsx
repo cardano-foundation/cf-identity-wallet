@@ -339,7 +339,7 @@ const CardDetails = () => {
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
-          action={handleDelete}
+          onVerify={handleDelete}
         />
       </TabLayout>
     </IonPage>
