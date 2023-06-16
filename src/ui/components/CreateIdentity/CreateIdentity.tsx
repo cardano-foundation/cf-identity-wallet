@@ -17,6 +17,9 @@ import {VerifyPassword} from "../VerifyPassword";
 import {generateUUID} from "../../../utils";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {getDidsCache, setDidsCache} from "../../../store/reducers/didsCache";
+import {ColorGenerator} from "../../utils/ColorGenerator";
+import {Capacitor} from "@capacitor/core";
+import {Keyboard} from "@capacitor/keyboard";
 const CreateIdentity = ({
   modalIsOpen,
   setModalIsOpen,
@@ -28,10 +31,22 @@ const CreateIdentity = ({
     undefined
   );
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
+  const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
 
   const displayNameValueIsValid =
       displayNameValue.length > 0 && displayNameValue.length <= 32;
   const typeIsSelectedIsValid = selectedType !== undefined;
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      Keyboard.addListener("keyboardWillShow", () => {
+        setKeyboardIsOpen(true);
+      });
+      Keyboard.addListener("keyboardWillHide", () => {
+        setKeyboardIsOpen(false);
+      });
+    }
+  }, []);
 
   const resetModal = () => {
     setModalIsOpen(false);
@@ -46,28 +61,38 @@ const CreateIdentity = ({
   const handleOnVerifyPassword = () => {
     const uuid = generateUUID();
     const id = `did:key:${uuid}`;
+    const currentDate = new Date();
+    const year = currentDate.getFullYear();
+    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
+    const day = String(currentDate.getDate()).padStart(2, "0");
+
+    const formattedDate = `${day}-${month}-${year}`;
+    const colorGenerator = new ColorGenerator();
+    const newColor = colorGenerator.generateNextColor();
     const newDid = {
       id,
       type: selectedType === 0 ? `${i18n.t(
-          "createIdentity.identityType.types.type0"
+        "createIdentity.identityType.types.type0"
       )}` : `${i18n.t(
-          "createIdentity.identityType.types.type1"
+        "createIdentity.identityType.types.type1"
       )}`,
       name: displayNameValue,
-      date: "15/05/2023",
-      colors: ["#92FFC0", "#47FF94"]
+      date: formattedDate,
+      colors: [newColor[1], newColor[0]]
     }
     dispatch(setDidsCache([...didsData, newDid]))
     setShowVerifyPassword(false);
     resetModal();
   };
 
+
+
   return (
     <IonModal
       isOpen={modalIsOpen}
       initialBreakpoint={0.45}
       breakpoints={[0.45]}
-      className="page-layout"
+      className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
       data-testid="create-identity-modal"
       onDidDismiss={() => resetModal()}
     >

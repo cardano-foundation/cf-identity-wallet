@@ -10,6 +10,7 @@ import {
   IonList,
 } from "@ionic/react";
 import { closeOutline, checkmarkOutline } from "ionicons/icons";
+import {useHistory} from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import "./CreatePassword.scss";
@@ -23,6 +24,11 @@ import {
   KeyStoreKeys,
   SecureStorage,
 } from "../../../core/storage/secureStorage";
+import {useAppDispatch, useAppSelector} from "../../../store/hooks";
+import {getState} from "../../../store/reducers/stateCache";
+import {getNextRoute} from "../../../routes/nextRoute";
+import {getBackRoute} from "../../../routes/backRoute";
+import {updateReduxState} from "../../../store/utils";
 
 const STRING_LENGTH = "length";
 const STRING_UPPERCASE = "uppercase";
@@ -112,6 +118,9 @@ const PasswordRegex = ({ password, setRegexState }: PasswordRegexProps) => {
 };
 
 const CreatePassword = () => {
+  const storeState = useAppSelector(getState);
+  const history = useHistory();
+  const dispatch = useAppDispatch();
   const [createPasswordValue, setCreatePasswordValue] = useState("");
   const [createPasswordFocus, setCreatePasswordFocus] = useState(false);
   const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
@@ -160,6 +169,19 @@ const CreatePassword = () => {
     setErrorMessage(errorMessageHandler(regexState) || "");
   }, [createPasswordValue, confirmPasswordValue, regexState]);
 
+  const handleClearState = () => {
+    setCreatePasswordValue("");
+    setConfirmPasswordValue("");
+    setCreateHintValue("");
+  };
+  const handleClose = async () => {
+    const { backPath } = getBackRoute(RoutePath.CREATE_PASSWORD, {
+      store: storeState,
+    });
+    history.push(backPath.pathname);
+    handleClearState();
+  };
+
   const handleContinue = async () => {
     // @TODO - foconnor: We should handle errors here and display something to the user as feedback to try again.
     await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, createPasswordValue);
@@ -169,9 +191,17 @@ const CreatePassword = () => {
         createHintValue
       );
     }
-    setCreatePasswordValue("");
-    setConfirmPasswordValue("");
-    setCreateHintValue("");
+    const { nextPath, updateRedux } = getNextRoute(RoutePath.CREATE_PASSWORD, {
+      store: storeState,
+    });
+    updateReduxState(
+      nextPath.pathname,
+      { store: storeState },
+      dispatch,
+      updateRedux
+    );
+    history.push(nextPath.pathname);
+    handleClearState();
     // @TODO - sdisalvo: this will need to be completed at a later stage (navigation)
   };
 
@@ -181,14 +211,12 @@ const CreatePassword = () => {
         header={true}
         currentPath={RoutePath.CREATE_PASSWORD}
         closeButton={true}
-        closeButtonAction={() => {
-          // TODO: this will need to be completed at a later stage
-        }}
+        closeButtonAction={() => handleClose()}
         title={`${i18n.t("createpassword.title")}`}
         footer={true}
         primaryButtonText={`${i18n.t("createpassword.continue.button")}`}
         primaryButtonAction={handleContinue}
-        primaryButtonDisabled={!validated}
+        primaryButtonDisabled={false}
       >
         <IonGrid>
           <IonRow>

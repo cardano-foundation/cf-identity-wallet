@@ -60,6 +60,7 @@ const VerifyPassword = ({
     // Count down timer must be persistent if the user navigates away from the page
     // or closes the application.
     // The UI will disable password input fields during count down timer.
+
     if (
       verifyPasswordValue.length > 0 &&
       verifyPasswordValue !== storedPassword
@@ -68,6 +69,7 @@ const VerifyPassword = ({
       setTimeout(() => {
         setShowError(false);
       }, MESSAGE_MILLISECONDS * 1.5);
+      onVerify();
     }
     if (
       verifyPasswordValue.length > 0 &&
@@ -100,7 +102,7 @@ const VerifyPassword = ({
           closeButtonLabel={`${i18n.t("verifypassword.cancel")}`}
           closeButtonAction={() => setModalIsOpen(false)}
           actionButton={true}
-          actionButtonDisabled={!verifyPasswordValue.length}
+          actionButtonDisabled={false}
           actionButtonAction={() => setAttempts(attempts - 1)}
           actionButtonLabel={`${i18n.t("verifypassword.confirm")}`}
           title={`${i18n.t("verifypassword.title")}`}
