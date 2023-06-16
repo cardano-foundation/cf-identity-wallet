@@ -115,6 +115,7 @@
   "shareidentity.copykey": "Copy identity key",
   "shareidentity.more": "More share options",
   "editidentity.title": "Edit identity",
+  "editidentity.cancel": "Cancel",
   "editidentity.name": "Edit identity",
   "editidentity.share": "Share identity",
   "editidentity.delete": "Delete identity",

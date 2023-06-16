@@ -1,13 +1,14 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import { didsMock } from "../../__mocks__/didsMock";
-import { store } from "../../../store";
 import { CardDetails } from "./CardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
 const path = TabsRoutePath.DIDS + "/" + didsMock[0].id;
 
@@ -23,10 +24,34 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
+const mockStore = configureStore();
+const dispatchMock = jest.fn();
+const initialState = {
+  stateCache: {
+    routes: [TabsRoutePath.DIDS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+    },
+  },
+  seedPhraseCache: {
+    seedPhrase160:
+      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+    seedPhrase256: "",
+    selected: FIFTEEN_WORDS_BIT_LENGTH,
+  },
+};
+
+const storeMocked = {
+  ...mockStore(initialState),
+  dispatch: dispatchMock,
+};
+
 describe("Cards Details page", () => {
   test("It renders Card Details", async () => {
     const { getByText, getByTestId, getAllByTestId } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -55,7 +80,7 @@ describe("Cards Details page", () => {
         return;
       });
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -79,7 +104,7 @@ describe("Cards Details page", () => {
         return;
       });
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -104,7 +129,7 @@ describe("Cards Details page", () => {
         return;
       });
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -130,7 +155,7 @@ describe("Cards Details page", () => {
         return;
       });
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -151,7 +176,7 @@ describe("Cards Details page", () => {
 
   test("It opens the sharing modal", async () => {
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -172,7 +197,7 @@ describe("Cards Details page", () => {
 
   test("It opens the edit modal", async () => {
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -193,7 +218,7 @@ describe("Cards Details page", () => {
 
   test("It shows the button to access the editor", async () => {
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -214,7 +239,7 @@ describe("Cards Details page", () => {
 
   test.skip("It shows the editor", async () => {
     const { getByTestId, getByText } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -245,7 +270,7 @@ describe("Cards Details page", () => {
 
   test("It asks to verify the password when users try to delete the did using the button in the modal", async () => {
     const { getByTestId, getByText, getAllByText } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -286,7 +311,7 @@ describe("Cards Details page", () => {
 
   test("It shows the warning when I click on the big delete button", async () => {
     const { getByTestId, getByText } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -309,7 +334,7 @@ describe("Cards Details page", () => {
 
   test.skip("It deletes the did using the big button", async () => {
     const { getByTestId, getByText, queryByText } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}

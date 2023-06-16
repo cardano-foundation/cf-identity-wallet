@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   IonButton,
+  IonButtons,
   IonCol,
   IonContent,
   IonGrid,
@@ -21,7 +22,7 @@ import { EditIdentityProps } from "./EditIdentity.types";
 import "./EditIdentity.scss";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
-import { VerifyPassword } from "../../components/VerifyPassword";
+import { VerifyPassword } from "../VerifyPassword";
 import { Alert } from "../Alert";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setDidsCache } from "../../../store/reducers/didsCache";
@@ -31,6 +32,7 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { CardsStackProps } from "../CardsStack/CardsStack.types";
+import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
 
 const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
   const storeState = useAppSelector(getState);
@@ -41,7 +43,6 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
-  const DISPLAY_NAME_LENGTH = 32;
   const verifyDisplayName =
     newDisplayName.length > 0 &&
     newDisplayName.length <= DISPLAY_NAME_LENGTH &&
@@ -55,6 +56,11 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
   const handleDismiss = () => {
     setEditIsOpen(false);
     setIsOpen(false);
+  };
+
+  const handleClose = () => {
+    setEditIsOpen(false);
+    setIsOpen(true);
   };
 
   const handleDelete = () => {
@@ -80,7 +86,9 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
       dispatch,
       updateRedux
     );
-    history.push(TabsRoutePath.DIDS);
+    if (actionType === "delete") {
+      history.push(TabsRoutePath.DIDS);
+    }
   };
 
   const verifyAction = () => {
@@ -136,6 +144,17 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
             className="ion-no-border"
           >
             <IonToolbar color="light">
+              {editIsOpen && (
+                <IonButtons slot="start">
+                  <IonButton
+                    className="close-button-label"
+                    onClick={handleClose}
+                    data-testid="close-button"
+                  >
+                    {i18n.t("editidentity.cancel")}
+                  </IonButton>
+                </IonButtons>
+              )}
               <IonTitle data-testid="edit-identity-title">
                 <h2>{i18n.t("editidentity.title")}</h2>
               </IonTitle>
