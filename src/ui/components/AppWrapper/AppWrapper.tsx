@@ -25,10 +25,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     } catch (e) {
       return false;
     }
-  }
+  };
   const initApp = async () => {
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
-    const seedPhraseIsSet = await checkKeyStore(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY)
+    const seedPhraseIsSet = await checkKeyStore(
+      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
+    );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
 
     dispatch(
