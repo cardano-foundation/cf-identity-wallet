@@ -69,7 +69,6 @@ const VerifyPassword = ({
       setTimeout(() => {
         setShowError(false);
       }, MESSAGE_MILLISECONDS * 1.5);
-      onVerify();
     }
     if (
       verifyPasswordValue.length > 0 &&
