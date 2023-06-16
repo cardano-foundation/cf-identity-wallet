@@ -262,9 +262,7 @@ describe("Cards Details page", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS["editidentity.inner.label"])
-      ).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.editidentity.inner.label)).toBeVisible();
     });
   });
 
@@ -289,23 +287,23 @@ describe("Cards Details page", () => {
     });
 
     act(() => {
-      fireEvent.click(getAllByText(EN_TRANSLATIONS["editidentity.delete"])[0]);
+      fireEvent.click(getAllByText(EN_TRANSLATIONS.editidentity.delete)[0]);
     });
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS["dids.card.details.delete.alert.title"])
+        getByText(EN_TRANSLATIONS.dids.card.details.delete.alert.title)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS["dids.card.details.delete.alert.confirm"])
+        getByText(EN_TRANSLATIONS.dids.card.details.delete.alert.confirm)
       );
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS["verifypassword.title"])).toBeVisible();
+      expect(getByText(EN_TRANSLATIONS.verifypassword.title)).toBeVisible();
     });
   });
 
@@ -327,7 +325,7 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS["dids.card.details.delete.alert.title"])
+        getByText(EN_TRANSLATIONS.dids.card.details.delete.alert.title)
       ).toBeVisible();
     });
   });
@@ -350,21 +348,19 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS["dids.card.details.delete.alert.title"])
+        getByText(EN_TRANSLATIONS.dids.card.details.delete.alert.title)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS["dids.card.details.delete.alert.confirm"])
+        getByText(EN_TRANSLATIONS.dids.card.details.delete.alert.confirm)
       );
     });
     await waitForIonicReact();
 
     await waitFor(() => {
-      expect(
-        queryByText(EN_TRANSLATIONS["verifypassword.title"])
-      ).toBeVisible();
+      expect(queryByText(EN_TRANSLATIONS.verifypassword.title)).toBeVisible();
     });
   });
 });

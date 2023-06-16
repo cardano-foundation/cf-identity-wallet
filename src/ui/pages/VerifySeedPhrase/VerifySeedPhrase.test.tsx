@@ -41,7 +41,8 @@ describe("Verify Seed Phrase Page", () => {
       },
     },
     seedPhraseCache: {
-      seedPhrase160: "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+      seedPhrase160:
+        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
@@ -71,7 +72,7 @@ describe("Verify Seed Phrase Page", () => {
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
     const generateContinueButton = getByText(
-      EN_TRANSLATIONS["generateseedphrase.continue.button"]
+      EN_TRANSLATIONS.generateseedphrase.continue.button
     );
 
     act(() => {
@@ -89,7 +90,7 @@ describe("Verify Seed Phrase Page", () => {
     }
 
     const generateConfirmButton = getByText(
-      EN_TRANSLATIONS["generateseedphrase.alert.button.confirm"]
+      EN_TRANSLATIONS.generateseedphrase.alert.button.confirm
     );
 
     act(() => {
@@ -97,9 +98,7 @@ describe("Verify Seed Phrase Page", () => {
     });
 
     await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS["verifyseedphrase.title"])
-      ).toBeVisible()
+      expect(queryByText(EN_TRANSLATIONS.verifyseedphrase.title)).toBeVisible()
     );
   });
 
@@ -148,7 +147,7 @@ describe("Verify Seed Phrase Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS["verifyseedphrase.alert.text"])
+        queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.text)
       ).toBeVisible()
     );
 
@@ -187,9 +186,11 @@ describe("Verify Seed Phrase Page", () => {
 
     expect(continueButton).toBeDisabled();
 
-    initialState.seedPhraseCache.seedPhrase160.split(' ').forEach(async (word) => {
-      fireEvent.click(getByText(String(word)));
-    });
+    initialState.seedPhraseCache.seedPhrase160
+      .split(" ")
+      .forEach(async (word) => {
+        fireEvent.click(getByText(String(word)));
+      });
 
     await waitFor(() =>
       expect(matchingSeedPhraseContainer.childNodes.length).toBe(
@@ -197,7 +198,15 @@ describe("Verify Seed Phrase Page", () => {
       )
     );
 
-    fireEvent.click(getByText(String(initialState.seedPhraseCache.seedPhrase160.split(" ")[MNEMONIC_FIFTEEN_WORDS - 1])));
+    fireEvent.click(
+      getByText(
+        String(
+          initialState.seedPhraseCache.seedPhrase160.split(" ")[
+            MNEMONIC_FIFTEEN_WORDS - 1
+          ]
+        )
+      )
+    );
 
     await waitFor(() =>
       expect(matchingSeedPhraseContainer.childNodes.length).toBe(
@@ -205,7 +214,15 @@ describe("Verify Seed Phrase Page", () => {
       )
     );
 
-    fireEvent.click(getByText(String(initialState.seedPhraseCache.seedPhrase160.split(" ")[MNEMONIC_FIFTEEN_WORDS - 1])));
+    fireEvent.click(
+      getByText(
+        String(
+          initialState.seedPhraseCache.seedPhrase160.split(" ")[
+            MNEMONIC_FIFTEEN_WORDS - 1
+          ]
+        )
+      )
+    );
 
     await waitFor(() =>
       expect(continueButton).toHaveAttribute("disabled", "false")
@@ -226,8 +243,6 @@ describe("Verify Seed Phrase Page", () => {
       seedPhraseString
     );
   });
-
-
 
   test("calls handleOnBack when back button is clicked", async () => {
     const mockStore = configureStore();

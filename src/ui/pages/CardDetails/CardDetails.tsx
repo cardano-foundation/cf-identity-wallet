@@ -126,7 +126,7 @@ const CardDetails = () => {
     <IonPage className="tab-layout card-details">
       <TabLayout
         header={true}
-        title={`${i18n.t("card.details.done")}`}
+        title={`${i18n.t("carddetails.done")}`}
         titleSize="h3"
         titleAction={handleDone}
         menuButton={false}
