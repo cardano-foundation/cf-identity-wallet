@@ -1,35 +1,37 @@
-import { render, waitFor, fireEvent } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
-import { CreateIdentity } from "./CreateIdentity";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { SecureStorage } from "../../../core/storage/secureStorage";
+import {render} from "@testing-library/react";
+import {Provider} from "react-redux";
+import configureStore from "redux-mock-store";
+import { Store, AnyAction } from "@reduxjs/toolkit";
+import {CreateIdentity} from "./CreateIdentity";
+import {filteredDidsMock} from "../../__mocks__/filteredDidsMock";
+jest.mock("../../../utils", () => ({
+  generateUUID: jest.fn(),
+}));
+describe("Create Identity modal", () => {
+  const mockOnClose = jest.fn();
 
-describe("Verify Password modal", () => {
-  test.skip("User can close the modal by clicking on the backdrop", async () => {
-    const mockSetIsOpen = jest.fn();
-    const storedPass = "storedPass";
-    const secureStorageGetMock = jest
-      .spyOn(SecureStorage, "get")
-      .mockResolvedValue(storedPass);
-    const { queryByText, getByText, getByTestId } = render(
-      <CreateIdentity
-        modalIsOpen={true}
-        setModalIsOpen={mockSetIsOpen}
-      />
+  let mockedStore: Store<unknown, AnyAction>;
+  beforeEach(() => {
+    jest.resetAllMocks();
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      didsCache: {
+        dids: filteredDidsMock,
+      },
+    };
+    mockedStore = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+  });
+
+  test("should display the modal", () => {
+    const { getByTestId } = render(
+      <Provider store={mockedStore}>
+        <CreateIdentity modalIsOpen={true} setModalIsOpen={mockOnClose} />
+      </Provider>
     );
-
-    expect(getByTestId("verify-password")).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS["verifypassword.title"])).toBeVisible();
-
-    const backdrop = document.querySelector("ion-backdrop");
-    act(() => {
-      backdrop && fireEvent.click(backdrop);
-    });
-
-    await waitFor(() => {
-      expect(backdrop).not.toBeInTheDocument();
-    });
-
-    expect(queryByText(EN_TRANSLATIONS["verifypassword.title"])).toBeNull();
+    expect(getByTestId("create-identity-modal")).toBeInTheDocument();
   });
 });

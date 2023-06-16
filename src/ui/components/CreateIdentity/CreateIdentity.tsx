@@ -68,7 +68,7 @@ const CreateIdentity = ({
       initialBreakpoint={0.45}
       breakpoints={[0.45]}
       className="page-layout"
-      data-testid="verify-password"
+      data-testid="create-identity-modal"
       onDidDismiss={() => resetModal()}
     >
       <div className="create-identity modal">
