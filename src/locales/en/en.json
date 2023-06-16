@@ -197,6 +197,33 @@
       }
     }
   },
+  "creds": {
+    "tab": {
+      "title": "Credentials",
+      "create": "Create a credential"
+    },
+    "card": {
+      "layout": {
+        "name": "NAME",
+        "issued": "ISSUED",
+        "validity": "VALID FROM - TO"
+      },
+      "details": {
+        "information": "Information",
+        "type": "Type",
+        "controller": "Controller",
+        "publickeybase": "Public Key Base 58",
+        "delete": {
+          "button": "Delete credential",
+          "alert": {
+            "title": "Are you sure you want to delete this credential?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          }
+        }
+      }
+    }
+  },
   "verifypassword": {
     "title": "Enter password",
     "cancel": "Cancel",
