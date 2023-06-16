@@ -116,3 +116,7 @@ p {
     margin: 0 auto;
   }
 }
+
+.extended-modal::part(content) {
+  height: 800px;
+}

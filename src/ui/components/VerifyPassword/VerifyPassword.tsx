@@ -1,5 +1,7 @@
 import { IonButton, IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
 import { useEffect, useState } from "react";
+import { Capacitor } from "@capacitor/core";
+import { Keyboard } from "@capacitor/keyboard";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
@@ -15,8 +17,9 @@ import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
 
 const VerifyPassword = ({
-  modalIsOpen,
-  setModalIsOpen,
+  isOpen,
+  setIsOpen,
+  onVerify,
 }: VerifyPasswordProps) => {
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
   const [attempts, setAttempts] = useState(6);
@@ -25,27 +28,43 @@ const VerifyPassword = ({
   const [showError, setShowError] = useState(false);
   const [storedPassword, setStoredPassword] = useState("");
   const [storedHint, setStoredHint] = useState("");
+  const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      Keyboard.addListener("keyboardWillShow", () => {
+        setkeyboardIsOpen(true);
+      });
+      Keyboard.addListener("keyboardWillHide", () => {
+        setkeyboardIsOpen(false);
+      });
+    }
+  }, []);
 
   const errorMessages = {
     hasNoMatch: i18n.t("verifypassword.error.hasNoMatch"),
   };
 
   const handleFetchStoredValues = async () => {
-    const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
-    if (password) {
-      setStoredPassword(`${password}`);
-    }
+    try {
+      const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
+      if (password) {
+        setStoredPassword(`${password}`);
+      }
 
-    const hint = await AriesAgent.agent.getMiscRecordValueById(
-      MiscRecordId.OP_PASS_HINT
-    );
-    if (hint) {
-      setStoredHint(`${hint}`);
+      const hint = await AriesAgent.agent.getMiscRecordValueById(
+        MiscRecordId.OP_PASS_HINT
+      );
+      if (hint) {
+        setStoredHint(`${hint}`);
+      }
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
     }
   };
 
   const resetModal = () => {
-    setModalIsOpen(false);
+    setIsOpen(false);
     setVerifyPasswordValue("");
   };
 
@@ -73,7 +92,7 @@ const VerifyPassword = ({
       verifyPasswordValue === storedPassword
     ) {
       resetModal();
-      // @TODO - sdisalvo: navigate the user to the required page
+      onVerify();
     }
   }, [attempts]);
 
@@ -84,10 +103,11 @@ const VerifyPassword = ({
 
   return (
     <IonModal
-      isOpen={modalIsOpen}
-      initialBreakpoint={0.5}
-      breakpoints={[0.5]}
-      className="page-layout"
+      isOpen={isOpen}
+      initialBreakpoint={0.35}
+      breakpoints={[0.35]}
+      animated={false}
+      className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
       data-testid="verify-password"
       onDidDismiss={() => resetModal()}
     >
@@ -96,7 +116,7 @@ const VerifyPassword = ({
           header={true}
           closeButton={true}
           closeButtonLabel={`${i18n.t("verifypassword.cancel")}`}
-          closeButtonAction={() => setModalIsOpen(false)}
+          closeButtonAction={() => setIsOpen(false)}
           actionButton={true}
           actionButtonDisabled={!verifyPasswordValue.length}
           actionButtonAction={() => setAttempts(attempts - 1)}

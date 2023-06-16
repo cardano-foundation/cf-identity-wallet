@@ -13,13 +13,16 @@ describe("Verify Password modal", () => {
       .mockResolvedValue(storedPass);
     const { queryByText, getByText, getByTestId } = render(
       <VerifyPassword
-        modalIsOpen={true}
-        setModalIsOpen={mockSetIsOpen}
+        isOpen={true}
+        setIsOpen={mockSetIsOpen}
+        onVerify={() => {
+          return;
+        }}
       />
     );
 
     expect(getByTestId("verify-password")).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS["verifypassword.title"])).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.verifypassword.title)).toBeVisible();
 
     const backdrop = document.querySelector("ion-backdrop");
     act(() => {
@@ -30,6 +33,6 @@ describe("Verify Password modal", () => {
       expect(backdrop).not.toBeInTheDocument();
     });
 
-    expect(queryByText(EN_TRANSLATIONS["verifypassword.title"])).toBeNull();
+    expect(queryByText(EN_TRANSLATIONS.verifypassword.title)).toBeNull();
   });
 });

@@ -23,10 +23,10 @@ describe("SetPasscode Page", () => {
       </Provider>
     );
     expect(
-      getByText(EN_TRANSLATIONS["setpasscode.enterpasscode.title"])
+      getByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS["setpasscode.enterpasscode.description"])
+      getByText(EN_TRANSLATIONS.setpasscode.enterpasscode.description)
     ).toBeInTheDocument();
   });
 
@@ -58,10 +58,10 @@ describe("SetPasscode Page", () => {
     fireEvent.click(getByText(/1/));
 
     expect(
-      getByText(EN_TRANSLATIONS["setpasscode.reenterpasscode.title"])
+      getByText(EN_TRANSLATIONS.setpasscode.reenterpasscode.title)
     ).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS["setpasscode.startover.label"])
+      getByText(EN_TRANSLATIONS.setpasscode.startover.label)
     ).toBeInTheDocument();
   });
 
@@ -79,17 +79,17 @@ describe("SetPasscode Page", () => {
     fireEvent.click(getByText(/1/));
 
     const labelElement = getByText(
-      EN_TRANSLATIONS["setpasscode.reenterpasscode.title"]
+      EN_TRANSLATIONS.setpasscode.reenterpasscode.title
     );
     expect(labelElement).toBeInTheDocument();
 
     const startOverElement = getByText(
-      EN_TRANSLATIONS["setpasscode.startover.label"]
+      EN_TRANSLATIONS.setpasscode.startover.label
     );
     fireEvent.click(startOverElement);
 
     const passcodeLabel = getByText(
-      EN_TRANSLATIONS["setpasscode.enterpasscode.title"]
+      EN_TRANSLATIONS.setpasscode.enterpasscode.title
     );
     expect(passcodeLabel).toBeInTheDocument();
   });
@@ -108,7 +108,7 @@ describe("SetPasscode Page", () => {
     fireEvent.click(getByText(/5/));
 
     const labelElement = getByText(
-      EN_TRANSLATIONS["setpasscode.reenterpasscode.title"]
+      EN_TRANSLATIONS.setpasscode.reenterpasscode.title
     );
     expect(labelElement).toBeInTheDocument();
 
@@ -120,7 +120,7 @@ describe("SetPasscode Page", () => {
     fireEvent.click(getByText(/1/));
 
     const errorMessage = getByText(
-      EN_TRANSLATIONS["setpasscode.enterpasscode.error"]
+      EN_TRANSLATIONS.setpasscode.enterpasscode.error
     );
     expect(errorMessage).toBeInTheDocument();
   });
@@ -150,7 +150,7 @@ describe("SetPasscode Page", () => {
     fireEvent.click(getByText(/1/));
 
     const labelElement = getByText(
-      EN_TRANSLATIONS["setpasscode.reenterpasscode.title"]
+      EN_TRANSLATIONS.setpasscode.reenterpasscode.title
     );
     expect(labelElement).toBeInTheDocument();
 
@@ -163,7 +163,7 @@ describe("SetPasscode Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS["generateseedphrase.title"])
+        queryByText(EN_TRANSLATIONS.generateseedphrase.title)
       ).not.toBeInTheDocument()
     );
 
@@ -204,7 +204,7 @@ describe("SetPasscode Page", () => {
     fireEvent.click(backButton);
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.title"])
+        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
       ).toBeInTheDocument()
     );
   });

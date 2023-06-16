@@ -1,6 +1,7 @@
 interface VerifyPasswordProps {
-  modalIsOpen: boolean;
-  setModalIsOpen: (value: boolean) => void;
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
+  onVerify: () => void;
 }
 
 export type { VerifyPasswordProps };
