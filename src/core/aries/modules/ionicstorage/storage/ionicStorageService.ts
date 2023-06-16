@@ -148,7 +148,7 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
     await session.forEach((record) => {
       if (record.category && record.category === recordClass.type) {
         for (const [queryKey, queryVal] of Object.entries(query)) {
-          if (record.tags[queryKey] !== queryVal) {
+          if (record.tags[queryKey] !== queryVal && queryVal !== undefined) {
             return;
           }
         }

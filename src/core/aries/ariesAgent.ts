@@ -6,6 +6,7 @@ import {
   DidsModule,
   KeyDidResolver,
   KeyType,
+  TagValue,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { CapacitorFileSystem } from "./dependencies/capacitorFileSystem";
@@ -90,6 +91,35 @@ class AriesAgent {
       options: { keyType: KeyType.Ed25519 },
     });
   }
+
+  async getIdentities(method?: string, did?: string) {
+    const dids = await this.agent.dids.getCreatedDids({method, did});
+
+    let didRecordTags: { method: TagValue; displayName: TagValue; did: TagValue; createdAt: Date; }[] = [];
+
+    dids.forEach(did => {
+      didRecordTags.push(
+        {
+          method: did.getTag("method"),
+          displayName: did.getTag("displayName"),
+          did: did.getTag("did"),
+          createdAt : did.createdAt,
+        }
+      )
+    });
+
+    return didRecordTags;
+  }
+
+  async getIdentity(did: string) {
+    const didRecord = await this.agent.dids.getCreatedDids({did});
+
+    if (didRecord.length === 1) {
+      return didRecord[0];
+    }
+  }
 }
+
+
 
 export { AriesAgent, agentDependencies };
