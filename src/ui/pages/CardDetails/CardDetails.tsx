@@ -73,11 +73,11 @@ const CardDetails = () => {
     publicKeyBase58: "",
   });
 
+  const cardDetails = didsMock.find((did) => did.id === params.id);
   useEffect(() => {
     const cardDetails = didsMock.find((did) => did.id === params.id);
     if (cardDetails) setCardData(cardDetails);
-  }, [params?.id]);
-
+  }, []);
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
