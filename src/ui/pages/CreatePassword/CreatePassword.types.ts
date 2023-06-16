@@ -1,12 +1,12 @@
 import { Dispatch, SetStateAction } from "react";
 
 interface RegexItemProps {
-  condition: RegExpMatchArray | boolean | null;
+  condition: RegExpMatchArray | null;
   label: string;
 }
 interface PasswordRegexProps {
   password: string;
-  setRegexState: Dispatch<SetStateAction<boolean>>;
+  setRegexState: Dispatch<SetStateAction<string>>;
 }
 
 export type { PasswordRegexProps, RegexItemProps };

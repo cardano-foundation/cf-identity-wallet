@@ -43,25 +43,23 @@ const CreateIdentity = ({
     setShowVerifyPassword(true);
   };
 
-  const handleOnVerifyPassword = (isVerified:boolean) => {
-    if (isVerified) {
-      const uuid = generateUUID();
-      const id = `did:key:${uuid}`;
-      const newDid = {
-        id,
-        type: selectedType === 0 ? `${i18n.t(
+  const handleOnVerifyPassword = () => {
+    const uuid = generateUUID();
+    const id = `did:key:${uuid}`;
+    const newDid = {
+      id,
+      type: selectedType === 0 ? `${i18n.t(
           "createIdentity.identityType.types.type0"
-        )}` : `${i18n.t(
+      )}` : `${i18n.t(
           "createIdentity.identityType.types.type1"
-        )}`,
-        name: displayNameValue,
-        date: "15/05/2023",
-        colors: ["#92FFC0", "#47FF94"]
-      }
-      dispatch(setDidsCache([...didsData, newDid]))
-      setShowVerifyPassword(false);
-      resetModal();
+      )}`,
+      name: displayNameValue,
+      date: "15/05/2023",
+      colors: ["#92FFC0", "#47FF94"]
     }
+    dispatch(setDidsCache([...didsData, newDid]))
+    setShowVerifyPassword(false);
+    resetModal();
   };
 
   return (
@@ -156,7 +154,7 @@ const CreateIdentity = ({
           </IonGrid>
           <VerifyPassword
             modalIsOpen={showVerifyPassword}
-            onVerify={(isVerified:boolean) => handleOnVerifyPassword(isVerified)}
+            onVerify={() => handleOnVerifyPassword()}
             setModalIsOpen={(isOpen:boolean) => setShowVerifyPassword(isOpen)}
           />
         </PageLayout>

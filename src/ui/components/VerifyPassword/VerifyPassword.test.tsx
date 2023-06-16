@@ -15,7 +15,7 @@ describe("Verify Password modal", () => {
       <VerifyPassword
         modalIsOpen={true}
         setModalIsOpen={mockSetIsOpen}
-        onVerify={(isVerified:boolean) => {/**/}}
+        onVerify={() => {/**/}}
       />
     );
 

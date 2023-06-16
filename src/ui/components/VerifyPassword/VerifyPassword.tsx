@@ -75,7 +75,7 @@ const VerifyPassword = ({
     ) {
       resetModal();
       // @TODO - sdisalvo: navigate the user to the required page
-      onVerify(true);
+      onVerify();
     }
   }, [attempts]);
 
