@@ -33,6 +33,7 @@ import { EditIdentity } from "../../components/EditIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import { setDidsCache } from "../../../store/reducers/didsCache";
+import {formatDate} from "../../../utils";
 
 const CardDetails = () => {
   const history = useHistory();
@@ -187,7 +188,7 @@ const CardDetails = () => {
                     </span>
 
                     <span className="card-details-info-block-data">
-                      {cardData?.date}
+                      {formatDate(cardData?.date)}
                     </span>
                   </span>
                 </div>

@@ -7,6 +7,7 @@ import {
 } from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
+import {formatDate} from "../../../utils";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -59,7 +60,7 @@ const DidCard = ({
           <span className="card-created-label">
             {i18n.t("dids.card.layout.created")}
           </span>
-          <span>{cardData.date}</span>
+          <span>{formatDate(cardData.date)}</span>
         </div>
       </div>
     </div>
