@@ -16,7 +16,7 @@ import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import "./CreateIdentity.scss";
 import {VerifyPassword} from "../VerifyPassword";
-import {formatDate, generateUUID} from "../../../utils";
+import {generateUUID} from "../../../utils";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {getDidsCache, setDidsCache} from "../../../store/reducers/didsCache";
 import {ColorGenerator} from "../../utils/ColorGenerator";
