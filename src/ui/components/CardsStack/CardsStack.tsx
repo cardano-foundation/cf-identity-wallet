@@ -27,11 +27,17 @@ const DidCard = ({
   index,
   onHandleShowCardDetails,
 }: DidCardProps) => {
+  let shadowClass = "";
+  if (index === undefined){
+    shadowClass = "bottom-shadow";
+  } else if (index !== 0){
+    shadowClass = "top-shadow"
+  }
   return (
     <div
       key={index}
       data-testid={`card-stack${index !== undefined ? `-index-${index}` : ""}`}
-      className={`cards-stack-card ${isActive ? "active" : ""} ${index !== 0 && index !== undefined ? "top-shadow" : ""}`}
+      className={`cards-stack-card ${isActive ? "active" : ""} ${shadowClass}`}
       onClick={() => {
         if (onHandleShowCardDetails) {
           onHandleShowCardDetails(index);
