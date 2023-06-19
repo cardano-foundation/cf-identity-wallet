@@ -8,7 +8,7 @@ import {
 } from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
-import { formatDate } from "../../../utils/formatDate";
+import { formatDate } from "../../../utils";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -69,11 +69,17 @@ const DidCard = ({
   index,
   onHandleShowCardDetails,
 }: DidCardProps) => {
+  let shadowClass = "";
+  if (index === undefined) {
+    shadowClass = "bottom-shadow";
+  } else if (index !== 0) {
+    shadowClass = "top-shadow";
+  }
   return (
     <div
       key={index}
       data-testid={`card-stack${index !== undefined ? `-index-${index}` : ""}`}
-      className={`cards-stack-card ${isActive ? "active" : ""}`}
+      className={`cards-stack-card ${isActive ? "active" : ""} ${shadowClass}`}
       onClick={() => {
         if (onHandleShowCardDetails) {
           onHandleShowCardDetails(index);
@@ -92,12 +98,10 @@ const DidCard = ({
           <span>{cardData.id}</span>
         </div>
         <div className="card-footer">
-          <div className="card-footer-column">
-            <span className="card-footer-column-label">
-              {i18n.t("dids.card.layout.created")}
-            </span>
-            <span>{cardData.date}</span>
-          </div>
+          <span className="card-created-label">
+            {i18n.t("dids.card.layout.created")}
+          </span>
+          <span>{formatDate(cardData.date)}</span>
         </div>
       </div>
     </div>

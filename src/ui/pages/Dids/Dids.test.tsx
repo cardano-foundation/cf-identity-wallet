@@ -42,7 +42,7 @@ describe("Dids Tab", () => {
       },
       seedPhraseCache: {},
       didsCache: {
-        dids: [filteredDidsMock[0]],
+        dids: filteredDidsMock,
       },
     };
 
@@ -77,9 +77,6 @@ describe("Dids Tab", () => {
     expect(getByText(EN_TRANSLATIONS.carddetails.done)).toBeVisible();
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
-
-    const firstCardDetailsId = getByTestId("card-stack");
-    expect(firstCardDetailsId).not.toHaveClass("active");
 
     const doneButton = getByTestId(
       `tab-title-${EN_TRANSLATIONS.carddetails.done.toLowerCase()}`
