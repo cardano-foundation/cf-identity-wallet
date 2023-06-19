@@ -20,8 +20,7 @@ describe("Verify Password modal", () => {
     );
 
     expect(getByTestId("verify-password")).toBeInTheDocument();
-    // @ts-ignore
-    expect(getByText(EN_TRANSLATIONS["verifypassword.title"])).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.verifypassword.title)).toBeVisible();
 
     const backdrop = document.querySelector("ion-backdrop");
     act(() => {
@@ -31,7 +30,6 @@ describe("Verify Password modal", () => {
     await waitFor(() => {
       expect(backdrop).not.toBeInTheDocument();
     });
-    // @ts-ignore
-    expect(queryByText(EN_TRANSLATIONS["verifypassword.title"])).toBeNull();
+    expect(queryByText(EN_TRANSLATIONS.verifypassword.title)).toBeNull();
   });
 });
