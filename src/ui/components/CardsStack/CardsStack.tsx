@@ -8,6 +8,7 @@ import {
 } from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
+import { formatDate } from "../../../utils/formatDate";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -32,7 +33,7 @@ const CredCard = ({
         background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
       }}
     >
-      <div className="cards-stack-did-layout">
+      <div className="cards-stack-cred-layout">
         <div className="card-header">
           <img
             src={cardData.issuerLogo}
@@ -44,17 +45,17 @@ const CredCard = ({
           <span> </span>
         </div>
         <div className="card-footer">
-          <div>
-            <span className="card-created-label">
+          <div className="card-footer-column">
+            <span className="card-footer-column-label">
               {i18n.t("creds.card.layout.name")}
             </span>
             <span>{cardData.nameOnCredential}</span>
           </div>
-          <div>
-            <span className="card-created-label">
+          <div className="card-footer-column">
+            <span className="card-footer-column-label">
               {i18n.t("creds.card.layout.issued")}
             </span>
-            <span>{cardData.issuanceDate}</span>
+            <span>{formatDate(cardData.issuanceDate)}</span>
           </div>
         </div>
       </div>
@@ -91,10 +92,12 @@ const DidCard = ({
           <span>{cardData.id}</span>
         </div>
         <div className="card-footer">
-          <span className="card-created-label">
-            {i18n.t("dids.card.layout.created")}
-          </span>
-          <span>{cardData.date}</span>
+          <div className="card-footer-column">
+            <span className="card-footer-column-label">
+              {i18n.t("dids.card.layout.created")}
+            </span>
+            <span>{cardData.date}</span>
+          </div>
         </div>
       </div>
     </div>
