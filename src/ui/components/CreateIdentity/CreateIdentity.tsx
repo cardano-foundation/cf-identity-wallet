@@ -7,19 +7,19 @@ import {
   IonRow,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
-import {Keyboard} from "@capacitor/keyboard";
-import {Capacitor} from "@capacitor/core";
+import { Keyboard } from "@capacitor/keyboard";
+import { Capacitor } from "@capacitor/core";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { CreateIdentityProps } from "./CreateIdentity.types";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import "./CreateIdentity.scss";
-import {VerifyPassword} from "../VerifyPassword";
-import {generateUUID} from "../../../utils";
-import {useAppDispatch, useAppSelector} from "../../../store/hooks";
-import {getDidsCache, setDidsCache} from "../../../store/reducers/didsCache";
-import {ColorGenerator} from "../../utils/ColorGenerator";
+import { VerifyPassword } from "../VerifyPassword";
+import { generateUUID } from "../../../utils";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getDidsCache, setDidsCache } from "../../../store/reducers/didsCache";
+import { ColorGenerator } from "../../utils/ColorGenerator";
 const CreateIdentity = ({
   modalIsOpen,
   setModalIsOpen,
@@ -34,7 +34,7 @@ const CreateIdentity = ({
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
 
   const displayNameValueIsValid =
-      displayNameValue.length > 0 && displayNameValue.length <= 32;
+    displayNameValue.length > 0 && displayNameValue.length <= 32;
   const typeIsSelectedIsValid = selectedType !== undefined;
 
   useEffect(() => {
@@ -67,21 +67,18 @@ const CreateIdentity = ({
     const newColor = colorGenerator.generateNextColor();
     const newDid = {
       id,
-      type: selectedType === 0 ? `${i18n.t(
-        "createIdentity.identityType.types.type0"
-      )}` : `${i18n.t(
-        "createIdentity.identityType.types.type1"
-      )}`,
+      type:
+        selectedType === 0
+          ? i18n.t("createIdentity.identityType.types.type0")
+          : i18n.t("createIdentity.identityType.types.type1"),
       name: displayNameValue,
       date: currentDate.toISOString(),
-      colors: [newColor[1], newColor[0]]
-    }
-    dispatch(setDidsCache([...didsData, newDid]))
+      colors: [newColor[1], newColor[0]],
+    };
+    dispatch(setDidsCache([...didsData, newDid]));
     setShowVerifyPassword(false);
     resetModal();
   };
-
-
 
   return (
     <IonModal
@@ -176,8 +173,8 @@ const CreateIdentity = ({
           <VerifyPassword
             isOpen={showVerifyPassword}
             onVerify={() => handleOnVerifyPassword()}
-            setIsOpen={(isOpen:boolean) => setShowVerifyPassword(isOpen)}
-            />
+            setIsOpen={(isOpen: boolean) => setShowVerifyPassword(isOpen)}
+          />
         </PageLayout>
       </div>
     </IonModal>

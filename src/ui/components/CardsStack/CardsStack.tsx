@@ -7,7 +7,7 @@ import {
 } from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
-import {formatDate} from "../../../utils";
+import { formatDate } from "../../../utils";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -29,10 +29,10 @@ const DidCard = ({
   onHandleShowCardDetails,
 }: DidCardProps) => {
   let shadowClass = "";
-  if (index === undefined){
+  if (index === undefined) {
     shadowClass = "bottom-shadow";
-  } else if (index !== 0){
-    shadowClass = "top-shadow"
+  } else if (index !== 0) {
+    shadowClass = "top-shadow";
   }
   return (
     <div

@@ -10,7 +10,7 @@ import {
   IonList,
 } from "@ionic/react";
 import { closeOutline, checkmarkOutline } from "ionicons/icons";
-import {useHistory} from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import "./CreatePassword.scss";
@@ -24,11 +24,11 @@ import {
   KeyStoreKeys,
   SecureStorage,
 } from "../../../core/storage/secureStorage";
-import {useAppDispatch, useAppSelector} from "../../../store/hooks";
-import {getState} from "../../../store/reducers/stateCache";
-import {getNextRoute} from "../../../routes/nextRoute";
-import {getBackRoute} from "../../../routes/backRoute";
-import {updateReduxState} from "../../../store/utils";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getState } from "../../../store/reducers/stateCache";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { getBackRoute } from "../../../routes/backRoute";
+import { updateReduxState } from "../../../store/utils";
 
 const STRING_LENGTH = "length";
 const STRING_UPPERCASE = "uppercase";
@@ -129,41 +129,41 @@ const CreatePassword = () => {
   const [regexState, setRegexState] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const passwordValueMatching =
-      createPasswordValue.length > 0 &&
-      confirmPasswordValue.length > 0 &&
-      createPasswordValue === confirmPasswordValue;
+    createPasswordValue.length > 0 &&
+    confirmPasswordValue.length > 0 &&
+    createPasswordValue === confirmPasswordValue;
   const passwordValueNotMatching =
-      createPasswordValue.length > 0 &&
-      confirmPasswordValue.length > 0 &&
-      createPasswordValue !== confirmPasswordValue;
+    createPasswordValue.length > 0 &&
+    confirmPasswordValue.length > 0 &&
+    createPasswordValue !== confirmPasswordValue;
   const validated =
-      !regexState.length &&
-      passwordValueMatching &&
-      createHintValue !== createPasswordValue;
+    !regexState.length &&
+    passwordValueMatching &&
+    createHintValue !== createPasswordValue;
 
   useEffect(() => {
     const errorMessageHandler = (errorType: string) => {
       switch (errorType) {
-      case STRING_SPECIAL_CHAR:
-        return errorMessages.hasSpecialChar;
-      case STRING_LENGTH:
-        if (createPasswordValue.length < 8) {
-          return errorMessages.isTooShort;
-        } else if (createPasswordValue.length > 64) {
-          return errorMessages.isTooLong;
-        } else {
-          return;
-        }
-      case STRING_UPPERCASE:
-        return errorMessages.hasNoUppercase;
-      case STRING_LOWERCASE:
-        return errorMessages.hasNoLowercase;
-      case STRING_NUMBER:
-        return errorMessages.hasNoNumber;
-      case STRING_SYMBOL:
-        return errorMessages.hasNoSymbol;
-      default:
-        break;
+        case STRING_SPECIAL_CHAR:
+          return errorMessages.hasSpecialChar;
+        case STRING_LENGTH:
+          if (createPasswordValue.length < 8) {
+            return errorMessages.isTooShort;
+          } else if (createPasswordValue.length > 64) {
+            return errorMessages.isTooLong;
+          } else {
+            return;
+          }
+        case STRING_UPPERCASE:
+          return errorMessages.hasNoUppercase;
+        case STRING_LOWERCASE:
+          return errorMessages.hasNoLowercase;
+        case STRING_NUMBER:
+          return errorMessages.hasNoNumber;
+        case STRING_SYMBOL:
+          return errorMessages.hasNoSymbol;
+        default:
+          break;
       }
     };
     setErrorMessage(errorMessageHandler(regexState) || "");
@@ -251,11 +251,11 @@ const CreatePassword = () => {
           ) : regexState &&
             regexState !== STRING_SPECIAL_CHAR &&
             !createPasswordFocus ? (
-              <ErrorMessage
-                message={errorMessage}
-                timeout={false}
-              />
-            ) : null}
+            <ErrorMessage
+              message={errorMessage}
+              timeout={false}
+            />
+          ) : null}
           {createPasswordValue && (
             <IonRow>
               <IonCol size="12">

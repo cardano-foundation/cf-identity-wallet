@@ -48,7 +48,7 @@ const didsMock = [
     keyType: "Ed25519",
     controller: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQj",
     publicKeyBase58: "AviE3J4duRYoGNXZDGUjiSShXM6AEvHSUJqVnDB96LdY",
-  }
+  },
 ];
 
 export { didsMock };

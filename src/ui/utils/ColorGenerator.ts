@@ -1,7 +1,11 @@
 class ColorGenerator {
   private colorSet;
 
-  constructor(private readonly lightness: number = 75, private readonly saturation: number = 75, initialColors: string[] = []) {
+  constructor(
+    private readonly lightness: number = 75,
+    private readonly saturation: number = 75,
+    initialColors: string[] = []
+  ) {
     this.colorSet = new Set(initialColors);
   }
 
@@ -14,7 +18,11 @@ class ColorGenerator {
     }
 
     const color1 = this.hslToHex(hue, this.saturation, lightness);
-    const color2 = this.hslToHex(hue, this.saturation, this.lightness + 10 < 100 ? this.lightness + 10 : 100);
+    const color2 = this.hslToHex(
+      hue,
+      this.saturation,
+      this.lightness + 10 < 100 ? this.lightness + 10 : 100
+    );
 
     return [color1, color2];
   }
@@ -23,7 +31,8 @@ class ColorGenerator {
     s /= 100;
     l /= 100;
     const a = s * Math.min(l, 1 - l);
-    const f = (n: number, k = (n + h / 30) % 12) => l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+    const f = (n: number, k = (n + h / 30) % 12) =>
+      l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
     const toHex = (x: number) => {
       const hex = Math.round(x * 255).toString(16);
       return hex.length === 1 ? "0" + hex : hex;
@@ -32,7 +41,6 @@ class ColorGenerator {
   }
 
   public generateColorPairs(numPairs = 1) {
-
     const newColorPairs: Array<[string, string]> = [];
     for (let i = 0; i < numPairs; i++) {
       const [color1, color2] = this.randomHSLToHex();
@@ -48,12 +56,11 @@ class ColorGenerator {
   }
 
   public generateNextColor() {
-
     let [color1, color2] = this.randomHSLToHex();
     let colorKey = [color1, color2].sort().join(":");
     let newColor = this.colorSet.has(colorKey);
 
-    while(!newColor){
+    while (!newColor) {
       [color1, color2] = this.randomHSLToHex();
       colorKey = [color1, color2].sort().join(":");
       if (!this.colorSet.has(colorKey)) {
@@ -70,6 +77,4 @@ class ColorGenerator {
   }
 }
 
-export {
-  ColorGenerator
-}
+export { ColorGenerator };

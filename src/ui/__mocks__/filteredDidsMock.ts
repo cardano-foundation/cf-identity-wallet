@@ -24,22 +24,22 @@ const filteredDidsMock = [
     type: "DID:KEY",
     name: "Offline ID",
     date: "2023-01-01T19:23:24Z",
-    colors: ["#D9EDDF", "#ACD8B9"]
+    colors: ["#D9EDDF", "#ACD8B9"],
   },
   {
     id: "did:key:z6MkpNyGd9gbLD1857nQoZYK5Ey1pCf5cy1SxVeeGifA1ZQv",
     type: "KERI",
     name: "Professional ID",
     date: "2023-01-01T19:23:24Z",
-    colors: ["#47E0FF", "#00C6EF"]
+    colors: ["#47E0FF", "#00C6EF"],
   },
   {
     id: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQvb",
     type: "KERI",
     name: "Offline ID",
     date: "2023-01-01T19:23:24Z",
-    colors: ["#FF9780", "#FF5833"]
-  }
+    colors: ["#FF9780", "#FF5833"],
+  },
 ];
 
 export { filteredDidsMock };
