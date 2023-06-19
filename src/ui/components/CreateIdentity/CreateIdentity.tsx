@@ -16,7 +16,7 @@ import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import "./CreateIdentity.scss";
 import {VerifyPassword} from "../VerifyPassword";
-import {generateUUID} from "../../../utils";
+import {formatDate, generateUUID} from "../../../utils";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {getDidsCache, setDidsCache} from "../../../store/reducers/didsCache";
 import {ColorGenerator} from "../../utils/ColorGenerator";
@@ -61,12 +61,16 @@ const CreateIdentity = ({
   const handleOnVerifyPassword = () => {
     const uuid = generateUUID();
     const id = `did:key:${uuid}`;
-    const currentDate = new Date();
-    const year = currentDate.getFullYear();
-    const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-    const day = String(currentDate.getDate()).padStart(2, "0");
 
-    const formattedDate = `${day}/${month}/${year}`;
+    const currentDate = new Date();
+    const year = currentDate.getFullYear().toString().padStart(4, '0');
+    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
+    const day = currentDate.getDate().toString().padStart(2, '0');
+    const hours = currentDate.getHours().toString().padStart(2, '0');
+    const minutes = currentDate.getMinutes().toString().padStart(2, '0');
+    const seconds = currentDate.getSeconds().toString().padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
+
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
     const newDid = {
