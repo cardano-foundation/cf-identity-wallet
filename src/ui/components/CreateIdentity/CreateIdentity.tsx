@@ -178,10 +178,10 @@ const CreateIdentity = ({
             </IonRow>
           </IonGrid>
           <VerifyPassword
-            modalIsOpen={showVerifyPassword}
+            isOpen={showVerifyPassword}
             onVerify={() => handleOnVerifyPassword()}
-            setModalIsOpen={(isOpen:boolean) => setShowVerifyPassword(isOpen)}
-          />
+            setIsOpen={(isOpen:boolean) => setShowVerifyPassword(isOpen)}
+            />
         </PageLayout>
       </div>
     </IonModal>
