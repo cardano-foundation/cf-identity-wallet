@@ -63,14 +63,6 @@ const CreateIdentity = ({
     const id = `did:key:${uuid}`;
 
     const currentDate = new Date();
-    const year = currentDate.getFullYear().toString().padStart(4, '0');
-    const month = (currentDate.getMonth() + 1).toString().padStart(2, '0');
-    const day = currentDate.getDate().toString().padStart(2, '0');
-    const hours = currentDate.getHours().toString().padStart(2, '0');
-    const minutes = currentDate.getMinutes().toString().padStart(2, '0');
-    const seconds = currentDate.getSeconds().toString().padStart(2, '0');
-    const formattedDate = `${year}-${month}-${day}T${hours}:${minutes}:${seconds}Z`;
-
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
     const newDid = {
@@ -81,7 +73,7 @@ const CreateIdentity = ({
         "createIdentity.identityType.types.type1"
       )}`,
       name: displayNameValue,
-      date: formattedDate,
+      date: currentDate.toISOString(),
       colors: [newColor[1], newColor[0]]
     }
     dispatch(setDidsCache([...didsData, newDid]))
