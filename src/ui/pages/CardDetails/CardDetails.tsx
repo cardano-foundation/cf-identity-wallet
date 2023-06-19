@@ -55,7 +55,6 @@ const CardDetails = () => {
     publicKeyBase58: "",
   });
 
-  const cardDetails = didsMock.find((did) => did.id === params.id);
   useEffect(() => {
     const cardDetails = dids.find((did) => did.id === params.id);
     if (cardDetails) setCardData(cardDetails);
