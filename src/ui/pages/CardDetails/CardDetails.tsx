@@ -27,40 +27,22 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
-
-const AdditionalButtons = () => {
-  return (
-    <>
-      <IonButton
-        shape="round"
-        className="contacts-button"
-        data-testid="contacts-button"
-      >
-        <IonIcon
-          slot="icon-only"
-          icon={shareOutline}
-          color="primary"
-        />
-      </IonButton>
-      <IonButton
-        shape="round"
-        className="add-button"
-        data-testid="add-button"
-      >
-        <IonIcon
-          slot="icon-only"
-          icon={ellipsisVertical}
-          color="primary"
-        />
-      </IonButton>
-    </>
-  );
-};
+import { writeToClipboard } from "../../../utils/clipboard";
+import { ShareIdentity } from "../../components/ShareIdentity";
+import { EditIdentity } from "../../components/EditIdentity";
+import { VerifyPassword } from "../../components/VerifyPassword";
+import { Alert } from "../../components/Alert";
+import { setDidsCache } from "../../../store/reducers/didsCache";
 
 const CardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
+  const [shareIsOpen, setShareIsOpen] = useState(false);
+  const [editIsOpen, setEditIsOpen] = useState(false);
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [dids, setDids] = useState(didsMock);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState({
     id: params.id,
@@ -75,14 +57,14 @@ const CardDetails = () => {
 
   const cardDetails = didsMock.find((did) => did.id === params.id);
   useEffect(() => {
-    const cardDetails = didsMock.find((did) => did.id === params.id);
+    const cardDetails = dids.find((did) => did.id === params.id);
     if (cardDetails) setCardData(cardDetails);
   }, []);
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
 
-  const onClickDone = () => {
+  const handleDone = () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
       store: storeState,
     });
@@ -94,18 +76,67 @@ const CardDetails = () => {
     );
     history.push(TabsRoutePath.DIDS);
   };
+
+  const handleDelete = () => {
+    setVerifyPasswordIsOpen(false);
+    // @TODO - sdisalvo: Update Database.
+    // Remember to update EditIdentity file too.
+    const updatedDids = dids.filter((item) => item.id !== cardData.id);
+    setDids(updatedDids);
+    dispatch(setDidsCache(updatedDids));
+    handleDone();
+  };
+
+  const AdditionalButtons = () => {
+    return (
+      <>
+        <IonButton
+          shape="round"
+          className="share-button"
+          data-testid="share-button"
+          onClick={() => {
+            setShareIsOpen(true);
+          }}
+        >
+          <IonIcon
+            slot="icon-only"
+            icon={shareOutline}
+            color="primary"
+          />
+        </IonButton>
+        <IonButton
+          shape="round"
+          className="edit-button"
+          data-testid="edit-button"
+          onClick={() => {
+            setEditIsOpen(true);
+          }}
+        >
+          <IonIcon
+            slot="icon-only"
+            icon={ellipsisVertical}
+            color="primary"
+          />
+        </IonButton>
+      </>
+    );
+  };
+
   return (
     <IonPage className="tab-layout card-details">
       <TabLayout
         header={true}
-        title={`${i18n.t("card.details.done")}`}
+        title={`${i18n.t("carddetails.done")}`}
         titleSize="h3"
-        titleAction={() => onClickDone()}
+        titleAction={handleDone}
         menuButton={false}
         additionalButtons={<AdditionalButtons />}
       >
         {cardData.name.length === 0 ? (
-          <div className="spinner-container">
+          <div
+            className="spinner-container"
+            data-testid="spinner-container"
+          >
             <IonSpinner name="dots" />
           </div>
         ) : (
@@ -118,7 +149,11 @@ const CardDetails = () => {
               <div className="card-details-info-block">
                 <h3>{i18n.t("dids.card.details.information")}</h3>
                 <div className="card-details-info-block-inner">
-                  <span className="card-details-info-block-line">
+                  <span
+                    className="card-details-info-block-line"
+                    data-testid="copy-button-id"
+                    onClick={() => writeToClipboard(cardData.id)}
+                  >
                     <span>
                       <IonIcon
                         slot="icon-only"
@@ -128,14 +163,13 @@ const CardDetails = () => {
                     </span>
 
                     <span className="card-details-info-block-data">
-                      {cardData?.id.substring(0, 13)}...
-                      {cardData?.id.slice(-5)}
+                      {cardData.id.substring(0, 13)}...
+                      {cardData.id.slice(-5)}
                     </span>
                     <span>
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button"
                       >
                         <IonIcon
                           slot="icon-only"
@@ -162,7 +196,11 @@ const CardDetails = () => {
               <div className="card-details-info-block">
                 <h3>{i18n.t("dids.card.details.type")}</h3>
                 <div className="card-details-info-block-inner">
-                  <span className="card-details-info-block-line">
+                  <span
+                    className="card-details-info-block-line"
+                    data-testid="copy-button-type"
+                    onClick={() => writeToClipboard(cardData.keyType)}
+                  >
                     <span>
                       <IonIcon
                         slot="icon-only"
@@ -172,13 +210,12 @@ const CardDetails = () => {
                     </span>
 
                     <span className="card-details-info-block-data">
-                      {cardData?.keyType}
+                      {cardData.keyType}
                     </span>
                     <span>
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button"
                       >
                         <IonIcon
                           slot="icon-only"
@@ -192,7 +229,11 @@ const CardDetails = () => {
               <div className="card-details-info-block">
                 <h3>{i18n.t("dids.card.details.controller")}</h3>
                 <div className="card-details-info-block-inner">
-                  <span className="card-details-info-block-line">
+                  <span
+                    className="card-details-info-block-line"
+                    data-testid="copy-button-controller"
+                    onClick={() => writeToClipboard(cardData.controller)}
+                  >
                     <span>
                       <IonIcon
                         slot="icon-only"
@@ -202,14 +243,13 @@ const CardDetails = () => {
                     </span>
 
                     <span className="card-details-info-block-data">
-                      {cardData?.controller.substring(0, 13)}...
-                      {cardData?.controller.slice(-5)}
+                      {cardData.controller.substring(0, 13)}...
+                      {cardData.controller.slice(-5)}
                     </span>
                     <span>
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button"
                       >
                         <IonIcon
                           slot="icon-only"
@@ -223,7 +263,11 @@ const CardDetails = () => {
               <div className="card-details-info-block">
                 <h3>{i18n.t("dids.card.details.publickeybase")}</h3>
                 <div className="card-details-info-block-inner">
-                  <span className="card-details-info-block-line">
+                  <span
+                    className="card-details-info-block-line"
+                    data-testid="copy-button-publicKeyBase58"
+                    onClick={() => writeToClipboard(cardData.publicKeyBase58)}
+                  >
                     <span>
                       <IonIcon
                         slot="icon-only"
@@ -232,14 +276,13 @@ const CardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {cardData?.publicKeyBase58.substring(0, 5)}...
-                      {cardData?.publicKeyBase58.slice(-5)}
+                      {cardData.publicKeyBase58.substring(0, 5)}...
+                      {cardData.publicKeyBase58.slice(-5)}
                     </span>
                     <span>
                       <IonButton
                         shape="round"
                         className="copy-button"
-                        data-testid="copy-button"
                       >
                         <IonIcon
                           slot="icon-only"
@@ -254,7 +297,9 @@ const CardDetails = () => {
                 shape="round"
                 expand="block"
                 color="danger"
+                data-testid="card-details-delete-button"
                 className="delete-button"
+                onClick={() => setAlertIsOpen(true)}
               >
                 <IonIcon
                   slot="icon-only"
@@ -262,14 +307,43 @@ const CardDetails = () => {
                   icon={trashOutline}
                   color="primary"
                 />
-                {i18n.t("dids.card.details.delete")}
+                {i18n.t("dids.card.details.delete.button")}
               </IonButton>
             </div>
           </>
         )}
+        <ShareIdentity
+          isOpen={shareIsOpen}
+          setIsOpen={setShareIsOpen}
+          id={cardData.id}
+          name={cardData.name}
+        />
+        <EditIdentity
+          isOpen={editIsOpen}
+          setIsOpen={setEditIsOpen}
+          id={cardData.id}
+          name={cardData.name}
+        />
+        <Alert
+          isOpen={alertIsOpen}
+          setIsOpen={setAlertIsOpen}
+          headerText={i18n.t("dids.card.details.delete.alert.title")}
+          confirmButtonText={`${i18n.t(
+            "dids.card.details.delete.alert.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "dids.card.details.delete.alert.cancel"
+          )}`}
+          actionConfirm={() => setVerifyPasswordIsOpen(true)}
+        />
+        <VerifyPassword
+          isOpen={verifyPasswordIsOpen}
+          setIsOpen={setVerifyPasswordIsOpen}
+          onVerify={handleDelete}
+        />
       </TabLayout>
     </IonPage>
   );
 };
 
-export { CardDetails, AdditionalButtons };
+export { CardDetails };

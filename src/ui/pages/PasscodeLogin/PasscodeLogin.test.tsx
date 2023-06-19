@@ -19,11 +19,9 @@ describe("Passcode Login Page", () => {
         <PasscodeLogin />
       </Provider>
     );
+    expect(getByText(EN_TRANSLATIONS.passcodelogin.title)).toBeInTheDocument();
     expect(
-      getByText(EN_TRANSLATIONS["passcodelogin.title"])
-    ).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS["passcodelogin.description"])
+      getByText(EN_TRANSLATIONS.passcodelogin.description)
     ).toBeInTheDocument();
   });
 
@@ -62,20 +60,16 @@ describe("Passcode Login Page", () => {
     fireEvent.click(getByText(/4/));
     fireEvent.click(getByText(/5/));
     fireEvent.click(getByText(/6/));
+    expect(await findByText(EN_TRANSLATIONS.passcodelogin.error)).toBeVisible();
+    fireEvent.click(getByText(EN_TRANSLATIONS.passcodelogin.forgotten.button));
     expect(
-      await findByText(EN_TRANSLATIONS["passcodelogin.error"])
+      await findByText(EN_TRANSLATIONS.passcodelogin.alert.text.restart)
     ).toBeVisible();
     fireEvent.click(
-      getByText(EN_TRANSLATIONS["passcodelogin.forgotten.button"])
+      getByText(EN_TRANSLATIONS.passcodelogin.alert.button.restart)
     );
     expect(
-      await findByText(EN_TRANSLATIONS["passcodelogin.alert.text.restart"])
-    ).toBeVisible();
-    fireEvent.click(
-      getByText(EN_TRANSLATIONS["passcodelogin.alert.button.restart"])
-    );
-    expect(
-      await findByText(EN_TRANSLATIONS["setpasscode.enterpasscode.title"])
+      await findByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
     ).toBeVisible();
   });
 
@@ -140,7 +134,7 @@ describe("Passcode Login Page", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS["generateseedphrase.title"])
+        queryByText(EN_TRANSLATIONS.generateseedphrase.title)
       ).toBeVisible();
     });
   });

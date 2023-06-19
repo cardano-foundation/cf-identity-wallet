@@ -14,7 +14,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
 
 describe("Dids Tab", () => {
-  test("Renders Dids Tab", () => {
+  test("Renders Dids Tab and all elements in it", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
         <Dids />
@@ -22,7 +22,7 @@ describe("Dids Tab", () => {
     );
 
     expect(getByTestId("dids-tab")).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS["dids.tab.title"])).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.dids.tab.title)).toBeInTheDocument();
     expect(getByTestId("contacts-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
     expect(getByTestId("menu-button")).toBeInTheDocument();
@@ -74,17 +74,17 @@ describe("Dids Tab", () => {
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 
-    expect(getByText(EN_TRANSLATIONS["card.details.done"])).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.carddetails.done)).toBeVisible();
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 
     const doneButton = getByTestId(
-      `tab-title-${EN_TRANSLATIONS["card.details.done"].toLowerCase()}`
+      `tab-title-${EN_TRANSLATIONS.carddetails.done.toLowerCase()}`
     );
 
     act(() => {
       fireEvent.click(doneButton);
     });
-    expect(queryByText(EN_TRANSLATIONS["dids.tab.title"])).toBeVisible();
+    expect(queryByText(EN_TRANSLATIONS.dids.tab.title)).toBeVisible();
   });
 });

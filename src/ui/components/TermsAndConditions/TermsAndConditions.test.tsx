@@ -27,7 +27,7 @@ describe("Terms and conditions screen", () => {
     });
 
     expect(
-      queryByText(EN_TRANSLATIONS["termsandconditions.title"])
+      queryByText(EN_TRANSLATIONS.termsandconditions.title)
     ).not.toBeInTheDocument();
   });
 
@@ -55,7 +55,7 @@ describe("Terms and conditions screen", () => {
     });
 
     expect(
-      queryByText(EN_TRANSLATIONS["termsandconditions.title"])
+      queryByText(EN_TRANSLATIONS.termsandconditions.title)
     ).not.toBeInTheDocument();
   });
 });

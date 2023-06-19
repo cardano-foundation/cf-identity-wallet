@@ -72,7 +72,7 @@ describe("Verify Seed Phrase Page", () => {
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
     const generateContinueButton = getByText(
-      EN_TRANSLATIONS["generateseedphrase.continue.button"]
+      EN_TRANSLATIONS.generateseedphrase.continue.button
     );
 
     act(() => {
@@ -90,7 +90,7 @@ describe("Verify Seed Phrase Page", () => {
     }
 
     const generateConfirmButton = getByText(
-      EN_TRANSLATIONS["generateseedphrase.alert.button.confirm"]
+      EN_TRANSLATIONS.generateseedphrase.alert.button.confirm
     );
 
     act(() => {
@@ -98,9 +98,7 @@ describe("Verify Seed Phrase Page", () => {
     });
 
     await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS["verifyseedphrase.title"])
-      ).toBeVisible()
+      expect(queryByText(EN_TRANSLATIONS.verifyseedphrase.title)).toBeVisible()
     );
   });
 
@@ -149,7 +147,7 @@ describe("Verify Seed Phrase Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS["verifyseedphrase.alert.text"])
+        queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.text)
       ).toBeVisible()
     );
 
