@@ -1,6 +1,6 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { credsCacheSlice, getCredsCache, setCredsCache } from "./credsCache";
-import { CardsStackProps } from "../../../ui/components/CardsStack/CardsStack.types";
+import { CredProps } from "../../../ui/components/CardsStack/CardsStack.types";
 import { RootState } from "../../index";
 
 describe("credsCacheSlice", () => {
@@ -14,13 +14,13 @@ describe("credsCacheSlice", () => {
   });
 
   it("should handle setCredsCache", () => {
-    const creds: CardsStackProps[] = [
+    const creds: CredProps[] = [
       {
-        id: "cred-1",
-        type: "creds",
-        name: "example-name",
-        date: "example-date",
-        colors: ["#92FFC0", "#47FF94"],
+        issuanceDate: "2010-01-01T19:23:24Z",
+        credentialType: "University Credential",
+        nameOnCredential: "Thomas A. Mayfield",
+        issuerLogo: "https://placehold.co/120x22",
+        colors: ["#FFBC60", "#FFA21F"],
       },
     ];
     const newState = credsCacheSlice.reducer(
@@ -37,18 +37,18 @@ describe("getCredsCache", () => {
       credsCache: {
         creds: [
           {
-            id: "cred-1",
-            type: "creds",
-            name: "example-name-1",
-            date: "example-date",
-            colors: ["#92FFC0", "#47FF94"],
+            issuanceDate: "2010-01-01T19:23:24Z",
+            credentialType: "University Credential",
+            nameOnCredential: "Thomas A. Mayfield",
+            issuerLogo: "https://placehold.co/120x22",
+            colors: ["#FFBC60", "#FFA21F"],
           },
           {
-            id: "cred-2",
-            type: "creds",
-            name: "example-name-2",
-            date: "example-date",
-            colors: ["#16FFB0", "#57FFA4"],
+            issuanceDate: "2010-01-01T19:23:24Z",
+            credentialType: "University Credential",
+            nameOnCredential: "Thomas A. Mayfield",
+            issuerLogo: "https://placehold.co/120x22",
+            colors: ["#FFBC60", "#FFA21F"],
           },
         ],
       },

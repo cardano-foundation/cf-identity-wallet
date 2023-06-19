@@ -205,8 +205,7 @@
     "card": {
       "layout": {
         "name": "NAME",
-        "issued": "ISSUED",
-        "validity": "VALID FROM - TO"
+        "issued": "ISSUED"
       },
       "details": {
         "information": "Information",

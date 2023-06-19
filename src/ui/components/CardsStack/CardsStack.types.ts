@@ -1,4 +1,4 @@
-interface CardsStackProps {
+interface DidProps {
   id: string;
   type: string;
   name: string;
@@ -9,18 +9,43 @@ interface CardsStackProps {
   publicKeyBase58?: string;
 }
 
+interface CredProps {
+  type?: string[];
+  connection?: string;
+  issuanceDate: string;
+  expirationDate?: string;
+  receivingDid?: string;
+  credentialType: string;
+  nameOnCredential: string;
+  issuerLogo: string;
+  credentialSubject?: {
+    degree: {
+      education: string;
+      type: string;
+      name: string;
+    };
+  };
+  proofType?: string;
+  proofValue?: string;
+  credentialStatus?: {
+    revoked: boolean;
+    suspended: boolean;
+  };
+  colors: string[];
+}
+
 interface DidCardProps {
-  cardData: CardsStackProps;
+  cardData: DidProps;
   isActive: boolean;
   index?: number;
   onHandleShowCardDetails?: (index: number | undefined) => void;
 }
 
 interface CredCardProps {
-  cardData: CardsStackProps;
+  cardData: CredProps;
   isActive: boolean;
   index?: number;
-  onHandleShowCardDetails: (index: number | undefined) => void;
+  onHandleShowCardDetails?: (index: number | undefined) => void;
 }
 
-export type { CardsStackProps, DidCardProps, CredCardProps };
+export type { DidProps, DidCardProps, CredProps, CredCardProps };
