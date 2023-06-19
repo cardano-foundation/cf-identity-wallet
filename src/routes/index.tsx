@@ -16,8 +16,9 @@ import {
   setCurrentRoute,
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
-import { TabsMenu } from "../ui/components/navigation/TabsMenu";
+import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
+import { CardDetails } from "../ui/pages/CardDetails";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
@@ -61,25 +62,22 @@ const Routes = () => {
   return (
     <IonReactRouter>
       <IonRouterOutlet animated={false}>
-        <Redirect
-          exact
-          from="/"
-          to={nextPath}
-        />
-
         <Route
           path={RoutePath.PASSCODE_LOGIN}
           component={PasscodeLogin}
+          exact
         />
 
         <Route
           path={RoutePath.SET_PASSCODE}
           component={SetPasscode}
+          exact
         />
 
         <Route
           path={RoutePath.ONBOARDING}
           component={Onboarding}
+          exact
         />
 
         {/* Private Routes */}
@@ -101,6 +99,36 @@ const Routes = () => {
           path={RoutePath.CREATE_PASSWORD}
           exact
           component={CreatePassword}
+        />
+        {tabsRoutes.map((tab, index: number) => {
+          return (
+            <AuthenticatedRoute
+              key={index}
+              path={tab.path}
+              exact
+              render={() => (
+                <TabsMenu
+                  tab={tab.component}
+                  path={tab.path}
+                />
+              )}
+            />
+          );
+        })}
+        <AuthenticatedRoute
+          path="/tabs/dids/:id"
+          component={CardDetails}
+          exact
+        />
+        <AuthenticatedRoute
+          path="/tabs/creds/:id"
+          component={CardDetails}
+          exact
+        />
+        <Redirect
+          exact
+          from="/"
+          to={nextPath}
         />
       </IonRouterOutlet>
     </IonReactRouter>

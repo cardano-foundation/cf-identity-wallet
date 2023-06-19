@@ -78,6 +78,7 @@ const VerifyPassword = ({
     // Count down timer must be persistent if the user navigates away from the page
     // or closes the application.
     // The UI will disable password input fields during count down timer.
+
     if (
       verifyPasswordValue.length > 0 &&
       verifyPasswordValue !== storedPassword
