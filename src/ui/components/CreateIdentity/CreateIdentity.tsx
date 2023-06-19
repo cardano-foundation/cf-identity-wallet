@@ -7,6 +7,8 @@ import {
   IonRow,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
+import {Keyboard} from "@capacitor/keyboard";
+import {Capacitor} from "@capacitor/core";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { CreateIdentityProps } from "./CreateIdentity.types";
@@ -18,8 +20,6 @@ import {generateUUID} from "../../../utils";
 import {useAppDispatch, useAppSelector} from "../../../store/hooks";
 import {getDidsCache, setDidsCache} from "../../../store/reducers/didsCache";
 import {ColorGenerator} from "../../utils/ColorGenerator";
-import {Capacitor} from "@capacitor/core";
-import {Keyboard} from "@capacitor/keyboard";
 const CreateIdentity = ({
   modalIsOpen,
   setModalIsOpen,

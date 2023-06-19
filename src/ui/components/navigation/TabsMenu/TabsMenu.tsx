@@ -63,7 +63,6 @@ const TabsMenu = ({
   tab: React.ComponentType<any>;
   path: string;
 }) => {
-  const Tab = tab
   return (
     <IonTabs>
       <IonRouterOutlet animated={false}>
