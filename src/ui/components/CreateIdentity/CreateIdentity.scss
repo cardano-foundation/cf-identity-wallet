@@ -1,28 +1,28 @@
 .create-identity {
   .type-input-title,
   ion-item.input-item ion-label[position="stacked"] {
-    font-size: 16px;
+    font-size: 1rem;
     font-weight: 500;
-    line-height: 22px;
+    line-height: 1.375rem;
   }
   ion-item.input-item .input-line ion-input input::placeholder {
-    font-size: 16px;
+    font-size: 1rem;
   }
   .hide-title ion-item.input-item ion-label[position="stacked"] {
     opacity: 0;
   }
   .error-message-container {
-    height: 16px;
+    height: 1rem;
   }
   .type-input-title {
-    margin-top: 9px;
+    margin-top: 0.563rem;
   }
   .type-input {
     --background: var(--ion-color-light);
     --inner-border-width: 0;
     border: 1px solid var(--color-dark-grey);
     color: var(--ion-color-secondary);
-    border-radius: 8px;
+    border-radius: 0.5rem;
     width: 100%;
   }
   .selectedType {
@@ -30,10 +30,10 @@
     --background: var(--color-medium-grey);
   }
   .col-left {
-    margin-right: 5px;
+    margin-right: 0.313rem;
   }
   .col-right {
-    margin-left: 5px;
+    margin-left: 0.313rem;
   }
   .centered-text {
     display: flex;
@@ -42,6 +42,6 @@
     width: 90%;
   }
   .continue-button-container {
-    margin-top: 27px;
+    margin-top: 1.688rem;
   }
 }
