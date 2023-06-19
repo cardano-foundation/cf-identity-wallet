@@ -4,7 +4,7 @@ describe("ColorGenerator", () => {
   let colorGenerator: ColorGenerator;
 
   beforeEach(() => {
-    colorGenerator = new ColorGenerator(75, 75, ["#123456", "#789abc"]);
+    colorGenerator = new ColorGenerator(75, 75, ["#123456:#789abc"]);
   });
 
   test("generateColorPairs should generate the specified number of color pairs", () => {
@@ -26,7 +26,7 @@ describe("ColorGenerator", () => {
   test("getUsedColors should return the set of used colors", () => {
     const usedColors = colorGenerator.getUsedColors();
 
-    expect(usedColors).toHaveLength(2);
-    expect(usedColors).toEqual(["#123456", "#789abc"]);
+    expect(usedColors).toHaveLength(1);
+    expect(usedColors).toEqual(["#123456:#789abc"]);
   });
 });
