@@ -216,7 +216,7 @@ const CreatePassword = () => {
         footer={true}
         primaryButtonText={`${i18n.t("createpassword.continue.button")}`}
         primaryButtonAction={handleContinue}
-        primaryButtonDisabled={false}
+        primaryButtonDisabled={!validated}
       >
         <IonGrid>
           <IonRow>
