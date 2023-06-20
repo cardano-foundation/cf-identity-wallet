@@ -50,21 +50,6 @@ export const PasswordValidator = {
   symbolRegex: /^(?=.*[!@#$%^&*()])/,
   validCharactersRegex: /^[a-zA-Z0-9!@#$%^&*()]+$/,
   lengthRegex: /^.{8,64}$/,
-  validatePassword(password:string) {
-    const isUppercaseValid = this.uppercaseRegex.test(password);
-    const isLowercaseValid = this.lowercaseRegex.test(password);
-    const isNumberValid = this.numberRegex.test(password);
-    const isSymbolValid = this.symbolRegex.test(password);
-    const isValidCharacters = this.validCharactersRegex.test(password);
-    const isLengthValid = this.lengthRegex.test(password);
-
-    return isUppercaseValid &&
-        isLowercaseValid &&
-        isNumberValid &&
-        isSymbolValid &&
-        isValidCharacters &&
-        isLengthValid;
-  },
   isLengthValid(password:string) {
     return this.lengthRegex.test(password);
   },
@@ -82,6 +67,14 @@ export const PasswordValidator = {
   },
   isValidCharacters(password:string) {
     return this.validCharactersRegex.test(password);
+  },
+  validatePassword(password:string) {
+    return this.isUppercaseValid(password) &&
+        this.isLowercaseValid(password) &&
+        this.isNumberValid(password) &&
+        this.isSymbolValid(password) &&
+        this.isValidCharacters(password) &&
+        this.isLengthValid(password);
   }
 }
 
