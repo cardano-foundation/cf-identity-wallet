@@ -10,6 +10,7 @@ interface DidProps {
 }
 
 interface CredProps {
+  id: string;
   type?: string[];
   connection?: string;
   issuanceDate: string;

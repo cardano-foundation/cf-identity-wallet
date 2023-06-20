@@ -16,6 +16,7 @@ describe("credsCacheSlice", () => {
   it("should handle setCredsCache", () => {
     const creds: CredProps[] = [
       {
+        id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
         issuanceDate: "2010-01-01T19:23:24Z",
         credentialType: "University Credential",
         nameOnCredential: "Thomas A. Mayfield",
@@ -37,6 +38,7 @@ describe("getCredsCache", () => {
       credsCache: {
         creds: [
           {
+            id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
             issuanceDate: "2010-01-01T19:23:24Z",
             credentialType: "University Credential",
             nameOnCredential: "Thomas A. Mayfield",
@@ -44,6 +46,7 @@ describe("getCredsCache", () => {
             colors: ["#FFBC60", "#FFA21F"],
           },
           {
+            id: "did:example:ebfeb1f712ebc6f1c276e12ec22",
             issuanceDate: "2010-01-01T19:23:24Z",
             credentialType: "University Credential",
             nameOnCredential: "Thomas A. Mayfield",

@@ -1,5 +1,6 @@
 const credsMock = [
   {
+    id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
     type: ["UniversityDegreeCredential"],
     connection: "idHere",
     issuanceDate: "2010-01-01T19:23:24Z",

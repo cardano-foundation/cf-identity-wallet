@@ -156,7 +156,7 @@ const CardsStack = ({
       pathname = `/tabs/dids/${data.id}`;
     } else {
       const data = cardsData[index] as CredProps;
-      pathname = `/tabs/creds/${data.receivingDid}`;
+      pathname = `/tabs/creds/${data.id}`;
     }
 
     setTimeout(() => {
