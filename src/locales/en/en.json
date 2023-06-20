@@ -148,7 +148,7 @@
       "button": "Create password"
     },
     "error": {
-      "hasSpecialChar": "Use only lowercase/uppercase letters, numbers & symbols for your password",
+      "hasSpecialChar": "Use only lowercase/uppercase letters, numbers and symbols: !@#$%^&*()",
       "isTooShort": "Must be more than 8 characters long",
       "isTooLong": "Must be less than 64 characters long",
       "hasNoUppercase": "Must contain an uppercase letter",
