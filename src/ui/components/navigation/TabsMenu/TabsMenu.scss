@@ -16,6 +16,11 @@ ion-tab-button {
   max-width: 20%;
   --ripple-color: transparent;
 
+  &:not(.tab-selected) {
+    opacity: 70%;
+    color: var(--ion-color-secondary);
+  }
+
   .borderTop {
     height: 2px;
     width: 65%;
@@ -28,8 +33,11 @@ ion-tab-button {
     width: 90%;
   }
 
-  &.tab-selected .borderTop {
-    border-color: var(--ion-color-primary);
+  &.tab-selected {
+    color: var(--ion-color-primary);
+    .borderTop {
+      border-color: var(--ion-color-primary);
+    }
   }
 
   ion-icon {
