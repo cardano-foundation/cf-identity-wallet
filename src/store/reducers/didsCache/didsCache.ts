@@ -1,14 +1,14 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CardsStackProps } from "../../../ui/components/CardsStack/CardsStack.types";
+import { DidProps } from "../../../ui/components/CardsStack/CardsStack.types";
 import { RootState } from "../../index";
-const initialState: { dids: CardsStackProps[] } = {
+const initialState: { dids: DidProps[] } = {
   dids: [],
 };
 const didsCacheSlice = createSlice({
   name: "didsCache",
   initialState,
   reducers: {
-    setDidsCache: (state, action: PayloadAction<CardsStackProps[]>) => {
+    setDidsCache: (state, action: PayloadAction<DidProps[]>) => {
       state.dids = action.payload;
     },
   },

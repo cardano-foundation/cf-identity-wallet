@@ -108,12 +108,21 @@ p {
     padding: 0.5rem 0 0 !important;
   }
 
+  ion-title {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
+
   ion-content {
     height: 90vh;
   }
 
   h2 {
     margin: 0 auto;
+    font-size: 1.4rem;
   }
 }
 
