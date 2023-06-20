@@ -1,4 +1,8 @@
 ion-tab-bar {
+  --background: transparent;
+  --border: transparent;
+  border-top: 1px solid var(--color-dark-grey);
+  margin-top: 1px;
   padding-inline: 0.625rem;
   height: 8vh;
   justify-content: space-around;
