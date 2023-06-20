@@ -77,6 +77,7 @@ const TabsMenu = ({
           exact={true}
         />
       </IonRouterOutlet>
+
       <IonTabBar
         slot="bottom"
         data-testid="tabs-menu"

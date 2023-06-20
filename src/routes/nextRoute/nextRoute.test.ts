@@ -34,6 +34,7 @@ describe("NextRoute", () => {
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       didsCache: { dids: [] },
+      credsCache: { creds: [] },
     };
   });
 
@@ -120,6 +121,7 @@ describe("getNextRoute", () => {
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
     didsCache: { dids: [] },
+    credsCache: { creds: [] },
   };
   const state = {};
   const payload = {};
