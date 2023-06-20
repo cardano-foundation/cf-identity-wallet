@@ -32,6 +32,10 @@
     .card-header {
       display: flex;
       justify-content: space-between;
+      .card-logo {
+        max-width: 7.5rem;
+        max-height: 1.375rem;
+      }
     }
     .card-footer {
       display: flex;

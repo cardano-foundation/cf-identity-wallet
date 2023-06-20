@@ -7,7 +7,7 @@ const credsMock = [
     receivingDid: "did:example:ebfeb1f712ebc6f1c276e12ec21",
     credentialType: "University Credential",
     nameOnCredential: "Thomas A. Mayfield",
-    issuerLogo: "https://placehold.co/120x22",
+    issuerLogo: "https://www.w3.org/Icons/WWW/w3c_home_nb-v.svg",
     credentialSubject: {
       degree: {
         education: "Degree",

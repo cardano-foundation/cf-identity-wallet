@@ -37,7 +37,8 @@ const CredCard = ({
         <div className="card-header">
           <img
             src={cardData.issuerLogo}
-            alt="logo"
+            className="card-logo"
+            alt="card-logo"
           />
           <span>{cardData.credentialType}</span>
         </div>
