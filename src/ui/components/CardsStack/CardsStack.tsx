@@ -19,11 +19,17 @@ const CredCard = ({
   index = 0,
   onHandleShowCardDetails,
 }: CredCardProps) => {
+  let shadowClass = "";
+  if (index === undefined) {
+    shadowClass = "bottom-shadow";
+  } else if (index !== 0) {
+    shadowClass = "top-shadow";
+  }
   return (
     <div
       key={index}
       data-testid={`card-stack${index !== undefined ? `-index-${index}` : ""}`}
-      className={`cards-stack-card ${isActive ? "active" : ""}`}
+      className={`cards-stack-card ${isActive ? "active" : ""} ${shadowClass}`}
       onClick={() => {
         if (onHandleShowCardDetails) {
           onHandleShowCardDetails(index);
