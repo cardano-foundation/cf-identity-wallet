@@ -41,7 +41,6 @@ describe("getBackRoute", () => {
         },
       },
       didsCache: { dids: [] },
-      credsCache: { creds: [] },
     };
   });
 
@@ -115,7 +114,6 @@ describe("getBackRoute", () => {
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       didsCache: { dids: [] },
-      credsCache: { creds: [] },
     };
     const expectedAuthentication = {
       ...storeMock.stateCache.authentication,
@@ -174,7 +172,6 @@ describe("getPreviousRoute", () => {
         },
       },
       didsCache: { dids: [] },
-      credsCache: { creds: [] },
     };
   });
 

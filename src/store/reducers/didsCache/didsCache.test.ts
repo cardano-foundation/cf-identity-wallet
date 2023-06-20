@@ -1,6 +1,6 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { didsCacheSlice, getDidsCache, setDidsCache } from "./didsCache";
-import { DidProps } from "../../../ui/components/CardsStack/CardsStack.types";
+import { CardsStackProps } from "../../../ui/components/CardsStack/CardsStack.types";
 import { RootState } from "../../index";
 
 describe("didsCacheSlice", () => {
@@ -14,7 +14,7 @@ describe("didsCacheSlice", () => {
   });
 
   it("should handle setDidsCache", () => {
-    const dids: DidProps[] = [
+    const dids: CardsStackProps[] = [
       {
         id: "id-1",
         type: "dids",

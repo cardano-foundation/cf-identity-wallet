@@ -1,8 +1,4 @@
 ion-tab-bar {
-  --background: transparent;
-  --border: transparent;
-  border-top: 1px solid var(--color-dark-grey);
-  margin-top: 1px;
   padding-inline: 0.625rem;
   height: 8vh;
   justify-content: space-around;
@@ -16,11 +12,6 @@ ion-tab-button {
   max-width: 20%;
   --ripple-color: transparent;
 
-  &:not(.tab-selected) {
-    opacity: 70%;
-    color: var(--ion-color-secondary);
-  }
-
   .borderTop {
     height: 2px;
     width: 65%;
@@ -33,11 +24,8 @@ ion-tab-button {
     width: 90%;
   }
 
-  &.tab-selected {
-    color: var(--ion-color-primary);
-    .borderTop {
-      border-color: var(--ion-color-primary);
-    }
+  &.tab-selected .borderTop {
+    border-color: var(--ion-color-primary);
   }
 
   ion-icon {

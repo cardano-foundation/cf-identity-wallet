@@ -197,32 +197,6 @@
       }
     }
   },
-  "creds": {
-    "tab": {
-      "title": "Credentials",
-      "create": "Create a credential"
-    },
-    "card": {
-      "layout": {
-        "name": "NAME",
-        "issued": "ISSUED"
-      },
-      "details": {
-        "information": "Information",
-        "type": "Type",
-        "controller": "Controller",
-        "publickeybase": "Public Key Base 58",
-        "delete": {
-          "button": "Delete credential",
-          "alert": {
-            "title": "Are you sure you want to delete this credential?",
-            "confirm": "Yes, I'm sure",
-            "cancel": "Cancel"
-          }
-        }
-      }
-    }
-  },
   "verifypassword": {
     "title": "Enter password",
     "cancel": "Cancel",
@@ -265,22 +239,19 @@
       "error": "Must be less than 32 characters long"
     }
   },
-  "createidentity": {
+  "createIdentity": {
     "title": "Create new identity",
-    "displayname": {
+    "displayName": {
       "title": "Display name",
       "placeholder": "Create a name for this identity"
     },
-    "identitytype": {
+    "identityType": {
       "title": "Identity type",
       "types": {
         "type0": "did:key",
         "type1": "KERI"
       }
     },
-    "confirmbutton": "Create identity",
-    "error": {
-      "maxlength": "Must be less than 32 characters long"
-    }
+    "confirmButton": "Create identity"
   }
 }

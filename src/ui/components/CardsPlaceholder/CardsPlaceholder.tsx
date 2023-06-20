@@ -8,10 +8,7 @@ const CardsPlaceholder = ({
   buttonAction,
 }: CardsPlaceholderProps) => {
   return (
-    <div
-      className="cards-placeholder-container"
-      data-testid="cards-placeholder"
-    >
+    <div className="cards-placeholder-container">
       <div className="cards-placeholder-cards">
         <span className="back-card" />
         <span className="front-card" />

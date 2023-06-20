@@ -10,8 +10,6 @@ import {
 } from "../../../core/storage/secureStorage";
 import { setDidsCache } from "../../../store/reducers/didsCache";
 import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
-import { setCredsCache } from "../../../store/reducers/credsCache";
-import { filteredCredsMock } from "../../__mocks__/filteredCredsMock";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -45,7 +43,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
 
     dispatch(setDidsCache(filteredDidsMock));
-    dispatch(setCredsCache(filteredCredsMock));
   };
 
   return <>{props.children}</>;

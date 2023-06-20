@@ -31,7 +31,7 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import { DidProps } from "../CardsStack/CardsStack.types";
+import { CardsStackProps } from "../CardsStack/CardsStack.types";
 import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
 
 const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
@@ -96,7 +96,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
     if (actionType === "edit") {
       // @TODO - sdisalvo: Update Database.
       // Remember to update CardDetails file too.
-      const updatedDids: DidProps[] = [];
+      const updatedDids: CardsStackProps[] = [];
       didsMock.forEach((element) => {
         const obj = { ...element };
         if (element.id === id) {

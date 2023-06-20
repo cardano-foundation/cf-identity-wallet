@@ -1,10 +1,9 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
-  DidProps,
+  CardsStackProps,
   CredCardProps,
   DidCardProps,
-  CredProps,
 } from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
@@ -19,55 +18,8 @@ const CredCard = ({
   index = 0,
   onHandleShowCardDetails,
 }: CredCardProps) => {
-  let shadowClass = "";
-  if (index === undefined) {
-    shadowClass = "bottom-shadow";
-  } else if (index !== 0) {
-    shadowClass = "top-shadow";
-  }
-  return (
-    <div
-      key={index}
-      data-testid={`card-stack${index !== undefined ? `-index-${index}` : ""}`}
-      className={`cards-stack-card ${isActive ? "active" : ""} ${shadowClass}`}
-      onClick={() => {
-        if (onHandleShowCardDetails) {
-          onHandleShowCardDetails(index);
-        }
-      }}
-      style={{
-        background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
-      }}
-    >
-      <div className="cards-stack-cred-layout">
-        <div className="card-header">
-          <img
-            src={cardData.issuerLogo}
-            className="card-logo"
-            alt="card-logo"
-          />
-          <span>{cardData.credentialType}</span>
-        </div>
-        <div className="card-body">
-          <span> </span>
-        </div>
-        <div className="card-footer">
-          <div className="card-footer-column">
-            <span className="card-footer-column-label">
-              {i18n.t("creds.card.layout.name")}
-            </span>
-            <span>{cardData.nameOnCredential}</span>
-          </div>
-          <div className="card-footer-column">
-            <span className="card-footer-column-label">
-              {i18n.t("creds.card.layout.issued")}
-            </span>
-            <span>{formatDate(cardData.issuanceDate)}</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+  // TODO: Implement credential card
+  return null;
 };
 
 const DidCard = ({
@@ -114,24 +66,23 @@ const DidCard = ({
     </div>
   );
 };
-
 const CardsStack = ({
   cardsType,
   cardsData,
 }: {
   cardsType: string;
-  cardsData: DidProps[] | CredProps[];
+  cardsData: CardsStackProps[];
 }) => {
   const history = useHistory();
   const [isActive, setIsActive] = useState(false);
 
-  const renderCards = (cardsData: DidProps[] | CredProps[]) => {
-    return cardsData.map((cardData: DidProps | CredProps, index: number) =>
+  const renderCards = (cardsData: CardsStackProps[]) => {
+    return cardsData.map((cardData: CardsStackProps, index: number) =>
       cardsType === "dids" ? (
         <DidCard
           key={index}
           index={index}
-          cardData={cardData as DidProps}
+          cardData={cardData}
           isActive={isActive}
           onHandleShowCardDetails={() => handleShowCardDetails(index)}
         />
@@ -139,7 +90,7 @@ const CardsStack = ({
         <CredCard
           key={index}
           index={index}
-          cardData={cardData as CredProps}
+          cardData={cardData}
           isActive={isActive}
           onHandleShowCardDetails={() => handleShowCardDetails(index)}
         />
@@ -149,18 +100,12 @@ const CardsStack = ({
 
   const handleShowCardDetails = (index: number) => {
     setIsActive(true);
-    let pathname = "";
-
-    if (cardsType === "dids") {
-      const data = cardsData[index] as DidProps;
-      pathname = `/tabs/dids/${data.id}`;
-    } else {
-      const data = cardsData[index] as CredProps;
-      pathname = `/tabs/creds/${data.id}`;
-    }
-
     setTimeout(() => {
-      history.push({ pathname: pathname });
+      history.push({
+        pathname: `/tabs/${cardsType === "dids" ? "dids" : "creds"}/${
+          cardsData[index].id
+        }`,
+      });
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {
