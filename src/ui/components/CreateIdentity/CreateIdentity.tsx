@@ -69,8 +69,8 @@ const CreateIdentity = ({
       id,
       type:
         selectedType === 0
-          ? i18n.t("createIdentity.identityType.types.type0")
-          : i18n.t("createIdentity.identityType.types.type1"),
+          ? i18n.t("createidentity.identitytype.types.type0")
+          : i18n.t("createidentity.identitytype.types.type1"),
       name: displayNameValue,
       date: currentDate.toISOString(),
       colors: [newColor[1], newColor[0]],
@@ -95,16 +95,16 @@ const CreateIdentity = ({
           closeButton={true}
           closeButtonLabel={`${i18n.t("verifypassword.cancel")}`}
           closeButtonAction={() => setModalIsOpen(false)}
-          title={`${i18n.t("createIdentity.title")}`}
+          title={`${i18n.t("createidentity.title")}`}
         >
           <IonGrid>
             <IonRow>
               <IonCol>
                 <CustomInput
                   dataTestId="display-name-input"
-                  title={`${i18n.t("createIdentity.displayName.title")}`}
+                  title={`${i18n.t("createidentity.displayname.title")}`}
                   placeholder={`${i18n.t(
-                    "createIdentity.displayName.placeholder"
+                    "createidentity.displayname.placeholder"
                   )}`}
                   hiddenInput={false}
                   onChangeInput={setDisplayNameValue}
@@ -115,14 +115,14 @@ const CreateIdentity = ({
             <IonRow className="error-message-container">
               {displayNameValue.length !== 0 && !displayNameValueIsValid ? (
                 <ErrorMessage
-                  message={`${i18n.t("createIdentity.error.maxLength")}`}
+                  message={i18n.t("createidentity.error.maxlength")}
                   timeout={true}
                 />
               ) : null}
             </IonRow>
             <IonRow>
               <span className="type-input-title">{`${i18n.t(
-                "createIdentity.identityType.title"
+                "createidentity.identitytype.title"
               )}`}</span>
             </IonRow>
             <IonRow>
@@ -135,7 +135,7 @@ const CreateIdentity = ({
                 >
                   <div className="centered-text">
                     <span>{`${i18n.t(
-                      "createIdentity.identityType.types.type0"
+                      "createidentity.identitytype.types.type0"
                     )}`}</span>
                   </div>
                 </IonItem>
@@ -149,7 +149,7 @@ const CreateIdentity = ({
                 >
                   <div className="centered-text">
                     <span>{`${i18n.t(
-                      "createIdentity.identityType.types.type1"
+                      "createidentity.identitytype.types.type1"
                     )}`}</span>
                   </div>
                 </IonItem>
@@ -165,7 +165,7 @@ const CreateIdentity = ({
                   onClick={() => handleCreateIdentity()}
                   disabled={!(displayNameValueIsValid && typeIsSelectedIsValid)}
                 >
-                  {`${i18n.t("createIdentity.confirmButton")}`}
+                  {`${i18n.t("createidentity.confirmbutton")}`}
                 </IonButton>
               </IonCol>
             </IonRow>

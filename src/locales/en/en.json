@@ -265,19 +265,22 @@
       "error": "Must be less than 32 characters long"
     }
   },
-  "createIdentity": {
+  "createidentity": {
     "title": "Create new identity",
-    "displayName": {
+    "displayname": {
       "title": "Display name",
       "placeholder": "Create a name for this identity"
     },
-    "identityType": {
+    "identitytype": {
       "title": "Identity type",
       "types": {
         "type0": "did:key",
         "type1": "KERI"
       }
     },
-    "confirmButton": "Create identity"
+    "confirmbutton": "Create identity",
+    "error": {
+      "maxlength": "Must be less than 32 characters long"
+    }
   }
 }
