@@ -5,7 +5,6 @@ import {
   CreatePassword,
   PasswordRegex
 } from "./CreatePassword";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 describe("Create Password Page", () => {
   const mockStore = configureStore();
