@@ -181,7 +181,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
                 </IonRow>
                 {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
                   <ErrorMessage
-                    message={i18n.t("editidentity.inner.error") as string}
+                    message={`${i18n.t("editidentity.inner.error")}`}
                     timeout={false}
                   />
                 ) : (
