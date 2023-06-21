@@ -22,8 +22,8 @@ const ErrorMessage = ({ message, timeout }: ErrorMessageProps) => {
 
   return (
     <>
-      {
-        message ? <div
+      {message ? (
+        <div
           data-testid="error-message"
           className={`error-message ${visible ? "visible" : ""}`}
         >
@@ -33,11 +33,9 @@ const ErrorMessage = ({ message, timeout }: ErrorMessageProps) => {
           >
             {message}
           </IonLabel>
-        </div> : null
-      }
-
+        </div>
+      ) : null}
     </>
-
   );
 };
 

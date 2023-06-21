@@ -1,6 +1,5 @@
-
 interface RegexItemProps {
-  condition:  boolean;
+  condition: boolean;
   label: string;
 }
 interface PasswordRegexProps {

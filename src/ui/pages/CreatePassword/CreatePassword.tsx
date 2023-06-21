@@ -30,7 +30,6 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 
-
 const errorMessages = {
   hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
   isTooShort: i18n.t("createpassword.error.isTooShort"),
@@ -50,51 +49,53 @@ const PasswordValidator = {
   symbolRegex: /^(?=.*[!@#$%^&*()])/,
   validCharactersRegex: /^[a-zA-Z0-9!@#$%^&*()]+$/,
   lengthRegex: /^.{8,64}$/,
-  isLengthValid(password:string) {
+  isLengthValid(password: string) {
     return this.lengthRegex.test(password);
   },
-  isUppercaseValid(password:string) {
+  isUppercaseValid(password: string) {
     return this.uppercaseRegex.test(password);
   },
-  isLowercaseValid(password:string) {
+  isLowercaseValid(password: string) {
     return this.lowercaseRegex.test(password);
   },
-  isNumberValid(password:string) {
+  isNumberValid(password: string) {
     return this.numberRegex.test(password);
   },
-  isSymbolValid(password:string) {
+  isSymbolValid(password: string) {
     return this.symbolRegex.test(password);
   },
-  isValidCharacters(password:string) {
+  isValidCharacters(password: string) {
     return this.validCharactersRegex.test(password);
   },
-  validatePassword(password:string) {
-    return this.isUppercaseValid(password) &&
-        this.isLowercaseValid(password) &&
-        this.isNumberValid(password) &&
-        this.isSymbolValid(password) &&
-        this.isValidCharacters(password) &&
-        this.isLengthValid(password);
+  validatePassword(password: string) {
+    return (
+      this.isUppercaseValid(password) &&
+      this.isLowercaseValid(password) &&
+      this.isNumberValid(password) &&
+      this.isSymbolValid(password) &&
+      this.isValidCharacters(password) &&
+      this.isLengthValid(password)
+    );
   },
-  getErrorByPriority(password:string) {
+  getErrorByPriority(password: string) {
     let errorMessage = undefined;
-    if (password.length < 8){
+    if (password.length < 8) {
       errorMessage = errorMessages.isTooShort;
-    } else if (password.length > 32){
+    } else if (password.length > 32) {
       errorMessage = errorMessages.isTooLong;
-    } else if (!this.isUppercaseValid(password)){
+    } else if (!this.isUppercaseValid(password)) {
       errorMessage = errorMessages.hasNoUppercase;
-    } else if (!this.isLowercaseValid(password)){
+    } else if (!this.isLowercaseValid(password)) {
       errorMessage = errorMessages.hasNoLowercase;
-    } else if (!this.isNumberValid(password)){
+    } else if (!this.isNumberValid(password)) {
       errorMessage = errorMessages.hasNoNumber;
-    } else if (!this.isValidCharacters(password)){
-      errorMessage = errorMessages.hasSpecialChar
+    } else if (!this.isValidCharacters(password)) {
+      errorMessage = errorMessages.hasSpecialChar;
     }
 
     return errorMessage;
-  }
-}
+  },
+};
 
 const RegexItem = ({ condition, label }: RegexItemProps) => {
   return (
@@ -110,7 +111,6 @@ const RegexItem = ({ condition, label }: RegexItemProps) => {
 };
 
 const PasswordRegex = ({ password }: PasswordRegexProps) => {
-
   return (
     <IonList
       lines="none"
@@ -158,9 +158,12 @@ const CreatePassword = () => {
     createPasswordValue.length > 0 &&
     confirmPasswordValue.length > 0 &&
     createPasswordValue !== confirmPasswordValue;
-  const validated = PasswordValidator.validatePassword(createPasswordValue) && passwordValueMatching &&  createHintValue !== createPasswordValue;
+  const validated =
+    PasswordValidator.validatePassword(createPasswordValue) &&
+    passwordValueMatching &&
+    createHintValue !== createPasswordValue;
 
-  const handlePasswordInput = (password:string) => {
+  const handlePasswordInput = (password: string) => {
     setCreatePasswordValue(password);
   };
   const handleClearState = () => {
@@ -231,24 +234,30 @@ const CreatePassword = () => {
                   "createpassword.input.first.placeholder"
                 )}`}
                 hiddenInput={true}
-                onChangeInput={(password:string) => handlePasswordInput(password)}
+                onChangeInput={(password: string) =>
+                  handlePasswordInput(password)
+                }
                 onChangeFocus={setPasswordFocus}
                 value={createPasswordValue}
               />
             </IonCol>
           </IonRow>
-          {createPasswordValue !== "" && ((passwordFocus &&!PasswordValidator.validatePassword(createPasswordValue)) || (!passwordFocus && !PasswordValidator.isValidCharacters(createPasswordValue))) ? (
-            <ErrorMessage
-              message={PasswordValidator.getErrorByPriority(createPasswordValue)}
-              timeout={false}
-            />
-          ) : null}
+          {createPasswordValue !== "" &&
+          ((passwordFocus &&
+            !PasswordValidator.validatePassword(createPasswordValue)) ||
+            (!passwordFocus &&
+              !PasswordValidator.isValidCharacters(createPasswordValue))) ? (
+              <ErrorMessage
+                message={PasswordValidator.getErrorByPriority(
+                  createPasswordValue
+                )}
+                timeout={false}
+              />
+            ) : null}
           {createPasswordValue && (
             <IonRow>
               <IonCol size="12">
-                <PasswordRegex
-                  password={createPasswordValue}
-                />
+                <PasswordRegex password={createPasswordValue} />
               </IonCol>
             </IonRow>
           )}
@@ -304,8 +313,4 @@ const CreatePassword = () => {
   );
 };
 
-export {
-  CreatePassword,
-  PasswordRegex,
-  PasswordValidator
-};
+export { CreatePassword, PasswordRegex, PasswordValidator };

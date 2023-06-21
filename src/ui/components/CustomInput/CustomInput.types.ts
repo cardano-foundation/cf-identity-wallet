@@ -7,7 +7,7 @@ interface CustomInputProps {
   placeholder?: string;
   hiddenInput: boolean;
   value: string;
-  onChangeInput: (text:string) => void;
+  onChangeInput: (text: string) => void;
   onChangeFocus?: Dispatch<SetStateAction<boolean>>;
   optional?: boolean;
 }
