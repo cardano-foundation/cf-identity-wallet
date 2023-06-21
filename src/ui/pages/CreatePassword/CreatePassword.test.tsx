@@ -96,13 +96,4 @@ describe("Create Password Page", () => {
     const regexConditions = container.getElementsByClassName("password-criteria-icon");
     expect(regexConditions[4]).toHaveClass("fails");
   });
-
-  test("validates password has space/special character", () => {
-    const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <CreatePassword />
-      </Provider>
-    );
-  });
-
 });

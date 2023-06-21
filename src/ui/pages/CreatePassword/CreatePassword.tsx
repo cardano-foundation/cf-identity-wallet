@@ -43,7 +43,7 @@ const errorMessages = {
   hintSameAsPassword: i18n.t("createpassword.error.hintSameAsPassword"),
 };
 
-export const PasswordValidator = {
+const PasswordValidator = {
   uppercaseRegex: /^(?=.*[A-Z])/,
   lowercaseRegex: /^(?=.*[a-z])/,
   numberRegex: /^(?=.*[0-9])/,
@@ -286,5 +286,6 @@ const CreatePassword = () => {
 
 export {
   CreatePassword,
-  PasswordRegex
+  PasswordRegex,
+  PasswordValidator
 };
