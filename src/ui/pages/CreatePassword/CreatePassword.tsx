@@ -33,12 +33,6 @@ import { updateReduxState } from "../../../store/utils";
 
 const errorMessages = {
   hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
-  isTooShort: i18n.t("createpassword.error.isTooShort"),
-  isTooLong: i18n.t("createpassword.error.isTooLong"),
-  hasNoUppercase: i18n.t("createpassword.error.hasNoUppercase"),
-  hasNoLowercase: i18n.t("createpassword.error.hasNoLowercase"),
-  hasNoNumber: i18n.t("createpassword.error.hasNoNumber"),
-  hasNoSymbol: i18n.t("createpassword.error.hasNoSymbol"),
   hasNoMatch: i18n.t("createpassword.error.hasNoMatch"),
   hintSameAsPassword: i18n.t("createpassword.error.hintSameAsPassword"),
 };

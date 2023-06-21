@@ -148,13 +148,7 @@
       "button": "Create password"
     },
     "error": {
-      "hasSpecialChar": "Use only lowercase/uppercase letters, numbers and symbols: !@#$%^&*()",
-      "isTooShort": "Must be more than 8 characters long",
-      "isTooLong": "Must be less than 64 characters long",
-      "hasNoUppercase": "Must contain an uppercase letter",
-      "hasNoLowercase": "Must contain a lowercase letter",
-      "hasNoNumber": "Must contain a number",
-      "hasNoSymbol": "Must contain a a symbol",
+      "hasSpecialChar": "Please enter a valid character",
       "hasNoMatch": "Passwords do not match",
       "hintSameAsPassword": "Your hint cannot be your password"
     }
@@ -165,7 +159,7 @@
       "uppercase": "Contains an uppercase letter",
       "lowercase": "Contains a lowercase letter",
       "number": "Contains a number",
-      "symbol": "Contains a symbol"
+      "symbol": "Contains a symbol !@#$%^&*()"
     }
   },
 

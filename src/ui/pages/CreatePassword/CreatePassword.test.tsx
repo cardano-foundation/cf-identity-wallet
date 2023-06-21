@@ -1,10 +1,12 @@
 import { Provider } from "react-redux";
 import { render } from "@testing-library/react";
 import configureStore from "redux-mock-store";
+import userEvent from "@testing-library/user-event";
 import {
   CreatePassword,
-  PasswordRegex
+  PasswordRegex, PasswordValidator
 } from "./CreatePassword";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 describe("Create Password Page", () => {
   const mockStore = configureStore();
@@ -94,5 +96,22 @@ describe("Create Password Page", () => {
     );
     const regexConditions = container.getElementsByClassName("password-criteria-icon");
     expect(regexConditions[4]).toHaveClass("fails");
+  });
+
+  test("PasswordValidator returns false when using special char", () => {
+    expect(PasswordValidator.isValidCharacters("Abc123! @")).toBe(false);
+  });
+
+  test.skip("show error message on type special char", () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreatePassword />
+      </Provider>
+    );
+
+    const input = getByTestId("createPasswordValue");
+    userEvent.type(input, "Abc123! @");
+    const errorMessage = getByTestId("error-message");
+    expect(errorMessage).toBeInTheDocument();
   });
 });
