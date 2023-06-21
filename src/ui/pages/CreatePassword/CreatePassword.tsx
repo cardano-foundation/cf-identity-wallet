@@ -89,6 +89,8 @@ const PasswordValidator = {
       errorMessage = errorMessages.hasNoLowercase;
     } else if (!this.isNumberValid(password)) {
       errorMessage = errorMessages.hasNoNumber;
+    } else if (!this.isSymbolValid(password)) {
+      errorMessage = errorMessages.hasNoSymbol;
     } else if (!this.isValidCharacters(password)) {
       errorMessage = errorMessages.hasSpecialChar;
     }
@@ -242,15 +244,15 @@ const CreatePassword = () => {
               />
             </IonCol>
           </IonRow>
-          {createPasswordValue !== "" &&
-          ((passwordFocus &&
+          {(createPasswordValue !== "" &&
             !PasswordValidator.validatePassword(createPasswordValue)) ||
-            (!passwordFocus &&
-              !PasswordValidator.isValidCharacters(createPasswordValue))) ? (
+          !PasswordValidator.isValidCharacters(createPasswordValue) ? (
               <ErrorMessage
-                message={PasswordValidator.getErrorByPriority(
-                  createPasswordValue
-                )}
+                message={
+                  createPasswordValue.length
+                    ? PasswordValidator.getErrorByPriority(createPasswordValue)
+                    : undefined
+                }
                 timeout={false}
               />
             ) : null}

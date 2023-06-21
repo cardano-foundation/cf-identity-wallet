@@ -105,12 +105,26 @@ describe("Create Password Page", () => {
   });
 
   test("PasswordValidator returns correct error priority", () => {
-    expect(PasswordValidator.getErrorByPriority("ABCD")).toBe(EN_TRANSLATIONS.createpassword.error.isTooShort);
-    expect(PasswordValidator.getErrorByPriority("123456789123456789123456789123456789")).toBe(EN_TRANSLATIONS.createpassword.error.isTooLong);
-    expect(PasswordValidator.getErrorByPriority("ABCD1234@")).toBe(EN_TRANSLATIONS.createpassword.error.hasNoLowercase);
-    expect(PasswordValidator.getErrorByPriority("abcd1234@")).toBe(EN_TRANSLATIONS.createpassword.error.hasNoUppercase);
-    expect(PasswordValidator.getErrorByPriority("abcdEFGH@")).toBe(EN_TRANSLATIONS.createpassword.error.hasNoNumber);
-    expect(PasswordValidator.getErrorByPriority("abcdEFGH12 @")).toBe(EN_TRANSLATIONS.createpassword.error.hasSpecialChar);
+    expect(PasswordValidator.getErrorByPriority("ABCD")).toBe(
+      EN_TRANSLATIONS.createpassword.error.isTooShort
+    );
+    expect(
+      PasswordValidator.getErrorByPriority(
+        "123456789123456789123456789123456789"
+      )
+    ).toBe(EN_TRANSLATIONS.createpassword.error.isTooLong);
+    expect(PasswordValidator.getErrorByPriority("ABCD1234@")).toBe(
+      EN_TRANSLATIONS.createpassword.error.hasNoLowercase
+    );
+    expect(PasswordValidator.getErrorByPriority("abcd1234@")).toBe(
+      EN_TRANSLATIONS.createpassword.error.hasNoUppercase
+    );
+    expect(PasswordValidator.getErrorByPriority("abcdEFGH@")).toBe(
+      EN_TRANSLATIONS.createpassword.error.hasNoNumber
+    );
+    expect(PasswordValidator.getErrorByPriority("abcdEFGH12 @")).toBe(
+      EN_TRANSLATIONS.createpassword.error.hasSpecialChar
+    );
   });
 
   test.skip("show error message on type special char", () => {

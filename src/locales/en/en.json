@@ -154,7 +154,7 @@
       "hasNoUppercase": "Must contain an uppercase letter",
       "hasNoLowercase": "Must contain a lowercase letter",
       "hasNoNumber": "Must contain a number",
-      "hasNoSymbol": "Must contain a a symbol !@#$%^&*()",
+      "hasNoSymbol": "Must contain a valid symbol",
       "hasNoMatch": "Passwords do not match",
       "hintSameAsPassword": "Your hint cannot be your password"
     }
