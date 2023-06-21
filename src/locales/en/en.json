@@ -168,10 +168,6 @@
       "symbol": "Contains a symbol"
     }
   },
-
-  "carddetails": {
-    "done": "Done"
-  },
   "dids": {
     "tab": {
       "title": "Identities",
@@ -182,6 +178,7 @@
         "created": "CREATED"
       },
       "details": {
+        "done": "Done",
         "information": "Information",
         "type": "Type",
         "controller": "Controller",
@@ -208,6 +205,7 @@
         "issued": "ISSUED"
       },
       "details": {
+        "done": "Done",
         "information": "Information",
         "type": "Type",
         "controller": "Controller",

@@ -4,7 +4,7 @@ import { MemoryRouter, Route } from "react-router-dom";
 import { CardsStack, NAVIGATION_DELAY } from "./CardsStack";
 import { didsMock } from "../../__mocks__/didsMock";
 import { store } from "../../../store";
-import { CardDetails } from "../../pages/CardDetails";
+import { DidCardDetails } from "../../pages/DidCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 
 describe("Cards Stack Component", () => {
@@ -32,7 +32,7 @@ describe("Cards Stack Component", () => {
           />
           <Route
             path={TabsRoutePath.DID_DETAILS}
-            component={CardDetails}
+            component={DidCardDetails}
           />
         </Provider>
       </MemoryRouter>
