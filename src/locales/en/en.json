@@ -149,6 +149,12 @@
     },
     "error": {
       "hasSpecialChar": "Please enter a valid character",
+      "isTooShort": "Must be more than 8 characters long",
+      "isTooLong": "Must be less than 64 characters long",
+      "hasNoUppercase": "Must contain an uppercase letter",
+      "hasNoLowercase": "Must contain a lowercase letter",
+      "hasNoNumber": "Must contain a number",
+      "hasNoSymbol": "Must contain a a symbol !@#$%^&*()",
       "hasNoMatch": "Passwords do not match",
       "hintSameAsPassword": "Your hint cannot be your password"
     }

@@ -33,6 +33,12 @@ import { updateReduxState } from "../../../store/utils";
 
 const errorMessages = {
   hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
+  isTooShort: i18n.t("createpassword.error.isTooShort"),
+  isTooLong: i18n.t("createpassword.error.isTooLong"),
+  hasNoUppercase: i18n.t("createpassword.error.hasNoUppercase"),
+  hasNoLowercase: i18n.t("createpassword.error.hasNoLowercase"),
+  hasNoNumber: i18n.t("createpassword.error.hasNoNumber"),
+  hasNoSymbol: i18n.t("createpassword.error.hasNoSymbol"),
   hasNoMatch: i18n.t("createpassword.error.hasNoMatch"),
   hintSameAsPassword: i18n.t("createpassword.error.hintSameAsPassword"),
 };
@@ -69,6 +75,24 @@ const PasswordValidator = {
         this.isSymbolValid(password) &&
         this.isValidCharacters(password) &&
         this.isLengthValid(password);
+  },
+  getErrorByPriority(password:string) {
+    let errorMessage = undefined;
+    if (password.length < 8){
+      errorMessage = errorMessages.isTooShort;
+    } else if (password.length > 32){
+      errorMessage = errorMessages.isTooLong;
+    } else if (!this.isUppercaseValid(password)){
+      errorMessage = errorMessages.hasNoUppercase;
+    } else if (!this.isLowercaseValid(password)){
+      errorMessage = errorMessages.hasNoLowercase;
+    } else if (!this.isNumberValid(password)){
+      errorMessage = errorMessages.hasNoNumber;
+    } else if (!this.isValidCharacters(password)){
+      errorMessage = errorMessages.hasSpecialChar
+    }
+
+    return errorMessage;
   }
 }
 
@@ -123,6 +147,7 @@ const CreatePassword = () => {
   const [createPasswordValue, setCreatePasswordValue] = useState("");
   const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
   const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
+  const [passwordFocus, setPasswordFocus] = useState(false);
   const [createHintValue, setCreateHintValue] = useState("");
 
   const passwordValueMatching =
@@ -207,13 +232,14 @@ const CreatePassword = () => {
                 )}`}
                 hiddenInput={true}
                 onChangeInput={(password:string) => handlePasswordInput(password)}
+                onChangeFocus={setPasswordFocus}
                 value={createPasswordValue}
               />
             </IonCol>
           </IonRow>
-          {createPasswordValue !== "" && !PasswordValidator.isValidCharacters(createPasswordValue) ? (
+          {createPasswordValue !== "" && ((passwordFocus &&!PasswordValidator.validatePassword(createPasswordValue)) || (!passwordFocus && !PasswordValidator.isValidCharacters(createPasswordValue))) ? (
             <ErrorMessage
-              message={i18n.t("createpassword.error.hasSpecialChar")}
+              message={PasswordValidator.getErrorByPriority(createPasswordValue)}
               timeout={false}
             />
           ) : null}

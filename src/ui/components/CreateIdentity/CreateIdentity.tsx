@@ -115,7 +115,7 @@ const CreateIdentity = ({
             <IonRow className="error-message-container">
               {displayNameValue.length !== 0 && !displayNameValueIsValid ? (
                 <ErrorMessage
-                  message={i18n.t("createidentity.error.maxlength")}
+                  message={i18n.t("createidentity.error.maxlength") as string}
                   timeout={true}
                 />
               ) : null}
