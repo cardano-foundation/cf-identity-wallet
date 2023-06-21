@@ -60,6 +60,7 @@ const DidCardDetails = () => {
     const cardDetails = dids.find((did) => did.id === params.id);
     if (cardDetails) setCardData(cardDetails);
   }, [params.id]);
+
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });

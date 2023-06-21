@@ -7,7 +7,6 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
-  shareOutline,
   ellipsisVertical,
   keyOutline,
   copyOutline,
@@ -17,7 +16,6 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { inflate } from "zlib";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
@@ -29,8 +27,6 @@ import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
 import { writeToClipboard } from "../../../utils/clipboard";
-import { ShareIdentity } from "../../components/ShareIdentity";
-import { EditIdentity } from "../../components/EditIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import { setCredsCache } from "../../../store/reducers/credsCache";
@@ -40,8 +36,7 @@ const CredCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
-  const [shareIsOpen, setShareIsOpen] = useState(false);
-  const [editIsOpen, setEditIsOpen] = useState(false);
+  const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [creds, setCreds] = useState(credsMock);
@@ -76,6 +71,7 @@ const CredCardDetails = () => {
     const cardDetails = creds.find((cred) => cred.id === params.id);
     if (cardDetails) setCardData(cardDetails);
   }, [params.id]);
+
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
@@ -108,24 +104,10 @@ const CredCardDetails = () => {
       <>
         <IonButton
           shape="round"
-          className="share-button"
-          data-testid="share-button"
-          onClick={() => {
-            setShareIsOpen(true);
-          }}
-        >
-          <IonIcon
-            slot="icon-only"
-            icon={shareOutline}
-            color="primary"
-          />
-        </IonButton>
-        <IonButton
-          shape="round"
           className="edit-button"
           data-testid="edit-button"
           onClick={() => {
-            setEditIsOpen(true);
+            setOptionsIsOpen(true);
           }}
         >
           <IonIcon
