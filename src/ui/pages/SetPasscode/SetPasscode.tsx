@@ -93,7 +93,7 @@ const SetPasscode = () => {
             passcode.length === 6 &&
             originalPassCode !== passcode && (
               <ErrorMessage
-                message={i18n.t("setpasscode.enterpasscode.error")}
+                message={`${i18n.t("setpasscode.enterpasscode.error")}`}
                 timeout={true}
               />
             )
