@@ -31,6 +31,7 @@ import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { formatDate } from "../../../utils";
+import { CredsOptions } from "../../components/CredsOptions";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -92,7 +93,6 @@ const CredCardDetails = () => {
   const handleDelete = () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
-    // Remember to update EditIdentity file too.
     const updatedCreds = creds.filter((item) => item.id !== cardData.id);
     setCreds(updatedCreds);
     dispatch(setCredsCache(updatedCreds));
@@ -104,8 +104,8 @@ const CredCardDetails = () => {
       <>
         <IonButton
           shape="round"
-          className="edit-button"
-          data-testid="edit-button"
+          className="options-button"
+          data-testid="options-button"
           onClick={() => {
             setOptionsIsOpen(true);
           }}
@@ -328,6 +328,11 @@ const CredCardDetails = () => {
             </div>
           </>
         )}
+        <CredsOptions
+          isOpen={optionsIsOpen}
+          setIsOpen={setOptionsIsOpen}
+          id={cardData.id}
+        />
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
