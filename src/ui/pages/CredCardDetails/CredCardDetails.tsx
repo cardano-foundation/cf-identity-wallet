@@ -12,17 +12,18 @@ import {
   keyOutline,
   copyOutline,
   calendarNumberOutline,
-  pricetagOutline,
+  informationCircleOutline,
   personCircleOutline,
   trashOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
+import { inflate } from "zlib";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import "./CredCardDetails.scss";
-import { didsMock } from "../../__mocks__/didsMock";
-import { DidCard } from "../../components/CardsStack";
+import { credsMock } from "../../__mocks__/credsMock";
+import { CredCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -32,7 +33,7 @@ import { ShareIdentity } from "../../components/ShareIdentity";
 import { EditIdentity } from "../../components/EditIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
-import { setDidsCache } from "../../../store/reducers/didsCache";
+import { setCredsCache } from "../../../store/reducers/credsCache";
 import { formatDate } from "../../../utils";
 
 const CredCardDetails = () => {
@@ -43,21 +44,36 @@ const CredCardDetails = () => {
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [dids, setDids] = useState(didsMock);
+  const [creds, setCreds] = useState(credsMock);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState({
     id: params.id,
-    type: "",
-    name: "",
-    date: "",
+    type: [""],
+    connection: "",
+    issuanceDate: "",
+    expirationDate: "",
+    receivingDid: "",
+    credentialType: "",
+    nameOnCredential: "",
+    issuerLogo: "",
+    credentialSubject: {
+      degree: {
+        education: "",
+        type: "",
+        name: "",
+      },
+    },
+    proofType: "",
+    proofValue: "",
+    credentialStatus: {
+      revoked: false,
+      suspended: false,
+    },
     colors: ["", ""],
-    keyType: "",
-    controller: "",
-    publicKeyBase58: "",
   });
 
   useEffect(() => {
-    const cardDetails = dids.find((did) => did.id === params.id);
+    const cardDetails = creds.find((cred) => cred.id === params.id);
     if (cardDetails) setCardData(cardDetails);
   }, [params.id]);
   useIonViewWillEnter(() => {
@@ -65,7 +81,7 @@ const CredCardDetails = () => {
   });
 
   const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
+    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
       store: storeState,
     });
     updateReduxState(
@@ -74,16 +90,16 @@ const CredCardDetails = () => {
       dispatch,
       updateRedux
     );
-    history.push(TabsRoutePath.DIDS);
+    history.push(TabsRoutePath.CREDS);
   };
 
   const handleDelete = () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
     // Remember to update EditIdentity file too.
-    const updatedDids = dids.filter((item) => item.id !== cardData.id);
-    setDids(updatedDids);
-    dispatch(setDidsCache(updatedDids));
+    const updatedCreds = creds.filter((item) => item.id !== cardData.id);
+    setCreds(updatedCreds);
+    dispatch(setCredsCache(updatedCreds));
     handleDone();
   };
 
@@ -132,7 +148,7 @@ const CredCardDetails = () => {
         menuButton={false}
         additionalButtons={<AdditionalButtons />}
       >
-        {cardData.name.length === 0 ? (
+        {cardData.receivingDid.length === 0 ? (
           <div
             className="spinner-container"
             data-testid="spinner-container"
@@ -141,19 +157,38 @@ const CredCardDetails = () => {
           </div>
         ) : (
           <>
-            <DidCard
+            <CredCard
               cardData={cardData}
               isActive={false}
             />
             <div className="card-details-content">
               <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.information")}</h3>
+                <h3>{i18n.t("creds.card.details.types")}</h3>
                 <div className="card-details-info-block-inner">
-                  <span
-                    className="card-details-info-block-line"
-                    data-testid="copy-button-id"
-                    onClick={() => writeToClipboard(cardData.id)}
-                  >
+                  {cardData.type.map((type: string, index: number) => (
+                    <span
+                      className="card-details-info-block-line"
+                      key={index}
+                    >
+                      <span>
+                        <IonIcon
+                          slot="icon-only"
+                          icon={informationCircleOutline}
+                          color="primary"
+                        />
+                      </span>
+                      <span className="card-details-info-block-data">
+                        {cardData.type[index]}
+                      </span>
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <div className="card-details-info-block">
+                <h3>{i18n.t("creds.card.details.attributes")}</h3>
+                <div className="card-details-info-block-inner">
+                  <span className="card-details-info-block-line">
                     <span>
                       <IonIcon
                         slot="icon-only"
@@ -161,79 +196,41 @@ const CredCardDetails = () => {
                         color="primary"
                       />
                     </span>
-
                     <span className="card-details-info-block-data">
-                      {cardData.id.substring(0, 13)}...
-                      {cardData.id.slice(-5)}
-                    </span>
-                    <span>
-                      <IonButton
-                        shape="round"
-                        className="copy-button"
-                      >
-                        <IonIcon
-                          slot="icon-only"
-                          icon={copyOutline}
-                        />
-                      </IonButton>
+                      {cardData.credentialSubject.degree.education}
                     </span>
                   </span>
                   <span className="card-details-info-block-line">
                     <span>
                       <IonIcon
                         slot="icon-only"
-                        icon={calendarNumberOutline}
+                        icon={informationCircleOutline}
                         color="primary"
                       />
                     </span>
-
                     <span className="card-details-info-block-data">
-                      {formatDate(cardData?.date)}
+                      {cardData.credentialSubject.degree.type}
                     </span>
                   </span>
-                </div>
-              </div>
-              <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.type")}</h3>
-                <div className="card-details-info-block-inner">
-                  <span
-                    className="card-details-info-block-line"
-                    data-testid="copy-button-type"
-                    onClick={() => writeToClipboard(cardData.keyType)}
-                  >
+                  <span className="card-details-info-block-line">
                     <span>
                       <IonIcon
                         slot="icon-only"
-                        icon={pricetagOutline}
+                        icon={informationCircleOutline}
                         color="primary"
                       />
                     </span>
-
                     <span className="card-details-info-block-data">
-                      {cardData.keyType}
-                    </span>
-                    <span>
-                      <IonButton
-                        shape="round"
-                        className="copy-button"
-                      >
-                        <IonIcon
-                          slot="icon-only"
-                          icon={copyOutline}
-                        />
-                      </IonButton>
+                      {cardData.credentialSubject.degree.name}
                     </span>
                   </span>
                 </div>
               </div>
+
               <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.controller")}</h3>
+                <h3>{i18n.t("creds.card.details.connection")}</h3>
                 <div className="card-details-info-block-inner">
-                  <span
-                    className="card-details-info-block-line"
-                    data-testid="copy-button-controller"
-                    onClick={() => writeToClipboard(cardData.controller)}
-                  >
+                  <span className="card-details-info-block-line">
                     <span>
                       <IonIcon
                         slot="icon-only"
@@ -243,30 +240,67 @@ const CredCardDetails = () => {
                     </span>
 
                     <span className="card-details-info-block-data">
-                      {cardData.controller.substring(0, 13)}...
-                      {cardData.controller.slice(-5)}
-                    </span>
-                    <span>
-                      <IonButton
-                        shape="round"
-                        className="copy-button"
-                      >
-                        <IonIcon
-                          slot="icon-only"
-                          icon={copyOutline}
-                        />
-                      </IonButton>
+                      {cardData.connection}
                     </span>
                   </span>
                 </div>
               </div>
+
               <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.publickeybase")}</h3>
+                <h3>{i18n.t("creds.card.details.issuancedate")}</h3>
                 <div className="card-details-info-block-inner">
+                  <span className="card-details-info-block-line">
+                    <span>
+                      <IonIcon
+                        slot="icon-only"
+                        icon={calendarNumberOutline}
+                        color="primary"
+                      />
+                    </span>
+                    <span className="card-details-info-block-data">
+                      {formatDate(cardData.issuanceDate)}
+                    </span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="card-details-info-block">
+                <h3>{i18n.t("creds.card.details.expirationdate")}</h3>
+                <div className="card-details-info-block-inner">
+                  <span className="card-details-info-block-line">
+                    <span>
+                      <IonIcon
+                        slot="icon-only"
+                        icon={calendarNumberOutline}
+                        color="primary"
+                      />
+                    </span>
+                    <span className="card-details-info-block-data">
+                      {formatDate(cardData.expirationDate)}
+                    </span>
+                  </span>
+                </div>
+              </div>
+
+              <div className="card-details-info-block">
+                <h3>{i18n.t("creds.card.details.prooftypes")}</h3>
+                <div className="card-details-info-block-inner">
+                  <span className="card-details-info-block-line">
+                    <span>
+                      <IonIcon
+                        slot="icon-only"
+                        icon={informationCircleOutline}
+                        color="primary"
+                      />
+                    </span>
+                    <span className="card-details-info-block-data">
+                      {cardData.proofType}
+                    </span>
+                  </span>
                   <span
                     className="card-details-info-block-line"
-                    data-testid="copy-button-publicKeyBase58"
-                    onClick={() => writeToClipboard(cardData.publicKeyBase58)}
+                    data-testid="copy-button-proof-value"
+                    onClick={() => writeToClipboard(cardData.proofValue)}
                   >
                     <span>
                       <IonIcon
@@ -276,8 +310,8 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {cardData.publicKeyBase58.substring(0, 5)}...
-                      {cardData.publicKeyBase58.slice(-5)}
+                      {cardData.proofValue.substring(0, 13)}...
+                      {cardData.proofValue.slice(-5)}
                     </span>
                     <span>
                       <IonButton
@@ -307,32 +341,20 @@ const CredCardDetails = () => {
                   icon={trashOutline}
                   color="primary"
                 />
-                {i18n.t("dids.card.details.delete.button")}
+                {i18n.t("creds.card.details.delete.button")}
               </IonButton>
             </div>
           </>
         )}
-        <ShareIdentity
-          isOpen={shareIsOpen}
-          setIsOpen={setShareIsOpen}
-          id={cardData.id}
-          name={cardData.name}
-        />
-        <EditIdentity
-          isOpen={editIsOpen}
-          setIsOpen={setEditIsOpen}
-          id={cardData.id}
-          name={cardData.name}
-        />
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
-          headerText={i18n.t("dids.card.details.delete.alert.title")}
+          headerText={i18n.t("creds.card.details.delete.alert.title")}
           confirmButtonText={`${i18n.t(
-            "dids.card.details.delete.alert.confirm"
+            "creds.card.details.delete.alert.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "dids.card.details.delete.alert.cancel"
+            "creds.card.details.delete.alert.cancel"
           )}`}
           actionConfirm={() => setVerifyPasswordIsOpen(true)}
         />

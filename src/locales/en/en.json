@@ -206,10 +206,23 @@
       },
       "details": {
         "done": "Done",
-        "information": "Information",
-        "type": "Type",
-        "controller": "Controller",
-        "publickeybase": "Public Key Base 58",
+        "types": "Types",
+        "attributes": "Attributes",
+        "connection": "Connection",
+        "issuancedate": "Issuance Date",
+        "expirationdate": "Expiration date",
+        "prooftypes": "Proof Types",
+        "options": {
+          "title": "Credential options",
+          "view": "View JSON",
+          "delete": "Delete credential"
+        },
+        "view": {
+          "cancel": "Cancel",
+          "title": "Credential JSON",
+          "copy": "Copy JSON",
+          "save": "Save to device"
+        },
         "delete": {
           "button": "Delete credential",
           "alert": {
