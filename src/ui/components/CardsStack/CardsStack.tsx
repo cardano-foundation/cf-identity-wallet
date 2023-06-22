@@ -75,7 +75,7 @@ const CredCard = ({
 const DidCard = ({
   cardData,
   isActive,
-  index,
+  index = 0,
   onHandleShowCardDetails,
 }: DidCardProps) => {
   let shadowClass = "";
