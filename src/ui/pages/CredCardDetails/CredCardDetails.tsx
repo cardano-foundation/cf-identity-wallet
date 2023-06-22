@@ -93,6 +93,7 @@ const CredCardDetails = () => {
   const handleDelete = () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
+    // Remember to update CredCardoptions file too.
     const updatedCreds = creds.filter((item) => item.id !== cardData.id);
     setCreds(updatedCreds);
     dispatch(setCredsCache(updatedCreds));
@@ -333,8 +334,8 @@ const CredCardDetails = () => {
           </>
         )}
         <CredsOptions
-          isOpen={optionsIsOpen}
-          setIsOpen={setOptionsIsOpen}
+          optionsIsOpen={optionsIsOpen}
+          setOptionsIsOpen={setOptionsIsOpen}
           id={cardData.id}
         />
         <Alert

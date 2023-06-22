@@ -29,27 +29,29 @@ import { updateReduxState } from "../../../store/utils";
 import { credsMock } from "../../__mocks__/credsMock";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 
-const CredsOptions = ({ isOpen, setIsOpen, id }: CredsOptionsProps) => {
+const CredsOptions = ({
+  optionsIsOpen,
+  setOptionsIsOpen,
+  id,
+}: CredsOptionsProps) => {
   const storeState = useAppSelector(getState);
   const history = useHistory();
   const [viewIsOpen, setViewIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
   const dispatch = useAppDispatch();
 
-  const handleDismiss = () => {
-    setViewIsOpen(false);
-    setIsOpen(false);
-  };
-
+  const handleCloseOptions = () => setOptionsIsOpen(false);
+  const handleCloseView = () => setViewIsOpen(false);
+  const handleOpenAlert = () => setAlertIsOpen(true);
   const handleDelete = () => {
-    handleDismiss();
-    setAlertIsOpen(true);
+    handleCloseView();
+    handleCloseOptions();
+    handleOpenAlert();
   };
 
   const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
+    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
       store: storeState,
     });
     updateReduxState(
@@ -58,38 +60,30 @@ const CredsOptions = ({ isOpen, setIsOpen, id }: CredsOptionsProps) => {
       dispatch,
       updateRedux
     );
-    history.push(TabsRoutePath.DIDS);
+    history.push(TabsRoutePath.CREDS);
   };
 
   const verifyAction = () => {
-    handleDismiss();
+    handleCloseView();
+    handleCloseOptions();
     // @TODO - sdisalvo: Update Database.
-    // Remember to update CardDetails file too.
+    // Remember to update CredCardDetails file too.
     const updatedCreds = credsMock.filter((item) => item.id !== id);
     dispatch(setCredsCache(updatedCreds));
     handleDone();
   };
 
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      Keyboard.addListener("keyboardWillShow", () => {
-        setkeyboardIsOpen(true);
-      });
-      Keyboard.addListener("keyboardWillHide", () => {
-        setkeyboardIsOpen(false);
-      });
-    }
-  }, []);
+  const cred = credsMock.find((item) => item.id === id);
 
   return (
     <>
       <IonModal
-        isOpen={isOpen}
+        isOpen={optionsIsOpen}
         initialBreakpoint={0.25}
         breakpoints={[0.25]}
-        className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
+        className="page-layout"
         data-testid="creds-options-modal"
-        onDidDismiss={handleDismiss}
+        onDidDismiss={handleCloseOptions}
       >
         <div className="creds-options modal menu">
           <IonHeader
@@ -97,20 +91,6 @@ const CredsOptions = ({ isOpen, setIsOpen, id }: CredsOptionsProps) => {
             className="ion-no-border"
           >
             <IonToolbar color="light">
-              {viewIsOpen && (
-                <IonButtons slot="start">
-                  <IonButton
-                    className="close-button-label"
-                    onClick={() => {
-                      setIsOpen(false);
-                      setViewIsOpen(true);
-                    }}
-                    data-testid="close-button"
-                  >
-                    {i18n.t("creds.card.details.view.cancel")}
-                  </IonButton>
-                </IonButtons>
-              )}
               <IonTitle data-testid="creds-options-title">
                 <h2>{i18n.t("creds.card.details.options.title")}</h2>
               </IonTitle>
@@ -127,9 +107,7 @@ const CredsOptions = ({ isOpen, setIsOpen, id }: CredsOptionsProps) => {
                   <span
                     className="creds-option"
                     data-testid="creds-options-view-button"
-                    onClick={() => {
-                      setViewIsOpen(true);
-                    }}
+                    onClick={() => setViewIsOpen(true)}
                   >
                     <span>
                       <IonButton shape="round">
@@ -170,9 +148,9 @@ const CredsOptions = ({ isOpen, setIsOpen, id }: CredsOptionsProps) => {
         isOpen={viewIsOpen}
         initialBreakpoint={1}
         breakpoints={[1]}
-        className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
+        className="page-layout"
         data-testid="creds-options-modal"
-        onDidDismiss={handleDismiss}
+        onDidDismiss={handleCloseView}
       >
         <div className="creds-options modal viewer">
           <IonHeader
@@ -180,20 +158,15 @@ const CredsOptions = ({ isOpen, setIsOpen, id }: CredsOptionsProps) => {
             className="ion-no-border"
           >
             <IonToolbar color="light">
-              {viewIsOpen && (
-                <IonButtons slot="start">
-                  <IonButton
-                    className="close-button-label"
-                    onClick={() => {
-                      setViewIsOpen(false);
-                      setIsOpen(true);
-                    }}
-                    data-testid="close-button"
-                  >
-                    {i18n.t("creds.card.details.view.cancel")}
-                  </IonButton>
-                </IonButtons>
-              )}
+              <IonButtons slot="start">
+                <IonButton
+                  className="close-button-label"
+                  onClick={handleCloseView}
+                  data-testid="close-button"
+                >
+                  {i18n.t("creds.card.details.view.cancel")}
+                </IonButton>
+              </IonButtons>
               <IonTitle data-testid="creds-options-title">
                 <h2>{i18n.t("creds.card.details.view.title")}</h2>
               </IonTitle>
@@ -204,18 +177,20 @@ const CredsOptions = ({ isOpen, setIsOpen, id }: CredsOptionsProps) => {
             className="creds-options-body"
             color="light"
           >
-            <IonGrid className="creds-options-inner">The grid</IonGrid>
+            <IonGrid className="creds-options-inner">
+              <pre>{JSON.stringify(cred, null, 2)}</pre>
+            </IonGrid>
           </IonContent>
         </div>
       </IonModal>
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
-        headerText={i18n.t("dids.card.details.delete.alert.title")}
+        headerText={i18n.t("creds.card.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
-          "dids.card.details.delete.alert.confirm"
+          "creds.card.details.delete.alert.confirm"
         )}`}
-        cancelButtonText={`${i18n.t("dids.card.details.delete.alert.cancel")}`}
+        cancelButtonText={`${i18n.t("creds.card.details.delete.alert.cancel")}`}
         actionConfirm={() => setVerifyPasswordIsOpen(true)}
       />
       <VerifyPassword

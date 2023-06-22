@@ -1,6 +1,6 @@
 interface CredsOptionsProps {
-  isOpen: boolean;
-  setIsOpen: (value: boolean) => void;
+  optionsIsOpen: boolean;
+  setOptionsIsOpen: (value: boolean) => void;
   id: string;
 }
 
