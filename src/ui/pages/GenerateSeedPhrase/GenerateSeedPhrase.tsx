@@ -223,7 +223,7 @@ const GenerateSeedPhrase = () => {
                   {seedPhrase.map((word, index) => (
                     <IonChip key={index}>
                       <span className="index">{index + 1}.</span>
-                      <span>{word}</span>
+                      <span data-testid={`word-index-${index}`}>{word}</span>
                     </IonChip>
                   ))}
                 </div>

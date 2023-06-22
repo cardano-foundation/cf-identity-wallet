@@ -181,6 +181,7 @@ const VerifySeedPhrase = () => {
                     {seedPhraseRemaining.map((word, index) => (
                       <IonChip
                         key={index}
+                        data-testid={`remaining-word-${word}`}
                         onClick={() => {
                           addSeedPhraseSelected(word);
                         }}
