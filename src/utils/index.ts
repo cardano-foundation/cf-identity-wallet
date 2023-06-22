@@ -7,11 +7,15 @@ const generateUUID = () => {
 };
 
 const formatDate = (date: string) => {
-  return new Date(date).toLocaleDateString("en-uk", {
+  return new Date(date).toLocaleDateString("en-GB", {
     day: "numeric",
     month: "numeric",
     year: "numeric",
   });
 };
 
-export { generateUUID, formatDate };
+const formatTime = (date: string) => {
+  return new Date(date).toLocaleTimeString("en-GB");
+};
+
+export { generateUUID, formatDate, formatTime };

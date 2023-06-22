@@ -18,7 +18,8 @@ import {
 import { getNextRoute } from "./nextRoute";
 import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
-import { CardDetails } from "../ui/pages/CardDetails";
+import { DidCardDetails } from "../ui/pages/DidCardDetails";
+import { CredCardDetails } from "../ui/pages/CredCardDetails";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
@@ -117,12 +118,12 @@ const Routes = () => {
         })}
         <AuthenticatedRoute
           path="/tabs/dids/:id"
-          component={CardDetails}
+          component={DidCardDetails}
           exact
         />
         <AuthenticatedRoute
           path="/tabs/creds/:id"
-          component={CardDetails}
+          component={CredCardDetails}
           exact
         />
         <Redirect

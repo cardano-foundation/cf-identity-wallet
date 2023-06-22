@@ -20,7 +20,7 @@ const CredCard = ({
   onHandleShowCardDetails,
 }: CredCardProps) => {
   let shadowClass = "";
-  if (index === undefined) {
+  if (index === 0) {
     shadowClass = "bottom-shadow";
   } else if (index !== 0) {
     shadowClass = "top-shadow";
@@ -28,7 +28,9 @@ const CredCard = ({
   return (
     <div
       key={index}
-      data-testid={`card-stack${index !== undefined ? `-index-${index}` : ""}`}
+      data-testid={`cred-card-stack${
+        index !== undefined ? `-index-${index}` : ""
+      }`}
       className={`cards-stack-card ${isActive ? "active" : ""} ${shadowClass}`}
       onClick={() => {
         if (onHandleShowCardDetails) {
@@ -73,11 +75,11 @@ const CredCard = ({
 const DidCard = ({
   cardData,
   isActive,
-  index,
+  index = 0,
   onHandleShowCardDetails,
 }: DidCardProps) => {
   let shadowClass = "";
-  if (index === undefined) {
+  if (index === 0) {
     shadowClass = "bottom-shadow";
   } else if (index !== 0) {
     shadowClass = "top-shadow";
@@ -85,7 +87,9 @@ const DidCard = ({
   return (
     <div
       key={index}
-      data-testid={`card-stack${index !== undefined ? `-index-${index}` : ""}`}
+      data-testid={`did-card-stack${
+        index !== undefined ? `-index-${index}` : ""
+      }`}
       className={`cards-stack-card ${isActive ? "active" : ""} ${shadowClass}`}
       onClick={() => {
         if (onHandleShowCardDetails) {

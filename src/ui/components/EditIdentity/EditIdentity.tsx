@@ -95,7 +95,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
     handleDismiss();
     if (actionType === "edit") {
       // @TODO - sdisalvo: Update Database.
-      // Remember to update CardDetails file too.
+      // Remember to update DidCardDetails file too.
       const updatedDids: DidProps[] = [];
       didsMock.forEach((element) => {
         const obj = { ...element };
@@ -108,7 +108,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
       handleDone();
     } else if (actionType === "delete") {
       // @TODO - sdisalvo: Update Database.
-      // Remember to update CardDetails file too.
+      // Remember to update DidCardDetails file too.
       const updatedDids = didsMock.filter((item) => item.id !== id);
       dispatch(setDidsCache(updatedDids));
       handleDone();
