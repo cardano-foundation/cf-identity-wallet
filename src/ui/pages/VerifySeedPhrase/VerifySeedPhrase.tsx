@@ -114,6 +114,7 @@ const VerifySeedPhrase = () => {
   return (
     <IonPage className="page-layout verify-seedphrase">
       <PageLayout
+        id="verify-seedphrase"
         header={true}
         backButton={true}
         onBack={handleClearState}

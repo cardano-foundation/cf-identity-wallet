@@ -1,6 +1,4 @@
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
 import EN_TRANSLATIONS from "../../src/locales/en/en.json";
 
 describe("Onboarding process", () => {
@@ -34,7 +32,6 @@ describe("Onboarding process", () => {
 
     // Open terms and conditions
     //cy.contains(EN_TRANSLATIONS.generateseedphrase.termsandconditions.link).click();
-    //cy.contains(EN_TRANSLATIONS.generateseedphrase.termsandconditions.link).click();
 
     cy.get("[data-testid=\"termsandconditions-checkbox\"]").click();
 
@@ -56,23 +53,16 @@ describe("Onboarding process", () => {
 
     const waitForPromises = () => {
       Cypress.Promise.all(wordPromises)
-        .then((words) => {
+        .then((words:string[]) => {
           generatedWords = words;
+          cy.log("words: ", words);
         })
         .then(() => {
           if (generatedWords.length === 15) {
-            // Todas las promesas se han resuelto, continuar con el siguiente paso
-            // ...
-
             for (let i = 0; i < generatedWords.length; i++) {
-              // ...
-              cy.log("waitForPromises ", i, generatedWords[i]);
               cy.get(`[data-testid="remaining-word-${generatedWords[i]}"]`).click()
             }
-
-            // ...
           } else {
-            // Aún no se han completado todas las promesas, esperar y volver a verificar
             waitForPromises();
           }
         });
@@ -83,32 +73,7 @@ describe("Onboarding process", () => {
 
     waitForPromises();
 
-    cy.log("generatedWords 2");
-    cy.log(generatedWords);
-    cy.log("generatedWords length:");
-    cy.log(generatedWords.length);
-    cy.wait(1000);
-    for (let i = 0; i < generatedWords.length; i++){
-      cy.log("generatedWords[i]");
-      cy.log(generatedWords[i]);
-      cy.get(`[data-testid="remaining-word-${generatedWords[i]}"]]`).click()
-    }
-    //cy.get(`[data-testid="remaining-word-${generatedWords[0]}"]`).click()
-    /*
-    arr.map(w => {
-      cy.log("wwwwww");
-      cy.log(w);
-    })*/
-    //cy.wait(1000);
-    /*
-    generatedWords.forEach((word) => {
-      //cy.contains(word).click();
-      cy.log("click in word - Verification");
-      cy.log(`[data-testid="remaining-word-${word}"]`);
-      //cy.contains(`[data-testid="remaining-word-${word}"]`)?.click();
-      //cy.get(`[data-testid=\"remaining-word-${word}\"]`).click();
-    });*/
-
+    cy.get("[data-testid=\"continue-button-verify-seedphrase\"]").click();
   });
 
 });
