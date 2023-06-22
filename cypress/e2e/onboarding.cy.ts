@@ -8,6 +8,7 @@ describe("Onboarding process", () => {
 
   beforeEach(() => {
     cy.visit("http://localhost:3003");
+    generatedWords = [];
   });
 
   it("It should click on the start button", () => {
@@ -39,22 +40,60 @@ describe("Onboarding process", () => {
 
     cy.contains(EN_TRANSLATIONS.generateseedphrase.privacy.overlay.button).click();
 
-    generatedWords = Array(15).map((_, index:number) => {
-      return cy.get(`[data-testid="word-index-${index}"]`)
-        .invoke("text");
-    });
+    for (let i = 0; i < 15; i++){
+      cy.get(`[data-testid="word-index-${i}"]`)
+        .invoke("text").then(text => generatedWords.push(text));
+    }
+
+    const wordPromises: any[] = [];
+    for (let i = 0; i < 15; i++) {
+      wordPromises.push(
+        cy.get(`[data-testid="word-index-${i}"]`)
+          .invoke("text")
+          .then((text) => text)
+      );
+    }
+
+    const waitForPromises = () => {
+      Cypress.Promise.all(wordPromises)
+        .then((words) => {
+          generatedWords = words;
+        })
+        .then(() => {
+          if (generatedWords.length === 15) {
+            // Todas las promesas se han resuelto, continuar con el siguiente paso
+            // ...
+
+            for (let i = 0; i < generatedWords.length; i++) {
+              // ...
+              cy.log("waitForPromises ", i, generatedWords[i]);
+              cy.get(`[data-testid="remaining-word-${generatedWords[i]}"]`).click()
+            }
+
+            // ...
+          } else {
+            // Aún no se han completado todas las promesas, esperar y volver a verificar
+            waitForPromises();
+          }
+        });
+    };
 
     cy.contains(EN_TRANSLATIONS.generateseedphrase.continue.button).click();
     cy.contains(EN_TRANSLATIONS.generateseedphrase.alert.button.confirm).click();
 
+    waitForPromises();
 
     cy.log("generatedWords 2");
     cy.log(generatedWords);
-
-    generatedWords.map(word => {
-      cy.log("word");
-      cy.log(word);
-    })
+    cy.log("generatedWords length:");
+    cy.log(generatedWords.length);
+    cy.wait(1000);
+    for (let i = 0; i < generatedWords.length; i++){
+      cy.log("generatedWords[i]");
+      cy.log(generatedWords[i]);
+      cy.get(`[data-testid="remaining-word-${generatedWords[i]}"]]`).click()
+    }
+    //cy.get(`[data-testid="remaining-word-${generatedWords[0]}"]`).click()
     /*
     arr.map(w => {
       cy.log("wwwwww");
