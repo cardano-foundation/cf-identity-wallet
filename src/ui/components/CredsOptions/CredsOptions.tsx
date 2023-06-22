@@ -14,8 +14,6 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { codeSlashOutline, trashOutline } from "ionicons/icons";
-import { Capacitor } from "@capacitor/core";
-import { Keyboard } from "@capacitor/keyboard";
 import { i18n } from "../../../i18n";
 import { CredsOptionsProps } from "./CredsOptions.types";
 import "./CredsOptions.scss";
@@ -149,7 +147,7 @@ const CredsOptions = ({
         initialBreakpoint={1}
         breakpoints={[1]}
         className="page-layout"
-        data-testid="creds-options-modal"
+        data-testid="view-creds-modal"
         onDidDismiss={handleCloseView}
       >
         <div className="creds-options modal viewer">

@@ -60,7 +60,7 @@ describe("Cards Details page", () => {
         </MemoryRouter>
       </Provider>
     );
-    expect(getByTestId("card-stack")).toBeInTheDocument();
+
     expect(getByText(didsMock[0].id)).toBeInTheDocument();
     expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
       "false"

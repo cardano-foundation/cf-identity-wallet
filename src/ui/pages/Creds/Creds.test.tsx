@@ -80,6 +80,6 @@ describe("Creds Tab", () => {
       </Provider>
     );
 
-    expect(getByTestId("card-stack-index-0")).toBeInTheDocument();
+    expect(getByTestId("cred-card-stack-index-0")).toBeInTheDocument();
   });
 });

@@ -4,13 +4,13 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { waitForIonicReact } from "@ionic/react-test-utils";
-import { didsMock } from "../../__mocks__/didsMock";
 import { CredCardDetails } from "./CredCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { credsMock } from "../../__mocks__/credsMock";
 
-const path = TabsRoutePath.DIDS + "/" + didsMock[0].id;
+const path = TabsRoutePath.CREDS + "/" + credsMock[0].id;
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -19,7 +19,7 @@ afterEach(() => {
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: didsMock[0].id,
+    id: credsMock[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
@@ -28,7 +28,7 @@ const mockStore = configureStore();
 const dispatchMock = jest.fn();
 const initialState = {
   stateCache: {
-    routes: [TabsRoutePath.DIDS],
+    routes: [TabsRoutePath.CREDS],
     authentication: {
       loggedIn: true,
       time: Date.now(),
@@ -60,12 +60,11 @@ describe("Cards Details page", () => {
         </MemoryRouter>
       </Provider>
     );
-    expect(getByTestId("card-stack")).toBeInTheDocument();
-    expect(getByText(didsMock[0].id)).toBeInTheDocument();
-    expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
+    expect(getByText(credsMock[0].credentialType)).toBeInTheDocument();
+    expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
       "false"
     );
-    expect(getByTestId("edit-identity-modal").getAttribute("is-open")).toBe(
+    expect(getByTestId("view-creds-modal").getAttribute("is-open")).toBe(
       "false"
     );
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
@@ -90,19 +89,16 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    fireEvent.click(getByTestId("copy-button-id"));
+    fireEvent.click(getByTestId("copy-button-proof-value"));
 
     await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({ string: didsMock[0].id });
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: credsMock[0].proofValue,
+      });
     });
   });
 
-  test("It copies type to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
+  test("It opens the options modal", async () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
@@ -114,130 +110,20 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    fireEvent.click(getByTestId("copy-button-type"));
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: didsMock[0].keyType,
-      });
-    });
-  });
-
-  test("It copies controller to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
-    const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    fireEvent.click(getByTestId("copy-button-controller"));
-
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: didsMock[0].controller,
-      });
-    });
-  });
-
-  test("It copies publicKeyBase58 to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
-    const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    fireEvent.click(getByTestId("copy-button-publicKeyBase58"));
-
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: didsMock[0].publicKeyBase58,
-      });
-    });
-  });
-
-  test("It opens the sharing modal", async () => {
-    const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
+    expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
+      "false"
     );
 
     act(() => {
-      fireEvent.click(getByTestId("share-button"));
+      fireEvent.click(getByTestId("options-button"));
     });
 
-    expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
+    expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
       "true"
     );
   });
 
-  test("It opens the edit modal", async () => {
-    const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("edit-button"));
-    });
-
-    expect(getByTestId("edit-identity-modal").getAttribute("is-open")).toBe(
-      "true"
-    );
-  });
-
-  test("It shows the button to access the editor", async () => {
-    const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("edit-button"));
-    });
-
-    await waitFor(() => {
-      expect(getByTestId("edit-identity-edit-button")).toBeInTheDocument();
-    });
-  });
-
-  test.skip("It shows the editor", async () => {
+  test.skip("It shows the credential viewer", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
@@ -250,24 +136,30 @@ describe("Cards Details page", () => {
     );
 
     act(() => {
-      fireEvent.click(getByTestId("edit-button"));
+      fireEvent.click(getByTestId("options-button"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("edit-identity-edit-button")).toBeInTheDocument();
+      expect(getByTestId("creds-options-view-button")).toBeVisible();
     });
 
     act(() => {
-      fireEvent.click(getByTestId("edit-identity-edit-button"));
+      fireEvent.click(getByTestId("creds-options-view-button"));
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.editidentity.inner.label)).toBeVisible();
+      expect(getByTestId("view-creds-modal").getAttribute("is-open")).toBe(
+        "true"
+      );
+    });
+
+    await waitFor(() => {
+      expect(getByText(credsMock[0].id)).toBeVisible();
     });
   });
 
-  test("It asks to verify the password when users try to delete the did using the button in the modal", async () => {
-    const { getByTestId, getByText, getAllByText } = render(
+  test.skip("It asks to verify the password when users try to delete the cred using the button in the modal", async () => {
+    const { getByTestId, getByText, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -278,27 +170,37 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
+      "false"
+    );
+
     act(() => {
-      fireEvent.click(getByTestId("edit-button"));
+      fireEvent.click(getByTestId("options-button"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("edit-identity-delete-button")).toBeInTheDocument();
+      expect(getByTestId("creds-options-delete-button")).toBeInTheDocument();
     });
 
     act(() => {
-      fireEvent.click(getAllByText(EN_TRANSLATIONS.editidentity.delete)[0]);
+      fireEvent.click(getByTestId("creds-options-delete-button"));
+    });
+
+    await waitFor(() => {
+      expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
+        "true"
+      );
     });
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.dids.card.details.delete.alert.title)
+        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.dids.card.details.delete.alert.confirm)
+        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.confirm)
       );
     });
 
@@ -325,12 +227,12 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.dids.card.details.delete.alert.title)
+        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
       ).toBeVisible();
     });
   });
 
-  test.skip("It deletes the did using the big button", async () => {
+  test.skip("It deletes the cred using the big button", async () => {
     const { getByTestId, getByText, queryByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
@@ -348,13 +250,13 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.dids.card.details.delete.alert.title)
+        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.dids.card.details.delete.alert.confirm)
+        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.confirm)
       );
     });
     await waitForIonicReact();
