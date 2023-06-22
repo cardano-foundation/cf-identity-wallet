@@ -293,5 +293,10 @@
     "error": {
       "maxlength": "Must be less than 32 characters long"
     }
+  },
+  "crypto": {
+    "tab": {
+      "create": "Add a crypto account"
+    }
   }
 }
