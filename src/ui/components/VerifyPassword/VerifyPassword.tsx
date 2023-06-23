@@ -106,7 +106,7 @@ const VerifyPassword = ({
     <IonModal
       isOpen={isOpen}
       initialBreakpoint={0.35}
-      breakpoints={[0.35]}
+      breakpoints={[0, 0.35]}
       animated={false}
       className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
       data-testid="verify-password"

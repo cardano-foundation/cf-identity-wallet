@@ -89,7 +89,7 @@ const Crypto = () => {
       <IonModal
         isOpen={myWalletsIsOpen}
         initialBreakpoint={1}
-        breakpoints={[1]}
+        breakpoints={[0, 1]}
         className="page-layout"
         data-testid="my-wallets"
         onDidDismiss={() => setMyWalletsIsOpen(false)}
@@ -147,7 +147,7 @@ const Crypto = () => {
       <IonModal
         isOpen={addAccountIsOpen}
         initialBreakpoint={0.3}
-        breakpoints={[0.3]}
+        breakpoints={[0, 0.3]}
         className="page-layout"
         data-testid="add-crypto-account"
         onDidDismiss={() => setAddAccountIsOpen(false)}

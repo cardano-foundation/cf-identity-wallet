@@ -78,7 +78,7 @@ const CredsOptions = ({
       <IonModal
         isOpen={optionsIsOpen}
         initialBreakpoint={0.25}
-        breakpoints={[0.25]}
+        breakpoints={[0, 0.25]}
         className="page-layout"
         data-testid="creds-options-modal"
         onDidDismiss={handleCloseOptions}
