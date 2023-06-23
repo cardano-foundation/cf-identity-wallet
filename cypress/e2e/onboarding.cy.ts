@@ -9,11 +9,7 @@ describe("Onboarding process", () => {
     generatedWords = [];
   });
 
-  it("It should click on the start button", () => {
-    cy.get("[data-testid=\"get-started-button\"]").click();
-  });
-
-  it("Debería ingresar el código de acceso correcto y redirigir", async () => {
+  it("Full onboarding process", async () => {
     cy.get("[data-testid=\"get-started-button\"]").click();
 
     cy.contains("1").click();
@@ -74,6 +70,11 @@ describe("Onboarding process", () => {
     waitForPromises();
 
     cy.get("[data-testid=\"continue-button-verify-seedphrase\"]").click();
-  });
 
+    /*
+    * Reference for input typing
+    * cy.get("[data-testid=\"edit-display-name\"]").clear();
+    * cy.get("[data-testid=\"edit-display-name\"]").type("Im cypress");
+    */
+  });
 });
