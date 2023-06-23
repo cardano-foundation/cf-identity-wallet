@@ -19,6 +19,7 @@ import { updateReduxState } from "../../../../store/utils";
 import { getBackRoute } from "../../../../routes/backRoute";
 
 const PageLayout = ({
+    id,
   header,
   backButton,
   onBack,
@@ -197,7 +198,7 @@ const PageLayout = ({
               shape="round"
               expand="block"
               className="ion-primary-button"
-              data-testid="continue-button"
+              data-testid={`continue-button${id ? `-${id}` : ""}`}
               onClick={primaryButtonAction}
               disabled={primaryButtonDisabled}
             >
