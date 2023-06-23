@@ -8,7 +8,8 @@
     "build:cap": "npm run build && npx cap sync",
     "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
-    "test": "jest"
+    "test": "jest",
+    "test:e2e": "cypress run"
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "^3.0.1",
