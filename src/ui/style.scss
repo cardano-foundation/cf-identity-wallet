@@ -103,6 +103,11 @@ p {
 .modal {
   padding-inline: 20px;
   background-color: var(--ion-color-light);
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 
   ion-toolbar {
     padding: 0.5rem 0 0 !important;
@@ -114,10 +119,6 @@ p {
     height: 100%;
     top: 0;
     left: 0;
-  }
-
-  ion-content {
-    height: 90vh;
   }
 
   h2 {

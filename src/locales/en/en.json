@@ -297,6 +297,11 @@
   "crypto": {
     "tab": {
       "create": "Add a crypto account"
+    },
+    "mywalletsmodal": {
+      "title": "My wallets",
+      "empty": "No wallets available",
+      "create": "Add a crypto account"
     }
   }
 }
