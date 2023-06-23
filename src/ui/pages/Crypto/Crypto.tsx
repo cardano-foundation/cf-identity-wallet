@@ -9,7 +9,13 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { useState } from "react";
-import { walletOutline, addOutline } from "ionicons/icons";
+import {
+  walletOutline,
+  addOutline,
+  repeatOutline,
+  addCircleOutline,
+  refreshOutline,
+} from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
@@ -24,6 +30,7 @@ const Crypto = () => {
   const dispatch = useAppDispatch();
   const cryptoAccountsData = []; // useAppSelector(getCryptoAccountsCache);
   const [myWalletsIsOpen, setMyWalletsIsOpen] = useState(false);
+  const [addAccountIsOpen, setAddAccountIsOpen] = useState(false);
 
   const handleAddCryptoAccount = () => {
     //
@@ -88,7 +95,10 @@ const Crypto = () => {
                     shape="round"
                     expand="block"
                     className="ion-primary-button"
-                    onClick={handleAddCryptoAccount}
+                    onClick={() => {
+                      setMyWalletsIsOpen(false);
+                      setAddAccountIsOpen(true);
+                    }}
                   >
                     <IonIcon
                       slot="icon-only"
@@ -98,6 +108,94 @@ const Crypto = () => {
                     />
                     {i18n.t("crypto.mywalletsmodal.create")}
                   </IonButton>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          </PageLayout>
+        </div>
+      </IonModal>
+    );
+  };
+
+  const AddCryptoAccount = () => {
+    return (
+      <IonModal
+        isOpen={addAccountIsOpen}
+        initialBreakpoint={0.3}
+        breakpoints={[0.3]}
+        className="page-layout"
+        data-testid="add-crypto-account"
+        onDidDismiss={() => setAddAccountIsOpen(false)}
+      >
+        <div className="add-crypto-account modal">
+          <PageLayout
+            header={true}
+            closeButton={false}
+            title={`${i18n.t("crypto.addcryptoaccountmodal.title")}`}
+          >
+            <IonGrid>
+              <IonRow>
+                <IonCol
+                  size="12"
+                  className="add-crypto-account-body"
+                >
+                  <span
+                    className="add-crypto-account-option"
+                    data-testid="add-crypto-account-reuse-button"
+                    onClick={() => {
+                      return;
+                    }}
+                  >
+                    <span>
+                      <IonButton shape="round">
+                        <IonIcon
+                          slot="icon-only"
+                          icon={repeatOutline}
+                        />
+                      </IonButton>
+                    </span>
+                    <span className="add-crypto-account-label">
+                      {i18n.t("crypto.addcryptoaccountmodal.reuse")}
+                    </span>
+                  </span>
+                  <span
+                    className="add-crypto-account-option"
+                    data-testid="add-crypto-account-generate-button"
+                    onClick={() => {
+                      return;
+                    }}
+                  >
+                    <span>
+                      <IonButton shape="round">
+                        <IonIcon
+                          slot="icon-only"
+                          icon={addCircleOutline}
+                        />
+                      </IonButton>
+                    </span>
+                    <span className="add-crypto-account-label">
+                      {i18n.t("crypto.addcryptoaccountmodal.generate")}
+                    </span>
+                  </span>
+                  <span
+                    className="add-crypto-account-option"
+                    data-testid="add-crypto-account-restore-button"
+                    onClick={() => {
+                      return;
+                    }}
+                  >
+                    <span>
+                      <IonButton shape="round">
+                        <IonIcon
+                          slot="icon-only"
+                          icon={refreshOutline}
+                        />
+                      </IonButton>
+                    </span>
+                    <span className="add-crypto-account-label">
+                      {i18n.t("crypto.addcryptoaccountmodal.restore")}
+                    </span>
+                  </span>
                 </IonCol>
               </IonRow>
             </IonGrid>
@@ -124,12 +222,13 @@ const Crypto = () => {
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("crypto.tab.create")}
-              buttonAction={handleAddCryptoAccount}
+              buttonAction={() => setAddAccountIsOpen(true)}
             />
           )}
         </TabLayout>
       </IonPage>
       <MyWallets />
+      <AddCryptoAccount />
     </>
   );
 };
