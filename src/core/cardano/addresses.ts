@@ -1,5 +1,5 @@
 import { Bip32PrivateKey } from "@emurgo/cardano-serialization-lib-browser";
-import { mnemonicToEntropy } from "bip39";
+import { entropyToMnemonic, mnemonicToEntropy } from "bip39";
 
 class Addresses {
   static convertToRootXPrivateKeyHex(seedPhrase: string): string {
@@ -10,6 +10,14 @@ class Addresses {
     );
 
     return rootExtendedPrivateKey.to_hex();
+  }
+
+  static convertToMnemonic(rootXPrivateKeyHex: string): string {
+    const rootExtendedPrivateKey = Bip32PrivateKey.from_hex(rootXPrivateKeyHex);
+
+    return entropyToMnemonic(
+      Buffer.from(rootExtendedPrivateKey.chaincode()).toString("hex")
+    );
   }
 }
 

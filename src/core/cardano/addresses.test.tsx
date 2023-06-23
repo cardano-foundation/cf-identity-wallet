@@ -25,4 +25,13 @@ describe("Cardano seed phrase and address derivation", () => {
       Addresses.convertToRootXPrivateKeyHex(INVALID_SEEDPHRASE)
     ).toThrowError();
   });
+
+  test("should return a seedphrase a root extended private key hex from", () => {
+    expect(Addresses.convertToMnemonic(ROOT_XPRV_KEY_15_WORDS)).toEqual(
+      VALID_SEEDPHRASE_15_WORDS
+    );
+    expect(Addresses.convertToMnemonic(ROOT_XPRV_KEY_24_WORDS)).toEqual(
+      VALID_SEEDPHRASE_24_WORDS
+    );
+  });
 });

@@ -14,6 +14,8 @@ import {
   GeneralStorageModule,
   MiscRecord,
   MiscRecordId,
+  CryptoAccountRecordId,
+  CryptoAccountRecord,
 } from "./modules";
 import { LabelledKeyDidRegistrar } from "./dids";
 import { IdentityType } from "./ariesAgent.types";
@@ -75,6 +77,27 @@ class AriesAgent {
     try {
       return (await this.agent.modules.generalStorage.getMiscRecordById(id))
         .value;
+    } catch (e) {
+      if (e instanceof RecordNotFoundError) {
+        return undefined;
+      }
+      throw e;
+    }
+  }
+
+  async storeCryptoAccountRecord(id: CryptoAccountRecordId, value: string) {
+    await this.agent.modules.generalStorage.saveCryptoRecord(
+      new CryptoAccountRecord({ id, value })
+    );
+  }
+
+  async getCryptoAccountRecordValueById(
+    id: CryptoAccountRecordId
+  ): Promise<string | undefined> {
+    try {
+      return (
+        await this.agent.modules.generalStorage.getCryptoAccountRecordById(id)
+      ).value;
     } catch (e) {
       if (e instanceof RecordNotFoundError) {
         return undefined;
