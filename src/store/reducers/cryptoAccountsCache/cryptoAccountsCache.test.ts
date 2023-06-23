@@ -22,6 +22,8 @@ describe("cryptoAccountsCacheSlice", () => {
       {
         currency: "ADA",
         balance: 2785.82,
+        seedPhrase:
+          "example example example example example example example example example example example example example example example",
       },
     ];
     const newState = cryptoAccountsCacheSlice.reducer(
@@ -40,10 +42,14 @@ describe("getCryptoAccountsCache", () => {
           {
             currency: "ADA",
             balance: 2785.82,
+            seedPhrase:
+              "example example example example example example example example example example example example example example example",
           },
           {
             currency: "ADA",
             balance: 892.36,
+            seedPhrase:
+              "test test test test test test test test test test test test test test test",
           },
         ],
       },

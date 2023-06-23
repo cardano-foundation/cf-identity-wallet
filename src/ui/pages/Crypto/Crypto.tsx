@@ -8,7 +8,7 @@ import {
   IonRow,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   walletOutline,
   addOutline,
@@ -25,16 +25,41 @@ import { getCryptoAccountsCache } from "../../../store/reducers/cryptoAccountsCa
 import { i18n } from "../../../i18n";
 import "./Crypto.scss";
 import { PageLayout } from "../../components/layout/PageLayout";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+} from "../../../core/storage/secureStorage";
+import { CryptoAccountProps } from "./Crypto.types";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
-  const cryptoAccountsData = []; // useAppSelector(getCryptoAccountsCache);
+  const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
+    getCryptoAccountsCache
+  );
   const [myWalletsIsOpen, setMyWalletsIsOpen] = useState(false);
   const [addAccountIsOpen, setAddAccountIsOpen] = useState(false);
+  const [idwProfileInUse, setIdwProfileInUse] = useState(false);
 
-  const handleAddCryptoAccount = () => {
-    //
-  };
+  useEffect(() => {
+    const handleFetchStoredValues = async () => {
+      try {
+        const seedPhrase = await SecureStorage.get(
+          KeyStoreKeys.IDENTITY_SEEDPHRASE
+        );
+        if (seedPhrase) {
+          cryptoAccountsData.forEach((element) => {
+            const obj = { ...element };
+            if (element.seedPhrase === seedPhrase) {
+              setIdwProfileInUse(true);
+            }
+          });
+        }
+      } catch (e) {
+        // @TODO - sdisalvo: handle error
+      }
+    };
+    handleFetchStoredValues();
+  }, []);
 
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }))
@@ -139,25 +164,27 @@ const Crypto = () => {
                   size="12"
                   className="add-crypto-account-body"
                 >
-                  <span
-                    className="add-crypto-account-option"
-                    data-testid="add-crypto-account-reuse-button"
-                    onClick={() => {
-                      return;
-                    }}
-                  >
-                    <span>
-                      <IonButton shape="round">
-                        <IonIcon
-                          slot="icon-only"
-                          icon={repeatOutline}
-                        />
-                      </IonButton>
+                  {!idwProfileInUse && (
+                    <span
+                      className="add-crypto-account-option"
+                      data-testid="add-crypto-account-reuse-button"
+                      onClick={() => {
+                        return;
+                      }}
+                    >
+                      <span>
+                        <IonButton shape="round">
+                          <IonIcon
+                            slot="icon-only"
+                            icon={repeatOutline}
+                          />
+                        </IonButton>
+                      </span>
+                      <span className="add-crypto-account-label">
+                        {i18n.t("crypto.addcryptoaccountmodal.reuse")}
+                      </span>
                     </span>
-                    <span className="add-crypto-account-label">
-                      {i18n.t("crypto.addcryptoaccountmodal.reuse")}
-                    </span>
-                  </span>
+                  )}
                   <span
                     className="add-crypto-account-option"
                     data-testid="add-crypto-account-generate-button"
