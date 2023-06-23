@@ -44,27 +44,18 @@ describe("Onboarding process", () => {
       );
     }
 
-    const waitForPromises = () => {
-      Cypress.Promise.all(wordPromises)
-        .then((words:string[]) => {
-          generatedWords = words;
-          cy.log("words: ", words);
-        })
-        .then(() => {
-          if (generatedWords.length === 15) {
-            for (let i = 0; i < generatedWords.length; i++) {
-              cy.get(`[data-testid="remaining-word-${generatedWords[i]}"]`).click()
-            }
-          } else {
-            waitForPromises();
-          }
-        });
-    };
-
     cy.contains(EN_TRANSLATIONS.generateseedphrase.continue.button).click();
     cy.contains(EN_TRANSLATIONS.generateseedphrase.alert.button.confirm).click();
 
-    waitForPromises();
+    Cypress.Promise.all(wordPromises)
+      .then((words:string[]) => {
+        generatedWords = words;
+      })
+      .then(() => {
+        for (let i = 0; i < generatedWords.length; i++) {
+          cy.get(`[data-testid="remaining-word-${generatedWords[i]}"]`).click()
+        }
+      });
 
     cy.get("[data-testid=\"continue-button-verify-seedphrase\"]").click();
 
