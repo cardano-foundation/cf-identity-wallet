@@ -26,9 +26,6 @@ describe("Onboarding process", () => {
     cy.contains("5").click();
     cy.contains("6").click();
 
-    // Open terms and conditions
-    //cy.contains(EN_TRANSLATIONS.generateseedphrase.termsandconditions.link).click();
-
     cy.get("[data-testid=\"termsandconditions-checkbox\"]").click();
 
     cy.contains(EN_TRANSLATIONS.generateseedphrase.privacy.overlay.button).click();
