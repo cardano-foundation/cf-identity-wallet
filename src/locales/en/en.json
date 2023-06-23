@@ -293,5 +293,21 @@
     "error": {
       "maxlength": "Must be less than 32 characters long"
     }
+  },
+  "crypto": {
+    "tab": {
+      "create": "Add a crypto account"
+    },
+    "mywalletsmodal": {
+      "title": "My wallets",
+      "empty": "No wallets available",
+      "create": "Add a crypto account"
+    },
+    "addcryptoaccountmodal": {
+      "title": "Add a new crypto account",
+      "reuse": "Use existing identity seed phrase",
+      "generate": "Generate a new seed phrase",
+      "restore": "Restore using an existing seed phrase"
+    }
   }
 }

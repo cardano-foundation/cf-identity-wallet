@@ -42,6 +42,7 @@ describe("getBackRoute", () => {
       },
       didsCache: { dids: [] },
       credsCache: { creds: [] },
+      cryptoAccountsCache: { cryptoAccounts: [] },
     };
   });
 
@@ -116,6 +117,7 @@ describe("getBackRoute", () => {
       },
       didsCache: { dids: [] },
       credsCache: { creds: [] },
+      cryptoAccountsCache: { cryptoAccounts: [] },
     };
     const expectedAuthentication = {
       ...storeMock.stateCache.authentication,
@@ -175,6 +177,7 @@ describe("getPreviousRoute", () => {
       },
       didsCache: { dids: [] },
       credsCache: { creds: [] },
+      cryptoAccountsCache: { cryptoAccounts: [] },
     };
   });
 

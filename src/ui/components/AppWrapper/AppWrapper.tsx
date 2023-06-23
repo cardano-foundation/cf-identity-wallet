@@ -12,6 +12,8 @@ import { setDidsCache } from "../../../store/reducers/didsCache";
 import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { filteredCredsMock } from "../../__mocks__/filteredCredsMock";
+import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
+import { setCryptoAccountsCache } from "../../../store/reducers/cryptoAccountsCache";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -46,6 +48,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     dispatch(setDidsCache(filteredDidsMock));
     dispatch(setCredsCache(filteredCredsMock));
+    dispatch(setCryptoAccountsCache(cryptoAccountsMock));
   };
 
   return <>{props.children}</>;

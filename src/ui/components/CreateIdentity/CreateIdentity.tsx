@@ -84,7 +84,7 @@ const CreateIdentity = ({
     <IonModal
       isOpen={modalIsOpen}
       initialBreakpoint={0.45}
-      breakpoints={[0.45]}
+      breakpoints={[0, 0.45]}
       className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
       data-testid="create-identity-modal"
       onDidDismiss={() => resetModal()}

@@ -131,7 +131,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
       <IonModal
         isOpen={isOpen}
         initialBreakpoint={0.35}
-        breakpoints={[0.35]}
+        breakpoints={[0, 0.35]}
         className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
         data-testid="edit-identity-modal"
         onDidDismiss={handleDismiss}
