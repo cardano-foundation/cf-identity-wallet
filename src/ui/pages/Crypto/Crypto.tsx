@@ -69,8 +69,8 @@ const Crypto = () => {
     return (
       <IonButton
         shape="round"
-        className="share-button"
-        data-testid="share-button"
+        className="my-wallets-button"
+        data-testid="my-wallets-button"
         onClick={() => {
           setMyWalletsIsOpen(true);
         }}
@@ -244,7 +244,7 @@ const Crypto = () => {
           menuButton={true}
           additionalButtons={<AdditionalButtons />}
         >
-          {cryptoAccountsData.length ? (
+          {cryptoAccountsData ? (
             <div>Account details here</div>
           ) : (
             <CardsPlaceholder
