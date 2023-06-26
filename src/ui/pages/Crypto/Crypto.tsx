@@ -43,9 +43,6 @@ const Crypto = () => {
   const [idwProfileInUse, setIdwProfileInUse] = useState(false);
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
-  const [accountName, setAccountName] = useState(
-    `${i18n.t("crypto.chooseaccountnamemodal.placeholder")}`
-  );
 
   useEffect(() => {
     cryptoAccountsData?.forEach((account) => {
@@ -228,6 +225,9 @@ const Crypto = () => {
   };
 
   const ChooseAccountName = () => {
+    const [accountName, setAccountName] = useState(
+      `${i18n.t("crypto.chooseaccountnamemodal.placeholder")}`
+    );
     return (
       <IonModal
         isOpen={chooseAccountNameIsOpen}
@@ -269,7 +269,7 @@ const Crypto = () => {
                 expand="block"
                 className="ion-primary-button"
                 data-testid="continue-button"
-                onClick={handleCreateWallet}
+                onClick={() => handleCreateWallet(accountName)}
                 disabled={
                   accountName ===
                   `${i18n.t("crypto.chooseaccountnamemodal.placeholder")}`
@@ -284,9 +284,9 @@ const Crypto = () => {
     );
   };
 
-  const handleCreateWallet = () => {
+  const handleCreateWallet = (value: string) => {
     const newWallet: CryptoAccountProps = {
-      name: `${accountName}`,
+      name: `${value}`,
       currency: "ADA", // @TODO - sdisalvo: remove whenever core is ready
       balance: 2785.82, // @TODO - sdisalvo: remove whenever core is ready
       usesIdentitySeedPhrase: true,
