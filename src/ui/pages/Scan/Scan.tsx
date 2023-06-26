@@ -1,20 +1,20 @@
-import { IonPage } from "@ionic/react";
-import { PageLayout } from "../../components/layout/PageLayout";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { IonPage, useIonViewWillEnter } from "@ionic/react";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { useAppDispatch } from "../../../store/hooks";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import { TabsRoutePath } from "../../../routes/paths";
 
 const Scan = () => {
+  const dispatch = useAppDispatch();
+  useIonViewWillEnter(() =>
+    dispatch(setCurrentRoute({ path: TabsRoutePath.SCAN }))
+  );
   return (
     <IonPage
-      className="page-layout scan-page"
-      data-testid="scan-page"
+      className="tab-layout"
+      data-testid="scan-tab"
     >
-      <PageLayout
-        header={true}
-        menuButton={true}
-        currentPath={TabsRoutePath.SCAN}
-      >
-        <div>Scan</div>
-      </PageLayout>
+      <TabLayout header={false}></TabLayout>
     </IonPage>
   );
 };

@@ -19,6 +19,7 @@ import { updateReduxState } from "../../../../store/utils";
 import { getBackRoute } from "../../../../routes/backRoute";
 
 const PageLayout = ({
+    id,
   header,
   backButton,
   onBack,
@@ -26,6 +27,12 @@ const PageLayout = ({
   children,
   closeButton,
   closeButtonAction,
+  closeButtonLabel,
+  actionButton,
+  actionButtonDisabled,
+  actionButtonAction,
+  actionButtonLabel,
+  actionButtonIcon,
   progressBar,
   progressBarValue,
   progressBarBuffer,
@@ -41,18 +48,20 @@ const PageLayout = ({
   const storeState = useAppSelector(getState);
 
   const handleOnBack = () => {
-    const { backPath, updateRedux } = getBackRoute(currentPath, {
-      store: storeState,
-    });
-    updateReduxState(
-      backPath.pathname,
-      { store: storeState },
-      dispatch,
-      updateRedux
-    );
-    history.push(backPath.pathname);
-    if (onBack) {
-      onBack();
+    if (backButton && currentPath) {
+      const { backPath, updateRedux } = getBackRoute(currentPath, {
+        store: storeState,
+      });
+      updateReduxState(
+        backPath.pathname,
+        { store: storeState },
+        dispatch,
+        updateRedux
+      );
+      history.push(backPath.pathname);
+      if (onBack) {
+        onBack();
+      }
     }
   };
 
@@ -79,7 +88,8 @@ const PageLayout = ({
                   />
                 </IonButton>
               )}
-              {closeButton && (
+
+              {closeButton && !closeButtonLabel && (
                 <IonButton
                   shape="round"
                   className="close-button"
@@ -93,6 +103,16 @@ const PageLayout = ({
                   />
                 </IonButton>
               )}
+
+              {closeButton && closeButtonLabel && (
+                <IonButton
+                  className="close-button-label"
+                  onClick={closeButtonAction}
+                  data-testid="close-button"
+                >
+                  {closeButtonLabel}
+                </IonButton>
+              )}
             </IonButtons>
 
             {title && (
@@ -100,6 +120,7 @@ const PageLayout = ({
                 <h2>{title}</h2>
               </IonTitle>
             )}
+
             {progressBar && (
               <div className="progress-bar-container">
                 <IonProgressBar
@@ -109,21 +130,50 @@ const PageLayout = ({
               </div>
             )}
 
-            <IonButtons slot="end">
-              {menuButton && (
-                <IonButton
-                  shape="round"
-                  className="menu-button"
-                  data-testid="menu-button"
-                >
-                  <IonIcon
-                    slot="icon-only"
-                    icon={menuOutline}
-                    color="primary"
-                  />
-                </IonButton>
-              )}
-            </IonButtons>
+            {!progressBar && (
+              <IonButtons slot="end">
+                {menuButton && (
+                  <IonButton
+                    shape="round"
+                    className="menu-button"
+                    data-testid="menu-button"
+                  >
+                    <IonIcon
+                      slot="icon-only"
+                      icon={menuOutline}
+                      color="primary"
+                    />
+                  </IonButton>
+                )}
+
+                {actionButton && !actionButtonLabel && (
+                  <IonButton
+                    shape="round"
+                    disabled={actionButtonDisabled}
+                    className="action-button"
+                    onClick={actionButtonAction}
+                    data-testid="action-button"
+                  >
+                    <IonIcon
+                      slot="icon-only"
+                      icon={actionButtonIcon}
+                      color="primary"
+                    />
+                  </IonButton>
+                )}
+
+                {actionButton && actionButtonLabel && (
+                  <IonButton
+                    disabled={actionButtonDisabled}
+                    className="action-button-label"
+                    onClick={actionButtonAction}
+                    data-testid="action-button"
+                  >
+                    {actionButtonLabel}
+                  </IonButton>
+                )}
+              </IonButtons>
+            )}
           </IonToolbar>
         </IonHeader>
       )}
@@ -148,7 +198,7 @@ const PageLayout = ({
               shape="round"
               expand="block"
               className="ion-primary-button"
-              data-testid="continue-button"
+              data-testid={`continue-button${id ? `-${id}` : ""}`}
               onClick={primaryButtonAction}
               disabled={primaryButtonDisabled}
             >

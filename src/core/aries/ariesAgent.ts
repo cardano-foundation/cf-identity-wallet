@@ -1,4 +1,12 @@
-import { InitConfig, Agent, AgentDependencies } from "@aries-framework/core";
+import {
+  InitConfig,
+  Agent,
+  AgentDependencies,
+  RecordNotFoundError,
+  DidsModule,
+  KeyDidResolver,
+  KeyType,
+} from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { CapacitorFileSystem } from "./dependencies";
 import {
@@ -8,6 +16,8 @@ import {
   MiscRecordId,
 } from "./modules";
 import { HttpOutboundTransport } from "./transports";
+import { LabelledKeyDidRegistrar } from "./dids";
+import { IdentityType } from "./ariesAgent.types";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -37,6 +47,10 @@ class AriesAgent {
       modules: {
         ionicStorage: new IonicStorageModule(),
         generalStorage: new GeneralStorageModule(),
+        dids: new DidsModule({
+          registrars: [new LabelledKeyDidRegistrar()],
+          resolvers: [new KeyDidResolver()],
+        }),
       },
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
@@ -57,6 +71,26 @@ class AriesAgent {
     await this.agent.modules.generalStorage.saveMiscRecord(
       new MiscRecord({ id, value })
     );
+  }
+
+  async getMiscRecordValueById(id: MiscRecordId): Promise<string | undefined> {
+    try {
+      return (await this.agent.modules.generalStorage.getMiscRecordById(id))
+        .value;
+    } catch (e) {
+      if (e instanceof RecordNotFoundError) {
+        return undefined;
+      }
+      throw e;
+    }
+  }
+
+  async createIdentity(type: IdentityType, displayName: string) {
+    await this.agent.dids.create({
+      method: type,
+      displayName: displayName,
+      options: { keyType: KeyType.Ed25519 },
+    });
   }
 }
 

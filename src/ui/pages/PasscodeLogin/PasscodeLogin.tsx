@@ -5,7 +5,7 @@ import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import Alert from "../../components/Alert/Alert";
+import { Alert } from "../../components/Alert";
 import {
   KeyStoreKeys,
   SecureStorage,
@@ -118,7 +118,7 @@ const PasscodeLogin = () => {
             passcode.length === 6 &&
             passcodeIncorrect && (
               <ErrorMessage
-                message={i18n.t("passcodelogin.error")}
+                message={`${i18n.t("passcodelogin.error")}`}
                 timeout={true}
               />
             )

@@ -23,12 +23,19 @@ code {
     monospace;
 }
 
-h2 {
+h2,
+h3 {
   margin: 0 0 1rem;
   font-size: 1.5rem;
   font-weight: 700;
   line-height: 1.756rem;
   color: var(--ion-color-primary);
+}
+
+h3 {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.172rem;
 }
 
 p {
@@ -52,6 +59,11 @@ p {
 .secondary-button {
   --border-color: var(--color-dark-grey);
   --background-activated: var(--color-dark-grey);
+}
+
+.ion-primary-button,
+.secondary-button {
+  height: 3.25rem;
 }
 
 .page-paragraph {
@@ -86,4 +98,40 @@ p {
       margin-right: 4px;
     }
   }
+}
+
+ion-modal {
+  --background: transparent;
+}
+
+.modal {
+  padding-inline: 20px;
+  background-color: var(--ion-color-light);
+  border-radius: 1rem 1rem 0px 0px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  ion-toolbar {
+    padding: 0.5rem 0 0 !important;
+  }
+
+  ion-title {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+  }
+
+  h2 {
+    margin: 0 auto;
+    font-size: 1.5rem;
+  }
+}
+
+.extended-modal::part(content) {
+  height: 800px;
 }

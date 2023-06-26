@@ -1,20 +1,24 @@
-import { IonPage } from "@ionic/react";
-import { PageLayout } from "../../components/layout/PageLayout";
-import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { IonPage, useIonViewWillEnter } from "@ionic/react";
+import { TabLayout } from "../../components/layout/TabLayout";
+import { useAppDispatch } from "../../../store/hooks";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import { TabsRoutePath } from "../../../routes/paths";
 
 const Chat = () => {
+  const dispatch = useAppDispatch();
+  useIonViewWillEnter(() =>
+    dispatch(setCurrentRoute({ path: TabsRoutePath.CHAT }))
+  );
   return (
     <IonPage
-      className="page-layout chat-page"
-      data-testid="chat-page"
+      className="tab-layout"
+      data-testid="chat-tab"
     >
-      <PageLayout
+      <TabLayout
         header={true}
+        title="Chat"
         menuButton={true}
-        currentPath={TabsRoutePath.CHAT}
-      >
-        <div>Chat</div>
-      </PageLayout>
+      ></TabLayout>
     </IonPage>
   );
 };

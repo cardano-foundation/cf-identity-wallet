@@ -7,7 +7,7 @@ import {
 } from "../../store/reducers/stateCache";
 import { clearSeedPhraseCache } from "../../store/reducers/seedPhraseCache";
 import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
-import { RoutePath } from "../paths";
+import { RoutePath, TabsRoutePath } from "../paths";
 
 const getBackRoute = (
   currentPath: string,
@@ -26,6 +26,7 @@ const getBackRoute = (
 
 const updateStoreSetCurrentRoute = (data: DataProps) => {
   const prevPath = calcPreviousRoute(data.store.stateCache.routes);
+
   let path;
   if (prevPath) {
     path = prevPath.path;
@@ -107,6 +108,15 @@ const backRoute: Record<string, any> = {
   [RoutePath.PASSCODE_LOGIN]: {
     updateRedux: [updateStoreAfterPasscodeLoginRoute],
   },
+  [RoutePath.CREATE_PASSWORD]: {
+    updateRedux: [],
+  },
+  [TabsRoutePath.DID_DETAILS]: {
+    updateRedux: [removeCurrentRoute],
+  },
+  [TabsRoutePath.CRED_DETAILS]: {
+    updateRedux: [removeCurrentRoute],
+  },
 };
 
 export {
@@ -115,4 +125,5 @@ export {
   getPreviousRoute,
   updateStoreAfterPasscodeLoginRoute,
   updateStoreSetCurrentRoute,
+  backPath,
 };

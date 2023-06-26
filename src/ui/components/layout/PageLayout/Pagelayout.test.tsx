@@ -18,10 +18,8 @@ describe("Page Layout", () => {
           currentPath={"/"}
           closeButton={true}
           closeButtonAction={mockCloseButton}
-          progressBar={true}
-          progressBarValue={0.5}
-          progressBarBuffer={1}
           title={"Title"}
+          menuButton={true}
         >
           <p>Content</p>
         </PageLayout>
@@ -30,6 +28,7 @@ describe("Page Layout", () => {
 
     expect(getByText("Title")).toBeInTheDocument();
     expect(getByText("Content")).toBeInTheDocument();
+    expect(getByTestId("menu-button")).toBeInTheDocument();
 
     fireEvent.click(getByTestId("close-button"));
     expect(mockCloseButton.mock.calls.length).toEqual(1);

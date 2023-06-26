@@ -6,7 +6,6 @@ import {
   IonLabel,
   IonRouterOutlet,
 } from "@ionic/react";
-import { IonReactRouter } from "@ionic/react-router";
 import { Route, Redirect } from "react-router";
 import {
   idCardOutline,
@@ -15,98 +14,90 @@ import {
   chatbubbleOutline,
   walletOutline,
 } from "ionicons/icons";
+import React from "react";
 import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
+import { TabsRoutePath } from "../../../../routes/paths";
 import { Dids } from "../../../pages/Dids";
 import { Creds } from "../../../pages/Creds";
-import { Crypto } from "../../../pages/Crypto";
 import { Scan } from "../../../pages/Scan";
+import { Crypto } from "../../../pages/Crypto";
 import { Chat } from "../../../pages/Chat";
-import { TabsRoutePath } from "../../../../routes/paths";
-const TabsMenu = () => {
+
+const tabsRoutes = [
+  {
+    label: i18n.t("tabsmenu.label.dids"),
+    path: TabsRoutePath.DIDS,
+    component: Dids,
+    icon: fingerPrintOutline,
+  },
+  {
+    label: i18n.t("tabsmenu.label.creds"),
+    path: TabsRoutePath.CREDS,
+    component: Creds,
+    icon: idCardOutline,
+  },
+  {
+    label: i18n.t("tabsmenu.label.scan"),
+    path: TabsRoutePath.SCAN,
+    component: Scan,
+    icon: scanOutline,
+  },
+  {
+    label: i18n.t("tabsmenu.label.crypto"),
+    path: TabsRoutePath.CRYPTO,
+    component: Crypto,
+    icon: walletOutline,
+  },
+  {
+    label: i18n.t("tabsmenu.label.chat"),
+    path: TabsRoutePath.CHAT,
+    component: Chat,
+    icon: chatbubbleOutline,
+  },
+];
+const TabsMenu = ({
+  tab,
+  path,
+}: {
+  tab: React.ComponentType<any>;
+  path: string;
+}) => {
   return (
-    <IonReactRouter>
-      <IonTabs>
-        <IonRouterOutlet>
-          <Redirect
-            exact
-            path={TabsRoutePath.ROOT}
-            to={TabsRoutePath.DIDS}
-          />
-          <Route
-            path={TabsRoutePath.DIDS}
-            component={Dids}
-            exact={true}
-          />
-          <Route
-            path={TabsRoutePath.CREDS}
-            component={Creds}
-            exact={true}
-          />
-          <Route
-            path={TabsRoutePath.SCAN}
-            component={Scan}
-            exact={true}
-          />
-          <Route
-            path={TabsRoutePath.CRYPTO}
-            component={Crypto}
-            exact={true}
-          />
-          <Route
-            path={TabsRoutePath.CHAT}
-            component={Chat}
-            exact={true}
-          />
-        </IonRouterOutlet>
+    <IonTabs>
+      <IonRouterOutlet animated={false}>
+        <Redirect
+          exact
+          from={TabsRoutePath.ROOT}
+          to={TabsRoutePath.DIDS}
+        />
+        <Route
+          path={path}
+          component={tab}
+          exact={true}
+        />
+      </IonRouterOutlet>
 
-        <IonTabBar
-          slot="bottom"
-          data-testid="tabs-menu"
-        >
-          <IonTabButton
-            tab="dids"
-            href={TabsRoutePath.DIDS}
-          >
-            <IonIcon icon={fingerPrintOutline} />
-            <IonLabel>{i18n.t("tabsmenu.label.dids")}</IonLabel>
-          </IonTabButton>
-
-          <IonTabButton
-            tab="creds"
-            href={TabsRoutePath.CREDS}
-          >
-            <IonIcon icon={idCardOutline} />
-            <IonLabel>{i18n.t("tabsmenu.label.creds")}</IonLabel>
-          </IonTabButton>
-
-          <IonTabButton
-            tab="scan"
-            href={TabsRoutePath.SCAN}
-          >
-            <IonIcon icon={scanOutline} />
-            <IonLabel>{i18n.t("tabsmenu.label.scan")}</IonLabel>
-          </IonTabButton>
-
-          <IonTabButton
-            tab="crypto"
-            href={TabsRoutePath.CRYPTO}
-          >
-            <IonIcon icon={walletOutline} />
-            <IonLabel>{i18n.t("tabsmenu.label.crypto")}</IonLabel>
-          </IonTabButton>
-
-          <IonTabButton
-            tab="chat"
-            href={TabsRoutePath.CHAT}
-          >
-            <IonIcon icon={chatbubbleOutline} />
-            <IonLabel>{i18n.t("tabsmenu.label.chat")}</IonLabel>
-          </IonTabButton>
-        </IonTabBar>
-      </IonTabs>
-    </IonReactRouter>
+      <IonTabBar
+        slot="bottom"
+        data-testid="tabs-menu"
+      >
+        {tabsRoutes.map((tab, index: number) => {
+          return (
+            <IonTabButton
+              key={`${tab.label}-${index}`}
+              tab={tab.label}
+              href={tab.path}
+            >
+              <div className="borderTop" />
+              <IonIcon icon={tab.icon} />
+              <IonLabel>{tab.label}</IonLabel>
+            </IonTabButton>
+          );
+        })}
+      </IonTabBar>
+    </IonTabs>
   );
 };
 
-export { TabsMenu, TabsRoutePath };
+export { TabsMenu, TabsRoutePath, tabsRoutes };

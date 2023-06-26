@@ -11,6 +11,7 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps } from "./nextRoute.types";
 import { RoutePath } from "../paths";
+import { backPath } from "../backRoute";
 
 const getNextRootRoute = (store: RootState) => {
   const authentication = store.stateCache.authentication;
@@ -21,6 +22,8 @@ const getNextRootRoute = (store: RootState) => {
   let path;
   if (authentication.passcodeIsSet && !authentication.loggedIn) {
     path = RoutePath.PASSCODE_LOGIN;
+  } else if (authentication.seedPhraseIsSet) {
+    path = RoutePath.TABS_MENU;
   } else {
     if (initialRoute) {
       path = RoutePath.ONBOARDING;
@@ -28,6 +31,7 @@ const getNextRootRoute = (store: RootState) => {
       path = routes[0].path;
     }
   }
+
   return { pathname: path };
 };
 const getNextOnboardingRoute = (store: RootState) => {
@@ -63,6 +67,12 @@ const updateStoreAfterSetPasscodeRoute = (data: DataProps) => {
     passcodeIsSet: true,
   });
 };
+const updateStoreAfterVerifySeedPhraseRoute = (data: DataProps) => {
+  return setAuthentication({
+    ...data.store.stateCache.authentication,
+    seedPhraseIsSet: true,
+  });
+};
 
 const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
@@ -80,6 +90,17 @@ const updateStoreSetSeedPhrase = (data: DataProps) => {
 };
 const updateStoreCurrentRoute = (data: DataProps) => {
   return setCurrentRoute({ path: data.state?.nextRoute });
+};
+
+const getNextCreatePasswordRoute = (data: DataProps) => {
+  const backRoute = backPath(data);
+  return { pathname: backRoute.pathname };
+};
+const updateStoreAfterCreatePassword = (data: DataProps) => {
+  return setAuthentication({
+    ...data.store.stateCache.authentication,
+    passwordIsSet: true,
+  });
 };
 
 const getNextRoute = (
@@ -118,7 +139,11 @@ const NextRoute: Record<string, any> = {
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
     nextPath: () => getNextVerifySeedPhraseRoute(),
-    updateRedux: [clearSeedPhraseCache],
+    updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
+  },
+  [RoutePath.CREATE_PASSWORD]: {
+    nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
+    updateRedux: [updateStoreAfterCreatePassword],
   },
 };
 
@@ -132,4 +157,7 @@ export {
   getNextVerifySeedPhraseRoute,
   updateStoreCurrentRoute,
   updateStoreSetSeedPhrase,
+  updateStoreAfterVerifySeedPhraseRoute,
+  getNextCreatePasswordRoute,
+  updateStoreAfterCreatePassword,
 };
