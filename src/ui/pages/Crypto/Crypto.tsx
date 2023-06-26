@@ -8,6 +8,7 @@ import {
   IonRow,
   useIonViewWillEnter,
 } from "@ionic/react";
+import crypto from "crypto";
 import { useEffect, useState } from "react";
 import {
   walletOutline,
@@ -21,15 +22,16 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { getCryptoAccountsCache } from "../../../store/reducers/cryptoAccountsCache";
+import {
+  getCryptoAccountsCache,
+  setCryptoAccountsCache,
+} from "../../../store/reducers/cryptoAccountsCache";
 import { i18n } from "../../../i18n";
 import "./Crypto.scss";
 import { PageLayout } from "../../components/layout/PageLayout";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage/secureStorage";
 import { CryptoAccountProps } from "./Crypto.types";
+import { VerifyPassword } from "../../components/VerifyPassword";
+import { CustomInput } from "../../components/CustomInput";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
@@ -39,27 +41,19 @@ const Crypto = () => {
   const [myWalletsIsOpen, setMyWalletsIsOpen] = useState(false);
   const [addAccountIsOpen, setAddAccountIsOpen] = useState(false);
   const [idwProfileInUse, setIdwProfileInUse] = useState(false);
+  const [showVerifyPassword, setShowVerifyPassword] = useState(false);
+  const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
+  const [accountName, setAccountName] = useState(
+    `${i18n.t("crypto.chooseaccountnamemodal.placeholder")}`
+  );
 
   useEffect(() => {
-    const handleFetchStoredValues = async () => {
-      try {
-        const seedPhrase = await SecureStorage.get(
-          KeyStoreKeys.IDENTITY_SEEDPHRASE
-        );
-        if (seedPhrase) {
-          cryptoAccountsData.forEach((element) => {
-            const obj = { ...element };
-            if (element.seedPhrase === seedPhrase) {
-              setIdwProfileInUse(true);
-            }
-          });
-        }
-      } catch (e) {
-        // @TODO - sdisalvo: handle error
+    cryptoAccountsData.forEach((account) => {
+      if (account.usesIdentitySeedPhrase) {
+        setIdwProfileInUse(true);
       }
-    };
-    handleFetchStoredValues();
-  }, []);
+    });
+  }, [cryptoAccountsData]);
 
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }))
@@ -169,7 +163,8 @@ const Crypto = () => {
                       className="add-crypto-account-option"
                       data-testid="add-crypto-account-reuse-button"
                       onClick={() => {
-                        return;
+                        setAddAccountIsOpen(false);
+                        setShowVerifyPassword(true);
                       }}
                     >
                       <span>
@@ -232,6 +227,88 @@ const Crypto = () => {
     );
   };
 
+  const ChooseAccountName = () => {
+    return (
+      <IonModal
+        isOpen={chooseAccountNameIsOpen}
+        initialBreakpoint={0.3}
+        breakpoints={[0, 0.3]}
+        className="page-layout"
+        data-testid="choose-account-name"
+        onDidDismiss={() => setChooseAccountNameIsOpen(false)}
+      >
+        <div className="choose-account-name modal">
+          <PageLayout
+            header={true}
+            closeButton={false}
+            title={`${i18n.t("crypto.chooseaccountnamemodal.title")}`}
+            actionButton={true}
+            actionButtonLabel={`${i18n.t(
+              "crypto.chooseaccountnamemodal.skip"
+            )}`}
+            actionButtonAction={handleSkip}
+          >
+            <IonGrid>
+              <IonRow>
+                <IonCol size="12">
+                  <CustomInput
+                    dataTestId="edit-display-name"
+                    title={`${i18n.t("crypto.chooseaccountnamemodal.label")}`}
+                    hiddenInput={false}
+                    autofocus={true}
+                    placeholder={`${i18n.t(
+                      "crypto.chooseaccountnamemodal.placeholder"
+                    )}`}
+                    onChangeInput={setAccountName}
+                    value={accountName}
+                  />
+                </IonCol>
+              </IonRow>
+              <IonButton
+                shape="round"
+                expand="block"
+                className="ion-primary-button"
+                data-testid="continue-button"
+                onClick={handleCreateWallet}
+                disabled={
+                  accountName ===
+                  `${i18n.t("crypto.chooseaccountnamemodal.placeholder")}`
+                }
+              >
+                {i18n.t("crypto.chooseaccountnamemodal.confirm")}
+              </IonButton>
+            </IonGrid>
+          </PageLayout>
+        </div>
+      </IonModal>
+    );
+  };
+
+  const handleCreateWallet = () => {
+    const newWallet: CryptoAccountProps = {
+      name: `${accountName}`,
+      currency: "ADA", // @TODO - sdisalvo: remove whenever core is ready
+      balance: 2785.82, // @TODO - sdisalvo: remove whenever core is ready
+      usesIdentitySeedPhrase: true,
+    };
+    dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
+    setChooseAccountNameIsOpen(false);
+  };
+
+  const handleSkip = () => {
+    const newWallet = {
+      name:
+        i18n.t("crypto.chooseaccountnamemodal.placeholder") +
+        " " +
+        crypto.randomBytes(3).toString("hex"),
+      currency: "ADA", // @TODO - sdisalvo: remove whenever core is ready
+      balance: 2785.82, // @TODO - sdisalvo: remove whenever core is ready
+      usesIdentitySeedPhrase: true,
+    };
+    dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
+    setChooseAccountNameIsOpen(false);
+  };
+
   return (
     <>
       <IonPage
@@ -244,8 +321,8 @@ const Crypto = () => {
           menuButton={true}
           additionalButtons={<AdditionalButtons />}
         >
-          {cryptoAccountsData ? (
-            <div>Account details here</div>
+          {cryptoAccountsData.length ? (
+            <pre>{JSON.stringify(cryptoAccountsData[0], null, 2)}</pre>
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("crypto.tab.create")}
@@ -254,8 +331,19 @@ const Crypto = () => {
           )}
         </TabLayout>
       </IonPage>
-      <MyWallets />
-      <AddCryptoAccount />
+      {myWalletsIsOpen && <MyWallets />}
+      {addAccountIsOpen && <AddCryptoAccount />}
+      {showVerifyPassword && (
+        <VerifyPassword
+          isOpen={showVerifyPassword}
+          onVerify={() => {
+            setShowVerifyPassword(false);
+            setChooseAccountNameIsOpen(true);
+          }}
+          setIsOpen={(isOpen: boolean) => setShowVerifyPassword(isOpen)}
+        />
+      )}
+      {chooseAccountNameIsOpen && <ChooseAccountName />}
     </>
   );
 };

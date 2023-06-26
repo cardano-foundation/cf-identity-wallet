@@ -1,7 +1,8 @@
 interface CryptoAccountProps {
+  name: string;
   currency: string;
   balance: number;
-  seedPhrase: string;
+  usesIdentitySeedPhrase?: boolean;
 }
 
 export type { CryptoAccountProps };
