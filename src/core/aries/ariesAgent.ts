@@ -1,12 +1,13 @@
 import { InitConfig, Agent, AgentDependencies } from "@aries-framework/core";
 import { EventEmitter } from "events";
-import { CapacitorFileSystem } from "./dependencies/capacitorFileSystem";
+import { CapacitorFileSystem } from "./dependencies";
 import {
   IonicStorageModule,
   GeneralStorageModule,
   MiscRecord,
   MiscRecordId,
 } from "./modules";
+import { HttpOutboundTransport } from "./transports";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -38,6 +39,7 @@ class AriesAgent {
         generalStorage: new GeneralStorageModule(),
       },
     });
+    this.agent.registerOutboundTransport(new HttpOutboundTransport());
   }
 
   static get agent() {

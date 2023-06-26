@@ -432,10 +432,10 @@ class IonicStorageWallet implements Wallet {
     try {
       const message = crypto_aead_chacha20poly1305_ietf_decrypt_detached(
         null,
-        TypedArrayEncoder.fromBase64(encryptedMessage.ciphertext as any),
-        TypedArrayEncoder.fromBase64(encryptedMessage.tag as any),
+        TypedArrayEncoder.fromBase64(encryptedMessage.ciphertext as string),
+        TypedArrayEncoder.fromBase64(encryptedMessage.tag as string),
         TypedArrayEncoder.fromString(encryptedMessage.protected),
-        TypedArrayEncoder.fromBase64(encryptedMessage.iv as any),
+        TypedArrayEncoder.fromBase64(encryptedMessage.iv as string),
         payloadKey
       );
       return {
