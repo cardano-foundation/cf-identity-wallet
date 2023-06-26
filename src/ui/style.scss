@@ -116,12 +116,13 @@ ion-modal {
 
   ion-toolbar {
     padding: 0.5rem 0 0 !important;
+    height: 4rem;
   }
 
   ion-title {
     position: absolute;
     width: 100%;
-    height: 100%;
+    height: 3rem;
     top: 0;
     left: 0;
   }
@@ -129,6 +130,11 @@ ion-modal {
   h2 {
     margin: 0 auto;
     font-size: 1.5rem;
+  }
+
+  .action-button-label,
+  .close-button-label {
+    color: var(--ion-color-primary);
   }
 }
 

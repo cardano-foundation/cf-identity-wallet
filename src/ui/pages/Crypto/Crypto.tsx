@@ -17,6 +17,8 @@ import {
   addCircleOutline,
   refreshOutline,
 } from "ionicons/icons";
+import { Capacitor } from "@capacitor/core";
+import { Keyboard } from "@capacitor/keyboard";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
@@ -43,6 +45,7 @@ const Crypto = () => {
   const [idwProfileInUse, setIdwProfileInUse] = useState(false);
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
+  const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
 
   useEffect(() => {
     cryptoAccountsData?.forEach((account) => {
@@ -55,6 +58,17 @@ const Crypto = () => {
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }))
   );
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      Keyboard.addListener("keyboardWillShow", () => {
+        setkeyboardIsOpen(true);
+      });
+      Keyboard.addListener("keyboardWillHide", () => {
+        setkeyboardIsOpen(false);
+      });
+    }
+  }, []);
 
   const AdditionalButtons = () => {
     return (
@@ -137,8 +151,8 @@ const Crypto = () => {
     return (
       <IonModal
         isOpen={addAccountIsOpen}
-        initialBreakpoint={0.3}
-        breakpoints={[0, 0.3]}
+        initialBreakpoint={0.35}
+        breakpoints={[0, 0.35]}
         className="page-layout"
         data-testid="add-crypto-account"
         onDidDismiss={() => setAddAccountIsOpen(false)}
@@ -231,9 +245,9 @@ const Crypto = () => {
     return (
       <IonModal
         isOpen={chooseAccountNameIsOpen}
-        initialBreakpoint={0.3}
-        breakpoints={[0, 0.3]}
-        className="page-layout"
+        initialBreakpoint={0.35}
+        breakpoints={[0, 0.35]}
+        className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
         data-testid="choose-account-name"
         onDidDismiss={() => setChooseAccountNameIsOpen(false)}
       >
@@ -246,7 +260,7 @@ const Crypto = () => {
             actionButtonLabel={`${i18n.t(
               "crypto.chooseaccountnamemodal.skip"
             )}`}
-            actionButtonAction={handleSkip}
+            actionButtonAction={() => handleCreateWallet("skip")}
           >
             <IonGrid>
               <IonRow>
@@ -286,21 +300,12 @@ const Crypto = () => {
 
   const handleCreateWallet = (value: string) => {
     const newWallet: CryptoAccountProps = {
-      name: `${value}`,
-      currency: "ADA", // @TODO - sdisalvo: remove whenever core is ready
-      balance: 2785.82, // @TODO - sdisalvo: remove whenever core is ready
-      usesIdentitySeedPhrase: true,
-    };
-    dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
-    setChooseAccountNameIsOpen(false);
-  };
-
-  const handleSkip = () => {
-    const newWallet = {
       name:
-        i18n.t("crypto.chooseaccountnamemodal.placeholder") +
-        " " +
-        crypto.randomBytes(3).toString("hex"),
+        value === "skip"
+          ? i18n.t("crypto.chooseaccountnamemodal.placeholder") +
+            " " +
+            crypto.randomBytes(3).toString("hex")
+          : value,
       currency: "ADA", // @TODO - sdisalvo: remove whenever core is ready
       balance: 2785.82, // @TODO - sdisalvo: remove whenever core is ready
       usesIdentitySeedPhrase: true,
