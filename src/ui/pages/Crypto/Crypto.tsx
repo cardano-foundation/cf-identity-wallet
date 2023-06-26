@@ -48,7 +48,7 @@ const Crypto = () => {
   );
 
   useEffect(() => {
-    cryptoAccountsData.forEach((account) => {
+    cryptoAccountsData?.forEach((account) => {
       if (account.usesIdentitySeedPhrase) {
         setIdwProfileInUse(true);
       }
@@ -321,7 +321,7 @@ const Crypto = () => {
           menuButton={true}
           additionalButtons={<AdditionalButtons />}
         >
-          {cryptoAccountsData.length ? (
+          {cryptoAccountsData?.length ? (
             <pre>{JSON.stringify(cryptoAccountsData[0], null, 2)}</pre>
           ) : (
             <CardsPlaceholder
