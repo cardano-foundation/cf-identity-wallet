@@ -1,10 +1,5 @@
-const cryptoAccountsMock = [
-  {
-    currency: "ADA",
-    balance: 2785.82,
-    seedPhrase:
-      "example example example example example example example example example example example example example example example",
-  },
-];
+import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
+
+const cryptoAccountsMock: CryptoAccountProps[] = [];
 
 export { cryptoAccountsMock };

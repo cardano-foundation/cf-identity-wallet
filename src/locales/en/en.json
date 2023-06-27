@@ -308,6 +308,13 @@
       "reuse": "Use existing identity seed phrase",
       "generate": "Generate a new seed phrase",
       "restore": "Restore using an existing seed phrase"
+    },
+    "chooseaccountnamemodal": {
+      "title": "Wallet name",
+      "skip": "Skip",
+      "label": "Display name",
+      "placeholder": "My wallet",
+      "confirm": "Create wallet"
     }
   }
 }
