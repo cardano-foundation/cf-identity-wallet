@@ -87,7 +87,7 @@ const VerifySeedPhrase = () => {
       const seedPhraseString = originalSeedPhrase.join(" ");
       await SecureStorage.set(
         KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-        await Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
+        Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
       );
       await SecureStorage.set(
         KeyStoreKeys.IDENTITY_SEEDPHRASE,

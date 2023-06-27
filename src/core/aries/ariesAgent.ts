@@ -8,13 +8,14 @@ import {
   KeyType,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
-import { CapacitorFileSystem } from "./dependencies/capacitorFileSystem";
+import { CapacitorFileSystem } from "./dependencies";
 import {
   IonicStorageModule,
   GeneralStorageModule,
   MiscRecord,
   MiscRecordId,
 } from "./modules";
+import { HttpOutboundTransport } from "./transports";
 import { LabelledKeyDidRegistrar } from "./dids";
 import { IdentityType } from "./ariesAgent.types";
 
@@ -52,6 +53,7 @@ class AriesAgent {
         }),
       },
     });
+    this.agent.registerOutboundTransport(new HttpOutboundTransport());
   }
 
   static get agent() {
