@@ -8,9 +8,6 @@ import {
 import type { StorageService } from "@aries-framework/core";
 import { CryptoAccountRecord } from "./cryptoAccountRecord";
 
-enum CryptoAccountRecordId {
-}
-
 @injectable()
 class CryptoAccountRepository extends Repository<CryptoAccountRecord> {
   constructor(
@@ -22,4 +19,4 @@ class CryptoAccountRepository extends Repository<CryptoAccountRecord> {
   }
 }
 
-export { CryptoAccountRecordId, CryptoAccountRepository };
+export { CryptoAccountRepository };

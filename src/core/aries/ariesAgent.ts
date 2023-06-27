@@ -14,11 +14,11 @@ import {
   GeneralStorageModule,
   MiscRecord,
   MiscRecordId,
-  CryptoAccountRecordId,
   CryptoAccountRecord,
 } from "./modules";
 import { LabelledKeyDidRegistrar } from "./dids";
 import { IdentityType } from "./ariesAgent.types";
+import { Bip32PrivateKey } from "@emurgo/cardano-serialization-lib-browser";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -85,18 +85,40 @@ class AriesAgent {
     }
   }
 
-  async storeCryptoAccountRecord(id: CryptoAccountRecordId, value: string) {
+  async storeCryptoAccountRecord(rootExtendedPrivateKey: string) {
+    const rootKey = Bip32PrivateKey.from_hex(rootExtendedPrivateKey);
+    const rootExtendedPublicKey = rootKey.to_public().to_hex();
+
+    const accountKey = rootKey
+      .derive(harden(1852))
+      .derive(harden(1815))
+      .derive(harden(0));
+
+    const utxoPubKey = accountKey.derive(0).derive(0).to_public().to_hex();
+
+    const stakeKey = accountKey.derive(2).derive(0).to_public().to_hex();
+
     await this.agent.modules.generalStorage.saveCryptoRecord(
-      new CryptoAccountRecord({ id, value })
+      new CryptoAccountRecord({
+        id: rootExtendedPublicKey,
+        address: utxoPubKey,
+        stakeKey,
+      })
     );
   }
 
+  async getAllCryptoAccountRecords(): Promise<CryptoAccountRecord[]> {
+    return await this.agent.modules.generalStorage.getAllCryptoAccountRecords();
+  }
+
   async getCryptoAccountRecordValueById(
-    id: CryptoAccountRecordId
+    rootExtendedPublicKey: string
   ): Promise<string | undefined> {
     try {
       return (
-        await this.agent.modules.generalStorage.getCryptoAccountRecordById(id)
+        await this.agent.modules.generalStorage.getCryptoAccountRecordById(
+          rootExtendedPublicKey
+        )
       ).value;
     } catch (e) {
       if (e instanceof RecordNotFoundError) {
@@ -113,6 +135,10 @@ class AriesAgent {
       options: { keyType: KeyType.Ed25519 },
     });
   }
+}
+
+function harden(num: number): number {
+  return 0x80000000 + num;
 }
 
 export { AriesAgent, agentDependencies };

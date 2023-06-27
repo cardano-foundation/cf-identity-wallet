@@ -2,22 +2,21 @@ import { Bip32PrivateKey } from "@emurgo/cardano-serialization-lib-browser";
 import { entropyToMnemonic, mnemonicToEntropy } from "bip39";
 
 class Addresses {
-  static convertToRootXPrivateKeyHex(seedPhrase: string): string {
-    const bip39entropy = mnemonicToEntropy(seedPhrase);
+  static convertToEntropy(seedPhrase: string): string {
+    return mnemonicToEntropy(seedPhrase);
+  }
+
+  static convertToRootXPrivateKeyHex(entropy: string): string {
     const rootExtendedPrivateKey = Bip32PrivateKey.from_bip39_entropy(
-      Buffer.from(bip39entropy, "hex"),
+      Buffer.from(entropy, "hex"),
       Buffer.from("")
     );
 
     return rootExtendedPrivateKey.to_hex();
   }
 
-  static convertToMnemonic(rootXPrivateKeyHex: string): string {
-    const rootExtendedPrivateKey = Bip32PrivateKey.from_hex(rootXPrivateKeyHex);
-
-    return entropyToMnemonic(
-      Buffer.from(rootExtendedPrivateKey.chaincode()).toString("hex")
-    );
+  static convertToMnemonic(entropy: string): string {
+    return entropyToMnemonic(entropy);
   }
 }
 

@@ -1,7 +1,6 @@
 import { AgentContext, injectable } from "@aries-framework/core";
 import {
   CryptoAccountRecord,
-  CryptoAccountRecordId,
   CryptoAccountRepository,
   MiscRecord,
   MiscRecordId,
@@ -32,13 +31,15 @@ export class GeneralStorageApi {
     return this.miscRepository.getById(this.agentContext, id);
   }
 
-  async saveCryptoAccountRecord(record: CryptoAccountRecord): Promise<void> {
+  async saveCryptoRecord(record: CryptoAccountRecord): Promise<void> {
     await this.cryptoAccountRepository.save(this.agentContext, record);
   }
 
-  async getCryptoAccountRecordById(
-    id: CryptoAccountRecordId
-  ): Promise<CryptoAccountRecord> {
+  async getCryptoAccountRecordById(id: string): Promise<CryptoAccountRecord> {
     return this.cryptoAccountRepository.getById(this.agentContext, id);
+  }
+
+  async getAllCryptoAccountRecords(): Promise<CryptoAccountRecord[]> {
+    return this.cryptoAccountRepository.getAll(this.agentContext);
   }
 }

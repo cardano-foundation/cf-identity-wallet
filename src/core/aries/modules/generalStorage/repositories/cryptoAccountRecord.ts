@@ -1,18 +1,19 @@
 import { BaseRecord } from "@aries-framework/core";
 
 class CryptoAccountRecord extends BaseRecord {
-  value!: string;
+  addresses: string[] = [];
+  stakeKeys: string[] = [];
 
   static readonly type = "CryptoAccountRecord";
   readonly type = CryptoAccountRecord.type;
 
-  constructor(props: { id: string; createdAt?: Date; value: string }) {
+  constructor(props: { id: string; address: string; stakeKey: string }) {
     super();
 
     if (props) {
       this.id = props.id;
-      this.value = props.value;
-      this.createdAt = props.createdAt ?? new Date();
+      this.addresses.push(props.address);
+      this.stakeKeys.push(props.stakeKey);
     }
   }
 
