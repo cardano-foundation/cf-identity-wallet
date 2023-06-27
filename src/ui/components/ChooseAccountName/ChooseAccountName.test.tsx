@@ -1,8 +1,5 @@
 import { act, render, waitFor } from "@testing-library/react";
-import {
-  ionFireEvent as fireEvent,
-  waitForIonicReact,
-} from "@ionic/react-test-utils";
+import { ionFireEvent as fireEvent } from "@ionic/react-test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { ChooseAccountName } from "./ChooseAccountName";
