@@ -14,6 +14,7 @@ import {
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { AddCryptoAccountsProps } from "./AddCryptoAccount.types";
+import "./AddCryptoAccount.scss";
 
 const AddCryptoAccount = ({
   addAccountIsOpen,

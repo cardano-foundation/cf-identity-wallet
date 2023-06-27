@@ -13,6 +13,7 @@ import {
 } from "../../../store/reducers/cryptoAccountsCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ChooseAccountNameProps } from "./ChooseAccountName.types";
+import "./ChooseAccountName.scss";
 
 const ChooseAccountName = ({
   chooseAccountNameIsOpen,
@@ -43,7 +44,7 @@ const ChooseAccountName = ({
       name:
         value === "skip"
           ? i18n.t("crypto.chooseaccountnamemodal.placeholder") +
-            " " +
+            " #" +
             crypto.randomBytes(3).toString("hex")
           : value,
       currency: "ADA", // @TODO - sdisalvo: remove whenever core is ready

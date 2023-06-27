@@ -10,6 +10,7 @@ import { addOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { MyWalletsProps } from "./MyWallets.types";
+import "./MyWallets.scss";
 
 const MyWallets = ({
   myWalletsIsOpen,
@@ -41,33 +42,26 @@ const MyWallets = ({
               </IonCol>
             </IonRow>
           </IonGrid>
-          <IonGrid>
-            <IonRow>
-              <IonCol
-                size="12"
-                className="my-wallets-footer"
-              >
-                <IonButton
-                  shape="round"
-                  expand="block"
-                  className="ion-primary-button"
-                  onClick={() => {
-                    setMyWalletsIsOpen(false);
-                    setAddAccountIsOpen(true);
-                  }}
-                >
-                  <IonIcon
-                    slot="icon-only"
-                    size="small"
-                    icon={addOutline}
-                    color="primary"
-                  />
-                  {i18n.t("crypto.mywalletsmodal.create")}
-                </IonButton>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
         </PageLayout>
+        <div className="my-wallets-footer">
+          <IonButton
+            shape="round"
+            expand="block"
+            className="ion-primary-button"
+            onClick={() => {
+              setMyWalletsIsOpen(false);
+              setAddAccountIsOpen(true);
+            }}
+          >
+            <IonIcon
+              slot="icon-only"
+              size="small"
+              icon={addOutline}
+              color="primary"
+            />
+            {i18n.t("crypto.mywalletsmodal.create")}
+          </IonButton>
+        </div>
       </div>
     </IonModal>
   );
