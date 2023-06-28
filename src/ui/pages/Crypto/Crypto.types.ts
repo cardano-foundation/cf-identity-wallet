@@ -1,7 +1,7 @@
 interface CryptoAccountProps {
   name: string;
-  currency: string;
-  balance: number;
+  adaBalance: number;
+  usdBalance: number;
   usesIdentitySeedPhrase?: boolean;
 }
 

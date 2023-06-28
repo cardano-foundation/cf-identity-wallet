@@ -20,10 +20,10 @@ describe("cryptoAccountsCacheSlice", () => {
   it("should handle setCryptoAccountsCache", () => {
     const cryptoAccounts: CryptoAccountProps[] = [
       {
-        name: "Wallet 1",
-        currency: "ADA",
-        balance: 2785.82,
-        usesIdentitySeedPhrase: false,
+        name: "Test wallet 1",
+        adaBalance: 273.85,
+        usdBalance: 75.2,
+        usesIdentitySeedPhrase: true,
       },
     ];
     const newState = cryptoAccountsCacheSlice.reducer(
@@ -40,16 +40,10 @@ describe("getCryptoAccountsCache", () => {
       cryptoAccountsCache: {
         cryptoAccounts: [
           {
-            name: "Wallet 1",
-            currency: "ADA",
-            balance: 2785.82,
-            usesIdentitySeedPhrase: false,
-          },
-          {
-            name: "Wallet 2",
-            currency: "ADA",
-            balance: 892.36,
-            usesIdentitySeedPhrase: false,
+            name: "Test wallet 1",
+            adaBalance: 273.85,
+            usdBalance: 75.2,
+            usesIdentitySeedPhrase: true,
           },
         ],
       },

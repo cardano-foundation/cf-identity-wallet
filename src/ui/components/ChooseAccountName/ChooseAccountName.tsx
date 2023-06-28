@@ -47,8 +47,8 @@ const ChooseAccountName = ({
             " #" +
             crypto.randomBytes(3).toString("hex")
           : value,
-      currency: "ADA", // @TODO - sdisalvo: remove whenever core is ready
-      balance: 2785.82, // @TODO - sdisalvo: remove whenever core is ready
+      adaBalance: 273.85, // @TODO - sdisalvo: remove whenever we know where to pull this info from
+      usdBalance: 75.2, // @TODO - sdisalvo: remove whenever we know where to pull this info from
       usesIdentitySeedPhrase: true,
     };
     dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
