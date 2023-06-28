@@ -3,21 +3,22 @@ import {
   IonCol,
   IonGrid,
   IonIcon,
-  IonItem,
   IonLabel,
   IonList,
   IonModal,
   IonRow,
 } from "@ionic/react";
-import { addOutline } from "ionicons/icons";
+import { addOutline, checkmark } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { MyWalletsProps } from "./MyWallets.types";
 import "./MyWallets.scss";
 import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
-import { useAppSelector } from "../../../store/hooks";
-import { getCryptoAccountsCache } from "../../../store/reducers/cryptoAccountsCache";
-import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getCryptoAccountsCache,
+  setCryptoAccountsCache,
+} from "../../../store/reducers/cryptoAccountsCache";
 import { formatCurrencyUSD } from "../../../utils";
 
 const MyWallets = ({
@@ -25,9 +26,61 @@ const MyWallets = ({
   setMyWalletsIsOpen,
   setAddAccountIsOpen,
 }: MyWalletsProps) => {
+  const dispatch = useAppDispatch();
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
+
+  const handleSelect = (address: string) => {
+    // @TODO - sdisalvo: Update Database.
+    const updatedAccountsData: CryptoAccountProps[] = [];
+    cryptoAccountsData.forEach((account) => {
+      const obj = { ...account };
+      if (account.address === address) {
+        obj.isSelected = true;
+      } else {
+        obj.isSelected = false;
+      }
+      updatedAccountsData.push(obj);
+    });
+    dispatch(setCryptoAccountsCache(updatedAccountsData));
+    setMyWalletsIsOpen(false);
+  };
+
+  const handleRename = (address: string, newWalletName: string) => {
+    // @TODO - sdisalvo: Update Database.
+    const updatedAccountsData: CryptoAccountProps[] = [];
+    cryptoAccountsData.forEach((account) => {
+      const obj = { ...account };
+      if (account.address === address) {
+        obj.name = newWalletName;
+      }
+      updatedAccountsData.push(obj);
+    });
+    dispatch(setCryptoAccountsCache(updatedAccountsData));
+  };
+
+  const handleDelete = (address: string) => {
+    // @TODO - sdisalvo: Update Database.
+    const updatedAccountsData = cryptoAccountsData.filter(
+      (account) => account.address !== address
+    );
+    dispatch(setCryptoAccountsCache(updatedAccountsData));
+  };
+
+  const Checkmark = () => {
+    return (
+      <div className="checkmark-base">
+        <div className="checkmark-inner">
+          <IonIcon
+            slot="icon-only"
+            icon={checkmark}
+          />
+        </div>
+      </div>
+    );
+  };
+
   return (
     <IonModal
       isOpen={myWalletsIsOpen}
@@ -57,7 +110,10 @@ const MyWallets = ({
                     <IonGrid>
                       {cryptoAccountsData.map(
                         (account: CryptoAccountProps, index: number) => (
-                          <IonRow key={index}>
+                          <IonRow
+                            key={index}
+                            onClick={() => handleSelect(account.address)}
+                          >
                             <IonCol
                               size="1.5"
                               className="account-logo"
@@ -66,9 +122,10 @@ const MyWallets = ({
                                 src={account.logo}
                                 alt="blockchain-logo"
                               />
+                              {account.isSelected && <Checkmark />}
                             </IonCol>
                             <IonCol
-                              size="6"
+                              size="5.5"
                               className="account-info"
                             >
                               <IonLabel className="account-name">
@@ -79,11 +136,11 @@ const MyWallets = ({
                               </IonLabel>
                             </IonCol>
                             <IonCol
-                              size="3.5"
+                              size="4"
                               className="account-balance"
                             >
                               <IonLabel>
-                                {formatCurrencyUSD.format(account.usdBalance)}
+                                {formatCurrencyUSD(account.usdBalance)}
                               </IonLabel>
                             </IonCol>
                           </IonRow>

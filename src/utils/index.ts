@@ -18,17 +18,23 @@ const formatTime = (date: string) => {
   return new Date(date).toLocaleTimeString("en-GB");
 };
 
-const formatCurrencyUSD = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "USD",
-  minimumFractionDigits: 2,
-});
+const formatCurrencyUSD = (amount: number) => {
+  const currencyFormat = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 2,
+  });
+  return currencyFormat.format(amount);
+};
 
-const formatCurrencyADA = new Intl.NumberFormat("en-US", {
-  style: "currency",
-  currency: "ARA",
-  minimumFractionDigits: 6,
-});
+const formatCurrencyADA = (amount: number) => {
+  const currencyFormat = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "ADA",
+    minimumFractionDigits: 6,
+  });
+  return currencyFormat.format(amount).replace(/ADA/, "\u20B3");
+};
 
 export {
   generateUUID,

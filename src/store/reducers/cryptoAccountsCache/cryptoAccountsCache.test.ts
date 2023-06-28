@@ -20,6 +20,7 @@ describe("cryptoAccountsCacheSlice", () => {
   it("should handle setCryptoAccountsCache", () => {
     const cryptoAccounts: CryptoAccountProps[] = [
       {
+        address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
         name: "Test wallet 1",
         blockchain: "Cardano",
         currency: "ADA",
@@ -27,6 +28,7 @@ describe("cryptoAccountsCacheSlice", () => {
         nativeBalance: 273.85,
         usdBalance: 75.2,
         usesIdentitySeedPhrase: true,
+        isSelected: true,
       },
     ];
     const newState = cryptoAccountsCacheSlice.reducer(
@@ -43,6 +45,8 @@ describe("getCryptoAccountsCache", () => {
       cryptoAccountsCache: {
         cryptoAccounts: [
           {
+            address:
+              "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
             name: "Test wallet 1",
             blockchain: "Cardano",
             currency: "ADA",
@@ -50,6 +54,7 @@ describe("getCryptoAccountsCache", () => {
             nativeBalance: 273.85,
             usdBalance: 75.2,
             usesIdentitySeedPhrase: true,
+            isSelected: true,
           },
         ],
       },

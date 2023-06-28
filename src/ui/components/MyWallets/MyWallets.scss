@@ -16,26 +16,47 @@
       }
 
       ion-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
         &.account-logo {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
+          position: relative;
 
           img {
             width: 2.75rem;
             height: 2.75rem;
             border-radius: 2rem;
           }
+          .checkmark-base {
+            width: 1.375rem;
+            height: 1.375rem;
+            border-radius: 1.375rem;
+            background: var(--ion-color-light);
+            position: absolute;
+            top: 0;
+            right: -0.438rem;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            .checkmark-inner {
+              width: 1.125rem;
+              height: 1.125rem;
+              margin: auto;
+              border-radius: 1.125rem;
+              background: var(--color-accent-gradient);
+            }
+          }
         }
 
         &.account-info {
-          display: flex;
-          flex-direction: column;
-
           .account-name {
-            font-size: 1rem;
-            color: var(--ion-color-primary);
             margin-bottom: 0.31rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
           }
 
           .account-blockchain {
@@ -45,8 +66,9 @@
         }
 
         &.account-balance {
-          display: flex;
-          justify-content: flex-end;
+          ion-label {
+            text-align: right;
+          }
         }
       }
     }

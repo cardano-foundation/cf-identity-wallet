@@ -70,7 +70,12 @@ const Crypto = () => {
           additionalButtons={<AdditionalButtons />}
         >
           {cryptoAccountsData?.length ? (
-            <pre>{JSON.stringify(cryptoAccountsData[0], null, 2)}</pre>
+            cryptoAccountsData.map(
+              (account: CryptoAccountProps, index: number) =>
+                account.isSelected && (
+                  <pre key={index}>{JSON.stringify(account, null, 2)}</pre>
+                )
+            )
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("crypto.tab.create")}
