@@ -145,7 +145,10 @@ describe("Crypto Tab", () => {
       cryptoAccountsCache: [
         {
           name: "Test wallet",
-          adaBalance: 273.85,
+          blockchain: "Cardano",
+          currency: "ADA",
+          logo: "logo.png",
+          nativeBalance: 273.85,
           usdBalance: 75.2,
           usesIdentitySeedPhrase: true,
         },

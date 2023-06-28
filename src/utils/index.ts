@@ -18,4 +18,22 @@ const formatTime = (date: string) => {
   return new Date(date).toLocaleTimeString("en-GB");
 };
 
-export { generateUUID, formatDate, formatTime };
+const formatCurrencyUSD = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "USD",
+  minimumFractionDigits: 2,
+});
+
+const formatCurrencyADA = new Intl.NumberFormat("en-US", {
+  style: "currency",
+  currency: "ARA",
+  minimumFractionDigits: 6,
+});
+
+export {
+  generateUUID,
+  formatDate,
+  formatTime,
+  formatCurrencyUSD,
+  formatCurrencyADA,
+};

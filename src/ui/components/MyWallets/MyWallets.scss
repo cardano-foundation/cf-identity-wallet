@@ -3,6 +3,55 @@
   flex-direction: column;
   justify-content: space-between;
 
+  .accounts-list {
+    background: transparent;
+
+    ion-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid var(--color-dark-grey);
+      }
+
+      ion-col {
+        &.account-logo {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          img {
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: 2rem;
+          }
+        }
+
+        &.account-info {
+          display: flex;
+          flex-direction: column;
+
+          .account-name {
+            font-size: 1rem;
+            color: var(--ion-color-primary);
+            margin-bottom: 0.31rem;
+          }
+
+          .account-blockchain {
+            font-size: 0.875rem;
+            color: var(--ion-color-secondary);
+          }
+        }
+
+        &.account-balance {
+          display: flex;
+          justify-content: flex-end;
+        }
+      }
+    }
+  }
+
   .my-wallets-footer {
     margin-bottom: 1.63rem;
   }

@@ -3,6 +3,9 @@ import {
   IonCol,
   IonGrid,
   IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
   IonModal,
   IonRow,
 } from "@ionic/react";
@@ -11,12 +14,20 @@ import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { MyWalletsProps } from "./MyWallets.types";
 import "./MyWallets.scss";
+import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
+import { useAppSelector } from "../../../store/hooks";
+import { getCryptoAccountsCache } from "../../../store/reducers/cryptoAccountsCache";
+import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
+import { formatCurrencyUSD } from "../../../utils";
 
 const MyWallets = ({
   myWalletsIsOpen,
   setMyWalletsIsOpen,
   setAddAccountIsOpen,
 }: MyWalletsProps) => {
+  const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
+    getCryptoAccountsCache
+  );
   return (
     <IonModal
       isOpen={myWalletsIsOpen}
@@ -38,7 +49,51 @@ const MyWallets = ({
                 size="12"
                 className="my-wallets-body"
               >
-                <i>{i18n.t("crypto.mywalletsmodal.empty")}</i>
+                {cryptoAccountsData?.length ? (
+                  <IonList
+                    lines="none"
+                    className="accounts-list"
+                  >
+                    <IonGrid>
+                      {cryptoAccountsData.map(
+                        (account: CryptoAccountProps, index: number) => (
+                          <IonRow key={index}>
+                            <IonCol
+                              size="1.5"
+                              className="account-logo"
+                            >
+                              <img
+                                src={account.logo}
+                                alt="blockchain-logo"
+                              />
+                            </IonCol>
+                            <IonCol
+                              size="6"
+                              className="account-info"
+                            >
+                              <IonLabel className="account-name">
+                                {account.name}
+                              </IonLabel>
+                              <IonLabel className="account-blockchain">
+                                {account.blockchain}
+                              </IonLabel>
+                            </IonCol>
+                            <IonCol
+                              size="3.5"
+                              className="account-balance"
+                            >
+                              <IonLabel>
+                                {formatCurrencyUSD.format(account.usdBalance)}
+                              </IonLabel>
+                            </IonCol>
+                          </IonRow>
+                        )
+                      )}
+                    </IonGrid>
+                  </IonList>
+                ) : (
+                  <i>{i18n.t("crypto.mywalletsmodal.empty")}</i>
+                )}
               </IonCol>
             </IonRow>
           </IonGrid>

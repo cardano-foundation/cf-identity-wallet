@@ -14,6 +14,7 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ChooseAccountNameProps } from "./ChooseAccountName.types";
 import "./ChooseAccountName.scss";
+import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
 
 const ChooseAccountName = ({
   chooseAccountNameIsOpen,
@@ -47,9 +48,13 @@ const ChooseAccountName = ({
             " #" +
             crypto.randomBytes(3).toString("hex")
           : value,
-      adaBalance: 273.85, // @TODO - sdisalvo: remove whenever we know where to pull this info from
-      usdBalance: 75.2, // @TODO - sdisalvo: remove whenever we know where to pull this info from
       usesIdentitySeedPhrase: true,
+      // @TODO - sdisalvo: remove hardcoded values below whenever we know where to pull them from
+      blockchain: "Cardano",
+      currency: "ADA",
+      logo: CardanoLogo,
+      nativeBalance: 273.85,
+      usdBalance: 75.2,
     };
     dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
     setChooseAccountNameIsOpen(false);
