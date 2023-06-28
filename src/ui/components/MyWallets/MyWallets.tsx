@@ -3,6 +3,10 @@ import {
   IonCol,
   IonGrid,
   IonIcon,
+  IonItem,
+  IonItemOption,
+  IonItemOptions,
+  IonItemSliding,
   IonLabel,
   IonList,
   IonModal,
@@ -107,46 +111,61 @@ const MyWallets = ({
                     lines="none"
                     className="accounts-list"
                   >
-                    <IonGrid>
-                      {cryptoAccountsData.map(
-                        (account: CryptoAccountProps, index: number) => (
-                          <IonRow
-                            key={index}
-                            onClick={() => handleSelect(account.address)}
-                          >
-                            <IonCol
-                              size="1.5"
-                              className="account-logo"
+                    {cryptoAccountsData.map(
+                      (account: CryptoAccountProps, index: number) => (
+                        <IonItemSliding
+                          key={index}
+                          onClick={() => handleSelect(account.address)}
+                        >
+                          <IonItem>
+                            <IonGrid>
+                              <IonRow>
+                                <IonCol
+                                  size="1.5"
+                                  className="account-logo"
+                                >
+                                  <img
+                                    src={account.logo}
+                                    alt="blockchain-logo"
+                                  />
+                                  {account.isSelected && <Checkmark />}
+                                </IonCol>
+                                <IonCol
+                                  size="5.5"
+                                  className="account-info"
+                                >
+                                  <IonLabel className="account-name">
+                                    {account.name}
+                                  </IonLabel>
+                                  <IonLabel className="account-blockchain">
+                                    {account.blockchain}
+                                  </IonLabel>
+                                </IonCol>
+                                <IonCol
+                                  size="4"
+                                  className="account-balance"
+                                >
+                                  <IonLabel>
+                                    {formatCurrencyUSD(account.usdBalance)}
+                                  </IonLabel>
+                                </IonCol>
+                              </IonRow>
+                            </IonGrid>
+                          </IonItem>
+                          <IonItemOptions side="end">
+                            <IonItemOption color="dark-grey">
+                              Rename
+                            </IonItemOption>
+                            <IonItemOption
+                              color="danger"
+                              expandable
                             >
-                              <img
-                                src={account.logo}
-                                alt="blockchain-logo"
-                              />
-                              {account.isSelected && <Checkmark />}
-                            </IonCol>
-                            <IonCol
-                              size="5.5"
-                              className="account-info"
-                            >
-                              <IonLabel className="account-name">
-                                {account.name}
-                              </IonLabel>
-                              <IonLabel className="account-blockchain">
-                                {account.blockchain}
-                              </IonLabel>
-                            </IonCol>
-                            <IonCol
-                              size="4"
-                              className="account-balance"
-                            >
-                              <IonLabel>
-                                {formatCurrencyUSD(account.usdBalance)}
-                              </IonLabel>
-                            </IonCol>
-                          </IonRow>
-                        )
-                      )}
-                    </IonGrid>
+                              Delete
+                            </IonItemOption>
+                          </IonItemOptions>
+                        </IonItemSliding>
+                      )
+                    )}
                   </IonList>
                 ) : (
                   <i>{i18n.t("crypto.mywalletsmodal.empty")}</i>

@@ -73,8 +73,8 @@
     width: 88px;
     height: 88px;
     --border-radius: 50px;
-    --background: var(--color-medium-grey);
-    --background-activated: var(--color-dark-grey);
+    --background: var(--ion-color-medium-grey);
+    --background-activated: var(--ion-color-dark-grey);
   }
 
   .backspace-button {
@@ -82,7 +82,7 @@
     height: 88px;
     --border-radius: 50px;
     --background: var(--ion-color-primary);
-    --background-activated: var(--color-dark-grey);
+    --background-activated: var(--ion-color-dark-grey);
     --color: var(--ion-color-light);
   }
 

@@ -32,14 +32,14 @@
   .type-input {
     --background: var(--ion-color-light);
     --inner-border-width: 0;
-    border: 1px solid var(--color-dark-grey);
+    border: 1px solid var(--ion-color-dark-grey);
     color: var(--ion-color-secondary);
     border-radius: 0.5rem;
     width: 100%;
   }
   .selectedType {
     border: 1px solid var(--ion-color-secondary) !important;
-    --background: var(--color-medium-grey);
+    --background: var(--ion-color-medium-grey);
   }
   .col-left {
     margin-right: 0.313rem;
