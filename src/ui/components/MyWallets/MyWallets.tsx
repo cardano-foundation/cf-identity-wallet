@@ -25,6 +25,8 @@ import {
   setCryptoAccountsCache,
 } from "../../../store/reducers/cryptoAccountsCache";
 import { formatCurrencyUSD } from "../../../utils";
+import { VerifyPassword } from "../VerifyPassword";
+import { RenameWallet } from "../RenameWallet";
 
 const MyWallets = ({
   myWalletsIsOpen,
@@ -35,6 +37,12 @@ const MyWallets = ({
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
+  const [currentAccount, setCurrentAccount] = useState({
+    name: "",
+    address: "",
+  });
+  const [editIsOpen, setEditIsOpen] = useState(false);
+  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
 
   const handleSelect = (address: string) => {
     // @TODO - sdisalvo: Update Database.
@@ -52,23 +60,10 @@ const MyWallets = ({
     setMyWalletsIsOpen(false);
   };
 
-  const handleRename = (address: string, newWalletName: string) => {
-    // @TODO - sdisalvo: Update Database.
-    const updatedAccountsData: CryptoAccountProps[] = [];
-    cryptoAccountsData.forEach((account) => {
-      const obj = { ...account };
-      if (account.address === address) {
-        obj.name = newWalletName;
-      }
-      updatedAccountsData.push(obj);
-    });
-    dispatch(setCryptoAccountsCache(updatedAccountsData));
-  };
-
-  const handleDelete = (address: string) => {
+  const handleDelete = () => {
     // @TODO - sdisalvo: Update Database.
     const updatedAccountsData = cryptoAccountsData.filter(
-      (account) => account.address !== address
+      (account) => account.address !== currentAccount.address
     );
     dispatch(setCryptoAccountsCache(updatedAccountsData));
   };
@@ -125,11 +120,40 @@ const MyWallets = ({
             </IonRow>
           </IonGrid>
         </IonItem>
-        <IonItemOptions side="end">
-          <IonItemOption color="dark-grey">Rename</IonItemOption>
+        <IonItemOptions
+          side="end"
+          onIonSwipe={() => {
+            setCurrentAccount({
+              name: account.name,
+              address: account.address,
+            });
+            setVerifyPasswordIsOpen(true);
+          }}
+        >
+          <IonItemOption
+            color="dark-grey"
+            onClick={(event) => {
+              event.stopPropagation();
+              setCurrentAccount({
+                name: account.name,
+                address: account.address,
+              });
+              setEditIsOpen(true);
+            }}
+          >
+            Rename
+          </IonItemOption>
           <IonItemOption
             color="danger"
             expandable
+            onClick={(event) => {
+              event.stopPropagation();
+              setCurrentAccount({
+                name: account.name,
+                address: account.address,
+              });
+              setVerifyPasswordIsOpen(true);
+            }}
           >
             Delete
           </IonItemOption>
@@ -139,68 +163,81 @@ const MyWallets = ({
   };
 
   return (
-    <IonModal
-      isOpen={myWalletsIsOpen}
-      initialBreakpoint={1}
-      breakpoints={[0, 1]}
-      className="page-layout"
-      data-testid="my-wallets"
-      onDidDismiss={() => setMyWalletsIsOpen(false)}
-    >
-      <div className="my-wallets modal">
-        <PageLayout
-          header={true}
-          closeButton={false}
-          title={`${i18n.t("crypto.mywalletsmodal.title")}`}
-        >
-          <IonGrid>
-            <IonRow>
-              <IonCol
-                size="12"
-                className="my-wallets-body"
-              >
-                {cryptoAccountsData?.length ? (
-                  <IonList
-                    lines="none"
-                    className="accounts-list"
-                  >
-                    {cryptoAccountsData.map((account, index) => {
-                      return (
-                        <AccountItem
-                          key={index}
-                          account={account}
-                        />
-                      );
-                    })}
-                  </IonList>
-                ) : (
-                  <i>{i18n.t("crypto.mywalletsmodal.empty")}</i>
-                )}
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </PageLayout>
-        <div className="my-wallets-footer">
-          <IonButton
-            shape="round"
-            expand="block"
-            className="ion-primary-button"
-            onClick={() => {
-              setMyWalletsIsOpen(false);
-              setAddAccountIsOpen(true);
-            }}
+    <>
+      <IonModal
+        isOpen={myWalletsIsOpen}
+        initialBreakpoint={1}
+        breakpoints={[0, 1]}
+        className="page-layout"
+        data-testid="my-wallets"
+        onDidDismiss={() => setMyWalletsIsOpen(false)}
+      >
+        <div className="my-wallets modal">
+          <PageLayout
+            header={true}
+            closeButton={false}
+            title={`${i18n.t("crypto.mywalletsmodal.title")}`}
           >
-            <IonIcon
-              slot="icon-only"
-              size="small"
-              icon={addOutline}
-              color="primary"
-            />
-            {i18n.t("crypto.mywalletsmodal.create")}
-          </IonButton>
+            <IonGrid>
+              <IonRow>
+                <IonCol
+                  size="12"
+                  className="my-wallets-body"
+                >
+                  {cryptoAccountsData?.length ? (
+                    <IonList
+                      lines="none"
+                      className="accounts-list"
+                    >
+                      {cryptoAccountsData.map((account, index) => {
+                        return (
+                          <AccountItem
+                            key={index}
+                            account={account}
+                          />
+                        );
+                      })}
+                    </IonList>
+                  ) : (
+                    <i>{i18n.t("crypto.mywalletsmodal.empty")}</i>
+                  )}
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          </PageLayout>
+          <div className="my-wallets-footer">
+            <IonButton
+              shape="round"
+              expand="block"
+              className="ion-primary-button"
+              onClick={() => {
+                setMyWalletsIsOpen(false);
+                setAddAccountIsOpen(true);
+              }}
+            >
+              <IonIcon
+                slot="icon-only"
+                size="small"
+                icon={addOutline}
+                color="primary"
+              />
+              {i18n.t("crypto.mywalletsmodal.create")}
+            </IonButton>
+          </div>
         </div>
-      </div>
-    </IonModal>
+      </IonModal>
+      <RenameWallet
+        isOpen={editIsOpen}
+        setIsOpen={setEditIsOpen}
+        address={currentAccount.address}
+        name={currentAccount.name}
+      />
+      <VerifyPassword
+        isOpen={verifyPasswordIsOpen}
+        setIsOpen={setVerifyPasswordIsOpen}
+        onVerify={() => handleDelete}
+      />
+    </>
   );
 };
 
