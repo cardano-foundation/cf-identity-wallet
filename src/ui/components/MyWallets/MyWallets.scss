@@ -10,14 +10,29 @@
       &:not(:last-child) {
         border-bottom: 1px solid var(--ion-color-dark-grey);
       }
-    }
-    ion-item {
-      --inner-padding-end: 0;
 
-      &::part(native) {
-        padding: 0;
-        background: var(--ion-color-light);
+      &.item-sliding-active-slide ion-grid {
+        transform: translate3d(-1rem, 0px, 0px) !important;
+        transition: transform 1s linear;
       }
+
+      &:not(.item-sliding-active-slide) ion-grid {
+        transform: translate3d(0px, 0px, 0px) !important;
+        transition: transform 0.35s linear;
+      }
+
+      ion-item {
+        --inner-padding-end: 0;
+
+        &::part(native) {
+          padding: 0;
+          background: var(--ion-color-light);
+        }
+      }
+    }
+
+    ion-item-option {
+      width: 5.625rem;
     }
 
     ion-row {
