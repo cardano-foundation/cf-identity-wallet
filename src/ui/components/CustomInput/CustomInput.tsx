@@ -10,10 +10,11 @@ const CustomInput = ({
   title,
   placeholder,
   hiddenInput,
+  autofocus,
   onChangeInput,
   onChangeFocus,
   optional,
-  value
+  value,
 }: CustomInputProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
 
@@ -36,6 +37,7 @@ const CustomInput = ({
         <IonInput
           data-testid={dataTestId}
           type={hidden ? "password" : "text"}
+          autofocus={autofocus}
           placeholder={placeholder}
           onIonChange={(e) => onChangeInput(`${e.target.value ?? ""}`)}
           onIonFocus={() => handleFocus(true)}

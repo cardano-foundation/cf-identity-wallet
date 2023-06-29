@@ -5,7 +5,7 @@ import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import Alert from "../../components/Alert/Alert";
+import { Alert } from "../../components/Alert";
 import {
   KeyStoreKeys,
   SecureStorage,
@@ -83,7 +83,9 @@ const PasscodeLogin = () => {
 
   const verifyPasscode = async (pass: string) => {
     try {
-      const storedPass = await SecureStorage.get(KeyStoreKeys.APP_PASSCODE) as string;
+      const storedPass = (await SecureStorage.get(
+        KeyStoreKeys.APP_PASSCODE
+      )) as string;
       if (!storedPass) return false;
       return storedPass === pass;
     } catch (e) {
@@ -116,7 +118,7 @@ const PasscodeLogin = () => {
             passcode.length === 6 &&
             passcodeIncorrect && (
               <ErrorMessage
-                message={i18n.t("passcodelogin.error")}
+                message={`${i18n.t("passcodelogin.error")}`}
                 timeout={true}
               />
             )

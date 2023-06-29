@@ -29,7 +29,7 @@ import {
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
 import { PageLayout } from "../../components/layout/PageLayout";
-import Alert from "../../components/Alert/Alert";
+import { Alert } from "../../components/Alert";
 import { getState } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
@@ -223,7 +223,7 @@ const GenerateSeedPhrase = () => {
                   {seedPhrase.map((word, index) => (
                     <IonChip key={index}>
                       <span className="index">{index + 1}.</span>
-                      <span>{word}</span>
+                      <span data-testid={`word-index-${index}`}>{word}</span>
                     </IonChip>
                   ))}
                 </div>

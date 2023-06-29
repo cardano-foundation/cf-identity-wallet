@@ -1,0 +1,9 @@
+.my-wallets {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .my-wallets-footer {
+    margin-bottom: 1.63rem;
+  }
+}

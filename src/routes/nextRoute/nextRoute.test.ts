@@ -24,6 +24,8 @@ describe("NextRoute", () => {
           loggedIn: false,
           time: 0,
           passcodeIsSet: false,
+          seedPhraseIsSet: false,
+          passwordIsSet: false,
         },
       },
       seedPhraseCache: {
@@ -31,13 +33,9 @@ describe("NextRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      cardInfoCache: {
-        cardProps: {
-          cardType: "",
-          cardColor: "",
-        },
-        cardData: [],
-      },
+      didsCache: { dids: [] },
+      credsCache: { creds: [] },
+      cryptoAccountsCache: { cryptoAccounts: [] },
     };
   });
 
@@ -114,6 +112,8 @@ describe("getNextRoute", () => {
         loggedIn: false,
         time: 0,
         passcodeIsSet: true,
+        seedPhraseIsSet: false,
+        passwordIsSet: false,
       },
     },
     seedPhraseCache: {
@@ -121,13 +121,9 @@ describe("getNextRoute", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
-    cardInfoCache: {
-      cardProps: {
-        cardType: "",
-        cardColor: "",
-      },
-      cardData: [],
-    },
+    didsCache: { dids: [] },
+    credsCache: { creds: [] },
+    cryptoAccountsCache: { cryptoAccounts: [] },
   };
   const state = {};
   const payload = {};

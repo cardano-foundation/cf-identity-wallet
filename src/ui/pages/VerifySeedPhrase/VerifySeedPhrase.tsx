@@ -12,7 +12,7 @@ import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import Alert from "../../components/Alert/Alert";
+import { Alert } from "../../components/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
 import {
@@ -87,9 +87,12 @@ const VerifySeedPhrase = () => {
       const seedPhraseString = originalSeedPhrase.join(" ");
       await SecureStorage.set(
         KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-        await Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
+        Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
       );
-      await SecureStorage.set(KeyStoreKeys.IDENTITY_SEEDPHRASE, seedPhraseString);
+      await SecureStorage.set(
+        KeyStoreKeys.IDENTITY_SEEDPHRASE,
+        seedPhraseString
+      );
 
       const { nextPath, updateRedux } = getNextRoute(
         RoutePath.VERIFY_SEED_PHRASE,
@@ -111,6 +114,7 @@ const VerifySeedPhrase = () => {
   return (
     <IonPage className="page-layout verify-seedphrase">
       <PageLayout
+        id="verify-seedphrase"
         header={true}
         backButton={true}
         onBack={handleClearState}
@@ -178,6 +182,7 @@ const VerifySeedPhrase = () => {
                     {seedPhraseRemaining.map((word, index) => (
                       <IonChip
                         key={index}
+                        data-testid={`remaining-word-${word}`}
                         onClick={() => {
                           addSeedPhraseSelected(word);
                         }}

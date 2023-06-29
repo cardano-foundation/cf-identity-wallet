@@ -21,17 +21,21 @@ const ErrorMessage = ({ message, timeout }: ErrorMessageProps) => {
   }, []);
 
   return (
-    <div
-      data-testid="error-messsage"
-      className={`error-message ${visible ? "visible" : ""}`}
-    >
-      <IonLabel
-        className="text-fadein"
-        color="danger"
-      >
-        {message}
-      </IonLabel>
-    </div>
+    <>
+      {message ? (
+        <div
+          data-testid="error-message"
+          className={`error-message ${visible ? "visible" : ""}`}
+        >
+          <IonLabel
+            className="text-fadein"
+            color="danger"
+          >
+            {message}
+          </IonLabel>
+        </div>
+      ) : null}
+    </>
   );
 };
 

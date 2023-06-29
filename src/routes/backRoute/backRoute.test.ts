@@ -34,17 +34,15 @@ describe("getBackRoute", () => {
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
+          seedPhraseIsSet: false,
+          passwordIsSet: false,
           loggedIn: false,
           time: 0,
         },
       },
-      cardInfoCache: {
-        cardProps: {
-          cardType: "",
-          cardColor: "",
-        },
-        cardData: [],
-      },
+      didsCache: { dids: [] },
+      credsCache: { creds: [] },
+      cryptoAccountsCache: { cryptoAccounts: [] },
     };
   });
 
@@ -108,6 +106,8 @@ describe("getBackRoute", () => {
           loggedIn: false,
           time: 0,
           passcodeIsSet: true,
+          seedPhraseIsSet: false,
+          passwordIsSet: false,
         },
       },
       seedPhraseCache: {
@@ -115,13 +115,9 @@ describe("getBackRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      cardInfoCache: {
-        cardProps: {
-          cardType: "",
-          cardColor: "",
-        },
-        cardData: [],
-      },
+      didsCache: { dids: [] },
+      credsCache: { creds: [] },
+      cryptoAccountsCache: { cryptoAccounts: [] },
     };
     const expectedAuthentication = {
       ...storeMock.stateCache.authentication,
@@ -173,17 +169,15 @@ describe("getPreviousRoute", () => {
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
+          seedPhraseIsSet: false,
+          passwordIsSet: false,
           loggedIn: false,
           time: 0,
         },
       },
-      cardInfoCache: {
-        cardProps: {
-          cardType: "",
-          cardColor: "",
-        },
-        cardData: [],
-      },
+      didsCache: { dids: [] },
+      credsCache: { creds: [] },
+      cryptoAccountsCache: { cryptoAccounts: [] },
     };
   });
 

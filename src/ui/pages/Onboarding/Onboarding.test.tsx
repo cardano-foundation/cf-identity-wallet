@@ -17,7 +17,7 @@ describe("Onboarding Page", () => {
         <Onboarding />
       </Provider>
     );
-    const slide1 = getByText(EN_TRANSLATIONS["onboarding.slides"][0].title);
+    const slide1 = getByText(EN_TRANSLATIONS.onboarding.slides[0].title);
     expect(slide1).toBeInTheDocument();
   });
   test("Render 'Get Started' button", () => {
@@ -27,7 +27,7 @@ describe("Onboarding Page", () => {
       </Provider>
     );
     const button = getByText(
-      EN_TRANSLATIONS["onboarding.getstarted.button.label"]
+      EN_TRANSLATIONS.onboarding.getstarted.button.label
     );
     expect(button).toBeInTheDocument();
   });
@@ -38,7 +38,7 @@ describe("Onboarding Page", () => {
       </Provider>
     );
     const alreadyWallet = getByText(
-      EN_TRANSLATIONS["onboarding.alreadywallet.button.label"]
+      EN_TRANSLATIONS.onboarding.alreadywallet.button.label
     );
     expect(alreadyWallet).toBeInTheDocument();
   });
@@ -66,7 +66,7 @@ describe("Onboarding Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS["setpasscode.enterpasscode.title"])
+        queryByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
       ).toBeVisible()
     );
   });
@@ -110,7 +110,7 @@ describe("Onboarding Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS["generateseedphrase.title"])
+        queryByText(EN_TRANSLATIONS.generateseedphrase.title)
       ).toBeVisible()
     );
   });

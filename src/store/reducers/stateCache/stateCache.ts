@@ -13,6 +13,8 @@ const initialState: StateCacheProps = {
     loggedIn: false,
     time: 0,
     passcodeIsSet: false,
+    seedPhraseIsSet: false,
+    passwordIsSet: false,
   },
 };
 

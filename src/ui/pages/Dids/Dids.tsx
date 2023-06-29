@@ -1,15 +1,26 @@
-import { IonButton, IonIcon, IonPage } from "@ionic/react";
+import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
+import { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
-import { didsMock } from "../../__mocks__/didsMock";
 import "./Dids.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getDidsCache } from "../../../store/reducers/didsCache";
+import {
+  getAuthentication,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
+import { RoutePath, TabsRoutePath } from "../../../routes/paths";
+import { CreateIdentity } from "../../components/CreateIdentity";
 
-const didsData = didsMock;
+interface AdditionalButtonsProps {
+  handleCreateDid: () => void;
+}
 
-const AdditionalButtons = () => {
+const AdditionalButtons = ({ handleCreateDid }: AdditionalButtonsProps) => {
   return (
     <>
       <IonButton
@@ -27,6 +38,7 @@ const AdditionalButtons = () => {
         shape="round"
         className="add-button"
         data-testid="add-button"
+        onClick={handleCreateDid}
       >
         <IonIcon
           slot="icon-only"
@@ -38,11 +50,25 @@ const AdditionalButtons = () => {
   );
 };
 
-const handleCreateDid = () => {
-  // TODO: Function to create DID
-};
-
 const Dids = () => {
+  const didsData = useAppSelector(getDidsCache);
+  const authentication = useAppSelector(getAuthentication);
+  const dispatch = useAppDispatch();
+  const history = useHistory();
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const handleCreateDid = () => {
+    if (!authentication.passwordIsSet) {
+      history.replace(RoutePath.CREATE_PASSWORD);
+      dispatch(setCurrentRoute({ path: RoutePath.CREATE_PASSWORD }));
+    } else {
+      setModalIsOpen(true);
+    }
+  };
+
+  useIonViewWillEnter(() =>
+    dispatch(setCurrentRoute({ path: TabsRoutePath.DIDS }))
+  );
+
   return (
     <IonPage
       className="tab-layout dids-tab"
@@ -52,7 +78,9 @@ const Dids = () => {
         header={true}
         title={`${i18n.t("dids.tab.title")}`}
         menuButton={true}
-        additionalButtons={<AdditionalButtons />}
+        additionalButtons={
+          <AdditionalButtons handleCreateDid={handleCreateDid} />
+        }
       >
         {didsData.length ? (
           <CardsStack
@@ -65,6 +93,10 @@ const Dids = () => {
             buttonAction={handleCreateDid}
           />
         )}
+        <CreateIdentity
+          modalIsOpen={modalIsOpen}
+          setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
+        />
       </TabLayout>
     </IonPage>
   );

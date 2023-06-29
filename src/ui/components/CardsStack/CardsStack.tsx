@@ -1,91 +1,172 @@
 import { useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { useHistory } from "react-router-dom";
-import { CardsStackProps } from "./CardsStack.types";
+import {
+  DidProps,
+  CredCardProps,
+  DidCardProps,
+  CredProps,
+} from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
-import { TabsRoutePath } from "../navigation/TabsMenu";
-import { setCardInfoCache } from "../../../store/reducers/cardInfoCache";
-import { RootState } from "../../../store";
+import { formatDate } from "../../../utils";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
+
+const CredCard = ({
+  cardData,
+  isActive,
+  index = 0,
+  onHandleShowCardDetails,
+}: CredCardProps) => {
+  let shadowClass = "";
+  if (index === 0) {
+    shadowClass = "bottom-shadow";
+  } else if (index !== 0) {
+    shadowClass = "top-shadow";
+  }
+  return (
+    <div
+      key={index}
+      data-testid={`cred-card-stack${
+        index !== undefined ? `-index-${index}` : ""
+      }`}
+      className={`cards-stack-card ${isActive ? "active" : ""} ${shadowClass}`}
+      onClick={() => {
+        if (onHandleShowCardDetails) {
+          onHandleShowCardDetails(index);
+        }
+      }}
+      style={{
+        background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
+      }}
+    >
+      <div className="cards-stack-cred-layout">
+        <div className="card-header">
+          <img
+            src={cardData.issuerLogo}
+            className="card-logo"
+            alt="card-logo"
+          />
+          <span>{cardData.credentialType}</span>
+        </div>
+        <div className="card-body">
+          <span> </span>
+        </div>
+        <div className="card-footer">
+          <div className="card-footer-column">
+            <span className="card-footer-column-label">
+              {i18n.t("creds.card.layout.name")}
+            </span>
+            <span>{cardData.nameOnCredential}</span>
+          </div>
+          <div className="card-footer-column">
+            <span className="card-footer-column-label">
+              {i18n.t("creds.card.layout.issued")}
+            </span>
+            <span>{formatDate(cardData.issuanceDate)}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const DidCard = ({
+  cardData,
+  isActive,
+  index = 0,
+  onHandleShowCardDetails,
+}: DidCardProps) => {
+  let shadowClass = "";
+  if (index === 0) {
+    shadowClass = "bottom-shadow";
+  } else if (index !== 0) {
+    shadowClass = "top-shadow";
+  }
+  return (
+    <div
+      key={index}
+      data-testid={`did-card-stack${
+        index !== undefined ? `-index-${index}` : ""
+      }`}
+      className={`cards-stack-card ${isActive ? "active" : ""} ${shadowClass}`}
+      onClick={() => {
+        if (onHandleShowCardDetails) {
+          onHandleShowCardDetails(index);
+        }
+      }}
+      style={{
+        background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
+      }}
+    >
+      <div className="cards-stack-did-layout">
+        <div className="card-header">
+          <span>{cardData.type}</span>
+          <span>{cardData.name}</span>
+        </div>
+        <div className="card-body">
+          <span>{cardData.id}</span>
+        </div>
+        <div className="card-footer">
+          <span className="card-created-label">
+            {i18n.t("dids.card.layout.created")}
+          </span>
+          <span>{formatDate(cardData.date)}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const CardsStack = ({
   cardsType,
   cardsData,
 }: {
   cardsType: string;
-  cardsData: CardsStackProps[];
+  cardsData: DidProps[] | CredProps[];
 }) => {
   const history = useHistory();
-  const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(false);
-  const cardsBackgroundColor = [
-    "linear-gradient(91.86deg, #92FFC0 28.76%, #47FF94 119.14%)",
-    "linear-gradient(91.86deg, #FFBC60 28.76%, #FFA21F 119.14%)",
-    "linear-gradient(91.86deg, #D9EDDF 28.76%, #ACD8B9 119.14%)",
-    "linear-gradient(91.86deg, #47E0FF 28.76%, #00C6EF 119.14%)",
-    "linear-gradient(91.86deg, #B5C2FF 28.76%, #708AFF 119.14%)",
-    "linear-gradient(91.86deg, #FF9780 28.76%, #FF5833 119.14%)",
-  ];
-  const selectedCardColor = useSelector(
-    (state: RootState) => state.cardInfoCache.cardProps.cardColor
-  );
 
-  const renderCards = (cardsData: CardsStackProps[]) => {
-    return cardsData.map((cardData, index) => (
-      <div
-        key={index}
-        data-testid={`card-stack-index-${index}`}
-        className={`cards-stack-card ${isActive ? "active" : ""}`}
-        style={{
-          background:
-            selectedCardColor && cardsData.length === 1
-              ? selectedCardColor
-              : cardsBackgroundColor[index % 6],
-        }}
-        onClick={() => {
-          if (cardsData.length > 1) {
-            handleShowCardDetails(index);
-          }
-        }}
-      >
-        {cardsType === "dids" && (
-          <div className="cards-stack-did-layout">
-            <div className="card-header">
-              <span>{cardData.type}</span>
-              <span>{cardData.name}</span>
-            </div>
-            <div className="card-body">
-              <span>{cardData.id}</span>
-            </div>
-            <div className="card-footer">
-              <span className="card-created-label">
-                {i18n.t("dids.card.layout.created")}
-              </span>
-              <span>{cardData.date}</span>
-            </div>
-          </div>
-        )}
-      </div>
-    ));
+  const renderCards = (cardsData: DidProps[] | CredProps[]) => {
+    return cardsData.map((cardData: DidProps | CredProps, index: number) =>
+      cardsType === "dids" ? (
+        <DidCard
+          key={index}
+          index={index}
+          cardData={cardData as DidProps}
+          isActive={isActive}
+          onHandleShowCardDetails={() => handleShowCardDetails(index)}
+        />
+      ) : (
+        <CredCard
+          key={index}
+          index={index}
+          cardData={cardData as CredProps}
+          isActive={isActive}
+          onHandleShowCardDetails={() => handleShowCardDetails(index)}
+        />
+      )
+    );
   };
 
   const handleShowCardDetails = (index: number) => {
-    dispatch(
-      setCardInfoCache({
-        cardProps: {
-          cardType: cardsType,
-          cardColor: cardsBackgroundColor[index % 6],
-        },
-        cardData: [cardsData[index]],
-      })
-    );
     setIsActive(true);
+    let pathname = "";
+
+    if (cardsType === "dids") {
+      const data = cardsData[index] as DidProps;
+      pathname = `/tabs/dids/${data.id}`;
+    } else {
+      const data = cardsData[index] as CredProps;
+      pathname = `/tabs/creds/${data.id}`;
+    }
+
     setTimeout(() => {
-      history.replace(TabsRoutePath.CARD_DETAILS);
+      history.push({ pathname: pathname });
     }, NAVIGATION_DELAY);
+
     setTimeout(() => {
       setIsActive(false);
     }, CLEAR_STATE_DELAY);
@@ -94,4 +175,4 @@ const CardsStack = ({
   return <div className="cards-stack-container">{renderCards(cardsData)}</div>;
 };
 
-export { CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };
+export { DidCard, CredCard, CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };

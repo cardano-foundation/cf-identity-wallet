@@ -6,12 +6,16 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 describe("Terms and conditions screen", () => {
   test("User can close the modal by clicking on the backdrop", async () => {
     const mockSetIsOpen = jest.fn();
-    const { queryByText } = render(
+    const { queryByText, getByTestId } = render(
       <TermsAndConditions
         isOpen={true}
         setIsOpen={mockSetIsOpen}
       />
     );
+
+    await waitFor(() => {
+      expect(getByTestId("terms-and-conditions")).toBeVisible();
+    });
 
     const backdrop = document.querySelector("ion-backdrop");
     act(() => {
@@ -23,7 +27,7 @@ describe("Terms and conditions screen", () => {
     });
 
     expect(
-      queryByText(EN_TRANSLATIONS["termsandconditions.title"])
+      queryByText(EN_TRANSLATIONS.termsandconditions.title)
     ).not.toBeInTheDocument();
   });
 
@@ -51,7 +55,7 @@ describe("Terms and conditions screen", () => {
     });
 
     expect(
-      queryByText(EN_TRANSLATIONS["termsandconditions.title"])
+      queryByText(EN_TRANSLATIONS.termsandconditions.title)
     ).not.toBeInTheDocument();
   });
 });

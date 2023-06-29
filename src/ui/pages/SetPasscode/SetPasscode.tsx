@@ -38,12 +38,7 @@ const SetPasscode = () => {
                 RoutePath.SET_PASSCODE,
                 data
               );
-              updateReduxState(
-                nextPath.pathname,
-                data,
-                dispatch,
-                updateRedux
-              );
+              updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
               history.push(nextPath.pathname);
             }
           );
@@ -98,7 +93,7 @@ const SetPasscode = () => {
             passcode.length === 6 &&
             originalPassCode !== passcode && (
               <ErrorMessage
-                message={i18n.t("setpasscode.enterpasscode.error")}
+                message={`${i18n.t("setpasscode.enterpasscode.error")}`}
                 timeout={true}
               />
             )

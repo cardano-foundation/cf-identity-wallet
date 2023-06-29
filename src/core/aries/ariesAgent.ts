@@ -9,13 +9,14 @@ import {
   TagValue,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
-import { CapacitorFileSystem } from "./dependencies/capacitorFileSystem";
+import { CapacitorFileSystem } from "./dependencies";
 import {
   IonicStorageModule,
   GeneralStorageModule,
   MiscRecord,
   MiscRecordId,
 } from "./modules";
+import { HttpOutboundTransport } from "./transports";
 import { LabelledKeyDidRegistrar } from "./dids";
 import { IdentityType } from "./ariesAgent.types";
 
@@ -53,6 +54,7 @@ class AriesAgent {
         }),
       },
     });
+    this.agent.registerOutboundTransport(new HttpOutboundTransport());
   }
 
   static get agent() {
@@ -83,7 +85,7 @@ class AriesAgent {
       throw e;
     }
   }
-    
+
   async createIdentity(type: IdentityType, displayName: string) {
     await this.agent.dids.create({
       method: type,
