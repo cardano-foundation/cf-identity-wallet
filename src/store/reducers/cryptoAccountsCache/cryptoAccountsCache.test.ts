@@ -28,7 +28,6 @@ describe("cryptoAccountsCacheSlice", () => {
         nativeBalance: 273.85,
         usdBalance: 75.2,
         usesIdentitySeedPhrase: true,
-        isSelected: true,
       },
     ];
     const newState = cryptoAccountsCacheSlice.reducer(
@@ -54,7 +53,6 @@ describe("getCryptoAccountsCache", () => {
             nativeBalance: 273.85,
             usdBalance: 75.2,
             usesIdentitySeedPhrase: true,
-            isSelected: true,
           },
         ],
       },

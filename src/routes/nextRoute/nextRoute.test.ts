@@ -27,6 +27,7 @@ describe("NextRoute", () => {
           seedPhraseIsSet: false,
           passwordIsSet: false,
         },
+        defaultCryptoAccount: "",
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -115,6 +116,7 @@ describe("getNextRoute", () => {
         seedPhraseIsSet: false,
         passwordIsSet: false,
       },
+      defaultCryptoAccount: "",
     },
     seedPhraseCache: {
       seedPhrase160: "",

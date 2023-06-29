@@ -7,7 +7,6 @@ interface CryptoAccountProps {
   nativeBalance: number;
   usdBalance: number;
   usesIdentitySeedPhrase: boolean;
-  isSelected: boolean;
 }
 
 export type { CryptoAccountProps };

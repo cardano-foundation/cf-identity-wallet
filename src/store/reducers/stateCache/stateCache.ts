@@ -16,6 +16,7 @@ const initialState: StateCacheProps = {
     seedPhraseIsSet: false,
     passwordIsSet: false,
   },
+  defaultCryptoAccount: "",
 };
 
 const stateCacheSlice = createSlice({

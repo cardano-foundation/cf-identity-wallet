@@ -14,6 +14,7 @@ import { VerifyPassword } from "../../components/VerifyPassword";
 import { MyWallets } from "../../components/MyWallets";
 import { AddCryptoAccount } from "../../components/AddCryptoAccount";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
+import { PreferencesStorage } from "../../../core/storage/preferences/preferencesStorage";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
@@ -25,11 +26,38 @@ const Crypto = () => {
   const [idwProfileInUse, setIdwProfileInUse] = useState(false);
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
+  const [defaultCryptoAccount, setDefaultCryptoAccount] = useState("");
+  const [currentAccount, setCurrentAccount] = useState<CryptoAccountProps>({
+    address: "",
+    name: "",
+    blockchain: "",
+    currency: "",
+    logo: "",
+    nativeBalance: 0,
+    usdBalance: 0,
+    usesIdentitySeedPhrase: false,
+  });
 
   useEffect(() => {
     cryptoAccountsData?.forEach((account) => {
       if (account.usesIdentitySeedPhrase) {
         setIdwProfileInUse(true);
+      } else {
+        setIdwProfileInUse(false);
+      }
+    });
+
+    if (cryptoAccountsData.length === 1 && !defaultCryptoAccount) {
+      PreferencesStorage.set("defaultCryptoAccount", {
+        data: cryptoAccountsData[0].address,
+      });
+    } else if (cryptoAccountsData.length === 0 && defaultCryptoAccount) {
+      PreferencesStorage.remove("defaultCryptoAccount");
+    }
+
+    cryptoAccountsData.forEach((account) => {
+      if (account.address === `${defaultCryptoAccount}`) {
+        setCurrentAccount(account);
       }
     });
   }, [cryptoAccountsData]);
@@ -70,12 +98,7 @@ const Crypto = () => {
           additionalButtons={<AdditionalButtons />}
         >
           {cryptoAccountsData?.length ? (
-            cryptoAccountsData.map(
-              (account: CryptoAccountProps, index: number) =>
-                account.isSelected && (
-                  <pre key={index}>{JSON.stringify(account, null, 2)}</pre>
-                )
-            )
+            <pre>{JSON.stringify(currentAccount, null, 2)}</pre>
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("crypto.tab.create")}
@@ -88,6 +111,7 @@ const Crypto = () => {
         myWalletsIsOpen={myWalletsIsOpen}
         setMyWalletsIsOpen={setMyWalletsIsOpen}
         setAddAccountIsOpen={setAddAccountIsOpen}
+        currentAccount={currentAccount}
       />
       <AddCryptoAccount
         addAccountIsOpen={addAccountIsOpen}

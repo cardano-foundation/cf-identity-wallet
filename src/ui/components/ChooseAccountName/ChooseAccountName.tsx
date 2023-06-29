@@ -49,7 +49,6 @@ const ChooseAccountName = ({
             crypto.randomBytes(3).toString("hex")
           : value,
       usesIdentitySeedPhrase: true,
-      isSelected: !cryptoAccountsData.length,
       // @TODO - sdisalvo: remove hardcoded values below whenever we know where to pull them from
       address: "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg7j8cu8",
       blockchain: "Cardano",

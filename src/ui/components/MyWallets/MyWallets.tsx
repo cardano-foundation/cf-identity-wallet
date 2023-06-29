@@ -27,17 +27,19 @@ import {
 import { formatCurrencyUSD } from "../../../utils";
 import { VerifyPassword } from "../VerifyPassword";
 import { RenameWallet } from "../RenameWallet";
+import { PreferencesStorage } from "../../../core/storage/preferences/preferencesStorage";
 
 const MyWallets = ({
   myWalletsIsOpen,
   setMyWalletsIsOpen,
   setAddAccountIsOpen,
+  currentAccount,
 }: MyWalletsProps) => {
   const dispatch = useAppDispatch();
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
-  const [currentAccount, setCurrentAccount] = useState({
+  const [selectedAccount, setSelectedAccount] = useState({
     name: "",
     address: "",
   });
@@ -45,39 +47,19 @@ const MyWallets = ({
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
 
   const handleSelect = (address: string) => {
-    // @TODO - sdisalvo: Update Database.
-    const updatedAccountsData: CryptoAccountProps[] = [];
-    cryptoAccountsData.forEach((account) => {
-      const obj = { ...account };
-      if (account.address === address) {
-        obj.isSelected = true;
-      } else {
-        obj.isSelected = false;
-      }
-      updatedAccountsData.push(obj);
+    PreferencesStorage.set("defaultCryptoAccount", {
+      data: address,
     });
-    dispatch(setCryptoAccountsCache(updatedAccountsData));
+
     setMyWalletsIsOpen(false);
   };
 
   const handleDelete = () => {
     // @TODO - sdisalvo: Update Database.
-    const updatedAccountsData: CryptoAccountProps[] = [];
-    const filteredAccountsData = cryptoAccountsData.filter(
-      (account) => account.address !== currentAccount.address
+    const updatedAccountsData = cryptoAccountsData.filter(
+      (account) => account.address !== selectedAccount.address
     );
-    if (filteredAccountsData.length) {
-      filteredAccountsData.forEach((account) => {
-        const obj = { ...account };
-        if (account.address === filteredAccountsData[0].address) {
-          obj.isSelected = true;
-        }
-        updatedAccountsData.push(obj);
-      });
-      dispatch(setCryptoAccountsCache(updatedAccountsData));
-    } else {
-      dispatch(setCryptoAccountsCache(filteredAccountsData));
-    }
+    dispatch(setCryptoAccountsCache(updatedAccountsData));
   };
 
   const Checkmark = () => {
@@ -112,7 +94,7 @@ const MyWallets = ({
                   src={account.logo}
                   alt="blockchain-logo"
                 />
-                {account.isSelected && <Checkmark />}
+                {account.address === currentAccount.address && <Checkmark />}
               </IonCol>
               <IonCol
                 size="5.5"
@@ -135,7 +117,7 @@ const MyWallets = ({
         <IonItemOptions
           side="end"
           onIonSwipe={() => {
-            setCurrentAccount({
+            setSelectedAccount({
               name: account.name,
               address: account.address,
             });
@@ -146,7 +128,7 @@ const MyWallets = ({
             color="dark-grey"
             onClick={(event) => {
               event.stopPropagation();
-              setCurrentAccount({
+              setSelectedAccount({
                 name: account.name,
                 address: account.address,
               });
@@ -160,7 +142,7 @@ const MyWallets = ({
             expandable
             onClick={(event) => {
               event.stopPropagation();
-              setCurrentAccount({
+              setSelectedAccount({
                 name: account.name,
                 address: account.address,
               });
@@ -241,8 +223,8 @@ const MyWallets = ({
       <RenameWallet
         isOpen={editIsOpen}
         setIsOpen={setEditIsOpen}
-        address={currentAccount.address}
-        name={currentAccount.name}
+        address={selectedAccount.address}
+        name={selectedAccount.name}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}

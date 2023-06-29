@@ -14,6 +14,7 @@ import { setCredsCache } from "../../../store/reducers/credsCache";
 import { filteredCredsMock } from "../../__mocks__/filteredCredsMock";
 import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
 import { setCryptoAccountsCache } from "../../../store/reducers/cryptoAccountsCache";
+import { PreferencesStorage } from "../../../core/storage/preferences/preferencesStorage";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -36,6 +37,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
+    const defaultCryptoAccount = await PreferencesStorage.get(
+      "defaultCryptoAccount"
+    );
 
     dispatch(
       setAuthentication({
@@ -49,6 +53,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setDidsCache(filteredDidsMock));
     dispatch(setCredsCache(filteredCredsMock));
     dispatch(setCryptoAccountsCache(cryptoAccountsMock));
+    // dispatch(setDefaultCryptoAccountCache(defaultCryptoAccount));
   };
 
   return <>{props.children}</>;
