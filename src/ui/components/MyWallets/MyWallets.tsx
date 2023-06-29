@@ -62,10 +62,22 @@ const MyWallets = ({
 
   const handleDelete = () => {
     // @TODO - sdisalvo: Update Database.
-    const updatedAccountsData = cryptoAccountsData.filter(
+    const updatedAccountsData: CryptoAccountProps[] = [];
+    const filteredAccountsData = cryptoAccountsData.filter(
       (account) => account.address !== currentAccount.address
     );
-    dispatch(setCryptoAccountsCache(updatedAccountsData));
+    if (filteredAccountsData.length) {
+      filteredAccountsData.forEach((account) => {
+        const obj = { ...account };
+        if (account.address === filteredAccountsData[0].address) {
+          obj.isSelected = true;
+        }
+        updatedAccountsData.push(obj);
+      });
+      dispatch(setCryptoAccountsCache(updatedAccountsData));
+    } else {
+      dispatch(setCryptoAccountsCache(filteredAccountsData));
+    }
   };
 
   const Checkmark = () => {
@@ -235,7 +247,7 @@ const MyWallets = ({
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={() => handleDelete}
+        onVerify={handleDelete}
       />
     </>
   );
