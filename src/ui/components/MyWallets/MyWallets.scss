@@ -21,6 +21,10 @@
         transition: transform 0.35s linear;
       }
 
+      &.item-sliding-active-swipe-end .delete-button {
+        width: 120vw;
+      }
+
       ion-item {
         --inner-padding-end: 0;
 

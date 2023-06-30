@@ -169,6 +169,7 @@ const MyWallets = ({
           <IonItemOption
             color="danger"
             expandable
+            className="delete-button"
             onClick={(event) => {
               event.stopPropagation();
               setSelectedAccount({
