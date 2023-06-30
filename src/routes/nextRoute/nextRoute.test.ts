@@ -36,7 +36,7 @@ describe("NextRoute", () => {
       },
       didsCache: { dids: [] },
       credsCache: { creds: [] },
-      cryptoAccountsCache: { cryptoAccounts: [] },
+      cryptoAccountsCache: { cryptoAccounts: [], defaultCryptoAccount: "" },
     };
   });
 
@@ -125,7 +125,7 @@ describe("getNextRoute", () => {
     },
     didsCache: { dids: [] },
     credsCache: { creds: [] },
-    cryptoAccountsCache: { cryptoAccounts: [] },
+    cryptoAccountsCache: { cryptoAccounts: [], defaultCryptoAccount: "" },
   };
   const state = {};
   const payload = {};

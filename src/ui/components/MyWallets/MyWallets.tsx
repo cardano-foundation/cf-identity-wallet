@@ -23,17 +23,24 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCryptoAccountsCache,
   setCryptoAccountsCache,
+  setDefaultCryptoAccountCache,
 } from "../../../store/reducers/cryptoAccountsCache";
 import { formatCurrencyUSD } from "../../../utils";
 import { VerifyPassword } from "../VerifyPassword";
 import { RenameWallet } from "../RenameWallet";
-import { PreferencesStorage } from "../../../core/storage/preferences/preferencesStorage";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences/preferencesStorage";
 
 const MyWallets = ({
   myWalletsIsOpen,
   setMyWalletsIsOpen,
   setAddAccountIsOpen,
-  currentAccount,
+  defaultAccountData,
+  setDefaultAccountData,
+  defaultAccountAddress,
+  setDefaultAccountAddress,
 }: MyWalletsProps) => {
   const dispatch = useAppDispatch();
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
@@ -46,20 +53,40 @@ const MyWallets = ({
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
 
-  const handleSelect = (address: string) => {
-    PreferencesStorage.set("defaultCryptoAccount", {
+  const handleSetDefaultAccount = (address: string) => {
+    dispatch(setDefaultCryptoAccountCache(address));
+    PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
       data: address,
     });
-
+    cryptoAccountsData.forEach((account) => {
+      if (account.address === address) {
+        setDefaultAccountData(account);
+        setDefaultAccountAddress(address);
+      }
+    });
     setMyWalletsIsOpen(false);
   };
 
   const handleDelete = () => {
-    // @TODO - sdisalvo: Update Database.
     const updatedAccountsData = cryptoAccountsData.filter(
       (account) => account.address !== selectedAccount.address
     );
+
+    if (selectedAccount.address === defaultAccountAddress) {
+      if (updatedAccountsData.length > 0) {
+        setDefaultAccountAddress(updatedAccountsData[0].address);
+        dispatch(setDefaultCryptoAccountCache(updatedAccountsData[0].address));
+        PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
+          data: updatedAccountsData[0].address,
+        });
+      } else {
+        setDefaultAccountAddress("");
+        dispatch(setDefaultCryptoAccountCache(""));
+        PreferencesStorage.remove(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT);
+      }
+    }
     dispatch(setCryptoAccountsCache(updatedAccountsData));
+    // @TODO - sdisalvo: Remember to update Database.
   };
 
   const Checkmark = () => {
@@ -82,7 +109,7 @@ const MyWallets = ({
 
   const AccountItem = ({ account }: AccountItemProps) => {
     return (
-      <IonItemSliding onClick={() => handleSelect(account.address)}>
+      <IonItemSliding onClick={() => handleSetDefaultAccount(account.address)}>
         <IonItem>
           <IonGrid>
             <IonRow>
@@ -94,7 +121,9 @@ const MyWallets = ({
                   src={account.logo}
                   alt="blockchain-logo"
                 />
-                {account.address === currentAccount.address && <Checkmark />}
+                {account.address === defaultAccountData.address && (
+                  <Checkmark />
+                )}
               </IonCol>
               <IonCol
                 size="5.5"

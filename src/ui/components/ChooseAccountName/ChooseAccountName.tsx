@@ -10,15 +10,21 @@ import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 import {
   getCryptoAccountsCache,
   setCryptoAccountsCache,
+  setDefaultCryptoAccountCache,
 } from "../../../store/reducers/cryptoAccountsCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ChooseAccountNameProps } from "./ChooseAccountName.types";
 import "./ChooseAccountName.scss";
 import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences/preferencesStorage";
 
 const ChooseAccountName = ({
   chooseAccountNameIsOpen,
   setChooseAccountNameIsOpen,
+  setDefaultAccountData,
 }: ChooseAccountNameProps) => {
   const dispatch = useAppDispatch();
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
@@ -49,15 +55,25 @@ const ChooseAccountName = ({
             crypto.randomBytes(3).toString("hex")
           : value,
       usesIdentitySeedPhrase: true,
-      // @TODO - sdisalvo: remove hardcoded values below whenever we know where to pull them from
+      // @TODO - sdisalvo: remember to remove hardcoded values below this point
       address: "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg7j8cu8",
       blockchain: "Cardano",
       currency: "ADA",
       logo: CardanoLogo,
       nativeBalance: 273.85,
       usdBalance: 75.2,
+      // End of hardcoded values
     };
-    dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
+
+    if (cryptoAccountsData.length === 0) {
+      dispatch(setDefaultCryptoAccountCache(newWallet.address));
+      PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
+        data: newWallet.address,
+      });
+
+      dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
+      setDefaultAccountData(newWallet);
+    }
     setChooseAccountNameIsOpen(false);
   };
 
