@@ -44,7 +44,7 @@ const Crypto = () => {
     });
 
   useEffect(() => {
-    cryptoAccountsData.forEach((account) => {
+    cryptoAccountsData?.forEach((account) => {
       if (account.address === defaultAccountAddress) {
         setDefaultAccountData(account);
       }
@@ -54,7 +54,7 @@ const Crypto = () => {
         setIdwProfileInUse(false);
       }
     });
-    if (!cryptoAccountsData.length) {
+    if (!cryptoAccountsData?.length) {
       setIdwProfileInUse(false);
     }
   }, [cryptoAccountsData, defaultAccountAddress]);
@@ -94,7 +94,7 @@ const Crypto = () => {
           menuButton={true}
           additionalButtons={<AdditionalButtons />}
         >
-          {cryptoAccountsData.length && defaultAccountData ? (
+          {cryptoAccountsData?.length && defaultAccountData ? (
             <pre>{JSON.stringify(defaultAccountData, null, 2)}</pre>
           ) : (
             <CardsPlaceholder

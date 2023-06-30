@@ -1,7 +1,7 @@
-import { act, fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
-import { CardsStack, NAVIGATION_DELAY } from "./CardsStack";
+import { CLEAR_STATE_DELAY, CardsStack, NAVIGATION_DELAY } from "./CardsStack";
 import { didsMock } from "../../__mocks__/didsMock";
 import { store } from "../../../store";
 import { DidCardDetails } from "../../pages/DidCardDetails";
@@ -53,9 +53,9 @@ describe("Cards Stack Component", () => {
     expect(secondCard).toHaveClass("top-shadow");
   });
 
-  test("It navigates to Did Card Details", () => {
+  test("It navigates to Did Card Details and back", async () => {
     jest.useFakeTimers();
-    const { getByText, getByTestId } = render(
+    const { findByTestId } = render(
       <MemoryRouter>
         <Provider store={store}>
           <CardsStack
@@ -70,20 +70,28 @@ describe("Cards Stack Component", () => {
       </MemoryRouter>
     );
 
-    const firstCard = getByTestId("did-card-stack-index-0");
-    expect(firstCard).not.toHaveClass("active");
+    const firstCard = await findByTestId("did-card-stack-index-0");
+    await waitFor(() => expect(firstCard).not.toHaveClass("active"));
 
     act(() => {
       fireEvent.click(firstCard);
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 
-    expect(firstCard).toHaveClass("active");
+    await waitFor(() => expect(firstCard).toHaveClass("active"));
+
+    const doneButton = await findByTestId("tab-title-done");
+    act(() => {
+      fireEvent.click(doneButton);
+      jest.advanceTimersByTime(CLEAR_STATE_DELAY);
+    });
+
+    await waitFor(() => expect(firstCard).not.toHaveClass("active"));
   });
 
-  test("It navigates to Cred Card Details", () => {
+  test("It navigates to Cred Card Details and back", async () => {
     jest.useFakeTimers();
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <MemoryRouter>
         <Provider store={store}>
           <CardsStack
@@ -98,14 +106,22 @@ describe("Cards Stack Component", () => {
       </MemoryRouter>
     );
 
-    const firstCard = getByTestId("cred-card-stack-index-0");
-    expect(firstCard).not.toHaveClass("active");
+    const firstCard = await findByTestId("cred-card-stack-index-0");
+    await waitFor(() => expect(firstCard).not.toHaveClass("active"));
 
     act(() => {
       fireEvent.click(firstCard);
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 
-    expect(firstCard).toHaveClass("active");
+    await waitFor(() => expect(firstCard).toHaveClass("active"));
+
+    const doneButton = await findByTestId("tab-title-done");
+    act(() => {
+      fireEvent.click(doneButton);
+      jest.advanceTimersByTime(CLEAR_STATE_DELAY);
+    });
+
+    await waitFor(() => expect(firstCard).not.toHaveClass("active"));
   });
 });
