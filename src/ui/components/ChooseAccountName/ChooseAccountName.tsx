@@ -70,10 +70,9 @@ const ChooseAccountName = ({
       PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
         data: newWallet.address,
       });
-
-      dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
       setDefaultAccountData(newWallet);
     }
+    dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
     setChooseAccountNameIsOpen(false);
   };
 
