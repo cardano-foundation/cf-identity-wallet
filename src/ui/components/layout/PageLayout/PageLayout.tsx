@@ -19,7 +19,7 @@ import { updateReduxState } from "../../../../store/utils";
 import { getBackRoute } from "../../../../routes/backRoute";
 
 const PageLayout = ({
-    id,
+  id,
   header,
   backButton,
   onBack,
