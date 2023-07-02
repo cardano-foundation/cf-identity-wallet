@@ -6,7 +6,9 @@ import {
   DidsModule,
   KeyDidResolver,
   KeyType,
-  TagValue,
+  DidDocument,
+  DidRecord,
+  VerificationMethod,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { CapacitorFileSystem } from "./dependencies";
@@ -19,6 +21,7 @@ import {
 import { HttpOutboundTransport } from "./transports";
 import { LabelledKeyDidRegistrar } from "./dids";
 import { IdentityType } from "./ariesAgent.types";
+import type { IdentityDetails, IdentityShortDetails } from "./ariesAgent.types";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -38,6 +41,11 @@ const agentDependencies: AgentDependencies = {
 };
 
 class AriesAgent {
+  static readonly DID_MISSING_METHOD = "DID method missing for stored DID";
+  static readonly DID_MISSING_DISPLAY_NAME = "DID display name missing for stored DID";
+  static readonly DID_MISSING_DID_DOC = "DID document missing or unresolvable for stored DID";
+  static readonly UNEXPECTED_DID_DOC_FORMAT = "DID document format is missing expected values for stored DID";
+
   private static instance: AriesAgent;
   private readonly agent: Agent;
 
@@ -94,34 +102,70 @@ class AriesAgent {
     });
   }
 
-  async getIdentities(method?: string, did?: string) {
+  async getIdentities(method?: string, did?: string): Promise<IdentityShortDetails[]> {
+    const identities: IdentityShortDetails[] = [];
     const dids = await this.agent.dids.getCreatedDids({method, did});
+    for (const did of dids) {
+      const method = <IdentityType> did.getTag("method")?.toString();
+      const displayName = did.getTag("displayName")?.toString();
+      if (method && displayName) {
+        identities.push({
+          method,
+          displayName,
+          id: did.did,
+          createdAtUTC: did.createdAt.toISOString(),
+        });
+      }
+    }
 
-    let didRecordTags: { method: TagValue; displayName: TagValue; did: TagValue; createdAt: Date; }[] = [];
-
-    dids.forEach(did => {
-      didRecordTags.push(
-        {
-          method: did.getTag("method"),
-          displayName: did.getTag("displayName"),
-          did: did.getTag("did"),
-          createdAt : did.createdAt,
-        }
-      )
-    });
-
-    return didRecordTags;
+    return identities;
   }
 
-  async getIdentity(did: string) {
-    const didRecord = await this.agent.dids.getCreatedDids({did});
-
-    if (didRecord.length === 1) {
-      return didRecord[0];
+  async getIdentity(did: string): Promise<IdentityDetails | undefined> {
+    const storedDid = await this.agent.dids.getCreatedDids({did});
+    if (!(storedDid && storedDid.length)) {
+      return undefined;
+    }
+    
+    const method = <IdentityType> storedDid[0].getTag("method")?.toString();
+    if (!method) {
+      throw new Error(`${AriesAgent.DID_MISSING_METHOD} ${did}`);
+    }
+    if (method === IdentityType.KEY) {
+      return this.getIdentityFromDidKeyRecord(storedDid[0]);
     }
   }
+
+  private async getIdentityFromDidKeyRecord(record: DidRecord): Promise<IdentityDetails> {
+    const displayName = record.getTag("displayName")?.toString();
+    if (!displayName) {
+      throw new Error(`${AriesAgent.DID_MISSING_DISPLAY_NAME} ${record.did}`);
+    }
+
+    const didDoc = (await this.agent.dids.resolve(record.did)).didDocument;
+    if (!didDoc) {
+      throw new Error(`${AriesAgent.DID_MISSING_DID_DOC} ${record.did}`);
+    }
+    console.log(JSON.stringify(didDoc, null, 2));
+
+    if (!(didDoc.verificationMethod && didDoc.verificationMethod.length)) {
+      throw new Error(`${AriesAgent.UNEXPECTED_DID_DOC_FORMAT} ${record.did}`);
+    }
+    const signingKey = didDoc.verificationMethod[0];
+    if (!signingKey.publicKeyBase58) {
+      throw new Error(`${AriesAgent.UNEXPECTED_DID_DOC_FORMAT} ${record.did}`);
+    }
+
+    return {
+      id: record.did,
+      method: IdentityType.KEY,
+      displayName,
+      createdAtUTC: record.createdAt.toISOString(),
+      controller: record.did,
+      keyType: signingKey.type.toString(),
+      publicKeyBase58: signingKey.publicKeyBase58
+    };
+  }
 }
-
-
 
 export { AriesAgent, agentDependencies };

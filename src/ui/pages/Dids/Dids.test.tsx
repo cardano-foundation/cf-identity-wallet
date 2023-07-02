@@ -41,8 +41,8 @@ describe("Dids Tab", () => {
         },
       },
       seedPhraseCache: {},
-      didsCache: {
-        dids: filteredDidsMock,
+      identitiesCache: {
+        identities: filteredDidsMock,
       },
     };
 

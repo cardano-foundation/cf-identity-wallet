@@ -40,7 +40,7 @@ describe("getBackRoute", () => {
           time: 0,
         },
       },
-      didsCache: { dids: [] },
+      identitiesCache: { identities: [] },
       credsCache: { creds: [] },
       cryptoAccountsCache: { cryptoAccounts: [] },
     };
@@ -115,7 +115,7 @@ describe("getBackRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      didsCache: { dids: [] },
+      identitiesCache: { identities: [] },
       credsCache: { creds: [] },
       cryptoAccountsCache: { cryptoAccounts: [] },
     };
@@ -175,7 +175,7 @@ describe("getPreviousRoute", () => {
           time: 0,
         },
       },
-      didsCache: { dids: [] },
+      identitiesCache: { identities: [] },
       credsCache: { creds: [] },
       cryptoAccountsCache: { cryptoAccounts: [] },
     };

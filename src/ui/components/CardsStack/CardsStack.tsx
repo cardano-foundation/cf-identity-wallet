@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
-  DidProps,
   CredCardProps,
   DidCardProps,
   CredProps,
@@ -9,6 +8,7 @@ import {
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
 import { formatDate } from "../../../utils";
+import { IdentityDetails, IdentityShortDetails, IdentityType } from "../../../core/aries/ariesAgent.types";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -84,6 +84,8 @@ const DidCard = ({
   } else if (index !== 0) {
     shadowClass = "top-shadow";
   }
+
+  const colors = ["#92FFC0", "#47FF94"];
   return (
     <div
       key={index}
@@ -97,13 +99,13 @@ const DidCard = ({
         }
       }}
       style={{
-        background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
+        background: `linear-gradient(91.86deg, ${colors[0]} 28.76%, ${colors[1]} 119.14%)`,
       }}
     >
       <div className="cards-stack-did-layout">
         <div className="card-header">
-          <span>{cardData.type}</span>
-          <span>{cardData.name}</span>
+          <span>{cardData.method === IdentityType.KEY ? "DID:KEY" : "KERI"}</span>
+          <span>{cardData.displayName}</span>
         </div>
         <div className="card-body">
           <span>{cardData.id}</span>
@@ -112,7 +114,7 @@ const DidCard = ({
           <span className="card-created-label">
             {i18n.t("dids.card.layout.created")}
           </span>
-          <span>{formatDate(cardData.date)}</span>
+          <span>{formatDate(cardData.createdAtUTC)}</span>
         </div>
       </div>
     </div>
@@ -124,18 +126,18 @@ const CardsStack = ({
   cardsData,
 }: {
   cardsType: string;
-  cardsData: DidProps[] | CredProps[];
+  cardsData: IdentityShortDetails[] | CredProps[];
 }) => {
   const history = useHistory();
   const [isActive, setIsActive] = useState(false);
 
-  const renderCards = (cardsData: DidProps[] | CredProps[]) => {
-    return cardsData.map((cardData: DidProps | CredProps, index: number) =>
+  const renderCards = (cardsData: IdentityShortDetails[] | CredProps[]) => {
+    return cardsData.map((cardData: IdentityShortDetails | CredProps, index: number) =>
       cardsType === "dids" ? (
         <DidCard
           key={index}
           index={index}
-          cardData={cardData as DidProps}
+          cardData={cardData as IdentityShortDetails}
           isActive={isActive}
           onHandleShowCardDetails={() => handleShowCardDetails(index)}
         />
@@ -156,7 +158,7 @@ const CardsStack = ({
     let pathname = "";
 
     if (cardsType === "dids") {
-      const data = cardsData[index] as DidProps;
+      const data = cardsData[index] as IdentityDetails;
       pathname = `/tabs/dids/${data.id}`;
     } else {
       const data = cardsData[index] as CredProps;

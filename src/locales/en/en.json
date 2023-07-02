@@ -283,11 +283,7 @@
       "placeholder": "Create a name for this identity"
     },
     "identitytype": {
-      "title": "Identity type",
-      "types": {
-        "type0": "did:key",
-        "type1": "KERI"
-      }
+      "title": "Identity type"
     },
     "confirmbutton": "Create identity",
     "error": {

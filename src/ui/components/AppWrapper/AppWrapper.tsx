@@ -8,12 +8,12 @@ import {
   KeyStoreKeys,
   SecureStorage,
 } from "../../../core/storage/secureStorage";
-import { setDidsCache } from "../../../store/reducers/didsCache";
-import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
+import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { filteredCredsMock } from "../../__mocks__/filteredCredsMock";
 import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
 import { setCryptoAccountsCache } from "../../../store/reducers/cryptoAccountsCache";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -36,6 +36,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
+    const storedIdentities = await AriesAgent.agent.getIdentities();
 
     dispatch(
       setAuthentication({
@@ -46,7 +47,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       })
     );
 
-    dispatch(setDidsCache(filteredDidsMock));
+    dispatch(setIdentitiesCache(storedIdentities));
     dispatch(setCredsCache(filteredCredsMock));
     dispatch(setCryptoAccountsCache(cryptoAccountsMock));
   };

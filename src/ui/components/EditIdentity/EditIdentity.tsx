@@ -25,16 +25,16 @@ import { ErrorMessage } from "../ErrorMessage";
 import { VerifyPassword } from "../VerifyPassword";
 import { Alert } from "../Alert";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { setDidsCache } from "../../../store/reducers/didsCache";
+import { getIdentitiesCache, setIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import { didsMock } from "../../__mocks__/didsMock";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import { DidProps } from "../CardsStack/CardsStack.types";
 import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
 
 const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
+  const identitiesData = useAppSelector(getIdentitiesCache);
   const storeState = useAppSelector(getState);
   const history = useHistory();
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -96,23 +96,17 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
     if (actionType === "edit") {
       // @TODO - sdisalvo: Update Database.
       // Remember to update DidCardDetails file too.
-      const updatedDids: DidProps[] = [];
-      didsMock.forEach((element) => {
-        const obj = { ...element };
-        if (element.id === id) {
-          obj.name = newDisplayName;
-        }
-        updatedDids.push(obj);
-      });
-      dispatch(setDidsCache(updatedDids));
-      handleDone();
+      const updatedIdentities = [...identitiesData];
+      const index = updatedIdentities.findIndex(identity => identity.id === id);
+      updatedIdentities[index] = { ...updatedIdentities[index], displayName: newDisplayName };
+      dispatch(setIdentitiesCache(updatedIdentities));
     } else if (actionType === "delete") {
       // @TODO - sdisalvo: Update Database.
       // Remember to update DidCardDetails file too.
-      const updatedDids = didsMock.filter((item) => item.id !== id);
-      dispatch(setDidsCache(updatedDids));
-      handleDone();
+      const updatedIdentities = identitiesData.filter((item) => item.id !== id);
+      dispatch(setIdentitiesCache(updatedIdentities));
     }
+    handleDone();
   };
 
   useEffect(() => {
