@@ -1,2 +1,13 @@
 .crypto-tab {
+  &.wallet-details {
+    ion-title {
+      margin-left: 3.4375rem;
+      max-width: 11.25rem;
+      h2 {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
 }

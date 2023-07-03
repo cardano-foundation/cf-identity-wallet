@@ -82,15 +82,34 @@ const Crypto = () => {
     );
   };
 
+  const Avatar = () => {
+    return (
+      <IonButton
+        shape="round"
+        className="my-wallets-button"
+        data-testid="my-wallets-button"
+      >
+        <IonIcon
+          slot="icon-only"
+          icon={walletOutline}
+          color="primary"
+        />
+      </IonButton>
+    );
+  };
+
   return (
     <>
       <IonPage
-        className="tab-layout"
+        className={`tab-layout crypto-tab${
+          defaultAccountData ? " wallet-details" : ""
+        }`}
         data-testid="crypto-tab"
       >
         <TabLayout
           header={true}
-          title=""
+          avatar={defaultAccountData && <Avatar />}
+          title={defaultAccountData ? defaultAccountData.name : ""}
           menuButton={true}
           additionalButtons={<AdditionalButtons />}
         >

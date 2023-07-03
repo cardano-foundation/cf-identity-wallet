@@ -13,6 +13,7 @@ import { TabLayoutProps } from "./TabLayout.types";
 
 const TabLayout = ({
   header,
+  avatar,
   title,
   titleSize,
   titleAction,
@@ -28,6 +29,8 @@ const TabLayout = ({
           className="ion-no-border tab-header"
         >
           <IonToolbar color="light">
+            {avatar && <IonButtons slot="start">{avatar}</IonButtons>}
+
             {title && (
               <IonTitle
                 onClick={titleAction}
