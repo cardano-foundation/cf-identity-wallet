@@ -1,4 +1,5 @@
 import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
+import Blockies from "react-18-blockies";
 import { useEffect, useState } from "react";
 import { walletOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -84,17 +85,12 @@ const Crypto = () => {
 
   const Avatar = () => {
     return (
-      <IonButton
-        shape="round"
-        className="my-wallets-button"
-        data-testid="my-wallets-button"
-      >
-        <IonIcon
-          slot="icon-only"
-          icon={walletOutline}
-          color="primary"
-        />
-      </IonButton>
+      <Blockies
+        seed={defaultAccountData.name}
+        size={7}
+        scale={7}
+        className="identicon"
+      />
     );
   };
 

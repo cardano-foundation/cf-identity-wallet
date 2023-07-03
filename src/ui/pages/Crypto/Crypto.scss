@@ -1,5 +1,11 @@
 .crypto-tab {
   &.wallet-details {
+    .identicon {
+      width: 2.8125rem;
+      height: 2.8125rem;
+      border-radius: 1.5rem;
+    }
+
     ion-title {
       margin-left: 3.4375rem;
       max-width: 11.25rem;
