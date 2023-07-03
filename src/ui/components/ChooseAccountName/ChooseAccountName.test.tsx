@@ -5,6 +5,7 @@ import configureStore from "redux-mock-store";
 import { ChooseAccountName } from "./ChooseAccountName";
 import { TabsRoutePath } from "../../../routes/paths";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 
 describe("Choose Crypto Account name", () => {
   test("Render the modal", async () => {
@@ -27,11 +28,13 @@ describe("Choose Crypto Account name", () => {
       dispatch: dispatchMock,
     };
     const setChooseAccountNameIsOpen = jest.fn();
+    const setDefaultAccountData = jest.fn();
     const { getByTestId, queryByText } = render(
       <Provider store={storeMocked}>
         <ChooseAccountName
           chooseAccountNameIsOpen={true}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
+          setDefaultAccountData={setDefaultAccountData}
         />
       </Provider>
     );
@@ -66,12 +69,14 @@ describe("Choose Crypto Account name", () => {
     };
     const setChooseAccountNameIsOpen = jest.fn();
     const handleCreateWallet = jest.fn();
+    const setDefaultAccountData = jest.fn();
 
     const { getByTestId, queryByText } = render(
       <Provider store={storeMocked}>
         <ChooseAccountName
           chooseAccountNameIsOpen={true}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
+          setDefaultAccountData={setDefaultAccountData}
         />
       </Provider>
     );

@@ -1,8 +1,12 @@
 interface CryptoAccountProps {
+  address: string;
   name: string;
+  blockchain: string;
   currency: string;
-  balance: number;
-  usesIdentitySeedPhrase?: boolean;
+  logo: string;
+  nativeBalance: number;
+  usdBalance: number;
+  usesIdentitySeedPhrase: boolean;
 }
 
 export type { CryptoAccountProps };

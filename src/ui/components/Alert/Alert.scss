@@ -40,13 +40,13 @@
 .alert-button {
   font-weight: 500 !important;
   text-transform: none !important;
-  border: solid var(--color-medium-grey) 2px !important;
+  border: solid var(--ion-color-medium-grey) 2px !important;
   border-radius: 20px !important;
   margin: 0;
 
   &:first-child {
     border: none !important;
-    background: var(--color-accent-gradient) !important;
+    background: var(--ion-color-primary-gradient) !important;
     margin-bottom: 0.5rem;
   }
 }

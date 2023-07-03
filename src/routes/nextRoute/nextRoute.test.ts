@@ -27,6 +27,7 @@ describe("NextRoute", () => {
           seedPhraseIsSet: false,
           passwordIsSet: false,
         },
+        defaultCryptoAccount: "",
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -35,7 +36,7 @@ describe("NextRoute", () => {
       },
       didsCache: { dids: [] },
       credsCache: { creds: [] },
-      cryptoAccountsCache: { cryptoAccounts: [] },
+      cryptoAccountsCache: { cryptoAccounts: [], defaultCryptoAccount: "" },
     };
   });
 
@@ -115,6 +116,7 @@ describe("getNextRoute", () => {
         seedPhraseIsSet: false,
         passwordIsSet: false,
       },
+      defaultCryptoAccount: "",
     },
     seedPhraseCache: {
       seedPhrase160: "",
@@ -123,7 +125,7 @@ describe("getNextRoute", () => {
     },
     didsCache: { dids: [] },
     credsCache: { creds: [] },
-    cryptoAccountsCache: { cryptoAccounts: [] },
+    cryptoAccountsCache: { cryptoAccounts: [], defaultCryptoAccount: "" },
   };
   const state = {};
   const payload = {};

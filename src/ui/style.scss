@@ -48,17 +48,17 @@ p {
   text-transform: none;
   font-size: 1rem;
   color: var(--ion-color-primary);
-  --background: var(--color-accent-gradient);
-  --background-activated: var(--color-medium-grey);
+  --background: var(--ion-color-primary-gradient);
+  --background-activated: var(--ion-color-medium-grey);
 
   &.button-disabled {
-    --background: var(--color-dark-grey);
+    --background: var(--ion-color-dark-grey);
   }
 }
 
 .secondary-button {
-  --border-color: var(--color-dark-grey);
-  --background-activated: var(--color-dark-grey);
+  --border-color: var(--ion-color-dark-grey);
+  --background-activated: var(--ion-color-dark-grey);
 }
 
 .ion-primary-button,
