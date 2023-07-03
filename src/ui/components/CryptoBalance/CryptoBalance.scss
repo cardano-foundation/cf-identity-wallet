@@ -3,7 +3,7 @@
 
 .crypto-balance {
   padding-inline: 30px;
-  margin-top: 20vh;
+  margin-top: 13vh;
   text-align: center;
 
   .account-network {
@@ -16,6 +16,8 @@
     color: var(--ion-color-light);
     background: rgba(var(--ion-color-primary-rgb), 0.5);
     margin-bottom: 2.19rem;
+    min-height: 2rem;
+    min-width: 6rem;
   }
 
   .swiper-slide {
