@@ -124,7 +124,9 @@ const Crypto = () => {
               icon={arrowUpOutline}
               color="primary"
             />
-            <span>{i18n.t("crypto.tab.actionbuttons.send")}</span>
+            <span className="button-label-dark">
+              {i18n.t("crypto.tab.actionbuttons.send")}
+            </span>
           </div>
         </IonButton>
         <IonButton
@@ -138,7 +140,9 @@ const Crypto = () => {
               icon={arrowDownOutline}
               color="primary"
             />
-            <span>{i18n.t("crypto.tab.actionbuttons.receive")}</span>
+            <span className="button-label-dark">
+              {i18n.t("crypto.tab.actionbuttons.receive")}
+            </span>
           </div>
         </IonButton>
         <IonButton
@@ -152,7 +156,9 @@ const Crypto = () => {
               icon={imageOutline}
               color="light"
             />
-            <span>{i18n.t("crypto.tab.actionbuttons.nfts")}</span>
+            <span className="button-label-light">
+              {i18n.t("crypto.tab.actionbuttons.nfts")}
+            </span>
           </div>
         </IonButton>
         <IonButton
@@ -166,7 +172,9 @@ const Crypto = () => {
               icon={layersOutline}
               color="light"
             />
-            <span>{i18n.t("crypto.tab.actionbuttons.staking")}</span>
+            <span className="button-label-light">
+              {i18n.t("crypto.tab.actionbuttons.staking")}
+            </span>
           </div>
         </IonButton>
       </div>

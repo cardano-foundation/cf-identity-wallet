@@ -24,11 +24,8 @@ const TabLayout = ({
   return (
     <>
       {header && (
-        <IonHeader
-          translucent={true}
-          className="ion-no-border tab-header"
-        >
-          <IonToolbar color="light">
+        <IonHeader className="ion-no-border tab-header">
+          <IonToolbar color="transparent">
             {avatar && <IonButtons slot="start">{avatar}</IonButtons>}
 
             {title && (
@@ -64,7 +61,7 @@ const TabLayout = ({
 
       <IonContent
         className="tab-content"
-        color="light"
+        color="transparent"
       >
         {children}
       </IonContent>
