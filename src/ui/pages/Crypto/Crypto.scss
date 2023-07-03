@@ -6,13 +6,51 @@
       border-radius: 1.5rem;
     }
 
+    .crypto-tab-content {
+      margin-top: 8vh;
+    }
+
     ion-title {
       margin-left: 3.4375rem;
       max-width: 11.25rem;
+
+      &.md {
+        margin-left: 0.63rem;
+      }
+
       h2 {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+      }
+    }
+
+    .crypto-tab-action-buttons {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-around;
+      margin-top: 3.62rem;
+
+      ion-button {
+        width: 3.8125rem;
+        height: 5.1875rem;
+
+        .button-inner {
+          display: flex;
+          flex-direction: column !important;
+
+          ion-icon {
+            width: 1.9375rem;
+            height: 1.9375rem;
+            margin: 0 auto;
+          }
+
+          span {
+            margin-top: 0.62rem;
+            font-size: 0.75rem;
+            font-weight: 400;
+          }
+        }
       }
     }
   }

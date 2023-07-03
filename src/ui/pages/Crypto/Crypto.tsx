@@ -1,7 +1,13 @@
 import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import Blockies from "react-18-blockies";
 import { useEffect, useState } from "react";
-import { walletOutline } from "ionicons/icons";
+import {
+  walletOutline,
+  arrowUpOutline,
+  arrowDownOutline,
+  imageOutline,
+  layersOutline,
+} from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
@@ -48,12 +54,7 @@ const Crypto = () => {
     });
   const items: CryptoBalanceItem[] = [
     {
-      title: i18n.t("crypto.slider.title.mainbalance"),
-      fiatBalance: formatCurrencyUSD(defaultAccountData.usdBalance),
-      nativeBalance: defaultAccountData.nativeBalance.toFixed(2) + " ADA",
-    },
-    {
-      title: i18n.t("crypto.slider.title.mainbalance"),
+      title: i18n.t("crypto.tab.slider.title.mainbalance"),
       fiatBalance: formatCurrencyUSD(defaultAccountData.usdBalance),
       nativeBalance: defaultAccountData.nativeBalance.toFixed(2) + " ADA",
     },
@@ -109,6 +110,69 @@ const Crypto = () => {
     );
   };
 
+  const ActionButtons = () => {
+    return (
+      <div className="crypto-tab-action-buttons">
+        <IonButton
+          className="send-button"
+          data-testid="send-button"
+          color="light-grey"
+        >
+          <div className="button-inner">
+            <IonIcon
+              slot="icon-only"
+              icon={arrowUpOutline}
+              color="primary"
+            />
+            <span>{i18n.t("crypto.tab.actionbuttons.send")}</span>
+          </div>
+        </IonButton>
+        <IonButton
+          className="receive-button"
+          data-testid="receive-button"
+          color="light-grey"
+        >
+          <div className="button-inner">
+            <IonIcon
+              slot="icon-only"
+              icon={arrowDownOutline}
+              color="primary"
+            />
+            <span>{i18n.t("crypto.tab.actionbuttons.receive")}</span>
+          </div>
+        </IonButton>
+        <IonButton
+          className="nfts-button"
+          data-testid="nfts-button"
+          color="secondary"
+        >
+          <div className="button-inner">
+            <IonIcon
+              slot="icon-only"
+              icon={imageOutline}
+              color="light"
+            />
+            <span>{i18n.t("crypto.tab.actionbuttons.nfts")}</span>
+          </div>
+        </IonButton>
+        <IonButton
+          className="staking-button"
+          data-testid="staking-button"
+          color="secondary"
+        >
+          <div className="button-inner">
+            <IonIcon
+              slot="icon-only"
+              icon={layersOutline}
+              color="light"
+            />
+            <span>{i18n.t("crypto.tab.actionbuttons.staking")}</span>
+          </div>
+        </IonButton>
+      </div>
+    );
+  };
+
   return (
     <>
       <IonPage
@@ -125,7 +189,13 @@ const Crypto = () => {
           additionalButtons={<AdditionalButtons />}
         >
           {cryptoAccountsData?.length && defaultAccountData ? (
-            <CryptoBalance items={items} />
+            <div
+              className="crypto-tab-content"
+              data-testid="crypto-tab-content"
+            >
+              <CryptoBalance items={items} />
+              <ActionButtons />
+            </div>
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("crypto.tab.create")}
