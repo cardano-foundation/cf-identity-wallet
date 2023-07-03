@@ -296,7 +296,10 @@
   },
   "crypto": {
     "tab": {
-      "create": "Add a crypto account"
+      "create": "Add a crypto account",
+      "network": {
+        "mainnet": "Mainnet"
+      }
     },
     "mywalletsmodal": {
       "title": "My wallets",
@@ -322,6 +325,11 @@
       "label": "Display name",
       "placeholder": "Wallet name",
       "confirm": "Confirm changes"
+    },
+    "slider": {
+      "title": {
+        "mainbalance": "Main balance"
+      }
     }
   }
 }

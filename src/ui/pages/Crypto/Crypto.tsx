@@ -18,6 +18,9 @@ import { VerifyPassword } from "../../components/VerifyPassword";
 import { MyWallets } from "../../components/MyWallets";
 import { AddCryptoAccount } from "../../components/AddCryptoAccount";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
+import { CryptoBalance } from "../../components/CryptoBalance";
+import { CryptoBalanceItem } from "../../components/CryptoBalance/CryptoBalance.types";
+import { formatCurrencyUSD } from "../../../utils";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
@@ -43,6 +46,18 @@ const Crypto = () => {
       usdBalance: 0,
       usesIdentitySeedPhrase: false,
     });
+  const items: CryptoBalanceItem[] = [
+    {
+      title: i18n.t("crypto.slider.title.mainbalance"),
+      fiatBalance: formatCurrencyUSD(defaultAccountData.usdBalance),
+      nativeBalance: defaultAccountData.nativeBalance.toFixed(2) + " ADA",
+    },
+    {
+      title: i18n.t("crypto.slider.title.mainbalance"),
+      fiatBalance: formatCurrencyUSD(defaultAccountData.usdBalance),
+      nativeBalance: defaultAccountData.nativeBalance.toFixed(2) + " ADA",
+    },
+  ];
 
   useEffect(() => {
     cryptoAccountsData?.forEach((account) => {
@@ -110,7 +125,7 @@ const Crypto = () => {
           additionalButtons={<AdditionalButtons />}
         >
           {cryptoAccountsData?.length && defaultAccountData ? (
-            <pre>{JSON.stringify(defaultAccountData, null, 2)}</pre>
+            <CryptoBalance items={items} />
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("crypto.tab.create")}
