@@ -6,9 +6,7 @@ import {
   DidsModule,
   KeyDidResolver,
   KeyType,
-  DidDocument,
   DidRecord,
-  VerificationMethod,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { CapacitorFileSystem } from "./dependencies";
@@ -39,6 +37,15 @@ const agentDependencies: AgentDependencies = {
   WebSocketClass:
     global.WebSocket as unknown as AgentDependencies["WebSocketClass"],
 };
+
+// @TODO - foconnor: Once colour stories in place this should be stored in DB. 
+const PRESET_COLOURS: [string, string][] = [
+  ["#92FFC0", "#47FF94"],
+  ["#92FFC0", "#47FF94"],
+  ["#D9EDDF", "#ACD8B9"],
+  ["#47E0FF", "#00C6EF"],
+  ["#FF9780", "#FF5833"],
+];
 
 class AriesAgent {
   static readonly DID_MISSING_METHOD = "DID method missing for stored DID";
@@ -105,7 +112,8 @@ class AriesAgent {
   async getIdentities(method?: string, did?: string): Promise<IdentityShortDetails[]> {
     const identities: IdentityShortDetails[] = [];
     const dids = await this.agent.dids.getCreatedDids({method, did});
-    for (const did of dids) {
+    for (let i=0; i<dids.length; i++) {
+      const did = dids[i];
       const method = <IdentityType> did.getTag("method")?.toString();
       const displayName = did.getTag("displayName")?.toString();
       if (method && displayName) {
@@ -114,6 +122,7 @@ class AriesAgent {
           displayName,
           id: did.did,
           createdAtUTC: did.createdAt.toISOString(),
+          colours: PRESET_COLOURS[i % PRESET_COLOURS.length]
         });
       }
     }
@@ -146,7 +155,6 @@ class AriesAgent {
     if (!didDoc) {
       throw new Error(`${AriesAgent.DID_MISSING_DID_DOC} ${record.did}`);
     }
-    console.log(JSON.stringify(didDoc, null, 2));
 
     if (!(didDoc.verificationMethod && didDoc.verificationMethod.length)) {
       throw new Error(`${AriesAgent.UNEXPECTED_DID_DOC_FORMAT} ${record.did}`);
@@ -163,7 +171,8 @@ class AriesAgent {
       createdAtUTC: record.createdAt.toISOString(),
       controller: record.did,
       keyType: signingKey.type.toString(),
-      publicKeyBase58: signingKey.publicKeyBase58
+      publicKeyBase58: signingKey.publicKeyBase58,
+      colours: PRESET_COLOURS[0]
     };
   }
 }

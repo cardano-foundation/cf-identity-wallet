@@ -20,6 +20,7 @@ describe("identitiesCacheSlice", () => {
         method: IdentityType.KEY,
         displayName: "example-name",
         createdAtUTC: "example-date",
+        colours: ["#92FFC0", "#47FF94"],
       },
     ];
     const newState = identitiesCacheSlice.reducer(initialState, setIdentitiesCache(identities));
@@ -37,12 +38,14 @@ describe("getIdentitiesCache", () => {
             method: IdentityType.KEY,
             displayName: "example-name-1",
             createdAtUTC: "example-date",
+            colours: ["#92FFC0", "#47FF94"],
           },
           {
             id: "id-2",
             method: IdentityType.KEY,
             displayName: "example-name-2",
             createdAtUTC: "example-date",
+            colours: ["#FFBC60", "#FFA21F"],
           },
         ],
       },

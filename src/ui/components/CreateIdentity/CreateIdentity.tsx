@@ -20,6 +20,7 @@ import { generateUUID } from "../../../utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getIdentitiesCache, setIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import { IdentityShortDetails, IdentityType } from "../../../core/aries/ariesAgent.types";
+import { ColorGenerator } from "../../utils/ColorGenerator";
 const CreateIdentity = ({
   modalIsOpen,
   setModalIsOpen,
@@ -61,7 +62,8 @@ const CreateIdentity = ({
   const handleOnVerifyPassword = () => {
     const uuid = generateUUID();
     const id = `did:key:${uuid}`;
-
+    const colorGenerator = new ColorGenerator();
+    const newColor = colorGenerator.generateNextColor();
     const newIdentity: IdentityShortDetails = {
       id,
       method:
@@ -70,6 +72,7 @@ const CreateIdentity = ({
           : IdentityType.KERI,
       displayName: displayNameValue,
       createdAtUTC: new Date().toISOString(),
+      colours: [newColor[1], newColor[0]]
     };
     dispatch(setIdentitiesCache([...identityData, newIdentity]));
     setShowVerifyPassword(false);
