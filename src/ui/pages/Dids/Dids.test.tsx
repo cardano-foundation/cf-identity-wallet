@@ -12,7 +12,13 @@ import {
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
-
+jest.mock("../../../core/aries/ariesAgent.ts", () => ({
+  AriesAgent: {
+    agent: {
+      getIdentity: jest.fn().mockResolvedValue({})
+    }
+  }
+}));
 describe("Dids Tab", () => {
   test("Renders Dids Tab and all elements in it", () => {
     const { getByText, getByTestId } = render(

@@ -13,10 +13,6 @@ import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
 
 const path = TabsRoutePath.DIDS + "/" + didsMock[0].id;
 
-afterEach(() => {
-  jest.restoreAllMocks();
-});
-
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
@@ -25,7 +21,13 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-jest.mock("../../../core/aries/ariesAgent.ts");
+jest.mock("../../../core/aries/ariesAgent.ts", () => ({
+  AriesAgent: {
+    agent: {
+      getIdentity: jest.fn().mockResolvedValue(didsMock[0])
+    }
+  }
+}));
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
@@ -54,6 +56,11 @@ const storeMocked = {
   dispatch: dispatchMock,
 };
 
+const storeMocked2 = {
+  ...mockStore({...initialState}),
+  dispatch: jest.fn()
+};
+
 describe("Cards Details page", () => {
   test("It renders Card Details", async () => {
     const { getByText, getByTestId, getAllByTestId } = render(
@@ -67,7 +74,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    expect(getByText(didsMock[0].id)).toBeInTheDocument();
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
       "false"
     );
@@ -85,8 +92,8 @@ describe("Cards Details page", () => {
       .mockImplementation(async (text: string): Promise<void> => {
         return;
       });
-    const { getByTestId } = render(
-      <Provider store={storeMocked}>
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked2}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -96,6 +103,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-id"));
 
     await waitFor(() => {
@@ -109,7 +117,7 @@ describe("Cards Details page", () => {
       .mockImplementation(async (text: string): Promise<void> => {
         return;
       });
-    const { getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -120,6 +128,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-type"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
@@ -134,7 +143,7 @@ describe("Cards Details page", () => {
       .mockImplementation(async (text: string): Promise<void> => {
         return;
       });
-    const { getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -145,6 +154,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-controller"));
 
     await waitFor(() => {
@@ -160,7 +170,7 @@ describe("Cards Details page", () => {
       .mockImplementation(async (text: string): Promise<void> => {
         return;
       });
-    const { getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -171,6 +181,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-publicKeyBase58"));
 
     await waitFor(() => {
@@ -192,6 +203,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByTestId("share-button")).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("share-button"));
     });
@@ -202,7 +214,7 @@ describe("Cards Details page", () => {
   });
 
   test("It opens the edit modal", async () => {
-    const { getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -213,6 +225,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -223,7 +236,7 @@ describe("Cards Details page", () => {
   });
 
   test("It shows the button to access the editor", async () => {
-    const { getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -234,6 +247,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -255,6 +269,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -284,6 +299,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -325,6 +341,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));
     });
@@ -348,6 +365,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));
     });

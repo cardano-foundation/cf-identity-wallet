@@ -8,7 +8,13 @@ import { DidCardDetails } from "../../pages/DidCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsMock } from "../../__mocks__/credsMock";
 import { CredCardDetails } from "../../pages/CredCardDetails";
-
+jest.mock("../../../core/aries/ariesAgent.ts", () => ({
+  AriesAgent: {
+    agent: {
+      getIdentity: jest.fn().mockResolvedValue({})
+    }
+  }
+}));
 describe("Cards Stack Component", () => {
   test("It renders Cards Stack", () => {
     const { getByText } = render(

@@ -7,6 +7,13 @@ import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
 jest.mock("../../../utils", () => ({
   generateUUID: jest.fn(),
 }));
+jest.mock("../../../core/aries/ariesAgent.ts", () => ({
+  AriesAgent: {
+    agent: {
+      getIdentity: jest.fn().mockResolvedValue({})
+    }
+  }
+}));
 describe("Create Identity modal", () => {
   const mockOnClose = jest.fn();
 
@@ -18,6 +25,9 @@ describe("Create Identity modal", () => {
     const initialState = {
       didsCache: {
         dids: filteredDidsMock,
+      },
+      identitiesCache: {
+        identities: [],
       },
     };
     mockedStore = {
