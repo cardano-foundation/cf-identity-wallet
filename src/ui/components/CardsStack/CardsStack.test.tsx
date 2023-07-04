@@ -11,7 +11,7 @@ import { CredCardDetails } from "../../pages/CredCardDetails";
 jest.mock("../../../core/aries/ariesAgent.ts", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest.fn().mockResolvedValue({}),
+      getIdentity: jest.fn().mockResolvedValue(didsMock[0]),
     },
   },
 }));

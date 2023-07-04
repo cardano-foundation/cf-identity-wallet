@@ -10,6 +10,7 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
 
 const path = TabsRoutePath.DIDS + "/" + didsMock[0].id;
 
@@ -84,14 +85,11 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
+    expect(AriesAgent.agent.getIdentity).toBeCalledWith(didsMock[0].id);
   });
 
   test("It copies id to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
+    Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked2}>
         <MemoryRouter initialEntries={[path]}>
@@ -112,11 +110,7 @@ describe("Cards Details page", () => {
   });
 
   test("It copies type to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
+    Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
@@ -138,11 +132,7 @@ describe("Cards Details page", () => {
   });
 
   test("It copies controller to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
+    Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
@@ -165,11 +155,7 @@ describe("Cards Details page", () => {
   });
 
   test("It copies publicKeyBase58 to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
+    Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
