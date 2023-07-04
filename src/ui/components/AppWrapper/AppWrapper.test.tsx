@@ -5,9 +5,9 @@ import { store } from "../../../store";
 jest.mock("../../../core/aries/ariesAgent.ts", () => ({
   AriesAgent: {
     agent: {
-      getIdentities: jest.fn().mockResolvedValue([])
-    }
-  }
+      getIdentities: jest.fn().mockResolvedValue([]),
+    },
+  },
 }));
 describe("App Wrapper", () => {
   test("renders children components", () => {

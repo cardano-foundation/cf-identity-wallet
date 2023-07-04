@@ -11,9 +11,9 @@ import { CredCardDetails } from "../../pages/CredCardDetails";
 jest.mock("../../../core/aries/ariesAgent.ts", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest.fn().mockResolvedValue({})
-    }
-  }
+      getIdentity: jest.fn().mockResolvedValue({}),
+    },
+  },
 }));
 describe("Cards Stack Component", () => {
   test("It renders Cards Stack", () => {

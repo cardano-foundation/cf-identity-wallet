@@ -25,7 +25,10 @@ import { ErrorMessage } from "../ErrorMessage";
 import { VerifyPassword } from "../VerifyPassword";
 import { Alert } from "../Alert";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getIdentitiesCache, setIdentitiesCache } from "../../../store/reducers/identitiesCache";
+import {
+  getIdentitiesCache,
+  setIdentitiesCache,
+} from "../../../store/reducers/identitiesCache";
 import { didsMock } from "../../__mocks__/didsMock";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
@@ -97,8 +100,13 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
       // @TODO - sdisalvo: Update Database.
       // Remember to update DidCardDetails file too.
       const updatedIdentities = [...identitiesData];
-      const index = updatedIdentities.findIndex(identity => identity.id === id);
-      updatedIdentities[index] = { ...updatedIdentities[index], displayName: newDisplayName };
+      const index = updatedIdentities.findIndex(
+        (identity) => identity.id === id
+      );
+      updatedIdentities[index] = {
+        ...updatedIdentities[index],
+        displayName: newDisplayName,
+      };
       dispatch(setIdentitiesCache(updatedIdentities));
     } else if (actionType === "delete") {
       // @TODO - sdisalvo: Update Database.

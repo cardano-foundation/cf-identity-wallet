@@ -31,7 +31,10 @@ import { ShareIdentity } from "../../components/ShareIdentity";
 import { EditIdentity } from "../../components/EditIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
-import { getIdentitiesCache, setIdentitiesCache } from "../../../store/reducers/identitiesCache";
+import {
+  getIdentitiesCache,
+  setIdentitiesCache,
+} from "../../../store/reducers/identitiesCache";
 import { formatDate } from "../../../utils";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { IdentityDetails } from "../../../core/aries/ariesAgent.types";
@@ -55,7 +58,7 @@ const DidCardDetails = () => {
         setCardData(cardDetails);
       }
       // @TODO - Error handling.
-    }
+    };
     fetchDetails();
   }, [params.id]);
 
@@ -81,7 +84,9 @@ const DidCardDetails = () => {
     // @TODO - sdisalvo: Update Database.
     // Remember to update EditIdentity file too.
     if (cardData) {
-      const updatedIdentities = identitiesData.filter((item) => item.id !== cardData.id);
+      const updatedIdentities = identitiesData.filter(
+        (item) => item.id !== cardData.id
+      );
       dispatch(setIdentitiesCache(updatedIdentities));
     }
     handleDone();
@@ -312,18 +317,22 @@ const DidCardDetails = () => {
             </div>
           </>
         )}
-        {cardData && <ShareIdentity
-          isOpen={shareIsOpen}
-          setIsOpen={setShareIsOpen}
-          id={cardData.id}
-          name={cardData.displayName}
-        />}
-        {cardData && <EditIdentity
-          isOpen={editIsOpen}
-          setIsOpen={setEditIsOpen}
-          id={cardData.id}
-          name={cardData.displayName}
-        />}
+        {cardData && (
+          <ShareIdentity
+            isOpen={shareIsOpen}
+            setIsOpen={setShareIsOpen}
+            id={cardData.id}
+            name={cardData.displayName}
+          />
+        )}
+        {cardData && (
+          <EditIdentity
+            isOpen={editIsOpen}
+            setIsOpen={setEditIsOpen}
+            id={cardData.id}
+            name={cardData.displayName}
+          />
+        )}
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}

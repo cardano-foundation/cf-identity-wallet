@@ -1,16 +1,23 @@
 import { PayloadAction } from "@reduxjs/toolkit";
-import { identitiesCacheSlice, getIdentitiesCache, setIdentitiesCache } from "./identitiesCache";
+import {
+  identitiesCacheSlice,
+  getIdentitiesCache,
+  setIdentitiesCache,
+} from "./identitiesCache";
 import { RootState } from "../../index";
-import { IdentityShortDetails, IdentityType } from "../../../core/aries/ariesAgent.types";
+import {
+  IdentityShortDetails,
+  IdentityType,
+} from "../../../core/aries/ariesAgent.types";
 
 describe("identitiesCacheSlice", () => {
   const initialState = {
     identities: [],
   };
   it("should return the initial state", () => {
-    expect(identitiesCacheSlice.reducer(undefined, {} as PayloadAction)).toEqual(
-      initialState
-    );
+    expect(
+      identitiesCacheSlice.reducer(undefined, {} as PayloadAction)
+    ).toEqual(initialState);
   });
 
   it("should handle setIdentitiesCache", () => {
@@ -23,7 +30,10 @@ describe("identitiesCacheSlice", () => {
         colours: ["#92FFC0", "#47FF94"],
       },
     ];
-    const newState = identitiesCacheSlice.reducer(initialState, setIdentitiesCache(identities));
+    const newState = identitiesCacheSlice.reducer(
+      initialState,
+      setIdentitiesCache(identities)
+    );
     expect(newState.identities).toEqual(identities);
   });
 });

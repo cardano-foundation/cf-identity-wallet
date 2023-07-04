@@ -13,7 +13,7 @@ import { LabelledKeyDidCreateOptions } from "./labelledKeyDidRegistrar.types";
 class LabelledKeyDidRegistrar implements DidRegistrar {
   public readonly supportedMethods = ["key"];
 
-   async create(
+  async create(
     agentContext: AgentContext,
     options: LabelledKeyDidCreateOptions
   ): Promise<DidCreateResult> {

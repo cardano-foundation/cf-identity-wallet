@@ -1,4 +1,7 @@
-import { IdentityDetails, IdentityType } from "../../core/aries/ariesAgent.types";
+import {
+  IdentityDetails,
+  IdentityType,
+} from "../../core/aries/ariesAgent.types";
 
 const didsMock: IdentityDetails[] = [
   {
@@ -9,7 +12,7 @@ const didsMock: IdentityDetails[] = [
     colours: ["#92FFC0", "#47FF94"],
     keyType: "Ed25519",
     controller: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
-    publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY"
+    publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
   },
   {
     id: "did:key:z6MkpNyGdYK5Ey1pCf5cyQoZxVeeGifA1ZQv1S9gbLD1857n",

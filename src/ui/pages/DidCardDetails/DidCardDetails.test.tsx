@@ -24,9 +24,9 @@ jest.mock("react-router-dom", () => ({
 jest.mock("../../../core/aries/ariesAgent.ts", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest.fn().mockResolvedValue(didsMock[0])
-    }
-  }
+      getIdentity: jest.fn().mockResolvedValue(didsMock[0]),
+    },
+  },
 }));
 
 const mockStore = configureStore();
@@ -57,8 +57,8 @@ const storeMocked = {
 };
 
 const storeMocked2 = {
-  ...mockStore({...initialState}),
-  dispatch: jest.fn()
+  ...mockStore({ ...initialState }),
+  dispatch: jest.fn(),
 };
 
 describe("Cards Details page", () => {
@@ -203,7 +203,9 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByTestId("share-button")).toBeInTheDocument());
+    await waitFor(() =>
+      expect(getByTestId("share-button")).toBeInTheDocument()
+    );
     act(() => {
       fireEvent.click(getByTestId("share-button"));
     });

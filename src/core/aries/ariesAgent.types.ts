@@ -1,6 +1,6 @@
 enum IdentityType {
   KEY = "key",
-  KERI = "keri"
+  KERI = "keri",
 }
 
 interface IdentityShortDetails {

@@ -38,7 +38,7 @@ const agentDependencies: AgentDependencies = {
     global.WebSocket as unknown as AgentDependencies["WebSocketClass"],
 };
 
-// @TODO - foconnor: Once colour stories in place this should be stored in DB. 
+// @TODO - foconnor: Once colour stories in place this should be stored in DB.
 const PRESET_COLOURS: [string, string][] = [
   ["#92FFC0", "#47FF94"],
   ["#92FFC0", "#47FF94"],
@@ -49,9 +49,12 @@ const PRESET_COLOURS: [string, string][] = [
 
 class AriesAgent {
   static readonly DID_MISSING_METHOD = "DID method missing for stored DID";
-  static readonly DID_MISSING_DISPLAY_NAME = "DID display name missing for stored DID";
-  static readonly DID_MISSING_DID_DOC = "DID document missing or unresolvable for stored DID";
-  static readonly UNEXPECTED_DID_DOC_FORMAT = "DID document format is missing expected values for stored DID";
+  static readonly DID_MISSING_DISPLAY_NAME =
+    "DID display name missing for stored DID";
+  static readonly DID_MISSING_DID_DOC =
+    "DID document missing or unresolvable for stored DID";
+  static readonly UNEXPECTED_DID_DOC_FORMAT =
+    "DID document format is missing expected values for stored DID";
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
@@ -109,12 +112,15 @@ class AriesAgent {
     });
   }
 
-  async getIdentities(method?: string, did?: string): Promise<IdentityShortDetails[]> {
+  async getIdentities(
+    method?: string,
+    did?: string
+  ): Promise<IdentityShortDetails[]> {
     const identities: IdentityShortDetails[] = [];
-    const dids = await this.agent.dids.getCreatedDids({method, did});
-    for (let i=0; i<dids.length; i++) {
+    const dids = await this.agent.dids.getCreatedDids({ method, did });
+    for (let i = 0; i < dids.length; i++) {
       const did = dids[i];
-      const method = <IdentityType> did.getTag("method")?.toString();
+      const method = <IdentityType>did.getTag("method")?.toString();
       const displayName = did.getTag("displayName")?.toString();
       if (method && displayName) {
         identities.push({
@@ -122,7 +128,7 @@ class AriesAgent {
           displayName,
           id: did.did,
           createdAtUTC: did.createdAt.toISOString(),
-          colours: PRESET_COLOURS[i % PRESET_COLOURS.length]
+          colours: PRESET_COLOURS[i % PRESET_COLOURS.length],
         });
       }
     }
@@ -131,12 +137,12 @@ class AriesAgent {
   }
 
   async getIdentity(did: string): Promise<IdentityDetails | undefined> {
-    const storedDid = await this.agent.dids.getCreatedDids({did});
+    const storedDid = await this.agent.dids.getCreatedDids({ did });
     if (!(storedDid && storedDid.length)) {
       return undefined;
     }
-    
-    const method = <IdentityType> storedDid[0].getTag("method")?.toString();
+
+    const method = <IdentityType>storedDid[0].getTag("method")?.toString();
     if (!method) {
       throw new Error(`${AriesAgent.DID_MISSING_METHOD} ${did}`);
     }
@@ -145,7 +151,9 @@ class AriesAgent {
     }
   }
 
-  private async getIdentityFromDidKeyRecord(record: DidRecord): Promise<IdentityDetails> {
+  private async getIdentityFromDidKeyRecord(
+    record: DidRecord
+  ): Promise<IdentityDetails> {
     const displayName = record.getTag("displayName")?.toString();
     if (!displayName) {
       throw new Error(`${AriesAgent.DID_MISSING_DISPLAY_NAME} ${record.did}`);
@@ -172,7 +180,7 @@ class AriesAgent {
       controller: record.did,
       keyType: signingKey.type.toString(),
       publicKeyBase58: signingKey.publicKeyBase58,
-      colours: PRESET_COLOURS[0]
+      colours: PRESET_COLOURS[0],
     };
   }
 }

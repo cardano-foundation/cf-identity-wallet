@@ -10,9 +10,9 @@ jest.mock("../../../utils", () => ({
 jest.mock("../../../core/aries/ariesAgent.ts", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest.fn().mockResolvedValue({})
-    }
-  }
+      getIdentity: jest.fn().mockResolvedValue({}),
+    },
+  },
 }));
 describe("Create Identity modal", () => {
   const mockOnClose = jest.fn();

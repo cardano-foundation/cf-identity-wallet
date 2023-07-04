@@ -8,7 +8,10 @@ const identitiesCacheSlice = createSlice({
   name: "identitiesCache",
   initialState,
   reducers: {
-    setIdentitiesCache: (state, action: PayloadAction<IdentityShortDetails[]>) => {
+    setIdentitiesCache: (
+      state,
+      action: PayloadAction<IdentityShortDetails[]>
+    ) => {
       state.identities = action.payload;
     },
   },
@@ -18,6 +21,7 @@ export { initialState, identitiesCacheSlice };
 
 export const { setIdentitiesCache } = identitiesCacheSlice.actions;
 
-const getIdentitiesCache = (state: RootState) => state.identitiesCache.identities;
+const getIdentitiesCache = (state: RootState) =>
+  state.identitiesCache.identities;
 
 export { getIdentitiesCache };

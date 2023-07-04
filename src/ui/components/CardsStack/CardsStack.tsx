@@ -1,14 +1,14 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import {
-  CredCardProps,
-  DidCardProps,
-  CredProps,
-} from "./CardsStack.types";
+import { CredCardProps, DidCardProps, CredProps } from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
 import { formatDate } from "../../../utils";
-import { IdentityDetails, IdentityShortDetails, IdentityType } from "../../../core/aries/ariesAgent.types";
+import {
+  IdentityDetails,
+  IdentityShortDetails,
+  IdentityType,
+} from "../../../core/aries/ariesAgent.types";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -103,7 +103,9 @@ const DidCard = ({
     >
       <div className="cards-stack-did-layout">
         <div className="card-header">
-          <span>{cardData.method === IdentityType.KEY ? "DID:KEY" : "KERI"}</span>
+          <span>
+            {cardData.method === IdentityType.KEY ? "DID:KEY" : "KERI"}
+          </span>
           <span>{cardData.displayName}</span>
         </div>
         <div className="card-body">
@@ -131,24 +133,25 @@ const CardsStack = ({
   const [isActive, setIsActive] = useState(false);
 
   const renderCards = (cardsData: IdentityShortDetails[] | CredProps[]) => {
-    return cardsData.map((cardData: IdentityShortDetails | CredProps, index: number) =>
-      cardsType === "dids" ? (
-        <DidCard
-          key={index}
-          index={index}
-          cardData={cardData as IdentityShortDetails}
-          isActive={isActive}
-          onHandleShowCardDetails={() => handleShowCardDetails(index)}
-        />
-      ) : (
-        <CredCard
-          key={index}
-          index={index}
-          cardData={cardData as CredProps}
-          isActive={isActive}
-          onHandleShowCardDetails={() => handleShowCardDetails(index)}
-        />
-      )
+    return cardsData.map(
+      (cardData: IdentityShortDetails | CredProps, index: number) =>
+        cardsType === "dids" ? (
+          <DidCard
+            key={index}
+            index={index}
+            cardData={cardData as IdentityShortDetails}
+            isActive={isActive}
+            onHandleShowCardDetails={() => handleShowCardDetails(index)}
+          />
+        ) : (
+          <CredCard
+            key={index}
+            index={index}
+            cardData={cardData as CredProps}
+            isActive={isActive}
+            onHandleShowCardDetails={() => handleShowCardDetails(index)}
+          />
+        )
     );
   };
 
