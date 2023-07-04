@@ -18,7 +18,7 @@
       &.back-card {
         left: calc(50% - 7rem);
         top: calc(50% - 7rem);
-        background: var(--color-gradient-green);
+        background: var(--ion-color-gradient-green);
         box-shadow: 0 0.25rem 0.25rem rgba(var(--ion-color-secondary-rgb), 0.2);
         transform: rotate(-10deg);
       }
@@ -26,7 +26,7 @@
       &.front-card {
         left: calc(50% - 2rem);
         top: calc(50% - 8.5rem);
-        background: var(--color-gradient-blue);
+        background: var(--ion-color-gradient-blue);
         box-shadow: 0 0.25rem 0.25rem rgba(var(--ion-color-secondary-rgb), 0.2);
         transform: rotate(10deg);
       }

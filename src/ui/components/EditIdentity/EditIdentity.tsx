@@ -31,7 +31,7 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import { CardsStackProps } from "../CardsStack/CardsStack.types";
+import { DidProps } from "../CardsStack/CardsStack.types";
 import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
 
 const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
@@ -95,8 +95,8 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
     handleDismiss();
     if (actionType === "edit") {
       // @TODO - sdisalvo: Update Database.
-      // Remember to update CardDetails file too.
-      const updatedDids: CardsStackProps[] = [];
+      // Remember to update DidCardDetails file too.
+      const updatedDids: DidProps[] = [];
       didsMock.forEach((element) => {
         const obj = { ...element };
         if (element.id === id) {
@@ -108,7 +108,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
       handleDone();
     } else if (actionType === "delete") {
       // @TODO - sdisalvo: Update Database.
-      // Remember to update CardDetails file too.
+      // Remember to update DidCardDetails file too.
       const updatedDids = didsMock.filter((item) => item.id !== id);
       dispatch(setDidsCache(updatedDids));
       handleDone();
@@ -131,7 +131,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
       <IonModal
         isOpen={isOpen}
         initialBreakpoint={0.35}
-        breakpoints={[0.35]}
+        breakpoints={[0, 0.35]}
         className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
         data-testid="edit-identity-modal"
         onDidDismiss={handleDismiss}
@@ -181,7 +181,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
                 </IonRow>
                 {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
                   <ErrorMessage
-                    message={i18n.t("editidentity.inner.error")}
+                    message={`${i18n.t("editidentity.inner.error")}`}
                     timeout={false}
                   />
                 ) : (

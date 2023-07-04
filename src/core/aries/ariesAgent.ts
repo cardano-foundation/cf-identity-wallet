@@ -8,7 +8,7 @@ import {
   KeyType,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
-import { CapacitorFileSystem } from "./dependencies/capacitorFileSystem";
+import { CapacitorFileSystem } from "./dependencies";
 import {
   IonicStorageModule,
   GeneralStorageModule,
@@ -16,6 +16,7 @@ import {
   MiscRecordId,
   CryptoAccountRecord,
 } from "./modules";
+import { HttpOutboundTransport } from "./transports";
 import { LabelledKeyDidRegistrar } from "./dids";
 import { IdentityType } from "./ariesAgent.types";
 import { Bip32PrivateKey } from "@emurgo/cardano-serialization-lib-browser";
@@ -54,6 +55,7 @@ class AriesAgent {
         }),
       },
     });
+    this.agent.registerOutboundTransport(new HttpOutboundTransport());
   }
 
   static get agent() {

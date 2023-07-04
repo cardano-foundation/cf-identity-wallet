@@ -87,7 +87,7 @@ const VerifySeedPhrase = () => {
       const seedPhraseString = originalSeedPhrase.join(" ");
       await SecureStorage.set(
         KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-        await Addresses.convertToRootXPrivateKeyHex(
+        Addresses.convertToRootXPrivateKeyHex(
           Addresses.convertToEntropy(seedPhraseString)
         )
       );
@@ -116,6 +116,7 @@ const VerifySeedPhrase = () => {
   return (
     <IonPage className="page-layout verify-seedphrase">
       <PageLayout
+        id="verify-seedphrase"
         header={true}
         backButton={true}
         onBack={handleClearState}
@@ -183,6 +184,7 @@ const VerifySeedPhrase = () => {
                     {seedPhraseRemaining.map((word, index) => (
                       <IonChip
                         key={index}
+                        data-testid={`remaining-word-${word}`}
                         onClick={() => {
                           addSeedPhraseSelected(word);
                         }}

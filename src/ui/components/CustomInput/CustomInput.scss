@@ -16,7 +16,7 @@ ion-item.input-item {
   .input-line {
     display: flex;
     width: 100%;
-    border: 1px solid var(--color-dark-grey);
+    border: 1px solid var(--ion-color-dark-grey);
     border-radius: 8px;
 
     ion-input {
@@ -37,7 +37,7 @@ ion-item.input-item {
       margin: auto 0.5rem;
       border-radius: 1.5rem;
       --background: transparent;
-      --background-activated: var(--color-medium-grey);
+      --background-activated: var(--ion-color-medium-grey);
       --box-shadow: none;
 
       &::part(native) {

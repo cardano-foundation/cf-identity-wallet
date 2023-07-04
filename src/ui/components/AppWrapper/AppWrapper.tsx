@@ -10,6 +10,17 @@ import {
 } from "../../../core/storage/secureStorage";
 import { setDidsCache } from "../../../store/reducers/didsCache";
 import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
+import { setCredsCache } from "../../../store/reducers/credsCache";
+import { filteredCredsMock } from "../../__mocks__/filteredCredsMock";
+import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
+import {
+  setCryptoAccountsCache,
+  setDefaultCryptoAccountCache,
+} from "../../../store/reducers/cryptoAccountsCache";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences/preferencesStorage";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -33,6 +44,19 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
 
+    try {
+      const defaultCryptoAccount = await PreferencesStorage.get(
+        PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT
+      );
+      dispatch(setDefaultCryptoAccountCache(`${defaultCryptoAccount.data}`));
+    } catch (e) {
+      if (cryptoAccountsMock.length) {
+        dispatch(setDefaultCryptoAccountCache(cryptoAccountsMock[0].address));
+      } else {
+        // @TODO - sdisalvo: handle error
+      }
+    }
+
     dispatch(
       setAuthentication({
         ...authentication,
@@ -43,6 +67,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
 
     dispatch(setDidsCache(filteredDidsMock));
+    dispatch(setCredsCache(filteredCredsMock));
+    dispatch(setCryptoAccountsCache(cryptoAccountsMock));
   };
 
   return <>{props.children}</>;

@@ -148,13 +148,13 @@
       "button": "Create password"
     },
     "error": {
-      "hasSpecialChar": "Use only lowercase/uppercase letters, numbers & symbols for your password",
+      "hasSpecialChar": "Please enter a valid character",
       "isTooShort": "Must be more than 8 characters long",
       "isTooLong": "Must be less than 64 characters long",
       "hasNoUppercase": "Must contain an uppercase letter",
       "hasNoLowercase": "Must contain a lowercase letter",
       "hasNoNumber": "Must contain a number",
-      "hasNoSymbol": "Must contain a a symbol",
+      "hasNoSymbol": "Must contain a valid symbol",
       "hasNoMatch": "Passwords do not match",
       "hintSameAsPassword": "Your hint cannot be your password"
     }
@@ -165,12 +165,8 @@
       "uppercase": "Contains an uppercase letter",
       "lowercase": "Contains a lowercase letter",
       "number": "Contains a number",
-      "symbol": "Contains a symbol"
+      "symbol": "Contains a symbol !@#$%^&*()"
     }
-  },
-
-  "carddetails": {
-    "done": "Done"
   },
   "dids": {
     "tab": {
@@ -182,6 +178,7 @@
         "created": "CREATED"
       },
       "details": {
+        "done": "Done",
         "information": "Information",
         "type": "Type",
         "controller": "Controller",
@@ -190,6 +187,46 @@
           "button": "Delete identity",
           "alert": {
             "title": "Are you sure you want to delete this identity?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          }
+        }
+      }
+    }
+  },
+  "creds": {
+    "tab": {
+      "title": "Credentials",
+      "create": "Create a credential"
+    },
+    "card": {
+      "layout": {
+        "name": "NAME",
+        "issued": "ISSUED"
+      },
+      "details": {
+        "done": "Done",
+        "types": "Types",
+        "attributes": "Attributes",
+        "connection": "Connection",
+        "issuancedate": "Issuance Date",
+        "expirationdate": "Expiration date",
+        "prooftypes": "Proof Types",
+        "options": {
+          "title": "Credential options",
+          "view": "View JSON",
+          "delete": "Delete credential"
+        },
+        "view": {
+          "cancel": "Cancel",
+          "title": "Credential JSON",
+          "copy": "Copy JSON",
+          "save": "Save to device"
+        },
+        "delete": {
+          "button": "Delete credential",
+          "alert": {
+            "title": "Are you sure you want to delete this credential?",
             "confirm": "Yes, I'm sure",
             "cancel": "Cancel"
           }
@@ -237,6 +274,54 @@
       "label": "Display name",
       "confirm": "Confirm changes",
       "error": "Must be less than 32 characters long"
+    }
+  },
+  "createidentity": {
+    "title": "Create new identity",
+    "displayname": {
+      "title": "Display name",
+      "placeholder": "Create a name for this identity"
+    },
+    "identitytype": {
+      "title": "Identity type",
+      "types": {
+        "type0": "did:key",
+        "type1": "KERI"
+      }
+    },
+    "confirmbutton": "Create identity",
+    "error": {
+      "maxlength": "Must be less than 32 characters long"
+    }
+  },
+  "crypto": {
+    "tab": {
+      "create": "Add a crypto account"
+    },
+    "mywalletsmodal": {
+      "title": "My wallets",
+      "empty": "No wallets available",
+      "create": "Add a crypto account"
+    },
+    "addcryptoaccountmodal": {
+      "title": "Add a new crypto account",
+      "reuse": "Use existing identity seed phrase",
+      "generate": "Generate a new seed phrase",
+      "restore": "Restore using an existing seed phrase"
+    },
+    "chooseaccountnamemodal": {
+      "title": "Wallet name",
+      "skip": "Skip",
+      "label": "Display name",
+      "placeholder": "My wallet",
+      "confirm": "Create wallet"
+    },
+    "renamewallet": {
+      "title": "Rename wallet",
+      "cancel": "Cancel",
+      "label": "Display name",
+      "placeholder": "Wallet name",
+      "confirm": "Confirm changes"
     }
   }
 }

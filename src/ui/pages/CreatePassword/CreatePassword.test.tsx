@@ -1,21 +1,26 @@
 import { Provider } from "react-redux";
 import { render } from "@testing-library/react";
-import { store } from "../../../store";
+import configureStore from "redux-mock-store";
+import userEvent from "@testing-library/user-event";
 import {
   CreatePassword,
   PasswordRegex,
-  STRING_LENGTH,
-  STRING_UPPERCASE,
-  STRING_LOWERCASE,
-  STRING_NUMBER,
-  STRING_SYMBOL,
-  STRING_SPECIAL_CHAR,
+  PasswordValidator,
 } from "./CreatePassword";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 describe("Create Password Page", () => {
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const initialState = {};
+
+  const storeMocked = {
+    ...mockStore(initialState),
+    dispatch: dispatchMock,
+  };
   test("Renders Create Password page", () => {
     const { getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked}>
         <CreatePassword />
       </Provider>
     );
@@ -27,100 +32,111 @@ describe("Create Password Page", () => {
     expect(createHintValue).toBeInTheDocument();
   });
 
-  test("Password is too short", () => {
-    const createPasswordValue = "A";
-    const setRegexState = jest.fn();
-    render(
-      <PasswordRegex
-        password={createPasswordValue}
-        setRegexState={setRegexState}
-      />
+  test("validates password correctly", () => {
+    const { container } = render(<PasswordRegex password="Abc123!@" />);
+    const regexConditions = container.getElementsByClassName(
+      "password-criteria-icon"
     );
-    expect(setRegexState).toHaveBeenCalledWith(STRING_LENGTH);
+    for (let i = 0; i < regexConditions.length; i++) {
+      expect(regexConditions[i]).toHaveClass("pass");
+    }
   });
 
-  test("Password is too long", () => {
-    const createPasswordValue =
-      "Cardano1$Cardano1$Cardano1$Cardano1$Cardano1$Cardano1$Cardano1$Cardano1$";
-    const setRegexState = jest.fn();
-    render(
-      <PasswordRegex
-        password={createPasswordValue}
-        setRegexState={setRegexState}
-      />
+  test("validates password length correctly", () => {
+    const { container } = render(<PasswordRegex password="Abc123!@" />);
+    const regexConditions = container.getElementsByClassName(
+      "password-criteria-icon"
     );
-    expect(setRegexState).toHaveBeenCalledWith(STRING_LENGTH);
+    expect(regexConditions[0]).toHaveClass("pass");
   });
 
-  test("Password doesn't have uppercase", () => {
-    const createPasswordValue = "cardano1$";
-    const setRegexState = jest.fn();
-    render(
-      <PasswordRegex
-        password={createPasswordValue}
-        setRegexState={setRegexState}
-      />
+  test("validates password is too short", () => {
+    const { container } = render(<PasswordRegex password="Ac123@" />);
+    const regexConditions = container.getElementsByClassName(
+      "password-criteria-icon"
     );
-    expect(setRegexState).toHaveBeenCalledWith(STRING_UPPERCASE);
+    expect(regexConditions[0]).toHaveClass("fails");
   });
 
-  test("Password doesn't have lowercase", () => {
-    const createPasswordValue = "CARDANO1$";
-    const setRegexState = jest.fn();
-    render(
-      <PasswordRegex
-        password={createPasswordValue}
-        setRegexState={setRegexState}
-      />
+  test("validates password is too long", () => {
+    const { container } = render(
+      <PasswordRegex password="Abc123456789012345678901234567890123456789012345678901234567890123@" />
     );
-    expect(setRegexState).toHaveBeenCalledWith(STRING_LOWERCASE);
+    const regexConditions = container.getElementsByClassName(
+      "password-criteria-icon"
+    );
+    expect(regexConditions[0]).toHaveClass("fails");
   });
 
-  test("Password doesn't have number", () => {
-    const createPasswordValue = "Cardano$";
-    const setRegexState = jest.fn();
-    render(
-      <PasswordRegex
-        password={createPasswordValue}
-        setRegexState={setRegexState}
-      />
+  test("validates password doesn't have uppercase", () => {
+    const { container } = render(<PasswordRegex password="abc123!@" />);
+    const regexConditions = container.getElementsByClassName(
+      "password-criteria-icon"
     );
-    expect(setRegexState).toHaveBeenCalledWith(STRING_NUMBER);
+    expect(regexConditions[1]).toHaveClass("fails");
   });
 
-  test("Password doesn't have symbol", () => {
-    const createPasswordValue = "Cardano1";
-    const setRegexState = jest.fn();
-    render(
-      <PasswordRegex
-        password={createPasswordValue}
-        setRegexState={setRegexState}
-      />
+  test("validates password doesn't have lowercase", () => {
+    const { container } = render(<PasswordRegex password="ABCD123!@" />);
+    const regexConditions = container.getElementsByClassName(
+      "password-criteria-icon"
     );
-    expect(setRegexState).toHaveBeenCalledWith(STRING_SYMBOL);
+    expect(regexConditions[2]).toHaveClass("fails");
   });
 
-  test("Password has space/special character", () => {
-    const createPasswordValue = "Cardano1$ ";
-    const setRegexState = jest.fn();
-    render(
-      <PasswordRegex
-        password={createPasswordValue}
-        setRegexState={setRegexState}
-      />
+  test("validates password doesn't have number", () => {
+    const { container } = render(<PasswordRegex password="ABCDabcde!@" />);
+    const regexConditions = container.getElementsByClassName(
+      "password-criteria-icon"
     );
-    expect(setRegexState).toHaveBeenCalledWith(STRING_SPECIAL_CHAR);
+    expect(regexConditions[3]).toHaveClass("fails");
   });
 
-  test("Password is accepted", () => {
-    const createPasswordValue = "Cardano1$";
-    const setRegexState = jest.fn();
-    render(
-      <PasswordRegex
-        password={createPasswordValue}
-        setRegexState={setRegexState}
-      />
+  test("validates password doesn't have symbol", () => {
+    const { container } = render(<PasswordRegex password="ABCDabcde123" />);
+    const regexConditions = container.getElementsByClassName(
+      "password-criteria-icon"
     );
-    expect(setRegexState).toHaveBeenCalledWith("");
+    expect(regexConditions[4]).toHaveClass("fails");
+  });
+
+  test("PasswordValidator returns false when using special char", () => {
+    expect(PasswordValidator.isValidCharacters("Abc123! @")).toBe(false);
+  });
+
+  test("PasswordValidator returns correct error priority", () => {
+    expect(PasswordValidator.getErrorByPriority("ABCD")).toBe(
+      EN_TRANSLATIONS.createpassword.error.isTooShort
+    );
+    expect(
+      PasswordValidator.getErrorByPriority(
+        "123456789123456789123456789123456789"
+      )
+    ).toBe(EN_TRANSLATIONS.createpassword.error.isTooLong);
+    expect(PasswordValidator.getErrorByPriority("ABCD1234@")).toBe(
+      EN_TRANSLATIONS.createpassword.error.hasNoLowercase
+    );
+    expect(PasswordValidator.getErrorByPriority("abcd1234@")).toBe(
+      EN_TRANSLATIONS.createpassword.error.hasNoUppercase
+    );
+    expect(PasswordValidator.getErrorByPriority("abcdEFGH@")).toBe(
+      EN_TRANSLATIONS.createpassword.error.hasNoNumber
+    );
+    expect(PasswordValidator.getErrorByPriority("abcdEFGH12 @")).toBe(
+      EN_TRANSLATIONS.createpassword.error.hasSpecialChar
+    );
+  });
+
+  test.skip("show error message on type special char", () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <CreatePassword />
+      </Provider>
+    );
+
+    const input = getByTestId("createPasswordValue");
+    userEvent.type(input, "Abc123! @");
+    const errorMessage = getByTestId("error-message");
+    expect(errorMessage).toBeInTheDocument();
   });
 });

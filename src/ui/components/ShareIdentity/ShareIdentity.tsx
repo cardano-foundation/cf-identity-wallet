@@ -23,7 +23,7 @@ const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {
     <IonModal
       isOpen={isOpen}
       initialBreakpoint={0.66}
-      breakpoints={[0.66]}
+      breakpoints={[0, 0.66]}
       className="page-layout share-identity"
       data-testid="share-identity-modal"
       onDidDismiss={() => setIsOpen(false)}

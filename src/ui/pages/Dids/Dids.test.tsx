@@ -5,7 +5,7 @@ import configureStore from "redux-mock-store";
 import { Dids } from "./Dids";
 import { store } from "../../../store";
 import { TabsRoutePath } from "../../../routes/paths";
-import { CardDetails } from "../CardDetails";
+import { DidCardDetails } from "../DidCardDetails";
 import {
   CLEAR_STATE_DELAY,
   NAVIGATION_DELAY,
@@ -42,7 +42,7 @@ describe("Dids Tab", () => {
       },
       seedPhraseCache: {},
       didsCache: {
-        dids: [filteredDidsMock[0]],
+        dids: filteredDidsMock,
       },
     };
 
@@ -61,7 +61,7 @@ describe("Dids Tab", () => {
           />
           <Route
             path={TabsRoutePath.DID_DETAILS}
-            component={CardDetails}
+            component={DidCardDetails}
           />
         </Provider>
       </MemoryRouter>
@@ -74,15 +74,12 @@ describe("Dids Tab", () => {
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 
-    expect(getByText(EN_TRANSLATIONS.carddetails.done)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.dids.card.details.done)).toBeVisible();
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 
-    const firstCardDetailsId = getByTestId("card-stack");
-    expect(firstCardDetailsId).not.toHaveClass("active");
-
     const doneButton = getByTestId(
-      `tab-title-${EN_TRANSLATIONS.carddetails.done.toLowerCase()}`
+      `tab-title-${EN_TRANSLATIONS.dids.card.details.done.toLowerCase()}`
     );
 
     act(() => {

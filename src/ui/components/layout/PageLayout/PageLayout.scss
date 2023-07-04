@@ -1,5 +1,5 @@
 .page-layout {
-  padding-inline: 20px;
+  padding-inline: 1.25rem;
   ion-toolbar,
   .toolbar-container,
   ion-grid,
@@ -18,11 +18,11 @@
       width: 2.5rem;
       height: 2.5rem;
       border-radius: 1.5rem;
-      background: var(--color-light-grey);
+      background: var(--ion-color-light-grey);
     }
 
     ion-button[disabled="true"] {
-      color: var(--color-dark-grey);
+      color: var(--ion-color-dark-grey);
     }
 
     ion-icon {
@@ -46,7 +46,7 @@
     .action-button-label {
       --padding-end: 0px;
       &[disabled="false"] {
-        color: var(--color-blue);
+        color: var(--ion-color-blue);
       }
     }
   }

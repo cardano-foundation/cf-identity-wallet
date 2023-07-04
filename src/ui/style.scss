@@ -48,17 +48,17 @@ p {
   text-transform: none;
   font-size: 1rem;
   color: var(--ion-color-primary);
-  --background: var(--color-accent-gradient);
-  --background-activated: var(--color-medium-grey);
+  --background: var(--ion-color-primary-gradient);
+  --background-activated: var(--ion-color-medium-grey);
 
   &.button-disabled {
-    --background: var(--color-dark-grey);
+    --background: var(--ion-color-dark-grey);
   }
 }
 
 .secondary-button {
-  --border-color: var(--color-dark-grey);
-  --background-activated: var(--color-dark-grey);
+  --border-color: var(--ion-color-dark-grey);
+  --background-activated: var(--ion-color-dark-grey);
 }
 
 .ion-primary-button,
@@ -100,20 +100,41 @@ p {
   }
 }
 
+ion-modal {
+  --background: transparent;
+}
+
 .modal {
-  padding-inline: 20px;
+  padding-inline: 1.25rem;
   background-color: var(--ion-color-light);
+  border-radius: 1rem 1rem 0px 0px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
 
   ion-toolbar {
     padding: 0.5rem 0 0 !important;
+    height: 4rem;
   }
 
-  ion-content {
-    height: 90vh;
+  ion-title {
+    position: absolute;
+    width: 100%;
+    height: 3rem;
+    top: 0;
+    left: 0;
   }
 
   h2 {
     margin: 0 auto;
+    font-size: 1.5rem;
+  }
+
+  .action-button-label,
+  .close-button-label {
+    color: var(--ion-color-primary);
   }
 }
 

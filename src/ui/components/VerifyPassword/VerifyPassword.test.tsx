@@ -16,7 +16,7 @@ describe("Verify Password modal", () => {
         isOpen={true}
         setIsOpen={mockSetIsOpen}
         onVerify={() => {
-          return;
+          /**/
         }}
       />
     );
@@ -32,7 +32,6 @@ describe("Verify Password modal", () => {
     await waitFor(() => {
       expect(backdrop).not.toBeInTheDocument();
     });
-
     expect(queryByText(EN_TRANSLATIONS.verifypassword.title)).toBeNull();
   });
 });

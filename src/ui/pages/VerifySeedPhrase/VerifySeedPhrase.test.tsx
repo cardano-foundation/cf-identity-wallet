@@ -114,7 +114,7 @@ describe("Verify Seed Phrase Page", () => {
       </Provider>
     );
 
-    const continueButton = getByTestId("continue-button");
+    const continueButton = getByTestId("continue-button-verify-seedphrase");
     const originalSeedPhraseContainer = getByTestId(
       "original-seed-phrase-container"
     );
@@ -171,7 +171,7 @@ describe("Verify Seed Phrase Page", () => {
       </Provider>
     );
 
-    const continueButton = getByTestId("continue-button");
+    const continueButton = getByTestId("continue-button-verify-seedphrase");
     const originalSeedPhraseContainer = getByTestId(
       "original-seed-phrase-container"
     );
@@ -284,7 +284,9 @@ describe("Verify Seed Phrase Page", () => {
     fireEvent.click(getByText(String("example4")));
     fireEvent.click(getByText(String("example5")));
 
-    const continueButton = getByTestId("continue-button") as HTMLButtonElement;
+    const continueButton = getByTestId(
+      "continue-button-verify-seedphrase"
+    ) as HTMLButtonElement;
 
     expect(continueButton.disabled).toBe(false);
 

@@ -1,13 +1,14 @@
-import { Preferences, GetResult } from "@capacitor/preferences";
-import { PreferencesStorageItem } from "./preferencesStorage.type";
+import { Preferences } from "@capacitor/preferences";
 import {
   RemoveOptions,
   SetOptions,
 } from "@capacitor/preferences/dist/esm/definitions";
+import { PreferencesStorageItem } from "./preferencesStorage.type";
 
 enum PreferencesKeys {
   APP_STATE_FLAGS = "app-state-flags",
   APP_LANGUAGE = "app-language",
+  APP_DEFAULT_CRYPTO_ACCOUNT = "app-default-crypto-account",
 }
 
 class PreferencesStorage {

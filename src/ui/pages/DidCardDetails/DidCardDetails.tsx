@@ -20,7 +20,7 @@ import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
-import "./CardDetails.scss";
+import "./DidCardDetails.scss";
 import { didsMock } from "../../__mocks__/didsMock";
 import { DidCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -33,8 +33,9 @@ import { EditIdentity } from "../../components/EditIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import { setDidsCache } from "../../../store/reducers/didsCache";
+import { formatDate } from "../../../utils";
 
-const CardDetails = () => {
+const DidCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
@@ -58,7 +59,7 @@ const CardDetails = () => {
   useEffect(() => {
     const cardDetails = dids.find((did) => did.id === params.id);
     if (cardDetails) setCardData(cardDetails);
-  }, [params?.id]);
+  }, [params.id]);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
@@ -126,7 +127,7 @@ const CardDetails = () => {
     <IonPage className="tab-layout card-details">
       <TabLayout
         header={true}
-        title={`${i18n.t("carddetails.done")}`}
+        title={`${i18n.t("dids.card.details.done")}`}
         titleSize="h3"
         titleAction={handleDone}
         menuButton={false}
@@ -188,7 +189,7 @@ const CardDetails = () => {
                     </span>
 
                     <span className="card-details-info-block-data">
-                      {cardData?.date}
+                      {formatDate(cardData?.date)}
                     </span>
                   </span>
                 </div>
@@ -346,4 +347,4 @@ const CardDetails = () => {
   );
 };
 
-export { CardDetails };
+export { DidCardDetails };

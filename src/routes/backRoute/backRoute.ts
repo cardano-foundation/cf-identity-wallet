@@ -108,7 +108,13 @@ const backRoute: Record<string, any> = {
   [RoutePath.PASSCODE_LOGIN]: {
     updateRedux: [updateStoreAfterPasscodeLoginRoute],
   },
+  [RoutePath.CREATE_PASSWORD]: {
+    updateRedux: [],
+  },
   [TabsRoutePath.DID_DETAILS]: {
+    updateRedux: [removeCurrentRoute],
+  },
+  [TabsRoutePath.CRED_DETAILS]: {
     updateRedux: [removeCurrentRoute],
   },
 };
@@ -119,4 +125,5 @@ export {
   getPreviousRoute,
   updateStoreAfterPasscodeLoginRoute,
   updateStoreSetCurrentRoute,
+  backPath,
 };
