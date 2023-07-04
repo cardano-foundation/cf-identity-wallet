@@ -6,7 +6,10 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
-import { getCryptoAccountsCache } from "../../../store/reducers/cryptoAccountsCache";
+import {
+  getCryptoAccountsCache,
+  getDefaultCryptoAccountCache,
+} from "../../../store/reducers/cryptoAccountsCache";
 import { i18n } from "../../../i18n";
 import "./Crypto.scss";
 import { CryptoAccountProps } from "./Crypto.types";
@@ -25,14 +28,36 @@ const Crypto = () => {
   const [idwProfileInUse, setIdwProfileInUse] = useState(false);
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
+  const [defaultAccountAddress, setDefaultAccountAddress] = useState(
+    useAppSelector(getDefaultCryptoAccountCache)
+  );
+  const [defaultAccountData, setDefaultAccountData] =
+    useState<CryptoAccountProps>({
+      address: "",
+      name: "",
+      blockchain: "",
+      currency: "",
+      logo: "",
+      nativeBalance: 0,
+      usdBalance: 0,
+      usesIdentitySeedPhrase: false,
+    });
 
   useEffect(() => {
     cryptoAccountsData?.forEach((account) => {
+      if (account.address === defaultAccountAddress) {
+        setDefaultAccountData(account);
+      }
       if (account.usesIdentitySeedPhrase) {
         setIdwProfileInUse(true);
+      } else {
+        setIdwProfileInUse(false);
       }
     });
-  }, [cryptoAccountsData]);
+    if (!cryptoAccountsData?.length) {
+      setIdwProfileInUse(false);
+    }
+  }, [cryptoAccountsData, defaultAccountAddress]);
 
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }))
@@ -69,8 +94,8 @@ const Crypto = () => {
           menuButton={true}
           additionalButtons={<AdditionalButtons />}
         >
-          {cryptoAccountsData?.length ? (
-            <pre>{JSON.stringify(cryptoAccountsData[0], null, 2)}</pre>
+          {cryptoAccountsData?.length && defaultAccountData ? (
+            <pre>{JSON.stringify(defaultAccountData, null, 2)}</pre>
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("crypto.tab.create")}
@@ -83,6 +108,10 @@ const Crypto = () => {
         myWalletsIsOpen={myWalletsIsOpen}
         setMyWalletsIsOpen={setMyWalletsIsOpen}
         setAddAccountIsOpen={setAddAccountIsOpen}
+        defaultAccountData={defaultAccountData}
+        setDefaultAccountData={setDefaultAccountData}
+        defaultAccountAddress={defaultAccountAddress}
+        setDefaultAccountAddress={setDefaultAccountAddress}
       />
       <AddCryptoAccount
         addAccountIsOpen={addAccountIsOpen}
@@ -101,6 +130,7 @@ const Crypto = () => {
       <ChooseAccountName
         chooseAccountNameIsOpen={chooseAccountNameIsOpen}
         setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
+        setDefaultAccountData={setDefaultAccountData}
       />
     </>
   );

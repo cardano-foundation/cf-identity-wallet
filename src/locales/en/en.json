@@ -311,6 +311,13 @@
       "label": "Display name",
       "placeholder": "My wallet",
       "confirm": "Create wallet"
+    },
+    "renamewallet": {
+      "title": "Rename wallet",
+      "cancel": "Cancel",
+      "label": "Display name",
+      "placeholder": "Wallet name",
+      "confirm": "Confirm changes"
     }
   }
 }

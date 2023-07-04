@@ -1,19 +1,19 @@
 .generate-seedphrase {
   ion-segment {
-    --background: var(--color-dark-grey);
+    --background: var(--ion-color-dark-grey);
 
     ion-segment-button.segment-button-checked {
       &::part(indicator-background) {
-        background: var(--color-accent-gradient);
+        background: var(--ion-color-primary-gradient);
       }
     }
   }
 
   ion-card {
     position: relative;
-    border: 1px solid var(--color-dark-grey);
+    border: 1px solid var(--ion-color-dark-grey);
     border-radius: 1rem;
-    --background: var(--color-light-grey);
+    --background: var(--ion-color-light-grey);
     box-shadow: none;
   }
 

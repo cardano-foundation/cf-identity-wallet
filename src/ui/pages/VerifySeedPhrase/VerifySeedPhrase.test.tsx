@@ -284,7 +284,9 @@ describe("Verify Seed Phrase Page", () => {
     fireEvent.click(getByText(String("example4")));
     fireEvent.click(getByText(String("example5")));
 
-    const continueButton = getByTestId("continue-button-verify-seedphrase") as HTMLButtonElement;
+    const continueButton = getByTestId(
+      "continue-button-verify-seedphrase"
+    ) as HTMLButtonElement;
 
     expect(continueButton.disabled).toBe(false);
 

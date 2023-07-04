@@ -144,10 +144,16 @@ describe("Crypto Tab", () => {
       seedPhraseCache: {},
       cryptoAccountsCache: [
         {
+          address:
+            "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
           name: "Test wallet",
+          blockchain: "Cardano",
           currency: "ADA",
-          balance: 2785.82,
+          logo: "logo.png",
+          nativeBalance: 273.85,
+          usdBalance: 75.2,
           usesIdentitySeedPhrase: true,
+          isSelected: false,
         },
       ],
     };

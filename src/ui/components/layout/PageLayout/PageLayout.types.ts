@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 
 interface PageLayoutProps {
-  id?: string,
+  id?: string;
   header?: boolean;
   backButton?: boolean;
   onBack?: () => void;
