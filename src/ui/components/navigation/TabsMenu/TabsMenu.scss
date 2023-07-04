@@ -20,7 +20,7 @@ ion-tab-button {
     color: var(--ion-color-secondary);
   }
 
-  .borderTop {
+  .border-top {
     height: 2px;
     width: 65%;
     position: absolute;
@@ -28,13 +28,13 @@ ion-tab-button {
     border-top: 2px solid transparent;
   }
 
-  &.md .borderTop {
+  &.md .border-top {
     width: 90%;
   }
 
   &.tab-selected {
     color: var(--ion-color-primary);
-    .borderTop {
+    .border-top {
       border-color: var(--ion-color-primary);
     }
   }
