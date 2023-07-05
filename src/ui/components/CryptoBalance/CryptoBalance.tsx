@@ -35,12 +35,15 @@ const CryptoBalance = ({ items }: CryptoBalanceProps) => {
   };
 
   return (
-    <div className={`crypto-balance${hidden ? " hide-balance" : ""}`}>
+    <div
+      className={`crypto-balance-container${hidden ? " hide-balance" : ""}`}
+      data-testid="crypto-balance-container"
+    >
       <div className="account-network">
         <span>{i18n.t("crypto.tab.network.mainnet")}</span>
       </div>
       <Swiper
-        className="swiper-container"
+        data-testid="crypto-balance-swiper"
         onSwiper={(swiper) => setSwiper(swiper)}
         onSlideChange={() => (swiper ? setActiveIndex(swiper.realIndex) : null)}
         slidesPerView={1}
