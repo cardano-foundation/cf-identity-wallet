@@ -8,7 +8,7 @@ interface IdentityShortDetails {
   displayName: string;
   id: string;
   createdAtUTC: string;
-  colours: [string, string];
+  colors: [string, string];
 }
 
 interface IdentityDetails {
@@ -19,7 +19,7 @@ interface IdentityDetails {
   controller: string;
   keyType: string;
   publicKeyBase58: string;
-  colours: [string, string];
+  colors: [string, string];
 }
 
 export { IdentityType };

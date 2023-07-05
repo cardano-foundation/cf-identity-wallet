@@ -75,7 +75,7 @@ const CreateIdentity = ({
       method: selectedType === 0 ? IdentityType.KEY : IdentityType.KERI,
       displayName: displayNameValue,
       createdAtUTC: new Date().toISOString(),
-      colours: [newColor[1], newColor[0]],
+      colors: [newColor[1], newColor[0]],
     };
     dispatch(setIdentitiesCache([...identityData, newIdentity]));
     setShowVerifyPassword(false);

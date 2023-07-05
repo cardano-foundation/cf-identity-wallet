@@ -38,8 +38,8 @@ const agentDependencies: AgentDependencies = {
     global.WebSocket as unknown as AgentDependencies["WebSocketClass"],
 };
 
-// @TODO - foconnor: Once colour stories in place this should be stored in DB.
-const PRESET_COLOURS: [string, string][] = [
+// @TODO - foconnor: Once color stories in place this should be stored in DB.
+const PRESET_COLORS: [string, string][] = [
   ["#92FFC0", "#47FF94"],
   ["#92FFC0", "#47FF94"],
   ["#D9EDDF", "#ACD8B9"],
@@ -128,7 +128,7 @@ class AriesAgent {
           displayName,
           id: did.did,
           createdAtUTC: did.createdAt.toISOString(),
-          colours: PRESET_COLOURS[i % PRESET_COLOURS.length],
+          colors: PRESET_COLORS[i % PRESET_COLORS.length],
         });
       }
     }
@@ -180,7 +180,7 @@ class AriesAgent {
       controller: record.did,
       keyType: signingKey.type.toString(),
       publicKeyBase58: signingKey.publicKeyBase58,
-      colours: PRESET_COLOURS[0],
+      colors: PRESET_COLORS[0],
     };
   }
 }

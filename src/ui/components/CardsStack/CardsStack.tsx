@@ -98,7 +98,7 @@ const DidCard = ({
         }
       }}
       style={{
-        background: `linear-gradient(91.86deg, ${cardData.colours[0]} 28.76%, ${cardData.colours[1]} 119.14%)`,
+        background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
       }}
     >
       <div className="cards-stack-did-layout">
