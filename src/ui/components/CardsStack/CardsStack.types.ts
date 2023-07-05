@@ -1,13 +1,4 @@
-interface DidProps {
-  id: string;
-  type: string;
-  name: string;
-  date: string;
-  colors: string[];
-  keyType?: string;
-  controller?: string;
-  publicKeyBase58?: string;
-}
+import { IdentityShortDetails } from "../../../core/aries/ariesAgent.types";
 
 interface CredProps {
   id: string;
@@ -36,7 +27,7 @@ interface CredProps {
 }
 
 interface DidCardProps {
-  cardData: DidProps;
+  cardData: IdentityShortDetails;
   isActive: boolean;
   index?: number;
   onHandleShowCardDetails?: (index: number | undefined) => void;
@@ -49,4 +40,4 @@ interface CredCardProps {
   onHandleShowCardDetails?: (index: number | undefined) => void;
 }
 
-export type { DidProps, DidCardProps, CredProps, CredCardProps };
+export type { DidCardProps, CredProps, CredCardProps };

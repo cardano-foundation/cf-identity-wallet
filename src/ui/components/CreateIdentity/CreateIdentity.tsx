@@ -18,14 +18,21 @@ import "./CreateIdentity.scss";
 import { VerifyPassword } from "../VerifyPassword";
 import { generateUUID } from "../../../utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getDidsCache, setDidsCache } from "../../../store/reducers/didsCache";
+import {
+  getIdentitiesCache,
+  setIdentitiesCache,
+} from "../../../store/reducers/identitiesCache";
+import {
+  IdentityShortDetails,
+  IdentityType,
+} from "../../../core/aries/ariesAgent.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 const CreateIdentity = ({
   modalIsOpen,
   setModalIsOpen,
 }: CreateIdentityProps) => {
   const dispatch = useAppDispatch();
-  const didsData = useAppSelector(getDidsCache);
+  const identityData = useAppSelector(getIdentitiesCache);
   const [displayNameValue, setDisplayNameValue] = useState("");
   const [selectedType, setSelectedType] = useState<number | undefined>(
     undefined
@@ -61,21 +68,16 @@ const CreateIdentity = ({
   const handleOnVerifyPassword = () => {
     const uuid = generateUUID();
     const id = `did:key:${uuid}`;
-
-    const currentDate = new Date();
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
-    const newDid = {
+    const newIdentity: IdentityShortDetails = {
       id,
-      type:
-        selectedType === 0
-          ? i18n.t("createidentity.identitytype.types.type0")
-          : i18n.t("createidentity.identitytype.types.type1"),
-      name: displayNameValue,
-      date: currentDate.toISOString(),
+      method: selectedType === 0 ? IdentityType.KEY : IdentityType.KERI,
+      displayName: displayNameValue,
+      createdAtUTC: new Date().toISOString(),
       colors: [newColor[1], newColor[0]],
     };
-    dispatch(setDidsCache([...didsData, newDid]));
+    dispatch(setIdentitiesCache([...identityData, newIdentity]));
     setShowVerifyPassword(false);
     resetModal();
   };
@@ -134,9 +136,7 @@ const CreateIdentity = ({
                   }`}
                 >
                   <div className="centered-text">
-                    <span>{`${i18n.t(
-                      "createidentity.identitytype.types.type0"
-                    )}`}</span>
+                    <span>{"DID:KEY"}</span>
                   </div>
                 </IonItem>
               </IonCol>
@@ -148,9 +148,7 @@ const CreateIdentity = ({
                   }`}
                 >
                   <div className="centered-text">
-                    <span>{`${i18n.t(
-                      "createidentity.identitytype.types.type1"
-                    )}`}</span>
+                    <span>{"KERI"}</span>
                   </div>
                 </IonItem>
               </IonCol>
