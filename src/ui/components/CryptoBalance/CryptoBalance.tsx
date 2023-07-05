@@ -6,10 +6,29 @@ import { Swiper as SwiperClass } from "swiper/types";
 import { CryptoBalanceProps } from "./CryptoBalance.types";
 import "./CryptoBalance.scss";
 import { i18n } from "../../../i18n";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getHideCryptoData,
+  setHideCryptoData,
+} from "../../../store/reducers/cryptoAccountsCache";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences/preferencesStorage";
 
 const CryptoBalance = ({ items }: CryptoBalanceProps) => {
+  const dispatch = useAppDispatch();
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
+  const [hidden, setHidden] = useState(useAppSelector(getHideCryptoData));
+
+  const handleToggleHide = () => {
+    dispatch(setHideCryptoData(!hidden));
+    PreferencesStorage.set(PreferencesKeys.APP_HIDE_CRYPTO_DATA, {
+      hidden: !hidden,
+    });
+    setHidden(!hidden);
+  };
 
   return (
     <div className="crypto-balance">
@@ -24,6 +43,7 @@ const CryptoBalance = ({ items }: CryptoBalanceProps) => {
             swiper ? setActiveIndex(swiper.realIndex) : null
           }
           slidesPerView={1}
+          onClick={handleToggleHide}
         >
           {items.map((slide, index) => (
             <SwiperSlide key={index}>

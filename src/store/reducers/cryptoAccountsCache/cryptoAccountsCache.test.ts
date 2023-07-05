@@ -14,6 +14,7 @@ describe("cryptoAccountsCacheSlice", () => {
   const initialState = {
     cryptoAccounts: [],
     defaultCryptoAccount: "",
+    hideCryptoData: false,
   };
   it("should return the initial state", () => {
     expect(
