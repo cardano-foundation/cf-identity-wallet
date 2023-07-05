@@ -1,10 +1,19 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  queryByTestId,
+  queryByText,
+  render,
+  waitFor,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Crypto } from "./Crypto";
 import { store } from "../../../store";
 import { TabsRoutePath } from "../../../routes/paths";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
+import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
 describe("Crypto Tab", () => {
   test("Renders Crypto Tab", () => {
@@ -96,7 +105,12 @@ describe("Crypto Tab", () => {
           passcodeIsSet: true,
         },
       },
-      seedPhraseCache: {},
+      seedPhraseCache: {
+        seedPhrase160:
+          "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
       cryptoAccountsCache: [],
     };
 
@@ -104,7 +118,7 @@ describe("Crypto Tab", () => {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, queryAllByTestId } = render(
       <Provider store={storeMocked}>
         <Crypto />
       </Provider>
@@ -125,7 +139,10 @@ describe("Crypto Tab", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.verifypassword.title)).toBeVisible();
+      expect(queryAllByTestId("verify-password")[0]).toHaveAttribute(
+        "is-open",
+        "true"
+      );
     });
   });
 
@@ -142,31 +159,42 @@ describe("Crypto Tab", () => {
         },
       },
       seedPhraseCache: {},
-      cryptoAccountsCache: [
-        {
-          address:
-            "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
-          name: "Test wallet",
-          blockchain: "Cardano",
-          currency: "ADA",
-          logo: "logo.png",
-          nativeBalance: 273.85,
-          usdBalance: 75.2,
-          usesIdentitySeedPhrase: true,
-          isSelected: false,
-        },
-      ],
+      cryptoAccountsCache: {
+        cryptoAccounts: [
+          {
+            address:
+              "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
+            name: "Test wallet",
+            blockchain: "Cardano",
+            currency: "ADA",
+            logo: "logo.png",
+            nativeBalance: 273.85,
+            usdBalance: 75.2,
+            usesIdentitySeedPhrase: true,
+            isSelected: false,
+          },
+        ],
+        defaultCryptoAccount: cryptoAccountsMock[0].address,
+      },
     };
 
     const storeMocked = {
       ...mockStore(initialState),
       dispatch: dispatchMock,
     };
-    const { getByText, queryByText } = render(
+    const { getByText, queryByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <Crypto />
       </Provider>
     );
+
+    act(() => {
+      fireEvent.click(getByTestId("my-wallets-button"));
+    });
+
+    await waitFor(() => {
+      expect(queryByText(EN_TRANSLATIONS.crypto.tab.create)).toBeVisible();
+    });
 
     act(() => {
       fireEvent.click(getByText(EN_TRANSLATIONS.crypto.tab.create));
@@ -216,5 +244,64 @@ describe("Crypto Tab", () => {
         getByText(EN_TRANSLATIONS.crypto.mywalletsmodal.empty)
       ).toBeVisible();
     });
+  });
+
+  test("User can toggle accounts", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.CRYPTO],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      cryptoAccountsCache: {
+        cryptoAccounts: cryptoAccountsMock,
+        defaultCryptoAccount: cryptoAccountsMock[0].address,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { queryByTestId, getByTestId, queryByText } = render(
+      <Provider store={storeMocked}>
+        <Crypto />
+      </Provider>
+    );
+
+    expect(queryByText(cryptoAccountsMock[0].name)).toBeVisible();
+
+    await waitFor(() => {
+      expect(queryByTestId("crypto-tab-content")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("my-wallets")).toHaveAttribute("is-open", "false");
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("my-wallets-button"));
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("my-wallets-account-1")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("my-wallets")).toHaveAttribute("is-open", "true");
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("my-wallets-account-1"));
+    });
+
+    expect(queryByText(cryptoAccountsMock[1].name)).toBeVisible();
   });
 });

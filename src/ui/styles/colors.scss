@@ -15,7 +15,9 @@
   --ion-color-medium-grey: #d9d9d9;
   --ion-color-dark-grey: #bbbbbb;
   --ion-color-green: #438f68;
+  --ion-color-dark-green: #377657;
   --ion-color-blue: #017eff;
+  --ion-color-transparent: transparent;
 
   --ion-color-primary-gradient: linear-gradient(
     94.29deg,
@@ -52,8 +54,16 @@
   --ion-color-base: var(--ion-color-green);
 }
 
+.ion-color-dark-green {
+  --ion-color-base: var(--ion-color-dark-green);
+}
+
 .ion-color-blue {
   --ion-color-base: var(--ion-color-blue);
+}
+
+.ion-color-transparent {
+  --ion-color-base: var(--ion-color-transparent);
 }
 
 .ion-color-primary-gradient {

@@ -296,7 +296,21 @@
   },
   "crypto": {
     "tab": {
-      "create": "Add a crypto account"
+      "create": "Add a crypto account",
+      "network": {
+        "mainnet": "Mainnet"
+      },
+      "slider": {
+        "title": {
+          "mainbalance": "Main balance"
+        }
+      },
+      "actionbuttons": {
+        "send": "Send",
+        "receive": "Receive",
+        "nfts": "NFTs",
+        "staking": "Staking"
+      }
     },
     "mywalletsmodal": {
       "title": "My wallets",
