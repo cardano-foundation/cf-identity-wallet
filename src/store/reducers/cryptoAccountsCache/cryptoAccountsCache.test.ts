@@ -3,8 +3,10 @@ import {
   cryptoAccountsCacheSlice,
   getCryptoAccountsCache,
   getDefaultCryptoAccountCache,
+  getHideCryptoData,
   setCryptoAccountsCache,
   setDefaultCryptoAccountCache,
+  setHideCryptoData,
 } from "./cryptoAccountsCache";
 import { RootState } from "../../index";
 import { CryptoAccountProps } from "../../../ui/pages/Crypto/Crypto.types";
@@ -63,6 +65,27 @@ describe("cryptoAccountsCacheSlice", () => {
     const cryptoAccountsCache = getDefaultCryptoAccountCache(state);
     expect(cryptoAccountsCache).toEqual(
       state.cryptoAccountsCache.defaultCryptoAccount
+    );
+  });
+
+  it("should handle setHideCryptoData", () => {
+    const hideCryptoData = true;
+    const newState = cryptoAccountsCacheSlice.reducer(
+      initialState,
+      setHideCryptoData(hideCryptoData)
+    );
+    expect(newState.hideCryptoData).toEqual(hideCryptoData);
+  });
+
+  it("should handle getHideCryptoData", () => {
+    const state = {
+      cryptoAccountsCache: {
+        hideCryptoData: true,
+      },
+    } as RootState;
+    const cryptoAccountsCache = getHideCryptoData(state);
+    expect(cryptoAccountsCache).toEqual(
+      state.cryptoAccountsCache.hideCryptoData
     );
   });
 });
