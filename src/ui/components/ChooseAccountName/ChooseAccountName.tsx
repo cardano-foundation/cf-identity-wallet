@@ -60,8 +60,16 @@ const ChooseAccountName = ({
       blockchain: "Cardano",
       currency: "ADA",
       logo: CardanoLogo,
-      nativeBalance: 273.85,
-      usdBalance: 75.2,
+      balance: {
+        main: {
+          nativeBalance: 273.85,
+          usdBalance: 75.2,
+        },
+        reward: {
+          nativeBalance: 0,
+          usdBalance: 0,
+        },
+      },
       // End of hardcoded values
     };
 

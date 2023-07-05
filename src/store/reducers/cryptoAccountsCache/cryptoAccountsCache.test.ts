@@ -8,6 +8,7 @@ import {
 } from "./cryptoAccountsCache";
 import { RootState } from "../../index";
 import { CryptoAccountProps } from "../../../ui/pages/Crypto/Crypto.types";
+import { cryptoAccountsMock } from "../../../ui/__mocks__/cryptoAccountsMock";
 
 describe("cryptoAccountsCacheSlice", () => {
   const initialState = {
@@ -21,18 +22,7 @@ describe("cryptoAccountsCacheSlice", () => {
   });
 
   it("should handle setCryptoAccountsCache", () => {
-    const cryptoAccounts: CryptoAccountProps[] = [
-      {
-        address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
-        name: "Test wallet 1",
-        blockchain: "Cardano",
-        currency: "ADA",
-        logo: "logo.png",
-        nativeBalance: 273.85,
-        usdBalance: 75.2,
-        usesIdentitySeedPhrase: true,
-      },
-    ];
+    const cryptoAccounts: CryptoAccountProps[] = cryptoAccountsMock;
     const newState = cryptoAccountsCacheSlice.reducer(
       initialState,
       setCryptoAccountsCache(cryptoAccounts)
@@ -43,19 +33,7 @@ describe("cryptoAccountsCacheSlice", () => {
   it("should handle getCryptoAccountsCache", () => {
     const state = {
       cryptoAccountsCache: {
-        cryptoAccounts: [
-          {
-            address:
-              "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
-            name: "Test wallet 1",
-            blockchain: "Cardano",
-            currency: "ADA",
-            logo: "logo.png",
-            nativeBalance: 273.85,
-            usdBalance: 75.2,
-            usesIdentitySeedPhrase: true,
-          },
-        ],
+        cryptoAccounts: cryptoAccountsMock,
       },
     } as RootState;
     const cryptoAccountsCache = getCryptoAccountsCache(state);

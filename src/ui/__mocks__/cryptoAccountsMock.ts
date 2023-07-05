@@ -8,8 +8,16 @@ const cryptoAccountsMock: CryptoAccountProps[] = [
     blockchain: "Cardano",
     currency: "ADA",
     logo: CardanoLogo,
-    nativeBalance: 3678.05563949,
-    usdBalance: 1012.0,
+    balance: {
+      main: {
+        nativeBalance: 3678.05563949,
+        usdBalance: 1012.0,
+      },
+      reward: {
+        nativeBalance: 52.8638809,
+        usdBalance: 15.45,
+      },
+    },
     usesIdentitySeedPhrase: false,
   },
   {
@@ -18,8 +26,16 @@ const cryptoAccountsMock: CryptoAccountProps[] = [
     blockchain: "Cardano",
     currency: "ADA",
     logo: CardanoLogo,
-    nativeBalance: 47526.01302044,
-    usdBalance: 13000.0,
+    balance: {
+      main: {
+        nativeBalance: 47526.01302044,
+        usdBalance: 13000.0,
+      },
+      reward: {
+        nativeBalance: 362.04059792,
+        usdBalance: 105.81,
+      },
+    },
     usesIdentitySeedPhrase: false,
   },
 ];

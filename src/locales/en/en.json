@@ -302,7 +302,8 @@
       },
       "slider": {
         "title": {
-          "mainbalance": "Main balance"
+          "mainbalance": "Main balance",
+          "rewardbalance": "Reward balance"
         }
       },
       "actionbuttons": {
