@@ -9,7 +9,9 @@
     "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
-    "test:e2e": "cypress run"
+    "test:e2e": "cypress run",
+    "e2e": "SERVE_PORT=3000 TS_NODE_PROJECT=tests/tsconfig.json  wdio tests/config/web.config.ts --watch"
+
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "^3.0.1",
