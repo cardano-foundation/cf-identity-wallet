@@ -21,7 +21,6 @@ import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import "./DidCardDetails.scss";
-import { didsMock } from "../../__mocks__/didsMock";
 import { DidCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -32,33 +31,35 @@ import { ShareIdentity } from "../../components/ShareIdentity";
 import { EditIdentity } from "../../components/EditIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
-import { setDidsCache } from "../../../store/reducers/didsCache";
+import {
+  getIdentitiesCache,
+  setIdentitiesCache,
+} from "../../../store/reducers/identitiesCache";
 import { formatDate } from "../../../utils";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { IdentityDetails } from "../../../core/aries/ariesAgent.types";
 
 const DidCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
+  const identitiesData = useAppSelector(getIdentitiesCache);
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [dids, setDids] = useState(didsMock);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState({
-    id: params.id,
-    type: "",
-    name: "",
-    date: "",
-    colors: ["", ""],
-    keyType: "",
-    controller: "",
-    publicKeyBase58: "",
-  });
+  const [cardData, setCardData] = useState<IdentityDetails | undefined>();
 
   useEffect(() => {
-    const cardDetails = dids.find((did) => did.id === params.id);
-    if (cardDetails) setCardData(cardDetails);
+    const fetchDetails = async () => {
+      const cardDetails = await AriesAgent.agent.getIdentity(params.id);
+      if (cardDetails) {
+        setCardData(cardDetails);
+      }
+      // @TODO - Error handling.
+    };
+    fetchDetails();
   }, [params.id]);
 
   useIonViewWillEnter(() => {
@@ -82,9 +83,12 @@ const DidCardDetails = () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
     // Remember to update EditIdentity file too.
-    const updatedDids = dids.filter((item) => item.id !== cardData.id);
-    setDids(updatedDids);
-    dispatch(setDidsCache(updatedDids));
+    if (cardData) {
+      const updatedIdentities = identitiesData.filter(
+        (item) => item.id !== cardData.id
+      );
+      dispatch(setIdentitiesCache(updatedIdentities));
+    }
     handleDone();
   };
 
@@ -133,7 +137,7 @@ const DidCardDetails = () => {
         menuButton={false}
         additionalButtons={<AdditionalButtons />}
       >
-        {cardData.name.length === 0 ? (
+        {!cardData ? (
           <div
             className="spinner-container"
             data-testid="spinner-container"
@@ -189,7 +193,7 @@ const DidCardDetails = () => {
                     </span>
 
                     <span className="card-details-info-block-data">
-                      {formatDate(cardData?.date)}
+                      {formatDate(cardData?.createdAtUTC)}
                     </span>
                   </span>
                 </div>
@@ -313,18 +317,22 @@ const DidCardDetails = () => {
             </div>
           </>
         )}
-        <ShareIdentity
-          isOpen={shareIsOpen}
-          setIsOpen={setShareIsOpen}
-          id={cardData.id}
-          name={cardData.name}
-        />
-        <EditIdentity
-          isOpen={editIsOpen}
-          setIsOpen={setEditIsOpen}
-          id={cardData.id}
-          name={cardData.name}
-        />
+        {cardData && (
+          <ShareIdentity
+            isOpen={shareIsOpen}
+            setIsOpen={setShareIsOpen}
+            id={cardData.id}
+            name={cardData.displayName}
+          />
+        )}
+        {cardData && (
+          <EditIdentity
+            isOpen={editIsOpen}
+            setIsOpen={setEditIsOpen}
+            id={cardData.id}
+            name={cardData.displayName}
+          />
+        )}
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}

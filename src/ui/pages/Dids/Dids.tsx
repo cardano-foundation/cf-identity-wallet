@@ -8,7 +8,7 @@ import "./Dids.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getDidsCache } from "../../../store/reducers/didsCache";
+import { getIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import {
   getAuthentication,
   setCurrentRoute,
@@ -51,7 +51,7 @@ const AdditionalButtons = ({ handleCreateDid }: AdditionalButtonsProps) => {
 };
 
 const Dids = () => {
-  const didsData = useAppSelector(getDidsCache);
+  const didsData = useAppSelector(getIdentitiesCache);
   const authentication = useAppSelector(getAuthentication);
   const dispatch = useAppDispatch();
   const history = useHistory();

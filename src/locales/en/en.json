@@ -283,11 +283,7 @@
       "placeholder": "Create a name for this identity"
     },
     "identitytype": {
-      "title": "Identity type",
-      "types": {
-        "type0": "did:key",
-        "type1": "KERI"
-      }
+      "title": "Identity type"
     },
     "confirmbutton": "Create identity",
     "error": {
@@ -296,7 +292,21 @@
   },
   "crypto": {
     "tab": {
-      "create": "Add a crypto account"
+      "create": "Add a crypto account",
+      "network": {
+        "mainnet": "Mainnet"
+      },
+      "slider": {
+        "title": {
+          "mainbalance": "Main balance"
+        }
+      },
+      "actionbuttons": {
+        "send": "Send",
+        "receive": "Receive",
+        "nfts": "NFTs",
+        "staking": "Staking"
+      }
     },
     "mywalletsmodal": {
       "title": "My wallets",

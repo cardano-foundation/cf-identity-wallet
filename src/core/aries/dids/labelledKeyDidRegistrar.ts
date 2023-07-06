@@ -13,7 +13,7 @@ import { LabelledKeyDidCreateOptions } from "./labelledKeyDidRegistrar.types";
 class LabelledKeyDidRegistrar implements DidRegistrar {
   public readonly supportedMethods = ["key"];
 
-  public async create(
+  async create(
     agentContext: AgentContext,
     options: LabelledKeyDidCreateOptions
   ): Promise<DidCreateResult> {
@@ -58,7 +58,7 @@ class LabelledKeyDidRegistrar implements DidRegistrar {
     }
   }
 
-  public async update(): Promise<DidUpdateResult> {
+  async update(): Promise<DidUpdateResult> {
     return {
       didDocumentMetadata: {},
       didRegistrationMetadata: {},
@@ -69,7 +69,7 @@ class LabelledKeyDidRegistrar implements DidRegistrar {
     };
   }
 
-  public async deactivate(): Promise<DidDeactivateResult> {
+  async deactivate(): Promise<DidDeactivateResult> {
     return {
       didDocumentMetadata: {},
       didRegistrationMetadata: {},

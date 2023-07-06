@@ -91,8 +91,11 @@ const MyWallets = ({
 
   const Checkmark = () => {
     return (
-      <div className="checkmark-base">
-        <div className="checkmark-inner">
+      <div
+        className="selected-account-checkmark"
+        data-testid="selected-account-checkmark"
+      >
+        <div className="selected-account-checkmark-inner">
           <IonIcon
             slot="icon-only"
             icon={checkmark}
@@ -104,12 +107,16 @@ const MyWallets = ({
 
   interface AccountItemProps {
     key: number;
+    index: number;
     account: CryptoAccountProps;
   }
 
-  const AccountItem = ({ account }: AccountItemProps) => {
+  const AccountItem = ({ account, index }: AccountItemProps) => {
     return (
-      <IonItemSliding onClick={() => handleSetDefaultAccount(account.address)}>
+      <IonItemSliding
+        onClick={() => handleSetDefaultAccount(account.address)}
+        data-testid={`my-wallets-account-${index}`}
+      >
         <IonItem>
           <IonGrid>
             <IonRow>
@@ -218,6 +225,7 @@ const MyWallets = ({
                           <AccountItem
                             key={index}
                             account={account}
+                            index={index}
                           />
                         );
                       })}

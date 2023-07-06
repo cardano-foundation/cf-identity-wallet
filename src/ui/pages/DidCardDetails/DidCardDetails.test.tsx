@@ -9,12 +9,10 @@ import { DidCardDetails } from "./DidCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
 
 const path = TabsRoutePath.DIDS + "/" + didsMock[0].id;
-
-afterEach(() => {
-  jest.restoreAllMocks();
-});
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -22,6 +20,14 @@ jest.mock("react-router-dom", () => ({
     id: didsMock[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
+}));
+
+jest.mock("../../../core/aries/ariesAgent.ts", () => ({
+  AriesAgent: {
+    agent: {
+      getIdentity: jest.fn().mockResolvedValue(didsMock[0]),
+    },
+  },
 }));
 
 const mockStore = configureStore();
@@ -41,11 +47,19 @@ const initialState = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
+  identitiesCache: {
+    identities: filteredDidsMock,
+  },
 };
 
 const storeMocked = {
   ...mockStore(initialState),
   dispatch: dispatchMock,
+};
+
+const storeMocked2 = {
+  ...mockStore({ ...initialState }),
+  dispatch: jest.fn(),
 };
 
 describe("Cards Details page", () => {
@@ -61,7 +75,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    expect(getByText(didsMock[0].id)).toBeInTheDocument();
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
       "false"
     );
@@ -71,16 +85,13 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
+    expect(AriesAgent.agent.getIdentity).toBeCalledWith(didsMock[0].id);
   });
 
   test("It copies id to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
-    const { getByTestId } = render(
-      <Provider store={storeMocked}>
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked2}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -90,6 +101,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-id"));
 
     await waitFor(() => {
@@ -98,12 +110,8 @@ describe("Cards Details page", () => {
   });
 
   test("It copies type to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
-    const { getByTestId } = render(
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -114,6 +122,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-type"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
@@ -123,12 +132,8 @@ describe("Cards Details page", () => {
   });
 
   test("It copies controller to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
-    const { getByTestId } = render(
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -139,6 +144,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-controller"));
 
     await waitFor(() => {
@@ -149,12 +155,8 @@ describe("Cards Details page", () => {
   });
 
   test("It copies publicKeyBase58 to clipboard", async () => {
-    Clipboard.write = jest
-      .fn()
-      .mockImplementation(async (text: string): Promise<void> => {
-        return;
-      });
-    const { getByTestId } = render(
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -165,6 +167,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-publicKeyBase58"));
 
     await waitFor(() => {
@@ -186,6 +189,9 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() =>
+      expect(getByTestId("share-button")).toBeInTheDocument()
+    );
     act(() => {
       fireEvent.click(getByTestId("share-button"));
     });
@@ -196,7 +202,7 @@ describe("Cards Details page", () => {
   });
 
   test("It opens the edit modal", async () => {
-    const { getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -207,6 +213,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -217,7 +224,7 @@ describe("Cards Details page", () => {
   });
 
   test("It shows the button to access the editor", async () => {
-    const { getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -228,6 +235,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -249,6 +257,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -278,6 +287,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -319,6 +329,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));
     });
@@ -342,6 +353,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
+    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));
     });

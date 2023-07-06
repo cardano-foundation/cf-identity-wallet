@@ -34,7 +34,7 @@ describe("NextRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      didsCache: { dids: [] },
+      identitiesCache: { identities: [] },
       credsCache: { creds: [] },
       cryptoAccountsCache: { cryptoAccounts: [], defaultCryptoAccount: "" },
     };
@@ -123,7 +123,7 @@ describe("getNextRoute", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
-    didsCache: { dids: [] },
+    identitiesCache: { identities: [] },
     credsCache: { creds: [] },
     cryptoAccountsCache: { cryptoAccounts: [], defaultCryptoAccount: "" },
   };

@@ -89,7 +89,7 @@ const TabsMenu = ({
               tab={tab.label}
               href={tab.path}
             >
-              <div className="borderTop" />
+              <div className="border-top" />
               <IonIcon icon={tab.icon} />
               <IonLabel>{tab.label}</IonLabel>
             </IonTabButton>

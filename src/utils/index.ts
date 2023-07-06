@@ -27,19 +27,4 @@ const formatCurrencyUSD = (amount: number) => {
   return currencyFormat.format(amount);
 };
 
-const formatCurrencyADA = (amount: number) => {
-  const currencyFormat = new Intl.NumberFormat("en-US", {
-    style: "currency",
-    currency: "ADA",
-    minimumFractionDigits: 6,
-  });
-  return currencyFormat.format(amount).replace(/ADA/, "\u20B3");
-};
-
-export {
-  generateUUID,
-  formatDate,
-  formatTime,
-  formatCurrencyUSD,
-  formatCurrencyADA,
-};
+export { generateUUID, formatDate, formatTime, formatCurrencyUSD };
