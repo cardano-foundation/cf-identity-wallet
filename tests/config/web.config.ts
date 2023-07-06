@@ -9,8 +9,8 @@ import { config } from "./shared.config";
 // specs: ["./tests/**/*.spec.ts"],
 // but for watch mode we want to run all specs in 1 instance so
 // the specs are an array in an array
-config.specs = [["../specs/**/*.spec.ts"]];
-config.filesToWatch = ["../specs/**/*.spec.ts"];
+config.specs = [["./tests/**/*.spec.ts"]];
+config.filesToWatch = ["./tests/**/*.spec.ts"];
 
 //
 // ================

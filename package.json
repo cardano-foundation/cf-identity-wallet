@@ -11,7 +11,7 @@
     "test": "jest",
     "test:e2e": "cypress run",
     "start-appium": "appium --port 4003",
-    "e2e:web": "SERVE_PORT=4003 TS_NODE_PROJECT=tests/tsconfig.json  wdio tests/config/web.config.ts --watch"
+    "e2e:web": "SERVE_PORT=4003 TS_NODE_PROJECT=tests/tsconfig.json  wdio tests/config/web.config.ts"
 
   },
   "dependencies": {
