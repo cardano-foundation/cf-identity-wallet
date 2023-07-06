@@ -14,8 +14,9 @@ export class IonicButton extends IonicComponent {
     super(selector);
   }
 
-  static withTitle(buttonTitle: string): IonicButton {
-    return new IonicButton(`ion-button=${buttonTitle}`);
+  static withText(buttonText: string): IonicButton {
+    const selector = `ion-button >> text=${buttonText}`;
+    return new IonicButton(selector);
   }
 
   async click({

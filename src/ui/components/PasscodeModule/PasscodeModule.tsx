@@ -38,6 +38,7 @@ const PasscodeModule = ({
       <IonRow className="numbers-row">
         <IonCol>
           <IonButton
+            data-testid="passcode-button-1"
             className="board-button"
             onClick={() => handlePinChange(1)}
           >
@@ -46,6 +47,7 @@ const PasscodeModule = ({
         </IonCol>
         <IonCol>
           <IonButton
+            data-testid="passcode-button-2"
             className="board-button"
             onClick={() => handlePinChange(2)}
           >
@@ -61,6 +63,7 @@ const PasscodeModule = ({
         </IonCol>
         <IonCol>
           <IonButton
+            data-testid="passcode-button-3"
             className="board-button"
             onClick={() => handlePinChange(3)}
           >
@@ -78,6 +81,7 @@ const PasscodeModule = ({
       <IonRow className="numbers-row">
         <IonCol>
           <IonButton
+            data-testid="passcode-button-4"
             className="board-button"
             onClick={() => handlePinChange(4)}
           >
@@ -93,6 +97,7 @@ const PasscodeModule = ({
         </IonCol>
         <IonCol>
           <IonButton
+            data-testid="passcode-button-5"
             className="board-button"
             onClick={() => handlePinChange(5)}
           >
@@ -108,6 +113,7 @@ const PasscodeModule = ({
         </IonCol>
         <IonCol>
           <IonButton
+            data-testid="passcode-button-6"
             className="board-button"
             onClick={() => handlePinChange(6)}
           >
@@ -125,6 +131,7 @@ const PasscodeModule = ({
       <IonRow className="numbers-row">
         <IonCol>
           <IonButton
+            data-testid="passcode-button-6"
             className="board-button"
             onClick={() => handlePinChange(7)}
           >
@@ -141,6 +148,7 @@ const PasscodeModule = ({
         </IonCol>
         <IonCol>
           <IonButton
+            data-testid="passcode-button-8"
             className="board-button"
             onClick={() => handlePinChange(8)}
           >
@@ -156,6 +164,7 @@ const PasscodeModule = ({
         </IonCol>
         <IonCol>
           <IonButton
+            data-testid="passcode-button-9"
             className="board-button"
             onClick={() => handlePinChange(9)}
           >
@@ -175,6 +184,7 @@ const PasscodeModule = ({
         <IonCol />
         <IonCol>
           <IonButton
+            data-testid="passcode-button-0"
             className="board-button"
             onClick={() => handlePinChange(0)}
           >
