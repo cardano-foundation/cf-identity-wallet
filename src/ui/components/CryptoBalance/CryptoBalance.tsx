@@ -12,8 +12,8 @@ import "./CryptoBalance.scss";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getHideCryptoData,
-  setHideCryptoData,
+  getHideCryptoBalances,
+  setHideCryptoBalances,
 } from "../../../store/reducers/cryptoAccountsCache";
 import {
   PreferencesKeys,
@@ -24,10 +24,10 @@ const CryptoBalance = ({ items }: CryptoBalanceProps) => {
   const dispatch = useAppDispatch();
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [hidden, setHidden] = useState(useAppSelector(getHideCryptoData));
+  const [hidden, setHidden] = useState(useAppSelector(getHideCryptoBalances));
 
   const handleToggleHide = () => {
-    dispatch(setHideCryptoData(!hidden));
+    dispatch(setHideCryptoBalances(!hidden));
     PreferencesStorage.set(PreferencesKeys.APP_HIDE_CRYPTO_BALANCES, {
       hidden: !hidden,
     });

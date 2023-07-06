@@ -46,7 +46,7 @@ describe("getBackRoute", () => {
       cryptoAccountsCache: {
         cryptoAccounts: [],
         defaultCryptoAccount: "",
-        hideCryptoData: false,
+        hideCryptoBalances: false,
       },
     };
   });
@@ -126,7 +126,7 @@ describe("getBackRoute", () => {
       cryptoAccountsCache: {
         cryptoAccounts: [],
         defaultCryptoAccount: "",
-        hideCryptoData: false,
+        hideCryptoBalances: false,
       },
     };
     const expectedAuthentication = {
@@ -191,7 +191,7 @@ describe("getPreviousRoute", () => {
       cryptoAccountsCache: {
         cryptoAccounts: [],
         defaultCryptoAccount: "",
-        hideCryptoData: false,
+        hideCryptoBalances: false,
       },
     };
   });

@@ -16,7 +16,7 @@ import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
 import {
   setCryptoAccountsCache,
   setDefaultCryptoAccountCache,
-  setHideCryptoData,
+  setHideCryptoBalances,
 } from "../../../store/reducers/cryptoAccountsCache";
 import {
   PreferencesKeys,
@@ -59,10 +59,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     try {
-      const hideCryptoData = await PreferencesStorage.get(
+      const hideCryptoBalances = await PreferencesStorage.get(
         PreferencesKeys.APP_HIDE_CRYPTO_BALANCES
       );
-      dispatch(setHideCryptoData(!!hideCryptoData.data));
+      dispatch(setHideCryptoBalances(!!hideCryptoBalances.data));
     } catch (e) {
       // @TODO - sdisalvo: handle error
     }

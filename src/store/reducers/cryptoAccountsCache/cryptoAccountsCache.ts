@@ -4,11 +4,11 @@ import { CryptoAccountProps } from "../../../ui/pages/Crypto/Crypto.types";
 const initialState: {
   cryptoAccounts: CryptoAccountProps[];
   defaultCryptoAccount: string;
-  hideCryptoData: boolean;
+  hideCryptoBalances: boolean;
 } = {
   cryptoAccounts: [],
   defaultCryptoAccount: "",
-  hideCryptoData: false,
+  hideCryptoBalances: false,
 };
 const cryptoAccountsCacheSlice = createSlice({
   name: "cryptoAccountsCache",
@@ -23,8 +23,8 @@ const cryptoAccountsCacheSlice = createSlice({
     setDefaultCryptoAccountCache: (state, action: PayloadAction<string>) => {
       state.defaultCryptoAccount = action.payload;
     },
-    setHideCryptoData: (state, action: PayloadAction<boolean>) => {
-      state.hideCryptoData = action.payload;
+    setHideCryptoBalances: (state, action: PayloadAction<boolean>) => {
+      state.hideCryptoBalances = action.payload;
     },
   },
 });
@@ -34,7 +34,7 @@ export { initialState, cryptoAccountsCacheSlice };
 export const {
   setCryptoAccountsCache,
   setDefaultCryptoAccountCache,
-  setHideCryptoData,
+  setHideCryptoBalances,
 } = cryptoAccountsCacheSlice.actions;
 
 const getCryptoAccountsCache = (state: RootState) =>
@@ -43,11 +43,11 @@ const getCryptoAccountsCache = (state: RootState) =>
 const getDefaultCryptoAccountCache = (state: RootState) =>
   state.cryptoAccountsCache.defaultCryptoAccount;
 
-const getHideCryptoData = (state: RootState) =>
-  state.cryptoAccountsCache.hideCryptoData;
+const getHideCryptoBalances = (state: RootState) =>
+  state.cryptoAccountsCache.hideCryptoBalances;
 
 export {
   getCryptoAccountsCache,
   getDefaultCryptoAccountCache,
-  getHideCryptoData,
+  getHideCryptoBalances,
 };
