@@ -15,6 +15,7 @@ describe("Onboarding page", () => {
 
     await getStartedButton.click();
 
+
     await pause(500);
     const url = await getUrl();
     expect(url.toString()).toContain('createpassword');

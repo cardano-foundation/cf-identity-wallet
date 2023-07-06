@@ -10,7 +10,8 @@
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
     "test:e2e": "cypress run",
-    "e2e": "SERVE_PORT=3000 TS_NODE_PROJECT=tests/tsconfig.json  wdio tests/config/web.config.ts --watch"
+    "start-appium": "appium --port 4003",
+    "e2e:web": "SERVE_PORT=4003 TS_NODE_PROJECT=tests/tsconfig.json  wdio tests/config/web.config.ts --watch"
 
   },
   "dependencies": {
