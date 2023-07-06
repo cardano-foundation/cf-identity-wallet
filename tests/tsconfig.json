@@ -1,6 +1,7 @@
 {
     "extends": "../tsconfig.json",
     "compilerOptions": {
+        "moduleResolution": "node",
         "outDir": "../build/",
         "sourceMap": false,
         "target": "es2019",
