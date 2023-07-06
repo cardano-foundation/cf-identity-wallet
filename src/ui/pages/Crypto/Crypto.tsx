@@ -46,6 +46,8 @@ const Crypto = () => {
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
   const [showAssetsTransactions, setShowAssetsTransactions] = useState(false);
+  const [assetsTransactionsExpanded, setAssetsTransactionsExpanded] =
+    useState(false);
   const [defaultAccountAddress, setDefaultAccountAddress] = useState(
     useAppSelector(getDefaultCryptoAccountCache)
   );
@@ -247,12 +249,16 @@ const Crypto = () => {
                 canDismiss={false}
                 backdropDismiss={false}
                 backdropBreakpoint={1}
+                onIonBreakpointDidChange={() =>
+                  setAssetsTransactionsExpanded(!assetsTransactionsExpanded)
+                }
                 className="crypto-assets-transactions page-layout"
                 data-testid="crypto-assets-transactions"
               >
                 <AssetsTransactions
                   assets={defaultAccountData.assets}
                   transactions={defaultAccountData.transactions}
+                  expanded={assetsTransactionsExpanded}
                 />
               </IonModal>
             </div>

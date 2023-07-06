@@ -17,6 +17,7 @@ import {
   CryptoAssetsProps,
   CryptoTransactionsProps,
 } from "../../pages/Crypto/Crypto.types";
+import "./AssetsTransactions.scss";
 
 interface AssetItemProps {
   key: number;
@@ -62,16 +63,18 @@ const AssetItem = ({ asset, index }: AssetItemProps) => {
 interface AssetsTransactionsProps {
   assets: CryptoAssetsProps[];
   transactions: CryptoTransactionsProps[];
+  expanded: boolean;
 }
 
 const AssetsTransactions = ({
   assets,
   transactions,
+  expanded,
 }: AssetsTransactionsProps) => {
   return (
-    <div className="modal">
+    <div className="assets-transactions-body modal">
       <PageLayout>
-        {i18n.t("crypto.tab.assetstransactions.swipeupmessage")}
+        {expanded ? "" : i18n.t("crypto.tab.assetstransactions.swipeupmessage")}
         <IonGrid>
           <IonRow>
             <IonCol
@@ -81,7 +84,7 @@ const AssetsTransactions = ({
               {assets.length ? (
                 <IonList
                   lines="none"
-                  className="accounts-list"
+                  className="assets-list"
                 >
                   {assets.map((asset, index) => {
                     return (

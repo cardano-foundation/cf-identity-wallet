@@ -1,0 +1,68 @@
+.assets-transactions-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  ion-grid {
+    background: var(--ion-color-light-grey);
+  }
+
+  .assets-list {
+    ion-item {
+      &:not(:last-child) {
+        border-bottom: 1px solid var(--ion-color-dark-grey);
+      }
+      --inner-padding-end: 0;
+
+      &::part(native) {
+        padding: 0;
+      }
+    }
+
+    ion-item-option {
+      width: 5.625rem;
+    }
+
+    ion-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+
+      ion-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        &.asset-logo {
+          position: relative;
+
+          img {
+            width: 2.75rem;
+            height: 2.75rem;
+            border-radius: 2rem;
+          }
+        }
+
+        &.asset-info {
+          .asset-name {
+            margin-bottom: 0.31rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .asset-rate {
+            font-size: 0.875rem;
+            color: var(--ion-color-secondary);
+          }
+        }
+
+        &.asset-balance {
+          ion-label {
+            text-align: right;
+          }
+        }
+      }
+    }
+  }
+}
