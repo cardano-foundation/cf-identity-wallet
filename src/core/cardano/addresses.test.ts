@@ -6,11 +6,16 @@ const validSeedPhrase15Words =
 const entropy15Words = "df9ed25ed146bf43336a5d7cf7395994";
 const rootXprvKey15Words =
   "608621fb4c0101feb31f6f2fd7018bee54101ff67d555079671893225ee1a45e2331497029d885b5634405f350508cd95dce3991503b10f128d04f34b7b625783a1e3bd5dcf11fd4f989ec2cdcdea3a54db8997398174ecdcc87006c274176a0";
-const rootXpubKey15Words = "e7effdd1c042aae1b5860dd9259207fe0078dc8239959441012e4049128602193a1e3bd5dcf11fd4f989ec2cdcdea3a54db8997398174ecdcc87006c274176a0";
-const mainnetAddr0 = "addr1qx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwqfjkjv7";
-const testnetAddr0 = "addr_test1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwq2ytjqp";
-const mainnetRewardAddr0 = "stake1uyevw2xnsc0pvn9t9r9c7qryfqfeerchgrlm3ea2nefr9hqxdekzz";
-const testnetRewardAddr0 = "stake_test1uqevw2xnsc0pvn9t9r9c7qryfqfeerchgrlm3ea2nefr9hqp8n5xl";
+const rootXpubKey15Words =
+  "e7effdd1c042aae1b5860dd9259207fe0078dc8239959441012e4049128602193a1e3bd5dcf11fd4f989ec2cdcdea3a54db8997398174ecdcc87006c274176a0";
+const mainnetAddr0 =
+  "addr1qx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwqfjkjv7";
+const testnetAddr0 =
+  "addr_test1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwq2ytjqp";
+const mainnetRewardAddr0 =
+  "stake1uyevw2xnsc0pvn9t9r9c7qryfqfeerchgrlm3ea2nefr9hqxdekzz";
+const testnetRewardAddr0 =
+  "stake_test1uqevw2xnsc0pvn9t9r9c7qryfqfeerchgrlm3ea2nefr9hqp8n5xl";
 const validSeedPhrase24Words =
   "find bag dilemma sing symptom page sand exotic celery tape cat typical sea portion jar return trophy warfare tribe soap protect tuna goddess shine";
 const entropy24Words =
@@ -52,13 +57,23 @@ describe("Cardano seed phrase and address derivation", () => {
   });
 
   test("should return the correct extended public key for private key", () => {
-    expect(Addresses.bip32PrivateHexToPublicHex(rootXprvKey15Words)).toEqual(rootXpubKey15Words);
+    expect(Addresses.bip32PrivateHexToPublicHex(rootXprvKey15Words)).toEqual(
+      rootXpubKey15Words
+    );
   });
 
   test("can derive the correct base and reward addresses from root xprv key", () => {
-    expect(Addresses.deriveFirstBaseAndRewardAddrs(rootXprvKey15Words)).toEqual({
-      addresses: new Map([[NetworkType.MAINNET, [mainnetAddr0]], [NetworkType.TESTNET, [testnetAddr0]]]),
-      rewardAddresses: new Map([[NetworkType.MAINNET, [mainnetRewardAddr0]], [NetworkType.TESTNET, [testnetRewardAddr0]]]),
-    });
+    expect(Addresses.deriveFirstBaseAndRewardAddrs(rootXprvKey15Words)).toEqual(
+      {
+        addresses: new Map([
+          [NetworkType.MAINNET, [mainnetAddr0]],
+          [NetworkType.TESTNET, [testnetAddr0]],
+        ]),
+        rewardAddresses: new Map([
+          [NetworkType.MAINNET, [mainnetRewardAddr0]],
+          [NetworkType.TESTNET, [testnetRewardAddr0]],
+        ]),
+      }
+    );
   });
 });

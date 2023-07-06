@@ -121,7 +121,7 @@ class AriesAgent {
         addresses,
         rewardAddresses,
         displayName,
-        usesIdentitySeedPhrase
+        usesIdentitySeedPhrase,
       })
     );
   }

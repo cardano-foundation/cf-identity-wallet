@@ -6,10 +6,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 
-import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { RoutePath } from "../../../routes";
 
 describe("Passcode Login Page", () => {

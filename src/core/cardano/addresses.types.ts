@@ -1,6 +1,6 @@
 enum NetworkType {
   MAINNET = "mainnet",
-  TESTNET = "testnet"
+  TESTNET = "testnet",
 }
 
-export { NetworkType }
+export { NetworkType };

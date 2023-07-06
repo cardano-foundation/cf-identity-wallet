@@ -17,18 +17,20 @@ describe("CryptoAccount Record", () => {
       addresses: addresses,
       rewardAddresses: rewardAddrs,
       displayName,
-      usesIdentitySeedPhrase: true
+      usesIdentitySeedPhrase: true,
     });
 
     expect(record.type).toBe(CryptoAccountRecord.type);
     expect(record.id).toBe(recordId);
     expect(record.addresses.get(NetworkType.TESTNET)).toEqual([address]);
-    expect(record.rewardAddresses.get(NetworkType.TESTNET)).toEqual([rewardAddr]);
+    expect(record.rewardAddresses.get(NetworkType.TESTNET)).toEqual([
+      rewardAddr,
+    ]);
     expect(record.displayName).toBe(displayName);
     expect(record.usesIdentitySeedPhrase).toBe(true);
     expect(record.getTags()).toMatchObject({
       usesIdentitySeedPhrase: true,
-      displayName
+      displayName,
     });
   });
 
@@ -37,18 +39,20 @@ describe("CryptoAccount Record", () => {
       id: recordId,
       addresses: addresses,
       rewardAddresses: rewardAddrs,
-      displayName
+      displayName,
     });
 
     expect(record.type).toBe(CryptoAccountRecord.type);
     expect(record.id).toBe(recordId);
     expect(record.addresses.get(NetworkType.TESTNET)).toEqual([address]);
-    expect(record.rewardAddresses.get(NetworkType.TESTNET)).toEqual([rewardAddr]);
+    expect(record.rewardAddresses.get(NetworkType.TESTNET)).toEqual([
+      rewardAddr,
+    ]);
     expect(record.displayName).toBe(displayName);
     expect(record.usesIdentitySeedPhrase).toBe(false);
     expect(record.getTags()).toMatchObject({
       usesIdentitySeedPhrase: false,
-      displayName
+      displayName,
     });
   });
 });

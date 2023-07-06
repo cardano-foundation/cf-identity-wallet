@@ -1,4 +1,11 @@
-import { BaseAddress, Bip32PrivateKey, Bip32PublicKey, NetworkInfo, RewardAddress, StakeCredential } from "@emurgo/cardano-serialization-lib-browser";
+import {
+  BaseAddress,
+  Bip32PrivateKey,
+  Bip32PublicKey,
+  NetworkInfo,
+  RewardAddress,
+  StakeCredential,
+} from "@emurgo/cardano-serialization-lib-browser";
 import { entropyToMnemonic, mnemonicToEntropy } from "bip39";
 import { NetworkType } from "./addresses.types";
 
@@ -36,32 +43,65 @@ class Addresses {
 
     // Addresses do not change between testnets so we can just pick preprod here.
     const addresses = new Map<NetworkType, string[]>();
-    addresses.set(NetworkType.MAINNET, [Addresses.calculateBaseAddressBech32(spendingPubKey, stakePubKey, NetworkInfo.mainnet())]);
-    addresses.set(NetworkType.TESTNET, [Addresses.calculateBaseAddressBech32(spendingPubKey, stakePubKey, NetworkInfo.testnet_preprod())]);
+    addresses.set(NetworkType.MAINNET, [
+      Addresses.calculateBaseAddressBech32(
+        spendingPubKey,
+        stakePubKey,
+        NetworkInfo.mainnet()
+      ),
+    ]);
+    addresses.set(NetworkType.TESTNET, [
+      Addresses.calculateBaseAddressBech32(
+        spendingPubKey,
+        stakePubKey,
+        NetworkInfo.testnet_preprod()
+      ),
+    ]);
 
     const rewardAddresses = new Map<NetworkType, string[]>();
-    rewardAddresses.set(NetworkType.MAINNET, [Addresses.calculateRewardAddressBech32(stakePubKey, NetworkInfo.mainnet())]);
-    rewardAddresses.set(NetworkType.TESTNET, [Addresses.calculateRewardAddressBech32(stakePubKey, NetworkInfo.testnet_preprod())]);
+    rewardAddresses.set(NetworkType.MAINNET, [
+      Addresses.calculateRewardAddressBech32(
+        stakePubKey,
+        NetworkInfo.mainnet()
+      ),
+    ]);
+    rewardAddresses.set(NetworkType.TESTNET, [
+      Addresses.calculateRewardAddressBech32(
+        stakePubKey,
+        NetworkInfo.testnet_preprod()
+      ),
+    ]);
 
     return {
       addresses,
-      rewardAddresses
-    }
+      rewardAddresses,
+    };
   }
 
-  private static calculateBaseAddressBech32(spendingPubKey: Bip32PublicKey, stakePubKey: Bip32PublicKey, networkInfo: NetworkInfo): string {
+  private static calculateBaseAddressBech32(
+    spendingPubKey: Bip32PublicKey,
+    stakePubKey: Bip32PublicKey,
+    networkInfo: NetworkInfo
+  ): string {
     return BaseAddress.new(
       networkInfo.network_id(),
       StakeCredential.from_keyhash(spendingPubKey.to_raw_key().hash()),
-      StakeCredential.from_keyhash(stakePubKey.to_raw_key().hash()),
-    ).to_address().to_bech32();
+      StakeCredential.from_keyhash(stakePubKey.to_raw_key().hash())
+    )
+      .to_address()
+      .to_bech32();
   }
 
-  private static calculateRewardAddressBech32(stakePubKey: Bip32PublicKey, networkInfo: NetworkInfo): string {
+  private static calculateRewardAddressBech32(
+    stakePubKey: Bip32PublicKey,
+    networkInfo: NetworkInfo
+  ): string {
     return RewardAddress.new(
       networkInfo.network_id(),
       StakeCredential.from_keyhash(stakePubKey.to_raw_key().hash())
-    ).to_address().to_bech32();
+    )
+      .to_address()
+      .to_bech32();
   }
 
   private static harden(num: number): number {

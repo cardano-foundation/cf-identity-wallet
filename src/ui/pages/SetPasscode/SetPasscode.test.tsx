@@ -4,10 +4,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { SetPasscode } from "./SetPasscode";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
-import {
-  SecureStorage,
-  KeyStoreKeys,
-} from "../../../core/storage";
+import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";

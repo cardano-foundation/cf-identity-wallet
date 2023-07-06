@@ -4,10 +4,7 @@ import {
   getAuthentication,
   setAuthentication,
 } from "../../../store/reducers/stateCache";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { filteredCredsMock } from "../../__mocks__/filteredCredsMock";

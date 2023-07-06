@@ -33,7 +33,7 @@ class CryptoAccountRecord extends BaseRecord {
     return {
       ...this._tags,
       usesIdentitySeedPhrase: !!this.usesIdentitySeedPhrase,
-      displayName: this.displayName
+      displayName: this.displayName,
     };
   }
 }

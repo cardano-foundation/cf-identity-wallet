@@ -15,10 +15,7 @@ import {
 } from "../../../constants/appConstants";
 import { TabsMenu } from "../../components/navigation/TabsMenu";
 import { Addresses } from "../../../core/cardano/addresses";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 
 const rootKey = "rootKeyHex";
 const secureStorageSetSpy = jest

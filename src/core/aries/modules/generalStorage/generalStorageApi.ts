@@ -44,6 +44,12 @@ export class GeneralStorageApi {
   }
 
   async cryptoAccountIdentitySeedPhraseExists(): Promise<boolean> {
-    return (await this.cryptoAccountRepository.findByQuery(this.agentContext, { usesIdentitySeedPhrase: true })).length > 0;
+    return (
+      (
+        await this.cryptoAccountRepository.findByQuery(this.agentContext, {
+          usesIdentitySeedPhrase: true,
+        })
+      ).length > 0
+    );
   }
 }

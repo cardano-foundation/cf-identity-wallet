@@ -51,41 +51,49 @@ const ChooseAccountName = ({
   }, []);
 
   const handleCreateWallet = (displayName?: string) => {
-    const name = displayName ?? `${i18n.t("crypto.chooseaccountnamemodal.placeholder")} #${crypto.randomBytes(3).toString("hex")}`
-    seedPhraseStorageService.current.createCryptoAccountFromIdentitySeedPhrase(name).then(() => {
-      const newWallet: CryptoAccountProps = {
-        name,
-        usesIdentitySeedPhrase: true,
-        // @TODO - sdisalvo: remember to remove hardcoded values below this point
-        address: "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg7j8cu8",
-        blockchain: "Cardano",
-        currency: "ADA",
-        logo: CardanoLogo,
-        balance: {
-          main: {
-            nativeBalance: 273.85,
-            usdBalance: 75.2,
+    const name =
+      displayName ??
+      `${i18n.t("crypto.chooseaccountnamemodal.placeholder")} #${crypto
+        .randomBytes(3)
+        .toString("hex")}`;
+    seedPhraseStorageService.current
+      .createCryptoAccountFromIdentitySeedPhrase(name)
+      .then(() => {
+        const newWallet: CryptoAccountProps = {
+          name,
+          usesIdentitySeedPhrase: true,
+          // @TODO - sdisalvo: remember to remove hardcoded values below this point
+          address:
+            "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg7j8cu8",
+          blockchain: "Cardano",
+          currency: "ADA",
+          logo: CardanoLogo,
+          balance: {
+            main: {
+              nativeBalance: 273.85,
+              usdBalance: 75.2,
+            },
+            reward: {
+              nativeBalance: 0,
+              usdBalance: 0,
+            },
           },
-          reward: {
-            nativeBalance: 0,
-            usdBalance: 0,
-          },
-        },
-        // End of hardcoded values
-      };
-      if (cryptoAccountsData.length === 0) {
-        dispatch(setDefaultCryptoAccountCache(newWallet.address));
-        PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
-          data: newWallet.address,
-        });
-        setDefaultAccountData(newWallet);
-      }
-      dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
-      setChooseAccountNameIsOpen(false);
-    }).catch(err => {
-      // @TODO - handle exceptions in the UI story here
-      throw err;
-    });
+          // End of hardcoded values
+        };
+        if (cryptoAccountsData.length === 0) {
+          dispatch(setDefaultCryptoAccountCache(newWallet.address));
+          PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
+            data: newWallet.address,
+          });
+          setDefaultAccountData(newWallet);
+        }
+        dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
+        setChooseAccountNameIsOpen(false);
+      })
+      .catch((err) => {
+        // @TODO - handle exceptions in the UI story here
+        throw err;
+      });
   };
 
   return (
