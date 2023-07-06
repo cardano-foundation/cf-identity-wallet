@@ -1,5 +1,5 @@
 
-export const config = {
+export const config:WebdriverIO.Config = {
   autoCompileOpts: {
     autoCompile: true,
     // see https://github.com/TypeStrong/ts-node#cli-and-programmatic-options
@@ -30,7 +30,7 @@ export const config = {
   // Specify Test Files
   // ==================
   //
-  specs: ["../e2e/**/*.spec.ts"],
+  specs: ["../specs/**/*.spec.ts"],
   //
   // ============
   // Capabilities

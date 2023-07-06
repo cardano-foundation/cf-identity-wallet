@@ -18,11 +18,11 @@ export class IonicButton extends IonicComponent {
     return new IonicButton(`ion-button=${buttonTitle}`);
   }
 
-  async tap({
+  async click({
     visibilityTimeout = 5000,
     scroll = true,
   }: TapButtonOptions = {}) {
-    const button = await Ionic$.$(this.selector as string);
+    const button = await Ionic$.$testid(this.selector as string);
     await button.waitForDisplayed({ timeout: visibilityTimeout });
     if (scroll) {
       await button.scrollIntoView();
