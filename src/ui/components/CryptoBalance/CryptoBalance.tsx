@@ -28,7 +28,7 @@ const CryptoBalance = ({ items }: CryptoBalanceProps) => {
 
   const handleToggleHide = () => {
     dispatch(setHideCryptoData(!hidden));
-    PreferencesStorage.set(PreferencesKeys.APP_HIDE_CRYPTO_DATA, {
+    PreferencesStorage.set(PreferencesKeys.APP_HIDE_CRYPTO_BALANCES, {
       hidden: !hidden,
     });
     setHidden(!hidden);

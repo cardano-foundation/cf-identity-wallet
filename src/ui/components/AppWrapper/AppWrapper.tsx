@@ -60,7 +60,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     try {
       const hideCryptoData = await PreferencesStorage.get(
-        PreferencesKeys.APP_HIDE_CRYPTO_DATA
+        PreferencesKeys.APP_HIDE_CRYPTO_BALANCES
       );
       dispatch(setHideCryptoData(!!hideCryptoData.data));
     } catch (e) {
