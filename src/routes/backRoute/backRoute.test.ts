@@ -43,7 +43,11 @@ describe("getBackRoute", () => {
       },
       identitiesCache: { identities: [] },
       credsCache: { creds: [] },
-      cryptoAccountsCache: { cryptoAccounts: [], defaultCryptoAccount: "" },
+      cryptoAccountsCache: {
+        cryptoAccounts: [],
+        defaultCryptoAccount: "",
+        hideCryptoBalances: false,
+      },
     };
   });
 
@@ -119,7 +123,11 @@ describe("getBackRoute", () => {
       },
       identitiesCache: { identities: [] },
       credsCache: { creds: [] },
-      cryptoAccountsCache: { cryptoAccounts: [], defaultCryptoAccount: "" },
+      cryptoAccountsCache: {
+        cryptoAccounts: [],
+        defaultCryptoAccount: "",
+        hideCryptoBalances: false,
+      },
     };
     const expectedAuthentication = {
       ...storeMock.stateCache.authentication,
@@ -180,7 +188,11 @@ describe("getPreviousRoute", () => {
       },
       identitiesCache: { identities: [] },
       credsCache: { creds: [] },
-      cryptoAccountsCache: { cryptoAccounts: [], defaultCryptoAccount: "" },
+      cryptoAccountsCache: {
+        cryptoAccounts: [],
+        defaultCryptoAccount: "",
+        hideCryptoBalances: false,
+      },
     };
   });
 

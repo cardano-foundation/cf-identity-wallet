@@ -1,7 +1,7 @@
 @import "swiper/css";
 @import "@ionic/react/css/ionic-swiper.css";
 
-.crypto-balance {
+.crypto-balance-container {
   padding-inline: 30px;
   text-align: center;
 
@@ -70,5 +70,9 @@
 
   .page-indicator-active {
     background-color: var(--ion-color-secondary);
+  }
+
+  &.hide-balance .balance {
+    filter: blur(0.438rem);
   }
 }

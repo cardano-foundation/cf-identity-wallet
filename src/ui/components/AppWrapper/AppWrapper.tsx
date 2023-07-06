@@ -16,6 +16,7 @@ import { AriesAgent } from "../../../core/aries/ariesAgent";
 import {
   setCryptoAccountsCache,
   setDefaultCryptoAccountCache,
+  setHideCryptoBalances,
 } from "../../../store/reducers/cryptoAccountsCache";
 import {
   PreferencesKeys,
@@ -56,6 +57,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
       } else {
         // @TODO - sdisalvo: handle error
       }
+    }
+
+    try {
+      const hideCryptoBalances = await PreferencesStorage.get(
+        PreferencesKeys.APP_HIDE_CRYPTO_BALANCES
+      );
+      dispatch(setHideCryptoBalances(!!hideCryptoBalances.hidden));
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
     }
 
     dispatch(
