@@ -23,7 +23,7 @@ import { MiscRecordId } from "../../../core/aries/modules";
 import {
   KeyStoreKeys,
   SecureStorage,
-} from "../../../core/storage/secureStorage";
+} from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";

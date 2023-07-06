@@ -7,7 +7,7 @@ import { ErrorMessage } from "../../components/ErrorMessage";
 import {
   SecureStorage,
   KeyStoreKeys,
-} from "../../../core/storage/secureStorage";
+} from "../../../core/storage";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { getState } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";

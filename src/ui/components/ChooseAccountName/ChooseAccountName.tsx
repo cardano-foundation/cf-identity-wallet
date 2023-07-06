@@ -1,5 +1,5 @@
 import { IonModal, IonGrid, IonRow, IonCol, IonButton } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import crypto from "crypto";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
@@ -19,7 +19,10 @@ import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
 import {
   PreferencesKeys,
   PreferencesStorage,
-} from "../../../core/storage/preferences/preferencesStorage";
+} from "../../../core/storage/preferences";
+import { SeedPhraseStorageService } from "../../../core/storage/services";
+
+const seedPhraseStorageService = new SeedPhraseStorageService();
 
 const ChooseAccountName = ({
   chooseAccountNameIsOpen,
@@ -27,6 +30,7 @@ const ChooseAccountName = ({
   setDefaultAccountData,
 }: ChooseAccountNameProps) => {
   const dispatch = useAppDispatch();
+  const seedPhraseStorageService = useRef(new SeedPhraseStorageService());
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
@@ -46,34 +50,34 @@ const ChooseAccountName = ({
     }
   }, []);
 
-  const handleCreateWallet = (value: string) => {
-    const newWallet: CryptoAccountProps = {
-      name:
-        value === "skip"
-          ? i18n.t("crypto.chooseaccountnamemodal.placeholder") +
-            " #" +
-            crypto.randomBytes(3).toString("hex")
-          : value,
-      usesIdentitySeedPhrase: true,
-      // @TODO - sdisalvo: remember to remove hardcoded values below this point
-      address: "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg7j8cu8",
-      blockchain: "Cardano",
-      currency: "ADA",
-      logo: CardanoLogo,
-      nativeBalance: 273.85,
-      usdBalance: 75.2,
-      // End of hardcoded values
-    };
-
-    if (cryptoAccountsData.length === 0) {
-      dispatch(setDefaultCryptoAccountCache(newWallet.address));
-      PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
-        data: newWallet.address,
-      });
-      setDefaultAccountData(newWallet);
-    }
-    dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
-    setChooseAccountNameIsOpen(false);
+  const handleCreateWallet = (displayName?: string) => {
+    const name = displayName ?? `${i18n.t("crypto.chooseaccountnamemodal.placeholder")} #${crypto.randomBytes(3).toString("hex")}`
+    seedPhraseStorageService.current.createCryptoAccountFromIdentitySeedPhrase(name).then(() => {
+      const newWallet: CryptoAccountProps = {
+        name,
+        usesIdentitySeedPhrase: true,
+        // @TODO - sdisalvo: remember to remove hardcoded values below this point
+        address: "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg7j8cu8",
+        blockchain: "Cardano",
+        currency: "ADA",
+        logo: CardanoLogo,
+        nativeBalance: 273.85,
+        usdBalance: 75.2,
+        // End of hardcoded values
+      };
+      if (cryptoAccountsData.length === 0) {
+        dispatch(setDefaultCryptoAccountCache(newWallet.address));
+        PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
+          data: newWallet.address,
+        });
+        setDefaultAccountData(newWallet);
+      }
+      dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
+      setChooseAccountNameIsOpen(false);
+    }).catch(err => {
+      // @TODO - handle exceptions in the UI story here
+      throw err;
+    });
   };
 
   return (
@@ -92,7 +96,7 @@ const ChooseAccountName = ({
           title={`${i18n.t("crypto.chooseaccountnamemodal.title")}`}
           actionButton={true}
           actionButtonLabel={`${i18n.t("crypto.chooseaccountnamemodal.skip")}`}
-          actionButtonAction={() => handleCreateWallet("skip")}
+          actionButtonAction={() => handleCreateWallet()}
         >
           <IonGrid>
             <IonRow>

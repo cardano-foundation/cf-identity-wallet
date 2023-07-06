@@ -9,7 +9,6 @@ import {
   DidRecord,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
-import { Bip32PrivateKey } from "@emurgo/cardano-serialization-lib-browser";
 import { CapacitorFileSystem } from "./dependencies";
 import {
   IonicStorageModule,
@@ -22,6 +21,7 @@ import { HttpOutboundTransport } from "./transports";
 import { LabelledKeyDidRegistrar } from "./dids";
 import { IdentityType } from "./ariesAgent.types";
 import type { IdentityDetails, IdentityShortDetails } from "./ariesAgent.types";
+import { NetworkType } from "../cardano/addresses.types";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -60,6 +60,7 @@ class AriesAgent {
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
+  static ready = false;
 
   private constructor() {
     this.agent = new Agent({
@@ -86,6 +87,7 @@ class AriesAgent {
 
   async start(): Promise<void> {
     await this.agent.initialize();
+    AriesAgent.ready = true;
   }
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
@@ -106,47 +108,30 @@ class AriesAgent {
     }
   }
 
-  async storeCryptoAccountRecord(rootExtendedPrivateKey: string) {
-    const rootKey = Bip32PrivateKey.from_hex(rootExtendedPrivateKey);
-    const rootExtendedPublicKey = rootKey.to_public().to_hex();
-
-    const accountKey = rootKey
-      .derive(harden(1852))
-      .derive(harden(1815))
-      .derive(harden(0));
-
-    const utxoPubKey = accountKey.derive(0).derive(0).to_public().to_hex();
-
-    const stakeKey = accountKey.derive(2).derive(0).to_public().to_hex();
-
+  async storeCryptoAccountRecord(
+    id: string,
+    addresses: Map<NetworkType, string[]>,
+    rewardAddresses: Map<NetworkType, string[]>,
+    displayName: string,
+    usesIdentitySeedPhrase = false
+  ): Promise<void> {
     await this.agent.modules.generalStorage.saveCryptoRecord(
       new CryptoAccountRecord({
-        id: rootExtendedPublicKey,
-        address: utxoPubKey,
-        stakeKey,
+        id,
+        addresses,
+        rewardAddresses,
+        displayName,
+        usesIdentitySeedPhrase
       })
     );
   }
 
-  async getAllCryptoAccountRecords(): Promise<CryptoAccountRecord[]> {
-    return await this.agent.modules.generalStorage.getAllCryptoAccountRecords();
+  async cryptoAccountIdentitySeedPhraseExists(): Promise<boolean> {
+    return this.agent.modules.generalStorage.cryptoAccountIdentitySeedPhraseExists();
   }
 
-  async getCryptoAccountRecordValueById(
-    rootExtendedPublicKey: string
-  ): Promise<string | undefined> {
-    try {
-      return (
-        await this.agent.modules.generalStorage.getCryptoAccountRecordById(
-          rootExtendedPublicKey
-        )
-      ).value;
-    } catch (e) {
-      if (e instanceof RecordNotFoundError) {
-        return undefined;
-      }
-      throw e;
-    }
+  async removeCryptoAccountRecordById(id: string): Promise<void> {
+    await this.agent.modules.generalStorage.removeCryptoRecordById(id);
   }
 
   async createIdentity(type: IdentityType, displayName: string) {
@@ -228,10 +213,6 @@ class AriesAgent {
       colors: PRESET_COLORS[0],
     };
   }
-}
-
-function harden(num: number): number {
-  return 0x80000000 + num;
 }
 
 export { AriesAgent, agentDependencies };

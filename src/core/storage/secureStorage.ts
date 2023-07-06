@@ -9,6 +9,7 @@ enum KeyStoreKeys {
   IDENTITY_ROOT_XPRV_KEY = "identity-root-xprv-key",
   APP_OP_PASSWORD = "app-operations-password",
   CRYPTO_ENTROPY_PREFIX = "crypto-entropy-",
+  CRYPTO_ROOT_XPRV_KEY_PREFIX = "crypto-root-xprv-key-",
 }
 
 class SecureStorage {

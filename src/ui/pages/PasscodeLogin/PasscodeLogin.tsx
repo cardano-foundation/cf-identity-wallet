@@ -9,7 +9,7 @@ import { Alert } from "../../components/Alert";
 import {
   KeyStoreKeys,
   SecureStorage,
-} from "../../../core/storage/secureStorage";
+} from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";

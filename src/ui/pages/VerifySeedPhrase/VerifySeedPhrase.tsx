@@ -18,7 +18,7 @@ import "./VerifySeedPhrase.scss";
 import {
   KeyStoreKeys,
   SecureStorage,
-} from "../../../core/storage/secureStorage";
+} from "../../../core/storage";
 import { Addresses } from "../../../core/cardano/addresses";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";

@@ -2,7 +2,7 @@ import { render, waitFor, fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { VerifyPassword } from "./VerifyPassword";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { SecureStorage } from "../../../core/storage/secureStorage";
+import { SecureStorage } from "../../../core/storage";
 
 describe("Verify Password modal", () => {
   test.skip("User can close the modal by clicking on the backdrop", async () => {

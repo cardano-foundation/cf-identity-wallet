@@ -7,6 +7,10 @@ import {
   MiscRepository,
 } from "./repositories";
 
+/**
+ * This can be used to store any records in the agent that aren't explicitly created
+ * by a module in the agent - i.e. all "external" records.
+ */
 @injectable()
 export class GeneralStorageApi {
   private miscRepository: MiscRepository;
@@ -35,11 +39,11 @@ export class GeneralStorageApi {
     await this.cryptoAccountRepository.save(this.agentContext, record);
   }
 
-  async getCryptoAccountRecordById(id: string): Promise<CryptoAccountRecord> {
-    return this.cryptoAccountRepository.getById(this.agentContext, id);
+  async removeCryptoRecordById(id: string): Promise<void> {
+    await this.cryptoAccountRepository.deleteById(this.agentContext, id);
   }
 
-  async getAllCryptoAccountRecords(): Promise<CryptoAccountRecord[]> {
-    return this.cryptoAccountRepository.getAll(this.agentContext);
+  async cryptoAccountIdentitySeedPhraseExists(): Promise<boolean> {
+    return (await this.cryptoAccountRepository.findByQuery(this.agentContext, { usesIdentitySeedPhrase: true })).length > 0;
   }
 }

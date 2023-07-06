@@ -12,7 +12,7 @@ import { Alert } from "../Alert";
 import {
   KeyStoreKeys,
   SecureStorage,
-} from "../../../core/storage/secureStorage";
+} from "../../../core/storage";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
 

@@ -9,7 +9,7 @@ import { store } from "../../../store";
 import {
   KeyStoreKeys,
   SecureStorage,
-} from "../../../core/storage/secureStorage";
+} from "../../../core/storage";
 import { RoutePath } from "../../../routes";
 
 describe("Passcode Login Page", () => {

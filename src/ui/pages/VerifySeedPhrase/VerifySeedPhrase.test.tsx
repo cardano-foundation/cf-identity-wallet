@@ -18,7 +18,7 @@ import { Addresses } from "../../../core/cardano/addresses";
 import {
   KeyStoreKeys,
   SecureStorage,
-} from "../../../core/storage/secureStorage";
+} from "../../../core/storage";
 
 const rootKey = "rootKeyHex";
 const secureStorageSetSpy = jest
