@@ -5,8 +5,8 @@ import {getUrl} from "../helpers";
 describe("Onboarding page", () => {
 
   beforeEach(async () => {
-    await restartApp('/');
-    await url('/');
+    await restartApp("/");
+    await url("/");
     await pause(500);
   });
 
@@ -18,7 +18,7 @@ describe("Onboarding page", () => {
 
     await pause(500);
     const url = await getUrl();
-    expect(url.toString()).toContain('createpassword');
+    expect(url.toString()).toContain("createpassword");
   });
 
 });

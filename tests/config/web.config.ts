@@ -41,7 +41,7 @@ config.capabilities = [
     maxInstances: 1,
     browserName: "chrome",
     'goog:chromeOptions': {
-      args: ['--window-size=500,1000'],
+      args: ['--window-size=393,851', '--proxy-server=localhost:3003'],
       // See https://chromedriver.chromium.org/mobile-emulation
       // For more details
       mobileEmulation: {
@@ -55,6 +55,7 @@ config.capabilities = [
         'profile.default_content_setting_values.notifications': 1,
       },
     },
+
   },
 ];
 
