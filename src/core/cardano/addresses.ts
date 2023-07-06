@@ -49,7 +49,7 @@ class Addresses {
     }
   }
 
-  static calculateBaseAddressBech32(spendingPubKey: Bip32PublicKey, stakePubKey: Bip32PublicKey, networkInfo: NetworkInfo): string {
+  private static calculateBaseAddressBech32(spendingPubKey: Bip32PublicKey, stakePubKey: Bip32PublicKey, networkInfo: NetworkInfo): string {
     return BaseAddress.new(
       networkInfo.network_id(),
       StakeCredential.from_keyhash(spendingPubKey.to_raw_key().hash()),
@@ -57,7 +57,7 @@ class Addresses {
     ).to_address().to_bech32();
   }
 
-  static calculateRewardAddressBech32(stakePubKey: Bip32PublicKey, networkInfo: NetworkInfo): string {
+  private static calculateRewardAddressBech32(stakePubKey: Bip32PublicKey, networkInfo: NetworkInfo): string {
     return RewardAddress.new(
       networkInfo.network_id(),
       StakeCredential.from_keyhash(stakePubKey.to_raw_key().hash())
