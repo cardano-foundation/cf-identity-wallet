@@ -62,7 +62,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       const hideCryptoBalances = await PreferencesStorage.get(
         PreferencesKeys.APP_HIDE_CRYPTO_BALANCES
       );
-      dispatch(setHideCryptoBalances(!!hideCryptoBalances.data));
+      dispatch(setHideCryptoBalances(!!hideCryptoBalances.hidden));
     } catch (e) {
       // @TODO - sdisalvo: handle error
     }
