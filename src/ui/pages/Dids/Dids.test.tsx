@@ -12,7 +12,7 @@ import {
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
-jest.mock("../../../core/aries/ariesAgent.ts", () => ({
+jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
       getIdentity: jest.fn().mockResolvedValue({}),

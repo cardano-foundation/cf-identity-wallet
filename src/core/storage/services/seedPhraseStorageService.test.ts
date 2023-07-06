@@ -19,7 +19,7 @@ const rewardAddressesMap = new Map([
 ]);
 const entropy = "entropy";
 
-jest.mock("../../aries/ariesAgent.ts", () => ({
+jest.mock("../../aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
       cryptoAccountIdentitySeedPhraseExists: jest.fn().mockResolvedValue(false),
@@ -29,7 +29,7 @@ jest.mock("../../aries/ariesAgent.ts", () => ({
   },
 }));
 
-jest.mock("../../cardano/addresses.ts");
+jest.mock("../../cardano/addresses");
 Addresses.bip32PrivateHexToPublicHex = jest
   .fn()
   .mockReturnValue(rootExtendedPublicKey);
@@ -42,7 +42,7 @@ Addresses.convertToRootXPrivateKeyHex = jest
   .fn()
   .mockReturnValue(rootExtendedPrivateKey);
 
-jest.mock("../secureStorage.ts");
+jest.mock("../secureStorage");
 
 describe("Seed phrase storage service", () => {
   beforeAll(() => {

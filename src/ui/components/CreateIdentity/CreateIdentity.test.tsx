@@ -7,7 +7,7 @@ import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
 jest.mock("../../../utils", () => ({
   generateUUID: jest.fn(),
 }));
-jest.mock("../../../core/aries/ariesAgent.ts", () => ({
+jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
       getIdentity: jest.fn().mockResolvedValue({}),
