@@ -145,7 +145,9 @@ const MyWallets = ({
                 size="4"
                 className="account-balance"
               >
-                <IonLabel>{formatCurrencyUSD(account.usdBalance)}</IonLabel>
+                <IonLabel>
+                  {formatCurrencyUSD(account.balance.main.usdBalance)}
+                </IonLabel>
               </IonCol>
             </IonRow>
           </IonGrid>

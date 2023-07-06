@@ -48,15 +48,34 @@ const Crypto = () => {
       blockchain: "",
       currency: "",
       logo: "",
-      nativeBalance: 0,
-      usdBalance: 0,
+      balance: {
+        main: {
+          nativeBalance: 0,
+          usdBalance: 0,
+        },
+        reward: {
+          nativeBalance: 0,
+          usdBalance: 0,
+        },
+      },
       usesIdentitySeedPhrase: false,
     });
   const items: CryptoBalanceItem[] = [
     {
       title: i18n.t("crypto.tab.slider.title.mainbalance"),
-      fiatBalance: formatCurrencyUSD(defaultAccountData.usdBalance),
-      nativeBalance: defaultAccountData.nativeBalance.toFixed(2) + " ADA",
+      fiatBalance: formatCurrencyUSD(
+        defaultAccountData.balance.main.usdBalance
+      ),
+      nativeBalance:
+        defaultAccountData.balance.main.nativeBalance.toFixed(2) + " ADA",
+    },
+    {
+      title: i18n.t("crypto.tab.slider.title.rewardbalance"),
+      fiatBalance: formatCurrencyUSD(
+        defaultAccountData.balance.reward.usdBalance
+      ),
+      nativeBalance:
+        defaultAccountData.balance.reward.nativeBalance.toFixed(2) + " ADA",
     },
   ];
 

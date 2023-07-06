@@ -4,8 +4,16 @@ interface CryptoAccountProps {
   blockchain: string;
   currency: string;
   logo: string;
-  nativeBalance: number;
-  usdBalance: number;
+  balance: {
+    main: {
+      nativeBalance: number;
+      usdBalance: number;
+    };
+    reward: {
+      nativeBalance: number;
+      usdBalance: number;
+    };
+  };
   usesIdentitySeedPhrase: boolean;
 }
 
