@@ -33,6 +33,10 @@ class SeedPhraseStorageService {
   }
 
   async createCryptoAccountFromIdentitySeedPhrase(displayName: string): Promise<void> {
+    if (!AriesAgent.ready) {
+      throw new Error(SeedPhraseStorageService.AGENT_NOT_READY);
+    }
+
     if (await AriesAgent.agent.cryptoAccountIdentitySeedPhraseExists()) {
       throw new Error(SeedPhraseStorageService.IDENTITY_SEED_PHRASE_IN_USE);
     }
