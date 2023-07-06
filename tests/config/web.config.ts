@@ -40,19 +40,19 @@ config.capabilities = [
   {
     maxInstances: 1,
     browserName: "chrome",
-    'goog:chromeOptions': {
-      args: ['--window-size=393,851', '--proxy-server=localhost:3003'],
+    "goog:chromeOptions": {
+      args: ["--window-size=393,851", "--proxy-server=localhost:3003", "--remote-debugging-port=9222"],
       // See https://chromedriver.chromium.org/mobile-emulation
       // For more details
       mobileEmulation: {
         deviceMetrics: { width: 393, height: 851, pixelRatio: 3 },
         userAgent:
-            'Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s Mobile Safari/537.36',
+            "Mozilla/5.0 (Linux; Android 8.0.0; Pixel 2 XL Build/OPD1.170816.004) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/%s Mobile Safari/537.36",
       },
       prefs: {
-        'profile.default_content_setting_values.media_stream_camera': 1,
-        'profile.default_content_setting_values.media_stream_mic': 1,
-        'profile.default_content_setting_values.notifications': 1,
+        "profile.default_content_setting_values.media_stream_camera": 1,
+        "profile.default_content_setting_values.media_stream_mic": 1,
+        "profile.default_content_setting_values.notifications": 1,
       },
     },
 

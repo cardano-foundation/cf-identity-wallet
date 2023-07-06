@@ -1,15 +1,6 @@
 import { config } from "./shared.config";
 
 //
-// =====================
-// Server Configurations
-// =====================
-//
-// The server port Appium is running on
-//
-config.port = 4723;
-
-//
 // ================
 // Services: Appium
 // ================
