@@ -1,4 +1,10 @@
-import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonModal,
+  IonPage,
+  useIonViewWillEnter,
+} from "@ionic/react";
 import Blockies from "react-18-blockies";
 import { useEffect, useState } from "react";
 import {
@@ -27,6 +33,7 @@ import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { CryptoBalance } from "../../components/CryptoBalance";
 import { CryptoBalanceItem } from "../../components/CryptoBalance/CryptoBalance.types";
 import { formatCurrencyUSD } from "../../../utils";
+import { AssetsTransactions } from "../../components/AssetsTransactions";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
@@ -38,6 +45,7 @@ const Crypto = () => {
   const [idwProfileInUse, setIdwProfileInUse] = useState(false);
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
+  const [showAssetsTransactions, setShowAssetsTransactions] = useState(false);
   const [defaultAccountAddress, setDefaultAccountAddress] = useState(
     useAppSelector(getDefaultCryptoAccountCache)
   );
@@ -59,6 +67,8 @@ const Crypto = () => {
         },
       },
       usesIdentitySeedPhrase: false,
+      assets: [],
+      transactions: [],
     });
   const items: CryptoBalanceItem[] = [
     {
@@ -94,6 +104,14 @@ const Crypto = () => {
       setIdwProfileInUse(false);
     }
   }, [cryptoAccountsData, defaultAccountAddress]);
+
+  useEffect(() => {
+    if (defaultAccountAddress) {
+      setShowAssetsTransactions(true);
+    } else {
+      setShowAssetsTransactions(false);
+    }
+  }, [defaultAccountAddress]);
 
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }))
@@ -222,6 +240,21 @@ const Crypto = () => {
             >
               <CryptoBalance items={items} />
               <ActionButtons />
+              <IonModal
+                isOpen={showAssetsTransactions}
+                initialBreakpoint={0.2}
+                breakpoints={[0.2, 1]}
+                canDismiss={false}
+                backdropDismiss={false}
+                backdropBreakpoint={1}
+                className="crypto-assets-transactions page-layout"
+                data-testid="crypto-assets-transactions"
+              >
+                <AssetsTransactions
+                  assets={defaultAccountData.assets}
+                  transactions={defaultAccountData.transactions}
+                />
+              </IonModal>
             </div>
           ) : (
             <CardsPlaceholder

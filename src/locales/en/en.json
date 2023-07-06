@@ -307,6 +307,9 @@
         "receive": "Receive",
         "nfts": "NFTs",
         "staking": "Staking"
+      },
+      "assetstransactions": {
+        "swipeupmessage": "Swipe up to see assets & transactions"
       }
     },
     "mywalletsmodal": {
