@@ -225,6 +225,8 @@ const Crypto = () => {
     );
   };
 
+  console.log(currentRoute?.path);
+  console.log(TabsRoutePath.CRYPTO);
   return currentRoute?.path === TabsRoutePath.CRYPTO ? (
     <>
       <IonPage
