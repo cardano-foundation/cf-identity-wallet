@@ -4,6 +4,7 @@ import {
   IonModal,
   IonPage,
   useIonViewWillEnter,
+  useIonViewWillLeave,
 } from "@ionic/react";
 import Blockies from "react-18-blockies";
 import { useEffect, useState } from "react";
@@ -16,7 +17,11 @@ import {
 } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  setCurrentRoute,
+  getCurrentRoute,
+  getState,
+} from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import {
@@ -37,6 +42,12 @@ import { AssetsTransactions } from "../../components/AssetsTransactions";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
+  useIonViewWillEnter(() =>
+    dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }))
+  );
+  const storeState = useAppSelector(getState);
+  const currentRoute = getCurrentRoute(storeState);
+
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
@@ -114,10 +125,6 @@ const Crypto = () => {
       setShowAssetsTransactions(false);
     }
   }, [defaultAccountAddress]);
-
-  useIonViewWillEnter(() =>
-    dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }))
-  );
 
   const AdditionalButtons = () => {
     return (
@@ -221,6 +228,7 @@ const Crypto = () => {
   };
 
   return (
+    //currentRoute.path === TabsRoutePath.CRYPTO &&
     <>
       <IonPage
         className={`tab-layout crypto-tab${

@@ -74,12 +74,21 @@ const AssetsTransactions = ({
   return (
     <div className="assets-transactions-body modal">
       <PageLayout>
-        {expanded ? "" : i18n.t("crypto.tab.assetstransactions.swipeupmessage")}
         <IonGrid>
           <IonRow>
             <IonCol
               size="12"
-              className="my-wallets-body"
+              className=""
+            >
+              {expanded
+                ? ""
+                : i18n.t("crypto.tab.assetstransactions.swipeupmessage")}
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol
+              size="12"
+              className=""
             >
               {assets.length ? (
                 <IonList

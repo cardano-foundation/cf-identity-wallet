@@ -178,12 +178,7 @@ const PageLayout = ({
         </IonHeader>
       )}
 
-      <IonContent
-        className="page-content"
-        color="light"
-      >
-        {children}
-      </IonContent>
+      <IonContent className="page-content">{children}</IonContent>
 
       {footer && (
         <IonFooter
