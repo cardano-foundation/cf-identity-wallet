@@ -7,7 +7,11 @@ import {getUrl} from "../helpers";
 describe("Onboarding page", () => {
 
   beforeEach(async () => {
-    await browser.execute('window.localStorage.clear();');
+    try {
+      await browser.execute('window.localStorage.clear();');
+    } catch (e) {
+      console.log(e)
+    }
     await restartApp("/");
     // await url("/");
     await pause(500);
@@ -30,7 +34,18 @@ describe("Onboarding page", () => {
       await SetPasscodePage.getNumberButton(1).click();
     }
 
-    await GenerateSeedPhrasePage.getTermsAndConditionsCheckBox().click()
+
+    await GenerateSeedPhrasePage.getTermsAndConditionsCheckBox().click();
+    await GenerateSeedPhrasePage.getRevealSeedPhraseButton().click();
+
+    const generatedWords = [];
+    for (let i = 0; i < 15; i++){
+      const word = await GenerateSeedPhrasePage.getSeedWord(i);
+      console.log("\n\n\nword");
+      console.log(word);
+      //generatedWords.push(word);
+    }
+
 
   });
 
