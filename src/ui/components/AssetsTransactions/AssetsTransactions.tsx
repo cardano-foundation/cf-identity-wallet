@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import {
   IonButton,
   IonCol,
@@ -6,11 +7,11 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonModal,
-  IonPage,
   IonRow,
-  useIonViewWillEnter,
+  IonSegment,
+  IonSegmentButton,
 } from "@ionic/react";
+import { arrowUpOutline, arrowDownOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import {
@@ -18,14 +19,16 @@ import {
   CryptoTransactionsProps,
 } from "../../pages/Crypto/Crypto.types";
 import "./AssetsTransactions.scss";
+import { formatDate, formatTime } from "../../../utils";
 
-interface AssetItemProps {
+interface AssetTransactionItemProps {
   key: number;
-  asset: CryptoAssetsProps;
+  asset?: CryptoAssetsProps;
+  transaction?: CryptoTransactionsProps;
   index: number;
 }
 
-const AssetItem = ({ asset, index }: AssetItemProps) => {
+const AssetItem = ({ asset, index }: AssetTransactionItemProps) => {
   return (
     <IonItem>
       <IonGrid>
@@ -35,7 +38,7 @@ const AssetItem = ({ asset, index }: AssetItemProps) => {
             className="asset-logo"
           >
             <img
-              src={asset.logo}
+              src={asset?.logo}
               alt="asset-logo"
             />
           </IonCol>
@@ -43,16 +46,71 @@ const AssetItem = ({ asset, index }: AssetItemProps) => {
             size="5.5"
             className="asset-info"
           >
-            <IonLabel className="asset-name">{asset.name}</IonLabel>
+            <IonLabel className="asset-name">{asset?.name}</IonLabel>
             <IonLabel className="asset-rate">
-              {asset.currentPrice} {asset.performance}%
+              {asset?.currentPrice} {asset?.performance}%
             </IonLabel>
           </IonCol>
           <IonCol
             size="4"
             className="account-balance"
           >
-            <IonLabel>{asset.balance.toFixed(2) + " ADA"}</IonLabel>
+            <IonLabel>{asset?.balance.toFixed(2) + " ADA"}</IonLabel>
+          </IonCol>
+        </IonRow>
+      </IonGrid>
+    </IonItem>
+  );
+};
+
+const TransactionItem = ({ transaction, index }: AssetTransactionItemProps) => {
+  return (
+    <IonItem>
+      <IonGrid>
+        <IonRow>
+          <IonCol
+            size="1.5"
+            className="transaction-icon"
+          >
+            <IonButton
+              shape="round"
+              color={`transparent ${transaction?.operation}`}
+            >
+              {transaction?.operation === "send" ? (
+                <IonIcon
+                  slot="icon-only"
+                  icon={arrowUpOutline}
+                  color="danger"
+                />
+              ) : (
+                <IonIcon
+                  slot="icon-only"
+                  icon={arrowDownOutline}
+                  color="green"
+                />
+              )}
+            </IonButton>
+          </IonCol>
+          <IonCol
+            size="5.5"
+            className="transaction-info"
+          >
+            <IonLabel className="transaction-address-type">
+              {transaction?.address.substring(0, 4)}...
+              {transaction?.address.slice(-4)}
+              {transaction?.type[0]}
+            </IonLabel>
+            <IonLabel className="transaction-time">
+              {formatDate(`${transaction?.timestamp}`) +
+                " | " +
+                formatTime(`${transaction?.timestamp}`)}
+            </IonLabel>
+          </IonCol>
+          <IonCol
+            size="4"
+            className="transaction-outcome"
+          >
+            <IonLabel>{transaction?.amount.toFixed(2) + " ADA"}</IonLabel>
           </IonCol>
         </IonRow>
       </IonGrid>
@@ -71,6 +129,12 @@ const AssetsTransactions = ({
   transactions,
   expanded,
 }: AssetsTransactionsProps) => {
+  const [selectedTab, setSelectedTab] = useState("assets");
+  useEffect(() => {
+    if (!expanded) {
+      setSelectedTab("assets");
+    }
+  }, [expanded]);
   return (
     <div className="assets-transactions-body modal">
       <PageLayout>
@@ -80,9 +144,34 @@ const AssetsTransactions = ({
               size="12"
               className=""
             >
-              {expanded
-                ? ""
-                : i18n.t("crypto.tab.assetstransactions.swipeupmessage")}
+              <IonLabel
+                className={`assets-transactions-swipe-message ${
+                  expanded ? "hide" : "show"
+                }`}
+              >
+                {i18n.t("crypto.tab.assetstransactions.swipeupmessage")}
+              </IonLabel>
+              <IonSegment
+                className={`assets-transactions-toggle-segment ${
+                  expanded ? "show" : "hide"
+                }`}
+                data-testid="assets-transactions-toggle-segment"
+                value={selectedTab}
+                onIonChange={(event) => {
+                  setSelectedTab(`${event.detail.value}`);
+                }}
+              >
+                <IonSegmentButton value="assets">
+                  <IonLabel>
+                    {i18n.t("crypto.tab.assetstransactions.assets")}
+                  </IonLabel>
+                </IonSegmentButton>
+                <IonSegmentButton value="transactions">
+                  <IonLabel>
+                    {i18n.t("crypto.tab.assetstransactions.transactions")}
+                  </IonLabel>
+                </IonSegmentButton>
+              </IonSegment>
             </IonCol>
           </IonRow>
           <IonRow>
@@ -90,7 +179,7 @@ const AssetsTransactions = ({
               size="12"
               className=""
             >
-              {assets.length ? (
+              {selectedTab === "assets" && assets.length && (
                 <IonList
                   lines="none"
                   className="assets-list"
@@ -105,8 +194,22 @@ const AssetsTransactions = ({
                     );
                   })}
                 </IonList>
-              ) : (
-                <i>{i18n.t("crypto.mywalletsmodal.empty")}</i>
+              )}
+              {selectedTab === "transactions" && transactions.length && (
+                <IonList
+                  lines="none"
+                  className="transactions-list"
+                >
+                  {transactions.map((transaction, index) => {
+                    return (
+                      <TransactionItem
+                        key={index}
+                        transaction={transaction}
+                        index={index}
+                      />
+                    );
+                  })}
+                </IonList>
               )}
             </IonCol>
           </IonRow>

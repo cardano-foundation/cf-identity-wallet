@@ -309,7 +309,9 @@
         "staking": "Staking"
       },
       "assetstransactions": {
-        "swipeupmessage": "Swipe up to see assets & transactions"
+        "swipeupmessage": "Swipe up to see assets & transactions",
+        "assets": "Assets",
+        "transactions": "Transactions"
       }
     },
     "mywalletsmodal": {

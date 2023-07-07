@@ -41,9 +41,6 @@ import { AssetsTransactions } from "../../components/AssetsTransactions";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
-  useIonViewWillEnter(() => {
-    dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }));
-  });
   const storeState = useAppSelector(getState);
   const currentRoute = getCurrentRoute(storeState);
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
@@ -54,7 +51,7 @@ const Crypto = () => {
   const [idwProfileInUse, setIdwProfileInUse] = useState(false);
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
-  const [showAssetsTransactions, setShowAssetsTransactions] = useState(false);
+  const [showAssetsTransactions, setShowAssetsTransactions] = useState(true);
   const [assetsTransactionsExpanded, setAssetsTransactionsExpanded] =
     useState(false);
   const [defaultAccountAddress, setDefaultAccountAddress] = useState(
@@ -99,6 +96,19 @@ const Crypto = () => {
         defaultAccountData.balance.reward.nativeBalance.toFixed(2) + " ADA",
     },
   ];
+
+  useIonViewWillEnter(() => {
+    dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }));
+    setShowAssetsTransactions(true);
+  });
+
+  useEffect(() => {
+    if (!currentRoute?.path || currentRoute.path !== TabsRoutePath.CRYPTO) {
+      setShowAssetsTransactions(false);
+    } else {
+      setShowAssetsTransactions(true);
+    }
+  }, [currentRoute]);
 
   useEffect(() => {
     cryptoAccountsData?.forEach((account) => {
@@ -225,9 +235,7 @@ const Crypto = () => {
     );
   };
 
-  console.log(currentRoute?.path);
-  console.log(TabsRoutePath.CRYPTO);
-  return currentRoute?.path === TabsRoutePath.CRYPTO ? (
+  return (
     <>
       <IonPage
         className={`tab-layout crypto-tab${
@@ -249,25 +257,27 @@ const Crypto = () => {
             >
               <CryptoBalance items={items} />
               <ActionButtons />
-              <IonModal
-                isOpen={showAssetsTransactions}
-                initialBreakpoint={0.2}
-                breakpoints={[0.2, 1]}
-                canDismiss={false}
-                backdropDismiss={false}
-                backdropBreakpoint={1}
-                onIonBreakpointDidChange={() =>
-                  setAssetsTransactionsExpanded(!assetsTransactionsExpanded)
-                }
-                className="crypto-assets-transactions page-layout"
-                data-testid="crypto-assets-transactions"
-              >
-                <AssetsTransactions
-                  assets={defaultAccountData.assets}
-                  transactions={defaultAccountData.transactions}
-                  expanded={assetsTransactionsExpanded}
-                />
-              </IonModal>
+              {showAssetsTransactions ? (
+                <IonModal
+                  isOpen={true}
+                  initialBreakpoint={0.2}
+                  breakpoints={[0.2, 1]}
+                  canDismiss={false}
+                  backdropDismiss={false}
+                  backdropBreakpoint={1}
+                  onIonBreakpointDidChange={() =>
+                    setAssetsTransactionsExpanded(!assetsTransactionsExpanded)
+                  }
+                  className="crypto-assets-transactions page-layout"
+                  data-testid="crypto-assets-transactions"
+                >
+                  <AssetsTransactions
+                    assets={defaultAccountData.assets}
+                    transactions={defaultAccountData.transactions}
+                    expanded={assetsTransactionsExpanded}
+                  />
+                </IonModal>
+              ) : null}
             </div>
           ) : (
             <CardsPlaceholder
@@ -306,7 +316,7 @@ const Crypto = () => {
         setDefaultAccountData={setDefaultAccountData}
       />
     </>
-  ) : null;
+  );
 };
 
 export { Crypto };
