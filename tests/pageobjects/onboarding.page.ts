@@ -5,7 +5,7 @@ import {IonicButton} from "../helpers/ionic";
 
 class Onboarding extends Page {
   get getStartedButton() {
-    return new IonicButton("get-started-button");
+    return new IonicButton(`[data-testid="${"get-started-button"}"]`);
   }
 }
 

@@ -5,7 +5,8 @@ import {IonicButton} from "../helpers/ionic";
 
 class SetPasscodePage extends Page {
   getNumberButton(number: number) {
-    return new IonicButton(`passcode-button-${number}`);
+    const selector = `[data-testid=passcode-button-${number}]`
+    return new IonicButton(selector);
   }
 }
 

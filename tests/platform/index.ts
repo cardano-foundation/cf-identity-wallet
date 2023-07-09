@@ -43,29 +43,14 @@ export function getContext() {
 }
 
 export async function url(newUrl: string) {
-  console.log("newUrl");
-  console.log(newUrl);
-  // const currentUrl = await b
-  console.log("browser");
-  console.log(browser);
-  // const currentUrl = await browser.getUrl();
   const currentUrl = await browser.getUrl();
-  console.log("currentUrl");
-  console.log(currentUrl);
-
   if (newUrl[0] === "/") {
     // Simulate baseUrl by grabbing the current url and navigating relative
     // to that
     try {
-      console.log("hey1");
-      console.log(newUrl);
-      console.log(typeof currentUrl);
       const fullUrl = new URL(newUrl, currentUrl);
-      console.log("fullUrl");
-      console.log(fullUrl);
       return browser.url(fullUrl.href);
     } catch (e) {
-      console.log("->error:");
       console.log(e);
     }
   }

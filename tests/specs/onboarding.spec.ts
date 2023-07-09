@@ -3,6 +3,7 @@ import {pause, restartApp, url} from "../platform";
 import Onboarding from "../pageobjects/onboarding.page";
 import SetPasscodePage from "../pageobjects/setpasscode.page";
 import GenerateSeedPhrasePage from "../pageobjects/generateseedphrase.page";
+import VerifySeedPhrasePage from "../pageobjects/verifyeedphrase.page";
 import {getUrl} from "../helpers";
 describe("Onboarding page", () => {
 
@@ -41,11 +42,20 @@ describe("Onboarding page", () => {
     const generatedWords = [];
     for (let i = 0; i < 15; i++){
       const word = await GenerateSeedPhrasePage.getSeedWord(i);
-      console.log("\n\n\nword");
-      console.log(word);
-      //generatedWords.push(word);
+      generatedWords.push(word);
     }
 
+    await GenerateSeedPhrasePage.getContinueButton().click();
+    await pause(500);
+    await (await GenerateSeedPhrasePage.getConfirmButton()).click();
+
+    for (let i = 0; i < generatedWords.length; i++){
+      const wordChip = VerifySeedPhrasePage.getWordButton(generatedWords[i]);
+      await wordChip.click();
+    }
+
+    await pause(500);
+    await VerifySeedPhrasePage.getConfirmButton().click();
 
   });
 
