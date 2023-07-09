@@ -9,7 +9,6 @@
     "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
-    "test:e2e": "cypress run",
     "start-appium": "appium --port 4003",
     "e2e:web": "SERVE_PORT=4003 TS_NODE_PROJECT=tests/tsconfig.json  wdio tests/config/web.config.ts --watch"
   },
@@ -82,7 +81,6 @@
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
     "css-minimizer-webpack-plugin": "^4.0.0",
-    "cypress": "^12.15.0",
     "eslint": "^8.36.0",
     "eslint-plugin-import": "^2.27.5",
     "eslint-plugin-jest": "^27.2.1",
