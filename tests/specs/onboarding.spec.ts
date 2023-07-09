@@ -27,15 +27,14 @@ describe("Onboarding page", () => {
 
 
     await pause(500);
-    const url = await getUrl();
+    let url = await getUrl();
     expect(url.toString()).toContain("setpasscode");
-
 
     for (let i = 0; i < 12; i++) {
       await SetPasscodePage.getNumberButton(1).click();
     }
-
-
+    url = await getUrl();
+    expect(url.toString()).toContain("generateseedphrase");
     await GenerateSeedPhrasePage.getTermsAndConditionsCheckBox().click();
     await GenerateSeedPhrasePage.getRevealSeedPhraseButton().click();
 
@@ -49,6 +48,8 @@ describe("Onboarding page", () => {
     await pause(500);
     await (await GenerateSeedPhrasePage.getConfirmButton()).click();
 
+    url = await getUrl();
+    expect(url.toString()).toContain("verifyseedphrase");
     for (let i = 0; i < generatedWords.length; i++){
       const wordChip = VerifySeedPhrasePage.getWordButton(generatedWords[i]);
       await wordChip.click();
@@ -56,6 +57,9 @@ describe("Onboarding page", () => {
 
     await pause(500);
     await VerifySeedPhrasePage.getConfirmButton().click();
+
+    url = await getUrl();
+    expect(url.toString()).toContain("tabs/dids");
 
   });
 
