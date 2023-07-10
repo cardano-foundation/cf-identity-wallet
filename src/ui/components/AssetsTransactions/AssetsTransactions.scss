@@ -47,6 +47,13 @@
     }
   }
 
+  &.hide-balance {
+    .account-balance,
+    .transaction-amount {
+      filter: blur(0.438rem);
+    }
+  }
+
   ion-item {
     --background: var(--ion-color-light-grey);
   }
@@ -194,7 +201,7 @@
       }
     }
 
-    &.transaction-outcome {
+    &.transaction-amount {
       ion-label {
         text-align: right;
       }

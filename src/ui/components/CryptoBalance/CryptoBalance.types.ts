@@ -6,6 +6,8 @@ interface CryptoBalanceItem {
 
 interface CryptoBalanceProps {
   items: CryptoBalanceItem[];
+  hideBalance: boolean;
+  setHideBalance: (value: boolean) => void;
 }
 
 export type { CryptoBalanceItem, CryptoBalanceProps };

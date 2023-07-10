@@ -27,6 +27,7 @@ import {
 } from "../../pages/Crypto/Crypto.types";
 import "./AssetsTransactions.scss";
 import { formatLongDate, formatShortTime } from "../../../utils";
+import { AssetsTransactionsProps } from "./AssetsTransactions.types";
 
 interface AssetTransactionItemProps {
   key: number;
@@ -141,7 +142,7 @@ const TransactionItem = ({ transaction, index }: AssetTransactionItemProps) => {
           </IonCol>
           <IonCol
             size="4"
-            className="transaction-outcome"
+            className="transaction-amount"
           >
             {transaction?.operation === "send" ? (
               <IonLabel>{transaction?.amount.toFixed(2) + " ADA"}</IonLabel>
@@ -197,16 +198,11 @@ const TransactionFilters = () => {
   );
 };
 
-interface AssetsTransactionsProps {
-  assets: CryptoAssetsProps[];
-  transactions: CryptoTransactionsProps[];
-  expanded: boolean;
-}
-
 const AssetsTransactions = ({
   assets,
   transactions,
   expanded,
+  hideBalance,
 }: AssetsTransactionsProps) => {
   const [selectedTab, setSelectedTab] = useState("assets");
   useEffect(() => {
@@ -218,7 +214,10 @@ const AssetsTransactions = ({
     <div
       className={`assets-transactions-body modal ${
         expanded ? "full" : "compact"
-      } ${selectedTab === "transactions" ? "transactions" : "assets"}`}
+      } ${selectedTab === "transactions" ? "transactions" : "assets"} ${
+        hideBalance ? "hide-balance" : "show-balance"
+      }`}
+      data-testid="assets-transactions-main-container"
     >
       {expanded && (
         <PageLayout>

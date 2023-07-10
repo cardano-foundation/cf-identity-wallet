@@ -26,6 +26,7 @@ import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import {
   getCryptoAccountsCache,
   getDefaultCryptoAccountCache,
+  getHideCryptoBalances,
 } from "../../../store/reducers/cryptoAccountsCache";
 import { i18n } from "../../../i18n";
 import "./Crypto.scss";
@@ -96,6 +97,9 @@ const Crypto = () => {
         defaultAccountData.balance.reward.nativeBalance.toFixed(2) + " ADA",
     },
   ];
+  const [hideBalance, setHideBalance] = useState(
+    useAppSelector(getHideCryptoBalances)
+  );
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }));
@@ -255,9 +259,13 @@ const Crypto = () => {
               className="crypto-tab-content"
               data-testid="crypto-tab-content"
             >
-              <CryptoBalance items={items} />
+              <CryptoBalance
+                items={items}
+                hideBalance={hideBalance}
+                setHideBalance={setHideBalance}
+              />
               <ActionButtons />
-              {showAssetsTransactions ? (
+              {showAssetsTransactions && (
                 <IonModal
                   isOpen={true}
                   initialBreakpoint={0.2}
@@ -275,9 +283,10 @@ const Crypto = () => {
                     assets={defaultAccountData.assets}
                     transactions={defaultAccountData.transactions}
                     expanded={assetsTransactionsExpanded}
+                    hideBalance={hideBalance}
                   />
                 </IonModal>
-              ) : null}
+              )}
             </div>
           ) : (
             <CardsPlaceholder
