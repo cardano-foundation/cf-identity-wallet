@@ -1,5 +1,5 @@
 import {pause, restartApp} from "../platform";
-import Onboarding from "../pageobjects/onboarding.page";
+import OnboardingPage from "../pageobjects/onboarding.page";
 import SetPasscodePage from "../pageobjects/setpasscode.page";
 import GenerateSeedPhrasePage from "../pageobjects/generateseedphrase.page";
 import VerifySeedPhrasePage from "../pageobjects/verifyeedphrase.page";
@@ -23,7 +23,7 @@ describe("Onboarding page", () => {
   it("Full onboarding process", async () => {
 
 
-    const getStartedButton = await Onboarding.getStartedButton;
+    const getStartedButton = await OnboardingPage.getStartedButton;
 
     await getStartedButton.click();
 
