@@ -40,7 +40,7 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
 
-### `npm run start-appium"`
+### `npm run start-appium`
 
 When you run the appium command, it starts the Appium server, which listens for incoming connections on a specified port. In this case, the --port 4003 option is used to specify that the Appium server should listen on port 4003.
 
@@ -51,7 +51,7 @@ Runs the WebdriverIO test runner with the provided TypeScript configuration file
 #### How to run the end2ends in local
 
 1. Start Appium server in terminal A:
-   `npm run start-appium"`
+   `npm run start-appium`
 2.  Run the web server in terminal B:
     `npm run dev`
 3. Run the test in terminal C:
