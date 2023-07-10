@@ -10,8 +10,6 @@ import config from "./shared.appium.config";
 
 const androidConfig: typeof config = {
   ...config,
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
   capabilities: [
     {
       // The defaults you need to have in your config

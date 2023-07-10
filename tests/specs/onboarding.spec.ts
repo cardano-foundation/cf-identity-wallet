@@ -9,9 +9,12 @@ describe("Onboarding page", () => {
 
   beforeEach(async () => {
     try {
+      // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      // eslint-disable-next-line no-undef
       await browser.execute('window.localStorage.clear();');
     } catch (e) {
-      console.log(e)
+      //
     }
     await restartApp("/");
     // await url("/");
