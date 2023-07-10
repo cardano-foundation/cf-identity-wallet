@@ -1,4 +1,5 @@
-import { ElementActionOptions } from './definitions';
+import { driver, $, browser } from "@wdio/globals";
+import { ElementActionOptions } from "./definitions";
 
 export async function waitForElement(selector: string, { visibilityTimeout = 5000 }: ElementActionOptions = {}) {
   const el = await $(selector);
@@ -19,6 +20,6 @@ export async function tryAcceptAlert() {
   try {
     return driver.acceptAlert();
   } catch (e) {
-    console.warn('No alert to accept');
+    console.warn("No alert to accept");
   }
 }

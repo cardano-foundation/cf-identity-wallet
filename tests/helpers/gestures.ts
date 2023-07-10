@@ -23,8 +23,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+import { driver } from "@wdio/globals";
 
-import type { RectReturn } from '@wdio/protocols/build/types';
+import type { RectReturn } from "@wdio/protocols/build/types";
 
 /**
  * To make a Gesture methods more robust for multiple devices and also
@@ -68,6 +69,7 @@ export class Gestures {
    * check if it visible after x amount of scrolls
    */
   static async checkIfDisplayedWithSwipeUp(
+    // eslint-disable-next-line no-undef
     element: WebdriverIO.Element,
     maxScrolls: number,
     amount = 0
@@ -153,23 +155,23 @@ export class Gestures {
     await driver.performActions([
       {
         // a. Create the event
-        type: 'pointer',
-        id: 'finger1',
-        parameters: { pointerType: 'touch' },
+        type: "pointer",
+        id: "finger1",
+        parameters: { pointerType: "touch" },
         actions: [
           // b. Move finger into start position
-          { type: 'pointerMove', duration: 0, x: from.x, y: from.y },
+          { type: "pointerMove", duration: 0, x: from.x, y: from.y },
           // c. Finger comes down into contact with screen
-          { type: 'pointerDown', button: 0 },
+          { type: "pointerDown", button: 0 },
           // d. Pause for a little bit
-          { type: 'pause', duration: 100 },
+          { type: "pause", duration: 100 },
           // e. Finger moves to end position
           //    We move our finger from the center of the element to the
           //    starting position of the element.
           //    Play with the duration to make the swipe go slower / faster
-          { type: 'pointerMove', duration: 1000, x: to.x, y: to.y },
+          { type: "pointerMove", duration: 1000, x: to.x, y: to.y },
           // f. Finger gets up, off the screen
-          { type: 'pointerUp', button: 0 },
+          { type: "pointerUp", button: 0 },
         ],
       },
     ]);
