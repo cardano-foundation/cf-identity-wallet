@@ -217,7 +217,6 @@ const AssetsTransactions = ({
       } ${selectedTab === "transactions" ? "transactions" : "assets"} ${
         hideBalance ? "hide-balance" : "show-balance"
       }`}
-      data-testid="assets-transactions-main-container"
     >
       {expanded && (
         <PageLayout>
@@ -249,6 +248,7 @@ const AssetsTransactions = ({
                       placeholder={`${i18n.t(
                         "crypto.tab.assetstransactions.searchtransactions"
                       )}`}
+                      data-testid="assets-transactions-searchbar"
                     />
                     <TransactionFilters />
                   </>
@@ -270,6 +270,7 @@ const AssetsTransactions = ({
                   <IonList
                     lines="none"
                     className="assets-list"
+                    data-testid="assets-list"
                   >
                     {assets.map((asset, index) => {
                       return (
@@ -286,6 +287,7 @@ const AssetsTransactions = ({
                   <IonList
                     lines="none"
                     className="transactions-list"
+                    data-testid="transactions-list"
                   >
                     {transactions.map((transaction, index) => {
                       return (
