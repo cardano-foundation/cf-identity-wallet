@@ -35,7 +35,7 @@ import {
   getIdentitiesCache,
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
-import { formatDate } from "../../../utils";
+import { formatShortDate } from "../../../utils";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { IdentityDetails } from "../../../core/aries/ariesAgent.types";
 
@@ -193,7 +193,7 @@ const DidCardDetails = () => {
                     </span>
 
                     <span className="card-details-info-block-data">
-                      {formatDate(cardData?.createdAtUTC)}
+                      {formatShortDate(cardData?.createdAtUTC)}
                     </span>
                   </span>
                 </div>

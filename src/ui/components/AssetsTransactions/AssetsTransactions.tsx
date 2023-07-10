@@ -25,7 +25,7 @@ import {
   CryptoTransactionsProps,
 } from "../../pages/Crypto/Crypto.types";
 import "./AssetsTransactions.scss";
-import { formatDate, formatTime } from "../../../utils";
+import { formatLongDate, formatShortTime } from "../../../utils";
 
 interface AssetTransactionItemProps {
   key: number;
@@ -133,9 +133,9 @@ const TransactionItem = ({ transaction, index }: AssetTransactionItemProps) => {
               })}
             </IonLabel>
             <IonLabel className="transaction-time">
-              {formatDate(`${transaction?.timestamp}`) +
+              {formatLongDate(`${transaction?.timestamp}`) +
                 " | " +
-                formatTime(`${transaction?.timestamp}`)}
+                formatShortTime(`${transaction?.timestamp}`)}
             </IonLabel>
           </IonCol>
           <IonCol
