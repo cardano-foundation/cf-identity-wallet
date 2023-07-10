@@ -1,11 +1,13 @@
+import { browser, driver, $ } from "@wdio/globals";
+
 export const CONTEXT_REF = {
-  NATIVE: 'native',
-  WEBVIEW: 'webview',
+  NATIVE: "native",
+  WEBVIEW: "webview",
 };
 const DOCUMENT_READY_STATE = {
-  COMPLETE: 'complete',
-  INTERACTIVE: 'interactive',
-  LOADING: 'loading',
+  COMPLETE: "complete",
+  INTERACTIVE: "interactive",
+  LOADING: "loading",
 };
 
 class WebView {
@@ -31,14 +33,14 @@ class WebView {
           currentContexts.length > 1 &&
           currentContexts.find((currentContext) =>
             currentContext.toLowerCase().includes(CONTEXT_REF.WEBVIEW)
-          ) !== 'undefined'
+          ) !== "undefined"
         );
       },
       {
         // Wait a max of 45 seconds. Reason for this high amount is that loading
         // a webview for iOS might take longer
         timeout: 45000,
-        timeoutMsg: 'Webview context not loaded',
+        timeoutMsg: "Webview context not loaded",
         interval: 100,
       }
     );
@@ -62,6 +64,8 @@ class WebView {
    * Returns an object with the list of all available contexts
    */
   getCurrentContexts(): Promise<string[]> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return Promise.resolve(driver.getContexts());
   }
 
@@ -79,7 +83,7 @@ class WebView {
         DOCUMENT_READY_STATE.COMPLETE,
       {
         timeout: 15000,
-        timeoutMsg: 'Website not loaded',
+        timeoutMsg: "Website not loaded",
         interval: 100,
       }
     );
@@ -99,8 +103,8 @@ class WebView {
     isShown = true
   ): Promise<boolean | void> {
     const selector = browser.isAndroid
-      ? '*//android.webkit.WebView'
-      : '*//XCUIElementTypeWebView';
+      ? "*//android.webkit.WebView"
+      : "*//XCUIElementTypeWebView";
     (await $(selector)).waitForDisplayed({
       timeout: 45000,
       reverse: !isShown,

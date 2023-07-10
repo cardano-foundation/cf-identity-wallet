@@ -1,7 +1,7 @@
 
 
 import Page from "./page";
-import {Ionic$, IonicButton, IonicContent} from "../helpers/ionic";
+import {IonicButton, IonicContent} from "../helpers/ionic";
 import {IonicAlert} from "../helpers/ionic/components/alert";
 
 class GenerateSeedPhrasePage extends Page {

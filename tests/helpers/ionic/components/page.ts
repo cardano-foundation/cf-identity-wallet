@@ -1,10 +1,11 @@
-import { IonicComponent } from './component';
+import { driver, $$ } from "@wdio/globals"
+import { IonicComponent } from "./component";
 
 export class IonicPage extends IonicComponent {
   static async active() {
     await driver.waitUntil(
       async () => {
-        const currentPages = await $$('.ion-page:not(.ion-page-hidden)');
+        const currentPages = await $$(".ion-page:not(.ion-page-hidden)");
         for (const page of currentPages) {
           if ((await page.isDisplayed())) {
             return true;
@@ -12,14 +13,15 @@ export class IonicPage extends IonicComponent {
         }
         return false;
       }, {
-      timeout: 10000,
-      timeoutMsg: 'Unable to find any visible pages',
-      interval: 500,
-    }
+        timeout: 10000,
+        timeoutMsg: "Unable to find any visible pages",
+        interval: 500,
+      }
     );
 
-    const allPages = await $$('.ion-page:not(.ion-page-hidden)');
+    const allPages = await $$(".ion-page:not(.ion-page-hidden)");
 
+    // eslint-disable-next-line no-undef
     const pages: WebdriverIO.Element[] = [];
 
     // Collect visible pages
@@ -30,6 +32,7 @@ export class IonicPage extends IonicComponent {
     }
 
     // Collect all the visible pages in the app
+    // eslint-disable-next-line no-undef
     const pagesAndParents: WebdriverIO.Element[][] = [];
     for (const page of pages) {
       const path = await this.getPath(page);
@@ -43,6 +46,7 @@ export class IonicPage extends IonicComponent {
     return activePage;
   }
 
+  // eslint-disable-next-line no-undef
   static async getPath(el: WebdriverIO.Element) {
     const path = [el];
 

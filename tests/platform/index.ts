@@ -1,7 +1,5 @@
+import { browser, driver, $ } from "@wdio/globals";
 import WebView, { CONTEXT_REF } from "../helpers/webview";
-
-export * from "./android";
-export * from "./ios";
 
 export async function waitForLoad() {
   if (isWeb()) {
@@ -31,9 +29,6 @@ export async function getContexts() {
     return Promise.resolve(["WEBVIEW"]);
   }
 
-  // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
   return driver.getContexts();
 }
 
@@ -42,48 +37,34 @@ export function getContext() {
     return Promise.resolve("WEBVIEW");
   }
 
-  // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
   return driver.getContext();
 }
 
 export async function url(newUrl: string) {
-  // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
+
   const currentUrl = await browser.getUrl();
   if (newUrl[0] === "/") {
     // Simulate baseUrl by grabbing the current url and navigating relative
     // to that
     try {
       const fullUrl = new URL(newUrl, currentUrl);
-      // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      // eslint-disable-next-line no-undef
+
       return browser.url(fullUrl.href);
     } catch (e) {
       //
     }
   }
 
-  // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
   return browser.url(newUrl);
 }
 
 export function pause(ms: number) {
-  // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
+
   return driver.pause(ms);
 }
 
 export function hideKeyboard() {
-  // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
+
   return driver.hideKeyboard();
 }
 
@@ -105,23 +86,17 @@ export function onAndroid(fn: () => Promise<void>) {
 }
 
 export function isIOS() {
-  // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
+
   return driver.isIOS;
 }
 
 export function isAndroid() {
-  // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
+
   return driver.isAndroid;
 }
 
 export function isWeb() {
-  // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
+
   return !driver.isMobile;
 }
 
@@ -131,9 +106,6 @@ export async function setLocation(lat: number, lng: number) {
     return Promise.resolve();
   }
 
-  // eslint-disable-next-line no-undef,@typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  // eslint-disable-next-line no-undef
   return driver.setGeoLocation({
     latitude: "" + lat,
     longitude: "" + lat,

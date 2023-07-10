@@ -1,6 +1,8 @@
+import { $ } from "@wdio/globals";
 import { IonicComponent } from "./component";
 
 export class IonicAlert extends IonicComponent {
+  // eslint-disable-next-line no-undef
   constructor(selector?: string | WebdriverIO.Element) {
     super(selector ?? "ion-alert");
   }
