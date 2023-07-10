@@ -52,7 +52,7 @@ const cryptoAccountsMock: CryptoAccountProps[] = [
     transactions: [
       {
         address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
-        type: "assets",
+        type: ["assets"],
         operation: "send",
         timestamp: "2023-07-05T14:48:00.000Z",
         amount: 30.0,
@@ -61,7 +61,7 @@ const cryptoAccountsMock: CryptoAccountProps[] = [
       },
       {
         address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
-        type: "assets",
+        type: ["assets", "nfts"],
         operation: "send",
         timestamp: "2023-05-04T04:16:00.000Z",
         amount: 100.0,
@@ -70,7 +70,7 @@ const cryptoAccountsMock: CryptoAccountProps[] = [
       },
       {
         address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
-        type: "assets",
+        type: ["metadata"],
         operation: "receive",
         timestamp: "2023-06-02T12:03:00.000Z",
         amount: 15.0,
@@ -79,7 +79,7 @@ const cryptoAccountsMock: CryptoAccountProps[] = [
       },
       {
         address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
-        type: "assets",
+        type: ["nfts"],
         operation: "receive",
         timestamp: "2023-03-27T10:30:00.000Z",
         amount: 120.0,
@@ -138,7 +138,7 @@ const cryptoAccountsMock: CryptoAccountProps[] = [
     transactions: [
       {
         address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
-        type: "assets",
+        type: ["assets"],
         operation: "send",
         timestamp: "2023-07-05T14:48:00.000Z",
         amount: 30.0,
@@ -147,7 +147,7 @@ const cryptoAccountsMock: CryptoAccountProps[] = [
       },
       {
         address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
-        type: "assets",
+        type: ["assets", "nfts"],
         operation: "send",
         timestamp: "2023-05-04T04:16:00.000Z",
         amount: 100.0,
@@ -156,7 +156,7 @@ const cryptoAccountsMock: CryptoAccountProps[] = [
       },
       {
         address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
-        type: "assets",
+        type: ["metadata"],
         operation: "receive",
         timestamp: "2023-06-02T12:03:00.000Z",
         amount: 15.0,
@@ -165,7 +165,7 @@ const cryptoAccountsMock: CryptoAccountProps[] = [
       },
       {
         address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
-        type: "assets",
+        type: ["nfts"],
         operation: "receive",
         timestamp: "2023-03-27T10:30:00.000Z",
         amount: 120.0,

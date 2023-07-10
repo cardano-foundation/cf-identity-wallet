@@ -11,7 +11,13 @@ import {
   IonSegment,
   IonSegmentButton,
 } from "@ionic/react";
-import { arrowUpOutline, arrowDownOutline } from "ionicons/icons";
+import {
+  arrowUpOutline,
+  arrowDownOutline,
+  imageOutline,
+  cashOutline,
+  codeSlashOutline,
+} from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import {
@@ -95,10 +101,36 @@ const TransactionItem = ({ transaction, index }: AssetTransactionItemProps) => {
             size="5.5"
             className="transaction-info"
           >
-            <IonLabel className="transaction-address-type">
-              {transaction?.address.substring(0, 4)}...
-              {transaction?.address.slice(-4)}
-              {transaction?.type[0]}
+            <IonLabel>
+              <span className="transaction-address">
+                {transaction?.address.substring(0, 4)}...
+                {transaction?.address.slice(-4)}
+              </span>
+
+              {transaction?.type.map((type: string, index) => {
+                let icon;
+                switch (type) {
+                  case "assets":
+                    icon = cashOutline;
+                    break;
+                  case "nfts":
+                    icon = imageOutline;
+                    break;
+                  case "metadata":
+                    icon = codeSlashOutline;
+                    break;
+                  default:
+                    break;
+                }
+                return (
+                  <IonIcon
+                    key={index}
+                    slot="icon-only"
+                    icon={icon}
+                    className="transaction-type"
+                  />
+                );
+              })}
             </IonLabel>
             <IonLabel className="transaction-time">
               {formatDate(`${transaction?.timestamp}`) +
@@ -110,7 +142,13 @@ const TransactionItem = ({ transaction, index }: AssetTransactionItemProps) => {
             size="4"
             className="transaction-outcome"
           >
-            <IonLabel>{transaction?.amount.toFixed(2) + " ADA"}</IonLabel>
+            {transaction?.operation === "send" ? (
+              <IonLabel>{transaction?.amount.toFixed(2) + " ADA"}</IonLabel>
+            ) : (
+              <IonLabel color="dark-green">
+                +{transaction?.amount.toFixed(2) + " ADA"}
+              </IonLabel>
+            )}
           </IonCol>
         </IonRow>
       </IonGrid>

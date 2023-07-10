@@ -28,7 +28,7 @@
 
   .assets-transactions-swipe-message,
   .assets-transactions-toggle-segment {
-    margin-top: 1rem;
+    margin-top: 2rem;
 
     &.show {
       top: 0;
@@ -107,6 +107,7 @@
         display: flex;
         border: 1.5px solid;
         border-radius: 1.375rem;
+        margin: 0 auto;
 
         &.send {
           border-color: var(--ion-color-danger);
@@ -130,11 +131,23 @@
     }
 
     &.transaction-info {
-      .transaction-address-type {
-        margin-bottom: 0.31rem;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+      ion-label {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        margin-bottom: 0.2rem;
+      }
+
+      .transaction-address {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      .transaction-type {
+        width: 1.18rem;
+        height: 1.18rem;
+        margin-left: 0.62rem;
       }
 
       .transaction-time {

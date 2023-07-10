@@ -8,7 +8,7 @@ interface CryptoAssetsProps {
 
 interface CryptoTransactionsProps {
   address: string;
-  type: string;
+  type: string[];
   operation: string;
   timestamp: string;
   amount: number;
