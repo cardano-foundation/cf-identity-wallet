@@ -1,4 +1,3 @@
-import { browser } from "@wdio/globals";
 import { IonicComponent } from "./component";
 export class IonicTextarea extends IonicComponent {
   constructor(selector: string) {

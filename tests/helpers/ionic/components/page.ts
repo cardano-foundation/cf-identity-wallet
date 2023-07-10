@@ -1,4 +1,3 @@
-import { driver, $$ } from "@wdio/globals"
 import { IonicComponent } from "./component";
 
 export class IonicPage extends IonicComponent {

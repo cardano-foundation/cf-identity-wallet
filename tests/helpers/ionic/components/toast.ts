@@ -1,4 +1,3 @@
-import { $ } from "@wdio/globals"
 import { IonicComponent } from "./component";
 
 export class IonicToast extends IonicComponent {

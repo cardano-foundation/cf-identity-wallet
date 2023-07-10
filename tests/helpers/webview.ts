@@ -1,4 +1,3 @@
-import { browser, driver, $ } from "@wdio/globals";
 
 export const CONTEXT_REF = {
   NATIVE: "native",

@@ -1,4 +1,3 @@
-import { driver, $, browser } from "@wdio/globals";
 import { ElementActionOptions } from "./definitions";
 
 export async function waitForElement(selector: string, { visibilityTimeout = 5000 }: ElementActionOptions = {}) {

@@ -1,4 +1,4 @@
-import type { Options } from '@wdio/types'
+import type { Options } from "@wdio/types"
 
 export const config: Options.Testrunner = {
   //
@@ -25,7 +25,7 @@ export const config: Options.Testrunner = {
     // for all available options
     tsNodeOpts: {
       transpileOnly: true,
-      project: 'tests/tsconfig.json'
+      project: "tests/tsconfig.json"
     }
     // tsconfig-paths is only used if "tsConfigPathsOpts" are provided, if you
     // do please make sure "tsconfig-paths" is installed as dependency
@@ -50,7 +50,7 @@ export const config: Options.Testrunner = {
   // will be called from there.
   //
   specs: [
-    './tests/specs/**/*.ts'
+    "./tests/specs/**/*.ts"
   ],
   // Patterns to exclude.
   exclude: [
@@ -85,7 +85,7 @@ export const config: Options.Testrunner = {
     // 5 instances get started at a time.
     maxInstances: 5,
     //
-    browserName: 'chrome',
+    browserName: "chrome",
     acceptInsecureCerts: true
     // If outputDir is provided WebdriverIO can capture driver session logs
     // it is possible to configure which logTypes to include/exclude.
@@ -99,7 +99,7 @@ export const config: Options.Testrunner = {
   // Define all options that are relevant for the WebdriverIO instance here
   //
   // Level of logging verbosity: trace | debug | info | warn | error | silent
-  logLevel: 'info',
+  logLevel: "info",
   //
   // Set specific log levels per logger
   // loggers:
@@ -123,7 +123,7 @@ export const config: Options.Testrunner = {
   // with `/`, the base url gets prepended, not including the path portion of your baseUrl.
   // If your `url` parameter starts without a scheme or `/` (like `some/path`), the base url
   // gets prepended directly.
-  baseUrl: 'http://localhost:3003',
+  baseUrl: "http://localhost:3003",
   //
   // Default timeout for all waitFor* commands.
   waitforTimeout: 10000,
@@ -139,7 +139,7 @@ export const config: Options.Testrunner = {
   // Services take over a specific job you don't want to take care of. They enhance
   // your test setup with almost no effort. Unlike plugins, they don't add new
   // commands. Instead, they hook themselves up into the test process.
-  services: ['chromedriver'],
+  services: ["chromedriver"],
 
   // Framework you want to run your specs with.
   // The following are supported: Mocha, Jasmine, and Cucumber
@@ -147,7 +147,7 @@ export const config: Options.Testrunner = {
   //
   // Make sure you have the wdio adapter package for the specific framework installed
   // before running any tests.
-  framework: 'mocha',
+  framework: "mocha",
   //
   // The number of times to retry the entire specfile when it fails as a whole
   // specFileRetries: 1,
@@ -161,7 +161,7 @@ export const config: Options.Testrunner = {
   // Test reporter for stdout.
   // The only one supported by default is 'dot'
   // see also: https://webdriver.io/docs/dot-reporter
-  reporters: ['spec'],
+  reporters: ["spec"],
 
 
 
@@ -169,7 +169,7 @@ export const config: Options.Testrunner = {
   // Options to be passed to Mocha.
   // See the full list at http://mochajs.org/
   mochaOpts: {
-    ui: 'bdd',
+    ui: "bdd",
     timeout: 60000
   },
   //

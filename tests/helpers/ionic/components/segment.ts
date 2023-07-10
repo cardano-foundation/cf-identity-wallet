@@ -1,7 +1,7 @@
 import { IonicComponent } from "./component";
 
 import { TapButtonOptions } from "./button";
-import { Ionic$ } from "..";
+import { Ionic$ } from "../index";
 
 export class IonicSegment extends IonicComponent {
   // eslint-disable-next-line no-undef

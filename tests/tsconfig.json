@@ -15,17 +15,7 @@
             "node",
             "webdriverio/async",
             "@wdio/mocha-framework",
-            "expect-webdriverio",
-            "@wdio/globals/types"
-        ],
-        "env": {
-            "browser": true,
-            "commonjs": true,
-            "es6": true,
-            "jquery": true
-        }
-    },
-    "exclude": [
-        "tests"
-    ]
+            "expect-webdriverio"
+        ]
+    }
 }

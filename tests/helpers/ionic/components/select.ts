@@ -1,6 +1,5 @@
-import { pause, waitForElement } from "../..";
+import { pause, waitForElement } from "../../index";
 import { IonicComponent } from "./component";
-import { $$ } from "@wdio/globals";
 export class IonicSelect extends IonicComponent {
   constructor(selector: string) {
     super(selector);

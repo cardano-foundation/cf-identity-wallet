@@ -2,7 +2,7 @@
 import path from "path";
 
 module.exports = {
-  port: 4723,
+  port: 4003,
   capabilities: [
     {
       platformName: 'Android',

@@ -1,4 +1,7 @@
-import { config } from "./shared.config";
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+//import { config } from "./shared.config";
+const { config } = require("./shared.config");
 
 //
 // =====

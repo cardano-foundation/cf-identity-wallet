@@ -23,7 +23,6 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-import { driver } from "@wdio/globals";
 
 import type { RectReturn } from "@wdio/protocols/build/types";
 
