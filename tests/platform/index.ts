@@ -1,4 +1,4 @@
-import { browser, driver, $ } from "@wdio/globals";
+import { browser, driver } from "@wdio/globals";
 import WebView, { CONTEXT_REF } from "../helpers/webview";
 
 export async function waitForLoad() {

@@ -1,4 +1,4 @@
-
+import { browser } from "@wdio/globals";
 import {pause, restartApp} from "../platform";
 import Onboarding from "../pageobjects/onboarding.page";
 import SetPasscodePage from "../pageobjects/setpasscode.page";
