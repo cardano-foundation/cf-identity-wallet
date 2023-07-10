@@ -9,11 +9,11 @@ const { config } = require("./shared.config");
 // =====
 //
 // Normally the specs are written like
-// specs: ["./tests/**/*.spec.ts"],
+// specs: ["./e2e/**/*.spec.ts"],
 // but for watch mode we want to run all specs in 1 instance so
 // the specs are an array in an array
-config.specs = [["./tests/**/*.spec.ts"]];
-config.filesToWatch = ["./tests/**/*.spec.ts"];
+config.specs = [["./e2e/**/*.test.ts"]];
+config.filesToWatch = ["./e2e/**/*.test.ts"];
 
 //
 // ================

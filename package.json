@@ -10,7 +10,7 @@
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
     "start-appium": "appium --port 4003",
-    "e2e:web": "SERVE_PORT=4003 TS_NODE_PROJECT=tests/tsconfig.json  wdio tests/config/web.config.ts --watch"
+    "e2e:web": "SERVE_PORT=4003 TS_NODE_PROJECT=e2e/tsconfig.json  wdio e2e/config/web.config.ts --watch"
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "^3.0.1",
