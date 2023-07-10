@@ -1,5 +1,5 @@
 
-import {pause, restartApp, url} from "../platform";
+import {pause, restartApp} from "../platform";
 import Onboarding from "../pageobjects/onboarding.page";
 import SetPasscodePage from "../pageobjects/setpasscode.page";
 import GenerateSeedPhrasePage from "../pageobjects/generateseedphrase.page";
