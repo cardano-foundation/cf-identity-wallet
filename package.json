@@ -99,7 +99,6 @@
     "node-sass": "^8.0.0",
     "postcss-loader": "^7.0.1",
     "prettier": "2.8.7",
-    "puppeteer": "13.5.2",
     "redux-mock-store": "^1.5.4",
     "sass": "^1.61.0",
     "sass-loader": "^13.0.2",
