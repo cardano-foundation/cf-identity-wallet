@@ -1,20 +1,4 @@
-.assets-transactions-body {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  ion-item {
-    --background: var(--ion-color-light-grey);
-  }
-
-  .assets-transactions-swipe-message {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-    color: var(--ion-color-secondary);
-    font-weight: 400;
-  }
-
+.assets-transactions-header {
   .assets-transactions-toggle-segment {
     --background: var(--ion-color-medium-grey);
 
@@ -36,8 +20,46 @@
     margin-top: 2rem;
   }
 
-  .transaction-type,
   .filter-icon {
+    width: 1.18rem;
+    height: 1.18rem;
+  }
+}
+
+.assets-transactions-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  &.compact {
+    padding-top: 1.5rem;
+  }
+
+  &.full {
+    ion-content:first-of-type {
+      max-height: 6rem;
+    }
+  }
+
+  &.transactions {
+    ion-content:first-of-type {
+      max-height: 11rem;
+    }
+  }
+
+  ion-item {
+    --background: var(--ion-color-light-grey);
+  }
+
+  .assets-transactions-swipe-message {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    color: var(--ion-color-secondary);
+    font-weight: 400;
+  }
+
+  .transaction-type {
     width: 1.18rem;
     height: 1.18rem;
   }
