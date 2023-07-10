@@ -177,80 +177,98 @@ const AssetsTransactions = ({
     <div className="assets-transactions-body modal">
       <PageLayout>
         <IonGrid>
-          <IonRow>
-            <IonCol
-              size="12"
-              className=""
-            >
-              <IonLabel
-                className={`assets-transactions-swipe-message ${
-                  expanded ? "hide" : "show"
-                }`}
-              >
-                {i18n.t("crypto.tab.assetstransactions.swipeupmessage")}
-              </IonLabel>
-              <IonSegment
-                className={`assets-transactions-toggle-segment ${
-                  expanded ? "show" : "hide"
-                }`}
-                data-testid="assets-transactions-toggle-segment"
-                value={selectedTab}
-                onIonChange={(event) => {
-                  setSelectedTab(`${event.detail.value}`);
-                }}
-              >
-                <IonSegmentButton value="assets">
-                  <IonLabel>
-                    {i18n.t("crypto.tab.assetstransactions.assets")}
-                  </IonLabel>
-                </IonSegmentButton>
-                <IonSegmentButton value="transactions">
-                  <IonLabel>
-                    {i18n.t("crypto.tab.assetstransactions.transactions")}
-                  </IonLabel>
-                </IonSegmentButton>
-              </IonSegment>
-            </IonCol>
-          </IonRow>
-          <IonRow>
-            <IonCol
-              size="12"
-              className=""
-            >
-              {selectedTab === "assets" && assets.length && (
-                <IonList
-                  lines="none"
-                  className="assets-list"
+          {expanded ? (
+            <>
+              <IonRow>
+                <IonCol size="12">
+                  <IonSegment
+                    className="assets-transactions-toggle-segment"
+                    data-testid="assets-transactions-toggle-segment"
+                    value={selectedTab}
+                    onIonChange={(event) => {
+                      setSelectedTab(`${event.detail.value}`);
+                    }}
+                  >
+                    <IonSegmentButton value="assets">
+                      <IonLabel>
+                        {i18n.t("crypto.tab.assetstransactions.assets")}
+                      </IonLabel>
+                    </IonSegmentButton>
+                    <IonSegmentButton value="transactions">
+                      <IonLabel>
+                        {i18n.t("crypto.tab.assetstransactions.transactions")}
+                      </IonLabel>
+                    </IonSegmentButton>
+                  </IonSegment>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol
+                  size="12"
+                  className=""
                 >
-                  {assets.map((asset, index) => {
-                    return (
+                  {selectedTab === "assets" && assets.length && (
+                    <IonList
+                      lines="none"
+                      className="assets-list"
+                    >
+                      {assets.map((asset, index) => {
+                        return (
+                          <AssetItem
+                            key={index}
+                            asset={asset}
+                            index={index}
+                          />
+                        );
+                      })}
+                    </IonList>
+                  )}
+                  {selectedTab === "transactions" && transactions.length && (
+                    <IonList
+                      lines="none"
+                      className="transactions-list"
+                    >
+                      {transactions.map((transaction, index) => {
+                        return (
+                          <TransactionItem
+                            key={index}
+                            transaction={transaction}
+                            index={index}
+                          />
+                        );
+                      })}
+                    </IonList>
+                  )}
+                </IonCol>
+              </IonRow>
+            </>
+          ) : (
+            <>
+              <IonRow>
+                <IonCol size="12">
+                  <IonLabel className="assets-transactions-swipe-message">
+                    {i18n.t("crypto.tab.assetstransactions.swipeupmessage")}
+                  </IonLabel>
+                </IonCol>
+              </IonRow>
+              <IonRow>
+                <IonCol size="12">
+                  {assets.length && (
+                    <IonList
+                      lines="none"
+                      className="assets-list"
+                    >
                       <AssetItem
-                        key={index}
-                        asset={asset}
-                        index={index}
+                        key={0}
+                        asset={assets[0]}
+                        index={0}
                       />
-                    );
-                  })}
-                </IonList>
-              )}
-              {selectedTab === "transactions" && transactions.length && (
-                <IonList
-                  lines="none"
-                  className="transactions-list"
-                >
-                  {transactions.map((transaction, index) => {
-                    return (
-                      <TransactionItem
-                        key={index}
-                        transaction={transaction}
-                        index={index}
-                      />
-                    );
-                  })}
-                </IonList>
-              )}
-            </IonCol>
-          </IonRow>
+                    </IonList>
+                  )}
+                </IonCol>
+              </IonRow>
+            </>
+          )}
         </IonGrid>
       </PageLayout>
     </div>

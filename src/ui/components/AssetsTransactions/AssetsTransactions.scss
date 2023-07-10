@@ -10,7 +10,6 @@
   .assets-transactions-swipe-message {
     display: flex;
     justify-content: center;
-    position: absolute;
     width: 100%;
     color: var(--ion-color-secondary);
     font-weight: 400;
@@ -29,16 +28,6 @@
   .assets-transactions-swipe-message,
   .assets-transactions-toggle-segment {
     margin-top: 2rem;
-
-    &.show {
-      top: 0;
-      transition: top 0.5s ease-out;
-    }
-
-    &.hide {
-      top: 100%;
-      transition: top 0.5s ease-out;
-    }
   }
 
   .assets-list,
