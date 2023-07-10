@@ -9,7 +9,7 @@
     "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
-    "start-appium": "appium --port 4003",
+    "e2e:appium": "appium --port 4003",
     "e2e:web": "SERVE_PORT=4003 TS_NODE_PROJECT=e2e/tsconfig.json  wdio e2e/config/web.config.ts --watch"
   },
   "dependencies": {
