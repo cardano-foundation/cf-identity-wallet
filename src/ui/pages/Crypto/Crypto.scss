@@ -75,6 +75,10 @@
 .crypto-assets-transactions {
   bottom: calc(8vh + 1px);
 
+  &.md {
+    bottom: calc(8vh + 13px);
+  }
+
   .modal {
     background-color: var(--ion-color-light-grey);
   }

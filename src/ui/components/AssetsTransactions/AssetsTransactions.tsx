@@ -33,10 +33,9 @@ interface AssetTransactionItemProps {
   key: number;
   asset?: CryptoAssetsProps;
   transaction?: CryptoTransactionsProps;
-  index: number;
 }
 
-const AssetItem = ({ asset, index }: AssetTransactionItemProps) => {
+const AssetItem = ({ asset }: AssetTransactionItemProps) => {
   return (
     <IonItem>
       <IonGrid>
@@ -71,7 +70,7 @@ const AssetItem = ({ asset, index }: AssetTransactionItemProps) => {
   );
 };
 
-const TransactionItem = ({ transaction, index }: AssetTransactionItemProps) => {
+const TransactionItem = ({ transaction }: AssetTransactionItemProps) => {
   return (
     <IonItem>
       <IonGrid>
@@ -80,10 +79,7 @@ const TransactionItem = ({ transaction, index }: AssetTransactionItemProps) => {
             size="1.5"
             className="transaction-icon"
           >
-            <IonButton
-              shape="round"
-              color={`transparent ${transaction?.operation}`}
-            >
+            <div className={`icon-container ${transaction?.operation}`}>
               {transaction?.operation === "send" ? (
                 <IonIcon
                   slot="icon-only"
@@ -97,7 +93,7 @@ const TransactionItem = ({ transaction, index }: AssetTransactionItemProps) => {
                   color="green"
                 />
               )}
-            </IonButton>
+            </div>
           </IonCol>
           <IonCol
             size="5.5"
@@ -277,7 +273,6 @@ const AssetsTransactions = ({
                         <AssetItem
                           key={index}
                           asset={asset}
-                          index={index}
                         />
                       );
                     })}
@@ -294,7 +289,6 @@ const AssetsTransactions = ({
                         <TransactionItem
                           key={index}
                           transaction={transaction}
-                          index={index}
                         />
                       );
                     })}
@@ -321,7 +315,6 @@ const AssetsTransactions = ({
                       <AssetItem
                         key={0}
                         asset={assets[0]}
-                        index={0}
                       />
                     </IonList>
                   )}
