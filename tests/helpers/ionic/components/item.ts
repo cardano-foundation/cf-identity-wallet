@@ -1,6 +1,6 @@
-import { TapButtonOptions } from '.';
-import { Ionic$ } from '..';
-import { IonicComponent } from './component';
+import { TapButtonOptions } from ".";
+import { Ionic$ } from "..";
+import { IonicComponent } from "./component";
 
 export class IonicItem extends IonicComponent {
   constructor(selector: string) {

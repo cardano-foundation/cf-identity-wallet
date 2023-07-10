@@ -1,6 +1,8 @@
-import { Ionic$ } from '..';
-import { ElementActionOptions } from '../..';
-import { IonicComponent } from './component';
+import { driver } from "@wdio/globals";
+
+import { Ionic$ } from "..";
+import { ElementActionOptions } from "../..";
+import { IonicComponent } from "./component";
 
 export interface OpenMenuOptions extends ElementActionOptions {
   delayForAnimation?: boolean;
@@ -8,11 +10,11 @@ export interface OpenMenuOptions extends ElementActionOptions {
 
 export class IonicMenu extends IonicComponent {
   constructor(selector?: string) {
-    super(selector || 'ion-menu');
+    super(selector || "ion-menu");
   }
 
   get menuButton() {
-    return Ionic$.$('.ion-page:not(.ion-page-hidden) ion-menu-button');
+    return Ionic$.$(".ion-page:not(.ion-page-hidden) ion-menu-button");
   }
 
   async open({

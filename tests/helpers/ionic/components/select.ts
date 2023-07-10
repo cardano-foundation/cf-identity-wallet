@@ -1,6 +1,6 @@
-import { pause, waitForElement } from '../..';
-import { IonicComponent } from './component';
-
+import { pause, waitForElement } from "../..";
+import { IonicComponent } from "./component";
+import { $$ } from "@wdio/globals";
 export class IonicSelect extends IonicComponent {
   constructor(selector: string) {
     super(selector);
@@ -13,13 +13,13 @@ export class IonicSelect extends IonicComponent {
   }
 
   async select(n: number) {
-    const options = await $$('.select-interface-option');
+    const options = await $$(".select-interface-option");
 
     return options[n]?.click();
   }
 
   async cancel() {
-    const cancel = await waitForElement('.alert-button-role-cancel');
+    const cancel = await waitForElement(".alert-button-role-cancel");
     await cancel.click();
     // Allow alert to close
     return cancel.waitForDisplayed({ reverse: true });
@@ -27,7 +27,7 @@ export class IonicSelect extends IonicComponent {
 
   async ok() {
     const ok = await waitForElement(
-      '.alert-button:not(.alert-button-role-cancel)'
+      ".alert-button:not(.alert-button-role-cancel)"
     );
     await ok.click();
     // Allow alert to close

@@ -1,8 +1,9 @@
-import { IonicComponent } from './component';
+import { $ } from "@wdio/globals"
+import { IonicComponent } from "./component";
 
 export class IonicToast extends IonicComponent {
   constructor() {
-    super('ion-toast');
+    super("ion-toast");
   }
 
   getText() {

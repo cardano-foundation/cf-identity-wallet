@@ -1,4 +1,4 @@
-import {IonicComponent} from './component';
+import {IonicComponent} from "./component";
 import {Ionic$} from "../index";
 
 export class IonicContent extends IonicComponent {

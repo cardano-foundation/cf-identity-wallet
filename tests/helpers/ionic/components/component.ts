@@ -1,4 +1,5 @@
 export class IonicComponent {
+  // eslint-disable-next-line no-undef
   constructor(public selector: string | WebdriverIO.Element) {
   }
 

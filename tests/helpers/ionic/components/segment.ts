@@ -1,15 +1,16 @@
-import { IonicComponent } from './component';
+import { IonicComponent } from "./component";
 
-import { TapButtonOptions } from './button';
-import { Ionic$ } from '..';
+import { TapButtonOptions } from "./button";
+import { Ionic$ } from "..";
 
 export class IonicSegment extends IonicComponent {
+  // eslint-disable-next-line no-undef
   constructor(selector: string | WebdriverIO.Element) {
     super(selector);
   }
 
   async button(buttonTitle: string) {
-    const segmentButtons = await (await this.$).$$('ion-segment-button');
+    const segmentButtons = await (await this.$).$$("ion-segment-button");
     for (const button of segmentButtons) {
       if (
         (await button.getText()).toLocaleLowerCase() ===
