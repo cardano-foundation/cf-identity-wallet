@@ -4,6 +4,7 @@ export default {
   coveragePathIgnorePatterns: [
     "/node_modules",
     "src/routes/index.tsx",
+    "/tests"
   ],
   coverageDirectory: "coverage",
   coverageProvider: "v8",
