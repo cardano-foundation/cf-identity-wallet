@@ -311,7 +311,10 @@
       "assetstransactions": {
         "swipeupmessage": "Swipe up to see assets & transactions",
         "assets": "Assets",
-        "transactions": "Transactions"
+        "nfts": "NFTs",
+        "metadata": "Metadata",
+        "transactions": "Transactions",
+        "searchtransactions": "Search transactions"
       }
     },
     "mywalletsmodal": {

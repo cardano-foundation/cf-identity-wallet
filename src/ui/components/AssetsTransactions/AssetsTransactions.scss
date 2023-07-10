@@ -16,7 +16,7 @@
   }
 
   .assets-transactions-toggle-segment {
-    --background: var(--ion-color-dark-grey);
+    --background: var(--ion-color-medium-grey);
 
     ion-segment-button.segment-button-checked {
       &::part(indicator-background) {
@@ -25,9 +25,38 @@
     }
   }
 
+  ion-searchbar {
+    padding: 0;
+    height: 2.25rem;
+    margin: 0.63rem 0;
+  }
+
   .assets-transactions-swipe-message,
   .assets-transactions-toggle-segment {
     margin-top: 2rem;
+  }
+
+  .transaction-type,
+  .filter-icon {
+    width: 1.18rem;
+    height: 1.18rem;
+  }
+
+  .transactions-filters {
+    ion-button {
+      margin: 0;
+      height: 1.93rem;
+      --padding-start: 0.63rem;
+      --padding-end: 0.63rem;
+
+      &:not(:first-child) {
+        margin-left: 0.63rem;
+      }
+
+      ion-icon {
+        margin-right: 0.3rem;
+      }
+    }
   }
 
   .assets-list,
@@ -134,8 +163,6 @@
       }
 
       .transaction-type {
-        width: 1.18rem;
-        height: 1.18rem;
         margin-left: 0.62rem;
       }
 

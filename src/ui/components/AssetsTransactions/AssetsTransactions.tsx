@@ -8,6 +8,7 @@ import {
   IonLabel,
   IonList,
   IonRow,
+  IonSearchbar,
   IonSegment,
   IonSegmentButton,
 } from "@ionic/react";
@@ -156,6 +157,46 @@ const TransactionItem = ({ transaction, index }: AssetTransactionItemProps) => {
   );
 };
 
+const TransactionFilters = () => {
+  return (
+    <div className="transactions-filters">
+      <IonButton color="medium-grey">
+        <IonIcon
+          slot="icon-only"
+          icon={cashOutline}
+          color="secondary"
+          className="filter-icon"
+        />
+        <IonLabel color="secondary">
+          {i18n.t("crypto.tab.assetstransactions.assets")}
+        </IonLabel>
+      </IonButton>
+      <IonButton color="medium-grey">
+        <IonIcon
+          slot="icon-only"
+          icon={imageOutline}
+          color="secondary"
+          className="filter-icon"
+        />
+        <IonLabel color="secondary">
+          {i18n.t("crypto.tab.assetstransactions.nfts")}
+        </IonLabel>
+      </IonButton>
+      <IonButton color="medium-grey">
+        <IonIcon
+          slot="icon-only"
+          icon={codeSlashOutline}
+          color="secondary"
+          className="filter-icon"
+        />
+        <IonLabel color="secondary">
+          {i18n.t("crypto.tab.assetstransactions.metadata")}
+        </IonLabel>
+      </IonButton>
+    </div>
+  );
+};
+
 interface AssetsTransactionsProps {
   assets: CryptoAssetsProps[];
   transactions: CryptoTransactionsProps[];
@@ -200,6 +241,16 @@ const AssetsTransactions = ({
                       </IonLabel>
                     </IonSegmentButton>
                   </IonSegment>
+                  {selectedTab === "transactions" && (
+                    <>
+                      <IonSearchbar
+                        placeholder={`${i18n.t(
+                          "crypto.tab.assetstransactions.searchtransactions"
+                        )}`}
+                      />
+                      <TransactionFilters />
+                    </>
+                  )}
                 </IonCol>
               </IonRow>
               <IonRow>
