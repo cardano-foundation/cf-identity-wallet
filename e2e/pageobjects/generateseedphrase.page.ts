@@ -27,4 +27,6 @@ class GenerateSeedPhrasePage extends Page {
 
 }
 
-export default new GenerateSeedPhrasePage();
+export {
+  GenerateSeedPhrasePage
+}

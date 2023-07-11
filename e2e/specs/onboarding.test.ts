@@ -1,8 +1,8 @@
 import {pause, restartApp} from "../platform";
-import OnboardingPage from "../pageobjects/onboarding.page";
-import SetPasscodePage from "../pageobjects/setpasscode.page";
-import GenerateSeedPhrasePage from "../pageobjects/generateseedphrase.page";
-import VerifySeedPhrasePage from "../pageobjects/verifyeedphrase.page";
+import {OnboardingPage} from "../pageobjects/onboarding.page";
+import {SetPasscodePage} from "../pageobjects/setpasscode.page";
+import {GenerateSeedPhrasePage} from "../pageobjects/generateseedphrase.page";
+import {VerifySeedPhrasePage} from "../pageobjects/verifyeedphrase.page";
 import {getUrl} from "../helpers";
 describe("Onboarding page", () => {
 
@@ -23,7 +23,8 @@ describe("Onboarding page", () => {
   it("Full onboarding process", async () => {
 
 
-    const getStartedButton = await OnboardingPage.getStartedButton;
+    const onBoardingPage = new OnboardingPage();
+    const getStartedButton = onBoardingPage.getStartedButton;
 
     await getStartedButton.click();
 
@@ -32,33 +33,38 @@ describe("Onboarding page", () => {
     let url = await getUrl();
     expect(url.toString()).toContain("setpasscode");
 
+    const setPasscodePage = new SetPasscodePage();
     for (let i = 0; i < 12; i++) {
-      await SetPasscodePage.getNumberButton(1).click();
+      await setPasscodePage.getNumberButton(1).click();
     }
     url = await getUrl();
     expect(url.toString()).toContain("generateseedphrase");
-    await GenerateSeedPhrasePage.getTermsAndConditionsCheckBox().click();
-    await GenerateSeedPhrasePage.getRevealSeedPhraseButton().click();
+
+    const generateSeedPhrasePage = new GenerateSeedPhrasePage();
+    await generateSeedPhrasePage.getTermsAndConditionsCheckBox().click();
+    await generateSeedPhrasePage.getRevealSeedPhraseButton().click();
 
     const generatedWords = [];
     for (let i = 0; i < 15; i++){
-      const word = await GenerateSeedPhrasePage.getSeedWord(i);
+      const word = await generateSeedPhrasePage.getSeedWord(i);
       generatedWords.push(word);
     }
 
-    await GenerateSeedPhrasePage.getContinueButton().click();
+    await generateSeedPhrasePage.getContinueButton().click();
     await pause(500);
-    await (await GenerateSeedPhrasePage.getConfirmButton()).click();
+    await (await generateSeedPhrasePage.getConfirmButton()).click();
 
     url = await getUrl();
+
+    const verifySeedPhrasePage = new VerifySeedPhrasePage();
     expect(url.toString()).toContain("verifyseedphrase");
     for (let i = 0; i < generatedWords.length; i++){
-      const wordChip = VerifySeedPhrasePage.getWordButton(generatedWords[i]);
+      const wordChip = verifySeedPhrasePage.getWordButton(generatedWords[i]);
       await wordChip.click();
     }
 
     await pause(500);
-    await VerifySeedPhrasePage.getConfirmButton().click();
+    await verifySeedPhrasePage.getConfirmButton().click();
 
     url = await getUrl();
     expect(url.toString()).toContain("tabs/dids");

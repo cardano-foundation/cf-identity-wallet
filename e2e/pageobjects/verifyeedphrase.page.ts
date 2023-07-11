@@ -13,4 +13,6 @@ class VerifySeedPhrasePage extends Page {
   }
 }
 
-export default new VerifySeedPhrasePage();
+export {
+  VerifySeedPhrasePage
+}

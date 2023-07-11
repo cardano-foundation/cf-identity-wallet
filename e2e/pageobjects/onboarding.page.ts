@@ -9,4 +9,6 @@ class OnboardingPage extends Page {
   }
 }
 
-export default new OnboardingPage();
+export {
+  OnboardingPage
+}

@@ -10,4 +10,6 @@ class SetPasscodePage extends Page {
   }
 }
 
-export default new SetPasscodePage();
+export {
+  SetPasscodePage
+}
