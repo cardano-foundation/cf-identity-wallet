@@ -4,6 +4,7 @@ export default {
   coveragePathIgnorePatterns: [
     "/node_modules",
     "src/routes/index.tsx",
+    "/tests"
   ],
   coverageDirectory: "coverage",
   coverageProvider: "v8",
@@ -34,7 +35,7 @@ export default {
     "@emurgo/cardano-serialization-lib-browser": "@emurgo/cardano-serialization-lib-nodejs",
   },
   testEnvironment: "jsdom",
-  testMatch: ["**/__tests__/**/*.[jt]s?(x)", "**/?(*.)+(spec|test).[tj]s?(x)"],
+  testMatch: ["**/src/**/?(*.)+(test).[tj]s?(x)"],
   testPathIgnorePatterns: ["/node_modules/"],
   transformIgnorePatterns: [
     "node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons|swiper|ssr-window)/)"
