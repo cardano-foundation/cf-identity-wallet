@@ -208,60 +208,57 @@ const AssetsTransactions = ({
   }, [expanded]);
   return (
     <div
-      className={`assets-transactions-body modal ${
-        expanded ? "full" : "compact"
-      } ${selectedTab === "transactions" ? "transactions" : "assets"} ${
+      className={`assets-transactions modal ${
         hideBalance ? "hide-balance" : "show-balance"
       }`}
     >
       {expanded && (
-        <PageLayout>
-          <IonGrid className="assets-transactions-header">
-            <IonRow>
-              <IonCol size="12">
-                <IonSegment
-                  className="assets-transactions-toggle-segment"
-                  data-testid="assets-transactions-toggle-segment"
-                  value={selectedTab}
-                  onIonChange={(event) => {
-                    setSelectedTab(`${event.detail.value}`);
-                  }}
-                >
-                  <IonSegmentButton value="assets">
-                    <IonLabel>
-                      {i18n.t("crypto.tab.assetstransactions.assets")}
-                    </IonLabel>
-                  </IonSegmentButton>
-                  <IonSegmentButton value="transactions">
-                    <IonLabel>
-                      {i18n.t("crypto.tab.assetstransactions.transactions")}
-                    </IonLabel>
-                  </IonSegmentButton>
-                </IonSegment>
-                {selectedTab === "transactions" && (
-                  <>
-                    <IonSearchbar
-                      placeholder={`${i18n.t(
-                        "crypto.tab.assetstransactions.searchtransactions"
-                      )}`}
-                      data-testid="assets-transactions-searchbar"
-                    />
-                    <TransactionFilters />
-                  </>
-                )}
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </PageLayout>
+        <IonGrid
+          className={`assets-transactions-header ${
+            expanded ? "expanded" : "compact"
+          } ${selectedTab === "transactions" ? "transactions" : "assets"}`}
+        >
+          <IonRow>
+            <IonCol size="12">
+              <IonSegment
+                className="assets-transactions-toggle-segment"
+                data-testid="assets-transactions-toggle-segment"
+                value={selectedTab}
+                onIonChange={(event) => {
+                  setSelectedTab(`${event.detail.value}`);
+                }}
+              >
+                <IonSegmentButton value="assets">
+                  <IonLabel>
+                    {i18n.t("crypto.tab.assetstransactions.assets")}
+                  </IonLabel>
+                </IonSegmentButton>
+                <IonSegmentButton value="transactions">
+                  <IonLabel>
+                    {i18n.t("crypto.tab.assetstransactions.transactions")}
+                  </IonLabel>
+                </IonSegmentButton>
+              </IonSegment>
+              {selectedTab === "transactions" && (
+                <>
+                  <IonSearchbar
+                    placeholder={`${i18n.t(
+                      "crypto.tab.assetstransactions.searchtransactions"
+                    )}`}
+                    data-testid="assets-transactions-searchbar"
+                  />
+                  <TransactionFilters />
+                </>
+              )}
+            </IonCol>
+          </IonRow>
+        </IonGrid>
       )}
       <PageLayout>
-        <IonGrid>
+        <IonGrid className={expanded ? "expanded" : "compact"}>
           {expanded ? (
             <IonRow>
-              <IonCol
-                size="12"
-                className=""
-              >
+              <IonCol size="12">
                 {selectedTab === "assets" && assets.length && (
                   <IonList
                     lines="none"

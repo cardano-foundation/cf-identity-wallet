@@ -1,59 +1,55 @@
-.assets-transactions-header {
-  .assets-transactions-toggle-segment {
-    --background: var(--ion-color-medium-grey);
-
-    ion-segment-button.segment-button-checked {
-      &::part(indicator-background) {
-        background: var(--ion-color-primary-gradient);
-      }
-    }
-  }
-
-  ion-searchbar {
-    padding: 0;
-    height: 2.25rem;
-    margin: 0.63rem 0;
-  }
-
-  .assets-transactions-swipe-message,
-  .assets-transactions-toggle-segment {
-    margin-top: 1rem;
-  }
-
-  .filter-icon {
-    width: 1.18rem;
-    height: 1.18rem;
-  }
-}
-
-.assets-transactions-body {
+.assets-transactions {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
 
-  &.compact {
+  .compact {
     padding-top: 1.5rem;
   }
 
-  &.full {
-    ion-content:first-of-type {
+  .assets-transactions-header {
+    width: 100%;
+
+    &.expanded {
       max-height: 6rem;
-    }
-    &.assets {
-      ion-content:first-of-type {
+
+      &.assets {
         max-height: 4rem;
         &.md {
           max-height: 5rem;
         }
       }
-    }
-    &.transactions {
-      ion-content:first-of-type {
+      &.transactions {
         max-height: 9.5rem;
         &.md {
           max-height: 10.5rem;
         }
       }
+    }
+
+    .assets-transactions-toggle-segment {
+      --background: var(--ion-color-medium-grey);
+
+      ion-segment-button.segment-button-checked {
+        &::part(indicator-background) {
+          background: var(--ion-color-primary-gradient);
+        }
+      }
+    }
+
+    ion-searchbar {
+      padding: 0;
+      height: 2.25rem;
+      margin: 0.63rem 0;
+    }
+
+    .assets-transactions-swipe-message,
+    .assets-transactions-toggle-segment {
+      margin-top: 1rem;
+    }
+
+    .filter-icon {
+      width: 1.18rem;
+      height: 1.18rem;
     }
   }
 
