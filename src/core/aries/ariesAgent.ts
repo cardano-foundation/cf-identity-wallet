@@ -104,12 +104,16 @@ class AriesAgent {
     }
   }
 
-  async createIdentity(type: IdentityType, displayName: string) {
-    await this.agent.dids.create({
+  async createIdentity(
+    type: IdentityType,
+    displayName: string
+  ): Promise<string | undefined> {
+    const result = await this.agent.dids.create({
       method: type,
       displayName: displayName,
       options: { keyType: KeyType.Ed25519 },
     });
+    return result.didState.did;
   }
 
   async getIdentities(
