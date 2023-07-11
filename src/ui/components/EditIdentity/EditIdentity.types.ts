@@ -1,8 +1,10 @@
+import { IdentityDetails } from "../../../core/aries/ariesAgent.types";
+
 interface EditIdentityProps {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
-  id: string;
-  name: string;
+  cardData: IdentityDetails;
+  setCardData: (value: IdentityDetails) => void;
 }
 
 export type { EditIdentityProps };

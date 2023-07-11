@@ -27,6 +27,8 @@ import {
   IdentityType,
 } from "../../../core/aries/ariesAgent.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
+
 const CreateIdentity = ({
   modalIsOpen,
   setModalIsOpen,
@@ -78,6 +80,10 @@ const CreateIdentity = ({
       colors: [newColor[1], newColor[0]],
     };
     dispatch(setIdentitiesCache([...identityData, newIdentity]));
+    AriesAgent.agent.createIdentity(
+      newIdentity.method,
+      newIdentity.displayName
+    );
     setShowVerifyPassword(false);
     resetModal();
   };
