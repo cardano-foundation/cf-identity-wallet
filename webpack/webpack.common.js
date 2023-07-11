@@ -4,6 +4,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+const Dotenv = require('dotenv-webpack');
 
 const config = {
   entry: {
@@ -70,7 +71,8 @@ const config = {
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
     }),
-    new NodePolyfillPlugin()
+    new NodePolyfillPlugin(),
+    new Dotenv()
   ],
   infrastructureLogging: {
     level: "info",
