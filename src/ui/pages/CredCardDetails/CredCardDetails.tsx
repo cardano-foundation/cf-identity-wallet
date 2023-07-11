@@ -30,7 +30,7 @@ import { writeToClipboard } from "../../../utils/clipboard";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import { setCredsCache } from "../../../store/reducers/credsCache";
-import { formatDate, formatTime } from "../../../utils";
+import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
 
 const CredCardDetails = () => {
@@ -241,9 +241,9 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {formatDate(cardData.issuanceDate)}
+                      {formatShortDate(cardData.issuanceDate)}
                       {" - "}
-                      {formatTime(cardData.issuanceDate)}
+                      {formatTimeToSec(cardData.issuanceDate)}
                     </span>
                   </span>
                 </div>
@@ -261,9 +261,9 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {formatDate(cardData.expirationDate)}
+                      {formatShortDate(cardData.expirationDate)}
                       {" - "}
-                      {formatTime(cardData.expirationDate)}
+                      {formatTimeToSec(cardData.expirationDate)}
                     </span>
                   </span>
                 </div>

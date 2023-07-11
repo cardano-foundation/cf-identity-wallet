@@ -1,3 +1,21 @@
+interface CryptoAssetsProps {
+  name: string;
+  balance: number;
+  logo: string;
+  currentPrice: number;
+  performance: number;
+}
+
+interface CryptoTransactionsProps {
+  address: string;
+  type: string[];
+  operation: string;
+  timestamp: string;
+  amount: number;
+  currency: string;
+  status: string;
+}
+
 interface CryptoAccountProps {
   address: string;
   name: string;
@@ -15,6 +33,8 @@ interface CryptoAccountProps {
     };
   };
   usesIdentitySeedPhrase: boolean;
+  assets: CryptoAssetsProps[];
+  transactions: CryptoTransactionsProps[];
 }
 
-export type { CryptoAccountProps };
+export type { CryptoAccountProps, CryptoAssetsProps, CryptoTransactionsProps };

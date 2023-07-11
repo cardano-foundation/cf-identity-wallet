@@ -10,33 +10,35 @@ import { Swiper as SwiperClass } from "swiper/types";
 import { CryptoBalanceProps } from "./CryptoBalance.types";
 import "./CryptoBalance.scss";
 import { i18n } from "../../../i18n";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getHideCryptoBalances,
-  setHideCryptoBalances,
-} from "../../../store/reducers/cryptoAccountsCache";
+import { useAppDispatch } from "../../../store/hooks";
+import { setHideCryptoBalances } from "../../../store/reducers/cryptoAccountsCache";
 import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences/preferencesStorage";
 
-const CryptoBalance = ({ items }: CryptoBalanceProps) => {
+const CryptoBalance = ({
+  items,
+  hideBalance,
+  setHideBalance,
+}: CryptoBalanceProps) => {
   const dispatch = useAppDispatch();
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [hidden, setHidden] = useState(useAppSelector(getHideCryptoBalances));
 
   const handleToggleHide = () => {
-    dispatch(setHideCryptoBalances(!hidden));
+    dispatch(setHideCryptoBalances(!hideBalance));
     PreferencesStorage.set(PreferencesKeys.APP_HIDE_CRYPTO_BALANCES, {
-      hidden: !hidden,
+      hidden: !hideBalance,
     });
-    setHidden(!hidden);
+    setHideBalance(!hideBalance);
   };
 
   return (
     <div
-      className={`crypto-balance-container${hidden ? " hide-balance" : ""}`}
+      className={`crypto-balance-container${
+        hideBalance ? " hide-balance" : ""
+      }`}
       data-testid="crypto-balance-container"
     >
       <div className="account-network">
@@ -59,7 +61,7 @@ const CryptoBalance = ({ items }: CryptoBalanceProps) => {
               <span>{slide.title}</span>
               <IonIcon
                 slot="icon-only"
-                icon={hidden ? eyeOffOutline : eyeOutline}
+                icon={hideBalance ? eyeOffOutline : eyeOutline}
                 color="primary"
               />
             </div>

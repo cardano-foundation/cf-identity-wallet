@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { CredCardProps, DidCardProps, CredProps } from "./CardsStack.types";
 import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
-import { formatDate } from "../../../utils";
+import { formatShortDate } from "../../../utils";
 import {
   IdentityDetails,
   IdentityShortDetails,
@@ -64,7 +64,7 @@ const CredCard = ({
             <span className="card-footer-column-label">
               {i18n.t("creds.card.layout.issued")}
             </span>
-            <span>{formatDate(cardData.issuanceDate)}</span>
+            <span>{formatShortDate(cardData.issuanceDate)}</span>
           </div>
         </div>
       </div>
@@ -115,7 +115,7 @@ const DidCard = ({
           <span className="card-created-label">
             {i18n.t("dids.card.layout.created")}
           </span>
-          <span>{formatDate(cardData.createdAtUTC)}</span>
+          <span>{formatShortDate(cardData.createdAtUTC)}</span>
         </div>
       </div>
     </div>
