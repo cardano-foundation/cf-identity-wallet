@@ -67,7 +67,7 @@ const CreateIdentity = ({
     setShowVerifyPassword(true);
   };
 
-  const handleOnVerifyPassword = () => {
+  const handleOnVerifyPassword = async () => {
     const uuid = generateUUID();
     const id = `did:key:${uuid}`;
     const colorGenerator = new ColorGenerator();
@@ -80,7 +80,7 @@ const CreateIdentity = ({
       colors: [newColor[1], newColor[0]],
     };
     dispatch(setIdentitiesCache([...identityData, newIdentity]));
-    AriesAgent.agent.createIdentity(
+    await AriesAgent.agent.createIdentity(
       newIdentity.method,
       newIdentity.displayName
     );
