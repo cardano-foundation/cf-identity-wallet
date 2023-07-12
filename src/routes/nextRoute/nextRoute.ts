@@ -10,7 +10,7 @@ import {
   setSeedPhraseCache,
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps } from "./nextRoute.types";
-import { RoutePath } from "../paths";
+import { RoutePath, TabsRoutePath } from "../paths";
 import { backPath } from "../backRoute";
 
 const getNextRootRoute = (store: RootState) => {
@@ -46,6 +46,11 @@ const getNextOnboardingRoute = (store: RootState) => {
     path = RoutePath.GENERATE_SEED_PHRASE;
   }
 
+  return { pathname: path };
+};
+
+const getNextCreateCryptoAccountRoute = () => {
+  const path = RoutePath.GENERATE_SEED_PHRASE;
   return { pathname: path };
 };
 
@@ -144,6 +149,10 @@ const NextRoute: Record<string, any> = {
   [RoutePath.CREATE_PASSWORD]: {
     nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
     updateRedux: [updateStoreAfterCreatePassword],
+  },
+  [TabsRoutePath.CRYPTO]: {
+    nextPath: () => getNextCreateCryptoAccountRoute(),
+    updateRedux: [],
   },
 };
 
