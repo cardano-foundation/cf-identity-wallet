@@ -43,6 +43,7 @@ const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
+  const [seedPhraseType, setSeedPhraseType] = useState("");
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
@@ -51,6 +52,17 @@ const GenerateSeedPhrase = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
+
+  type GenerationType = {
+    [key: string]: any;
+  };
+  useEffect(() => {
+    console.log(history.location.state);
+    if (history.location.state) {
+      const state: GenerationType = history.location.state;
+      setSeedPhraseType(state.type);
+    }
+  }, []);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
@@ -98,7 +110,6 @@ const GenerateSeedPhrase = () => {
     return (
       <a
         onClick={() => {
-          setChecked(true);
           setModalIsOpen(true);
         }}
       >
@@ -132,25 +143,40 @@ const GenerateSeedPhrase = () => {
     handleClearState();
   };
 
+  const handleCloseButton = () => {
+    return;
+  };
+
   return (
     <IonPage className="page-layout generate-seedphrase">
       <PageLayout
         header={true}
-        backButton={true}
+        title={
+          seedPhraseType !== "new"
+            ? `${i18n.t("generateseedphrase.title")}`
+            : undefined
+        }
+        backButton={seedPhraseType === "new"}
         onBack={handleClearState}
+        closeButton={seedPhraseType !== "new"}
+        closeButtonAction={() => handleCloseButton()}
         currentPath={RoutePath.GENERATE_SEED_PHRASE}
-        progressBar={true}
+        progressBar={seedPhraseType === "new"}
         progressBarValue={0.66}
         progressBarBuffer={1}
         footer={true}
-        primaryButtonText={`${i18n.t("generateseedphrase.continue.button")}`}
+        primaryButtonText={`${i18n.t(
+          "generateseedphrase.continue.button." + seedPhraseType
+        )}`}
         primaryButtonAction={() => setAlertIsOpen(true)}
         primaryButtonDisabled={!(showSeedPhrase && checked)}
       >
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <h2>{i18n.t("generateseedphrase.title")}</h2>
+              {seedPhraseType === "new" && (
+                <h2>{i18n.t("generateseedphrase.title")}</h2>
+              )}
               <p className="page-paragraph">
                 {i18n.t("generateseedphrase.paragraph.top")}
               </p>

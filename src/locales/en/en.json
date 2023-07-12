@@ -60,7 +60,10 @@
       }
     },
     "continue": {
-      "button": "Continue"
+      "button": {
+        "new": "Continue",
+        "additional": "Generate seed phrase"
+      }
     },
     "alert": {
       "text": "Have you double-checked you've copied your seed phrase correctly?",

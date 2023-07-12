@@ -94,7 +94,7 @@ const AddCryptoAccount = ({
                 <span
                   className="add-crypto-account-option"
                   data-testid="add-crypto-account-generate-button"
-                  onClick={() => handleNewAccount("generate")}
+                  onClick={() => handleNewAccount("additional")}
                 >
                   <span>
                     <IonButton shape="round">

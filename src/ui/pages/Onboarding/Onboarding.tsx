@@ -31,7 +31,12 @@ const Onboarding = () => {
     };
     const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    history.push(nextPath.pathname);
+    history.push({
+      pathname: nextPath.pathname,
+      state: {
+        type: "new",
+      },
+    });
   };
 
   return (

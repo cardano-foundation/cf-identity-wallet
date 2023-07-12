@@ -72,7 +72,7 @@ describe("Verify Seed Phrase Page", () => {
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
     const generateContinueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.continue.button
+      EN_TRANSLATIONS.generateseedphrase.continue.button.new
     );
 
     act(() => {
