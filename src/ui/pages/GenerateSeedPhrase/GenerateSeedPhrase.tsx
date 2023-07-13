@@ -43,7 +43,7 @@ const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
-  const [seedPhraseType, setSeedPhraseType] = useState("");
+  const seedPhraseType: string = history?.location?.state?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
@@ -52,17 +52,6 @@ const GenerateSeedPhrase = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
-
-  type GenerationType = {
-    [key: string]: any;
-  };
-  useEffect(() => {
-    console.log(history.location.state);
-    if (history.location.state) {
-      const state: GenerationType = history.location.state;
-      setSeedPhraseType(state.type);
-    }
-  }, []);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
