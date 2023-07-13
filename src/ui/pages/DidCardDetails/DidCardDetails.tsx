@@ -42,7 +42,7 @@ import { IdentityDetails } from "../../../core/aries/ariesAgent.types";
 const DidCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
+
   const identitiesData = useAppSelector(getIdentitiesCache);
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -67,15 +67,8 @@ const DidCardDetails = () => {
   });
 
   const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
-      store: storeState,
-    });
-    updateReduxState(
-      backPath.pathname,
-      { store: storeState },
-      dispatch,
-      updateRedux
-    );
+    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS);
+    updateReduxState(backPath.pathname, {}, dispatch, updateRedux);
     history.push(TabsRoutePath.DIDS);
   };
 

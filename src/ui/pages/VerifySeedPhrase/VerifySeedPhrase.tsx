@@ -22,13 +22,12 @@ import {
 import { Addresses } from "../../../core/cardano/addresses";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import { getState } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
+
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
     seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
@@ -96,14 +95,9 @@ const VerifySeedPhrase = () => {
 
       const { nextPath, updateRedux } = getNextRoute(
         RoutePath.VERIFY_SEED_PHRASE,
-        { store: storeState }
+        {}
       );
-      updateReduxState(
-        nextPath.pathname,
-        { store: storeState },
-        dispatch,
-        updateRedux
-      );
+      updateReduxState(nextPath.pathname, {}, dispatch, updateRedux);
       history.push(nextPath.pathname);
       // TODO: Store Seed Phrase in db/keystore
     } else {

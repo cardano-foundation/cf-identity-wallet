@@ -1,5 +1,5 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
-import { RootState } from "../../store";
+import { RootState, store as storeState } from "../../store";
 import {
   removeCurrentRoute,
   setAuthentication,
@@ -10,8 +10,7 @@ import { DataProps, PayloadProps } from "../nextRoute/nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
 
 const getBackRoute = (
-  currentPath: string,
-  data: DataProps
+  currentPath: string
 ): {
   backPath: { pathname: string };
   updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
@@ -19,25 +18,27 @@ const getBackRoute = (
   const { updateRedux } = backRoute[currentPath];
 
   return {
-    backPath: backPath(data),
+    backPath: backPath(),
     updateRedux,
   };
 };
 
-const updateStoreSetCurrentRoute = (data: DataProps) => {
-  const prevPath = calcPreviousRoute(data.store.stateCache.routes);
+const updateStoreSetCurrentRoute = () => {
+  const store = storeState.getState();
+  const prevPath = calcPreviousRoute(store.stateCache.routes);
 
   let path;
   if (prevPath) {
     path = prevPath.path;
   } else {
-    path = data.store.stateCache.routes[0].path;
+    path = store.stateCache.routes[0].path;
   }
 
   return setCurrentRoute({ path });
 };
-const getPreviousRoute = (data: DataProps) => {
-  const { routes } = data.store.stateCache;
+const getPreviousRoute = () => {
+  const store = storeState.getState();
+  const { routes } = store.stateCache;
 
   const prevPath = calcPreviousRoute(routes);
   let path;
@@ -52,23 +53,24 @@ const getPreviousRoute = (data: DataProps) => {
 };
 
 const updateStoreAfterPasscodeLoginRoute = (data: DataProps) => {
-  const seedPhraseISet = !!data.store.seedPhraseCache.seedPhrase160;
+  const store = storeState.getState();
+  const seedPhraseISet = !!store.seedPhraseCache.seedPhrase160;
 
   if (data.state?.resetPasscode && seedPhraseISet) {
     return setAuthentication({
-      ...data.store.stateCache.authentication,
+      ...store.stateCache.authentication,
       loggedIn: false,
       time: 0,
     });
   } else if (data.state?.resetPasscode) {
     return setAuthentication({
-      ...data.store.stateCache.authentication,
+      ...store.stateCache.authentication,
       loggedIn: false,
       time: 0,
     });
   } else {
     return setAuthentication({
-      ...data.store.stateCache.authentication,
+      ...store.stateCache.authentication,
       loggedIn: true,
       time: Date.now(),
     });
@@ -83,7 +85,7 @@ const calcPreviousRoute = (
     .find((element) => element.path !== RoutePath.PASSCODE_LOGIN);
 };
 
-const backPath = (data: DataProps) => getPreviousRoute(data);
+const backPath = () => getPreviousRoute();
 
 const backRoute: Record<string, any> = {
   [RoutePath.ROOT]: {
