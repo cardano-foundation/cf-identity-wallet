@@ -48,7 +48,7 @@ const GenerateSeedPhrase = () => {
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
   const seedPhraseType =
-    (history?.location?.state as GenerationType).type || "";
+    (history?.location?.state as GenerationType)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
