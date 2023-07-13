@@ -29,7 +29,10 @@ import {
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
 import { PageLayout } from "../../components/layout/PageLayout";
-import { Alert } from "../../components/Alert";
+import {
+  Alert as AlertConfirm,
+  Alert as AlertExit,
+} from "../../components/Alert";
 import { getState } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
@@ -38,6 +41,7 @@ import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
+import { TabsRoutePath } from "../../../routes/paths";
 
 type GenerationType = {
   type: string;
@@ -54,7 +58,8 @@ const GenerateSeedPhrase = () => {
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
+  const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
@@ -87,7 +92,8 @@ const GenerateSeedPhrase = () => {
     setSeedPhrase256([]);
     setSeedPhrase([]);
     setShowSeedPhrase(false);
-    setAlertIsOpen(false);
+    setAlertConfirmIsOpen(false);
+    setAlertExitIsOpen(false);
     setModalIsOpen(false);
     setChecked(false);
   };
@@ -116,7 +122,7 @@ const GenerateSeedPhrase = () => {
     setShowSeedPhrase(true);
   };
   const handleContinue = () => {
-    setAlertIsOpen(false);
+    setAlertConfirmIsOpen(false);
     const data: DataProps = {
       store: storeState,
       state: {
@@ -133,12 +139,13 @@ const GenerateSeedPhrase = () => {
       data
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    history.push(nextPath.pathname);
     handleClearState();
+    history.push(nextPath.pathname);
   };
 
-  const handleCloseButton = () => {
-    return;
+  const handleExit = () => {
+    handleClearState();
+    history.push(TabsRoutePath.CRYPTO);
   };
 
   return (
@@ -147,29 +154,31 @@ const GenerateSeedPhrase = () => {
         header={true}
         title={
           seedPhraseType !== "new"
-            ? `${i18n.t("generateseedphrase.title")}`
+            ? `${i18n.t("generateseedphrase." + seedPhraseType + ".title")}`
             : undefined
         }
         backButton={seedPhraseType === "new"}
         onBack={handleClearState}
         closeButton={seedPhraseType !== "new"}
-        closeButtonAction={() => handleCloseButton()}
+        closeButtonAction={() => setAlertExitIsOpen(true)}
         currentPath={RoutePath.GENERATE_SEED_PHRASE}
         progressBar={seedPhraseType === "new"}
         progressBarValue={0.66}
         progressBarBuffer={1}
         footer={true}
         primaryButtonText={`${i18n.t(
-          "generateseedphrase.continue.button." + seedPhraseType
+          "generateseedphrase." + seedPhraseType + ".continue.button"
         )}`}
-        primaryButtonAction={() => setAlertIsOpen(true)}
+        primaryButtonAction={() => setAlertConfirmIsOpen(true)}
         primaryButtonDisabled={!(showSeedPhrase && checked)}
       >
         <IonGrid>
           <IonRow>
             <IonCol size="12">
               {seedPhraseType === "new" && (
-                <h2>{i18n.t("generateseedphrase.title")}</h2>
+                <h2>
+                  {i18n.t("generateseedphrase." + seedPhraseType + ".title")}
+                </h2>
               )}
               <p className="page-paragraph">
                 {i18n.t("generateseedphrase.paragraph.top")}
@@ -294,18 +303,29 @@ const GenerateSeedPhrase = () => {
             </IonCol>
           </IonRow>
         </IonGrid>
-
-        <Alert
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
-          headerText={i18n.t("generateseedphrase.alert.text")}
+        <AlertConfirm
+          isOpen={alertConfirmIsOpen}
+          setIsOpen={setAlertConfirmIsOpen}
+          headerText={i18n.t("generateseedphrase.alert.confirm.text")}
           confirmButtonText={`${i18n.t(
-            "generateseedphrase.alert.button.confirm"
+            "generateseedphrase.alert.confirm.button.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "generateseedphrase.alert.button.cancel"
+            "generateseedphrase.alert.confirm.button.cancel"
           )}`}
           actionConfirm={handleContinue}
+        />
+        <AlertExit
+          isOpen={alertExitIsOpen}
+          setIsOpen={setAlertExitIsOpen}
+          headerText={i18n.t("generateseedphrase.alert.exit.text")}
+          confirmButtonText={`${i18n.t(
+            "generateseedphrase.alert.exit.button.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "generateseedphrase.alert.exit.button.cancel"
+          )}`}
+          actionConfirm={handleExit}
         />
       </PageLayout>
     </IonPage>

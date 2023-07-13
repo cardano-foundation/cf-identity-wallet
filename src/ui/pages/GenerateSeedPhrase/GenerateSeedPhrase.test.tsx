@@ -26,7 +26,7 @@ describe("Generate Seed Phrase screen", () => {
       </Provider>
     );
 
-    const title = getByText(EN_TRANSLATIONS.generateseedphrase.title);
+    const title = getByText(EN_TRANSLATIONS.generateseedphrase.new.title);
     const overlay = getByTestId("seed-phrase-privacy-overlay");
 
     expect(title).toBeInTheDocument();
@@ -185,7 +185,7 @@ describe("Generate Seed Phrase screen", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.continue.button.new
+      EN_TRANSLATIONS.generateseedphrase.new.continue.button
     );
     const alertWrapper = getByTestId("alert-wrapper");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
@@ -208,7 +208,9 @@ describe("Generate Seed Phrase screen", () => {
 
     await waitFor(() => expect(alertWrapper).toHaveClass("alert-visible"));
 
-    const alertTitle = getByText(EN_TRANSLATIONS.generateseedphrase.alert.text);
+    const alertTitle = getByText(
+      EN_TRANSLATIONS.generateseedphrase.alert.confirm.text
+    );
 
     await waitFor(() => expect(alertTitle).toBeVisible());
   });
@@ -222,7 +224,7 @@ describe("Generate Seed Phrase screen", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.continue.button.new
+      EN_TRANSLATIONS.generateseedphrase.new.continue.button
     );
     const alertWrapper = getByTestId("alert-wrapper");
 
@@ -234,7 +236,9 @@ describe("Generate Seed Phrase screen", () => {
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.generateseedphrase.alert.button.cancel)
+        getByText(
+          EN_TRANSLATIONS.generateseedphrase.alert.confirm.button.cancel
+        )
       );
     });
 
@@ -250,7 +254,7 @@ describe("Generate Seed Phrase screen", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.continue.button.new
+      EN_TRANSLATIONS.generateseedphrase.new.continue.button
     );
 
     act(() => {
