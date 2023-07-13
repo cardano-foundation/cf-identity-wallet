@@ -24,8 +24,8 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getState } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { TabsRoutePath } from "../../../routes/paths";
 import { getBackRoute } from "../../../routes/backRoute";
+import { TabsRoutePath } from "../../../routes/paths";
 
 type GenerationType = {
   type: string;
@@ -113,7 +113,10 @@ const VerifySeedPhrase = () => {
         dispatch,
         updateRedux
       );
-      history.push(nextPath.pathname);
+      handleClearState();
+      history.push(
+        seedPhraseType === "new" ? nextPath.pathname : TabsRoutePath.CRYPTO
+      );
       // TODO: Store Seed Phrase in db/keystore
     } else {
       setAlertIsOpen(true);
