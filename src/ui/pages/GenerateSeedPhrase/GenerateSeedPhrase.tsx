@@ -140,7 +140,12 @@ const GenerateSeedPhrase = () => {
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     handleClearState();
-    history.push(nextPath.pathname);
+    history.push({
+      pathname: nextPath.pathname,
+      state: {
+        type: seedPhraseType,
+      },
+    });
   };
 
   const handleExit = () => {

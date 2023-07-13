@@ -98,7 +98,9 @@ describe("Verify Seed Phrase Page", () => {
     });
 
     await waitFor(() =>
-      expect(queryByText(EN_TRANSLATIONS.verifyseedphrase.title)).toBeVisible()
+      expect(
+        queryByText(EN_TRANSLATIONS.verifyseedphrase.new.title)
+      ).toBeVisible()
     );
   });
 

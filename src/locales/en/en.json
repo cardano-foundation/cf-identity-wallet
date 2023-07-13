@@ -118,12 +118,20 @@
     }
   },
   "verifyseedphrase": {
-    "title": "Verify your seed phrase",
+    "new": {
+      "title": "Verify your seed phrase",
+      "continue": {
+        "button": "Continue"
+      }
+    },
+    "additional": {
+      "title": "Verify seed phrase",
+      "continue": {
+        "button": "Verify seed phrase"
+      }
+    },
     "paragraph": {
       "top": "Please select each word in the order it was presented to you."
-    },
-    "continue": {
-      "button": "Continue"
     },
     "alert": {
       "text": "Sorry, the seed phrase you have entered is incorrect!",

@@ -48,19 +48,20 @@ const PageLayout = ({
   const storeState = useAppSelector(getState);
 
   const handleOnBack = () => {
-    if (backButton && currentPath) {
-      const { backPath, updateRedux } = getBackRoute(currentPath, {
-        store: storeState,
-      });
-      updateReduxState(
-        backPath.pathname,
-        { store: storeState },
-        dispatch,
-        updateRedux
-      );
-      history.push(backPath.pathname);
-      if (onBack) {
-        onBack();
+    if (onBack) {
+      onBack();
+    } else {
+      if (backButton && currentPath) {
+        const { backPath, updateRedux } = getBackRoute(currentPath, {
+          store: storeState,
+        });
+        updateReduxState(
+          backPath.pathname,
+          { store: storeState },
+          dispatch,
+          updateRedux
+        );
+        history.push(backPath.pathname);
       }
     }
   };
