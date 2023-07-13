@@ -39,11 +39,16 @@ import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 
+type GenerationType = {
+  type: string;
+};
+
 const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
-  const seedPhraseType: string = history?.location?.state?.type || "";
+  const seedPhraseType =
+    (history?.location?.state as GenerationType).type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
