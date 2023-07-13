@@ -31,7 +31,7 @@ import {
 } from "../../../store/reducers/identitiesCache";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { getState } from "../../../store/reducers/stateCache";
+import {getStateCache} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
 
@@ -42,7 +42,7 @@ const EditIdentity = ({
   setCardData,
 }: EditIdentityProps) => {
   const identitiesData = useAppSelector(getIdentitiesCache);
-  const storeState = useAppSelector(getState);
+  const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
@@ -85,11 +85,14 @@ const EditIdentity = ({
 
   const handleDone = () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
-      store: storeState,
+      store: {stateCache},
     });
+
+    if (!backPath) return;
+
     updateReduxState(
       backPath.pathname,
-      { store: storeState },
+      { store: {stateCache} },
       dispatch,
       updateRedux
     );

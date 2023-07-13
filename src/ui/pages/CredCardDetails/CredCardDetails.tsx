@@ -25,7 +25,7 @@ import { CredCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import {getStateCache, setCurrentRoute} from "../../../store/reducers/stateCache";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
@@ -36,7 +36,7 @@ import { CredsOptions } from "../../components/CredsOptions";
 const CredCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
+  const stateCache = useAppSelector(getStateCache);
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
@@ -79,11 +79,14 @@ const CredCardDetails = () => {
 
   const handleDone = () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
-      store: storeState,
+      store: {stateCache},
     });
+
+    if (!backPath) return;
+
     updateReduxState(
       backPath.pathname,
-      { store: storeState },
+      { store: {stateCache} },
       dispatch,
       updateRedux
     );

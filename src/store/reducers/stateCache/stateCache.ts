@@ -59,7 +59,6 @@ const {
   setAuthentication,
 } = stateCacheSlice.actions;
 
-const getState = (state: RootState) => state;
 const getStateCache = (state: RootState) => state.stateCache;
 const getRoutes = (state: RootState) => state.stateCache.routes;
 const getCurrentRoute = (state: RootState) =>
@@ -81,7 +80,6 @@ export {
   removeRoute,
   removeSetPasscodeRoute,
   setAuthentication,
-  getState,
   getStateCache,
   getCurrentRoute,
   getAuthentication,

@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   getAuthentication,
   getRoutes,
-  getState,
+  getStateCache,
   setCurrentRoute,
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
@@ -20,6 +20,7 @@ import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
 import { DidCardDetails } from "../ui/pages/DidCardDetails";
 import { CredCardDetails } from "../ui/pages/CredCardDetails";
+
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
@@ -49,11 +50,13 @@ const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
 };
 
 const Routes = () => {
-  const storeState = useAppSelector(getState);
   const dispatch = useAppDispatch();
   const routes = useAppSelector(getRoutes);
+  const stateCache = useAppSelector(getStateCache);
+
+  //console.log(state);
   const { nextPath } = getNextRoute(RoutePath.ROOT, {
-    store: storeState,
+    store: { stateCache },
   });
 
   useEffect(() => {
