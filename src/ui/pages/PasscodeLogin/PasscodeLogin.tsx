@@ -11,19 +11,16 @@ import {
   SecureStorage,
 } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
 import { getBackRoute } from "../../../routes/backRoute";
 import { RoutePath } from "../../../routes";
-import {
-  getAuthentication,
-  setAuthentication,
-} from "../../../store/reducers/stateCache";
 
 const PasscodeLogin = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const authentication = useAppSelector(getAuthentication);
+  const storeState = useAppSelector(getState);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
   const [isOpen, setIsOpen] = useState(false);
@@ -52,9 +49,17 @@ const PasscodeLogin = () => {
           .then((verified) => {
             if (verified) {
               const { backPath, updateRedux } = getBackRoute(
-                RoutePath.PASSCODE_LOGIN
+                RoutePath.PASSCODE_LOGIN,
+                {
+                  store: storeState,
+                }
               );
-              updateReduxState(backPath.pathname, {}, dispatch, updateRedux);
+              updateReduxState(
+                backPath.pathname,
+                { store: storeState },
+                dispatch,
+                updateRedux
+              );
               history.push(backPath.pathname);
               handleClearState();
             } else {
@@ -90,7 +95,14 @@ const PasscodeLogin = () => {
 
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
-      dispatch(setAuthentication({ ...authentication, passcodeIsSet: false }));
+      const copyStore = JSON.parse(JSON.stringify(storeState));
+      copyStore.stateCache = {
+        ...copyStore.stateCache,
+        authentication: {
+          ...copyStore.stateCache.authentication,
+          passcodeIsSet: false,
+        },
+      };
       history.push(RoutePath.SET_PASSCODE);
       handleClearState();
     });

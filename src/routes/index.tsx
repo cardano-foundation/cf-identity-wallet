@@ -49,9 +49,12 @@ const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
 };
 
 const Routes = () => {
+  const storeState = useAppSelector(getState);
   const dispatch = useAppDispatch();
   const routes = useAppSelector(getRoutes);
-  const { nextPath } = getNextRoute(RoutePath.ROOT, {});
+  const { nextPath } = getNextRoute(RoutePath.ROOT, {
+    store: storeState,
+  });
 
   useEffect(() => {
     if (!routes.length) dispatch(setCurrentRoute({ path: nextPath.pathname }));

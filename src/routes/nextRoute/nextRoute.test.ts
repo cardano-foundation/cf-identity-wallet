@@ -52,7 +52,7 @@ describe("NextRoute", () => {
     localStorageMock.getItem = jest.fn().mockReturnValue(null);
     storeMock.stateCache.authentication.passcodeIsSet = true;
 
-    const result = getNextOnboardingRoute();
+    const result = getNextOnboardingRoute(storeMock);
 
     expect(result).toEqual({
       pathname: RoutePath.GENERATE_SEED_PHRASE,
@@ -62,7 +62,7 @@ describe("NextRoute", () => {
   test("should return correct route for /onboarding when passcodeIsSet is false and seedPhrase is set", () => {
     localStorageMock.getItem = jest.fn().mockReturnValue("someSeedPhrase");
 
-    const result = getNextOnboardingRoute();
+    const result = getNextOnboardingRoute(storeMock);
 
     expect(result).toEqual({
       pathname: RoutePath.SET_PASSCODE,
@@ -72,7 +72,7 @@ describe("NextRoute", () => {
   test("should return correct route for /setpasscode when seedPhrase is not set", () => {
     localStorageMock.getItem = jest.fn().mockReturnValue("someSeedPhrase");
 
-    const result = getNextSetPasscodeRoute();
+    const result = getNextSetPasscodeRoute(storeMock);
 
     expect(result).toEqual({
       pathname: RoutePath.GENERATE_SEED_PHRASE,
@@ -87,7 +87,7 @@ describe("NextRoute", () => {
       passcodeIsSet: true,
     };
 
-    const result = updateStoreAfterSetPasscodeRoute();
+    const result = updateStoreAfterSetPasscodeRoute({ store: storeMock });
 
     expect(result).toEqual(setAuthentication(expectedAuthentication));
   });
@@ -140,6 +140,7 @@ describe("getNextRoute", () => {
 
   test("should return the correct Onboarding next route", () => {
     let result = getNextRoute(RoutePath.ONBOARDING, {
+      store: storeMock,
       state,
       payload,
     });
@@ -151,6 +152,7 @@ describe("getNextRoute", () => {
     storeMock.stateCache.authentication.passcodeIsSet = false;
 
     result = getNextRoute(RoutePath.ONBOARDING, {
+      store: storeMock,
       state,
       payload,
     });
@@ -161,6 +163,7 @@ describe("getNextRoute", () => {
     storeMock.seedPhraseCache.seedPhrase160 = "example-seed-phrase";
 
     result = getNextRoute(RoutePath.ONBOARDING, {
+      store: storeMock,
       state,
       payload,
     });
@@ -175,7 +178,7 @@ describe("getNextRoute", () => {
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     };
 
-    const result = getNextSetPasscodeRoute();
+    const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({
       pathname: RoutePath.TABS_MENU,
     });
@@ -185,7 +188,7 @@ describe("getNextRoute", () => {
     storeMock.seedPhraseCache.seedPhrase160 = "";
     storeMock.seedPhraseCache.seedPhrase256 = "";
 
-    const result = getNextSetPasscodeRoute();
+    const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({
       pathname: RoutePath.GENERATE_SEED_PHRASE,
     });

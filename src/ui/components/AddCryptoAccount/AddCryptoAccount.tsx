@@ -17,7 +17,8 @@ import { PageLayout } from "../layout/PageLayout";
 import { AddCryptoAccountsProps } from "./AddCryptoAccount.types";
 import "./AddCryptoAccount.scss";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { useAppDispatch } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getState } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
@@ -30,10 +31,13 @@ const AddCryptoAccount = ({
 }: AddCryptoAccountsProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
 
   const handleNewAccount = (type: string) => {
     setAddAccountIsOpen(false);
-    const data: DataProps = {};
+    const data: DataProps = {
+      store: storeState,
+    };
     const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CRYPTO, data);
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push({

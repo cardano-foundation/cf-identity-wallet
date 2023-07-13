@@ -1,4 +1,5 @@
 import { RootState } from "../../store";
+import { DataProps } from "../nextRoute/nextRoute.types";
 import {
   calcPreviousRoute,
   getBackRoute,
@@ -56,8 +57,11 @@ describe("getBackRoute", () => {
 
   test("should return the correct 'backPath' and 'updateRedux' when currentPath is '/'", () => {
     const currentPath = "/";
+    const data: DataProps = {
+      store: storeMock,
+    };
 
-    const result = getBackRoute(currentPath);
+    const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
     expect(result.updateRedux).toEqual([]);
@@ -65,8 +69,11 @@ describe("getBackRoute", () => {
 
   test("should return the correct back path when currentPath is /generateseedphrase", () => {
     const currentPath = "/generateseedphrase";
+    const data: DataProps = {
+      store: storeMock,
+    };
 
-    const result = getBackRoute(currentPath);
+    const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
     expect(result.updateRedux).toHaveLength(3);
@@ -74,8 +81,11 @@ describe("getBackRoute", () => {
 
   test("should return the correct back path when currentPath is /verifyseedphrase", () => {
     const currentPath = "/verifyseedphrase";
+    const data: DataProps = {
+      store: storeMock,
+    };
 
-    const result = getBackRoute(currentPath);
+    const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
     expect(result.updateRedux).toHaveLength(2);
@@ -83,8 +93,11 @@ describe("getBackRoute", () => {
 
   test("should return the correct back path when currentPath is /setpasscode", () => {
     const currentPath = "/setpasscode";
+    const data: DataProps = {
+      store: storeMock,
+    };
 
-    const result = getBackRoute(currentPath);
+    const result = getBackRoute(currentPath, data);
 
     expect(result.backPath).toEqual({ pathname: "/route2" });
     expect(result.updateRedux).toHaveLength(2);
@@ -122,6 +135,7 @@ describe("getBackRoute", () => {
       time: expect.any(Number),
     };
     const result = updateStoreAfterPasscodeLoginRoute({
+      store: storeMock,
       state,
     });
 
@@ -186,13 +200,23 @@ describe("getPreviousRoute", () => {
     jest.resetAllMocks();
   });
   test("should return the correct previous route pathname", () => {
-    const result = getPreviousRoute();
+    const data: DataProps = {
+      store: storeMock,
+    };
+
+    const result = getPreviousRoute(data);
 
     expect(result).toEqual({ pathname: "/route2" });
   });
 
   test("should return the ROOT path if no previous route exists", () => {
-    const result = getPreviousRoute();
+    const data: DataProps = {
+      store: storeMock,
+    };
+
+    data.store.stateCache.routes = [];
+
+    const result = getPreviousRoute(data);
 
     expect(result).toEqual({ pathname: "/" });
   });
