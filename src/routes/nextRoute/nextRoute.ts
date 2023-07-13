@@ -1,6 +1,7 @@
 import { AnyAction, ThunkAction } from "@reduxjs/toolkit";
-import { RootState } from "../../store";
+import { RootState, store as storeState } from "../../store";
 import {
+  getState,
   removeSetPasscodeRoute,
   setAuthentication,
   setCurrentRoute,
@@ -12,8 +13,10 @@ import {
 import { DataProps } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
 import { backPath } from "../backRoute";
+import { useAppSelector } from "../../store/hooks";
 
-const getNextRootRoute = (store: RootState) => {
+const getNextRootRoute = () => {
+  const store = storeState.getState();
   const authentication = store.stateCache.authentication;
   const routes = store.stateCache.routes;
   const initialRoute =
@@ -34,7 +37,8 @@ const getNextRootRoute = (store: RootState) => {
 
   return { pathname: path };
 };
-const getNextOnboardingRoute = (store: RootState) => {
+const getNextOnboardingRoute = () => {
+  const store = storeState.getState();
   const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase160;
 
   let path;
@@ -54,7 +58,8 @@ const getNextCreateCryptoAccountRoute = () => {
   return { pathname: path };
 };
 
-const getNextSetPasscodeRoute = (store: RootState) => {
+const getNextSetPasscodeRoute = () => {
+  const store = storeState.getState();
   const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase160;
 
   const nextPath: string = seedPhraseIsSet
@@ -64,17 +69,19 @@ const getNextSetPasscodeRoute = (store: RootState) => {
   return { pathname: nextPath };
 };
 
-const updateStoreAfterSetPasscodeRoute = (data: DataProps) => {
+const updateStoreAfterSetPasscodeRoute = () => {
+  const store = storeState.getState();
   return setAuthentication({
-    ...data.store.stateCache.authentication,
+    ...store.stateCache.authentication,
     loggedIn: true,
     time: Date.now(),
     passcodeIsSet: true,
   });
 };
-const updateStoreAfterVerifySeedPhraseRoute = (data: DataProps) => {
+const updateStoreAfterVerifySeedPhraseRoute = () => {
+  const store = storeState.getState();
   return setAuthentication({
-    ...data.store.stateCache.authentication,
+    ...store.stateCache.authentication,
     seedPhraseIsSet: true,
   });
 };
@@ -97,13 +104,14 @@ const updateStoreCurrentRoute = (data: DataProps) => {
   return setCurrentRoute({ path: data.state?.nextRoute });
 };
 
-const getNextCreatePasswordRoute = (data: DataProps) => {
-  const backRoute = backPath(data);
+const getNextCreatePasswordRoute = () => {
+  const backRoute = backPath();
   return { pathname: backRoute.pathname };
 };
-const updateStoreAfterCreatePassword = (data: DataProps) => {
+const updateStoreAfterCreatePassword = () => {
+  const store = storeState.getState();
   return setAuthentication({
-    ...data.store.stateCache.authentication,
+    ...store.stateCache.authentication,
     passwordIsSet: true,
   });
 };
@@ -127,15 +135,15 @@ const getNextRoute = (
 
 const NextRoute: Record<string, any> = {
   [RoutePath.ROOT]: {
-    nextPath: (data: DataProps) => getNextRootRoute(data.store),
+    nextPath: () => getNextRootRoute(),
     updateRedux: [],
   },
   [RoutePath.ONBOARDING]: {
-    nextPath: (data: DataProps) => getNextOnboardingRoute(data.store),
+    nextPath: () => getNextOnboardingRoute(),
     updateRedux: [],
   },
   [RoutePath.SET_PASSCODE]: {
-    nextPath: (data: DataProps) => getNextSetPasscodeRoute(data.store),
+    nextPath: () => getNextSetPasscodeRoute(),
     updateRedux: [removeSetPasscodeRoute, updateStoreAfterSetPasscodeRoute],
   },
   [RoutePath.GENERATE_SEED_PHRASE]: {
@@ -147,7 +155,7 @@ const NextRoute: Record<string, any> = {
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
   [RoutePath.CREATE_PASSWORD]: {
-    nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
+    nextPath: () => getNextCreatePasswordRoute(),
     updateRedux: [updateStoreAfterCreatePassword],
   },
   [TabsRoutePath.CRYPTO]: {

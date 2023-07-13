@@ -13,8 +13,7 @@ import { arrowBackOutline, closeOutline, menuOutline } from "ionicons/icons";
 import "./PageLayout.scss";
 import { useHistory } from "react-router-dom";
 import { PageLayoutProps } from "./PageLayout.types";
-import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import { getState } from "../../../../store/reducers/stateCache";
+import { useAppDispatch } from "../../../../store/hooks";
 import { updateReduxState } from "../../../../store/utils";
 import { getBackRoute } from "../../../../routes/backRoute";
 
@@ -45,19 +44,11 @@ const PageLayout = ({
 }: PageLayoutProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
 
   const handleOnBack = () => {
     if (backButton && currentPath) {
-      const { backPath, updateRedux } = getBackRoute(currentPath, {
-        store: storeState,
-      });
-      updateReduxState(
-        backPath.pathname,
-        { store: storeState },
-        dispatch,
-        updateRedux
-      );
+      const { backPath, updateRedux } = getBackRoute(currentPath);
+      updateReduxState(backPath.pathname, {}, dispatch, updateRedux);
       history.push(backPath.pathname);
       if (onBack) {
         onBack();

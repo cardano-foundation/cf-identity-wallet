@@ -30,7 +30,6 @@ import {
 } from "../../../constants/appConstants";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { Alert } from "../../components/Alert";
-import { getState } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -46,7 +45,7 @@ type GenerationType = {
 const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
+
   const seedPhraseType =
     (history?.location?.state as GenerationType).type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
@@ -118,7 +117,6 @@ const GenerateSeedPhrase = () => {
   const handleContinue = () => {
     setAlertIsOpen(false);
     const data: DataProps = {
-      store: storeState,
       state: {
         seedPhrase160: seedPhrase160.join(" "),
         seedPhrase256: seedPhrase256.join(" "),

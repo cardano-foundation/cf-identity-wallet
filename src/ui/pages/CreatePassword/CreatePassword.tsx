@@ -24,8 +24,7 @@ import {
   KeyStoreKeys,
   SecureStorage,
 } from "../../../core/storage/secureStorage";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState } from "../../../store/reducers/stateCache";
+import { useAppDispatch } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -143,7 +142,6 @@ const PasswordRegex = ({ password }: PasswordRegexProps) => {
 };
 
 const CreatePassword = () => {
-  const storeState = useAppSelector(getState);
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [createPasswordValue, setCreatePasswordValue] = useState("");
@@ -174,9 +172,7 @@ const CreatePassword = () => {
     setCreateHintValue("");
   };
   const handleClose = async () => {
-    const { backPath } = getBackRoute(RoutePath.CREATE_PASSWORD, {
-      store: storeState,
-    });
+    const { backPath } = getBackRoute(RoutePath.CREATE_PASSWORD);
     history.push(backPath.pathname);
     handleClearState();
   };
@@ -190,15 +186,11 @@ const CreatePassword = () => {
         createHintValue
       );
     }
-    const { nextPath, updateRedux } = getNextRoute(RoutePath.CREATE_PASSWORD, {
-      store: storeState,
-    });
-    updateReduxState(
-      nextPath.pathname,
-      { store: storeState },
-      dispatch,
-      updateRedux
+    const { nextPath, updateRedux } = getNextRoute(
+      RoutePath.CREATE_PASSWORD,
+      {}
     );
+    updateReduxState(nextPath.pathname, {}, dispatch, updateRedux);
     history.push(nextPath.pathname);
     handleClearState();
     // @TODO - sdisalvo: this will need to be completed at a later stage (navigation)

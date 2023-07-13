@@ -36,7 +36,7 @@ import { CredsOptions } from "../../components/CredsOptions";
 const CredCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
+
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
@@ -78,15 +78,8 @@ const CredCardDetails = () => {
   });
 
   const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
-      store: storeState,
-    });
-    updateReduxState(
-      backPath.pathname,
-      { store: storeState },
-      dispatch,
-      updateRedux
-    );
+    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS);
+    updateReduxState(backPath.pathname, {}, dispatch, updateRedux);
     history.push(TabsRoutePath.CREDS);
   };
 

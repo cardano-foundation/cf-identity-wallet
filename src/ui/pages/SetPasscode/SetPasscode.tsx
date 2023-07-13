@@ -9,8 +9,7 @@ import {
   KeyStoreKeys,
 } from "../../../core/storage/secureStorage";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import { getState } from "../../../store/reducers/stateCache";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { useAppDispatch } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
@@ -19,7 +18,7 @@ import { RoutePath } from "../../../routes";
 const SetPasscode = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
+
   const [passcode, setPasscode] = useState("");
   const [originalPassCode, setOriginalPassCode] = useState("");
   const handlePinChange = (digit: number) => {
@@ -31,9 +30,7 @@ const SetPasscode = () => {
             () => {
               handleClearState();
 
-              const data: DataProps = {
-                store: storeState,
-              };
+              const data: DataProps = {};
               const { nextPath, updateRedux } = getNextRoute(
                 RoutePath.SET_PASSCODE,
                 data
