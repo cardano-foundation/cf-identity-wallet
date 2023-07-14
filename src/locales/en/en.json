@@ -331,6 +331,9 @@
       "network": {
         "mainnet": "Mainnet"
       },
+      "toast": {
+        "success": "Seed phrase verified"
+      },
       "slider": {
         "title": {
           "mainbalance": "Main balance",
