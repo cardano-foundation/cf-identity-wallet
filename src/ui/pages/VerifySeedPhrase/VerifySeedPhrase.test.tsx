@@ -1,4 +1,4 @@
-import { MemoryRouter, Route } from "react-router-dom";
+import { MemoryRouter, Route, Router } from "react-router-dom";
 import { Provider } from "react-redux";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
@@ -28,7 +28,25 @@ const convertRootKeySpy = jest
   .spyOn(Addresses, "convertToRootXPrivateKeyHex")
   .mockReturnValue(rootKey);
 
+jest.mock("react-router-dom", () => {
+  const nav = jest.fn();
+  return {
+    ...jest.requireActual("react-router-dom"),
+    mockedNavigation: nav,
+    useLocation: jest.fn(() => ({
+      state: {
+        type: "new",
+      },
+    })),
+    useNavigate: jest.fn(() => nav),
+  };
+});
+
 describe("Verify Seed Phrase Page", () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
   const initialState = {
@@ -54,7 +72,7 @@ describe("Verify Seed Phrase Page", () => {
   };
   test("The user can navigate from Generate to Verify Seed Phrase page", async () => {
     const seedPhrase = [];
-    const { getByTestId, queryByText, getByText } = render(
+    const { getByTestId, queryByText, getByText, findByText } = render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
           <Route
@@ -71,7 +89,7 @@ describe("Verify Seed Phrase Page", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    const generateContinueButton = getByText(
+    const generateContinueButton = await findByText(
       EN_TRANSLATIONS.generateseedphrase.new.continue.button
     );
 
