@@ -1,5 +1,5 @@
 import { Blockfrost, Lucid, Network, Tx, WalletApi } from "lucid-cardano";
-import { Address, Assets } from "lucid-cardano/types/src/types/mod";
+import { Address, Assets } from "lucid-cardano";
 
 class TransactionBuilder {
   private lucid: Lucid;
@@ -12,14 +12,14 @@ class TransactionBuilder {
     this.lucid = lucid;
   }
   static async new(
-    apiWallet: WalletApi,
+    apiWallet: WalletApi | undefined,
     network: Network,
     url: string,
     blockfrostToken: string
   ): Promise<TransactionBuilder> {
     const blockfrost = new Blockfrost(url, blockfrostToken);
     const lucid = await Lucid.new(blockfrost, network);
-    lucid.selectWallet(apiWallet);
+    // lucid.selectWallet(apiWallet);
 
     return new TransactionBuilder(lucid);
   }

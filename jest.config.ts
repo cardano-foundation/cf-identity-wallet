@@ -33,6 +33,7 @@ export default {
     "\\.(css|scss)$": "<rootDir>/src/ui/__mocks__/styleMock.ts",
     // Jest cannot import the browser version so we can map in the NodeJS version instead.
     "@emurgo/cardano-serialization-lib-browser": "@emurgo/cardano-serialization-lib-nodejs",
+    "lucid-cardano": "@jpg-store/lucid-cardano",
   },
   testEnvironment: "jsdom",
   testMatch: ["**/src/**/?(*.)+(test).[tj]s?(x)"],
@@ -45,4 +46,9 @@ export default {
     "^.+\\.(js|jsx)$": "babel-jest"
   },
   setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
+  globals: {
+    TextEncoder: require("util").TextEncoder,
+    TextDecoder: require("util").TextDecoder
+  }
+
 };

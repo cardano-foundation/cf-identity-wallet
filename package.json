@@ -27,7 +27,6 @@
     "@ionic/react": "^6.7.0",
     "@ionic/react-router": "^6.7.0",
     "@ionic/storage": "^3.0.6",
-    "@jpg-store/lucid-cardano": "^0.9.1",
     "@meshsdk/core": "^1.5.4",
     "@reduxjs/toolkit": "^1.9.5",
     "@stablelib/ed25519": "^1.0.3",
@@ -51,6 +50,7 @@
   },
   "devDependencies": {
     "@capacitor/cli": "^4.7.3",
+    "@jpg-store/lucid-cardano": "^0.9.1",
     "@emurgo/cardano-serialization-lib-nodejs": "^11.4.0",
     "@ionic/react-test-utils": "^0.4.0",
     "@testing-library/dom": "^9.3.1",
