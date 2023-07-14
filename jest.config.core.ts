@@ -35,8 +35,8 @@ export default {
     "@dcspark/cardano-multiplatform-lib-browser": "@dcspark/cardano-multiplatform-lib-nodejs",
     "lucid-cardano": "@jpg-store/lucid-cardano",
   },
-  testEnvironment: "node",
-  testMatch: ["**/src/core/cardano/**/?(*.)+(test).[tj]s?(x)"],
+  testEnvironment: "jsdom",
+  testMatch: ["**/src/**/?(*.)+(test).[tj]s?(x)"],
   testPathIgnorePatterns: ["/node_modules/"],
   transformIgnorePatterns: [
     "node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons|swiper|ssr-window)/)"
@@ -45,5 +45,10 @@ export default {
     "^.+\\.(ts|tsx)$": "ts-jest",
     "^.+\\.(js|jsx)$": "babel-jest"
   },
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"]
+  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"],
+  globals: {
+    TextEncoder: require("util").TextEncoder,
+    TextDecoder: require("util").TextDecoder
+  }
+
 };
