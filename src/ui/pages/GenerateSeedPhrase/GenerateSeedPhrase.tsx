@@ -51,8 +51,9 @@ const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
-  const seedPhraseType =
-    (history?.location?.state as GenerationType)?.type || "";
+  const seedPhraseType = !storeState.stateCache.authentication.seedPhraseIsSet
+    ? "onboarding"
+    : (history?.location?.state as GenerationType)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
@@ -152,7 +153,7 @@ const GenerateSeedPhrase = () => {
     handleClearState();
     history.push(TabsRoutePath.CRYPTO);
   };
-  console.log(seedPhraseType);
+
   return (
     <IonPage className="page-layout generate-seedphrase">
       <PageLayout

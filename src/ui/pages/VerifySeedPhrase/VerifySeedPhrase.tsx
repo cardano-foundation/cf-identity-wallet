@@ -36,8 +36,9 @@ const VerifySeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
-  const seedPhraseType =
-    (history?.location?.state as GenerationType)?.type || "";
+  const seedPhraseType = !storeState.stateCache.authentication.seedPhraseIsSet
+    ? "onboarding"
+    : (history?.location?.state as GenerationType)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
     seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
@@ -122,6 +123,7 @@ const VerifySeedPhrase = () => {
           dispatch,
           updateRedux
         );
+        handleClearState();
         history.push(nextPath.pathname);
       } else {
         setChooseAccountNameIsOpen(true);
