@@ -12,7 +12,7 @@ import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { Alert as AlertExit, Alert } from "../../components/Alert";
+import { Alert as AlertExit, Alert as AlertFail } from "../../components/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
 import {
@@ -246,21 +246,29 @@ const VerifySeedPhrase = () => {
           </IonGrid>
         ) : null}
 
-        <Alert
+        <AlertFail
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
-          headerText={i18n.t("verifyseedphrase.alert.text")}
-          cancelButtonText={`${i18n.t("verifyseedphrase.alert.button.cancel")}`}
+          dataTestId="alert-fail"
+          headerText={i18n.t("verifyseedphrase.alert.fail.text")}
+          confirmButtonText={`${i18n.t(
+            "verifyseedphrase.alert.fail.button.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "verifyseedphrase.alert.fail.button.cancel"
+          )}`}
+          actionConfirm={handleExit}
         />
         <AlertExit
           isOpen={alertExitIsOpen}
           setIsOpen={setAlertExitIsOpen}
-          headerText={i18n.t("generateseedphrase.alert.exit.text")}
+          dataTestId="alert-exit"
+          headerText={i18n.t("verifyseedphrase.alert.exit.text")}
           confirmButtonText={`${i18n.t(
-            "generateseedphrase.alert.exit.button.confirm"
+            "verifyseedphrase.alert.exit.button.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "generateseedphrase.alert.exit.button.cancel"
+            "verifyseedphrase.alert.exit.button.cancel"
           )}`}
           actionConfirm={handleExit}
         />

@@ -160,7 +160,7 @@ describe("Verify Seed Phrase Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.text)
+        queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.text)
       ).toBeVisible()
     );
 

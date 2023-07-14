@@ -311,6 +311,7 @@ const GenerateSeedPhrase = () => {
         <AlertConfirm
           isOpen={alertConfirmIsOpen}
           setIsOpen={setAlertConfirmIsOpen}
+          dataTestId="alert-confirm"
           headerText={i18n.t("generateseedphrase.alert.confirm.text")}
           confirmButtonText={`${i18n.t(
             "generateseedphrase.alert.confirm.button.confirm"
@@ -323,6 +324,7 @@ const GenerateSeedPhrase = () => {
         <AlertExit
           isOpen={alertExitIsOpen}
           setIsOpen={setAlertExitIsOpen}
+          dataTestId="alert-exit"
           headerText={i18n.t("generateseedphrase.alert.exit.text")}
           confirmButtonText={`${i18n.t(
             "generateseedphrase.alert.exit.button.confirm"

@@ -1,4 +1,5 @@
 import { render, waitFor } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import { act } from "react-dom/test-utils";
 import {
   ionFireEvent as fireEvent,
@@ -6,7 +7,7 @@ import {
 } from "@ionic/react-test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { MemoryRouter } from "react-router-dom";
+import { Router } from "react-router-dom";
 import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
 import {
   MNEMONIC_FIFTEEN_WORDS,
@@ -18,11 +19,18 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 
-describe("Generate Seed Phrase screen", () => {
+describe("Generate Seed Phrase screen from Onboarding", () => {
+  const history = createMemoryHistory();
+  const state = {
+    type: "new",
+  };
+  history.push(RoutePath.GENERATE_SEED_PHRASE, state);
   test("User can see Title and Security Overlay", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
-        <GenerateSeedPhrase />
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
       </Provider>
     );
 
@@ -36,7 +44,9 @@ describe("Generate Seed Phrase screen", () => {
   test("User can dismiss the Security Overlay", async () => {
     const { getByTestId } = render(
       <Provider store={store}>
-        <GenerateSeedPhrase />
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
       </Provider>
     );
 
@@ -78,11 +88,11 @@ describe("Generate Seed Phrase screen", () => {
     };
 
     const { getByTestId } = render(
-      <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
-        <Provider store={storeMocked}>
+      <Provider store={storeMocked}>
+        <Router history={history}>
           <GenerateSeedPhrase />
-        </Provider>
-      </MemoryRouter>
+        </Router>
+      </Provider>
     );
 
     const segment = getByTestId("mnemonic-length-segment");
@@ -139,11 +149,11 @@ describe("Generate Seed Phrase screen", () => {
     };
 
     const { getByTestId } = render(
-      <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
-        <Provider store={storeMocked}>
+      <Provider store={storeMocked}>
+        <Router history={history}>
           <GenerateSeedPhrase />
-        </Provider>
-      </MemoryRouter>
+        </Router>
+      </Provider>
     );
 
     const segment = getByTestId("mnemonic-length-segment");
@@ -179,7 +189,9 @@ describe("Generate Seed Phrase screen", () => {
   test("User is prompted to save the seed phrase", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
-        <GenerateSeedPhrase />
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
       </Provider>
     );
 
@@ -187,7 +199,7 @@ describe("Generate Seed Phrase screen", () => {
     const continueButton = getByText(
       EN_TRANSLATIONS.generateseedphrase.new.continue.button
     );
-    const alertWrapper = getByTestId("alert-wrapper");
+    const alertWrapper = getByTestId("alert-confirm");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
 
     expect(alertWrapper).toHaveClass("alert-invisible");
@@ -218,7 +230,9 @@ describe("Generate Seed Phrase screen", () => {
   test("Clicking on second alert button will dismiss it", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
-        <GenerateSeedPhrase />
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
       </Provider>
     );
 
@@ -226,7 +240,7 @@ describe("Generate Seed Phrase screen", () => {
     const continueButton = getByText(
       EN_TRANSLATIONS.generateseedphrase.new.continue.button
     );
-    const alertWrapper = getByTestId("alert-wrapper");
+    const alertWrapper = getByTestId("alert-confirm");
 
     act(() => {
       fireEvent.click(revealSeedPhraseButton);
@@ -248,7 +262,9 @@ describe("Generate Seed Phrase screen", () => {
   test("Clicking on alert backdrop will dismiss it", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={store}>
-        <GenerateSeedPhrase />
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
       </Provider>
     );
 
@@ -263,7 +279,7 @@ describe("Generate Seed Phrase screen", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("alert-wrapper")).toBeInTheDocument();
+      expect(getByTestId("alert-confirm")).toBeInTheDocument();
     });
 
     const backdrop = document.querySelector("ion-backdrop");
@@ -280,7 +296,9 @@ describe("Generate Seed Phrase screen", () => {
   test("User can toggle the checkbox", async () => {
     const { getByTestId } = render(
       <Provider store={store}>
-        <GenerateSeedPhrase />
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
       </Provider>
     );
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
@@ -294,7 +312,9 @@ describe("Generate Seed Phrase screen", () => {
   test("Opening Terms and conditions modal triggers the checkbox", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
-        <GenerateSeedPhrase />
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
       </Provider>
     );
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
@@ -337,11 +357,11 @@ describe("Generate Seed Phrase screen", () => {
       dispatch: dispatchMock,
     };
     const { getByTestId } = render(
-      <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
-        <Provider store={storeMocked}>
+      <Provider store={storeMocked}>
+        <Router history={history}>
           <GenerateSeedPhrase />
-        </Provider>
-      </MemoryRouter>
+        </Router>
+      </Provider>
     );
 
     const overlay = getByTestId("seed-phrase-privacy-overlay");

@@ -134,9 +134,19 @@
       "top": "Please select each word in the order it was presented to you."
     },
     "alert": {
-      "text": "Sorry, the seed phrase you have entered is incorrect!",
-      "button": {
-        "cancel": "Try again"
+      "fail": {
+        "text": "Your seed phrase couldn’t be verified. Please, try again or choose an alternative method",
+        "button": {
+          "confirm": "View my seed phrase",
+          "cancel": "Cancel"
+        }
+      },
+      "exit": {
+        "text": "If you go back you will lose your current progress. Are you sure you want to do this?",
+        "button": {
+          "confirm": "Confirm",
+          "cancel": "Cancel"
+        }
       }
     }
   },
