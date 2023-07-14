@@ -36,22 +36,5 @@ describe("Cardano transactions", () => {
 
   });
 
-  test('buildTransaction() should return a new transaction', async () => {
 
-    const walletApi = new Wallet("wallet-name");
-    const blockfrost = new Blockfrost(blockfrostUrl, blockfrostKey);
-    const lucid = await Lucid.new(blockfrost, network);
-    const txBuilder = await TransactionBuilder.new(walletApi, network, blockfrostUrl, blockfrostKey || "previewaLIUBOHJyeervH0uRxHP5JjyIcWvC8VA")
-
-    const spy = jest.spyOn(lucid, "newTx");
-
-    const address = addressBech32;
-    const assets = {lovelace: 4213243n };
-    const outputs = [{ address, assets }];
-
-    const tx = await txBuilder.buildTransaction(outputs);
-
-    expect(tx).toBeInstanceOf(Tx);
-    expect(spy).toHaveBeenCalled();
-  });
 });

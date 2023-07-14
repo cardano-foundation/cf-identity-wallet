@@ -1,4 +1,4 @@
-import { Bip32PrivateKey } from "@emurgo/cardano-serialization-lib-browser";
+import { Bip32PrivateKey } from "@dcspark/cardano-multiplatform-lib-browser";
 import { mnemonicToEntropy } from "bip39";
 
 class Addresses {
@@ -9,7 +9,7 @@ class Addresses {
       Buffer.from("")
     );
 
-    return rootExtendedPrivateKey.to_hex();
+    return rootExtendedPrivateKey.to_128_xprv().toString();
   }
 }
 
