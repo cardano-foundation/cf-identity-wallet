@@ -152,22 +152,22 @@ const GenerateSeedPhrase = () => {
     handleClearState();
     history.push(TabsRoutePath.CRYPTO);
   };
-
+  console.log(seedPhraseType);
   return (
     <IonPage className="page-layout generate-seedphrase">
       <PageLayout
         header={true}
         title={
-          seedPhraseType !== "new"
+          seedPhraseType !== "onboarding"
             ? `${i18n.t("generateseedphrase." + seedPhraseType + ".title")}`
             : undefined
         }
-        backButton={seedPhraseType === "new"}
+        backButton={seedPhraseType === "onboarding"}
         onBack={handleClearState}
-        closeButton={seedPhraseType !== "new"}
+        closeButton={seedPhraseType !== "onboarding"}
         closeButtonAction={() => setAlertExitIsOpen(true)}
         currentPath={RoutePath.GENERATE_SEED_PHRASE}
-        progressBar={seedPhraseType === "new"}
+        progressBar={seedPhraseType === "onboarding"}
         progressBarValue={0.66}
         progressBarBuffer={1}
         footer={true}
@@ -180,7 +180,7 @@ const GenerateSeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              {seedPhraseType === "new" && (
+              {seedPhraseType === "onboarding" && (
                 <h2>
                   {i18n.t("generateseedphrase." + seedPhraseType + ".title")}
                 </h2>

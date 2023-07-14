@@ -22,7 +22,7 @@ import { RoutePath } from "../../../routes";
 describe("Generate Seed Phrase screen from Onboarding", () => {
   const history = createMemoryHistory();
   const state = {
-    type: "new",
+    type: "onboarding",
   };
   history.push(RoutePath.GENERATE_SEED_PHRASE, state);
   test("User can see Title and Security Overlay", () => {
@@ -34,7 +34,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       </Provider>
     );
 
-    const title = getByText(EN_TRANSLATIONS.generateseedphrase.new.title);
+    const title = getByText(
+      EN_TRANSLATIONS.generateseedphrase.onboarding.title
+    );
     const overlay = getByTestId("seed-phrase-privacy-overlay");
 
     expect(title).toBeInTheDocument();
@@ -197,7 +199,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.new.continue.button
+      EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
     );
     const alertWrapper = getByTestId("alert-confirm");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
@@ -238,7 +240,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.new.continue.button
+      EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
     );
     const alertWrapper = getByTestId("alert-confirm");
 
@@ -270,7 +272,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.new.continue.button
+      EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
     );
 
     act(() => {

@@ -34,7 +34,7 @@ const Onboarding = () => {
     history.push({
       pathname: nextPath.pathname,
       state: {
-        type: "new",
+        type: "onboarding",
       },
     });
   };

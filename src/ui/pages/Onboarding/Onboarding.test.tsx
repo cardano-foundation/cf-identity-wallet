@@ -110,7 +110,7 @@ describe("Onboarding Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS.generateseedphrase.new.title)
+        queryByText(EN_TRANSLATIONS.generateseedphrase.onboarding.title)
       ).toBeVisible()
     );
   });

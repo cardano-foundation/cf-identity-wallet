@@ -20,11 +20,17 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences/preferencesStorage";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+} from "../../../core/storage/secureStorage";
 
 const ChooseAccountName = ({
   chooseAccountNameIsOpen,
   setChooseAccountNameIsOpen,
   setDefaultAccountData,
+  seedPhrase,
+  onDone,
 }: ChooseAccountNameProps) => {
   const dispatch = useAppDispatch();
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
@@ -34,6 +40,18 @@ const ChooseAccountName = ({
     `${i18n.t("crypto.chooseaccountnamemodal.placeholder")}`
   );
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
+
+  const usesIdentitySeedPhrase = async () => {
+    try {
+      const identitySeedPhrase = (await SecureStorage.get(
+        KeyStoreKeys.IDENTITY_SEEDPHRASE
+      )) as string;
+      if (!identitySeedPhrase) return false;
+      return identitySeedPhrase === seedPhrase;
+    } catch (e) {
+      return false;
+    }
+  };
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -54,7 +72,7 @@ const ChooseAccountName = ({
             " #" +
             crypto.randomBytes(3).toString("hex")
           : value,
-      usesIdentitySeedPhrase: true,
+      usesIdentitySeedPhrase: usesIdentitySeedPhrase,
       // @TODO - sdisalvo: remember to remove hardcoded values below this point
       address: "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg7j8cu8",
       blockchain: "Cardano",
@@ -75,7 +93,7 @@ const ChooseAccountName = ({
       // End of hardcoded values
     };
 
-    if (cryptoAccountsData.length === 0) {
+    if (cryptoAccountsData.length === 0 && setDefaultAccountData) {
       dispatch(setDefaultCryptoAccountCache(newWallet.address));
       PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
         data: newWallet.address,
@@ -84,6 +102,9 @@ const ChooseAccountName = ({
     }
     dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
     setChooseAccountNameIsOpen(false);
+    if (onDone) {
+      onDone();
+    }
   };
 
   return (

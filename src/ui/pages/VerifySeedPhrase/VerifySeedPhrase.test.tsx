@@ -56,7 +56,7 @@ describe("Verify Seed Phrase Page", () => {
   test("The user can navigate from Generate to Verify Seed Phrase page", async () => {
     const history = createMemoryHistory();
     const state = {
-      type: "new",
+      type: "onboarding",
     };
     history.push(RoutePath.GENERATE_SEED_PHRASE, state);
     const seedPhrase = [];
@@ -78,7 +78,7 @@ describe("Verify Seed Phrase Page", () => {
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
     const generateContinueButton = await findByText(
-      EN_TRANSLATIONS.generateseedphrase.new.continue.button
+      EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
     );
 
     act(() => {
@@ -105,7 +105,7 @@ describe("Verify Seed Phrase Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS.verifyseedphrase.new.title)
+        queryByText(EN_TRANSLATIONS.verifyseedphrase.onboarding.title)
       ).toBeVisible()
     );
   });
@@ -113,7 +113,7 @@ describe("Verify Seed Phrase Page", () => {
   test("The user can't Verify the Seed Phrase", async () => {
     const history = createMemoryHistory();
     const state = {
-      type: "new",
+      type: "onboarding",
     };
     history.push(RoutePath.VERIFY_SEED_PHRASE, state);
     const { getByTestId, queryByText } = render(
@@ -171,7 +171,7 @@ describe("Verify Seed Phrase Page", () => {
   test("The user can Verify the Seed Phrase", async () => {
     const history = createMemoryHistory();
     const state = {
-      type: "new",
+      type: "onboarding",
     };
     history.push(RoutePath.VERIFY_SEED_PHRASE, state);
     const { getByTestId, getByText } = render(
@@ -265,7 +265,7 @@ describe("Verify Seed Phrase Page", () => {
   test("calls handleOnBack when back button is clicked", async () => {
     const history = createMemoryHistory();
     const state = {
-      type: "new",
+      type: "onboarding",
     };
     history.push(RoutePath.VERIFY_SEED_PHRASE, state);
     const mockStore = configureStore();

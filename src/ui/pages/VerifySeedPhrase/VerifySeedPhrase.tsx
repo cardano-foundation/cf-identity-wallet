@@ -26,6 +26,7 @@ import { getState } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../../../routes/paths";
+import { ChooseAccountName } from "../../components/ChooseAccountName";
 
 type GenerationType = {
   type: string;
@@ -46,6 +47,7 @@ const VerifySeedPhrase = () => {
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
+  const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
@@ -88,36 +90,42 @@ const VerifySeedPhrase = () => {
     setSeedPhraseSelected(newMatch);
   };
 
+  const handleStore = async () => {
+    const seedPhraseString = originalSeedPhrase.join(" ");
+    await SecureStorage.set(
+      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+      Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
+    );
+    await SecureStorage.set(
+      seedPhraseType === "onboarding"
+        ? KeyStoreKeys.IDENTITY_SEEDPHRASE
+        : // @TODO - sdisalvo: Remember to change the key below as soon as core is ready
+          KeyStoreKeys.IDENTITY_SEEDPHRASE,
+      seedPhraseString
+    );
+  };
+
   const handleContinue = async () => {
     if (
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      const seedPhraseString = originalSeedPhrase.join(" ");
-      await SecureStorage.set(
-        KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-        Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
-      );
-      await SecureStorage.set(
-        KeyStoreKeys.IDENTITY_SEEDPHRASE,
-        seedPhraseString
-      );
-
-      const { nextPath, updateRedux } = getNextRoute(
-        RoutePath.VERIFY_SEED_PHRASE,
-        { store: storeState }
-      );
-      updateReduxState(
-        nextPath.pathname,
-        { store: storeState },
-        dispatch,
-        updateRedux
-      );
-      handleClearState();
-      history.push(
-        seedPhraseType === "new" ? nextPath.pathname : TabsRoutePath.CRYPTO
-      );
-      // TODO: Store Seed Phrase in db/keystore
+      if (seedPhraseType === "onboarding") {
+        handleStore();
+        const { nextPath, updateRedux } = getNextRoute(
+          RoutePath.VERIFY_SEED_PHRASE,
+          { store: storeState }
+        );
+        updateReduxState(
+          nextPath.pathname,
+          { store: storeState },
+          dispatch,
+          updateRedux
+        );
+        history.push(nextPath.pathname);
+      } else {
+        setChooseAccountNameIsOpen(true);
+      }
     } else {
       setAlertIsOpen(true);
     }
@@ -151,18 +159,18 @@ const VerifySeedPhrase = () => {
         id="verify-seedphrase"
         header={true}
         title={
-          seedPhraseType !== "new"
+          seedPhraseType !== "onboarding"
             ? `${i18n.t("verifyseedphrase." + seedPhraseType + ".title")}`
             : undefined
         }
         backButton={true}
         onBack={
-          seedPhraseType === "new"
+          seedPhraseType === "onboarding"
             ? handleClearState
             : () => setAlertExitIsOpen(true)
         }
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
-        progressBar={seedPhraseType === "new"}
+        progressBar={seedPhraseType === "onboarding"}
         progressBarValue={1}
         progressBarBuffer={1}
         footer={true}
@@ -177,7 +185,7 @@ const VerifySeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              {seedPhraseType === "new" && (
+              {seedPhraseType === "onboarding" && (
                 <h2>
                   {i18n.t("verifyseedphrase." + seedPhraseType + ".title")}
                 </h2>
@@ -271,6 +279,16 @@ const VerifySeedPhrase = () => {
             "verifyseedphrase.alert.exit.button.cancel"
           )}`}
           actionConfirm={handleExit}
+        />
+        <ChooseAccountName
+          chooseAccountNameIsOpen={chooseAccountNameIsOpen}
+          setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
+          seedPhrase={originalSeedPhrase.join(" ")}
+          onDone={() => {
+            handleStore();
+            handleClearState();
+            history.push(TabsRoutePath.CRYPTO);
+          }}
         />
       </PageLayout>
     </IonPage>

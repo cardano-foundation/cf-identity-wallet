@@ -58,7 +58,7 @@
         "button": "View seed phrase"
       }
     },
-    "new": {
+    "onboarding": {
       "title": "Generate seed phrase",
       "continue": {
         "button": "Continue"
@@ -118,7 +118,7 @@
     }
   },
   "verifyseedphrase": {
-    "new": {
+    "onboarding": {
       "title": "Verify your seed phrase",
       "continue": {
         "button": "Continue"
