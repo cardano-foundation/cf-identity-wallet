@@ -1,4 +1,8 @@
-import { render, waitFor } from "@testing-library/react";
+import {
+  render,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { act } from "react-dom/test-utils";
 import {
@@ -25,6 +29,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     type: "onboarding",
   };
   history.push(RoutePath.GENERATE_SEED_PHRASE, state);
+
   test("User can see Title and Security Overlay", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
@@ -382,5 +387,71 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     });
 
     await waitFor(() => expect(overlay).toHaveClass("visible"));
+  });
+});
+
+describe("Generate Seed Phrase screen from Crypto/Generate", () => {
+  const history = createMemoryHistory();
+  const state = {
+    type: "additional",
+  };
+  history.push(RoutePath.GENERATE_SEED_PHRASE, state);
+
+  const mockStore = configureStore();
+  const dispatchMock = jest.fn();
+  const initialState = {
+    stateCache: {
+      routes: [RoutePath.VERIFY_SEED_PHRASE],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        seedPhraseIsSet: true,
+      },
+    },
+    seedPhraseCache: {
+      seedPhrase160:
+        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+      seedPhrase256: "",
+      selected: FIFTEEN_WORDS_BIT_LENGTH,
+    },
+    cryptoAccountsCache: [],
+  };
+
+  const storeMocked = {
+    ...mockStore(initialState),
+    dispatch: dispatchMock,
+  };
+
+  test("User can see a different layout", () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
+      </Provider>
+    );
+
+    expect(getByTestId("close-button")).toBeInTheDocument();
+  });
+
+  test("Shows an alert when close button is clicked", async () => {
+    const { getByTestId, queryByText } = render(
+      <Provider store={storeMocked}>
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("close-button"));
+    });
+
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.generateseedphrase.alert.exit.text)
+      ).toBeVisible()
+    );
   });
 });
