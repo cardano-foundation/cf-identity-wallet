@@ -1,21 +1,16 @@
-import type { Asset } from "@meshsdk/core";
-import {Blockfrost, Lucid, Network, Tx} from "lucid-cardano";
+
+import {Blockfrost, Lucid, Network} from "lucid-cardano";
 
 import dotenv from "dotenv";
 import {TransactionBuilder} from "./transaction";
 import {Wallet} from "./wallet";
-import {Address, Assets} from "@dcspark/cardano-multiplatform-lib-browser";
 dotenv.config();
 describe("Cardano transactions", () => {
 
-  const addressBech32 = "addr_test1qqkv0gx8jgvwmuv8mna7a4emmly4zmlj0lwmq0efj55ny8dt9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s5va3zt";
   const blockfrostUrl = "https://cardano-preview.blockfrost.io/api/v0";
   const network:Network = "Preview";
 
-  const blockfrostKey = process.env.BLOCKFROST_PREVIEW_KEY;
-  console.log("blockfrostKey");
-  console.log(blockfrostKey);
-
+  const blockfrostKey = process.env.BLOCKFROST_PREVIEW_KEY || "";
 
   test("constructor should throw an error if not provided a Lucid instance", () => {
     expect(() => new TransactionBuilder({} as Lucid)).toThrowError("Invalid argument: 'lucid' must be an instance of Lucid instead of object");
@@ -27,14 +22,9 @@ describe("Cardano transactions", () => {
     expect(() => new TransactionBuilder(lucid)).not.toThrow();
   });
 
-  test("test1234", async () => {
-
+  test("static new method should create an instance of TransactionBuilder", async () => {
     const walletApi = new Wallet("wallet-name");
-    const blockfrost = new Blockfrost(blockfrostUrl, blockfrostKey);
-    const lucid = await Lucid.new(blockfrost, network);
-    const a = await TransactionBuilder.new(walletApi, network, blockfrostUrl, blockfrostKey || "previewaLIUBOHJyeervH0uRxHP5JjyIcWvC8VA")
-
+    const txBuilder = await TransactionBuilder.new(walletApi, network, blockfrostUrl, blockfrostKey)
+    expect(txBuilder).toBeInstanceOf(TransactionBuilder);
   });
-
-
 });
