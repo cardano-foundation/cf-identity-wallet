@@ -324,6 +324,7 @@ const Crypto = () => {
         chooseAccountNameIsOpen={chooseAccountNameIsOpen}
         setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
         setDefaultAccountData={setDefaultAccountData}
+        usesIdentitySeedPhrase={true}
       />
     </>
   );

@@ -4,7 +4,7 @@ interface ChooseAccountNameProps {
   chooseAccountNameIsOpen: boolean;
   setChooseAccountNameIsOpen: (value: boolean) => void;
   setDefaultAccountData?: (value: CryptoAccountProps) => void;
-  seedPhrase?: string;
+  usesIdentitySeedPhrase: boolean;
   onDone?: () => void;
 }
 

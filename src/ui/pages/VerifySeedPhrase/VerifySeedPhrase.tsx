@@ -283,7 +283,7 @@ const VerifySeedPhrase = () => {
         <ChooseAccountName
           chooseAccountNameIsOpen={chooseAccountNameIsOpen}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
-          seedPhrase={originalSeedPhrase.join(" ")}
+          usesIdentitySeedPhrase={false}
           onDone={() => {
             handleStore();
             handleClearState();

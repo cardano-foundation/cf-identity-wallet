@@ -20,38 +20,20 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences/preferencesStorage";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage/secureStorage";
 
 const ChooseAccountName = ({
   chooseAccountNameIsOpen,
   setChooseAccountNameIsOpen,
   setDefaultAccountData,
-  seedPhrase,
+  usesIdentitySeedPhrase,
   onDone,
 }: ChooseAccountNameProps) => {
   const dispatch = useAppDispatch();
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
-  const [accountName, setAccountName] = useState(
-    `${i18n.t("crypto.chooseaccountnamemodal.placeholder")}`
-  );
+  const [accountName, setAccountName] = useState("");
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
-
-  const usesIdentitySeedPhrase = async () => {
-    try {
-      const identitySeedPhrase = (await SecureStorage.get(
-        KeyStoreKeys.IDENTITY_SEEDPHRASE
-      )) as string;
-      if (!identitySeedPhrase) return false;
-      return identitySeedPhrase === seedPhrase;
-    } catch (e) {
-      return false;
-    }
-  };
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -147,10 +129,7 @@ const ChooseAccountName = ({
               className="ion-primary-button"
               data-testid="continue-button"
               onClick={() => handleCreateWallet(accountName)}
-              disabled={
-                accountName ===
-                `${i18n.t("crypto.chooseaccountnamemodal.placeholder")}`
-              }
+              disabled={!accountName.length}
             >
               {i18n.t("crypto.chooseaccountnamemodal.confirm")}
             </IonButton>
