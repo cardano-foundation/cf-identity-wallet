@@ -60,7 +60,14 @@ const PasscodeLogin = () => {
                 dispatch,
                 updateRedux
               );
-              history.push(backPath.pathname);
+              backPath.pathname === "/onboarding"
+                ? history.push({
+                    pathname: backPath.pathname,
+                    state: {
+                      type: "onboarding",
+                    },
+                  })
+                : history.push(backPath.pathname);
               handleClearState();
             } else {
               setPasscodeIncorrect(true);
