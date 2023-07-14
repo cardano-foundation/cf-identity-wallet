@@ -1,5 +1,4 @@
-import { Route, Router } from "react-router-dom";
-import { createMemoryHistory } from "history";
+import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
@@ -39,6 +38,7 @@ describe("Verify Seed Phrase Page", () => {
         loggedIn: true,
         time: Date.now(),
         passcodeIsSet: true,
+        seedPhraseIsSet: false,
       },
     },
     seedPhraseCache: {
@@ -47,6 +47,7 @@ describe("Verify Seed Phrase Page", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
+    cryptoAccountsCache: [],
   };
 
   const storeMocked = {
@@ -54,15 +55,10 @@ describe("Verify Seed Phrase Page", () => {
     dispatch: dispatchMock,
   };
   test("The user can navigate from Generate to Verify Seed Phrase page", async () => {
-    const history = createMemoryHistory();
-    const state = {
-      type: "onboarding",
-    };
-    history.push(RoutePath.GENERATE_SEED_PHRASE, state);
     const seedPhrase = [];
-    const { getByTestId, queryByText, getByText, findByText } = render(
+    const { getByTestId, queryByText, getByText } = render(
       <Provider store={store}>
-        <Router history={history}>
+        <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
           <Route
             path={RoutePath.GENERATE_SEED_PHRASE}
             component={GenerateSeedPhrase}
@@ -71,13 +67,13 @@ describe("Verify Seed Phrase Page", () => {
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
-        </Router>
+        </MemoryRouter>
       </Provider>
     );
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    const generateContinueButton = await findByText(
+    const generateContinueButton = getByText(
       EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
     );
 
@@ -111,19 +107,14 @@ describe("Verify Seed Phrase Page", () => {
   });
 
   test("The user can't Verify the Seed Phrase", async () => {
-    const history = createMemoryHistory();
-    const state = {
-      type: "onboarding",
-    };
-    history.push(RoutePath.VERIFY_SEED_PHRASE, state);
     const { getByTestId, queryByText } = render(
       <Provider store={storeMocked}>
-        <Router history={history}>
+        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
           <Route
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
-        </Router>
+        </MemoryRouter>
       </Provider>
     );
 
@@ -169,14 +160,9 @@ describe("Verify Seed Phrase Page", () => {
   });
 
   test("The user can Verify the Seed Phrase", async () => {
-    const history = createMemoryHistory();
-    const state = {
-      type: "onboarding",
-    };
-    history.push(RoutePath.VERIFY_SEED_PHRASE, state);
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <Router history={history}>
+        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
           <Route
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
@@ -185,7 +171,7 @@ describe("Verify Seed Phrase Page", () => {
             path={RoutePath.TABS_MENU}
             component={TabsMenu}
           />
-        </Router>
+        </MemoryRouter>
       </Provider>
     );
 
@@ -263,11 +249,6 @@ describe("Verify Seed Phrase Page", () => {
   });
 
   test("calls handleOnBack when back button is clicked", async () => {
-    const history = createMemoryHistory();
-    const state = {
-      type: "onboarding",
-    };
-    history.push(RoutePath.VERIFY_SEED_PHRASE, state);
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -277,6 +258,7 @@ describe("Verify Seed Phrase Page", () => {
           loggedIn: true,
           time: Date.now(),
           passcodeIsSet: true,
+          seedPhraseIsSet: false,
         },
       },
       seedPhraseCache: {
@@ -284,6 +266,7 @@ describe("Verify Seed Phrase Page", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
+      cryptoAccountsCache: [],
     };
 
     const storeMocked = {
@@ -292,12 +275,12 @@ describe("Verify Seed Phrase Page", () => {
     };
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <Router history={history}>
+        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
           <Route
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
-        </Router>
+        </MemoryRouter>
       </Provider>
     );
 
