@@ -1,4 +1,5 @@
-import { MemoryRouter, Route, Router } from "react-router-dom";
+import { Route, Router } from "react-router-dom";
+import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
@@ -28,25 +29,7 @@ const convertRootKeySpy = jest
   .spyOn(Addresses, "convertToRootXPrivateKeyHex")
   .mockReturnValue(rootKey);
 
-jest.mock("react-router-dom", () => {
-  const nav = jest.fn();
-  return {
-    ...jest.requireActual("react-router-dom"),
-    mockedNavigation: nav,
-    useLocation: jest.fn(() => ({
-      state: {
-        type: "new",
-      },
-    })),
-    useNavigate: jest.fn(() => nav),
-  };
-});
-
 describe("Verify Seed Phrase Page", () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
-
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
   const initialState = {
@@ -71,10 +54,15 @@ describe("Verify Seed Phrase Page", () => {
     dispatch: dispatchMock,
   };
   test("The user can navigate from Generate to Verify Seed Phrase page", async () => {
+    const history = createMemoryHistory();
+    const state = {
+      type: "new",
+    };
+    history.push(RoutePath.GENERATE_SEED_PHRASE, state);
     const seedPhrase = [];
     const { getByTestId, queryByText, getByText, findByText } = render(
       <Provider store={store}>
-        <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
+        <Router history={history}>
           <Route
             path={RoutePath.GENERATE_SEED_PHRASE}
             component={GenerateSeedPhrase}
@@ -83,7 +71,7 @@ describe("Verify Seed Phrase Page", () => {
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
-        </MemoryRouter>
+        </Router>
       </Provider>
     );
 
@@ -123,14 +111,19 @@ describe("Verify Seed Phrase Page", () => {
   });
 
   test("The user can't Verify the Seed Phrase", async () => {
+    const history = createMemoryHistory();
+    const state = {
+      type: "new",
+    };
+    history.push(RoutePath.VERIFY_SEED_PHRASE, state);
     const { getByTestId, queryByText } = render(
       <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
+        <Router history={history}>
           <Route
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
-        </MemoryRouter>
+        </Router>
       </Provider>
     );
 
@@ -176,9 +169,14 @@ describe("Verify Seed Phrase Page", () => {
   });
 
   test("The user can Verify the Seed Phrase", async () => {
+    const history = createMemoryHistory();
+    const state = {
+      type: "new",
+    };
+    history.push(RoutePath.VERIFY_SEED_PHRASE, state);
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
+        <Router history={history}>
           <Route
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
@@ -187,7 +185,7 @@ describe("Verify Seed Phrase Page", () => {
             path={RoutePath.TABS_MENU}
             component={TabsMenu}
           />
-        </MemoryRouter>
+        </Router>
       </Provider>
     );
 
@@ -265,6 +263,11 @@ describe("Verify Seed Phrase Page", () => {
   });
 
   test("calls handleOnBack when back button is clicked", async () => {
+    const history = createMemoryHistory();
+    const state = {
+      type: "new",
+    };
+    history.push(RoutePath.VERIFY_SEED_PHRASE, state);
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
@@ -289,12 +292,12 @@ describe("Verify Seed Phrase Page", () => {
     };
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
+        <Router history={history}>
           <Route
             path={RoutePath.VERIFY_SEED_PHRASE}
             component={VerifySeedPhrase}
           />
-        </MemoryRouter>
+        </Router>
       </Provider>
     );
 
