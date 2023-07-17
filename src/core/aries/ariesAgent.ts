@@ -110,7 +110,7 @@ class AriesAgent {
 
   async storeCryptoAccountRecord(
     id: string,
-    addresses: Map<NetworkType, string[]>,
+    addresses: Map<NetworkType, Map<number, Map<number, string[]>>>,
     rewardAddresses: Map<NetworkType, string[]>,
     displayName: string,
     usesIdentitySeedPhrase = false

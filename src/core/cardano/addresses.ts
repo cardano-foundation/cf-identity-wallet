@@ -42,20 +42,23 @@ class Addresses {
     const stakePubKey = accountKey.derive(2).derive(0).to_public();
 
     // Addresses do not change between testnets so we can just pick preprod here.
-    const addresses = new Map<NetworkType, string[]>();
-    addresses.set(NetworkType.MAINNET, [
+    const mainnetAddresses = [
       Addresses.calculateBaseAddressBech32(
         spendingPubKey,
         stakePubKey,
         NetworkInfo.mainnet()
       ),
-    ]);
-    addresses.set(NetworkType.TESTNET, [
+    ];
+    const testnetAddresses = [
       Addresses.calculateBaseAddressBech32(
         spendingPubKey,
         stakePubKey,
         NetworkInfo.testnet_preprod()
       ),
+    ];
+    const addresses: Map<NetworkType, Map<number, Map<number, string[]>>> = new Map([
+      [NetworkType.MAINNET, new Map([[1852, new Map([[0, mainnetAddresses], [1, []]])]])],
+      [NetworkType.TESTNET, new Map([[1852, new Map([[0, testnetAddresses], [1, []]])]])]
     ]);
 
     const rewardAddresses = new Map<NetworkType, string[]>();
@@ -73,7 +76,7 @@ class Addresses {
     ]);
 
     return {
-      addresses,
+      addresses: addresses,
       rewardAddresses,
     };
   }

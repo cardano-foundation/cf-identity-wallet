@@ -3,7 +3,8 @@ import { NetworkType } from "../../../../cardano/addresses.types";
 
 class CryptoAccountRecord extends BaseRecord {
   // This particular record assumes Shelley so we only care about mainnet/testnet as addresses don't vary on testnets.
-  addresses: Map<NetworkType, string[]> = new Map();
+  // Network Type -> Purpose -> Coin Type -> Array of addresses [index]
+  addresses: Map<NetworkType, Map<number, Map<number, string[]>>> = new Map();
   rewardAddresses: Map<NetworkType, string[]> = new Map();
   displayName = "";
   usesIdentitySeedPhrase = false;
@@ -13,7 +14,7 @@ class CryptoAccountRecord extends BaseRecord {
 
   constructor(props: {
     id: string;
-    addresses: Map<NetworkType, string[]>;
+    addresses: Map<NetworkType, Map<number, Map<number, string[]>>>;
     rewardAddresses: Map<NetworkType, string[]>;
     displayName: string;
     usesIdentitySeedPhrase?: boolean;

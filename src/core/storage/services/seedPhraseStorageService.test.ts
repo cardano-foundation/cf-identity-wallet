@@ -9,9 +9,9 @@ const displayName = "displayName";
 const seedPhrase = "seedPhrase";
 const rootExtendedPrivateKey = "rootExtendedPrivateKey";
 const rootExtendedPublicKey = "rootExtendedPublicKey";
-const addressesMap = new Map([
-  [NetworkType.MAINNET, ["mainnetAddr"]],
-  [NetworkType.TESTNET, ["testnetAddr"]],
+const addressesMap: Map<NetworkType, Map<number, Map<number, string[]>>> = new Map([
+  [NetworkType.MAINNET, new Map([[1852, new Map([[0, ["mainnetAddr"]], [1, []]])]])],
+  [NetworkType.TESTNET, new Map([[1852, new Map([[0, ["testnetAddr"]], [1, []]])]])]
 ]);
 const rewardAddressesMap = new Map([
   [NetworkType.MAINNET, ["mainnetRewardAddr"]],

@@ -5,8 +5,14 @@ const recordId = "EXAMPLE_RECORD";
 const address = "cryptoAccount-item-address";
 const rewardAddr = "cryptoAccount-item-reward-addr";
 const displayName = "cryptoAccount1";
-const addresses = new Map<NetworkType, string[]>();
-addresses.set(NetworkType.TESTNET, [address]);
+
+const addresses = new Map<number, string[]>();
+addresses.set(0, [address]);
+addresses.set(1, []);
+const addressesAllPurposes = new Map<number, Map<number, string[]>>();
+addressesAllPurposes.set(1852, addresses);
+const addressesAllNetworks = new Map<NetworkType, Map<number, Map<number, string[]>>>();
+addressesAllNetworks.set(NetworkType.TESTNET, addressesAllPurposes);
 const rewardAddrs = new Map<NetworkType, string[]>();
 rewardAddrs.set(NetworkType.TESTNET, [rewardAddr]);
 
@@ -14,7 +20,7 @@ describe("CryptoAccount Record", () => {
   test("should fill the record based on supplied props", () => {
     const record = new CryptoAccountRecord({
       id: recordId,
-      addresses: addresses,
+      addresses: addressesAllNetworks,
       rewardAddresses: rewardAddrs,
       displayName,
       usesIdentitySeedPhrase: true,
@@ -22,7 +28,14 @@ describe("CryptoAccount Record", () => {
 
     expect(record.type).toBe(CryptoAccountRecord.type);
     expect(record.id).toBe(recordId);
-    expect(record.addresses.get(NetworkType.TESTNET)).toEqual([address]);
+    const addressesMap = record.addresses.get(NetworkType.TESTNET);
+    expect(addressesMap).toBeDefined();
+    const purpose1852 = addressesMap?.get(1852);
+    expect(purpose1852).toBeDefined();
+    const externalAddresses = purpose1852?.get(0);
+    const internalAddresses = purpose1852?.get(1);
+    expect(externalAddresses).toEqual([address]);
+    expect(internalAddresses).toEqual([]);
     expect(record.rewardAddresses.get(NetworkType.TESTNET)).toEqual([
       rewardAddr,
     ]);
@@ -37,14 +50,21 @@ describe("CryptoAccount Record", () => {
   test("should fall back to not using identity seed phrase", () => {
     const record = new CryptoAccountRecord({
       id: recordId,
-      addresses: addresses,
+      addresses: addressesAllNetworks,
       rewardAddresses: rewardAddrs,
       displayName,
     });
 
     expect(record.type).toBe(CryptoAccountRecord.type);
     expect(record.id).toBe(recordId);
-    expect(record.addresses.get(NetworkType.TESTNET)).toEqual([address]);
+    const addressesMap = record.addresses.get(NetworkType.TESTNET);
+    expect(addressesMap).toBeDefined();
+    const purpose1852 = addressesMap?.get(1852);
+    expect(purpose1852).toBeDefined();
+    const externalAddresses = purpose1852?.get(0);
+    const internalAddresses = purpose1852?.get(1);
+    expect(externalAddresses).toEqual([address]);
+    expect(internalAddresses).toEqual([]);
     expect(record.rewardAddresses.get(NetworkType.TESTNET)).toEqual([
       rewardAddr,
     ]);
