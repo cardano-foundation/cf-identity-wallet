@@ -10,9 +10,31 @@ describe("Cardano transactions", () => {
   const blockfrostUrl = BLOCKFROST_PREPROD_SELF_HOSTED;
   const network: Network = "Preprod";
   let blockfrostProvider: BlockfrostProvider;
+  let mockProtocolParameters: ProtocolParameters;
 
   beforeEach(() => {
     blockfrostProvider = new BlockfrostProvider(blockfrostUrl);
+    mockProtocolParameters = {
+      minFeeA: 1,
+      minFeeB: 2,
+      maxTxSize: 3,
+      maxValSize: 4,
+      keyDeposit: BigInt(5),
+      poolDeposit: BigInt(6),
+      priceMem: 7.0,
+      priceStep: 8.0,
+      maxTxExMem: BigInt(9),
+      maxTxExSteps: BigInt(10),
+      coinsPerUtxoByte: BigInt(11),
+      collateralPercentage: 12,
+      maxCollateralInputs: 13,
+      // eslint-disable-next-line
+      // @ts-ignore
+      costModels: {},
+    };
+
+    jest.spyOn(blockfrostProvider, "getProtocolParameters").mockImplementation(() => Promise.resolve(mockProtocolParameters));
+
   });
 
   test("constructor should throw an error if not provided a Lucid instance", () => {
@@ -38,27 +60,6 @@ describe("Cardano transactions", () => {
   });
 
   test("should mock getProtocolParameters method", async () => {
-
-    const mockProtocolParameters: ProtocolParameters = {
-      minFeeA: 1,
-      minFeeB: 2,
-      maxTxSize: 3,
-      maxValSize: 4,
-      keyDeposit: BigInt(5),
-      poolDeposit: BigInt(6),
-      priceMem: 7.0,
-      priceStep: 8.0,
-      maxTxExMem: BigInt(9),
-      maxTxExSteps: BigInt(10),
-      coinsPerUtxoByte: BigInt(11),
-      collateralPercentage: 12,
-      maxCollateralInputs: 13,
-      // eslint-disable-next-line
-      // @ts-ignore
-      costModels: {},
-    };
-
-    jest.spyOn(blockfrostProvider, "getProtocolParameters").mockImplementation(() => Promise.resolve(mockProtocolParameters));
 
     const protocolParameters = await blockfrostProvider.getProtocolParameters();
 
