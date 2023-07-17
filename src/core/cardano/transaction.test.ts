@@ -1,14 +1,19 @@
-import { Blockfrost, Lucid, Network } from "lucid-cardano";
+import {Lucid, Network, ProtocolParameters} from "lucid-cardano";
 
 import dotenv from "dotenv";
 import { TransactionBuilder } from "./transaction";
 import { Wallet } from "./wallet";
+import { BLOCKFROST_PREPROD_SELF_HOSTED } from "./provider/config";
+import { BlockfrostProvider } from "./provider/blockfrost";
 dotenv.config();
 describe("Cardano transactions", () => {
-  const blockfrostUrl = "https://cardano-preview.blockfrost.io/api/v0";
-  const network: Network = "Preview";
+  const blockfrostUrl = BLOCKFROST_PREPROD_SELF_HOSTED;
+  const network: Network = "Preprod";
+  let blockfrostProvider: BlockfrostProvider;
 
-  const blockfrostKey = process.env.BLOCKFROST_PREVIEW_KEY || "";
+  beforeEach(() => {
+    blockfrostProvider = new BlockfrostProvider(blockfrostUrl);
+  });
 
   test("constructor should throw an error if not provided a Lucid instance", () => {
     expect(() => new TransactionBuilder({} as Lucid)).toThrowError(
@@ -17,7 +22,7 @@ describe("Cardano transactions", () => {
   });
 
   test("constructor should create a new instance if provided a Lucid instance", async () => {
-    const blockfrost = new Blockfrost(blockfrostUrl, blockfrostKey);
+    const blockfrost = new BlockfrostProvider(blockfrostUrl);
     const lucid = await Lucid.new(blockfrost, network);
     expect(() => new TransactionBuilder(lucid)).not.toThrow();
   });
@@ -27,9 +32,36 @@ describe("Cardano transactions", () => {
     const txBuilder = await TransactionBuilder.new(
       walletApi,
       network,
-      blockfrostUrl,
-      blockfrostKey
+      blockfrostUrl
     );
     expect(txBuilder).toBeInstanceOf(TransactionBuilder);
+  });
+
+  test("should mock getProtocolParameters method", async () => {
+
+    const mockProtocolParameters: ProtocolParameters = {
+      minFeeA: 1,
+      minFeeB: 2,
+      maxTxSize: 3,
+      maxValSize: 4,
+      keyDeposit: BigInt(5),
+      poolDeposit: BigInt(6),
+      priceMem: 7.0,
+      priceStep: 8.0,
+      maxTxExMem: BigInt(9),
+      maxTxExSteps: BigInt(10),
+      coinsPerUtxoByte: BigInt(11),
+      collateralPercentage: 12,
+      maxCollateralInputs: 13,
+      // eslint-disable-next-line
+      // @ts-ignore
+      costModels: {},
+    };
+
+    jest.spyOn(blockfrostProvider, "getProtocolParameters").mockImplementation(() => Promise.resolve(mockProtocolParameters));
+
+    const protocolParameters = await blockfrostProvider.getProtocolParameters();
+
+    expect(protocolParameters).toEqual(mockProtocolParameters);
   });
 });
