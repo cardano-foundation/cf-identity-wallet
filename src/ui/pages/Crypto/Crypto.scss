@@ -71,3 +71,15 @@
     }
   }
 }
+
+.crypto-assets-transactions {
+  bottom: calc(8vh + 1px + var(--ion-safe-area-bottom));
+
+  &.md {
+    bottom: calc(8vh + 0.75rem + 1px);
+  }
+
+  .modal {
+    background-color: var(--ion-color-light-grey);
+  }
+}

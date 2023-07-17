@@ -78,6 +78,8 @@ const ChooseAccountName = ({
               usdBalance: 0,
             },
           },
+          assets: [],
+          transactions: [],
           // End of hardcoded values
         };
         if (cryptoAccountsData.length === 0) {

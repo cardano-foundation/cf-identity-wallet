@@ -48,9 +48,15 @@ describe("Slides Component", () => {
   };
 
   test("Render slide 1", () => {
+    const hideBalance = false;
+    const setHideBalance = jest.fn();
     const { getByText } = render(
       <Provider store={storeMocked}>
-        <CryptoBalance items={items} />
+        <CryptoBalance
+          items={items}
+          hideBalance={hideBalance}
+          setHideBalance={setHideBalance}
+        />
       </Provider>
     );
     const linkElement = getByText(
@@ -60,9 +66,15 @@ describe("Slides Component", () => {
   });
 
   test.skip("Toggle hide balance", async () => {
+    const hideBalance = false;
+    const setHideBalance = jest.fn();
     const { getByTestId } = render(
       <Provider store={storeMocked}>
-        <CryptoBalance items={items} />
+        <CryptoBalance
+          items={items}
+          hideBalance={hideBalance}
+          setHideBalance={setHideBalance}
+        />
       </Provider>
     );
 

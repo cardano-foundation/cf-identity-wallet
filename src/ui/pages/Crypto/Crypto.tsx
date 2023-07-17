@@ -1,4 +1,10 @@
-import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonModal,
+  IonPage,
+  useIonViewWillEnter,
+} from "@ionic/react";
 import Blockies from "react-18-blockies";
 import { useEffect, useState } from "react";
 import {
@@ -10,12 +16,17 @@ import {
 } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  setCurrentRoute,
+  getCurrentRoute,
+  getState,
+} from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import {
   getCryptoAccountsCache,
   getDefaultCryptoAccountCache,
+  getHideCryptoBalances,
 } from "../../../store/reducers/cryptoAccountsCache";
 import { i18n } from "../../../i18n";
 import "./Crypto.scss";
@@ -27,9 +38,12 @@ import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { CryptoBalance } from "../../components/CryptoBalance";
 import { CryptoBalanceItem } from "../../components/CryptoBalance/CryptoBalance.types";
 import { formatCurrencyUSD } from "../../../utils";
+import { AssetsTransactions } from "../../components/AssetsTransactions";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
+  const storeState = useAppSelector(getState);
+  const currentRoute = getCurrentRoute(storeState);
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
@@ -38,6 +52,9 @@ const Crypto = () => {
   const [idwProfileInUse, setIdwProfileInUse] = useState(false);
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
+  const [showAssetsTransactions, setShowAssetsTransactions] = useState(true);
+  const [assetsTransactionsExpanded, setAssetsTransactionsExpanded] =
+    useState(false);
   const [defaultAccountAddress, setDefaultAccountAddress] = useState(
     useAppSelector(getDefaultCryptoAccountCache)
   );
@@ -59,7 +76,10 @@ const Crypto = () => {
         },
       },
       usesIdentitySeedPhrase: false,
+      assets: [],
+      transactions: [],
     });
+  const accountAvailable = cryptoAccountsData?.length && defaultAccountData;
   const items: CryptoBalanceItem[] = [
     {
       title: i18n.t("crypto.tab.slider.title.mainbalance"),
@@ -78,6 +98,22 @@ const Crypto = () => {
         defaultAccountData.balance.reward.nativeBalance.toFixed(2) + " ADA",
     },
   ];
+  const [hideBalance, setHideBalance] = useState(
+    useAppSelector(getHideCryptoBalances)
+  );
+
+  useIonViewWillEnter(() => {
+    dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }));
+    setShowAssetsTransactions(true);
+  });
+
+  useEffect(() => {
+    if (!currentRoute?.path || currentRoute.path !== TabsRoutePath.CRYPTO) {
+      setShowAssetsTransactions(false);
+    } else {
+      setShowAssetsTransactions(true);
+    }
+  }, [currentRoute]);
 
   useEffect(() => {
     cryptoAccountsData?.forEach((account) => {
@@ -95,9 +131,13 @@ const Crypto = () => {
     }
   }, [cryptoAccountsData, defaultAccountAddress]);
 
-  useIonViewWillEnter(() =>
-    dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }))
-  );
+  useEffect(() => {
+    if (defaultAccountAddress) {
+      setShowAssetsTransactions(true);
+    } else {
+      setShowAssetsTransactions(false);
+    }
+  }, [defaultAccountAddress]);
 
   const AdditionalButtons = () => {
     return (
@@ -204,14 +244,14 @@ const Crypto = () => {
     <>
       <IonPage
         className={`tab-layout crypto-tab${
-          defaultAccountData ? " wallet-details" : ""
+          accountAvailable ? " wallet-details" : ""
         }`}
         data-testid="crypto-tab"
       >
         <TabLayout
           header={true}
-          avatar={defaultAccountData && <Avatar />}
-          title={defaultAccountData ? defaultAccountData.name : ""}
+          avatar={accountAvailable ? <Avatar /> : null}
+          title={accountAvailable ? defaultAccountData.name : ""}
           menuButton={true}
           additionalButtons={<AdditionalButtons />}
         >
@@ -220,8 +260,34 @@ const Crypto = () => {
               className="crypto-tab-content"
               data-testid="crypto-tab-content"
             >
-              <CryptoBalance items={items} />
+              <CryptoBalance
+                items={items}
+                hideBalance={hideBalance}
+                setHideBalance={setHideBalance}
+              />
               <ActionButtons />
+              {showAssetsTransactions && (
+                <IonModal
+                  isOpen={true}
+                  initialBreakpoint={0.2}
+                  breakpoints={[0.2, 1]}
+                  canDismiss={false}
+                  backdropDismiss={false}
+                  backdropBreakpoint={1}
+                  onIonBreakpointDidChange={() =>
+                    setAssetsTransactionsExpanded(!assetsTransactionsExpanded)
+                  }
+                  className="crypto-assets-transactions page-layout"
+                  data-testid="crypto-assets-transactions"
+                >
+                  <AssetsTransactions
+                    assets={defaultAccountData.assets}
+                    transactions={defaultAccountData.transactions}
+                    expanded={assetsTransactionsExpanded}
+                    hideBalance={hideBalance}
+                  />
+                </IonModal>
+              )}
             </div>
           ) : (
             <CardsPlaceholder

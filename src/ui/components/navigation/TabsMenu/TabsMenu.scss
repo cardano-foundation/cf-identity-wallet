@@ -1,5 +1,5 @@
 ion-tab-bar {
-  --background: transparent;
+  --background: var(--ion-color-light);
   --border: transparent;
   border-top: 1px solid var(--ion-color-dark-grey);
   padding-inline: 0.625rem;

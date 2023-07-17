@@ -8,13 +8,19 @@ import {
 } from "@ionic/react";
 import { Route, Redirect } from "react-router";
 import {
+  idCard,
   idCardOutline,
+  fingerPrint,
   fingerPrintOutline,
+  scan,
   scanOutline,
+  chatbubble,
   chatbubbleOutline,
+  wallet,
   walletOutline,
 } from "ionicons/icons";
 import React from "react";
+import { useLocation } from "react-router-dom";
 import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
 import { TabsRoutePath } from "../../../../routes/paths";
@@ -29,40 +35,41 @@ const tabsRoutes = [
     label: i18n.t("tabsmenu.label.dids"),
     path: TabsRoutePath.DIDS,
     component: Dids,
-    icon: fingerPrintOutline,
+    icon: [fingerPrint, fingerPrintOutline],
   },
   {
     label: i18n.t("tabsmenu.label.creds"),
     path: TabsRoutePath.CREDS,
     component: Creds,
-    icon: idCardOutline,
+    icon: [idCard, idCardOutline],
   },
   {
     label: i18n.t("tabsmenu.label.scan"),
     path: TabsRoutePath.SCAN,
     component: Scan,
-    icon: scanOutline,
+    icon: [scan, scanOutline],
   },
   {
     label: i18n.t("tabsmenu.label.crypto"),
     path: TabsRoutePath.CRYPTO,
     component: Crypto,
-    icon: walletOutline,
+    icon: [wallet, walletOutline],
   },
   {
     label: i18n.t("tabsmenu.label.chat"),
     path: TabsRoutePath.CHAT,
     component: Chat,
-    icon: chatbubbleOutline,
+    icon: [chatbubble, chatbubbleOutline],
   },
 ];
 const TabsMenu = ({
   tab,
   path,
 }: {
-  tab: React.ComponentType<any>;
+  tab: React.ComponentType;
   path: string;
 }) => {
+  const location = useLocation();
   return (
     <IonTabs>
       <IonRouterOutlet animated={false}>
@@ -90,7 +97,11 @@ const TabsMenu = ({
               href={tab.path}
             >
               <div className="border-top" />
-              <IonIcon icon={tab.icon} />
+              <IonIcon
+                icon={
+                  tab.path === location.pathname ? tab.icon[0] : tab.icon[1]
+                }
+              />
               <IonLabel>{tab.label}</IonLabel>
             </IonTabButton>
           );
