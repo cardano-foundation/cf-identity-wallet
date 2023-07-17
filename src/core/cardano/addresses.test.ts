@@ -66,8 +66,30 @@ describe("Cardano seed phrase and address derivation", () => {
     expect(Addresses.deriveFirstBaseAndRewardAddrs(rootXprvKey15Words)).toEqual(
       {
         addresses: new Map([
-          [NetworkType.MAINNET, [mainnetAddr0]],
-          [NetworkType.TESTNET, [testnetAddr0]],
+          [
+            NetworkType.MAINNET,
+            new Map([
+              [
+                1852,
+                new Map([
+                  [0, [mainnetAddr0]],
+                  [1, []],
+                ]),
+              ],
+            ]),
+          ],
+          [
+            NetworkType.TESTNET,
+            new Map([
+              [
+                1852,
+                new Map([
+                  [0, [testnetAddr0]],
+                  [1, []],
+                ]),
+              ],
+            ]),
+          ],
         ]),
         rewardAddresses: new Map([
           [NetworkType.MAINNET, [mainnetRewardAddr0]],
