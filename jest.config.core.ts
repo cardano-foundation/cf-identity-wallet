@@ -3,11 +3,9 @@ export default {
   collectCoverage: true,
   coveragePathIgnorePatterns: [
     "/node_modules",
-    "src/routes/index.tsx",
     "/e2e",
     "src/ui",
-    "src/core/aries",
-    "src/core/storage",
+    "src/routes",
   ],
   coverageDirectory: "coverage",
   coverageProvider: "v8",
@@ -22,8 +20,6 @@ export default {
   },
   moduleFileExtensions: [
     "js",
-    "mjs",
-    "cjs",
     "ts",
     "json",
     "node",
@@ -34,12 +30,11 @@ export default {
     "lucid-cardano": "@jpg-store/lucid-cardano",
   },
   testEnvironment: "node",
-  testMatch: ["**/src/core/cardano/**/?(*.)+(test).[tj]s?(x)"],
+  testMatch: ["**/src/core/**/?(*.)+(test).[tj]s?(x)"],
   testPathIgnorePatterns: ["/node_modules/"],
   transformIgnorePatterns: [],
   transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest",
-    "^.+\\.(js|jsx)$": "babel-jest"
-  },
-  setupFilesAfterEnv: ["<rootDir>/src/setupTests.ts"]
+    "^.+\\.(ts)$": "ts-jest",
+    "^.+\\.(js)$": "babel-jest"
+  }
 };

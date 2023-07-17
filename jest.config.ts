@@ -5,7 +5,7 @@ export default {
     "/node_modules",
     "src/routes/index.tsx",
     "/e2e",
-    "src/core/cardano"
+    "src/core"
   ],
   coverageDirectory: "coverage",
   coverageProvider: "v8",
@@ -37,7 +37,7 @@ export default {
   },
   testEnvironment: "jsdom",
   testMatch: ["**/src/**/?(*.)+(test).[tj]s?(x)"],
-  testPathIgnorePatterns: ["/node_modules/", "src/core/cardano"],
+  testPathIgnorePatterns: ["/node_modules/", "src/core"],
   transformIgnorePatterns: [
     "node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons|swiper|ssr-window)/)"
   ],

@@ -1,8 +1,8 @@
-import { WalletApi} from "lucid-cardano";
+import { WalletApi } from "lucid-cardano";
 
 class Wallet implements WalletApi {
   account: string;
-  constructor(account:string) {
+  constructor(account: string) {
     this.account = account;
   }
   getBalance(): Promise<string> {
@@ -37,8 +37,11 @@ class Wallet implements WalletApi {
     return Promise.resolve(undefined);
   }
 
-  signData(address: string, payload: string): Promise<{ signature: string; key: string }> {
-    return Promise.resolve({key: "", signature: ""});
+  signData(
+    address: string,
+    payload: string
+  ): Promise<{ signature: string; key: string }> {
+    return Promise.resolve({ key: "", signature: "" });
   }
 
   signTx(tx: string, partialSign: boolean): Promise<string> {
@@ -56,8 +59,6 @@ class Wallet implements WalletApi {
     on(eventName: string, callback: (...args: unknown[]) => void): void;
     off(eventName: string, callback: (...args: unknown[]) => void): void;
   };
-
-
 }
 
 export { Wallet };

@@ -1,5 +1,13 @@
-import { Blockfrost, Lucid, Network, Tx, WalletApi , Address, Assets } from "lucid-cardano";
-import {Asset} from "@meshsdk/core";
+import {
+  Blockfrost,
+  Lucid,
+  Network,
+  Tx,
+  WalletApi,
+  Address,
+  Assets,
+} from "lucid-cardano";
+import { Asset } from "@meshsdk/core";
 
 class TransactionBuilder {
   private lucid: Lucid;
@@ -25,13 +33,12 @@ class TransactionBuilder {
     return new TransactionBuilder(lucid);
   }
   async buildTransaction(
-    outputs: { address: string; assets: {[unit:string]: bigint} }[],
+    outputs: { address: string; assets: { [unit: string]: bigint } }[],
     changeAddress?: string
   ): Promise<Tx> {
     const tx = await this.lucid.newTx();
     for (let i = 0; i < outputs.length; i++) {
       await tx.payToAddress(outputs[i].address, outputs[i].assets);
-      await tx.payToAddress("addr...", { lovelace: 5000000n })
     }
 
     if (changeAddress) {
