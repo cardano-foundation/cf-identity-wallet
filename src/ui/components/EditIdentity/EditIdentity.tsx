@@ -29,7 +29,6 @@ import {
   getIdentitiesCache,
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
-import { didsMock } from "../../__mocks__/didsMock";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { getState } from "../../../store/reducers/stateCache";

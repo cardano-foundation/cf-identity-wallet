@@ -3,11 +3,8 @@ import {
   Lucid,
   Network,
   Tx,
-  WalletApi,
-  Address,
-  Assets,
+  WalletApi
 } from "lucid-cardano";
-import { Asset } from "@meshsdk/core";
 
 class TransactionBuilder {
   private lucid: Lucid;

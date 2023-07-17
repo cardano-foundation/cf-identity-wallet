@@ -1,8 +1,6 @@
 import {
   act,
   fireEvent,
-  queryByTestId,
-  queryByText,
   render,
   waitFor,
 } from "@testing-library/react";
