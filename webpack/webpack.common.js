@@ -29,9 +29,7 @@ const config = {
   resolve: {
     extensions: [".js", ".tsx", ".ts"],
     fallback: {
-      fs: false,
-      buffer: require.resolve("buffer"),
-      stream: require.resolve("stream"),
+      fs: false
     }
   },
   plugins: [
