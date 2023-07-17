@@ -56,9 +56,34 @@ class Addresses {
         NetworkInfo.testnet_preprod()
       ),
     ];
-    const addresses: Map<NetworkType, Map<number, Map<number, string[]>>> = new Map([
-      [NetworkType.MAINNET, new Map([[1852, new Map([[0, mainnetAddresses], [1, []]])]])],
-      [NetworkType.TESTNET, new Map([[1852, new Map([[0, testnetAddresses], [1, []]])]])]
+    const addresses: Map<
+      NetworkType,
+      Map<number, Map<number, string[]>>
+    > = new Map([
+      [
+        NetworkType.MAINNET,
+        new Map([
+          [
+            1852,
+            new Map([
+              [0, mainnetAddresses],
+              [1, []],
+            ]),
+          ],
+        ]),
+      ],
+      [
+        NetworkType.TESTNET,
+        new Map([
+          [
+            1852,
+            new Map([
+              [0, testnetAddresses],
+              [1, []],
+            ]),
+          ],
+        ]),
+      ],
     ]);
 
     const rewardAddresses = new Map<NetworkType, string[]>();

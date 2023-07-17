@@ -11,7 +11,10 @@ addresses.set(0, [address]);
 addresses.set(1, []);
 const addressesAllPurposes = new Map<number, Map<number, string[]>>();
 addressesAllPurposes.set(1852, addresses);
-const addressesAllNetworks = new Map<NetworkType, Map<number, Map<number, string[]>>>();
+const addressesAllNetworks = new Map<
+  NetworkType,
+  Map<number, Map<number, string[]>>
+>();
 addressesAllNetworks.set(NetworkType.TESTNET, addressesAllPurposes);
 const rewardAddrs = new Map<NetworkType, string[]>();
 rewardAddrs.set(NetworkType.TESTNET, [rewardAddr]);
