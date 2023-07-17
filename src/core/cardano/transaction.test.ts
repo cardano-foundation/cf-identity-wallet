@@ -1,19 +1,18 @@
-import {Lucid, Network, ProtocolParameters} from "lucid-cardano";
+import {Blockfrost, Lucid, Network, ProtocolParameters} from "lucid-cardano";
 
 import dotenv from "dotenv";
 import { TransactionBuilder } from "./transaction";
 import { Wallet } from "./wallet";
 import { BLOCKFROST_PREPROD_SELF_HOSTED } from "./provider/config";
-import { BlockfrostProvider } from "./provider/blockfrost";
 dotenv.config();
 describe("Cardano transactions", () => {
   const blockfrostUrl = BLOCKFROST_PREPROD_SELF_HOSTED;
   const network: Network = "Preprod";
-  let blockfrostProvider: BlockfrostProvider;
+  let blockfrostProvider: Blockfrost;
   let mockProtocolParameters: ProtocolParameters;
 
   beforeEach(() => {
-    blockfrostProvider = new BlockfrostProvider(blockfrostUrl);
+    blockfrostProvider = new Blockfrost(blockfrostUrl);
     mockProtocolParameters = {
       minFeeA: 1,
       minFeeB: 2,
@@ -44,7 +43,7 @@ describe("Cardano transactions", () => {
   });
 
   test("constructor should create a new instance if provided a Lucid instance", async () => {
-    const blockfrost = new BlockfrostProvider(blockfrostUrl);
+    const blockfrost = new Blockfrost(blockfrostUrl);
     const lucid = await Lucid.new(blockfrost, network);
     expect(() => new TransactionBuilder(lucid)).not.toThrow();
   });
