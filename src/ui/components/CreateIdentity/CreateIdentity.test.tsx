@@ -4,10 +4,8 @@ import configureStore from "redux-mock-store";
 import { Store, AnyAction } from "@reduxjs/toolkit";
 import { CreateIdentity } from "./CreateIdentity";
 import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
-jest.mock("../../../utils", () => ({
-  generateUUID: jest.fn(),
-}));
-jest.mock("../../../core/aries/ariesAgent.ts", () => ({
+
+jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
       getIdentity: jest.fn().mockResolvedValue({}),

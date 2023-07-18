@@ -22,7 +22,7 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-jest.mock("../../../core/aries/ariesAgent.ts", () => ({
+jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
       getIdentity: jest.fn().mockResolvedValue(didsMock[0]),

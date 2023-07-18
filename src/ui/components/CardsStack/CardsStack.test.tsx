@@ -8,7 +8,7 @@ import { DidCardDetails } from "../../pages/DidCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsMock } from "../../__mocks__/credsMock";
 import { CredCardDetails } from "../../pages/CredCardDetails";
-jest.mock("../../../core/aries/ariesAgent.ts", () => ({
+jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
       getIdentity: jest.fn().mockResolvedValue(didsMock[0]),

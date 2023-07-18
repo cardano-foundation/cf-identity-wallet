@@ -332,8 +332,8 @@ const DidCardDetails = () => {
           <EditIdentity
             isOpen={editIsOpen}
             setIsOpen={setEditIsOpen}
-            id={cardData.id}
-            name={cardData.displayName}
+            cardData={cardData}
+            setCardData={setCardData}
           />
         )}
         <Alert

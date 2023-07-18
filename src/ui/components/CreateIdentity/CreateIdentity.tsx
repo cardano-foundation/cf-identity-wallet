@@ -16,7 +16,6 @@ import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import "./CreateIdentity.scss";
 import { VerifyPassword } from "../VerifyPassword";
-import { generateUUID } from "../../../utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getIdentitiesCache,
@@ -27,6 +26,8 @@ import {
   IdentityType,
 } from "../../../core/aries/ariesAgent.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
+
 const CreateIdentity = ({
   modalIsOpen,
   setModalIsOpen,
@@ -65,21 +66,23 @@ const CreateIdentity = ({
     setShowVerifyPassword(true);
   };
 
-  const handleOnVerifyPassword = () => {
-    const uuid = generateUUID();
-    const id = `did:key:${uuid}`;
+  const handleOnVerifyPassword = async () => {
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
-    const newIdentity: IdentityShortDetails = {
-      id,
-      method: selectedType === 0 ? IdentityType.KEY : IdentityType.KERI,
-      displayName: displayNameValue,
-      createdAtUTC: new Date().toISOString(),
-      colors: [newColor[1], newColor[0]],
-    };
-    dispatch(setIdentitiesCache([...identityData, newIdentity]));
-    setShowVerifyPassword(false);
-    resetModal();
+    const type = selectedType === 0 ? IdentityType.KEY : IdentityType.KERI;
+    const did = await AriesAgent.agent.createIdentity(type, displayNameValue);
+    if (did) {
+      const newIdentity: IdentityShortDetails = {
+        id: did,
+        method: type,
+        displayName: displayNameValue,
+        createdAtUTC: new Date().toISOString(),
+        colors: [newColor[1], newColor[0]],
+      };
+      dispatch(setIdentitiesCache([...identityData, newIdentity]));
+      setShowVerifyPassword(false);
+      resetModal();
+    }
   };
 
   return (

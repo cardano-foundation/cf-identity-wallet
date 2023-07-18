@@ -2,7 +2,7 @@ import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { AppWrapper } from "./AppWrapper";
 import { store } from "../../../store";
-jest.mock("../../../core/aries/ariesAgent.ts", () => ({
+jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
       getIdentities: jest.fn().mockResolvedValue([]),
