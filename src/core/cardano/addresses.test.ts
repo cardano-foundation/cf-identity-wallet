@@ -5,9 +5,9 @@ const validSeedPhrase15Words =
   "test walk nut penalty hip pave soap entry language right filter choice";
 const entropy15Words = "df9ed25ed146bf43336a5d7cf7395994";
 const rootXprvKey15Words =
-  "608621fb4c0101feb31f6f2fd7018bee54101ff67d555079671893225ee1a45e2331497029d885b5634405f350508cd95dce3991503b10f128d04f34b7b625783a1e3bd5dcf11fd4f989ec2cdcdea3a54db8997398174ecdcc87006c274176a0";
+  "xprv1vzrzr76vqyqlavclduhawqvtae2pq8lk0424q7t8rzfjyhhp530zxv2fwq5a3pd4vdzqtu6s2zxdjhww8xg4qwcs7y5dqne5k7mz27p6rcaath83rl20nz0v9nwdaga9fkufjuucza8vmny8qpkzwstk5quneyk9";
 const rootXpubKey15Words =
-  "e7effdd1c042aae1b5860dd9259207fe0078dc8239959441012e4049128602193a1e3bd5dcf11fd4f989ec2cdcdea3a54db8997398174ecdcc87006c274176a0";
+  "xpub1ulhlm5wqg24wrdvxphvjtys8lcq83hyz8x2egsgp9eqyjy5xqgvn583m6hw0z875lxy7ctxum6362ndcn9ees96wehxgwqrvyaqhdgqv0khjm";
 const mainnetAddr0 =
   "addr1qx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwqfjkjv7";
 const testnetAddr0 =
@@ -21,7 +21,7 @@ const validSeedPhrase24Words =
 const entropy24Words =
   "56a230f8e4adc93defca80251bb88f75fc1f509dd5c1e8fee3a166dacbd4d90e";
 const rootXprvKey24Words =
-  "3866b831cc61a5e2e93cf8685891390e6195a23dba7886d5f5698941eb651d4d129a107364096cae120349bf6b1f96e094b52d7d1e9e6470ecc57f49360b863278672db9313ecd75ee979b5683da438a5f2e50b3bef3d14042b26968263a3c0f";
+  "xprv18pntsvwvvxj796fulp593yfepesetg3ahfugd404dxy5r6m9r4x39xsswdjqjm9wzgp5n0mtr7twp9949473a8nywrkv2l6fxc9cvvncvukmjvf7e467a9um26pa5su2tuh9pva770g5qs4jd95zvw3upuhhyvxv";
 const invalidSeedPhrase = "INVALID_SEEDPHRASE";
 
 describe("Cardano seed phrase and address derivation", () => {
