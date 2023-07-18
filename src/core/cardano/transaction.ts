@@ -2,12 +2,7 @@ import { Blockfrost, Lucid, Network, Tx, WalletApi } from "lucid-cardano";
 
 class TransactionBuilder {
   private lucid: Lucid;
-  constructor(lucid: Lucid) {
-    if (!(lucid instanceof Lucid)) {
-      throw new Error(
-        `Invalid argument: 'lucid' must be an instance of Lucid instead of ${typeof lucid}`
-      );
-    }
+  private constructor(lucid: Lucid) {
     this.lucid = lucid;
   }
   static async new(
