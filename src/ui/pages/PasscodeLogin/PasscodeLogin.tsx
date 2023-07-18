@@ -8,7 +8,7 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 import { Alert } from "../../components/Alert";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {getStateCache} from "../../../store/reducers/stateCache";
+import {getAuthentication, getStateCache, setAuthentication} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -18,6 +18,7 @@ const PasscodeLogin = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
   const [isOpen, setIsOpen] = useState(false);
@@ -95,14 +96,12 @@ const PasscodeLogin = () => {
 
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
-      const copyStore = JSON.parse(JSON.stringify(stateCache));
-      copyStore.stateCache = {
-        ...copyStore.stateCache,
-        authentication: {
-          ...copyStore.stateCache.authentication,
+      dispatch(setAuthentication(
+        {
+          ...authentication,
           passcodeIsSet: false,
-        },
-      };
+        }
+      ))
       history.push(RoutePath.SET_PASSCODE);
       handleClearState();
     });
