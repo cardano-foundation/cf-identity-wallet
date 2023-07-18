@@ -4,7 +4,6 @@ const CopyPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
-
 const config = {
   entry: {
     main: path.join(__dirname, "..", "src", "index.tsx"),

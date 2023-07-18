@@ -5,7 +5,7 @@ import {
   NetworkInfo,
   RewardAddress,
   StakeCredential,
-} from "@emurgo/cardano-serialization-lib-browser";
+} from "@dcspark/cardano-multiplatform-lib-browser";
 import { entropyToMnemonic, mnemonicToEntropy } from "bip39";
 import { NetworkType } from "./addresses.types";
 
@@ -20,19 +20,19 @@ class Addresses {
       Buffer.from("")
     );
 
-    return rootExtendedPrivateKey.to_hex();
+    return rootExtendedPrivateKey.to_bech32();
   }
 
   static convertToMnemonic(entropy: string): string {
     return entropyToMnemonic(entropy);
   }
 
-  static bip32PrivateHexToPublicHex(privateHex: string) {
-    return Bip32PrivateKey.from_hex(privateHex).to_public().to_hex();
+  static bip32PrivateHexToPublicHex(privateBech32: string) {
+    return Bip32PrivateKey.from_bech32(privateBech32).to_public().to_bech32();
   }
 
   static deriveFirstBaseAndRewardAddrs(rootExtendedPrivateKey: string) {
-    const rootKey = Bip32PrivateKey.from_hex(rootExtendedPrivateKey);
+    const rootKey = Bip32PrivateKey.from_bech32(rootExtendedPrivateKey);
     const accountKey = rootKey
       .derive(Addresses.harden(1852))
       .derive(Addresses.harden(1815))
@@ -53,7 +53,7 @@ class Addresses {
       Addresses.calculateBaseAddressBech32(
         spendingPubKey,
         stakePubKey,
-        NetworkInfo.testnet_preprod()
+        NetworkInfo.testnet()
       ),
     ];
     const addresses: Map<
@@ -96,7 +96,7 @@ class Addresses {
     rewardAddresses.set(NetworkType.TESTNET, [
       Addresses.calculateRewardAddressBech32(
         stakePubKey,
-        NetworkInfo.testnet_preprod()
+        NetworkInfo.testnet()
       ),
     ]);
 
