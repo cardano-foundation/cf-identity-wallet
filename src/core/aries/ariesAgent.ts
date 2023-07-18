@@ -15,11 +15,13 @@ import {
   GeneralStorageModule,
   MiscRecord,
   MiscRecordId,
+  CryptoAccountRecord,
 } from "./modules";
 import { HttpOutboundTransport } from "./transports";
 import { LabelledKeyDidRegistrar } from "./dids";
 import { IdentityType } from "./ariesAgent.types";
 import type { IdentityDetails, IdentityShortDetails } from "./ariesAgent.types";
+import { NetworkType } from "../cardano/addresses.types";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -58,6 +60,7 @@ class AriesAgent {
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
+  static ready = false;
 
   private constructor() {
     this.agent = new Agent({
@@ -84,6 +87,7 @@ class AriesAgent {
 
   async start(): Promise<void> {
     await this.agent.initialize();
+    AriesAgent.ready = true;
   }
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
@@ -102,6 +106,32 @@ class AriesAgent {
       }
       throw e;
     }
+  }
+
+  async storeCryptoAccountRecord(
+    id: string,
+    addresses: Map<NetworkType, Map<number, Map<number, string[]>>>,
+    rewardAddresses: Map<NetworkType, string[]>,
+    displayName: string,
+    usesIdentitySeedPhrase = false
+  ): Promise<void> {
+    await this.agent.modules.generalStorage.saveCryptoRecord(
+      new CryptoAccountRecord({
+        id,
+        addresses,
+        rewardAddresses,
+        displayName,
+        usesIdentitySeedPhrase,
+      })
+    );
+  }
+
+  async cryptoAccountIdentitySeedPhraseExists(): Promise<boolean> {
+    return this.agent.modules.generalStorage.cryptoAccountIdentitySeedPhraseExists();
+  }
+
+  async removeCryptoAccountRecordById(id: string): Promise<void> {
+    await this.agent.modules.generalStorage.removeCryptoRecordById(id);
   }
 
   async createIdentity(

@@ -4,10 +4,7 @@ import {
   getAuthentication,
   setAuthentication,
 } from "../../../store/reducers/stateCache";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage/secureStorage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { filteredCredsMock } from "../../__mocks__/filteredCredsMock";
@@ -21,7 +18,7 @@ import {
 import {
   PreferencesKeys,
   PreferencesStorage,
-} from "../../../core/storage/preferences/preferencesStorage";
+} from "../../../core/storage/preferences";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);

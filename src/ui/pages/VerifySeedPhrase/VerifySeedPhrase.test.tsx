@@ -15,18 +15,15 @@ import {
 } from "../../../constants/appConstants";
 import { TabsMenu } from "../../components/navigation/TabsMenu";
 import { Addresses } from "../../../core/cardano/addresses";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage/secureStorage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 
+const entropy = "entropy";
 const rootKey = "rootKeyHex";
-const secureStorageSetSpy = jest
-  .spyOn(SecureStorage, "set")
-  .mockResolvedValue();
-const convertRootKeySpy = jest
-  .spyOn(Addresses, "convertToRootXPrivateKeyHex")
-  .mockReturnValue(rootKey);
+
+jest.mock("../../../core/storage");
+jest.mock("../../../core/cardano/addresses");
+Addresses.convertToEntropy = jest.fn().mockReturnValue(entropy);
+Addresses.convertToRootXPrivateKeyHex = jest.fn().mockReturnValue(rootKey);
 
 describe("Verify Seed Phrase Page", () => {
   const mockStore = configureStore();
@@ -151,8 +148,9 @@ describe("Verify Seed Phrase Page", () => {
       ).toBeVisible()
     );
 
-    expect(convertRootKeySpy).not.toBeCalled();
-    expect(secureStorageSetSpy).not.toBeCalled();
+    expect(Addresses.convertToEntropy).not.toBeCalled();
+    expect(Addresses.convertToRootXPrivateKeyHex).not.toBeCalled();
+    expect(SecureStorage.set).not.toBeCalled();
   });
 
   test("The user can Verify the Seed Phrase", async () => {
@@ -233,12 +231,13 @@ describe("Verify Seed Phrase Page", () => {
     await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
 
     const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
-    expect(convertRootKeySpy).toBeCalledWith(seedPhraseString);
-    expect(secureStorageSetSpy).toBeCalledWith(
+    expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
+    expect(Addresses.convertToRootXPrivateKeyHex).toBeCalledWith(entropy);
+    expect(SecureStorage.set).toBeCalledWith(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
       rootKey
     );
-    expect(secureStorageSetSpy).toBeCalledWith(
+    expect(SecureStorage.set).toBeCalledWith(
       KeyStoreKeys.IDENTITY_SEEDPHRASE,
       seedPhraseString
     );
