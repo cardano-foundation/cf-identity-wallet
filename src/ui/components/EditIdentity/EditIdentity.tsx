@@ -35,12 +35,17 @@ import { getState } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
 
-const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
+const EditIdentity = ({
+  isOpen,
+  setIsOpen,
+  cardData,
+  setCardData,
+}: EditIdentityProps) => {
   const identitiesData = useAppSelector(getIdentitiesCache);
   const storeState = useAppSelector(getState);
   const history = useHistory();
   const [editIsOpen, setEditIsOpen] = useState(false);
-  const [newDisplayName, setNewDisplayName] = useState(name);
+  const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
@@ -48,12 +53,12 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
   const verifyDisplayName =
     newDisplayName.length > 0 &&
     newDisplayName.length <= DISPLAY_NAME_LENGTH &&
-    newDisplayName !== name;
+    newDisplayName !== cardData.displayName;
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setNewDisplayName(name);
-  }, [name]);
+    setNewDisplayName(cardData.displayName);
+  }, [cardData.displayName]);
 
   const handleDismiss = () => {
     setEditIsOpen(false);
@@ -100,17 +105,20 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
       // Remember to update DidCardDetails file too.
       const updatedIdentities = [...identitiesData];
       const index = updatedIdentities.findIndex(
-        (identity) => identity.id === id
+        (identity) => identity.id === cardData.id
       );
       updatedIdentities[index] = {
         ...updatedIdentities[index],
         displayName: newDisplayName,
       };
+      setCardData({ ...cardData, displayName: newDisplayName });
       dispatch(setIdentitiesCache(updatedIdentities));
     } else if (actionType === "delete") {
       // @TODO - sdisalvo: Update Database.
       // Remember to update DidCardDetails file too.
-      const updatedIdentities = identitiesData.filter((item) => item.id !== id);
+      const updatedIdentities = identitiesData.filter(
+        (item) => item.id !== cardData.id
+      );
       dispatch(setIdentitiesCache(updatedIdentities));
     }
     handleDone();
@@ -207,7 +215,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
                       className="edit-identity-option"
                       data-testid="edit-identity-edit-button"
                       onClick={() => {
-                        setNewDisplayName(name);
+                        setNewDisplayName(cardData.displayName);
                         setEditIsOpen(true);
                       }}
                     >
@@ -228,7 +236,7 @@ const EditIdentity = ({ isOpen, setIsOpen, id, name }: EditIdentityProps) => {
                       data-testid="edit-identity-share-button"
                       onClick={async () => {
                         await Share.share({
-                          text: name + " " + id,
+                          text: cardData.displayName + " " + cardData.id,
                         });
                       }}
                     >

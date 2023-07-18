@@ -79,6 +79,7 @@ const Crypto = () => {
       assets: [],
       transactions: [],
     });
+  const accountAvailable = cryptoAccountsData?.length && defaultAccountData;
   const items: CryptoBalanceItem[] = [
     {
       title: i18n.t("crypto.tab.slider.title.mainbalance"),
@@ -243,14 +244,14 @@ const Crypto = () => {
     <>
       <IonPage
         className={`tab-layout crypto-tab${
-          defaultAccountData ? " wallet-details" : ""
+          accountAvailable ? " wallet-details" : ""
         }`}
         data-testid="crypto-tab"
       >
         <TabLayout
           header={true}
-          avatar={defaultAccountData && <Avatar />}
-          title={defaultAccountData ? defaultAccountData.name : ""}
+          avatar={accountAvailable ? <Avatar /> : null}
+          title={accountAvailable ? defaultAccountData.name : ""}
           menuButton={true}
           additionalButtons={<AdditionalButtons />}
         >
