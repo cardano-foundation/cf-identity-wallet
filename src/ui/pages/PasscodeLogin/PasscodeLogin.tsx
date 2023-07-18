@@ -11,7 +11,7 @@ import {
   SecureStorage,
 } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState } from "../../../store/reducers/stateCache";
+import {getStateCache} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -20,7 +20,7 @@ import { RoutePath } from "../../../routes";
 const PasscodeLogin = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
+  const stateCache = useAppSelector(getStateCache);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
   const [isOpen, setIsOpen] = useState(false);
@@ -51,12 +51,15 @@ const PasscodeLogin = () => {
               const { backPath, updateRedux } = getBackRoute(
                 RoutePath.PASSCODE_LOGIN,
                 {
-                  store: storeState,
+                  store: {stateCache},
                 }
               );
+
+              if (!backPath) return;
+
               updateReduxState(
                 backPath.pathname,
-                { store: storeState },
+                { store: {stateCache} },
                 dispatch,
                 updateRedux
               );
@@ -95,7 +98,7 @@ const PasscodeLogin = () => {
 
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
-      const copyStore = JSON.parse(JSON.stringify(storeState));
+      const copyStore = JSON.parse(JSON.stringify(stateCache));
       copyStore.stateCache = {
         ...copyStore.stateCache,
         authentication: {

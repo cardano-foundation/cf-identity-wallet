@@ -18,8 +18,7 @@ import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   setCurrentRoute,
-  getCurrentRoute,
-  getState,
+  getCurrentRoute
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
@@ -42,8 +41,7 @@ import { AssetsTransactions } from "../../components/AssetsTransactions";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
-  const currentRoute = getCurrentRoute(storeState);
+  const currentRoute = useAppSelector(getCurrentRoute);
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );

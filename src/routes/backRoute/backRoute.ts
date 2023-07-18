@@ -13,7 +13,7 @@ const getBackRoute = (
   currentPath: string,
   data: DataProps
 ): {
-  backPath: { pathname: string };
+  backPath: undefined | { pathname: string };
   updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
   const { updateRedux } = backRoute[currentPath];
@@ -25,6 +25,8 @@ const getBackRoute = (
 };
 
 const updateStoreSetCurrentRoute = (data: DataProps) => {
+  if (!data.store.stateCache) return;
+
   const prevPath = calcPreviousRoute(data.store.stateCache.routes);
 
   let path;
@@ -37,6 +39,8 @@ const updateStoreSetCurrentRoute = (data: DataProps) => {
   return setCurrentRoute({ path });
 };
 const getPreviousRoute = (data: DataProps) => {
+  if (!data.store.stateCache) return;
+
   const { routes } = data.store.stateCache;
 
   const prevPath = calcPreviousRoute(routes);
@@ -52,7 +56,10 @@ const getPreviousRoute = (data: DataProps) => {
 };
 
 const updateStoreAfterPasscodeLoginRoute = (data: DataProps) => {
-  const seedPhraseISet = !!data.store.seedPhraseCache.seedPhrase160;
+
+  if (!data.store.stateCache) return;
+
+  const seedPhraseISet = data.store.stateCache.authentication.seedPhraseIsSet;
 
   if (data.state?.resetPasscode && seedPhraseISet) {
     return setAuthentication({

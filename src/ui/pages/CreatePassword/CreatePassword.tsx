@@ -25,7 +25,7 @@ import {
   SecureStorage,
 } from "../../../core/storage/secureStorage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState } from "../../../store/reducers/stateCache";
+import {getStateCache} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -143,7 +143,7 @@ const PasswordRegex = ({ password }: PasswordRegexProps) => {
 };
 
 const CreatePassword = () => {
-  const storeState = useAppSelector(getState);
+  const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [createPasswordValue, setCreatePasswordValue] = useState("");
@@ -175,8 +175,11 @@ const CreatePassword = () => {
   };
   const handleClose = async () => {
     const { backPath } = getBackRoute(RoutePath.CREATE_PASSWORD, {
-      store: storeState,
+      store: {stateCache},
     });
+
+    if (!backPath) return;
+
     history.push(backPath.pathname);
     handleClearState();
   };
@@ -191,11 +194,12 @@ const CreatePassword = () => {
       );
     }
     const { nextPath, updateRedux } = getNextRoute(RoutePath.CREATE_PASSWORD, {
-      store: storeState,
+      store: {stateCache},
     });
+
     updateReduxState(
       nextPath.pathname,
-      { store: storeState },
+      { store: {stateCache} },
       dispatch,
       updateRedux
     );
