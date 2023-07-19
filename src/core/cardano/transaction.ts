@@ -21,17 +21,29 @@ class TransactionBuilder {
     outputs: { address: string; assets: { [unit: string]: bigint } }[],
     changeAddress?: string
   ): Promise<Tx> {
+    console.log("Yeeee1");
     const tx = await this.lucid.newTx();
-    for (let i = 0; i < outputs.length; i++) {
-      await tx.payToAddress(outputs[i].address, outputs[i].assets);
+    console.log("Yeeee2");
+    try {
+      for (let i = 0; i < outputs.length; i++) {
+        console.log("Yeeee3");
+        await tx.payToAddress(outputs[i].address, outputs[i].assets);
+      }
+
+    } catch (e) {
+      console.log("error: in buildTransaction!!");
+      console.log(e);
     }
 
+    console.log("Yeeee4");
+    /*
     if (changeAddress) {
       await tx.complete({ change: { address: changeAddress } });
     } else {
       await tx.complete();
-    }
+    }*/
 
+    console.log("Yeeee5");
     return tx;
   }
 }

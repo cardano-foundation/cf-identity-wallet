@@ -1,11 +1,35 @@
-import { WalletApi } from "lucid-cardano";
+import {assetsToValue, WalletApi as WalletApiProps} from "lucid-cardano";
+import {BigNum, Value} from "@dcspark/cardano-multiplatform-lib-browser";
+import {Assets} from "lucid-cardano/types/src/types/mod";
 
-class Wallet implements WalletApi {
-  account: string;
-  constructor(account: string) {
+class WalletApi implements WalletApiProps {
+  account: {
+    publicKeyBech32: string
+  };
+  endpoint: string;
+  constructor(account: {
+    publicKeyBech32: string
+  }, endpoint:string) {
     this.account = account;
+    this.endpoint = endpoint;
   }
-  getBalance(): Promise<string> {
+  async getBalance(): Promise<string> {
+    /*
+    const result = await fetch(`${this.endpoint}/addresses/${this.account.publicKeyBech32}`
+    ).then((res) => res.json());
+
+    if (result.error) {
+      if (result.status_code === 400) throw "InvalidRequest";
+      else if (result.status_code === 500) throw "InternalError";
+      else {
+        const noValue = Value.new(BigNum.from_str("0"));
+        return Buffer.from(noValue.to_bytes(), "hex").toString("hex");
+      }
+    }
+    const assets:Assets = result.amount;
+    const value = assetsToValue(assets);
+    return Buffer.from(value.to_bytes(), "hex").toString("hex");
+    */
     return Promise.resolve("");
   }
 
@@ -61,4 +85,4 @@ class Wallet implements WalletApi {
   };
 }
 
-export { Wallet };
+export { WalletApi };
