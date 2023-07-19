@@ -175,8 +175,6 @@ const CreatePassword = () => {
       store: {stateCache},
     });
 
-    if (!backPath) return;
-
     history.push(backPath.pathname);
     handleClearState();
   };

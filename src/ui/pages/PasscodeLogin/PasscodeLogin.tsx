@@ -53,8 +53,6 @@ const PasscodeLogin = () => {
                 }
               );
 
-              if (!backPath) return;
-
               updateReduxState(
                 backPath.pathname,
                 { store: {stateCache} },

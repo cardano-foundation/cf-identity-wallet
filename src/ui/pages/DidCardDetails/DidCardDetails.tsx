@@ -71,8 +71,6 @@ const DidCardDetails = () => {
       store: {stateCache},
     });
 
-    if (!backPath) return;
-
     updateReduxState(
       backPath.pathname,
       { store: {stateCache} },
