@@ -4,8 +4,14 @@ import dotenv from "dotenv";
 import { TransactionBuilder } from "./transaction";
 import { WalletApi } from "./walletApi";
 import { BLOCKFROST_PREPROD_SELF_HOSTED } from "./provider/config";
+import {Addresses} from "./addresses";
 
 dotenv.config();
+
+const validSeedPhrase15Words =
+    "tortoise arrive pulp crisp blood dynamic trial follow senior topple element unveil typical woman cost";
+const entropy = Addresses.convertToEntropy(validSeedPhrase15Words);
+const rootPrivateKeyBech32 = Addresses.convertToRootXPrivateKeyHex(entropy);
 describe("Cardano transactions", () => {
   const blockfrostUrl = BLOCKFROST_PREPROD_SELF_HOSTED;
   const network: Network = "Preprod";
@@ -54,9 +60,9 @@ describe("Cardano transactions", () => {
   });
 
   test("static new method should create an instance of TransactionBuilder", async () => {
-    const walletApi = new WalletApi({publicKeyBech32: "wallet-pub"}, blockfrostUrl);
+
     const txBuilder = await TransactionBuilder.new(
-      walletApi,
+      rootPrivateKeyBech32,
       network,
       blockfrostUrl
     );
@@ -77,25 +83,28 @@ describe("Cardano transactions", () => {
       { address: addresses[1], assets: { lovelace: 200n } },
     ];
 
-    const wallet = new WalletApi({publicKeyBech32: "wallet-pub"}, blockfrostUrl);
+    //const wallet = new WalletApi({publicKeyBech32: "wallet-pub"}, blockfrostUrl);
 
     jest.spyOn(blockfrostProvider, "getProtocolParameters").mockImplementation(() => Promise.resolve(mockProtocolParameters));
 
-    const value = assetsToValue(balances[0]);
-    const valueHex = Buffer.from(value.to_bytes()).toString("hex");
+    // const value = assetsToValue(balances[0]);
+    //const valueHex = Buffer.from(value.to_bytes()).toString("hex");
 
-    jest.spyOn(wallet, "getBalance").mockImplementation(() => Promise.resolve(valueHex));
+    // jest.spyOn(wallet, "getBalance").mockImplementation(() => Promise.resolve(valueHex));
 
-    const balance = await wallet.getBalance();
-    expect(balance).toBe(valueHex);
+    //const balance = await wallet.getBalance();
+    //expect(balance).toBe(valueHex);
 
-    /*
+
+
     const txBuilder = await TransactionBuilder.new(
-      wallet,
+      rootPrivateKeyBech32,
       network,
       blockfrostUrl
     );
 
+
+    /*
     const changeAddress = addresses[2];
 
     const tx = await txBuilder.buildTransaction(outputs, changeAddress);

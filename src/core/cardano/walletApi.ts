@@ -1,6 +1,4 @@
-import {assetsToValue, WalletApi as WalletApiProps} from "lucid-cardano";
-import {BigNum, Value} from "@dcspark/cardano-multiplatform-lib-browser";
-import {Assets} from "lucid-cardano/types/src/types/mod";
+import {WalletApi as WalletApiProps} from "lucid-cardano";
 
 class WalletApi implements WalletApiProps {
   account: {
