@@ -13,7 +13,7 @@ const getBackRoute = (
   currentPath: string,
   data: DataProps
 ): {
-  backPath: undefined | { pathname: string };
+  backPath: { pathname: string };
   updateRedux: (() => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
   const { updateRedux } = backRoute[currentPath];
@@ -38,10 +38,9 @@ const updateStoreSetCurrentRoute = (data: DataProps) => {
 
   return setCurrentRoute({ path });
 };
-const getPreviousRoute = (data: DataProps) => {
-  if (!data.store.stateCache) return;
+const getPreviousRoute = (data: DataProps):{pathname: string} => {
 
-  const { routes } = data.store.stateCache;
+  const routes = data.store.stateCache?.routes || [];
 
   const prevPath = calcPreviousRoute(routes);
   let path;

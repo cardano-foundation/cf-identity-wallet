@@ -127,7 +127,7 @@ const getNextRoute = (
       data: DataProps
   ) => ThunkAction<void, RootState, undefined, AnyAction>)[];
 } => {
-  const { nextPath, updateRedux } = NextRoute[currentPath];
+  const { nextPath, updateRedux } = nextRoute[currentPath];
   updateRedux.push(updateStoreCurrentRoute);
   return {
     nextPath: nextPath(data),
@@ -135,7 +135,7 @@ const getNextRoute = (
   };
 };
 
-const NextRoute: Record<string, any> = {
+const nextRoute: Record<string, any> = {
   [RoutePath.ROOT]: {
     nextPath: (data: DataProps) => getNextRootRoute(data.store),
     updateRedux: [],
