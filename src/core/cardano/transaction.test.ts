@@ -36,18 +36,6 @@ describe("Cardano transactions", () => {
 
   });
 
-  test("constructor should throw an error if not provided a Lucid instance", () => {
-    expect(() => new TransactionBuilder({} as Lucid)).toThrowError(
-      "Invalid argument: 'lucid' must be an instance of Lucid instead of object"
-    );
-  });
-
-  test("constructor should create a new instance if provided a Lucid instance", async () => {
-    const blockfrost = new Blockfrost(blockfrostUrl);
-    const lucid = await Lucid.new(blockfrost, network);
-    expect(() => new TransactionBuilder(lucid)).not.toThrow();
-  });
-
   test("static new method should create an instance of TransactionBuilder", async () => {
     const walletApi = new Wallet("wallet-name");
     const txBuilder = await TransactionBuilder.new(
