@@ -1,10 +1,10 @@
-import {assetsToValue, Blockfrost, Network, ProtocolParameters} from "lucid-cardano";
+import {valueToAssets, Blockfrost, Network, ProtocolParameters, TxComplete, UTxO} from "lucid-cardano";
 
 import dotenv from "dotenv";
 import { TransactionBuilder } from "./transaction";
-import { WalletApi } from "./walletApi";
 import { BLOCKFROST_PREPROD_SELF_HOSTED } from "./provider/config";
 import {Addresses} from "./addresses";
+import {Address} from "@dcspark/cardano-multiplatform-lib-browser";
 
 dotenv.config();
 
@@ -28,6 +28,17 @@ describe("Cardano transactions", () => {
     {
       "lovelace": 42000000n,
       "b0d07d45fe9514f80213f4020e5a61241458be626841cde717cb38a76e7574636f696e": 12n,
+    }
+  ]
+
+  const utxos = [
+    {
+      txHash: "39a7a284c2a0948189dc45dec670211cd4d72f7b66c5726c08d9b3df11e44d58",
+      address: "addr1qxqs59lphg8g6qndelq8xwqn60ag3aeyfcp33c2kdp46a09re5df3pzwwmyq946axfcejy5n4x0y99wqpgtp2gd0k09qsgy6pz",
+      outputIndex: 0,
+      assets: {
+        lovelace: 10000000n // 10 ADA
+      }
     }
   ]
 
@@ -76,26 +87,13 @@ describe("Cardano transactions", () => {
     expect(protocolParameters).toEqual(mockProtocolParameters);
   });
 
-  test("build a valid transaction", async () => {
+  test("build a valid transaction with change address", async () => {
 
     const outputs = [
-      { address: addresses[0], assets: { lovelace: 1000000n } },
-      { address: addresses[1], assets: { lovelace: 200n } },
+      { address: addresses[0], assets: { lovelace: 2000000n } } // 2 ADA
     ];
 
-    //const wallet = new WalletApi({publicKeyBech32: "wallet-pub"}, blockfrostUrl);
-
     jest.spyOn(blockfrostProvider, "getProtocolParameters").mockImplementation(() => Promise.resolve(mockProtocolParameters));
-
-    // const value = assetsToValue(balances[0]);
-    //const valueHex = Buffer.from(value.to_bytes()).toString("hex");
-
-    // jest.spyOn(wallet, "getBalance").mockImplementation(() => Promise.resolve(valueHex));
-
-    //const balance = await wallet.getBalance();
-    //expect(balance).toBe(valueHex);
-
-
 
     const txBuilder = await TransactionBuilder.new(
       rootPrivateKeyBech32,
@@ -104,13 +102,58 @@ describe("Cardano transactions", () => {
     );
 
 
-    /*
-    const changeAddress = addresses[2];
+    jest.spyOn(txBuilder.lucid.provider, "getUtxos").mockImplementation(() => Promise.resolve(utxos));
 
-    const tx = await txBuilder.buildTransaction(outputs, changeAddress);
+    const tx = await txBuilder.buildTransaction(outputs, addresses[2]);
 
-    expect(tx).toBe(true);*/
+    expect(tx).toBeInstanceOf(TxComplete);
 
+    const txJson = JSON.parse(tx.txComplete.to_json());
 
+    expect(txJson.is_valid).toBe(true);
+
+    // Check inputs
+    expect(txJson.body.inputs[0].transaction_id).toBe(utxos[0].txHash);
+
+    // Check outputs+fee
+    const fee = BigInt(txJson.body.fee);
+    let totalAdaInOutputs = 0n;
+    txJson.body.outputs.map((output: { amount: { coin: string; }; }) => totalAdaInOutputs += BigInt(output.amount.coin))
+
+    expect(totalAdaInOutputs+fee).toBe(utxos[0].assets.lovelace);
+  });
+
+  test("should throw an error if outputs value > inputs value", async () => {
+
+    const outputs = [
+      { address: addresses[0], assets: { lovelace: 20000000n } }  // 20 ADA
+    ];
+
+    const txBuilder = await TransactionBuilder.new(
+      rootPrivateKeyBech32,
+      network,
+      blockfrostUrl
+    );
+
+    jest.spyOn(txBuilder.lucid.provider, "getUtxos").mockImplementation(() => Promise.resolve(utxos));
+
+    txBuilder.buildTransaction(outputs).catch(error => expect(error).toBe("InputsExhaustedError") )
+  });
+
+  test("should throw an error if not enough inputs value to cover the fee", async () => {
+
+    const outputs = [
+      { address: addresses[0], assets: { lovelace: 1931948n } }  // 1.931948 ADA, expected fee 168053
+    ];
+
+    const txBuilder = await TransactionBuilder.new(
+      rootPrivateKeyBech32,
+      network,
+      blockfrostUrl
+    );
+
+    jest.spyOn(txBuilder.lucid.provider, "getUtxos").mockImplementation(() => Promise.resolve(utxos));
+
+    txBuilder.buildTransaction(outputs).catch(error => expect(error).toBe("InputsExhaustedError") )
   });
 });

@@ -1,8 +1,9 @@
 import { Blockfrost, Lucid, Network, Tx, WalletApi } from "lucid-cardano";
 import {Bip32PrivateKey} from "@dcspark/cardano-multiplatform-lib-browser";
+import {TxComplete} from "lucid-cardano/types/src/lucid/tx_complete";
 
 class TransactionBuilder {
-  private lucid: Lucid;
+  lucid: Lucid;
   private constructor(lucid: Lucid) {
     this.lucid = lucid;
   }
@@ -24,25 +25,20 @@ class TransactionBuilder {
   async buildTransaction(
     outputs: { address: string; assets: { [unit: string]: bigint } }[],
     changeAddress?: string
-  ): Promise<Tx> {
-    const tx = await this.lucid.newTx();
-    try {
-      for (let i = 0; i < outputs.length; i++) {
-        await tx.payToAddress(outputs[i].address, outputs[i].assets);
-      }
+  ): Promise<TxComplete> {
 
-    } catch (e) {
-      console.log(e);
+    const tx = await this.lucid.newTx();
+
+    for (let i = 0; i < outputs.length; i++) {
+      await tx.payToAddress(outputs[i].address, outputs[i].assets);
     }
 
-    /*
     if (changeAddress) {
-      await tx.complete({ change: { address: changeAddress } });
+      return await tx.complete({ change: { address: changeAddress } });
     } else {
-      await tx.complete();
-    }*/
+      return await tx.complete();
+    }
 
-    return tx;
   }
 }
 
