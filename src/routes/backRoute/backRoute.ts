@@ -25,7 +25,6 @@ const getBackRoute = (
 };
 
 const updateStoreSetCurrentRoute = (data: DataProps) => {
-  if (!data.store.stateCache) return;
 
   const prevPath = calcPreviousRoute(data.store.stateCache.routes);
 
@@ -55,8 +54,6 @@ const getPreviousRoute = (data: DataProps):{pathname: string} => {
 };
 
 const updateStoreAfterPasscodeLoginRoute = (data: DataProps) => {
-
-  if (!data.store.stateCache) return;
 
   const seedPhraseISet = data.store.stateCache.authentication.seedPhraseIsSet;
 
