@@ -14,7 +14,6 @@ import { RoutePath, TabsRoutePath } from "../paths";
 import { backPath } from "../backRoute";
 
 const getNextRootRoute = (store: StoreState) => {
-  if (!store.stateCache) return;
 
   const authentication = store.stateCache.authentication;
   const routes = store.stateCache.routes;
@@ -38,8 +37,6 @@ const getNextRootRoute = (store: StoreState) => {
 };
 const getNextOnboardingRoute = (store: StoreState) => {
   const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase160;
-
-  if (!store.stateCache) return;
 
   let path;
   if (!store.stateCache.authentication.passcodeIsSet) {

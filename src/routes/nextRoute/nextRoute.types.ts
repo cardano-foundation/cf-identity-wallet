@@ -11,7 +11,7 @@ interface PayloadProps {
   [key: string]: any;
 }
 interface StoreState {
-  stateCache?: StateCacheProps;
+  stateCache: StateCacheProps;
   seedPhraseCache?: SeedPhraseCacheProps;
   identitiesCache?: { identities: IdentityShortDetails[] };
   credsCache?: { creds: CredProps[] };
