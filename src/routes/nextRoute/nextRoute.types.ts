@@ -13,13 +13,6 @@ interface PayloadProps {
 interface StoreState {
   stateCache: StateCacheProps;
   seedPhraseCache?: SeedPhraseCacheProps;
-  identitiesCache?: { identities: IdentityShortDetails[] };
-  credsCache?: { creds: CredProps[] };
-  cryptoAccountsCache?: {
-    cryptoAccounts: CryptoAccountProps[];
-    defaultCryptoAccount: string;
-    hideCryptoBalances: boolean;
-  };
 }
 interface DataProps {
   store: StoreState;
