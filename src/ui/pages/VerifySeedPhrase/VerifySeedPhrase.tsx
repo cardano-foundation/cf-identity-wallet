@@ -19,18 +19,18 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { Addresses } from "../../../core/cardano/addresses";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import { getState } from "../../../store/reducers/stateCache";
+import {getStateCache} from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
+  const stateCache = useAppSelector(getStateCache);
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
-    seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
-      ? seedPhraseStore.seedPhrase160.split(" ")
-      : seedPhraseStore.seedPhrase256.split(" ");
+      seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
+        ? seedPhraseStore.seedPhrase160.split(" ")
+        : seedPhraseStore.seedPhrase256.split(" ");
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -79,7 +79,7 @@ const VerifySeedPhrase = () => {
   const handleContinue = async () => {
     if (
       originalSeedPhrase.length === seedPhraseSelected.length &&
-      originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
+        originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
       const seedPhraseString = originalSeedPhrase.join(" ");
       await SecureStorage.set(
@@ -95,11 +95,11 @@ const VerifySeedPhrase = () => {
 
       const { nextPath, updateRedux } = getNextRoute(
         RoutePath.VERIFY_SEED_PHRASE,
-        { store: storeState }
+        { store: {stateCache} }
       );
       updateReduxState(
         nextPath.pathname,
-        { store: storeState },
+        { store: {stateCache} },
         dispatch,
         updateRedux
       );
