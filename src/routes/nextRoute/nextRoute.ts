@@ -9,7 +9,7 @@ import {
   clearSeedPhraseCache,
   setSeedPhraseCache,
 } from "../../store/reducers/seedPhraseCache";
-import { DataProps, StoreState } from "./nextRoute.types";
+import {DataProps, StoreState} from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
 import { backPath } from "../backRoute";
 
@@ -66,8 +66,6 @@ const getNextSetPasscodeRoute = (store: StoreState) => {
 };
 
 const updateStoreAfterSetPasscodeRoute = (data: DataProps) => {
-  if (!data?.store?.stateCache) return;
-
   return setAuthentication({
     ...data.store.stateCache.authentication,
     loggedIn: true,
@@ -76,8 +74,6 @@ const updateStoreAfterSetPasscodeRoute = (data: DataProps) => {
   });
 };
 const updateStoreAfterVerifySeedPhraseRoute = (data: DataProps) => {
-  if (!data?.store?.stateCache) return;
-
   return setAuthentication({
     ...data.store.stateCache.authentication,
     seedPhraseIsSet: true,
@@ -107,7 +103,6 @@ const getNextCreatePasswordRoute = (data: DataProps) => {
   return { pathname: backRoute?.pathname };
 };
 const updateStoreAfterCreatePassword = (data: DataProps) => {
-  if (!data?.store?.stateCache) return;
 
   return setAuthentication({
     ...data.store.stateCache.authentication,
