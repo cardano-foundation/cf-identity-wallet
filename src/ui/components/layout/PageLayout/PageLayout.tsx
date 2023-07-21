@@ -14,7 +14,7 @@ import "./PageLayout.scss";
 import { useHistory } from "react-router-dom";
 import { PageLayoutProps } from "./PageLayout.types";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import { getStateCache} from "../../../../store/reducers/stateCache";
+import { getStateCache } from "../../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../../store/utils";
 import { getBackRoute } from "../../../../routes/backRoute";
 
@@ -53,12 +53,12 @@ const PageLayout = ({
     } else {
       if (backButton && currentPath) {
         const { backPath, updateRedux } = getBackRoute(currentPath, {
-          store: {stateCache},
+          store: { stateCache },
         });
-  
+
         updateReduxState(
           backPath.pathname,
-          { store: {stateCache} },
+          { store: { stateCache } },
           dispatch,
           updateRedux
         );

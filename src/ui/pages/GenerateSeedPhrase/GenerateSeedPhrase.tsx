@@ -126,7 +126,7 @@ const GenerateSeedPhrase = () => {
   const handleContinue = () => {
     setAlertConfirmIsOpen(false);
     const data: DataProps = {
-      store: {stateCache},
+      store: { stateCache },
       state: {
         seedPhrase160: seedPhrase160.join(" "),
         seedPhrase256: seedPhrase256.join(" "),

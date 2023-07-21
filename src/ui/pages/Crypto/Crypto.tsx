@@ -45,7 +45,7 @@ const Crypto = () => {
   const dispatch = useAppDispatch();
   const currentRoute = useAppSelector(getCurrentRoute);
   const { backPath } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
-    store: {stateCache},
+    store: { stateCache },
   });
   const [showToast, setShowToast] = useState(
     backPath.pathname === RoutePath.VERIFY_SEED_PHRASE
