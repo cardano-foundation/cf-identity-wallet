@@ -334,6 +334,7 @@ const CredCardDetails = () => {
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
+          dataTestId="alert-delete"
           headerText={i18n.t("creds.card.details.delete.alert.title")}
           confirmButtonText={`${i18n.t(
             "creds.card.details.delete.alert.confirm"

@@ -3,6 +3,7 @@ import {
   IonIcon,
   IonModal,
   IonPage,
+  IonToast,
   useIonViewWillEnter,
 } from "@ionic/react";
 import Blockies from "react-18-blockies";
@@ -20,7 +21,7 @@ import {
   setCurrentRoute,
   getCurrentRoute,
 } from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
+import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import {
   getCryptoAccountsCache,
@@ -38,10 +39,17 @@ import { CryptoBalance } from "../../components/CryptoBalance";
 import { CryptoBalanceItem } from "../../components/CryptoBalance/CryptoBalance.types";
 import { formatCurrencyUSD } from "../../../utils";
 import { AssetsTransactions } from "../../components/AssetsTransactions";
+import { getBackRoute } from "../../../routes/backRoute";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
   const currentRoute = useAppSelector(getCurrentRoute);
+  const { backPath } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
+    store: {stateCache},
+  });
+  const [showToast, setShowToast] = useState(
+    backPath.pathname === RoutePath.VERIFY_SEED_PHRASE
+  );
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
@@ -293,6 +301,15 @@ const Crypto = () => {
               buttonAction={() => setAddAccountIsOpen(true)}
             />
           )}
+          <IonToast
+            isOpen={showToast}
+            onDidDismiss={() => setShowToast(false)}
+            message={`${i18n.t("crypto.tab.toast.success")}`}
+            color="light-green"
+            position="top"
+            cssClass="crypto-toast"
+            duration={1500}
+          />
         </TabLayout>
       </IonPage>
       <MyWallets
@@ -322,6 +339,7 @@ const Crypto = () => {
         chooseAccountNameIsOpen={chooseAccountNameIsOpen}
         setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
         setDefaultAccountData={setDefaultAccountData}
+        usesIdentitySeedPhrase={true}
       />
     </>
   );

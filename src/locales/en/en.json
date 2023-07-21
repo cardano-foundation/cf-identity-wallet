@@ -47,7 +47,6 @@
     }
   },
   "generateseedphrase": {
-    "title": "Generate seed phrase",
     "paragraph": {
       "top": "Think of your secret recovery phrase as a safety net for your identity. If you ever lose your phone or switch to a new wallet, this phrase will help you recover your identity.",
       "bottom": "It's important to keep these words safe and sound! Store them in a secure location, like a password manager, and remember to never share them with anyone."
@@ -59,17 +58,32 @@
         "button": "View seed phrase"
       }
     },
-    "continue": {
-      "button": {
-        "new": "Continue",
-        "additional": "Generate seed phrase"
+    "onboarding": {
+      "title": "Generate seed phrase",
+      "continue": {
+        "button": "Continue"
+      }
+    },
+    "additional": {
+      "title": "Generate seed phrase",
+      "continue": {
+        "button": "Generate seed phrase"
       }
     },
     "alert": {
-      "text": "Have you double-checked you've copied your seed phrase correctly?",
-      "button": {
-        "confirm": "Yes, I've copied these correctly!",
-        "cancel": "I'll take another look"
+      "confirm": {
+        "text": "Have you double-checked you've copied your seed phrase correctly?",
+        "button": {
+          "confirm": "Yes, I've copied these correctly!",
+          "cancel": "I'll take another look"
+        }
+      },
+      "exit": {
+        "text": "If you go back you will lose your current progress. Are you sure you want to do this?",
+        "button": {
+          "confirm": "Confirm",
+          "cancel": "Cancel"
+        }
       }
     },
     "termsandconditions": {
@@ -104,17 +118,35 @@
     }
   },
   "verifyseedphrase": {
-    "title": "Verify your seed phrase",
+    "onboarding": {
+      "title": "Verify your seed phrase",
+      "continue": {
+        "button": "Continue"
+      }
+    },
+    "additional": {
+      "title": "Verify seed phrase",
+      "continue": {
+        "button": "Verify seed phrase"
+      }
+    },
     "paragraph": {
       "top": "Please select each word in the order it was presented to you."
     },
-    "continue": {
-      "button": "Continue"
-    },
     "alert": {
-      "text": "Sorry, the seed phrase you have entered is incorrect!",
-      "button": {
-        "cancel": "Try again"
+      "fail": {
+        "text": "Your seed phrase couldn’t be verified. Please, try again or choose an alternative method",
+        "button": {
+          "confirm": "View my seed phrase",
+          "cancel": "Cancel"
+        }
+      },
+      "exit": {
+        "text": "If you go back you will lose your current progress. Are you sure you want to do this?",
+        "button": {
+          "confirm": "Confirm",
+          "cancel": "Cancel"
+        }
       }
     }
   },
@@ -298,6 +330,9 @@
       "create": "Add a crypto account",
       "network": {
         "mainnet": "Mainnet"
+      },
+      "toast": {
+        "success": "Seed phrase verified"
       },
       "slider": {
         "title": {

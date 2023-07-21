@@ -5,7 +5,6 @@ import configureStore from "redux-mock-store";
 import { ChooseAccountName } from "./ChooseAccountName";
 import { TabsRoutePath } from "../../../routes/paths";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 
 describe("Choose Crypto Account name", () => {
   test("Render the modal", async () => {
@@ -35,6 +34,7 @@ describe("Choose Crypto Account name", () => {
           chooseAccountNameIsOpen={true}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
           setDefaultAccountData={setDefaultAccountData}
+          usesIdentitySeedPhrase={false}
         />
       </Provider>
     );
@@ -77,6 +77,7 @@ describe("Choose Crypto Account name", () => {
           chooseAccountNameIsOpen={true}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
           setDefaultAccountData={setDefaultAccountData}
+          usesIdentitySeedPhrase={false}
         />
       </Provider>
     );

@@ -6,14 +6,17 @@ import {
   render,
   waitFor,
 } from "@testing-library/react";
+import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { BrowserRouter, MemoryRouter, Route, Router } from "react-router-dom";
 import { Crypto } from "./Crypto";
 import { store } from "../../../store";
-import { TabsRoutePath } from "../../../routes/paths";
+import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 
 describe("Crypto Tab", () => {
   test("Renders Crypto Tab", () => {
@@ -290,5 +293,47 @@ describe("Crypto Tab", () => {
     });
 
     expect(queryByText(cryptoAccountsMock[1].name)).toBeVisible();
+  });
+
+  test("User has an option for creating a new crypto account generating a new seed phrase", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.CRYPTO],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      cryptoAccountsCache: [],
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { getByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <Crypto />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(queryByText(EN_TRANSLATIONS.crypto.tab.create)).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByText(EN_TRANSLATIONS.crypto.tab.create));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.crypto.addcryptoaccountmodal.generate)
+      ).toBeVisible();
+    });
   });
 });

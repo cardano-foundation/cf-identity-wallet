@@ -133,6 +133,7 @@ const PasscodeLogin = () => {
         <Alert
           isOpen={isOpen}
           setIsOpen={setIsOpen}
+          dataTestId="alert-forgotten"
           headerText={headerText}
           confirmButtonText={confirmButtonText}
           cancelButtonText={cancelButtonText}
