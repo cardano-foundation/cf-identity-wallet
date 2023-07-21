@@ -25,7 +25,7 @@ import { DidCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import {getStateCache, setCurrentRoute} from "../../../store/reducers/stateCache";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { ShareIdentity } from "../../components/ShareIdentity";
 import { EditIdentity } from "../../components/EditIdentity";
@@ -42,7 +42,7 @@ import { IdentityDetails } from "../../../core/aries/ariesAgent.types";
 const DidCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-
+  const stateCache = useAppSelector(getStateCache);
   const identitiesData = useAppSelector(getIdentitiesCache);
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [editIsOpen, setEditIsOpen] = useState(false);
@@ -67,8 +67,16 @@ const DidCardDetails = () => {
   });
 
   const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS);
-    updateReduxState(backPath.pathname, {}, dispatch, updateRedux);
+    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
+      store: {stateCache},
+    });
+
+    updateReduxState(
+      backPath.pathname,
+      { store: {stateCache} },
+      dispatch,
+      updateRedux
+    );
     history.push(TabsRoutePath.DIDS);
   };
 

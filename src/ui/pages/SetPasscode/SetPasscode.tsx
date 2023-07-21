@@ -4,12 +4,10 @@ import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import {
-  SecureStorage,
-  KeyStoreKeys,
-} from "../../../core/storage/secureStorage";
+import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import { useAppDispatch } from "../../../store/hooks";
+import {getStateCache} from "../../../store/reducers/stateCache";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
@@ -18,7 +16,7 @@ import { RoutePath } from "../../../routes";
 const SetPasscode = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-
+  const stateCache = useAppSelector(getStateCache);
   const [passcode, setPasscode] = useState("");
   const [originalPassCode, setOriginalPassCode] = useState("");
   const handlePinChange = (digit: number) => {
@@ -30,7 +28,9 @@ const SetPasscode = () => {
             () => {
               handleClearState();
 
-              const data: DataProps = {};
+              const data: DataProps = {
+                store: {stateCache},
+              };
               const { nextPath, updateRedux } = getNextRoute(
                 RoutePath.SET_PASSCODE,
                 data

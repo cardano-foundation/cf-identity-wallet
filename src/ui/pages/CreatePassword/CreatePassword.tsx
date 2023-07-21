@@ -20,11 +20,9 @@ import { RoutePath } from "../../../routes";
 import { PasswordRegexProps, RegexItemProps } from "./CreatePassword.types";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage/secureStorage";
-import { useAppDispatch } from "../../../store/hooks";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {getStateCache} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -142,6 +140,7 @@ const PasswordRegex = ({ password }: PasswordRegexProps) => {
 };
 
 const CreatePassword = () => {
+  const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [createPasswordValue, setCreatePasswordValue] = useState("");
@@ -172,7 +171,10 @@ const CreatePassword = () => {
     setCreateHintValue("");
   };
   const handleClose = async () => {
-    const { backPath } = getBackRoute(RoutePath.CREATE_PASSWORD);
+    const { backPath } = getBackRoute(RoutePath.CREATE_PASSWORD, {
+      store: {stateCache},
+    });
+
     history.push(backPath.pathname);
     handleClearState();
   };
@@ -186,9 +188,15 @@ const CreatePassword = () => {
         createHintValue
       );
     }
-    const { nextPath, updateRedux } = getNextRoute(
-      RoutePath.CREATE_PASSWORD,
-      {}
+    const { nextPath, updateRedux } = getNextRoute(RoutePath.CREATE_PASSWORD, {
+      store: {stateCache},
+    });
+
+    updateReduxState(
+      nextPath.pathname,
+      { store: {stateCache} },
+      dispatch,
+      updateRedux
     );
     updateReduxState(nextPath.pathname, {}, dispatch, updateRedux);
     history.push(nextPath.pathname);

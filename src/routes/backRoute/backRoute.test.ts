@@ -192,7 +192,22 @@ describe("getPreviousRoute", () => {
   });
 
   test("should return the ROOT path if no previous route exists", () => {
-    const result = getPreviousRoute();
+    const data: DataProps = {
+      store: storeMock,
+    };
+
+    const storeWithoutRoutes = {
+      ...storeMock,
+      stateCache: {
+        ...storeMock.stateCache,
+        routes: []
+      }
+    }
+
+    const result = getPreviousRoute({
+      ...data,
+      store: storeWithoutRoutes
+    });
 
     expect(result).toEqual({ pathname: "/" });
   });

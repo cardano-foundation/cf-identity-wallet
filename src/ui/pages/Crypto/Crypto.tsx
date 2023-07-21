@@ -19,7 +19,7 @@ import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   setCurrentRoute,
-  getCurrentRoute,
+  getCurrentRoute
 } from "../../../store/reducers/stateCache";
 import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";

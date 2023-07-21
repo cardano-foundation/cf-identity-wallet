@@ -15,10 +15,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { Alert as AlertExit, Alert as AlertFail } from "../../components/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage/secureStorage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { Addresses } from "../../../core/cardano/addresses";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -44,9 +41,9 @@ const VerifySeedPhrase = () => {
     : (history?.location?.state as GenerationType)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
-    seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
-      ? seedPhraseStore.seedPhrase160.split(" ")
-      : seedPhraseStore.seedPhrase256.split(" ");
+      seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
+        ? seedPhraseStore.seedPhrase160.split(" ")
+        : seedPhraseStore.seedPhrase256.split(" ");
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -112,25 +109,32 @@ const VerifySeedPhrase = () => {
   const handleContinue = async () => {
     if (
       originalSeedPhrase.length === seedPhraseSelected.length &&
-      originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
+        originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      if (seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding) {
-        handleStore();
-        const { nextPath, updateRedux } = getNextRoute(
-          RoutePath.VERIFY_SEED_PHRASE,
-          { store: storeState }
-        );
-        updateReduxState(
-          nextPath.pathname,
-          { store: storeState },
-          dispatch,
-          updateRedux
-        );
-        handleClearState();
-        history.push(nextPath.pathname);
-      } else {
-        setChooseAccountNameIsOpen(true);
-      }
+      const seedPhraseString = originalSeedPhrase.join(" ");
+      await SecureStorage.set(
+        KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+        Addresses.convertToRootXPrivateKeyHex(
+          Addresses.convertToEntropy(seedPhraseString)
+        )
+      );
+      await SecureStorage.set(
+        KeyStoreKeys.IDENTITY_SEEDPHRASE,
+        seedPhraseString
+      );
+
+      const { nextPath, updateRedux } = getNextRoute(
+        RoutePath.VERIFY_SEED_PHRASE,
+        { store: {stateCache} }
+      );
+      updateReduxState(
+        nextPath.pathname,
+        { store: {stateCache} },
+        dispatch,
+        updateRedux
+      );
+      history.push(nextPath.pathname);
+      // TODO: Store Seed Phrase in db/keystore
     } else {
       setAlertIsOpen(true);
     }

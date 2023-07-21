@@ -68,7 +68,6 @@ describe("Choose Crypto Account name", () => {
       dispatch: dispatchMock,
     };
     const setChooseAccountNameIsOpen = jest.fn();
-    const handleCreateWallet = jest.fn();
     const setDefaultAccountData = jest.fn();
 
     const { getByTestId, queryByText } = render(
@@ -94,8 +93,6 @@ describe("Choose Crypto Account name", () => {
       fireEvent.click(getByTestId("action-button"));
     });
 
-    await waitFor(() => {
-      expect(handleCreateWallet).toHaveBeenCalledWith("skip");
-    });
+    // @TODO - foconnor: If unskipped can test Aries agent called and Redux updated
   });
 });

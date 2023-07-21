@@ -9,10 +9,7 @@ import { CustomInput } from "../CustomInput";
 import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
 import "./VerifyPassword.scss";
 import { Alert } from "../Alert";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage/secureStorage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
 

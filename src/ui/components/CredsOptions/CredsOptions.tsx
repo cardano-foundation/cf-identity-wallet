@@ -19,9 +19,10 @@ import { CredsOptionsProps } from "./CredsOptions.types";
 import "./CredsOptions.scss";
 import { VerifyPassword } from "../VerifyPassword";
 import { Alert } from "../Alert";
-import { useAppDispatch } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getBackRoute } from "../../../routes/backRoute";
-import { TabsRoutePath } from "../navigation/TabsMenu";
+import { TabsRoutePath } from "../../../routes/paths";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { credsMock } from "../../__mocks__/credsMock";
 import { setCredsCache } from "../../../store/reducers/credsCache";
@@ -31,6 +32,7 @@ const CredsOptions = ({
   setOptionsIsOpen,
   id,
 }: CredsOptionsProps) => {
+  const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const [viewIsOpen, setViewIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -47,8 +49,16 @@ const CredsOptions = ({
   };
 
   const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS);
-    updateReduxState(backPath.pathname, {}, dispatch, updateRedux);
+    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
+      store: {stateCache},
+    });
+
+    updateReduxState(
+      backPath.pathname,
+      { store: {stateCache} },
+      dispatch,
+      updateRedux
+    );
     history.push(TabsRoutePath.CREDS);
   };
 

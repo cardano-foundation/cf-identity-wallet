@@ -41,13 +41,14 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: '18'
-    
+
     - name: Run unit tests
       env:
         NODE_OPTIONS: "--max_old_space_size=4096"
       run: |
         npm ci
-        npm test
+        npm run test
+        npm run test:cardano
 
     - name: 🔨 Build project
       run: npm run build

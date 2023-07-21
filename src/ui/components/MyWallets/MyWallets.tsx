@@ -31,7 +31,7 @@ import { RenameWallet } from "../RenameWallet";
 import {
   PreferencesKeys,
   PreferencesStorage,
-} from "../../../core/storage/preferences/preferencesStorage";
+} from "../../../core/storage/preferences";
 
 const MyWallets = ({
   myWalletsIsOpen,

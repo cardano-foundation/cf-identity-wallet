@@ -6,11 +6,9 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { Alert } from "../../components/Alert";
-import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage/secureStorage";
+import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {getAuthentication, getStateCache, setAuthentication} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -23,6 +21,7 @@ import {
 const PasscodeLogin = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
@@ -52,7 +51,17 @@ const PasscodeLogin = () => {
           .then((verified) => {
             if (verified) {
               const { backPath, updateRedux } = getBackRoute(
-                RoutePath.PASSCODE_LOGIN
+                RoutePath.PASSCODE_LOGIN,
+                {
+                  store: {stateCache},
+                }
+              );
+
+              updateReduxState(
+                backPath.pathname,
+                { store: {stateCache} },
+                dispatch,
+                updateRedux
               );
               updateReduxState(backPath.pathname, {}, dispatch, updateRedux);
               history.push(backPath.pathname);
@@ -90,7 +99,12 @@ const PasscodeLogin = () => {
 
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
-      dispatch(setAuthentication({ ...authentication, passcodeIsSet: false }));
+      dispatch(setAuthentication(
+        {
+          ...authentication,
+          passcodeIsSet: false,
+        }
+      ))
       history.push(RoutePath.SET_PASSCODE);
       handleClearState();
     });

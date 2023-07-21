@@ -30,7 +30,8 @@ import {
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
 import { getBackRoute } from "../../../routes/backRoute";
-import { TabsRoutePath } from "../navigation/TabsMenu";
+import { TabsRoutePath } from "../../../routes/paths";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
 
@@ -41,7 +42,7 @@ const EditIdentity = ({
   setCardData,
 }: EditIdentityProps) => {
   const identitiesData = useAppSelector(getIdentitiesCache);
-
+  const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
@@ -83,8 +84,16 @@ const EditIdentity = ({
   };
 
   const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS);
-    updateReduxState(backPath.pathname, {}, dispatch, updateRedux);
+    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
+      store: {stateCache},
+    });
+
+    updateReduxState(
+      backPath.pathname,
+      { store: {stateCache} },
+      dispatch,
+      updateRedux
+    );
     if (actionType === "delete") {
       history.push(TabsRoutePath.DIDS);
     }
