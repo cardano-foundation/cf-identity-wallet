@@ -1,8 +1,4 @@
-import {
-  render,
-  waitFor,
-  waitForElementToBeRemoved,
-} from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
 import { createMemoryHistory } from "history";
 import { act } from "react-dom/test-utils";
 import {
@@ -18,6 +14,7 @@ import {
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
+  GENERATE_SEED_PHRASE_STATE,
 } from "../../../constants/appConstants";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
@@ -25,10 +22,10 @@ import { RoutePath } from "../../../routes";
 
 describe("Generate Seed Phrase screen from Onboarding", () => {
   const history = createMemoryHistory();
-  const state = {
-    type: "onboarding",
-  };
-  history.push(RoutePath.GENERATE_SEED_PHRASE, state);
+  history.push(
+    RoutePath.GENERATE_SEED_PHRASE,
+    GENERATE_SEED_PHRASE_STATE.type.onboarding
+  );
 
   test("User can see Title and Security Overlay", () => {
     const { getByText, getByTestId } = render(
@@ -392,10 +389,10 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
 describe("Generate Seed Phrase screen from Crypto/Generate", () => {
   const history = createMemoryHistory();
-  const state = {
-    type: "additional",
-  };
-  history.push(RoutePath.GENERATE_SEED_PHRASE, state);
+  history.push(
+    RoutePath.GENERATE_SEED_PHRASE,
+    GENERATE_SEED_PHRASE_STATE.type.additional
+  );
 
   const mockStore = configureStore();
   const dispatchMock = jest.fn();

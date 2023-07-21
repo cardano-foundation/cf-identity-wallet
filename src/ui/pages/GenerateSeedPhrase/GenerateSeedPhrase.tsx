@@ -27,6 +27,7 @@ import {
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
+  GENERATE_SEED_PHRASE_STATE,
 } from "../../../constants/appConstants";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
@@ -52,7 +53,7 @@ const GenerateSeedPhrase = () => {
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
   const seedPhraseType = !storeState.stateCache.authentication.seedPhraseIsSet
-    ? "onboarding"
+    ? GENERATE_SEED_PHRASE_STATE.type.onboarding
     : (history?.location?.state as GenerationType)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
@@ -181,7 +182,8 @@ const GenerateSeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              {seedPhraseType === "onboarding" && (
+              {seedPhraseType ===
+                GENERATE_SEED_PHRASE_STATE.type.onboarding && (
                 <h2>
                   {i18n.t("generateseedphrase." + seedPhraseType + ".title")}
                 </h2>

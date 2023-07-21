@@ -22,7 +22,7 @@ import {
   getCurrentRoute,
   getState,
 } from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
+import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import {
   getCryptoAccountsCache,
@@ -50,7 +50,7 @@ const Crypto = () => {
     store: storeState,
   });
   const [showToast, setShowToast] = useState(
-    backPath.pathname === "/verifyseedphrase"
+    backPath.pathname === RoutePath.VERIFY_SEED_PHRASE
   );
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache

@@ -23,7 +23,10 @@ import { Addresses } from "../../../core/cardano/addresses";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getState } from "../../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import {
+  FIFTEEN_WORDS_BIT_LENGTH,
+  GENERATE_SEED_PHRASE_STATE,
+} from "../../../constants/appConstants";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../../../routes/paths";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
@@ -37,7 +40,7 @@ const VerifySeedPhrase = () => {
   const dispatch = useAppDispatch();
   const storeState = useAppSelector(getState);
   const seedPhraseType = !storeState.stateCache.authentication.seedPhraseIsSet
-    ? "onboarding"
+    ? GENERATE_SEED_PHRASE_STATE.type.onboarding
     : (history?.location?.state as GenerationType)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
