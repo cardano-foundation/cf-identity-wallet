@@ -101,7 +101,7 @@ const VerifySeedPhrase = () => {
       Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
     );
     await SecureStorage.set(
-      seedPhraseType === "onboarding"
+      seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding
         ? KeyStoreKeys.IDENTITY_SEEDPHRASE
         : // @TODO - sdisalvo: Remember to change the key below as soon as core is ready
           KeyStoreKeys.IDENTITY_SEEDPHRASE,
@@ -114,7 +114,7 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      if (seedPhraseType === "onboarding") {
+      if (seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding) {
         handleStore();
         const { nextPath, updateRedux } = getNextRoute(
           RoutePath.VERIFY_SEED_PHRASE,
@@ -164,18 +164,20 @@ const VerifySeedPhrase = () => {
         id="verify-seedphrase"
         header={true}
         title={
-          seedPhraseType !== "onboarding"
+          seedPhraseType !== GENERATE_SEED_PHRASE_STATE.type.onboarding
             ? `${i18n.t("verifyseedphrase." + seedPhraseType + ".title")}`
             : undefined
         }
         backButton={true}
         onBack={
-          seedPhraseType === "onboarding"
+          seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding
             ? handleClearState
             : () => setAlertExitIsOpen(true)
         }
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
-        progressBar={seedPhraseType === "onboarding"}
+        progressBar={
+          seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding
+        }
         progressBarValue={1}
         progressBarBuffer={1}
         footer={true}
@@ -190,7 +192,8 @@ const VerifySeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              {seedPhraseType === "onboarding" && (
+              {seedPhraseType ===
+                GENERATE_SEED_PHRASE_STATE.type.onboarding && (
                 <h2>
                   {i18n.t("verifyseedphrase." + seedPhraseType + ".title")}
                 </h2>
