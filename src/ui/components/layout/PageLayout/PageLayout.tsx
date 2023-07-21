@@ -63,6 +63,7 @@ const PageLayout = ({
           updateRedux
         );
         history.push(backPath.pathname);
+      }
     }
   };
 

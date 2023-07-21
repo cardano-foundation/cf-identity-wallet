@@ -111,30 +111,23 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.length === seedPhraseSelected.length &&
         originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      const seedPhraseString = originalSeedPhrase.join(" ");
-      await SecureStorage.set(
-        KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-        Addresses.convertToRootXPrivateKeyHex(
-          Addresses.convertToEntropy(seedPhraseString)
-        )
-      );
-      await SecureStorage.set(
-        KeyStoreKeys.IDENTITY_SEEDPHRASE,
-        seedPhraseString
-      );
-
-      const { nextPath, updateRedux } = getNextRoute(
-        RoutePath.VERIFY_SEED_PHRASE,
-        { store: {stateCache} }
-      );
-      updateReduxState(
-        nextPath.pathname,
-        { store: {stateCache} },
-        dispatch,
-        updateRedux
-      );
-      history.push(nextPath.pathname);
-      // TODO: Store Seed Phrase in db/keystore
+      if (seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding) {
+        handleStore();
+        const { nextPath, updateRedux } = getNextRoute(
+          RoutePath.VERIFY_SEED_PHRASE,
+          { store: storeState }
+        );
+        updateReduxState(
+          nextPath.pathname,
+          { store: storeState },
+          dispatch,
+          updateRedux
+        );
+        handleClearState();
+        history.push(nextPath.pathname);
+      } else {
+        setChooseAccountNameIsOpen(true);
+      }
     } else {
       setAlertIsOpen(true);
     }

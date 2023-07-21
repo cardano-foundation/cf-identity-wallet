@@ -51,11 +51,10 @@ type GenerationType = {
 const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
-  const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
+  const storeState = useAppSelector(getStateCache);
+  const seedPhraseType = !storeState.stateCache.authentication.seedPhraseIsSet
     ? GENERATE_SEED_PHRASE_STATE.type.onboarding
     : (history?.location?.state as GenerationType)?.type || "";
-
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
