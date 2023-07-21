@@ -32,7 +32,7 @@ interface CryptoAccountProps {
       usdBalance: number;
     };
   };
-  usesIdentitySeedPhrase: boolean;
+  usesIdentitySeedPhrase: boolean | (() => Promise<boolean>);
   assets: CryptoAssetsProps[];
   transactions: CryptoTransactionsProps[];
 }

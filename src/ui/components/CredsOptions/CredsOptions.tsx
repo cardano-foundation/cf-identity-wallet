@@ -175,6 +175,7 @@ const CredsOptions = ({
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
+        dataTestId="alert-confirm"
         headerText={i18n.t("creds.card.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
           "creds.card.details.delete.alert.confirm"
