@@ -28,15 +28,15 @@ const ChooseAccountName = ({
   chooseAccountNameIsOpen,
   setChooseAccountNameIsOpen,
   setDefaultAccountData,
+  usesIdentitySeedPhrase,
+  onDone,
 }: ChooseAccountNameProps) => {
   const dispatch = useAppDispatch();
   const seedPhraseStorageService = useRef(new SeedPhraseStorageService());
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
-  const [accountName, setAccountName] = useState(
-    `${i18n.t("crypto.chooseaccountnamemodal.placeholder")}`
-  );
+  const [accountName, setAccountName] = useState("");
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ const ChooseAccountName = ({
       .then(() => {
         const newWallet: CryptoAccountProps = {
           name,
-          usesIdentitySeedPhrase: true,
+          usesIdentitySeedPhrase: usesIdentitySeedPhrase,
           // @TODO - sdisalvo: remember to remove hardcoded values below this point
           address:
             "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg7j8cu8",
@@ -82,7 +82,7 @@ const ChooseAccountName = ({
           transactions: [],
           // End of hardcoded values
         };
-        if (cryptoAccountsData.length === 0) {
+        if (cryptoAccountsData.length === 0 && setDefaultAccountData) {
           dispatch(setDefaultCryptoAccountCache(newWallet.address));
           PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
             data: newWallet.address,
@@ -91,6 +91,9 @@ const ChooseAccountName = ({
         }
         dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
         setChooseAccountNameIsOpen(false);
+        if (onDone) {
+          onDone();
+        }
       })
       .catch((err) => {
         // @TODO - handle exceptions in the UI story here
@@ -138,10 +141,7 @@ const ChooseAccountName = ({
               className="ion-primary-button"
               data-testid="continue-button"
               onClick={() => handleCreateWallet(accountName)}
-              disabled={
-                accountName ===
-                `${i18n.t("crypto.chooseaccountnamemodal.placeholder")}`
-              }
+              disabled={!accountName.length}
             >
               {i18n.t("crypto.chooseaccountnamemodal.confirm")}
             </IonButton>

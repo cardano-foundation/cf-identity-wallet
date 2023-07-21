@@ -34,6 +34,7 @@ describe("Choose Crypto Account name", () => {
           chooseAccountNameIsOpen={true}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
           setDefaultAccountData={setDefaultAccountData}
+          usesIdentitySeedPhrase={false}
         />
       </Provider>
     );
@@ -75,6 +76,7 @@ describe("Choose Crypto Account name", () => {
           chooseAccountNameIsOpen={true}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
           setDefaultAccountData={setDefaultAccountData}
+          usesIdentitySeedPhrase={false}
         />
       </Provider>
     );

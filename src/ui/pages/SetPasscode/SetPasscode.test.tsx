@@ -160,7 +160,7 @@ describe("SetPasscode Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS.generateseedphrase.title)
+        queryByText(EN_TRANSLATIONS.generateseedphrase.onboarding.title)
       ).not.toBeInTheDocument()
     );
 

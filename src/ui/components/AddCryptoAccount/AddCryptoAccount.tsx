@@ -11,10 +11,18 @@ import {
   addCircleOutline,
   refreshOutline,
 } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { AddCryptoAccountsProps } from "./AddCryptoAccount.types";
 import "./AddCryptoAccount.scss";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getStateCache } from "../../../store/reducers/stateCache";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { TabsRoutePath } from "../navigation/TabsMenu";
+import { updateReduxState } from "../../../store/utils";
+import { GENERATE_SEED_PHRASE_STATE } from "../../../constants/appConstants";
 
 const AddCryptoAccount = ({
   addAccountIsOpen,
@@ -22,6 +30,25 @@ const AddCryptoAccount = ({
   setShowVerifyPassword,
   idwProfileInUse,
 }: AddCryptoAccountsProps) => {
+  const history = useHistory();
+  const dispatch = useAppDispatch();
+  const stateCache = useAppSelector(getStateCache);
+
+  const handleNewAccount = (type: string) => {
+    setAddAccountIsOpen(false);
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CRYPTO, data);
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    history.push({
+      pathname: nextPath.pathname,
+      state: {
+        type: type,
+      },
+    });
+  };
+
   return (
     <IonModal
       isOpen={addAccountIsOpen}
@@ -68,9 +95,9 @@ const AddCryptoAccount = ({
                 <span
                   className="add-crypto-account-option"
                   data-testid="add-crypto-account-generate-button"
-                  onClick={() => {
-                    return;
-                  }}
+                  onClick={() =>
+                    handleNewAccount(GENERATE_SEED_PHRASE_STATE.type.additional)
+                  }
                 >
                   <span>
                     <IonButton shape="round">
@@ -87,9 +114,9 @@ const AddCryptoAccount = ({
                 <span
                   className="add-crypto-account-option"
                   data-testid="add-crypto-account-restore-button"
-                  onClick={() => {
-                    return;
-                  }}
+                  onClick={() =>
+                    handleNewAccount(GENERATE_SEED_PHRASE_STATE.type.restore)
+                  }
                 >
                   <span>
                     <IonButton shape="round">

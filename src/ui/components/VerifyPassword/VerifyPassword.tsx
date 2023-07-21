@@ -172,6 +172,7 @@ const VerifyPassword = ({
           <Alert
             isOpen={alertChoiceIsOpen}
             setIsOpen={setAlertChoiceIsOpen}
+            dataTestId="alert-choice"
             headerText={i18n.t("verifypassword.alert.choice.title")}
             confirmButtonText={`${i18n.t(
               "verifypassword.alert.button.seepasswordhint"
@@ -188,6 +189,7 @@ const VerifyPassword = ({
           <Alert
             isOpen={alertHintIsOpen}
             setIsOpen={setAlertHintIsOpen}
+            dataTestId="alert-tryagain"
             headerText={i18n.t("verifypassword.alert.hint.title")}
             subheaderText={storedHint}
             confirmButtonText={`${i18n.t(

@@ -27,10 +27,14 @@ import {
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
+  GENERATE_SEED_PHRASE_STATE,
 } from "../../../constants/appConstants";
 import { PageLayout } from "../../components/layout/PageLayout";
-import { Alert } from "../../components/Alert";
-import {getStateCache} from "../../../store/reducers/stateCache";
+import {
+  Alert as AlertConfirm,
+  Alert as AlertExit,
+} from "../../components/Alert";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -38,17 +42,26 @@ import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
+import { TabsRoutePath } from "../../../routes/paths";
+
+type GenerationType = {
+  type: string;
+};
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
+    ? GENERATE_SEED_PHRASE_STATE.type.onboarding
+    : (history?.location?.state as GenerationType)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
+  const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
@@ -81,7 +94,8 @@ const GenerateSeedPhrase = () => {
     setSeedPhrase256([]);
     setSeedPhrase([]);
     setShowSeedPhrase(false);
-    setAlertIsOpen(false);
+    setAlertConfirmIsOpen(false);
+    setAlertExitIsOpen(false);
     setModalIsOpen(false);
     setChecked(false);
   };
@@ -98,7 +112,6 @@ const GenerateSeedPhrase = () => {
     return (
       <a
         onClick={() => {
-          setChecked(true);
           setModalIsOpen(true);
         }}
       >
@@ -111,9 +124,9 @@ const GenerateSeedPhrase = () => {
     setShowSeedPhrase(true);
   };
   const handleContinue = () => {
-    setAlertIsOpen(false);
+    setAlertConfirmIsOpen(false);
     const data: DataProps = {
-      store: {stateCache},
+      store: { stateCache },
       state: {
         seedPhrase160: seedPhrase160.join(" "),
         seedPhrase256: seedPhrase256.join(" "),
@@ -128,29 +141,59 @@ const GenerateSeedPhrase = () => {
       data
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    history.push(nextPath.pathname);
     handleClearState();
+    history.push({
+      pathname: nextPath.pathname,
+      state: {
+        type: seedPhraseType,
+      },
+    });
+  };
+
+  const handleExit = () => {
+    handleClearState();
+    history.push(TabsRoutePath.CRYPTO);
   };
 
   return (
     <IonPage className="page-layout generate-seedphrase">
       <PageLayout
         header={true}
-        backButton={true}
+        title={
+          seedPhraseType !== GENERATE_SEED_PHRASE_STATE.type.onboarding
+            ? `${i18n.t("generateseedphrase." + seedPhraseType + ".title")}`
+            : undefined
+        }
+        backButton={
+          seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding
+        }
         onBack={handleClearState}
+        closeButton={
+          seedPhraseType !== GENERATE_SEED_PHRASE_STATE.type.onboarding
+        }
+        closeButtonAction={() => setAlertExitIsOpen(true)}
         currentPath={RoutePath.GENERATE_SEED_PHRASE}
-        progressBar={true}
+        progressBar={
+          seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding
+        }
         progressBarValue={0.66}
         progressBarBuffer={1}
         footer={true}
-        primaryButtonText={`${i18n.t("generateseedphrase.continue.button")}`}
-        primaryButtonAction={() => setAlertIsOpen(true)}
+        primaryButtonText={`${i18n.t(
+          "generateseedphrase." + seedPhraseType + ".continue.button"
+        )}`}
+        primaryButtonAction={() => setAlertConfirmIsOpen(true)}
         primaryButtonDisabled={!(showSeedPhrase && checked)}
       >
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <h2>{i18n.t("generateseedphrase.title")}</h2>
+              {seedPhraseType ===
+                GENERATE_SEED_PHRASE_STATE.type.onboarding && (
+                <h2>
+                  {i18n.t("generateseedphrase." + seedPhraseType + ".title")}
+                </h2>
+              )}
               <p className="page-paragraph">
                 {i18n.t("generateseedphrase.paragraph.top")}
               </p>
@@ -274,18 +317,31 @@ const GenerateSeedPhrase = () => {
             </IonCol>
           </IonRow>
         </IonGrid>
-
-        <Alert
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
-          headerText={i18n.t("generateseedphrase.alert.text")}
+        <AlertConfirm
+          isOpen={alertConfirmIsOpen}
+          setIsOpen={setAlertConfirmIsOpen}
+          dataTestId="alert-confirm"
+          headerText={i18n.t("generateseedphrase.alert.confirm.text")}
           confirmButtonText={`${i18n.t(
-            "generateseedphrase.alert.button.confirm"
+            "generateseedphrase.alert.confirm.button.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "generateseedphrase.alert.button.cancel"
+            "generateseedphrase.alert.confirm.button.cancel"
           )}`}
           actionConfirm={handleContinue}
+        />
+        <AlertExit
+          isOpen={alertExitIsOpen}
+          setIsOpen={setAlertExitIsOpen}
+          dataTestId="alert-exit"
+          headerText={i18n.t("generateseedphrase.alert.exit.text")}
+          confirmButtonText={`${i18n.t(
+            "generateseedphrase.alert.exit.button.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "generateseedphrase.alert.exit.button.cancel"
+          )}`}
+          actionConfirm={handleExit}
         />
       </PageLayout>
     </IonPage>

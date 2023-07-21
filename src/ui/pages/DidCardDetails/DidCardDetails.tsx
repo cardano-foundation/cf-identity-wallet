@@ -25,7 +25,10 @@ import { DidCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {getStateCache, setCurrentRoute} from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { ShareIdentity } from "../../components/ShareIdentity";
 import { EditIdentity } from "../../components/EditIdentity";
@@ -68,12 +71,12 @@ const DidCardDetails = () => {
 
   const handleDone = () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
-      store: {stateCache},
+      store: { stateCache },
     });
 
     updateReduxState(
       backPath.pathname,
-      { store: {stateCache} },
+      { store: { stateCache } },
       dispatch,
       updateRedux
     );
@@ -337,6 +340,7 @@ const DidCardDetails = () => {
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
+          dataTestId="alert-confirm"
           headerText={i18n.t("dids.card.details.delete.alert.title")}
           confirmButtonText={`${i18n.t(
             "dids.card.details.delete.alert.confirm"

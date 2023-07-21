@@ -53,7 +53,7 @@ const Routes = () => {
   const dispatch = useAppDispatch();
   const routes = useAppSelector(getRoutes);
   const { nextPath } = getNextRoute(RoutePath.ROOT, {
-    store: {stateCache},
+    store: { stateCache },
   });
 
   useEffect(() => {

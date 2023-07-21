@@ -25,7 +25,10 @@ import { CredCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache, setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
@@ -79,12 +82,12 @@ const CredCardDetails = () => {
 
   const handleDone = () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
-      store: {stateCache},
+      store: { stateCache },
     });
 
     updateReduxState(
       backPath.pathname,
-      { store: {stateCache} },
+      { store: { stateCache } },
       dispatch,
       updateRedux
     );
@@ -342,6 +345,7 @@ const CredCardDetails = () => {
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
+          dataTestId="alert-delete"
           headerText={i18n.t("creds.card.details.delete.alert.title")}
           confirmButtonText={`${i18n.t(
             "creds.card.details.delete.alert.confirm"

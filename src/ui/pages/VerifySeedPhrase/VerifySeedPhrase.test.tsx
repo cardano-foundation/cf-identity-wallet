@@ -35,6 +35,7 @@ describe("Verify Seed Phrase Page", () => {
         loggedIn: true,
         time: Date.now(),
         passcodeIsSet: true,
+        seedPhraseIsSet: false,
       },
     },
     seedPhraseCache: {
@@ -43,6 +44,7 @@ describe("Verify Seed Phrase Page", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
+    cryptoAccountsCache: [],
   };
 
   const storeMocked = {
@@ -69,7 +71,7 @@ describe("Verify Seed Phrase Page", () => {
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
     const generateContinueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.continue.button
+      EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
     );
 
     act(() => {
@@ -87,7 +89,7 @@ describe("Verify Seed Phrase Page", () => {
     }
 
     const generateConfirmButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.alert.button.confirm
+      EN_TRANSLATIONS.generateseedphrase.alert.confirm.button.confirm
     );
 
     act(() => {
@@ -95,7 +97,9 @@ describe("Verify Seed Phrase Page", () => {
     });
 
     await waitFor(() =>
-      expect(queryByText(EN_TRANSLATIONS.verifyseedphrase.title)).toBeVisible()
+      expect(
+        queryByText(EN_TRANSLATIONS.verifyseedphrase.onboarding.title)
+      ).toBeVisible()
     );
   });
 
@@ -144,7 +148,7 @@ describe("Verify Seed Phrase Page", () => {
 
     await waitFor(() =>
       expect(
-        queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.text)
+        queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.text)
       ).toBeVisible()
     );
 
@@ -253,6 +257,7 @@ describe("Verify Seed Phrase Page", () => {
           loggedIn: true,
           time: Date.now(),
           passcodeIsSet: true,
+          seedPhraseIsSet: false,
         },
       },
       seedPhraseCache: {
@@ -260,6 +265,7 @@ describe("Verify Seed Phrase Page", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
+      cryptoAccountsCache: [],
     };
 
     const storeMocked = {
