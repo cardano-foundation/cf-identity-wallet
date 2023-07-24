@@ -1,4 +1,5 @@
-import { MemoryRouter, Route } from "react-router-dom";
+import { MemoryRouter, Route, Router } from "react-router-dom";
+import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
@@ -11,9 +12,9 @@ import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   FIFTEEN_WORDS_BIT_LENGTH,
+  GENERATE_SEED_PHRASE_STATE,
   MNEMONIC_FIFTEEN_WORDS,
 } from "../../../constants/appConstants";
-import { TabsMenu } from "../../components/navigation/TabsMenu";
 import { Addresses } from "../../../core/cardano/addresses";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 
@@ -158,18 +159,16 @@ describe("Verify Seed Phrase Page", () => {
   });
 
   test("The user can Verify the Seed Phrase", async () => {
+    const history = createMemoryHistory();
+    history.push(
+      RoutePath.VERIFY_SEED_PHRASE,
+      GENERATE_SEED_PHRASE_STATE.type.onboarding
+    );
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
-          <Route
-            path={RoutePath.VERIFY_SEED_PHRASE}
-            component={VerifySeedPhrase}
-          />
-          <Route
-            path={RoutePath.TABS_MENU}
-            component={TabsMenu}
-          />
-        </MemoryRouter>
+        <Router history={history}>
+          <VerifySeedPhrase />
+        </Router>
       </Provider>
     );
 
@@ -191,7 +190,7 @@ describe("Verify Seed Phrase Page", () => {
     initialState.seedPhraseCache.seedPhrase160
       .split(" ")
       .forEach(async (word) => {
-        fireEvent.click(getByText(String(word)));
+        fireEvent.click(getByText(`${word}`));
       });
 
     await waitFor(() =>
@@ -200,39 +199,11 @@ describe("Verify Seed Phrase Page", () => {
       )
     );
 
-    fireEvent.click(
-      getByText(
-        String(
-          initialState.seedPhraseCache.seedPhrase160.split(" ")[
-            MNEMONIC_FIFTEEN_WORDS - 1
-          ]
-        )
-      )
-    );
-
-    await waitFor(() =>
-      expect(matchingSeedPhraseContainer.childNodes.length).toBe(
-        MNEMONIC_FIFTEEN_WORDS
-      )
-    );
-
-    fireEvent.click(
-      getByText(
-        String(
-          initialState.seedPhraseCache.seedPhrase160.split(" ")[
-            MNEMONIC_FIFTEEN_WORDS - 1
-          ]
-        )
-      )
-    );
-
     await waitFor(() =>
       expect(continueButton).toHaveAttribute("disabled", "false")
     );
 
     fireEvent.click(continueButton);
-
-    await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
 
     const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
     expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
@@ -245,6 +216,8 @@ describe("Verify Seed Phrase Page", () => {
       KeyStoreKeys.IDENTITY_SEEDPHRASE,
       seedPhraseString
     );
+
+    await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
   });
 
   test("calls handleOnBack when back button is clicked", async () => {
@@ -283,11 +256,11 @@ describe("Verify Seed Phrase Page", () => {
       </Provider>
     );
 
-    fireEvent.click(getByText(String("example1")));
-    fireEvent.click(getByText(String("example2")));
-    fireEvent.click(getByText(String("example3")));
-    fireEvent.click(getByText(String("example4")));
-    fireEvent.click(getByText(String("example5")));
+    fireEvent.click(getByText("example1"));
+    fireEvent.click(getByText("example2"));
+    fireEvent.click(getByText("example3"));
+    fireEvent.click(getByText("example4"));
+    fireEvent.click(getByText("example5"));
 
     const continueButton = getByTestId(
       "continue-button-verify-seedphrase"

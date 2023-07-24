@@ -22,8 +22,6 @@ import {
 } from "../../../core/storage/preferences";
 import { SeedPhraseStorageService } from "../../../core/storage/services";
 
-const seedPhraseStorageService = new SeedPhraseStorageService();
-
 const ChooseAccountName = ({
   chooseAccountNameIsOpen,
   setChooseAccountNameIsOpen,
@@ -56,49 +54,56 @@ const ChooseAccountName = ({
       `${i18n.t("crypto.chooseaccountnamemodal.placeholder")} #${crypto
         .randomBytes(3)
         .toString("hex")}`;
-    seedPhraseStorageService.current
-      .createCryptoAccountFromIdentitySeedPhrase(name)
-      .then(() => {
-        const newWallet: CryptoAccountProps = {
-          name,
-          usesIdentitySeedPhrase: usesIdentitySeedPhrase,
-          // @TODO - sdisalvo: remember to remove hardcoded values below this point
-          address:
-            "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg7j8cu8",
-          blockchain: "Cardano",
-          currency: "ADA",
-          logo: CardanoLogo,
-          balance: {
-            main: {
-              nativeBalance: 273.85,
-              usdBalance: 75.2,
-            },
-            reward: {
-              nativeBalance: 0,
-              usdBalance: 0,
-            },
-          },
-          assets: [],
-          transactions: [],
-          // End of hardcoded values
-        };
-        if (cryptoAccountsData.length === 0 && setDefaultAccountData) {
+
+    const newWallet: CryptoAccountProps = {
+      name,
+      usesIdentitySeedPhrase: usesIdentitySeedPhrase,
+      // @TODO - sdisalvo: remember to remove hardcoded values below this point
+      address: "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg7j8cu8",
+      blockchain: "Cardano",
+      currency: "ADA",
+      logo: CardanoLogo,
+      balance: {
+        main: {
+          nativeBalance: 273.85,
+          usdBalance: 75.2,
+        },
+        reward: {
+          nativeBalance: 0,
+          usdBalance: 0,
+        },
+      },
+      assets: [],
+      transactions: [],
+      // End of hardcoded values
+    };
+
+    if (cryptoAccountsData.length === 0 && setDefaultAccountData) {
+      seedPhraseStorageService.current
+        .createCryptoAccountFromIdentitySeedPhrase(name)
+        .then(() => {
           dispatch(setDefaultCryptoAccountCache(newWallet.address));
           PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
             data: newWallet.address,
           });
           setDefaultAccountData(newWallet);
-        }
-        dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
-        setChooseAccountNameIsOpen(false);
-        if (onDone) {
-          onDone();
-        }
-      })
-      .catch((err) => {
-        // @TODO - handle exceptions in the UI story here
-        throw err;
-      });
+        })
+        .catch((err) => {
+          // @TODO - sdisalvo: handle errors
+          throw err;
+        });
+    }
+
+    if (usesIdentitySeedPhrase) {
+      const seedPhraseSecureStorage = new SeedPhraseStorageService();
+      seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase(name);
+    }
+
+    dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
+    setChooseAccountNameIsOpen(false);
+    if (onDone) {
+      onDone(name);
+    }
   };
 
   return (

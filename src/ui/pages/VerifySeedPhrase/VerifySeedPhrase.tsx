@@ -28,6 +28,7 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../../../routes/paths";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { SeedPhraseStorageService } from "../../../core/storage/services/seedPhraseStorageService";
 
 type GenerationType = {
   type: string;
@@ -92,19 +93,20 @@ const VerifySeedPhrase = () => {
     setSeedPhraseSelected(newMatch);
   };
 
-  const handleStore = async () => {
+  const handleStore = async (name: string) => {
     const seedPhraseString = originalSeedPhrase.join(" ");
-    await SecureStorage.set(
-      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-      Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
-    );
-    await SecureStorage.set(
-      seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding
-        ? KeyStoreKeys.IDENTITY_SEEDPHRASE
-        : // @TODO - sdisalvo: Remember to change the key below as soon as core is ready
-          KeyStoreKeys.IDENTITY_SEEDPHRASE,
-      seedPhraseString
-    );
+    if (seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding) {
+      await SecureStorage.set(
+        KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+        Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
+      );
+    } else {
+      const seedPhraseSecureStorage = new SeedPhraseStorageService();
+      await seedPhraseSecureStorage.createCryptoAccountFromSeedPhrase(
+        name,
+        seedPhraseString
+      );
+    }
   };
 
   const handleContinue = async () => {
@@ -113,7 +115,7 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
       if (seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding) {
-        handleStore();
+        handleStore("");
 
         const data: DataProps = {
           store: { stateCache },
@@ -289,8 +291,8 @@ const VerifySeedPhrase = () => {
           chooseAccountNameIsOpen={chooseAccountNameIsOpen}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
           usesIdentitySeedPhrase={false}
-          onDone={() => {
-            handleStore();
+          onDone={(name) => {
+            handleStore(name);
             handleClearState();
             history.push(TabsRoutePath.CRYPTO);
           }}

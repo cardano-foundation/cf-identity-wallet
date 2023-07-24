@@ -41,6 +41,11 @@ import { CryptoBalanceItem } from "../../components/CryptoBalance/CryptoBalance.
 import { formatCurrencyUSD } from "../../../utils";
 import { AssetsTransactions } from "../../components/AssetsTransactions";
 import { getBackRoute } from "../../../routes/backRoute";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+} from "../../../core/storage/secureStorage";
+import { SeedPhraseStorageService } from "../../../core/storage/services";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
