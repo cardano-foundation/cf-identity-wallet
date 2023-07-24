@@ -54,7 +54,7 @@ const AddCryptoAccount = ({
       isOpen={addAccountIsOpen}
       initialBreakpoint={0.35}
       breakpoints={[0, 0.35]}
-      className="page-layout"
+      className={`page-layout${idwProfileInUse ? " short-modal" : ""}`}
       data-testid="add-crypto-account"
       onDidDismiss={() => setAddAccountIsOpen(false)}
     >
