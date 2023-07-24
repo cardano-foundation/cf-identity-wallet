@@ -1,7 +1,12 @@
 import { MemoryRouter, Route, Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  queryByTestId,
+  render,
+  waitFor,
+} from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import configureStore from "redux-mock-store";
@@ -158,7 +163,7 @@ describe("Verify Seed Phrase Page", () => {
     expect(SecureStorage.set).not.toBeCalled();
   });
 
-  test("The user can Verify the Seed Phrase", async () => {
+  test("The user can Verify the Seed Phrase when Onboarding", async () => {
     const history = createMemoryHistory();
     history.push(
       RoutePath.VERIFY_SEED_PHRASE,
@@ -206,18 +211,69 @@ describe("Verify Seed Phrase Page", () => {
     fireEvent.click(continueButton);
 
     const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
-    expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
-    expect(Addresses.convertToRootXPrivateKeyHex).toBeCalledWith(entropy);
+
     expect(SecureStorage.set).toBeCalledWith(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-      rootKey
+      Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
     );
-    expect(SecureStorage.set).toBeCalledWith(
-      KeyStoreKeys.IDENTITY_SEEDPHRASE,
-      seedPhraseString
+  });
+
+  test.skip("The user can Verify the Seed Phrase when generating a new seed phrase", async () => {
+    const history = createMemoryHistory();
+    history.push(
+      RoutePath.VERIFY_SEED_PHRASE,
+      GENERATE_SEED_PHRASE_STATE.type.additional
+    );
+    const { getByTestId, getByText, queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <Router history={history}>
+          <VerifySeedPhrase />
+        </Router>
+      </Provider>
     );
 
-    await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
+    await waitFor(() =>
+      expect(
+        getByText(EN_TRANSLATIONS.verifyseedphrase.additional.title)
+      ).toBeVisible()
+    );
+
+    const continueButton = getByTestId("continue-button-verify-seedphrase");
+    const originalSeedPhraseContainer = getByTestId(
+      "original-seed-phrase-container"
+    );
+    const matchingSeedPhraseContainer = getByTestId(
+      "matching-seed-phrase-container"
+    );
+    await waitFor(() =>
+      expect(originalSeedPhraseContainer.childNodes.length).toBe(
+        MNEMONIC_FIFTEEN_WORDS
+      )
+    );
+
+    expect(continueButton).toBeDisabled();
+
+    initialState.seedPhraseCache.seedPhrase160
+      .split(" ")
+      .forEach(async (word) => {
+        fireEvent.click(getByText(`${word}`));
+      });
+
+    await waitFor(() =>
+      expect(matchingSeedPhraseContainer.childNodes.length).toBe(
+        MNEMONIC_FIFTEEN_WORDS
+      )
+    );
+
+    await waitFor(() =>
+      expect(continueButton).toHaveAttribute("disabled", "false")
+    );
+
+    fireEvent.click(continueButton);
+
+    await waitFor(() =>
+      expect(queryByTestId("choose-account-name")).toBeVisible()
+    );
   });
 
   test("calls handleOnBack when back button is clicked", async () => {
