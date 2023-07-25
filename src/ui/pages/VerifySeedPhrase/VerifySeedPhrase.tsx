@@ -21,6 +21,7 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import {
+  DEFAULT_CRYPTO_ACCOUNT_DATA,
   FIFTEEN_WORDS_BIT_LENGTH,
   GENERATE_SEED_PHRASE_STATE,
 } from "../../../constants/appConstants";
@@ -28,7 +29,6 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../../../routes/paths";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { SeedPhraseStorageService } from "../../../core/storage/services/seedPhraseStorageService";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 
 const VerifySeedPhrase = () => {
@@ -90,20 +90,12 @@ const VerifySeedPhrase = () => {
     setSeedPhraseSelected(newMatch);
   };
 
-  const handleStore = async (name: string) => {
+  const handleStore = async () => {
     const seedPhraseString = originalSeedPhrase.join(" ");
-    if (seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding) {
-      await SecureStorage.set(
-        KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-        Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
-      );
-    } else {
-      const seedPhraseSecureStorage = new SeedPhraseStorageService();
-      await seedPhraseSecureStorage.createCryptoAccountFromSeedPhrase(
-        name,
-        seedPhraseString
-      );
-    }
+    await SecureStorage.set(
+      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+      Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
+    );
   };
 
   const handleContinue = async () => {
@@ -112,8 +104,7 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
       if (seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding) {
-        handleStore("");
-
+        handleStore();
         const data: DataProps = {
           store: { stateCache },
         };
@@ -288,8 +279,11 @@ const VerifySeedPhrase = () => {
           chooseAccountNameIsOpen={chooseAccountNameIsOpen}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
           usesIdentitySeedPhrase={false}
-          onDone={(name) => {
-            handleStore(name);
+          seedPhrase={originalSeedPhrase.join(" ")}
+          onDone={() => {
+            if (seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding) {
+              handleStore();
+            }
             handleClearState();
             history.push({
               pathname: TabsRoutePath.CRYPTO,

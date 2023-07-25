@@ -25,6 +25,7 @@ import { SeedPhraseStorageService } from "../../../core/storage/services";
 const ChooseAccountName = ({
   chooseAccountNameIsOpen,
   setChooseAccountNameIsOpen,
+  seedPhrase,
   setDefaultAccountData,
   usesIdentitySeedPhrase,
   onDone,
@@ -48,7 +49,7 @@ const ChooseAccountName = ({
     }
   }, []);
 
-  const handleCreateWallet = (displayName?: string) => {
+  const handleCreateWallet = async (displayName?: string) => {
     const name =
       displayName ??
       `${i18n.t("crypto.chooseaccountnamemodal.placeholder")} #${crypto
@@ -78,31 +79,35 @@ const ChooseAccountName = ({
       // End of hardcoded values
     };
 
-    if (cryptoAccountsData.length === 0 && setDefaultAccountData) {
-      seedPhraseStorageService.current
-        .createCryptoAccountFromIdentitySeedPhrase(name)
-        .then(() => {
-          dispatch(setDefaultCryptoAccountCache(newWallet.address));
-          PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
-            data: newWallet.address,
-          });
-          setDefaultAccountData(newWallet);
-        })
-        .catch((err) => {
-          // @TODO - sdisalvo: handle errors
-          throw err;
-        });
+    if (usesIdentitySeedPhrase) {
+      await seedPhraseStorageService.current.createCryptoAccountFromIdentitySeedPhrase(
+        name
+      );
+    } else if (seedPhrase) {
+      await seedPhraseStorageService.current.createCryptoAccountFromSeedPhrase(
+        name,
+        seedPhrase
+      );
+    } else {
+      throw new Error(
+        "Tried to create a new crypto wallet from seed phrase, but no seed phrase was provided to the component"
+      );
     }
 
-    if (usesIdentitySeedPhrase) {
-      const seedPhraseSecureStorage = new SeedPhraseStorageService();
-      seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase(name);
+    if (cryptoAccountsData.length === 0) {
+      dispatch(setDefaultCryptoAccountCache(newWallet.address));
+      PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
+        data: newWallet.address,
+      });
+      if (setDefaultAccountData) {
+        setDefaultAccountData(newWallet);
+      }
     }
 
     dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
     setChooseAccountNameIsOpen(false);
     if (onDone) {
-      onDone(name);
+      onDone();
     }
   };
 

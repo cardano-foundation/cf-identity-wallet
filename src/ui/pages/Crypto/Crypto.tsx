@@ -124,7 +124,9 @@ const Crypto = () => {
         setIdwProfileInUse(false);
       }
     });
-    if (!cryptoAccountsData?.length) {
+    if (cryptoAccountsData.length === 1) {
+      setDefaultAccountData(cryptoAccountsData[0]);
+    } else if (!cryptoAccountsData?.length) {
       setIdwProfileInUse(false);
     }
   }, [cryptoAccountsData, defaultAccountAddress]);
