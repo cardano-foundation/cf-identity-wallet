@@ -13,6 +13,31 @@ const GENERATE_SEED_PHRASE_STATE = {
     success: "success",
   },
 };
+const DEFAULT_CREDENTIALS_CARD_DATA = {
+  id: "",
+  type: [""],
+  connection: "",
+  issuanceDate: "",
+  expirationDate: "",
+  receivingDid: "",
+  credentialType: "",
+  nameOnCredential: "",
+  issuerLogo: "",
+  credentialSubject: {
+    degree: {
+      education: "",
+      type: "",
+      name: "",
+    },
+  },
+  proofType: "",
+  proofValue: "",
+  credentialStatus: {
+    revoked: false,
+    suspended: false,
+  },
+  colors: ["", ""],
+};
 const DEFAULT_CRYPTO_ACCOUNT_DATA: CryptoAccountProps = {
   address: "",
   name: "",
@@ -41,5 +66,6 @@ export {
   TWENTYFOUR_WORDS_BIT_LENGTH,
   DISPLAY_NAME_LENGTH,
   GENERATE_SEED_PHRASE_STATE,
+  DEFAULT_CREDENTIALS_CARD_DATA,
   DEFAULT_CRYPTO_ACCOUNT_DATA,
 };

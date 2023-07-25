@@ -4,6 +4,7 @@ import {
   IonIcon,
   IonPage,
   IonSpinner,
+  IonToast,
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
@@ -35,6 +36,7 @@ import { Alert } from "../../components/Alert";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
+import { DEFAULT_CREDENTIALS_CARD_DATA } from "../../../constants/appConstants";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -43,32 +45,12 @@ const CredCardDetails = () => {
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const [creds, setCreds] = useState(credsMock);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState({
+    ...DEFAULT_CREDENTIALS_CARD_DATA,
     id: params.id,
-    type: [""],
-    connection: "",
-    issuanceDate: "",
-    expirationDate: "",
-    receivingDid: "",
-    credentialType: "",
-    nameOnCredential: "",
-    issuerLogo: "",
-    credentialSubject: {
-      degree: {
-        education: "",
-        type: "",
-        name: "",
-      },
-    },
-    proofType: "",
-    proofValue: "",
-    credentialStatus: {
-      revoked: false,
-      suspended: false,
-    },
-    colors: ["", ""],
   });
 
   useEffect(() => {
@@ -291,7 +273,10 @@ const CredCardDetails = () => {
                   <span
                     className="card-details-info-block-line"
                     data-testid="copy-button-proof-value"
-                    onClick={() => writeToClipboard(cardData.proofValue)}
+                    onClick={() => {
+                      writeToClipboard(cardData.proofValue);
+                      setShowToast(true);
+                    }}
                   >
                     <span>
                       <IonIcon
@@ -359,6 +344,15 @@ const CredCardDetails = () => {
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
           onVerify={handleDelete}
+        />
+        <IonToast
+          isOpen={showToast}
+          onDidDismiss={() => setShowToast(false)}
+          message={`${i18n.t("creds.card.details.toast.clipboard")}`}
+          color="secondary"
+          position="top"
+          cssClass="credential-card-toast"
+          duration={1500}
         />
       </TabLayout>
     </IonPage>

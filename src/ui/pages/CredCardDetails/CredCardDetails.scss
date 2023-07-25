@@ -105,10 +105,8 @@
   }
 }
 
-ion-toast.crypto-toast {
-  --box-shadow: 3px 3px 10px 0 rgba(0, 0, 0, 0.2);
-
+ion-toast.credential-card-toast {
   &::part(message) {
-    text-align: center;
+    color: var(--ion-color-light);
   }
 }

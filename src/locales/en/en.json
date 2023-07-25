@@ -225,6 +225,9 @@
             "confirm": "Yes, I'm sure",
             "cancel": "Cancel"
           }
+        },
+        "toast": {
+          "clipboard": "Copied to clipboard"
         }
       }
     }
@@ -265,6 +268,9 @@
             "confirm": "Yes, I'm sure",
             "cancel": "Cancel"
           }
+        },
+        "toast": {
+          "clipboard": "Copied to clipboard"
         }
       }
     }

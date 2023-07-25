@@ -297,7 +297,7 @@ const Crypto = () => {
             isOpen={showToast}
             onDidDismiss={() => setShowToast(false)}
             message={`${i18n.t("crypto.tab.toast.success")}`}
-            color="light-green"
+            color="secondary"
             position="top"
             cssClass="crypto-toast"
             duration={1500}
