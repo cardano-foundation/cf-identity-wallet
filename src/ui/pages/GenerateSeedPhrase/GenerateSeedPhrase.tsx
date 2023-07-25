@@ -43,10 +43,7 @@ import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { TabsRoutePath } from "../../../routes/paths";
-
-type GenerationType = {
-  type: string;
-};
+import { GenerateSeedPhraseProps } from "./GenerateSeedPhrase.types";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -54,7 +51,7 @@ const GenerateSeedPhrase = () => {
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
     ? GENERATE_SEED_PHRASE_STATE.type.onboarding
-    : (history?.location?.state as GenerationType)?.type || "";
+    : (history?.location?.state as GenerateSeedPhraseProps)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);

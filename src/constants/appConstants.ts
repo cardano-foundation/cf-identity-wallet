@@ -1,3 +1,5 @@
+import { CryptoAccountProps } from "../ui/pages/Crypto/Crypto.types";
+
 const MNEMONIC_FIFTEEN_WORDS = 15;
 const MNEMONIC_TWENTYFOUR_WORDS = 24;
 const FIFTEEN_WORDS_BIT_LENGTH = 160;
@@ -8,7 +10,28 @@ const GENERATE_SEED_PHRASE_STATE = {
     onboarding: "onboarding",
     additional: "additional",
     restore: "restore",
+    success: "success",
   },
+};
+const DEFAULT_CRYPTO_ACCOUNT_DATA: CryptoAccountProps = {
+  address: "",
+  name: "",
+  blockchain: "",
+  currency: "",
+  logo: "",
+  balance: {
+    main: {
+      nativeBalance: 0,
+      usdBalance: 0,
+    },
+    reward: {
+      nativeBalance: 0,
+      usdBalance: 0,
+    },
+  },
+  usesIdentitySeedPhrase: false,
+  assets: [],
+  transactions: [],
 };
 
 export {
@@ -18,4 +41,5 @@ export {
   TWENTYFOUR_WORDS_BIT_LENGTH,
   DISPLAY_NAME_LENGTH,
   GENERATE_SEED_PHRASE_STATE,
+  DEFAULT_CRYPTO_ACCOUNT_DATA,
 };

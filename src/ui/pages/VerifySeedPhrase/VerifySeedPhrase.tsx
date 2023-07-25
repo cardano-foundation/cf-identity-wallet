@@ -29,10 +29,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { SeedPhraseStorageService } from "../../../core/storage/services/seedPhraseStorageService";
-
-type GenerationType = {
-  type: string;
-};
+import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
@@ -40,7 +37,7 @@ const VerifySeedPhrase = () => {
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
     ? GENERATE_SEED_PHRASE_STATE.type.onboarding
-    : (history?.location?.state as GenerationType)?.type || "";
+    : (history?.location?.state as GenerateSeedPhraseProps)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
     seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
@@ -294,7 +291,12 @@ const VerifySeedPhrase = () => {
           onDone={(name) => {
             handleStore(name);
             handleClearState();
-            history.push(TabsRoutePath.CRYPTO);
+            history.push({
+              pathname: TabsRoutePath.CRYPTO,
+              state: {
+                type: GENERATE_SEED_PHRASE_STATE.type.success,
+              },
+            });
           }}
         />
       </PageLayout>

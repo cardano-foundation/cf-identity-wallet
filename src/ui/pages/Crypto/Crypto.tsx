@@ -15,14 +15,14 @@ import {
   imageOutline,
   layersOutline,
 } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   setCurrentRoute,
   getCurrentRoute,
-  getStateCache,
 } from "../../../store/reducers/stateCache";
-import { RoutePath, TabsRoutePath } from "../../../routes/paths";
+import { TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import {
   getCryptoAccountsCache,
@@ -40,23 +40,17 @@ import { CryptoBalance } from "../../components/CryptoBalance";
 import { CryptoBalanceItem } from "../../components/CryptoBalance/CryptoBalance.types";
 import { formatCurrencyUSD } from "../../../utils";
 import { AssetsTransactions } from "../../components/AssetsTransactions";
-import { getBackRoute } from "../../../routes/backRoute";
 import {
-  KeyStoreKeys,
-  SecureStorage,
-} from "../../../core/storage/secureStorage";
-import { SeedPhraseStorageService } from "../../../core/storage/services";
+  DEFAULT_CRYPTO_ACCOUNT_DATA,
+  GENERATE_SEED_PHRASE_STATE,
+} from "../../../constants/appConstants";
+import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 
 const Crypto = () => {
+  const history = useHistory();
   const dispatch = useAppDispatch();
   const currentRoute = useAppSelector(getCurrentRoute);
-  const stateCache = useAppSelector(getStateCache);
-  const { backPath } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
-    store: { stateCache },
-  });
-  const [showToast, setShowToast] = useState(
-    backPath.pathname === RoutePath.VERIFY_SEED_PHRASE
-  );
+  const [showToast, setShowToast] = useState(false);
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
@@ -71,27 +65,9 @@ const Crypto = () => {
   const [defaultAccountAddress, setDefaultAccountAddress] = useState(
     useAppSelector(getDefaultCryptoAccountCache)
   );
-  const [defaultAccountData, setDefaultAccountData] =
-    useState<CryptoAccountProps>({
-      address: "",
-      name: "",
-      blockchain: "",
-      currency: "",
-      logo: "",
-      balance: {
-        main: {
-          nativeBalance: 0,
-          usdBalance: 0,
-        },
-        reward: {
-          nativeBalance: 0,
-          usdBalance: 0,
-        },
-      },
-      usesIdentitySeedPhrase: false,
-      assets: [],
-      transactions: [],
-    });
+  const [defaultAccountData, setDefaultAccountData] = useState(
+    DEFAULT_CRYPTO_ACCOUNT_DATA
+  );
   const accountAvailable = cryptoAccountsData?.length && defaultAccountData;
   const items: CryptoBalanceItem[] = [
     {
@@ -119,6 +95,15 @@ const Crypto = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }));
     setShowAssetsTransactions(true);
   });
+
+  useEffect(() => {
+    if (
+      (history?.location?.state as GenerateSeedPhraseProps)?.type ===
+      GENERATE_SEED_PHRASE_STATE.type.success
+    ) {
+      setShowToast(true);
+    }
+  }, [history?.location?.state]);
 
   useEffect(() => {
     if (!currentRoute?.path || currentRoute.path !== TabsRoutePath.CRYPTO) {
@@ -347,6 +332,7 @@ const Crypto = () => {
         setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
         setDefaultAccountData={setDefaultAccountData}
         usesIdentitySeedPhrase={true}
+        onDone={() => setShowToast(true)}
       />
     </>
   );
