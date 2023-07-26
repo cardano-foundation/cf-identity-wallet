@@ -400,7 +400,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
   };
 
   test("User can generate a new seed phrase", async () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId } = render(
       <Provider store={storeMocked}>
         <Router history={history}>
           <GenerateSeedPhrase />

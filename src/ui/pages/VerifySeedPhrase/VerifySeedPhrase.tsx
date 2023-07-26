@@ -91,17 +91,12 @@ const VerifySeedPhrase = () => {
 
   const handleStore = async () => {
     const seedPhraseString = originalSeedPhrase.join(" ");
+    const convertToEntropy = Addresses.convertToEntropy(seedPhraseString);
     await SecureStorage.set(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-      Addresses.convertToRootXPrivateKeyHex(
-        Addresses.convertToEntropy(seedPhraseString)
-      )
+      Addresses.convertToRootXPrivateKeyHex(convertToEntropy)
     );
-
-    await SecureStorage.set(
-      KeyStoreKeys.IDENTITY_ENTROPY,
-      Addresses.convertToEntropy(seedPhraseString)
-    );
+    await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, convertToEntropy);
   };
 
   const handleContinue = async () => {
