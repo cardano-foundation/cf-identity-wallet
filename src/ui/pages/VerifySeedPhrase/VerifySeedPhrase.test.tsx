@@ -238,7 +238,7 @@ describe("Verify Seed Phrase Page", () => {
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
       rootKey
     );
-    // TODOJ
+    
     expect(SecureStorage.set).toBeCalledWith(
       KeyStoreKeys.IDENTITY_ENTROPY,
       entropy
