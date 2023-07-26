@@ -44,17 +44,17 @@ const ChooseAccountName = ({
   }, []);
 
   const handleCreateWallet = async (displayName?: string) => {
+    const randomizer = crypto.randomBytes(3).toString("hex");
     const name =
       displayName ??
-      `${i18n.t("crypto.chooseaccountnamemodal.placeholder")} #${crypto
-        .randomBytes(3)
-        .toString("hex")}`;
+      `${i18n.t("crypto.chooseaccountnamemodal.placeholder")} #${randomizer}`;
 
     const newWallet: CryptoAccountProps = {
       name,
       usesIdentitySeedPhrase: usesIdentitySeedPhrase,
       // @TODO - sdisalvo: remember to remove hardcoded values below this point
-      address: "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg7j8cu8",
+      address:
+        "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg" + randomizer,
       blockchain: "Cardano",
       currency: "ADA",
       logo: CardanoLogo,
