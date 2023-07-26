@@ -21,7 +21,6 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import {
-  DEFAULT_CRYPTO_ACCOUNT_DATA,
   FIFTEEN_WORDS_BIT_LENGTH,
   GenerateSeedPhraseState,
 } from "../../../constants/appConstants";
