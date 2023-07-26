@@ -14,7 +14,7 @@ import {
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-  GENERATE_SEED_PHRASE_STATE,
+  GenerateSeedPhraseState,
 } from "../../../constants/appConstants";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
@@ -24,7 +24,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
   const history = createMemoryHistory();
   history.push(
     RoutePath.GENERATE_SEED_PHRASE,
-    GENERATE_SEED_PHRASE_STATE.type.onboarding
+    GenerateSeedPhraseState.onboarding
   );
 
   test("User can see Title and Security Overlay", () => {
@@ -391,7 +391,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
   const history = createMemoryHistory();
   history.push(
     RoutePath.GENERATE_SEED_PHRASE,
-    GENERATE_SEED_PHRASE_STATE.type.additional
+    GenerateSeedPhraseState.additional
   );
 
   const mockStore = configureStore();

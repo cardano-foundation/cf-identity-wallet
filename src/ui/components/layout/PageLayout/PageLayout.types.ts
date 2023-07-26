@@ -18,7 +18,7 @@ interface PageLayoutProps {
   progressBar?: boolean;
   progressBarValue?: number;
   progressBarBuffer?: number;
-  title?: string | boolean;
+  title?: string;
   menuButton?: boolean;
   footer?: boolean;
   primaryButtonText?: string;

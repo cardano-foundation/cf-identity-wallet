@@ -27,7 +27,7 @@ import {
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-  GENERATE_SEED_PHRASE_STATE,
+  GenerateSeedPhraseState,
 } from "../../../constants/appConstants";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
@@ -50,7 +50,7 @@ const GenerateSeedPhrase = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
-    ? GENERATE_SEED_PHRASE_STATE.type.onboarding
+    ? GenerateSeedPhraseState.onboarding
     : (history?.location?.state as GenerateSeedPhraseProps)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
@@ -157,22 +157,16 @@ const GenerateSeedPhrase = () => {
       <PageLayout
         header={true}
         title={
-          seedPhraseType !== GENERATE_SEED_PHRASE_STATE.type.onboarding
+          seedPhraseType !== GenerateSeedPhraseState.onboarding
             ? `${i18n.t("generateseedphrase." + seedPhraseType + ".title")}`
             : undefined
         }
-        backButton={
-          seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding
-        }
+        backButton={seedPhraseType === GenerateSeedPhraseState.onboarding}
         onBack={handleClearState}
-        closeButton={
-          seedPhraseType !== GENERATE_SEED_PHRASE_STATE.type.onboarding
-        }
+        closeButton={seedPhraseType !== GenerateSeedPhraseState.onboarding}
         closeButtonAction={() => setAlertExitIsOpen(true)}
         currentPath={RoutePath.GENERATE_SEED_PHRASE}
-        progressBar={
-          seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding
-        }
+        progressBar={seedPhraseType === GenerateSeedPhraseState.onboarding}
         progressBarValue={0.66}
         progressBarBuffer={1}
         footer={true}
@@ -185,8 +179,7 @@ const GenerateSeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              {seedPhraseType ===
-                GENERATE_SEED_PHRASE_STATE.type.onboarding && (
+              {seedPhraseType === GenerateSeedPhraseState.onboarding && (
                 <h2>
                   {i18n.t("generateseedphrase." + seedPhraseType + ".title")}
                 </h2>

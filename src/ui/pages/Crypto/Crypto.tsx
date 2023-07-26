@@ -43,7 +43,7 @@ import { formatCurrencyUSD } from "../../../utils";
 import { AssetsTransactions } from "../../components/AssetsTransactions";
 import {
   DEFAULT_CRYPTO_ACCOUNT_DATA,
-  GENERATE_SEED_PHRASE_STATE,
+  GenerateSeedPhraseState,
 } from "../../../constants/appConstants";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 import {
@@ -104,7 +104,7 @@ const Crypto = () => {
   useEffect(() => {
     if (
       (history?.location?.state as GenerateSeedPhraseProps)?.type ===
-      GENERATE_SEED_PHRASE_STATE.type.success
+      GenerateSeedPhraseState.success
     ) {
       setShowToast(true);
     }

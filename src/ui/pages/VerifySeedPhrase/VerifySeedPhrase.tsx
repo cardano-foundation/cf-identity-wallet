@@ -23,7 +23,7 @@ import { getStateCache } from "../../../store/reducers/stateCache";
 import {
   DEFAULT_CRYPTO_ACCOUNT_DATA,
   FIFTEEN_WORDS_BIT_LENGTH,
-  GENERATE_SEED_PHRASE_STATE,
+  GenerateSeedPhraseState,
 } from "../../../constants/appConstants";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -36,7 +36,7 @@ const VerifySeedPhrase = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
-    ? GENERATE_SEED_PHRASE_STATE.type.onboarding
+    ? GenerateSeedPhraseState.onboarding
     : (history?.location?.state as GenerateSeedPhraseProps)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
@@ -103,7 +103,7 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      if (seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding) {
+      if (seedPhraseType === GenerateSeedPhraseState.onboarding) {
         handleStore();
         const data: DataProps = {
           store: { stateCache },
@@ -151,20 +151,18 @@ const VerifySeedPhrase = () => {
         id="verify-seedphrase"
         header={true}
         title={
-          seedPhraseType !== GENERATE_SEED_PHRASE_STATE.type.onboarding
+          seedPhraseType !== GenerateSeedPhraseState.onboarding
             ? `${i18n.t("verifyseedphrase." + seedPhraseType + ".title")}`
             : undefined
         }
         backButton={true}
         onBack={
-          seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding
+          seedPhraseType === GenerateSeedPhraseState.onboarding
             ? handleClearState
             : () => setAlertExitIsOpen(true)
         }
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
-        progressBar={
-          seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding
-        }
+        progressBar={seedPhraseType === GenerateSeedPhraseState.onboarding}
         progressBarValue={1}
         progressBarBuffer={1}
         footer={true}
@@ -179,8 +177,7 @@ const VerifySeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              {seedPhraseType ===
-                GENERATE_SEED_PHRASE_STATE.type.onboarding && (
+              {seedPhraseType === GenerateSeedPhraseState.onboarding && (
                 <h2>
                   {i18n.t("verifyseedphrase." + seedPhraseType + ".title")}
                 </h2>
@@ -281,14 +278,14 @@ const VerifySeedPhrase = () => {
           usesIdentitySeedPhrase={false}
           seedPhrase={originalSeedPhrase.join(" ")}
           onDone={() => {
-            if (seedPhraseType === GENERATE_SEED_PHRASE_STATE.type.onboarding) {
+            if (seedPhraseType === GenerateSeedPhraseState.onboarding) {
               handleStore();
             }
             handleClearState();
             history.push({
               pathname: TabsRoutePath.CRYPTO,
               state: {
-                type: GENERATE_SEED_PHRASE_STATE.type.success,
+                type: GenerateSeedPhraseState.success,
               },
             });
           }}

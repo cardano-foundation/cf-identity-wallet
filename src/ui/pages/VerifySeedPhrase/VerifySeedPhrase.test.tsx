@@ -17,7 +17,7 @@ import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   FIFTEEN_WORDS_BIT_LENGTH,
-  GENERATE_SEED_PHRASE_STATE,
+  GenerateSeedPhraseState,
   MNEMONIC_FIFTEEN_WORDS,
 } from "../../../constants/appConstants";
 import { Addresses } from "../../../core/cardano/addresses";
@@ -167,7 +167,7 @@ describe("Verify Seed Phrase Page", () => {
     const history = createMemoryHistory();
     history.push(
       RoutePath.VERIFY_SEED_PHRASE,
-      GENERATE_SEED_PHRASE_STATE.type.onboarding
+      GenerateSeedPhraseState.onboarding
     );
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
@@ -222,7 +222,7 @@ describe("Verify Seed Phrase Page", () => {
     const history = createMemoryHistory();
     history.push(
       RoutePath.VERIFY_SEED_PHRASE,
-      GENERATE_SEED_PHRASE_STATE.type.additional
+      GenerateSeedPhraseState.additional
     );
     const { getByTestId, getByText, queryByTestId } = render(
       <Provider store={storeMocked}>
