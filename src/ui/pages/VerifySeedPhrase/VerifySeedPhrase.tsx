@@ -84,7 +84,7 @@ const VerifySeedPhrase = () => {
       const seedPhraseString = originalSeedPhrase.join(" ");
       await SecureStorage.set(
         KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-        Addresses.convertToRootXPrivateKeyHex(
+        Addresses.convertEntropyToBech32XPrvNoPasscode(
           Addresses.convertToEntropy(seedPhraseString)
         )
       );

@@ -14,25 +14,16 @@ class Addresses {
     return mnemonicToEntropy(seedPhrase);
   }
 
-  static convertToRootXPrivateKeyHex(entropy: string): string {
-    const rootExtendedPrivateKey = Bip32PrivateKey.from_bip39_entropy(
-      Buffer.from(entropy, "hex"),
-      Buffer.from("")
-    );
-
-    return rootExtendedPrivateKey.to_bech32();
-  }
-
   static convertToMnemonic(entropy: string): string {
     return entropyToMnemonic(entropy);
   }
 
-  static bip32PrivateHexToPublicHex(privateBech32: string) {
-    return Bip32PrivateKey.from_bech32(privateBech32).to_public().to_bech32();
+  static convertEntropyToBech32XPrvNoPasscode(entropy: string) {
+    return Bip32PrivateKey.from_bip39_entropy(Buffer.from(entropy, "hex"), Buffer.from("")).to_bech32();
   }
 
-  static deriveFirstBaseAndRewardAddrs(rootExtendedPrivateKey: string) {
-    const rootKey = Bip32PrivateKey.from_bech32(rootExtendedPrivateKey);
+  static deriveFirstBaseAndRewardAddrs(rootXPrvBech32: string) {
+    const rootKey = Bip32PrivateKey.from_bech32(rootXPrvBech32);
     const accountKey = rootKey
       .derive(Addresses.harden(1852))
       .derive(Addresses.harden(1815))
