@@ -1,12 +1,7 @@
 import { MemoryRouter, Route, Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
-import {
-  fireEvent,
-  queryByTestId,
-  render,
-  waitFor,
-} from "@testing-library/react";
+import { fireEvent, render, waitFor } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { waitForIonicReact } from "@ionic/react-test-utils";
 import configureStore from "redux-mock-store";
@@ -212,10 +207,19 @@ describe("Verify Seed Phrase Page", () => {
 
     const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
     const entropy = Addresses.convertToEntropy(seedPhraseString);
+    expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
+    expect(Addresses.convertToRootXPrivateKeyHex).toBeCalledWith(entropy);
 
     expect(SecureStorage.set).toBeCalledWith(
-      KeyStoreKeys.IDENTITY_ENTROPY,
-      entropy
+      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+      rootKey
+    );
+
+    await waitFor(() =>
+      expect(SecureStorage.set).toBeCalledWith(
+        KeyStoreKeys.IDENTITY_ENTROPY,
+        entropy
+      )
     );
   });
 
