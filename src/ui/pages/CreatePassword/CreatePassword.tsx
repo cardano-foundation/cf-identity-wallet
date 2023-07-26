@@ -22,7 +22,7 @@ import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {getStateCache} from "../../../store/reducers/stateCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -172,7 +172,7 @@ const CreatePassword = () => {
   };
   const handleClose = async () => {
     const { backPath } = getBackRoute(RoutePath.CREATE_PASSWORD, {
-      store: {stateCache},
+      store: { stateCache },
     });
 
     history.push(backPath.pathname);
@@ -189,12 +189,12 @@ const CreatePassword = () => {
       );
     }
     const { nextPath, updateRedux } = getNextRoute(RoutePath.CREATE_PASSWORD, {
-      store: {stateCache},
+      store: { stateCache },
     });
 
     updateReduxState(
       nextPath.pathname,
-      { store: {stateCache} },
+      { store: { stateCache } },
       dispatch,
       updateRedux
     );

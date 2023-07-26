@@ -7,7 +7,7 @@ import { KeyStoreKeys, SecureStorage } from "..";
 class SeedPhraseStorageService {
   static readonly AGENT_NOT_READY = "Aries Agent has not been initialised yet";
   static readonly IDENTITY_SEED_PHRASE_IN_USE =
-    "A crypto account already exists that is using the identity sheed phrase";
+    "A crypto account already exists that is using the identity seed phrase";
   static readonly IDENTITY_ROOT_XPRV_MISSING_OR_MALFORMED =
     "Identity root extended private key does not exist in the secure storage, or was in an unexpected format";
 

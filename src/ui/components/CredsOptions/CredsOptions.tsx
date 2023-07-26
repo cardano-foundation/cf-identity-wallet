@@ -50,12 +50,12 @@ const CredsOptions = ({
 
   const handleDone = () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
-      store: {stateCache},
+      store: { stateCache },
     });
 
     updateReduxState(
       backPath.pathname,
-      { store: {stateCache} },
+      { store: { stateCache } },
       dispatch,
       updateRedux
     );
@@ -185,6 +185,7 @@ const CredsOptions = ({
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
+        dataTestId="alert-confirm"
         headerText={i18n.t("creds.card.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
           "creds.card.details.delete.alert.confirm"
