@@ -20,7 +20,33 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 
+interface StoreMocked {
+  stateCache: {
+    routes: RoutePath[];
+    authentication: {
+      loggedIn: boolean;
+      time: number;
+      passcodeIsSet: boolean;
+      seedPhraseIsSet?: boolean;
+    };
+  };
+  seedPhraseCache: {
+    seedPhrase160: string;
+    seedPhrase256: string;
+    selected: number;
+  };
+  cryptoAccountsCache?: never[];
+}
+
+const mockStore = configureStore();
+const dispatchMock = jest.fn();
 const history = createMemoryHistory();
+const storeMocked = (initialState: StoreMocked) => {
+  return {
+    ...mockStore(initialState),
+    dispatch: dispatchMock,
+  };
+};
 
 describe("Generate Seed Phrase screen from Onboarding", () => {
   beforeAll(() => {
@@ -69,8 +95,6 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
   });
 
   test("User can toggle the 15/24 words seed phrase segment using the seed phrases from Redux", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
     const initialState = {
       stateCache: {
         routes: [RoutePath.GENERATE_SEED_PHRASE],
@@ -89,13 +113,8 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       },
     };
 
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
-
     const { getByTestId } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMocked(initialState)}>
         <Router history={history}>
           <GenerateSeedPhrase />
         </Router>
@@ -132,8 +151,6 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     );
   });
   test("User can toggle the 15/24 words seed phrase segment", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
     const initialState = {
       stateCache: {
         routes: [RoutePath.GENERATE_SEED_PHRASE],
@@ -150,13 +167,8 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       },
     };
 
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
-
     const { getByTestId } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMocked(initialState)}>
         <Router history={history}>
           <GenerateSeedPhrase />
         </Router>
@@ -317,8 +329,6 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
   });
 
   test("calls handleOnBack when back button is clicked", async () => {
-    const mockStore = configureStore();
-    const dispatchMock = jest.fn();
     const initialState = {
       stateCache: {
         routes: [RoutePath.SET_PASSCODE, RoutePath.ONBOARDING],
@@ -335,12 +345,8 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       },
     };
 
-    const storeMocked = {
-      ...mockStore(initialState),
-      dispatch: dispatchMock,
-    };
     const { getByTestId } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMocked(initialState)}>
         <Router history={history}>
           <GenerateSeedPhrase />
         </Router>
@@ -367,14 +373,13 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 });
 
 describe("Generate Seed Phrase screen from Crypto/Generate", () => {
-  const history = createMemoryHistory();
-  history.push(
-    RoutePath.GENERATE_SEED_PHRASE,
-    GenerateSeedPhraseState.additional
-  );
+  beforeAll(() => {
+    history.push(
+      RoutePath.GENERATE_SEED_PHRASE,
+      GenerateSeedPhraseState.additional
+    );
+  });
 
-  const mockStore = configureStore();
-  const dispatchMock = jest.fn();
   const initialState = {
     stateCache: {
       routes: [RoutePath.VERIFY_SEED_PHRASE],
@@ -394,14 +399,9 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
     cryptoAccountsCache: [],
   };
 
-  const storeMocked = {
-    ...mockStore(initialState),
-    dispatch: dispatchMock,
-  };
-
   test("User can generate a new seed phrase", async () => {
     const { getByTestId } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMocked(initialState)}>
         <Router history={history}>
           <GenerateSeedPhrase />
         </Router>
@@ -439,7 +439,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
 
   test("Shows an alert when close button is clicked", async () => {
     const { getByTestId, queryByText } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMocked(initialState)}>
         <Router history={history}>
           <GenerateSeedPhrase />
         </Router>
