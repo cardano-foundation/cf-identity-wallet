@@ -119,14 +119,13 @@ const Crypto = () => {
   }, [currentRoute]);
 
   useEffect(() => {
+    setIdwProfileInUse(false);
     cryptoAccountsData?.forEach((account) => {
       if (account.address === defaultAccountAddress) {
         setDefaultAccountData(account);
       }
       if (account.usesIdentitySeedPhrase) {
         setIdwProfileInUse(true);
-      } else {
-        setIdwProfileInUse(false);
       }
     });
     if (cryptoAccountsData?.length === 1) {
