@@ -20,12 +20,15 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 
+const history = createMemoryHistory();
+
 describe("Generate Seed Phrase screen from Onboarding", () => {
-  const history = createMemoryHistory();
-  history.push(
-    RoutePath.GENERATE_SEED_PHRASE,
-    GenerateSeedPhraseState.onboarding
-  );
+  beforeAll(() => {
+    history.push(
+      RoutePath.GENERATE_SEED_PHRASE,
+      GenerateSeedPhraseState.onboarding
+    );
+  });
 
   test("User can see Title and Security Overlay", () => {
     const { getByText, getByTestId } = render(
