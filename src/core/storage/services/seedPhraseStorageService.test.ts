@@ -55,15 +55,12 @@ jest.mock("../../aries/ariesAgent", () => ({
 }));
 
 jest.mock("../../cardano/addresses");
-Addresses.bip32PrivateHexToPublicHex = jest
-  .fn()
-  .mockReturnValue(rootExtendedPublicKey);
 Addresses.deriveFirstBaseAndRewardAddrs = jest.fn().mockReturnValue({
   addresses: addressesMap,
   rewardAddresses: rewardAddressesMap,
 });
 Addresses.convertToEntropy = jest.fn().mockReturnValue(entropy);
-Addresses.convertToRootXPrivateKeyHex = jest
+Addresses.convertEntropyToBech32XPrvNoPasscode = jest
   .fn()
   .mockReturnValue(rootExtendedPrivateKey);
 
@@ -92,7 +89,7 @@ describe("Seed phrase storage service", () => {
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     expect(AriesAgent.agent.storeCryptoAccountRecord).toBeCalledWith(
-      rootExtendedPublicKey,
+      rootExtendedPrivateKey,
       addressesMap,
       rewardAddressesMap,
       displayName,
@@ -170,7 +167,7 @@ describe("Seed phrase storage service", () => {
       seedPhrase
     );
     expect(AriesAgent.agent.storeCryptoAccountRecord).toBeCalledWith(
-      rootExtendedPublicKey,
+      rootExtendedPrivateKey,
       addressesMap,
       rewardAddressesMap,
       displayName
@@ -209,7 +206,7 @@ describe("Seed phrase storage service", () => {
       )
     ).rejects.toThrowError(errorMsg);
     expect(AriesAgent.agent.storeCryptoAccountRecord).toBeCalledWith(
-      rootExtendedPublicKey,
+      rootExtendedPrivateKey,
       addressesMap,
       rewardAddressesMap,
       displayName
