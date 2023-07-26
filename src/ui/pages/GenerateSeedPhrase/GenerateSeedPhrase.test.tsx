@@ -399,7 +399,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
     dispatch: dispatchMock,
   };
 
-  test.skip("User can generate a new seed phrase", async () => {
+  test("User can generate a new seed phrase", async () => {
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <Router history={history}>
@@ -424,9 +424,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
     fireEvent.click(termsCheckbox);
     expect(termsCheckbox.hasAttribute('[checked="true'));
 
-    const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.additional.continue.button
-    );
+    const continueButton = getByTestId("continue-button");
 
     await waitFor(() => expect(continueButton).not.toBeDisabled);
 
@@ -436,11 +434,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
 
     await waitForIonicReact();
 
-    const alertTitle = getByText(
-      EN_TRANSLATIONS.generateseedphrase.alert.confirm.text
-    );
-
-    await waitFor(() => expect(alertTitle).toBeVisible());
+    await waitFor(() => expect(getByTestId("alert-confirm")).toBeVisible());
   });
 
   test("Shows an alert when close button is clicked", async () => {
