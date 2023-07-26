@@ -134,8 +134,6 @@ const Crypto = () => {
       PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
         data: cryptoAccountsData[0].address,
       });
-    } else if (!cryptoAccountsData?.length) {
-      setIdwProfileInUse(false);
     }
   }, [cryptoAccountsData, defaultAccountAddress]);
 
