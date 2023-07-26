@@ -97,6 +97,11 @@ const VerifySeedPhrase = () => {
         Addresses.convertToEntropy(seedPhraseString)
       )
     );
+
+    await SecureStorage.set(
+      KeyStoreKeys.IDENTITY_ENTROPY,
+      Addresses.convertToEntropy(seedPhraseString)
+    );
   };
 
   const handleContinue = async () => {

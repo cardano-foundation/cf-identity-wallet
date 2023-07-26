@@ -211,10 +211,11 @@ describe("Verify Seed Phrase Page", () => {
     fireEvent.click(continueButton);
 
     const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
+    const entropy = Addresses.convertToEntropy(seedPhraseString);
 
     expect(SecureStorage.set).toBeCalledWith(
-      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-      Addresses.convertToRootXPrivateKeyHex(seedPhraseString)
+      KeyStoreKeys.IDENTITY_ENTROPY,
+      entropy
     );
   });
 
