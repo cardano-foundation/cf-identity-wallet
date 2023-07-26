@@ -279,9 +279,6 @@ const VerifySeedPhrase = () => {
           usesIdentitySeedPhrase={false}
           seedPhrase={originalSeedPhrase.join(" ")}
           onDone={() => {
-            if (seedPhraseType === GenerateSeedPhraseState.onboarding) {
-              handleStore();
-            }
             handleClearState();
             history.push({
               pathname: TabsRoutePath.CRYPTO,
