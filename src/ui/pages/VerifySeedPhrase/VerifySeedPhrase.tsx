@@ -19,7 +19,7 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { Addresses } from "../../../core/cardano/addresses";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import {getStateCache} from "../../../store/reducers/stateCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
 const VerifySeedPhrase = () => {
@@ -28,9 +28,9 @@ const VerifySeedPhrase = () => {
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
-      seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
-        ? seedPhraseStore.seedPhrase160.split(" ")
-        : seedPhraseStore.seedPhrase256.split(" ");
+    seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
+      ? seedPhraseStore.seedPhrase160.split(" ")
+      : seedPhraseStore.seedPhrase256.split(" ");
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -79,7 +79,7 @@ const VerifySeedPhrase = () => {
   const handleContinue = async () => {
     if (
       originalSeedPhrase.length === seedPhraseSelected.length &&
-        originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
+      originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
       const seedPhraseString = originalSeedPhrase.join(" ");
       await SecureStorage.set(
@@ -88,18 +88,19 @@ const VerifySeedPhrase = () => {
           Addresses.convertToEntropy(seedPhraseString)
         )
       );
+
       await SecureStorage.set(
-        KeyStoreKeys.IDENTITY_SEEDPHRASE,
-        seedPhraseString
+        KeyStoreKeys.IDENTITY_ENTROPY,
+        Addresses.convertToEntropy(seedPhraseString)
       );
 
       const { nextPath, updateRedux } = getNextRoute(
         RoutePath.VERIFY_SEED_PHRASE,
-        { store: {stateCache} }
+        { store: { stateCache } }
       );
       updateReduxState(
         nextPath.pathname,
-        { store: {stateCache} },
+        { store: { stateCache } },
         dispatch,
         updateRedux
       );

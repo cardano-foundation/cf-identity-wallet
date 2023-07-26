@@ -231,15 +231,17 @@ describe("Verify Seed Phrase Page", () => {
     await waitFor(() => expect(getByTestId("tabs-menu")).toBeVisible());
 
     const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
+    const entropy = Addresses.convertToEntropy(seedPhraseString);
     expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
     expect(Addresses.convertToRootXPrivateKeyHex).toBeCalledWith(entropy);
     expect(SecureStorage.set).toBeCalledWith(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
       rootKey
     );
+    
     expect(SecureStorage.set).toBeCalledWith(
-      KeyStoreKeys.IDENTITY_SEEDPHRASE,
-      seedPhraseString
+      KeyStoreKeys.IDENTITY_ENTROPY,
+      entropy
     );
   });
 
