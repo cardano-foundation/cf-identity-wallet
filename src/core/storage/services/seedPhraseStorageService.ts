@@ -6,8 +6,8 @@ import { KeyStoreKeys, SecureStorage } from "..";
 // when our DIDs/KERI use the seed phrase. For now here is more appropriate.
 class SeedPhraseStorageService {
   static readonly AGENT_NOT_READY = "Aries Agent has not been initialised yet";
-  static readonly IDENTITY_ENTROPY_IN_USE =
-    "A crypto account already exists that is using the identity entropy";
+  static readonly IDENTITY_SEED_PHRASE_IN_USE =
+    "A crypto account already exists that is using the identity sheed phrase";
   static readonly IDENTITY_ROOT_XPRV_MISSING_OR_MALFORMED =
     "Identity root extended private key does not exist in the secure storage, or was in an unexpected format";
 
@@ -59,7 +59,7 @@ class SeedPhraseStorageService {
     }
 
     if (await AriesAgent.agent.cryptoAccountIdentitySeedPhraseExists()) {
-      throw new Error(SeedPhraseStorageService.IDENTITY_ENTROPY_IN_USE);
+      throw new Error(SeedPhraseStorageService.IDENTITY_SEED_PHRASE_IN_USE);
     }
 
     const storedRootXPRV = (await SecureStorage.get(
