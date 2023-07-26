@@ -89,7 +89,7 @@ const VerifySeedPhrase = () => {
     setSeedPhraseSelected(newMatch);
   };
 
-  const handleStore = async () => {
+  const storeIdentitySeedPhrase = async () => {
     const seedPhraseString = originalSeedPhrase.join(" ");
     const convertToEntropy = Addresses.convertToEntropy(seedPhraseString);
     await SecureStorage.set(
@@ -97,6 +97,16 @@ const VerifySeedPhrase = () => {
       Addresses.convertToRootXPrivateKeyHex(convertToEntropy)
     );
     await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, convertToEntropy);
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(
+      RoutePath.VERIFY_SEED_PHRASE,
+      data
+    );
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    handleClearState();
+    history.push(nextPath.pathname);
   };
 
   const handleContinue = async () => {
@@ -105,17 +115,7 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
       if (seedPhraseType === GenerateSeedPhraseState.onboarding) {
-        handleStore();
-        const data: DataProps = {
-          store: { stateCache },
-        };
-        const { nextPath, updateRedux } = getNextRoute(
-          RoutePath.VERIFY_SEED_PHRASE,
-          data
-        );
-        updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-        handleClearState();
-        history.push(nextPath.pathname);
+        storeIdentitySeedPhrase();
       } else {
         setChooseAccountNameIsOpen(true);
       }
