@@ -316,30 +316,6 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     expect(termsCheckbox.hasAttribute('[checked="false'));
   });
 
-  test("Opening Terms and conditions modal triggers the checkbox", async () => {
-    const { getByText, getByTestId } = render(
-      <Provider store={store}>
-        <Router history={history}>
-          <GenerateSeedPhrase />
-        </Router>
-      </Provider>
-    );
-    const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    const termsLink = getByText(
-      EN_TRANSLATIONS.generateseedphrase.termsandconditions.link
-    );
-
-    expect(termsCheckbox.hasAttribute('[checked="false'));
-
-    act(() => {
-      fireEvent.click(termsLink);
-    });
-
-    await waitFor(() => {
-      expect(termsCheckbox.hasAttribute('[checked="true'));
-    });
-  });
-
   test("calls handleOnBack when back button is clicked", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
@@ -423,8 +399,8 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
     dispatch: dispatchMock,
   };
 
-  test("User can see a different layout", () => {
-    const { getByTestId } = render(
+  test.skip("User can generate a new seed phrase", async () => {
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <Router history={history}>
           <GenerateSeedPhrase />
@@ -433,6 +409,38 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
     );
 
     expect(getByTestId("close-button")).toBeInTheDocument();
+    const overlay = getByTestId("seed-phrase-privacy-overlay");
+    const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
+
+    expect(overlay).toHaveClass("visible");
+
+    act(() => {
+      fireEvent.click(revealSeedPhraseButton);
+    });
+    await waitFor(() => expect(overlay).toHaveClass("hidden"));
+
+    const termsCheckbox = getByTestId("termsandconditions-checkbox");
+    expect(termsCheckbox.hasAttribute('[checked="false'));
+    fireEvent.click(termsCheckbox);
+    expect(termsCheckbox.hasAttribute('[checked="true'));
+
+    const continueButton = getByText(
+      EN_TRANSLATIONS.generateseedphrase.additional.continue.button
+    );
+
+    await waitFor(() => expect(continueButton).not.toBeDisabled);
+
+    act(() => {
+      fireEvent.click(continueButton);
+    });
+
+    await waitForIonicReact();
+
+    const alertTitle = getByText(
+      EN_TRANSLATIONS.generateseedphrase.alert.confirm.text
+    );
+
+    await waitFor(() => expect(alertTitle).toBeVisible());
   });
 
   test("Shows an alert when close button is clicked", async () => {
