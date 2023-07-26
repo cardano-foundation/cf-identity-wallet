@@ -5,7 +5,7 @@ import {
 
 enum KeyStoreKeys {
   APP_PASSCODE = "app-login-passcode",
-  IDENTITY_SEEDPHRASE = "identity-seed-phrase",
+  IDENTITY_ENTROPY = "identity-entropy",
   IDENTITY_ROOT_XPRV_KEY = "identity-root-xprv-key",
   APP_OP_PASSWORD = "app-operations-password",
   CRYPTO_ENTROPY_PREFIX = "crypto-entropy-",

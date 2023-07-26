@@ -119,9 +119,7 @@ describe("Seed phrase storage service", () => {
       seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase(
         displayName
       )
-    ).rejects.toThrowError(
-      SeedPhraseStorageService.IDENTITY_SEED_PHRASE_IN_USE
-    );
+    ).rejects.toThrowError(SeedPhraseStorageService.IDENTITY_ENTROPY_IN_USE);
     expect(AriesAgent.agent.cryptoAccountIdentitySeedPhraseExists).toBeCalled();
     expect(SecureStorage.get).not.toBeCalled();
     expect(AriesAgent.agent.storeCryptoAccountRecord).not.toBeCalled();
