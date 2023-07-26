@@ -28,6 +28,7 @@ import {
   getCryptoAccountsCache,
   getDefaultCryptoAccountCache,
   getHideCryptoBalances,
+  setDefaultCryptoAccountCache,
 } from "../../../store/reducers/cryptoAccountsCache";
 import { i18n } from "../../../i18n";
 import "./Crypto.scss";
@@ -45,6 +46,10 @@ import {
   GENERATE_SEED_PHRASE_STATE,
 } from "../../../constants/appConstants";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences";
 
 const Crypto = () => {
   const history = useHistory();
@@ -124,8 +129,12 @@ const Crypto = () => {
         setIdwProfileInUse(false);
       }
     });
-    if (cryptoAccountsData.length === 1) {
+    if (cryptoAccountsData?.length === 1) {
       setDefaultAccountData(cryptoAccountsData[0]);
+      dispatch(setDefaultCryptoAccountCache(cryptoAccountsData[0].address));
+      PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
+        data: cryptoAccountsData[0].address,
+      });
     } else if (!cryptoAccountsData?.length) {
       setIdwProfileInUse(false);
     }
@@ -332,7 +341,6 @@ const Crypto = () => {
       <ChooseAccountName
         chooseAccountNameIsOpen={chooseAccountNameIsOpen}
         setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
-        setDefaultAccountData={setDefaultAccountData}
         usesIdentitySeedPhrase={true}
         onDone={() => setShowToast(true)}
       />

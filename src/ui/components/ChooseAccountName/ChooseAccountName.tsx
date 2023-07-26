@@ -10,23 +10,17 @@ import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 import {
   getCryptoAccountsCache,
   setCryptoAccountsCache,
-  setDefaultCryptoAccountCache,
 } from "../../../store/reducers/cryptoAccountsCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ChooseAccountNameProps } from "./ChooseAccountName.types";
 import "./ChooseAccountName.scss";
 import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
 import { SeedPhraseStorageService } from "../../../core/storage/services";
 
 const ChooseAccountName = ({
   chooseAccountNameIsOpen,
   setChooseAccountNameIsOpen,
   seedPhrase,
-  setDefaultAccountData,
   usesIdentitySeedPhrase,
   onDone,
 }: ChooseAccountNameProps) => {
@@ -92,16 +86,6 @@ const ChooseAccountName = ({
       throw new Error(
         "Tried to create a new crypto wallet from seed phrase, but no seed phrase was provided to the component"
       );
-    }
-
-    if (cryptoAccountsData.length === 0) {
-      dispatch(setDefaultCryptoAccountCache(newWallet.address));
-      PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
-        data: newWallet.address,
-      });
-      if (setDefaultAccountData) {
-        setDefaultAccountData(newWallet);
-      }
     }
 
     dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));

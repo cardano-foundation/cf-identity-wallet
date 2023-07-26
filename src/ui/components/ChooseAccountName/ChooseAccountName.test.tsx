@@ -27,13 +27,11 @@ describe("Choose Crypto Account name", () => {
       dispatch: dispatchMock,
     };
     const setChooseAccountNameIsOpen = jest.fn();
-    const setDefaultAccountData = jest.fn();
     const { getByTestId, queryByText } = render(
       <Provider store={storeMocked}>
         <ChooseAccountName
           chooseAccountNameIsOpen={true}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
-          setDefaultAccountData={setDefaultAccountData}
           usesIdentitySeedPhrase={false}
         />
       </Provider>
@@ -68,14 +66,12 @@ describe("Choose Crypto Account name", () => {
       dispatch: dispatchMock,
     };
     const setChooseAccountNameIsOpen = jest.fn();
-    const setDefaultAccountData = jest.fn();
 
     const { getByTestId, queryByText } = render(
       <Provider store={storeMocked}>
         <ChooseAccountName
           chooseAccountNameIsOpen={true}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
-          setDefaultAccountData={setDefaultAccountData}
           usesIdentitySeedPhrase={false}
         />
       </Provider>
@@ -116,13 +112,11 @@ describe("Choose Crypto Account name", () => {
       dispatch: dispatchMock,
     };
     const setChooseAccountNameIsOpen = jest.fn();
-    const setDefaultAccountData = jest.fn();
     const { getByTestId } = render(
       <Provider store={storeMocked}>
         <ChooseAccountName
           chooseAccountNameIsOpen={true}
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
-          setDefaultAccountData={setDefaultAccountData}
           usesIdentitySeedPhrase={true}
         />
       </Provider>
