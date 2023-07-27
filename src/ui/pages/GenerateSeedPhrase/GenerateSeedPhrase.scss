@@ -68,9 +68,15 @@
 
     &.restore {
       ion-chip {
-        --background: transparent;
-        border: 1px dashed var(--ion-color-dark-grey);
-        &.ion-activated {
+        &.empty {
+          --background: transparent;
+          border: 1px dashed var(--ion-color-dark-grey);
+        }
+
+        &.full {
+        }
+
+        &:focus-within {
           border: 1px solid var(--ion-color-secondary);
         }
       }

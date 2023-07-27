@@ -9,6 +9,7 @@ import {
   IonCol,
   IonGrid,
   IonIcon,
+  IonInput,
   IonItem,
   IonLabel,
   IonPage,
@@ -267,12 +268,29 @@ const GenerateSeedPhrase = () => {
                   }
                 }`}
                 >
-                  {seedPhrase.map((word, index) => (
-                    <IonChip key={index}>
-                      <span className="index">{index + 1}.</span>
-                      <span data-testid={`word-index-${index}`}>{word}</span>
-                    </IonChip>
-                  ))}
+                  {seedPhrase.map((word, index) => {
+                    return stateRestore ? (
+                      <IonChip
+                        key={index}
+                        className={word.length ? "full" : "empty"}
+                      >
+                        <span className="index">{index + 1}.</span>
+                        <IonInput
+                          onIonBlur={(e) => {
+                            const newSeedPhrase = seedPhrase;
+                            newSeedPhrase[index] = `${e.target.value}`;
+                            setSeedPhrase(newSeedPhrase);
+                          }}
+                          value={word}
+                        />
+                      </IonChip>
+                    ) : (
+                      <IonChip key={index}>
+                        <span className="index">{index + 1}.</span>
+                        <span data-testid={`word-index-${index}`}>{word}</span>
+                      </IonChip>
+                    );
+                  })}
                 </div>
               </IonCard>
             </IonCol>
