@@ -66,9 +66,19 @@ const GenerateSeedPhrase = () => {
     if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
       const isFifteenWordsSelected =
         seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
-      let seed160;
-      let seed256;
-      if (
+      let seed160 = [];
+      let seed256 = [];
+      if (seedPhraseType === GenerateSeedPhraseState.restore) {
+        setShowSeedPhrase(true);
+        for (let index = 0; index < MNEMONIC_FIFTEEN_WORDS; index++) {
+          seed160.push("");
+        }
+        setSeedPhrase160(seed160);
+        for (let index = 0; index < MNEMONIC_TWENTYFOUR_WORDS; index++) {
+          seed256.push("");
+        }
+        setSeedPhrase256(seed256);
+      } else if (
         seedPhraseStore.seedPhrase160.length > 0 &&
         seedPhraseStore.seedPhrase256.length > 0
       ) {
@@ -83,9 +93,6 @@ const GenerateSeedPhrase = () => {
         setSeedPhrase256(seed256);
       }
       setSeedPhrase(isFifteenWordsSelected ? seed160 : seed256);
-    }
-    if (seedPhraseType === GenerateSeedPhraseState.restore) {
-      setShowSeedPhrase(true);
     }
   }, [history?.location.pathname]);
 
@@ -206,7 +213,9 @@ const GenerateSeedPhrase = () => {
                     : FIFTEEN_WORDS_BIT_LENGTH
                 }`}
                 onIonChange={(event) => {
-                  setShowSeedPhrase(false);
+                  setShowSeedPhrase(
+                    seedPhraseType === GenerateSeedPhraseState.restore
+                  );
                   toggleSeedPhrase(Number(event.detail.value));
                 }}
               >
