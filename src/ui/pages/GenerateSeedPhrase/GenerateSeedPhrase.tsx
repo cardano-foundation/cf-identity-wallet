@@ -84,6 +84,9 @@ const GenerateSeedPhrase = () => {
       }
       setSeedPhrase(isFifteenWordsSelected ? seed160 : seed256);
     }
+    if (seedPhraseType === GenerateSeedPhraseState.restore) {
+      setShowSeedPhrase(true);
+    }
   }, [history?.location.pathname]);
 
   const handleClearState = () => {
@@ -185,7 +188,9 @@ const GenerateSeedPhrase = () => {
                 </h2>
               )}
               <p className="page-paragraph">
-                {i18n.t("generateseedphrase.paragraph.top")}
+                {i18n.t(
+                  "generateseedphrase." + seedPhraseType + ".paragraph.top"
+                )}
               </p>
             </IonCol>
           </IonRow>
@@ -268,7 +273,9 @@ const GenerateSeedPhrase = () => {
           <IonRow>
             <IonCol size="12">
               <p className="page-paragraph">
-                {i18n.t("generateseedphrase.paragraph.bottom")}
+                {i18n.t(
+                  "generateseedphrase." + seedPhraseType + ".paragraph.bottom"
+                )}
               </p>
             </IonCol>
           </IonRow>
