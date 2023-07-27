@@ -260,7 +260,7 @@ const GenerateSeedPhrase = () => {
                 </div>
                 <div
                   data-testid="seed-phrase-container"
-                  className={`seed-phrase-container ${
+                  className={`seed-phrase-container ${seedPhraseType} ${
                     showSeedPhrase
                       ? "seed-phrase-visible"
                       : "seed-phrase-blurred"

@@ -65,6 +65,16 @@
     &.seed-phrase-blurred {
       filter: blur(5px);
     }
+
+    &.restore {
+      ion-chip {
+        --background: transparent;
+        border: 1px dashed var(--ion-color-dark-grey);
+        &.ion-activated {
+          border: 1px solid var(--ion-color-secondary);
+        }
+      }
+    }
   }
 
   ion-card,
