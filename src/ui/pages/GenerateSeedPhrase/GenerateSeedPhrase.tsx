@@ -64,6 +64,11 @@ const GenerateSeedPhrase = () => {
   const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
+  const [reloadSeedPhrase, setReloadSeedPhrase] = useState(false);
+
+  useEffect(() => {
+    setSeedPhrase(seedPhrase);
+  }, [reloadSeedPhrase]);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
@@ -273,6 +278,7 @@ const GenerateSeedPhrase = () => {
                       <IonChip
                         key={index}
                         className={word.length ? "full" : "empty"}
+                        onBlur={() => setReloadSeedPhrase(!reloadSeedPhrase)}
                       >
                         <span className="index">{index + 1}.</span>
                         <IonInput
