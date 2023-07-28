@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Keyboard } from "@capacitor/keyboard";
 import {
   IonButton,
   IonCard,
@@ -22,6 +23,7 @@ import "./GenerateSeedPhrase.scss";
 import { eyeOffOutline } from "ionicons/icons";
 import { generateMnemonic, validateMnemonic } from "bip39";
 import { Trans } from "react-i18next";
+import { Capacitor } from "@capacitor/core";
 import { i18n } from "../../../i18n";
 import {
   MNEMONIC_FIFTEEN_WORDS,
@@ -45,6 +47,7 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { GenerateSeedPhraseProps } from "./GenerateSeedPhrase.types";
+import { bip39Seeds } from "../../__mocks__/bip39Seeds";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -67,6 +70,19 @@ const GenerateSeedPhrase = () => {
   const [reloadSeedPhrase, setReloadSeedPhrase] = useState(false);
   const [verifySeedPhrase, setVerifySeedPhrase] = useState(true);
   const [validateSeedPhrase, setValidateSeedPhrase] = useState(false);
+  const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      Keyboard.addListener("keyboardWillShow", () => {
+        setkeyboardIsOpen(true);
+      });
+      Keyboard.addListener("keyboardWillHide", () => {
+        setkeyboardIsOpen(false);
+      });
+    }
+  }, []);
 
   useEffect(() => {
     setSeedPhrase(seedPhrase);
@@ -177,6 +193,36 @@ const GenerateSeedPhrase = () => {
   const handleExit = () => {
     handleClearState();
     history.push(TabsRoutePath.CRYPTO);
+  };
+
+  const Suggestions = () => {
+    return (
+      <div className="seed-phrase-container">
+        {suggestions.map((suggestion, index) => (
+          <IonChip
+            className=""
+            key={index}
+            onClick={(event) => {
+              //addWord(suggestion, index);
+            }}
+          >
+            <span className="">{suggestion}</span>
+          </IonChip>
+        ))}
+      </div>
+    );
+  };
+
+  const handleSuggestions = (word: string) => {
+    const query = word.toLowerCase();
+    if (query.length > 1) {
+      const filteredSuggestions = bip39Seeds.filter(
+        (suggestion: string) => suggestion.toLowerCase().indexOf(query) > -1
+      );
+      filteredSuggestions.length = 3;
+      console.log(filteredSuggestions);
+      //setSuggestions(filteredSuggestions);
+    }
   };
 
   return (
@@ -296,6 +342,9 @@ const GenerateSeedPhrase = () => {
                             setSeedPhrase(newSeedPhrase);
                             setReloadSeedPhrase(!reloadSeedPhrase);
                           }}
+                          onIonChange={(e) =>
+                            handleSuggestions(`${e.target.value}`)
+                          }
                           onIonBlur={(e) => {
                             const newSeedPhrase = seedPhrase;
                             newSeedPhrase[index] = `${e.target.value}`;
@@ -359,6 +408,11 @@ const GenerateSeedPhrase = () => {
                 isOpen={modalIsOpen}
                 setIsOpen={setModalIsOpen}
               />
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol>
+              <Suggestions />
             </IonCol>
           </IonRow>
         </IonGrid>
