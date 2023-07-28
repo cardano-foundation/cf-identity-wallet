@@ -203,7 +203,7 @@ const GenerateSeedPhrase = () => {
             className=""
             key={index}
             onClick={(event) => {
-              //addWord(suggestion, index);
+              //addWord(suggestion);
             }}
           >
             <span className="">{suggestion}</span>
@@ -220,8 +220,7 @@ const GenerateSeedPhrase = () => {
         (suggestion: string) => suggestion.toLowerCase().indexOf(query) > -1
       );
       filteredSuggestions.length = 3;
-      console.log(filteredSuggestions);
-      //setSuggestions(filteredSuggestions);
+      setSuggestions(filteredSuggestions);
     }
   };
 
@@ -342,14 +341,15 @@ const GenerateSeedPhrase = () => {
                             setSeedPhrase(newSeedPhrase);
                             setReloadSeedPhrase(!reloadSeedPhrase);
                           }}
-                          onIonChange={(e) =>
-                            handleSuggestions(`${e.target.value}`)
-                          }
-                          onIonBlur={(e) => {
+                          onIonChange={(e) => {
+                            handleSuggestions(`${e.target.value}`);
                             const newSeedPhrase = seedPhrase;
                             newSeedPhrase[index] = `${e.target.value}`;
                             setSeedPhrase(newSeedPhrase);
                             setReloadSeedPhrase(!reloadSeedPhrase);
+                          }}
+                          onIonBlur={() => {
+                            setSuggestions([]);
                           }}
                           value={word}
                         />
@@ -410,11 +410,13 @@ const GenerateSeedPhrase = () => {
               />
             </IonCol>
           </IonRow>
-          <IonRow>
-            <IonCol>
-              <Suggestions />
-            </IonCol>
-          </IonRow>
+          {suggestions.length ? (
+            <IonRow>
+              <IonCol>
+                <Suggestions />
+              </IonCol>
+            </IonRow>
+          ) : null}
         </IonGrid>
         <AlertConfirm
           isOpen={alertConfirmIsOpen}
