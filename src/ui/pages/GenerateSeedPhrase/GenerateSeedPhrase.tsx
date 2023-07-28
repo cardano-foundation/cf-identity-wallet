@@ -72,6 +72,8 @@ const GenerateSeedPhrase = () => {
   const [validateSeedPhrase, setValidateSeedPhrase] = useState(false);
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -202,8 +204,8 @@ const GenerateSeedPhrase = () => {
           <IonChip
             className=""
             key={index}
-            onClick={(event) => {
-              //addWord(suggestion);
+            onClick={() => {
+              updateSeedPhrase(currentIndex, suggestion);
             }}
           >
             <span className="">{suggestion}</span>
@@ -213,15 +215,23 @@ const GenerateSeedPhrase = () => {
     );
   };
 
-  const handleSuggestions = (word: string) => {
+  const handleSuggestions = (index: number, word: string) => {
+    setCurrentIndex(index);
     const query = word.toLowerCase();
     if (query.length > 1) {
       const filteredSuggestions = bip39Seeds.filter(
         (suggestion: string) => suggestion.toLowerCase().indexOf(query) > -1
       );
-      filteredSuggestions.length = 3;
+      filteredSuggestions.length = isTyping ? 3 : 0;
       setSuggestions(filteredSuggestions);
     }
+  };
+
+  const updateSeedPhrase = (index: number, word: string) => {
+    const newSeedPhrase = seedPhrase;
+    newSeedPhrase[index] = word;
+    setSeedPhrase(newSeedPhrase);
+    setReloadSeedPhrase(!reloadSeedPhrase);
   };
 
   return (
@@ -336,20 +346,15 @@ const GenerateSeedPhrase = () => {
                         <span className="index">{index + 1}.</span>
                         <IonInput
                           onClick={() => {
-                            const newSeedPhrase = seedPhrase;
-                            newSeedPhrase[index] = "";
-                            setSeedPhrase(newSeedPhrase);
-                            setReloadSeedPhrase(!reloadSeedPhrase);
+                            updateSeedPhrase(index, "");
+                            setIsTyping(true);
                           }}
                           onIonChange={(e) => {
-                            handleSuggestions(`${e.target.value}`);
-                            const newSeedPhrase = seedPhrase;
-                            newSeedPhrase[index] = `${e.target.value}`;
-                            setSeedPhrase(newSeedPhrase);
-                            setReloadSeedPhrase(!reloadSeedPhrase);
+                            handleSuggestions(index, `${e.target.value}`);
+                            updateSeedPhrase(index, `${e.target.value}`);
                           }}
                           onIonBlur={() => {
-                            setSuggestions([]);
+                            setIsTyping(false);
                           }}
                           value={word}
                         />
@@ -410,7 +415,7 @@ const GenerateSeedPhrase = () => {
               />
             </IonCol>
           </IonRow>
-          {suggestions.length ? (
+          {isTyping && suggestions.length ? (
             <IonRow>
               <IonCol>
                 <Suggestions />
