@@ -20,7 +20,7 @@ import {
 import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
 import { eyeOffOutline } from "ionicons/icons";
-import { generateMnemonic } from "bip39";
+import { generateMnemonic, validateMnemonic } from "bip39";
 import { Trans } from "react-i18next";
 import { i18n } from "../../../i18n";
 import {
@@ -65,26 +65,35 @@ const GenerateSeedPhrase = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [reloadSeedPhrase, setReloadSeedPhrase] = useState(false);
+  const [verifySeedPhrase, setVerifySeedPhrase] = useState(true);
+  const [validateSeedPhrase, setValidateSeedPhrase] = useState(false);
 
   useEffect(() => {
     setSeedPhrase(seedPhrase);
+    const isVerifiable = () => {
+      let verify = true;
+      for (let index = 0; index < seedPhrase.length; index++) {
+        if (seedPhrase[index] === "") {
+          verify = false;
+        }
+      }
+      return verify;
+    };
+    setVerifySeedPhrase(isVerifiable);
+    setValidateSeedPhrase(validateMnemonic(seedPhrase.join(" ")));
   }, [reloadSeedPhrase]);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
       const isFifteenWordsSelected =
         seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
-      let seed160 = [];
-      let seed256 = [];
+      let seed160;
+      let seed256;
       if (stateRestore) {
         setShowSeedPhrase(true);
-        for (let index = 0; index < MNEMONIC_FIFTEEN_WORDS; index++) {
-          seed160.push("");
-        }
+        seed160 = new Array(MNEMONIC_FIFTEEN_WORDS).fill("");
         setSeedPhrase160(seed160);
-        for (let index = 0; index < MNEMONIC_TWENTYFOUR_WORDS; index++) {
-          seed256.push("");
-        }
+        seed256 = new Array(MNEMONIC_TWENTYFOUR_WORDS).fill("");
         setSeedPhrase256(seed256);
       } else if (
         seedPhraseStore.seedPhrase160.length > 0 &&
@@ -192,7 +201,7 @@ const GenerateSeedPhrase = () => {
           "generateseedphrase." + seedPhraseType + ".continue.button"
         )}`}
         primaryButtonAction={() => setAlertConfirmIsOpen(true)}
-        primaryButtonDisabled={!(showSeedPhrase && checked)}
+        primaryButtonDisabled={!(showSeedPhrase && checked && verifySeedPhrase)}
       >
         <IonGrid>
           <IonRow>
@@ -278,14 +287,20 @@ const GenerateSeedPhrase = () => {
                       <IonChip
                         key={index}
                         className={word.length ? "full" : "empty"}
-                        onBlur={() => setReloadSeedPhrase(!reloadSeedPhrase)}
                       >
                         <span className="index">{index + 1}.</span>
                         <IonInput
+                          onClick={() => {
+                            const newSeedPhrase = seedPhrase;
+                            newSeedPhrase[index] = "";
+                            setSeedPhrase(newSeedPhrase);
+                            setReloadSeedPhrase(!reloadSeedPhrase);
+                          }}
                           onIonBlur={(e) => {
                             const newSeedPhrase = seedPhrase;
                             newSeedPhrase[index] = `${e.target.value}`;
                             setSeedPhrase(newSeedPhrase);
+                            setReloadSeedPhrase(!reloadSeedPhrase);
                           }}
                           value={word}
                         />
