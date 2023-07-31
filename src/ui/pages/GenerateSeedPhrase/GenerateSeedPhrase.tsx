@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Keyboard } from "@capacitor/keyboard";
 import {
   IonButton,
   IonCard,
@@ -23,7 +22,6 @@ import "./GenerateSeedPhrase.scss";
 import { eyeOffOutline } from "ionicons/icons";
 import { generateMnemonic, validateMnemonic } from "bip39";
 import { Trans } from "react-i18next";
-import { Capacitor } from "@capacitor/core";
 import { i18n } from "../../../i18n";
 import {
   MNEMONIC_FIFTEEN_WORDS,
@@ -70,21 +68,9 @@ const GenerateSeedPhrase = () => {
   const [reloadSeedPhrase, setReloadSeedPhrase] = useState(false);
   const [verifySeedPhrase, setVerifySeedPhrase] = useState(true);
   const [validateSeedPhrase, setValidateSeedPhrase] = useState(false);
-  const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
-
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      Keyboard.addListener("keyboardWillShow", () => {
-        setkeyboardIsOpen(true);
-      });
-      Keyboard.addListener("keyboardWillHide", () => {
-        setkeyboardIsOpen(false);
-      });
-    }
-  }, []);
 
   useEffect(() => {
     setSeedPhrase(seedPhrase);
@@ -365,6 +351,7 @@ const GenerateSeedPhrase = () => {
                             }}
                             onIonBlur={() => {
                               setIsTyping(false);
+                              setSuggestions([]);
                             }}
                             value={word}
                           />
