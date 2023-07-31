@@ -38,7 +38,7 @@ export const {
 } = cryptoAccountsCacheSlice.actions;
 
 const getCryptoAccountsCache = (state: RootState) =>
-  state.cryptoAccountsCache.cryptoAccounts;
+  state.cryptoAccountsCache?.cryptoAccounts;
 
 const getDefaultCryptoAccountCache = (state: RootState) =>
   state.cryptoAccountsCache.defaultCryptoAccount;

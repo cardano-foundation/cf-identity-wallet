@@ -149,11 +149,7 @@ const GenerateSeedPhrase = () => {
 
   const HandleTerms = () => {
     return (
-      <a
-        onClick={() => {
-          setTermsModalIsOpen(true);
-        }}
-      >
+      <a onClick={() => setTermsModalIsOpen(true)}>
         <u>{i18n.t("generateseedphrase.termsandconditions.link")}</u>
       </a>
     );
