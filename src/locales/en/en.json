@@ -69,6 +69,7 @@
     },
     "restore": {
       "title": "Enter seed phrase",
+      "suggestions": "Suggestions",
       "paragraph": {
         "top": "Restore a crypto account based on an existing seed phrase.",
         "bottom": ""
@@ -96,6 +97,20 @@
         "text": "If you go back you will lose your current progress. Are you sure you want to do this?",
         "button": {
           "confirm": "Confirm",
+          "cancel": "Cancel"
+        }
+      },
+      "toggle": {
+        "text": "Switching tabs will remove the words you have already entered, are you sire you want to switch?",
+        "button": {
+          "confirm": "Yes, switch tabs",
+          "cancel": "Cancel"
+        }
+      },
+      "verify": {
+        "text": "Your seed phrase couldn’t be verified. Please, try again or choose an alternative method",
+        "button": {
+          "confirm": "Try again",
           "cancel": "Cancel"
         }
       }

@@ -29,11 +29,14 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
   GenerateSeedPhraseState,
+  SEED_PHRASE_SUGGESTIONS,
 } from "../../../constants/appConstants";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
   Alert as AlertConfirm,
   Alert as AlertExit,
+  Alert as AlertToggle,
+  Alert as AlertVerify,
 } from "../../components/Alert";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -46,6 +49,7 @@ import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { GenerateSeedPhraseProps } from "./GenerateSeedPhrase.types";
 import { bip39Seeds } from "../../__mocks__/bip39Seeds";
+import { ChooseAccountName } from "../../components/ChooseAccountName";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -61,9 +65,11 @@ const GenerateSeedPhrase = () => {
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
+  const [alertToggleIsOpen, setAlertToggleIsOpen] = useState(false);
+  const [alertVerifyIsOpen, setAlertVerifyIsOpen] = useState(false);
   const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
   const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [termsModalIsOpen, setTermsModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [reloadSeedPhrase, setReloadSeedPhrase] = useState(false);
   const [verifySeedPhrase, setVerifySeedPhrase] = useState(true);
@@ -71,6 +77,8 @@ const GenerateSeedPhrase = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
+  const [toggleLength, setToggleLength] = useState(FIFTEEN_WORDS_BIT_LENGTH);
+  const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
 
   useEffect(() => {
     setSeedPhrase(seedPhrase);
@@ -85,46 +93,49 @@ const GenerateSeedPhrase = () => {
     };
     setVerifySeedPhrase(isVerifiable);
     setValidateSeedPhrase(validateMnemonic(seedPhrase.join(" ")));
-  }, [reloadSeedPhrase]);
+  }, [reloadSeedPhrase, isTyping]);
+
+  const initializeSeedPhrase = () => {
+    const isFifteenWordsSelected =
+      seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
+    let seed160;
+    let seed256;
+    if (stateRestore) {
+      setShowSeedPhrase(true);
+      seed160 = new Array(MNEMONIC_FIFTEEN_WORDS).fill("");
+      setSeedPhrase160(seed160);
+      seed256 = new Array(MNEMONIC_TWENTYFOUR_WORDS).fill("");
+      setSeedPhrase256(seed256);
+    } else if (
+      seedPhraseStore.seedPhrase160.length > 0 &&
+      seedPhraseStore.seedPhrase256.length > 0
+    ) {
+      seed160 = seedPhraseStore.seedPhrase160.split(" ");
+      setSeedPhrase160(seed160);
+      seed256 = seedPhraseStore.seedPhrase256.split(" ");
+      setSeedPhrase256(seed256);
+    } else {
+      seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
+      setSeedPhrase160(seed160);
+      seed256 = generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ");
+      setSeedPhrase256(seed256);
+    }
+    setSeedPhrase(isFifteenWordsSelected ? seed160 : seed256);
+  };
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
-      const isFifteenWordsSelected =
-        seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
-      let seed160;
-      let seed256;
-      if (stateRestore) {
-        setShowSeedPhrase(true);
-        seed160 = new Array(MNEMONIC_FIFTEEN_WORDS).fill("");
-        setSeedPhrase160(seed160);
-        seed256 = new Array(MNEMONIC_TWENTYFOUR_WORDS).fill("");
-        setSeedPhrase256(seed256);
-      } else if (
-        seedPhraseStore.seedPhrase160.length > 0 &&
-        seedPhraseStore.seedPhrase256.length > 0
-      ) {
-        seed160 = seedPhraseStore.seedPhrase160.split(" ");
-        setSeedPhrase160(seed160);
-        seed256 = seedPhraseStore.seedPhrase256.split(" ");
-        setSeedPhrase256(seed256);
-      } else {
-        seed160 = generateMnemonic(FIFTEEN_WORDS_BIT_LENGTH).split(" ");
-        setSeedPhrase160(seed160);
-        seed256 = generateMnemonic(TWENTYFOUR_WORDS_BIT_LENGTH).split(" ");
-        setSeedPhrase256(seed256);
-      }
-      setSeedPhrase(isFifteenWordsSelected ? seed160 : seed256);
+      initializeSeedPhrase();
     }
   }, [history?.location.pathname]);
 
   const handleClearState = () => {
     setSeedPhrase160([]);
     setSeedPhrase256([]);
-    setSeedPhrase([]);
+    initializeSeedPhrase();
     setShowSeedPhrase(false);
     setAlertConfirmIsOpen(false);
     setAlertExitIsOpen(false);
-    setModalIsOpen(false);
     setChecked(false);
   };
 
@@ -140,7 +151,7 @@ const GenerateSeedPhrase = () => {
     return (
       <a
         onClick={() => {
-          setModalIsOpen(true);
+          setTermsModalIsOpen(true);
         }}
       >
         <u>{i18n.t("generateseedphrase.termsandconditions.link")}</u>
@@ -159,7 +170,7 @@ const GenerateSeedPhrase = () => {
         seedPhrase160: seedPhrase160.join(" "),
         seedPhrase256: seedPhrase256.join(" "),
         selected:
-          seedPhrase.length === 15
+          seedPhrase.length === MNEMONIC_FIFTEEN_WORDS
             ? FIFTEEN_WORDS_BIT_LENGTH
             : TWENTYFOUR_WORDS_BIT_LENGTH,
       },
@@ -184,10 +195,13 @@ const GenerateSeedPhrase = () => {
   };
 
   const Suggestions = () => {
+    console.log("isTyping ", isTyping);
+    console.log("seedPhrase ", seedPhrase);
+    console.log("suggestions ", suggestions.length);
     return (
       <div className="generate-seedphrase-suggestions">
         <span className="generate-seedphrase-suggestions-title">
-          Suggestions
+          {i18n.t("generateseedphrase." + seedPhraseType + ".suggestions")}
         </span>
         <div className="seed-phrase-container">
           {suggestions.map((suggestion, index) => (
@@ -208,13 +222,16 @@ const GenerateSeedPhrase = () => {
   const handleSuggestions = (index: number, word: string) => {
     setCurrentIndex(index);
     const query = word.toLowerCase();
-    if (query.length > 1) {
-      const filteredSuggestions = bip39Seeds.filter(
-        (suggestion: string) => suggestion.toLowerCase().indexOf(query) > -1
-      );
-      filteredSuggestions.length = isTyping ? 3 : 0;
-      setSuggestions(filteredSuggestions);
-    }
+    const filteredSuggestions =
+      isTyping && query.length
+        ? bip39Seeds
+            .filter(
+              (suggestion: string) =>
+                suggestion.toLowerCase().indexOf(query) > -1
+            )
+            .splice(0, SEED_PHRASE_SUGGESTIONS)
+        : [];
+    setSuggestions(filteredSuggestions);
   };
 
   const updateSeedPhrase = (index: number, word: string) => {
@@ -247,7 +264,17 @@ const GenerateSeedPhrase = () => {
           primaryButtonText={`${i18n.t(
             "generateseedphrase." + seedPhraseType + ".continue.button"
           )}`}
-          primaryButtonAction={() => setAlertConfirmIsOpen(true)}
+          primaryButtonAction={() => {
+            if (stateRestore) {
+              if (validateSeedPhrase) {
+                setChooseAccountNameIsOpen(true);
+              } else {
+                setAlertVerifyIsOpen(true);
+              }
+            } else {
+              setAlertConfirmIsOpen(true);
+            }
+          }}
           primaryButtonDisabled={
             !(showSeedPhrase && checked && verifySeedPhrase)
           }
@@ -280,17 +307,23 @@ const GenerateSeedPhrase = () => {
                   }`}
                   onIonChange={(event) => {
                     setShowSeedPhrase(stateRestore);
-                    toggleSeedPhrase(Number(event.detail.value));
+                    const selectedLength = Number(event.detail.value);
+                    if (stateRestore) {
+                      setToggleLength(selectedLength);
+                      setAlertToggleIsOpen(true);
+                    } else {
+                      toggleSeedPhrase(selectedLength);
+                    }
                   }}
                 >
-                  <IonSegmentButton value={String(FIFTEEN_WORDS_BIT_LENGTH)}>
+                  <IonSegmentButton value={`${FIFTEEN_WORDS_BIT_LENGTH}`}>
                     <IonLabel>
                       {i18n.t("generateseedphrase.segment", {
                         length: MNEMONIC_FIFTEEN_WORDS,
                       })}
                     </IonLabel>
                   </IonSegmentButton>
-                  <IonSegmentButton value={String(TWENTYFOUR_WORDS_BIT_LENGTH)}>
+                  <IonSegmentButton value={`${TWENTYFOUR_WORDS_BIT_LENGTH}`}>
                     <IonLabel>
                       {i18n.t("generateseedphrase.segment", {
                         length: MNEMONIC_TWENTYFOUR_WORDS,
@@ -341,7 +374,7 @@ const GenerateSeedPhrase = () => {
                         >
                           <span className="index">{index + 1}.</span>
                           <IonInput
-                            onClick={() => {
+                            onIonFocus={() => {
                               updateSeedPhrase(index, "");
                               setIsTyping(true);
                             }}
@@ -409,12 +442,46 @@ const GenerateSeedPhrase = () => {
                   </IonLabel>
                 </IonItem>
                 <TermsAndConditions
-                  isOpen={modalIsOpen}
-                  setIsOpen={setModalIsOpen}
+                  isOpen={termsModalIsOpen}
+                  setIsOpen={setTermsModalIsOpen}
                 />
               </IonCol>
             </IonRow>
           </IonGrid>
+          <AlertToggle
+            isOpen={alertToggleIsOpen}
+            setIsOpen={setAlertToggleIsOpen}
+            dataTestId="alert-toggle"
+            headerText={i18n.t("generateseedphrase.alert.toggle.text")}
+            confirmButtonText={`${i18n.t(
+              "generateseedphrase.alert.toggle.button.confirm"
+            )}`}
+            cancelButtonText={`${i18n.t(
+              "generateseedphrase.alert.toggle.button.cancel"
+            )}`}
+            actionConfirm={() => {
+              initializeSeedPhrase();
+              setAlertToggleIsOpen(false);
+              toggleSeedPhrase(toggleLength);
+            }}
+          />
+          <AlertVerify
+            isOpen={alertVerifyIsOpen}
+            setIsOpen={setAlertVerifyIsOpen}
+            dataTestId="alert-verify"
+            headerText={i18n.t("generateseedphrase.alert.verify.text")}
+            confirmButtonText={`${i18n.t(
+              "generateseedphrase.alert.verify.button.confirm"
+            )}`}
+            cancelButtonText={`${i18n.t(
+              "generateseedphrase.alert.verify.button.cancel"
+            )}`}
+            actionConfirm={() => {
+              initializeSeedPhrase();
+              setAlertToggleIsOpen(false);
+              toggleSeedPhrase(toggleLength);
+            }}
+          />
           <AlertConfirm
             isOpen={alertConfirmIsOpen}
             setIsOpen={setAlertConfirmIsOpen}
@@ -440,6 +507,21 @@ const GenerateSeedPhrase = () => {
               "generateseedphrase.alert.exit.button.cancel"
             )}`}
             actionConfirm={handleExit}
+          />
+          <ChooseAccountName
+            chooseAccountNameIsOpen={chooseAccountNameIsOpen}
+            setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
+            usesIdentitySeedPhrase={false}
+            seedPhrase={seedPhrase.join(" ")}
+            onDone={() => {
+              handleClearState();
+              history.push({
+                pathname: TabsRoutePath.CRYPTO,
+                state: {
+                  type: GenerateSeedPhraseState.success,
+                },
+              });
+            }}
           />
         </PageLayout>
       </IonPage>

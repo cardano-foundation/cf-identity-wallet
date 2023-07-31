@@ -113,9 +113,12 @@
 
 .generate-seedphrase-suggestions {
   position: absolute;
+  margin-top: constant(safe-area-inset-top);
+  margin-top: env(safe-area-inset-top);
+  --safe-area-inset-top: env(safe-area-inset-top);
   z-index: 1000;
   width: 100%;
-  background: var(--ion-color-light);
+  background-color: var(--ion-color-light);
 
   .generate-seedphrase-suggestions-title {
     display: block;
