@@ -77,7 +77,7 @@ const GenerateSeedPhrase = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
-  const [toggleLength, setToggleLength] = useState(FIFTEEN_WORDS_BIT_LENGTH);
+  const [currentLength, setCurrentLength] = useState(FIFTEEN_WORDS_BIT_LENGTH);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
 
   useEffect(() => {
@@ -298,13 +298,18 @@ const GenerateSeedPhrase = () => {
                       ? TWENTYFOUR_WORDS_BIT_LENGTH
                       : FIFTEEN_WORDS_BIT_LENGTH
                   }`}
+                  onClick={() => console.log(seedPhrase.length)}
                   onIonChange={(event) => {
+                    event.stopPropagation();
                     setShowSeedPhrase(stateRestore);
                     const selectedLength = Number(event.detail.value);
-                    if (stateRestore) {
-                      setToggleLength(selectedLength);
+                    console.log("currentLength ", currentLength);
+                    console.log("selectedLength ", selectedLength);
+                    if (stateRestore && currentLength !== selectedLength) {
+                      setCurrentLength(selectedLength);
                       setAlertToggleIsOpen(true);
-                    } else {
+                    }
+                    if (!stateRestore) {
                       toggleSeedPhrase(selectedLength);
                     }
                   }}
@@ -371,9 +376,9 @@ const GenerateSeedPhrase = () => {
                               updateSeedPhrase(index, "");
                               setIsTyping(true);
                             }}
-                            onIonChange={(e) => {
-                              handleSuggestions(index, `${e.target.value}`);
-                              updateSeedPhrase(index, `${e.target.value}`);
+                            onIonChange={(event) => {
+                              handleSuggestions(index, `${event.target.value}`);
+                              updateSeedPhrase(index, `${event.target.value}`);
                             }}
                             onIonBlur={() => {
                               setIsTyping(false);
@@ -418,7 +423,7 @@ const GenerateSeedPhrase = () => {
                     slot="start"
                     checked={checked}
                     data-testid="termsandconditions-checkbox"
-                    onIonChange={(e) => setChecked(e.detail.checked)}
+                    onIonChange={(event) => setChecked(event.detail.checked)}
                   />
                   <IonLabel
                     slot="end"
@@ -444,6 +449,7 @@ const GenerateSeedPhrase = () => {
           <AlertToggle
             isOpen={alertToggleIsOpen}
             setIsOpen={setAlertToggleIsOpen}
+            actionDismiss={() => setAlertToggleIsOpen(false)}
             dataTestId="alert-toggle"
             headerText={i18n.t("generateseedphrase.alert.toggle.text")}
             confirmButtonText={`${i18n.t(
@@ -455,7 +461,7 @@ const GenerateSeedPhrase = () => {
             actionConfirm={() => {
               initializeSeedPhrase();
               setAlertToggleIsOpen(false);
-              toggleSeedPhrase(toggleLength);
+              toggleSeedPhrase(currentLength);
             }}
           />
           <AlertVerify
@@ -469,10 +475,10 @@ const GenerateSeedPhrase = () => {
             cancelButtonText={`${i18n.t(
               "generateseedphrase.alert.verify.button.cancel"
             )}`}
-            actionConfirm={() => {
-              initializeSeedPhrase();
+            actionConfirm={() => setAlertToggleIsOpen(false)}
+            actionCancel={() => {
               setAlertToggleIsOpen(false);
-              toggleSeedPhrase(toggleLength);
+              handleExit();
             }}
           />
           <AlertConfirm
