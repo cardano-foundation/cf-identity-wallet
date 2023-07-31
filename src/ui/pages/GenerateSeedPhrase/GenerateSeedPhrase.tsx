@@ -195,9 +195,6 @@ const GenerateSeedPhrase = () => {
   };
 
   const Suggestions = () => {
-    console.log("isTyping ", isTyping);
-    console.log("seedPhrase ", seedPhrase);
-    console.log("suggestions ", suggestions.length);
     return (
       <div className="generate-seedphrase-suggestions">
         <span className="generate-seedphrase-suggestions-title">
