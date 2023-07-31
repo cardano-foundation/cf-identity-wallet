@@ -199,18 +199,22 @@ const GenerateSeedPhrase = () => {
 
   const Suggestions = () => {
     return (
-      <div className="seed-phrase-container">
-        {suggestions.map((suggestion, index) => (
-          <IonChip
-            className=""
-            key={index}
-            onClick={() => {
-              updateSeedPhrase(currentIndex, suggestion);
-            }}
-          >
-            <span className="">{suggestion}</span>
-          </IonChip>
-        ))}
+      <div className="generate-seedphrase-suggestions">
+        <span className="generate-seedphrase-suggestions-title">
+          Suggestions
+        </span>
+        <div className="seed-phrase-container">
+          {suggestions.map((suggestion, index) => (
+            <IonChip
+              key={index}
+              onClick={() => {
+                updateSeedPhrase(currentIndex, suggestion);
+              }}
+            >
+              <span>{suggestion}</span>
+            </IonChip>
+          ))}
+        </div>
       </div>
     );
   };
@@ -235,222 +239,224 @@ const GenerateSeedPhrase = () => {
   };
 
   return (
-    <IonPage className="page-layout generate-seedphrase">
-      <PageLayout
-        header={true}
-        title={
-          !stateOnboarding
-            ? `${i18n.t("generateseedphrase." + seedPhraseType + ".title")}`
-            : undefined
-        }
-        backButton={stateOnboarding}
-        onBack={handleClearState}
-        closeButton={!stateOnboarding}
-        closeButtonAction={() => setAlertExitIsOpen(true)}
-        currentPath={RoutePath.GENERATE_SEED_PHRASE}
-        progressBar={stateOnboarding}
-        progressBarValue={0.66}
-        progressBarBuffer={1}
-        footer={true}
-        primaryButtonText={`${i18n.t(
-          "generateseedphrase." + seedPhraseType + ".continue.button"
-        )}`}
-        primaryButtonAction={() => setAlertConfirmIsOpen(true)}
-        primaryButtonDisabled={!(showSeedPhrase && checked && verifySeedPhrase)}
-      >
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12">
-              {stateOnboarding && (
-                <h2>
-                  {i18n.t("generateseedphrase." + seedPhraseType + ".title")}
-                </h2>
-              )}
-              <p className="page-paragraph">
-                {i18n.t(
-                  "generateseedphrase." + seedPhraseType + ".paragraph.top"
-                )}
-              </p>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12">
-              <IonSegment
-                data-testid="mnemonic-length-segment"
-                value={`${
-                  seedPhrase.length === MNEMONIC_TWENTYFOUR_WORDS
-                    ? TWENTYFOUR_WORDS_BIT_LENGTH
-                    : FIFTEEN_WORDS_BIT_LENGTH
-                }`}
-                onIonChange={(event) => {
-                  setShowSeedPhrase(stateRestore);
-                  toggleSeedPhrase(Number(event.detail.value));
-                }}
-              >
-                <IonSegmentButton value={String(FIFTEEN_WORDS_BIT_LENGTH)}>
-                  <IonLabel>
-                    {i18n.t("generateseedphrase.segment", {
-                      length: MNEMONIC_FIFTEEN_WORDS,
-                    })}
-                  </IonLabel>
-                </IonSegmentButton>
-                <IonSegmentButton value={String(TWENTYFOUR_WORDS_BIT_LENGTH)}>
-                  <IonLabel>
-                    {i18n.t("generateseedphrase.segment", {
-                      length: MNEMONIC_TWENTYFOUR_WORDS,
-                    })}
-                  </IonLabel>
-                </IonSegmentButton>
-              </IonSegment>
-            </IonCol>
-          </IonRow>
-          <IonRow>
-            <IonCol size="12">
-              <IonCard>
-                <div
-                  data-testid="seed-phrase-privacy-overlay"
-                  className={`overlay ${showSeedPhrase ? "hidden" : "visible"}`}
-                >
-                  <IonCardHeader>
-                    <IonIcon icon={eyeOffOutline} />
-                  </IonCardHeader>
-                  <IonCardContent>
-                    {i18n.t("generateseedphrase.privacy.overlay.text")}
-                  </IonCardContent>
-                  <IonButton
-                    shape="round"
-                    fill="outline"
-                    data-testid="reveal-seed-phrase-button"
-                    onClick={() => handleShowSeedPhrase()}
-                  >
-                    {i18n.t("generateseedphrase.privacy.overlay.button")}
-                  </IonButton>
-                </div>
-                <div
-                  data-testid="seed-phrase-container"
-                  className={`seed-phrase-container ${seedPhraseType} ${
-                    showSeedPhrase
-                      ? "seed-phrase-visible"
-                      : "seed-phrase-blurred"
-                  }
-                }`}
-                >
-                  {seedPhrase.map((word, index) => {
-                    return stateRestore ? (
-                      <IonChip
-                        key={index}
-                        className={word.length ? "full" : "empty"}
-                      >
-                        <span className="index">{index + 1}.</span>
-                        <IonInput
-                          onClick={() => {
-                            updateSeedPhrase(index, "");
-                            setIsTyping(true);
-                          }}
-                          onIonChange={(e) => {
-                            handleSuggestions(index, `${e.target.value}`);
-                            updateSeedPhrase(index, `${e.target.value}`);
-                          }}
-                          onIonBlur={() => {
-                            setIsTyping(false);
-                          }}
-                          value={word}
-                        />
-                      </IonChip>
-                    ) : (
-                      <IonChip key={index}>
-                        <span className="index">{index + 1}.</span>
-                        <span data-testid={`word-index-${index}`}>{word}</span>
-                      </IonChip>
-                    );
-                  })}
-                </div>
-              </IonCard>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12">
-              <p className="page-paragraph">
-                {i18n.t(
-                  "generateseedphrase." + seedPhraseType + ".paragraph.bottom"
-                )}
-              </p>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12">
-              <IonItem
-                color="light"
-                lines="none"
-              >
-                <IonCheckbox
-                  slot="start"
-                  checked={checked}
-                  data-testid="termsandconditions-checkbox"
-                  onIonChange={(e) => setChecked(e.detail.checked)}
-                />
-                <IonLabel
-                  slot="end"
-                  className="ion-text-wrap termsandconditions-label"
-                  color="primary"
-                  data-testid="termsandconditions-label"
-                >
-                  <Trans
-                    i18nKey={i18n.t(
-                      "generateseedphrase.termsandconditions.text"
-                    )}
-                    components={[<HandleTerms key="" />]}
-                  />
-                </IonLabel>
-              </IonItem>
-              <TermsAndConditions
-                isOpen={modalIsOpen}
-                setIsOpen={setModalIsOpen}
-              />
-            </IonCol>
-          </IonRow>
-          {isTyping && suggestions.length ? (
+    <>
+      {isTyping && suggestions.length ? <Suggestions /> : null}
+      <IonPage className="page-layout generate-seedphrase">
+        <PageLayout
+          header={true}
+          title={
+            !stateOnboarding
+              ? `${i18n.t("generateseedphrase." + seedPhraseType + ".title")}`
+              : undefined
+          }
+          backButton={stateOnboarding}
+          onBack={handleClearState}
+          closeButton={!stateOnboarding}
+          closeButtonAction={() => setAlertExitIsOpen(true)}
+          currentPath={RoutePath.GENERATE_SEED_PHRASE}
+          progressBar={stateOnboarding}
+          progressBarValue={0.66}
+          progressBarBuffer={1}
+          footer={true}
+          primaryButtonText={`${i18n.t(
+            "generateseedphrase." + seedPhraseType + ".continue.button"
+          )}`}
+          primaryButtonAction={() => setAlertConfirmIsOpen(true)}
+          primaryButtonDisabled={
+            !(showSeedPhrase && checked && verifySeedPhrase)
+          }
+        >
+          <IonGrid>
             <IonRow>
-              <IonCol>
-                <Suggestions />
+              <IonCol size="12">
+                {stateOnboarding && (
+                  <h2>
+                    {i18n.t("generateseedphrase." + seedPhraseType + ".title")}
+                  </h2>
+                )}
+                <p className="page-paragraph">
+                  {i18n.t(
+                    "generateseedphrase." + seedPhraseType + ".paragraph.top"
+                  )}
+                </p>
               </IonCol>
             </IonRow>
-          ) : null}
-        </IonGrid>
-        <AlertConfirm
-          isOpen={alertConfirmIsOpen}
-          setIsOpen={setAlertConfirmIsOpen}
-          dataTestId="alert-confirm"
-          headerText={i18n.t("generateseedphrase.alert.confirm.text")}
-          confirmButtonText={`${i18n.t(
-            "generateseedphrase.alert.confirm.button.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            "generateseedphrase.alert.confirm.button.cancel"
-          )}`}
-          actionConfirm={handleContinue}
-        />
-        <AlertExit
-          isOpen={alertExitIsOpen}
-          setIsOpen={setAlertExitIsOpen}
-          dataTestId="alert-exit"
-          headerText={i18n.t("generateseedphrase.alert.exit.text")}
-          confirmButtonText={`${i18n.t(
-            "generateseedphrase.alert.exit.button.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            "generateseedphrase.alert.exit.button.cancel"
-          )}`}
-          actionConfirm={handleExit}
-        />
-      </PageLayout>
-    </IonPage>
+          </IonGrid>
+          <IonGrid>
+            <IonRow>
+              <IonCol size="12">
+                <IonSegment
+                  data-testid="mnemonic-length-segment"
+                  value={`${
+                    seedPhrase.length === MNEMONIC_TWENTYFOUR_WORDS
+                      ? TWENTYFOUR_WORDS_BIT_LENGTH
+                      : FIFTEEN_WORDS_BIT_LENGTH
+                  }`}
+                  onIonChange={(event) => {
+                    setShowSeedPhrase(stateRestore);
+                    toggleSeedPhrase(Number(event.detail.value));
+                  }}
+                >
+                  <IonSegmentButton value={String(FIFTEEN_WORDS_BIT_LENGTH)}>
+                    <IonLabel>
+                      {i18n.t("generateseedphrase.segment", {
+                        length: MNEMONIC_FIFTEEN_WORDS,
+                      })}
+                    </IonLabel>
+                  </IonSegmentButton>
+                  <IonSegmentButton value={String(TWENTYFOUR_WORDS_BIT_LENGTH)}>
+                    <IonLabel>
+                      {i18n.t("generateseedphrase.segment", {
+                        length: MNEMONIC_TWENTYFOUR_WORDS,
+                      })}
+                    </IonLabel>
+                  </IonSegmentButton>
+                </IonSegment>
+              </IonCol>
+            </IonRow>
+            <IonRow>
+              <IonCol size="12">
+                <IonCard>
+                  <div
+                    data-testid="seed-phrase-privacy-overlay"
+                    className={`overlay ${
+                      showSeedPhrase ? "hidden" : "visible"
+                    }`}
+                  >
+                    <IonCardHeader>
+                      <IonIcon icon={eyeOffOutline} />
+                    </IonCardHeader>
+                    <IonCardContent>
+                      {i18n.t("generateseedphrase.privacy.overlay.text")}
+                    </IonCardContent>
+                    <IonButton
+                      shape="round"
+                      fill="outline"
+                      data-testid="reveal-seed-phrase-button"
+                      onClick={() => handleShowSeedPhrase()}
+                    >
+                      {i18n.t("generateseedphrase.privacy.overlay.button")}
+                    </IonButton>
+                  </div>
+                  <div
+                    data-testid="seed-phrase-container"
+                    className={`seed-phrase-container ${seedPhraseType} ${
+                      showSeedPhrase
+                        ? "seed-phrase-visible"
+                        : "seed-phrase-blurred"
+                    }
+                }`}
+                  >
+                    {seedPhrase.map((word, index) => {
+                      return stateRestore ? (
+                        <IonChip
+                          key={index}
+                          className={word.length ? "full" : "empty"}
+                        >
+                          <span className="index">{index + 1}.</span>
+                          <IonInput
+                            onClick={() => {
+                              updateSeedPhrase(index, "");
+                              setIsTyping(true);
+                            }}
+                            onIonChange={(e) => {
+                              handleSuggestions(index, `${e.target.value}`);
+                              updateSeedPhrase(index, `${e.target.value}`);
+                            }}
+                            onIonBlur={() => {
+                              setIsTyping(false);
+                            }}
+                            value={word}
+                          />
+                        </IonChip>
+                      ) : (
+                        <IonChip key={index}>
+                          <span className="index">{index + 1}.</span>
+                          <span data-testid={`word-index-${index}`}>
+                            {word}
+                          </span>
+                        </IonChip>
+                      );
+                    })}
+                  </div>
+                </IonCard>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+          <IonGrid>
+            <IonRow>
+              <IonCol size="12">
+                <p className="page-paragraph">
+                  {i18n.t(
+                    "generateseedphrase." + seedPhraseType + ".paragraph.bottom"
+                  )}
+                </p>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+          <IonGrid>
+            <IonRow>
+              <IonCol size="12">
+                <IonItem
+                  color="light"
+                  lines="none"
+                >
+                  <IonCheckbox
+                    slot="start"
+                    checked={checked}
+                    data-testid="termsandconditions-checkbox"
+                    onIonChange={(e) => setChecked(e.detail.checked)}
+                  />
+                  <IonLabel
+                    slot="end"
+                    className="ion-text-wrap termsandconditions-label"
+                    color="primary"
+                    data-testid="termsandconditions-label"
+                  >
+                    <Trans
+                      i18nKey={i18n.t(
+                        "generateseedphrase.termsandconditions.text"
+                      )}
+                      components={[<HandleTerms key="" />]}
+                    />
+                  </IonLabel>
+                </IonItem>
+                <TermsAndConditions
+                  isOpen={modalIsOpen}
+                  setIsOpen={setModalIsOpen}
+                />
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+          <AlertConfirm
+            isOpen={alertConfirmIsOpen}
+            setIsOpen={setAlertConfirmIsOpen}
+            dataTestId="alert-confirm"
+            headerText={i18n.t("generateseedphrase.alert.confirm.text")}
+            confirmButtonText={`${i18n.t(
+              "generateseedphrase.alert.confirm.button.confirm"
+            )}`}
+            cancelButtonText={`${i18n.t(
+              "generateseedphrase.alert.confirm.button.cancel"
+            )}`}
+            actionConfirm={handleContinue}
+          />
+          <AlertExit
+            isOpen={alertExitIsOpen}
+            setIsOpen={setAlertExitIsOpen}
+            dataTestId="alert-exit"
+            headerText={i18n.t("generateseedphrase.alert.exit.text")}
+            confirmButtonText={`${i18n.t(
+              "generateseedphrase.alert.exit.button.confirm"
+            )}`}
+            cancelButtonText={`${i18n.t(
+              "generateseedphrase.alert.exit.button.cancel"
+            )}`}
+            actionConfirm={handleExit}
+          />
+        </PageLayout>
+      </IonPage>
+    </>
   );
 };
 

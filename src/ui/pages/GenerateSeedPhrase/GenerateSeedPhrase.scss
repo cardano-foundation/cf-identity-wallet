@@ -104,8 +104,26 @@
 
   .termsandconditions-label {
     font-size: 1rem !important;
+    color: var(--ion-color-secondary);
     margin: 0 !important;
     position: absolute;
     z-index: 2;
+  }
+}
+
+.generate-seedphrase-suggestions {
+  position: absolute;
+  z-index: 1000;
+  width: 100%;
+  background: var(--ion-color-light);
+
+  .generate-seedphrase-suggestions-title {
+    display: block;
+    text-align: center;
+    color: var(--ion-color-secondary);
+  }
+
+  .seed-phrase-container {
+    padding: 0.25rem 0.5rem;
   }
 }
