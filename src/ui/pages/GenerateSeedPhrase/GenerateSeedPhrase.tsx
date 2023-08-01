@@ -35,7 +35,6 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import {
   Alert as AlertConfirm,
   Alert as AlertExit,
-  Alert as AlertToggle,
   Alert as AlertVerify,
 } from "../../components/Alert";
 import { getStateCache } from "../../../store/reducers/stateCache";
@@ -65,7 +64,6 @@ const GenerateSeedPhrase = () => {
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
-  const [alertToggleIsOpen, setAlertToggleIsOpen] = useState(false);
   const [alertVerifyIsOpen, setAlertVerifyIsOpen] = useState(false);
   const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
   const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
@@ -77,7 +75,6 @@ const GenerateSeedPhrase = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
-  const [currentLength, setCurrentLength] = useState(FIFTEEN_WORDS_BIT_LENGTH);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
 
   useEffect(() => {
@@ -155,9 +152,6 @@ const GenerateSeedPhrase = () => {
     );
   };
 
-  const handleShowSeedPhrase = () => {
-    setShowSeedPhrase(true);
-  };
   const handleContinue = () => {
     setAlertConfirmIsOpen(false);
     const data: DataProps = {
@@ -298,20 +292,9 @@ const GenerateSeedPhrase = () => {
                       ? TWENTYFOUR_WORDS_BIT_LENGTH
                       : FIFTEEN_WORDS_BIT_LENGTH
                   }`}
-                  onClick={() => console.log(seedPhrase.length)}
                   onIonChange={(event) => {
-                    event.stopPropagation();
                     setShowSeedPhrase(stateRestore);
-                    const selectedLength = Number(event.detail.value);
-                    console.log("currentLength ", currentLength);
-                    console.log("selectedLength ", selectedLength);
-                    if (stateRestore && currentLength !== selectedLength) {
-                      setCurrentLength(selectedLength);
-                      setAlertToggleIsOpen(true);
-                    }
-                    if (!stateRestore) {
-                      toggleSeedPhrase(selectedLength);
-                    }
+                    toggleSeedPhrase(Number(event.detail.value));
                   }}
                 >
                   <IonSegmentButton value={`${FIFTEEN_WORDS_BIT_LENGTH}`}>
@@ -350,7 +333,7 @@ const GenerateSeedPhrase = () => {
                       shape="round"
                       fill="outline"
                       data-testid="reveal-seed-phrase-button"
-                      onClick={() => handleShowSeedPhrase()}
+                      onClick={() => setShowSeedPhrase(true)}
                     >
                       {i18n.t("generateseedphrase.privacy.overlay.button")}
                     </IonButton>
@@ -446,24 +429,6 @@ const GenerateSeedPhrase = () => {
               </IonCol>
             </IonRow>
           </IonGrid>
-          <AlertToggle
-            isOpen={alertToggleIsOpen}
-            setIsOpen={setAlertToggleIsOpen}
-            actionDismiss={() => setAlertToggleIsOpen(false)}
-            dataTestId="alert-toggle"
-            headerText={i18n.t("generateseedphrase.alert.toggle.text")}
-            confirmButtonText={`${i18n.t(
-              "generateseedphrase.alert.toggle.button.confirm"
-            )}`}
-            cancelButtonText={`${i18n.t(
-              "generateseedphrase.alert.toggle.button.cancel"
-            )}`}
-            actionConfirm={() => {
-              initializeSeedPhrase();
-              setAlertToggleIsOpen(false);
-              toggleSeedPhrase(currentLength);
-            }}
-          />
           <AlertVerify
             isOpen={alertVerifyIsOpen}
             setIsOpen={setAlertVerifyIsOpen}
@@ -475,9 +440,9 @@ const GenerateSeedPhrase = () => {
             cancelButtonText={`${i18n.t(
               "generateseedphrase.alert.verify.button.cancel"
             )}`}
-            actionConfirm={() => setAlertToggleIsOpen(false)}
+            actionConfirm={() => setAlertVerifyIsOpen(false)}
             actionCancel={() => {
-              setAlertToggleIsOpen(false);
+              setAlertVerifyIsOpen(false);
               handleExit();
             }}
           />
