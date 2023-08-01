@@ -7,7 +7,7 @@ import {
 } from "@ionic/react-test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { Router } from "react-router-dom";
+import { Route, Router } from "react-router-dom";
 import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
 import {
   MNEMONIC_FIFTEEN_WORDS,
@@ -382,7 +382,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
 
   const initialState = {
     stateCache: {
-      routes: [RoutePath.VERIFY_SEED_PHRASE],
+      routes: [RoutePath.GENERATE_SEED_PHRASE],
       authentication: {
         loggedIn: true,
         time: Date.now(),
@@ -455,5 +455,61 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
         queryByText(EN_TRANSLATIONS.generateseedphrase.alert.exit.text)
       ).toBeVisible()
     );
+  });
+});
+
+describe.skip("Restore account from existing seed phrase", () => {
+  beforeAll(() => {
+    history.push(
+      RoutePath.GENERATE_SEED_PHRASE,
+      GenerateSeedPhraseState.restore
+    );
+  });
+
+  const initialState = {
+    stateCache: {
+      routes: [RoutePath.GENERATE_SEED_PHRASE],
+      authentication: {
+        loggedIn: true,
+        time: Date.now(),
+        passcodeIsSet: true,
+        seedPhraseIsSet: true,
+      },
+    },
+    seedPhraseCache: {
+      seedPhrase160:
+        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+      seedPhrase256: "",
+      selected: FIFTEEN_WORDS_BIT_LENGTH,
+    },
+    cryptoAccountsCache: [],
+  };
+
+  test("User can enter a seed phrase", async () => {
+    window.history.pushState(
+      { type: GenerateSeedPhraseState.restore },
+      "",
+      RoutePath.GENERATE_SEED_PHRASE
+    );
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked(initialState)}>
+        <Router history={history}>
+          <Route
+            path={RoutePath.GENERATE_SEED_PHRASE}
+            component={GenerateSeedPhrase}
+          />
+        </Router>
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.generateseedphrase.restore.paragraph.top)
+    ).toBeVisible();
+
+    const overlay = getByTestId("seed-phrase-privacy-overlay");
+    expect(overlay).toHaveClass("hidden");
+
+    const continueButton = getByTestId("continue-button");
+    expect(continueButton).toBeDisabled;
   });
 });
