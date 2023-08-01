@@ -35,7 +35,9 @@ interface StoreMocked {
     seedPhrase256: string;
     selected: number;
   };
-  cryptoAccountsCache?: never[];
+  cryptoAccountsCache: {
+    cryptoAccounts: never[];
+  };
 }
 
 const mockStore = configureStore();
@@ -111,6 +113,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           "example example example example example example example example example example example example example example example example example example example example example example example example",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
+      cryptoAccountsCache: {
+        cryptoAccounts: [],
+      },
     };
 
     const { getByTestId } = render(
@@ -164,6 +169,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
         seedPhrase160: "",
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
+      cryptoAccountsCache: {
+        cryptoAccounts: [],
       },
     };
 
@@ -343,6 +351,9 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
+      cryptoAccountsCache: {
+        cryptoAccounts: [],
+      },
     };
 
     const { getByTestId } = render(
@@ -396,7 +407,9 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
-    cryptoAccountsCache: [],
+    cryptoAccountsCache: {
+      cryptoAccounts: [],
+    },
   };
 
   test("User can generate a new seed phrase", async () => {
@@ -482,7 +495,9 @@ describe.skip("Restore account from existing seed phrase", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
-    cryptoAccountsCache: [],
+    cryptoAccountsCache: {
+      cryptoAccounts: [],
+    },
   };
 
   test("User can enter a seed phrase", async () => {
