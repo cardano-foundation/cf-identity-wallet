@@ -11,6 +11,7 @@ const Alert = ({
   confirmButtonText,
   cancelButtonText,
   actionConfirm,
+  actionCancel,
   actionDismiss,
 }: AlertProps) => {
   const buttons: AlertButton[] = [];
@@ -32,6 +33,7 @@ const Alert = ({
       role: "cancel",
       handler: () => {
         setIsOpen(false);
+        actionCancel && actionCancel();
       },
     });
   }

@@ -86,6 +86,9 @@ describe("Onboarding Page", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
+      cryptoAccountsCache: {
+        cryptoAccounts: [],
+      },
     };
     const storeMocked = mockStore(initialState);
 
