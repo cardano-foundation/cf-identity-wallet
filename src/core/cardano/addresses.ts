@@ -25,6 +25,19 @@ class Addresses {
     ).to_bech32();
   }
 
+  static convertEntropyToHexXPrvNoPasscode(entropy: string) {
+    const privateKeyBytes = Bip32PrivateKey.from_bip39_entropy(
+      Buffer.from(entropy, "hex"),
+      Buffer.from("")
+    ).as_bytes();
+
+    return Buffer.from(privateKeyBytes).toString("hex");
+  }
+
+  static convertHexXPrvToBech32XPrv(HexXPrv: string) {
+    return Bip32PrivateKey.from_bytes(Buffer.from(HexXPrv, "hex")).to_bech32();
+  }
+
   static deriveFirstBaseAndRewardAddrs(rootXPrvBech32: string) {
     const rootKey = Bip32PrivateKey.from_bech32(rootXPrvBech32);
     const accountKey = rootKey

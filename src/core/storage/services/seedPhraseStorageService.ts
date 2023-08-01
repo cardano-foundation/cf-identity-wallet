@@ -72,7 +72,7 @@ class SeedPhraseStorageService {
     }
 
     const rootExtendedPrivateKey = storedRootXPRV as string;
-    const id = rootExtendedPrivateKey;
+    const id = Addresses.convertHexXPrvToBech32XPrv(rootExtendedPrivateKey);
     const addresses = Addresses.deriveFirstBaseAndRewardAddrs(
       rootExtendedPrivateKey
     );

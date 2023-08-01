@@ -63,6 +63,9 @@ Addresses.convertToEntropy = jest.fn().mockReturnValue(entropy);
 Addresses.convertEntropyToBech32XPrvNoPasscode = jest
   .fn()
   .mockReturnValue(rootExtendedPrivateKey);
+Addresses.convertHexXPrvToBech32XPrv = jest
+  .fn()
+  .mockReturnValue(rootExtendedPrivateKey);
 
 jest.mock("../secureStorage");
 
