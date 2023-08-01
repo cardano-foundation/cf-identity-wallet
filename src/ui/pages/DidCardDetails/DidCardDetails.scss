@@ -104,3 +104,9 @@
     }
   }
 }
+
+ion-toast.identity-card-toast {
+  &::part(message) {
+    color: var(--ion-color-light);
+  }
+}

@@ -5,6 +5,7 @@ import "./Alert.scss";
 const Alert = ({
   isOpen,
   setIsOpen,
+  dataTestId,
   headerText,
   subheaderText,
   confirmButtonText,
@@ -44,7 +45,7 @@ const Alert = ({
 
   return (
     <div
-      data-testid="alert-wrapper"
+      data-testid={dataTestId}
       className={isOpen ? "alert-visible" : "alert-invisible"}
     >
       <IonAlert

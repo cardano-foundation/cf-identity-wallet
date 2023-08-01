@@ -1,4 +1,4 @@
-import {Blockfrost, Lucid, Network, ProtocolParameters} from "lucid-cardano";
+import { Blockfrost, Lucid, Network, ProtocolParameters } from "lucid-cardano";
 
 import dotenv from "dotenv";
 import { TransactionBuilder } from "./transaction";
@@ -32,8 +32,9 @@ describe("Cardano transactions", () => {
       costModels: {},
     };
 
-    jest.spyOn(blockfrostProvider, "getProtocolParameters").mockImplementation(() => Promise.resolve(mockProtocolParameters));
-
+    jest
+      .spyOn(blockfrostProvider, "getProtocolParameters")
+      .mockImplementation(() => Promise.resolve(mockProtocolParameters));
   });
 
   test("static new method should create an instance of TransactionBuilder", async () => {
@@ -47,7 +48,6 @@ describe("Cardano transactions", () => {
   });
 
   test("should mock getProtocolParameters method", async () => {
-
     const protocolParameters = await blockfrostProvider.getProtocolParameters();
 
     expect(protocolParameters).toEqual(mockProtocolParameters);

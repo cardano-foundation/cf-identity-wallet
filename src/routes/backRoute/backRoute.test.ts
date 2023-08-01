@@ -218,13 +218,13 @@ describe("getPreviousRoute", () => {
       ...storeMock,
       stateCache: {
         ...storeMock.stateCache,
-        routes: []
-      }
-    }
+        routes: [],
+      },
+    };
 
     const result = getPreviousRoute({
       ...data,
-      store: storeWithoutRoutes
+      store: storeWithoutRoutes,
     });
 
     expect(result).toEqual({ pathname: "/" });

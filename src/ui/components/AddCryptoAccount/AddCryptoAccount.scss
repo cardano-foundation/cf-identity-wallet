@@ -45,3 +45,7 @@
     }
   }
 }
+
+.short-modal::part(content) {
+  height: 43rem;
+}

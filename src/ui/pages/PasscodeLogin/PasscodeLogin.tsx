@@ -8,7 +8,11 @@ import { PasscodeModule } from "../../components/PasscodeModule";
 import { Alert } from "../../components/Alert";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {getAuthentication, getStateCache, setAuthentication} from "../../../store/reducers/stateCache";
+import {
+  getAuthentication,
+  getStateCache,
+  setAuthentication,
+} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -49,13 +53,13 @@ const PasscodeLogin = () => {
               const { backPath, updateRedux } = getBackRoute(
                 RoutePath.PASSCODE_LOGIN,
                 {
-                  store: {stateCache},
+                  store: { stateCache },
                 }
               );
 
               updateReduxState(
                 backPath.pathname,
-                { store: {stateCache} },
+                { store: { stateCache } },
                 dispatch,
                 updateRedux
               );
@@ -94,12 +98,12 @@ const PasscodeLogin = () => {
 
   const resetPasscode = () => {
     SecureStorage.delete(KeyStoreKeys.APP_PASSCODE).then(() => {
-      dispatch(setAuthentication(
-        {
+      dispatch(
+        setAuthentication({
           ...authentication,
           passcodeIsSet: false,
-        }
-      ))
+        })
+      );
       history.push(RoutePath.SET_PASSCODE);
       handleClearState();
     });
@@ -142,6 +146,7 @@ const PasscodeLogin = () => {
         <Alert
           isOpen={isOpen}
           setIsOpen={setIsOpen}
+          dataTestId="alert-forgotten"
           headerText={headerText}
           confirmButtonText={confirmButtonText}
           cancelButtonText={cancelButtonText}

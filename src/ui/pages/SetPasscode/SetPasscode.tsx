@@ -6,7 +6,7 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import {getStateCache} from "../../../store/reducers/stateCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -29,7 +29,7 @@ const SetPasscode = () => {
               handleClearState();
 
               const data: DataProps = {
-                store: {stateCache},
+                store: { stateCache },
               };
               const { nextPath, updateRedux } = getNextRoute(
                 RoutePath.SET_PASSCODE,

@@ -1,5 +1,11 @@
 .page-layout {
   padding-inline: 1.25rem;
+  background: var(--ion-color-light);
+
+  &.modal-sheet {
+    background: transparent;
+  }
+
   ion-toolbar,
   .toolbar-container,
   ion-grid,
