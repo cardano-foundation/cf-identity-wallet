@@ -39,12 +39,12 @@ describe("Cardano seed phrase and address derivation", () => {
   });
 
   test("can return a root extended private key hex from an entropy", async () => {
-    expect(Addresses.convertToRootXPrivateKeyHex(entropy15Words)).toEqual(
-      rootXprvKey15Words
-    );
-    expect(Addresses.convertToRootXPrivateKeyHex(entropy24Words)).toEqual(
-      rootXprvKey24Words
-    );
+    expect(
+      Addresses.convertEntropyToBech32XPrvNoPasscode(entropy15Words)
+    ).toEqual(rootXprvKey15Words);
+    expect(
+      Addresses.convertEntropyToBech32XPrvNoPasscode(entropy24Words)
+    ).toEqual(rootXprvKey24Words);
   });
 
   test("should return a seedphrase from an entropy", () => {
@@ -53,12 +53,6 @@ describe("Cardano seed phrase and address derivation", () => {
     );
     expect(Addresses.convertToMnemonic(entropy24Words)).toEqual(
       validSeedPhrase24Words
-    );
-  });
-
-  test("should return the correct extended public key for private key", () => {
-    expect(Addresses.bip32PrivateHexToPublicHex(rootXprvKey15Words)).toEqual(
-      rootXpubKey15Words
     );
   });
 

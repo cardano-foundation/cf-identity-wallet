@@ -21,8 +21,8 @@ class SeedPhraseStorageService {
 
     const entropy = Addresses.convertToEntropy(seedPhrase);
     const rootExtendedPrivateKey =
-      Addresses.convertToRootXPrivateKeyHex(entropy);
-    const id = Addresses.bip32PrivateHexToPublicHex(rootExtendedPrivateKey);
+      Addresses.convertEntropyToBech32XPrvNoPasscode(entropy);
+    const id = rootExtendedPrivateKey;
     const addresses = Addresses.deriveFirstBaseAndRewardAddrs(
       rootExtendedPrivateKey
     );
@@ -72,7 +72,7 @@ class SeedPhraseStorageService {
     }
 
     const rootExtendedPrivateKey = storedRootXPRV as string;
-    const id = Addresses.bip32PrivateHexToPublicHex(rootExtendedPrivateKey);
+    const id = Addresses.convertHexXPrvToBech32XPrv(rootExtendedPrivateKey);
     const addresses = Addresses.deriveFirstBaseAndRewardAddrs(
       rootExtendedPrivateKey
     );
