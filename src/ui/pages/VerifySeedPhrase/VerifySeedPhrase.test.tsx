@@ -23,7 +23,9 @@ const rootKey = "rootKeyHex";
 jest.mock("../../../core/storage");
 jest.mock("../../../core/cardano/addresses");
 Addresses.convertToEntropy = jest.fn().mockReturnValue(entropy);
-Addresses.convertEntropyToBech32XPrvNoPasscode = jest.fn().mockReturnValue(rootKey);
+Addresses.convertEntropyToBech32XPrvNoPasscode = jest
+  .fn()
+  .mockReturnValue(rootKey);
 
 describe("Verify Seed Phrase Page", () => {
   const mockStore = configureStore();
@@ -232,7 +234,9 @@ describe("Verify Seed Phrase Page", () => {
 
     const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
     expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
-    expect(Addresses.convertEntropyToBech32XPrvNoPasscode).toBeCalledWith(entropy);
+    expect(Addresses.convertEntropyToBech32XPrvNoPasscode).toBeCalledWith(
+      entropy
+    );
     expect(SecureStorage.set).toBeCalledWith(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
       rootKey

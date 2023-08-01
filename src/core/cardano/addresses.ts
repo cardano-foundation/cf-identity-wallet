@@ -19,7 +19,10 @@ class Addresses {
   }
 
   static convertEntropyToBech32XPrvNoPasscode(entropy: string) {
-    return Bip32PrivateKey.from_bip39_entropy(Buffer.from(entropy, "hex"), Buffer.from("")).to_bech32();
+    return Bip32PrivateKey.from_bip39_entropy(
+      Buffer.from(entropy, "hex"),
+      Buffer.from("")
+    ).to_bech32();
   }
 
   static deriveFirstBaseAndRewardAddrs(rootXPrvBech32: string) {
