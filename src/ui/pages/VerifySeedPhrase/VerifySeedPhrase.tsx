@@ -16,7 +16,6 @@ import { Alert as AlertExit, Alert as AlertFail } from "../../components/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { Addresses } from "../../../core/cardano/addresses";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getStateCache } from "../../../store/reducers/stateCache";
@@ -29,6 +28,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
+import { Addresses } from "../../../core/cardano";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
@@ -94,7 +94,7 @@ const VerifySeedPhrase = () => {
     const convertToEntropy = Addresses.convertToEntropy(seedPhraseString);
     await SecureStorage.set(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-      Addresses.convertToRootXPrivateKeyHex(convertToEntropy)
+      Addresses.convertEntropyToBech32XPrvNoPasscode(convertToEntropy)
     );
     await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, convertToEntropy);
     const data: DataProps = {

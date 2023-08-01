@@ -15,8 +15,8 @@ import {
   GenerateSeedPhraseState,
   MNEMONIC_FIFTEEN_WORDS,
 } from "../../../constants/appConstants";
-import { Addresses } from "../../../core/cardano/addresses";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { Addresses } from "../../../core/cardano";
 
 const entropy = "entropy";
 const rootKey = "rootKeyHex";
@@ -210,7 +210,7 @@ describe("Verify Seed Phrase Page", () => {
     const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
     const entropy = Addresses.convertToEntropy(seedPhraseString);
     expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
-    expect(Addresses.convertToRootXPrivateKeyHex).toBeCalledWith(entropy);
+    expect(Addresses.convertEntropyToBech32XPrvNoPasscode).toBeCalledWith(entropy);
 
     expect(SecureStorage.set).toBeCalledWith(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
