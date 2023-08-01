@@ -9,6 +9,7 @@ const displayName = "displayName";
 const seedPhrase = "seedPhrase";
 const rootExtendedPrivateKey = "rootExtendedPrivateKey";
 const rootExtendedPublicKey = "rootExtendedPublicKey";
+const entropy = "entropy";
 const addressesMap: Map<
   NetworkType,
   Map<number, Map<number, string[]>>
@@ -42,7 +43,6 @@ const rewardAddressesMap = new Map([
   [NetworkType.MAINNET, ["mainnetRewardAddr"]],
   [NetworkType.TESTNET, ["testnetRewardAddr"]],
 ]);
-const entropy = "entropy";
 
 jest.mock("../../aries/ariesAgent", () => ({
   AriesAgent: {
@@ -173,11 +173,11 @@ describe("Seed phrase storage service", () => {
       displayName
     );
     expect(SecureStorage.set).toBeCalledWith(
-      `${KeyStoreKeys.CRYPTO_ENTROPY_PREFIX}${rootExtendedPublicKey}`,
+      `${KeyStoreKeys.CRYPTO_ENTROPY_PREFIX}${rootExtendedPrivateKey}`,
       entropy
     );
     expect(SecureStorage.set).toBeCalledWith(
-      `${KeyStoreKeys.CRYPTO_ROOT_XPRV_KEY_PREFIX}${rootExtendedPublicKey}`,
+      `${KeyStoreKeys.CRYPTO_ROOT_XPRV_KEY_PREFIX}${rootExtendedPrivateKey}`,
       rootExtendedPrivateKey
     );
   });
@@ -212,7 +212,7 @@ describe("Seed phrase storage service", () => {
       displayName
     );
     expect(SecureStorage.set).toBeCalledWith(
-      `${KeyStoreKeys.CRYPTO_ENTROPY_PREFIX}${rootExtendedPublicKey}`,
+      `${KeyStoreKeys.CRYPTO_ENTROPY_PREFIX}${rootExtendedPrivateKey}`,
       entropy
     );
     expect(SecureStorage.set).not.toBeCalledWith(
@@ -220,7 +220,7 @@ describe("Seed phrase storage service", () => {
       rootExtendedPrivateKey
     );
     expect(AriesAgent.agent.removeCryptoAccountRecordById).toBeCalledWith(
-      rootExtendedPublicKey
+      rootExtendedPrivateKey
     );
   });
 });
