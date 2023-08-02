@@ -304,6 +304,12 @@
       }
     }
   },
+  "connections": {
+    "tab": {
+      "title": "Connections",
+      "create": "Add a connection"
+    }
+  },
   "verifypassword": {
     "title": "Enter password",
     "cancel": "Cancel",

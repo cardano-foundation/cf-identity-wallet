@@ -1,21 +1,16 @@
-import { useHistory } from "react-router-dom";
 import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
+import { useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Creds.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getStateCache,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
-import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { getNextRoute } from "../../../routes/nextRoute";
-import { updateReduxState } from "../../../store/utils";
+import { Connections } from "../Connections";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -57,29 +52,25 @@ const AdditionalButtons = ({
 };
 
 const Creds = () => {
-  const history = useHistory();
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
   const credsData = useAppSelector(getCredsCache);
+  const [showConnections, setShowConnections] = useState(false);
 
   const handleCreateCred = () => {
-    // TODO: Function to create Credential
+    // @TODO - sdisalvo: Function to create Credential
   };
 
   const handleConnections = () => {
-    const data: DataProps = {
-      store: { stateCache },
-    };
-    const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CREDS, data);
-    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    history.push(nextPath.pathname);
+    setShowConnections(!showConnections);
   };
 
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
   );
 
-  return (
+  return showConnections ? (
+    <Connections />
+  ) : (
     <IonPage
       className="tab-layout creds-tab"
       data-testid="creds-tab"

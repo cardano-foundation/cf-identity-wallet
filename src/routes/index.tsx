@@ -17,10 +17,9 @@ import {
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
 import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
-import { RoutePath, TabsRoutePath } from "./paths";
+import { RoutePath } from "./paths";
 import { DidCardDetails } from "../ui/pages/DidCardDetails";
 import { CredCardDetails } from "../ui/pages/CredCardDetails";
-import { Connections } from "../ui/pages/Connections";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
@@ -96,11 +95,6 @@ const Routes = () => {
           path={RoutePath.TABS_MENU}
           exact
           component={TabsMenu}
-        />
-        <AuthenticatedRoute
-          path={TabsRoutePath.CONNECTIONS}
-          exact
-          component={Connections}
         />
         <AuthenticatedRoute
           path={RoutePath.CREATE_PASSWORD}

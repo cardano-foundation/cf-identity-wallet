@@ -18,7 +18,6 @@ enum TabsRoutePath {
   CHAT = "/tabs/chat",
   DID_DETAILS = "/tabs/dids/:id?",
   CRED_DETAILS = "/tabs/creds/:id?",
-  CONNECTIONS = "/tabs/connections",
 }
 
 export { RoutePath, TabsRoutePath };
