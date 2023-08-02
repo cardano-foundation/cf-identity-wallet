@@ -1,3 +1,4 @@
+import { useHistory } from "react-router-dom";
 import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -6,21 +7,32 @@ import "./Creds.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { updateReduxState } from "../../../store/utils";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
+  handleConnections: () => void;
 }
 
-const AdditionalButtons = ({ handleCreateCred }: AdditionalButtonsProps) => {
+const AdditionalButtons = ({
+  handleCreateCred,
+  handleConnections,
+}: AdditionalButtonsProps) => {
   return (
     <>
       <IonButton
         shape="round"
-        className="contacts-button"
-        data-testid="contacts-button"
+        className="connections-button"
+        data-testid="connections-button"
+        onClick={handleConnections}
       >
         <IonIcon
           slot="icon-only"
@@ -45,12 +57,24 @@ const AdditionalButtons = ({ handleCreateCred }: AdditionalButtonsProps) => {
 };
 
 const Creds = () => {
+  const history = useHistory();
+  const dispatch = useAppDispatch();
+  const stateCache = useAppSelector(getStateCache);
   const credsData = useAppSelector(getCredsCache);
+
   const handleCreateCred = () => {
     // TODO: Function to create Credential
   };
 
-  const dispatch = useAppDispatch();
+  const handleConnections = () => {
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CREDS, data);
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    history.push(nextPath.pathname);
+  };
+
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
   );
@@ -65,7 +89,10 @@ const Creds = () => {
         title={`${i18n.t("creds.tab.title")}`}
         menuButton={true}
         additionalButtons={
-          <AdditionalButtons handleCreateCred={handleCreateCred} />
+          <AdditionalButtons
+            handleCreateCred={handleCreateCred}
+            handleConnections={handleConnections}
+          />
         }
       >
         {credsData.length ? (
