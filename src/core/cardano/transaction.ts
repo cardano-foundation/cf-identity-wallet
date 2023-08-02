@@ -1,6 +1,6 @@
-import { Blockfrost, Lucid, Network, Tx, WalletApi } from "lucid-cardano";
-import {Bip32PrivateKey} from "@dcspark/cardano-multiplatform-lib-browser";
-import {TxComplete} from "lucid-cardano/types/src/lucid/tx_complete";
+import { Bip32PrivateKey } from "@dcspark/cardano-multiplatform-lib-browser";
+import { Blockfrost, Lucid, Network } from "lucid-cardano";
+import { TxComplete } from "lucid-cardano/types/src/lucid/tx_complete";
 
 class TransactionBuilder {
   lucid: Lucid;
@@ -12,7 +12,6 @@ class TransactionBuilder {
     network: Network,
     url: string
   ): Promise<TransactionBuilder> {
-
     const rootPrivateKey = Bip32PrivateKey.from_bech32(bech32Bip32PrivateKey);
     const bech32PrivateKey = rootPrivateKey.to_raw_key().to_bech32();
 
@@ -26,7 +25,6 @@ class TransactionBuilder {
     outputs: { address: string; assets: { [unit: string]: bigint } }[],
     changeAddress?: string
   ): Promise<TxComplete> {
-
     const tx = await this.lucid.newTx();
 
     for (let i = 0; i < outputs.length; i++) {
@@ -38,7 +36,6 @@ class TransactionBuilder {
     } else {
       return await tx.complete();
     }
-
   }
 }
 

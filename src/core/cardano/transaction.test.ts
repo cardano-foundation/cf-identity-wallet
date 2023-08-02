@@ -1,17 +1,22 @@
-import { Blockfrost, Network, ProtocolParameters, TxComplete } from "lucid-cardano";
+import {
+  Blockfrost,
+  Network,
+  ProtocolParameters,
+  TxComplete,
+} from "lucid-cardano";
 
 import dotenv from "dotenv";
-import { TransactionBuilder } from "./transaction";
+import { Addresses } from "./addresses";
 import { BLOCKFROST_PREPROD_SELF_HOSTED } from "./provider/config";
-import {Addresses} from "./addresses";
-import {Address} from "@dcspark/cardano-multiplatform-lib-browser";
+import { TransactionBuilder } from "./transaction";
 
 dotenv.config();
 
 const validSeedPhrase15Words =
-    "tortoise arrive pulp crisp blood dynamic trial follow senior topple element unveil typical woman cost";
+  "tortoise arrive pulp crisp blood dynamic trial follow senior topple element unveil typical woman cost";
 const entropy = Addresses.convertToEntropy(validSeedPhrase15Words);
-const rootPrivateKeyBech32 = Addresses.convertToRootXPrivateKeyHex(entropy);
+const rootPrivateKeyBech32 =
+  Addresses.convertEntropyToBech32XPrvNoPasscode(entropy);
 describe("Cardano transactions", () => {
   const blockfrostUrl = BLOCKFROST_PREPROD_SELF_HOSTED;
   const network: Network = "Preprod";
@@ -21,30 +26,32 @@ describe("Cardano transactions", () => {
   const addresses = [
     "addr_test1qrqe03xqpl2jwh3a8pgca9gjm5k8n4jgv3ytppppavvynwdt9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9sa8lf7s",
     "addr_test1qp7jhfea5lr7j9f6axe5vc6pc0m9mgxxjyjxplh3qeyh869t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s35su0w",
-    "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2"
-  ]
+    "addr_test1qp699gyph5gj8c4whp62048z7w7kte2w5ghkpl36wwh5z84t9gat4d3njffvnlde55dwtqyev48z8ywwqask7rsmwd9s0pxmc2",
+  ];
 
   const balances = [
     {
-      "lovelace": 42000000n,
-      "b0d07d45fe9514f80213f4020e5a61241458be626841cde717cb38a76e7574636f696e": 12n,
-    }
-  ]
+      lovelace: 42000000n,
+      b0d07d45fe9514f80213f4020e5a61241458be626841cde717cb38a76e7574636f696e:
+        12n,
+    },
+  ];
 
   const utxos = [
     {
-      txHash: "39a7a284c2a0948189dc45dec670211cd4d72f7b66c5726c08d9b3df11e44d58",
-      address: "addr1qxqs59lphg8g6qndelq8xwqn60ag3aeyfcp33c2kdp46a09re5df3pzwwmyq946axfcejy5n4x0y99wqpgtp2gd0k09qsgy6pz",
+      txHash:
+        "39a7a284c2a0948189dc45dec670211cd4d72f7b66c5726c08d9b3df11e44d58",
+      address:
+        "addr1qxqs59lphg8g6qndelq8xwqn60ag3aeyfcp33c2kdp46a09re5df3pzwwmyq946axfcejy5n4x0y99wqpgtp2gd0k09qsgy6pz",
       outputIndex: 0,
       assets: {
-        lovelace: 10000000n // 10 ADA
-      }
-    }
-  ]
+        lovelace: 10000000n, // 10 ADA
+      },
+    },
+  ];
 
   beforeEach(() => {
     blockfrostProvider = new Blockfrost(blockfrostUrl);
-
 
     mockProtocolParameters = {
       minFeeA: 44,
@@ -62,8 +69,7 @@ describe("Cardano transactions", () => {
       maxCollateralInputs: 3,
       // eslint-disable-next-line
       // @ts-ignore
-      costModels: {
-      },
+      costModels: {},
     };
 
     jest
@@ -72,7 +78,6 @@ describe("Cardano transactions", () => {
   });
 
   test("static new method should create an instance of TransactionBuilder", async () => {
-
     const txBuilder = await TransactionBuilder.new(
       rootPrivateKeyBech32,
       network,
@@ -88,12 +93,13 @@ describe("Cardano transactions", () => {
   });
 
   test("build a valid transaction with change address", async () => {
-
     const outputs = [
-      { address: addresses[0], assets: { lovelace: 2000000n } } // 2 ADA
+      { address: addresses[0], assets: { lovelace: 2000000n } }, // 2 ADA
     ];
 
-    jest.spyOn(blockfrostProvider, "getProtocolParameters").mockImplementation(() => Promise.resolve(mockProtocolParameters));
+    jest
+      .spyOn(blockfrostProvider, "getProtocolParameters")
+      .mockImplementation(() => Promise.resolve(mockProtocolParameters));
 
     const txBuilder = await TransactionBuilder.new(
       rootPrivateKeyBech32,
@@ -101,8 +107,9 @@ describe("Cardano transactions", () => {
       blockfrostUrl
     );
 
-
-    jest.spyOn(txBuilder.lucid.provider, "getUtxos").mockImplementation(() => Promise.resolve(utxos));
+    jest
+      .spyOn(txBuilder.lucid.provider, "getUtxos")
+      .mockImplementation(() => Promise.resolve(utxos));
 
     const tx = await txBuilder.buildTransaction(outputs, addresses[2]);
 
@@ -118,15 +125,17 @@ describe("Cardano transactions", () => {
     // Check outputs+fee
     const fee = BigInt(txJson.body.fee);
     let totalAdaInOutputs = 0n;
-    txJson.body.outputs.map((output: { amount: { coin: string; }; }) => totalAdaInOutputs += BigInt(output.amount.coin))
+    txJson.body.outputs.map(
+      (output: { amount: { coin: string } }) =>
+        (totalAdaInOutputs += BigInt(output.amount.coin))
+    );
 
-    expect(totalAdaInOutputs+fee).toBe(utxos[0].assets.lovelace);
+    expect(totalAdaInOutputs + fee).toBe(utxos[0].assets.lovelace);
   });
 
   test("should throw an error if outputs value > inputs value", async () => {
-
     const outputs = [
-      { address: addresses[0], assets: { lovelace: 20000000n } }  // 20 ADA
+      { address: addresses[0], assets: { lovelace: 20000000n } }, // 20 ADA
     ];
 
     const txBuilder = await TransactionBuilder.new(
@@ -135,15 +144,18 @@ describe("Cardano transactions", () => {
       blockfrostUrl
     );
 
-    jest.spyOn(txBuilder.lucid.provider, "getUtxos").mockImplementation(() => Promise.resolve(utxos));
+    jest
+      .spyOn(txBuilder.lucid.provider, "getUtxos")
+      .mockImplementation(() => Promise.resolve(utxos));
 
-    txBuilder.buildTransaction(outputs).catch(error => expect(error).toBe("InputsExhaustedError") )
+    txBuilder
+      .buildTransaction(outputs)
+      .catch((error) => expect(error).toBe("InputsExhaustedError"));
   });
 
   test("should throw an error if not enough inputs value to cover the fee", async () => {
-
     const outputs = [
-      { address: addresses[0], assets: { lovelace: 1931948n } }  // 1.931948 ADA, expected fee 168053
+      { address: addresses[0], assets: { lovelace: 1931948n } }, // 1.931948 ADA, expected fee 168053
     ];
 
     const txBuilder = await TransactionBuilder.new(
@@ -152,8 +164,12 @@ describe("Cardano transactions", () => {
       blockfrostUrl
     );
 
-    jest.spyOn(txBuilder.lucid.provider, "getUtxos").mockImplementation(() => Promise.resolve(utxos));
+    jest
+      .spyOn(txBuilder.lucid.provider, "getUtxos")
+      .mockImplementation(() => Promise.resolve(utxos));
 
-    txBuilder.buildTransaction(outputs).catch(error => expect(error).toBe("InputsExhaustedError") )
+    txBuilder
+      .buildTransaction(outputs)
+      .catch((error) => expect(error).toBe("InputsExhaustedError"));
   });
 });
