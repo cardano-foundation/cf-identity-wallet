@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import {
   getAuthentication,
   getRoutes,
-  getState,
+  getStateCache,
   setCurrentRoute,
 } from "../store/reducers/stateCache";
 import { getNextRoute } from "./nextRoute";
@@ -49,11 +49,11 @@ const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
 };
 
 const Routes = () => {
-  const storeState = useAppSelector(getState);
+  const stateCache = useAppSelector(getStateCache);
   const dispatch = useAppDispatch();
   const routes = useAppSelector(getRoutes);
   const { nextPath } = getNextRoute(RoutePath.ROOT, {
-    store: storeState,
+    store: { stateCache },
   });
 
   useEffect(() => {

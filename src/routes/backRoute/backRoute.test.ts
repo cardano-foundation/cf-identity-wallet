@@ -214,9 +214,18 @@ describe("getPreviousRoute", () => {
       store: storeMock,
     };
 
-    data.store.stateCache.routes = [];
+    const storeWithoutRoutes = {
+      ...storeMock,
+      stateCache: {
+        ...storeMock.stateCache,
+        routes: [],
+      },
+    };
 
-    const result = getPreviousRoute(data);
+    const result = getPreviousRoute({
+      ...data,
+      store: storeWithoutRoutes,
+    });
 
     expect(result).toEqual({ pathname: "/" });
   });

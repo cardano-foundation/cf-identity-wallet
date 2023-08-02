@@ -1,4 +1,4 @@
-@import "./styles/colors.scss";
+@import "./colors.scss";
 
 body {
   margin: 0;
@@ -148,5 +148,15 @@ ion-modal {
 }
 
 .extended-modal::part(content) {
-  height: 800px;
+  height: 50rem;
+}
+
+ion-toast {
+  --height: 3.25rem;
+  --border-radius: 0.5rem;
+  --box-shadow: 3px 3px 10px 0 rgba(0, 0, 0, 0.2);
+
+  &::part(message) {
+    text-align: center;
+  }
 }

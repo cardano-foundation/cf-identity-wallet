@@ -8,17 +8,16 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { filteredCredsMock } from "../../__mocks__/filteredCredsMock";
-import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import {
   setCryptoAccountsCache,
-  setDefaultCryptoAccountCache,
   setHideCryptoBalances,
 } from "../../../store/reducers/cryptoAccountsCache";
 import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences";
+import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -42,19 +41,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const storedIdentities = await AriesAgent.agent.getIdentities();
-
-    try {
-      const defaultCryptoAccount = await PreferencesStorage.get(
-        PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT
-      );
-      dispatch(setDefaultCryptoAccountCache(`${defaultCryptoAccount.data}`));
-    } catch (e) {
-      if (cryptoAccountsMock.length) {
-        dispatch(setDefaultCryptoAccountCache(cryptoAccountsMock[0].address));
-      } else {
-        // @TODO - sdisalvo: handle error
-      }
-    }
+    // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
+    const storedCryptoAccounts: CryptoAccountProps[] = [];
 
     try {
       const hideCryptoBalances = await PreferencesStorage.get(
@@ -76,7 +64,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     dispatch(setIdentitiesCache(storedIdentities));
     dispatch(setCredsCache(filteredCredsMock));
-    dispatch(setCryptoAccountsCache(cryptoAccountsMock));
+    dispatch(setCryptoAccountsCache(storedCryptoAccounts));
   };
 
   return <>{props.children}</>;

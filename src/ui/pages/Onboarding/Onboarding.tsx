@@ -7,7 +7,7 @@ import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState } from "../../../store/reducers/stateCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
@@ -15,7 +15,7 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 const Onboarding = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
+  const stateCache = useAppSelector(getStateCache);
   const items: SlideItem[] = [];
   for (let i = 0; i < 5; i++) {
     items.push({
@@ -27,7 +27,7 @@ const Onboarding = () => {
 
   const handleNavigation = () => {
     const data: DataProps = {
-      store: storeState,
+      store: { stateCache },
     };
     const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);

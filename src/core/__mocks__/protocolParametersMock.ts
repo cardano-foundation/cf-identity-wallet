@@ -186,7 +186,7 @@ const protocolParametersMock = {
       "unMapData-memory-arguments": 32,
       "verifyEd25519Signature-cpu-arguments-intercept": 57996947,
       "verifyEd25519Signature-cpu-arguments-slope": 18975,
-      "verifyEd25519Signature-memory-arguments": 10
+      "verifyEd25519Signature-memory-arguments": 10,
     },
     PlutusV2: {
       "addInteger-cpu-arguments-intercept": 205665,
@@ -363,8 +363,8 @@ const protocolParametersMock = {
       "verifyEd25519Signature-memory-arguments": 10,
       "verifySchnorrSecp256k1Signature-cpu-arguments-intercept": 38887044,
       "verifySchnorrSecp256k1Signature-cpu-arguments-slope": 32947,
-      "verifySchnorrSecp256k1Signature-memory-arguments": 10
-    }
+      "verifySchnorrSecp256k1Signature-memory-arguments": 10,
+    },
   },
   price_mem: 0.0577,
   price_step: 0.0000721,
@@ -376,9 +376,7 @@ const protocolParametersMock = {
   collateral_percent: 150,
   max_collateral_inputs: 3,
   coins_per_utxo_size: "4310",
-  coins_per_utxo_word: "4310"
-}
+  coins_per_utxo_word: "4310",
+};
 
-export {
-  protocolParametersMock
-}
+export { protocolParametersMock };

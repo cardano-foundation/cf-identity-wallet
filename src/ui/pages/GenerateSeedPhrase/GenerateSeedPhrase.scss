@@ -1,4 +1,8 @@
 .generate-seedphrase {
+  ion-title h2 {
+    margin: 0 auto;
+  }
+
   ion-segment {
     --background: var(--ion-color-dark-grey);
 
@@ -61,6 +65,23 @@
     &.seed-phrase-blurred {
       filter: blur(5px);
     }
+
+    &.restore {
+      ion-chip {
+        &.empty {
+          --background: transparent;
+          border: 1px dashed var(--ion-color-dark-grey);
+        }
+
+        &.full {
+        }
+
+        &:focus-within {
+          --background: transparent;
+          border: 1px solid var(--ion-color-secondary);
+        }
+      }
+    }
   }
 
   ion-card,
@@ -83,8 +104,29 @@
 
   .termsandconditions-label {
     font-size: 1rem !important;
+    color: var(--ion-color-secondary);
     margin: 0 !important;
     position: absolute;
     z-index: 2;
+  }
+}
+
+.generate-seedphrase-suggestions {
+  position: absolute;
+  margin-top: constant(safe-area-inset-top);
+  margin-top: env(safe-area-inset-top);
+  --safe-area-inset-top: env(safe-area-inset-top);
+  z-index: 1000;
+  width: 100%;
+  background-color: var(--ion-color-light);
+
+  .generate-seedphrase-suggestions-title {
+    display: block;
+    text-align: center;
+    color: var(--ion-color-secondary);
+  }
+
+  .seed-phrase-container {
+    padding: 0.25rem 0.5rem;
   }
 }

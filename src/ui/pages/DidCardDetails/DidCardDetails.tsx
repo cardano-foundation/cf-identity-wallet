@@ -4,6 +4,7 @@ import {
   IonIcon,
   IonPage,
   IonSpinner,
+  IonToast,
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
@@ -25,7 +26,10 @@ import { DidCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getState, setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { ShareIdentity } from "../../components/ShareIdentity";
 import { EditIdentity } from "../../components/EditIdentity";
@@ -42,12 +46,13 @@ import { IdentityDetails } from "../../../core/aries/ariesAgent.types";
 const DidCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
+  const stateCache = useAppSelector(getStateCache);
   const identitiesData = useAppSelector(getIdentitiesCache);
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<IdentityDetails | undefined>();
 
@@ -68,11 +73,12 @@ const DidCardDetails = () => {
 
   const handleDone = () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
-      store: storeState,
+      store: { stateCache },
     });
+
     updateReduxState(
       backPath.pathname,
-      { store: storeState },
+      { store: { stateCache } },
       dispatch,
       updateRedux
     );
@@ -157,7 +163,10 @@ const DidCardDetails = () => {
                   <span
                     className="card-details-info-block-line"
                     data-testid="copy-button-id"
-                    onClick={() => writeToClipboard(cardData.id)}
+                    onClick={() => {
+                      writeToClipboard(cardData.id);
+                      setShowToast(true);
+                    }}
                   >
                     <span>
                       <IonIcon
@@ -204,7 +213,10 @@ const DidCardDetails = () => {
                   <span
                     className="card-details-info-block-line"
                     data-testid="copy-button-type"
-                    onClick={() => writeToClipboard(cardData.keyType)}
+                    onClick={() => {
+                      writeToClipboard(cardData.keyType);
+                      setShowToast(true);
+                    }}
                   >
                     <span>
                       <IonIcon
@@ -237,7 +249,10 @@ const DidCardDetails = () => {
                   <span
                     className="card-details-info-block-line"
                     data-testid="copy-button-controller"
-                    onClick={() => writeToClipboard(cardData.controller)}
+                    onClick={() => {
+                      writeToClipboard(cardData.controller);
+                      setShowToast(true);
+                    }}
                   >
                     <span>
                       <IonIcon
@@ -271,7 +286,10 @@ const DidCardDetails = () => {
                   <span
                     className="card-details-info-block-line"
                     data-testid="copy-button-publicKeyBase58"
-                    onClick={() => writeToClipboard(cardData.publicKeyBase58)}
+                    onClick={() => {
+                      writeToClipboard(cardData.publicKeyBase58);
+                      setShowToast(true);
+                    }}
                   >
                     <span>
                       <IonIcon
@@ -336,6 +354,7 @@ const DidCardDetails = () => {
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
+          dataTestId="alert-confirm"
           headerText={i18n.t("dids.card.details.delete.alert.title")}
           confirmButtonText={`${i18n.t(
             "dids.card.details.delete.alert.confirm"
@@ -349,6 +368,15 @@ const DidCardDetails = () => {
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
           onVerify={handleDelete}
+        />
+        <IonToast
+          isOpen={showToast}
+          onDidDismiss={() => setShowToast(false)}
+          message={`${i18n.t("dids.card.details.toast.clipboard")}`}
+          color="secondary"
+          position="top"
+          cssClass="identity-card-toast"
+          duration={1500}
         />
       </TabLayout>
     </IonPage>

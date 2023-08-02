@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   IonButton,
@@ -21,8 +21,8 @@ import { VerifyPassword } from "../VerifyPassword";
 import { Alert } from "../Alert";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getBackRoute } from "../../../routes/backRoute";
-import { TabsRoutePath } from "../navigation/TabsMenu";
-import { getState } from "../../../store/reducers/stateCache";
+import { TabsRoutePath } from "../../../routes/paths";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { credsMock } from "../../__mocks__/credsMock";
 import { setCredsCache } from "../../../store/reducers/credsCache";
@@ -32,7 +32,7 @@ const CredsOptions = ({
   setOptionsIsOpen,
   id,
 }: CredsOptionsProps) => {
-  const storeState = useAppSelector(getState);
+  const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const [viewIsOpen, setViewIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -50,11 +50,12 @@ const CredsOptions = ({
 
   const handleDone = () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
-      store: storeState,
+      store: { stateCache },
     });
+
     updateReduxState(
       backPath.pathname,
-      { store: storeState },
+      { store: { stateCache } },
       dispatch,
       updateRedux
     );
@@ -184,6 +185,7 @@ const CredsOptions = ({
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
+        dataTestId="alert-confirm"
         headerText={i18n.t("creds.card.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
           "creds.card.details.delete.alert.confirm"

@@ -30,8 +30,8 @@ import {
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
 import { getBackRoute } from "../../../routes/backRoute";
-import { TabsRoutePath } from "../navigation/TabsMenu";
-import { getState } from "../../../store/reducers/stateCache";
+import { TabsRoutePath } from "../../../routes/paths";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
 
@@ -42,7 +42,7 @@ const EditIdentity = ({
   setCardData,
 }: EditIdentityProps) => {
   const identitiesData = useAppSelector(getIdentitiesCache);
-  const storeState = useAppSelector(getState);
+  const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
@@ -85,11 +85,12 @@ const EditIdentity = ({
 
   const handleDone = () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
-      store: storeState,
+      store: { stateCache },
     });
+
     updateReduxState(
       backPath.pathname,
-      { store: storeState },
+      { store: { stateCache } },
       dispatch,
       updateRedux
     );
@@ -279,6 +280,7 @@ const EditIdentity = ({
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
+        dataTestId="alert-confirm"
         headerText={i18n.t("dids.card.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
           "dids.card.details.delete.alert.confirm"

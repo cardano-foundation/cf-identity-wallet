@@ -5,11 +5,13 @@ import "./Alert.scss";
 const Alert = ({
   isOpen,
   setIsOpen,
+  dataTestId,
   headerText,
   subheaderText,
   confirmButtonText,
   cancelButtonText,
   actionConfirm,
+  actionCancel,
   actionDismiss,
 }: AlertProps) => {
   const buttons: AlertButton[] = [];
@@ -31,6 +33,7 @@ const Alert = ({
       role: "cancel",
       handler: () => {
         setIsOpen(false);
+        actionCancel && actionCancel();
       },
     });
   }
@@ -44,7 +47,7 @@ const Alert = ({
 
   return (
     <div
-      data-testid="alert-wrapper"
+      data-testid={dataTestId}
       className={isOpen ? "alert-visible" : "alert-invisible"}
     >
       <IonAlert

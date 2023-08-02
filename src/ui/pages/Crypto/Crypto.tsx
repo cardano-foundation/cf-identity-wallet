@@ -3,6 +3,7 @@ import {
   IonIcon,
   IonModal,
   IonPage,
+  IonToast,
   useIonViewWillEnter,
 } from "@ionic/react";
 import Blockies from "react-18-blockies";
@@ -14,12 +15,12 @@ import {
   imageOutline,
   layersOutline,
 } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   setCurrentRoute,
   getCurrentRoute,
-  getState,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
@@ -27,6 +28,7 @@ import {
   getCryptoAccountsCache,
   getDefaultCryptoAccountCache,
   getHideCryptoBalances,
+  setDefaultCryptoAccountCache,
 } from "../../../store/reducers/cryptoAccountsCache";
 import { i18n } from "../../../i18n";
 import "./Crypto.scss";
@@ -39,11 +41,21 @@ import { CryptoBalance } from "../../components/CryptoBalance";
 import { CryptoBalanceItem } from "../../components/CryptoBalance/CryptoBalance.types";
 import { formatCurrencyUSD } from "../../../utils";
 import { AssetsTransactions } from "../../components/AssetsTransactions";
+import {
+  DEFAULT_CRYPTO_ACCOUNT_DATA,
+  GenerateSeedPhraseState,
+} from "../../../constants/appConstants";
+import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences";
 
 const Crypto = () => {
+  const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
-  const currentRoute = getCurrentRoute(storeState);
+  const currentRoute = useAppSelector(getCurrentRoute);
+  const [showToast, setShowToast] = useState(false);
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
@@ -58,27 +70,9 @@ const Crypto = () => {
   const [defaultAccountAddress, setDefaultAccountAddress] = useState(
     useAppSelector(getDefaultCryptoAccountCache)
   );
-  const [defaultAccountData, setDefaultAccountData] =
-    useState<CryptoAccountProps>({
-      address: "",
-      name: "",
-      blockchain: "",
-      currency: "",
-      logo: "",
-      balance: {
-        main: {
-          nativeBalance: 0,
-          usdBalance: 0,
-        },
-        reward: {
-          nativeBalance: 0,
-          usdBalance: 0,
-        },
-      },
-      usesIdentitySeedPhrase: false,
-      assets: [],
-      transactions: [],
-    });
+  const [defaultAccountData, setDefaultAccountData] = useState(
+    DEFAULT_CRYPTO_ACCOUNT_DATA
+  );
   const accountAvailable = cryptoAccountsData?.length && defaultAccountData;
   const items: CryptoBalanceItem[] = [
     {
@@ -108,6 +102,15 @@ const Crypto = () => {
   });
 
   useEffect(() => {
+    if (
+      (history?.location?.state as GenerateSeedPhraseProps)?.type ===
+      GenerateSeedPhraseState.success
+    ) {
+      setShowToast(true);
+    }
+  }, [history?.location?.state]);
+
+  useEffect(() => {
     if (!currentRoute?.path || currentRoute.path !== TabsRoutePath.CRYPTO) {
       setShowAssetsTransactions(false);
     } else {
@@ -116,18 +119,21 @@ const Crypto = () => {
   }, [currentRoute]);
 
   useEffect(() => {
+    setIdwProfileInUse(false);
     cryptoAccountsData?.forEach((account) => {
       if (account.address === defaultAccountAddress) {
         setDefaultAccountData(account);
       }
       if (account.usesIdentitySeedPhrase) {
         setIdwProfileInUse(true);
-      } else {
-        setIdwProfileInUse(false);
       }
     });
-    if (!cryptoAccountsData?.length) {
-      setIdwProfileInUse(false);
+    if (cryptoAccountsData?.length === 1) {
+      setDefaultAccountData(cryptoAccountsData[0]);
+      dispatch(setDefaultCryptoAccountCache(cryptoAccountsData[0].address));
+      PreferencesStorage.set(PreferencesKeys.APP_DEFAULT_CRYPTO_ACCOUNT, {
+        data: cryptoAccountsData[0].address,
+      });
     }
   }, [cryptoAccountsData, defaultAccountAddress]);
 
@@ -295,6 +301,15 @@ const Crypto = () => {
               buttonAction={() => setAddAccountIsOpen(true)}
             />
           )}
+          <IonToast
+            isOpen={showToast}
+            onDidDismiss={() => setShowToast(false)}
+            message={`${i18n.t("crypto.tab.toast.success")}`}
+            color="secondary"
+            position="top"
+            cssClass="crypto-toast"
+            duration={1500}
+          />
         </TabLayout>
       </IonPage>
       <MyWallets
@@ -323,7 +338,8 @@ const Crypto = () => {
       <ChooseAccountName
         chooseAccountNameIsOpen={chooseAccountNameIsOpen}
         setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
-        setDefaultAccountData={setDefaultAccountData}
+        usesIdentitySeedPhrase={true}
+        onDone={() => setShowToast(true)}
       />
     </>
   );

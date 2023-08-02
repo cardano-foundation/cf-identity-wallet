@@ -12,20 +12,31 @@ import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { Alert } from "../../components/Alert";
+import { Alert as AlertExit, Alert as AlertFail } from "../../components/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { Addresses } from "../../../core/cardano/addresses";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import { getState } from "../../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  FIFTEEN_WORDS_BIT_LENGTH,
+  GenerateSeedPhraseState,
+} from "../../../constants/appConstants";
+import { getBackRoute } from "../../../routes/backRoute";
+import { TabsRoutePath } from "../../../routes/paths";
+import { ChooseAccountName } from "../../components/ChooseAccountName";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
+import { Addresses } from "../../../core/cardano";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const storeState = useAppSelector(getState);
+  const stateCache = useAppSelector(getStateCache);
+  const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
+    ? GenerateSeedPhraseState.onboarding
+    : (history?.location?.state as GenerateSeedPhraseProps)?.type || "";
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
     seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
@@ -34,6 +45,8 @@ const VerifySeedPhrase = () => {
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
+  const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
@@ -76,38 +89,61 @@ const VerifySeedPhrase = () => {
     setSeedPhraseSelected(newMatch);
   };
 
+  const storeIdentitySeedPhrase = async () => {
+    const seedPhraseString = originalSeedPhrase.join(" ");
+    const convertToEntropy = Addresses.convertToEntropy(seedPhraseString);
+    await SecureStorage.set(
+      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+      Addresses.convertEntropyToHexXPrvNoPasscode(convertToEntropy)
+    );
+    await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, convertToEntropy);
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(
+      RoutePath.VERIFY_SEED_PHRASE,
+      data
+    );
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    handleClearState();
+    history.push(nextPath.pathname);
+  };
+
   const handleContinue = async () => {
     if (
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      const seedPhraseString = originalSeedPhrase.join(" ");
-      await SecureStorage.set(
-        KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-        Addresses.convertToRootXPrivateKeyHex(
-          Addresses.convertToEntropy(seedPhraseString)
-        )
-      );
-      await SecureStorage.set(
-        KeyStoreKeys.IDENTITY_SEEDPHRASE,
-        seedPhraseString
-      );
-
-      const { nextPath, updateRedux } = getNextRoute(
-        RoutePath.VERIFY_SEED_PHRASE,
-        { store: storeState }
-      );
-      updateReduxState(
-        nextPath.pathname,
-        { store: storeState },
-        dispatch,
-        updateRedux
-      );
-      history.push(nextPath.pathname);
-      // TODO: Store Seed Phrase in db/keystore
+      if (seedPhraseType === GenerateSeedPhraseState.onboarding) {
+        storeIdentitySeedPhrase();
+      } else {
+        setChooseAccountNameIsOpen(true);
+      }
     } else {
       setAlertIsOpen(true);
     }
+  };
+
+  const handleExit = () => {
+    handleClearState();
+    const { backPath, updateRedux } = getBackRoute(
+      RoutePath.VERIFY_SEED_PHRASE,
+      {
+        store: { stateCache },
+      }
+    );
+    updateReduxState(
+      backPath.pathname,
+      { store: { stateCache } },
+      dispatch,
+      updateRedux
+    );
+    history.push({
+      pathname: backPath.pathname,
+      state: {
+        type: seedPhraseType,
+      },
+    });
   };
 
   return (
@@ -115,14 +151,25 @@ const VerifySeedPhrase = () => {
       <PageLayout
         id="verify-seedphrase"
         header={true}
+        title={
+          seedPhraseType !== GenerateSeedPhraseState.onboarding
+            ? `${i18n.t("verifyseedphrase." + seedPhraseType + ".title")}`
+            : undefined
+        }
         backButton={true}
-        onBack={handleClearState}
+        onBack={
+          seedPhraseType === GenerateSeedPhraseState.onboarding
+            ? handleClearState
+            : () => setAlertExitIsOpen(true)
+        }
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
-        progressBar={true}
+        progressBar={seedPhraseType === GenerateSeedPhraseState.onboarding}
         progressBarValue={1}
         progressBarBuffer={1}
         footer={true}
-        primaryButtonText={`${i18n.t("verifyseedphrase.continue.button")}`}
+        primaryButtonText={`${i18n.t(
+          "verifyseedphrase." + seedPhraseType + ".continue.button"
+        )}`}
         primaryButtonAction={() => handleContinue()}
         primaryButtonDisabled={
           !(originalSeedPhrase.length == seedPhraseSelected.length)
@@ -131,7 +178,11 @@ const VerifySeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              <h2>{i18n.t("verifyseedphrase.title")}</h2>
+              {seedPhraseType === GenerateSeedPhraseState.onboarding && (
+                <h2>
+                  {i18n.t("verifyseedphrase." + seedPhraseType + ".title")}
+                </h2>
+              )}
               <p className="page-paragraph">
                 {i18n.t("verifyseedphrase.paragraph.top")}
               </p>
@@ -196,11 +247,46 @@ const VerifySeedPhrase = () => {
           </IonGrid>
         ) : null}
 
-        <Alert
+        <AlertFail
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
-          headerText={i18n.t("verifyseedphrase.alert.text")}
-          cancelButtonText={`${i18n.t("verifyseedphrase.alert.button.cancel")}`}
+          dataTestId="alert-fail"
+          headerText={i18n.t("verifyseedphrase.alert.fail.text")}
+          confirmButtonText={`${i18n.t(
+            "verifyseedphrase.alert.fail.button.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "verifyseedphrase.alert.fail.button.cancel"
+          )}`}
+          actionConfirm={handleExit}
+        />
+        <AlertExit
+          isOpen={alertExitIsOpen}
+          setIsOpen={setAlertExitIsOpen}
+          dataTestId="alert-exit"
+          headerText={i18n.t("verifyseedphrase.alert.exit.text")}
+          confirmButtonText={`${i18n.t(
+            "verifyseedphrase.alert.exit.button.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "verifyseedphrase.alert.exit.button.cancel"
+          )}`}
+          actionConfirm={handleExit}
+        />
+        <ChooseAccountName
+          chooseAccountNameIsOpen={chooseAccountNameIsOpen}
+          setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
+          usesIdentitySeedPhrase={false}
+          seedPhrase={originalSeedPhrase.join(" ")}
+          onDone={() => {
+            handleClearState();
+            history.push({
+              pathname: TabsRoutePath.CRYPTO,
+              state: {
+                type: GenerateSeedPhraseState.success,
+              },
+            });
+          }}
         />
       </PageLayout>
     </IonPage>
