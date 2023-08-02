@@ -1,4 +1,25 @@
 .connections-tab {
+  .back-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 1.5rem;
+    background: var(--ion-color-light-grey);
+    flex-direction: row;
+    justify-content: center;
+
+    ion-icon {
+      font-size: 1.85em !important;
+    }
+  }
+
+  ion-title {
+    margin-left: 3.2rem;
+  }
+
+  ion-searchbar {
+    padding-inline: 0;
+  }
+
   .cards-stack-container {
     height: 90vh;
   }

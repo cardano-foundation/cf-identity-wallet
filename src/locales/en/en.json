@@ -307,7 +307,8 @@
   "connections": {
     "tab": {
       "title": "Connections",
-      "create": "Add a connection"
+      "create": "Add a connection",
+      "searchconnections": "Search connections"
     }
   },
   "verifypassword": {
