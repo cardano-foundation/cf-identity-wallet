@@ -34,6 +34,7 @@ const TabLayout = ({
               <IonButtons
                 slot="start"
                 className="back-button"
+                onClick={backButtonAction}
               >
                 <IonIcon
                   icon={arrowBackOutline}

@@ -41,7 +41,11 @@ const ConnectionItem = ({ item }: ConnectionItemProps) => {
   return <div>{item.issuer}</div>;
 };
 
-const Connections = () => {
+interface ConnectionsProps {
+  setShowConnections: (value: boolean) => void;
+}
+
+const Connections = ({ setShowConnections }: ConnectionsProps) => {
   const connections: FilteredConnectionsProps[] = filteredConnections;
 
   const handleCreateConnection = () => {
@@ -49,54 +53,51 @@ const Connections = () => {
   };
 
   return (
-    <IonPage
-      className="tab-layout connections-tab"
+    <TabLayout
       data-testid="connections-tab"
+      header={true}
+      backButton={true}
+      backButtonAction={() => {
+        setShowConnections(false);
+        console.log("fire");
+      }}
+      title={`${i18n.t("connections.tab.title")}`}
+      menuButton={true}
+      additionalButtons={<AdditionalButtons />}
     >
-      <TabLayout
-        header={true}
-        backButton={true}
-        backButtonAction={() => {
-          return;
-        }}
-        title={`${i18n.t("connections.tab.title")}`}
-        menuButton={true}
-        additionalButtons={<AdditionalButtons />}
-      >
-        {connections.length ? (
-          <>
-            <IonSearchbar
-              placeholder={`${i18n.t("connections.tab.searchconnections")}`}
-            />
-            <IonGrid>
-              <IonRow>
-                <IonCol size="12">
-                  <IonList
-                    lines="none"
-                    className="transactions-list"
-                    data-testid="transactions-list"
-                  >
-                    {connections.map((connection, index) => {
-                      return (
-                        <ConnectionItem
-                          key={index}
-                          item={connection}
-                        />
-                      );
-                    })}
-                  </IonList>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </>
-        ) : (
-          <CardsPlaceholder
-            buttonLabel={i18n.t("connections.tab.create")}
-            buttonAction={handleCreateConnection}
+      {connections.length ? (
+        <>
+          <IonSearchbar
+            placeholder={`${i18n.t("connections.tab.searchconnections")}`}
           />
-        )}
-      </TabLayout>
-    </IonPage>
+          <IonGrid>
+            <IonRow>
+              <IonCol size="12">
+                <IonList
+                  lines="none"
+                  className="transactions-list"
+                  data-testid="transactions-list"
+                >
+                  {connections.map((connection, index) => {
+                    return (
+                      <ConnectionItem
+                        key={index}
+                        item={connection}
+                      />
+                    );
+                  })}
+                </IonList>
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+        </>
+      ) : (
+        <CardsPlaceholder
+          buttonLabel={i18n.t("connections.tab.create")}
+          buttonAction={handleCreateConnection}
+        />
+      )}
+    </TabLayout>
   );
 };
 

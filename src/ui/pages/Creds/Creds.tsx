@@ -68,36 +68,40 @@ const Creds = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
   );
 
-  return showConnections ? (
-    <Connections />
-  ) : (
+  return (
     <IonPage
-      className="tab-layout creds-tab"
+      className={`tab-layout ${
+        showConnections ? "connections-tab" : "creds-tab"
+      }`}
       data-testid="creds-tab"
     >
-      <TabLayout
-        header={true}
-        title={`${i18n.t("creds.tab.title")}`}
-        menuButton={true}
-        additionalButtons={
-          <AdditionalButtons
-            handleCreateCred={handleCreateCred}
-            handleConnections={handleConnections}
-          />
-        }
-      >
-        {credsData.length ? (
-          <CardsStack
-            cardsType="creds"
-            cardsData={credsData}
-          />
-        ) : (
-          <CardsPlaceholder
-            buttonLabel={i18n.t("creds.tab.create")}
-            buttonAction={handleCreateCred}
-          />
-        )}
-      </TabLayout>
+      {showConnections ? (
+        <Connections setShowConnections={setShowConnections} />
+      ) : (
+        <TabLayout
+          header={true}
+          title={`${i18n.t("creds.tab.title")}`}
+          menuButton={true}
+          additionalButtons={
+            <AdditionalButtons
+              handleCreateCred={handleCreateCred}
+              handleConnections={handleConnections}
+            />
+          }
+        >
+          {credsData.length ? (
+            <CardsStack
+              cardsType="creds"
+              cardsData={credsData}
+            />
+          ) : (
+            <CardsPlaceholder
+              buttonLabel={i18n.t("creds.tab.create")}
+              buttonAction={handleCreateCred}
+            />
+          )}
+        </TabLayout>
+      )}
     </IonPage>
   );
 };
