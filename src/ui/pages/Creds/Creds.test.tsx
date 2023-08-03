@@ -4,6 +4,7 @@ import configureStore from "redux-mock-store";
 import { Creds } from "./Creds";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsMock } from "../../__mocks__/filteredCredsMock";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 describe("Creds Tab", () => {
   const mockStore = configureStore();
@@ -52,7 +53,11 @@ describe("Creds Tab", () => {
 
     expect(getByTestId("creds-tab")).toBeInTheDocument();
     expect(getByText("Credentials")).toBeInTheDocument();
-    expect(getByTestId("menu-button")).toBeInTheDocument();
+    expect(
+      getByTestId(
+        `menu-button-${EN_TRANSLATIONS.creds.tab.title.toLowerCase()}`
+      )
+    ).toBeInTheDocument();
   });
 
   test("Renders Creds Card placeholder", () => {

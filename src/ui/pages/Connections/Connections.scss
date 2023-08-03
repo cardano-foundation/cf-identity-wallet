@@ -44,4 +44,64 @@
   .cards-stack-container {
     height: 90vh;
   }
+
+  .connections-list {
+    padding-top: 0;
+    background: var(--ion-color-light-grey);
+
+    ion-item {
+      &:not(:last-child) {
+        border-bottom: 1px solid var(--ion-color-dark-grey);
+      }
+      --inner-padding-end: 0;
+
+      &::part(native) {
+        padding: 0;
+      }
+    }
+
+    ion-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.5rem 0;
+
+      ion-col {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+  }
+
+  .connections-list {
+    ion-item {
+      --background: var(--ion-color-light);
+    }
+
+    ion-col {
+      &.connection-logo {
+        position: relative;
+
+        img {
+          width: 2.5rem;
+          height: 2.5rem;
+          border-radius: 2rem;
+        }
+      }
+
+      &.connection-info {
+        .connection-name {
+          margin-bottom: 0.31rem;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .connection-date {
+          font-size: 0.875rem;
+          color: var(--ion-color-secondary);
+        }
+      }
+    }
+  }
 }

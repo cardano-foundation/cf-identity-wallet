@@ -31,7 +31,9 @@ describe("Dids Tab", () => {
     expect(getByText(EN_TRANSLATIONS.dids.tab.title)).toBeInTheDocument();
     expect(getByTestId("contacts-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
-    expect(getByTestId("menu-button")).toBeInTheDocument();
+    expect(
+      getByTestId(`menu-button-${EN_TRANSLATIONS.dids.tab.title.toLowerCase()}`)
+    ).toBeInTheDocument();
   });
 
   test("Navigate from Dids Tab to Card Details and back", async () => {

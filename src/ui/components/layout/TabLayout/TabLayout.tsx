@@ -60,7 +60,7 @@ const TabLayout = ({
                 <IonButton
                   shape="round"
                   className="menu-button"
-                  data-testid="menu-button"
+                  data-testid={`menu-button-${title?.toLowerCase()}`}
                 >
                   <IonIcon
                     slot="icon-only"

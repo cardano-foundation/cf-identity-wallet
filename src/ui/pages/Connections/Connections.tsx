@@ -3,6 +3,8 @@ import {
   IonCol,
   IonGrid,
   IonIcon,
+  IonItem,
+  IonLabel,
   IonList,
   IonRow,
   IonSearchbar,
@@ -18,6 +20,7 @@ import {
 } from "./Connections.types";
 import { filteredConnections } from "../../__fixtures__/filteredConnections";
 import "./Connections.scss";
+import { formatLongDate } from "../../../utils";
 
 const AdditionalButtons = () => {
   return (
@@ -36,7 +39,38 @@ const AdditionalButtons = () => {
 };
 
 const ConnectionItem = ({ item }: ConnectionItemProps) => {
-  return <div>{item.issuer}</div>;
+  return (
+    <IonItem>
+      <IonGrid>
+        <IonRow>
+          <IonCol
+            size="1.5"
+            className="connection-logo"
+          >
+            <img
+              src={item?.issuerLogo}
+              alt="connection-logo"
+            />
+          </IonCol>
+          <IonCol
+            size="5.5"
+            className="connection-info"
+          >
+            <IonLabel className="connection-name">{item?.issuer}</IonLabel>
+            <IonLabel className="connection-date">
+              {formatLongDate(`${item?.issuanceDate}`)}
+            </IonLabel>
+          </IonCol>
+          <IonCol
+            size="4"
+            className="item-status"
+          >
+            <IonLabel>Status</IonLabel>
+          </IonCol>
+        </IonRow>
+      </IonGrid>
+    </IonItem>
+  );
 };
 
 const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
@@ -66,8 +100,8 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
               <IonCol size="12">
                 <IonList
                   lines="none"
-                  className="transactions-list"
-                  data-testid="transactions-list"
+                  className="connections-list"
+                  data-testid="connections-list"
                 >
                   {connections.map((connection, index) => {
                     return (

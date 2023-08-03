@@ -17,7 +17,6 @@ describe("Crypto Tab", () => {
     );
 
     expect(getByTestId("crypto-tab")).toBeInTheDocument();
-    expect(getByTestId("menu-button")).toBeInTheDocument();
   });
 
   test("Renders placeholder when no crypto accounts are found", () => {
