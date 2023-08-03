@@ -1,4 +1,25 @@
 .connections-tab {
+  background: var(--ion-color-light);
+  z-index: 102 !important;
+
+  &.show {
+    right: 0;
+    left: 0;
+    width: 100%;
+    transition-property: right;
+    transition-property: left;
+    transition-duration: 1s;
+  }
+
+  &.hide {
+    right: -100%;
+    left: 100%;
+    width: 100%;
+    transition-property: right;
+    transition-property: left;
+    transition-duration: 1s;
+  }
+
   .back-button {
     width: 2.5rem;
     height: 2.5rem;

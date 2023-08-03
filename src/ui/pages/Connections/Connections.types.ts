@@ -10,4 +10,18 @@ interface FilteredConnectionsProps {
   issuerLogo: string;
 }
 
-export type { ConnectionsProps, FilteredConnectionsProps };
+interface ConnectionItemProps {
+  key: number;
+  item: FilteredConnectionsProps;
+}
+
+interface ConnectionsComponentProps {
+  setShowConnections: (value: boolean) => void;
+}
+
+export type {
+  ConnectionsProps,
+  FilteredConnectionsProps,
+  ConnectionItemProps,
+  ConnectionsComponentProps,
+};

@@ -1,15 +1,4 @@
-import {
-  IonButton,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonMenu,
-  IonMenuToggle,
-  IonPage,
-  IonTitle,
-  IonToolbar,
-  useIonViewWillEnter,
-} from "@ionic/react";
+import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -80,54 +69,44 @@ const Creds = () => {
   );
 
   return (
-    <IonPage
-      className={`tab-layout ${
-        showConnections ? "connections-tab" : "creds-tab"
-      }`}
-      data-testid="creds-tab"
-    >
-      {showConnections ? (
+    <>
+      <IonPage
+        className={`tab-layout connections-tab ${
+          showConnections ? "show" : "hide"
+        }`}
+        data-testid="connections-tab"
+      >
         <Connections setShowConnections={setShowConnections} />
-      ) : (
-        <>
-          <IonMenu contentId="main-content">
-            <IonHeader>
-              <IonToolbar>
-                <IonTitle>Menu Content</IonTitle>
-              </IonToolbar>
-            </IonHeader>
-            <IonContent className="ion-padding">
-              <IonMenuToggle>
-                <IonButton>Click to close the menu</IonButton>
-              </IonMenuToggle>
-            </IonContent>
-          </IonMenu>
-          <TabLayout
-            header={true}
-            title={`${i18n.t("creds.tab.title")}`}
-            menuButton={true}
-            additionalButtons={
-              <AdditionalButtons
-                handleCreateCred={handleCreateCred}
-                handleConnections={handleConnections}
-              />
-            }
-          >
-            {credsData.length ? (
-              <CardsStack
-                cardsType="creds"
-                cardsData={credsData}
-              />
-            ) : (
-              <CardsPlaceholder
-                buttonLabel={i18n.t("creds.tab.create")}
-                buttonAction={handleCreateCred}
-              />
-            )}
-          </TabLayout>
-        </>
-      )}
-    </IonPage>
+      </IonPage>
+      <IonPage
+        className="tab-layout creds-tab"
+        data-testid="creds-tab"
+      >
+        <TabLayout
+          header={true}
+          title={`${i18n.t("creds.tab.title")}`}
+          menuButton={true}
+          additionalButtons={
+            <AdditionalButtons
+              handleCreateCred={handleCreateCred}
+              handleConnections={handleConnections}
+            />
+          }
+        >
+          {credsData.length ? (
+            <CardsStack
+              cardsType="creds"
+              cardsData={credsData}
+            />
+          ) : (
+            <CardsPlaceholder
+              buttonLabel={i18n.t("creds.tab.create")}
+              buttonAction={handleCreateCred}
+            />
+          )}
+        </TabLayout>
+      </IonPage>
+    </>
   );
 };
 

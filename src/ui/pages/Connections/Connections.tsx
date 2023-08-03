@@ -4,7 +4,6 @@ import {
   IonGrid,
   IonIcon,
   IonList,
-  IonPage,
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
@@ -12,7 +11,11 @@ import { addOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { i18n } from "../../../i18n";
-import { FilteredConnectionsProps } from "./Connections.types";
+import {
+  ConnectionItemProps,
+  ConnectionsComponentProps,
+  FilteredConnectionsProps,
+} from "./Connections.types";
 import { filteredConnections } from "../../__fixtures__/filteredConnections";
 import "./Connections.scss";
 
@@ -32,20 +35,11 @@ const AdditionalButtons = () => {
   );
 };
 
-interface ConnectionItemProps {
-  key: number;
-  item: FilteredConnectionsProps;
-}
-
 const ConnectionItem = ({ item }: ConnectionItemProps) => {
   return <div>{item.issuer}</div>;
 };
 
-interface ConnectionsProps {
-  setShowConnections: (value: boolean) => void;
-}
-
-const Connections = ({ setShowConnections }: ConnectionsProps) => {
+const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const connections: FilteredConnectionsProps[] = filteredConnections;
 
   const handleCreateConnection = () => {
