@@ -1,4 +1,15 @@
-import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
+import {
+  IonButton,
+  IonContent,
+  IonHeader,
+  IonIcon,
+  IonMenu,
+  IonMenuToggle,
+  IonPage,
+  IonTitle,
+  IonToolbar,
+  useIonViewWillEnter,
+} from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -78,29 +89,43 @@ const Creds = () => {
       {showConnections ? (
         <Connections setShowConnections={setShowConnections} />
       ) : (
-        <TabLayout
-          header={true}
-          title={`${i18n.t("creds.tab.title")}`}
-          menuButton={true}
-          additionalButtons={
-            <AdditionalButtons
-              handleCreateCred={handleCreateCred}
-              handleConnections={handleConnections}
-            />
-          }
-        >
-          {credsData.length ? (
-            <CardsStack
-              cardsType="creds"
-              cardsData={credsData}
-            />
-          ) : (
-            <CardsPlaceholder
-              buttonLabel={i18n.t("creds.tab.create")}
-              buttonAction={handleCreateCred}
-            />
-          )}
-        </TabLayout>
+        <>
+          <IonMenu contentId="main-content">
+            <IonHeader>
+              <IonToolbar>
+                <IonTitle>Menu Content</IonTitle>
+              </IonToolbar>
+            </IonHeader>
+            <IonContent className="ion-padding">
+              <IonMenuToggle>
+                <IonButton>Click to close the menu</IonButton>
+              </IonMenuToggle>
+            </IonContent>
+          </IonMenu>
+          <TabLayout
+            header={true}
+            title={`${i18n.t("creds.tab.title")}`}
+            menuButton={true}
+            additionalButtons={
+              <AdditionalButtons
+                handleCreateCred={handleCreateCred}
+                handleConnections={handleConnections}
+              />
+            }
+          >
+            {credsData.length ? (
+              <CardsStack
+                cardsType="creds"
+                cardsData={credsData}
+              />
+            ) : (
+              <CardsPlaceholder
+                buttonLabel={i18n.t("creds.tab.create")}
+                buttonAction={handleCreateCred}
+              />
+            )}
+          </TabLayout>
+        </>
       )}
     </IonPage>
   );

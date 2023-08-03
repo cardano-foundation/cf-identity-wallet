@@ -57,10 +57,7 @@ const Connections = ({ setShowConnections }: ConnectionsProps) => {
       data-testid="connections-tab"
       header={true}
       backButton={true}
-      backButtonAction={() => {
-        setShowConnections(false);
-        console.log("fire");
-      }}
+      backButtonAction={() => setShowConnections(false)}
       title={`${i18n.t("connections.tab.title")}`}
       menuButton={true}
       additionalButtons={<AdditionalButtons />}
