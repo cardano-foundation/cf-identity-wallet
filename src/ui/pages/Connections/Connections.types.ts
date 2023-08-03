@@ -8,6 +8,7 @@ interface FilteredConnectionsProps {
   issuer: string;
   issuanceDate: string;
   issuerLogo: string;
+  status: string;
 }
 
 interface ConnectionItemProps {

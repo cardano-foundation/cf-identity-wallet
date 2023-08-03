@@ -1,5 +1,6 @@
 import {
   IonButton,
+  IonChip,
   IonCol,
   IonGrid,
   IonIcon,
@@ -9,7 +10,7 @@ import {
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
-import { addOutline } from "ionicons/icons";
+import { addOutline, hourglassOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { i18n } from "../../../i18n";
@@ -20,7 +21,7 @@ import {
 } from "./Connections.types";
 import { filteredConnections } from "../../__fixtures__/filteredConnections";
 import "./Connections.scss";
-import { formatLongDate } from "../../../utils";
+import { formatShortDate } from "../../../utils";
 
 const AdditionalButtons = () => {
   return (
@@ -53,19 +54,27 @@ const ConnectionItem = ({ item }: ConnectionItemProps) => {
             />
           </IonCol>
           <IonCol
-            size="5.5"
+            size="6.25"
             className="connection-info"
           >
             <IonLabel className="connection-name">{item?.issuer}</IonLabel>
             <IonLabel className="connection-date">
-              {formatLongDate(`${item?.issuanceDate}`)}
+              {formatShortDate(`${item?.issuanceDate}`)}
             </IonLabel>
           </IonCol>
           <IonCol
-            size="4"
+            size="3.5"
             className="item-status"
           >
-            <IonLabel>Status</IonLabel>
+            {item.status === "pending" ? (
+              <IonChip>
+                <IonIcon
+                  icon={hourglassOutline}
+                  color="primary"
+                ></IonIcon>
+                <span>{item.status}</span>
+              </IonChip>
+            ) : null}
           </IonCol>
         </IonRow>
       </IonGrid>

@@ -73,9 +73,6 @@
           border: 1px dashed var(--ion-color-dark-grey);
         }
 
-        &.full {
-        }
-
         &:focus-within {
           --background: transparent;
           border: 1px solid var(--ion-color-secondary);

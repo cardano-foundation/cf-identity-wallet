@@ -83,14 +83,15 @@
         position: relative;
 
         img {
-          width: 2.5rem;
-          height: 2.5rem;
+          width: 2.75rem;
+          height: 2.75rem;
           border-radius: 2rem;
         }
       }
 
       &.connection-info {
         .connection-name {
+          font-size: 1rem;
           margin-bottom: 0.31rem;
           white-space: nowrap;
           overflow: hidden;
@@ -100,6 +101,20 @@
         .connection-date {
           font-size: 0.875rem;
           color: var(--ion-color-secondary);
+        }
+      }
+
+      ion-chip {
+        width: 6.4rem;
+        height: 1.9rem;
+        font-weight: 400;
+        margin: 0.3rem auto;
+        border-radius: 0.5rem;
+        padding-inline: 0.62rem;
+
+        span {
+          text-transform: capitalize;
+          margin-right: 4px;
         }
       }
     }

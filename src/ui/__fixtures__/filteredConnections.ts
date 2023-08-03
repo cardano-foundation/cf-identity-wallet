@@ -5,26 +5,31 @@ const filteredConnections = [
     issuer: "Cambridge University",
     issuanceDate: "2017-08-13T19:23:24Z",
     issuerLogo: CardanoLogo,
+    status: "pending",
   },
   {
     issuer: "Cardano Foundation",
     issuanceDate: "2017-08-13T19:23:24Z",
     issuerLogo: CardanoLogo,
+    status: "confirmed",
   },
   {
     issuer: "DVLA",
     issuanceDate: "2019-05-12T19:23:24Z",
     issuerLogo: CardanoLogo,
+    status: "confirmed",
   },
   {
     issuer: "Passport Office",
     issuanceDate: "2017-08-13T19:23:24Z",
     issuerLogo: CardanoLogo,
+    status: "confirmed",
   },
   {
     issuer: "Starling Bank",
     issuanceDate: "2016-01-10T19:23:24Z",
     issuerLogo: CardanoLogo,
+    status: "confirmed",
   },
 ];
 
