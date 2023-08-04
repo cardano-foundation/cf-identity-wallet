@@ -148,6 +148,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           <IonSearchbar
             placeholder={`${i18n.t("connections.tab.searchconnections")}`}
           />
+          <IonButton slot="fixed">A</IonButton>
           <IonContent className="connections-container">
             <IonGrid>
               <IonRow>

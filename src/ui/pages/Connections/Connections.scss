@@ -35,6 +35,10 @@
     ion-icon {
       font-size: 1.85em !important;
     }
+
+    > ion-content {
+      overflow: hidden;
+    }
   }
 
   ion-title {
@@ -42,12 +46,13 @@
   }
 
   ion-searchbar {
-    padding-inline: 0;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 10;
-    background: var(--ion-color-light);
+    padding: 0;
+    height: 3rem;
+  }
+
+  ion-button[slot="fixed"] {
+    top: 50%;
+    right: 20px;
   }
 
   .cards-stack-container {
@@ -55,10 +60,14 @@
   }
 
   .connections-container {
-    height: 85vh;
+    height: 80vh;
 
-    & > ion-grid {
-      margin-top: 3rem;
+    > ion-grid {
+      padding: 0;
+
+      > ion-row > ion-col {
+        padding: 0 0 2rem;
+      }
     }
   }
 
