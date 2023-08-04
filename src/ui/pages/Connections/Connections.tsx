@@ -12,8 +12,10 @@ import {
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
+import { HashLink } from "react-router-hash-link";
 import { useEffect, useState } from "react";
 import { addOutline, hourglassOutline } from "ionicons/icons";
+import { Link } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { i18n } from "../../../i18n";
@@ -156,12 +158,13 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           <div className="alphabet-selector">
             {alphabet.map((letter, index) => {
               return (
-                <IonButton
-                  slot="fixed"
+                <HashLink
+                  smooth
+                  to={`#${letter}`}
                   key={index}
                 >
-                  {letter}
-                </IonButton>
+                  <IonButton slot="fixed">{letter}</IonButton>
+                </HashLink>
               );
             })}
           </div>
@@ -175,7 +178,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
                         className="connections-list"
                         key={index}
                       >
-                        <IonItemDivider>
+                        <IonItemDivider id={alphabeticGroup.key}>
                           <IonLabel>{alphabeticGroup.key}</IonLabel>
                         </IonItemDivider>
                         <AlphabeticList
