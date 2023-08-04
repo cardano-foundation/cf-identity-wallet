@@ -31,6 +31,18 @@ const filteredConnections = [
     issuerLogo: CardanoLogo,
     status: "confirmed",
   },
+  {
+    issuer: "Friends' Bank",
+    issuanceDate: "2018-01-14T19:23:24Z",
+    issuerLogo: CardanoLogo,
+    status: "confirmed",
+  },
+  {
+    issuer: "YMCA",
+    issuanceDate: "2020-07-06T19:23:24Z",
+    issuerLogo: CardanoLogo,
+    status: "confirmed",
+  },
 ];
 
 export { filteredConnections };

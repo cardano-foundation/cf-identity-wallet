@@ -2,6 +2,10 @@
   background: var(--ion-color-light);
   z-index: 102 !important;
 
+  ion-header {
+    margin-bottom: -1px;
+  }
+
   &.show {
     right: 0;
     left: 0;
@@ -39,10 +43,23 @@
 
   ion-searchbar {
     padding-inline: 0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background: var(--ion-color-light);
   }
 
   .cards-stack-container {
     height: 90vh;
+  }
+
+  .connections-container {
+    height: 85vh;
+
+    & > ion-grid {
+      margin-top: 3rem;
+    }
   }
 
   .connections-list {

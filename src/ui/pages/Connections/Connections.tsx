@@ -2,6 +2,7 @@ import {
   IonButton,
   IonChip,
   IonCol,
+  IonContent,
   IonGrid,
   IonIcon,
   IonItem,
@@ -147,27 +148,29 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           <IonSearchbar
             placeholder={`${i18n.t("connections.tab.searchconnections")}`}
           />
-          <IonGrid>
-            <IonRow>
-              <IonCol size="12">
-                {mappedConnections.map((alphabeticGroup, index) => {
-                  return (
-                    <IonItemGroup
-                      className="connections-list"
-                      key={index}
-                    >
-                      <IonItemDivider>
-                        <IonLabel>{alphabeticGroup.key}</IonLabel>
-                      </IonItemDivider>
-                      <AlphabeticList
-                        items={Array.from(alphabeticGroup.value)}
-                      />
-                    </IonItemGroup>
-                  );
-                })}
-              </IonCol>
-            </IonRow>
-          </IonGrid>
+          <IonContent className="connections-container">
+            <IonGrid>
+              <IonRow>
+                <IonCol size="12">
+                  {mappedConnections.map((alphabeticGroup, index) => {
+                    return (
+                      <IonItemGroup
+                        className="connections-list"
+                        key={index}
+                      >
+                        <IonItemDivider>
+                          <IonLabel>{alphabeticGroup.key}</IonLabel>
+                        </IonItemDivider>
+                        <AlphabeticList
+                          items={Array.from(alphabeticGroup.value)}
+                        />
+                      </IonItemGroup>
+                    );
+                  })}
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          </IonContent>
         </>
       ) : (
         <CardsPlaceholder
