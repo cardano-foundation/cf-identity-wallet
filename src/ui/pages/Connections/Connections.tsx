@@ -133,6 +133,11 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
     );
   };
 
+  const alphabet = new Array(26)
+    .fill(1)
+    .map((_, i) => String.fromCharCode(65 + i))
+    .concat("#");
+
   return (
     <TabLayout
       data-testid="connections-tab"
@@ -148,7 +153,18 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           <IonSearchbar
             placeholder={`${i18n.t("connections.tab.searchconnections")}`}
           />
-          <IonButton slot="fixed">A</IonButton>
+          <div className="alphabet-selector">
+            {alphabet.map((letter, index) => {
+              return (
+                <IonButton
+                  slot="fixed"
+                  key={index}
+                >
+                  {letter}
+                </IonButton>
+              );
+            })}
+          </div>
           <IonContent className="connections-container">
             <IonGrid>
               <IonRow>

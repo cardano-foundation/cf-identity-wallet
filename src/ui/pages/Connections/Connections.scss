@@ -1,9 +1,11 @@
 .connections-tab {
   background: var(--ion-color-light);
   z-index: 102 !important;
+  padding-inline: 0;
 
   ion-header {
     margin-bottom: -1px;
+    padding-inline: 1.25rem;
   }
 
   &.show {
@@ -46,17 +48,36 @@
   }
 
   ion-searchbar {
-    padding: 0;
+    padding: 0 1.25rem;
     height: 3rem;
   }
 
-  ion-button[slot="fixed"] {
-    top: 50%;
-    right: 20px;
+  .alphabet-selector {
+    position: absolute;
+    z-index: 10;
+    top: calc(50% - 11.81rem);
+    right: 0;
+    height: 23.62rem;
+    display: flex;
+    flex-direction: column;
+
+    ion-button {
+      width: 1.5rem;
+      height: 1rem;
+      margin: 0.1rem 0;
+      font-size: 0.625rem;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 0.875rem;
+      color: var(--ion-color-action-blue);
+      --background: transparent;
+      --background-activated: transparent;
+    }
   }
 
   .cards-stack-container {
     height: 90vh;
+    padding-inline: 1.25rem;
   }
 
   .connections-container {
@@ -69,10 +90,14 @@
         padding: 0 0 2rem;
       }
     }
+
+    ion-item-group {
+      background: var(--ion-color-light);
+    }
   }
 
   .connections-list {
-    padding-top: 0;
+    padding: 0 1.25rem;
     background: var(--ion-color-light-grey);
 
     ion-row {
