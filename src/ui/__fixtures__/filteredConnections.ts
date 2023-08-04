@@ -8,6 +8,12 @@ const filteredConnections = [
     status: "pending",
   },
   {
+    issuer: "Passport Office",
+    issuanceDate: "2017-08-13T19:23:24Z",
+    issuerLogo: CardanoLogo,
+    status: "confirmed",
+  },
+  {
     issuer: "Cardano Foundation",
     issuanceDate: "2017-08-13T19:23:24Z",
     issuerLogo: CardanoLogo,
@@ -16,12 +22,6 @@ const filteredConnections = [
   {
     issuer: "DVLA",
     issuanceDate: "2019-05-12T19:23:24Z",
-    issuerLogo: CardanoLogo,
-    status: "confirmed",
-  },
-  {
-    issuer: "Passport Office",
-    issuanceDate: "2017-08-13T19:23:24Z",
     issuerLogo: CardanoLogo,
     status: "confirmed",
   },

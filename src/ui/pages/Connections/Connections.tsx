@@ -5,11 +5,13 @@ import {
   IonGrid,
   IonIcon,
   IonItem,
+  IonItemDivider,
+  IonItemGroup,
   IonLabel,
-  IonList,
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
+import { useEffect, useState } from "react";
 import { addOutline, hourglassOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
@@ -18,6 +20,7 @@ import {
   ConnectionItemProps,
   ConnectionsComponentProps,
   FilteredConnectionsProps,
+  MappedConnections,
 } from "./Connections.types";
 import { filteredConnections } from "../../__fixtures__/filteredConnections";
 import "./Connections.scss";
@@ -84,9 +87,46 @@ const ConnectionItem = ({ item }: ConnectionItemProps) => {
 
 const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const connections: FilteredConnectionsProps[] = filteredConnections;
+  const [mappedConnections, setMappedConnections] = useState<
+    MappedConnections[]
+  >([]);
 
   const handleCreateConnection = () => {
     // @TODO - sdisalvo: function to create connection
+  };
+
+  useEffect(() => {
+    const sortedConnections = connections.sort(function (a, b) {
+      const textA = a.issuer.toUpperCase();
+      const textB = b.issuer.toUpperCase();
+      return textA < textB ? -1 : textA > textB ? 1 : 0;
+    });
+
+    const map = ((m, a) => (
+      a.forEach((s) => {
+        const a = m.get(s.issuer[0]) || [];
+        m.set(s.issuer[0], (a.push(s), a));
+      }),
+      m
+    ))(new Map(), sortedConnections);
+
+    const mapToArray = Array.from(map, ([key, value]) => ({ key, value }));
+    setMappedConnections(mapToArray);
+  }, []);
+
+  const AlphabeticList = ({ items }: { items: FilteredConnectionsProps[] }) => {
+    return (
+      <>
+        {items.map((connection, index) => {
+          return (
+            <ConnectionItem
+              key={index}
+              item={connection}
+            />
+          );
+        })}
+      </>
+    );
   };
 
   return (
@@ -107,20 +147,21 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           <IonGrid>
             <IonRow>
               <IonCol size="12">
-                <IonList
-                  lines="none"
-                  className="connections-list"
-                  data-testid="connections-list"
-                >
-                  {connections.map((connection, index) => {
-                    return (
-                      <ConnectionItem
-                        key={index}
-                        item={connection}
+                {mappedConnections.map((alphabeticGroup, index) => {
+                  return (
+                    <IonItemGroup
+                      className="connections-list"
+                      key={index}
+                    >
+                      <IonItemDivider>
+                        <IonLabel>{alphabeticGroup.key}</IonLabel>
+                      </IonItemDivider>
+                      <AlphabeticList
+                        items={Array.from(alphabeticGroup.value)}
                       />
-                    );
-                  })}
-                </IonList>
+                    </IonItemGroup>
+                  );
+                })}
               </IonCol>
             </IonRow>
           </IonGrid>

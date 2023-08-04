@@ -20,9 +20,15 @@ interface ConnectionsComponentProps {
   setShowConnections: (value: boolean) => void;
 }
 
+interface MappedConnections {
+  key: string;
+  value: FilteredConnectionsProps[];
+}
+
 export type {
   ConnectionsProps,
   FilteredConnectionsProps,
   ConnectionItemProps,
   ConnectionsComponentProps,
+  MappedConnections,
 };
