@@ -12,7 +12,6 @@ import {
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
-import { HashLink } from "react-router-hash-link";
 import { useEffect, useState } from "react";
 import { addOutline, hourglassOutline } from "ionicons/icons";
 import { Link } from "react-router-dom";
@@ -158,13 +157,12 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           <div className="alphabet-selector">
             {alphabet.map((letter, index) => {
               return (
-                <HashLink
-                  smooth
-                  to={`#${letter}`}
+                <Link
+                  to={`/creds/#${letter}`}
                   key={index}
                 >
                   <IonButton slot="fixed">{letter}</IonButton>
-                </HashLink>
+                </Link>
               );
             })}
           </div>
