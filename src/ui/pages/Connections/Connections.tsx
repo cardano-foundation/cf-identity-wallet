@@ -102,7 +102,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
       return textA < textB ? -1 : textA > textB ? 1 : 0;
     });
 
-    const map = ((m, a) => (
+    const mapConnections = ((m, a) => (
       a.forEach((s) => {
         const a = m.get(s.issuer[0]) || [];
         m.set(s.issuer[0], (a.push(s), a));
@@ -110,7 +110,10 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
       m
     ))(new Map(), sortedConnections);
 
-    const mapToArray = Array.from(map, ([key, value]) => ({ key, value }));
+    const mapToArray = Array.from(mapConnections, ([key, value]) => ({
+      key,
+      value,
+    }));
     setMappedConnections(mapToArray);
   }, []);
 
