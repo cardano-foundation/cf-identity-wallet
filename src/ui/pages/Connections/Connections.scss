@@ -49,21 +49,10 @@
     padding-top: 0;
     background: var(--ion-color-light-grey);
 
-    ion-item {
-      &:not(:last-child) {
-        border-bottom: 1px solid var(--ion-color-dark-grey);
-      }
-      --inner-padding-end: 0;
-
-      &::part(native) {
-        padding: 0;
-      }
-    }
-
     ion-row {
       display: flex;
       justify-content: space-between;
-      padding: 0.5rem 0;
+      padding: 0.3125rem 0;
 
       ion-col {
         display: flex;
@@ -71,11 +60,31 @@
         justify-content: center;
       }
     }
-  }
 
-  .connections-list {
-    ion-item {
+    ion-item,
+    ion-item-divider {
+      --inner-padding-end: 0;
+
+      &::part(native) {
+        padding: 0;
+      }
+
       --background: var(--ion-color-light);
+      border-bottom: 1px solid rgba(var(--ion-color-dark-grey-rgb), 0.5);
+    }
+
+    ion-item {
+      //height: 4.625rem;
+    }
+
+    ion-item-divider {
+      height: 3.69rem;
+      padding: 0;
+
+      ion-label {
+        font-size: 1rem;
+        font-weight: 500;
+      }
     }
 
     ion-col {
