@@ -45,7 +45,7 @@ describe("Crypto Tab", () => {
       </Provider>
     );
 
-    expect(getByTestId("cards-placeholder")).toBeInTheDocument();
+    expect(getByTestId("crypto-cards-placeholder")).toBeInTheDocument();
   });
 
   test("User has an option for reusing existing IDW seed phrase as a crypto account", async () => {

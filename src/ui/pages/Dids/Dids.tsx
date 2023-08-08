@@ -91,6 +91,7 @@ const Dids = () => {
           <CardsPlaceholder
             buttonLabel={i18n.t("dids.tab.create")}
             buttonAction={handleCreateDid}
+            testId="dids-cards-placeholder"
           />
         )}
         <CreateIdentity

@@ -34,6 +34,7 @@ const TabLayout = ({
               <IonButtons
                 slot="start"
                 className="back-button"
+                data-testid={`back-button-${title?.toLowerCase()}`}
                 onClick={backButtonAction}
               >
                 <IonIcon

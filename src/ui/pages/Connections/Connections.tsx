@@ -20,13 +20,14 @@ import { i18n } from "../../../i18n";
 import {
   ConnectionItemProps,
   ConnectionsComponentProps,
-  FilteredConnectionsProps,
+  ConnectionsProps,
   MappedConnections,
 } from "./Connections.types";
-import { filteredConnections } from "../../__fixtures__/filteredConnections";
 import "./Connections.scss";
 import { formatShortDate } from "../../../utils";
 import { AddConnection } from "../../components/AddConnection";
+import { useAppSelector } from "../../../store/hooks";
+import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 
 const ConnectionItem = ({ item }: ConnectionItemProps) => {
   return (
@@ -72,7 +73,7 @@ const ConnectionItem = ({ item }: ConnectionItemProps) => {
 };
 
 const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
-  const connections: FilteredConnectionsProps[] = filteredConnections;
+  const connections: ConnectionsProps[] = useAppSelector(getConnectionsCache);
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
@@ -100,28 +101,30 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   };
 
   useEffect(() => {
-    const sortedConnections = connections.sort(function (a, b) {
-      const textA = a.issuer.toUpperCase();
-      const textB = b.issuer.toUpperCase();
-      return textA < textB ? -1 : textA > textB ? 1 : 0;
-    });
+    if (connections.length) {
+      const sortedConnections = [...connections].sort(function (a, b) {
+        const textA = a.issuer.toUpperCase();
+        const textB = b.issuer.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
 
-    const mapConnections = ((m, a) => (
-      a.forEach((s) => {
-        const a = m.get(s.issuer[0]) || [];
-        m.set(s.issuer[0], (a.push(s), a));
-      }),
-      m
-    ))(new Map(), sortedConnections);
+      const mapConnections = ((m, a) => (
+        a.forEach((s) => {
+          const a = m.get(s.issuer[0]) || [];
+          m.set(s.issuer[0], (a.push(s), a));
+        }),
+        m
+      ))(new Map(), sortedConnections);
 
-    const mapToArray = Array.from(mapConnections, ([key, value]) => ({
-      key,
-      value,
-    }));
-    setMappedConnections(mapToArray);
+      const mapToArray = Array.from(mapConnections, ([key, value]) => ({
+        key,
+        value,
+      }));
+      setMappedConnections(mapToArray);
+    }
   }, []);
 
-  const AlphabeticList = ({ items }: { items: FilteredConnectionsProps[] }) => {
+  const AlphabeticList = ({ items }: { items: ConnectionsProps[] }) => {
     return (
       <>
         {items.map((connection, index) => {
@@ -150,7 +153,6 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
 
   return (
     <TabLayout
-      data-testid="connections-tab"
       header={true}
       backButton={true}
       backButtonAction={() => setShowConnections(false)}
@@ -209,6 +211,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
         <CardsPlaceholder
           buttonLabel={i18n.t("connections.tab.create")}
           buttonAction={handleAddConnection}
+          testId="connections-cards-placeholder"
         />
       )}
     </TabLayout>

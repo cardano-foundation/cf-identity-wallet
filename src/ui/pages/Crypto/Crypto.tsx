@@ -299,6 +299,7 @@ const Crypto = () => {
             <CardsPlaceholder
               buttonLabel={i18n.t("crypto.tab.create")}
               buttonAction={() => setAddAccountIsOpen(true)}
+              testId="crypto-cards-placeholder"
             />
           )}
           <IonToast

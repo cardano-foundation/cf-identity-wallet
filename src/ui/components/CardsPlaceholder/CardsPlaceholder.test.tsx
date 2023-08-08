@@ -8,6 +8,7 @@ describe("Cards Placeholder Component", () => {
       <CardsPlaceholder
         buttonLabel="Button"
         buttonAction={action}
+        testId="cards-placeholder"
       />
     );
     const button = getByText("Button");

@@ -1,15 +1,15 @@
 import CardanoLogo from "../assets/images/CardanoLogo.jpg";
 
-const filteredConnections = [
+const connections = [
   {
     issuer: "Cambridge University",
-    issuanceDate: "2017-08-13T19:23:24Z",
+    issuanceDate: "2017-08-14T19:23:24Z",
     issuerLogo: CardanoLogo,
     status: "pending",
   },
   {
     issuer: "Passport Office",
-    issuanceDate: "2017-08-13T19:23:24Z",
+    issuanceDate: "2017-08-16T19:23:24Z",
     issuerLogo: CardanoLogo,
     status: "confirmed",
   },
@@ -45,4 +45,4 @@ const filteredConnections = [
   },
 ];
 
-export { filteredConnections };
+export { connections };

@@ -2,18 +2,12 @@ interface ConnectionsProps {
   issuer: string;
   issuanceDate: string;
   issuerLogo: string;
-}
-
-interface FilteredConnectionsProps {
-  issuer: string;
-  issuanceDate: string;
-  issuerLogo: string;
   status: string;
 }
 
 interface ConnectionItemProps {
   key: number;
-  item: FilteredConnectionsProps;
+  item: ConnectionsProps;
 }
 
 interface ConnectionsComponentProps {
@@ -22,12 +16,11 @@ interface ConnectionsComponentProps {
 
 interface MappedConnections {
   key: string;
-  value: FilteredConnectionsProps[];
+  value: ConnectionsProps[];
 }
 
 export type {
   ConnectionsProps,
-  FilteredConnectionsProps,
   ConnectionItemProps,
   ConnectionsComponentProps,
   MappedConnections,

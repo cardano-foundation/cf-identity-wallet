@@ -41,6 +41,9 @@ describe("NextRoute", () => {
         defaultCryptoAccount: "",
         hideCryptoBalances: false,
       },
+      connectionsCache: {
+        connections: [],
+      },
     };
   });
 
@@ -133,6 +136,9 @@ describe("getNextRoute", () => {
       cryptoAccounts: [],
       defaultCryptoAccount: "",
       hideCryptoBalances: false,
+    },
+    connectionsCache: {
+      connections: [],
     },
   };
   const state = {};
