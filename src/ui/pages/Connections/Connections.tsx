@@ -12,7 +12,6 @@ import {
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
-import { HashLink as Link } from "react-router-hash-link";
 import { useEffect, useState } from "react";
 import { addOutline, hourglassOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -139,6 +138,13 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
     .map((_, i) => String.fromCharCode(65 + i))
     .concat("#");
 
+  const handleClickScroll = (letter: string) => {
+    const element = document.getElementById(letter);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   return (
     <TabLayout
       data-testid="connections-tab"
@@ -157,12 +163,12 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           <div className="alphabet-selector">
             {alphabet.map((letter, index) => {
               return (
-                <Link
-                  to={`/tabs/creds#${letter}`}
+                <span
+                  onClick={() => handleClickScroll(letter)}
                   key={index}
                 >
                   <IonButton slot="fixed">{letter}</IonButton>
-                </Link>
+                </span>
               );
             })}
           </div>
