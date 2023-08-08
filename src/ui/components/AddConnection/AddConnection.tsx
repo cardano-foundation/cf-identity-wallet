@@ -19,8 +19,8 @@ const AddConnection = ({
   return (
     <IonModal
       isOpen={addConnectionIsOpen}
-      initialBreakpoint={0.35}
-      breakpoints={[0, 0.35]}
+      initialBreakpoint={0.3}
+      breakpoints={[0, 0.3]}
       className="page-layout short-modal"
       data-testid="add-connection-modal"
       onDidDismiss={() => setAddConnectionIsOpen(false)}

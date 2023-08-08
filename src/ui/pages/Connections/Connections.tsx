@@ -170,6 +170,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
                   slot="fixed"
                   onClick={() => handleClickScroll(letter)}
                   key={index}
+                  color="transparent"
                 >
                   {letter}
                 </IonButton>

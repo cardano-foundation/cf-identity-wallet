@@ -2,6 +2,7 @@
   background: var(--ion-color-light);
   z-index: 102 !important;
   padding-inline: 0;
+  overflow: initial !important;
 
   ion-header {
     margin-bottom: -1px;
@@ -44,7 +45,7 @@
   }
 
   > ion-content {
-    overflow: hidden;
+    overflow: initial;
   }
 
   ion-searchbar {
@@ -68,7 +69,7 @@
 
     ion-button {
       width: 1.2rem;
-      height: 0.5rem;
+      height: 100%;
       margin: 0;
       font-size: 0.625rem;
       font-style: normal;
@@ -78,6 +79,7 @@
       --background: transparent;
       --background-activated: transparent;
       --background-focused: transparent;
+      --box-shadow: none;
     }
   }
 
@@ -87,13 +89,13 @@
   }
 
   .connections-container {
-    height: 80vh;
+    height: calc(92vh - (6.813rem + env(safe-area-inset-bottom)));
 
     > ion-grid {
       padding: 0;
 
       > ion-row > ion-col {
-        padding: 0 0 2rem;
+        padding: 0 0 calc(2rem + env(safe-area-inset-bottom));
       }
     }
 
