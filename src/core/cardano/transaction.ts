@@ -25,10 +25,10 @@ class TransactionBuilder {
     outputs: { address: string; assets: { [unit: string]: bigint } }[],
     changeAddress?: string
   ): Promise<TxComplete> {
-    const tx = await this.lucid.newTx();
+    const tx = this.lucid.newTx();
 
     for (let i = 0; i < outputs.length; i++) {
-      await tx.payToAddress(outputs[i].address, outputs[i].assets);
+      tx.payToAddress(outputs[i].address, outputs[i].assets);
     }
 
     if (changeAddress) {

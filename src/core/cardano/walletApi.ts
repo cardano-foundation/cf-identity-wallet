@@ -1,33 +1,20 @@
-import {WalletApi as WalletApiProps} from "lucid-cardano";
+import { WalletApi as WalletApiProps } from "lucid-cardano";
 
 class WalletApi implements WalletApiProps {
   account: {
-    publicKeyBech32: string
+    publicKeyBech32: string;
   };
   endpoint: string;
-  constructor(account: {
-    publicKeyBech32: string
-  }, endpoint:string) {
+  constructor(
+    account: {
+      publicKeyBech32: string;
+    },
+    endpoint: string
+  ) {
     this.account = account;
     this.endpoint = endpoint;
   }
   async getBalance(): Promise<string> {
-    /*
-    const result = await fetch(`${this.endpoint}/addresses/${this.account.publicKeyBech32}`
-    ).then((res) => res.json());
-
-    if (result.error) {
-      if (result.status_code === 400) throw "InvalidRequest";
-      else if (result.status_code === 500) throw "InternalError";
-      else {
-        const noValue = Value.new(BigNum.from_str("0"));
-        return Buffer.from(noValue.to_bytes(), "hex").toString("hex");
-      }
-    }
-    const assets:Assets = result.amount;
-    const value = assetsToValue(assets);
-    return Buffer.from(value.to_bytes(), "hex").toString("hex");
-    */
     return Promise.resolve("");
   }
 

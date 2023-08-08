@@ -12,11 +12,8 @@ import { TransactionBuilder } from "./transaction";
 
 dotenv.config();
 
-const validSeedPhrase15Words =
-  "tortoise arrive pulp crisp blood dynamic trial follow senior topple element unveil typical woman cost";
-const entropy = Addresses.convertToEntropy(validSeedPhrase15Words);
-const rootPrivateKeyBech32 =
-  Addresses.convertEntropyToBech32XPrvNoPasscode(entropy);
+const validRootPrivateKeyBech32 = "xprv1yprjk4zc56qg6qcqcmlsfpyflmmp5gpucrnmucclwn34hfpfddv2mr57yuwc4utzfpjyldw5cxnn6k06kr0myks9z2jpfd6pnxrswp6jfkdjrhe09cypv6mldcamc4ggqywwrpceu2cwaqwclnxjj2udgc25sp2u";
+  
 describe("Cardano transactions", () => {
   const blockfrostUrl = BLOCKFROST_PREPROD_SELF_HOSTED;
   const network: Network = "Preprod";
@@ -79,17 +76,11 @@ describe("Cardano transactions", () => {
 
   test("static new method should create an instance of TransactionBuilder", async () => {
     const txBuilder = await TransactionBuilder.new(
-      rootPrivateKeyBech32,
+      validRootPrivateKeyBech32,
       network,
       blockfrostUrl
     );
     expect(txBuilder).toBeInstanceOf(TransactionBuilder);
-  });
-
-  test("should mock getProtocolParameters method", async () => {
-    const protocolParameters = await blockfrostProvider.getProtocolParameters();
-
-    expect(protocolParameters).toEqual(mockProtocolParameters);
   });
 
   test("build a valid transaction with change address", async () => {
@@ -102,7 +93,7 @@ describe("Cardano transactions", () => {
       .mockImplementation(() => Promise.resolve(mockProtocolParameters));
 
     const txBuilder = await TransactionBuilder.new(
-      rootPrivateKeyBech32,
+      validRootPrivateKeyBech32,
       network,
       blockfrostUrl
     );
@@ -139,7 +130,7 @@ describe("Cardano transactions", () => {
     ];
 
     const txBuilder = await TransactionBuilder.new(
-      rootPrivateKeyBech32,
+      validRootPrivateKeyBech32,
       network,
       blockfrostUrl
     );
@@ -159,7 +150,7 @@ describe("Cardano transactions", () => {
     ];
 
     const txBuilder = await TransactionBuilder.new(
-      rootPrivateKeyBech32,
+      validRootPrivateKeyBech32,
       network,
       blockfrostUrl
     );
