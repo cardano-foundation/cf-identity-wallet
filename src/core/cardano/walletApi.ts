@@ -1,11 +1,20 @@
-import { WalletApi } from "lucid-cardano";
+import { WalletApi as WalletApiProps } from "lucid-cardano";
 
-class Wallet implements WalletApi {
-  account: string;
-  constructor(account: string) {
+class WalletApi implements WalletApiProps {
+  account: {
+    publicKeyBech32: string;
+  };
+  endpoint: string;
+  constructor(
+    account: {
+      publicKeyBech32: string;
+    },
+    endpoint: string
+  ) {
     this.account = account;
+    this.endpoint = endpoint;
   }
-  getBalance(): Promise<string> {
+  async getBalance(): Promise<string> {
     return Promise.resolve("");
   }
 
@@ -61,4 +70,4 @@ class Wallet implements WalletApi {
   };
 }
 
-export { Wallet };
+export { WalletApi };
