@@ -163,12 +163,13 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           <div className="alphabet-selector">
             {alphabet.map((letter, index) => {
               return (
-                <span
+                <IonButton
+                  slot="fixed"
                   onClick={() => handleClickScroll(letter)}
                   key={index}
                 >
-                  <IonButton slot="fixed">{letter}</IonButton>
-                </span>
+                  {letter}
+                </IonButton>
               );
             })}
           </div>
