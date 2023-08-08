@@ -26,22 +26,7 @@ import {
 import { filteredConnections } from "../../__fixtures__/filteredConnections";
 import "./Connections.scss";
 import { formatShortDate } from "../../../utils";
-
-const AdditionalButtons = () => {
-  return (
-    <IonButton
-      shape="round"
-      className="add-button"
-      data-testid="add-button"
-    >
-      <IonIcon
-        slot="icon-only"
-        icon={addOutline}
-        color="primary"
-      />
-    </IonButton>
-  );
-};
+import { AddConnection } from "../../components/AddConnection";
 
 const ConnectionItem = ({ item }: ConnectionItemProps) => {
   return (
@@ -91,9 +76,27 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
+  const [addConnectionIsOpen, setAddConnectionIsOpen] = useState(false);
 
-  const handleCreateConnection = () => {
-    // @TODO - sdisalvo: function to create connection
+  const handleAddConnection = () => {
+    setAddConnectionIsOpen(true);
+  };
+
+  const AdditionalButtons = () => {
+    return (
+      <IonButton
+        shape="round"
+        className="add-button"
+        data-testid="add-connection-button"
+        onClick={handleAddConnection}
+      >
+        <IonIcon
+          slot="icon-only"
+          icon={addOutline}
+          color="primary"
+        />
+      </IonButton>
+    );
   };
 
   useEffect(() => {
@@ -196,11 +199,15 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
               </IonRow>
             </IonGrid>
           </IonContent>
+          <AddConnection
+            addConnectionIsOpen={addConnectionIsOpen}
+            setAddConnectionIsOpen={setAddConnectionIsOpen}
+          />
         </>
       ) : (
         <CardsPlaceholder
           buttonLabel={i18n.t("connections.tab.create")}
-          buttonAction={handleCreateConnection}
+          buttonAction={handleAddConnection}
         />
       )}
     </TabLayout>
