@@ -42,6 +42,7 @@
     "react-qrcode-logo": "^2.9.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^5.3.4",
+    "react-router-hash-link": "^2.4.3",
     "swiper": "^9.2.0",
     "web-vitals": "^2.1.4"
   },

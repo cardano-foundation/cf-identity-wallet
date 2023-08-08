@@ -12,9 +12,9 @@ import {
   IonRow,
   IonSearchbar,
 } from "@ionic/react";
+import { HashLink as Link } from "react-router-hash-link";
 import { useEffect, useState } from "react";
 import { addOutline, hourglassOutline } from "ionicons/icons";
-import { Link } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { i18n } from "../../../i18n";
@@ -158,7 +158,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
             {alphabet.map((letter, index) => {
               return (
                 <Link
-                  to={`/creds/#${letter}`}
+                  to={`/tabs/creds#${letter}`}
                   key={index}
                 >
                   <IonButton slot="fixed">{letter}</IonButton>
