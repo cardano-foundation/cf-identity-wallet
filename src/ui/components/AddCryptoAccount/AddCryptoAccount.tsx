@@ -22,7 +22,7 @@ import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
-import { GenerateSeedPhraseState } from "../../../constants/appConstants";
+import { generateSeedPhraseState } from "../../__fixtures__/dictionary";
 
 const AddCryptoAccount = ({
   addAccountIsOpen,
@@ -96,7 +96,7 @@ const AddCryptoAccount = ({
                   className="add-crypto-account-option"
                   data-testid="add-crypto-account-generate-button"
                   onClick={() =>
-                    handleNewAccount(GenerateSeedPhraseState.additional)
+                    handleNewAccount(generateSeedPhraseState.additional)
                   }
                 >
                   <span>
@@ -115,7 +115,7 @@ const AddCryptoAccount = ({
                   className="add-crypto-account-option"
                   data-testid="add-crypto-account-restore-button"
                   onClick={() =>
-                    handleNewAccount(GenerateSeedPhraseState.restore)
+                    handleNewAccount(generateSeedPhraseState.restore)
                   }
                 >
                   <span>

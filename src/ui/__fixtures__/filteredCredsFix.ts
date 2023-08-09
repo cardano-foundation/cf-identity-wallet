@@ -1,4 +1,4 @@
-const filteredCredsMock = [
+const filteredCredsFix = [
   {
     id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
     issuanceDate: "2010-01-01T19:23:24Z",
@@ -17,4 +17,4 @@ const filteredCredsMock = [
   },
 ];
 
-export { filteredCredsMock };
+export { filteredCredsFix };

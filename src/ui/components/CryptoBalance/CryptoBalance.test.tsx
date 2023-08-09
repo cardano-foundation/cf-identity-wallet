@@ -3,7 +3,7 @@ import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { CryptoBalance } from "./index";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
+import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { formatCurrencyUSD } from "../../../utils";
 import { CryptoBalanceItem } from "./CryptoBalance.types";
@@ -12,18 +12,18 @@ const items: CryptoBalanceItem[] = [
   {
     title: EN_TRANSLATIONS.crypto.tab.slider.title.mainbalance,
     fiatBalance: formatCurrencyUSD(
-      cryptoAccountsMock[0].balance.main.usdBalance
+      cryptoAccountsFix[0].balance.main.usdBalance
     ),
     nativeBalance:
-      cryptoAccountsMock[0].balance.main.nativeBalance.toFixed(2) + " ADA",
+      cryptoAccountsFix[0].balance.main.nativeBalance.toFixed(2) + " ADA",
   },
   {
     title: EN_TRANSLATIONS.crypto.tab.slider.title.rewardbalance,
     fiatBalance: formatCurrencyUSD(
-      cryptoAccountsMock[1].balance.reward.usdBalance
+      cryptoAccountsFix[1].balance.reward.usdBalance
     ),
     nativeBalance:
-      cryptoAccountsMock[1].balance.reward.nativeBalance.toFixed(2) + " ADA",
+      cryptoAccountsFix[1].balance.reward.nativeBalance.toFixed(2) + " ADA",
   },
 ];
 
@@ -40,7 +40,7 @@ describe("Slides Component", () => {
       },
     },
     seedPhraseCache: {},
-    cryptoAccountsCache: cryptoAccountsMock,
+    cryptoAccountsCache: cryptoAccountsFix,
   };
   const storeMocked = {
     ...mockStore(initialState),

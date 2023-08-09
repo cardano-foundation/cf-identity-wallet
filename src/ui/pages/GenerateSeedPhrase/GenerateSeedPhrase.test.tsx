@@ -14,8 +14,8 @@ import {
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-  GenerateSeedPhraseState,
 } from "../../../constants/appConstants";
+import { generateSeedPhraseState } from "../../__fixtures__/dictionary";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
@@ -54,7 +54,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
   beforeAll(() => {
     history.push(
       RoutePath.GENERATE_SEED_PHRASE,
-      GenerateSeedPhraseState.onboarding
+      generateSeedPhraseState.onboarding
     );
   });
 
@@ -387,7 +387,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
   beforeAll(() => {
     history.push(
       RoutePath.GENERATE_SEED_PHRASE,
-      GenerateSeedPhraseState.additional
+      generateSeedPhraseState.additional
     );
   });
 
@@ -475,7 +475,7 @@ describe.skip("Restore account from existing seed phrase", () => {
   beforeAll(() => {
     history.push(
       RoutePath.GENERATE_SEED_PHRASE,
-      GenerateSeedPhraseState.restore
+      generateSeedPhraseState.restore
     );
   });
 
@@ -502,7 +502,7 @@ describe.skip("Restore account from existing seed phrase", () => {
 
   test("User can enter a seed phrase", async () => {
     window.history.pushState(
-      { type: GenerateSeedPhraseState.restore },
+      { type: generateSeedPhraseState.restore },
       "",
       RoutePath.GENERATE_SEED_PHRASE
     );

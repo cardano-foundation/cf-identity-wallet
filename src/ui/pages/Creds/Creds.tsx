@@ -11,6 +11,7 @@ import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
 import { Connections } from "../Connections";
+import { cardTypes } from "../../__fixtures__/dictionary";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -95,7 +96,7 @@ const Creds = () => {
         >
           {credsData.length ? (
             <CardsStack
-              cardsType="creds"
+              cardsType={cardTypes.creds}
               cardsData={credsData}
             />
           ) : (

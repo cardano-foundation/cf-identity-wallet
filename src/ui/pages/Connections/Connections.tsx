@@ -28,6 +28,7 @@ import { formatShortDate } from "../../../utils";
 import { AddConnection } from "../../components/AddConnection";
 import { useAppSelector } from "../../../store/hooks";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import { connectionStatus } from "../../__fixtures__/dictionary";
 
 const ConnectionItem = ({ item }: ConnectionItemProps) => {
   return (
@@ -56,7 +57,7 @@ const ConnectionItem = ({ item }: ConnectionItemProps) => {
             size="3.5"
             className="item-status"
           >
-            {item.status === "pending" ? (
+            {item.status === connectionStatus.pending ? (
               <IonChip>
                 <IonIcon
                   icon={hourglassOutline}

@@ -4,7 +4,7 @@ import { ionFireEvent as fireEvent } from "@ionic/react-test-utils";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
+import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { AssetsTransactions } from "./AssetsTransactions";
 
@@ -21,7 +21,7 @@ describe("Slides Component", () => {
       },
     },
     seedPhraseCache: {},
-    cryptoAccountsCache: cryptoAccountsMock,
+    cryptoAccountsCache: cryptoAccountsFix,
   };
   const storeMocked = {
     ...mockStore(initialState),
@@ -32,8 +32,8 @@ describe("Slides Component", () => {
     const { getByText } = render(
       <Provider store={storeMocked}>
         <AssetsTransactions
-          assets={cryptoAccountsMock[0].assets}
-          transactions={cryptoAccountsMock[0].transactions}
+          assets={cryptoAccountsFix[0].assets}
+          transactions={cryptoAccountsFix[0].transactions}
           expanded={false}
           hideBalance={false}
         />
@@ -43,7 +43,7 @@ describe("Slides Component", () => {
       EN_TRANSLATIONS.crypto.tab.assetstransactions.swipeupmessage
     );
     const firstAsset = getByText(
-      cryptoAccountsMock[0].assets[0].balance.toFixed(2) + " ADA"
+      cryptoAccountsFix[0].assets[0].balance.toFixed(2) + " ADA"
     );
     expect(swipeUpMessage).toBeInTheDocument();
     expect(firstAsset).toBeInTheDocument();
@@ -53,8 +53,8 @@ describe("Slides Component", () => {
     const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <AssetsTransactions
-          assets={cryptoAccountsMock[0].assets}
-          transactions={cryptoAccountsMock[0].transactions}
+          assets={cryptoAccountsFix[0].assets}
+          transactions={cryptoAccountsFix[0].transactions}
           expanded={true}
           hideBalance={false}
         />
@@ -62,7 +62,7 @@ describe("Slides Component", () => {
     );
     const segment = getByTestId("assets-transactions-toggle-segment");
     const firstAsset = getByText(
-      cryptoAccountsMock[0].assets[0].balance.toFixed(2) + " ADA"
+      cryptoAccountsFix[0].assets[0].balance.toFixed(2) + " ADA"
     );
     expect(segment).toBeInTheDocument();
     expect(getByTestId("assets-list")).toBeInTheDocument();
@@ -80,7 +80,7 @@ describe("Slides Component", () => {
     );
 
     const firstTransaction = getByText(
-      cryptoAccountsMock[0].transactions[0].amount.toFixed(2) + " ADA"
+      cryptoAccountsFix[0].transactions[0].amount.toFixed(2) + " ADA"
     );
     expect(firstTransaction).toBeInTheDocument();
   });

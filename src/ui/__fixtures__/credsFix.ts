@@ -1,4 +1,4 @@
-const credsMock = [
+const credsFix = [
   {
     id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
     type: ["UniversityDegreeCredential"],
@@ -53,4 +53,30 @@ const credsMock = [
   },
 ];
 
-export { credsMock };
+const defaultCredentialsCardData = {
+  id: "",
+  type: [""],
+  connection: "",
+  issuanceDate: "",
+  expirationDate: "",
+  receivingDid: "",
+  credentialType: "",
+  nameOnCredential: "",
+  issuerLogo: "",
+  credentialSubject: {
+    degree: {
+      education: "",
+      type: "",
+      name: "",
+    },
+  },
+  proofType: "",
+  proofValue: "",
+  credentialStatus: {
+    revoked: false,
+    suspended: false,
+  },
+  colors: ["", ""],
+};
+
+export { credsFix, defaultCredentialsCardData };

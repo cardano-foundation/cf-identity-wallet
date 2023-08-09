@@ -28,9 +28,9 @@ import {
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-  GenerateSeedPhraseState,
   SEED_PHRASE_SUGGESTIONS,
 } from "../../../constants/appConstants";
+import { generateSeedPhraseState } from "../../__fixtures__/dictionary";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
   Alert as AlertConfirm,
@@ -47,7 +47,7 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { GenerateSeedPhraseProps } from "./GenerateSeedPhrase.types";
-import { bip39Seeds } from "../../__mocks__/bip39Seeds";
+import { bip39Seeds } from "../../__fixtures__/bip39Seeds";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 
 const GenerateSeedPhrase = () => {
@@ -55,10 +55,10 @@ const GenerateSeedPhrase = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
-    ? GenerateSeedPhraseState.onboarding
+    ? generateSeedPhraseState.onboarding
     : (history?.location?.state as GenerateSeedPhraseProps)?.type || "";
-  const stateOnboarding = seedPhraseType === GenerateSeedPhraseState.onboarding;
-  const stateRestore = seedPhraseType === GenerateSeedPhraseState.restore;
+  const stateOnboarding = seedPhraseType === generateSeedPhraseState.onboarding;
+  const stateRestore = seedPhraseType === generateSeedPhraseState.restore;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
@@ -482,7 +482,7 @@ const GenerateSeedPhrase = () => {
               history.push({
                 pathname: TabsRoutePath.CRYPTO,
                 state: {
-                  type: GenerateSeedPhraseState.success,
+                  type: generateSeedPhraseState.success,
                 },
               });
             }}

@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Creds } from "./Creds";
 import { TabsRoutePath } from "../../../routes/paths";
-import { filteredCredsMock } from "../../__mocks__/filteredCredsMock";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { connections } from "../../__fixtures__/connections";
 import { formatShortDate } from "../../../utils";
@@ -41,7 +41,7 @@ describe("Creds Tab", () => {
     },
     seedPhraseCache: {},
     credsCache: {
-      creds: filteredCredsMock,
+      creds: filteredCredsFix,
     },
     connectionsCache: {
       connections: connections,

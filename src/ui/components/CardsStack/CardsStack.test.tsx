@@ -2,16 +2,17 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { CLEAR_STATE_DELAY, CardsStack, NAVIGATION_DELAY } from "./CardsStack";
-import { didsMock } from "../../__mocks__/didsMock";
+import { didsFix } from "../../__fixtures__/didsFix";
 import { store } from "../../../store";
 import { DidCardDetails } from "../../pages/DidCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { credsMock } from "../../__mocks__/credsMock";
+import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
+import { cardTypes } from "../../__fixtures__/dictionary";
 jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest.fn().mockResolvedValue(didsMock[0]),
+      getIdentity: jest.fn().mockResolvedValue(didsFix[0]),
     },
   },
 }));
@@ -20,12 +21,12 @@ describe("Cards Stack Component", () => {
     const { getByText } = render(
       <Provider store={store}>
         <CardsStack
-          cardsType="dids"
-          cardsData={didsMock}
+          cardsType={cardTypes.dids}
+          cardsData={didsFix}
         />
       </Provider>
     );
-    const firstCardId = getByText(didsMock[0].id);
+    const firstCardId = getByText(didsFix[0].id);
     expect(firstCardId).toBeInTheDocument();
   });
 
@@ -33,8 +34,8 @@ describe("Cards Stack Component", () => {
     const { getByTestId } = render(
       <Provider store={store}>
         <CardsStack
-          cardsType="dids"
-          cardsData={didsMock}
+          cardsType={cardTypes.dids}
+          cardsData={didsFix}
         />
       </Provider>
     );
@@ -48,8 +49,8 @@ describe("Cards Stack Component", () => {
     const { getByTestId } = render(
       <Provider store={store}>
         <CardsStack
-          cardsType="creds"
-          cardsData={credsMock}
+          cardsType={cardTypes.creds}
+          cardsData={credsFix}
         />
       </Provider>
     );
@@ -65,8 +66,8 @@ describe("Cards Stack Component", () => {
       <MemoryRouter>
         <Provider store={store}>
           <CardsStack
-            cardsType="dids"
-            cardsData={didsMock}
+            cardsType={cardTypes.dids}
+            cardsData={didsFix}
           />
           <Route
             path={TabsRoutePath.DID_DETAILS}
@@ -101,8 +102,8 @@ describe("Cards Stack Component", () => {
       <MemoryRouter>
         <Provider store={store}>
           <CardsStack
-            cardsType="creds"
-            cardsData={credsMock}
+            cardsType={cardTypes.creds}
+            cardsData={credsFix}
           />
           <Route
             path={TabsRoutePath.CRED_DETAILS}

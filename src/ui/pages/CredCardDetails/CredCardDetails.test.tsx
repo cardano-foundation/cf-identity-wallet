@@ -8,9 +8,9 @@ import { CredCardDetails } from "./CredCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { credsMock } from "../../__mocks__/credsMock";
+import { credsFix } from "../../__fixtures__/credsFix";
 
-const path = TabsRoutePath.CREDS + "/" + credsMock[0].id;
+const path = TabsRoutePath.CREDS + "/" + credsFix[0].id;
 
 afterEach(() => {
   jest.restoreAllMocks();
@@ -19,7 +19,7 @@ afterEach(() => {
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: credsMock[0].id,
+    id: credsFix[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
@@ -60,7 +60,7 @@ describe("Cards Details page", () => {
         </MemoryRouter>
       </Provider>
     );
-    expect(getByText(credsMock[0].credentialType)).toBeInTheDocument();
+    expect(getByText(credsFix[0].credentialType)).toBeInTheDocument();
     expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
       "false"
     );
@@ -93,7 +93,7 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: credsMock[0].proofValue,
+        string: credsFix[0].proofValue,
       });
     });
   });
@@ -154,7 +154,7 @@ describe("Cards Details page", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(credsMock[0].id)).toBeVisible();
+      expect(getByText(credsFix[0].id)).toBeVisible();
     });
   });
 

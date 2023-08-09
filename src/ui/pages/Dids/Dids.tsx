@@ -15,6 +15,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentity } from "../../components/CreateIdentity";
+import { cardTypes } from "../../__fixtures__/dictionary";
 
 interface AdditionalButtonsProps {
   handleCreateDid: () => void;
@@ -84,7 +85,7 @@ const Dids = () => {
       >
         {didsData.length ? (
           <CardsStack
-            cardsType="dids"
+            cardsType={cardTypes.dids}
             cardsData={didsData}
           />
         ) : (
