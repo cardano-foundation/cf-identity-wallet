@@ -12,8 +12,9 @@ import { TransactionBuilder } from "./transaction";
 
 dotenv.config();
 
-const validRootPrivateKeyBech32 = "xprv1yprjk4zc56qg6qcqcmlsfpyflmmp5gpucrnmucclwn34hfpfddv2mr57yuwc4utzfpjyldw5cxnn6k06kr0myks9z2jpfd6pnxrswp6jfkdjrhe09cypv6mldcamc4ggqywwrpceu2cwaqwclnxjj2udgc25sp2u";
-  
+const validRootPrivateKeyBech32 =
+  "xprv1yprjk4zc56qg6qcqcmlsfpyflmmp5gpucrnmucclwn34hfpfddv2mr57yuwc4utzfpjyldw5cxnn6k06kr0myks9z2jpfd6pnxrswp6jfkdjrhe09cypv6mldcamc4ggqywwrpceu2cwaqwclnxjj2udgc25sp2u";
+
 describe("Cardano transactions", () => {
   const blockfrostUrl = BLOCKFROST_PREPROD_SELF_HOSTED;
   const network: Network = "Preprod";
