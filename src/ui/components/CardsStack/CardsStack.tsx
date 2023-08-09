@@ -10,6 +10,7 @@ import {
   IdentityType,
 } from "../../../core/aries/ariesAgent.types";
 import { cardTypes } from "../../constants/dictionary";
+import { TabsRoutePath } from "../navigation/TabsMenu";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -162,10 +163,10 @@ const CardsStack = ({
 
     if (cardsType === cardTypes.dids) {
       const data = cardsData[index] as IdentityDetails;
-      pathname = `/tabs/dids/${data.id}`;
+      pathname = TabsRoutePath.DIDS + "/" + data.id;
     } else {
       const data = cardsData[index] as CredProps;
-      pathname = `/tabs/creds/${data.id}`;
+      pathname = TabsRoutePath.CREDS + "/" + data.id;
     }
 
     setTimeout(() => {
