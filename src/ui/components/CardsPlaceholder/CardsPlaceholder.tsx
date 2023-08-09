@@ -6,11 +6,12 @@ import "./CardsPlaceholder.scss";
 const CardsPlaceholder = ({
   buttonLabel,
   buttonAction,
+  testId,
 }: CardsPlaceholderProps) => {
   return (
     <div
       className="cards-placeholder-container"
-      data-testid="cards-placeholder"
+      data-testid={testId}
     >
       <div className="cards-placeholder-cards">
         <span className="back-card" />

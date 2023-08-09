@@ -4,20 +4,20 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { waitForIonicReact } from "@ionic/react-test-utils";
-import { didsMock } from "../../__mocks__/didsMock";
+import { didsFix } from "../../__fixtures__/didsFix";
 import { DidCardDetails } from "./DidCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
+import { filteredDidsFix } from "../../__fixtures__/filteredDidsFix";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 
-const path = TabsRoutePath.DIDS + "/" + didsMock[0].id;
+const path = TabsRoutePath.DIDS + "/" + didsFix[0].id;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: didsMock[0].id,
+    id: didsFix[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
@@ -25,7 +25,7 @@ jest.mock("react-router-dom", () => ({
 jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest.fn().mockResolvedValue(didsMock[0]),
+      getIdentity: jest.fn().mockResolvedValue(didsFix[0]),
     },
   },
 }));
@@ -48,7 +48,7 @@ const initialState = {
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
   identitiesCache: {
-    identities: filteredDidsMock,
+    identities: filteredDidsFix,
   },
 };
 
@@ -75,7 +75,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(didsFix[0].id)).toBeInTheDocument());
     expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
       "false"
     );
@@ -85,7 +85,7 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
-    expect(AriesAgent.agent.getIdentity).toBeCalledWith(didsMock[0].id);
+    expect(AriesAgent.agent.getIdentity).toBeCalledWith(didsFix[0].id);
   });
 
   test("It copies id to clipboard", async () => {
@@ -101,11 +101,11 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(didsFix[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-id"));
 
     await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({ string: didsMock[0].id });
+      expect(Clipboard.write).toHaveBeenCalledWith({ string: didsFix[0].id });
     });
   });
 
@@ -122,11 +122,11 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(didsFix[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-type"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: didsMock[0].keyType,
+        string: didsFix[0].keyType,
       });
     });
   });
@@ -144,12 +144,12 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(didsFix[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-controller"));
 
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: didsMock[0].controller,
+        string: didsFix[0].controller,
       });
     });
   });
@@ -167,12 +167,12 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(didsFix[0].id)).toBeInTheDocument());
     fireEvent.click(getByTestId("copy-button-publicKeyBase58"));
 
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: didsMock[0].publicKeyBase58,
+        string: didsFix[0].publicKeyBase58,
       });
     });
   });
@@ -213,7 +213,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(didsFix[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -235,7 +235,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(didsFix[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -257,7 +257,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(didsFix[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -287,7 +287,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(didsFix[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
     });
@@ -329,7 +329,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(didsFix[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));
     });
@@ -353,7 +353,7 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didsMock[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(didsFix[0].id)).toBeInTheDocument());
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));
     });

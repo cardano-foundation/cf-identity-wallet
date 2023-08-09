@@ -9,6 +9,7 @@ import {
   IdentityShortDetails,
   IdentityType,
 } from "../../../core/aries/ariesAgent.types";
+import { cardTypes } from "../../constants/dictionary";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -135,7 +136,7 @@ const CardsStack = ({
   const renderCards = (cardsData: IdentityShortDetails[] | CredProps[]) => {
     return cardsData.map(
       (cardData: IdentityShortDetails | CredProps, index: number) =>
-        cardsType === "dids" ? (
+        cardsType === cardTypes.dids ? (
           <DidCard
             key={index}
             index={index}
@@ -159,7 +160,7 @@ const CardsStack = ({
     setIsActive(true);
     let pathname = "";
 
-    if (cardsType === "dids") {
+    if (cardsType === cardTypes.dids) {
       const data = cardsData[index] as IdentityDetails;
       pathname = `/tabs/dids/${data.id}`;
     } else {

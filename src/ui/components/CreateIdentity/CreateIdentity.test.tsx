@@ -3,7 +3,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { Store, AnyAction } from "@reduxjs/toolkit";
 import { CreateIdentity } from "./CreateIdentity";
-import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
+import { filteredDidsFix } from "../../__fixtures__/filteredDidsFix";
 
 jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
@@ -22,7 +22,7 @@ describe("Create Identity modal", () => {
     const dispatchMock = jest.fn();
     const initialState = {
       didsCache: {
-        dids: filteredDidsMock,
+        dids: filteredDidsFix,
       },
       identitiesCache: {
         identities: [],

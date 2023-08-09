@@ -48,6 +48,9 @@ describe("getBackRoute", () => {
         defaultCryptoAccount: "",
         hideCryptoBalances: false,
       },
+      connectionsCache: {
+        connections: [],
+      },
     };
   });
 
@@ -128,6 +131,9 @@ describe("getBackRoute", () => {
         defaultCryptoAccount: "",
         hideCryptoBalances: false,
       },
+      connectionsCache: {
+        connections: [],
+      },
     };
     const expectedAuthentication = {
       ...storeMock.stateCache.authentication,
@@ -192,6 +198,9 @@ describe("getPreviousRoute", () => {
         cryptoAccounts: [],
         defaultCryptoAccount: "",
         hideCryptoBalances: false,
+      },
+      connectionsCache: {
+        connections: [],
       },
     };
   });

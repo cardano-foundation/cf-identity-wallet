@@ -12,9 +12,9 @@ import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   FIFTEEN_WORDS_BIT_LENGTH,
-  GenerateSeedPhraseState,
   MNEMONIC_FIFTEEN_WORDS,
 } from "../../../constants/appConstants";
+import { generateSeedPhraseState } from "../../constants/dictionary";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { Addresses } from "../../../core/cardano";
 
@@ -164,7 +164,7 @@ describe("Verify Seed Phrase Page", () => {
     const history = createMemoryHistory();
     history.push(
       RoutePath.VERIFY_SEED_PHRASE,
-      GenerateSeedPhraseState.onboarding
+      generateSeedPhraseState.onboarding
     );
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
@@ -229,7 +229,7 @@ describe("Verify Seed Phrase Page", () => {
     const history = createMemoryHistory();
     history.push(
       RoutePath.VERIFY_SEED_PHRASE,
-      GenerateSeedPhraseState.additional
+      generateSeedPhraseState.additional
     );
     const { getByTestId, getByText, queryByTestId } = render(
       <Provider store={storeMocked}>

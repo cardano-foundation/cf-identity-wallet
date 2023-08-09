@@ -24,7 +24,7 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../../../routes/paths";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import { credsMock } from "../../__mocks__/credsMock";
+import { credsFix } from "../../__fixtures__/credsFix";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 
 const CredsOptions = ({
@@ -67,12 +67,12 @@ const CredsOptions = ({
     handleCloseOptions();
     // @TODO - sdisalvo: Update Database.
     // Remember to update CredCardDetails file too.
-    const updatedCreds = credsMock.filter((item) => item.id !== id);
+    const updatedCreds = credsFix.filter((item) => item.id !== id);
     dispatch(setCredsCache(updatedCreds));
     handleDone();
   };
 
-  const cred = credsMock.find((item) => item.id === id);
+  const cred = credsFix.find((item) => item.id === id);
 
   return (
     <>

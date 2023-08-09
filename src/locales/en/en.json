@@ -304,6 +304,18 @@
       }
     }
   },
+  "connections": {
+    "tab": {
+      "title": "Connections",
+      "create": "Add a connection",
+      "searchconnections": "Search connections"
+    },
+    "modal": {
+      "title": "Add a connection",
+      "scan": "Scan a QR code",
+      "provide": "Provide a QR code"
+    }
+  },
   "verifypassword": {
     "title": "Enter password",
     "cancel": "Cancel",

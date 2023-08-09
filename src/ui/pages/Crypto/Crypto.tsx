@@ -42,9 +42,9 @@ import { CryptoBalanceItem } from "../../components/CryptoBalance/CryptoBalance.
 import { formatCurrencyUSD } from "../../../utils";
 import { AssetsTransactions } from "../../components/AssetsTransactions";
 import {
-  DEFAULT_CRYPTO_ACCOUNT_DATA,
-  GenerateSeedPhraseState,
-} from "../../../constants/appConstants";
+  defaultCryptoAccountData,
+  generateSeedPhraseState,
+} from "../../constants/dictionary";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 import {
   PreferencesKeys,
@@ -71,7 +71,7 @@ const Crypto = () => {
     useAppSelector(getDefaultCryptoAccountCache)
   );
   const [defaultAccountData, setDefaultAccountData] = useState(
-    DEFAULT_CRYPTO_ACCOUNT_DATA
+    defaultCryptoAccountData
   );
   const accountAvailable = cryptoAccountsData?.length && defaultAccountData;
   const items: CryptoBalanceItem[] = [
@@ -104,7 +104,7 @@ const Crypto = () => {
   useEffect(() => {
     if (
       (history?.location?.state as GenerateSeedPhraseProps)?.type ===
-      GenerateSeedPhraseState.success
+      generateSeedPhraseState.success
     ) {
       setShowToast(true);
     }
@@ -299,6 +299,7 @@ const Crypto = () => {
             <CardsPlaceholder
               buttonLabel={i18n.t("crypto.tab.create")}
               buttonAction={() => setAddAccountIsOpen(true)}
+              testId="crypto-cards-placeholder"
             />
           )}
           <IonToast

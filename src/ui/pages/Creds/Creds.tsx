@@ -1,5 +1,6 @@
 import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
+import { useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Creds.scss";
@@ -9,18 +10,25 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
+import { Connections } from "../Connections";
+import { cardTypes } from "../../constants/dictionary";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
+  handleConnections: () => void;
 }
 
-const AdditionalButtons = ({ handleCreateCred }: AdditionalButtonsProps) => {
+const AdditionalButtons = ({
+  handleCreateCred,
+  handleConnections,
+}: AdditionalButtonsProps) => {
   return (
     <>
       <IonButton
         shape="round"
-        className="contacts-button"
-        data-testid="contacts-button"
+        className="connections-button"
+        data-testid="connections-button"
+        onClick={handleConnections}
       >
         <IonIcon
           slot="icon-only"
@@ -45,42 +53,62 @@ const AdditionalButtons = ({ handleCreateCred }: AdditionalButtonsProps) => {
 };
 
 const Creds = () => {
+  const dispatch = useAppDispatch();
   const credsData = useAppSelector(getCredsCache);
+  const [showConnections, setShowConnections] = useState(false);
+
   const handleCreateCred = () => {
-    // TODO: Function to create Credential
+    // @TODO - sdisalvo: Function to create Credential
   };
 
-  const dispatch = useAppDispatch();
+  const handleConnections = () => {
+    setShowConnections(!showConnections);
+  };
+
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
   );
 
   return (
-    <IonPage
-      className="tab-layout creds-tab"
-      data-testid="creds-tab"
-    >
-      <TabLayout
-        header={true}
-        title={`${i18n.t("creds.tab.title")}`}
-        menuButton={true}
-        additionalButtons={
-          <AdditionalButtons handleCreateCred={handleCreateCred} />
-        }
+    <>
+      <IonPage
+        className={`tab-layout connections-tab ${
+          showConnections ? "show" : "hide"
+        }`}
+        data-testid="connections-tab"
       >
-        {credsData.length ? (
-          <CardsStack
-            cardsType="creds"
-            cardsData={credsData}
-          />
-        ) : (
-          <CardsPlaceholder
-            buttonLabel={i18n.t("creds.tab.create")}
-            buttonAction={handleCreateCred}
-          />
-        )}
-      </TabLayout>
-    </IonPage>
+        <Connections setShowConnections={setShowConnections} />
+      </IonPage>
+      <IonPage
+        className="tab-layout creds-tab"
+        data-testid="creds-tab"
+      >
+        <TabLayout
+          header={true}
+          title={`${i18n.t("creds.tab.title")}`}
+          menuButton={true}
+          additionalButtons={
+            <AdditionalButtons
+              handleCreateCred={handleCreateCred}
+              handleConnections={handleConnections}
+            />
+          }
+        >
+          {credsData.length ? (
+            <CardsStack
+              cardsType={cardTypes.creds}
+              cardsData={credsData}
+            />
+          ) : (
+            <CardsPlaceholder
+              buttonLabel={i18n.t("creds.tab.create")}
+              buttonAction={handleCreateCred}
+              testId="creds-cards-placeholder"
+            />
+          )}
+        </TabLayout>
+      </IonPage>
+    </>
   );
 };
 

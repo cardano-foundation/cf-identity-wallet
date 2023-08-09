@@ -11,7 +11,7 @@ import {
   NAVIGATION_DELAY,
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { filteredDidsMock } from "../../__mocks__/filteredDidsMock";
+import { filteredDidsFix } from "../../__fixtures__/filteredDidsFix";
 jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
@@ -31,7 +31,9 @@ describe("Dids Tab", () => {
     expect(getByText(EN_TRANSLATIONS.dids.tab.title)).toBeInTheDocument();
     expect(getByTestId("contacts-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
-    expect(getByTestId("menu-button")).toBeInTheDocument();
+    expect(
+      getByTestId(`menu-button-${EN_TRANSLATIONS.dids.tab.title.toLowerCase()}`)
+    ).toBeInTheDocument();
   });
 
   test("Navigate from Dids Tab to Card Details and back", async () => {
@@ -48,7 +50,7 @@ describe("Dids Tab", () => {
       },
       seedPhraseCache: {},
       identitiesCache: {
-        identities: filteredDidsMock,
+        identities: filteredDidsFix,
       },
     };
 
@@ -73,7 +75,7 @@ describe("Dids Tab", () => {
       </MemoryRouter>
     );
 
-    const firstCardId = getByText(filteredDidsMock[0].id);
+    const firstCardId = getByText(filteredDidsFix[0].id);
 
     act(() => {
       fireEvent.click(firstCardId);

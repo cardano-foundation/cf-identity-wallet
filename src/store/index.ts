@@ -4,6 +4,7 @@ import { stateCacheSlice } from "./reducers/stateCache";
 import { identitiesCacheSlice } from "./reducers/identitiesCache";
 import { credsCacheSlice } from "./reducers/credsCache";
 import { cryptoAccountsCacheSlice } from "./reducers/cryptoAccountsCache";
+import { connectionsCacheSlice } from "./reducers/connectionsCache";
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     identitiesCache: identitiesCacheSlice.reducer,
     credsCache: credsCacheSlice.reducer,
     cryptoAccountsCache: cryptoAccountsCacheSlice.reducer,
+    connectionsCache: connectionsCacheSlice.reducer,
   },
 });
 

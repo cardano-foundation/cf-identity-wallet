@@ -1,7 +1,7 @@
 import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
 import CardanoLogo from "../assets/images/CardanoLogo.jpg";
 
-const cryptoAccountsMock: CryptoAccountProps[] = [
+const cryptoAccountsFix: CryptoAccountProps[] = [
   {
     address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
     name: "Test wallet 1",
@@ -290,4 +290,4 @@ const cryptoAccountsMock: CryptoAccountProps[] = [
   },
 ];
 
-export { cryptoAccountsMock };
+export { cryptoAccountsFix };

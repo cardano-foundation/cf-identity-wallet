@@ -7,7 +7,8 @@ import {
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import { setCredsCache } from "../../../store/reducers/credsCache";
-import { filteredCredsMock } from "../../__mocks__/filteredCredsMock";
+import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import {
   setCryptoAccountsCache,
@@ -18,6 +19,7 @@ import {
   PreferencesStorage,
 } from "../../../core/storage/preferences";
 import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
+import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -63,8 +65,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
 
     dispatch(setIdentitiesCache(storedIdentities));
-    dispatch(setCredsCache(filteredCredsMock));
+    dispatch(setCredsCache(filteredCredsFix));
     dispatch(setCryptoAccountsCache(storedCryptoAccounts));
+    dispatch(setConnectionsCache(connectionsFix));
   };
 
   return <>{props.children}</>;

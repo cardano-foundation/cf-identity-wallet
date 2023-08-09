@@ -10,7 +10,7 @@ import {
 } from "./cryptoAccountsCache";
 import { RootState } from "../../index";
 import { CryptoAccountProps } from "../../../ui/pages/Crypto/Crypto.types";
-import { cryptoAccountsMock } from "../../../ui/__mocks__/cryptoAccountsMock";
+import { cryptoAccountsFix } from "../../../ui/__fixtures__/cryptoAccountsFix";
 
 describe("cryptoAccountsCacheSlice", () => {
   const initialState = {
@@ -25,7 +25,7 @@ describe("cryptoAccountsCacheSlice", () => {
   });
 
   it("should handle setCryptoAccountsCache", () => {
-    const cryptoAccounts: CryptoAccountProps[] = cryptoAccountsMock;
+    const cryptoAccounts: CryptoAccountProps[] = cryptoAccountsFix;
     const newState = cryptoAccountsCacheSlice.reducer(
       initialState,
       setCryptoAccountsCache(cryptoAccounts)
@@ -36,7 +36,7 @@ describe("cryptoAccountsCacheSlice", () => {
   it("should handle getCryptoAccountsCache", () => {
     const state = {
       cryptoAccountsCache: {
-        cryptoAccounts: cryptoAccountsMock,
+        cryptoAccounts: cryptoAccountsFix,
       },
     } as RootState;
     const cryptoAccountsCache = getCryptoAccountsCache(state);

@@ -1,4 +1,4 @@
-const credsMock = [
+const credsFix = [
   {
     id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
     type: ["UniversityDegreeCredential"],
@@ -53,4 +53,4 @@ const credsMock = [
   },
 ];
 
-export { credsMock };
+export { credsFix };

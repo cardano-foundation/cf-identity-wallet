@@ -21,7 +21,7 @@ import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import "./CredCardDetails.scss";
-import { credsMock } from "../../__mocks__/credsMock";
+import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -36,7 +36,7 @@ import { Alert } from "../../components/Alert";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
-import { DEFAULT_CREDENTIALS_CARD_DATA } from "../../../constants/appConstants";
+import { defaultCredentialsCardData } from "../../constants/dictionary";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -46,10 +46,10 @@ const CredCardDetails = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [creds, setCreds] = useState(credsMock);
+  const [creds, setCreds] = useState(credsFix);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState({
-    ...DEFAULT_CREDENTIALS_CARD_DATA,
+    ...defaultCredentialsCardData,
     id: params.id,
   });
 

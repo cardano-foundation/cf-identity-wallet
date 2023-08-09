@@ -5,7 +5,7 @@ import { Crypto } from "./Crypto";
 import { store } from "../../../store";
 import { TabsRoutePath } from "../../../routes/paths";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { cryptoAccountsMock } from "../../__mocks__/cryptoAccountsMock";
+import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 
 describe("Crypto Tab", () => {
@@ -17,7 +17,6 @@ describe("Crypto Tab", () => {
     );
 
     expect(getByTestId("crypto-tab")).toBeInTheDocument();
-    expect(getByTestId("menu-button")).toBeInTheDocument();
   });
 
   test("Renders placeholder when no crypto accounts are found", () => {
@@ -46,7 +45,7 @@ describe("Crypto Tab", () => {
       </Provider>
     );
 
-    expect(getByTestId("cards-placeholder")).toBeInTheDocument();
+    expect(getByTestId("crypto-cards-placeholder")).toBeInTheDocument();
   });
 
   test("User has an option for reusing existing IDW seed phrase as a crypto account", async () => {
@@ -153,8 +152,8 @@ describe("Crypto Tab", () => {
       },
       seedPhraseCache: {},
       cryptoAccountsCache: {
-        cryptoAccounts: cryptoAccountsMock,
-        defaultCryptoAccount: cryptoAccountsMock[0].address,
+        cryptoAccounts: cryptoAccountsFix,
+        defaultCryptoAccount: cryptoAccountsFix[0].address,
       },
     };
 
@@ -240,8 +239,8 @@ describe("Crypto Tab", () => {
       },
       seedPhraseCache: {},
       cryptoAccountsCache: {
-        cryptoAccounts: cryptoAccountsMock,
-        defaultCryptoAccount: cryptoAccountsMock[0].address,
+        cryptoAccounts: cryptoAccountsFix,
+        defaultCryptoAccount: cryptoAccountsFix[0].address,
       },
     };
 
@@ -256,7 +255,7 @@ describe("Crypto Tab", () => {
       </Provider>
     );
 
-    expect(queryByText(cryptoAccountsMock[0].name)).toBeVisible();
+    expect(queryByText(cryptoAccountsFix[0].name)).toBeVisible();
 
     await waitFor(() => {
       expect(queryByTestId("crypto-tab-content")).toBeVisible();
@@ -282,6 +281,6 @@ describe("Crypto Tab", () => {
       fireEvent.click(getByTestId("my-wallets-account-1"));
     });
 
-    expect(queryByText(cryptoAccountsMock[1].name)).toBeVisible();
+    expect(queryByText(cryptoAccountsFix[1].name)).toBeVisible();
   });
 });

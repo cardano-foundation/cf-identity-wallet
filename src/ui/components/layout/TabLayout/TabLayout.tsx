@@ -7,13 +7,15 @@ import {
   IonIcon,
   IonTitle,
 } from "@ionic/react";
-import { menuOutline } from "ionicons/icons";
+import { arrowBackOutline, menuOutline } from "ionicons/icons";
 import "./TabLayout.scss";
 import { TabLayoutProps } from "./TabLayout.types";
 
 const TabLayout = ({
   header,
   avatar,
+  backButton,
+  backButtonAction,
   title,
   titleSize,
   titleAction,
@@ -27,6 +29,20 @@ const TabLayout = ({
         <IonHeader className="ion-no-border tab-header">
           <IonToolbar color="transparent">
             {avatar && <IonButtons slot="start">{avatar}</IonButtons>}
+
+            {backButton && backButtonAction && (
+              <IonButtons
+                slot="start"
+                className="back-button"
+                data-testid={`back-button-${title?.toLowerCase()}`}
+                onClick={backButtonAction}
+              >
+                <IonIcon
+                  icon={arrowBackOutline}
+                  color="primary"
+                />
+              </IonButtons>
+            )}
 
             {title && (
               <IonTitle
@@ -45,7 +61,7 @@ const TabLayout = ({
                 <IonButton
                   shape="round"
                   className="menu-button"
-                  data-testid="menu-button"
+                  data-testid={`menu-button-${title?.toLowerCase()}`}
                 >
                   <IonIcon
                     slot="icon-only"
