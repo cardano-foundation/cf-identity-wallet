@@ -290,25 +290,4 @@ const cryptoAccountsFix: CryptoAccountProps[] = [
   },
 ];
 
-const defaultCryptoAccountData: CryptoAccountProps = {
-  address: "",
-  name: "",
-  blockchain: "",
-  currency: "",
-  logo: "",
-  balance: {
-    main: {
-      nativeBalance: 0,
-      usdBalance: 0,
-    },
-    reward: {
-      nativeBalance: 0,
-      usdBalance: 0,
-    },
-  },
-  usesIdentitySeedPhrase: false,
-  assets: [],
-  transactions: [],
-};
-
-export { cryptoAccountsFix, defaultCryptoAccountData };
+export { cryptoAccountsFix };

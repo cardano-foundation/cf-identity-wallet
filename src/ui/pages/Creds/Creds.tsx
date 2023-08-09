@@ -11,7 +11,7 @@ import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
 import { Connections } from "../Connections";
-import { cardTypes } from "../../__fixtures__/dictionary";
+import { cardTypes } from "../../constants/dictionary";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;

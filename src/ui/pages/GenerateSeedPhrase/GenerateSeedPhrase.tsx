@@ -30,7 +30,7 @@ import {
   TWENTYFOUR_WORDS_BIT_LENGTH,
   SEED_PHRASE_SUGGESTIONS,
 } from "../../../constants/appConstants";
-import { generateSeedPhraseState } from "../../__fixtures__/dictionary";
+import { generateSeedPhraseState } from "../../constants/dictionary";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
   Alert as AlertConfirm,
@@ -47,7 +47,7 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { GenerateSeedPhraseProps } from "./GenerateSeedPhrase.types";
-import { bip39Seeds } from "../../__fixtures__/bip39Seeds";
+import { bip39Seeds } from "../../constants/bip39Seeds";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 
 const GenerateSeedPhrase = () => {

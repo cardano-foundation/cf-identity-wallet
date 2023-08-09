@@ -5,7 +5,7 @@ import { Creds } from "./Creds";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { connections } from "../../__fixtures__/connections";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { formatShortDate } from "../../../utils";
 
 describe("Creds Tab", () => {
@@ -44,7 +44,7 @@ describe("Creds Tab", () => {
       creds: filteredCredsFix,
     },
     connectionsCache: {
-      connections: connections,
+      connections: connectionsFix,
     },
   };
 
@@ -167,11 +167,11 @@ describe("Creds Tab", () => {
       expect(queryByTestId("connections-cards-placeholder")).toBeNull();
     });
 
-    expect(getByText(connections[0].issuer)).toBeVisible();
+    expect(getByText(connectionsFix[0].issuer)).toBeVisible();
     expect(
-      getByText(formatShortDate(`${connections[0].issuanceDate}`))
+      getByText(formatShortDate(`${connectionsFix[0].issuanceDate}`))
     ).toBeVisible();
-    expect(getByText(connections[0].status)).toBeVisible();
+    expect(getByText(connectionsFix[0].status)).toBeVisible();
   });
 
   test.skip("Show Add Connections modal", async () => {

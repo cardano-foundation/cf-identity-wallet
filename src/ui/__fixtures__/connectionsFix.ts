@@ -1,6 +1,6 @@
 import CardanoLogo from "../assets/images/CardanoLogo.jpg";
 
-const connections = [
+const connectionsFix = [
   {
     issuer: "Cambridge University",
     issuanceDate: "2017-08-14T19:23:24Z",
@@ -45,4 +45,4 @@ const connections = [
   },
 ];
 
-export { connections };
+export { connectionsFix };

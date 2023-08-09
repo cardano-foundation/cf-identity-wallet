@@ -15,7 +15,7 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
-import { generateSeedPhraseState } from "../../__fixtures__/dictionary";
+import { generateSeedPhraseState } from "../../constants/dictionary";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";

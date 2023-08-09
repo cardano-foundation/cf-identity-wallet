@@ -21,10 +21,7 @@ import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import "./CredCardDetails.scss";
-import {
-  credsFix,
-  defaultCredentialsCardData,
-} from "../../__fixtures__/credsFix";
+import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -39,6 +36,7 @@ import { Alert } from "../../components/Alert";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
+import { defaultCredentialsCardData } from "../../constants/dictionary";
 
 const CredCardDetails = () => {
   const history = useHistory();

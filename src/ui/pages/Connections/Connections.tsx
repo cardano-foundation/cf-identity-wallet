@@ -28,7 +28,7 @@ import { formatShortDate } from "../../../utils";
 import { AddConnection } from "../../components/AddConnection";
 import { useAppSelector } from "../../../store/hooks";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
-import { connectionStatus } from "../../__fixtures__/dictionary";
+import { connectionStatus } from "../../constants/dictionary";
 
 const ConnectionItem = ({ item }: ConnectionItemProps) => {
   return (

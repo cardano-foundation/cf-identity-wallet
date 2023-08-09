@@ -8,7 +8,7 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
-import { connections } from "../../__fixtures__/connections";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import {
   setCryptoAccountsCache,
@@ -67,7 +67,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setIdentitiesCache(storedIdentities));
     dispatch(setCredsCache(filteredCredsFix));
     dispatch(setCryptoAccountsCache(storedCryptoAccounts));
-    dispatch(setConnectionsCache(connections));
+    dispatch(setConnectionsCache(connectionsFix));
   };
 
   return <>{props.children}</>;

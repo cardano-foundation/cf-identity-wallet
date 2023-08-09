@@ -14,7 +14,7 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   MNEMONIC_FIFTEEN_WORDS,
 } from "../../../constants/appConstants";
-import { generateSeedPhraseState } from "../../__fixtures__/dictionary";
+import { generateSeedPhraseState } from "../../constants/dictionary";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { Addresses } from "../../../core/cardano";
 

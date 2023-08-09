@@ -41,8 +41,10 @@ import { CryptoBalance } from "../../components/CryptoBalance";
 import { CryptoBalanceItem } from "../../components/CryptoBalance/CryptoBalance.types";
 import { formatCurrencyUSD } from "../../../utils";
 import { AssetsTransactions } from "../../components/AssetsTransactions";
-import { defaultCryptoAccountData } from "../../__fixtures__/cryptoAccountsFix";
-import { generateSeedPhraseState } from "../../__fixtures__/dictionary";
+import {
+  defaultCryptoAccountData,
+  generateSeedPhraseState,
+} from "../../constants/dictionary";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 import {
   PreferencesKeys,

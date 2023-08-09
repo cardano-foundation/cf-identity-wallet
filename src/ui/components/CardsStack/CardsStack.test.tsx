@@ -8,7 +8,7 @@ import { DidCardDetails } from "../../pages/DidCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
-import { cardTypes } from "../../__fixtures__/dictionary";
+import { cardTypes } from "../../constants/dictionary";
 jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {

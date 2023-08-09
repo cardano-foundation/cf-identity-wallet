@@ -9,7 +9,7 @@ import {
   IdentityShortDetails,
   IdentityType,
 } from "../../../core/aries/ariesAgent.types";
-import { cardTypes } from "../../__fixtures__/dictionary";
+import { cardTypes } from "../../constants/dictionary";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;

@@ -20,7 +20,7 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { generateSeedPhraseState } from "../../__fixtures__/dictionary";
+import { generateSeedPhraseState } from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../../../routes/paths";
 import { ChooseAccountName } from "../../components/ChooseAccountName";

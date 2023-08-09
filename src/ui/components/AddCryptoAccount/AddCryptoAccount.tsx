@@ -22,7 +22,7 @@ import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
-import { generateSeedPhraseState } from "../../__fixtures__/dictionary";
+import { generateSeedPhraseState } from "../../constants/dictionary";
 
 const AddCryptoAccount = ({
   addAccountIsOpen,

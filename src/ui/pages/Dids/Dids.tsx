@@ -15,7 +15,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentity } from "../../components/CreateIdentity";
-import { cardTypes } from "../../__fixtures__/dictionary";
+import { cardTypes } from "../../constants/dictionary";
 
 interface AdditionalButtonsProps {
   handleCreateDid: () => void;

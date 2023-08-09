@@ -53,30 +53,4 @@ const credsFix = [
   },
 ];
 
-const defaultCredentialsCardData = {
-  id: "",
-  type: [""],
-  connection: "",
-  issuanceDate: "",
-  expirationDate: "",
-  receivingDid: "",
-  credentialType: "",
-  nameOnCredential: "",
-  issuerLogo: "",
-  credentialSubject: {
-    degree: {
-      education: "",
-      type: "",
-      name: "",
-    },
-  },
-  proofType: "",
-  proofValue: "",
-  credentialStatus: {
-    revoked: false,
-    suspended: false,
-  },
-  colors: ["", ""],
-};
-
-export { credsFix, defaultCredentialsCardData };
+export { credsFix };
