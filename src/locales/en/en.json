@@ -322,7 +322,8 @@
       "goalcodes": "Goal Codes",
       "handshake": "Handshake Protocol",
       "attachments": "Request Attachments",
-      "endpoints": "Service Endpoints"
+      "endpoints": "Service Endpoints",
+      "notavailable": "N/A"
     }
   },
   "verifypassword": {

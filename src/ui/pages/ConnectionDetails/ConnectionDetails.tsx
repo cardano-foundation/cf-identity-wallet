@@ -53,13 +53,87 @@ const ConnectionDetails = ({
       menuButton={false}
       additionalButtons={<AdditionalButtons />}
     >
-      <div className="card-details-content">
-        <div className="card-details-info-block">
+      <div className="connection-details-content">
+        <div className="connection-details-header">
+          <div className="connection-details-logo">
+            <img
+              src={connectionDetails.issuerLogo}
+              alt="connection-logo"
+            />
+          </div>
+          <span className="connection-details-issuer">
+            {connectionDetails.issuer}
+          </span>
+          <span className="connection-details-date">
+            {formatShortDate(`${connectionDetails.issuanceDate}`)}
+          </span>
+        </div>
+
+        <div className="connection-details-info-block">
           <h3>{i18n.t("connections.details.label")}</h3>
-          <div className="card-details-info-block-inner">
-            <span className="card-details-info-block-line">
-              <span className="card-details-info-block-data">
+          <div className="connection-details-info-block-inner">
+            <span className="connection-details-info-block-line">
+              <span className="connection-details-info-block-data">
                 {connectionDetails.issuer}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div className="connection-details-info-block">
+          <h3>{i18n.t("connections.details.date")}</h3>
+          <div className="connection-details-info-block-inner">
+            <span className="connection-details-info-block-line">
+              <span className="connection-details-info-block-data">
+                {formatShortDate(`${connectionDetails.issuanceDate}`)}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div className="connection-details-info-block">
+          <h3>{i18n.t("connections.details.goalcodes")}</h3>
+          <div className="connection-details-info-block-inner">
+            <span className="connection-details-info-block-line">
+              <span className="connection-details-info-block-data">
+                {connectionDetails.goalCodes ||
+                  i18n.t("connections.details.notavailable")}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div className="connection-details-info-block">
+          <h3>{i18n.t("connections.details.handshake")}</h3>
+          <div className="connection-details-info-block-inner">
+            <span className="connection-details-info-block-line">
+              <span className="connection-details-info-block-data">
+                {connectionDetails.handshakeProtocol ||
+                  i18n.t("connections.details.notavailable")}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div className="connection-details-info-block">
+          <h3>{i18n.t("connections.details.attachments")}</h3>
+          <div className="connection-details-info-block-inner">
+            <span className="connection-details-info-block-line">
+              <span className="connection-details-info-block-data">
+                {connectionDetails.requestAttachments ||
+                  i18n.t("connections.details.notavailable")}
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div className="connection-details-info-block">
+          <h3>{i18n.t("connections.details.endpoints")}</h3>
+          <div className="connection-details-info-block-inner">
+            <span className="connection-details-info-block-line">
+              <span className="connection-details-info-block-data">
+                {connectionDetails.serviceEndpoints ||
+                  i18n.t("connections.details.notavailable")}
               </span>
             </span>
           </div>
@@ -69,7 +143,7 @@ const ConnectionDetails = ({
           shape="round"
           expand="block"
           color="danger"
-          data-testid="card-details-delete-button"
+          data-testid="connection-details-delete-button"
           className="delete-button"
           onClick={() => setAlertIsOpen(true)}
         >
