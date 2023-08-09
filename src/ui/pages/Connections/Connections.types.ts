@@ -3,15 +3,22 @@ interface ConnectionsProps {
   issuanceDate: string;
   issuerLogo: string;
   status: string;
+  goalCodes?: string;
+  handshakeProtocol?: string;
+  requestAttachments?: string;
+  serviceEndpoints?: string;
 }
 
 interface ConnectionItemProps {
   key: number;
   item: ConnectionsProps;
+  handleShowConnectionDetails: (value: ConnectionsProps) => void;
 }
 
 interface ConnectionsComponentProps {
   setShowConnections: (value: boolean) => void;
+  setConnectionDetails: (value: ConnectionsProps) => void;
+  setShowConnectionDetails: (value: boolean) => void;
 }
 
 interface MappedConnections {

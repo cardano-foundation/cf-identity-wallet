@@ -152,10 +152,19 @@ ion-modal {
 }
 
 .card-details {
+  background: var(--ion-color-light-grey);
+
   .tab-header,
   .card-details-content {
     -webkit-animation: fadein 0.7s; /* Safari, Chrome and Opera > 12.1 */
     animation: fadein 0.7s;
+  }
+
+  ion-header ion-toolbar {
+    ion-button,
+    ion-button.md {
+      background: var(--ion-color-light);
+    }
   }
 
   .spinner-container {

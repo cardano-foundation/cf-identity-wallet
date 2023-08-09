@@ -30,9 +30,12 @@ import { useAppSelector } from "../../../store/hooks";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { connectionStatus } from "../../constants/dictionary";
 
-const ConnectionItem = ({ item }: ConnectionItemProps) => {
+const ConnectionItem = ({
+  item,
+  handleShowConnectionDetails,
+}: ConnectionItemProps) => {
   return (
-    <IonItem>
+    <IonItem onClick={() => handleShowConnectionDetails(item)}>
       <IonGrid>
         <IonRow>
           <IonCol
@@ -73,7 +76,11 @@ const ConnectionItem = ({ item }: ConnectionItemProps) => {
   );
 };
 
-const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
+const Connections = ({
+  setShowConnections,
+  setConnectionDetails,
+  setShowConnectionDetails,
+}: ConnectionsComponentProps) => {
   const connections: ConnectionsProps[] = useAppSelector(getConnectionsCache);
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
@@ -82,6 +89,11 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
 
   const handleAddConnection = () => {
     setAddConnectionIsOpen(true);
+  };
+
+  const handleShowConnectionDetails = (item: ConnectionsProps) => {
+    setConnectionDetails(item);
+    setShowConnectionDetails(true);
   };
 
   const AdditionalButtons = () => {
@@ -133,6 +145,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
             <ConnectionItem
               key={index}
               item={connection}
+              handleShowConnectionDetails={handleShowConnectionDetails}
             />
           );
         })}

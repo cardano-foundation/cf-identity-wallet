@@ -314,6 +314,15 @@
       "title": "Add a connection",
       "scan": "Scan a QR code",
       "provide": "Provide a QR code"
+    },
+    "details": {
+      "done": "Done",
+      "label": "Label",
+      "date": "Date Created",
+      "goalcodes": "Goal Codes",
+      "handshake": "Handshake Protocol",
+      "attachments": "Request Attachments",
+      "endpoints": "Service Endpoints"
     }
   },
   "verifypassword": {

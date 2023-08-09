@@ -1,3 +1,4 @@
+import { ConnectionsProps } from "../pages/Connections/Connections.types";
 import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
 
 const cardTypes = {
@@ -64,10 +65,18 @@ const defaultCryptoAccountData: CryptoAccountProps = {
   transactions: [],
 };
 
+const defaultConnectionData: ConnectionsProps = {
+  issuer: "",
+  issuanceDate: "",
+  issuerLogo: "",
+  status: "",
+};
+
 export {
   cardTypes,
   connectionStatus,
   generateSeedPhraseState,
   defaultCredentialsCardData,
   defaultCryptoAccountData,
+  defaultConnectionData,
 };

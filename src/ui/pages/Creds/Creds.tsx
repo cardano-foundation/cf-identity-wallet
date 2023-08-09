@@ -11,7 +11,9 @@ import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
 import { Connections } from "../Connections";
-import { cardTypes } from "../../constants/dictionary";
+import { cardTypes, defaultConnectionData } from "../../constants/dictionary";
+import { ConnectionsProps } from "../Connections/Connections.types";
+import { ConnectionDetails } from "../ConnectionDetails";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -56,6 +58,10 @@ const Creds = () => {
   const dispatch = useAppDispatch();
   const credsData = useAppSelector(getCredsCache);
   const [showConnections, setShowConnections] = useState(false);
+  const [showConnectionDetails, setShowConnectionDetails] = useState(false);
+  const [connectionDetails, setConnectionDetails] = useState<ConnectionsProps>(
+    defaultConnectionData
+  );
 
   const handleCreateCred = () => {
     // @TODO - sdisalvo: Function to create Credential
@@ -77,7 +83,24 @@ const Creds = () => {
         }`}
         data-testid="connections-tab"
       >
-        <Connections setShowConnections={setShowConnections} />
+        <Connections
+          setShowConnections={setShowConnections}
+          setConnectionDetails={setConnectionDetails}
+          setShowConnectionDetails={setShowConnectionDetails}
+        />
+      </IonPage>
+      <IonPage
+        className={`tab-layout connection-details ${
+          showConnectionDetails && connectionDetails !== defaultConnectionData
+            ? "show"
+            : "hide"
+        }`}
+        data-testid="connection-details"
+      >
+        <ConnectionDetails
+          connectionDetails={connectionDetails}
+          setShowConnectionDetails={setShowConnectionDetails}
+        />
       </IonPage>
       <IonPage
         className="tab-layout creds-tab"
