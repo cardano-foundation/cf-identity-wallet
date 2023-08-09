@@ -57,15 +57,15 @@ const ConnectionDetails = ({
         <div className="connection-details-header">
           <div className="connection-details-logo">
             <img
-              src={connectionDetails.issuerLogo}
+              src={connectionDetails?.issuerLogo}
               alt="connection-logo"
             />
           </div>
           <span className="connection-details-issuer">
-            {connectionDetails.issuer}
+            {connectionDetails?.issuer}
           </span>
           <span className="connection-details-date">
-            {formatShortDate(`${connectionDetails.issuanceDate}`)}
+            {formatShortDate(`${connectionDetails?.issuanceDate}`)}
           </span>
         </div>
 
@@ -74,7 +74,7 @@ const ConnectionDetails = ({
           <div className="connection-details-info-block-inner">
             <span className="connection-details-info-block-line">
               <span className="connection-details-info-block-data">
-                {connectionDetails.issuer}
+                {connectionDetails?.issuer}
               </span>
             </span>
           </div>
@@ -85,7 +85,7 @@ const ConnectionDetails = ({
           <div className="connection-details-info-block-inner">
             <span className="connection-details-info-block-line">
               <span className="connection-details-info-block-data">
-                {formatShortDate(`${connectionDetails.issuanceDate}`)}
+                {formatShortDate(`${connectionDetails?.issuanceDate}`)}
               </span>
             </span>
           </div>
@@ -96,7 +96,7 @@ const ConnectionDetails = ({
           <div className="connection-details-info-block-inner">
             <span className="connection-details-info-block-line">
               <span className="connection-details-info-block-data">
-                {connectionDetails.goalCodes ||
+                {connectionDetails?.goalCodes ||
                   i18n.t("connections.details.notavailable")}
               </span>
             </span>
@@ -108,7 +108,7 @@ const ConnectionDetails = ({
           <div className="connection-details-info-block-inner">
             <span className="connection-details-info-block-line">
               <span className="connection-details-info-block-data">
-                {connectionDetails.handshakeProtocol ||
+                {connectionDetails?.handshakeProtocol ||
                   i18n.t("connections.details.notavailable")}
               </span>
             </span>
@@ -120,7 +120,7 @@ const ConnectionDetails = ({
           <div className="connection-details-info-block-inner">
             <span className="connection-details-info-block-line">
               <span className="connection-details-info-block-data">
-                {connectionDetails.requestAttachments ||
+                {connectionDetails?.requestAttachments ||
                   i18n.t("connections.details.notavailable")}
               </span>
             </span>
@@ -132,7 +132,7 @@ const ConnectionDetails = ({
           <div className="connection-details-info-block-inner">
             <span className="connection-details-info-block-line">
               <span className="connection-details-info-block-data">
-                {connectionDetails.serviceEndpoints ||
+                {connectionDetails?.serviceEndpoints ||
                   i18n.t("connections.details.notavailable")}
               </span>
             </span>
@@ -159,7 +159,7 @@ const ConnectionDetails = ({
       {/* <CredsOptions
           optionsIsOpen={optionsIsOpen}
           setOptionsIsOpen={setOptionsIsOpen}
-          id={connectionDetails.id}
+          id={connectionDetails?.id}
         />
         <Alert
           isOpen={alertIsOpen}
