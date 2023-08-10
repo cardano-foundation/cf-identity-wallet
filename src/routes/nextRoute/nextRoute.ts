@@ -49,8 +49,18 @@ const getNextOnboardingRoute = (store: StoreState) => {
   return { pathname: path };
 };
 
+const getNextConnectionDetailsRoute = () => {
+  const path = TabsRoutePath.CREDS;
+  return { pathname: path };
+};
+
 const getNextCreateCryptoAccountRoute = () => {
   const path = RoutePath.GENERATE_SEED_PHRASE;
+  return { pathname: path };
+};
+
+const getNextCredentialsRoute = () => {
+  const path = RoutePath.CONNECTION_DETAILS;
   return { pathname: path };
 };
 
@@ -150,8 +160,16 @@ const nextRoute: Record<string, any> = {
     nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
     updateRedux: [updateStoreAfterCreatePassword],
   },
+  [RoutePath.CONNECTION_DETAILS]: {
+    nextPath: () => getNextConnectionDetailsRoute(),
+    updateRedux: [],
+  },
   [TabsRoutePath.CRYPTO]: {
     nextPath: () => getNextCreateCryptoAccountRoute(),
+    updateRedux: [],
+  },
+  [TabsRoutePath.CREDS]: {
+    nextPath: () => getNextCredentialsRoute(),
     updateRedux: [],
   },
 };

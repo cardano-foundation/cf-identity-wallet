@@ -20,7 +20,6 @@ import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
-import "./CredCardDetails.scss";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -100,7 +99,7 @@ const CredCardDetails = () => {
           <IonIcon
             slot="icon-only"
             icon={ellipsisVertical}
-            color="primary"
+            color="secondary"
           />
         </IonButton>
       </>

@@ -20,6 +20,7 @@ import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
 import { DidCardDetails } from "../ui/pages/DidCardDetails";
 import { CredCardDetails } from "../ui/pages/CredCardDetails";
+import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
@@ -100,6 +101,11 @@ const Routes = () => {
           path={RoutePath.CREATE_PASSWORD}
           exact
           component={CreatePassword}
+        />
+        <AuthenticatedRoute
+          path={RoutePath.CONNECTION_DETAILS}
+          exact
+          component={ConnectionDetails}
         />
         {tabsRoutes.map((tab, index: number) => {
           return (
