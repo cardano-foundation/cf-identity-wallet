@@ -35,7 +35,10 @@ const ConnectionDetails = () => {
   };
 
   return (
-    <IonPage className="page-layout connection-details">
+    <IonPage
+      className="page-layout connection-details"
+      data-testid="connection-details-page"
+    >
       <PageLayout
         header={true}
         title={""}
