@@ -54,6 +54,11 @@ const getNextCreateCryptoAccountRoute = () => {
   return { pathname: path };
 };
 
+const getNextCredentialsRoute = () => {
+  const path = RoutePath.CONNECTION_DETAILS;
+  return { pathname: path };
+};
+
 const getNextSetPasscodeRoute = (store: StoreState) => {
   const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase160;
 
@@ -152,6 +157,10 @@ const nextRoute: Record<string, any> = {
   },
   [TabsRoutePath.CRYPTO]: {
     nextPath: () => getNextCreateCryptoAccountRoute(),
+    updateRedux: [],
+  },
+  [TabsRoutePath.CREDS]: {
+    nextPath: () => getNextCredentialsRoute(),
     updateRedux: [],
   },
 };

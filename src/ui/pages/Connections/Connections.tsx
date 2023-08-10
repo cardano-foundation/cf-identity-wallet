@@ -14,6 +14,7 @@ import {
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { addOutline, hourglassOutline } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { i18n } from "../../../i18n";
@@ -26,9 +27,14 @@ import {
 import "./Connections.scss";
 import { formatShortDate } from "../../../utils";
 import { AddConnection } from "../../components/AddConnection";
-import { useAppSelector } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { connectionStatus } from "../../constants/dictionary";
+import { getStateCache } from "../../../store/reducers/stateCache";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
+import { updateReduxState } from "../../../store/utils";
 
 const ConnectionItem = ({
   item,
@@ -81,6 +87,9 @@ const Connections = ({
   setConnectionDetails,
   setShowConnectionDetails,
 }: ConnectionsComponentProps) => {
+  const history = useHistory();
+  const dispatch = useAppDispatch();
+  const stateCache = useAppSelector(getStateCache);
   const connections: ConnectionsProps[] = useAppSelector(getConnectionsCache);
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
@@ -92,8 +101,16 @@ const Connections = ({
   };
 
   const handleShowConnectionDetails = (item: ConnectionsProps) => {
-    setConnectionDetails(item);
-    setShowConnectionDetails(true);
+    setShowConnectionDetails(false);
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CREDS, data);
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    history.push({
+      pathname: nextPath.pathname,
+      state: item,
+    });
   };
 
   const AdditionalButtons = () => {

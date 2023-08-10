@@ -90,19 +90,6 @@ const Creds = () => {
         />
       </IonPage>
       <IonPage
-        className={`tab-layout connection-details ${
-          showConnectionDetails && connectionDetails !== defaultConnectionData
-            ? "show"
-            : "hide"
-        }`}
-        data-testid="connection-details"
-      >
-        <ConnectionDetails
-          connectionDetails={connectionDetails}
-          setShowConnectionDetails={setShowConnectionDetails}
-        />
-      </IonPage>
-      <IonPage
         className="tab-layout creds-tab"
         data-testid="creds-tab"
       >

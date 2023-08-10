@@ -323,7 +323,8 @@
       "handshake": "Handshake Protocol",
       "attachments": "Request Attachments",
       "endpoints": "Service Endpoints",
-      "notavailable": "N/A"
+      "notavailable": "N/A",
+      "delete": "Delete connection"
     }
   },
   "verifypassword": {

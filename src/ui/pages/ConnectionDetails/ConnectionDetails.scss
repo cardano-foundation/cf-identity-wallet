@@ -1,7 +1,4 @@
 .connection-details {
-  z-index: 300 !important;
-  background: var(--ion-color-light-grey);
-
   &.show {
     bottom: 0;
     top: 0;
@@ -18,17 +15,6 @@
     transition-property: bottom;
     transition-property: top;
     transition-duration: 1s;
-  }
-
-  ion-header ion-toolbar {
-    ion-title {
-      width: 3rem;
-    }
-
-    ion-button,
-    ion-button.md {
-      background: var(--ion-color-light);
-    }
   }
 
   .connection-details-content {
