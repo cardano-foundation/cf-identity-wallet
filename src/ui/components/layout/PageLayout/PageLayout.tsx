@@ -158,7 +158,7 @@ const PageLayout = ({
                     <IonIcon
                       slot="icon-only"
                       icon={actionButtonIcon}
-                      color="primary"
+                      color="secondary"
                     />
                   </IonButton>
                 )}

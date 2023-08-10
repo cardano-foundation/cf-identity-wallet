@@ -82,11 +82,7 @@ const ConnectionItem = ({
   );
 };
 
-const Connections = ({
-  setShowConnections,
-  setConnectionDetails,
-  setShowConnectionDetails,
-}: ConnectionsComponentProps) => {
+const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -101,7 +97,6 @@ const Connections = ({
   };
 
   const handleShowConnectionDetails = (item: ConnectionsProps) => {
-    setShowConnectionDetails(false);
     const data: DataProps = {
       store: { stateCache },
     };

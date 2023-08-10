@@ -99,7 +99,7 @@ const CredCardDetails = () => {
           <IonIcon
             slot="icon-only"
             icon={ellipsisVertical}
-            color="primary"
+            color="secondary"
           />
         </IonButton>
       </>

@@ -1,34 +1,37 @@
-import { IonButton, IonIcon, IonPage, IonToast } from "@ionic/react";
+import { IonButton, IonIcon, IonPage } from "@ionic/react";
 import { ellipsisVertical, trashOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
-import { VerifyPassword } from "../../components/VerifyPassword";
-import { Alert } from "../../components/Alert";
 import { formatShortDate } from "../../../utils";
-import { ConnectionDetailsProps } from "./ConnectionDetails.types";
 import "./ConnectionDetails.scss";
 import { ConnectionsProps } from "../Connections/Connections.types";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
+import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import { getStateCache } from "../../../store/reducers/stateCache";
+import { getNextRoute } from "../../../routes/nextRoute";
+import { updateReduxState } from "../../../store/utils";
+import { ConnectionOptions } from "../../components/ConnectionOptions";
 
-const ConnectionDetails = ({
-  setShowConnectionDetails,
-}: ConnectionDetailsProps) => {
-  const [optionsIsOpen, setOptionsIsOpen] = useState(false);
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-
+const ConnectionDetails = () => {
   const history = useHistory();
+  const dispatch = useAppDispatch();
+  const stateCache = useAppSelector(getStateCache);
   const connectionDetails = history?.location?.state as ConnectionsProps;
+  const [optionsIsOpen, setOptionsIsOpen] = useState(false);
 
-  useEffect(() => {
-    console.log(connectionDetails);
-  }, []);
-
-  const handleDelete = () => {
-    setVerifyPasswordIsOpen(false);
+  const handleDone = () => {
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(
+      RoutePath.CONNECTION_DETAILS,
+      data
+    );
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    history.push(nextPath.pathname);
   };
 
   return (
@@ -36,9 +39,11 @@ const ConnectionDetails = ({
       <PageLayout
         header={true}
         title={""}
-        closeButtonAction={() => setShowConnectionDetails(false)}
+        closeButton={true}
+        closeButtonAction={handleDone}
         closeButtonLabel={`${i18n.t("connections.details.done")}`}
         currentPath={RoutePath.CONNECTION_DETAILS}
+        actionButton={true}
         actionButtonAction={() => {
           setOptionsIsOpen(true);
         }}
@@ -136,7 +141,6 @@ const ConnectionDetails = ({
             color="danger"
             data-testid="connection-details-delete-button"
             className="delete-button"
-            onClick={() => setAlertIsOpen(true)}
           >
             <IonIcon
               slot="icon-only"
@@ -147,38 +151,10 @@ const ConnectionDetails = ({
             {i18n.t("connections.details.delete")}
           </IonButton>
         </div>
-        {/* <CredsOptions
+        <ConnectionOptions
           optionsIsOpen={optionsIsOpen}
           setOptionsIsOpen={setOptionsIsOpen}
-          id={connectionDetails?.id}
         />
-        <Alert
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
-          dataTestId="alert-delete"
-          headerText={i18n.t("creds.card.details.delete.alert.title")}
-          confirmButtonText={`${i18n.t(
-            "creds.card.details.delete.alert.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            "creds.card.details.delete.alert.cancel"
-          )}`}
-          actionConfirm={() => setVerifyPasswordIsOpen(true)}
-        />
-        <VerifyPassword
-          isOpen={verifyPasswordIsOpen}
-          setIsOpen={setVerifyPasswordIsOpen}
-          onVerify={handleDelete}
-        />
-        <IonToast
-          isOpen={showToast}
-          onDidDismiss={() => setShowToast(false)}
-          message={`${i18n.t("creds.card.details.toast.clipboard")}`}
-          color="secondary"
-          position="top"
-          cssClass="credential-card-toast"
-          duration={1500}
-        /> */}
       </PageLayout>
     </IonPage>
   );

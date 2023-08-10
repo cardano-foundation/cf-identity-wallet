@@ -324,7 +324,12 @@
       "attachments": "Request Attachments",
       "endpoints": "Service Endpoints",
       "notavailable": "N/A",
-      "delete": "Delete connection"
+      "delete": "Delete connection",
+      "options": {
+        "title": "Connection options",
+        "edit": "Edit connection",
+        "delete": "Delete connection"
+      }
     }
   },
   "verifypassword": {
