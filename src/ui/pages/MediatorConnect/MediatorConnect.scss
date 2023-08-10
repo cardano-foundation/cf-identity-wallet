@@ -1,0 +1,23 @@
+.page-mediator-connect {
+  ion-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  ion-item {
+    width: 100%;
+  }
+
+  ion-button {
+    margin-top: 20px;
+  }
+
+  ion-textarea {
+    margin-top: 20px;
+    height: 200px;
+    width: 100%;
+    max-width: 500px;
+  }
+}

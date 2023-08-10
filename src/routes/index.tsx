@@ -20,6 +20,7 @@ import { TabsMenu, tabsRoutes } from "../ui/components/navigation/TabsMenu";
 import { RoutePath } from "./paths";
 import { DidCardDetails } from "../ui/pages/DidCardDetails";
 import { CredCardDetails } from "../ui/pages/CredCardDetails";
+import {MediatorConnect} from "../ui/pages/MediatorConnect";
 const AuthenticatedRoute: React.FC<RouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
   const location = useLocation();
@@ -63,6 +64,11 @@ const Routes = () => {
   return (
     <IonReactRouter>
       <IonRouterOutlet animated={false}>
+        <Route
+          path={RoutePath.MEDIATOR_CONNECT}
+          component={MediatorConnect}
+          exact
+        />
         <Route
           path={RoutePath.PASSCODE_LOGIN}
           component={PasscodeLogin}
