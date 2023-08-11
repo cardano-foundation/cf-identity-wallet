@@ -275,7 +275,8 @@ ion-toast {
   }
 
   &.identity-card-toast,
-  &.credential-card-toast {
+  &.credential-card-toast,
+  &.remove-connection-toast {
     &::part(message) {
       color: var(--ion-color-light);
     }

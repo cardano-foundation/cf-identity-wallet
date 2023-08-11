@@ -17,7 +17,7 @@ describe("connectionsCacheSlice", () => {
     ).toEqual(initialState);
   });
 
-  it("should handle setCredsCache", () => {
+  it("should handle setConnectionsCache", () => {
     const connections: ConnectionsProps[] = [
       {
         id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
@@ -35,7 +35,7 @@ describe("connectionsCacheSlice", () => {
   });
 });
 
-describe("getConnectioncCache", () => {
+describe("getConnectionsCache", () => {
   it("should return the connections cache from RootState", () => {
     const state = {
       connectionsCache: {

@@ -1,4 +1,4 @@
-import { IonButton, IonIcon, IonPage } from "@ionic/react";
+import { IonButton, IonIcon, IonPage, IonToast } from "@ionic/react";
 import { ellipsisVertical, trashOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -26,12 +26,11 @@ const ConnectionDetails = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const connectionsData = useAppSelector(getConnectionsCache);
-  const [connectionDetails, setConnectionDetails] = useState(
-    history?.location?.state as ConnectionsProps
-  );
+  const connectionDetails = history?.location?.state as ConnectionsProps;
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const handleDone = () => {
     const data: DataProps = {
@@ -46,12 +45,18 @@ const ConnectionDetails = () => {
   };
 
   const handleDelete = () => {
-    setVerifyPasswordIsOpen(false);
+    setOptionsIsOpen(false);
+    setAlertIsOpen(true);
+  };
+
+  const verifyAction = () => {
+    // @TODO - sdisalvo: Update core
     const updatedConnections = connectionsData.filter(
       (item) => item.id !== connectionDetails.id
     );
     dispatch(setConnectionsCache(updatedConnections));
     handleDone();
+    setShowToast(true);
   };
 
   return (
@@ -178,8 +183,7 @@ const ConnectionDetails = () => {
         <ConnectionOptions
           optionsIsOpen={optionsIsOpen}
           setOptionsIsOpen={setOptionsIsOpen}
-          connectionDetails={connectionDetails}
-          setConnectionDetails={setConnectionDetails}
+          handleDelete={handleDelete}
         />
         <Alert
           isOpen={alertIsOpen}
@@ -197,7 +201,16 @@ const ConnectionDetails = () => {
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
-          onVerify={handleDelete}
+          onVerify={verifyAction}
+        />
+        <IonToast
+          isOpen={showToast}
+          onDidDismiss={() => setShowToast(false)}
+          message={`${i18n.t("connections.details.options.toast")}`}
+          color="secondary"
+          position="top"
+          cssClass="remove-connection-toast"
+          duration={1500}
         />
       </PageLayout>
     </IonPage>
