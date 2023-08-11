@@ -6,7 +6,7 @@ import {
   DidsModule,
   KeyDidResolver,
   KeyType,
-  DidRecord,
+  DidRecord, MediationRecipientModule,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { CapacitorFileSystem } from "./dependencies";
@@ -72,7 +72,7 @@ class AriesAgent {
         dids: new DidsModule({
           registrars: [new LabelledKeyDidRegistrar()],
           resolvers: [new KeyDidResolver()],
-        }),
+        })
       },
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
@@ -85,9 +85,14 @@ class AriesAgent {
     return this.instance;
   }
 
-  async start(): Promise<void> {
+  async start(invitationUrl:string): Promise<void> {
     await this.agent.initialize();
     AriesAgent.ready = true;
+    const { connectionRecord } = await this.agent.oob.receiveInvitationFromUrl(invitationUrl);
+    if (connectionRecord) {
+      await this.agent.connections.returnWhenIsConnected(connectionRecord.id);
+      console.log("Connected!");
+    }
   }
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
