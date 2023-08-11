@@ -14,13 +14,24 @@ import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { ConnectionOptions } from "../../components/ConnectionOptions";
+import { VerifyPassword } from "../../components/VerifyPassword";
+import { Alert } from "../../components/Alert";
+import {
+  getConnectionsCache,
+  setConnectionsCache,
+} from "../../../store/reducers/connectionsCache";
 
 const ConnectionDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const connectionDetails = history?.location?.state as ConnectionsProps;
+  const connectionsData = useAppSelector(getConnectionsCache);
+  const [connectionDetails, setConnectionDetails] = useState(
+    history?.location?.state as ConnectionsProps
+  );
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
 
   const handleDone = () => {
     const data: DataProps = {
@@ -32,6 +43,15 @@ const ConnectionDetails = () => {
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push(nextPath.pathname);
+  };
+
+  const handleDelete = () => {
+    setVerifyPasswordIsOpen(false);
+    const updatedConnections = connectionsData.filter(
+      (item) => item.id !== connectionDetails.id
+    );
+    dispatch(setConnectionsCache(updatedConnections));
+    handleDone();
   };
 
   return (
@@ -144,6 +164,7 @@ const ConnectionDetails = () => {
             color="danger"
             data-testid="connection-details-delete-button"
             className="delete-button"
+            onClick={() => setAlertIsOpen(true)}
           >
             <IonIcon
               slot="icon-only"
@@ -157,6 +178,26 @@ const ConnectionDetails = () => {
         <ConnectionOptions
           optionsIsOpen={optionsIsOpen}
           setOptionsIsOpen={setOptionsIsOpen}
+          connectionDetails={connectionDetails}
+          setConnectionDetails={setConnectionDetails}
+        />
+        <Alert
+          isOpen={alertIsOpen}
+          setIsOpen={setAlertIsOpen}
+          dataTestId="alert-confirm"
+          headerText={i18n.t("connections.details.options.alert.title")}
+          confirmButtonText={`${i18n.t(
+            "connections.details.options.alert.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "connections.details.options.alert.cancel"
+          )}`}
+          actionConfirm={() => setVerifyPasswordIsOpen(true)}
+        />
+        <VerifyPassword
+          isOpen={verifyPasswordIsOpen}
+          setIsOpen={setVerifyPasswordIsOpen}
+          onVerify={handleDelete}
         />
       </PageLayout>
     </IonPage>

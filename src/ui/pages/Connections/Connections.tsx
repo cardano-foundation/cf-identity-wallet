@@ -28,7 +28,6 @@ import "./Connections.scss";
 import { formatShortDate } from "../../../utils";
 import { AddConnection } from "../../components/AddConnection";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { connectionStatus } from "../../constants/dictionary";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
@@ -82,11 +81,14 @@ const ConnectionItem = ({
   );
 };
 
-const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
+const Connections = ({
+  setShowConnections,
+  connectionsData,
+}: ConnectionsComponentProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const connections: ConnectionsProps[] = useAppSelector(getConnectionsCache);
+  const connections: ConnectionsProps[] = connectionsData;
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);

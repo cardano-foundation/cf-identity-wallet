@@ -20,6 +20,7 @@ describe("connectionsCacheSlice", () => {
   it("should handle setCredsCache", () => {
     const connections: ConnectionsProps[] = [
       {
+        id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
         issuer: "Cambridge University",
         issuanceDate: "2017-08-13T19:23:24Z",
         issuerLogo: "logo.png",
@@ -40,12 +41,14 @@ describe("getConnectioncCache", () => {
       connectionsCache: {
         connections: [
           {
+            id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
             issuer: "Cambridge University",
             issuanceDate: "2017-08-13T19:23:24Z",
             issuerLogo: "logo.png",
             status: "pending",
           },
           {
+            id: "did:example:ebfeb1ebc6f1c276ef71212ec22",
             issuer: "Passport Office",
             issuanceDate: "2017-08-13T19:23:24Z",
             issuerLogo: "logo.png",

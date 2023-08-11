@@ -1,4 +1,5 @@
 interface ConnectionsProps {
+  id: string;
   issuer: string;
   issuanceDate: string;
   issuerLogo: string;
@@ -17,6 +18,7 @@ interface ConnectionItemProps {
 
 interface ConnectionsComponentProps {
   setShowConnections: (value: boolean) => void;
+  connectionsData: ConnectionsProps[];
 }
 
 interface MappedConnections {

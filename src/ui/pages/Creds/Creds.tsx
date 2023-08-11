@@ -12,6 +12,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
 import { Connections } from "../Connections";
 import { cardTypes } from "../../constants/dictionary";
+import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -55,6 +56,7 @@ const AdditionalButtons = ({
 const Creds = () => {
   const dispatch = useAppDispatch();
   const credsData = useAppSelector(getCredsCache);
+  const connectionsData = useAppSelector(getConnectionsCache);
   const [showConnections, setShowConnections] = useState(false);
 
   const handleCreateCred = () => {
@@ -77,7 +79,10 @@ const Creds = () => {
         }`}
         data-testid="connections-tab"
       >
-        <Connections setShowConnections={setShowConnections} />
+        <Connections
+          setShowConnections={setShowConnections}
+          connectionsData={connectionsData}
+        />
       </IonPage>
       <IonPage
         className="tab-layout creds-tab"
