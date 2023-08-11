@@ -2,21 +2,21 @@ import CardanoLogo from "../assets/images/CardanoLogo.jpg";
 
 const connectionsFix = [
   {
-    id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
+    id: "did:example:ebfeb1ebc6f1c276ef71212ec20",
     issuer: "Cambridge University",
     issuanceDate: "2017-08-14T19:23:24Z",
     issuerLogo: CardanoLogo,
     status: "pending",
   },
   {
-    id: "did:example:ebfeb1ebc6f1c276ef71212ec22",
+    id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
     issuer: "Passport Office",
     issuanceDate: "2017-08-16T19:23:24Z",
     issuerLogo: CardanoLogo,
     status: "confirmed",
   },
   {
-    id: "did:example:ebfeb1ebc6f1c276ef71212ec23",
+    id: "did:example:ebfeb1ebc6f1c276ef71212ec22",
     issuer: "Cardano Foundation",
     issuanceDate: "2017-08-13T19:23:24Z",
     issuerLogo: CardanoLogo,
