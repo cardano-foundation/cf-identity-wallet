@@ -56,7 +56,6 @@ const AdditionalButtons = ({
 const Creds = () => {
   const dispatch = useAppDispatch();
   const credsData = useAppSelector(getCredsCache);
-  const connectionsData = useAppSelector(getConnectionsCache);
   const [showConnections, setShowConnections] = useState(false);
 
   const handleCreateCred = () => {
@@ -79,10 +78,7 @@ const Creds = () => {
         }`}
         data-testid="connections-tab"
       >
-        <Connections
-          setShowConnections={setShowConnections}
-          connectionsData={connectionsData}
-        />
+        <Connections setShowConnections={setShowConnections} />
       </IonPage>
       <IonPage
         className="tab-layout creds-tab"

@@ -18,7 +18,6 @@ interface ConnectionItemProps {
 
 interface ConnectionsComponentProps {
   setShowConnections: (value: boolean) => void;
-  connectionsData: ConnectionsProps[];
 }
 
 interface MappedConnections {

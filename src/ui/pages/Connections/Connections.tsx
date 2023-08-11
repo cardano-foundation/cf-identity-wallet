@@ -34,6 +34,7 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
+import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 
 const ConnectionItem = ({
   item,
@@ -81,13 +82,11 @@ const ConnectionItem = ({
   );
 };
 
-const Connections = ({
-  setShowConnections,
-  connectionsData,
-}: ConnectionsComponentProps) => {
+const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const connectionsData = useAppSelector(getConnectionsCache);
   const connections: ConnectionsProps[] = connectionsData;
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
