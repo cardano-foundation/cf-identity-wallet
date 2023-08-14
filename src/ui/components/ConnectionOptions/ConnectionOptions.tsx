@@ -18,6 +18,7 @@ import "./ConnectionOptions.scss";
 const ConnectionOptions = ({
   optionsIsOpen,
   setOptionsIsOpen,
+  handleDelete,
 }: ConnectionOptionsProps) => {
   return (
     <>
@@ -42,15 +43,15 @@ const ConnectionOptions = ({
           </IonHeader>
 
           <IonContent
-            className="edit-connection-body"
+            className="connection-options-body"
             color="light"
           >
-            <IonGrid className="edit-connection-main">
+            <IonGrid className="connection-options-main">
               <IonRow>
                 <IonCol size="12">
                   <span
-                    className="edit-connection-option"
-                    data-testid="edit-connection-edit-button"
+                    className="connection-options-option"
+                    data-testid="connection-options-edit-button"
                   >
                     <span>
                       <IonButton shape="round">
@@ -60,13 +61,14 @@ const ConnectionOptions = ({
                         />
                       </IonButton>
                     </span>
-                    <span className="edit-connection-label">
-                      {i18n.t("connections.details.options.edit")}
+                    <span className="connection-options-label">
+                      {i18n.t("connections.details.options.labels.edit")}
                     </span>
                   </span>
                   <span
-                    className="edit-connection-option"
-                    data-testid="edit-connection-delete-button"
+                    className="connection-options-option"
+                    data-testid="connection-options-delete-button"
+                    onClick={handleDelete}
                   >
                     <span>
                       <IonButton shape="round">
@@ -76,8 +78,8 @@ const ConnectionOptions = ({
                         />
                       </IonButton>
                     </span>
-                    <span className="edit-connection-label">
-                      {i18n.t("connections.details.options.delete")}
+                    <span className="connection-options-label">
+                      {i18n.t("connections.details.options.labels.delete")}
                     </span>
                   </span>
                 </IonCol>

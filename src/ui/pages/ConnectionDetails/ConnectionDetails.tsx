@@ -1,4 +1,4 @@
-import { IonButton, IonIcon, IonPage } from "@ionic/react";
+import { IonButton, IonIcon, IonPage, IonToast } from "@ionic/react";
 import { ellipsisVertical, trashOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -14,13 +14,23 @@ import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { ConnectionOptions } from "../../components/ConnectionOptions";
+import { VerifyPassword } from "../../components/VerifyPassword";
+import { Alert } from "../../components/Alert";
+import {
+  getConnectionsCache,
+  setConnectionsCache,
+} from "../../../store/reducers/connectionsCache";
 
 const ConnectionDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const connectionsData = useAppSelector(getConnectionsCache);
   const connectionDetails = history?.location?.state as ConnectionsProps;
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [showToast, setShowToast] = useState(false);
 
   const handleDone = () => {
     const data: DataProps = {
@@ -32,6 +42,21 @@ const ConnectionDetails = () => {
     );
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push(nextPath.pathname);
+  };
+
+  const handleDelete = () => {
+    setOptionsIsOpen(false);
+    setAlertIsOpen(true);
+  };
+
+  const verifyAction = () => {
+    // @TODO - sdisalvo: Update core
+    const updatedConnections = connectionsData.filter(
+      (item) => item.id !== connectionDetails.id
+    );
+    dispatch(setConnectionsCache(updatedConnections));
+    handleDone();
+    setShowToast(true);
   };
 
   return (
@@ -144,6 +169,7 @@ const ConnectionDetails = () => {
             color="danger"
             data-testid="connection-details-delete-button"
             className="delete-button"
+            onClick={() => setAlertIsOpen(true)}
           >
             <IonIcon
               slot="icon-only"
@@ -157,6 +183,34 @@ const ConnectionDetails = () => {
         <ConnectionOptions
           optionsIsOpen={optionsIsOpen}
           setOptionsIsOpen={setOptionsIsOpen}
+          handleDelete={handleDelete}
+        />
+        <Alert
+          isOpen={alertIsOpen}
+          setIsOpen={setAlertIsOpen}
+          dataTestId="alert-confirm"
+          headerText={i18n.t("connections.details.options.alert.title")}
+          confirmButtonText={`${i18n.t(
+            "connections.details.options.alert.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "connections.details.options.alert.cancel"
+          )}`}
+          actionConfirm={() => setVerifyPasswordIsOpen(true)}
+        />
+        <VerifyPassword
+          isOpen={verifyPasswordIsOpen}
+          setIsOpen={setVerifyPasswordIsOpen}
+          onVerify={verifyAction}
+        />
+        <IonToast
+          isOpen={showToast}
+          onDidDismiss={() => setShowToast(false)}
+          message={`${i18n.t("connections.details.options.toast")}`}
+          color="secondary"
+          position="top"
+          cssClass="remove-connection-toast"
+          duration={1500}
         />
       </PageLayout>
     </IonPage>

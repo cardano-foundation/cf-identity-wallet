@@ -327,8 +327,16 @@
       "delete": "Delete connection",
       "options": {
         "title": "Connection options",
-        "edit": "Edit connection",
-        "delete": "Delete connection"
+        "labels": {
+          "edit": "Edit connection",
+          "delete": "Delete connection"
+        },
+        "alert": {
+          "title": "Are you sure you want to delete this connection?",
+          "confirm": "Yes, I'm sure",
+          "cancel": "Cancel"
+        },
+        "toast": "Connection deleted successfully"
       }
     }
   },

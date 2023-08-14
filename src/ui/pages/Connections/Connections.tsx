@@ -28,13 +28,13 @@ import "./Connections.scss";
 import { formatShortDate } from "../../../utils";
 import { AddConnection } from "../../components/AddConnection";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { connectionStatus } from "../../constants/dictionary";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
+import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 
 const ConnectionItem = ({
   item,
@@ -86,7 +86,8 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const connections: ConnectionsProps[] = useAppSelector(getConnectionsCache);
+  const connectionsData: ConnectionsProps[] =
+    useAppSelector(getConnectionsCache);
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
@@ -126,8 +127,8 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   };
 
   useEffect(() => {
-    if (connections.length) {
-      const sortedConnections = [...connections].sort(function (a, b) {
+    if (connectionsData.length) {
+      const sortedConnections = [...connectionsData].sort(function (a, b) {
         const textA = a.issuer.toUpperCase();
         const textB = b.issuer.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
@@ -147,7 +148,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
       }));
       setMappedConnections(mapToArray);
     }
-  }, []);
+  }, [connectionsData]);
 
   const AlphabeticList = ({ items }: { items: ConnectionsProps[] }) => {
     return (
@@ -186,7 +187,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
       menuButton={true}
       additionalButtons={<AdditionalButtons />}
     >
-      {connections.length ? (
+      {connectionsData.length ? (
         <>
           <IonSearchbar
             placeholder={`${i18n.t("connections.tab.searchconnections")}`}

@@ -128,4 +128,102 @@ describe("ConnectionDetails Page", () => {
       expect(backdrop).not.toBeInTheDocument();
     });
   });
+
+  test.skip("Remove connection using red button ConnectionOptions", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.CREDS}
+            component={Creds}
+          />
+
+          <Route
+            path={RoutePath.CONNECTION_DETAILS}
+            component={ConnectionDetails}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
+
+    act(() => {
+      fireEvent.click(getByText(connectionsFix[0].issuer));
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("connection-details-delete-button"));
+    });
+
+    await waitFor(() =>
+      expect(
+        getByText(EN_TRANSLATIONS.connections.details.options.alert.title)
+      ).toBeVisible()
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("alert-confirm"));
+    });
+
+    await waitFor(() =>
+      expect(getByText(EN_TRANSLATIONS.verifypassword.title)).toBeVisible()
+    );
+  });
+
+  test.skip("Remove connection opening ConnectionOptions modal", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.CREDS}
+            component={Creds}
+          />
+
+          <Route
+            path={RoutePath.CONNECTION_DETAILS}
+            component={ConnectionDetails}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
+
+    act(() => {
+      fireEvent.click(getByText(connectionsFix[0].issuer));
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("action-button"));
+    });
+
+    await waitFor(() =>
+      expect(
+        getByText(EN_TRANSLATIONS.connections.details.options.title)
+      ).toBeVisible()
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("connection-options-delete-button"));
+    });
+
+    await waitFor(() =>
+      expect(
+        getByText(EN_TRANSLATIONS.connections.details.options.alert.title)
+      ).toBeVisible()
+    );
+  });
 });

@@ -66,6 +66,7 @@ const defaultCryptoAccountData: CryptoAccountProps = {
 };
 
 const defaultConnectionData: ConnectionsProps = {
+  id: "",
   issuer: "",
   issuanceDate: "",
   issuerLogo: "",

@@ -1,4 +1,5 @@
 interface ConnectionsProps {
+  id: string;
   issuer: string;
   issuanceDate: string;
   issuerLogo: string;
