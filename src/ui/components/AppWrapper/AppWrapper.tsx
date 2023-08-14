@@ -20,6 +20,7 @@ import {
 } from "../../../core/storage/preferences";
 import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
+import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -44,7 +45,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const storedIdentities = await AriesAgent.agent.getIdentities();
     // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
-    const storedCryptoAccounts: CryptoAccountProps[] = [];
+    const storedCryptoAccounts: CryptoAccountProps[] = cryptoAccountsFix;
 
     try {
       const hideCryptoBalances = await PreferencesStorage.get(
