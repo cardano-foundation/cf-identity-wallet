@@ -12,49 +12,54 @@ import {
 import "./MediatorConnect.scss";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {AriesAgent} from "../../../core/aries/ariesAgent";
 
 const MediatorConnect = () => {
-  const [agent, setAgent] = useState(undefined);
-  const [externalAgent, setExternalAgent] = useState("");
+  const [invitationLink, setInvitationLink] = useState( localStorage.getItem('invitationLink') || '');
   const [mediatorAgent, setMediatorAgent] = useState("");
   const [consoleOutput, setConsoleOutput] = useState<string[]>([]);
   const [messageToSend, setMessageToSend] = useState("");
   const [connected, setIsConnected] = useState(false);
+
+  useEffect(() => {
+    document.addEventListener("aries-agent-connected", () => {
+      console.log("AriesAgent.ready connected!!");
+      const currentTime = new Date();
+      const formattedTime = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}\t | `;
+      setConsoleOutput(prev => [`${formattedTime} Id-Wallet agent ready: ${AriesAgent.ready}`, ...prev]);
+      setIsConnected(true);
+    });
+  }, []);
 
   const connectAgents = async () => {
     const currentTime = new Date();
     const formattedTime = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()}\t | `;
 
     if (mediatorAgent.length) {
-      /*
-      const newAgent = AriesAgent.agentWithMediator(mediatorAgent);
-      newAgent.start().then(() => {
-        const result = `${formattedTime} Connected to mediator: ${mediatorAgent}`;
-        setConsoleOutput(prev => [result, ...prev]);
-        setIsConnected(true);
-      }).catch(e => {
-        console.log("error:");
-        console.log(e);
-        setConsoleOutput(prev => [`${formattedTime} ❌ Error on agent start`, ...prev]);
-      });*/
+
     } else {
       setConsoleOutput(prev => [`${formattedTime} ❌ Mediator invitation link not set`, ...prev]);
     }
   };
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     const currentTime = new Date();
     const formattedTime = `${currentTime.getHours()}:${currentTime.getMinutes()}:${currentTime.getSeconds()} >> `;
 
     if (connected){
-      setConsoleOutput(prev => [`${formattedTime} Message sent: ${messageToSend}`, ...prev]);
+      await AriesAgent.agent.sendMessage(messageToSend);
+      setConsoleOutput(prev => [`${formattedTime} 💬 Message sent: ${messageToSend}`, ...prev]);
       setMessageToSend("");
     } else {
       setConsoleOutput(prev => [`${formattedTime} ❌ Not connected yet`, ...prev]);
     }
   };
+
+  const handleSetInvitationLink = (invLink: string) => {
+    setInvitationLink(invLink);
+    localStorage.setItem('invitationLink', invLink);
+  }
 
   return (
     <IonPage className="page-mediator-connect onboarding safe-area">
@@ -65,12 +70,12 @@ const MediatorConnect = () => {
           </IonToolbar>
         </IonHeader>
         <IonItem>
-          <IonLabel position="floating">Mediator (Agent) - {connected ? "Is Connected" : "Not Connected"}</IonLabel>
+          <IonLabel position="floating">Mediator (Agent) - {connected ? "Is Connected ✅" : "Not Connected ❌"}</IonLabel>
           <IonInput value={mediatorAgent} onIonChange={e => setMediatorAgent(e.detail.value!)}></IonInput>
         </IonItem>
         <IonItem>
           <IonLabel position="floating">Faber Invitation Link</IonLabel>
-          <IonInput value={externalAgent} onIonChange={e => setExternalAgent(e.detail.value!)}></IonInput>
+          <IonInput value={invitationLink} onIonChange={e => handleSetInvitationLink(e.detail.value!)}></IonInput>
         </IonItem>
         <IonButton expand="block" onClick={connectAgents}>Connect</IonButton>
         <IonRow>

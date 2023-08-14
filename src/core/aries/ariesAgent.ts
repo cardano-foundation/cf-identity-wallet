@@ -61,6 +61,7 @@ class AriesAgent {
   private static instance: AriesAgent;
   private readonly agent: Agent;
   static ready = false;
+  connectionRecordId:string;
 
   private constructor() {
     this.agent = new Agent({
@@ -76,6 +77,7 @@ class AriesAgent {
       },
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
+    this.connectionRecordId = '';
   }
 
   static get agent() {
@@ -87,12 +89,18 @@ class AriesAgent {
 
   async start(invitationUrl:string): Promise<void> {
     await this.agent.initialize();
-    AriesAgent.ready = true;
     const { connectionRecord } = await this.agent.oob.receiveInvitationFromUrl(invitationUrl);
     if (connectionRecord) {
-      await this.agent.connections.returnWhenIsConnected(connectionRecord.id);
+      AriesAgent.ready = true;
+      const event = new CustomEvent("aries-agent-connected");
+      document.dispatchEvent(event);
       console.log("Connected!");
+      this.connectionRecordId = connectionRecord.id;
     }
+  }
+
+  public async sendMessage(message: string) {
+    await this.agent.basicMessages.sendMessage(this.connectionRecordId, message)
   }
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
