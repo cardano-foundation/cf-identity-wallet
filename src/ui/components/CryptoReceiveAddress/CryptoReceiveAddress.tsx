@@ -10,6 +10,7 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
+import { useState } from "react";
 import { Share } from "@capacitor/share";
 import { QRCode } from "react-qrcode-logo";
 import { copyOutline, openOutline } from "ionicons/icons";
@@ -23,13 +24,14 @@ const CryptoReceiveAddress = ({
   setIsOpen,
   accountData,
 }: CryptoReceiveAddressProps) => {
+  const [showToast, setShowToast] = useState(false);
   return (
     <IonModal
       isOpen={isOpen}
-      initialBreakpoint={0.66}
-      breakpoints={[0, 0.66]}
-      className="page-layout share-identity"
-      data-testid="share-identity-modal"
+      initialBreakpoint={0.9}
+      breakpoints={[0, 0.9]}
+      className="page-layout receive-crypto-modal"
+      data-testid="receive-crypto-modal"
       onDidDismiss={() => setIsOpen(false)}
     >
       <div className="modal">
@@ -38,21 +40,21 @@ const CryptoReceiveAddress = ({
           className="ion-no-border"
         >
           <IonToolbar color="light">
-            <IonTitle data-testid="share-identity-title">
+            <IonTitle data-testid="receive-crypto-modal-title">
               <h2>{i18n.t("crypto.receivemodal.title")}</h2>
             </IonTitle>
           </IonToolbar>
         </IonHeader>
 
         <IonContent
-          className="share-identity-body"
+          className="receive-crypto-modal-body"
           color="light"
         >
           <IonGrid>
             <IonRow>
               <IonCol size="12">
                 <QRCode
-                  data-testid="share-identity-qr-code"
+                  data-testid="receive-crypto-modal-qr-code"
                   value={accountData.address}
                   size={250}
                   fgColor={"black"}
@@ -67,40 +69,81 @@ const CryptoReceiveAddress = ({
               </IonCol>
             </IonRow>
             <IonRow>
-              <IonCol size="12">
-                <span
-                  className="share-identity-option"
-                  data-testid="share-identity-copy-button"
-                  onClick={() => writeToClipboard(accountData.address)}
-                >
-                  <span>
-                    <IonButton shape="round">
-                      <IonIcon
-                        slot="icon-only"
-                        icon={copyOutline}
-                      />
-                    </IonButton>
-                  </span>
-                  <span className="share-identity-label">
-                    {i18n.t("crypto.receivemodal.copykey")}
-                  </span>
-                </span>
+              <IonCol
+                size="12"
+                className="receive-crypto-modal-content"
+              >
+                <div className="receive-crypto-modal-info-block">
+                  <div className="receive-crypto-modal-info-block-inner">
+                    <span
+                      className="receive-crypto-modal-info-block-line"
+                      data-testid="copy-button-type"
+                      onClick={() => {
+                        writeToClipboard(accountData.address);
+                        setShowToast(true);
+                      }}
+                    >
+                      <span className="receive-crypto-modal-info-block-data">
+                        {accountData.address.substring(0, 22)}...
+                      </span>
+                      <span>
+                        <IonButton
+                          shape="round"
+                          className="copy-button"
+                        >
+                          <IonIcon
+                            slot="icon-only"
+                            icon={copyOutline}
+                          />
+                        </IonButton>
+                      </span>
+                    </span>
+                  </div>
+                </div>
+                <div className="receive-crypto-modal-info-block">
+                  <h3>{i18n.t("crypto.receivemodal.derivationpath")}</h3>
+                  <div className="receive-crypto-modal-info-block-inner">
+                    <span
+                      className="receive-crypto-modal-info-block-line"
+                      data-testid="copy-button-type"
+                      onClick={() => {
+                        writeToClipboard(accountData.address);
+                        setShowToast(true);
+                      }}
+                    >
+                      <span className="receive-crypto-modal-info-block-data">
+                        {accountData.derivationPath}
+                      </span>
+                      <span>
+                        <IonButton
+                          shape="round"
+                          className="copy-button"
+                        >
+                          <IonIcon
+                            slot="icon-only"
+                            icon={copyOutline}
+                          />
+                        </IonButton>
+                      </span>
+                    </span>
+                  </div>
+                </div>
               </IonCol>
             </IonRow>
           </IonGrid>
-          <div className="share-identity-divider">
-            <span className="share-identity-divider-line" />
-            <span className="share-identity-divider-text">
+          <div className="receive-crypto-modal-divider">
+            <span className="receive-crypto-modal-divider-line" />
+            <span className="receive-crypto-modal-divider-text">
               {i18n.t("crypto.receivemodal.divider")}
             </span>
-            <span className="share-identity-divider-line" />
+            <span className="receive-crypto-modal-divider-line" />
           </div>
           <IonGrid>
             <IonRow>
               <IonCol size="12">
                 <span
-                  className="share-identity-option"
-                  data-testid="share-identity-share-button"
+                  className="receive-crypto-modal-option"
+                  data-testid="receive-crypto-modal-share-button"
                   onClick={async () => {
                     await Share.share({
                       text: accountData.address,
@@ -115,7 +158,7 @@ const CryptoReceiveAddress = ({
                       />
                     </IonButton>
                   </span>
-                  <span className="share-identity-info-block-data">
+                  <span className="receive-crypto-modal-info-block-data">
                     {i18n.t("crypto.receivemodal.more")}
                   </span>
                 </span>

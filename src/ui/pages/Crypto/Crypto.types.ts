@@ -18,6 +18,7 @@ interface CryptoTransactionsProps {
 
 interface CryptoAccountProps {
   address: string;
+  derivationPath: string;
   name: string;
   blockchain: string;
   currency: string;

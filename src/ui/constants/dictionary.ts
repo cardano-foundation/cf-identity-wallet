@@ -46,6 +46,7 @@ const defaultCredentialsCardData = {
 
 const defaultCryptoAccountData: CryptoAccountProps = {
   address: "",
+  derivationPath: "",
   name: "",
   blockchain: "",
   currency: "",

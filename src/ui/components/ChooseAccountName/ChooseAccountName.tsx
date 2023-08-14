@@ -55,6 +55,7 @@ const ChooseAccountName = ({
       // @TODO - sdisalvo: remember to remove hardcoded values below this point
       address:
         "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg" + randomizer,
+      derivationPath: "m/1852'/1815'/0'/1/32",
       blockchain: "Cardano",
       currency: "ADA",
       logo: CardanoLogo,
