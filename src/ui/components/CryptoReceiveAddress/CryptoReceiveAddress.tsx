@@ -15,7 +15,12 @@ import {
 import { useState } from "react";
 import { Share } from "@capacitor/share";
 import { QRCode } from "react-qrcode-logo";
-import { copyOutline, openOutline, refreshOutline } from "ionicons/icons";
+import {
+  copyOutline,
+  openOutline,
+  refreshOutline,
+  qrCodeOutline,
+} from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { CryptoReceiveAddressProps } from "./CryptoReceiveAddress.types";
 import { writeToClipboard } from "../../../utils/clipboard";
@@ -27,11 +32,19 @@ const CryptoReceiveAddress = ({
   accountData,
 }: CryptoReceiveAddressProps) => {
   const [showToast, setShowToast] = useState(false);
+  const [hideDetails, setHideDetails] = useState(false);
+
+  const refresh = () => {
+    setHideDetails(true);
+    setTimeout(() => {
+      setHideDetails(false);
+    }, 500);
+  };
   return (
     <IonModal
       isOpen={isOpen}
-      initialBreakpoint={0.8}
-      breakpoints={[0, 0.8]}
+      initialBreakpoint={0.85}
+      breakpoints={[0, 0.85]}
       className="page-layout receive-crypto-modal"
       data-testid="receive-crypto-modal"
       onDidDismiss={() => setIsOpen(false)}
@@ -49,6 +62,7 @@ const CryptoReceiveAddress = ({
               <IonButton
                 shape="round"
                 className="refresh-button"
+                onClick={() => refresh()}
               >
                 <IonIcon
                   slot="icon-only"
@@ -63,7 +77,7 @@ const CryptoReceiveAddress = ({
           className="receive-crypto-modal-body"
           color="light"
         >
-          <IonGrid>
+          <IonGrid className={hideDetails ? "hide" : ""}>
             <IonRow>
               <IonCol size="12">
                 <QRCode
@@ -79,6 +93,14 @@ const CryptoReceiveAddress = ({
                   logoOpacity={1}
                   quietZone={10}
                 />
+                <span className="receive-crypto-modal-blur-overlay-container">
+                  <span className="receive-crypto-modal-blur-overlay-inner">
+                    <IonIcon
+                      slot="icon-only"
+                      icon={qrCodeOutline}
+                    />
+                  </span>
+                </span>
               </IonCol>
             </IonRow>
             <IonRow>
@@ -97,7 +119,9 @@ const CryptoReceiveAddress = ({
                       }}
                     >
                       <span className="receive-crypto-modal-info-block-data">
-                        {accountData.address.substring(0, 22)}...
+                        {hideDetails
+                          ? "••••••••••••••••••"
+                          : `${accountData.address.substring(0, 22)}...`}
                       </span>
                       <span>
                         <IonButton
@@ -125,7 +149,9 @@ const CryptoReceiveAddress = ({
                       }}
                     >
                       <span className="receive-crypto-modal-info-block-data">
-                        {accountData.derivationPath}
+                        {hideDetails
+                          ? "••••••••••••••••••"
+                          : accountData.derivationPath}
                       </span>
                       <span>
                         <IonButton
