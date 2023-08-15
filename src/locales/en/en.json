@@ -455,7 +455,10 @@
       "title": "Receive",
       "derivationpath": "Derivation path",
       "divider": "or",
-      "more": "More share options"
+      "more": "More share options",
+      "toast": {
+        "clipboard": "Copied to clipboard"
+      }
     }
   }
 }

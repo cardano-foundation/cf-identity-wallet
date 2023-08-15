@@ -209,7 +209,7 @@ const ConnectionDetails = () => {
           message={`${i18n.t("connections.details.options.toast")}`}
           color="secondary"
           position="top"
-          cssClass="remove-connection-toast"
+          cssClass="confirmation-toast"
           duration={1500}
         />
       </PageLayout>

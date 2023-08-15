@@ -1,5 +1,6 @@
 import {
   IonButton,
+  IonButtons,
   IonCol,
   IonContent,
   IonGrid,
@@ -8,12 +9,13 @@ import {
   IonModal,
   IonRow,
   IonTitle,
+  IonToast,
   IonToolbar,
 } from "@ionic/react";
 import { useState } from "react";
 import { Share } from "@capacitor/share";
 import { QRCode } from "react-qrcode-logo";
-import { copyOutline, openOutline } from "ionicons/icons";
+import { copyOutline, openOutline, refreshOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { CryptoReceiveAddressProps } from "./CryptoReceiveAddress.types";
 import { writeToClipboard } from "../../../utils/clipboard";
@@ -28,8 +30,8 @@ const CryptoReceiveAddress = ({
   return (
     <IonModal
       isOpen={isOpen}
-      initialBreakpoint={0.9}
-      breakpoints={[0, 0.9]}
+      initialBreakpoint={0.8}
+      breakpoints={[0, 0.8]}
       className="page-layout receive-crypto-modal"
       data-testid="receive-crypto-modal"
       onDidDismiss={() => setIsOpen(false)}
@@ -43,6 +45,17 @@ const CryptoReceiveAddress = ({
             <IonTitle data-testid="receive-crypto-modal-title">
               <h2>{i18n.t("crypto.receivemodal.title")}</h2>
             </IonTitle>
+            <IonButtons slot="primary">
+              <IonButton
+                shape="round"
+                className="refresh-button"
+              >
+                <IonIcon
+                  slot="icon-only"
+                  icon={refreshOutline}
+                ></IonIcon>
+              </IonButton>
+            </IonButtons>
           </IonToolbar>
         </IonHeader>
 
@@ -107,7 +120,7 @@ const CryptoReceiveAddress = ({
                       className="receive-crypto-modal-info-block-line"
                       data-testid="copy-button-type"
                       onClick={() => {
-                        writeToClipboard(accountData.address);
+                        writeToClipboard(accountData.derivationPath);
                         setShowToast(true);
                       }}
                     >
@@ -167,6 +180,15 @@ const CryptoReceiveAddress = ({
           </IonGrid>
         </IonContent>
       </div>
+      <IonToast
+        isOpen={showToast}
+        onDidDismiss={() => setShowToast(false)}
+        message={`${i18n.t("crypto.receivemodal.toast.clipboard")}`}
+        color="secondary"
+        position="top"
+        cssClass="confirmation-toast"
+        duration={1500}
+      />
     </IonModal>
   );
 };

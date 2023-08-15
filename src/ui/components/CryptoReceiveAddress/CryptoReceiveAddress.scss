@@ -1,6 +1,21 @@
 .receive-crypto-modal {
-  h2 {
-    text-align: left;
+  ion-toolbar {
+    margin: 0.625rem auto;
+
+    h2 {
+      text-align: left;
+    }
+
+    .refresh-button {
+      --background: var(--ion-color-light-grey);
+      width: 2.8125rem;
+      height: 2.8125rem;
+
+      ion-icon {
+        width: 1.9375rem;
+        height: 1.9375rem;
+      }
+    }
   }
 
   ion-grid,
@@ -45,7 +60,7 @@
 
   .receive-crypto-modal-divider {
     display: flex;
-    margin-bottom: 1rem;
+    margin: 1.56rem auto;
 
     .receive-crypto-modal-divider-line {
       border-bottom: 1px solid var(--ion-color-dark-grey);
@@ -59,14 +74,16 @@
   }
 
   .receive-crypto-modal-content {
-    margin: 1.56rem 0;
+    margin-top: 1.56rem;
   }
 
   .receive-crypto-modal-info-block {
     margin-inline: calc((100% - 270px) / 2);
 
     h3 {
-      margin: 1.56rem 0.62rem;
+      margin-top: 1.56rem;
+      margin-bottom: 0.63rem;
+      text-align: center;
     }
     .receive-crypto-modal-info-block-inner {
       display: flex;

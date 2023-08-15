@@ -350,7 +350,7 @@ const CredCardDetails = () => {
           message={`${i18n.t("creds.card.details.toast.clipboard")}`}
           color="secondary"
           position="top"
-          cssClass="credential-card-toast"
+          cssClass="confirmation-toast"
           duration={1500}
         />
       </TabLayout>

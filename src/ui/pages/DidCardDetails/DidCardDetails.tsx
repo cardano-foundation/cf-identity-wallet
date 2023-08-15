@@ -374,7 +374,7 @@ const DidCardDetails = () => {
           message={`${i18n.t("dids.card.details.toast.clipboard")}`}
           color="secondary"
           position="top"
-          cssClass="identity-card-toast"
+          cssClass="confirmation-toast"
           duration={1500}
         />
       </TabLayout>

@@ -274,9 +274,7 @@ ion-toast {
     text-align: center;
   }
 
-  &.identity-card-toast,
-  &.credential-card-toast,
-  &.remove-connection-toast {
+  &.confirmation-toast {
     &::part(message) {
       color: var(--ion-color-light);
     }
