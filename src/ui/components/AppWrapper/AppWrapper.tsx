@@ -1,4 +1,4 @@
-import { useEffect, ReactNode } from "react";
+import { useEffect, ReactNode, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
@@ -23,6 +23,7 @@ import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
+  const [initialised, setInitialised] = useState(false);
 
   useEffect(() => {
     initApp();
@@ -37,6 +38,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
   const initApp = async () => {
+    // Start agent setup and await at the end (so delays in KERIA etc do not impact our Redux checks)
+    const agentSetupPromise = AriesAgent.agent.start();
+
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
@@ -68,9 +72,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setCredsCache(filteredCredsFix));
     dispatch(setCryptoAccountsCache(storedCryptoAccounts));
     dispatch(setConnectionsCache(connectionsFix));
+    
+    await agentSetupPromise;
+    setInitialised(true);
   };
 
-  return <>{props.children}</>;
+  return initialised ? <>{props.children}</> : <></>;
 };
 
 export { AppWrapper };

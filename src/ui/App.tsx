@@ -1,3 +1,4 @@
+import { StrictMode } from "react";
 import { setupIonicReact, IonApp } from "@ionic/react";
 import { Routes } from "../routes";
 import "./styles/ionic.scss";
@@ -10,7 +11,9 @@ const App = () => {
   return (
     <IonApp>
       <AppWrapper>
-        <Routes />
+        <StrictMode>
+          <Routes />
+        </StrictMode>
       </AppWrapper>
     </IonApp>
   );

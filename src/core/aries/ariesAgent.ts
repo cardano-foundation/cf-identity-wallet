@@ -22,6 +22,7 @@ import { LabelledKeyDidRegistrar } from "./dids";
 import { IdentityType } from "./ariesAgent.types";
 import type { IdentityDetails, IdentityShortDetails } from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
+import { SignifyModule } from "./modules/signify";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -73,6 +74,7 @@ class AriesAgent {
           registrars: [new LabelledKeyDidRegistrar()],
           resolvers: [new KeyDidResolver()],
         }),
+        signify: new SignifyModule()
       },
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
@@ -87,6 +89,7 @@ class AriesAgent {
 
   async start(): Promise<void> {
     await this.agent.initialize();
+    await this.agent.modules.signify.start();
     AriesAgent.ready = true;
   }
 
@@ -138,6 +141,10 @@ class AriesAgent {
     type: IdentityType,
     displayName: string
   ): Promise<string | undefined> {
+    if (type === IdentityType.KERI) {
+      // @TODO - foconnor: We need to create an Aries record here to store display name etc
+      return this.agent.modules.signify.createIdentifier();
+    }
     const result = await this.agent.dids.create({
       method: type,
       displayName: displayName,
@@ -151,6 +158,22 @@ class AriesAgent {
     did?: string
   ): Promise<IdentityShortDetails[]> {
     const identities: IdentityShortDetails[] = [];
+
+    if (!method && !did) {
+      const aids = await this.agent.modules.signify.getIdentifiersDetailed();
+      for (let i = 0; i < aids.length; i++) {
+        const aid = aids[i];
+        // @TODO - foconnor: We need wrapper records in Aries to map to these with display name, created at, colors etc for UI.
+        identities.push({
+          method: IdentityType.KERI,
+          displayName: aid.name.substr(0, 10),  // @TODO - foconnor: This is not the user defined one.
+          id: aid.prefix,
+          createdAtUTC: aid.state.dt,
+          colors: PRESET_COLORS[i % PRESET_COLORS.length],
+        });
+      }
+    }
+
     const dids = await this.agent.dids.getCreatedDids({ method, did });
     for (let i = 0; i < dids.length; i++) {
       const did = dids[i];
