@@ -1,7 +1,6 @@
-import { injectable, utils } from "@aries-framework/core";
+import { utils } from "@aries-framework/core";
 import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
 
-@injectable()
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
   static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";

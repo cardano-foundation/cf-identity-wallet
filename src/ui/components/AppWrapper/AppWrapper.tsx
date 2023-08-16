@@ -38,8 +38,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
   const initApp = async () => {
-    // Start agent setup and await at the end (so delays in KERIA etc do not impact our Redux checks)
-    const agentSetupPromise = AriesAgent.agent.start();
+    await AriesAgent.agent.start();
 
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
@@ -73,7 +72,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setCryptoAccountsCache(storedCryptoAccounts));
     dispatch(setConnectionsCache(connectionsFix));
     
-    await agentSetupPromise;
     setInitialised(true);
   };
 

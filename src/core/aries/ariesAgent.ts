@@ -19,8 +19,8 @@ import {
 } from "./modules";
 import { HttpOutboundTransport } from "./transports";
 import { LabelledKeyDidRegistrar } from "./dids";
-import { IdentityType } from "./ariesAgent.types";
-import type { IdentityDetails, IdentityShortDetails } from "./ariesAgent.types";
+import { GetIdentityResult, IdentityType } from "./ariesAgent.types";
+import type { DIDDetails, IdentityShortDetails } from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
 
@@ -44,7 +44,7 @@ const agentDependencies: AgentDependencies = {
 // @TODO - foconnor: Once color stories in place this should be stored in DB.
 const PRESET_COLORS: [string, string][] = [
   ["#92FFC0", "#47FF94"],
-  ["#92FFC0", "#47FF94"],
+  ["#FFBC60", "#FFA21F"],
   ["#D9EDDF", "#ACD8B9"],
   ["#47E0FF", "#00C6EF"],
   ["#FF9780", "#FF5833"],
@@ -159,21 +159,6 @@ class AriesAgent {
   ): Promise<IdentityShortDetails[]> {
     const identities: IdentityShortDetails[] = [];
 
-    if (!method && !did) {
-      const aids = await this.agent.modules.signify.getIdentifiersDetailed();
-      for (let i = 0; i < aids.length; i++) {
-        const aid = aids[i];
-        // @TODO - foconnor: We need wrapper records in Aries to map to these with display name, created at, colors etc for UI.
-        identities.push({
-          method: IdentityType.KERI,
-          displayName: aid.name.substr(0, 10),  // @TODO - foconnor: This is not the user defined one.
-          id: aid.prefix,
-          createdAtUTC: aid.state.dt,
-          colors: PRESET_COLORS[i % PRESET_COLORS.length],
-        });
-      }
-    }
-
     const dids = await this.agent.dids.getCreatedDids({ method, did });
     for (let i = 0; i < dids.length; i++) {
       const did = dids[i];
@@ -190,27 +175,84 @@ class AriesAgent {
       }
     }
 
+    if (!method && !did) {
+      const aids = await this.agent.modules.signify.getIdentifiersDetailed();
+      for (let i = 0; i < aids.length; i++) {
+        const aid = aids[i];
+        // @TODO - foconnor: We need wrapper records in Aries to map to these with display name, created at, colors etc for UI.
+        identities.push({
+          method: IdentityType.KERI,
+          displayName: aid.name.substr(0, 10),  // @TODO - foconnor: This is not the user defined one.
+          id: aid.prefix,
+          createdAtUTC: aid.state.dt,
+          colors: PRESET_COLORS[(i + dids.length) % PRESET_COLORS.length],
+        });
+      }
+    }
+
     return identities;
   }
 
-  async getIdentity(did: string): Promise<IdentityDetails | undefined> {
-    const storedDid = await this.agent.dids.getCreatedDids({ did });
-    if (!(storedDid && storedDid.length)) {
-      return undefined;
-    }
+  async getIdentity(identifier: string): Promise<GetIdentityResult | undefined> {
+    if (identifier.startsWith("did:")) {
+      const storedDid = await this.agent.dids.getCreatedDids({ did: identifier });
+      if (!(storedDid && storedDid.length)) {
+        return undefined;
+      }
 
-    const method = <IdentityType>storedDid[0].getTag("method")?.toString();
-    if (!method) {
-      throw new Error(`${AriesAgent.DID_MISSING_METHOD} ${did}`);
-    }
-    if (method === IdentityType.KEY) {
-      return this.getIdentityFromDidKeyRecord(storedDid[0]);
+      const method = <IdentityType>storedDid[0].getTag("method")?.toString();
+      if (!method) {
+        throw new Error(`${AriesAgent.DID_MISSING_METHOD} ${identifier}`);
+      }
+      if (method === IdentityType.KEY) {
+        return {
+          type: IdentityType.KEY,
+          result: await this.getIdentityFromDidKeyRecord(storedDid[0])
+        };
+      }
+    } else {
+      // @TODO - foconnor: This is hugely inefficient but will change once we store
+      // enough information in the database to map the identifiers.
+      const aids = await this.agent.modules.signify.getIdentifiersDetailed();
+      for (let i = 0; i < aids.length; i++) {
+        const aid = aids[i];
+        if (aid.prefix === identifier) {
+          return {
+            type: IdentityType.KERI,
+            result: {
+              id: aid.prefix,
+              method: IdentityType.KERI,
+              displayName: aid.name.substr(0, 10),  // @TODO - foconnor: This is not the user defined one.
+              createdAtUTC: aid.state.dt,  // @TODO - foconnor: This is actually of the last event, so this is wrong - OK for now.
+              colors: PRESET_COLORS[0],
+              sequenceNumber: aid.state.s,
+              priorEventSaid: aid.state.p,
+              eventSaid: aid.state.d,
+              eventTimestamp: aid.state.dt,
+              eventType: aid.state.et,
+              keySigningThreshold: aid.state.kt,
+              signingKeys: aid.state.k,
+              nextKeysThreshold: aid.state.nt,
+              nextKeys: aid.state.n,
+              backerThreshold: aid.state.bt,
+              backerAids: aid.state.b,
+              lastEstablishmentEvent: {
+                said: aid.state.ee.d,
+                sequence: aid.state.ee.s,
+                backerToAdd: aid.state.ee.ba,
+                backerToRemove: aid.state.ee.br,
+              },
+            }
+          }
+        }
+      }
+      return undefined;
     }
   }
 
   private async getIdentityFromDidKeyRecord(
     record: DidRecord
-  ): Promise<IdentityDetails> {
+  ): Promise<DIDDetails> {
     const displayName = record.getTag("displayName")?.toString();
     if (!displayName) {
       throw new Error(`${AriesAgent.DID_MISSING_DISPLAY_NAME} ${record.did}`);
@@ -234,10 +276,10 @@ class AriesAgent {
       method: IdentityType.KEY,
       displayName,
       createdAtUTC: record.createdAt.toISOString(),
+      colors: PRESET_COLORS[0],
       controller: record.did,
       keyType: signingKey.type.toString(),
       publicKeyBase58: signingKey.publicKeyBase58,
-      colors: PRESET_COLORS[0],
     };
   }
 }
