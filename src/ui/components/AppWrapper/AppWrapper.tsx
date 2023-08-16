@@ -20,6 +20,7 @@ import {
 } from "../../../core/storage/preferences";
 import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
+import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);

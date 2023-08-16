@@ -1,12 +1,14 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { waitForIonicReact } from "@ionic/react-test-utils";
 import { Crypto } from "./Crypto";
 import { store } from "../../../store";
 import { TabsRoutePath } from "../../../routes/paths";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { blurredCryptoData } from "../../constants/dictionary";
 
 describe("Crypto Tab", () => {
   test("Renders Crypto Tab", () => {
@@ -282,5 +284,71 @@ describe("Crypto Tab", () => {
     });
 
     expect(queryByText(cryptoAccountsFix[1].name)).toBeVisible();
+  });
+
+  test("User can check receiving account", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    const refresh = jest.fn();
+    const initialState = {
+      stateCache: {
+        routes: [TabsRoutePath.CRYPTO],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+      },
+      seedPhraseCache: {},
+      cryptoAccountsCache: {
+        cryptoAccounts: cryptoAccountsFix,
+        defaultCryptoAccount: cryptoAccountsFix[0].address,
+      },
+    };
+
+    const storeMocked = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+
+    const { queryByTestId, getByTestId, queryByText } = render(
+      <Provider store={storeMocked}>
+        <Crypto />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId("receive-button")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("receive-crypto-modal")).toHaveAttribute(
+        "is-open",
+        "false"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("receive-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("receive-crypto-modal")).toHaveAttribute(
+        "is-open",
+        "true"
+      );
+    });
+
+    expect(document.querySelector("canvas")).toBeVisible();
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(
+        queryByText(`${cryptoAccountsFix[0].address.substring(0, 22)}...`)
+      ).toBeVisible();
+    });
+
+    expect(queryByText(cryptoAccountsFix[0].derivationPath)).toBeVisible();
   });
 });

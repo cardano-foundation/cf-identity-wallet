@@ -4,6 +4,7 @@ import CardanoLogo from "../assets/images/CardanoLogo.jpg";
 const cryptoAccountsFix: CryptoAccountProps[] = [
   {
     address: "stake1u9f9v0z5zzlldgx58n8tklphu8mf7h4jvp2j2gddluemnssjfnkzz",
+    derivationPath: "m/1852'/1815'/0'/1/32",
     name: "Test wallet 1",
     blockchain: "Cardano",
     currency: "ADA",
@@ -204,6 +205,7 @@ const cryptoAccountsFix: CryptoAccountProps[] = [
   },
   {
     address: "stake1u9eauga0y2das8xvmmptq4kqdzvqjdmc6e357qplyrpatfgu2w47a",
+    derivationPath: "m/1852'/1815'/0'/1/32",
     name: "Test wallet 2",
     blockchain: "Cardano",
     currency: "ADA",

@@ -46,6 +46,7 @@ const defaultCredentialsCardData = {
 
 const defaultCryptoAccountData: CryptoAccountProps = {
   address: "",
+  derivationPath: "",
   name: "",
   blockchain: "",
   currency: "",
@@ -73,6 +74,8 @@ const defaultConnectionData: ConnectionsProps = {
   status: "",
 };
 
+const blurredCryptoData = "••••••••••••••••••";
+
 export {
   cardTypes,
   connectionStatus,
@@ -80,4 +83,5 @@ export {
   defaultCredentialsCardData,
   defaultCryptoAccountData,
   defaultConnectionData,
+  blurredCryptoData,
 };
