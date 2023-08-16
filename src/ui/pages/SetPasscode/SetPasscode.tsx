@@ -20,14 +20,11 @@ const SetPasscode = () => {
   const [passcode, setPasscode] = useState("");
   const [originalPassCode, setOriginalPassCode] = useState("");
   const handlePinChange = (digit: number) => {
-    const length = passcode.length;
-    if (length < 6) {
-      if (originalPassCode !== "" && length === 5) {
+    if (passcode.length < 6) {
+      if (originalPassCode !== "" && passcode.length === 5) {
         if (originalPassCode === passcode + digit) {
           SecureStorage.set(KeyStoreKeys.APP_PASSCODE, originalPassCode).then(
             () => {
-              handleClearState();
-
               const data: DataProps = {
                 store: { stateCache },
               };
@@ -37,6 +34,7 @@ const SetPasscode = () => {
               );
               updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
               history.push(nextPath.pathname);
+              handleClearState();
             }
           );
         }
