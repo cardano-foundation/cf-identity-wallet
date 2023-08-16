@@ -50,6 +50,7 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences";
+import { CryptoReceiveAddress } from "../../components/CryptoReceiveAddress";
 
 const Crypto = () => {
   const history = useHistory();
@@ -61,6 +62,7 @@ const Crypto = () => {
   );
   const [myWalletsIsOpen, setMyWalletsIsOpen] = useState(false);
   const [addAccountIsOpen, setAddAccountIsOpen] = useState(false);
+  const [receiveIsOpen, setReceiveIsOpen] = useState(false);
   const [idwProfileInUse, setIdwProfileInUse] = useState(false);
   const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
@@ -198,6 +200,7 @@ const Crypto = () => {
           className="receive-button"
           data-testid="receive-button"
           color="light-grey"
+          onClick={() => setReceiveIsOpen(true)}
         >
           <div className="button-inner">
             <IonIcon
@@ -262,39 +265,46 @@ const Crypto = () => {
           additionalButtons={<AdditionalButtons />}
         >
           {cryptoAccountsData?.length && defaultAccountData ? (
-            <div
-              className="crypto-tab-content"
-              data-testid="crypto-tab-content"
-            >
-              <CryptoBalance
-                items={items}
-                hideBalance={hideBalance}
-                setHideBalance={setHideBalance}
+            <>
+              <div
+                className="crypto-tab-content"
+                data-testid="crypto-tab-content"
+              >
+                <CryptoBalance
+                  items={items}
+                  hideBalance={hideBalance}
+                  setHideBalance={setHideBalance}
+                />
+                <ActionButtons />
+                {showAssetsTransactions && (
+                  <IonModal
+                    isOpen={true}
+                    initialBreakpoint={0.2}
+                    breakpoints={[0.2, 1]}
+                    canDismiss={false}
+                    backdropDismiss={false}
+                    backdropBreakpoint={1}
+                    onIonBreakpointDidChange={() =>
+                      setAssetsTransactionsExpanded(!assetsTransactionsExpanded)
+                    }
+                    className="crypto-assets-transactions page-layout"
+                    data-testid="crypto-assets-transactions"
+                  >
+                    <AssetsTransactions
+                      assets={defaultAccountData.assets}
+                      transactions={defaultAccountData.transactions}
+                      expanded={assetsTransactionsExpanded}
+                      hideBalance={hideBalance}
+                    />
+                  </IonModal>
+                )}
+              </div>
+              <CryptoReceiveAddress
+                isOpen={receiveIsOpen}
+                setIsOpen={setReceiveIsOpen}
+                accountData={defaultAccountData}
               />
-              <ActionButtons />
-              {showAssetsTransactions && (
-                <IonModal
-                  isOpen={true}
-                  initialBreakpoint={0.2}
-                  breakpoints={[0.2, 1]}
-                  canDismiss={false}
-                  backdropDismiss={false}
-                  backdropBreakpoint={1}
-                  onIonBreakpointDidChange={() =>
-                    setAssetsTransactionsExpanded(!assetsTransactionsExpanded)
-                  }
-                  className="crypto-assets-transactions page-layout"
-                  data-testid="crypto-assets-transactions"
-                >
-                  <AssetsTransactions
-                    assets={defaultAccountData.assets}
-                    transactions={defaultAccountData.transactions}
-                    expanded={assetsTransactionsExpanded}
-                    hideBalance={hideBalance}
-                  />
-                </IonModal>
-              )}
-            </div>
+            </>
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("crypto.tab.create")}

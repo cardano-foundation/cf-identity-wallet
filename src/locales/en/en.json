@@ -450,6 +450,15 @@
       "label": "Display name",
       "placeholder": "Wallet name",
       "confirm": "Confirm changes"
+    },
+    "receivemodal": {
+      "title": "Receive",
+      "derivationpath": "Derivation path",
+      "divider": "or",
+      "more": "More share options",
+      "toast": {
+        "clipboard": "Copied to clipboard"
+      }
     }
   }
 }

@@ -212,7 +212,7 @@ const AssetsTransactions = ({
         hideBalance ? "hide-balance" : "show-balance"
       }`}
     >
-      {expanded && (
+      {expanded ? (
         <IonGrid
           className={`assets-transactions-header ${
             expanded ? "expanded" : "compact"
@@ -239,7 +239,7 @@ const AssetsTransactions = ({
                   </IonLabel>
                 </IonSegmentButton>
               </IonSegment>
-              {selectedTab === "transactions" && (
+              {selectedTab === "transactions" ? (
                 <>
                   <IonSearchbar
                     placeholder={`${i18n.t(
@@ -249,17 +249,17 @@ const AssetsTransactions = ({
                   />
                   <TransactionFilters />
                 </>
-              )}
+              ) : null}
             </IonCol>
           </IonRow>
         </IonGrid>
-      )}
+      ) : null}
       <PageLayout>
         <IonGrid className={expanded ? "expanded" : "compact"}>
           {expanded ? (
             <IonRow>
               <IonCol size="12">
-                {selectedTab === "assets" && assets.length && (
+                {selectedTab === "assets" && assets.length ? (
                   <IonList
                     lines="none"
                     className="assets-list"
@@ -274,8 +274,8 @@ const AssetsTransactions = ({
                       );
                     })}
                   </IonList>
-                )}
-                {selectedTab === "transactions" && transactions.length && (
+                ) : null}
+                {selectedTab === "transactions" && transactions.length ? (
                   <IonList
                     lines="none"
                     className="transactions-list"
@@ -290,7 +290,7 @@ const AssetsTransactions = ({
                       );
                     })}
                   </IonList>
-                )}
+                ) : null}
               </IonCol>
             </IonRow>
           ) : (
@@ -304,7 +304,7 @@ const AssetsTransactions = ({
               </IonRow>
               <IonRow>
                 <IonCol size="12">
-                  {assets.length && (
+                  {assets.length ? (
                     <IonList
                       lines="none"
                       className="assets-list"
@@ -314,7 +314,7 @@ const AssetsTransactions = ({
                         asset={assets[0]}
                       />
                     </IonList>
-                  )}
+                  ) : null}
                 </IonCol>
               </IonRow>
             </>
