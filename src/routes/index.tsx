@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IonReactRouter } from "@ionic/react-router";
 import { IonRouterOutlet } from "@ionic/react";
-import { Redirect, Route, RouteProps, useLocation } from "react-router-dom";
+import { Redirect, Route, useLocation } from "react-router-dom";
 import { Onboarding } from "../ui/pages/Onboarding";
 import { GenerateSeedPhrase } from "../ui/pages/GenerateSeedPhrase";
 import { SetPasscode } from "../ui/pages/SetPasscode";
