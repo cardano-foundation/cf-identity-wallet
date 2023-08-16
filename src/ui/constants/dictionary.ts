@@ -74,6 +74,8 @@ const defaultConnectionData: ConnectionsProps = {
   status: "",
 };
 
+const blurredCryptoData = "••••••••••••••••••";
+
 export {
   cardTypes,
   connectionStatus,
@@ -81,4 +83,5 @@ export {
   defaultCredentialsCardData,
   defaultCryptoAccountData,
   defaultConnectionData,
+  blurredCryptoData,
 };

@@ -25,6 +25,7 @@ import { i18n } from "../../../i18n";
 import { CryptoReceiveAddressProps } from "./CryptoReceiveAddress.types";
 import { writeToClipboard } from "../../../utils/clipboard";
 import "./CryptoReceiveAddress.scss";
+import { blurredCryptoData } from "../../constants/dictionary";
 
 const CryptoReceiveAddress = ({
   isOpen,
@@ -62,6 +63,7 @@ const CryptoReceiveAddress = ({
               <IonButton
                 shape="round"
                 className="refresh-button"
+                data-testid="refresh-button"
                 onClick={() => refresh()}
               >
                 <IonIcon
@@ -112,7 +114,7 @@ const CryptoReceiveAddress = ({
                   <div className="receive-crypto-modal-info-block-inner">
                     <span
                       className="receive-crypto-modal-info-block-line"
-                      data-testid="copy-button-type"
+                      data-testid="copy-button-address"
                       onClick={() => {
                         writeToClipboard(accountData.address);
                         setShowToast(true);
@@ -120,7 +122,7 @@ const CryptoReceiveAddress = ({
                     >
                       <span className="receive-crypto-modal-info-block-data">
                         {hideDetails
-                          ? "••••••••••••••••••"
+                          ? blurredCryptoData
                           : `${accountData.address.substring(0, 22)}...`}
                       </span>
                       <span>
@@ -150,7 +152,7 @@ const CryptoReceiveAddress = ({
                     >
                       <span className="receive-crypto-modal-info-block-data">
                         {hideDetails
-                          ? "••••••••••••••••••"
+                          ? blurredCryptoData
                           : accountData.derivationPath}
                       </span>
                       <span>
