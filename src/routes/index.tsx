@@ -21,10 +21,7 @@ import { RoutePath } from "./paths";
 import { DidCardDetails } from "../ui/pages/DidCardDetails";
 import { CredCardDetails } from "../ui/pages/CredCardDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
-
-interface AuthenticatedRouteProps extends RouteProps {
-  nextPathname: string;
-}
+import {AuthenticatedRouteProps} from "./routes.types";
 
 const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
