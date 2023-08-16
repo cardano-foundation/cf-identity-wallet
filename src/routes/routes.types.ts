@@ -1,9 +1,7 @@
-import {RouteProps} from "react-router-dom";
+import { RouteProps } from "react-router-dom";
 
 interface AuthenticatedRouteProps extends RouteProps {
-    nextPathname: string;
+  nextPathname: string;
 }
 
-export type {
-    AuthenticatedRouteProps
-}
+export type { AuthenticatedRouteProps };

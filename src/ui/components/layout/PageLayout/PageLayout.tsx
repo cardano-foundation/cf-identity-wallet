@@ -53,10 +53,10 @@ const PageLayout = ({
         store: { stateCache },
       });
       updateReduxState(
-          backPath.pathname,
-          { store: { stateCache } },
-          dispatch,
-          updateRedux
+        backPath.pathname,
+        { store: { stateCache } },
+        dispatch,
+        updateRedux
       );
       history.push(backPath.pathname);
       if (onBack) {
