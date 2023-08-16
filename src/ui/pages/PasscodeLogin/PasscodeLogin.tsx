@@ -12,6 +12,7 @@ import {
   getAuthentication,
   getStateCache,
   setAuthentication,
+  setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
@@ -80,10 +81,6 @@ const PasscodeLogin = () => {
     }
   };
 
-  const handleForgotten = () => {
-    resetPasscode();
-  };
-
   const verifyPasscode = async (pass: string) => {
     try {
       const storedPass = (await SecureStorage.get(
@@ -102,6 +99,11 @@ const PasscodeLogin = () => {
         setAuthentication({
           ...authentication,
           passcodeIsSet: false,
+        })
+      );
+      dispatch(
+        setCurrentRoute({
+          path: RoutePath.SET_PASSCODE,
         })
       );
       history.push(RoutePath.SET_PASSCODE);
@@ -150,7 +152,7 @@ const PasscodeLogin = () => {
           headerText={headerText}
           confirmButtonText={confirmButtonText}
           cancelButtonText={cancelButtonText}
-          actionConfirm={handleForgotten}
+          actionConfirm={resetPasscode}
         />
       </PageLayout>
     </IonPage>

@@ -22,7 +22,7 @@ const getNextRootRoute = (store: StoreState) => {
   let path;
   if (authentication.passcodeIsSet && !authentication.loggedIn) {
     path = RoutePath.PASSCODE_LOGIN;
-  } else if (authentication.seedPhraseIsSet) {
+  } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
     path = RoutePath.TABS_MENU;
   } else {
     if (initialRoute) {
