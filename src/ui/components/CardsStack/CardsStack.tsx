@@ -5,7 +5,7 @@ import "./CardsStack.scss";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../../utils";
 import {
-  IdentityDetails,
+  DIDDetails,
   IdentityShortDetails,
   IdentityType,
 } from "../../../core/aries/ariesAgent.types";
@@ -161,7 +161,7 @@ const CardsStack = ({
     let pathname = "";
 
     if (cardsType === cardTypes.dids) {
-      const data = cardsData[index] as IdentityDetails;
+      const data = cardsData[index] as DIDDetails;
       pathname = `/tabs/dids/${data.id}`;
     } else {
       const data = cardsData[index] as CredProps;

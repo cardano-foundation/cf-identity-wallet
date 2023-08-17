@@ -1,9 +1,10 @@
 import {
-  IdentityDetails,
+  DIDDetails,
   IdentityType,
 } from "../../core/aries/ariesAgent.types";
 
-const didsFix: IdentityDetails[] = [
+// @TODO - foconnor: When UI in place for KERI, need KERIDetails here too.
+const didsFix: DIDDetails[] = [
   {
     id: "did:key:z6MkpNyGdYK5Ey1pCf5cy1S9gbLD1857nQoZxVeeGifA1ZQv",
     method: IdentityType.KEY,

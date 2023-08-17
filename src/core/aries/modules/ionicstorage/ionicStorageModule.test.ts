@@ -15,8 +15,8 @@ describe("Ionic storage module", () => {
       isRegistered: jest.fn().mockReturnValue(false),
     } as unknown as DependencyManager;
 
-    const actionMenuModule = new IonicStorageModule();
-    actionMenuModule.register(dependencyManager);
+    const ionicStorageModule = new IonicStorageModule();
+    ionicStorageModule.register(dependencyManager);
 
     expect(dependencyManager.registerContextScoped).toBeCalledTimes(1);
     expect(dependencyManager.registerContextScoped).toBeCalledWith(
@@ -41,8 +41,8 @@ describe("Ionic storage module", () => {
         }),
     } as unknown as DependencyManager;
 
-    const actionMenuModule = new IonicStorageModule();
-    expect(() => actionMenuModule.register(dependencyManager)).toThrowError(
+    const ionicStorageModule = new IonicStorageModule();
+    expect(() => ionicStorageModule.register(dependencyManager)).toThrowError(
       IonicStorageModule.WALLET_ALREADY_REGISTERED_ERROR_MSG
     );
     expect(dependencyManager.registerContextScoped).not.toBeCalled();
@@ -60,8 +60,8 @@ describe("Ionic storage module", () => {
         }),
     } as unknown as DependencyManager;
 
-    const actionMenuModule = new IonicStorageModule();
-    expect(() => actionMenuModule.register(dependencyManager)).toThrowError(
+    const ionicStorageModule = new IonicStorageModule();
+    expect(() => ionicStorageModule.register(dependencyManager)).toThrowError(
       IonicStorageModule.STORAGE_SERVICE_ALREADY_REGISTERED_ERROR_MSG
     );
     expect(dependencyManager.registerContextScoped).toBeCalledTimes(1);
