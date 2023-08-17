@@ -178,7 +178,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     const sqlcmd = `SELECT * FROM kv`;
     const qValues = await session.query(sqlcmd);
     if (qValues && qValues.values && qValues.values.length > 0) {
-      return qValues.values.map((value) => JSON.parse(value) as StorageObject);
+      return qValues.values.map((record) => JSON.parse(record.value) as StorageObject);
     }
     return [];
   }
@@ -187,7 +187,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     const stmt = `SELECT * FROM kv where key = "${key}"`;
     const qValues = await session.query(stmt);
     if (qValues && qValues.values && qValues.values.length === 1) {
-      return JSON.parse(qValues.values[0]);
+      return JSON.parse(qValues.values[0]?.value);
     }
     return undefined;
   }
@@ -207,7 +207,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     key: string,
     val: StorageObject
   ): Promise<void> {
-    const sqlcmd = "UPDATE kv set vakue = ? where key = ?";
+    const sqlcmd = "UPDATE kv set value = ? where key = ?";
     const values = [JSON.stringify(val), key];
     await session.run(sqlcmd, values);
   }

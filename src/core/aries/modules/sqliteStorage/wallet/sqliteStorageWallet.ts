@@ -477,7 +477,7 @@ class SqliteStorageWallet implements Wallet {
     const stmt = `SELECT * FROM kv where key= "${key}"`;
     const qValues = await this.session?.query(stmt);
     if (qValues && qValues.values && qValues.values.length === 1) {
-      return JSON.parse(qValues.values[0]);
+      return JSON.parse(qValues.values[0]?.value);
     }
     return undefined;
   }
