@@ -35,6 +35,7 @@ const CustomInput = ({
       </IonLabel>
       <div className="input-line">
         <IonInput
+          id={dataTestId}
           data-testid={dataTestId}
           type={hidden ? "password" : "text"}
           autofocus={autofocus}

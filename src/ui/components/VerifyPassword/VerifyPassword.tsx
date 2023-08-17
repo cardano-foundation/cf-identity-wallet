@@ -25,18 +25,21 @@ const VerifyPassword = ({
   const [showError, setShowError] = useState(false);
   const [storedPassword, setStoredPassword] = useState("");
   const [storedHint, setStoredHint] = useState("");
-  const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
+
+  const setFocus = () => {
+    setTimeout(() => {
+      const inputField = document.querySelector<HTMLElement>(
+        "#verify-password-value input"
+      );
+      inputField?.focus();
+    }, 250);
+  };
 
   useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      Keyboard.addListener("keyboardWillShow", () => {
-        setkeyboardIsOpen(true);
-      });
-      Keyboard.addListener("keyboardWillHide", () => {
-        setkeyboardIsOpen(false);
-      });
+    if (isOpen) {
+      setFocus();
     }
-  }, []);
+  }, [isOpen]);
 
   const errorMessages = {
     hasNoMatch: i18n.t("verifypassword.error.hasNoMatch"),
@@ -105,11 +108,14 @@ const VerifyPassword = ({
       initialBreakpoint={0.35}
       breakpoints={[0, 0.35]}
       animated={false}
-      className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
+      className="page-layout extended-modal"
       data-testid="verify-password"
       onDidDismiss={() => resetModal()}
     >
-      <div className="verify-password modal">
+      <div
+        className="verify-password modal"
+        onClick={() => setFocus()}
+      >
         <PageLayout
           header={true}
           closeButton={true}
@@ -198,7 +204,10 @@ const VerifyPassword = ({
             cancelButtonText={`${i18n.t(
               "verifypassword.alert.button.resetmypassword"
             )}`}
-            actionConfirm={() => setAlertHintIsOpen(false)}
+            actionConfirm={() => {
+              setAlertHintIsOpen(false);
+              setFocus();
+            }}
             actionDismiss={handleReset}
           />
         </PageLayout>
