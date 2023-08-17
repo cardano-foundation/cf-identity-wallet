@@ -10,8 +10,12 @@ services:
       - KERI_AGENT_CORS=true
     volumes:
       - ./keria/configs/cf-backer-oobis.json:/keria/scripts/keri/cf/backer-oobis.json
+      - keria-data:/usr/local/var/keri
     entrypoint: keria start --config-file backer-oobis --config-dir ./scripts
     ports:
       - 3901:3901
       - 3902:3902
       - 3903:3903
+
+volumes:
+  keria-data:
