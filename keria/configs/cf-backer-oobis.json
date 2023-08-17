@@ -1,0 +1,10 @@
+{
+  "dt": "2022-01-20T12:57:59.823350+00:00",
+  "keria": {
+    "dt": "2022-01-20T12:57:59.823350+00:00",
+    "curls": ["http://127.0.0.1:3902/"]
+  },
+  "iurls": [    
+    "http://dev.backer.cf-keripy.metadata.dev.cf-deployments.org:5666/oobi/BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP/controller"
+  ]
+}

@@ -40,7 +40,7 @@ import {
 } from "../../../store/reducers/identitiesCache";
 import { formatShortDate } from "../../../utils";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
-import { IdentityDetails } from "../../../core/aries/ariesAgent.types";
+import { DIDDetails, IdentityType } from "../../../core/aries/ariesAgent.types";
 
 const DidCardDetails = () => {
   const history = useHistory();
@@ -53,13 +53,16 @@ const DidCardDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<IdentityDetails | undefined>();
+  const [cardData, setCardData] = useState<DIDDetails | undefined>();
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const cardDetails = await AriesAgent.agent.getIdentity(params.id);
-      if (cardDetails) {
-        setCardData(cardDetails);
+      const cardDetailsResult = await AriesAgent.agent.getIdentity(params.id);
+      if (cardDetailsResult && cardDetailsResult.type === IdentityType.KEY) {
+        setCardData(cardDetailsResult.result);
+      } else {
+        // @TODO - foconnor: Should put KERI one here when its ready - this was just easier to get the types to work.
+        setCardData(undefined);
       }
       // @TODO - Error handling.
     };
