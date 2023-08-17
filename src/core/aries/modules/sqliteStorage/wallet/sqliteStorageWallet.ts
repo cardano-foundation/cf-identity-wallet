@@ -107,6 +107,7 @@ class SqliteStorageWallet implements Wallet {
   }
 
   async close(): Promise<void> {
+    this.session?.close();
     this.session = undefined;
   }
 
