@@ -7,6 +7,9 @@ import { IonicStorageModule } from "./ionicStorageModule";
 import { IonicStorageService } from "./storage";
 import { IonicStorageWallet } from "./wallet";
 
+jest.mock("./wallet");
+jest.mock("./storage");
+
 describe("Ionic storage module", () => {
   test("registers dependencies on the dependency manager", () => {
     const dependencyManager = {
