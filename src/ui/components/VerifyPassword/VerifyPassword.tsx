@@ -1,7 +1,5 @@
 import { IonButton, IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
 import { useEffect, useState } from "react";
-import { Capacitor } from "@capacitor/core";
-import { Keyboard } from "@capacitor/keyboard";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
@@ -36,10 +34,10 @@ const VerifyPassword = ({
   };
 
   useEffect(() => {
-    if (isOpen) {
+    if (isOpen && !alertChoiceIsOpen && !alertHintIsOpen) {
       setFocus();
     }
-  }, [isOpen]);
+  }, [isOpen, alertChoiceIsOpen, alertHintIsOpen]);
 
   const errorMessages = {
     hasNoMatch: i18n.t("verifypassword.error.hasNoMatch"),
@@ -204,10 +202,7 @@ const VerifyPassword = ({
             cancelButtonText={`${i18n.t(
               "verifypassword.alert.button.resetmypassword"
             )}`}
-            actionConfirm={() => {
-              setAlertHintIsOpen(false);
-              setFocus();
-            }}
+            actionConfirm={() => setAlertHintIsOpen(false)}
             actionDismiss={handleReset}
           />
         </PageLayout>
