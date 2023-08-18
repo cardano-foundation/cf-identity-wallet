@@ -1,7 +1,5 @@
 import { IonButton, IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
 import { useEffect, useState } from "react";
-import { Capacitor } from "@capacitor/core";
-import { Keyboard } from "@capacitor/keyboard";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { VerifyPasswordProps } from "./VerifyPassword.types";
@@ -25,18 +23,21 @@ const VerifyPassword = ({
   const [showError, setShowError] = useState(false);
   const [storedPassword, setStoredPassword] = useState("");
   const [storedHint, setStoredHint] = useState("");
-  const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
+
+  const setFocus = () => {
+    setTimeout(() => {
+      const inputField = document.querySelector<HTMLElement>(
+        "#verify-password-value input"
+      );
+      inputField?.focus();
+    }, 250);
+  };
 
   useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      Keyboard.addListener("keyboardWillShow", () => {
-        setkeyboardIsOpen(true);
-      });
-      Keyboard.addListener("keyboardWillHide", () => {
-        setkeyboardIsOpen(false);
-      });
+    if (isOpen) {
+      setFocus();
     }
-  }, []);
+  }, [isOpen]);
 
   const errorMessages = {
     hasNoMatch: i18n.t("verifypassword.error.hasNoMatch"),
@@ -105,7 +106,7 @@ const VerifyPassword = ({
       initialBreakpoint={0.35}
       breakpoints={[0, 0.35]}
       animated={false}
-      className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
+      className="page-layout extended-modal"
       data-testid="verify-password"
       onDidDismiss={() => resetModal()}
     >
