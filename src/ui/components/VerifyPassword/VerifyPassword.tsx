@@ -34,10 +34,10 @@ const VerifyPassword = ({
   };
 
   useEffect(() => {
-    if (isOpen && !alertChoiceIsOpen && !alertHintIsOpen) {
+    if (isOpen) {
       setFocus();
     }
-  }, [isOpen, alertChoiceIsOpen, alertHintIsOpen]);
+  }, [isOpen]);
 
   const errorMessages = {
     hasNoMatch: i18n.t("verifypassword.error.hasNoMatch"),
@@ -110,10 +110,7 @@ const VerifyPassword = ({
       data-testid="verify-password"
       onDidDismiss={() => resetModal()}
     >
-      <div
-        className="verify-password modal"
-        onClick={() => setFocus()}
-      >
+      <div className="verify-password modal">
         <PageLayout
           header={true}
           closeButton={true}
