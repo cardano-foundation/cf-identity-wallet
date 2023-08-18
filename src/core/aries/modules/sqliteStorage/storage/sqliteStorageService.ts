@@ -169,7 +169,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     id: string
   ): Promise<void> {
     const sqlcmd = `DELETE FROM kv WHERE key = "${id}"`;
-    await session.execute(sqlcmd);
+    await session.run(sqlcmd);
   }
 
   async getAllKv(
