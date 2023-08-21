@@ -1,25 +1,27 @@
-import { multiaddr } from "@multiformats/multiaddr"
-import { webRTC } from "@libp2p/webrtc"
-import { webSockets } from "@libp2p/websockets"
-import * as filters from "@libp2p/websockets/filters"
-import { Pushable, pushable } from "it-pushable"
-import { pipe } from "it-pipe"
-import { mplex } from "@libp2p/mplex"
-import { createLibp2p, Libp2p } from "libp2p"
-import { circuitRelayTransport } from "libp2p/circuit-relay"
-import { noise } from "@chainsafe/libp2p-noise"
-import { identifyService } from "libp2p/identify"
+import { multiaddr } from "@multiformats/multiaddr";
+import { webRTC } from "@libp2p/webrtc";
+import { webSockets } from "@libp2p/websockets";
+import * as filters from "@libp2p/websockets/filters";
+import { Pushable, pushable } from "it-pushable";
+import { pipe } from "it-pipe";
+import { mplex } from "@libp2p/mplex";
+import { createLibp2p, Libp2p } from "libp2p";
+import { circuitRelayTransport } from "libp2p/circuit-relay";
+import { noise } from "@chainsafe/libp2p-noise";
+import { identifyService } from "libp2p/identify";
 import { IncomingStreamData } from "@libp2p/interface/src/stream-handler";
 import { OutboundPackage} from "@aries-framework/core";
-import { Connection } from "@libp2p/interface/connection"
-import { fromString } from "uint8arrays"
+import { Connection } from "@libp2p/interface/connection";
+import { fromString } from "uint8arrays";
 import { Stream } from "@libp2p/interface/src/connection";
+import { Libp2pOptions } from "libp2p/src/index";
 import { LibP2pInboundTransport } from "../libP2pInboundTransport";
 import { LibP2pOutboundTransport } from "../libP2pOutboundTransport";
-// @TODO - config env or input
 export const protocol = "webrtc"
 export const adsTimeout = 15 * 1000
-export const LIBP2P_RELAY = "/ip4/192.168.118.192/tcp/39595/ws/p2p/12D3KooWFWaKBHWWKfHZ3r1MfHU8maLRKEmLfcyhgsdPY3GQ3Ve9";
+// @TODO - config env or input from user
+// eslint-disable-next-line no-undef
+export const LIBP2P_RELAY = process.env.REACT_APP_LIBP2P_RELAY ?? "/dns/libp2p-relay-9aff91ec2cbd.herokuapp.com/tcp/443/wss/p2p/12D3KooWNUif5TCCGgRkNj5uzDKjEDRk9eNGcCVTor1vpaMzTdNg";
 export const schemaPrefix = "libp2p:/";
 
 interface ILibP2pTools {
@@ -60,8 +62,8 @@ export class LibP2p {
     return `${schemaPrefix}${LIBP2P_RELAY}/p2p-circuit/webrtc/p2p/${peerId}`;
   }
 
-  public async initNode() {
-    this.node = await createLibp2p({
+  public async initNode(peerId?: string) {
+    const options: Libp2pOptions = {
       addresses: {
         listen: [
           "/webrtc"
@@ -86,7 +88,11 @@ export class LibP2p {
       services: {
         identify: identifyService()
       }
-    });
+    };
+    if (peerId) {
+      options.peerId = peerId;
+    }
+    this.node = await createLibp2p(options);
     this.peerId = this.node.peerId.toString();
     return this;
   }
@@ -130,6 +136,9 @@ export class LibP2p {
     // implement logic here
   }
 
+  /*
+    *  It is necessary to connect the socket via the relay to be able to communicate with other peers
+   */
   public async advertising():Promise<string> {
     if(!this.node) {
       await this.start();
