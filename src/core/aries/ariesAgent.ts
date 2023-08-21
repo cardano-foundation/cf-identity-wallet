@@ -1,27 +1,26 @@
 import {
-  InitConfig,
   Agent,
   AgentDependencies,
-  RecordNotFoundError,
+  BasicMessageEventTypes,
+  BasicMessageStateChangedEvent,
+  ConnectionRecord,
+  DidRecord,
   DidsModule,
+  InitConfig,
   KeyDidResolver,
   KeyType,
-  DidRecord,
+  OutOfBandRecord,
+  RecordNotFoundError,
 } from "@aries-framework/core";
-import { EventEmitter } from "events";
-import { CapacitorFileSystem } from "./dependencies";
-import {
-  IonicStorageModule,
-  GeneralStorageModule,
-  MiscRecord,
-  MiscRecordId,
-  CryptoAccountRecord,
-} from "./modules";
-import { HttpOutboundTransport } from "./transports";
-import { LabelledKeyDidRegistrar } from "./dids";
-import { IdentityType } from "./ariesAgent.types";
-import type { IdentityDetails, IdentityShortDetails } from "./ariesAgent.types";
-import { NetworkType } from "../cardano/addresses.types";
+import {EventEmitter} from "events";
+import {CapacitorFileSystem} from "./dependencies";
+import {CryptoAccountRecord, GeneralStorageModule, IonicStorageModule, MiscRecord, MiscRecordId,} from "./modules";
+import {HttpOutboundTransport} from "./transports";
+import {LabelledKeyDidRegistrar} from "./dids";
+import type {IdentityDetails, IdentityShortDetails} from "./ariesAgent.types";
+import {IdentityType} from "./ariesAgent.types";
+import {NetworkType} from "../cardano/addresses.types";
+import {LibP2p} from "./transports/libp2p/libP2p";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -76,6 +75,8 @@ class AriesAgent {
       },
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
+    this.agent.registerOutboundTransport(LibP2p.libP2p.outBoundTransport)
+    this.agent.registerInboundTransport(LibP2p.libP2p.inBoundTransport)
   }
 
   static get agent() {
@@ -89,6 +90,64 @@ class AriesAgent {
     await this.agent.initialize();
     AriesAgent.ready = true;
   }
+
+
+  public setEndpoint(peerId: string) {
+    this.agent.config.endpoints = [LibP2p.getEndpoint(peerId)];
+  }
+
+  onMessage(callback?: (event: BasicMessageStateChangedEvent) => void) {
+    this.agent.events.on(BasicMessageEventTypes.BasicMessageStateChanged, async (event: BasicMessageStateChangedEvent) => {
+      this.agent.config.logger.info((`\nA received a message from connection ID ${event.payload.basicMessageRecord.connectionId}: ${event.payload.message.content}\n`));
+      if (callback)
+        callback(event);
+    })
+  }
+
+  /**
+   * Create an invitation link to connect
+   */
+  async createNewInvitation ()  {
+    const createInvitation = await  this.agent.oob.createInvitation({
+      autoAcceptConnection: true,
+    });
+    const domain = this.agent.config.endpoints?.[0];
+    if (!domain) {
+      throw new Error("No domain found in config");
+    }
+    await LibP2p.libP2p.advertising();
+    return createInvitation.outOfBandInvitation.toUrl({
+      domain: domain,
+    })
+  }
+
+  async sendMessageByOutOfBandId(outOfBandId: string, message: string) {
+    const [connection] = await this.agent.connections.findAllByOutOfBandId(outOfBandId);
+    if (!connection) {
+      throw Error("Connection not found");
+    }
+    return this.agent.basicMessages.sendMessage(connection.id, message);
+  }
+
+  async sendMessageByConnectionId(connectionId: string, message: string) {
+    const connectionRecord = await this.agent.connections.getById(connectionId);
+    if (!connectionRecord) {
+      throw Error("Connection not found");
+    }
+    return  this.agent.basicMessages.sendMessage(connectionRecord.id, message);
+  }
+
+  async receiveInvitationFromUrl(url: string): Promise<{
+    outOfBandRecord: OutOfBandRecord;
+    connectionRecord?: ConnectionRecord | undefined
+  }> {
+    return this.agent.oob.receiveInvitationFromUrl(url, {
+      autoAcceptConnection: true,
+      autoAcceptInvitation: true,
+      reuseConnection: true,
+    });
+  }
+
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
     await this.agent.modules.generalStorage.saveMiscRecord(
