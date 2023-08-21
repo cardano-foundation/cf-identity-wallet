@@ -1,26 +1,13 @@
 import {
+  InitConfig,
   Agent,
   AgentDependencies,
-  BasicMessageEventTypes,
-  BasicMessageStateChangedEvent,
-  ConnectionRecord,
-  DidRecord,
+  RecordNotFoundError,
   DidsModule,
-  InitConfig,
   KeyDidResolver,
   KeyType,
-  OutOfBandRecord,
-  RecordNotFoundError,
+  DidRecord, BasicMessageStateChangedEvent, BasicMessageEventTypes, OutOfBandRecord, ConnectionRecord,
 } from "@aries-framework/core";
-import {EventEmitter} from "events";
-import {CapacitorFileSystem} from "./dependencies";
-import {CryptoAccountRecord, GeneralStorageModule, IonicStorageModule, MiscRecord, MiscRecordId,} from "./modules";
-import {HttpOutboundTransport} from "./transports";
-import {LabelledKeyDidRegistrar} from "./dids";
-import type {IdentityDetails, IdentityShortDetails} from "./ariesAgent.types";
-import {IdentityType} from "./ariesAgent.types";
-import {NetworkType} from "../cardano/addresses.types";
-import {LibP2p} from "./transports/libp2p/libP2p";
 import { EventEmitter } from "events";
 import { CapacitorFileSystem } from "./dependencies";
 import {
@@ -38,6 +25,7 @@ import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
 import { Capacitor } from "@capacitor/core";
+import { LibP2p } from "./transports/libp2p/libP2p";
 
 const config: InitConfig = {
   label: "idw-agent",
