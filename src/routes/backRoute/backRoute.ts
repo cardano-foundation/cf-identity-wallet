@@ -106,7 +106,7 @@ const backRoute: Record<string, any> = {
     updateRedux: [removeCurrentRoute, updateStoreSetCurrentRoute],
   },
   [RoutePath.PASSCODE_LOGIN]: {
-    updateRedux: [updateStoreAfterPasscodeLoginRoute],
+    updateRedux: [removeCurrentRoute, updateStoreAfterPasscodeLoginRoute],
   },
   [RoutePath.CREATE_PASSWORD]: {
     updateRedux: [],
