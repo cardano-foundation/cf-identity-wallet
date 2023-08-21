@@ -23,6 +23,8 @@ import { GetIdentityResult, IdentityType } from "./ariesAgent.types";
 import type { DIDDetails, IdentityShortDetails } from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
+import { SqliteStorageModule } from "./modules/sqliteStorage";
+import { Capacitor } from "@capacitor/core";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -64,16 +66,19 @@ class AriesAgent {
   static ready = false;
 
   private constructor() {
+    const platformIsNative = Capacitor.isNativePlatform();
     this.agent = new Agent({
       config,
       dependencies: agentDependencies,
       modules: {
-        ionicStorage: new IonicStorageModule(),
         generalStorage: new GeneralStorageModule(),
         dids: new DidsModule({
           registrars: [new LabelledKeyDidRegistrar()],
           resolvers: [new KeyDidResolver()],
         }),
+        ...(platformIsNative
+          ? { sqliteStorage: new SqliteStorageModule() }
+          : { ionicStorage: new IonicStorageModule() }),
         signify: new SignifyModule()
       },
     });
