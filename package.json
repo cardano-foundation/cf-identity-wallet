@@ -16,6 +16,7 @@
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "^3.0.1",
     "@aries-framework/core": "^0.4.0-alpha.119",
+    "@capacitor-community/sqlite": "^4.6.3",
     "@capacitor/android": "^4.7.1",
     "@capacitor/clipboard": "^4.1.0",
     "@capacitor/core": "^4.7.1",
@@ -50,6 +51,7 @@
     "react-qrcode-logo": "^2.9.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^5.3.4",
+    "signify-ts": "github:WebOfTrust/signify-ts#bf4570365a58f382aea80304367aa5675635b227",
     "swiper": "^9.2.0",
     "uint8arrays": "^4.0.6",
     "web-vitals": "^2.1.4"
