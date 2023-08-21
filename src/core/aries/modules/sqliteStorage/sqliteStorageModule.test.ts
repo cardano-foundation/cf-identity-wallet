@@ -7,6 +7,9 @@ import { SqliteStorageModule } from "./sqliteStorageModule";
 import { SqliteStorageService } from "./storage";
 import { SqliteStorageWallet } from "./wallet";
 
+jest.mock("./wallet");
+jest.mock("./storage");
+
 describe("Sqlite storage module", () => {
   test("registers dependencies on the dependency manager", () => {
     const dependencyManager = {
