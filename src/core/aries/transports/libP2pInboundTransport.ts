@@ -30,7 +30,6 @@ export class LibP2pInboundTransport implements InboundTransport {
         this.logger.error("Error processing inbound message: " + error);
         throw error;
       }
-      throw error;
     }
   }
 }
