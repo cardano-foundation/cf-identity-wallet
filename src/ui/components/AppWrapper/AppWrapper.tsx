@@ -41,13 +41,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
   const initApp = async () => {
     await AriesAgent.agent.start();
-    LibP2p.libP2p.start()
-      .then(() => {
-        AriesAgent.agent.setEndpoint(LibP2p.libP2p.peerId);
-      })
-      .catch((err) => {
-        throw err;
-      });
+    await LibP2p.libP2p.start();
+    await AriesAgent.agent.initLibP2p(LibP2p.libP2p);
+
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY

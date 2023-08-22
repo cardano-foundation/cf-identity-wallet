@@ -6,9 +6,14 @@ import {
   DidsModule,
   KeyDidResolver,
   KeyType,
-  DidRecord, BasicMessageStateChangedEvent, BasicMessageEventTypes, OutOfBandRecord, ConnectionRecord,
+  DidRecord,
+  BasicMessageStateChangedEvent,
+  BasicMessageEventTypes,
+  OutOfBandRecord,
+  ConnectionRecord,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
+import { Capacitor } from "@capacitor/core";
 import { CapacitorFileSystem } from "./dependencies";
 import {
   IonicStorageModule,
@@ -24,7 +29,6 @@ import type { DIDDetails, IdentityShortDetails } from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
-import { Capacitor } from "@capacitor/core";
 import { LibP2p } from "./transports/libp2p/libP2p";
 
 const config: InitConfig = {
@@ -65,6 +69,7 @@ class AriesAgent {
   private static instance: AriesAgent;
   private readonly agent: Agent;
   static ready = false;
+  private _libP2p?: LibP2p;
 
   private constructor() {
     const platformIsNative = Capacitor.isNativePlatform();
@@ -84,8 +89,17 @@ class AriesAgent {
       },
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
-    this.agent.registerOutboundTransport(LibP2p.libP2p.outBoundTransport)
-    this.agent.registerInboundTransport(LibP2p.libP2p.inBoundTransport)
+  }
+
+  async initLibP2p(libP2p: LibP2p) {
+    this._libP2p = libP2p;
+    const outBoundTransport = this._libP2p.outBoundTransport;
+    const inBoundTransport = this._libP2p.inBoundTransport;
+    await inBoundTransport.start(this.agent)
+    await outBoundTransport.start(this.agent)
+    this.agent.registerInboundTransport(inBoundTransport);
+    this.agent.registerOutboundTransport(outBoundTransport);
+    this.setEndpoint(this._libP2p.peerId);
   }
 
   static get agent() {
@@ -103,7 +117,9 @@ class AriesAgent {
 
 
   public setEndpoint(peerId: string) {
-    this.agent.config.endpoints = [LibP2p.getEndpoint(peerId)];
+    if (this._libP2p) {
+      this.agent.config.endpoints = [this._libP2p.getEndpoint(peerId)];
+    }
   }
 
   onMessage(callback?: (event: BasicMessageStateChangedEvent) => void) {
@@ -125,7 +141,10 @@ class AriesAgent {
     if (!domain) {
       throw new Error("No domain found in config");
     }
-    await LibP2p.libP2p.advertising();
+    if (!this._libP2p){
+      throw new Error("No libP2p found in config");
+    }
+    await this._libP2p.advertising();
     return createInvitation.outOfBandInvitation.toUrl({
       domain: domain,
     })

@@ -1,7 +1,4 @@
 import { Agent, Logger, InboundTransport, AriesFrameworkError } from "@aries-framework/core"
-import { pipe } from "it-pipe"
-import { toString } from "uint8arrays"
-import {IncomingStreamData} from "@libp2p/interface/src/stream-handler";
 import { LibP2p } from "./libp2p/libP2p";
 
 export class LibP2pInboundTransport implements InboundTransport {
@@ -24,23 +21,10 @@ export class LibP2pInboundTransport implements InboundTransport {
     return new Promise((resolve, ) => { resolve() })
   }
 
-  public async receiveMessage(data:  IncomingStreamData) {
+  public async receiveMessage(data: unknown) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-this-alias
-      const _this = this;
-      await pipe(
-        data.stream,
-        async function* (source) {
-          for await (const buf of source) {
-            const incoming = toString(buf.subarray());
-            const parsed = JSON.parse(incoming);
-            _this.logger.debug(`Received inbound message via LibP2p: ${parsed}`);
-            await _this.agent.receiveMessage(parsed);
-            yield buf
-          }
-        },
-        data.stream
-      )
+      this.logger.debug(`Received inbound message via LibP2p: ${data}`);
+      await this.agent.receiveMessage(data);
     } catch (error) {
       if (error instanceof AriesFrameworkError) {
         this.logger.error("Error processing inbound message: " + error);

@@ -10,9 +10,9 @@ import { circuitRelayTransport } from "libp2p/circuit-relay";
 import { noise } from "@chainsafe/libp2p-noise";
 import { identifyService } from "libp2p/identify";
 import { IncomingStreamData } from "@libp2p/interface/src/stream-handler";
-import { OutboundPackage} from "@aries-framework/core";
+import { OutboundPackage } from "@aries-framework/core";
 import { Connection } from "@libp2p/interface/connection";
-import { fromString } from "uint8arrays";
+import {fromString, toString} from "uint8arrays";
 import { Stream } from "@libp2p/interface/src/connection";
 import { Libp2pOptions } from "libp2p/src/index";
 import { LibP2pInboundTransport } from "../libP2pInboundTransport";
@@ -21,7 +21,7 @@ export const protocol = "webrtc"
 export const adsTimeout = 15 * 1000
 // @TODO - config env or input from user
 // eslint-disable-next-line no-undef
-export const LIBP2P_RELAY = process.env.REACT_APP_LIBP2P_RELAY ?? "/dns/libp2p-relay-9aff91ec2cbd.herokuapp.com/tcp/443/wss/p2p/12D3KooWNUif5TCCGgRkNj5uzDKjEDRk9eNGcCVTor1vpaMzTdNg";
+export const LIBP2P_RELAY = process.env.REACT_APP_LIBP2P_RELAY ?? "/dns/libp2p-relay-9aff91ec2cbd.herokuapp.com/tcp/443/wss/p2p/12D3KooWH7RNURD6v8DdiJdUpydLgDAP5PcSsw5NhVT8E3GgG9Wx";
 export const schemaPrefix = "libp2p:/";
 
 interface ILibP2pTools {
@@ -58,7 +58,7 @@ export class LibP2p {
    * Get endpoint for libP2p. Created according to the rules of using relay
    * @param peerId
    */
-  static getEndpoint(peerId: string) {
+  public getEndpoint(peerId: string) {
     return `${schemaPrefix}${LIBP2P_RELAY}/p2p-circuit/webrtc/p2p/${peerId}`;
   }
 
@@ -122,7 +122,7 @@ export class LibP2p {
       const peerId = event.detail.remotePeer.toString();
       // Implement logic here
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const endpoint = LibP2p.getEndpoint(peerId);
+      const endpoint = this.getEndpoint(peerId);
       if (callback) {
         callback(event);
       }
@@ -178,7 +178,20 @@ export class LibP2p {
     throw new Error("Can not advertising");
   }
   public async receiveMessage(data: IncomingStreamData): Promise<void> {
-    return this.inBoundTransport.receiveMessage(data)
+    // eslint-disable-next-line @typescript-eslint/no-this-alias
+    const _this = this;
+    await pipe(
+      data.stream,
+      async function* (source) {
+        for await (const buf of source) {
+          const incoming = toString(buf.subarray());
+          const parsed = JSON.parse(incoming);
+          await _this.inBoundTransport.receiveMessage(parsed)
+          yield buf
+        }
+      },
+      data.stream
+    )
   }
 
   public async pipeMessage(sender: Pushable<Uint8Array, void, unknown>, outgoingStream: Stream) {
