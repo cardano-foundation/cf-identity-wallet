@@ -46,6 +46,7 @@ import {
   ready as libsodiumReady,
 } from "libsodium-wrappers";
 import { KeyPairEntry, JweRecipient } from "./sqliteStorageWallet.types";
+import { MIGRATION_SQL } from "../migration/sql";
 
 class SqliteStorageWallet implements Wallet {
   private walletConfig?: WalletConfig;
@@ -80,6 +81,9 @@ class SqliteStorageWallet implements Wallet {
   static readonly UNEXPECTED_IV_ERROR_MSG = "Unexpected IV";
 
   static readonly STORAGE_KEY_CATEGORY = "KeyPairRecord";
+
+  static readonly GET_KV_SQL = `SELECT * FROM kv where key = ?`;
+  static readonly INSERT_KV_SQL = "INSERT INTO kv (key,value) VALUES (?,?)";
 
   get isProvisioned() {
     return this.walletConfig !== undefined;
@@ -488,33 +492,16 @@ class SqliteStorageWallet implements Wallet {
   }
 
   private async initDB(): Promise<void> {
-    const migrationSqls = [
-      "CREATE TABLE IF NOT EXISTS kv (key text unique, value text)",
-      `CREATE TABLE IF NOT EXISTS items (
-        id TEXT PRIMARY KEY,
-        category TEXT NOT NULL,
-        name TEXT NOT NULL,
-        value TEXT NOT NULL
-    );`,
-      `CREATE TABLE IF NOT EXISTS items_tags (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        item_id TEXT NOT NULL,
-        name TEXT NOT NULL,
-        value TEXT NOT NULL,
-        FOREIGN KEY (item_id) REFERENCES items (id)
-            ON DELETE CASCADE ON UPDATE CASCADE
-    );`,
-    ];
-
-    const migrationStatements = migrationSqls.map((sql) => {
+    const migrationStatements = MIGRATION_SQL.map((sql) => {
       return { statement: sql };
     });
     await this.session?.executeTransaction(migrationStatements);
   }
 
   async getKv(key: string): Promise<any> {
-    const stmt = `SELECT * FROM kv where key= "${key}"`;
-    const qValues = await this.session?.query(stmt);
+    const qValues = await this.session?.query(SqliteStorageWallet.GET_KV_SQL, [
+      key,
+    ]);
     if (qValues && qValues.values && qValues.values.length === 1) {
       return JSON.parse(qValues.values[0]?.value);
     }
@@ -522,9 +509,8 @@ class SqliteStorageWallet implements Wallet {
   }
 
   async setKv(key: string, val: any): Promise<void> {
-    const sqlcmd = "INSERT INTO kv (key,value) VALUES (?,?)";
     const values: Array<any> = [key, JSON.stringify(val)];
-    await this.session?.run(sqlcmd, values);
+    await this.session?.run(SqliteStorageWallet.INSERT_KV_SQL, values);
   }
 }
 
