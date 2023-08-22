@@ -14,7 +14,7 @@ const MIGRATION_SQL = [
           FOREIGN KEY (item_id) REFERENCES items (id)
               ON DELETE CASCADE ON UPDATE CASCADE
       );`,
-  `CREATE INDEX ix_items_tags_item_id ON items_tags (item_id);`,
-  `CREATE INDEX ix_items_tags_name ON items_tags (name, value);`,
+  `CREATE INDEX IF NOT EXISTS ix_items_tags_item_id ON items_tags (item_id);`,
+  `CREATE INDEX IF NOT EXISTS ix_items_tags_name ON items_tags (name, value);`,
 ];
 export { MIGRATION_SQL };
