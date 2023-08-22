@@ -18,7 +18,11 @@ import {
   JsonEncoder,
   JsonTransformer,
 } from "@aries-framework/core";
-import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import {
+  CapacitorSQLite,
+  SQLiteConnection,
+  SQLiteDBConnection,
+} from "@capacitor-community/sqlite";
 import {
   generateKeyPair,
   KeyPair,
@@ -236,7 +240,9 @@ class SqliteStorageWallet implements Wallet {
 
     try {
       cek = crypto_aead_chacha20poly1305_keygen();
-      senderKey = senderVerkey ? await this.getKv(senderVerkey) as KeyPairEntry  : undefined;
+      senderKey = senderVerkey
+        ? ((await this.getKv(senderVerkey)) as KeyPairEntry)
+        : undefined;
       const recipients: JweRecipient[] = [];
       for (const recipientKey of recipientKeys) {
         const targetExchangeKey = convertPublicKeyToX25519(
@@ -328,7 +334,9 @@ class SqliteStorageWallet implements Wallet {
     for (const recip of protectedJson.recipients) {
       const kid = recip.header.kid;
       if (!kid) {
-        throw new WalletError(SqliteStorageWallet.BLANK_RECIPIENT_KEY_ERROR_MSG);
+        throw new WalletError(
+          SqliteStorageWallet.BLANK_RECIPIENT_KEY_ERROR_MSG
+        );
       }
       const sender = recip.header.sender
         ? TypedArrayEncoder.fromBase64(recip.header.sender)
@@ -455,26 +463,56 @@ class SqliteStorageWallet implements Wallet {
     _importConfig: WalletExportImportConfig
   ): Promise<void> {}
 
-  async openDB(walletConfig: WalletConfig) : Promise<void> {
+  async openDB(walletConfig: WalletConfig): Promise<void> {
     const connection = new SQLiteConnection(CapacitorSQLite);
     const ret = await connection.checkConnectionsConsistency();
-    const isConn = (await connection.isConnection(walletConfig.id, false)).result;
+    const isConn = (await connection.isConnection(walletConfig.id, false))
+      .result;
     if (ret.result && isConn) {
-      this.session = await connection.retrieveConnection(walletConfig.id, false);
+      this.session = await connection.retrieveConnection(
+        walletConfig.id,
+        false
+      );
     } else {
-      this.session = await connection.createConnection(walletConfig.id, false, "no-encryption", 1, false);
+      this.session = await connection.createConnection(
+        walletConfig.id,
+        false,
+        "no-encryption",
+        1,
+        false
+      );
     }
     await this.session.open();
     await libsodiumReady;
     await this.initDB();
   }
 
-  private async initDB() : Promise<void> {
-    const initKeyValueDB = "CREATE TABLE IF NOT EXISTS kv (key text unique, value text)"
-    await this.session?.execute(initKeyValueDB);
+  private async initDB(): Promise<void> {
+    const migrationSqls = [
+      "CREATE TABLE IF NOT EXISTS kv (key text unique, value text)",
+      `CREATE TABLE IF NOT EXISTS items (
+        id TEXT PRIMARY KEY,
+        category TEXT NOT NULL,
+        name TEXT NOT NULL,
+        value TEXT NOT NULL
+    );`,
+      `CREATE TABLE IF NOT EXISTS items_tags (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        item_id TEXT NOT NULL,
+        name TEXT NOT NULL,
+        value TEXT NOT NULL,
+        FOREIGN KEY (item_id) REFERENCES items (id)
+            ON DELETE CASCADE ON UPDATE CASCADE
+    );`,
+    ];
+
+    const migrationStatements = migrationSqls.map((sql) => {
+      return { statement: sql };
+    });
+    await this.session?.executeTransaction(migrationStatements);
   }
 
-  async getKv(key : string) : Promise<any> {
+  async getKv(key: string): Promise<any> {
     const stmt = `SELECT * FROM kv where key= "${key}"`;
     const qValues = await this.session?.query(stmt);
     if (qValues && qValues.values && qValues.values.length === 1) {
@@ -483,10 +521,10 @@ class SqliteStorageWallet implements Wallet {
     return undefined;
   }
 
-  async setKv(key : string,val : any) : Promise<void> {
+  async setKv(key: string, val: any): Promise<void> {
     const sqlcmd = "INSERT INTO kv (key,value) VALUES (?,?)";
-    const values: Array<any>  = [key,JSON.stringify(val)];
-    await this.session?.run(sqlcmd,values)
+    const values: Array<any> = [key, JSON.stringify(val)];
+    await this.session?.run(sqlcmd, values);
   }
 }
 
