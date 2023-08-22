@@ -118,6 +118,7 @@ const connectionMock = {
   execute: jest.fn(),
   query: jest.fn(),
   close : jest.fn(),
+  executeTransaction : jest.fn(),
 };
 
 jest.mock("@capacitor-community/sqlite", () => ({
