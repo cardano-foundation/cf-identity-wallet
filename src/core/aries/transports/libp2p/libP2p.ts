@@ -10,7 +10,7 @@ import {LibP2pService} from "./libP2p.service";
 
 // @TODO - config env or input from user
 // eslint-disable-next-line no-undef
-export const LIBP2P_RELAY = process.env.REACT_APP_LIBP2P_RELAY ?? "/dns/libp2p-relay-9aff91ec2cbd.herokuapp.com/tcp/443/wss/p2p/QmUDSANiD1VyciqTgUBTw9egXHAtmamrtR1sa8SNf4aPHa";
+export const LIBP2P_RELAY = process.env.REACT_APP_LIBP2P_RELAY ?? "/ip4/127.0.0.1/tcp/51986/ws/p2p/QmUDSANiD1VyciqTgUBTw9egXHAtmamrtR1sa8SNf4aPHa";
 export const schemaPrefix = "libp2p:/";
 
 interface ILibP2pTools {
