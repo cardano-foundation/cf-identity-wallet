@@ -196,14 +196,14 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     session: SQLiteDBConnection,
     category: string,
     query?: Query<T>
-  ) {
+  ): Promise<StorageObject[]> {
     let values = [category];
     let scan_query = SqliteStorageService.SCAN_QUERY_SQL;
     if (query) {
       for (const [queryKey, queryVal] of Object.entries(query)) {
         if (queryVal) {
           scan_query += " AND " + SqliteStorageService.SCAN_TAGS_SQL;
-          values = [...values, ...[queryKey, queryVal]];
+          values.push(queryKey, queryVal);
         }
       }
     }

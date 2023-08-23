@@ -46,7 +46,7 @@ import {
   ready as libsodiumReady,
 } from "libsodium-wrappers";
 import { KeyPairEntry, JweRecipient } from "./sqliteStorageWallet.types";
-import { MIGRATION_SQL } from "../migration/sql";
+import { getUnMigrationSqls } from "./utils";
 
 class SqliteStorageWallet implements Wallet {
   private walletConfig?: WalletConfig;
@@ -81,9 +81,10 @@ class SqliteStorageWallet implements Wallet {
   static readonly UNEXPECTED_IV_ERROR_MSG = "Unexpected IV";
 
   static readonly STORAGE_KEY_CATEGORY = "KeyPairRecord";
+  static readonly VERSION_DATABASE_KEY = "VERSION_DATABASE_KEY";
 
   static readonly GET_KV_SQL = `SELECT * FROM kv where key = ?`;
-  static readonly INSERT_KV_SQL = "INSERT INTO kv (key,value) VALUES (?,?)";
+  static readonly INSERT_KV_SQL = "INSERT OR REPLACE INTO kv (key,value) VALUES (?,?)";
 
   get isProvisioned() {
     return this.walletConfig !== undefined;
@@ -492,10 +493,23 @@ class SqliteStorageWallet implements Wallet {
   }
 
   private async initDB(): Promise<void> {
-    const migrationStatements = MIGRATION_SQL.map((sql) => {
-      return { statement: sql };
-    });
-    await this.session?.executeTransaction(migrationStatements);
+    const unMigrationSqls = getUnMigrationSqls(
+      await this.getCurrentVersionDatabase()
+    );
+    if (unMigrationSqls) {
+      let migrationStatements: { statement: string; values?: string[] }[] =
+        unMigrationSqls.sqls.map((sql) => {
+          return { statement: sql };
+        });
+      migrationStatements.push({
+        statement: SqliteStorageWallet.INSERT_KV_SQL,
+        values: [
+          SqliteStorageWallet.VERSION_DATABASE_KEY,
+          JSON.stringify(unMigrationSqls.latestVersion),
+        ],
+      });
+      await this.session?.executeTransaction(migrationStatements);
+    }
   }
 
   async getKv(key: string): Promise<any> {
@@ -511,6 +525,17 @@ class SqliteStorageWallet implements Wallet {
   async setKv(key: string, val: any): Promise<void> {
     const values: Array<any> = [key, JSON.stringify(val)];
     await this.session?.run(SqliteStorageWallet.INSERT_KV_SQL, values);
+  }
+
+  private async getCurrentVersionDatabase(): Promise<string> {
+    try {
+      const currentVersionDatabase = await this.getKv(
+        SqliteStorageWallet.VERSION_DATABASE_KEY
+      );
+      return currentVersionDatabase;
+    } catch (error) {
+      return "0.0.0";
+    }
   }
 }
 
