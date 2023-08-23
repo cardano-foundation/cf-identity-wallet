@@ -107,6 +107,8 @@ const getMock = jest
         } as any,
       };
     }
+
+    if(key === "VERSION_DATABASE_KEY") return "0.0.1"
     return false as any;
   });
 const setMock = jest
