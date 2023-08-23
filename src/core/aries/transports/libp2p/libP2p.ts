@@ -151,7 +151,7 @@ export class LibP2p {
       throw new Error("Not initialized node");
     }
     if (!this.peerId) {
-      throw new Error("Not initialized peerId");
+      throw new Error("Not found peerId");
     }
   }
 
@@ -164,7 +164,7 @@ export class LibP2p {
     let libP2pTools: ILibP2pTools | undefined = this.webRTCConnections.get(getEndpoint);
     if (!libP2pTools) {
       const ma = this.libP2pService.multiaddr(getEndpoint)
-      const connection = await this.node?.dial(ma);
+      const connection = await this.node.dial(ma);
       const outgoingStream = await connection.newStream(["/aries/1.0.0"])
       const sender = this.libP2pService.pushable();
       await this.pipeMessage(sender, outgoingStream);
