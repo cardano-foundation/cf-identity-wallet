@@ -30,14 +30,20 @@ import {
   TWENTYFOUR_WORDS_BIT_LENGTH,
   SEED_PHRASE_SUGGESTIONS,
 } from "../../../constants/appConstants";
-import { generateSeedPhraseState } from "../../constants/dictionary";
+import {
+  generateSeedPhraseState,
+  onboardingRoute,
+} from "../../constants/dictionary";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
   Alert as AlertConfirm,
   Alert as AlertExit,
   Alert as AlertVerify,
 } from "../../components/Alert";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getOnboardingRoute,
+  getStateCache,
+} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -76,6 +82,18 @@ const GenerateSeedPhrase = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
+  const routeCache = useAppSelector(getOnboardingRoute);
+  const [route, setRoute] = useState("");
+
+  useEffect(() => {
+    if (location.search === onboardingRoute.createRoute) {
+      setRoute(onboardingRoute.create);
+    } else if (location.search === onboardingRoute.restoreRoute) {
+      setRoute(onboardingRoute.restore);
+    } else if (routeCache.length) {
+      setRoute(routeCache);
+    }
+  }, [routeCache, route]);
 
   useEffect(() => {
     setSeedPhrase(seedPhrase);
@@ -121,7 +139,10 @@ const GenerateSeedPhrase = () => {
   };
 
   useEffect(() => {
-    if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
+    if (
+      history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE ||
+      RoutePath.GENERATE_SEED_PHRASE + onboardingRoute.createRoute
+    ) {
       initializeSeedPhrase();
     }
   }, [history?.location.pathname]);

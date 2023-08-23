@@ -7,10 +7,14 @@ import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setOnboardingRoute,
+} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { onboardingRoute } from "../../constants/dictionary";
 
 const Onboarding = () => {
   const history = useHistory();
@@ -25,13 +29,18 @@ const Onboarding = () => {
     });
   }
 
-  const handleNavigation = () => {
+  const handleNavigation = (route: string) => {
+    dispatch(setOnboardingRoute(route));
     const data: DataProps = {
       store: { stateCache },
+      state: { onboardingRoute: route },
     };
     const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    history.push(nextPath.pathname);
+    history.push({
+      pathname: nextPath.pathname,
+      state: data.state,
+    });
   };
 
   return (
@@ -43,13 +52,19 @@ const Onboarding = () => {
           expand="block"
           className="ion-primary-button get-started-button"
           onClick={() => {
-            handleNavigation();
+            handleNavigation(onboardingRoute.create);
           }}
           data-testid="get-started-button"
         >
           {i18n.t("onboarding.getstarted.button.label")}
         </IonButton>
-        <div className="already-wallet">
+        <div
+          className="already-wallet"
+          // @TODO - sdisalvo: Route tested, leaving it here for future reference
+          // onClick={() => {
+          //   handleNavigation(onboardingRoute.restore);
+          // }}
+        >
           {i18n.t("onboarding.alreadywallet.button.label")}
         </div>
       </PageLayout>

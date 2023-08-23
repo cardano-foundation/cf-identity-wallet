@@ -9,6 +9,7 @@ import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { onboardingRoute } from "../../constants/dictionary";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
@@ -80,6 +81,7 @@ describe("Onboarding Page", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
+        onboardingRoute: "",
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -100,7 +102,7 @@ describe("Onboarding Page", () => {
             component={Onboarding}
           />
           <Route
-            path={RoutePath.GENERATE_SEED_PHRASE}
+            path={RoutePath.GENERATE_SEED_PHRASE + onboardingRoute.createRoute}
             component={GenerateSeedPhrase}
           />
         </Provider>

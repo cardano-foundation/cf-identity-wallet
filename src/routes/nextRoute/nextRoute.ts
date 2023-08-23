@@ -4,6 +4,7 @@ import {
   removeSetPasscodeRoute,
   setAuthentication,
   setCurrentRoute,
+  setOnboardingRoute,
 } from "../../store/reducers/stateCache";
 import {
   clearSeedPhraseCache,
@@ -12,6 +13,7 @@ import {
 import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
 import { backPath } from "../backRoute";
+import { onboardingRoute } from "../../ui/constants/dictionary";
 
 const getNextRootRoute = (store: StoreState) => {
   const authentication = store.stateCache.authentication;
@@ -34,16 +36,20 @@ const getNextRootRoute = (store: StoreState) => {
 
   return { pathname: path };
 };
-const getNextOnboardingRoute = (store: StoreState) => {
-  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase160;
 
+const getNextOnboardingRoute = (data: DataProps) => {
+  const route = data?.state?.onboardingRoute;
+  let query = "";
+  if (route === onboardingRoute.create) {
+    query = onboardingRoute.createRoute;
+  } else if (route === onboardingRoute.restore) {
+    query = onboardingRoute.restoreRoute;
+  }
   let path;
-  if (!store.stateCache.authentication.passcodeIsSet) {
+  if (!data.store.stateCache.authentication.passcodeIsSet) {
     path = RoutePath.SET_PASSCODE;
-  } else if (store.stateCache.authentication.passcodeIsSet && seedPhraseIsSet) {
-    path = RoutePath.TABS_MENU;
   } else {
-    path = RoutePath.GENERATE_SEED_PHRASE;
+    path = RoutePath.GENERATE_SEED_PHRASE + query;
   }
 
   return { pathname: path };
@@ -141,7 +147,7 @@ const nextRoute: Record<string, any> = {
     updateRedux: [],
   },
   [RoutePath.ONBOARDING]: {
-    nextPath: (data: DataProps) => getNextOnboardingRoute(data.store),
+    nextPath: (data: DataProps) => getNextOnboardingRoute(data),
     updateRedux: [],
   },
   [RoutePath.SET_PASSCODE]: {

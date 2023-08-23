@@ -5,14 +5,17 @@ import {
   CurrentRouteCacheProps,
   getAuthentication,
   getCurrentRoute,
+  getOnboardingRoute,
   getStateCache,
   initialState,
   setAuthentication,
   setCurrentRoute,
+  setOnboardingRoute,
   stateCacheSlice,
 } from "./stateCache";
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
+import { onboardingRoute } from "../../../ui/constants/dictionary";
 
 describe("State Cache", () => {
   test("should return the initial state on first run", () => {
@@ -53,6 +56,19 @@ describe("State Cache", () => {
 
     const rootState = { stateCache: nextState } as RootState;
     expect(getAuthentication(rootState)).toEqual(nextState.authentication);
+    expect(getStateCache(rootState)).toEqual(nextState);
+  });
+
+  test("should set the onboarding route cache", () => {
+    const route = onboardingRoute.create;
+    const action = setOnboardingRoute(route);
+    const nextState = stateCacheSlice.reducer(initialState, action);
+
+    expect(nextState.onboardingRoute).toEqual(route);
+    expect(nextState).not.toBe(initialState);
+
+    const rootState = { stateCache: nextState } as RootState;
+    expect(getOnboardingRoute(rootState)).toEqual(nextState.onboardingRoute);
     expect(getStateCache(rootState)).toEqual(nextState);
   });
 });

@@ -76,6 +76,13 @@ const defaultConnectionData: ConnectionsProps = {
 
 const blurredCryptoData = "••••••••••••••••••";
 
+const onboardingRoute = {
+  create: "create",
+  createRoute: "?route=create",
+  restore: "restore",
+  restoreRoute: "?route=restore",
+};
+
 export {
   cardTypes,
   connectionStatus,
@@ -84,4 +91,5 @@ export {
   defaultCryptoAccountData,
   defaultConnectionData,
   blurredCryptoData,
+  onboardingRoute,
 };

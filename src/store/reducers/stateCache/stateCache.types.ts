@@ -17,6 +17,7 @@ interface AuthenticationCacheProps {
 interface StateCacheProps {
   routes: CurrentRouteCacheProps[];
   authentication: AuthenticationCacheProps;
+  onboardingRoute: string;
   defaultCryptoAccount: string;
 }
 

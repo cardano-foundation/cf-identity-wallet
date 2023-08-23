@@ -39,6 +39,7 @@ describe("getBackRoute", () => {
           loggedIn: false,
           time: 0,
         },
+        onboardingRoute: "",
         defaultCryptoAccount: "",
       },
       identitiesCache: { identities: [] },
@@ -117,6 +118,7 @@ describe("getBackRoute", () => {
           seedPhraseIsSet: false,
           passwordIsSet: false,
         },
+        onboardingRoute: "",
         defaultCryptoAccount: "",
       },
       seedPhraseCache: {
@@ -190,6 +192,7 @@ describe("getPreviousRoute", () => {
           loggedIn: false,
           time: 0,
         },
+        onboardingRoute: "",
         defaultCryptoAccount: "",
       },
       identitiesCache: { identities: [] },

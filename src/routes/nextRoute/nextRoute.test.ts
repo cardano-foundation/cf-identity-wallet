@@ -10,10 +10,12 @@ import { RootState } from "../../store";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
+import { DataProps } from "./nextRoute.types";
 
 describe("NextRoute", () => {
   let localStorageMock: any;
   let storeMock: RootState;
+  let data = {};
 
   beforeEach(() => {
     localStorageMock = {};
@@ -27,6 +29,7 @@ describe("NextRoute", () => {
           seedPhraseIsSet: false,
           passwordIsSet: false,
         },
+        onboardingRoute: "",
         defaultCryptoAccount: "",
       },
       seedPhraseCache: {
@@ -45,6 +48,9 @@ describe("NextRoute", () => {
         connections: [],
       },
     };
+    data = {
+      store: storeMock,
+    };
   });
 
   afterEach(() => {
@@ -55,7 +61,7 @@ describe("NextRoute", () => {
     localStorageMock.getItem = jest.fn().mockReturnValue(null);
     storeMock.stateCache.authentication.passcodeIsSet = true;
 
-    const result = getNextOnboardingRoute(storeMock);
+    const result = getNextOnboardingRoute(data as DataProps);
 
     expect(result).toEqual({
       pathname: RoutePath.GENERATE_SEED_PHRASE,
@@ -65,7 +71,7 @@ describe("NextRoute", () => {
   test("should return correct route for /onboarding when passcodeIsSet is false and seedPhrase is set", () => {
     localStorageMock.getItem = jest.fn().mockReturnValue("someSeedPhrase");
 
-    const result = getNextOnboardingRoute(storeMock);
+    const result = getNextOnboardingRoute(data as DataProps);
 
     expect(result).toEqual({
       pathname: RoutePath.SET_PASSCODE,
@@ -123,6 +129,7 @@ describe("getNextRoute", () => {
         seedPhraseIsSet: false,
         passwordIsSet: false,
       },
+      onboardingRoute: "",
       defaultCryptoAccount: "",
     },
     seedPhraseCache: {
@@ -164,17 +171,6 @@ describe("getNextRoute", () => {
     });
 
     expect(result.nextPath).toEqual({ pathname: RoutePath.SET_PASSCODE });
-
-    storeMock.stateCache.authentication.passcodeIsSet = true;
-    storeMock.seedPhraseCache.seedPhrase160 = "example-seed-phrase";
-
-    result = getNextRoute(RoutePath.ONBOARDING, {
-      store: storeMock,
-      state,
-      payload,
-    });
-
-    expect(result.nextPath).toEqual({ pathname: RoutePath.TABS_MENU });
   });
 
   test("getNextSetPasscodeRoute should return the correct next path when seed phrase is set", () => {

@@ -19,6 +19,7 @@ const SetPasscode = () => {
   const stateCache = useAppSelector(getStateCache);
   const [passcode, setPasscode] = useState("");
   const [originalPassCode, setOriginalPassCode] = useState("");
+
   const handlePinChange = (digit: number) => {
     if (passcode.length < 6) {
       if (originalPassCode !== "" && passcode.length === 5) {

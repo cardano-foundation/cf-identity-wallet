@@ -1,6 +1,7 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { waitForIonicReact } from "@ionic/react-test-utils";
 import { MyWallets } from "./MyWallets";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
@@ -48,6 +49,8 @@ describe("MyWallets modal", () => {
         />
       </Provider>
     );
+
+    waitForIonicReact();
 
     await waitFor(() => {
       expect(
