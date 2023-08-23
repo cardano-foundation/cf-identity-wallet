@@ -98,9 +98,11 @@ const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
 const getNextVerifySeedPhraseRoute = (data: DataProps) => {
-  const nextPath: string = data?.state?.onboardingRoute.length
-    ? RoutePath.CREATE_PASSWORD
-    : RoutePath.TABS_MENU;
+  const route = data?.state?.onboardingRoute;
+  const nextPath: string =
+    route === onboardingRoute.create || onboardingRoute.restore
+      ? RoutePath.CREATE_PASSWORD
+      : RoutePath.TABS_MENU;
 
   return { pathname: nextPath };
 };
@@ -117,8 +119,12 @@ const updateStoreCurrentRoute = (data: DataProps) => {
 };
 
 const getNextCreatePasswordRoute = (data: DataProps) => {
-  const backRoute = backPath(data);
-  return { pathname: backRoute?.pathname };
+  const backRoute = backPath(data)?.pathname;
+  const nextPath: string = data?.state?.type?.generateSeedPhraseState.success
+    ? RoutePath.TABS_MENU
+    : backRoute;
+
+  return { pathname: nextPath };
 };
 const updateStoreAfterCreatePassword = (data: DataProps) => {
   return setAuthentication({
