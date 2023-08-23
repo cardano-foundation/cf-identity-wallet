@@ -11,6 +11,7 @@ import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
 import { DataProps } from "./nextRoute.types";
+import { onboardingRoute } from "../../ui/constants/dictionary";
 
 describe("NextRoute", () => {
   let localStorageMock: any;
@@ -110,7 +111,25 @@ describe("NextRoute", () => {
   });
 
   test("should return correct route for /verifyseedphrase", () => {
-    const result = getNextVerifySeedPhraseRoute();
+    let data = {
+      store: storeMock,
+      state: {
+        onboardingRoute: onboardingRoute.create,
+      },
+    };
+    let result = getNextVerifySeedPhraseRoute(data);
+
+    expect(result).toEqual({
+      pathname: RoutePath.CREATE_PASSWORD,
+    });
+
+    data = {
+      store: storeMock,
+      state: {
+        onboardingRoute: "",
+      },
+    };
+    result = getNextVerifySeedPhraseRoute(data);
 
     expect(result).toEqual({
       pathname: RoutePath.TABS_MENU,

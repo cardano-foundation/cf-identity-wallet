@@ -4,7 +4,6 @@ import {
   removeSetPasscodeRoute,
   setAuthentication,
   setCurrentRoute,
-  setOnboardingRoute,
 } from "../../store/reducers/stateCache";
 import {
   clearSeedPhraseCache,
@@ -98,8 +97,12 @@ const updateStoreAfterVerifySeedPhraseRoute = (data: DataProps) => {
 const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
-const getNextVerifySeedPhraseRoute = () => {
-  return { pathname: RoutePath.TABS_MENU };
+const getNextVerifySeedPhraseRoute = (data: DataProps) => {
+  const nextPath: string = data?.state?.onboardingRoute.length
+    ? RoutePath.CREATE_PASSWORD
+    : RoutePath.TABS_MENU;
+
+  return { pathname: nextPath };
 };
 
 const updateStoreSetSeedPhrase = (data: DataProps) => {
@@ -159,7 +162,7 @@ const nextRoute: Record<string, any> = {
     updateRedux: [updateStoreSetSeedPhrase],
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
-    nextPath: () => getNextVerifySeedPhraseRoute(),
+    nextPath: (data: DataProps) => getNextVerifySeedPhraseRoute(data),
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
   [RoutePath.CREATE_PASSWORD]: {

@@ -18,7 +18,11 @@ import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getOnboardingRoute,
+  getStateCache,
+  setOnboardingRoute,
+} from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { generateSeedPhraseState } from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -45,6 +49,7 @@ const VerifySeedPhrase = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
+  const routeCache = useAppSelector(getOnboardingRoute);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
@@ -58,6 +63,7 @@ const VerifySeedPhrase = () => {
     setSeedPhraseRemaining([]);
     setSeedPhraseSelected([]);
     setAlertIsOpen(false);
+    dispatch(setOnboardingRoute(""));
   };
 
   const addSeedPhraseSelected = (word: string) => {
@@ -97,6 +103,7 @@ const VerifySeedPhrase = () => {
     await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, convertToEntropy);
     const data: DataProps = {
       store: { stateCache },
+      state: { onboardingRoute: routeCache },
     };
     const { nextPath, updateRedux } = getNextRoute(
       RoutePath.VERIFY_SEED_PHRASE,
