@@ -12,6 +12,7 @@ import { setAuthentication } from "../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
 import { DataProps } from "./nextRoute.types";
 import { onboardingRoute } from "../../ui/constants/dictionary";
+import { TabsRoutePath } from "../paths";
 
 describe("NextRoute", () => {
   let localStorageMock: any;
@@ -132,7 +133,7 @@ describe("NextRoute", () => {
     result = getNextVerifySeedPhraseRoute(data);
 
     expect(result).toEqual({
-      pathname: RoutePath.TABS_MENU,
+      pathname: TabsRoutePath.CRYPTO,
     });
   });
 });

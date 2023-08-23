@@ -101,17 +101,7 @@ const VerifySeedPhrase = () => {
       Addresses.convertEntropyToHexXPrvNoPasscode(convertToEntropy)
     );
     await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, convertToEntropy);
-    const data: DataProps = {
-      store: { stateCache },
-      state: { onboardingRoute: routeCache },
-    };
-    const { nextPath, updateRedux } = getNextRoute(
-      RoutePath.VERIFY_SEED_PHRASE,
-      data
-    );
-    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    handleClearState();
-    history.push(nextPath.pathname);
+    handleNavigate();
   };
 
   const handleContinue = async () => {
@@ -127,6 +117,23 @@ const VerifySeedPhrase = () => {
     } else {
       setAlertIsOpen(true);
     }
+  };
+
+  const handleNavigate = () => {
+    const data: DataProps = {
+      store: { stateCache },
+      state: {
+        onboardingRoute: routeCache || "",
+        type: generateSeedPhraseState.success,
+      },
+    };
+    const { nextPath, updateRedux } = getNextRoute(
+      RoutePath.VERIFY_SEED_PHRASE,
+      data
+    );
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    handleClearState();
+    history.push(nextPath.pathname);
   };
 
   const handleExit = () => {
@@ -283,15 +290,7 @@ const VerifySeedPhrase = () => {
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
           usesIdentitySeedPhrase={false}
           seedPhrase={originalSeedPhrase.join(" ")}
-          onDone={() => {
-            handleClearState();
-            history.push({
-              pathname: TabsRoutePath.CRYPTO,
-              state: {
-                type: generateSeedPhraseState.success,
-              },
-            });
-          }}
+          onDone={() => handleNavigate()}
         />
       </PageLayout>
     </IonPage>

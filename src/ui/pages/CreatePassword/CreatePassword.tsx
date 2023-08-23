@@ -8,6 +8,7 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  useIonViewWillEnter,
 } from "@ionic/react";
 import { closeOutline, checkmarkOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
@@ -22,7 +23,10 @@ import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";

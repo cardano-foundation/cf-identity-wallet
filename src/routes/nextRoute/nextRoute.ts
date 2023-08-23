@@ -97,12 +97,13 @@ const updateStoreAfterVerifySeedPhraseRoute = (data: DataProps) => {
 const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
+
 const getNextVerifySeedPhraseRoute = (data: DataProps) => {
   const route = data?.state?.onboardingRoute;
   const nextPath: string =
     route === onboardingRoute.create || onboardingRoute.restore
       ? RoutePath.CREATE_PASSWORD
-      : RoutePath.TABS_MENU;
+      : TabsRoutePath.CRYPTO;
 
   return { pathname: nextPath };
 };
@@ -121,7 +122,7 @@ const updateStoreCurrentRoute = (data: DataProps) => {
 const getNextCreatePasswordRoute = (data: DataProps) => {
   const backRoute = backPath(data)?.pathname;
   const nextPath: string = data?.state?.type?.generateSeedPhraseState.success
-    ? RoutePath.TABS_MENU
+    ? TabsRoutePath.CRYPTO
     : backRoute;
 
   return { pathname: nextPath };
