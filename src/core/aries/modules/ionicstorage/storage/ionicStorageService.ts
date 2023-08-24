@@ -149,10 +149,10 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
       if (record.category && record.category === recordClass.type) {
         for (const [queryKey, queryVal] of Object.entries(query)) {
           // @TODO: That is temporary. Need to look at the whole and handle this function appropriately
-          if (Array.isArray(queryVal) && queryVal.length === record.tags?.[queryKey]?.length){
+          if (Array.isArray(queryVal) && queryVal.length > 0){
             // compare them item by item
-            const compare = queryVal.sort().toString() === record.tags?.[queryKey]?.sort()?.toString();
-            if (!compare) {
+            const check = queryVal.every(element => record.tags?.[queryKey]?.includes(element));
+            if (!check){
               return;
             }
             continue;

@@ -125,14 +125,15 @@ class AriesAgent {
    * Create an invitation link to connect
    */
   async createNewWebRtcInvitation ()  {
-    const createInvitation = await  this.agent.oob.createInvitation({
-      autoAcceptConnection: true,
-    });
     const domains = this.agent.config.endpoints;
     const libP2pDomain = domains.find((domain) => domain.includes("libp2p"));
     if (!libP2pDomain) {
       throw new Error(AriesAgent.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
     }
+    const createInvitation = await  this.agent.oob.createInvitation({
+      autoAcceptConnection: true,
+    });
+
     return createInvitation.outOfBandInvitation.toUrl({
       domain: libP2pDomain,
     })
