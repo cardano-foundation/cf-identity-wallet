@@ -2,6 +2,7 @@ import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { AppWrapper } from "./AppWrapper";
 import { store } from "../../../store";
+
 jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {

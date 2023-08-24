@@ -7,8 +7,13 @@ import {
   KeyDidResolver,
   KeyType,
   DidRecord,
+  BasicMessageStateChangedEvent,
+  BasicMessageEventTypes,
+  OutOfBandRecord,
+  ConnectionRecord,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
+import { Capacitor } from "@capacitor/core";
 import { CapacitorFileSystem } from "./dependencies";
 import {
   IonicStorageModule,
@@ -24,7 +29,8 @@ import type { DIDDetails, IdentityShortDetails } from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
-import { Capacitor } from "@capacitor/core";
+import { LibP2p } from "./transports/libp2p/libP2p";
+import {LibP2pOutboundTransport} from "./transports/libP2pOutboundTransport";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -60,6 +66,8 @@ class AriesAgent {
     "DID document missing or unresolvable for stored DID";
   static readonly UNEXPECTED_DID_DOC_FORMAT =
     "DID document format is missing expected values for stored DID";
+  static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
+    "No domain found in config";
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
@@ -85,6 +93,18 @@ class AriesAgent {
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
   }
 
+  async registerLibP2pInbound(libP2p: LibP2p) {
+    const inBoundTransport = libP2p.inBoundTransport;
+    await inBoundTransport.start(this.agent);
+    this.agent.registerInboundTransport(inBoundTransport);
+  }
+
+  async registerLibP2pOutbound(libP2p: LibP2p) {
+    const outBoundTransport = new LibP2pOutboundTransport(libP2p);
+    await outBoundTransport.start(this.agent);
+    this.agent.registerOutboundTransport(outBoundTransport);
+  }
+
   static get agent() {
     if (!this.instance) {
       this.instance = new AriesAgent();
@@ -95,8 +115,57 @@ class AriesAgent {
   async start(): Promise<void> {
     await this.agent.initialize();
     await this.agent.modules.signify.start();
+    // @TODO - uncomment for demo, can remove if not used
+    // await AriesAgent.agent.registerLibP2pInbound(LibP2p.libP2p);
+    // await AriesAgent.agent.registerLibP2pOutbound(LibP2p.libP2p);
     AriesAgent.ready = true;
   }
+
+  /**
+   * Create an invitation link to connect
+   */
+  async createNewWebRtcInvitation ()  {
+    const domains = this.agent.config.endpoints;
+    const libP2pDomain = domains.find((domain) => domain.includes("libp2p"));
+    if (!libP2pDomain) {
+      throw new Error(AriesAgent.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
+    }
+    const createInvitation = await  this.agent.oob.createInvitation({
+      autoAcceptConnection: true,
+    });
+
+    return createInvitation.outOfBandInvitation.toUrl({
+      domain: libP2pDomain,
+    })
+  }
+
+  async sendMessageByOutOfBandId(outOfBandId: string, message: string) {
+    const [connection] = await this.agent.connections.findAllByOutOfBandId(outOfBandId);
+    if (!connection) {
+      throw Error("Connection not found");
+    }
+    return this.agent.basicMessages.sendMessage(connection.id, message);
+  }
+
+  async sendMessageByConnectionId(connectionId: string, message: string) {
+    const connectionRecord = await this.agent.connections.getById(connectionId);
+    if (!connectionRecord) {
+      throw Error("Connection not found");
+    }
+    return  this.agent.basicMessages.sendMessage(connectionRecord.id, message);
+  }
+
+  async receiveInvitationFromUrl(url: string): Promise<{
+    outOfBandRecord: OutOfBandRecord;
+    connectionRecord?: ConnectionRecord | undefined
+  }> {
+    return this.agent.oob.receiveInvitationFromUrl(url, {
+      autoAcceptConnection: true,
+      autoAcceptInvitation: true,
+      reuseConnection: true,
+    });
+  }
+
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
     await this.agent.modules.generalStorage.saveMiscRecord(

@@ -16,6 +16,14 @@ services:
       - 3901:3901
       - 3902:3902
       - 3903:3903
-
+  webrtc-relay:
+    build:
+      context: ./webrtc-relay
+      dockerfile: Dockerfile
+    container_name: webrtc-relay
+    tty: true
+    ports:
+      - 51986:51986
+    restart: always
 volumes:
   keria-data:
