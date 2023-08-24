@@ -30,7 +30,7 @@ import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
 import { LibP2p } from "./transports/libp2p/libP2p";
-import { LibP2pOutboundTransport } from "./transports/libP2pOutboundTransport";
+import {LibP2pOutboundTransport} from "./transports/libP2pOutboundTransport";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -70,7 +70,6 @@ class AriesAgent {
   private static instance: AriesAgent;
   private readonly agent: Agent;
   static ready = false;
-  private _libP2p?: LibP2p;
 
   private constructor() {
     const platformIsNative = Capacitor.isNativePlatform();
@@ -92,13 +91,15 @@ class AriesAgent {
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
   }
 
-  async initLibP2p(libP2p: LibP2p) {
-    this._libP2p = libP2p;
-    const outBoundTransport = new LibP2pOutboundTransport(libP2p);
-    const inBoundTransport = this._libP2p.inBoundTransport;
+  async registerLibP2pInbound(libP2p: LibP2p) {
+    const inBoundTransport = libP2p.inBoundTransport;
     await inBoundTransport.start(this.agent);
-    await outBoundTransport.start(this.agent);
     this.agent.registerInboundTransport(inBoundTransport);
+  }
+
+  async registerLibP2pOutbound(libP2p: LibP2p) {
+    const outBoundTransport = new LibP2pOutboundTransport(libP2p);
+    await outBoundTransport.start(this.agent);
     this.agent.registerOutboundTransport(outBoundTransport);
   }
 
@@ -112,8 +113,6 @@ class AriesAgent {
   async start(): Promise<void> {
     await this.agent.initialize();
     await this.agent.modules.signify.start();
-    // @TODO - for demo only, can remove if not used
-    await AriesAgent.agent.initLibP2p(LibP2p.libP2p);
     AriesAgent.ready = true;
   }
 
@@ -135,9 +134,6 @@ class AriesAgent {
     const domain = this.agent.config.endpoints?.[0];
     if (!domain) {
       throw new Error("No domain found in config");
-    }
-    if (!this._libP2p){
-      throw new Error("No libP2p found in config");
     }
     return createInvitation.outOfBandInvitation.toUrl({
       domain: domain,

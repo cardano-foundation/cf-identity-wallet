@@ -21,6 +21,7 @@ import {
 import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
+import {LibP2p} from "../../../core/aries/transports/libp2p/libP2p";
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -40,6 +41,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
   const initApp = async () => {
     await AriesAgent.agent.start();
+    // @TODO - uncomment for demo, can remove if not used
+    // await AriesAgent.agent.registerLibP2pInbound(LibP2p.libP2p);
+    // await AriesAgent.agent.registerLibP2pOutbound(LibP2p.libP2p);
+
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY

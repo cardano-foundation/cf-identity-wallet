@@ -5,19 +5,28 @@ import {
 } from "@aries-framework/core";
 import { CapacitorFileSystem } from "../dependencies";
 import { IonicStorageModule } from "../modules";
-import {LibP2p} from "./libp2p/libP2p";
+import {LibP2p, LIBP2P_RELAY, schemaPrefix} from "./libp2p/libP2p";
 import {LibP2pInboundTransport} from "./libP2pInboundTransport";
 
 const eventEmitterMock = jest.fn();
+const peerId = "12D3KooWBneTYQJQPYSh8pvkSuoctUjkeyoEjqeY7UEsbpc5rtm4";
+const endpoint = `${schemaPrefix}${LIBP2P_RELAY}/p2p-circuit/webrtc/p2p/${peerId}`
 
 jest.mock("./libp2p/libP2p", () => ({
   LibP2p: {
     libP2p: {
       start: jest.fn(),
       sendMessage: jest.fn(),
+      handleInboundMessage: jest.fn(),
+      advertising: jest.fn(),
+      setUsageStatusOfInbound: jest.fn(),
+      getEndpoint: jest.fn(() => endpoint),
+      stop: jest.fn(),
     },
   },
 }));
+
+
 const agentDependencies: AgentDependencies = {
   FileSystem: CapacitorFileSystem,
   EventEmitterClass:
@@ -44,7 +53,7 @@ const data: unknown = {
 };
 
 describe("LibP2p webrtc inbound transport test", () => {
-  beforeAll(async () => {
+  beforeAll(() => {
     agent = new Agent({
       config,
       dependencies: agentDependencies,
@@ -53,14 +62,26 @@ describe("LibP2p webrtc inbound transport test", () => {
       },
     });
     libP2pInboundTransport = new LibP2pInboundTransport(libP2p);
+  })
+
+  test("should successfully start", async () => {
     await LibP2p.libP2p.start();
     await agent.registerInboundTransport(libP2pInboundTransport);
-    await libP2pInboundTransport.start(agent);
+    await expect(libP2pInboundTransport.start(agent)).resolves.toBeUndefined();
   });
 
-  afterAll(async () => {
-    await libP2pInboundTransport.stop();
+  test("should successfully start with libP2p function error", async () => {
+    const advertisingMockFn = jest.spyOn(LibP2p.libP2p, "advertising");
+    advertisingMockFn.mockRejectedValue(new Error("Mock error"));
+    await expect(libP2pInboundTransport.start(agent)).resolves.toBeUndefined();
   });
+
+  test("should successfully stop", async () => {
+    await LibP2p.libP2p.start();
+    await agent.registerInboundTransport(libP2pInboundTransport);
+    await expect(libP2pInboundTransport.stop()).resolves.toBeUndefined();
+  });
+
 
   test("should throw Error when received unrecognized format message", async () => {
     await expect(libP2pInboundTransport.receiveMessage(data)).rejects.toThrowError(
@@ -76,7 +97,8 @@ describe("LibP2p webrtc inbound transport test", () => {
           info: jest.fn(),
           error: jest.fn(),
           debug: jest.fn(),
-        }
+        },
+        endpoints: jest.fn(),
       },
       receiveMessage: jest.fn(),
     });

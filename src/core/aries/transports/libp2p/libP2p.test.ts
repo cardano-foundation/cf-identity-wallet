@@ -6,7 +6,9 @@ import {Connection, Stream} from "@libp2p/interface/src/connection";
 import {Pushable} from "it-pushable";
 import {OutboundPackage} from "@aries-framework/core";
 import {EncryptedMessage} from "@aries-framework/core/build/types";
+import { TextEncoder, TextDecoder } from "util";
 import {LibP2p, LIBP2P_RELAY, schemaPrefix} from "./libP2p";
+Object.assign(global, { TextDecoder, TextEncoder });
 // Mock dependencies and methods
 jest.mock("./libP2p.service", () => ({
   LibP2pService: jest.fn(() => (
@@ -23,11 +25,13 @@ jest.mock("./libP2p.service", () => ({
       createNode: jest.fn<Partial<Libp2p>, any>(
         () => ({
           peerId: peerId as any as PeerId,
+          isStarted: jest.fn(() => false),
           handle: jest.fn(),
           addEventListener: jest.fn(),
           dial: jest.fn(()=>({
             newStream: jest.fn(),
           })) as any,
+          stop: jest.fn(),
         }),
       ),
       advertising: jest.fn(()=> endpoint),
@@ -143,6 +147,27 @@ describe("LibP2p webrtc class test", () => {
     }
     libP2p.setNode(undefined as any);
     await expect(libP2p.sendMessage(outboundPackage)).rejects.toThrowError("Not initialized node");
+  })
+
+  test("LibP2p successfully setUsageStatusOfInbound", async () => {
+    libP2p.setUsageStatusOfInbound(true);
+    expect(libP2p.usageStatus.usageStatusOfInbound).toEqual(true);
+  })
+
+  test("LibP2p successfully setUsageStatusOfInbound", async () => {
+    libP2p.setUsageStatusOfOutbound(true);
+    expect(libP2p.usageStatus.usageStatusOfInbound).toEqual(true);
+  })
+
+  test("LibP2p successfully stop", async () => {
+    libP2p.setUsageStatusOfInbound(false);
+    libP2p.setUsageStatusOfOutbound(false);
+    await libP2p.stop();
+    expect(libP2p.isStart).toEqual(false);
+  })
+
+  test("LibP2p successfully stop", async () => {
+    await expect(libP2p.handleInboundMessage()).toBeUndefined;
   })
 
   test("LibP2p fail when sendMessage without set peerId", async () => {

@@ -17,6 +17,7 @@ export class LibP2pInboundTransport implements InboundTransport {
       await this.libP2p.start();
       await this.libP2p.handleInboundMessage();
       await this.libP2p.advertising();
+      this.libP2p.setUsageStatusOfInbound(true);
       const endpoint = this.libP2p.getEndpoint(this.libP2p.peerId);
       if (endpoint){
         this.agent.config.endpoints = [endpoint];
@@ -29,8 +30,8 @@ export class LibP2pInboundTransport implements InboundTransport {
   }
 
   public async stop(): Promise<void> {
-    // implement stop
-    return new Promise((resolve, ) => { resolve() })
+    this.libP2p.setUsageStatusOfInbound(false);
+    await this.libP2p.stop();
   }
 
   public async receiveMessage(data: unknown) {

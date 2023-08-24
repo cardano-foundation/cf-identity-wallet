@@ -15,7 +15,8 @@ jest.mock("../../../core/aries/ariesAgent", () => ({
     agent: {
       start: jest.fn(),
       getIdentities: jest.fn().mockResolvedValue([]),
-      initLibP2p: jest.fn(),
+      registerLibP2pInbound: jest.fn(),
+      registerLibP2pOutbound: jest.fn(),
     },
   },
 }));

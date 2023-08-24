@@ -19,6 +19,11 @@ interface ILibP2pTools {
   isActive?: boolean;
 }
 
+interface IUsageStatusOfNode {
+  usageStatusOfInbound: boolean;
+  usageStatusOfOutbound: boolean;
+}
+
 
 export class LibP2p {
   private static instance: LibP2p;
@@ -28,6 +33,10 @@ export class LibP2p {
   public peerId!: string;
   public inBoundTransport: LibP2pInboundTransport;
   public isStart = false;
+  public usageStatus: IUsageStatusOfNode = {
+    usageStatusOfInbound: false,
+    usageStatusOfOutbound: false,
+  };
   public static readonly ADS_TIMEOUT_ERROR_MSG = "P2P advertising Timeout";
 
 
@@ -55,6 +64,13 @@ export class LibP2p {
     this.peerId = peerId;
   }
 
+  public setUsageStatusOfInbound(status: boolean) {
+    this.usageStatus.usageStatusOfInbound = status;
+  }
+  public setUsageStatusOfOutbound(status: boolean) {
+    this.usageStatus.usageStatusOfOutbound = status;
+  }
+
   /**
    * Get endpoint for libP2p. Created according to the rules of using relay
    * @param peerId
@@ -73,21 +89,20 @@ export class LibP2p {
   public async start() {
     if(this.isStart)
       return this;
-    if(!this.node) {
+    if(!this.node || !this.node.isStarted()) {
       await this.initNode();
     }
     this.isStart = true;
     return this;
   }
 
-  public async stop() {
+  public async stop():Promise<void> {
     if(!this.isStart)
-      return this;
-    if(this.node) {
+      return;
+    if(this.node && !this.usageStatus.usageStatusOfOutbound && !this.usageStatus.usageStatusOfInbound) {
       await this.node.stop();
+      this.isStart = false;
     }
-    this.isStart = false;
-    return this;
   }
 
   public async handleInboundMessage() {
