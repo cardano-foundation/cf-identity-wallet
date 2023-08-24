@@ -30,6 +30,7 @@ import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
 import { LibP2p } from "./transports/libp2p/libP2p";
+import { LibP2pOutboundTransport } from "./transports/libP2pOutboundTransport";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -93,13 +94,12 @@ class AriesAgent {
 
   async initLibP2p(libP2p: LibP2p) {
     this._libP2p = libP2p;
-    const outBoundTransport = this._libP2p.outBoundTransport;
+    const outBoundTransport = new LibP2pOutboundTransport(libP2p);
     const inBoundTransport = this._libP2p.inBoundTransport;
-    await inBoundTransport.start(this.agent)
-    await outBoundTransport.start(this.agent)
+    await inBoundTransport.start(this.agent);
+    await outBoundTransport.start(this.agent);
     this.agent.registerInboundTransport(inBoundTransport);
     this.agent.registerOutboundTransport(outBoundTransport);
-    this.setEndpoint(this._libP2p.peerId);
   }
 
   static get agent() {
@@ -112,14 +112,9 @@ class AriesAgent {
   async start(): Promise<void> {
     await this.agent.initialize();
     await this.agent.modules.signify.start();
+    // @TODO - for demo only, can remove if not used
+    await AriesAgent.agent.initLibP2p(LibP2p.libP2p);
     AriesAgent.ready = true;
-  }
-
-
-  public setEndpoint(peerId: string) {
-    if (this._libP2p) {
-      this.agent.config.endpoints = [this._libP2p.getEndpoint(peerId)];
-    }
   }
 
   onMessage(callback?: (event: BasicMessageStateChangedEvent) => void) {
@@ -133,7 +128,7 @@ class AriesAgent {
   /**
    * Create an invitation link to connect
    */
-  async createNewInvitation ()  {
+  async createNewWebRtcInvitation ()  {
     const createInvitation = await  this.agent.oob.createInvitation({
       autoAcceptConnection: true,
     });
@@ -144,7 +139,6 @@ class AriesAgent {
     if (!this._libP2p){
       throw new Error("No libP2p found in config");
     }
-    await this._libP2p.advertising();
     return createInvitation.outOfBandInvitation.toUrl({
       domain: domain,
     })

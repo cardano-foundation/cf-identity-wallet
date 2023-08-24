@@ -14,6 +14,7 @@ export class LibP2pOutboundTransport implements OutboundTransport {
   public async start(agent: Agent): Promise<void> {
     this.agent = agent;
     this.logger = this.agent.config.logger;
+    await this.libP2p.start();
     this.logger.debug("Starting LibP2p outbound transport");
   }
 

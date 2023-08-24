@@ -114,8 +114,8 @@ describe("LibP2p webrtc class test", () => {
     timeoutMockFn.mockReturnValue(
       [new Promise<void>((_, reject) => {
         setTimeout(() => {
-          reject(new Error("P2P advertising Timeout"));
-        }, 0.5 * 1000, "P2P advertising Timeout");
+          reject(new Error(LibP2p.ADS_TIMEOUT_ERROR_MSG));
+        }, 0.5 * 1000, LibP2p.ADS_TIMEOUT_ERROR_MSG);
       }), 1000]
     );
     await expect(libP2p.advertising()).rejects.toThrowError("P2P advertising Timeout");

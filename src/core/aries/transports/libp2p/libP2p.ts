@@ -5,7 +5,6 @@ import { OutboundPackage } from "@aries-framework/core";
 import { Connection } from "@libp2p/interface/connection";
 import { Stream } from "@libp2p/interface/src/connection";
 import { LibP2pInboundTransport } from "../libP2pInboundTransport";
-import { LibP2pOutboundTransport } from "../libP2pOutboundTransport";
 import {LibP2pService} from "./libP2p.service";
 
 // @TODO - config env or input from user
@@ -28,11 +27,12 @@ export class LibP2p {
   public endpoint? : string;
   public peerId!: string;
   public inBoundTransport: LibP2pInboundTransport;
-  public outBoundTransport: LibP2pOutboundTransport;
+  public isStart = false;
+  public static readonly ADS_TIMEOUT_ERROR_MSG = "P2P advertising Timeout";
+
 
   constructor(public readonly libP2pService: LibP2pService) {
     this.inBoundTransport = new LibP2pInboundTransport(this);
-    this.outBoundTransport = new LibP2pOutboundTransport(this);
     this.webRTCConnections = new Map<string, ILibP2pTools>();
   }
 
@@ -60,7 +60,7 @@ export class LibP2p {
    * @param peerId
    */
   public getEndpoint(peerId: string) {
-    return `${schemaPrefix}${LIBP2P_RELAY}/p2p-circuit/webrtc/p2p/${peerId}`;
+    return peerId ? `${schemaPrefix}${LIBP2P_RELAY}/p2p-circuit/webrtc/p2p/${peerId}` : undefined;
   }
 
   public async initNode() {
@@ -71,36 +71,29 @@ export class LibP2p {
   }
 
   public async start() {
+    if(this.isStart)
+      return this;
     if(!this.node) {
       await this.initNode();
     }
-    // event
-    await this.node.handle("/aries/1.0.0", this.receiveMessage.bind(this));
-    // this.eventConnectionOpen();
-    // this.eventConnectionClose();
+    this.isStart = true;
     return this;
   }
 
-  // public eventConnectionOpen(callback?: (event: CustomEvent<Connection>) => void){
-  //   this.node.addEventListener("connection:open", (event) => {
-  //     if (callback) {
-  //       callback(event);
-  //     }
-  //   })
-  // }
+  public async stop() {
+    if(!this.isStart)
+      return this;
+    if(this.node) {
+      await this.node.stop();
+    }
+    this.isStart = false;
+    return this;
+  }
 
-  // public eventConnectionClose(callback?: (event: CustomEvent<Connection>) => void){
-  //   this.node.addEventListener("connection:close", (event: CustomEvent<Connection>) => {
-  //     const peerId = event.detail.remotePeer.toString();
-  //     // Implement logic here
-  //     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  //     const endpoint = this.getEndpoint(peerId);
-  //     if (callback) {
-  //       callback(event);
-  //     }
-  //     // inactivate connection
-  //   })
-  // }
+  public async handleInboundMessage() {
+    // event
+    await this.node.handle("/aries/1.0.0", this.receiveMessage.bind(this));
+  }
 
   /*
     *  It is necessary to connect the socket via the relay to be able to communicate with other peers
@@ -114,7 +107,7 @@ export class LibP2p {
     }
     const node = this.node;
     await this.node.dial(this.libP2pService.multiaddr(LIBP2P_RELAY));
-    const [advertisingTimeout, timeoutId] = this.libP2pService.timeOut("P2P advertising Timeout");
+    const [advertisingTimeout, timeoutId] = this.libP2pService.timeOut(LibP2p.ADS_TIMEOUT_ERROR_MSG);
     const advertising: Promise<string> =  this.libP2pService.advertising(node, timeoutId);
     const endpoint = await Promise.race([advertising, advertisingTimeout]);
     if (endpoint) {
@@ -130,7 +123,7 @@ export class LibP2p {
       data.stream,
       async function* (source) {
         for await (const buf of source) {
-          const incoming = _this.libP2pService.toString(buf.subarray());
+          const incoming = new TextDecoder().decode(buf.subarray());
           const parsed = JSON.parse(incoming);
           await _this.inBoundTransport.receiveMessage(parsed)
           yield buf
@@ -180,6 +173,6 @@ export class LibP2p {
       // }
       this.webRTCConnections = this.webRTCConnections.set(getEndpoint, libP2pTools);
     }
-    libP2pTools.sender.push(this.libP2pService.fromString(JSON.stringify(outboundPackage.payload)));
+    libP2pTools.sender.push(new TextEncoder().encode(JSON.stringify(outboundPackage.payload)));
   }
 }

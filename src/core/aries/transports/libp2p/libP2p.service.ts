@@ -9,7 +9,6 @@ import { createLibp2p, Libp2p } from "libp2p";
 import { circuitRelayTransport } from "libp2p/circuit-relay";
 import { noise } from "@chainsafe/libp2p-noise";
 import { identifyService } from "libp2p/identify";
-import {fromString, toString} from "uint8arrays";
 import { Libp2pOptions } from "libp2p/src/index";
 
 export class LibP2pService {
@@ -18,8 +17,6 @@ export class LibP2pService {
   public pipe = pipe;
   public mplex = mplex;
   public noise = noise;
-  public fromString = fromString;
-  public toString = toString;
 
   public async createNode() {
     const options: Libp2pOptions = {
@@ -61,7 +58,7 @@ export class LibP2pService {
     const funcTimeout = new Promise<void>((_, reject) => {
       timeoutId = setTimeout(() => {
         reject(new Error(message))
-      }, 15 * 1000, message);
+      }, 5 * 1000, message);
     });
     return [funcTimeout, timeoutId]
   }

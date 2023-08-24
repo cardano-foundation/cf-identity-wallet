@@ -9,10 +9,10 @@
   },
   "dependencies": {
     "@chainsafe/libp2p-noise": "^13.0.0",
-    "@libp2p/mplex": "^8.0.1",
-    "@libp2p/websockets": "^6.0.1",
-    "@multiformats/multiaddr": "^12.0.0",
-    "it-pushable": "^3.2.0",
+    "@chainsafe/libp2p-yamux": "^5.0.0",
+    "@libp2p/mplex": "^9.0.0",
+    "@libp2p/websockets": "^7.0.0",
+    "@multiformats/multiaddr": "^12.1.5",
     "libp2p": "^0.46.0",
     "peer-id": "^0.16.0"
   },
