@@ -15,6 +15,7 @@ const initialState: StateCacheProps = {
     passcodeIsSet: false,
     seedPhraseIsSet: false,
     passwordIsSet: false,
+    passwordIsSkipped: true,
   },
   onboardingRoute: "",
   defaultCryptoAccount: "",

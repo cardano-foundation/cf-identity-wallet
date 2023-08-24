@@ -30,43 +30,40 @@ const Onboarding = () => {
   }
 
   const handleNavigation = (route: string) => {
-    dispatch(setOnboardingRoute(route));
-    const data: DataProps = {
-      store: { stateCache },
-      state: { onboardingRoute: route },
-    };
-    const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
-    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    history.push({
-      pathname: nextPath.pathname,
-      state: data.state,
-    });
+    if (route === onboardingRoute.restore) {
+      // @TODO - sdisalvo: Remove this condition and default to dispatch when the restore route is ready
+      return;
+    } else {
+      dispatch(setOnboardingRoute(route));
+      const data: DataProps = {
+        store: { stateCache },
+        state: { onboardingRoute: route },
+      };
+      const { nextPath, updateRedux } = getNextRoute(
+        RoutePath.ONBOARDING,
+        data
+      );
+      updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+      history.push({
+        pathname: nextPath.pathname,
+        state: data.state,
+      });
+    }
   };
 
   return (
     <IonPage className="page-layout onboarding safe-area">
-      <PageLayout currentPath={RoutePath.ONBOARDING}>
+      <PageLayout
+        currentPath={RoutePath.ONBOARDING}
+        footer={true}
+        primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}
+        primaryButtonAction={() => handleNavigation(onboardingRoute.create)}
+        secondaryButtonText={`${i18n.t(
+          "onboarding.alreadywallet.button.label"
+        )}`}
+        secondaryButtonAction={() => handleNavigation(onboardingRoute.restore)}
+      >
         <Slides items={items} />
-        <IonButton
-          shape="round"
-          expand="block"
-          className="ion-primary-button get-started-button"
-          onClick={() => {
-            handleNavigation(onboardingRoute.create);
-          }}
-          data-testid="get-started-button"
-        >
-          {i18n.t("onboarding.getstarted.button.label")}
-        </IonButton>
-        <div
-          className="already-wallet"
-          // @TODO - sdisalvo: Route tested, leaving it here for future reference
-          // onClick={() => {
-          //   handleNavigation(onboardingRoute.restore);
-          // }}
-        >
-          {i18n.t("onboarding.alreadywallet.button.label")}
-        </div>
       </PageLayout>
     </IonPage>
   );

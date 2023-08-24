@@ -47,6 +47,7 @@ describe("State Cache", () => {
       passcodeIsSet: false,
       seedPhraseIsSet: false,
       passwordIsSet: false,
+      passwordIsSkipped: false,
     };
     const action = setAuthentication(authentication);
     const nextState = stateCacheSlice.reducer(initialState, action);

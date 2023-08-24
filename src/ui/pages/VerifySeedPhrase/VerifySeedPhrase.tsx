@@ -18,15 +18,13 @@ import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import {
-  getOnboardingRoute,
-  getStateCache,
-  setOnboardingRoute,
-} from "../../../store/reducers/stateCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { generateSeedPhraseState } from "../../constants/dictionary";
+import {
+  generateSeedPhraseState,
+  onboardingRoute,
+} from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
-import { TabsRoutePath } from "../../../routes/paths";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
@@ -49,7 +47,6 @@ const VerifySeedPhrase = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
-  const routeCache = useAppSelector(getOnboardingRoute);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
@@ -63,7 +60,6 @@ const VerifySeedPhrase = () => {
     setSeedPhraseRemaining([]);
     setSeedPhraseSelected([]);
     setAlertIsOpen(false);
-    dispatch(setOnboardingRoute(""));
   };
 
   const addSeedPhraseSelected = (word: string) => {
@@ -123,8 +119,13 @@ const VerifySeedPhrase = () => {
     const data: DataProps = {
       store: { stateCache },
       state: {
-        onboardingRoute: routeCache || "",
-        type: generateSeedPhraseState.success,
+        type:
+          seedPhraseType !== generateSeedPhraseState.onboarding
+            ? generateSeedPhraseState.success
+            : "",
+        onboardingRoute: generateSeedPhraseState.onboarding
+          ? onboardingRoute.create
+          : "",
       },
     };
     const { nextPath, updateRedux } = getNextRoute(

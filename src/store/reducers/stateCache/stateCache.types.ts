@@ -12,6 +12,7 @@ interface AuthenticationCacheProps {
   passcodeIsSet: boolean;
   seedPhraseIsSet: boolean;
   passwordIsSet: boolean;
+  passwordIsSkipped: boolean;
 }
 
 interface StateCacheProps {

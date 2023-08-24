@@ -25,7 +25,9 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getStateCache,
+  setAuthentication,
   setCurrentRoute,
+  setOnboardingRoute,
 } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -175,23 +177,33 @@ const CreatePassword = () => {
     setCreateHintValue("");
   };
   const handleClose = async () => {
-    const { backPath } = getBackRoute(RoutePath.CREATE_PASSWORD, {
-      store: { stateCache },
-    });
-
-    history.push(backPath.pathname);
     handleClearState();
+    handleContinue(true);
   };
 
-  const handleContinue = async () => {
+  const handleContinue = async (skipped: boolean) => {
     // @TODO - foconnor: We should handle errors here and display something to the user as feedback to try again.
-    await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, createPasswordValue);
-    if (createHintValue) {
-      await AriesAgent.agent.storeMiscRecord(
-        MiscRecordId.OP_PASS_HINT,
-        createHintValue
+    if (!skipped) {
+      await SecureStorage.set(
+        KeyStoreKeys.APP_OP_PASSWORD,
+        createPasswordValue
       );
+      if (createHintValue) {
+        await AriesAgent.agent.storeMiscRecord(
+          MiscRecordId.OP_PASS_HINT,
+          createHintValue
+        );
+      }
     }
+
+    dispatch(setOnboardingRoute(""));
+    dispatch(
+      setAuthentication({
+        ...stateCache.authentication,
+        passwordIsSkipped: skipped,
+      })
+    );
+
     const { nextPath, updateRedux } = getNextRoute(RoutePath.CREATE_PASSWORD, {
       store: { stateCache },
     });
@@ -204,7 +216,6 @@ const CreatePassword = () => {
     );
     history.push(nextPath.pathname);
     handleClearState();
-    // @TODO - sdisalvo: this will need to be completed at a later stage (navigation)
   };
 
   return (
@@ -217,8 +228,10 @@ const CreatePassword = () => {
         title={`${i18n.t("createpassword.title")}`}
         footer={true}
         primaryButtonText={`${i18n.t("createpassword.continue.button")}`}
-        primaryButtonAction={handleContinue}
+        primaryButtonAction={() => handleContinue(false)}
         primaryButtonDisabled={!validated}
+        secondaryButtonText={`${i18n.t("createpassword.skip.button")}`}
+        secondaryButtonAction={() => handleContinue(true)}
       >
         <IonGrid>
           <IonRow>

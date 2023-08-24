@@ -42,6 +42,8 @@ const PageLayout = ({
   primaryButtonText,
   primaryButtonAction,
   primaryButtonDisabled,
+  secondaryButtonText,
+  secondaryButtonAction,
 }: PageLayoutProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -199,6 +201,14 @@ const PageLayout = ({
             >
               {primaryButtonText}
             </IonButton>
+            {secondaryButtonText && secondaryButtonAction ? (
+              <div
+                className="secondary-button"
+                onClick={secondaryButtonAction}
+              >
+                {secondaryButtonText}
+              </div>
+            ) : null}
           </IonToolbar>
         </IonFooter>
       )}

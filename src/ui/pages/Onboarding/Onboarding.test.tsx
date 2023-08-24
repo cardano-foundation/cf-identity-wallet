@@ -45,7 +45,7 @@ describe("Onboarding Page", () => {
   });
 
   test("If the user hasn't set a passcode yet, they will be asked to create one", async () => {
-    const { getByTestId, queryByText } = render(
+    const { getByText, queryByText } = render(
       <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
         <Provider store={store}>
           <Route
@@ -61,7 +61,9 @@ describe("Onboarding Page", () => {
       </MemoryRouter>
     );
 
-    const buttonContinue = getByTestId("get-started-button");
+    const buttonContinue = getByText(
+      EN_TRANSLATIONS.onboarding.getstarted.button.label
+    );
 
     fireEvent.click(buttonContinue);
 
@@ -94,7 +96,7 @@ describe("Onboarding Page", () => {
     };
     const storeMocked = mockStore(initialState);
 
-    const { getByTestId, queryByText } = render(
+    const { getByText, queryByText } = render(
       <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
         <Provider store={storeMocked}>
           <Route
@@ -109,7 +111,9 @@ describe("Onboarding Page", () => {
       </MemoryRouter>
     );
 
-    const buttonContinue = getByTestId("get-started-button");
+    const buttonContinue = getByText(
+      EN_TRANSLATIONS.onboarding.getstarted.button.label
+    );
 
     fireEvent.click(buttonContinue);
 

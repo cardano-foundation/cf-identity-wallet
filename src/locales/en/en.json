@@ -211,6 +211,9 @@
     "continue": {
       "button": "Create password"
     },
+    "skip": {
+      "button": "Skip"
+    },
     "error": {
       "hasSpecialChar": "Please enter a valid character",
       "isTooShort": "Must be more than 8 characters long",

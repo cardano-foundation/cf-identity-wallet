@@ -11,7 +11,6 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { backPath } from "../backRoute";
 import { onboardingRoute } from "../../ui/constants/dictionary";
 
 const getNextRootRoute = (store: StoreState) => {
@@ -24,7 +23,11 @@ const getNextRootRoute = (store: StoreState) => {
   if (authentication.passcodeIsSet && !authentication.loggedIn) {
     path = RoutePath.PASSCODE_LOGIN;
   } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
-    path = RoutePath.TABS_MENU;
+    if (store.stateCache.onboardingRoute.length) {
+      path = RoutePath.CREATE_PASSWORD;
+    } else {
+      path = RoutePath.TABS_MENU;
+    }
   } else {
     if (initialRoute) {
       path = RoutePath.ONBOARDING;
@@ -101,7 +104,7 @@ const getNextGenerateSeedPhraseRoute = () => {
 const getNextVerifySeedPhraseRoute = (data: DataProps) => {
   const route = data?.state?.onboardingRoute;
   const nextPath: string =
-    route === onboardingRoute.create || onboardingRoute.restore
+    route === onboardingRoute.create
       ? RoutePath.CREATE_PASSWORD
       : TabsRoutePath.CRYPTO;
 
@@ -119,13 +122,8 @@ const updateStoreCurrentRoute = (data: DataProps) => {
   return setCurrentRoute({ path: data.state?.nextRoute });
 };
 
-const getNextCreatePasswordRoute = (data: DataProps) => {
-  const backRoute = backPath(data)?.pathname;
-  const nextPath: string = data?.state?.type?.generateSeedPhraseState.success
-    ? TabsRoutePath.CRYPTO
-    : backRoute;
-
-  return { pathname: nextPath };
+const getNextCreatePasswordRoute = () => {
+  return { pathname: RoutePath.TABS_MENU };
 };
 const updateStoreAfterCreatePassword = (data: DataProps) => {
   return setAuthentication({
@@ -173,7 +171,7 @@ const nextRoute: Record<string, any> = {
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
   [RoutePath.CREATE_PASSWORD]: {
-    nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
+    nextPath: () => getNextCreatePasswordRoute(),
     updateRedux: [updateStoreAfterCreatePassword],
   },
   [RoutePath.CONNECTION_DETAILS]: {
