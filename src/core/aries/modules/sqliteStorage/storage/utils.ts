@@ -33,5 +33,14 @@ function deserializeRecord<T extends BaseRecord>(
   return instance;
 }
 
+function resolveTagsFromDb(tagDb: string): Record<string, unknown> | null {
+  let tags: Record<string, unknown> = {};
+  const tagsParseArrays = tagDb?.split(",") || [];
+  tagsParseArrays.forEach((tag: string) => {
+    const tagParse = tag.split("|");
+    tags[tagParse[0]] = tagParse[1];
+  });
+  return tags;
+}
 
-export { assertSqliteStorageWallet, deserializeRecord };
+export { assertSqliteStorageWallet, deserializeRecord, resolveTagsFromDb };

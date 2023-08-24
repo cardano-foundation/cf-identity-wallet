@@ -9,7 +9,11 @@ import {
   JsonTransformer,
   RecordDuplicateError,
 } from "@aries-framework/core";
-import { assertSqliteStorageWallet, deserializeRecord } from "./utils";
+import {
+  assertSqliteStorageWallet,
+  deserializeRecord,
+  resolveTagsFromDb,
+} from "./utils";
 import { StorageObject } from "./sqliteStorageService.types";
 
 class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
@@ -17,6 +21,23 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     "Record already exists with id";
   static readonly RECORD_DOES_NOT_EXIST_ERROR_MSG =
     "Record does not exist with id";
+  static readonly INSERT_ITEM_TAG_SQL =
+    "INSERT INTO items_tags (item_id, name, value) VALUES (?,?,?)";
+  static readonly DELETE_ITEM_TAGS_SQL =
+    "DELETE FROM items_tags where item_id = ?";
+  static readonly DELETE_ITEM_SQL = "DELETE FROM items where id = ?";
+  static readonly GET_ITEM_SQL =
+    "SELECT category, name, value, (SELECT group_concat(it.name || '|' || it.value) FROM items_tags it WHERE it.item_id = i.id) tags FROM items i WHERE id = ?";
+  static readonly INSERT_ITEMS_SQL =
+    "INSERT OR IGNORE INTO items (id, category, name, value) VALUES (?,?,?,?)";
+  static readonly UPDATE_ITEMS_SQL =
+    "UPDATE items set category = ?, name = ?, value = ? where id = ?";
+  static readonly SCAN_QUERY_SQL = `SELECT category, name, value,
+    (SELECT group_concat(it.name || '|' || it.value)
+        FROM items_tags it WHERE it.item_id = i.id) tags
+    FROM items i WHERE category = ?`;
+  static readonly SCAN_TAGS_SQL =
+    "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)";
 
   async save(agentContext: AgentContext, record: T): Promise<void> {
     assertSqliteStorageWallet(agentContext.wallet);
@@ -27,14 +48,14 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     const value = JsonTransformer.serialize(record);
     const tags = record.getTags() as Record<string, string>;
 
-    if (await this.getKv(session, record.id)) {
+    if (await this.getItem(session, record.id)) {
       throw new RecordDuplicateError(
         `${SqliteStorageService.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`,
         { recordType: record.type }
       );
     }
 
-    await this.setKv(session, record.id, {
+    await this.createItem(session, record.id, {
       category: record.type,
       name: record.id,
       value,
@@ -47,7 +68,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     const session = agentContext.wallet.store;
 
     // @TODO - foconnor: We should wrap get to enforce type here.
-    if (!(await this.getKv(session, record.id))) {
+    if (!(await this.getItem(session, record.id))) {
       throw new RecordNotFoundError(
         `${SqliteStorageService.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`,
         { recordType: record.type }
@@ -59,7 +80,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     const value = JsonTransformer.serialize(record);
     const tags = record.getTags() as Record<string, string>;
 
-    await this.updateKv(session, record.id, {
+    await this.updateItem(session, record.id, {
       category: record.type,
       name: record.id,
       value,
@@ -71,14 +92,14 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     assertSqliteStorageWallet(agentContext.wallet);
     const session = agentContext.wallet.store;
 
-    if (!(await this.getKv(session, record.id))) {
+    if (!(await this.getItem(session, record.id))) {
       throw new RecordNotFoundError(
         `${SqliteStorageService.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${record.id}`,
         { recordType: record.type }
       );
     }
 
-    await this.removeKv(session, record.id);
+    await this.deleteItem(session, record.id);
   }
 
   async deleteById(
@@ -89,14 +110,14 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     assertSqliteStorageWallet(agentContext.wallet);
     const session = agentContext.wallet.store;
 
-    if (!(await this.getKv(session, id))) {
+    if (!(await this.getItem(session, id))) {
       throw new RecordNotFoundError(
         `${SqliteStorageService.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`,
         { recordType: recordClass.type }
       );
     }
 
-    await this.removeKv(session, id);
+    await this.deleteItem(session, id);
   }
 
   async getById(
@@ -108,7 +129,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     const session = agentContext.wallet.store;
 
     // @TODO - foconnor: Missing check for recordClass type.
-    const record = await this.getKv(session, id);
+    const record = await this.getItem(session, id);
 
     if (!record) {
       throw new RecordNotFoundError(
@@ -127,12 +148,10 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     const session = agentContext.wallet.store;
     const instances: T[] = [];
 
-    const records = await this.getAllKv(session);
+    const records = await this.scanItems(session, recordClass.type);
 
     records.forEach((value) => {
-      if (value.category && value.category === recordClass.type) {
-        instances.push(deserializeRecord(value, recordClass));
-      }
+      instances.push(deserializeRecord(value, recordClass));
     });
 
     return instances;
@@ -150,66 +169,115 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     // Right now we just support SimpleQuery and not AdvancedQuery as it's not something we need right now.
     // This is also really inefficient but OK for now.
 
-    const records = await this.getAllKv(session);
+    const records = await this.scanItems(session, recordClass.type, query);
     records.forEach((value) => {
-      if (value.category && value.category === recordClass.type) {
-        for (const [queryKey, queryVal] of Object.entries(query)) {
-          if (value.tags[queryKey] !== queryVal && queryVal !== undefined) {
-            return;
-          }
-        }
-        instances.push(deserializeRecord(value, recordClass));
-      }
+      instances.push(deserializeRecord(value, recordClass));
     });
     return instances;
   }
 
-  async removeKv(
+  async getItem(
     session: SQLiteDBConnection,
     id: string
-  ): Promise<void> {
-    const sqlcmd = `DELETE FROM kv WHERE key = "${id}"`;
-    await session.run(sqlcmd);
-  }
-
-  async getAllKv(
-    session: SQLiteDBConnection
-  ): Promise<StorageObject[]> {
-    const sqlcmd = `SELECT * FROM kv`;
-    const qValues = await session.query(sqlcmd);
-    if (qValues && qValues.values && qValues.values.length > 0) {
-      return qValues.values.map((record) => JSON.parse(record.value) as StorageObject);
-    }
-    return [];
-  }
-
-  async getKv(session: SQLiteDBConnection, key: string): Promise<StorageObject | undefined> {
-    const stmt = `SELECT * FROM kv where key = "${key}"`;
-    const qValues = await session.query(stmt);
+  ): Promise<StorageObject | undefined> {
+    const qValues = await session.query(SqliteStorageService.GET_ITEM_SQL, [
+      id,
+    ]);
     if (qValues && qValues.values && qValues.values.length === 1) {
-      return JSON.parse(qValues.values[0]?.value);
+      return {
+        ...qValues.values[0],
+        tags: resolveTagsFromDb(qValues.values[0].tags),
+      } as StorageObject;
     }
     return undefined;
   }
 
-  async setKv(
+  async scanItems(
     session: SQLiteDBConnection,
-    key: string,
-    val: StorageObject
-  ): Promise<void> {
-    const sqlcmd = "INSERT INTO kv (key,value) VALUES (?,?)";
-    const values = [key, JSON.stringify(val)];
-    await session.run(sqlcmd, values);
+    category: string,
+    query?: Query<T>
+  ): Promise<StorageObject[]> {
+    let values = [category];
+    let scan_query = SqliteStorageService.SCAN_QUERY_SQL;
+    if (query) {
+      for (const [queryKey, queryVal] of Object.entries(query)) {
+        if (queryVal) {
+          scan_query += " AND " + SqliteStorageService.SCAN_TAGS_SQL;
+          values.push(queryKey, queryVal);
+        }
+      }
+    }
+    const qValues = await session.query(scan_query, values);
+    if (qValues && qValues.values && qValues.values.length > 0) {
+      return qValues.values.map((record) => {
+        return {
+          ...record,
+          tags: resolveTagsFromDb(record.tags),
+        } as StorageObject;
+      });
+    }
+    return [];
   }
 
-  async updateKv(
+  async createItem(
     session: SQLiteDBConnection,
-    key: string,
-    val: StorageObject
+    id: string,
+    sObject: StorageObject
   ): Promise<void> {
-    const sqlcmd = "UPDATE kv set value = ? where key = ?";
-    const values = [JSON.stringify(val), key];
-    await session.run(sqlcmd, values);
+    let transactionStatements = [];
+    transactionStatements.push({
+      statement: SqliteStorageService.INSERT_ITEMS_SQL,
+      values: [id, sObject.category, sObject.name, sObject.value],
+    });
+    for (let key in sObject.tags) {
+      if (sObject.tags[key]) {
+        transactionStatements.push({
+          statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
+          values: [id, key, sObject.tags[key]],
+        });
+      }
+    }
+    await session.executeTransaction(transactionStatements);
+  }
+
+  async updateItem(
+    session: SQLiteDBConnection,
+    id: string,
+    sObject: StorageObject
+  ): Promise<void> {
+    let transactionStatements = [];
+
+    transactionStatements.push({
+      statement: SqliteStorageService.UPDATE_ITEMS_SQL,
+      values: [sObject.category, sObject.name, sObject.value, id],
+    });
+    transactionStatements.push({
+      statement: SqliteStorageService.DELETE_ITEM_TAGS_SQL,
+      values: [id],
+    });
+    for (let key in sObject.tags) {
+      if (sObject.tags[key]) {
+        transactionStatements.push({
+          statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
+          values: [id, key, sObject.tags[key]],
+        });
+      }
+    }
+    await session.executeTransaction(transactionStatements);
+  }
+
+  async deleteItem(session: SQLiteDBConnection, id: string): Promise<void> {
+    const transactionStatements = [
+      {
+        statement: SqliteStorageService.DELETE_ITEM_SQL,
+        values: [id],
+      },
+      {
+        statement: SqliteStorageService.DELETE_ITEM_TAGS_SQL,
+        values: [id],
+      },
+    ];
+    await session.executeTransaction(transactionStatements);
   }
 }
 

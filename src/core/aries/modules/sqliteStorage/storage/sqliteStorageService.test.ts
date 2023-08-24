@@ -16,16 +16,16 @@ const startTime = new Date();
 
 // ------ MOCKS ------
 const setMock = jest
-  .spyOn(SqliteStorageService.prototype, "setKv")
+  .spyOn(SqliteStorageService.prototype, "createItem")
   .mockImplementation();
 const updateMock = jest
-  .spyOn(SqliteStorageService.prototype, "updateKv")
+  .spyOn(SqliteStorageService.prototype, "updateItem")
   .mockImplementation();
 const removeMock = jest
-  .spyOn(SqliteStorageService.prototype, "removeKv")
+  .spyOn(SqliteStorageService.prototype, "deleteItem")
   .mockImplementation();
 const getMock = jest
-  .spyOn(SqliteStorageService.prototype, "getKv")
+  .spyOn(SqliteStorageService.prototype, "getItem")
   .mockImplementation(async (session: SQLiteDBConnection, id: string) => {
     if (id === existingRecord.id) {
       return {
@@ -52,10 +52,10 @@ const getMock = jest
     return undefined;
   });
 const getAllKvMock = jest
-  .spyOn(SqliteStorageService.prototype, "getAllKv")
+  .spyOn(SqliteStorageService.prototype, "scanItems")
   .mockImplementation(
-    async (session: SQLiteDBConnection): Promise<StorageObject[]> => {
-      return [
+    async (session: SQLiteDBConnection, category : string, query): Promise<StorageObject[]> => {
+      let records =  [
         {
           category: TestRecord.type,
           name: existingRecord.id,
@@ -72,9 +72,25 @@ const getAllKvMock = jest
             id: "storagerecord-0",
             storageVersion: "0.0.1",
           }),
-          tags: {},
+          tags:  { firstTag: "exists", secondTag: "exists" },
         },
-      ];
+      ].filter(e => e.category == category) as StorageObject[];
+      let instances : StorageObject[] = []
+      if(query) {
+        records.forEach((record) => {
+          if (record.category && record.category === category) {
+            for (const [queryKey , queryVal] of Object.entries(query)) {
+              if (record.tags[queryKey] !== queryVal && queryVal !== undefined) {
+                return;
+              }
+            }
+            instances.push(record);
+          }
+        });
+      }else{
+        instances = records
+      }
+      return instances;
     }
   );
 

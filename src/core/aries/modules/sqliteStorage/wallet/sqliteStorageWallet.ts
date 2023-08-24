@@ -18,7 +18,11 @@ import {
   JsonEncoder,
   JsonTransformer,
 } from "@aries-framework/core";
-import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
+import {
+  CapacitorSQLite,
+  SQLiteConnection,
+  SQLiteDBConnection,
+} from "@capacitor-community/sqlite";
 import {
   generateKeyPair,
   KeyPair,
@@ -42,6 +46,7 @@ import {
   ready as libsodiumReady,
 } from "libsodium-wrappers";
 import { KeyPairEntry, JweRecipient } from "./sqliteStorageWallet.types";
+import { getUnMigrationSqls } from "./utils";
 
 class SqliteStorageWallet implements Wallet {
   private walletConfig?: WalletConfig;
@@ -76,6 +81,10 @@ class SqliteStorageWallet implements Wallet {
   static readonly UNEXPECTED_IV_ERROR_MSG = "Unexpected IV";
 
   static readonly STORAGE_KEY_CATEGORY = "KeyPairRecord";
+  static readonly VERSION_DATABASE_KEY = "VERSION_DATABASE_KEY";
+
+  static readonly GET_KV_SQL = `SELECT * FROM kv where key = ?`;
+  static readonly INSERT_KV_SQL = "INSERT OR REPLACE INTO kv (key,value) VALUES (?,?)";
 
   get isProvisioned() {
     return this.walletConfig !== undefined;
@@ -236,7 +245,9 @@ class SqliteStorageWallet implements Wallet {
 
     try {
       cek = crypto_aead_chacha20poly1305_keygen();
-      senderKey = senderVerkey ? await this.getKv(senderVerkey) as KeyPairEntry  : undefined;
+      senderKey = senderVerkey
+        ? ((await this.getKv(senderVerkey)) as KeyPairEntry)
+        : undefined;
       const recipients: JweRecipient[] = [];
       for (const recipientKey of recipientKeys) {
         const targetExchangeKey = convertPublicKeyToX25519(
@@ -328,7 +339,9 @@ class SqliteStorageWallet implements Wallet {
     for (const recip of protectedJson.recipients) {
       const kid = recip.header.kid;
       if (!kid) {
-        throw new WalletError(SqliteStorageWallet.BLANK_RECIPIENT_KEY_ERROR_MSG);
+        throw new WalletError(
+          SqliteStorageWallet.BLANK_RECIPIENT_KEY_ERROR_MSG
+        );
       }
       const sender = recip.header.sender
         ? TypedArrayEncoder.fromBase64(recip.header.sender)
@@ -455,38 +468,74 @@ class SqliteStorageWallet implements Wallet {
     _importConfig: WalletExportImportConfig
   ): Promise<void> {}
 
-  async openDB(walletConfig: WalletConfig) : Promise<void> {
+  async openDB(walletConfig: WalletConfig): Promise<void> {
     const connection = new SQLiteConnection(CapacitorSQLite);
     const ret = await connection.checkConnectionsConsistency();
-    const isConn = (await connection.isConnection(walletConfig.id, false)).result;
+    const isConn = (await connection.isConnection(walletConfig.id, false))
+      .result;
     if (ret.result && isConn) {
-      this.session = await connection.retrieveConnection(walletConfig.id, false);
+      this.session = await connection.retrieveConnection(
+        walletConfig.id,
+        false
+      );
     } else {
-      this.session = await connection.createConnection(walletConfig.id, false, "no-encryption", 1, false);
+      this.session = await connection.createConnection(
+        walletConfig.id,
+        false,
+        "no-encryption",
+        1,
+        false
+      );
     }
     await this.session.open();
     await libsodiumReady;
     await this.initDB();
   }
 
-  private async initDB() : Promise<void> {
-    const initKeyValueDB = "CREATE TABLE IF NOT EXISTS kv (key text unique, value text)"
-    await this.session?.execute(initKeyValueDB);
+  private async initDB(): Promise<void> {
+    const unMigrationSqls = getUnMigrationSqls(
+      await this.getCurrentVersionDatabase()
+    );
+    if (unMigrationSqls) {
+      let migrationStatements: { statement: string; values?: string[] }[] =
+        unMigrationSqls.sqls.map((sql) => {
+          return { statement: sql };
+        });
+      migrationStatements.push({
+        statement: SqliteStorageWallet.INSERT_KV_SQL,
+        values: [
+          SqliteStorageWallet.VERSION_DATABASE_KEY,
+          JSON.stringify(unMigrationSqls.latestVersion),
+        ],
+      });
+      await this.session?.executeTransaction(migrationStatements);
+    }
   }
 
-  async getKv(key : string) : Promise<any> {
-    const stmt = `SELECT * FROM kv where key= "${key}"`;
-    const qValues = await this.session?.query(stmt);
+  async getKv(key: string): Promise<any> {
+    const qValues = await this.session?.query(SqliteStorageWallet.GET_KV_SQL, [
+      key,
+    ]);
     if (qValues && qValues.values && qValues.values.length === 1) {
       return JSON.parse(qValues.values[0]?.value);
     }
     return undefined;
   }
 
-  async setKv(key : string,val : any) : Promise<void> {
-    const sqlcmd = "INSERT INTO kv (key,value) VALUES (?,?)";
-    const values: Array<any>  = [key,JSON.stringify(val)];
-    await this.session?.run(sqlcmd,values)
+  async setKv(key: string, val: any): Promise<void> {
+    const values: Array<any> = [key, JSON.stringify(val)];
+    await this.session?.run(SqliteStorageWallet.INSERT_KV_SQL, values);
+  }
+
+  private async getCurrentVersionDatabase(): Promise<string> {
+    try {
+      const currentVersionDatabase = await this.getKv(
+        SqliteStorageWallet.VERSION_DATABASE_KEY
+      );
+      return currentVersionDatabase;
+    } catch (error) {
+      return "0.0.0";
+    }
   }
 }
 
