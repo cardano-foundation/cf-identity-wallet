@@ -10,25 +10,19 @@ export class LibP2pInboundTransport implements InboundTransport {
   }
 
   public async start(agent: Agent): Promise<void> {
-    try {
-      const agentConfig = agent.config;
-      this.logger = agentConfig.logger;
-      this.agent = agent;
-      await this.libP2p.start();
-      await this.libP2p.handleInboundMessage();
-      await this.libP2p.advertising();
-      this.libP2p.setUsageStatusOfInbound(true);
-      const endpoint = this.libP2p.getEndpoint(this.libP2p.peerId);
-      if (endpoint){
-        const endpoints = this.agent.config.endpoints;
-        this.agent.config.endpoints = [...endpoints, endpoint];
-      }
-      this.logger.debug("Starting LibP2p inbound transport agent");
+    const agentConfig = agent.config;
+    this.logger = agentConfig.logger;
+    this.agent = agent;
+    await this.libP2p.start();
+    await this.libP2p.handleInboundMessage();
+    await this.libP2p.advertising();
+    this.libP2p.setUsageStatusOfInbound(true);
+    const endpoint = this.libP2p.getEndpoint(this.libP2p.peerId);
+    if (endpoint){
+      const endpoints = this.agent.config.endpoints;
+      this.agent.config.endpoints = [...endpoints, endpoint];
     }
-    catch (e) {
-      this.logger.error(`Error starting LibP2p inbound transport agent: ${e}`);
-      throw e;
-    }
+    this.logger.debug("Starting LibP2p inbound transport agent");
   }
 
   public async stop(): Promise<void> {

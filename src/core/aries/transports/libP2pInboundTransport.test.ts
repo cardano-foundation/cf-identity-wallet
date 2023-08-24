@@ -70,12 +70,6 @@ describe("LibP2p webrtc inbound transport test", () => {
     await expect(libP2pInboundTransport.start(agent)).resolves.toBeUndefined();
   });
 
-  test("should successfully start with libP2p function error", async () => {
-    const advertisingMockFn = jest.spyOn(LibP2p.libP2p, "advertising");
-    advertisingMockFn.mockRejectedValue(new Error("Mock error"));
-    await expect(libP2pInboundTransport.start(agent)).resolves.toBeUndefined();
-  });
-
   test("should successfully stop", async () => {
     await LibP2p.libP2p.start();
     await agent.registerInboundTransport(libP2pInboundTransport);
@@ -98,7 +92,7 @@ describe("LibP2p webrtc inbound transport test", () => {
           error: jest.fn(),
           debug: jest.fn(),
         },
-        endpoints: jest.fn(),
+        endpoints: [],
       },
       receiveMessage: jest.fn(),
     });
