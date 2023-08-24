@@ -116,14 +116,6 @@ class AriesAgent {
     AriesAgent.ready = true;
   }
 
-  onMessage(callback?: (event: BasicMessageStateChangedEvent) => void) {
-    this.agent.events.on(BasicMessageEventTypes.BasicMessageStateChanged, async (event: BasicMessageStateChangedEvent) => {
-      this.agent.config.logger.info((`\nA received a message from connection ID ${event.payload.basicMessageRecord.connectionId}: ${event.payload.message.content}\n`));
-      if (callback)
-        callback(event);
-    })
-  }
-
   /**
    * Create an invitation link to connect
    */
