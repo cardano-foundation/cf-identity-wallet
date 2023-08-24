@@ -38,6 +38,11 @@ export class LibP2p {
     usageStatusOfOutbound: false,
   };
   public static readonly ADS_TIMEOUT_ERROR_MSG = "P2P advertising Timeout";
+  public static readonly LIBP2P_NODE_NOT_STARTED_ERROR_MSG = "LibP2p node is not started";
+  public static readonly CAN_NOT_ADS_ERROR_MSG = "Can not advertising";
+  public static readonly NOT_INIT_NODE_ERROR_MSG = "Not initialized node";
+  public static readonly NOT_FOUND_PEER_ID_ERROR_MSG = "Not found peerId";
+  public static readonly ENDPOINT_IS_NOT_DEFINED_ERROR_MSG = "Endpoint is not defined";
 
 
   constructor(public readonly libP2pService: LibP2pService) {
@@ -115,7 +120,7 @@ export class LibP2p {
    */
   public async advertising():Promise<string> {
     if (!this.node) {
-      throw new Error("LibP2p node is not started")
+      throw new Error(LibP2p.LIBP2P_NODE_NOT_STARTED_ERROR_MSG)
     }
     if(this.endpoint) {
       return this.endpoint;
@@ -129,7 +134,7 @@ export class LibP2p {
       this.setEndpoint(endpoint);
       return endpoint;
     }
-    throw new Error("Can not advertising");
+    throw new Error(LibP2p.CAN_NOT_ADS_ERROR_MSG);
   }
   public async receiveMessage(data: IncomingStreamData): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -156,17 +161,17 @@ export class LibP2p {
 
   private checkConditionsSendMessages(): void {
     if (!this.node) {
-      throw new Error("Not initialized node");
+      throw new Error(LibP2p.NOT_INIT_NODE_ERROR_MSG);
     }
     if (!this.peerId) {
-      throw new Error("Not found peerId");
+      throw new Error(LibP2p.NOT_FOUND_PEER_ID_ERROR_MSG);
     }
   }
 
   public async sendMessage(outboundPackage: OutboundPackage) {
     this.checkConditionsSendMessages();
     if(!outboundPackage.endpoint){
-      throw new Error("Endpoint is not defined");
+      throw new Error(LibP2p.ENDPOINT_IS_NOT_DEFINED_ERROR_MSG);
     }
     const getEndpoint = outboundPackage.endpoint?.replace(schemaPrefix, "");
     let libP2pTools: ILibP2pTools | undefined = this.webRTCConnections.get(getEndpoint);
@@ -182,10 +187,6 @@ export class LibP2p {
         connection,
         isActive: true
       }
-      // Implement logic for check connection
-      // if (!libP2pTools?.isActive) {
-      //   throw new Error("Connection is not active");
-      // }
       this.webRTCConnections = this.webRTCConnections.set(getEndpoint, libP2pTools);
     }
     libP2pTools.sender.push(new TextEncoder().encode(JSON.stringify(outboundPackage.payload)));

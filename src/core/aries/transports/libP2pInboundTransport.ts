@@ -20,12 +20,14 @@ export class LibP2pInboundTransport implements InboundTransport {
       this.libP2p.setUsageStatusOfInbound(true);
       const endpoint = this.libP2p.getEndpoint(this.libP2p.peerId);
       if (endpoint){
-        this.agent.config.endpoints = [endpoint];
+        const endpoints = this.agent.config.endpoints;
+        this.agent.config.endpoints = [...endpoints, endpoint];
       }
       this.logger.debug("Starting LibP2p inbound transport agent");
     }
     catch (e) {
       this.logger.error(`Error starting LibP2p inbound transport agent: ${e}`);
+      throw e;
     }
   }
 

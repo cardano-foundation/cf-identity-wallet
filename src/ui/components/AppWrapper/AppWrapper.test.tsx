@@ -3,20 +3,11 @@ import { Provider } from "react-redux";
 import { AppWrapper } from "./AppWrapper";
 import { store } from "../../../store";
 
-jest.mock("../../../core/aries/transports/libp2p/libP2p", () => ({
-  LibP2p: {
-    libP2p: {
-      start: jest.fn(),
-    },
-  },
-}));
 jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
       start: jest.fn(),
       getIdentities: jest.fn().mockResolvedValue([]),
-      registerLibP2pInbound: jest.fn(),
-      registerLibP2pOutbound: jest.fn(),
     },
   },
 }));

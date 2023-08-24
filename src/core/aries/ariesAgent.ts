@@ -66,6 +66,8 @@ class AriesAgent {
     "DID document missing or unresolvable for stored DID";
   static readonly UNEXPECTED_DID_DOC_FORMAT =
     "DID document format is missing expected values for stored DID";
+  static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
+    "No domain found in config";
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
@@ -113,6 +115,9 @@ class AriesAgent {
   async start(): Promise<void> {
     await this.agent.initialize();
     await this.agent.modules.signify.start();
+    // @TODO - uncomment for demo, can remove if not used
+    // await AriesAgent.agent.registerLibP2pInbound(LibP2p.libP2p);
+    // await AriesAgent.agent.registerLibP2pOutbound(LibP2p.libP2p);
     AriesAgent.ready = true;
   }
 
@@ -123,12 +128,13 @@ class AriesAgent {
     const createInvitation = await  this.agent.oob.createInvitation({
       autoAcceptConnection: true,
     });
-    const domain = this.agent.config.endpoints?.[0];
-    if (!domain) {
-      throw new Error("No domain found in config");
+    const domains = this.agent.config.endpoints;
+    const libP2pDomain = domains.find((domain) => domain.includes("libp2p"));
+    if (!libP2pDomain) {
+      throw new Error(AriesAgent.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
     }
     return createInvitation.outOfBandInvitation.toUrl({
-      domain: domain,
+      domain: libP2pDomain,
     })
   }
 

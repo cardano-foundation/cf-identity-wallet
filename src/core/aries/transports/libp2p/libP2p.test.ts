@@ -102,7 +102,7 @@ describe("LibP2p webrtc class test", () => {
   test("LibP2p fail advertising when can not get endpoint from node", async () => {
     const advertisingMockFn = jest.spyOn(libP2p.libP2pService, "advertising");
     advertisingMockFn.mockReturnValue(undefined as any);
-    await expect(libP2p.advertising()).rejects.toThrowError("Can not advertising");
+    await expect(libP2p.advertising()).rejects.toThrowError(LibP2p.CAN_NOT_ADS_ERROR_MSG);
   });
 
   test("LibP2p fail advertising when timeout", async () => {
@@ -122,7 +122,7 @@ describe("LibP2p webrtc class test", () => {
         }, 0.5 * 1000, LibP2p.ADS_TIMEOUT_ERROR_MSG);
       }), 1000]
     );
-    await expect(libP2p.advertising()).rejects.toThrowError("P2P advertising Timeout");
+    await expect(libP2p.advertising()).rejects.toThrowError(LibP2p.ADS_TIMEOUT_ERROR_MSG);
   });
 
   test("LibP2p successfully receive message", async () => {
@@ -146,7 +146,7 @@ describe("LibP2p webrtc class test", () => {
       connectionId: "", endpoint: "", payload: payload, responseRequested: false
     }
     libP2p.setNode(undefined as any);
-    await expect(libP2p.sendMessage(outboundPackage)).rejects.toThrowError("Not initialized node");
+    await expect(libP2p.sendMessage(outboundPackage)).rejects.toThrowError(LibP2p.NOT_INIT_NODE_ERROR_MSG);
   })
 
   test("LibP2p successfully setUsageStatusOfInbound", async () => {
@@ -176,7 +176,7 @@ describe("LibP2p webrtc class test", () => {
       connectionId: "", endpoint: "", payload: payload, responseRequested: false
     }
     libP2p.setPeerId(undefined as any);
-    await expect(libP2p.sendMessage(outboundPackage)).rejects.toThrowError("Not found peerId");
+    await expect(libP2p.sendMessage(outboundPackage)).rejects.toThrowError(LibP2p.NOT_FOUND_PEER_ID_ERROR_MSG);
   });
 
   test("LibP2p fail when sendMessage payload without endpoint", async () => {
@@ -184,7 +184,7 @@ describe("LibP2p webrtc class test", () => {
     const outboundPackage: OutboundPackage = {
       connectionId: "", payload: payload, responseRequested: false
     }
-    await expect(libP2p.sendMessage(outboundPackage)).rejects.toThrowError("Endpoint is not defined");
+    await expect(libP2p.sendMessage(outboundPackage)).rejects.toThrowError(LibP2p.ENDPOINT_IS_NOT_DEFINED_ERROR_MSG);
   });
 
   test("LibP2p successfully when sendMessage", async () => {
