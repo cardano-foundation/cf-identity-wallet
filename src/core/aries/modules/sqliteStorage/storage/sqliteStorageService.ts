@@ -36,8 +36,10 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     (SELECT group_concat(it.name || '|' || it.value)
         FROM items_tags it WHERE it.item_id = i.id) tags
     FROM items i WHERE category = ?`;
-  static readonly SCAN_TAGS_SQL =
+  static readonly SCAN_TAGS_SQL_EQ =
     "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)";
+  static readonly SCAN_TAGS_SQL_IN =
+    "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value IN ";
 
   async save(agentContext: AgentContext, record: T): Promise<void> {
     assertSqliteStorageWallet(agentContext.wallet);
@@ -202,8 +204,19 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     if (query) {
       for (const [queryKey, queryVal] of Object.entries(query)) {
         if (queryVal) {
-          scan_query += " AND " + SqliteStorageService.SCAN_TAGS_SQL;
-          values.push(queryKey, queryVal);
+          if (Array.isArray(queryVal)) {
+            let generateValueFinds = Array.from("?".repeat(queryVal.length));
+            scan_query +=
+              " AND " +
+              SqliteStorageService.SCAN_TAGS_SQL_IN +
+              "(" +
+              generateValueFinds.join() +
+              "))";
+            values.push(queryKey, ...queryVal);
+          } else {
+            scan_query += " AND " + SqliteStorageService.SCAN_TAGS_SQL_EQ;
+            values.push(queryKey, queryVal);
+          }
         }
       }
     }
@@ -229,14 +242,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
       statement: SqliteStorageService.INSERT_ITEMS_SQL,
       values: [id, sObject.category, sObject.name, sObject.value],
     });
-    for (let key in sObject.tags) {
-      if (sObject.tags[key]) {
-        transactionStatements.push({
-          statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
-          values: [id, key, sObject.tags[key]],
-        });
-      }
-    }
+    transactionStatements.push(...this.getTagsInsertSql(id, sObject.tags));
     await session.executeTransaction(transactionStatements);
   }
 
@@ -255,14 +261,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
       statement: SqliteStorageService.DELETE_ITEM_TAGS_SQL,
       values: [id],
     });
-    for (let key in sObject.tags) {
-      if (sObject.tags[key]) {
-        transactionStatements.push({
-          statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
-          values: [id, key, sObject.tags[key]],
-        });
-      }
-    }
+    transactionStatements.push(...this.getTagsInsertSql(id, sObject.tags));
     await session.executeTransaction(transactionStatements);
   }
 
@@ -278,6 +277,28 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
       },
     ];
     await session.executeTransaction(transactionStatements);
+  }
+
+  private getTagsInsertSql(itemId: string, tags: Record<string, unknown>) {
+    const statements = [];
+    for (let key in tags) {
+      if (tags[key]) {
+        if (Array.isArray(tags[key])) {
+          (tags[key] as Array<string>).forEach((value) => {
+            statements.push({
+              statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
+              values: [itemId, key, value],
+            });
+          });
+        } else {
+          statements.push({
+            statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
+            values: [itemId, key, tags[key]],
+          });
+        }
+      }
+    }
+    return statements;
   }
 }
 
