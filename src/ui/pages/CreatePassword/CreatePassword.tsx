@@ -8,7 +8,6 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  useIonViewWillEnter,
 } from "@ionic/react";
 import { closeOutline, checkmarkOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
@@ -26,12 +25,11 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getStateCache,
   setAuthentication,
-  setCurrentRoute,
   setOnboardingRoute,
 } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
-import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
+import { Alert } from "../../components/Alert";
 
 const errorMessages = {
   hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
@@ -154,6 +152,7 @@ const CreatePassword = () => {
   const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
   const [createHintValue, setCreateHintValue] = useState("");
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   const passwordValueMatching =
     createPasswordValue.length > 0 &&
@@ -227,11 +226,11 @@ const CreatePassword = () => {
         closeButtonAction={() => handleClose()}
         title={`${i18n.t("createpassword.title")}`}
         footer={true}
-        primaryButtonText={`${i18n.t("createpassword.continue.button")}`}
+        primaryButtonText={`${i18n.t("createpassword.buttons.continue")}`}
         primaryButtonAction={() => handleContinue(false)}
         primaryButtonDisabled={!validated}
-        secondaryButtonText={`${i18n.t("createpassword.skip.button")}`}
-        secondaryButtonAction={() => handleContinue(true)}
+        secondaryButtonText={`${i18n.t("createpassword.buttons.skip")}`}
+        secondaryButtonAction={() => setAlertIsOpen(true)}
       >
         <IonGrid>
           <IonRow>
@@ -326,6 +325,15 @@ const CreatePassword = () => {
             />
           ) : null}
         </IonGrid>
+        <Alert
+          isOpen={alertIsOpen}
+          setIsOpen={setAlertIsOpen}
+          dataTestId="create-password-alert-skip"
+          headerText={`${i18n.t("createpassword.alert.text")}`}
+          confirmButtonText={`${i18n.t("createpassword.alert.button.confirm")}`}
+          cancelButtonText={`${i18n.t("createpassword.alert.button.cancel")}`}
+          actionConfirm={() => handleContinue(true)}
+        />
       </PageLayout>
     </IonPage>
   );

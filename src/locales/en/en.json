@@ -208,11 +208,16 @@
         "placeholder": "Create a password hint"
       }
     },
-    "continue": {
-      "button": "Create password"
+    "buttons": {
+      "continue": "Create password",
+      "skip": "Skip"
     },
-    "skip": {
-      "button": "Skip"
+    "alert": {
+      "text": "If you go back you will lose your current progress. Are you sure you want to do this?",
+      "button": {
+        "confirm": "Yes, skip",
+        "cancel": "Cancel"
+      }
     },
     "error": {
       "hasSpecialChar": "Please enter a valid character",
