@@ -27,7 +27,7 @@ import { generateSeedPhraseState } from "../../constants/dictionary";
 const AddCryptoAccount = ({
   addAccountIsOpen,
   setAddAccountIsOpen,
-  setShowVerifyPassword,
+  setChooseAccountNameIsOpen,
   idwProfileInUse,
 }: AddCryptoAccountsProps) => {
   const history = useHistory();
@@ -76,7 +76,7 @@ const AddCryptoAccount = ({
                     data-testid="add-crypto-account-reuse-button"
                     onClick={() => {
                       setAddAccountIsOpen(false);
-                      setShowVerifyPassword(true);
+                      setChooseAccountNameIsOpen(true);
                     }}
                   >
                     <span>
@@ -95,9 +95,10 @@ const AddCryptoAccount = ({
                 <span
                   className="add-crypto-account-option"
                   data-testid="add-crypto-account-generate-button"
-                  onClick={() =>
-                    handleNewAccount(generateSeedPhraseState.additional)
-                  }
+                  onClick={() => {
+                    setAddAccountIsOpen(false);
+                    handleNewAccount(generateSeedPhraseState.additional);
+                  }}
                 >
                   <span>
                     <IonButton shape="round">
@@ -114,9 +115,10 @@ const AddCryptoAccount = ({
                 <span
                   className="add-crypto-account-option"
                   data-testid="add-crypto-account-restore-button"
-                  onClick={() =>
-                    handleNewAccount(generateSeedPhraseState.restore)
-                  }
+                  onClick={() => {
+                    setAddAccountIsOpen(false);
+                    handleNewAccount(generateSeedPhraseState.restore);
+                  }}
                 >
                   <span>
                     <IonButton shape="round">

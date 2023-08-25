@@ -335,16 +335,8 @@ const Crypto = () => {
       <AddCryptoAccount
         addAccountIsOpen={addAccountIsOpen}
         setAddAccountIsOpen={setAddAccountIsOpen}
-        setShowVerifyPassword={setShowVerifyPassword}
+        setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
         idwProfileInUse={idwProfileInUse}
-      />
-      <VerifyPassword
-        isOpen={showVerifyPassword}
-        onVerify={() => {
-          setShowVerifyPassword(false);
-          setChooseAccountNameIsOpen(true);
-        }}
-        setIsOpen={(isOpen: boolean) => setShowVerifyPassword(isOpen)}
       />
       <ChooseAccountName
         chooseAccountNameIsOpen={chooseAccountNameIsOpen}
