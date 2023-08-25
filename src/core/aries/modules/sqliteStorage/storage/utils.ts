@@ -38,7 +38,15 @@ function resolveTagsFromDb(tagDb: string): Record<string, unknown> | null {
   const tagsParseArrays = tagDb?.split(",") || [];
   tagsParseArrays.forEach((tag: string) => {
     const tagParse = tag.split("|");
-    tags[tagParse[0]] = tagParse[1];
+    if (tags[tagParse[0]]) {
+      if (Array.isArray(tags[tagParse[0]])) {
+        (tags[tagParse[0]] as Array<string>).push(tagParse[1]);
+      } else {
+        tags[tagParse[0]] = [tags[tagParse[0]], tagParse[1]];
+      }
+    } else {
+      tags[tagParse[0]] = tagParse[1];
+    }
   });
   return tags;
 }
