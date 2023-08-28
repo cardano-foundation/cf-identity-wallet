@@ -7,10 +7,10 @@ import {
   KeyDidResolver,
   KeyType,
   DidRecord,
-  BasicMessageStateChangedEvent,
-  BasicMessageEventTypes,
   OutOfBandRecord,
   ConnectionRecord,
+  ConnectionEventTypes,
+  ConnectionStateChangedEvent,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -131,7 +131,7 @@ class AriesAgent {
       throw new Error(AriesAgent.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
     }
     const createInvitation = await  this.agent.oob.createInvitation({
-      autoAcceptConnection: true,
+      autoAcceptConnection: false,
     });
 
     return createInvitation.outOfBandInvitation.toUrl({
@@ -166,6 +166,20 @@ class AriesAgent {
     });
   }
 
+  /**
+   * Lister event connection state change.
+   * @param callback 
+   */
+  onConnectionStateChange(callback?: (event: ConnectionStateChangedEvent) => void) {
+    this.agent.events.on(ConnectionEventTypes.ConnectionStateChanged, async (event: ConnectionStateChangedEvent) => {
+      if (callback)
+        callback(event);
+    })
+  }
+
+  async acceptRequest(connectionId: string){
+    await this.agent.connections.acceptRequest(connectionId);
+  }
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
     await this.agent.modules.generalStorage.saveMiscRecord(
