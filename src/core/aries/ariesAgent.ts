@@ -176,10 +176,9 @@ class AriesAgent {
    * Lister event connection state change.
    * @param callback 
    */
-  onConnectionStateChange(callback?: (event: ConnectionStateChangedEvent) => void) {
+  onConnectionStateChange(callback: (event: ConnectionStateChangedEvent) => void) {
     this.agent.events.on(ConnectionEventTypes.ConnectionStateChanged, async (event: ConnectionStateChangedEvent) => {
-      if (callback)
-        callback(event);
+      callback(event);
     })
   }
 
@@ -187,13 +186,13 @@ class AriesAgent {
    * Lister event request connection.
    * @param callback 
    */
-  onRequestConnection(callback?: (event: ConnectionRecord) => void) {
+  onRequestConnection(callback: (event: ConnectionRecord) => void) {
     this.agent.events.on(ConnectionEventTypes.ConnectionStateChanged, async (event: ConnectionStateChangedEvent) => {
       if (
         event.payload.connectionRecord.role === DidExchangeRole.Responder &&
         event.payload.connectionRecord.state === DidExchangeState.RequestReceived
       ) {
-        if (callback) callback(event.payload.connectionRecord);
+        callback(event.payload.connectionRecord);
       }
     })
   }
@@ -202,10 +201,10 @@ class AriesAgent {
    * Lister event offer received.
    * @param callback 
    */
-  onCredentialOfferReceived(callback?: (event: CredentialExchangeRecord) => void) {
+  onCredentialOfferReceived(callback: (event: CredentialExchangeRecord) => void) {
     this.agent.events.on(CredentialEventTypes.CredentialStateChanged, async (event: CredentialStateChangedEvent) => {
       if (event.payload.credentialRecord.state === CredentialState.OfferReceived) {
-        if (callback) callback(event.payload.credentialRecord);
+        callback(event.payload.credentialRecord);
       }
     })
   }
