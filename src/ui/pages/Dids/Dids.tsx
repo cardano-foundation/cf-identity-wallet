@@ -9,11 +9,8 @@ import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getIdentitiesCache } from "../../../store/reducers/identitiesCache";
-import {
-  getAuthentication,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
-import { RoutePath, TabsRoutePath } from "../../../routes/paths";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentity } from "../../components/CreateIdentity";
 import { cardTypes } from "../../constants/dictionary";
 
@@ -53,18 +50,8 @@ const AdditionalButtons = ({ handleCreateDid }: AdditionalButtonsProps) => {
 
 const Dids = () => {
   const didsData = useAppSelector(getIdentitiesCache);
-  const authentication = useAppSelector(getAuthentication);
   const dispatch = useAppDispatch();
-  const history = useHistory();
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const handleCreateDid = () => {
-    if (!authentication.passwordIsSet) {
-      history.replace(RoutePath.CREATE_PASSWORD);
-      dispatch(setCurrentRoute({ path: RoutePath.CREATE_PASSWORD }));
-    } else {
-      setModalIsOpen(true);
-    }
-  };
 
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.DIDS }))
@@ -80,7 +67,7 @@ const Dids = () => {
         title={`${i18n.t("dids.tab.title")}`}
         menuButton={true}
         additionalButtons={
-          <AdditionalButtons handleCreateDid={handleCreateDid} />
+          <AdditionalButtons handleCreateDid={() => setModalIsOpen(true)} />
         }
       >
         {didsData.length ? (
@@ -91,7 +78,7 @@ const Dids = () => {
         ) : (
           <CardsPlaceholder
             buttonLabel={i18n.t("dids.tab.create")}
-            buttonAction={handleCreateDid}
+            buttonAction={() => setModalIsOpen(true)}
             testId="dids-cards-placeholder"
           />
         )}
