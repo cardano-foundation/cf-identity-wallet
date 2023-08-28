@@ -11,6 +11,8 @@ import {
   ConnectionRecord,
   ConnectionEventTypes,
   ConnectionStateChangedEvent,
+  DidExchangeRole,
+  DidExchangeState,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -177,6 +179,22 @@ class AriesAgent {
     })
   }
 
+  /**
+   * Lister event request connection.
+   * @param callback 
+   */
+  onRequestConnection(callback?: (event: ConnectionRecord) => void) {
+    this.agent.events.on(ConnectionEventTypes.ConnectionStateChanged, async (event: ConnectionStateChangedEvent) => {
+      if (
+        event.payload.connectionRecord.role === DidExchangeRole.Responder &&
+        event.payload.connectionRecord.state === DidExchangeState.RequestReceived
+      ) {
+        if (callback) callback(event.payload.connectionRecord);
+      }
+    })
+  }
+
+  
   async acceptRequest(connectionId: string){
     await this.agent.connections.acceptRequest(connectionId);
   }
