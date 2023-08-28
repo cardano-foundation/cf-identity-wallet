@@ -13,6 +13,10 @@ import {
   ConnectionStateChangedEvent,
   DidExchangeRole,
   DidExchangeState,
+  CredentialEventTypes,
+  CredentialStateChangedEvent,
+  CredentialState,
+  CredentialExchangeRecord,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -194,6 +198,21 @@ class AriesAgent {
     })
   }
 
+  /**
+   * Lister event offer received.
+   * @param callback 
+   */
+  onCredentialOfferReceived(callback?: (event: CredentialExchangeRecord) => void) {
+    this.agent.events.on(CredentialEventTypes.CredentialStateChanged, async (event: CredentialStateChangedEvent) => {
+      if (event.payload.credentialRecord.state === CredentialState.OfferReceived) {
+        if (callback) callback(event.payload.credentialRecord);
+      }
+    })
+  }
+
+  async acceptCredentialOffer(credentialRecordId: string){
+    await this.agent.credentials.acceptOffer({ credentialRecordId});
+  }
   
   async acceptRequest(connectionId: string){
     await this.agent.connections.acceptRequest(connectionId);
