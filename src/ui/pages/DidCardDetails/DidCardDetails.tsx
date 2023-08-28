@@ -55,7 +55,7 @@ const DidCardDetails = () => {
   const [showToast, setShowToast] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<DIDDetails | undefined>();
-  const [showVerifyPasscode, setShowVerifyPasscode] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -370,7 +370,7 @@ const DidCardDetails = () => {
             if (stateCache?.authentication.passwordIsSet) {
               setVerifyPasswordIsOpen(true);
             } else {
-              setShowVerifyPasscode(true);
+              setVerifyPasscodeIsOpen(true);
             }
           }}
         />
@@ -380,8 +380,8 @@ const DidCardDetails = () => {
           onVerify={handleDelete}
         />
         <VerifyPasscode
-          showVerifyPasscode={showVerifyPasscode}
-          setShowVerifyPasscode={setShowVerifyPasscode}
+          isOpen={verifyPasscodeIsOpen}
+          setIsOpen={setVerifyPasscodeIsOpen}
           onVerify={handleDelete}
         />
         <IonToast

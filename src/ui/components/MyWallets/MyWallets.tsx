@@ -32,6 +32,8 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences";
+import { VerifyPasscode } from "../../pages/VerifyPasscode";
+import { getStateCache } from "../../../store/reducers/stateCache";
 
 const MyWallets = ({
   myWalletsIsOpen,
@@ -43,6 +45,7 @@ const MyWallets = ({
   setDefaultAccountAddress,
 }: MyWalletsProps) => {
   const dispatch = useAppDispatch();
+  const stateCache = useAppSelector(getStateCache);
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
@@ -52,6 +55,7 @@ const MyWallets = ({
   });
   const [editIsOpen, setEditIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
   const handleSetDefaultAccount = (address: string) => {
     dispatch(setDefaultCryptoAccountCache(address));
@@ -159,7 +163,11 @@ const MyWallets = ({
               name: account.name,
               address: account.address,
             });
-            setVerifyPasswordIsOpen(true);
+            if (stateCache?.authentication.passwordIsSet) {
+              setVerifyPasswordIsOpen(true);
+            } else {
+              setVerifyPasscodeIsOpen(true);
+            }
           }}
         >
           <IonItemOption
@@ -185,7 +193,12 @@ const MyWallets = ({
                 name: account.name,
                 address: account.address,
               });
-              setVerifyPasswordIsOpen(true);
+
+              if (stateCache?.authentication.passwordIsSet) {
+                setVerifyPasswordIsOpen(true);
+              } else {
+                setVerifyPasscodeIsOpen(true);
+              }
             }}
           >
             Delete
@@ -269,6 +282,11 @@ const MyWallets = ({
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
+        onVerify={handleDelete}
+      />
+      <VerifyPasscode
+        isOpen={verifyPasscodeIsOpen}
+        setIsOpen={setVerifyPasscodeIsOpen}
         onVerify={handleDelete}
       />
     </>

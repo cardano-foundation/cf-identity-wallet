@@ -20,6 +20,7 @@ import {
   getConnectionsCache,
   setConnectionsCache,
 } from "../../../store/reducers/connectionsCache";
+import { VerifyPasscode } from "../VerifyPasscode";
 
 const ConnectionDetails = () => {
   const history = useHistory();
@@ -30,6 +31,7 @@ const ConnectionDetails = () => {
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
   const handleDone = () => {
@@ -196,12 +198,23 @@ const ConnectionDetails = () => {
           cancelButtonText={`${i18n.t(
             "connections.details.options.alert.cancel"
           )}`}
-          actionConfirm={() => setVerifyPasswordIsOpen(true)}
+          actionConfirm={() => {
+            if (stateCache?.authentication.passwordIsSet) {
+              setVerifyPasswordIsOpen(true);
+            } else {
+              setVerifyPasscodeIsOpen(true);
+            }
+          }}
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
           onVerify={verifyAction}
+        />
+        <VerifyPasscode
+          isOpen={verifyPasscodeIsOpen}
+          setIsOpen={setVerifyPasscodeIsOpen}
+          onVerify={handleDelete}
         />
         <IonToast
           isOpen={showToast}

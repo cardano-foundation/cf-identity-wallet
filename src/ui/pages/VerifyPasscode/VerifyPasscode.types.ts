@@ -1,6 +1,6 @@
 interface VerifyPasscodeProps {
-  showVerifyPasscode: boolean;
-  setShowVerifyPasscode: (value: boolean) => void;
+  isOpen: boolean;
+  setIsOpen: (value: boolean) => void;
   onVerify: () => void;
 }
 

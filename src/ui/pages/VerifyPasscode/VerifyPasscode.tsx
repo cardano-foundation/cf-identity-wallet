@@ -18,8 +18,8 @@ import { VerifyPasscodeProps } from "./VerifyPasscode.types";
 import "./VerifyPasscode.scss";
 
 const VerifyPasscode = ({
-  showVerifyPasscode,
-  setShowVerifyPasscode,
+  isOpen,
+  setIsOpen,
   onVerify,
 }: VerifyPasscodeProps) => {
   const history = useHistory();
@@ -27,7 +27,7 @@ const VerifyPasscode = ({
   const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
-  const [isOpen, setIsOpen] = useState(false);
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
   const headerText =
     seedPhrase !== null
@@ -41,9 +41,9 @@ const VerifyPasscode = ({
 
   const handleClearState = () => {
     setPasscode("");
-    setIsOpen(false);
+    setAlertIsOpen(false);
     setPasscodeIncorrect(false);
-    setShowVerifyPasscode(false);
+    setIsOpen(false);
   };
 
   const handlePinChange = (digit: number) => {
@@ -102,7 +102,7 @@ const VerifyPasscode = ({
 
   return (
     <IonModal
-      isOpen={showVerifyPasscode}
+      isOpen={isOpen}
       animated={true}
       className="page-layout verify-passcode"
       data-testid="verify-passcode"
@@ -138,7 +138,7 @@ const VerifyPasscode = ({
                 expand="block"
                 fill="outline"
                 className="secondary-button"
-                onClick={() => setIsOpen(true)}
+                onClick={() => setAlertIsOpen(true)}
               >
                 {i18n.t("verifypasscode.forgotten.button")}
               </IonButton>
@@ -146,8 +146,8 @@ const VerifyPasscode = ({
           </IonRow>
         </IonGrid>
         <Alert
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
+          isOpen={alertIsOpen}
+          setIsOpen={setAlertIsOpen}
           dataTestId="alert-forgotten"
           headerText={headerText}
           confirmButtonText={confirmButtonText}
