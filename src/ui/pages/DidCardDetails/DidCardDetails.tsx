@@ -41,6 +41,7 @@ import {
 import { formatShortDate } from "../../../utils";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { DIDDetails, IdentityType } from "../../../core/aries/ariesAgent.types";
+import { VerifyPasscode } from "../VerifyPasscode";
 
 const DidCardDetails = () => {
   const history = useHistory();
@@ -54,6 +55,7 @@ const DidCardDetails = () => {
   const [showToast, setShowToast] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<DIDDetails | undefined>();
+  const [showVerifyPasscode, setShowVerifyPasscode] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -84,7 +86,7 @@ const DidCardDetails = () => {
       dispatch,
       updateRedux
     );
-    history.push(TabsRoutePath.DIDS);
+    history.push(backPath.pathname);
   };
 
   const handleDelete = () => {
@@ -364,11 +366,22 @@ const DidCardDetails = () => {
           cancelButtonText={`${i18n.t(
             "dids.card.details.delete.alert.cancel"
           )}`}
-          actionConfirm={() => setVerifyPasswordIsOpen(true)}
+          actionConfirm={() => {
+            if (stateCache?.authentication.passwordIsSet) {
+              setVerifyPasswordIsOpen(true);
+            } else {
+              setShowVerifyPasscode(true);
+            }
+          }}
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
+          onVerify={handleDelete}
+        />
+        <VerifyPasscode
+          showVerifyPasscode={showVerifyPasscode}
+          setShowVerifyPasscode={setShowVerifyPasscode}
           onVerify={handleDelete}
         />
         <IonToast

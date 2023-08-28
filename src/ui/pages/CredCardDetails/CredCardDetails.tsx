@@ -72,7 +72,7 @@ const CredCardDetails = () => {
       dispatch,
       updateRedux
     );
-    history.push(TabsRoutePath.CREDS);
+    history.push(backPath.pathname);
   };
 
   const handleDelete = () => {

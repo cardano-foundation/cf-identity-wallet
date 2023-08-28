@@ -372,6 +372,26 @@
       }
     }
   },
+  "verifypasscode": {
+    "cancel": "Cancel",
+    "title": "Enter passcode",
+    "description": "Please enter your passcode to verify",
+    "error": "Incorrect passcode",
+    "forgotten": {
+      "button": "I've forgotten my passcode"
+    },
+    "alert": {
+      "text": {
+        "verify": "If you've forgotten your passcode, please verify your seed phrase to gain access to your wallet",
+        "restart": "You currently haven't generated a seed phrase, would you like to start your onboarding again?"
+      },
+      "button": {
+        "verify": "Verify your seed phrase",
+        "restart": "Start again",
+        "cancel": "Cancel"
+      }
+    }
+  },
   "shareidentity": {
     "title": "Share identity",
     "divider": "or",
