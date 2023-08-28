@@ -83,7 +83,7 @@ describe("Onboarding Page", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        onboardingRoute: "",
+        currentOperation: "",
       },
       seedPhraseCache: {
         seedPhrase160: "",

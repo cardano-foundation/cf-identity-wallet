@@ -13,8 +13,8 @@ const connectionStatus = {
 
 const generateSeedPhraseState = {
   onboarding: "onboarding",
-  additional: "additional",
-  restore: "restore",
+  additional: "newcryptoaccount",
+  restore: "restorecryptoaccount",
   success: "success",
 };
 
@@ -77,10 +77,10 @@ const defaultConnectionData: ConnectionsProps = {
 const blurredCryptoData = "••••••••••••••••••";
 
 const onboardingRoute = {
-  create: "create",
-  createRoute: "?route=create",
-  restore: "restore",
-  restoreRoute: "?route=restore",
+  create: "onboardingcreate",
+  createRoute: "?route=onboardingcreate",
+  restore: "onboardingrestore",
+  restoreRoute: "?route=onboardingrestore",
 };
 
 export {

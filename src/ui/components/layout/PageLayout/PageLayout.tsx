@@ -22,6 +22,7 @@ const PageLayout = ({
   id,
   header,
   backButton,
+  beforeBack,
   onBack,
   currentPath,
   children,
@@ -50,19 +51,23 @@ const PageLayout = ({
   const stateCache = useAppSelector(getStateCache);
 
   const handleOnBack = () => {
-    if (backButton && currentPath) {
-      const { backPath, updateRedux } = getBackRoute(currentPath, {
-        store: { stateCache },
-      });
-      updateReduxState(
-        backPath.pathname,
-        { store: { stateCache } },
-        dispatch,
-        updateRedux
-      );
-      history.push(backPath.pathname);
-      if (onBack) {
-        onBack();
+    if (onBack) {
+      onBack();
+    } else {
+      if (beforeBack) {
+        beforeBack();
+      }
+      if (backButton && currentPath) {
+        const { backPath, updateRedux } = getBackRoute(currentPath, {
+          store: { stateCache },
+        });
+        updateReduxState(
+          backPath.pathname,
+          { store: { stateCache } },
+          dispatch,
+          updateRedux
+        );
+        history.push(backPath.pathname);
       }
     }
   };

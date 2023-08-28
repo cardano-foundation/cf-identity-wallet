@@ -9,7 +9,7 @@ import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getStateCache,
-  setOnboardingRoute,
+  setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -34,10 +34,10 @@ const Onboarding = () => {
       // @TODO - sdisalvo: Remove this condition and default to dispatch when the restore route is ready
       return;
     } else {
-      dispatch(setOnboardingRoute(route));
+      dispatch(setCurrentOperation(route));
       const data: DataProps = {
         store: { stateCache },
-        state: { onboardingRoute: route },
+        state: { currentOperation: route },
       };
       const { nextPath, updateRedux } = getNextRoute(
         RoutePath.ONBOARDING,

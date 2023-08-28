@@ -32,7 +32,7 @@ describe("NextRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
-        onboardingRoute: "",
+        currentOperation: "",
         defaultCryptoAccount: "",
       },
       seedPhraseCache: {
@@ -116,7 +116,7 @@ describe("NextRoute", () => {
     let data = {
       store: storeMock,
       state: {
-        onboardingRoute: onboardingRoute.create,
+        currentOperation: onboardingRoute.create,
       },
     };
     let result = getNextVerifySeedPhraseRoute(data);
@@ -128,7 +128,7 @@ describe("NextRoute", () => {
     data = {
       store: storeMock,
       state: {
-        onboardingRoute: "",
+        currentOperation: "",
       },
     };
     result = getNextVerifySeedPhraseRoute(data);
@@ -151,7 +151,7 @@ describe("getNextRoute", () => {
         passwordIsSet: false,
         passwordIsSkipped: true,
       },
-      onboardingRoute: "",
+      currentOperation: "",
       defaultCryptoAccount: "",
     },
     seedPhraseCache: {

@@ -20,10 +20,7 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import {
-  generateSeedPhraseState,
-  onboardingRoute,
-} from "../../constants/dictionary";
+import { generateSeedPhraseState } from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
@@ -36,7 +33,8 @@ const VerifySeedPhrase = () => {
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
     ? generateSeedPhraseState.onboarding
-    : (history?.location?.state as GenerateSeedPhraseProps)?.type || "";
+    : (history?.location?.state as GenerateSeedPhraseProps)?.type ||
+      stateCache?.currentOperation;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
     seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
@@ -123,9 +121,7 @@ const VerifySeedPhrase = () => {
           seedPhraseType !== generateSeedPhraseState.onboarding
             ? generateSeedPhraseState.success
             : "",
-        onboardingRoute: generateSeedPhraseState.onboarding
-          ? onboardingRoute.create
-          : "",
+        currentOperation: stateCache.currentOperation,
       },
     };
     const { nextPath, updateRedux } = getNextRoute(
@@ -172,7 +168,10 @@ const VerifySeedPhrase = () => {
         backButton={true}
         onBack={
           seedPhraseType === generateSeedPhraseState.onboarding
-            ? handleClearState
+            ? () => {
+                handleClearState();
+                handleExit();
+              }
             : () => setAlertExitIsOpen(true)
         }
         currentPath={RoutePath.VERIFY_SEED_PHRASE}

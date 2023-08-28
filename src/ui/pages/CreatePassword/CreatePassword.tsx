@@ -25,11 +25,12 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getStateCache,
   setAuthentication,
-  setOnboardingRoute,
+  setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { Alert } from "../../components/Alert";
+import { onboardingRoute } from "../../constants/dictionary";
 
 const errorMessages = {
   hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
@@ -145,6 +146,9 @@ const PasswordRegex = ({ password }: PasswordRegexProps) => {
 
 const CreatePassword = () => {
   const stateCache = useAppSelector(getStateCache);
+  const onboarding =
+    stateCache?.currentOperation === onboardingRoute.create ||
+    onboardingRoute.restore;
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [createPasswordValue, setCreatePasswordValue] = useState("");
@@ -195,7 +199,7 @@ const CreatePassword = () => {
       }
     }
 
-    dispatch(setOnboardingRoute(""));
+    dispatch(setCurrentOperation(""));
     dispatch(
       setAuthentication({
         ...stateCache.authentication,
@@ -222,7 +226,7 @@ const CreatePassword = () => {
       <PageLayout
         header={true}
         currentPath={RoutePath.CREATE_PASSWORD}
-        closeButton={true}
+        closeButton={!onboarding}
         closeButtonAction={() => handleClose()}
         title={`${i18n.t("createpassword.title")}`}
         footer={true}

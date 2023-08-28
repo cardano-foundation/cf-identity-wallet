@@ -18,7 +18,10 @@ import { AddCryptoAccountsProps } from "./AddCryptoAccount.types";
 import "./AddCryptoAccount.scss";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
@@ -36,6 +39,7 @@ const AddCryptoAccount = ({
 
   const handleNewAccount = (type: string) => {
     setAddAccountIsOpen(false);
+    dispatch(setCurrentOperation(type));
     const data: DataProps = {
       store: { stateCache },
     };

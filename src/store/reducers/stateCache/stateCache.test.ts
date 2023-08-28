@@ -5,12 +5,12 @@ import {
   CurrentRouteCacheProps,
   getAuthentication,
   getCurrentRoute,
-  getOnboardingRoute,
+  getCurrentOperation,
   getStateCache,
   initialState,
   setAuthentication,
   setCurrentRoute,
-  setOnboardingRoute,
+  setCurrentOperation,
   stateCacheSlice,
 } from "./stateCache";
 import { RootState } from "../../index";
@@ -62,14 +62,14 @@ describe("State Cache", () => {
 
   test("should set the onboarding route cache", () => {
     const route = onboardingRoute.create;
-    const action = setOnboardingRoute(route);
+    const action = setCurrentOperation(route);
     const nextState = stateCacheSlice.reducer(initialState, action);
 
-    expect(nextState.onboardingRoute).toEqual(route);
+    expect(nextState.currentOperation).toEqual(route);
     expect(nextState).not.toBe(initialState);
 
     const rootState = { stateCache: nextState } as RootState;
-    expect(getOnboardingRoute(rootState)).toEqual(nextState.onboardingRoute);
+    expect(getCurrentOperation(rootState)).toEqual(nextState.currentOperation);
     expect(getStateCache(rootState)).toEqual(nextState);
   });
 });

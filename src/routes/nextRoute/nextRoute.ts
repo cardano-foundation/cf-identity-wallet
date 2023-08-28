@@ -23,7 +23,10 @@ const getNextRootRoute = (store: StoreState) => {
   if (authentication.passcodeIsSet && !authentication.loggedIn) {
     path = RoutePath.PASSCODE_LOGIN;
   } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
-    if (store.stateCache.onboardingRoute.length) {
+    if (
+      store.stateCache.currentOperation ===
+      (onboardingRoute.create || onboardingRoute.restore)
+    ) {
       path = RoutePath.CREATE_PASSWORD;
     } else {
       path = RoutePath.TABS_MENU;
@@ -40,7 +43,7 @@ const getNextRootRoute = (store: StoreState) => {
 };
 
 const getNextOnboardingRoute = (data: DataProps) => {
-  const route = data?.state?.onboardingRoute;
+  const route = data?.state?.currentOperation;
   let query = "";
   if (route === onboardingRoute.create) {
     query = onboardingRoute.createRoute;
@@ -102,7 +105,7 @@ const getNextGenerateSeedPhraseRoute = () => {
 };
 
 const getNextVerifySeedPhraseRoute = (data: DataProps) => {
-  const route = data?.state?.onboardingRoute;
+  const route = data?.state?.currentOperation;
   const nextPath: string =
     route === onboardingRoute.create
       ? RoutePath.CREATE_PASSWORD

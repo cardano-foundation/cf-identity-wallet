@@ -32,7 +32,7 @@ interface StoreMocked {
       passcodeIsSet: boolean;
       seedPhraseIsSet?: boolean;
     };
-    onboardingRoute: string;
+    currentOperation: string;
   };
   seedPhraseCache: {
     seedPhrase160: string;
@@ -109,7 +109,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        onboardingRoute: onboardingRoute.createRoute,
+        currentOperation: onboardingRoute.createRoute,
       },
       seedPhraseCache: {
         seedPhrase160:
@@ -169,7 +169,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        onboardingRoute: onboardingRoute.createRoute,
+        currentOperation: onboardingRoute.createRoute,
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -351,7 +351,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        onboardingRoute: onboardingRoute.createRoute,
+        currentOperation: onboardingRoute.createRoute,
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -407,7 +407,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
         passcodeIsSet: true,
         seedPhraseIsSet: true,
       },
-      onboardingRoute: "",
+      currentOperation: "",
     },
     seedPhraseCache: {
       seedPhrase160:
@@ -496,7 +496,7 @@ describe.skip("Restore account from existing seed phrase", () => {
         passcodeIsSet: true,
         seedPhraseIsSet: true,
       },
-      onboardingRoute: "",
+      currentOperation: "",
     },
     seedPhraseCache: {
       seedPhrase160:
@@ -527,7 +527,9 @@ describe.skip("Restore account from existing seed phrase", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.generateseedphrase.restore.paragraph.top)
+      getByText(
+        EN_TRANSLATIONS.generateseedphrase.restorecryptoaccount.paragraph.top
+      )
     ).toBeVisible();
 
     const overlay = getByTestId("seed-phrase-privacy-overlay");

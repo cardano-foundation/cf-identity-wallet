@@ -55,7 +55,7 @@ const SetPasscode = () => {
     setOriginalPassCode("");
   };
 
-  const handleOnBack = () => {
+  const handleBeforeBack = () => {
     handleClearState();
   };
 
@@ -71,7 +71,7 @@ const SetPasscode = () => {
       <PageLayout
         header={true}
         backButton={true}
-        onBack={handleOnBack}
+        beforeBack={handleBeforeBack}
         currentPath={RoutePath.SET_PASSCODE}
         progressBar={true}
         progressBarValue={0.33}
