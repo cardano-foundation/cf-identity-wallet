@@ -1,0 +1,20 @@
+FROM ghcr.io/hyperledger/aries-cloudagent-python:py3.9-indy-1.16.0-0.8.0
+
+USER root
+
+RUN mkdir -p /acapy-mediator
+WORKDIR /acapy-mediator
+
+ADD https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64 /usr/bin/jq
+RUN chmod +x /usr/bin/jq
+
+USER $user
+
+# Copy the necessary files from the mediator sub-folder
+COPY mediator-service/acapy/start.sh start.sh
+COPY mediator-service/acapy/configs configs
+
+RUN chmod +x start.sh && \
+  aca-py --version > ./acapy-version.txt
+
+ENTRYPOINT ["bash", "./start.sh"]

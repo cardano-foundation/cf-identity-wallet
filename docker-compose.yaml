@@ -25,5 +25,82 @@ services:
     ports:
       - 51986:51986
     restart: always
+  caddy:
+    image: caddy
+    hostname: caddy
+    networks:
+      - mediator-network
+    ports: # Uncomment to access caddy outside of containers
+      - 2015:2015
+    #   - 2019:2019
+    volumes:
+      - ./mediator-service/caddy/Caddyfile:/etc/caddy/Caddyfile:z
+    healthcheck:
+      # Port 2019 is an internal Caddy admin port.
+      test: nc -zv localhost:2019 || exit -1
+      interval: 3s
+      timeout: 3s
+      start_period: 10s
+      retries: 5
+
+  mediator:
+    build:
+      context: .
+      dockerfile: mediator-service/acapy/Dockerfile.acapy
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    environment:
+      - ENV=${ENV:-local}
+      - POSTGRESQL_HOST=${POSTGRESQL_HOST:-db}
+      - POSTGRESQL_PORT=${POSTGRESQL_PORT:-5432}
+      - ACAPY_WALLET_STORAGE_CONFIG={"url":"${POSTGRESQL_HOST:-db}:${POSTGRESQL_PORT:-5432}","wallet_scheme":"DatabasePerWallet"}
+      - ACAPY_WALLET_STORAGE_CREDS={"account":"${POSTGRESQL_USER:-postgres}","password":"${POSTGRESQL_PASSWORD:-development}","admin_account":"${POSTGRESQL_ADMIN_USER:-postgres}","admin_password":"${POSTGRESQL_ADMIN_PASSWORD:-development}"}
+      - ACAPY_WALLET_NAME=${MEDIATOR_WALLET_NAME:-mediator}
+      - ACAPY_WALLET_KEY=${MEDIATOR_WALLET_KEY:-testing}
+      - MEDIATOR_AGENT_HTTP_IN_PORT=${MEDIATOR_AGENT_HTTP_IN_PORT:-3000}
+      - MEDIATOR_AGENT_WS_IN_PORT=${MEDIATOR_AGENT_WS_IN_PORT:-3001}
+      - MEDIATOR_AGENT_HTTP_ADMIN_PORT=${MEDIATOR_AGENT_HTTP_ADMIN_PORT:-3002}
+      - MEDIATOR_AGENT_ADMIN_MODE=${MEDIATOR_AGENT_ADMIN_MODE:-admin-api-key 7gdmVBiJalMj52Oum50yD8neu/nxmv3/DTWcZPyKZ4K2UdNNwSPKgg==}
+      - MEDIATOR_AGENT_LABEL=${MEDIATOR_AGENT_LABEL:-Mediator}
+      - MEDIATOR_URL=${MEDIATOR_URL:-}
+      - MEDIATOR_ENDPOINT_URL=${MEDIATOR_ENDPOINT_URL:-localhost}
+      - MEDIATOR_ARG_FILE=${MEDIATOR_ARG_FILE:-./configs/mediator-auto-accept.yml}
+      - MEDIATOR_CONTROLLER_WEBHOOK=${MEDIATOR_CONTROLLER_WEBHOOK:-http://mediator-controller:3010/webhooks}
+      - MEDIATOR_AGENT_ADMIN_API_KEY=${MEDIATOR_AGENT_ADMIN_API_KEY:-insecure-hello-world-2}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+    # ports: # Uncomment to access mediator outside of containers
+    #   - ${MEDIATOR_AGENT_HTTP_ADMIN_PORT:-3002}:${MEDIATOR_AGENT_HTTP_ADMIN_PORT:-3002}
+    #   - ${MEDIATOR_AGENT_HTTP_IN_PORT:-3000}:${MEDIATOR_AGENT_HTTP_IN_PORT:-3000}
+    #   - ${MEDIATOR_AGENT_WS_IN_PORT:-3001}:${MEDIATOR_AGENT_WS_IN_PORT:-3001}
+    networks:
+      - mediator-network
+    healthcheck:
+      test: /bin/bash -c "</dev/tcp/mediator/3000"
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  db:
+    image: postgres:10
+    # restart: always
+    environment:
+      POSTGRES_PASSWORD: ${POSTGRESQL_ADMIN_PASSWORD:-development}
+    # ports: # Uncomment to access postgres outside of containers
+    # - "5432:5432"
+    networks:
+      - mediator-network
+    volumes:
+      - agency-wallet:/var/lib/pgsql/data:z
+    healthcheck:
+      test: pg_isready -U postgres
+      interval: 3s
+      timeout: 3s
+      retries: 5
+
 volumes:
   keria-data:
+  agency-wallet:
+networks:
+  mediator-network:

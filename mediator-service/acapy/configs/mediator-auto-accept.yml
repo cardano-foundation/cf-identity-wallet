@@ -1,0 +1,25 @@
+# General settings for mediator agent
+
+# Mediator does not use a ledger
+no-ledger: true
+
+# Wallet
+wallet-type: indy
+wallet-name: mediator
+wallet-key: insecure, for testing purposes only
+auto-provision: true
+
+# Mediation
+open-mediation: true
+enable-undelivered-queue: true
+
+# Connections
+debug-connections: true
+auto-accept-invites: true
+auto-accept-requests: true
+auto-ping-connection: true
+
+# Print an admin invite
+connections-invite: true
+invite-label: "Mediator"
+invite-multi-use: true

@@ -11,6 +11,9 @@ import {
   BasicMessageEventTypes,
   OutOfBandRecord,
   ConnectionRecord,
+  MediationRecipientModule,
+  MediatorPickupStrategy,
+  WsOutboundTransport
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -30,7 +33,7 @@ import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
 import { LibP2p } from "./transports/libp2p/libP2p";
-import {LibP2pOutboundTransport} from "./transports/libP2pOutboundTransport";
+import { LibP2pOutboundTransport } from "./transports/libP2pOutboundTransport";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -87,10 +90,15 @@ class AriesAgent {
         ...(platformIsNative
           ? { sqliteStorage: new SqliteStorageModule() }
           : { ionicStorage: new IonicStorageModule() }),
-        signify: new SignifyModule()
+        signify: new SignifyModule(),
+        mediationRecipient: new MediationRecipientModule({
+          mediatorInvitationUrl: "http://localhost:2015?c_i=eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL2Nvbm5lY3Rpb25zLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICIxODc4ZTRlYi01MDgxLTRjNTUtYTFlNS0yZjljMDVmOWQxYTEiLCAibGFiZWwiOiAiTWVkaWF0b3IiLCAicmVjaXBpZW50S2V5cyI6IFsiRTY3R1VheWhaTnozcGhQQm5QcVpONmg1djNGbjNYMlE2eEE3SEFpNlQ1aFoiXSwgInNlcnZpY2VFbmRwb2ludCI6ICJodHRwOi8vbG9jYWxob3N0OjIwMTUifQ==",
+          mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
+        }),
       },
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
+    this.agent.registerOutboundTransport(new WsOutboundTransport());
   }
 
   async registerLibP2pInbound(libP2p: LibP2p) {
@@ -124,23 +132,45 @@ class AriesAgent {
   /**
    * Create an invitation link to connect
    */
-  async createNewWebRtcInvitation ()  {
+  async createNewWebRtcInvitation() {
     const domains = this.agent.config.endpoints;
     const libP2pDomain = domains.find((domain) => domain.includes("libp2p"));
     if (!libP2pDomain) {
       throw new Error(AriesAgent.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
     }
-    const createInvitation = await  this.agent.oob.createInvitation({
+    const createInvitation = await this.agent.oob.createInvitation({
       autoAcceptConnection: true,
     });
 
     return createInvitation.outOfBandInvitation.toUrl({
       domain: libP2pDomain,
-    })
+    });
+  }
+
+  async createMediatorInvitation(goalCode?: string) {
+    const record = await this.agent?.oob.createInvitation({
+      goalCode,
+      autoAcceptConnection: true,
+    });
+    if (!record) {
+      throw new Error("Could not create new invitation");
+    }
+
+    const invitationUrl = record.outOfBandInvitation.toUrl({
+      domain: "didcomm://invite",
+    });
+
+    return {
+      record,
+      invitation: record.outOfBandInvitation,
+      invitationUrl,
+    };
   }
 
   async sendMessageByOutOfBandId(outOfBandId: string, message: string) {
-    const [connection] = await this.agent.connections.findAllByOutOfBandId(outOfBandId);
+    const [connection] = await this.agent.connections.findAllByOutOfBandId(
+      outOfBandId
+    );
     if (!connection) {
       throw Error("Connection not found");
     }
@@ -152,12 +182,12 @@ class AriesAgent {
     if (!connectionRecord) {
       throw Error("Connection not found");
     }
-    return  this.agent.basicMessages.sendMessage(connectionRecord.id, message);
+    return this.agent.basicMessages.sendMessage(connectionRecord.id, message);
   }
 
   async receiveInvitationFromUrl(url: string): Promise<{
     outOfBandRecord: OutOfBandRecord;
-    connectionRecord?: ConnectionRecord | undefined
+    connectionRecord?: ConnectionRecord | undefined;
   }> {
     return this.agent.oob.receiveInvitationFromUrl(url, {
       autoAcceptConnection: true,
@@ -165,7 +195,6 @@ class AriesAgent {
       reuseConnection: true,
     });
   }
-
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
     await this.agent.modules.generalStorage.saveMiscRecord(
@@ -256,7 +285,7 @@ class AriesAgent {
         // @TODO - foconnor: We need wrapper records in Aries to map to these with display name, created at, colors etc for UI.
         identities.push({
           method: IdentityType.KERI,
-          displayName: aid.name.substr(0, 10),  // @TODO - foconnor: This is not the user defined one.
+          displayName: aid.name.substr(0, 10), // @TODO - foconnor: This is not the user defined one.
           id: aid.prefix,
           createdAtUTC: aid.state.dt,
           colors: PRESET_COLORS[(i + dids.length) % PRESET_COLORS.length],
@@ -267,9 +296,13 @@ class AriesAgent {
     return identities;
   }
 
-  async getIdentity(identifier: string): Promise<GetIdentityResult | undefined> {
+  async getIdentity(
+    identifier: string
+  ): Promise<GetIdentityResult | undefined> {
     if (identifier.startsWith("did:")) {
-      const storedDid = await this.agent.dids.getCreatedDids({ did: identifier });
+      const storedDid = await this.agent.dids.getCreatedDids({
+        did: identifier,
+      });
       if (!(storedDid && storedDid.length)) {
         return undefined;
       }
@@ -281,7 +314,7 @@ class AriesAgent {
       if (method === IdentityType.KEY) {
         return {
           type: IdentityType.KEY,
-          result: await this.getIdentityFromDidKeyRecord(storedDid[0])
+          result: await this.getIdentityFromDidKeyRecord(storedDid[0]),
         };
       }
     } else {
@@ -296,8 +329,8 @@ class AriesAgent {
             result: {
               id: aid.prefix,
               method: IdentityType.KERI,
-              displayName: aid.name.substr(0, 10),  // @TODO - foconnor: This is not the user defined one.
-              createdAtUTC: aid.state.dt,  // @TODO - foconnor: This is actually of the last event, so this is wrong - OK for now.
+              displayName: aid.name.substr(0, 10), // @TODO - foconnor: This is not the user defined one.
+              createdAtUTC: aid.state.dt, // @TODO - foconnor: This is actually of the last event, so this is wrong - OK for now.
               colors: PRESET_COLORS[0],
               sequenceNumber: aid.state.s,
               priorEventSaid: aid.state.p,
@@ -316,8 +349,8 @@ class AriesAgent {
                 backerToAdd: aid.state.ee.ba,
                 backerToRemove: aid.state.ee.br,
               },
-            }
-          }
+            },
+          };
         }
       }
       return undefined;
