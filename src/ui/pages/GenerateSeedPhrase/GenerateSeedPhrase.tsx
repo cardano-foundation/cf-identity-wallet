@@ -158,7 +158,6 @@ const GenerateSeedPhrase = () => {
     setAlertConfirmIsOpen(false);
     setAlertExitIsOpen(false);
     setChecked(false);
-    dispatch(setCurrentOperation(""));
   };
 
   const toggleSeedPhrase = (length: number) => {
@@ -206,6 +205,7 @@ const GenerateSeedPhrase = () => {
 
   const handleExit = () => {
     handleClearState();
+    dispatch(setCurrentOperation(""));
     history.push(TabsRoutePath.CRYPTO);
   };
 
