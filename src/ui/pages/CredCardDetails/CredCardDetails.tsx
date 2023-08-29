@@ -340,7 +340,10 @@ const CredCardDetails = () => {
             "creds.card.details.delete.alert.cancel"
           )}`}
           actionConfirm={() => {
-            if (stateCache?.authentication.passwordIsSet) {
+            if (
+              !stateCache?.authentication.passwordIsSkipped &&
+              stateCache?.authentication.passwordIsSet
+            ) {
               setVerifyPasswordIsOpen(true);
             } else {
               setVerifyPasscodeIsOpen(true);

@@ -103,7 +103,6 @@ const VerifyPasscode = ({
   return (
     <IonModal
       isOpen={isOpen}
-      animated={true}
       className="page-layout verify-passcode"
       data-testid="verify-passcode"
       onDidDismiss={() => handleClearState()}

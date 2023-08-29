@@ -194,7 +194,10 @@ const MyWallets = ({
                 address: account.address,
               });
 
-              if (stateCache?.authentication.passwordIsSet) {
+              if (
+                !stateCache?.authentication.passwordIsSkipped &&
+                stateCache?.authentication.passwordIsSet
+              ) {
                 setVerifyPasswordIsOpen(true);
               } else {
                 setVerifyPasscodeIsOpen(true);
