@@ -343,8 +343,7 @@
           "title": "Are you sure you want to delete this connection?",
           "confirm": "Yes, I'm sure",
           "cancel": "Cancel"
-        },
-        "toast": "Connection deleted successfully"
+        }
       }
     }
   },
@@ -430,9 +429,6 @@
       "network": {
         "mainnet": "Mainnet"
       },
-      "toast": {
-        "success": "Seed phrase verified"
-      },
       "slider": {
         "title": {
           "mainbalance": "Main balance",
@@ -483,10 +479,17 @@
       "title": "Receive",
       "derivationpath": "Derivation path",
       "divider": "or",
-      "more": "More share options",
-      "toast": {
-        "clipboard": "Copied to clipboard"
-      }
+      "more": "More share options"
     }
+  },
+  "toast": {
+    "clipboard": "Copied to clipboard",
+    "walletCreated": "Seed phrase verified",
+    "walletRestored": "Seed phrase verified",
+    "walletDeleted": "Account deleted successfully",
+    "identityCreated": "New identity created successfully",
+    "identityDeleted": "Identity successfully deleted",
+    "credentialDeleted": "Credential deleted successfully",
+    "connectionDeleted": "Connection deleted successfully"
   }
 }

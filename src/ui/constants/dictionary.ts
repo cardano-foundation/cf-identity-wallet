@@ -15,7 +15,15 @@ const generateSeedPhraseState = {
   onboarding: "onboarding",
   additional: "newcryptoaccount",
   restore: "restorecryptoaccount",
-  success: "success",
+};
+
+const toastState = {
+  walletCreated: "walletCreated",
+  walletRestored: "walletRestored",
+  walletDeleted: "walletDeleted",
+  identityDeleted: "identityDeleted",
+  credentialDeleted: "credentialDeleted",
+  connectionDeleted: "connectionDeleted",
 };
 
 const defaultCredentialsCardData = {
@@ -92,4 +100,5 @@ export {
   defaultConnectionData,
   blurredCryptoData,
   onboardingRoute,
+  toastState,
 };

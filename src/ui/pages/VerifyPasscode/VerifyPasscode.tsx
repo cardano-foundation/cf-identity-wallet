@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IonButton, IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
@@ -10,12 +10,17 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getCurrentRoute,
+  getStateCache,
   setAuthentication,
+  setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import { RoutePath } from "../../../routes";
 import { VerifyPasscodeProps } from "./VerifyPasscode.types";
 import "./VerifyPasscode.scss";
+import { TabsRoutePath } from "../../../routes/paths";
+import { toastState } from "../../constants/dictionary";
 
 const VerifyPasscode = ({
   isOpen,
@@ -24,6 +29,8 @@ const VerifyPasscode = ({
 }: VerifyPasscodeProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const currentRoute = useAppSelector(getCurrentRoute);
+  const [currentAction, setCurrentAction] = useState("");
   const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
@@ -39,6 +46,20 @@ const VerifyPasscode = ({
       : i18n.t("verifypasscode.alert.button.restart");
   const cancelButtonText = i18n.t("verifypasscode.alert.button.cancel");
 
+  useEffect(() => {
+    let operation = "";
+    if (currentRoute?.path?.includes(TabsRoutePath.DIDS)) {
+      operation = toastState.identityDeleted;
+    } else if (currentRoute?.path?.includes(TabsRoutePath.CREDS)) {
+      operation = toastState.credentialDeleted;
+    } else if (currentRoute?.path?.includes(TabsRoutePath.CRYPTO)) {
+      operation = toastState.walletDeleted;
+    } else if (currentRoute?.path?.includes(RoutePath.CONNECTION_DETAILS)) {
+      operation = toastState.connectionDeleted;
+    }
+    setCurrentAction(operation);
+  }, [currentRoute?.path]);
+
   const handleClearState = () => {
     setPasscode("");
     setAlertIsOpen(false);
@@ -53,6 +74,7 @@ const VerifyPasscode = ({
         verifyPasscode(passcode + digit)
           .then((verified) => {
             if (verified) {
+              dispatch(setCurrentOperation(currentAction));
               onVerify();
               handleClearState();
             } else {

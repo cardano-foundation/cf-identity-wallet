@@ -18,9 +18,15 @@ import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { generateSeedPhraseState } from "../../constants/dictionary";
+import {
+  generateSeedPhraseState,
+  toastState,
+} from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
@@ -119,7 +125,7 @@ const VerifySeedPhrase = () => {
       state: {
         type:
           seedPhraseType !== generateSeedPhraseState.onboarding
-            ? generateSeedPhraseState.success
+            ? toastState.walletCreated
             : "",
         currentOperation: stateCache.currentOperation,
       },
@@ -290,7 +296,10 @@ const VerifySeedPhrase = () => {
           setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
           usesIdentitySeedPhrase={false}
           seedPhrase={originalSeedPhrase.join(" ")}
-          onDone={() => handleNavigate()}
+          onDone={() => {
+            dispatch(setCurrentOperation(toastState.walletCreated));
+            handleNavigate();
+          }}
         />
       </PageLayout>
     </IonPage>

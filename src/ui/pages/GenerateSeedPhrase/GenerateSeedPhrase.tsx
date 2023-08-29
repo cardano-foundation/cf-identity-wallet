@@ -33,6 +33,7 @@ import {
 import {
   generateSeedPhraseState,
   onboardingRoute,
+  toastState,
 } from "../../constants/dictionary";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
@@ -43,6 +44,7 @@ import {
 import {
   getCurrentOperation,
   getStateCache,
+  setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
@@ -156,6 +158,7 @@ const GenerateSeedPhrase = () => {
     setAlertConfirmIsOpen(false);
     setAlertExitIsOpen(false);
     setChecked(false);
+    dispatch(setCurrentOperation(""));
   };
 
   const toggleSeedPhrase = (length: number) => {
@@ -501,11 +504,9 @@ const GenerateSeedPhrase = () => {
             seedPhrase={seedPhrase.join(" ")}
             onDone={() => {
               handleClearState();
+              dispatch(setCurrentOperation(toastState.walletRestored));
               history.push({
                 pathname: TabsRoutePath.CRYPTO,
-                state: {
-                  type: generateSeedPhraseState.success,
-                },
               });
             }}
           />

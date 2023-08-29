@@ -363,7 +363,7 @@ const CredCardDetails = () => {
         <IonToast
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
-          message={`${i18n.t("creds.card.details.toast.clipboard")}`}
+          message={`${i18n.t("toast.clipboard")}`}
           color="secondary"
           position="top"
           cssClass="confirmation-toast"

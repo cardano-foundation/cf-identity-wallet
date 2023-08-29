@@ -15,12 +15,13 @@ import {
   imageOutline,
   layersOutline,
 } from "ionicons/icons";
-import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   setCurrentRoute,
   getCurrentRoute,
+  getStateCache,
+  setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
@@ -33,7 +34,6 @@ import {
 import { i18n } from "../../../i18n";
 import "./Crypto.scss";
 import { CryptoAccountProps } from "./Crypto.types";
-import { VerifyPassword } from "../../components/VerifyPassword";
 import { MyWallets } from "../../components/MyWallets";
 import { AddCryptoAccount } from "../../components/AddCryptoAccount";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
@@ -43,9 +43,8 @@ import { formatCurrencyUSD } from "../../../utils";
 import { AssetsTransactions } from "../../components/AssetsTransactions";
 import {
   defaultCryptoAccountData,
-  generateSeedPhraseState,
+  toastState,
 } from "../../constants/dictionary";
-import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 import {
   PreferencesKeys,
   PreferencesStorage,
@@ -53,8 +52,8 @@ import {
 import { CryptoReceiveAddress } from "../../components/CryptoReceiveAddress";
 
 const Crypto = () => {
-  const history = useHistory();
   const dispatch = useAppDispatch();
+  const stateCache = useAppSelector(getStateCache);
   const currentRoute = useAppSelector(getCurrentRoute);
   const [showToast, setShowToast] = useState(false);
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
@@ -64,7 +63,6 @@ const Crypto = () => {
   const [addAccountIsOpen, setAddAccountIsOpen] = useState(false);
   const [receiveIsOpen, setReceiveIsOpen] = useState(false);
   const [idwProfileInUse, setIdwProfileInUse] = useState(false);
-  const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
   const [showAssetsTransactions, setShowAssetsTransactions] = useState(true);
   const [assetsTransactionsExpanded, setAssetsTransactionsExpanded] =
@@ -105,12 +103,14 @@ const Crypto = () => {
 
   useEffect(() => {
     if (
-      (history?.location?.state as GenerateSeedPhraseProps)?.type ===
-      generateSeedPhraseState.success
+      (stateCache.currentOperation === toastState.walletCreated ||
+        stateCache.currentOperation === toastState.walletRestored ||
+        stateCache.currentOperation === toastState.walletDeleted) &&
+      currentRoute?.path === TabsRoutePath.CRYPTO
     ) {
       setShowToast(true);
     }
-  }, [history?.location?.state]);
+  }, [stateCache.currentOperation, currentRoute]);
 
   useEffect(() => {
     if (!currentRoute?.path || currentRoute.path !== TabsRoutePath.CRYPTO) {
@@ -314,11 +314,14 @@ const Crypto = () => {
           )}
           <IonToast
             isOpen={showToast}
-            onDidDismiss={() => setShowToast(false)}
-            message={`${i18n.t("crypto.tab.toast.success")}`}
+            message={`${i18n.t("toast." + stateCache.currentOperation)}`}
+            onDidDismiss={() => {
+              setShowToast(false);
+              dispatch(setCurrentOperation(""));
+            }}
             color="secondary"
             position="top"
-            cssClass="crypto-toast"
+            cssClass="confirmation-toast"
             duration={1500}
           />
         </TabLayout>
@@ -342,7 +345,10 @@ const Crypto = () => {
         chooseAccountNameIsOpen={chooseAccountNameIsOpen}
         setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
         usesIdentitySeedPhrase={true}
-        onDone={() => setShowToast(true)}
+        onDone={() => {
+          dispatch(setCurrentOperation(toastState.walletCreated));
+          setShowToast(true);
+        }}
       />
     </>
   );

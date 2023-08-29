@@ -211,7 +211,7 @@ const CryptoReceiveAddress = ({
       <IonToast
         isOpen={showToast}
         onDidDismiss={() => setShowToast(false)}
-        message={`${i18n.t("crypto.receivemodal.toast.clipboard")}`}
+        message={`${i18n.t("toast.clipboard")}`}
         color="secondary"
         position="top"
         cssClass="confirmation-toast"
