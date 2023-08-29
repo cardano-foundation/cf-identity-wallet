@@ -268,12 +268,12 @@ class AriesAgent {
 
   async createIdentity(
     type: IdentityType,
-    metaData: Omit<IdentityMetadataRecordProps, "id" | "createdAt" | "isDelete">
+    metadata: Omit<IdentityMetadataRecordProps, "id" | "createdAt" | "isDelete">
   ): Promise<string | undefined> {
     if (type === IdentityType.KERI) {
       const result = await this.agent.modules.signify.createIdentifier();
       if (result)
-        await this.createIdentityMetadataRecord({id: result, ...metaData});
+        await this.createIdentityMetadataRecord({id: result, ...metadata});
       return result;
     }
     const result = await this.agent.dids.create({
@@ -281,7 +281,7 @@ class AriesAgent {
       options: { keyType: KeyType.Ed25519 },
     });
     if(result.didState.did){
-      await this.createIdentityMetadataRecord({ id: result.didState.did, ...metaData});
+      await this.createIdentityMetadataRecord({ id: result.didState.did, ...metadata});
     }
     return result.didState.did;
   }
