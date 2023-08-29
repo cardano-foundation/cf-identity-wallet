@@ -16,7 +16,7 @@ import {
   CredentialEventTypes,
   CredentialStateChangedEvent,
   CredentialState,
-  CredentialExchangeRecord,
+  CredentialExchangeRecord, KeyDidRegistrar,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -29,7 +29,6 @@ import {
   CryptoAccountRecord,
 } from "./modules";
 import { HttpOutboundTransport } from "./transports";
-import { LabelledKeyDidRegistrar } from "./dids";
 import { GetIdentityResult, IdentityType } from "./ariesAgent.types";
 import type { DIDDetails, IdentityShortDetails } from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
@@ -37,6 +36,10 @@ import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
 import { LibP2p } from "./transports/libp2p/libP2p";
 import {LibP2pOutboundTransport} from "./transports/libP2pOutboundTransport";
+import {
+  IdentityMetadataRecord,
+  IdentityMetadataRecordProps
+} from "./modules/generalStorage/repositories/identityMetadataRecord";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -55,15 +58,6 @@ const agentDependencies: AgentDependencies = {
     global.WebSocket as unknown as AgentDependencies["WebSocketClass"],
 };
 
-// @TODO - foconnor: Once color stories in place this should be stored in DB.
-const PRESET_COLORS: [string, string][] = [
-  ["#92FFC0", "#47FF94"],
-  ["#FFBC60", "#FFA21F"],
-  ["#D9EDDF", "#ACD8B9"],
-  ["#47E0FF", "#00C6EF"],
-  ["#FF9780", "#FF5833"],
-];
-
 class AriesAgent {
   static readonly DID_MISSING_METHOD = "DID method missing for stored DID";
   static readonly DID_MISSING_DISPLAY_NAME =
@@ -74,6 +68,8 @@ class AriesAgent {
     "DID document format is missing expected values for stored DID";
   static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
     "No domain found in config";
+  static readonly DID_MISSING_METADATA_ERROR_MSG =
+    "DID metadata missing for stored DID";
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
@@ -87,7 +83,7 @@ class AriesAgent {
       modules: {
         generalStorage: new GeneralStorageModule(),
         dids: new DidsModule({
-          registrars: [new LabelledKeyDidRegistrar()],
+          registrars: [new KeyDidRegistrar()],
           resolvers: [new KeyDidResolver()],
         }),
         ...(platformIsNative
@@ -260,21 +256,42 @@ class AriesAgent {
   async removeCryptoAccountRecordById(id: string): Promise<void> {
     await this.agent.modules.generalStorage.removeCryptoRecordById(id);
   }
+  async createIdentityMetadataRecord(data: IdentityMetadataRecordProps){
+    const dataCreate= {
+      id: data.id,
+      displayName: data.displayName,
+      colors:data.colors
+    }
+    const record = new IdentityMetadataRecord(dataCreate);
+    return this.agent.modules.generalStorage.saveIdentityMetadataRecord(record);
+  }
 
   async createIdentity(
     type: IdentityType,
-    displayName: string
+    metaData: Omit<IdentityMetadataRecordProps, "id" | "createdAt" | "isDelete">
   ): Promise<string | undefined> {
     if (type === IdentityType.KERI) {
-      // @TODO - foconnor: We need to create an Aries record here to store display name etc
-      return this.agent.modules.signify.createIdentifier();
+      const result = await this.agent.modules.signify.createIdentifier();
+      if (result)
+        await this.createIdentityMetadataRecord({id: result, ...metaData});
+      return result;
     }
     const result = await this.agent.dids.create({
       method: type,
-      displayName: displayName,
       options: { keyType: KeyType.Ed25519 },
     });
+    if(result.didState.did){
+      await this.createIdentityMetadataRecord({ id: result.didState.did, ...metaData});
+    }
     return result.didState.did;
+  }
+
+  async getMetadataById(id: string): Promise<IdentityMetadataRecord> {
+    const metadata = await this.agent.modules.generalStorage.getIdentityMetadata(id);
+    if (!metadata) {
+      throw new Error(`${AriesAgent.DID_MISSING_METADATA_ERROR_MSG} ${id}`);
+    }
+    return metadata;
   }
 
   async getIdentities(
@@ -282,19 +299,19 @@ class AriesAgent {
     did?: string
   ): Promise<IdentityShortDetails[]> {
     const identities: IdentityShortDetails[] = [];
-
+    const listMetadata: IdentityMetadataRecord[] = await this.agent.modules.generalStorage.getAllIdentityMetadata();
     const dids = await this.agent.dids.getCreatedDids({ method, did });
     for (let i = 0; i < dids.length; i++) {
       const did = dids[i];
+      const metadata = listMetadata.find((item) => item.id === did.did);
       const method = <IdentityType>did.getTag("method")?.toString();
-      const displayName = did.getTag("displayName")?.toString();
-      if (method && displayName) {
+      if (method && metadata) {
         identities.push({
           method,
-          displayName,
+          displayName: metadata.displayName,
           id: did.did,
           createdAtUTC: did.createdAt.toISOString(),
-          colors: PRESET_COLORS[i % PRESET_COLORS.length],
+          colors: metadata.colors,
         });
       }
     }
@@ -303,14 +320,16 @@ class AriesAgent {
       const aids = await this.agent.modules.signify.getIdentifiersDetailed();
       for (let i = 0; i < aids.length; i++) {
         const aid = aids[i];
-        // @TODO - foconnor: We need wrapper records in Aries to map to these with display name, created at, colors etc for UI.
-        identities.push({
-          method: IdentityType.KERI,
-          displayName: aid.name.substr(0, 10),  // @TODO - foconnor: This is not the user defined one.
-          id: aid.prefix,
-          createdAtUTC: aid.state.dt,
-          colors: PRESET_COLORS[(i + dids.length) % PRESET_COLORS.length],
-        });
+        const metadata = listMetadata.find((item) => item.id === aid.prefix);
+        if(metadata){
+          identities.push({
+            method: IdentityType.KERI,
+            displayName: metadata.displayName,
+            id: aid.prefix,
+            createdAtUTC: metadata.createdAt.toISOString(),
+            colors: metadata.colors,
+          });
+        }
       }
     }
 
@@ -341,14 +360,15 @@ class AriesAgent {
       for (let i = 0; i < aids.length; i++) {
         const aid = aids[i];
         if (aid.prefix === identifier) {
+          const metadata = await this.getMetadataById(identifier);
           return {
             type: IdentityType.KERI,
             result: {
               id: aid.prefix,
               method: IdentityType.KERI,
-              displayName: aid.name.substr(0, 10),  // @TODO - foconnor: This is not the user defined one.
-              createdAtUTC: aid.state.dt,  // @TODO - foconnor: This is actually of the last event, so this is wrong - OK for now.
-              colors: PRESET_COLORS[0],
+              displayName: metadata.displayName,
+              createdAtUTC: metadata.createdAt.toISOString(),
+              colors: metadata.colors,
               sequenceNumber: aid.state.s,
               priorEventSaid: aid.state.p,
               eventSaid: aid.state.d,
@@ -377,11 +397,6 @@ class AriesAgent {
   private async getIdentityFromDidKeyRecord(
     record: DidRecord
   ): Promise<DIDDetails> {
-    const displayName = record.getTag("displayName")?.toString();
-    if (!displayName) {
-      throw new Error(`${AriesAgent.DID_MISSING_DISPLAY_NAME} ${record.did}`);
-    }
-
     const didDoc = (await this.agent.dids.resolve(record.did)).didDocument;
     if (!didDoc) {
       throw new Error(`${AriesAgent.DID_MISSING_DID_DOC} ${record.did}`);
@@ -394,17 +409,26 @@ class AriesAgent {
     if (!signingKey.publicKeyBase58) {
       throw new Error(`${AriesAgent.UNEXPECTED_DID_DOC_FORMAT} ${record.did}`);
     }
+    const metadata = await this.getMetadataById(record.did);
 
     return {
       id: record.did,
       method: IdentityType.KEY,
-      displayName,
+      displayName: metadata.displayName,
       createdAtUTC: record.createdAt.toISOString(),
-      colors: PRESET_COLORS[0],
+      colors: metadata.colors,
       controller: record.did,
       keyType: signingKey.type.toString(),
       publicKeyBase58: signingKey.publicKeyBase58,
     };
+  }
+
+  async updateIdentityMetadata(id: string, metadata: Omit<Partial<IdentityMetadataRecordProps>, "id" | "isDelete" | "createdAt">): Promise<void> {
+    return this.agent.modules.generalStorage.updateIdentityMetadata(id, metadata);
+  }
+
+  async deleteIdentityMetadata(id: string): Promise<void> {
+    return this.agent.modules.generalStorage.softDeleteIdentityMetadata(id);
   }
 }
 

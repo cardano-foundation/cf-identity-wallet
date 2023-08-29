@@ -70,7 +70,8 @@ const CreateIdentity = ({
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
     const type = selectedType === 0 ? IdentityType.KEY : IdentityType.KERI;
-    const did = await AriesAgent.agent.createIdentity(type, displayNameValue);
+    // @TODO: for test, should set colors
+    const did = await AriesAgent.agent.createIdentity(type, {displayName: displayNameValue, colors: [newColor[1], newColor[0]]});
     if (did) {
       const newIdentity: IdentityShortDetails = {
         id: did,

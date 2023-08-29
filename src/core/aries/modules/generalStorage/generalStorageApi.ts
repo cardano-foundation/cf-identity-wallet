@@ -6,6 +6,8 @@ import {
   MiscRecordId,
   MiscRepository,
 } from "./repositories";
+import { IdentityMetadataRepository } from "./repositories/identityMetadataRepository";
+import {IdentityMetadataRecord, IdentityMetadataRecordProps} from "./repositories/identityMetadataRecord";
 
 /**
  * This can be used to store any records in the agent that aren't explicitly created
@@ -15,15 +17,18 @@ import {
 export class GeneralStorageApi {
   private miscRepository: MiscRepository;
   private cryptoAccountRepository: CryptoAccountRepository;
+  private identityMetadataRepository: IdentityMetadataRepository;
   private agentContext: AgentContext;
 
   constructor(
     settingsMiscRepository: MiscRepository,
     settingsCryptoAccountRepository: CryptoAccountRepository,
+    settingIdentityMetadataRepository: IdentityMetadataRepository,
     agentContext: AgentContext
   ) {
     this.miscRepository = settingsMiscRepository;
     this.cryptoAccountRepository = settingsCryptoAccountRepository;
+    this.identityMetadataRepository = settingIdentityMetadataRepository;
     this.agentContext = agentContext;
   }
 
@@ -51,5 +56,34 @@ export class GeneralStorageApi {
         })
       ).length > 0
     );
+  }
+
+  async saveIdentityMetadataRecord(record: IdentityMetadataRecord): Promise<void> {
+    await this.identityMetadataRepository.save(this.agentContext, record);
+  }
+
+  async getAllIdentityMetadata(): Promise<IdentityMetadataRecord[]> {
+    return  this.identityMetadataRepository.getAll(this.agentContext);
+  }
+
+  async getIdentityMetadata(id: string): Promise<IdentityMetadataRecord | null> {
+    return this.identityMetadataRepository.findById(this.agentContext, id);
+  }
+
+  async softDeleteIdentityMetadata(id: string): Promise<void> {
+    return this.updateIdentityMetadata(id, {isDelete: true});
+  }
+
+  async updateIdentityMetadata(id: string, data: Omit<Partial<IdentityMetadataRecordProps>, "id" | "createdAt">): Promise<void> {
+    const record = await this.getIdentityMetadata(id);
+    if( record ){
+      if (data.colors)
+        record.colors = data.colors;
+      if( data.displayName )
+        record.displayName = data.displayName;
+      if( data.isDelete )
+        record.isDelete = data.isDelete;
+      return this.identityMetadataRepository.update(this.agentContext, record);
+    }
   }
 }
