@@ -2,16 +2,15 @@ import { useEffect, useState } from "react";
 import { IonButton, IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
-import { PageLayout } from "../../components/layout/PageLayout";
-import { ErrorMessage } from "../../components/ErrorMessage";
-import { PasscodeModule } from "../../components/PasscodeModule";
-import { Alert } from "../../components/Alert";
+import { PageLayout } from "../layout/PageLayout";
+import { ErrorMessage } from "../ErrorMessage";
+import { PasscodeModule } from "../PasscodeModule";
+import { Alert } from "../Alert";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
   getCurrentRoute,
-  getStateCache,
   setAuthentication,
   setCurrentOperation,
   setCurrentRoute,

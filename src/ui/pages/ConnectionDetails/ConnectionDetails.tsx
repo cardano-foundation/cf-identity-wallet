@@ -20,7 +20,7 @@ import {
   getConnectionsCache,
   setConnectionsCache,
 } from "../../../store/reducers/connectionsCache";
-import { VerifyPasscode } from "../VerifyPasscode";
+import { VerifyPasscode } from "../../components/VerifyPasscode";
 
 const ConnectionDetails = () => {
   const history = useHistory();

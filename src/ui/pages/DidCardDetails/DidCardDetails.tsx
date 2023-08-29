@@ -41,7 +41,7 @@ import {
 import { formatShortDate } from "../../../utils";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { DIDDetails, IdentityType } from "../../../core/aries/ariesAgent.types";
-import { VerifyPasscode } from "../VerifyPasscode";
+import { VerifyPasscode } from "../../components/VerifyPasscode";
 
 const DidCardDetails = () => {
   const history = useHistory();

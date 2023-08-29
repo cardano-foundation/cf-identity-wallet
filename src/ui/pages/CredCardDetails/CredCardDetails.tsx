@@ -36,7 +36,7 @@ import { setCredsCache } from "../../../store/reducers/credsCache";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
 import { defaultCredentialsCardData } from "../../constants/dictionary";
-import { VerifyPasscode } from "../VerifyPasscode";
+import { VerifyPasscode } from "../../components/VerifyPasscode";
 
 const CredCardDetails = () => {
   const history = useHistory();

@@ -32,7 +32,7 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences";
-import { VerifyPasscode } from "../../pages/VerifyPasscode";
+import { VerifyPasscode } from "../VerifyPasscode";
 import { getStateCache } from "../../../store/reducers/stateCache";
 
 const MyWallets = ({
