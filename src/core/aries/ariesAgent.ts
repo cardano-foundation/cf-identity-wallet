@@ -70,8 +70,8 @@ class AriesAgent {
     "No domain found in config";
   static readonly DID_MISSING_METADATA_ERROR_MSG =
     "DID metadata missing for stored DID";
-  static readonly CAN_CREATE_DID_ERROR_MESSAGE =
-    "Can't create DID";
+  static readonly UNEXPECTED_MISSING_DID_RESULT_ON_CREATE =
+    "DID was successfully created but the DID was not returned in the state returned";
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
@@ -264,7 +264,7 @@ class AriesAgent {
       displayName: data.displayName,
       colors: data.colors,
       method: data.method,
-      name: data.name,
+      signifyName: data.signifyName,
     }
     const record = new IdentityMetadataRecord(dataCreate);
     return this.agent.modules.generalStorage.saveIdentityMetadataRecord(record);
@@ -275,8 +275,8 @@ class AriesAgent {
   ): Promise<string | undefined> {
     const type = metadata.method;
     if (type === IdentityType.KERI) {
-      const [name, identifier] = await this.agent.modules.signify.createIdentifier();
-      await this.createIdentityMetadataRecord({id: identifier, ...metadata, name: name});
+      const { signifyName, identifier } = await this.agent.modules.signify.createIdentifier();
+      await this.createIdentityMetadataRecord({id: identifier, ...metadata, signifyName: signifyName});
       return identifier;
     }
     const result = await this.agent.dids.create({
@@ -284,7 +284,7 @@ class AriesAgent {
       options: { keyType: KeyType.Ed25519 },
     });
     if(!result.didState.did){
-      throw new Error(AriesAgent.CAN_CREATE_DID_ERROR_MESSAGE);
+      throw new Error(AriesAgent.UNEXPECTED_MISSING_DID_RESULT_ON_CREATE);
     }
     await this.createIdentityMetadataRecord({ id: result.didState.did, ...metadata});
     return result.didState.did;
@@ -335,7 +335,7 @@ class AriesAgent {
       }
     } else {
       const metadata = await this.getMetadataById(identifier);
-      const aid = await this.agent.modules.signify.getIdentifierByName(metadata.name as string);
+      const aid = await this.agent.modules.signify.getIdentifierByName(metadata.signifyName as string);
       if (!aid) {
         return undefined;
       }

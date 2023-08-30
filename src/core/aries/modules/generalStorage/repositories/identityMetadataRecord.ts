@@ -6,7 +6,7 @@ export interface IdentityMetadataRecordProps {
   displayName: string;
   colors: [string, string];
   method: IdentityType;
-  name?: string;
+  signifyName?: string;
   createdAt?: Date;
   isDelete?: boolean
 }
@@ -16,7 +16,7 @@ class IdentityMetadataRecord extends BaseRecord implements IdentityMetadataRecor
   method!: IdentityType;
   colors!: [string, string];
   isDelete?: boolean;
-  name?: string | undefined;
+  signifyName?: string | undefined;
 
   static readonly type = "IdentityMetadataRecord";
   readonly type = IdentityMetadataRecord.type;
@@ -29,7 +29,7 @@ class IdentityMetadataRecord extends BaseRecord implements IdentityMetadataRecor
       this.displayName = props.displayName;
       this.method = props.method;
       this.colors = props.colors;
-      this.name = props.name;
+      this.signifyName = props.signifyName;
       this.isDelete = props.isDelete ?? false;
       this.createdAt = props.createdAt ?? new Date();
     }
