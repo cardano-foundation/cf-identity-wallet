@@ -24,7 +24,6 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getStateCache,
-  setAuthentication,
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -199,24 +198,25 @@ const CreatePassword = () => {
       }
     }
 
-    dispatch(setCurrentOperation(""));
-    dispatch(
-      setAuthentication({
-        ...stateCache.authentication,
-        passwordIsSkipped: skipped,
-      })
-    );
-
     const { nextPath, updateRedux } = getNextRoute(RoutePath.CREATE_PASSWORD, {
       store: { stateCache },
+      state: {
+        skipped,
+      },
     });
 
     updateReduxState(
       nextPath.pathname,
-      { store: { stateCache } },
+      {
+        store: { stateCache },
+        state: {
+          skipped,
+        },
+      },
       dispatch,
       updateRedux
     );
+    dispatch(setCurrentOperation(""));
     history.push(nextPath.pathname);
     handleClearState();
   };

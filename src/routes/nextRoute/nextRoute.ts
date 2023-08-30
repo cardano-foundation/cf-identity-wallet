@@ -129,9 +129,11 @@ const getNextCreatePasswordRoute = () => {
   return { pathname: RoutePath.TABS_MENU };
 };
 const updateStoreAfterCreatePassword = (data: DataProps) => {
+  const skipped = data.state?.skipped;
   return setAuthentication({
     ...data.store.stateCache.authentication,
-    passwordIsSet: true,
+    passwordIsSet: !skipped,
+    passwordIsSkipped: skipped,
   });
 };
 
