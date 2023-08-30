@@ -21,7 +21,7 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-const initialState = {
+const initialStateNoPassword = {
   stateCache: {
     routes: [TabsRoutePath.CREDS],
     authentication: {
@@ -40,20 +40,38 @@ const initialState = {
   },
 };
 
+const initialStateWithPassword = {
+  stateCache: {
+    routes: [TabsRoutePath.CREDS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+      passwordIsSet: true,
+      passwordIsSkipped: false,
+    },
+  },
+  seedPhraseCache: {
+    seedPhrase160:
+      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+    seedPhrase256: "",
+    selected: FIFTEEN_WORDS_BIT_LENGTH,
+  },
+};
+
 describe("Cards Details page", () => {
   let storeMocked: Store<unknown, AnyAction>;
   beforeEach(() => {
-    jest.resetAllMocks();
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     storeMocked = {
-      ...mockStore(initialState),
+      ...mockStore(initialStateNoPassword),
       dispatch: dispatchMock,
     };
   });
 
-  test("It deletes the cred using the big button", async () => {
-    const { getByTestId, getByText, queryByText } = render(
+  test("It renders verify passcode when clicking on the big button", async () => {
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -74,6 +92,13 @@ describe("Cards Details page", () => {
       ).toBeVisible();
     });
 
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode")).toHaveAttribute(
+        "is-open",
+        "false"
+      );
+    });
+
     act(() => {
       fireEvent.click(
         getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.confirm)
@@ -85,6 +110,57 @@ describe("Cards Details page", () => {
     await waitFor(() => {
       expect(getByTestId("verify-passcode")).toBeInTheDocument();
       expect(getByTestId("verify-passcode")).toHaveAttribute("is-open", "true");
+    });
+  });
+
+  test("It renders verify password when clicking on the big button", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateWithPassword),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getByText, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("card-details-delete-button"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
+      ).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
+        "is-open",
+        "false"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.confirm)
+      );
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
+        "is-open",
+        "true"
+      );
     });
   });
 
