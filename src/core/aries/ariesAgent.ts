@@ -154,10 +154,8 @@ class AriesAgent {
     });
   }
 
-  async createMediatorInvitation(goalCode?: string) {
-    const record = await this.agent?.oob.createInvitation({
-      goalCode,
-    });
+  async createMediatorInvitation() {
+    const record = await this.agent?.oob.createInvitation();
     if (!record) {
       throw new Error("Could not create new invitation");
     }
