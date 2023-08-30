@@ -65,10 +65,18 @@ describe("Signify API", () => {
   });
 
   test("can create an identifier", async () => {
-    const name = "keriuuid";
-    jest.spyOn(utils, "uuid").mockReturnValue(name);
-    const result = await api.createIdentifier();
-    expect(result).toBe(name);
+    const mockName = "keriuuid";
+    jest.spyOn(utils, "uuid").mockReturnValue(mockName);
+    const {signifyName, identifier}= await api.createIdentifier();
+    expect(signifyName).toBe(mockName);
+    expect(identifier).toBe(mockName);
+  });
+
+  test("can get identifier by name", async () => {
+    const mockName = "keriuuid";
+    expect(await api.getIdentifierByName(mockName)).toEqual(
+      { name: mockName, id: `${aidPrefix}${mockName}` },
+    );
   });
 
   test("should timeout if identifier creation is not completing", async () => {
