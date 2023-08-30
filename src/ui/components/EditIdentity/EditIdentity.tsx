@@ -34,6 +34,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
+import {AriesAgent} from "../../../core/aries/ariesAgent";
 
 const EditIdentity = ({
   isOpen,
@@ -99,12 +100,14 @@ const EditIdentity = ({
     }
   };
 
-  const verifyAction = () => {
+  const verifyAction = async () => {
     handleDismiss();
     if (actionType === "edit") {
       // @TODO - sdisalvo: Update Database.
       // Remember to update DidCardDetails file too.
       const updatedIdentities = [...identitiesData];
+      // TODO: for test
+      await AriesAgent.agent.updateIdentityMetadata(cardData.id, {displayName: newDisplayName, colors: [cardData.colors[0], cardData.colors[1]]});
       const index = updatedIdentities.findIndex(
         (identity) => identity.id === cardData.id
       );

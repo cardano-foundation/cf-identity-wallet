@@ -63,7 +63,7 @@ export class GeneralStorageApi {
   }
 
   async getAllIdentityMetadata(): Promise<IdentityMetadataRecord[]> {
-    return  this.identityMetadataRepository.getAll(this.agentContext);
+    return this.identityMetadataRepository.findByQuery(this.agentContext, {});
   }
 
   async getIdentityMetadata(id: string): Promise<IdentityMetadataRecord | null> {
@@ -74,14 +74,14 @@ export class GeneralStorageApi {
     return this.updateIdentityMetadata(id, {isDelete: true});
   }
 
-  async updateIdentityMetadata(id: string, data: Omit<Partial<IdentityMetadataRecordProps>, "id" | "createdAt">): Promise<void> {
+  async updateIdentityMetadata(id: string, data: Omit<Partial<IdentityMetadataRecordProps>,  "id" | "name" | "method" | "createdAt">): Promise<void> {
     const record = await this.getIdentityMetadata(id);
     if( record ){
       if (data.colors)
         record.colors = data.colors;
       if( data.displayName )
         record.displayName = data.displayName;
-      if( data.isDelete )
+      if( data.isDelete !== undefined)
         record.isDelete = data.isDelete;
       return this.identityMetadataRepository.update(this.agentContext, record);
     }

@@ -1,9 +1,11 @@
 import {IdentityMetadataRecord, IdentityMetadataRecordProps} from "./identityMetadataRecord";
+import {IdentityType} from "../../../ariesAgent.types";
 
 const mockData:IdentityMetadataRecordProps = {
   id: "did:key:z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",
   displayName: "New Did",
   colors: ["#000000", "#FFFFFF"],
+  method: IdentityType.KEY,
   isDelete: true
 }
 
@@ -27,6 +29,7 @@ describe("Identify Record", () => {
       id: mockData.id,
       displayName: mockData.displayName,
       colors: mockData.colors,
+      method: mockData.method,
       isDelete: mockData.isDelete,
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
@@ -40,6 +43,7 @@ describe("Identify Record", () => {
       id: mockData.id,
       displayName: mockData.displayName,
       colors: mockData.colors,
+      method: mockData.method,
       createdAt: createdAt,
     });
     expect(settingsRecord.isDelete).toBe(false);

@@ -45,12 +45,13 @@ export class SignifyApi {
     }
   }
 
-  async createIdentifier(): Promise<string> {
-    const op = await this.signifyClient.identifiers().create(utils.uuid(), SignifyApi.BACKER_CONFIG);
+  async createIdentifier(): Promise<[name: string, identify: string]> {
+    const name = utils.uuid();
+    const op = await this.signifyClient.identifiers().create(name, SignifyApi.BACKER_CONFIG);
     if (!(await this.waitUntilOpDone(op, this.opTimeout, this.opRetryInterval))) {
       throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
     }
-    return op.name.replace("witness.", "");
+    return [name, op.name.replace("witness.", "")];
   }
 
   async getIdentifiersDetailed(): Promise<any[]> {
@@ -59,6 +60,10 @@ export class SignifyApi {
     return (await Promise.all((await this.signifyClient.identifiers().list()).map(async (aid: any) => {
       return this.signifyClient.identifiers().get(aid.name);
     }))).flat();
+  }
+
+  async getIdentifierByName(name: string): Promise<any> {
+    return this.signifyClient.identifiers().get(name);
   }
 
   /**

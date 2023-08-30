@@ -70,6 +70,8 @@ class AriesAgent {
     "No domain found in config";
   static readonly DID_MISSING_METADATA_ERROR_MSG =
     "DID metadata missing for stored DID";
+  static readonly CAN_CREATE_DID_ERROR_MESSAGE =
+    "Can't create DID";
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
@@ -260,29 +262,31 @@ class AriesAgent {
     const dataCreate= {
       id: data.id,
       displayName: data.displayName,
-      colors:data.colors
+      colors: data.colors,
+      method: data.method,
+      name: data.name,
     }
     const record = new IdentityMetadataRecord(dataCreate);
     return this.agent.modules.generalStorage.saveIdentityMetadataRecord(record);
   }
 
   async createIdentity(
-    type: IdentityType,
     metadata: Omit<IdentityMetadataRecordProps, "id" | "createdAt" | "isDelete">
   ): Promise<string | undefined> {
+    const type = metadata.method;
     if (type === IdentityType.KERI) {
-      const result = await this.agent.modules.signify.createIdentifier();
-      if (result)
-        await this.createIdentityMetadataRecord({id: result, ...metadata});
-      return result;
+      const [name, identifier] = await this.agent.modules.signify.createIdentifier();
+      await this.createIdentityMetadataRecord({id: identifier, ...metadata, name: name});
+      return identifier;
     }
     const result = await this.agent.dids.create({
       method: type,
       options: { keyType: KeyType.Ed25519 },
     });
-    if(result.didState.did){
-      await this.createIdentityMetadataRecord({ id: result.didState.did, ...metadata});
+    if(!result.didState.did){
+      throw new Error(AriesAgent.CAN_CREATE_DID_ERROR_MESSAGE);
     }
+    await this.createIdentityMetadataRecord({ id: result.didState.did, ...metadata});
     return result.didState.did;
   }
 
@@ -294,45 +298,21 @@ class AriesAgent {
     return metadata;
   }
 
-  async getIdentities(
-    method?: string,
-    did?: string
-  ): Promise<IdentityShortDetails[]> {
+  async getIdentities(): Promise<IdentityShortDetails[]> {
     const identities: IdentityShortDetails[] = [];
     const listMetadata: IdentityMetadataRecord[] = await this.agent.modules.generalStorage.getAllIdentityMetadata();
-    const dids = await this.agent.dids.getCreatedDids({ method, did });
-    for (let i = 0; i < dids.length; i++) {
-      const did = dids[i];
-      const metadata = listMetadata.find((item) => item.id === did.did);
-      const method = <IdentityType>did.getTag("method")?.toString();
-      if (method && metadata) {
+    for (let i = 0; i < listMetadata.length; i++) {
+      const metadata = listMetadata[i];
+      if (!metadata.isDelete) {
         identities.push({
-          method,
+          method: metadata.method,
           displayName: metadata.displayName,
-          id: did.did,
-          createdAtUTC: did.createdAt.toISOString(),
+          id: metadata.id,
+          createdAtUTC: metadata.createdAt.toISOString(),
           colors: metadata.colors,
         });
       }
     }
-
-    if (!method && !did) {
-      const aids = await this.agent.modules.signify.getIdentifiersDetailed();
-      for (let i = 0; i < aids.length; i++) {
-        const aid = aids[i];
-        const metadata = listMetadata.find((item) => item.id === aid.prefix);
-        if(metadata){
-          identities.push({
-            method: IdentityType.KERI,
-            displayName: metadata.displayName,
-            id: aid.prefix,
-            createdAtUTC: metadata.createdAt.toISOString(),
-            colors: metadata.colors,
-          });
-        }
-      }
-    }
-
     return identities;
   }
 
@@ -354,43 +334,38 @@ class AriesAgent {
         };
       }
     } else {
-      // @TODO - foconnor: This is hugely inefficient but will change once we store
-      // enough information in the database to map the identifiers.
-      const aids = await this.agent.modules.signify.getIdentifiersDetailed();
-      for (let i = 0; i < aids.length; i++) {
-        const aid = aids[i];
-        if (aid.prefix === identifier) {
-          const metadata = await this.getMetadataById(identifier);
-          return {
-            type: IdentityType.KERI,
-            result: {
-              id: aid.prefix,
-              method: IdentityType.KERI,
-              displayName: metadata.displayName,
-              createdAtUTC: metadata.createdAt.toISOString(),
-              colors: metadata.colors,
-              sequenceNumber: aid.state.s,
-              priorEventSaid: aid.state.p,
-              eventSaid: aid.state.d,
-              eventTimestamp: aid.state.dt,
-              eventType: aid.state.et,
-              keySigningThreshold: aid.state.kt,
-              signingKeys: aid.state.k,
-              nextKeysThreshold: aid.state.nt,
-              nextKeys: aid.state.n,
-              backerThreshold: aid.state.bt,
-              backerAids: aid.state.b,
-              lastEstablishmentEvent: {
-                said: aid.state.ee.d,
-                sequence: aid.state.ee.s,
-                backerToAdd: aid.state.ee.ba,
-                backerToRemove: aid.state.ee.br,
-              },
-            }
-          }
+      const metadata = await this.getMetadataById(identifier);
+      const aid = await this.agent.modules.signify.getIdentifierByName(metadata.name as string);
+      if (!aid) {
+        return undefined;
+      }
+      return {
+        type: IdentityType.KERI,
+        result: {
+          id: aid.prefix,
+          method: IdentityType.KERI,
+          displayName: metadata.displayName,
+          createdAtUTC: metadata.createdAt.toISOString(),
+          colors: metadata.colors,
+          sequenceNumber: aid.state.s,
+          priorEventSaid: aid.state.p,
+          eventSaid: aid.state.d,
+          eventTimestamp: aid.state.dt,
+          eventType: aid.state.et,
+          keySigningThreshold: aid.state.kt,
+          signingKeys: aid.state.k,
+          nextKeysThreshold: aid.state.nt,
+          nextKeys: aid.state.n,
+          backerThreshold: aid.state.bt,
+          backerAids: aid.state.b,
+          lastEstablishmentEvent: {
+            said: aid.state.ee.d,
+            sequence: aid.state.ee.s,
+            backerToAdd: aid.state.ee.ba,
+            backerToRemove: aid.state.ee.br,
+          },
         }
       }
-      return undefined;
     }
   }
 
@@ -423,7 +398,7 @@ class AriesAgent {
     };
   }
 
-  async updateIdentityMetadata(id: string, metadata: Omit<Partial<IdentityMetadataRecordProps>, "id" | "isDelete" | "createdAt">): Promise<void> {
+  async updateIdentityMetadata(id: string, metadata: Omit<Partial<IdentityMetadataRecordProps>, "id" | "isDelete" | "name" | "method" | "createdAt">): Promise<void> {
     return this.agent.modules.generalStorage.updateIdentityMetadata(id, metadata);
   }
 
