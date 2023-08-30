@@ -7,12 +7,18 @@ import {
   KeyDidResolver,
   KeyType,
   DidRecord,
-  BasicMessageStateChangedEvent,
-  BasicMessageEventTypes,
   OutOfBandRecord,
   ConnectionRecord,
   MediationRecipientModule,
   MediatorPickupStrategy,
+  ConnectionEventTypes,
+  ConnectionStateChangedEvent,
+  DidExchangeRole,
+  DidExchangeState,
+  CredentialEventTypes,
+  CredentialStateChangedEvent,
+  CredentialState,
+  CredentialExchangeRecord,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -138,8 +144,9 @@ class AriesAgent {
     if (!libP2pDomain) {
       throw new Error(AriesAgent.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
     }
-    const createInvitation = await this.agent.oob.createInvitation({
-      autoAcceptConnection: true,
+
+    const createInvitation = await  this.agent.oob.createInvitation({
+      autoAcceptConnection: false,
     });
 
     return createInvitation.outOfBandInvitation.toUrl({
@@ -194,6 +201,51 @@ class AriesAgent {
       autoAcceptInvitation: true,
       reuseConnection: true,
     });
+  }
+
+  /**
+   * Lister event connection state change.
+   * @param callback 
+   */
+  onConnectionStateChange(callback: (event: ConnectionStateChangedEvent) => void) {
+    this.agent.events.on(ConnectionEventTypes.ConnectionStateChanged, async (event: ConnectionStateChangedEvent) => {
+      callback(event);
+    })
+  }
+
+  /**
+   * Lister event request connection.
+   * @param callback 
+   */
+  onRequestConnection(callback: (event: ConnectionRecord) => void) {
+    this.agent.events.on(ConnectionEventTypes.ConnectionStateChanged, async (event: ConnectionStateChangedEvent) => {
+      if (
+        event.payload.connectionRecord.role === DidExchangeRole.Responder &&
+        event.payload.connectionRecord.state === DidExchangeState.RequestReceived
+      ) {
+        callback(event.payload.connectionRecord);
+      }
+    })
+  }
+
+  /**
+   * Lister event offer received.
+   * @param callback 
+   */
+  onCredentialOfferReceived(callback: (event: CredentialExchangeRecord) => void) {
+    this.agent.events.on(CredentialEventTypes.CredentialStateChanged, async (event: CredentialStateChangedEvent) => {
+      if (event.payload.credentialRecord.state === CredentialState.OfferReceived) {
+        callback(event.payload.credentialRecord);
+      }
+    })
+  }
+
+  async acceptCredentialOffer(credentialRecordId: string){
+    await this.agent.credentials.acceptOffer({ credentialRecordId});
+  }
+  
+  async acceptRequest(connectionId: string){
+    await this.agent.connections.acceptRequest(connectionId);
   }
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
