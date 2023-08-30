@@ -63,7 +63,7 @@ export class GeneralStorageApi {
   }
 
   async getAllIdentityMetadata(): Promise<IdentityMetadataRecord[]> {
-    return this.identityMetadataRepository.findByQuery(this.agentContext, {});
+    return this.identityMetadataRepository.getAll(this.agentContext);
   }
 
   async getIdentityMetadata(id: string): Promise<IdentityMetadataRecord | null> {

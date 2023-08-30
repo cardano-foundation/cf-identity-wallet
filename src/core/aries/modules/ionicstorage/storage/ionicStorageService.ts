@@ -125,7 +125,7 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
     const session = agentContext.wallet.store;
     const instances: T[] = [];
 
-    session.forEach((value) => {
+    await session.forEach((value) => {
       if (value.category && value.category === recordClass.type) {
         instances.push(deserializeRecord(value, recordClass));
       }
