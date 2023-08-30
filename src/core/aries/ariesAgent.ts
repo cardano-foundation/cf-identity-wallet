@@ -157,7 +157,6 @@ class AriesAgent {
   async createMediatorInvitation(goalCode?: string) {
     const record = await this.agent?.oob.createInvitation({
       goalCode,
-      autoAcceptConnection: true,
     });
     if (!record) {
       throw new Error("Could not create new invitation");
