@@ -1,6 +1,9 @@
 # ID Wallet
 An open-source Decentralised Identity (DID) and Verifiable Credential (VC) Wallet complying to W3C and DIDComm standards utilising Local-First Software design and development principles.  The wallet also features a bespoke Cardano Crypto Wallet. 
 
+# Mediator serivce
+You can know how to mediator work in [link](https://github.com/hyperledger/aries-cloudagent-python/blob/main/Mediation.md#mediator-message-flow-overview)
+
 ## Deployment steps before building
 At present to create KERI AIDs we use a combination of KERIA and Signify-TS.
 KERIA for now is deployed locally in Docker Compose and pushes key event material to a KERI cardano-backer running on our AWS account.
