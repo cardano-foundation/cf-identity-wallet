@@ -99,7 +99,7 @@ const EditIdentity = ({
     }
   };
 
-  const verifyAction = async () => {
+  const verifyAction = () => {
     handleDismiss();
     if (actionType === "edit") {
       // @TODO - sdisalvo: Update Database.
