@@ -2,7 +2,7 @@
 An open-source Decentralised Identity (DID) and Verifiable Credential (VC) Wallet complying to W3C and DIDComm standards utilising Local-First Software design and development principles.  The wallet also features a bespoke Cardano Crypto Wallet. 
 
 # Mediator serivce
-You can know how to mediator work in [link](https://github.com/hyperledger/aries-cloudagent-python/blob/main/Mediation.md#mediator-message-flow-overview)
+You can know how to mediator work in [link](https://github.com/hyperledger/aries-cloudagent-python/blob/main/Mediation.md#mediator-message-flow-overview).
 When deploy mediator services success by docker-compose, you can see invitation URL in log of mediator container:
 ```console
 mediator_1             | Invitation URL (Connections protocol):
