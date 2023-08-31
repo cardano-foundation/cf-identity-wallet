@@ -95,8 +95,7 @@ class AriesAgent {
           : { ionicStorage: new IonicStorageModule() }),
         signify: new SignifyModule(),
         mediationRecipient: new MediationRecipientModule({
-          mediatorInvitationUrl:
-            "http://localhost:2015?c_i=eyJAdHlwZSI6ICJodHRwczovL2RpZGNvbW0ub3JnL2Nvbm5lY3Rpb25zLzEuMC9pbnZpdGF0aW9uIiwgIkBpZCI6ICIxODc4ZTRlYi01MDgxLTRjNTUtYTFlNS0yZjljMDVmOWQxYTEiLCAibGFiZWwiOiAiTWVkaWF0b3IiLCAicmVjaXBpZW50S2V5cyI6IFsiRTY3R1VheWhaTnozcGhQQm5QcVpONmg1djNGbjNYMlE2eEE3SEFpNlQ1aFoiXSwgInNlcnZpY2VFbmRwb2ludCI6ICJodHRwOi8vbG9jYWxob3N0OjIwMTUifQ==",
+          mediatorInvitationUrl: "", // TODO: must add it when devops had supported infrastructure
           mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
         }),
       },
