@@ -36,7 +36,10 @@ class IdentityMetadataRecord extends BaseRecord implements IdentityMetadataRecor
   }
 
   getTags() {
-    return this._tags;
+    return {
+      ...this._tags,
+      isArchived: this.isArchived,
+    };
   }
 }
 
