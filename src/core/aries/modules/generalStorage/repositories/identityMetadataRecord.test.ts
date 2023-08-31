@@ -6,7 +6,7 @@ const mockData:IdentityMetadataRecordProps = {
   displayName: "New Did",
   colors: ["#000000", "#FFFFFF"],
   method: IdentityType.KEY,
-  isDelete: true
+  isArchived: true
 }
 
 describe("Identify Record", () => {
@@ -18,8 +18,8 @@ describe("Identify Record", () => {
     expect(settingsRecord.id).toBe(mockData.id);
     expect(settingsRecord.displayName).toBe(mockData.displayName);
     expect(settingsRecord.createdAt).toBe(createdAt);
-    expect(settingsRecord.isDelete).toBe(mockData.isDelete);
-    expect(settingsRecord.getTags()).toMatchObject({});
+    expect(settingsRecord.isArchived).toBe(mockData.isArchived);
+    expect(settingsRecord.getTags()).toMatchObject({isArchived: mockData.isArchived});
   });
 
   test("should fallback to the current time if not supplied", async () => {
@@ -30,14 +30,14 @@ describe("Identify Record", () => {
       displayName: mockData.displayName,
       colors: mockData.colors,
       method: mockData.method,
-      isDelete: mockData.isDelete,
+      isArchived: mockData.isArchived,
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
       createdAt.getTime()
     );
   });
   
-  test("should isDelete = false if not supplied", async () => {
+  test("should isArchived = false if not supplied", async () => {
     const createdAt = new Date();
     const settingsRecord = new IdentityMetadataRecord({
       id: mockData.id,
@@ -46,6 +46,6 @@ describe("Identify Record", () => {
       method: mockData.method,
       createdAt: createdAt,
     });
-    expect(settingsRecord.isDelete).toBe(false);
+    expect(settingsRecord.isArchived).toBe(false);
   });
 });
