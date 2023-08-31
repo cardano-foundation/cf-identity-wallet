@@ -31,7 +31,6 @@ import {
   CryptoAccountRecord,
 } from "./modules";
 import { HttpOutboundTransport, WsOutboundTransport } from "./transports";
-import { LabelledKeyDidRegistrar } from "./dids";
 import { GetIdentityResult, IdentityType } from "./ariesAgent.types";
 import type { DIDDetails, IdentityShortDetails } from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
