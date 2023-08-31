@@ -1,4 +1,9 @@
-import type { Agent, OutboundTransport, OutboundPackage, Logger } from "@aries-framework/core";
+import type {
+  Agent,
+  OutboundTransport,
+  OutboundPackage,
+  Logger,
+} from "@aries-framework/core";
 import { LibP2p } from "./libp2p/libP2p";
 
 export class LibP2pOutboundTransport implements OutboundTransport {
@@ -25,9 +30,12 @@ export class LibP2pOutboundTransport implements OutboundTransport {
   }
 
   public async sendMessage(outboundPackage: OutboundPackage): Promise<void> {
-    this.logger.debug(`Sending outbound message to endpoint '${outboundPackage.endpoint}', connection ID: ${outboundPackage.connectionId}`, {
-      payload: outboundPackage.payload,
-    })
+    this.logger.debug(
+      `Sending outbound message to endpoint '${outboundPackage.endpoint}', connection ID: ${outboundPackage.connectionId}`,
+      {
+        payload: outboundPackage.payload,
+      }
+    );
     return this.libP2p.sendMessage(outboundPackage);
   }
 }
