@@ -1,8 +1,8 @@
 import type {
   OutboundWebSocketClosedEvent,
   OutboundWebSocketOpenedEvent,
-} from "./TransportEventTypes";
-import { TransportEventTypes } from './TransportEventTypes'
+} from "./transportEventTypes";
+import { TransportEventTypes } from "./transportEventTypes";
 import type WebSocket from "ws";
 import type {
   OutboundTransport,
@@ -20,7 +20,7 @@ import {
 
 import { Buffer } from "buffer";
 
-export class WsOutboundTransport implements OutboundTransport {
+class WsOutboundTransport implements OutboundTransport {
   private transportTable: Map<string, WebSocket> = new Map<string, WebSocket>();
   private agent!: Agent;
   private logger!: Logger;
@@ -119,7 +119,7 @@ export class WsOutboundTransport implements OutboundTransport {
   private handleMessageEvent = async (event: any) => {
     this.logger.trace("WebSocket message event received.", {
       url: event.target.url,
-      data : event.data
+      data: event.data,
     });
     const payload = await this.parseDataEvent(event.data);
     if (!isValidJweStructure(payload)) {
@@ -196,10 +196,12 @@ export class WsOutboundTransport implements OutboundTransport {
     });
   }
 
-  private async parseDataEvent(data : any) : Promise<any> {
-    if (data instanceof Blob){
+  private async parseDataEvent(data: any): Promise<any> {
+    if (data instanceof Blob) {
       return JSON.parse(await data.text());
     }
     return JsonEncoder.fromBuffer(data);
   }
 }
+
+export { WsOutboundTransport };
