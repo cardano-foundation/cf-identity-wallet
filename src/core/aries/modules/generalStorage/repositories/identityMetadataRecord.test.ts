@@ -19,7 +19,7 @@ describe("Identify Record", () => {
     expect(settingsRecord.displayName).toBe(mockData.displayName);
     expect(settingsRecord.createdAt).toBe(createdAt);
     expect(settingsRecord.isArchived).toBe(mockData.isArchived);
-    expect(settingsRecord.getTags()).toMatchObject({});
+    expect(settingsRecord.getTags()).toMatchObject({isArchived: mockData.isArchived});
   });
 
   test("should fallback to the current time if not supplied", async () => {
