@@ -302,11 +302,11 @@ class AriesAgent {
 
   async getIdentities(isGetArchive = false): Promise<IdentityShortDetails[]> {
     const identities: IdentityShortDetails[] = [];
-    let listMetadata: IdentityMetadataRecord[] = await this.agent.modules.generalStorage.getAllIdentityMetadata();
+    let listMetadata: IdentityMetadataRecord[];
     if (isGetArchive) {
-      listMetadata = listMetadata.filter((metadata) => metadata.isArchived);
+      listMetadata = await this.agent.modules.generalStorage.getAllArchiveIdentityMetadata();
     } else {
-      listMetadata = listMetadata.filter((metadata) => !metadata.isArchived);
+      listMetadata = await this.agent.modules.generalStorage.getAllAvailableIdentityMetadata();
     }
     for (let i = 0; i < listMetadata.length; i++) {
       const metadata = listMetadata[i];
@@ -321,7 +321,7 @@ class AriesAgent {
     return identities;
   }
 
-  isDidIdentifier(identifier: string): boolean {
+  private isDidIdentifier(identifier: string): boolean {
     return identifier.startsWith("did:");
   }
 
@@ -420,17 +420,11 @@ class AriesAgent {
   async deleteIdentity(identifier: string): Promise<void> {
     const metadata = await this.getMetadataById(identifier);
     this.validArchivedIdentity(metadata);
-    if (this.isDidIdentifier(identifier)) {
-      await this.agent.modules.generalStorage.deleteDidRecord(identifier);
-    }
-    else {
-      // @TODO: delete signify
-    }
     await this.agent.modules.generalStorage.deleteIdentityMetadata(identifier);
   }
 
   async archiveIdentity(identifier: string): Promise<void> {
-    return this.agent.modules.generalStorage.softDeleteIdentityMetadata(identifier);
+    return this.agent.modules.generalStorage.archiveIdentityMetadata(identifier);
   }
 
   async restoreIdentity(identifier: string): Promise<void> {

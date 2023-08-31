@@ -63,15 +63,19 @@ export class GeneralStorageApi {
     await this.identityMetadataRepository.save(this.agentContext, record);
   }
 
-  async getAllIdentityMetadata(): Promise<IdentityMetadataRecord[]> {
-    return this.identityMetadataRepository.getAll(this.agentContext);
+  async getAllAvailableIdentityMetadata(): Promise<IdentityMetadataRecord[]> {
+    return this.identityMetadataRepository.findByQuery(this.agentContext, { isArchived: false });
+  }
+
+  async getAllArchiveIdentityMetadata(): Promise<IdentityMetadataRecord[]> {
+    return this.identityMetadataRepository.findByQuery(this.agentContext, { isArchived: true });
   }
 
   async getIdentityMetadata(id: string): Promise<IdentityMetadataRecord | null> {
     return this.identityMetadataRepository.findById(this.agentContext, id);
   }
 
-  async softDeleteIdentityMetadata(id: string): Promise<void> {
+  async archiveIdentityMetadata(id: string): Promise<void> {
     return this.updateIdentityMetadata(id, { isArchived: true });
   }
 
