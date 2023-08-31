@@ -45,8 +45,8 @@ services:
 
   mediator:
     build:
-      context: .
-      dockerfile: mediator-service/acapy/Dockerfile.acapy
+      context: github.com/hyperledger/aries-mediator-service#11b3a53ddc6ca845ae023eccc9f7a3c8d163ddc6
+      dockerfile: acapy/Dockerfile.acapy
     depends_on:
       db:
         condition: service_healthy
@@ -81,9 +81,11 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    volumes:
+     - ./mediator-service/acapy/start.sh:/acapy-mediator/start.sh
 
   db:
-    image: postgres:10
+    image: postgres:15
     # restart: always
     environment:
       POSTGRES_PASSWORD: ${POSTGRESQL_ADMIN_PASSWORD:-development}
