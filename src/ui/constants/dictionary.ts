@@ -13,9 +13,17 @@ const connectionStatus = {
 
 const generateSeedPhraseState = {
   onboarding: "onboarding",
-  additional: "additional",
-  restore: "restore",
-  success: "success",
+  additional: "newcryptoaccount",
+  restore: "restorecryptoaccount",
+};
+
+const toastState = {
+  walletCreated: "walletCreated",
+  walletRestored: "walletRestored",
+  walletDeleted: "walletDeleted",
+  identityDeleted: "identityDeleted",
+  credentialDeleted: "credentialDeleted",
+  connectionDeleted: "connectionDeleted",
 };
 
 const defaultCredentialsCardData = {
@@ -76,6 +84,13 @@ const defaultConnectionData: ConnectionsProps = {
 
 const blurredCryptoData = "••••••••••••••••••";
 
+const onboardingRoute = {
+  create: "onboardingcreate",
+  createRoute: "?route=onboardingcreate",
+  restore: "onboardingrestore",
+  restoreRoute: "?route=onboardingrestore",
+};
+
 export {
   cardTypes,
   connectionStatus,
@@ -84,4 +99,6 @@ export {
   defaultCryptoAccountData,
   defaultConnectionData,
   blurredCryptoData,
+  onboardingRoute,
+  toastState,
 };

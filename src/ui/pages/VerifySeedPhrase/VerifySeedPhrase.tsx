@@ -18,11 +18,16 @@ import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { generateSeedPhraseState } from "../../constants/dictionary";
+import {
+  generateSeedPhraseState,
+  toastState,
+} from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
-import { TabsRoutePath } from "../../../routes/paths";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
@@ -34,7 +39,8 @@ const VerifySeedPhrase = () => {
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
     ? generateSeedPhraseState.onboarding
-    : (history?.location?.state as GenerateSeedPhraseProps)?.type || "";
+    : (history?.location?.state as GenerateSeedPhraseProps)?.type ||
+      stateCache?.currentOperation;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
     seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
@@ -95,16 +101,7 @@ const VerifySeedPhrase = () => {
       Addresses.convertEntropyToHexXPrvNoPasscode(convertToEntropy)
     );
     await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, convertToEntropy);
-    const data: DataProps = {
-      store: { stateCache },
-    };
-    const { nextPath, updateRedux } = getNextRoute(
-      RoutePath.VERIFY_SEED_PHRASE,
-      data
-    );
-    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    handleClearState();
-    history.push(nextPath.pathname);
+    handleNavigate();
   };
 
   const handleContinue = async () => {
@@ -120,6 +117,26 @@ const VerifySeedPhrase = () => {
     } else {
       setAlertIsOpen(true);
     }
+  };
+
+  const handleNavigate = () => {
+    const data: DataProps = {
+      store: { stateCache },
+      state: {
+        type:
+          seedPhraseType !== generateSeedPhraseState.onboarding
+            ? toastState.walletCreated
+            : "",
+        currentOperation: stateCache.currentOperation,
+      },
+    };
+    const { nextPath, updateRedux } = getNextRoute(
+      RoutePath.VERIFY_SEED_PHRASE,
+      data
+    );
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    handleClearState();
+    history.push(nextPath.pathname);
   };
 
   const handleExit = () => {
@@ -157,7 +174,10 @@ const VerifySeedPhrase = () => {
         backButton={true}
         onBack={
           seedPhraseType === generateSeedPhraseState.onboarding
-            ? handleClearState
+            ? () => {
+                handleClearState();
+                handleExit();
+              }
             : () => setAlertExitIsOpen(true)
         }
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
@@ -277,13 +297,8 @@ const VerifySeedPhrase = () => {
           usesIdentitySeedPhrase={false}
           seedPhrase={originalSeedPhrase.join(" ")}
           onDone={() => {
-            handleClearState();
-            history.push({
-              pathname: TabsRoutePath.CRYPTO,
-              state: {
-                type: generateSeedPhraseState.success,
-              },
-            });
+            dispatch(setCurrentOperation(toastState.walletCreated));
+            handleNavigate();
           }}
         />
       </PageLayout>

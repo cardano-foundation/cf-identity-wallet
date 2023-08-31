@@ -83,9 +83,3 @@
     background-color: var(--ion-color-light-grey);
   }
 }
-
-ion-toast.crypto-toast {
-  &::part(message) {
-    color: var(--ion-color-light);
-  }
-}

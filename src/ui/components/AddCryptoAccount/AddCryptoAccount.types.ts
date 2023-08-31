@@ -1,7 +1,7 @@
 interface AddCryptoAccountsProps {
   addAccountIsOpen: boolean;
   setAddAccountIsOpen: (value: boolean) => void;
-  setShowVerifyPassword: (value: boolean) => void;
+  setChooseAccountNameIsOpen: (value: boolean) => void;
   idwProfileInUse: boolean;
 }
 

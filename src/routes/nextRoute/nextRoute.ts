@@ -11,7 +11,7 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { backPath } from "../backRoute";
+import { onboardingRoute } from "../../ui/constants/dictionary";
 
 const getNextRootRoute = (store: StoreState) => {
   const authentication = store.stateCache.authentication;
@@ -23,7 +23,14 @@ const getNextRootRoute = (store: StoreState) => {
   if (authentication.passcodeIsSet && !authentication.loggedIn) {
     path = RoutePath.PASSCODE_LOGIN;
   } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
-    path = RoutePath.TABS_MENU;
+    if (
+      store.stateCache.currentOperation ===
+      (onboardingRoute.create || onboardingRoute.restore)
+    ) {
+      path = RoutePath.CREATE_PASSWORD;
+    } else {
+      path = RoutePath.TABS_MENU;
+    }
   } else {
     if (initialRoute) {
       path = RoutePath.ONBOARDING;
@@ -34,16 +41,20 @@ const getNextRootRoute = (store: StoreState) => {
 
   return { pathname: path };
 };
-const getNextOnboardingRoute = (store: StoreState) => {
-  const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase160;
 
+const getNextOnboardingRoute = (data: DataProps) => {
+  const route = data?.state?.currentOperation;
+  let query = "";
+  if (route === onboardingRoute.create) {
+    query = onboardingRoute.createRoute;
+  } else if (route === onboardingRoute.restore) {
+    query = onboardingRoute.restoreRoute;
+  }
   let path;
-  if (!store.stateCache.authentication.passcodeIsSet) {
+  if (!data.store.stateCache.authentication.passcodeIsSet) {
     path = RoutePath.SET_PASSCODE;
-  } else if (store.stateCache.authentication.passcodeIsSet && seedPhraseIsSet) {
-    path = RoutePath.TABS_MENU;
   } else {
-    path = RoutePath.GENERATE_SEED_PHRASE;
+    path = RoutePath.GENERATE_SEED_PHRASE + query;
   }
 
   return { pathname: path };
@@ -92,8 +103,15 @@ const updateStoreAfterVerifySeedPhraseRoute = (data: DataProps) => {
 const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
-const getNextVerifySeedPhraseRoute = () => {
-  return { pathname: RoutePath.TABS_MENU };
+
+const getNextVerifySeedPhraseRoute = (data: DataProps) => {
+  const route = data?.state?.currentOperation;
+  const nextPath: string =
+    route === onboardingRoute.create
+      ? RoutePath.CREATE_PASSWORD
+      : TabsRoutePath.CRYPTO;
+
+  return { pathname: nextPath };
 };
 
 const updateStoreSetSeedPhrase = (data: DataProps) => {
@@ -107,14 +125,15 @@ const updateStoreCurrentRoute = (data: DataProps) => {
   return setCurrentRoute({ path: data.state?.nextRoute });
 };
 
-const getNextCreatePasswordRoute = (data: DataProps) => {
-  const backRoute = backPath(data);
-  return { pathname: backRoute?.pathname };
+const getNextCreatePasswordRoute = () => {
+  return { pathname: RoutePath.TABS_MENU };
 };
 const updateStoreAfterCreatePassword = (data: DataProps) => {
+  const skipped = data.state?.skipped;
   return setAuthentication({
     ...data.store.stateCache.authentication,
-    passwordIsSet: true,
+    passwordIsSet: !skipped,
+    passwordIsSkipped: skipped,
   });
 };
 
@@ -141,7 +160,7 @@ const nextRoute: Record<string, any> = {
     updateRedux: [],
   },
   [RoutePath.ONBOARDING]: {
-    nextPath: (data: DataProps) => getNextOnboardingRoute(data.store),
+    nextPath: (data: DataProps) => getNextOnboardingRoute(data),
     updateRedux: [],
   },
   [RoutePath.SET_PASSCODE]: {
@@ -153,11 +172,11 @@ const nextRoute: Record<string, any> = {
     updateRedux: [updateStoreSetSeedPhrase],
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
-    nextPath: () => getNextVerifySeedPhraseRoute(),
+    nextPath: (data: DataProps) => getNextVerifySeedPhraseRoute(data),
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
   [RoutePath.CREATE_PASSWORD]: {
-    nextPath: (data: DataProps) => getNextCreatePasswordRoute(data),
+    nextPath: () => getNextCreatePasswordRoute(),
     updateRedux: [updateStoreAfterCreatePassword],
   },
   [RoutePath.CONNECTION_DETAILS]: {

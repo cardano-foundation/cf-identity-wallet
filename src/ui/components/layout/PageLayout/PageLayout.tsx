@@ -22,6 +22,7 @@ const PageLayout = ({
   id,
   header,
   backButton,
+  beforeBack,
   onBack,
   currentPath,
   children,
@@ -42,25 +43,31 @@ const PageLayout = ({
   primaryButtonText,
   primaryButtonAction,
   primaryButtonDisabled,
+  secondaryButtonText,
+  secondaryButtonAction,
 }: PageLayoutProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
 
   const handleOnBack = () => {
-    if (backButton && currentPath) {
-      const { backPath, updateRedux } = getBackRoute(currentPath, {
-        store: { stateCache },
-      });
-      updateReduxState(
-        backPath.pathname,
-        { store: { stateCache } },
-        dispatch,
-        updateRedux
-      );
-      history.push(backPath.pathname);
-      if (onBack) {
-        onBack();
+    if (onBack) {
+      onBack();
+    } else {
+      if (beforeBack) {
+        beforeBack();
+      }
+      if (backButton && currentPath) {
+        const { backPath, updateRedux } = getBackRoute(currentPath, {
+          store: { stateCache },
+        });
+        updateReduxState(
+          backPath.pathname,
+          { store: { stateCache } },
+          dispatch,
+          updateRedux
+        );
+        history.push(backPath.pathname);
       }
     }
   };
@@ -199,6 +206,14 @@ const PageLayout = ({
             >
               {primaryButtonText}
             </IonButton>
+            {secondaryButtonText && secondaryButtonAction ? (
+              <div
+                className="secondary-button"
+                onClick={secondaryButtonAction}
+              >
+                {secondaryButtonText}
+              </div>
+            ) : null}
           </IonToolbar>
         </IonFooter>
       )}
