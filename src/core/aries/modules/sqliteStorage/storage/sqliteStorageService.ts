@@ -10,6 +10,7 @@ import {
   RecordDuplicateError,
 } from "@aries-framework/core";
 import {
+  TagDataType,
   assertSqliteStorageWallet,
   deserializeRecord,
   resolveTagsFromDb,
@@ -22,18 +23,18 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
   static readonly RECORD_DOES_NOT_EXIST_ERROR_MSG =
     "Record does not exist with id";
   static readonly INSERT_ITEM_TAG_SQL =
-    "INSERT INTO items_tags (item_id, name, value) VALUES (?,?,?)";
+    "INSERT INTO items_tags (item_id, name, value, type) VALUES (?,?,?,?)";
   static readonly DELETE_ITEM_TAGS_SQL =
     "DELETE FROM items_tags where item_id = ?";
   static readonly DELETE_ITEM_SQL = "DELETE FROM items where id = ?";
   static readonly GET_ITEM_SQL =
-    "SELECT category, name, value, (SELECT group_concat(it.name || '|' || it.value) FROM items_tags it WHERE it.item_id = i.id) tags FROM items i WHERE id = ?";
+    "SELECT category, name, value, (SELECT group_concat(it.type || '|' || it.name || '|' || it.value) FROM items_tags it WHERE it.item_id = i.id) tags FROM items i WHERE id = ?";
   static readonly INSERT_ITEMS_SQL =
     "INSERT OR IGNORE INTO items (id, category, name, value) VALUES (?,?,?,?)";
   static readonly UPDATE_ITEMS_SQL =
     "UPDATE items set category = ?, name = ?, value = ? where id = ?";
   static readonly SCAN_QUERY_SQL = `SELECT category, name, value,
-    (SELECT group_concat(it.name || '|' || it.value)
+    (SELECT group_concat(it.type || '|' || it.name || '|' || it.value)
         FROM items_tags it WHERE it.item_id = i.id) tags
     FROM items i WHERE category = ?`;
   static readonly SCAN_TAGS_SQL_EQ =
@@ -287,13 +288,13 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
           (tags[key] as Array<string>).forEach((value) => {
             statements.push({
               statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
-              values: [itemId, key, value],
+              values: [itemId, key, value, TagDataType.ARRAY],
             });
           });
         } else {
           statements.push({
             statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
-            values: [itemId, key, tags[key]],
+            values: [itemId, key, tags[key], TagDataType.STRING],
           });
         }
       }
