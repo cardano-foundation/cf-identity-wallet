@@ -16,7 +16,8 @@ import {
   CredentialEventTypes,
   CredentialStateChangedEvent,
   CredentialState,
-  CredentialExchangeRecord, KeyDidRegistrar,
+  CredentialExchangeRecord,
+  KeyDidRegistrar,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -30,15 +31,19 @@ import {
 } from "./modules";
 import { HttpOutboundTransport } from "./transports";
 import { GetIdentityResult, IdentityType } from "./ariesAgent.types";
-import type { DIDDetails, IdentityShortDetails } from "./ariesAgent.types";
+import type {
+  CryptoAccountRecordShortDetails,
+  DIDDetails,
+  IdentityShortDetails,
+} from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
 import { LibP2p } from "./transports/libp2p/libP2p";
-import {LibP2pOutboundTransport} from "./transports/libP2pOutboundTransport";
+import { LibP2pOutboundTransport } from "./transports/libP2pOutboundTransport";
 import {
   IdentityMetadataRecord,
-  IdentityMetadataRecordProps
+  IdentityMetadataRecordProps,
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
 
 const config: InitConfig = {
@@ -91,7 +96,7 @@ class AriesAgent {
         ...(platformIsNative
           ? { sqliteStorage: new SqliteStorageModule() }
           : { ionicStorage: new IonicStorageModule() }),
-        signify: new SignifyModule()
+        signify: new SignifyModule(),
       },
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
@@ -128,23 +133,25 @@ class AriesAgent {
   /**
    * Create an invitation link to connect
    */
-  async createNewWebRtcInvitation ()  {
+  async createNewWebRtcInvitation() {
     const domains = this.agent.config.endpoints;
     const libP2pDomain = domains.find((domain) => domain.includes("libp2p"));
     if (!libP2pDomain) {
       throw new Error(AriesAgent.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
     }
-    const createInvitation = await  this.agent.oob.createInvitation({
+    const createInvitation = await this.agent.oob.createInvitation({
       autoAcceptConnection: false,
     });
 
     return createInvitation.outOfBandInvitation.toUrl({
       domain: libP2pDomain,
-    })
+    });
   }
 
   async sendMessageByOutOfBandId(outOfBandId: string, message: string) {
-    const [connection] = await this.agent.connections.findAllByOutOfBandId(outOfBandId);
+    const [connection] = await this.agent.connections.findAllByOutOfBandId(
+      outOfBandId
+    );
     if (!connection) {
       throw Error("Connection not found");
     }
@@ -156,12 +163,12 @@ class AriesAgent {
     if (!connectionRecord) {
       throw Error("Connection not found");
     }
-    return  this.agent.basicMessages.sendMessage(connectionRecord.id, message);
+    return this.agent.basicMessages.sendMessage(connectionRecord.id, message);
   }
 
   async receiveInvitationFromUrl(url: string): Promise<{
     outOfBandRecord: OutOfBandRecord;
-    connectionRecord?: ConnectionRecord | undefined
+    connectionRecord?: ConnectionRecord | undefined;
   }> {
     return this.agent.oob.receiveInvitationFromUrl(url, {
       autoAcceptConnection: true,
@@ -172,46 +179,62 @@ class AriesAgent {
 
   /**
    * Lister event connection state change.
-   * @param callback 
+   * @param callback
    */
-  onConnectionStateChange(callback: (event: ConnectionStateChangedEvent) => void) {
-    this.agent.events.on(ConnectionEventTypes.ConnectionStateChanged, async (event: ConnectionStateChangedEvent) => {
-      callback(event);
-    })
+  onConnectionStateChange(
+    callback: (event: ConnectionStateChangedEvent) => void
+  ) {
+    this.agent.events.on(
+      ConnectionEventTypes.ConnectionStateChanged,
+      async (event: ConnectionStateChangedEvent) => {
+        callback(event);
+      }
+    );
   }
 
   /**
    * Lister event request connection.
-   * @param callback 
+   * @param callback
    */
   onRequestConnection(callback: (event: ConnectionRecord) => void) {
-    this.agent.events.on(ConnectionEventTypes.ConnectionStateChanged, async (event: ConnectionStateChangedEvent) => {
-      if (
-        event.payload.connectionRecord.role === DidExchangeRole.Responder &&
-        event.payload.connectionRecord.state === DidExchangeState.RequestReceived
-      ) {
-        callback(event.payload.connectionRecord);
+    this.agent.events.on(
+      ConnectionEventTypes.ConnectionStateChanged,
+      async (event: ConnectionStateChangedEvent) => {
+        if (
+          event.payload.connectionRecord.role === DidExchangeRole.Responder &&
+          event.payload.connectionRecord.state ===
+            DidExchangeState.RequestReceived
+        ) {
+          callback(event.payload.connectionRecord);
+        }
       }
-    })
+    );
   }
 
   /**
    * Lister event offer received.
-   * @param callback 
+   * @param callback
    */
-  onCredentialOfferReceived(callback: (event: CredentialExchangeRecord) => void) {
-    this.agent.events.on(CredentialEventTypes.CredentialStateChanged, async (event: CredentialStateChangedEvent) => {
-      if (event.payload.credentialRecord.state === CredentialState.OfferReceived) {
-        callback(event.payload.credentialRecord);
+  onCredentialOfferReceived(
+    callback: (event: CredentialExchangeRecord) => void
+  ) {
+    this.agent.events.on(
+      CredentialEventTypes.CredentialStateChanged,
+      async (event: CredentialStateChangedEvent) => {
+        if (
+          event.payload.credentialRecord.state === CredentialState.OfferReceived
+        ) {
+          callback(event.payload.credentialRecord);
+        }
       }
-    })
+    );
   }
 
-  async acceptCredentialOffer(credentialRecordId: string){
-    await this.agent.credentials.acceptOffer({ credentialRecordId});
+  async acceptCredentialOffer(credentialRecordId: string) {
+    await this.agent.credentials.acceptOffer({ credentialRecordId });
   }
-  
-  async acceptRequest(connectionId: string){
+
+  async acceptRequest(connectionId: string) {
     await this.agent.connections.acceptRequest(connectionId);
   }
 
@@ -251,6 +274,28 @@ class AriesAgent {
     );
   }
 
+  async getAllCryptoAccountRecord(): Promise<
+    CryptoAccountRecordShortDetails[]
+  > {
+    const cryptoAccountRecordsShortDetails: CryptoAccountRecordShortDetails[] =
+      [];
+    const listRecords =
+      await this.agent.modules.generalStorage.getAllCryptoRecord();
+
+    for (let i = 0; i < listRecords.length; i++) {
+      const record = listRecords[i];
+      cryptoAccountRecordsShortDetails.push({
+        id: record.id,
+        addresses: record.addresses,
+        rewardAddresses: record.rewardAddresses,
+        displayName: record.displayName,
+        usesIdentitySeedPhrase: record.usesIdentitySeedPhrase,
+      });
+    }
+
+    return cryptoAccountRecordsShortDetails;
+  }
+
   async cryptoAccountIdentitySeedPhraseExists(): Promise<boolean> {
     return this.agent.modules.generalStorage.cryptoAccountIdentitySeedPhraseExists();
   }
@@ -258,14 +303,14 @@ class AriesAgent {
   async removeCryptoAccountRecordById(id: string): Promise<void> {
     await this.agent.modules.generalStorage.removeCryptoRecordById(id);
   }
-  async createIdentityMetadataRecord(data: IdentityMetadataRecordProps){
-    const dataCreate= {
+  async createIdentityMetadataRecord(data: IdentityMetadataRecordProps) {
+    const dataCreate = {
       id: data.id,
       displayName: data.displayName,
       colors: data.colors,
       method: data.method,
       signifyName: data.signifyName,
-    }
+    };
     const record = new IdentityMetadataRecord(dataCreate);
     return this.agent.modules.generalStorage.saveIdentityMetadataRecord(record);
   }
@@ -275,23 +320,32 @@ class AriesAgent {
   ): Promise<string | undefined> {
     const type = metadata.method;
     if (type === IdentityType.KERI) {
-      const { signifyName, identifier } = await this.agent.modules.signify.createIdentifier();
-      await this.createIdentityMetadataRecord({id: identifier, ...metadata, signifyName: signifyName});
+      const { signifyName, identifier } =
+        await this.agent.modules.signify.createIdentifier();
+      await this.createIdentityMetadataRecord({
+        id: identifier,
+        ...metadata,
+        signifyName: signifyName,
+      });
       return identifier;
     }
     const result = await this.agent.dids.create({
       method: type,
       options: { keyType: KeyType.Ed25519 },
     });
-    if(!result.didState.did){
+    if (!result.didState.did) {
       throw new Error(AriesAgent.UNEXPECTED_MISSING_DID_RESULT_ON_CREATE);
     }
-    await this.createIdentityMetadataRecord({ id: result.didState.did, ...metadata});
+    await this.createIdentityMetadataRecord({
+      id: result.didState.did,
+      ...metadata,
+    });
     return result.didState.did;
   }
 
   async getMetadataById(id: string): Promise<IdentityMetadataRecord> {
-    const metadata = await this.agent.modules.generalStorage.getIdentityMetadata(id);
+    const metadata =
+      await this.agent.modules.generalStorage.getIdentityMetadata(id);
     if (!metadata) {
       throw new Error(`${AriesAgent.DID_MISSING_METADATA_ERROR_MSG} ${id}`);
     }
@@ -300,7 +354,8 @@ class AriesAgent {
 
   async getIdentities(): Promise<IdentityShortDetails[]> {
     const identities: IdentityShortDetails[] = [];
-    const listMetadata: IdentityMetadataRecord[] = await this.agent.modules.generalStorage.getAllIdentityMetadata();
+    const listMetadata: IdentityMetadataRecord[] =
+      await this.agent.modules.generalStorage.getAllIdentityMetadata();
     for (let i = 0; i < listMetadata.length; i++) {
       const metadata = listMetadata[i];
       if (!metadata.isDelete) {
@@ -316,9 +371,13 @@ class AriesAgent {
     return identities;
   }
 
-  async getIdentity(identifier: string): Promise<GetIdentityResult | undefined> {
+  async getIdentity(
+    identifier: string
+  ): Promise<GetIdentityResult | undefined> {
     if (identifier.startsWith("did:")) {
-      const storedDid = await this.agent.dids.getCreatedDids({ did: identifier });
+      const storedDid = await this.agent.dids.getCreatedDids({
+        did: identifier,
+      });
       if (!(storedDid && storedDid.length)) {
         return undefined;
       }
@@ -330,12 +389,14 @@ class AriesAgent {
       if (method === IdentityType.KEY) {
         return {
           type: IdentityType.KEY,
-          result: await this.getIdentityFromDidKeyRecord(storedDid[0])
+          result: await this.getIdentityFromDidKeyRecord(storedDid[0]),
         };
       }
     } else {
       const metadata = await this.getMetadataById(identifier);
-      const aid = await this.agent.modules.signify.getIdentifierByName(metadata.signifyName as string);
+      const aid = await this.agent.modules.signify.getIdentifierByName(
+        metadata.signifyName as string
+      );
       if (!aid) {
         return undefined;
       }
@@ -364,8 +425,8 @@ class AriesAgent {
             backerToAdd: aid.state.ee.ba,
             backerToRemove: aid.state.ee.br,
           },
-        }
-      }
+        },
+      };
     }
   }
 
@@ -398,8 +459,17 @@ class AriesAgent {
     };
   }
 
-  async updateIdentityMetadata(id: string, metadata: Omit<Partial<IdentityMetadataRecordProps>, "id" | "isDelete" | "name" | "method" | "createdAt">): Promise<void> {
-    return this.agent.modules.generalStorage.updateIdentityMetadata(id, metadata);
+  async updateIdentityMetadata(
+    id: string,
+    metadata: Omit<
+      Partial<IdentityMetadataRecordProps>,
+      "id" | "isDelete" | "name" | "method" | "createdAt"
+    >
+  ): Promise<void> {
+    return this.agent.modules.generalStorage.updateIdentityMetadata(
+      id,
+      metadata
+    );
   }
 
   async deleteIdentityMetadata(id: string): Promise<void> {

@@ -1,6 +1,16 @@
+import { NetworkType } from "../cardano/addresses.types";
+
 enum IdentityType {
   KEY = "key",
   KERI = "keri",
+}
+
+interface CryptoAccountRecordShortDetails {
+  id: string;
+  addresses: Map<NetworkType, Map<number, Map<number, string[]>>>;
+  rewardAddresses: Map<NetworkType, string[]>;
+  displayName: string;
+  usesIdentitySeedPhrase: boolean;
 }
 
 interface IdentityShortDetails {
@@ -33,11 +43,19 @@ interface KERIDetails extends IdentityShortDetails {
     said: string;
     sequence: string;
     backerToRemove: string[];
-    backerToAdd: string[]
-  }
+    backerToAdd: string[];
+  };
 }
 
-type GetIdentityResult = { type: IdentityType.KERI, result: KERIDetails } | { type: IdentityType.KEY, result: DIDDetails }
+type GetIdentityResult =
+  | { type: IdentityType.KERI; result: KERIDetails }
+  | { type: IdentityType.KEY; result: DIDDetails };
 
 export { IdentityType };
-export type { IdentityShortDetails, DIDDetails, KERIDetails, GetIdentityResult };
+export type {
+  CryptoAccountRecordShortDetails,
+  IdentityShortDetails,
+  DIDDetails,
+  KERIDetails,
+  GetIdentityResult,
+};

@@ -7,7 +7,10 @@ import {
   MiscRepository,
 } from "./repositories";
 import { IdentityMetadataRepository } from "./repositories/identityMetadataRepository";
-import {IdentityMetadataRecord, IdentityMetadataRecordProps} from "./repositories/identityMetadataRecord";
+import {
+  IdentityMetadataRecord,
+  IdentityMetadataRecordProps,
+} from "./repositories/identityMetadataRecord";
 
 /**
  * This can be used to store any records in the agent that aren't explicitly created
@@ -44,6 +47,10 @@ export class GeneralStorageApi {
     await this.cryptoAccountRepository.save(this.agentContext, record);
   }
 
+  async getAllCryptoRecord(): Promise<CryptoAccountRecord[]> {
+    return this.cryptoAccountRepository.getAll(this.agentContext);
+  }
+
   async removeCryptoRecordById(id: string): Promise<void> {
     await this.cryptoAccountRepository.deleteById(this.agentContext, id);
   }
@@ -58,7 +65,9 @@ export class GeneralStorageApi {
     );
   }
 
-  async saveIdentityMetadataRecord(record: IdentityMetadataRecord): Promise<void> {
+  async saveIdentityMetadataRecord(
+    record: IdentityMetadataRecord
+  ): Promise<void> {
     await this.identityMetadataRepository.save(this.agentContext, record);
   }
 
@@ -66,23 +75,28 @@ export class GeneralStorageApi {
     return this.identityMetadataRepository.getAll(this.agentContext);
   }
 
-  async getIdentityMetadata(id: string): Promise<IdentityMetadataRecord | null> {
+  async getIdentityMetadata(
+    id: string
+  ): Promise<IdentityMetadataRecord | null> {
     return this.identityMetadataRepository.findById(this.agentContext, id);
   }
 
   async softDeleteIdentityMetadata(id: string): Promise<void> {
-    return this.updateIdentityMetadata(id, {isDelete: true});
+    return this.updateIdentityMetadata(id, { isDelete: true });
   }
 
-  async updateIdentityMetadata(id: string, data: Omit<Partial<IdentityMetadataRecordProps>,  "id" | "name" | "method" | "createdAt">): Promise<void> {
+  async updateIdentityMetadata(
+    id: string,
+    data: Omit<
+      Partial<IdentityMetadataRecordProps>,
+      "id" | "name" | "method" | "createdAt"
+    >
+  ): Promise<void> {
     const record = await this.getIdentityMetadata(id);
-    if( record ){
-      if (data.colors)
-        record.colors = data.colors;
-      if( data.displayName )
-        record.displayName = data.displayName;
-      if( data.isDelete !== undefined)
-        record.isDelete = data.isDelete;
+    if (record) {
+      if (data.colors) record.colors = data.colors;
+      if (data.displayName) record.displayName = data.displayName;
+      if (data.isDelete !== undefined) record.isDelete = data.isDelete;
       return this.identityMetadataRepository.update(this.agentContext, record);
     }
   }
