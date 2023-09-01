@@ -1,6 +1,8 @@
 import { MIGRATIONS } from "../migrations";
 
-function getUnMigrationSqls(currentVersion: string): {sqls : string[], latestVersion: string} | null {
+function getUnMigrationSqls(
+  currentVersion: string
+): { sqls: string[]; latestVersion: string } | null {
   let versionArr: string[] = [];
   MIGRATIONS.forEach((migration) => {
     versionArr.push(migration.version);
@@ -16,7 +18,7 @@ function getUnMigrationSqls(currentVersion: string): {sqls : string[], latestVer
       sqlUnMigrations.push(...migration.sql);
     }
   });
-  return {sqls : sqlUnMigrations, latestVersion};
+  return { sqls: sqlUnMigrations, latestVersion };
 }
 
 function isValidPart(x: string): boolean {
@@ -51,6 +53,5 @@ function versionCompare(v1: string, v2: string) {
 
   return 0;
 }
-
 
 export { getUnMigrationSqls, versionCompare };

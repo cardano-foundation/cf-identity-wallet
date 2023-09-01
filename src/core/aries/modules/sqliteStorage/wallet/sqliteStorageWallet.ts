@@ -84,7 +84,8 @@ class SqliteStorageWallet implements Wallet {
   static readonly VERSION_DATABASE_KEY = "VERSION_DATABASE_KEY";
 
   static readonly GET_KV_SQL = `SELECT * FROM kv where key = ?`;
-  static readonly INSERT_KV_SQL = "INSERT OR REPLACE INTO kv (key,value) VALUES (?,?)";
+  static readonly INSERT_KV_SQL =
+    "INSERT OR REPLACE INTO kv (key,value) VALUES (?,?)";
 
   get isProvisioned() {
     return this.walletConfig !== undefined;

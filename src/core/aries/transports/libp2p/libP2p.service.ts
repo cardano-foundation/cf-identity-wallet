@@ -2,7 +2,7 @@ import { multiaddr } from "@multiformats/multiaddr";
 import { webRTC } from "@libp2p/webrtc";
 import { webSockets } from "@libp2p/websockets";
 import * as filters from "@libp2p/websockets/filters";
-import {  pushable } from "it-pushable";
+import { pushable } from "it-pushable";
 import { pipe } from "it-pipe";
 import { mplex } from "@libp2p/mplex";
 import { createLibp2p, Libp2p } from "libp2p";
@@ -21,9 +21,7 @@ export class LibP2pService {
   public async createNode() {
     const options: Libp2pOptions = {
       addresses: {
-        listen: [
-          "/webrtc"
-        ]
+        listen: ["/webrtc"],
       },
       transports: [
         webSockets({
@@ -38,11 +36,11 @@ export class LibP2pService {
       streamMuxers: [mplex()],
       connectionGater: {
         denyDialMultiaddr: () => {
-          return false
-        }
+          return false;
+        },
       },
       services: {
-        identify: identifyService()
+        identify: identifyService(),
       },
       start: true,
     };
@@ -56,17 +54,21 @@ export class LibP2pService {
   public timeOut(message: string): [Promise<void>, number] {
     let timeoutId = 0;
     const funcTimeout = new Promise<void>((_, reject) => {
-      timeoutId = setTimeout(() => {
-        reject(new Error(message))
-      }, 5 * 1000, message);
+      timeoutId = setTimeout(
+        () => {
+          reject(new Error(message));
+        },
+        5 * 1000,
+        message
+      );
     });
-    return [funcTimeout, timeoutId]
+    return [funcTimeout, timeoutId];
   }
 
   public async advertising(node: Libp2p, timeoutId: number): Promise<string> {
     // eslint-disable-next-line @typescript-eslint/no-this-alias
     const _this = this;
-    return  new Promise(function(resolve, reject) {
+    return new Promise(function (resolve, reject) {
       return node.addEventListener("self:peer:update", () => {
         const endpoint = _this.getNodeEndpoint(node);
         if (!endpoint) {
@@ -74,8 +76,7 @@ export class LibP2pService {
         }
         clearTimeout(timeoutId);
         resolve(endpoint);
-      })
+      });
     });
   }
-    
 }

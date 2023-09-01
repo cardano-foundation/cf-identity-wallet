@@ -1,5 +1,5 @@
 import { BaseRecord } from "@aries-framework/core";
-import {IdentityType} from "../../../ariesAgent.types";
+import { IdentityType } from "../../../ariesAgent.types";
 
 export interface IdentityMetadataRecordProps {
   id: string;
@@ -8,10 +8,13 @@ export interface IdentityMetadataRecordProps {
   method: IdentityType;
   signifyName?: string;
   createdAt?: Date;
-  isArchived?: boolean
+  isArchived?: boolean;
 }
 
-class IdentityMetadataRecord extends BaseRecord implements IdentityMetadataRecordProps{
+class IdentityMetadataRecord
+  extends BaseRecord
+  implements IdentityMetadataRecordProps
+{
   displayName!: string;
   method!: IdentityType;
   colors!: [string, string];
