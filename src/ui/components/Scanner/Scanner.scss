@@ -1,0 +1,11 @@
+.qr-code-scanner {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  ion-col {
+    font-size: 4rem;
+    z-index: 10;
+  }
+}

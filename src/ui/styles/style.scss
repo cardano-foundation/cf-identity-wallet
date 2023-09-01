@@ -11,6 +11,12 @@ body {
   .md {
     text-transform: none;
   }
+
+  &.scanner-active > div:last-child {
+    --background: transparent !important;
+    --ion-background-color: transparent !important;
+    background-color: transparent !important;
+  }
 }
 
 ion-content {
