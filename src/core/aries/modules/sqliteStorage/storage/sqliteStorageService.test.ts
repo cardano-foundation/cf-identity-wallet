@@ -54,8 +54,12 @@ const getMock = jest
 const getAllKvMock = jest
   .spyOn(SqliteStorageService.prototype, "scanItems")
   .mockImplementation(
-    async (session: SQLiteDBConnection, category : string, query): Promise<StorageObject[]> => {
-      let records =  [
+    async (
+      session: SQLiteDBConnection,
+      category: string,
+      query
+    ): Promise<StorageObject[]> => {
+      let records = [
         {
           category: TestRecord.type,
           name: existingRecord.id,
@@ -72,23 +76,26 @@ const getAllKvMock = jest
             id: "storagerecord-0",
             storageVersion: "0.0.1",
           }),
-          tags:  { firstTag: "exists", secondTag: "exists" },
+          tags: { firstTag: "exists", secondTag: "exists" },
         },
-      ].filter(e => e.category == category) as StorageObject[];
-      let instances : StorageObject[] = []
-      if(query) {
+      ].filter((e) => e.category == category) as StorageObject[];
+      let instances: StorageObject[] = [];
+      if (query) {
         records.forEach((record) => {
           if (record.category && record.category === category) {
-            for (const [queryKey , queryVal] of Object.entries(query)) {
-              if (record.tags[queryKey] !== queryVal && queryVal !== undefined) {
+            for (const [queryKey, queryVal] of Object.entries(query)) {
+              if (
+                record.tags[queryKey] !== queryVal &&
+                queryVal !== undefined
+              ) {
                 return;
               }
             }
             instances.push(record);
           }
         });
-      }else{
-        instances = records
+      } else {
+        instances = records;
       }
       return instances;
     }

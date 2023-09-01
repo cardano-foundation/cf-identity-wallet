@@ -17,25 +17,27 @@ jest.mock("signify-ts", () => ({
       connect: connectMock,
       boot: bootMock,
       identifiers: jest.fn().mockReturnValue({
-        list: jest.fn().mockResolvedValue([{ name: firstAid }, { name: secondAid }]),
+        list: jest
+          .fn()
+          .mockResolvedValue([{ name: firstAid }, { name: secondAid }]),
         get: jest.fn().mockImplementation((name: string) => {
-          return { name, id: `${aidPrefix}${name}` }
+          return { name, id: `${aidPrefix}${name}` };
         }),
         create: jest.fn().mockImplementation((name, _config) => {
-          return ({ done: false, name: `${witnessPrefix}${name}` })
-        })
+          return { done: false, name: `${witnessPrefix}${name}` };
+        }),
       }),
       operations: jest.fn().mockReturnValue({
         get: jest.fn().mockImplementation((name: string) => {
-          if (name === `${witnessPrefix}${uuidToThrow}` ) {
-            return { done: false, name }
+          if (name === `${witnessPrefix}${uuidToThrow}`) {
+            return { done: false, name };
           }
-          return { done: true, name }
-        })
-      })
-    }
+          return { done: true, name };
+        }),
+      }),
+    };
   }),
-  Tier: { low: "low" }
+  Tier: { low: "low" },
 }));
 
 // Set low timeout - fake timers would be better but having issues advancing timer at exact right time
@@ -49,7 +51,7 @@ describe("Signify API", () => {
   test("should call boot if connect fails", async () => {
     connectMock = jest.fn().mockImplementationOnce(() => {
       throw new Error("Connect error");
-    })
+    });
     await api.start();
     expect(ready).toBeCalled();
     expect(bootMock).toBeCalled();
@@ -60,27 +62,30 @@ describe("Signify API", () => {
     // This test should break when we implement the records properly
     expect(await api.getIdentifiersDetailed()).toEqual([
       { name: firstAid, id: `${aidPrefix}${firstAid}` },
-      { name: secondAid, id: `${aidPrefix}${secondAid}` }
+      { name: secondAid, id: `${aidPrefix}${secondAid}` },
     ]);
   });
 
   test("can create an identifier", async () => {
     const mockName = "keriuuid";
     jest.spyOn(utils, "uuid").mockReturnValue(mockName);
-    const {signifyName, identifier}= await api.createIdentifier();
+    const { signifyName, identifier } = await api.createIdentifier();
     expect(signifyName).toBe(mockName);
     expect(identifier).toBe(mockName);
   });
 
   test("can get identifier by name", async () => {
     const mockName = "keriuuid";
-    expect(await api.getIdentifierByName(mockName)).toEqual(
-      { name: mockName, id: `${aidPrefix}${mockName}` },
-    );
+    expect(await api.getIdentifierByName(mockName)).toEqual({
+      name: mockName,
+      id: `${aidPrefix}${mockName}`,
+    });
   });
 
   test("should timeout if identifier creation is not completing", async () => {
     jest.spyOn(utils, "uuid").mockReturnValue(uuidToThrow);
-    await expect(api.createIdentifier()).rejects.toThrowError(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
+    await expect(api.createIdentifier()).rejects.toThrowError(
+      SignifyApi.FAILED_TO_CREATE_IDENTIFIER
+    );
   });
 });
