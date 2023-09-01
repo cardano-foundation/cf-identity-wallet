@@ -1,4 +1,5 @@
 import { NetworkType } from "../cardano/addresses.types";
+import { IdentityMetadataRecordProps } from "./modules/generalStorage/repositories/identityMetadataRecord";
 
 enum IdentityType {
   KEY = "key",
@@ -46,10 +47,15 @@ interface KERIDetails extends IdentityShortDetails {
     backerToAdd: string[];
   };
 }
-
+  
 type GetIdentityResult =
   | { type: IdentityType.KERI; result: KERIDetails }
   | { type: IdentityType.KEY; result: DIDDetails };
+
+type UpdateIdentityMetadata = Omit<
+  Partial<IdentityMetadataRecordProps>,
+  "id" | "isArchived" | "name" | "method" | "createdAt"
+>;
 
 export { IdentityType };
 export type {
@@ -58,4 +64,5 @@ export type {
   DIDDetails,
   KERIDetails,
   GetIdentityResult,
+  UpdateIdentityMetadata,
 };

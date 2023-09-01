@@ -25,7 +25,9 @@ jest.mock("react-router-dom", () => ({
 jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest.fn().mockResolvedValue({ type: "key", result: didsFix[0] }),
+      getIdentity: jest
+        .fn()
+        .mockResolvedValue({ type: "key", result: didsFix[0] }),
     },
   },
 }));
@@ -39,6 +41,7 @@ const initialState = {
       loggedIn: true,
       time: Date.now(),
       passcodeIsSet: true,
+      passwordIsSet: true,
     },
   },
   seedPhraseCache: {

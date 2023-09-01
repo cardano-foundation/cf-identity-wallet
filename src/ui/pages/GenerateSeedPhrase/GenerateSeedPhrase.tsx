@@ -30,14 +30,22 @@ import {
   TWENTYFOUR_WORDS_BIT_LENGTH,
   SEED_PHRASE_SUGGESTIONS,
 } from "../../../constants/appConstants";
-import { generateSeedPhraseState } from "../../constants/dictionary";
+import {
+  generateSeedPhraseState,
+  onboardingRoute,
+  toastState,
+} from "../../constants/dictionary";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
   Alert as AlertConfirm,
   Alert as AlertExit,
   Alert as AlertVerify,
 } from "../../components/Alert";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getCurrentOperation,
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -56,7 +64,8 @@ const GenerateSeedPhrase = () => {
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
     ? generateSeedPhraseState.onboarding
-    : (history?.location?.state as GenerateSeedPhraseProps)?.type || "";
+    : (history?.location?.state as GenerateSeedPhraseProps)?.type ||
+      stateCache?.currentOperation;
   const stateOnboarding = seedPhraseType === generateSeedPhraseState.onboarding;
   const stateRestore = seedPhraseType === generateSeedPhraseState.restore;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
@@ -76,6 +85,18 @@ const GenerateSeedPhrase = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
+  const routeCache = useAppSelector(getCurrentOperation);
+  const [route, setRoute] = useState("");
+
+  useEffect(() => {
+    if (location.search === onboardingRoute.createRoute) {
+      setRoute(onboardingRoute.create);
+    } else if (location.search === onboardingRoute.restoreRoute) {
+      setRoute(onboardingRoute.restore);
+    } else if (routeCache.length) {
+      setRoute(routeCache);
+    }
+  }, [routeCache, route]);
 
   useEffect(() => {
     setSeedPhrase(seedPhrase);
@@ -121,7 +142,10 @@ const GenerateSeedPhrase = () => {
   };
 
   useEffect(() => {
-    if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
+    if (
+      history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE ||
+      RoutePath.GENERATE_SEED_PHRASE + onboardingRoute.createRoute
+    ) {
       initializeSeedPhrase();
     }
   }, [history?.location.pathname]);
@@ -181,6 +205,7 @@ const GenerateSeedPhrase = () => {
 
   const handleExit = () => {
     handleClearState();
+    dispatch(setCurrentOperation(""));
     history.push(TabsRoutePath.CRYPTO);
   };
 
@@ -240,7 +265,7 @@ const GenerateSeedPhrase = () => {
               : undefined
           }
           backButton={stateOnboarding}
-          onBack={handleClearState}
+          beforeBack={handleClearState}
           closeButton={!stateOnboarding}
           closeButtonAction={() => setAlertExitIsOpen(true)}
           currentPath={RoutePath.GENERATE_SEED_PHRASE}
@@ -479,11 +504,9 @@ const GenerateSeedPhrase = () => {
             seedPhrase={seedPhrase.join(" ")}
             onDone={() => {
               handleClearState();
+              dispatch(setCurrentOperation(toastState.walletRestored));
               history.push({
                 pathname: TabsRoutePath.CRYPTO,
-                state: {
-                  type: generateSeedPhraseState.success,
-                },
               });
             }}
           />

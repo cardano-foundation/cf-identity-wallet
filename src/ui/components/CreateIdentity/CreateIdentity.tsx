@@ -15,7 +15,6 @@ import { CreateIdentityProps } from "./CreateIdentity.types";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import "./CreateIdentity.scss";
-import { VerifyPassword } from "../VerifyPassword";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getIdentitiesCache,
@@ -38,7 +37,6 @@ const CreateIdentity = ({
   const [selectedType, setSelectedType] = useState<number | undefined>(
     undefined
   );
-  const [showVerifyPassword, setShowVerifyPassword] = useState(false);
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
 
   const displayNameValueIsValid =
@@ -62,16 +60,16 @@ const CreateIdentity = ({
     setSelectedType(undefined);
   };
 
-  const handleCreateIdentity = () => {
-    setShowVerifyPassword(true);
-  };
-
-  const handleOnVerifyPassword = async () => {
+  const handleCreateIdentity = async () => {
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
     const type = selectedType === 0 ? IdentityType.KEY : IdentityType.KERI;
     // @TODO: for test, should set colors
-    const did = await AriesAgent.agent.createIdentity( {displayName: displayNameValue,method: type, colors: [newColor[1], newColor[0]]});
+    const did = await AriesAgent.agent.createIdentity({
+      displayName: displayNameValue,
+      method: type,
+      colors: [newColor[1], newColor[0]],
+    });
     if (did) {
       const newIdentity: IdentityShortDetails = {
         id: did,
@@ -81,7 +79,6 @@ const CreateIdentity = ({
         colors: [newColor[1], newColor[0]],
       };
       dispatch(setIdentitiesCache([...identityData, newIdentity]));
-      setShowVerifyPassword(false);
       resetModal();
     }
   };
@@ -164,7 +161,7 @@ const CreateIdentity = ({
                   expand="block"
                   className="ion-primary-button"
                   data-testid="continue-button"
-                  onClick={() => handleCreateIdentity()}
+                  onClick={handleCreateIdentity}
                   disabled={!(displayNameValueIsValid && typeIsSelectedIsValid)}
                 >
                   {`${i18n.t("createidentity.confirmbutton")}`}
@@ -172,11 +169,6 @@ const CreateIdentity = ({
               </IonCol>
             </IonRow>
           </IonGrid>
-          <VerifyPassword
-            isOpen={showVerifyPassword}
-            onVerify={() => handleOnVerifyPassword()}
-            setIsOpen={(isOpen: boolean) => setShowVerifyPassword(isOpen)}
-          />
         </PageLayout>
       </div>
     </IonModal>

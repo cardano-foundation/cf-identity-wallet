@@ -4,6 +4,7 @@ interface PageLayoutProps {
   id?: string;
   header?: boolean;
   backButton?: boolean;
+  beforeBack?: () => void;
   onBack?: () => void;
   currentPath?: string;
   children?: ReactNode;
@@ -24,6 +25,8 @@ interface PageLayoutProps {
   primaryButtonText?: string;
   primaryButtonAction?: () => void;
   primaryButtonDisabled?: boolean;
+  secondaryButtonText?: string;
+  secondaryButtonAction?: () => void;
 }
 
 export type { PageLayoutProps };

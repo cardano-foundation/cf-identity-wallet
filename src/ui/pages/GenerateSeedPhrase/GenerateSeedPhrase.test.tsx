@@ -15,7 +15,10 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
-import { generateSeedPhraseState } from "../../constants/dictionary";
+import {
+  generateSeedPhraseState,
+  onboardingRoute,
+} from "../../constants/dictionary";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
@@ -29,6 +32,7 @@ interface StoreMocked {
       passcodeIsSet: boolean;
       seedPhraseIsSet?: boolean;
     };
+    currentOperation: string;
   };
   seedPhraseCache: {
     seedPhrase160: string;
@@ -105,6 +109,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
+        currentOperation: onboardingRoute.createRoute,
       },
       seedPhraseCache: {
         seedPhrase160:
@@ -164,6 +169,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
+        currentOperation: onboardingRoute.createRoute,
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -345,6 +351,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
+        currentOperation: onboardingRoute.createRoute,
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -400,6 +407,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
         passcodeIsSet: true,
         seedPhraseIsSet: true,
       },
+      currentOperation: "",
     },
     seedPhraseCache: {
       seedPhrase160:
@@ -488,6 +496,7 @@ describe.skip("Restore account from existing seed phrase", () => {
         passcodeIsSet: true,
         seedPhraseIsSet: true,
       },
+      currentOperation: "",
     },
     seedPhraseCache: {
       seedPhrase160:
@@ -518,7 +527,9 @@ describe.skip("Restore account from existing seed phrase", () => {
     );
 
     expect(
-      getByText(EN_TRANSLATIONS.generateseedphrase.restore.paragraph.top)
+      getByText(
+        EN_TRANSLATIONS.generateseedphrase.restorecryptoaccount.paragraph.top
+      )
     ).toBeVisible();
 
     const overlay = getByTestId("seed-phrase-privacy-overlay");

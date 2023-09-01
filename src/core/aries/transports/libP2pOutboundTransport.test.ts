@@ -7,8 +7,8 @@ import {
 } from "@aries-framework/core";
 import { CapacitorFileSystem } from "../dependencies";
 import { IonicStorageModule } from "../modules";
-import {LibP2p} from "./libp2p/libP2p";
-import {LibP2pOutboundTransport} from "./libP2pOutboundTransport";
+import { LibP2p } from "./libp2p/libP2p";
+import { LibP2pOutboundTransport } from "./libP2pOutboundTransport";
 
 const eventEmitterMock = jest.fn();
 
@@ -17,7 +17,8 @@ jest.mock("./libp2p/libP2p", () => ({
   LibP2p: {
     libP2p: {
       start: jest.fn(),
-      getEndpoint: (peerId: string) => `libp2p://dns/libp2p-relay-9aff91ec2cbd.herokuapp.com/tcp/443/wss/p2p/12D3KooWH7RNURD6v8DdiJdUpydLgDAP5PcSsw5NhVT8E3GgG9Wx/p2p-circuit/webrtc/p2p/${peerId}`,
+      getEndpoint: (peerId: string) =>
+        `libp2p://dns/libp2p-relay-9aff91ec2cbd.herokuapp.com/tcp/443/wss/p2p/12D3KooWH7RNURD6v8DdiJdUpydLgDAP5PcSsw5NhVT8E3GgG9Wx/p2p-circuit/webrtc/p2p/${peerId}`,
       sendMessage: jest.fn(),
       setUsageStatusOfOutbound: jest.fn(),
       stop: jest.fn(),
@@ -29,10 +30,8 @@ const agentDependencies: AgentDependencies = {
   EventEmitterClass:
     eventEmitterMock as unknown as AgentDependencies["EventEmitterClass"],
   fetch: null,
-  WebSocketClass:
-    {} as unknown as AgentDependencies["WebSocketClass"],
+  WebSocketClass: {} as unknown as AgentDependencies["WebSocketClass"],
 };
-
 
 let agent: Agent;
 const libP2p = LibP2p.libP2p;
@@ -78,6 +77,8 @@ describe("LibP2p webrtc outbound transport test", () => {
       responseRequested: true,
       endpoint,
     };
-    await expect(libP2pOutboundTransport.sendMessage(outboundPackage)).resolves.toBe(undefined);
+    await expect(
+      libP2pOutboundTransport.sendMessage(outboundPackage)
+    ).resolves.toBe(undefined);
   });
 });

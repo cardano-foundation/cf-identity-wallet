@@ -30,7 +30,11 @@ import {
   CryptoAccountRecord,
 } from "./modules";
 import { HttpOutboundTransport } from "./transports";
-import { GetIdentityResult, IdentityType } from "./ariesAgent.types";
+import {
+  GetIdentityResult,
+  IdentityType,
+  UpdateIdentityMetadata,
+} from "./ariesAgent.types";
 import type {
   CryptoAccountRecordShortDetails,
   DIDDetails,
@@ -77,6 +81,7 @@ class AriesAgent {
     "DID metadata missing for stored DID";
   static readonly UNEXPECTED_MISSING_DID_RESULT_ON_CREATE =
     "DID was successfully created but the DID was not returned in the state returned";
+  static readonly DID_NOT_ARCHIVED = "DID was not archived";
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
@@ -316,7 +321,10 @@ class AriesAgent {
   }
 
   async createIdentity(
-    metadata: Omit<IdentityMetadataRecordProps, "id" | "createdAt" | "isDelete">
+    metadata: Omit<
+      IdentityMetadataRecordProps,
+      "id" | "createdAt" | "isArchived"
+    >
   ): Promise<string | undefined> {
     const type = metadata.method;
     if (type === IdentityType.KERI) {
@@ -352,29 +360,37 @@ class AriesAgent {
     return metadata;
   }
 
-  async getIdentities(): Promise<IdentityShortDetails[]> {
+  async getIdentities(isGetArchive = false): Promise<IdentityShortDetails[]> {
     const identities: IdentityShortDetails[] = [];
-    const listMetadata: IdentityMetadataRecord[] =
-      await this.agent.modules.generalStorage.getAllIdentityMetadata();
+    let listMetadata: IdentityMetadataRecord[];
+    if (isGetArchive) {
+      listMetadata =
+        await this.agent.modules.generalStorage.getAllArchiveIdentityMetadata();
+    } else {
+      listMetadata =
+        await this.agent.modules.generalStorage.getAllAvailableIdentityMetadata();
+    }
     for (let i = 0; i < listMetadata.length; i++) {
       const metadata = listMetadata[i];
-      if (!metadata.isDelete) {
-        identities.push({
-          method: metadata.method,
-          displayName: metadata.displayName,
-          id: metadata.id,
-          createdAtUTC: metadata.createdAt.toISOString(),
-          colors: metadata.colors,
-        });
-      }
+      identities.push({
+        method: metadata.method,
+        displayName: metadata.displayName,
+        id: metadata.id,
+        createdAtUTC: metadata.createdAt.toISOString(),
+        colors: metadata.colors,
+      });
     }
     return identities;
+  }
+
+  private isDidIdentifier(identifier: string): boolean {
+    return identifier.startsWith("did:");
   }
 
   async getIdentity(
     identifier: string
   ): Promise<GetIdentityResult | undefined> {
-    if (identifier.startsWith("did:")) {
+    if (this.isDidIdentifier(identifier)) {
       const storedDid = await this.agent.dids.getCreatedDids({
         did: identifier,
       });
@@ -459,21 +475,41 @@ class AriesAgent {
     };
   }
 
+  validArchivedIdentity(metadata: IdentityMetadataRecord): void {
+    if (!metadata.isArchived) {
+      throw new Error(`${AriesAgent.DID_NOT_ARCHIVED} ${metadata.id}`);
+    }
+  }
+
   async updateIdentityMetadata(
-    id: string,
-    metadata: Omit<
-      Partial<IdentityMetadataRecordProps>,
-      "id" | "isDelete" | "name" | "method" | "createdAt"
-    >
+    identifier: string,
+    metadata: UpdateIdentityMetadata
   ): Promise<void> {
     return this.agent.modules.generalStorage.updateIdentityMetadata(
-      id,
+      identifier,
       metadata
     );
   }
 
-  async deleteIdentityMetadata(id: string): Promise<void> {
-    return this.agent.modules.generalStorage.softDeleteIdentityMetadata(id);
+  async deleteIdentity(identifier: string): Promise<void> {
+    const metadata = await this.getMetadataById(identifier);
+    this.validArchivedIdentity(metadata);
+    await this.agent.modules.generalStorage.deleteIdentityMetadata(identifier);
+  }
+
+  async archiveIdentity(identifier: string): Promise<void> {
+    return this.agent.modules.generalStorage.archiveIdentityMetadata(
+      identifier
+    );
+  }
+
+  async restoreIdentity(identifier: string): Promise<void> {
+    const metadata = await this.getMetadataById(identifier);
+    this.validArchivedIdentity(metadata);
+    return this.agent.modules.generalStorage.updateIdentityMetadata(
+      identifier,
+      { isArchived: false }
+    );
   }
 }
 

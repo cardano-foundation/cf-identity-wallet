@@ -12,7 +12,9 @@ import { cardTypes } from "../../constants/dictionary";
 jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest.fn().mockResolvedValue({ type: "key", result: didsFix[0] }),
+      getIdentity: jest
+        .fn()
+        .mockResolvedValue({ type: "key", result: didsFix[0] }),
     },
   },
 }));

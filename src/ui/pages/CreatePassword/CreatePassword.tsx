@@ -22,10 +22,14 @@ import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
-import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
+import { Alert } from "../../components/Alert";
+import { onboardingRoute } from "../../constants/dictionary";
 
 const errorMessages = {
   hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
@@ -141,6 +145,9 @@ const PasswordRegex = ({ password }: PasswordRegexProps) => {
 
 const CreatePassword = () => {
   const stateCache = useAppSelector(getStateCache);
+  const onboarding =
+    stateCache?.currentOperation === onboardingRoute.create ||
+    onboardingRoute.restore;
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [createPasswordValue, setCreatePasswordValue] = useState("");
@@ -148,6 +155,7 @@ const CreatePassword = () => {
   const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
   const [createHintValue, setCreateHintValue] = useState("");
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
 
   const passwordValueMatching =
     createPasswordValue.length > 0 &&
@@ -171,36 +179,46 @@ const CreatePassword = () => {
     setCreateHintValue("");
   };
   const handleClose = async () => {
-    const { backPath } = getBackRoute(RoutePath.CREATE_PASSWORD, {
-      store: { stateCache },
-    });
-
-    history.push(backPath.pathname);
     handleClearState();
+    handleContinue(true);
   };
 
-  const handleContinue = async () => {
+  const handleContinue = async (skipped: boolean) => {
     // @TODO - foconnor: We should handle errors here and display something to the user as feedback to try again.
-    await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, createPasswordValue);
-    if (createHintValue) {
-      await AriesAgent.agent.storeMiscRecord(
-        MiscRecordId.OP_PASS_HINT,
-        createHintValue
+    if (!skipped) {
+      await SecureStorage.set(
+        KeyStoreKeys.APP_OP_PASSWORD,
+        createPasswordValue
       );
+      if (createHintValue) {
+        await AriesAgent.agent.storeMiscRecord(
+          MiscRecordId.OP_PASS_HINT,
+          createHintValue
+        );
+      }
     }
+
     const { nextPath, updateRedux } = getNextRoute(RoutePath.CREATE_PASSWORD, {
       store: { stateCache },
+      state: {
+        skipped,
+      },
     });
 
     updateReduxState(
       nextPath.pathname,
-      { store: { stateCache } },
+      {
+        store: { stateCache },
+        state: {
+          skipped,
+        },
+      },
       dispatch,
       updateRedux
     );
+    dispatch(setCurrentOperation(""));
     history.push(nextPath.pathname);
     handleClearState();
-    // @TODO - sdisalvo: this will need to be completed at a later stage (navigation)
   };
 
   return (
@@ -208,13 +226,15 @@ const CreatePassword = () => {
       <PageLayout
         header={true}
         currentPath={RoutePath.CREATE_PASSWORD}
-        closeButton={true}
+        closeButton={!onboarding}
         closeButtonAction={() => handleClose()}
         title={`${i18n.t("createpassword.title")}`}
         footer={true}
-        primaryButtonText={`${i18n.t("createpassword.continue.button")}`}
-        primaryButtonAction={handleContinue}
+        primaryButtonText={`${i18n.t("createpassword.buttons.continue")}`}
+        primaryButtonAction={() => handleContinue(false)}
         primaryButtonDisabled={!validated}
+        secondaryButtonText={`${i18n.t("createpassword.buttons.skip")}`}
+        secondaryButtonAction={() => setAlertIsOpen(true)}
       >
         <IonGrid>
           <IonRow>
@@ -309,6 +329,15 @@ const CreatePassword = () => {
             />
           ) : null}
         </IonGrid>
+        <Alert
+          isOpen={alertIsOpen}
+          setIsOpen={setAlertIsOpen}
+          dataTestId="create-password-alert-skip"
+          headerText={`${i18n.t("createpassword.alert.text")}`}
+          confirmButtonText={`${i18n.t("createpassword.alert.button.confirm")}`}
+          cancelButtonText={`${i18n.t("createpassword.alert.button.cancel")}`}
+          actionConfirm={() => handleContinue(true)}
+        />
       </PageLayout>
     </IonPage>
   );

@@ -241,7 +241,7 @@ describe("Verify Seed Phrase Page", () => {
 
     await waitFor(() =>
       expect(
-        getByText(EN_TRANSLATIONS.verifyseedphrase.additional.title)
+        getByText(EN_TRANSLATIONS.verifyseedphrase.newcryptoaccount.title)
       ).toBeVisible()
     );
 

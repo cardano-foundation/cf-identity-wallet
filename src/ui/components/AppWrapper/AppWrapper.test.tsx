@@ -13,7 +13,7 @@ jest.mock("../../../core/aries/ariesAgent", () => ({
 }));
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
-    get: jest.fn()
+    get: jest.fn(),
   },
 }));
 

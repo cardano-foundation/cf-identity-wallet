@@ -1,4 +1,4 @@
-import { IonButton, IonIcon, IonPage, IonToast } from "@ionic/react";
+import { IonButton, IonIcon, IonPage } from "@ionic/react";
 import { ellipsisVertical, trashOutline } from "ionicons/icons";
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -20,6 +20,7 @@ import {
   getConnectionsCache,
   setConnectionsCache,
 } from "../../../store/reducers/connectionsCache";
+import { VerifyPasscode } from "../../components/VerifyPasscode";
 
 const ConnectionDetails = () => {
   const history = useHistory();
@@ -30,7 +31,7 @@ const ConnectionDetails = () => {
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
   const handleDone = () => {
     const data: DataProps = {
@@ -56,7 +57,8 @@ const ConnectionDetails = () => {
     );
     dispatch(setConnectionsCache(updatedConnections));
     handleDone();
-    setShowToast(true);
+    setVerifyPasswordIsOpen(false);
+    setVerifyPasscodeIsOpen(false);
   };
 
   return (
@@ -196,21 +198,26 @@ const ConnectionDetails = () => {
           cancelButtonText={`${i18n.t(
             "connections.details.options.alert.cancel"
           )}`}
-          actionConfirm={() => setVerifyPasswordIsOpen(true)}
+          actionConfirm={() => {
+            if (
+              !stateCache?.authentication.passwordIsSkipped &&
+              stateCache?.authentication.passwordIsSet
+            ) {
+              setVerifyPasswordIsOpen(true);
+            } else {
+              setVerifyPasscodeIsOpen(true);
+            }
+          }}
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
           onVerify={verifyAction}
         />
-        <IonToast
-          isOpen={showToast}
-          onDidDismiss={() => setShowToast(false)}
-          message={`${i18n.t("connections.details.options.toast")}`}
-          color="secondary"
-          position="top"
-          cssClass="confirmation-toast"
-          duration={1500}
+        <VerifyPasscode
+          isOpen={verifyPasscodeIsOpen}
+          setIsOpen={setVerifyPasscodeIsOpen}
+          onVerify={verifyAction}
         />
       </PageLayout>
     </IonPage>

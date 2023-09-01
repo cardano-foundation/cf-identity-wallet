@@ -1,4 +1,4 @@
-import { Agent, Logger, InboundTransport } from "@aries-framework/core"
+import { Agent, Logger, InboundTransport } from "@aries-framework/core";
 import { LibP2p } from "./libp2p/libP2p";
 
 export class LibP2pInboundTransport implements InboundTransport {
@@ -18,7 +18,7 @@ export class LibP2pInboundTransport implements InboundTransport {
     await this.libP2p.advertising();
     this.libP2p.setUsageStatusOfInbound(true);
     const endpoint = this.libP2p.getEndpoint(this.libP2p.peerId);
-    if (endpoint){
+    if (endpoint) {
       const endpoints = this.agent.config.endpoints;
       this.agent.config.endpoints = [...endpoints, endpoint];
     }

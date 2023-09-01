@@ -7,10 +7,14 @@ import { SlideItem } from "../../components/Slides/Slides.types";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
+import { onboardingRoute } from "../../constants/dictionary";
 
 const Onboarding = () => {
   const history = useHistory();
@@ -25,33 +29,41 @@ const Onboarding = () => {
     });
   }
 
-  const handleNavigation = () => {
-    const data: DataProps = {
-      store: { stateCache },
-    };
-    const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
-    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-    history.push(nextPath.pathname);
+  const handleNavigation = (route: string) => {
+    if (route === onboardingRoute.restore) {
+      // @TODO - sdisalvo: Remove this condition and default to dispatch when the restore route is ready
+      return;
+    } else {
+      dispatch(setCurrentOperation(route));
+      const data: DataProps = {
+        store: { stateCache },
+        state: { currentOperation: route },
+      };
+      const { nextPath, updateRedux } = getNextRoute(
+        RoutePath.ONBOARDING,
+        data
+      );
+      updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+      history.push({
+        pathname: nextPath.pathname,
+        state: data.state,
+      });
+    }
   };
 
   return (
     <IonPage className="page-layout onboarding safe-area">
-      <PageLayout currentPath={RoutePath.ONBOARDING}>
+      <PageLayout
+        currentPath={RoutePath.ONBOARDING}
+        footer={true}
+        primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}
+        primaryButtonAction={() => handleNavigation(onboardingRoute.create)}
+        secondaryButtonText={`${i18n.t(
+          "onboarding.alreadywallet.button.label"
+        )}`}
+        secondaryButtonAction={() => handleNavigation(onboardingRoute.restore)}
+      >
         <Slides items={items} />
-        <IonButton
-          shape="round"
-          expand="block"
-          className="ion-primary-button get-started-button"
-          onClick={() => {
-            handleNavigation();
-          }}
-          data-testid="get-started-button"
-        >
-          {i18n.t("onboarding.getstarted.button.label")}
-        </IonButton>
-        <div className="already-wallet">
-          {i18n.t("onboarding.alreadywallet.button.label")}
-        </div>
       </PageLayout>
     </IonPage>
   );
