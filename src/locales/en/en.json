@@ -491,5 +491,13 @@
     "identityDeleted": "Identity successfully deleted",
     "credentialDeleted": "Credential deleted successfully",
     "connectionDeleted": "Connection deleted successfully"
+  },
+  "scan": {
+    "tab": {
+      "title": "Align the QR code within the frame to scan"
+    },
+    "alert": {
+      "title": "Would you like to grant permission for using your camera?"
+    }
   }
 }
