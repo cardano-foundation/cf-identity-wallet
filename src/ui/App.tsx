@@ -22,11 +22,12 @@ const App = () => {
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          <Routes />
-          {showScan && (
+          {showScan ? (
             <IonPage data-testid="qr-code-scanner-full-page">
               <Scanner />
             </IonPage>
+          ) : (
+            <Routes />
           )}
         </StrictMode>
       </AppWrapper>

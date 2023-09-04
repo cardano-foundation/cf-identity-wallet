@@ -54,6 +54,7 @@ const Scanner = () => {
   const stopScan = async () => {
     await BarcodeScanner.stopScan();
     await BarcodeScanner.showBackground();
+    document?.querySelector("body")?.classList.remove("scanner-active");
   };
 
   const initScan = async () => {
