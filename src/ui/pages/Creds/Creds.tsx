@@ -23,7 +23,6 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
 import { Connections } from "../Connections";
 import { cardTypes, toastState } from "../../constants/dictionary";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;

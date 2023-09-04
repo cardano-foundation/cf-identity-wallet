@@ -14,8 +14,18 @@ import {
 import { scanOutline } from "ionicons/icons";
 import "./Scanner.scss";
 import { i18n } from "../../../i18n";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getCurrentOperation,
+  getCurrentRoute,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
+import { TabsRoutePath } from "../navigation/TabsMenu";
 
 const Scanner = () => {
+  const dispatch = useAppDispatch();
+  const currentOperation = useAppSelector(getCurrentOperation);
+  const currentRoute = useAppSelector(getCurrentRoute);
   const [showToast, setShowToast] = useState(false);
 
   const checkPermission = async () => {
@@ -55,18 +65,29 @@ const Scanner = () => {
         const result = await startScan();
         if (result.hasContent) {
           setShowToast(true);
+          dispatch(setCurrentOperation(""));
         }
       }
     }
   };
 
   useEffect(() => {
-    initScan();
-  }, []);
+    if (
+      currentRoute?.path === TabsRoutePath.SCAN ||
+      currentOperation === "scan"
+    ) {
+      initScan();
+    } else {
+      stopScan();
+    }
+  }, [currentOperation, currentRoute]);
 
   return (
     <>
-      <IonGrid className="qr-code-scanner">
+      <IonGrid
+        className="qr-code-scanner"
+        data-testid="qr-code-scanner"
+      >
         <IonRow>
           <IonCol size="12">
             <span className="qr-code-scanner-text">
@@ -95,4 +116,4 @@ const Scanner = () => {
   );
 };
 
-export default Scanner;
+export { Scanner };
