@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
+import { IonCol, IonGrid, IonIcon, IonRow, isPlatform } from "@ionic/react";
 import {
   BarcodeScanner,
   SupportedFormat,
@@ -37,20 +37,22 @@ const Scanner = () => {
     await BarcodeScanner.showBackground();
   };
 
-  const startScanning = async () => {
-    const allowed = await checkPermission();
-    if (allowed) {
-      document?.querySelector("body")?.classList.add("scanner-active");
-      BarcodeScanner.hideBackground();
-      const result = await startScan();
-      if (result.hasContent) {
-        console.log(result.content);
+  const initScan = async () => {
+    if (isPlatform("ios") || isPlatform("android")) {
+      const allowed = await checkPermission();
+      if (allowed) {
+        document?.querySelector("body")?.classList.add("scanner-active");
+        BarcodeScanner.hideBackground();
+        const result = await startScan();
+        if (result.hasContent) {
+          console.log(result.content);
+        }
       }
     }
   };
 
   useEffect(() => {
-    startScanning();
+    initScan();
   }, []);
 
   return (
