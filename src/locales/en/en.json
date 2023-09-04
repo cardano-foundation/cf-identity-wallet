@@ -484,13 +484,15 @@
   },
   "toast": {
     "clipboard": "Copied to clipboard",
-    "walletCreated": "Seed phrase verified",
-    "walletRestored": "Seed phrase verified",
-    "walletDeleted": "Account deleted successfully",
-    "identityCreated": "New identity created successfully",
-    "identityDeleted": "Identity successfully deleted",
-    "credentialDeleted": "Credential deleted successfully",
-    "connectionDeleted": "Connection deleted successfully"
+    "walletcreated": "Seed phrase verified",
+    "walletrestored": "Seed phrase verified",
+    "walletdeleted": "Account deleted successfully",
+    "identitycreated": "New identity created successfully",
+    "identitydeleted": "Identity successfully deleted",
+    "credentialdeleted": "Credential deleted successfully",
+    "connectiondeleted": "Connection deleted successfully",
+    "qrsuccess": "QR code scanned successfully",
+    "qrerror": "QR code not recognised"
   },
   "scan": {
     "tab": {

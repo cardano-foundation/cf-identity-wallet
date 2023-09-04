@@ -114,7 +114,7 @@ const Dids = () => {
             setShowToast(false);
             dispatch(setCurrentOperation(""));
           }}
-          message={`${i18n.t("toast.identityDeleted")}`}
+          message={`${i18n.t("toast.identitydeleted")}`}
           color="secondary"
           position="top"
           cssClass="confirmation-toast"

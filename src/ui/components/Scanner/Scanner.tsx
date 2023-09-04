@@ -1,5 +1,12 @@
-import { useEffect } from "react";
-import { IonCol, IonGrid, IonIcon, IonRow, isPlatform } from "@ionic/react";
+import { useEffect, useState } from "react";
+import {
+  IonCol,
+  IonGrid,
+  IonIcon,
+  IonRow,
+  IonToast,
+  isPlatform,
+} from "@ionic/react";
 import {
   BarcodeScanner,
   SupportedFormat,
@@ -9,6 +16,8 @@ import "./Scanner.scss";
 import { i18n } from "../../../i18n";
 
 const Scanner = () => {
+  const [showToast, setShowToast] = useState(false);
+
   const checkPermission = async () => {
     const status = await BarcodeScanner.checkPermission({ force: true });
     if (status.granted) {
@@ -45,7 +54,7 @@ const Scanner = () => {
         BarcodeScanner.hideBackground();
         const result = await startScan();
         if (result.hasContent) {
-          console.log(result.content);
+          setShowToast(true);
         }
       }
     }
@@ -56,22 +65,33 @@ const Scanner = () => {
   }, []);
 
   return (
-    <IonGrid className="qr-code-scanner">
-      <IonRow>
-        <IonCol size="12">
-          <span className="qr-code-scanner-text">
-            {i18n.t("scan.tab.title")}
-          </span>
-        </IonCol>
-      </IonRow>
-      <IonRow>
-        <IonIcon
-          icon={scanOutline}
-          color="light"
-          className="qr-code-scanner-icon"
-        />
-      </IonRow>
-    </IonGrid>
+    <>
+      <IonGrid className="qr-code-scanner">
+        <IonRow>
+          <IonCol size="12">
+            <span className="qr-code-scanner-text">
+              {i18n.t("scan.tab.title")}
+            </span>
+          </IonCol>
+        </IonRow>
+        <IonRow>
+          <IonIcon
+            icon={scanOutline}
+            color="light"
+            className="qr-code-scanner-icon"
+          />
+        </IonRow>
+      </IonGrid>
+      <IonToast
+        isOpen={showToast}
+        onDidDismiss={() => setShowToast(false)}
+        message={`${i18n.t("toast.qrsuccess")}`}
+        color="secondary"
+        position="top"
+        cssClass="confirmation-toast"
+        duration={1500}
+      />
+    </>
   );
 };
 

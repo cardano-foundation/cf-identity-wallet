@@ -136,7 +136,7 @@ const Creds = () => {
               setShowToast(false);
               dispatch(setCurrentOperation(""));
             }}
-            message={`${i18n.t("toast.credentialDeleted")}`}
+            message={`${i18n.t("toast.credentialdeleted")}`}
             color="secondary"
             position="top"
             cssClass="confirmation-toast"

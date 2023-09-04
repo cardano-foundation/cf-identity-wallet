@@ -314,7 +314,9 @@ const Crypto = () => {
           )}
           <IonToast
             isOpen={showToast}
-            message={`${i18n.t("toast." + stateCache.currentOperation)}`}
+            message={`${i18n.t(
+              "toast." + stateCache.currentOperation.toLowerCase()
+            )}`}
             onDidDismiss={() => {
               setShowToast(false);
               dispatch(setCurrentOperation(""));
