@@ -45,6 +45,9 @@ const Scanner = () => {
   const startScan = async () => {
     await BarcodeScanner.hideBackground();
     document?.querySelector("body")?.classList.add("scanner-active");
+    document
+      ?.querySelector("body.scanner-active > div:last-child")
+      ?.classList.remove("hide");
     const result = await BarcodeScanner.startScan({
       targetedFormats: [SupportedFormat.QR_CODE],
     });

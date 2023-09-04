@@ -13,10 +13,15 @@ body {
   }
 
   &.scanner-active > div:last-child {
+    display: block;
     z-index: -10;
     --background: var(--ion-color-secondary) !important;
     --ion-background-color: var(--ion-color-secondary) !important;
     background-color: var(--ion-color-secondary) !important;
+
+    &.hide {
+      display: none;
+    }
   }
 }
 
@@ -284,6 +289,23 @@ ion-toast {
   &.confirmation-toast {
     &::part(message) {
       color: var(--ion-color-light);
+    }
+  }
+}
+
+.qr-code-scanner-full-page {
+  ion-header ion-toolbar {
+    margin-top: 0.625rem;
+
+    .back-button {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 1.5rem;
+      background: var(--ion-color-light-grey);
+    }
+
+    ion-icon {
+      font-size: 1.85em !important;
     }
   }
 }
