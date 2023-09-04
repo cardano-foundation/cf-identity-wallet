@@ -46,8 +46,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const storedIdentities = await AriesAgent.agent.getIdentities();
-    // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
-    const storedCryptoAccounts: CryptoAccountProps[] = [];
+    // @TODO - jorgenavben: This will need to be updated one we move the temporal function from agent to a new place.
+    const storedCryptoAccounts: CryptoAccountProps[] =
+      await AriesAgent.agent.getAllCryptoAccountRecordUIMapping();
 
     try {
       const hideCryptoBalances = await PreferencesStorage.get(

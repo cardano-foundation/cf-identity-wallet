@@ -8,8 +8,6 @@ enum IdentityType {
 
 interface CryptoAccountRecordShortDetails {
   id: string;
-  addresses: Map<NetworkType, Map<number, Map<number, string[]>>>;
-  rewardAddresses: Map<NetworkType, string[]>;
   displayName: string;
   usesIdentitySeedPhrase: boolean;
 }
@@ -47,7 +45,7 @@ interface KERIDetails extends IdentityShortDetails {
     backerToAdd: string[];
   };
 }
-  
+
 type GetIdentityResult =
   | { type: IdentityType.KERI; result: KERIDetails }
   | { type: IdentityType.KEY; result: DIDDetails };
