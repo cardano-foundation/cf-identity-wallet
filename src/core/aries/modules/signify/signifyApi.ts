@@ -68,20 +68,6 @@ export class SignifyApi {
     };
   }
 
-  async getIdentifiersDetailed(): Promise<any[]> {
-    // @TODO - foconnor: We shouldn't need to individually re-pull every identifier
-    // but we don't have the records in place in Aries yet, so this is just to get created at date (even though after a rotation it will be wrong).
-    return (
-      await Promise.all(
-        (
-          await this.signifyClient.identifiers().list()
-        ).map(async (aid: any) => {
-          return this.signifyClient.identifiers().get(aid.name);
-        })
-      )
-    ).flat();
-  }
-
   async getIdentifierByName(name: string): Promise<any> {
     return this.signifyClient.identifiers().get(name);
   }
