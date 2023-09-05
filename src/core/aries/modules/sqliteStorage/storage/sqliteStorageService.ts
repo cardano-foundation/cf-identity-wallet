@@ -216,7 +216,10 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
             values.push(queryKey, ...queryVal);
           } else {
             scan_query += " AND " + SqliteStorageService.SCAN_TAGS_SQL_EQ;
-            values.push(queryKey, typeof queryVal == "boolean" ? queryVal ? "1" : "0" : queryVal)
+            values.push(
+              queryKey,
+              typeof queryVal == "boolean" ? (queryVal ? "1" : "0") : queryVal
+            );
           }
         }
       }

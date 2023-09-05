@@ -1,3 +1,3 @@
 export * from "./httpOutboundTransport";
-export * from './wsOutboundTransport'
-export * from './transportEventTypes'
+export * from "./wsOutboundTransport";
+export * from "./transportEventTypes";

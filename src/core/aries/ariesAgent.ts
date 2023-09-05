@@ -382,7 +382,6 @@ class AriesAgent {
     return identities;
   }
 
-
   private isDidIdentifier(identifier: string): boolean {
     return identifier.startsWith("did:");
   }
