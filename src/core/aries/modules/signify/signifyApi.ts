@@ -3,8 +3,10 @@ import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
 import { ICreateIdentifierResult } from "./signifyApi.types";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
+  static readonly LOCAL_KERIA_ENDPOINT =
+    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3901";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
+    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3903";
   static readonly SIGNIFY_BRAN = "0123456789abcdefghijk"; // @TODO - foconnor: Shouldn't be hard-coded.
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
@@ -53,7 +55,8 @@ export class SignifyApi {
     const signifyName = utils.uuid();
     const op = await this.signifyClient
       .identifiers()
-      .create(signifyName, SignifyApi.BACKER_CONFIG);
+      .create(signifyName, SignifyApi.BACKER_CONFIG)
+      .op();
     if (
       !(await this.waitUntilOpDone(op, this.opTimeout, this.opRetryInterval))
     ) {
