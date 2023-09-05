@@ -7,7 +7,7 @@ enum IdentityType {
 }
 
 enum Blockchain {
-  CARDANO = 'Cardano',
+  CARDANO = "Cardano",
 }
 
 interface CryptoAccountRecordShortDetails {
