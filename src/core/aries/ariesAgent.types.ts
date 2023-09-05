@@ -6,9 +6,15 @@ enum IdentityType {
   KERI = "keri",
 }
 
+enum Blockchain {
+  CARDANO = 'Cardano',
+}
+
 interface CryptoAccountRecordShortDetails {
   id: string;
   displayName: string;
+  blockchain: Blockchain;
+  totalADAinUSD: number;
   usesIdentitySeedPhrase: boolean;
 }
 
@@ -55,7 +61,7 @@ type UpdateIdentityMetadata = Omit<
   "id" | "isArchived" | "name" | "method" | "createdAt"
 >;
 
-export { IdentityType };
+export { IdentityType, Blockchain };
 export type {
   CryptoAccountRecordShortDetails,
   IdentityShortDetails,

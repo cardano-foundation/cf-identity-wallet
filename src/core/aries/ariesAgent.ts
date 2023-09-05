@@ -31,6 +31,7 @@ import {
 } from "./modules";
 import { HttpOutboundTransport } from "./transports";
 import {
+  Blockchain,
   GetIdentityResult,
   IdentityType,
   UpdateIdentityMetadata,
@@ -49,9 +50,6 @@ import {
   IdentityMetadataRecord,
   IdentityMetadataRecordProps,
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
-import { CryptoAccountProps } from "../../ui/pages/Crypto/Crypto.types";
-import crypto from "crypto";
-import CardanoLogo from "../../ui/assets/images/CardanoLogo.jpg";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -296,42 +294,12 @@ class AriesAgent {
         id: record.id,
         displayName: record.displayName,
         usesIdentitySeedPhrase: record.usesIdentitySeedPhrase,
+        blockchain: Blockchain.CARDANO,
+        totalADAinUSD: 0,
       });
     }
 
     return cryptoAccountRecordsShortDetails;
-  }
-
-  // @TODO - jorgenavben: This temporary function will need to be moved or mofified in the future once we have all the crypto wallet information
-  async getAllCryptoAccountRecordUIMapping(): Promise<CryptoAccountProps[]> {
-    return (await AriesAgent.agent.getAllCryptoAccountRecord()).map(
-      (cryptoAccountRecord) => {
-        const randomizer = crypto.randomBytes(3).toString("hex");
-        return {
-          address:
-            "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg" +
-            randomizer,
-          derivationPath: "m/1852'/1815'/0'/1/32",
-          name: cryptoAccountRecord.displayName,
-          blockchain: "Cardano",
-          currency: "ADA",
-          logo: CardanoLogo,
-          balance: {
-            main: {
-              nativeBalance: 273.85,
-              usdBalance: 75.2,
-            },
-            reward: {
-              nativeBalance: 0,
-              usdBalance: 0,
-            },
-          },
-          usesIdentitySeedPhrase: cryptoAccountRecord.usesIdentitySeedPhrase,
-          assets: [],
-          transactions: [],
-        };
-      }
-    );
   }
 
   async cryptoAccountIdentitySeedPhraseExists(): Promise<boolean> {
