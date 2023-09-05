@@ -48,6 +48,10 @@ export class GeneralStorageApi {
     await this.cryptoAccountRepository.save(this.agentContext, record);
   }
 
+  async getAllCryptoRecord(): Promise<CryptoAccountRecord[]> {
+    return this.cryptoAccountRepository.getAll(this.agentContext);
+  }
+
   async removeCryptoRecordById(id: string): Promise<void> {
     await this.cryptoAccountRepository.deleteById(this.agentContext, id);
   }

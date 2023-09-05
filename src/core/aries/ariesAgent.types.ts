@@ -1,8 +1,21 @@
+import { NetworkType } from "../cardano/addresses.types";
 import { IdentityMetadataRecordProps } from "./modules/generalStorage/repositories/identityMetadataRecord";
 
 enum IdentityType {
   KEY = "key",
   KERI = "keri",
+}
+
+enum Blockchain {
+  CARDANO = "Cardano",
+}
+
+interface CryptoAccountRecordShortDetails {
+  id: string;
+  displayName: string;
+  blockchain: Blockchain;
+  totalADAinUSD: number;
+  usesIdentitySeedPhrase: boolean;
 }
 
 interface IdentityShortDetails {
@@ -48,8 +61,9 @@ type UpdateIdentityMetadata = Omit<
   "id" | "isArchived" | "name" | "method" | "createdAt"
 >;
 
-export { IdentityType };
+export { IdentityType, Blockchain };
 export type {
+  CryptoAccountRecordShortDetails,
   IdentityShortDetails,
   DIDDetails,
   KERIDetails,

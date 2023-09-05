@@ -31,11 +31,16 @@ import {
 } from "./modules";
 import { HttpOutboundTransport } from "./transports";
 import {
+  Blockchain,
   GetIdentityResult,
   IdentityType,
   UpdateIdentityMetadata,
 } from "./ariesAgent.types";
-import type { DIDDetails, IdentityShortDetails } from "./ariesAgent.types";
+import type {
+  CryptoAccountRecordShortDetails,
+  DIDDetails,
+  IdentityShortDetails,
+} from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
@@ -273,6 +278,28 @@ class AriesAgent {
         usesIdentitySeedPhrase,
       })
     );
+  }
+
+  async getAllCryptoAccountRecord(): Promise<
+    CryptoAccountRecordShortDetails[]
+  > {
+    const cryptoAccountRecordsShortDetails: CryptoAccountRecordShortDetails[] =
+      [];
+    const listRecords =
+      await this.agent.modules.generalStorage.getAllCryptoRecord();
+
+    for (let i = 0; i < listRecords.length; i++) {
+      const record = listRecords[i];
+      cryptoAccountRecordsShortDetails.push({
+        id: record.id,
+        displayName: record.displayName,
+        usesIdentitySeedPhrase: record.usesIdentitySeedPhrase,
+        blockchain: Blockchain.CARDANO,
+        totalADAinUSD: 0,
+      });
+    }
+
+    return cryptoAccountRecordsShortDetails;
   }
 
   async cryptoAccountIdentitySeedPhraseExists(): Promise<boolean> {
