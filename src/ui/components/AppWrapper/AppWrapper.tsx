@@ -71,7 +71,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setCredsCache(filteredCredsFix));
     dispatch(setCryptoAccountsCache(storedCryptoAccounts));
     dispatch(setConnectionsCache(connectionsFix));
-    
+
     setInitialised(true);
   };
 

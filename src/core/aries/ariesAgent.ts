@@ -18,7 +18,8 @@ import {
   CredentialEventTypes,
   CredentialStateChangedEvent,
   CredentialState,
-  CredentialExchangeRecord, KeyDidRegistrar,
+  CredentialExchangeRecord,
+  KeyDidRegistrar,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -31,16 +32,20 @@ import {
   CryptoAccountRecord,
 } from "./modules";
 import { HttpOutboundTransport, WsOutboundTransport } from "./transports";
-import { GetIdentityResult, IdentityType } from "./ariesAgent.types";
+import {
+  GetIdentityResult,
+  IdentityType,
+  UpdateIdentityMetadata,
+} from "./ariesAgent.types";
 import type { DIDDetails, IdentityShortDetails } from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
 import { LibP2p } from "./transports/libp2p/libP2p";
-import {LibP2pOutboundTransport} from "./transports/libP2pOutboundTransport";
+import { LibP2pOutboundTransport } from "./transports/libP2pOutboundTransport";
 import {
   IdentityMetadataRecord,
-  IdentityMetadataRecordProps
+  IdentityMetadataRecordProps,
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
 
 const config: InitConfig = {
@@ -74,6 +79,7 @@ class AriesAgent {
     "DID metadata missing for stored DID";
   static readonly UNEXPECTED_MISSING_DID_RESULT_ON_CREATE =
     "DID was successfully created but the DID was not returned in the state returned";
+  static readonly DID_NOT_ARCHIVED = "DID was not archived";
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
@@ -142,7 +148,7 @@ class AriesAgent {
       throw new Error(AriesAgent.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
     }
 
-    const createInvitation = await  this.agent.oob.createInvitation({
+    const createInvitation = await this.agent.oob.createInvitation({
       autoAcceptConnection: false,
     });
 
@@ -199,46 +205,62 @@ class AriesAgent {
 
   /**
    * Lister event connection state change.
-   * @param callback 
+   * @param callback
    */
-  onConnectionStateChange(callback: (event: ConnectionStateChangedEvent) => void) {
-    this.agent.events.on(ConnectionEventTypes.ConnectionStateChanged, async (event: ConnectionStateChangedEvent) => {
-      callback(event);
-    })
+  onConnectionStateChange(
+    callback: (event: ConnectionStateChangedEvent) => void
+  ) {
+    this.agent.events.on(
+      ConnectionEventTypes.ConnectionStateChanged,
+      async (event: ConnectionStateChangedEvent) => {
+        callback(event);
+      }
+    );
   }
 
   /**
    * Lister event request connection.
-   * @param callback 
+   * @param callback
    */
   onRequestConnection(callback: (event: ConnectionRecord) => void) {
-    this.agent.events.on(ConnectionEventTypes.ConnectionStateChanged, async (event: ConnectionStateChangedEvent) => {
-      if (
-        event.payload.connectionRecord.role === DidExchangeRole.Responder &&
-        event.payload.connectionRecord.state === DidExchangeState.RequestReceived
-      ) {
-        callback(event.payload.connectionRecord);
+    this.agent.events.on(
+      ConnectionEventTypes.ConnectionStateChanged,
+      async (event: ConnectionStateChangedEvent) => {
+        if (
+          event.payload.connectionRecord.role === DidExchangeRole.Responder &&
+          event.payload.connectionRecord.state ===
+            DidExchangeState.RequestReceived
+        ) {
+          callback(event.payload.connectionRecord);
+        }
       }
-    })
+    );
   }
 
   /**
    * Lister event offer received.
-   * @param callback 
+   * @param callback
    */
-  onCredentialOfferReceived(callback: (event: CredentialExchangeRecord) => void) {
-    this.agent.events.on(CredentialEventTypes.CredentialStateChanged, async (event: CredentialStateChangedEvent) => {
-      if (event.payload.credentialRecord.state === CredentialState.OfferReceived) {
-        callback(event.payload.credentialRecord);
+  onCredentialOfferReceived(
+    callback: (event: CredentialExchangeRecord) => void
+  ) {
+    this.agent.events.on(
+      CredentialEventTypes.CredentialStateChanged,
+      async (event: CredentialStateChangedEvent) => {
+        if (
+          event.payload.credentialRecord.state === CredentialState.OfferReceived
+        ) {
+          callback(event.payload.credentialRecord);
+        }
       }
-    })
+    );
   }
 
-  async acceptCredentialOffer(credentialRecordId: string){
-    await this.agent.credentials.acceptOffer({ credentialRecordId});
+  async acceptCredentialOffer(credentialRecordId: string) {
+    await this.agent.credentials.acceptOffer({ credentialRecordId });
   }
-  
-  async acceptRequest(connectionId: string){
+
+  async acceptRequest(connectionId: string) {
     await this.agent.connections.acceptRequest(connectionId);
   }
 
@@ -285,68 +307,90 @@ class AriesAgent {
   async removeCryptoAccountRecordById(id: string): Promise<void> {
     await this.agent.modules.generalStorage.removeCryptoRecordById(id);
   }
-  async createIdentityMetadataRecord(data: IdentityMetadataRecordProps){
-    const dataCreate= {
+  async createIdentityMetadataRecord(data: IdentityMetadataRecordProps) {
+    const dataCreate = {
       id: data.id,
       displayName: data.displayName,
       colors: data.colors,
       method: data.method,
       signifyName: data.signifyName,
-    }
+    };
     const record = new IdentityMetadataRecord(dataCreate);
     return this.agent.modules.generalStorage.saveIdentityMetadataRecord(record);
   }
 
   async createIdentity(
-    metadata: Omit<IdentityMetadataRecordProps, "id" | "createdAt" | "isDelete">
+    metadata: Omit<
+      IdentityMetadataRecordProps,
+      "id" | "createdAt" | "isArchived"
+    >
   ): Promise<string | undefined> {
     const type = metadata.method;
     if (type === IdentityType.KERI) {
-      const { signifyName, identifier } = await this.agent.modules.signify.createIdentifier();
-      await this.createIdentityMetadataRecord({id: identifier, ...metadata, signifyName: signifyName});
+      const { signifyName, identifier } =
+        await this.agent.modules.signify.createIdentifier();
+      await this.createIdentityMetadataRecord({
+        id: identifier,
+        ...metadata,
+        signifyName: signifyName,
+      });
       return identifier;
     }
     const result = await this.agent.dids.create({
       method: type,
       options: { keyType: KeyType.Ed25519 },
     });
-    if(!result.didState.did){
+    if (!result.didState.did) {
       throw new Error(AriesAgent.UNEXPECTED_MISSING_DID_RESULT_ON_CREATE);
     }
-    await this.createIdentityMetadataRecord({ id: result.didState.did, ...metadata});
+    await this.createIdentityMetadataRecord({
+      id: result.didState.did,
+      ...metadata,
+    });
     return result.didState.did;
   }
 
   async getMetadataById(id: string): Promise<IdentityMetadataRecord> {
-    const metadata = await this.agent.modules.generalStorage.getIdentityMetadata(id);
+    const metadata =
+      await this.agent.modules.generalStorage.getIdentityMetadata(id);
     if (!metadata) {
       throw new Error(`${AriesAgent.DID_MISSING_METADATA_ERROR_MSG} ${id}`);
     }
     return metadata;
   }
 
-  async getIdentities(): Promise<IdentityShortDetails[]> {
+  async getIdentities(isGetArchive = false): Promise<IdentityShortDetails[]> {
     const identities: IdentityShortDetails[] = [];
-    const listMetadata: IdentityMetadataRecord[] = await this.agent.modules.generalStorage.getAllIdentityMetadata();
+    let listMetadata: IdentityMetadataRecord[];
+    if (isGetArchive) {
+      listMetadata =
+        await this.agent.modules.generalStorage.getAllArchiveIdentityMetadata();
+    } else {
+      listMetadata =
+        await this.agent.modules.generalStorage.getAllAvailableIdentityMetadata();
+    }
     for (let i = 0; i < listMetadata.length; i++) {
       const metadata = listMetadata[i];
-      if (!metadata.isDelete) {
-        identities.push({
-          method: metadata.method,
-          displayName: metadata.displayName,
-          id: metadata.id,
-          createdAtUTC: metadata.createdAt.toISOString(),
-          colors: metadata.colors,
-        });
-      }
+      identities.push({
+        method: metadata.method,
+        displayName: metadata.displayName,
+        id: metadata.id,
+        createdAtUTC: metadata.createdAt.toISOString(),
+        colors: metadata.colors,
+      });
     }
     return identities;
+  }
+
+
+  private isDidIdentifier(identifier: string): boolean {
+    return identifier.startsWith("did:");
   }
 
   async getIdentity(
     identifier: string
   ): Promise<GetIdentityResult | undefined> {
-    if (identifier.startsWith("did:")) {
+    if (this.isDidIdentifier(identifier)) {
       const storedDid = await this.agent.dids.getCreatedDids({
         did: identifier,
       });
@@ -366,7 +410,9 @@ class AriesAgent {
       }
     } else {
       const metadata = await this.getMetadataById(identifier);
-      const aid = await this.agent.modules.signify.getIdentifierByName(metadata.signifyName as string);
+      const aid = await this.agent.modules.signify.getIdentifierByName(
+        metadata.signifyName as string
+      );
       if (!aid) {
         return undefined;
       }
@@ -395,8 +441,8 @@ class AriesAgent {
             backerToAdd: aid.state.ee.ba,
             backerToRemove: aid.state.ee.br,
           },
-        }
-      }
+        },
+      };
     }
   }
 
@@ -429,12 +475,41 @@ class AriesAgent {
     };
   }
 
-  async updateIdentityMetadata(id: string, metadata: Omit<Partial<IdentityMetadataRecordProps>, "id" | "isDelete" | "name" | "method" | "createdAt">): Promise<void> {
-    return this.agent.modules.generalStorage.updateIdentityMetadata(id, metadata);
+  validArchivedIdentity(metadata: IdentityMetadataRecord): void {
+    if (!metadata.isArchived) {
+      throw new Error(`${AriesAgent.DID_NOT_ARCHIVED} ${metadata.id}`);
+    }
   }
 
-  async deleteIdentityMetadata(id: string): Promise<void> {
-    return this.agent.modules.generalStorage.softDeleteIdentityMetadata(id);
+  async updateIdentityMetadata(
+    identifier: string,
+    metadata: UpdateIdentityMetadata
+  ): Promise<void> {
+    return this.agent.modules.generalStorage.updateIdentityMetadata(
+      identifier,
+      metadata
+    );
+  }
+
+  async deleteIdentity(identifier: string): Promise<void> {
+    const metadata = await this.getMetadataById(identifier);
+    this.validArchivedIdentity(metadata);
+    await this.agent.modules.generalStorage.deleteIdentityMetadata(identifier);
+  }
+
+  async archiveIdentity(identifier: string): Promise<void> {
+    return this.agent.modules.generalStorage.archiveIdentityMetadata(
+      identifier
+    );
+  }
+
+  async restoreIdentity(identifier: string): Promise<void> {
+    const metadata = await this.getMetadataById(identifier);
+    this.validArchivedIdentity(metadata);
+    return this.agent.modules.generalStorage.updateIdentityMetadata(
+      identifier,
+      { isArchived: false }
+    );
   }
 }
 

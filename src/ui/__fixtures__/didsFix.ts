@@ -1,7 +1,4 @@
-import {
-  DIDDetails,
-  IdentityType,
-} from "../../core/aries/ariesAgent.types";
+import { DIDDetails, IdentityType } from "../../core/aries/ariesAgent.types";
 
 // @TODO - foconnor: When UI in place for KERI, need KERIDetails here too.
 const didsFix: DIDDetails[] = [

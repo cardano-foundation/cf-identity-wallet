@@ -9,6 +9,7 @@ import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { onboardingRoute } from "../../constants/dictionary";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
@@ -44,7 +45,7 @@ describe("Onboarding Page", () => {
   });
 
   test("If the user hasn't set a passcode yet, they will be asked to create one", async () => {
-    const { getByTestId, queryByText } = render(
+    const { getByText, queryByText } = render(
       <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
         <Provider store={store}>
           <Route
@@ -60,7 +61,9 @@ describe("Onboarding Page", () => {
       </MemoryRouter>
     );
 
-    const buttonContinue = getByTestId("get-started-button");
+    const buttonContinue = getByText(
+      EN_TRANSLATIONS.onboarding.getstarted.button.label
+    );
 
     fireEvent.click(buttonContinue);
 
@@ -80,6 +83,7 @@ describe("Onboarding Page", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
+        currentOperation: "",
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -92,7 +96,7 @@ describe("Onboarding Page", () => {
     };
     const storeMocked = mockStore(initialState);
 
-    const { getByTestId, queryByText } = render(
+    const { getByText, queryByText } = render(
       <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
         <Provider store={storeMocked}>
           <Route
@@ -100,14 +104,16 @@ describe("Onboarding Page", () => {
             component={Onboarding}
           />
           <Route
-            path={RoutePath.GENERATE_SEED_PHRASE}
+            path={RoutePath.GENERATE_SEED_PHRASE + onboardingRoute.createRoute}
             component={GenerateSeedPhrase}
           />
         </Provider>
       </MemoryRouter>
     );
 
-    const buttonContinue = getByTestId("get-started-button");
+    const buttonContinue = getByText(
+      EN_TRANSLATIONS.onboarding.getstarted.button.label
+    );
 
     fireEvent.click(buttonContinue);
 

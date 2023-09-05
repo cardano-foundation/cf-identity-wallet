@@ -36,6 +36,7 @@ import { setCredsCache } from "../../../store/reducers/credsCache";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
 import { defaultCredentialsCardData } from "../../constants/dictionary";
+import { VerifyPasscode } from "../../components/VerifyPasscode";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -44,6 +45,7 @@ const CredCardDetails = () => {
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [creds, setCreds] = useState(credsFix);
   const params: { id: string } = useParams();
@@ -72,7 +74,7 @@ const CredCardDetails = () => {
       dispatch,
       updateRedux
     );
-    history.push(TabsRoutePath.CREDS);
+    history.push(backPath.pathname);
   };
 
   const handleDelete = () => {
@@ -337,17 +339,31 @@ const CredCardDetails = () => {
           cancelButtonText={`${i18n.t(
             "creds.card.details.delete.alert.cancel"
           )}`}
-          actionConfirm={() => setVerifyPasswordIsOpen(true)}
+          actionConfirm={() => {
+            if (
+              !stateCache?.authentication.passwordIsSkipped &&
+              stateCache?.authentication.passwordIsSet
+            ) {
+              setVerifyPasswordIsOpen(true);
+            } else {
+              setVerifyPasscodeIsOpen(true);
+            }
+          }}
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
           onVerify={handleDelete}
         />
+        <VerifyPasscode
+          isOpen={verifyPasscodeIsOpen}
+          setIsOpen={setVerifyPasscodeIsOpen}
+          onVerify={handleDelete}
+        />
         <IonToast
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
-          message={`${i18n.t("creds.card.details.toast.clipboard")}`}
+          message={`${i18n.t("toast.clipboard")}`}
           color="secondary"
           position="top"
           cssClass="confirmation-toast"

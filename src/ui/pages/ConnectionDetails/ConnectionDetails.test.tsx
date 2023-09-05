@@ -2,6 +2,7 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { waitForIonicReact } from "@ionic/react-test-utils";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -111,6 +112,8 @@ describe("ConnectionDetails Page", () => {
     act(() => {
       fireEvent.click(getByTestId("action-button"));
     });
+
+    waitForIonicReact();
 
     await waitFor(() =>
       expect(

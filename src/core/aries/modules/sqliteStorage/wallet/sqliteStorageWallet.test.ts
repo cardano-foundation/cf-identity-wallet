@@ -108,7 +108,7 @@ const getMock = jest
       };
     }
 
-    if(key === "VERSION_DATABASE_KEY") return "0.0.1"
+    if (key === "VERSION_DATABASE_KEY") return "0.0.1";
     return false as any;
   });
 const setMock = jest
@@ -119,8 +119,8 @@ const connectionMock = {
   open: jest.fn(),
   execute: jest.fn(),
   query: jest.fn(),
-  close : jest.fn(),
-  executeTransaction : jest.fn(),
+  close: jest.fn(),
+  executeTransaction: jest.fn(),
 };
 
 jest.mock("@capacitor-community/sqlite", () => ({

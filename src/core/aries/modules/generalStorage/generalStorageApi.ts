@@ -1,4 +1,4 @@
-import { AgentContext, injectable } from "@aries-framework/core";
+import { AgentContext, DidRepository, injectable } from "@aries-framework/core";
 import {
   CryptoAccountRecord,
   CryptoAccountRepository,
@@ -7,7 +7,11 @@ import {
   MiscRepository,
 } from "./repositories";
 import { IdentityMetadataRepository } from "./repositories/identityMetadataRepository";
-import {IdentityMetadataRecord, IdentityMetadataRecordProps} from "./repositories/identityMetadataRecord";
+import {
+  IdentityMetadataRecord,
+  IdentityMetadataRecordProps,
+} from "./repositories/identityMetadataRecord";
+import { IdentityType } from "../../ariesAgent.types";
 
 /**
  * This can be used to store any records in the agent that aren't explicitly created
@@ -58,31 +62,64 @@ export class GeneralStorageApi {
     );
   }
 
-  async saveIdentityMetadataRecord(record: IdentityMetadataRecord): Promise<void> {
+  async saveIdentityMetadataRecord(
+    record: IdentityMetadataRecord
+  ): Promise<void> {
     await this.identityMetadataRepository.save(this.agentContext, record);
   }
 
-  async getAllIdentityMetadata(): Promise<IdentityMetadataRecord[]> {
-    return this.identityMetadataRepository.getAll(this.agentContext);
+  async getAllAvailableIdentityMetadata(): Promise<IdentityMetadataRecord[]> {
+    return this.identityMetadataRepository.findByQuery(this.agentContext, {
+      isArchived: false,
+    });
   }
 
-  async getIdentityMetadata(id: string): Promise<IdentityMetadataRecord | null> {
+  async getAllArchiveIdentityMetadata(): Promise<IdentityMetadataRecord[]> {
+    return this.identityMetadataRepository.findByQuery(this.agentContext, {
+      isArchived: true,
+    });
+  }
+
+  async getIdentityMetadata(
+    id: string
+  ): Promise<IdentityMetadataRecord | null> {
     return this.identityMetadataRepository.findById(this.agentContext, id);
   }
 
-  async softDeleteIdentityMetadata(id: string): Promise<void> {
-    return this.updateIdentityMetadata(id, {isDelete: true});
+  async archiveIdentityMetadata(id: string): Promise<void> {
+    return this.updateIdentityMetadata(id, { isArchived: true });
   }
 
-  async updateIdentityMetadata(id: string, data: Omit<Partial<IdentityMetadataRecordProps>,  "id" | "name" | "method" | "createdAt">): Promise<void> {
+  async deleteIdentityMetadata(id: string): Promise<void> {
+    return this.identityMetadataRepository.deleteById(this.agentContext, id);
+  }
+  async deleteDidRecord(did: string): Promise<void> {
+    const didRepository =
+      this.agentContext.dependencyManager.resolve(DidRepository);
+    const record = await didRepository.findByQuery(this.agentContext, {
+      did: did,
+      method: IdentityType.KEY,
+    });
+    if (!record.length) {
+      return;
+    }
+    return this.agentContext.dependencyManager
+      .resolve(DidRepository)
+      .delete(this.agentContext, record[0]);
+  }
+
+  async updateIdentityMetadata(
+    id: string,
+    data: Omit<
+      Partial<IdentityMetadataRecordProps>,
+      "id" | "name" | "method" | "createdAt"
+    >
+  ): Promise<void> {
     const record = await this.getIdentityMetadata(id);
-    if( record ){
-      if (data.colors)
-        record.colors = data.colors;
-      if( data.displayName )
-        record.displayName = data.displayName;
-      if( data.isDelete !== undefined)
-        record.isDelete = data.isDelete;
+    if (record) {
+      if (data.colors) record.colors = data.colors;
+      if (data.displayName) record.displayName = data.displayName;
+      if (data.isArchived !== undefined) record.isArchived = data.isArchived;
       return this.identityMetadataRepository.update(this.agentContext, record);
     }
   }

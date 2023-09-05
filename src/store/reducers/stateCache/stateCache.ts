@@ -15,7 +15,9 @@ const initialState: StateCacheProps = {
     passcodeIsSet: false,
     seedPhraseIsSet: false,
     passwordIsSet: false,
+    passwordIsSkipped: true,
   },
+  currentOperation: "",
   defaultCryptoAccount: "",
 };
 
@@ -48,6 +50,9 @@ const stateCacheSlice = createSlice({
     ) => {
       state.authentication = action.payload;
     },
+    setCurrentOperation: (state, action: PayloadAction<string>) => {
+      state.currentOperation = action.payload;
+    },
   },
 });
 
@@ -57,6 +62,7 @@ const {
   removeSetPasscodeRoute,
   removeRoute,
   setAuthentication,
+  setCurrentOperation,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -64,6 +70,8 @@ const getRoutes = (state: RootState) => state.stateCache.routes;
 const getCurrentRoute = (state: RootState) =>
   state.stateCache.routes.length ? state.stateCache.routes[0] : undefined;
 const getAuthentication = (state: RootState) => state.stateCache.authentication;
+const getCurrentOperation = (state: RootState) =>
+  state.stateCache.currentOperation;
 
 export type {
   CurrentRouteCacheProps,
@@ -73,14 +81,16 @@ export type {
 
 export {
   initialState,
+  getStateCache,
   stateCacheSlice,
   getRoutes,
+  removeRoute,
+  getCurrentRoute,
   setCurrentRoute,
   removeCurrentRoute,
-  removeRoute,
   removeSetPasscodeRoute,
-  setAuthentication,
-  getStateCache,
-  getCurrentRoute,
   getAuthentication,
+  setAuthentication,
+  getCurrentOperation,
+  setCurrentOperation,
 };

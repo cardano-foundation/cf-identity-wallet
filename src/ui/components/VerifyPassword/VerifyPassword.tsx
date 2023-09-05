@@ -10,12 +10,23 @@ import { Alert } from "../Alert";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { MiscRecordId } from "../../../core/aries/modules";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getCurrentRoute,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
+import { TabsRoutePath } from "../navigation/TabsMenu";
+import { toastState } from "../../constants/dictionary";
+import { RoutePath } from "../../../routes";
 
 const VerifyPassword = ({
   isOpen,
   setIsOpen,
   onVerify,
 }: VerifyPasswordProps) => {
+  const dispatch = useAppDispatch();
+  const currentRoute = useAppSelector(getCurrentRoute);
+  const [currentAction, setCurrentAction] = useState("");
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
   const [attempts, setAttempts] = useState(6);
   const [alertChoiceIsOpen, setAlertChoiceIsOpen] = useState(false);
@@ -38,6 +49,20 @@ const VerifyPassword = ({
       setFocus();
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    let operation = "";
+    if (currentRoute?.path?.includes(TabsRoutePath.DIDS)) {
+      operation = toastState.identityDeleted;
+    } else if (currentRoute?.path?.includes(TabsRoutePath.CREDS)) {
+      operation = toastState.credentialDeleted;
+    } else if (currentRoute?.path?.includes(TabsRoutePath.CRYPTO)) {
+      operation = toastState.walletDeleted;
+    } else if (currentRoute?.path?.includes(RoutePath.CONNECTION_DETAILS)) {
+      operation = toastState.connectionDeleted;
+    }
+    setCurrentAction(operation);
+  }, [currentRoute?.path]);
 
   const errorMessages = {
     hasNoMatch: i18n.t("verifypassword.error.hasNoMatch"),
@@ -91,6 +116,7 @@ const VerifyPassword = ({
       verifyPasswordValue === storedPassword
     ) {
       resetModal();
+      dispatch(setCurrentOperation(currentAction));
       onVerify();
     }
   }, [attempts]);
@@ -209,3 +235,6 @@ const VerifyPassword = ({
 };
 
 export { VerifyPassword };
+function setCurrentAction(operation: string) {
+  throw new Error("Function not implemented.");
+}

@@ -11,7 +11,8 @@
     "test": "jest",
     "test:cardano": "jest --config jest.config.cardano.ts",
     "e2e:appium": "appium --port 4003",
-    "e2e:web": "SERVE_PORT=4003 TS_NODE_PROJECT=e2e/tsconfig.json  wdio e2e/config/web.config.ts --watch"
+    "e2e:web": "SERVE_PORT=4003 TS_NODE_PROJECT=e2e/tsconfig.json  wdio e2e/config/web.config.ts --watch",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "^3.0.1",
@@ -98,9 +99,11 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "expect-webdriverio": "^4.2.6",
     "html-webpack-plugin": "^5.5.0",
+    "husky": "^8.0.3",
     "jest": "^29.5.0",
     "jest-canvas-mock": "^2.5.2",
     "jest-environment-jsdom": "^29.5.0",
+    "lint-staged": "^14.0.1",
     "mini-css-extract-plugin": "^2.6.1",
     "node-polyfill-webpack-plugin": "^2.0.1",
     "node-sass": "^8.0.0",
@@ -138,5 +141,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "lint-staged": {
+    "src/**/*.{ts,tsx}": "eslint --cache --fix",
+    "src/**/*.{ts,tsx,scss}": "npx prettier --write"
   }
 }

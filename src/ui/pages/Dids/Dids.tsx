@@ -1,7 +1,12 @@
-import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonPage,
+  IonToast,
+  useIonViewWillEnter,
+} from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
-import { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Dids.scss";
@@ -10,12 +15,14 @@ import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import {
-  getAuthentication,
+  getCurrentRoute,
+  getStateCache,
+  setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
-import { RoutePath, TabsRoutePath } from "../../../routes/paths";
+import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentity } from "../../components/CreateIdentity";
-import { cardTypes } from "../../constants/dictionary";
+import { cardTypes, toastState } from "../../constants/dictionary";
 
 interface AdditionalButtonsProps {
   handleCreateDid: () => void;
@@ -52,23 +59,25 @@ const AdditionalButtons = ({ handleCreateDid }: AdditionalButtonsProps) => {
 };
 
 const Dids = () => {
-  const didsData = useAppSelector(getIdentitiesCache);
-  const authentication = useAppSelector(getAuthentication);
   const dispatch = useAppDispatch();
-  const history = useHistory();
+  const stateCache = useAppSelector(getStateCache);
+  const currentRoute = useAppSelector(getCurrentRoute);
+  const didsData = useAppSelector(getIdentitiesCache);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const handleCreateDid = () => {
-    if (!authentication.passwordIsSet) {
-      history.replace(RoutePath.CREATE_PASSWORD);
-      dispatch(setCurrentRoute({ path: RoutePath.CREATE_PASSWORD }));
-    } else {
-      setModalIsOpen(true);
-    }
-  };
+  const [showToast, setShowToast] = useState(false);
 
-  useIonViewWillEnter(() =>
-    dispatch(setCurrentRoute({ path: TabsRoutePath.DIDS }))
-  );
+  useIonViewWillEnter(() => {
+    dispatch(setCurrentRoute({ path: TabsRoutePath.DIDS }));
+  });
+
+  useEffect(() => {
+    if (
+      stateCache.currentOperation === toastState.identityDeleted &&
+      currentRoute?.path === TabsRoutePath.DIDS
+    ) {
+      setShowToast(true);
+    }
+  }, [stateCache.currentOperation, currentRoute]);
 
   return (
     <IonPage
@@ -80,7 +89,7 @@ const Dids = () => {
         title={`${i18n.t("dids.tab.title")}`}
         menuButton={true}
         additionalButtons={
-          <AdditionalButtons handleCreateDid={handleCreateDid} />
+          <AdditionalButtons handleCreateDid={() => setModalIsOpen(true)} />
         }
       >
         {didsData.length ? (
@@ -91,13 +100,25 @@ const Dids = () => {
         ) : (
           <CardsPlaceholder
             buttonLabel={i18n.t("dids.tab.create")}
-            buttonAction={handleCreateDid}
+            buttonAction={() => setModalIsOpen(true)}
             testId="dids-cards-placeholder"
           />
         )}
         <CreateIdentity
           modalIsOpen={modalIsOpen}
           setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
+        />
+        <IonToast
+          isOpen={showToast}
+          onDidDismiss={() => {
+            setShowToast(false);
+            dispatch(setCurrentOperation(""));
+          }}
+          message={`${i18n.t("toast.identityDeleted")}`}
+          color="secondary"
+          position="top"
+          cssClass="confirmation-toast"
+          duration={1500}
         />
       </TabLayout>
     </IonPage>

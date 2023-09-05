@@ -1,0 +1,6 @@
+.verify-passcode {
+  --background: var(--ion-color-light);
+  &::part(backdrop) {
+    background-color: var(--ion-color-light);
+  }
+}

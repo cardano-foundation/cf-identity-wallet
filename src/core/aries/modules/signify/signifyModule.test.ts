@@ -5,7 +5,7 @@ import { SignifyModule } from "./signifyModule";
 describe("Signify module", () => {
   test("registers dependencies on the dependency manager", () => {
     const dependencyManager = {
-      registerContextScoped: jest.fn()
+      registerContextScoped: jest.fn(),
     } as unknown as DependencyManager;
 
     const signifyModule = new SignifyModule();

@@ -1,5 +1,5 @@
 import { BaseRecord } from "@aries-framework/core";
-import {IdentityType} from "../../../ariesAgent.types";
+import { IdentityType } from "../../../ariesAgent.types";
 
 export interface IdentityMetadataRecordProps {
   id: string;
@@ -8,14 +8,17 @@ export interface IdentityMetadataRecordProps {
   method: IdentityType;
   signifyName?: string;
   createdAt?: Date;
-  isDelete?: boolean
+  isArchived?: boolean;
 }
 
-class IdentityMetadataRecord extends BaseRecord implements IdentityMetadataRecordProps{
+class IdentityMetadataRecord
+  extends BaseRecord
+  implements IdentityMetadataRecordProps
+{
   displayName!: string;
   method!: IdentityType;
   colors!: [string, string];
-  isDelete?: boolean;
+  isArchived?: boolean;
   signifyName?: string | undefined;
 
   static readonly type = "IdentityMetadataRecord";
@@ -30,13 +33,16 @@ class IdentityMetadataRecord extends BaseRecord implements IdentityMetadataRecor
       this.method = props.method;
       this.colors = props.colors;
       this.signifyName = props.signifyName;
-      this.isDelete = props.isDelete ?? false;
+      this.isArchived = props.isArchived ?? false;
       this.createdAt = props.createdAt ?? new Date();
     }
   }
 
   getTags() {
-    return this._tags;
+    return {
+      ...this._tags,
+      isArchived: this.isArchived,
+    };
   }
 }
 
