@@ -38,17 +38,36 @@ function resolveTagsFromDb(tagDb: string): Record<string, unknown> | null {
   const tagsParseArrays = tagDb?.split(",") || [];
   tagsParseArrays.forEach((tag: string) => {
     const tagParse = tag.split("|");
-    if (tags[tagParse[0]]) {
-      if (Array.isArray(tags[tagParse[0]])) {
-        (tags[tagParse[0]] as Array<string>).push(tagParse[1]);
-      } else {
-        tags[tagParse[0]] = [tags[tagParse[0]], tagParse[1]];
+    switch (tagParse[0]) {
+      case TagDataType.ARRAY: {
+        if (tags[tagParse[1]]) {
+          (tags[tagParse[1]] as Array<string>).push(tagParse[2]);
+        } else {
+          tags[tagParse[1]] = [tagParse[2]];
+        }
+        break;
       }
-    } else {
-      tags[tagParse[0]] = tagParse[1];
+      case TagDataType.STRING: {
+        tags[tagParse[1]] = tagParse[2];
+        break;
+      }
+      default:
+        throw new AriesFrameworkError(
+          `Expected tag type to be in enum TagDataType, found ${tagParse[0]}`
+        );
     }
   });
   return tags;
 }
 
-export { assertSqliteStorageWallet, deserializeRecord, resolveTagsFromDb };
+enum TagDataType {
+  STRING = "string",
+  ARRAY = "array",
+}
+
+export {
+  assertSqliteStorageWallet,
+  deserializeRecord,
+  resolveTagsFromDb,
+  TagDataType,
+};

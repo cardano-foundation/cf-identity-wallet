@@ -9,6 +9,8 @@ import {
   DidRecord,
   OutOfBandRecord,
   ConnectionRecord,
+  MediationRecipientModule,
+  MediatorPickupStrategy,
   ConnectionEventTypes,
   ConnectionStateChangedEvent,
   DidExchangeRole,
@@ -29,7 +31,7 @@ import {
   MiscRecordId,
   CryptoAccountRecord,
 } from "./modules";
-import { HttpOutboundTransport } from "./transports";
+import { HttpOutboundTransport, WsOutboundTransport } from "./transports";
 import {
   Blockchain,
   GetIdentityResult,
@@ -103,9 +105,14 @@ class AriesAgent {
           ? { sqliteStorage: new SqliteStorageModule() }
           : { ionicStorage: new IonicStorageModule() }),
         signify: new SignifyModule(),
+        mediationRecipient: new MediationRecipientModule({
+          mediatorInvitationUrl: "", // TODO: must add it when devops had supported infrastructure
+          mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
+        }),
       },
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
+    this.agent.registerOutboundTransport(new WsOutboundTransport());
   }
 
   async registerLibP2pInbound(libP2p: LibP2p) {
@@ -145,6 +152,7 @@ class AriesAgent {
     if (!libP2pDomain) {
       throw new Error(AriesAgent.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
     }
+
     const createInvitation = await this.agent.oob.createInvitation({
       autoAcceptConnection: false,
     });
@@ -152,6 +160,23 @@ class AriesAgent {
     return createInvitation.outOfBandInvitation.toUrl({
       domain: libP2pDomain,
     });
+  }
+
+  async createMediatorInvitation() {
+    const record = await this.agent?.oob.createInvitation();
+    if (!record) {
+      throw new Error("Could not create new invitation");
+    }
+
+    const invitationUrl = record.outOfBandInvitation.toUrl({
+      domain: "didcomm://invite",
+    });
+
+    return {
+      record,
+      invitation: record.outOfBandInvitation,
+      invitationUrl,
+    };
   }
 
   async sendMessageByOutOfBandId(outOfBandId: string, message: string) {
