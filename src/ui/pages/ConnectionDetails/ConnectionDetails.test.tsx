@@ -109,17 +109,15 @@ describe("ConnectionDetails Page", () => {
       fireEvent.click(getByText(connectionsFix[0].issuer));
     });
 
-    act(() => {
-      fireEvent.click(getByTestId("action-button"));
-    });
-
-    waitForIonicReact();
-
-    await waitFor(() =>
+    await waitFor(() => {
+      expect(getByTestId("action-button")).toBeDefined();
+      act(() => {
+        fireEvent.click(getByTestId("action-button"));
+      });
       expect(
         getByText(EN_TRANSLATIONS.connections.details.options.title)
-      ).toBeVisible()
-    );
+      ).toBeVisible();
+    });
 
     const backdrop = document.querySelector("ion-backdrop");
 
