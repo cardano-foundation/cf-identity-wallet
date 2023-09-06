@@ -11,11 +11,14 @@ import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { AddConnectionProps } from "./AddConnection.types";
 import "./AddConnection.scss";
+import { useAppDispatch } from "../../../store/hooks";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
 
 const AddConnection = ({
   addConnectionIsOpen,
   setAddConnectionIsOpen,
 }: AddConnectionProps) => {
+  const dispatch = useAppDispatch();
   return (
     <IonModal
       isOpen={addConnectionIsOpen}
@@ -40,6 +43,10 @@ const AddConnection = ({
                 <span
                   className="add-connection-modal-option"
                   data-testid="add-connection-modal-scan-qr-code"
+                  onClick={() => {
+                    dispatch(setCurrentOperation("scan"));
+                    setAddConnectionIsOpen(false);
+                  }}
                 >
                   <span>
                     <IonButton shape="round">

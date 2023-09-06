@@ -258,7 +258,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           setShowToast(false);
           dispatch(setCurrentOperation(""));
         }}
-        message={`${i18n.t("toast.connectionDeleted")}`}
+        message={`${i18n.t("toast.connectiondeleted")}`}
         color="secondary"
         position="top"
         cssClass="confirmation-toast"
