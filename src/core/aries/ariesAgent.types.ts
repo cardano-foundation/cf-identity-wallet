@@ -1,4 +1,3 @@
-import { NetworkType } from "../cardano/addresses.types";
 import { IdentityMetadataRecordProps } from "./modules/generalStorage/repositories/identityMetadataRecord";
 
 enum IdentityType {
@@ -33,23 +32,15 @@ interface DIDDetails extends IdentityShortDetails {
 }
 
 interface KERIDetails extends IdentityShortDetails {
-  sequenceNumber: number;
-  priorEventSaid: string;
-  eventSaid: string;
-  eventTimestamp: Date;
-  eventType: string;
-  keySigningThreshold: number;
-  signingKeys: string[];
-  nextKeysThreshold: string[];
-  nextKeys: string[];
-  backerThreshold: number;
-  backerAids: string[];
-  lastEstablishmentEvent: {
-    said: string;
-    sequence: string;
-    backerToRemove: string[];
-    backerToAdd: string[];
-  };
+  s: number;
+  dt: string;
+  kt: number;
+  k: string[];
+  nt: number;
+  n: string[];
+  bt: number;
+  b: string[];
+  di: string;
 }
 
 type GetIdentityResult =

@@ -57,13 +57,11 @@ const DidCardDetails = () => {
   useEffect(() => {
     const fetchDetails = async () => {
       const cardDetailsResult = await AriesAgent.agent.getIdentity(params.id);
-      if (cardDetailsResult && cardDetailsResult.type === IdentityType.KEY) {
+      if (cardDetailsResult) {
         setCardData(cardDetailsResult.result);
       } else {
-        // @TODO - foconnor: Should put KERI one here when its ready - this was just easier to get the types to work.
-        setCardData(undefined);
+        // @TODO - Error handling.
       }
-      // @TODO - Error handling.
     };
     fetchDetails();
   }, [params.id]);
