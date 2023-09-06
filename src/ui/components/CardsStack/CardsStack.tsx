@@ -105,7 +105,7 @@ const DidCard = ({
       <div className="cards-stack-did-layout">
         <div className="card-header">
           <span>
-            {cardData.method === IdentityType.KEY ? "DID:KEY" : "KERI"}
+            {cardData.method === IdentityType.KEY ? "did:key" : "KERI"}
           </span>
           <span>{cardData.displayName}</span>
         </div>
@@ -113,10 +113,14 @@ const DidCard = ({
           <span>{cardData.id}</span>
         </div>
         <div className="card-footer">
-          <span className="card-created-label">
-            {i18n.t("dids.card.layout.created")}
+          <span className="card-footer-column">
+            <span className="card-footer-column-label">
+              {i18n.t("dids.card.layout.created")}
+            </span>
+            <span className="card-footer-column-info">
+              {formatShortDate(cardData.createdAtUTC)}
+            </span>
           </span>
-          <span>{formatShortDate(cardData.createdAtUTC)}</span>
         </div>
       </div>
     </div>

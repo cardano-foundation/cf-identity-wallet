@@ -6,7 +6,7 @@ import "./styles/style.scss";
 import { AppWrapper } from "./components/AppWrapper";
 import { getCurrentOperation } from "../store/reducers/stateCache";
 import { useAppSelector } from "../store/hooks";
-import FullPageScanner from "./pages/FullPageScanner/FullPageScanner";
+import { FullPageScanner } from "./pages/FullPageScanner";
 
 setupIonicReact();
 

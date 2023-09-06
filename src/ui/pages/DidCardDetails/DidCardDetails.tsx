@@ -7,16 +7,7 @@ import {
   IonToast,
   useIonViewWillEnter,
 } from "@ionic/react";
-import {
-  shareOutline,
-  ellipsisVertical,
-  keyOutline,
-  copyOutline,
-  calendarNumberOutline,
-  pricetagOutline,
-  personCircleOutline,
-  trashOutline,
-} from "ionicons/icons";
+import { shareOutline, ellipsisVertical, trashOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -29,7 +20,6 @@ import {
   getStateCache,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
-import { writeToClipboard } from "../../../utils/clipboard";
 import { ShareIdentity } from "../../components/ShareIdentity";
 import { EditIdentity } from "../../components/EditIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
@@ -38,10 +28,10 @@ import {
   getIdentitiesCache,
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
-import { formatShortDate } from "../../../utils";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { DIDDetails, IdentityType } from "../../../core/aries/ariesAgent.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
+import { DidCardInfoKey } from "../../components/DidCardInfoKey";
 
 const DidCardDetails = () => {
   const history = useHistory();
@@ -161,165 +151,12 @@ const DidCardDetails = () => {
               isActive={false}
             />
             <div className="card-details-content">
-              <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.information")}</h3>
-                <div className="card-details-info-block-inner">
-                  <span
-                    className="card-details-info-block-line"
-                    data-testid="copy-button-id"
-                    onClick={() => {
-                      writeToClipboard(cardData.id);
-                      setShowToast(true);
-                    }}
-                  >
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={keyOutline}
-                        color="primary"
-                      />
-                    </span>
-
-                    <span className="card-details-info-block-data">
-                      {cardData.id.substring(0, 13)}...
-                      {cardData.id.slice(-5)}
-                    </span>
-                    <span>
-                      <IonButton
-                        shape="round"
-                        className="copy-button"
-                      >
-                        <IonIcon
-                          slot="icon-only"
-                          icon={copyOutline}
-                        />
-                      </IonButton>
-                    </span>
-                  </span>
-                  <span className="card-details-info-block-line">
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={calendarNumberOutline}
-                        color="primary"
-                      />
-                    </span>
-
-                    <span className="card-details-info-block-data">
-                      {formatShortDate(cardData?.createdAtUTC)}
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.type")}</h3>
-                <div className="card-details-info-block-inner">
-                  <span
-                    className="card-details-info-block-line"
-                    data-testid="copy-button-type"
-                    onClick={() => {
-                      writeToClipboard(cardData.keyType);
-                      setShowToast(true);
-                    }}
-                  >
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={pricetagOutline}
-                        color="primary"
-                      />
-                    </span>
-
-                    <span className="card-details-info-block-data">
-                      {cardData.keyType}
-                    </span>
-                    <span>
-                      <IonButton
-                        shape="round"
-                        className="copy-button"
-                      >
-                        <IonIcon
-                          slot="icon-only"
-                          icon={copyOutline}
-                        />
-                      </IonButton>
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.controller")}</h3>
-                <div className="card-details-info-block-inner">
-                  <span
-                    className="card-details-info-block-line"
-                    data-testid="copy-button-controller"
-                    onClick={() => {
-                      writeToClipboard(cardData.controller);
-                      setShowToast(true);
-                    }}
-                  >
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={personCircleOutline}
-                        color="primary"
-                      />
-                    </span>
-
-                    <span className="card-details-info-block-data">
-                      {cardData.controller.substring(0, 13)}...
-                      {cardData.controller.slice(-5)}
-                    </span>
-                    <span>
-                      <IonButton
-                        shape="round"
-                        className="copy-button"
-                      >
-                        <IonIcon
-                          slot="icon-only"
-                          icon={copyOutline}
-                        />
-                      </IonButton>
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.publickeybase")}</h3>
-                <div className="card-details-info-block-inner">
-                  <span
-                    className="card-details-info-block-line"
-                    data-testid="copy-button-publicKeyBase58"
-                    onClick={() => {
-                      writeToClipboard(cardData.publicKeyBase58);
-                      setShowToast(true);
-                    }}
-                  >
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={keyOutline}
-                        color="primary"
-                      />
-                    </span>
-                    <span className="card-details-info-block-data">
-                      {cardData.publicKeyBase58.substring(0, 5)}...
-                      {cardData.publicKeyBase58.slice(-5)}
-                    </span>
-                    <span>
-                      <IonButton
-                        shape="round"
-                        className="copy-button"
-                      >
-                        <IonIcon
-                          slot="icon-only"
-                          icon={copyOutline}
-                        />
-                      </IonButton>
-                    </span>
-                  </span>
-                </div>
-              </div>
+              {cardData.method === IdentityType.KEY ? (
+                <DidCardInfoKey
+                  cardData={cardData}
+                  setShowToast={setShowToast}
+                />
+              ) : null}
               <IonButton
                 shape="round"
                 expand="block"
