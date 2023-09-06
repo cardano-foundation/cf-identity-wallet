@@ -7,6 +7,7 @@ import {
   StakeCredential,
 } from "@dcspark/cardano-multiplatform-lib-browser";
 import { entropyToMnemonic, mnemonicToEntropy } from "bip39";
+import { Buffer } from "buffer";
 import { NetworkType } from "./addresses.types";
 
 class Addresses {
@@ -36,6 +37,12 @@ class Addresses {
 
   static convertHexXPrvToBech32XPrv(HexXPrv: string) {
     return Bip32PrivateKey.from_bytes(Buffer.from(HexXPrv, "hex")).to_bech32();
+  }
+
+  static convertBech32XPrvNoPasscodeToHexPublicKey(rootXPrvHex: string) {
+    return Bip32PrivateKey.from_bytes(Buffer.from(rootXPrvHex, "hex"))
+      .to_public()
+      .to_bech32();
   }
 
   static deriveFirstBaseAndRewardAddrs(rootXPrvBech32: string) {
