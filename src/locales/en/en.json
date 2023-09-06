@@ -255,6 +255,16 @@
         "type": "Type",
         "controller": "Controller",
         "publickeybase": "Public Key Base 58",
+        "delegator": "Delegator Identifier Prefix",
+        "signingkeyslist": "List of Signing Keys",
+        "signingkeysthreshold": "Keys Signing Threshold",
+        "nextkeyslist": "List of Next Key Digests",
+        "nextkeysthreshold": "Next Keys Signing Threshold",
+        "creationtimestamp": "Creation Timestamp",
+        "rotationtimestamp": "Last Key Rotation Timestamp",
+        "sequencenumber": "Sequence Number",
+        "backerslist": "List of Backers",
+        "backeraddress": "Backer Address",
         "delete": {
           "button": "Delete identity",
           "alert": {

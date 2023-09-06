@@ -29,9 +29,14 @@ import {
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
-import { DIDDetails, IdentityType } from "../../../core/aries/ariesAgent.types";
+import {
+  DIDDetails,
+  IdentityType,
+  KERIDetails,
+} from "../../../core/aries/ariesAgent.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { DidCardInfoKey } from "../../components/DidCardInfoKey";
+import { DidCardInfoKeri } from "../../components/DidCardInfoKeri";
 
 const DidCardDetails = () => {
   const history = useHistory();
@@ -44,7 +49,9 @@ const DidCardDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<DIDDetails | undefined>();
+  const [cardData, setCardData] = useState<
+    DIDDetails | KERIDetails | undefined
+  >();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
   useEffect(() => {
@@ -153,10 +160,15 @@ const DidCardDetails = () => {
             <div className="card-details-content">
               {cardData.method === IdentityType.KEY ? (
                 <DidCardInfoKey
-                  cardData={cardData}
+                  cardData={cardData as DIDDetails}
                   setShowToast={setShowToast}
                 />
-              ) : null}
+              ) : (
+                <DidCardInfoKeri
+                  cardData={cardData as KERIDetails}
+                  setShowToast={setShowToast}
+                />
+              )}
               <IonButton
                 shape="round"
                 expand="block"
