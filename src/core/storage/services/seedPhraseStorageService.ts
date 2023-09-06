@@ -20,11 +20,8 @@ class SeedPhraseStorageService {
     }
 
     const entropy = Addresses.convertToEntropy(seedPhrase);
-    const rootExtendedPrivateKey =
-      Addresses.convertEntropyToBech32XPrvNoPasscode(entropy);
-    const id = Addresses.convertBech32XPrvNoPasscodeToHexPublicKey(
-      rootExtendedPrivateKey
-    );
+    const rootExtendedPrivateKey = Addresses.entropyToBip32NoPasscode(entropy);
+    const id = Addresses.bip39PrivateToPublic(rootExtendedPrivateKey);
     const addresses = Addresses.deriveFirstBaseAndRewardAddrs(
       rootExtendedPrivateKey
     );
@@ -74,11 +71,11 @@ class SeedPhraseStorageService {
     }
 
     const rootExtendedPrivateKey = storedRootXPRV as string;
-    const id = Addresses.convertBech32XPrvNoPasscodeToHexPublicKey(
-      rootExtendedPrivateKey
+    const id = Addresses.bip39PrivateToPublic(
+      Addresses.hexToBech32Bip32Private(rootExtendedPrivateKey)
     );
     const addresses = Addresses.deriveFirstBaseAndRewardAddrs(
-      Addresses.convertHexXPrvToBech32XPrv(rootExtendedPrivateKey)
+      Addresses.hexToBech32Bip32Private(rootExtendedPrivateKey)
     );
     await AriesAgent.agent.storeCryptoAccountRecord(
       id,

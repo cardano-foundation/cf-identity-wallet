@@ -60,12 +60,15 @@ Addresses.deriveFirstBaseAndRewardAddrs = jest.fn().mockReturnValue({
   rewardAddresses: rewardAddressesMap,
 });
 Addresses.convertToEntropy = jest.fn().mockReturnValue(entropy);
-Addresses.convertEntropyToBech32XPrvNoPasscode = jest
+Addresses.entropyToBip32NoPasscode = jest
   .fn()
   .mockReturnValue(rootExtendedPrivateKey);
-Addresses.convertHexXPrvToBech32XPrv = jest
+Addresses.hexToBech32Bip32Private = jest
   .fn()
   .mockReturnValue(rootExtendedPrivateKey);
+Addresses.bip39PrivateToPublic = jest
+  .fn()
+  .mockReturnValue(rootExtendedPublicKey);
 
 jest.mock("../secureStorage");
 
@@ -92,7 +95,7 @@ describe("Seed phrase storage service", () => {
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     expect(AriesAgent.agent.storeCryptoAccountRecord).toBeCalledWith(
-      rootExtendedPrivateKey,
+      rootExtendedPublicKey,
       addressesMap,
       rewardAddressesMap,
       displayName,
@@ -170,17 +173,17 @@ describe("Seed phrase storage service", () => {
       seedPhrase
     );
     expect(AriesAgent.agent.storeCryptoAccountRecord).toBeCalledWith(
-      rootExtendedPrivateKey,
+      rootExtendedPublicKey,
       addressesMap,
       rewardAddressesMap,
       displayName
     );
     expect(SecureStorage.set).toBeCalledWith(
-      `${KeyStoreKeys.CRYPTO_ENTROPY_PREFIX}${rootExtendedPrivateKey}`,
+      `${KeyStoreKeys.CRYPTO_ENTROPY_PREFIX}${rootExtendedPublicKey}`,
       entropy
     );
     expect(SecureStorage.set).toBeCalledWith(
-      `${KeyStoreKeys.CRYPTO_ROOT_XPRV_KEY_PREFIX}${rootExtendedPrivateKey}`,
+      `${KeyStoreKeys.CRYPTO_ROOT_XPRV_KEY_PREFIX}${rootExtendedPublicKey}`,
       rootExtendedPrivateKey
     );
   });
@@ -209,13 +212,13 @@ describe("Seed phrase storage service", () => {
       )
     ).rejects.toThrowError(errorMsg);
     expect(AriesAgent.agent.storeCryptoAccountRecord).toBeCalledWith(
-      rootExtendedPrivateKey,
+      rootExtendedPublicKey,
       addressesMap,
       rewardAddressesMap,
       displayName
     );
     expect(SecureStorage.set).toBeCalledWith(
-      `${KeyStoreKeys.CRYPTO_ENTROPY_PREFIX}${rootExtendedPrivateKey}`,
+      `${KeyStoreKeys.CRYPTO_ENTROPY_PREFIX}${rootExtendedPublicKey}`,
       entropy
     );
     expect(SecureStorage.set).not.toBeCalledWith(
@@ -223,7 +226,7 @@ describe("Seed phrase storage service", () => {
       rootExtendedPrivateKey
     );
     expect(AriesAgent.agent.removeCryptoAccountRecordById).toBeCalledWith(
-      rootExtendedPrivateKey
+      rootExtendedPublicKey
     );
   });
 });

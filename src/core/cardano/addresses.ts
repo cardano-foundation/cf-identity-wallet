@@ -19,30 +19,24 @@ class Addresses {
     return entropyToMnemonic(entropy);
   }
 
-  static convertEntropyToBech32XPrvNoPasscode(entropy: string) {
+  static entropyToBip32NoPasscode(entropy: string): string {
     return Bip32PrivateKey.from_bip39_entropy(
       Buffer.from(entropy, "hex"),
       Buffer.from("")
     ).to_bech32();
   }
 
-  static convertEntropyToHexXPrvNoPasscode(entropy: string) {
-    const privateKeyBytes = Bip32PrivateKey.from_bip39_entropy(
-      Buffer.from(entropy, "hex"),
-      Buffer.from("")
-    ).as_bytes();
-
+  static bech32ToHexBip32Private(Bech32XPrv: string): string {
+    const privateKeyBytes = Bip32PrivateKey.from_bech32(Bech32XPrv).as_bytes();
     return Buffer.from(privateKeyBytes).toString("hex");
   }
 
-  static convertHexXPrvToBech32XPrv(HexXPrv: string) {
+  static hexToBech32Bip32Private(HexXPrv: string): string {
     return Bip32PrivateKey.from_bytes(Buffer.from(HexXPrv, "hex")).to_bech32();
   }
 
-  static convertBech32XPrvNoPasscodeToHexPublicKey(rootXPrvHex: string) {
-    return Bip32PrivateKey.from_bytes(Buffer.from(rootXPrvHex, "hex"))
-      .to_public()
-      .to_bech32();
+  static bip39PrivateToPublic(Bech32XPrv: string): string {
+    return Bip32PrivateKey.from_bech32(Bech32XPrv).to_public().to_bech32();
   }
 
   static deriveFirstBaseAndRewardAddrs(rootXPrvBech32: string) {

@@ -98,7 +98,9 @@ const VerifySeedPhrase = () => {
     const entropy = Addresses.convertToEntropy(seedPhraseString);
     await SecureStorage.set(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-      Addresses.convertEntropyToHexXPrvNoPasscode(entropy)
+      Addresses.bech32ToHexBip32Private(
+        Addresses.entropyToBip32NoPasscode(entropy)
+      )
     );
     await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, entropy);
     handleNavigate();
