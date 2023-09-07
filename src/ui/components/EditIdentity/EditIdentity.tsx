@@ -34,6 +34,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
+import { VerifyPasscode } from "../VerifyPasscode";
 
 const EditIdentity = ({
   isOpen,
@@ -48,6 +49,7 @@ const EditIdentity = ({
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
   const verifyDisplayName =
@@ -80,7 +82,14 @@ const EditIdentity = ({
     setActionType("edit");
     setEditIsOpen(false);
     setIsOpen(false);
-    setVerifyPasswordIsOpen(true);
+    if (
+      !stateCache?.authentication.passwordIsSkipped &&
+      stateCache?.authentication.passwordIsSet
+    ) {
+      setVerifyPasswordIsOpen(true);
+    } else {
+      setVerifyPasscodeIsOpen(true);
+    }
   };
 
   const handleDone = () => {
@@ -96,6 +105,10 @@ const EditIdentity = ({
     );
     if (actionType === "delete") {
       history.push(TabsRoutePath.DIDS);
+    }
+
+    if (actionType === "edit") {
+      // @TODO - sdisalvo: Check toast message is correct
     }
   };
 
@@ -286,11 +299,25 @@ const EditIdentity = ({
           "dids.card.details.delete.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t("dids.card.details.delete.alert.cancel")}`}
-        actionConfirm={() => setVerifyPasswordIsOpen(true)}
+        actionConfirm={() => {
+          if (
+            !stateCache?.authentication.passwordIsSkipped &&
+            stateCache?.authentication.passwordIsSet
+          ) {
+            setVerifyPasswordIsOpen(true);
+          } else {
+            setVerifyPasscodeIsOpen(true);
+          }
+        }}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
+        onVerify={verifyAction}
+      />
+      <VerifyPasscode
+        isOpen={verifyPasscodeIsOpen}
+        setIsOpen={setVerifyPasscodeIsOpen}
         onVerify={verifyAction}
       />
     </>
