@@ -11,7 +11,8 @@ import {
   NAVIGATION_DELAY,
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { filteredDidsFix } from "../../__fixtures__/filteredDidsFix";
+import { filteredIdentityFix } from "../../__fixtures__/filteredIdentityFix";
+
 jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
@@ -50,7 +51,7 @@ describe("Dids Tab", () => {
       },
       seedPhraseCache: {},
       identitiesCache: {
-        identities: filteredDidsFix,
+        identities: filteredIdentityFix,
       },
     };
 
@@ -75,7 +76,7 @@ describe("Dids Tab", () => {
       </MemoryRouter>
     );
 
-    const firstCardId = getByText(filteredDidsFix[0].id);
+    const firstCardId = getByText(filteredIdentityFix[0].id);
 
     act(() => {
       fireEvent.click(firstCardId);

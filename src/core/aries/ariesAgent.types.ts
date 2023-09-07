@@ -18,16 +18,16 @@ interface CryptoAccountRecordShortDetails {
 }
 
 interface IdentityShortDetails {
+  id: string;
   method: IdentityType;
   displayName: string;
-  id: string;
   createdAtUTC: string;
   colors: [string, string];
 }
 
 interface DIDDetails extends IdentityShortDetails {
-  controller: string;
   keyType: string;
+  controller: string;
   publicKeyBase58: string;
 }
 

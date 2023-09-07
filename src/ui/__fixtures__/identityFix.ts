@@ -1,7 +1,10 @@
-import { DIDDetails, IdentityType } from "../../core/aries/ariesAgent.types";
+import {
+  DIDDetails,
+  IdentityType,
+  KERIDetails,
+} from "../../core/aries/ariesAgent.types";
 
-// @TODO - foconnor: When UI in place for KERI, need KERIDetails here too.
-const didsFix: DIDDetails[] = [
+const didFix: DIDDetails[] = [
   {
     id: "did:key:z6MkpNyGdYK5Ey1pCf5cy1S9gbLD1857nQoZxVeeGifA1ZQv",
     method: IdentityType.KEY,
@@ -32,26 +35,34 @@ const didsFix: DIDDetails[] = [
     controller: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQv",
     publicKeyBase58: "AviE3J4duRYoGNXZDGUjiSShXM6AEvHSUJqVnDB96LdY",
   },
+];
+
+const keriFix: KERIDetails[] = [
   {
-    id: "did:key:z6MkpNyGd9gbLD1857nQoZYK5Ey1pCf5cy1SxVeeGifA1ZQv",
+    id: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
     method: IdentityType.KERI,
     displayName: "Professional ID",
     createdAtUTC: "2023-01-01T19:23:24Z",
     colors: ["#47E0FF", "#00C6EF"],
-    keyType: "Ed25519",
-    controller: "did:key:z6MkpNyGdYK5Ey1pCS9gbLD1857nQoZf5cy1xVeeGifA1ZQv",
-    publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
-  },
-  {
-    id: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQvb",
-    method: IdentityType.KERI,
-    displayName: "Offline ID",
-    createdAtUTC: "2023-01-01T19:23:24Z",
-    colors: ["#FF9780", "#FF5833"],
-    keyType: "Ed25519",
-    controller: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQj",
-    publicKeyBase58: "AviE3J4duRYoGNXZDGUjiSShXM6AEvHSUJqVnDB96LdY",
+    s: 0, // Sequence number, only show if s > 0
+    dt: "2023-06-12T14:07:53.224866+00:00", // Last key rotation timestamp, if s > 0
+    kt: 1, // Keys signing threshold (only show if kt > 1)
+    k: [
+      // List of signing keys - array
+      "DCF6b0c5aVm_26_sCTgLB4An6oUxEM5pVDDLqxxXDxH-",
+    ],
+    nt: 1, // Next keys signing threshold
+    n: [
+      // Next keys digests - array
+      "EIZ-n_hHHY5ERGTzvpXYBkB6_yBAM4RXcjQG3-JykFvF",
+    ],
+    bt: 1, // Backer threshold and backer keys below
+    b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"], // List of backers
+    di: "", // Delegated identifier prefix, don't show if ""
   },
 ];
 
-export { didsFix };
+// @TODO - foconnor: When UI in place for KERI, need KERIDetails here too.
+const identityFix = [...didFix, ...keriFix];
+
+export { didFix, keriFix, identityFix };
