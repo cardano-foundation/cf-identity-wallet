@@ -26,6 +26,16 @@ interface IdentityShortDetails {
   colors: [string, string];
 }
 
+interface CredentialShortDetails {
+  displayName: string;
+  id: string;
+  createdAtUTC: string;
+  colors: [string, string];
+  issuanceDate: string;
+  issuerLogo: string;
+  credentialType : string;
+}
+
 interface DIDDetails extends IdentityShortDetails {
   controller: string;
   keyType: string;
@@ -69,4 +79,5 @@ export type {
   KERIDetails,
   GetIdentityResult,
   UpdateIdentityMetadata,
+  CredentialShortDetails,
 };

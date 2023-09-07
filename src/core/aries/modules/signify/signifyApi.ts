@@ -55,8 +55,7 @@ export class SignifyApi {
     const signifyName = utils.uuid();
     const op = await this.signifyClient
       .identifiers()
-      .create(signifyName, SignifyApi.BACKER_CONFIG)
-      .op();
+      .create(signifyName, SignifyApi.BACKER_CONFIG);
     if (
       !(await this.waitUntilOpDone(op, this.opTimeout, this.opRetryInterval))
     ) {

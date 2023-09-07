@@ -40,6 +40,7 @@ import {
   UpdateIdentityMetadata,
 } from "./ariesAgent.types";
 import type {
+  CredentialShortDetails,
   CryptoAccountRecordShortDetails,
   DIDDetails,
   IdentityShortDetails,
@@ -53,6 +54,9 @@ import {
   IdentityMetadataRecord,
   IdentityMetadataRecordProps,
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
+import {
+  CredentialMetadataRecord,
+} from "./modules/generalStorage/repositories/credentialMetadataRecord";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -85,7 +89,9 @@ class AriesAgent {
     "DID metadata missing for stored DID";
   static readonly UNEXPECTED_MISSING_DID_RESULT_ON_CREATE =
     "DID was successfully created but the DID was not returned in the state returned";
-  static readonly DID_NOT_ARCHIVED = "DID was not archived";
+  static readonly RECORD_NOT_ARCHIVED = "Record was not archived";
+  static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
+    "Credential metadata missing for stored credential";
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
@@ -379,7 +385,7 @@ class AriesAgent {
     return result.didState.did;
   }
 
-  async getMetadataById(id: string): Promise<IdentityMetadataRecord> {
+  async getIdentityMetadataById(id: string): Promise<IdentityMetadataRecord> {
     const metadata =
       await this.agent.modules.generalStorage.getIdentityMetadata(id);
     if (!metadata) {
@@ -437,7 +443,7 @@ class AriesAgent {
         };
       }
     } else {
-      const metadata = await this.getMetadataById(identifier);
+      const metadata = await this.getIdentityMetadataById(identifier);
       const aid = await this.agent.modules.signify.getIdentifierByName(
         metadata.signifyName as string
       );
@@ -489,7 +495,7 @@ class AriesAgent {
     if (!signingKey.publicKeyBase58) {
       throw new Error(`${AriesAgent.UNEXPECTED_DID_DOC_FORMAT} ${record.did}`);
     }
-    const metadata = await this.getMetadataById(record.did);
+    const metadata = await this.getIdentityMetadataById(record.did);
 
     return {
       id: record.did,
@@ -503,9 +509,11 @@ class AriesAgent {
     };
   }
 
-  validArchivedIdentity(metadata: IdentityMetadataRecord): void {
+  validArchivedRecord(
+    metadata: IdentityMetadataRecord | CredentialMetadataRecord
+  ): void {
     if (!metadata.isArchived) {
-      throw new Error(`${AriesAgent.DID_NOT_ARCHIVED} ${metadata.id}`);
+      throw new Error(`${AriesAgent.RECORD_NOT_ARCHIVED} ${metadata.id}`);
     }
   }
 
@@ -520,8 +528,8 @@ class AriesAgent {
   }
 
   async deleteIdentity(identifier: string): Promise<void> {
-    const metadata = await this.getMetadataById(identifier);
-    this.validArchivedIdentity(metadata);
+    const metadata = await this.getIdentityMetadataById(identifier);
+    this.validArchivedRecord(metadata);
     await this.agent.modules.generalStorage.deleteIdentityMetadata(identifier);
   }
 
@@ -532,12 +540,63 @@ class AriesAgent {
   }
 
   async restoreIdentity(identifier: string): Promise<void> {
-    const metadata = await this.getMetadataById(identifier);
-    this.validArchivedIdentity(metadata);
+    const metadata = await this.getIdentityMetadataById(identifier);
+    this.validArchivedRecord(metadata);
     return this.agent.modules.generalStorage.updateIdentityMetadata(
       identifier,
       { isArchived: false }
     );
+  }
+
+  // Credentials functions
+  async getCredentials(
+    isGetArchive = false
+  ): Promise<CredentialShortDetails[]> {
+    const listMetadatas =
+      await this.agent.modules.generalStorage.getAllCredentialMetadata(
+        isGetArchive
+      );
+    return listMetadatas.map((element: CredentialMetadataRecord) => ({
+      nameOnCredential: element.nameOnCredential,
+      id: element.id,
+      createdAtUTC: element.createdAt.toISOString(),
+      colors: element.colors,
+      issuanceDate: element.issuanceDate,
+      issuerLogo: element.issuerLogo,
+      credentialType : element.credentialType
+    }));
+  }
+
+  async getCredentialMetadataById(
+    id: string
+  ): Promise<CredentialMetadataRecord> {
+    const metadata =
+      await this.agent.modules.generalStorage.getCredentialMetadata(id);
+    if (!metadata) {
+      throw new Error(
+        `${AriesAgent.CREDENTIAL_MISSING_METADATA_ERROR_MSG} ${id}`
+      );
+    }
+    return metadata;
+  }
+
+  async deleteCredential(id: string): Promise<void> {
+    const metadata = await this.getCredentialMetadataById(id);
+    this.validArchivedRecord(metadata);
+    await this.agent.credentials.deleteById(id);
+    await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
+  }
+
+  async archiveCredential(id: string): Promise<void> {
+    await this.agent.modules.generalStorage.archiveCredentialMetadata(id);
+  }
+
+  async restoreCredential(id: string): Promise<void> {
+    const metadata = await this.getIdentityMetadataById(id);
+    this.validArchivedRecord(metadata);
+    await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
+      isArchived: false,
+    });
   }
 }
 
