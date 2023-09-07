@@ -9,7 +9,7 @@ export interface CredentialMetadataRecordProps {
   isArchived?: boolean;
   issuanceDate: string;
   issuerLogo: string;
-  credentialType : string;
+  credentialType: string;
 }
 
 class CredentialMetadataRecord
@@ -21,7 +21,7 @@ class CredentialMetadataRecord
   isArchived?: boolean;
   issuanceDate!: string;
   issuerLogo!: string;
-  credentialType! : string;
+  credentialType!: string;
 
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;

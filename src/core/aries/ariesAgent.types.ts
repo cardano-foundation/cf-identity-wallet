@@ -33,7 +33,7 @@ interface CredentialShortDetails {
   colors: [string, string];
   issuanceDate: string;
   issuerLogo: string;
-  credentialType : string;
+  credentialType: string;
 }
 
 interface DIDDetails extends IdentityShortDetails {

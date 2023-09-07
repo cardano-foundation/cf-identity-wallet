@@ -10,7 +10,7 @@ const mockData: CredentialMetadataRecordProps = {
   isArchived: true,
   issuanceDate: "2010-01-01T19:23:24Z",
   issuerLogo: "https://placehold.co/120x22",
-  credentialType : "test"
+  credentialType: "test",
 };
 
 describe("Credential metadata record", () => {
@@ -42,7 +42,7 @@ describe("Credential metadata record", () => {
       isArchived: mockData.isArchived,
       issuanceDate: "2010-01-01T19:23:24Z",
       issuerLogo: "https://placehold.co/120x22",
-      credentialType : "test"
+      credentialType: "test",
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
       createdAt.getTime()
@@ -58,7 +58,7 @@ describe("Credential metadata record", () => {
       createdAt: createdAt,
       issuanceDate: "2010-01-01T19:23:24Z",
       issuerLogo: "https://placehold.co/120x22",
-      credentialType : "test"
+      credentialType: "test",
     });
     expect(settingsRecord.isArchived).toBe(false);
   });
