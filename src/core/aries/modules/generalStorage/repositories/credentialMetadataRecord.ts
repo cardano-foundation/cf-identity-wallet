@@ -1,5 +1,4 @@
 import { BaseRecord } from "@aries-framework/core";
-import { IdentityType } from "../../../ariesAgent.types";
 
 export interface CredentialMetadataRecordProps {
   id: string;
@@ -14,7 +13,6 @@ export interface CredentialMetadataRecordProps {
 
 class CredentialMetadataRecord
   extends BaseRecord
-  implements CredentialMetadataRecordProps
 {
   nameOnCredential!: string;
   colors!: [string, string];

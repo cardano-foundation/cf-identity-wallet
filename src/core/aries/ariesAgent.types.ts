@@ -27,9 +27,8 @@ interface IdentityShortDetails {
 }
 
 interface CredentialShortDetails {
-  displayName: string;
   id: string;
-  createdAtUTC: string;
+  nameOnCredential: string;
   colors: [string, string];
   issuanceDate: string;
   issuerLogo: string;

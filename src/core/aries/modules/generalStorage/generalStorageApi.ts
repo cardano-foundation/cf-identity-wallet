@@ -154,10 +154,6 @@ export class GeneralStorageApi {
     return this.credentialMetadataRepository.findById(this.agentContext, id);
   }
 
-  async archiveCredentialMetadata(id: string): Promise<void> {
-    return this.updateCredentialMetadata(id, { isArchived: true });
-  }
-
   async deleteCredentialMetadata(id: string): Promise<void> {
     return this.credentialMetadataRepository.deleteById(this.agentContext, id);
   }

@@ -507,7 +507,7 @@ class AriesAgent {
     };
   }
 
-  validArchivedRecord(
+  private validArchivedRecord(
     metadata: IdentityMetadataRecord | CredentialMetadataRecord
   ): void {
     if (!metadata.isArchived) {
@@ -557,7 +557,6 @@ class AriesAgent {
     return listMetadatas.map((element: CredentialMetadataRecord) => ({
       nameOnCredential: element.nameOnCredential,
       id: element.id,
-      createdAtUTC: element.createdAt.toISOString(),
       colors: element.colors,
       issuanceDate: element.issuanceDate,
       issuerLogo: element.issuerLogo,
@@ -565,7 +564,7 @@ class AriesAgent {
     }));
   }
 
-  async getCredentialMetadataById(
+  private async getCredentialMetadataById(
     id: string
   ): Promise<CredentialMetadataRecord> {
     const metadata =
@@ -586,7 +585,9 @@ class AriesAgent {
   }
 
   async archiveCredential(id: string): Promise<void> {
-    await this.agent.modules.generalStorage.archiveCredentialMetadata(id);
+    await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
+      isArchived: true,
+    });
   }
 
   async restoreCredential(id: string): Promise<void> {
