@@ -53,7 +53,7 @@
     "react-qrcode-logo": "^2.9.0",
     "react-redux": "^8.0.5",
     "react-router-dom": "^5.3.4",
-    "signify-ts": "github:WebOfTrust/signify-ts#bf4570365a58f382aea80304367aa5675635b227",
+    "signify-ts": "github:WebOfTrust/signify-ts#002bb6410d944a190cc247893c1396792438743f",
     "swiper": "^9.2.0",
     "web-vitals": "^2.1.4"
   },

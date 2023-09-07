@@ -247,7 +247,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
       values: [id, sObject.category, sObject.name, sObject.value],
     });
     transactionStatements.push(...this.getTagsInsertSql(id, sObject.tags));
-    await session.executeTransaction(transactionStatements);
+    await session.executeSet(transactionStatements);
   }
 
   async updateItem(
@@ -266,7 +266,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
       values: [id],
     });
     transactionStatements.push(...this.getTagsInsertSql(id, sObject.tags));
-    await session.executeTransaction(transactionStatements);
+    await session.executeSet(transactionStatements);
   }
 
   async deleteItem(session: SQLiteDBConnection, id: string): Promise<void> {
@@ -280,7 +280,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
         values: [id],
       },
     ];
-    await session.executeTransaction(transactionStatements);
+    await session.executeSet(transactionStatements);
   }
 
   private getTagsInsertSql(itemId: string, tags: Record<string, unknown>) {
