@@ -3,19 +3,20 @@ import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
-import { keriFix } from "../../__fixtures__/identityFix";
+import { keriFix, identityFix } from "../../__fixtures__/identityFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { filteredKeriFix } from "../../__fixtures__/filteredIdentityFix";
 import { DidCardDetails } from "../../pages/DidCardDetails";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { formatShortDate, formatTimeToSec } from "../../../utils";
 
-const path = TabsRoutePath.DIDS + "/" + filteredKeriFix[0].id;
+const path = TabsRoutePath.DIDS + "/" + identityFix[1].id;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: filteredKeriFix[0].id,
+    id: identityFix[1].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
@@ -25,7 +26,7 @@ jest.mock("../../../core/aries/ariesAgent", () => ({
     agent: {
       getIdentity: jest
         .fn()
-        .mockResolvedValue({ type: "keri", result: filteredKeriFix[0] }),
+        .mockResolvedValue({ type: "keri", result: identityFix[1] }),
     },
   },
 }));
@@ -58,6 +59,11 @@ const storeMocked = {
   dispatch: dispatchMock,
 };
 
+const storeMocked2 = {
+  ...mockStore({ ...initialState }),
+  dispatch: jest.fn(),
+};
+
 describe("Cards Details page", () => {
   test("It renders Keri Card Details", async () => {
     const { getByText, getByTestId, getAllByTestId } = render(
@@ -74,6 +80,7 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(getByText(filteredKeriFix[0].id)).toBeInTheDocument()
     );
+    expect(getByText(filteredKeriFix[0].displayName)).toBeInTheDocument();
     expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
       "false"
     );
@@ -84,5 +91,81 @@ describe("Cards Details page", () => {
       "false"
     );
     expect(AriesAgent.agent.getIdentity).toBeCalledWith(filteredKeriFix[0].id);
+  });
+
+  test("It copies delegator identifier, signing key, next key digest, backer address to clipboard", async () => {
+    Clipboard.write = jest.fn();
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={DidCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() =>
+      expect(getByTestId("delegator-copy-button")).toBeInTheDocument()
+    );
+
+    fireEvent.click(getByTestId("delegator-copy-button"));
+
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: keriFix[0].di,
+      });
+    });
+
+    fireEvent.click(getByTestId("signing-keys-list-copy-button-0"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: keriFix[0].k[0],
+      });
+    });
+
+    fireEvent.click(getByTestId("next-keys-list-copy-button-0"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: keriFix[0].n[0],
+      });
+    });
+  });
+
+  test("It shows: Keys Signing Threshold - Next Keys Signing Threshold - Creation Timestamp - Last Key Rotation Timestamp - Sequence Number", async () => {
+    const { getByText } = render(
+      <Provider store={storeMocked2}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={DidCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => expect(getByText(keriFix[0].id)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(keriFix[0].kt)).toBeInTheDocument());
+    await waitFor(() => expect(getByText(keriFix[0].nt)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        getByText(
+          formatShortDate(keriFix[0].createdAtUTC) +
+            " - " +
+            formatTimeToSec(keriFix[0].createdAtUTC)
+        )
+      ).toBeInTheDocument()
+    );
+    await waitFor(() =>
+      expect(
+        getByText(
+          formatShortDate(keriFix[0].dt) +
+            " - " +
+            formatTimeToSec(keriFix[0].dt)
+        )
+      ).toBeInTheDocument()
+    );
+    await waitFor(() => expect(getByText(keriFix[0].s)).toBeInTheDocument());
   });
 });

@@ -64,7 +64,7 @@ const storeMocked2 = {
 };
 
 describe("Cards Details page", () => {
-  test("It renders Did Card Details", async () => {
+  test("It renders Did:Key Card Details", async () => {
     const { getByText, getByTestId, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>

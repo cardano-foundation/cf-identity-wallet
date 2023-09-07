@@ -305,7 +305,10 @@ const IdentityCardInfoKeri = ({
               />
             </span>
 
-            <span className="card-details-info-block-data">
+            <span
+              className="card-details-info-block-data"
+              data-testid="backer-address"
+            >
               {SignifyApi.BACKER_ADDRESS}
             </span>
             <span>
