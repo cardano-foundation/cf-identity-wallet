@@ -13,7 +13,7 @@ import {
 } from "./repositories/identityMetadataRecord";
 import { IdentityType } from "../../ariesAgent.types";
 import { CredentialMetadataRepository } from "./repositories/credentialMetadataRepository";
-import { CredentialMetadataRecord } from "./repositories/credentialMetadataRecord";
+import { CredentialMetadataRecord } from "./repositories/credentialMetadataRecord.types";
 
 /**
  * This can be used to store any records in the agent that aren't explicitly created

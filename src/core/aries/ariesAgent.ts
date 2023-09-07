@@ -54,7 +54,7 @@ import {
   IdentityMetadataRecord,
   IdentityMetadataRecordProps,
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
-import { CredentialMetadataRecord } from "./modules/generalStorage/repositories/credentialMetadataRecord";
+import { CredentialMetadataRecord } from "./modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 const config: InitConfig = {
   label: "idw-agent",

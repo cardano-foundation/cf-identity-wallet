@@ -6,7 +6,7 @@ import {
   EventEmitter,
 } from "@aries-framework/core";
 import type { StorageService } from "@aries-framework/core";
-import { CredentialMetadataRecord } from "./credentialMetadataRecord";
+import { CredentialMetadataRecord } from "./credentialMetadataRecord.types";
 
 @injectable()
 class CredentialMetadataRepository extends Repository<CredentialMetadataRecord> {
