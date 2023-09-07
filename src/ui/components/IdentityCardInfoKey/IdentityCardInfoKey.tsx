@@ -9,9 +9,12 @@ import {
 import { i18n } from "../../../i18n";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { formatShortDate } from "../../../utils";
-import { DidCardInfoKeyProps } from "./DidCardInfoKey.types";
+import { IdentityCardInfoKeyProps } from "./IdentityCardInfoKey.types";
 
-const DidCardInfoKey = ({ cardData, setShowToast }: DidCardInfoKeyProps) => {
+const IdentityCardInfoKey = ({
+  cardData,
+  setShowToast,
+}: IdentityCardInfoKeyProps) => {
   return (
     <>
       <div className="card-details-info-block">
@@ -177,4 +180,4 @@ const DidCardInfoKey = ({ cardData, setShowToast }: DidCardInfoKeyProps) => {
   );
 };
 
-export { DidCardInfoKey };
+export { IdentityCardInfoKey };

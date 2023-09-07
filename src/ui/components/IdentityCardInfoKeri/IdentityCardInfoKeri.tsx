@@ -9,10 +9,13 @@ import {
 import { i18n } from "../../../i18n";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { formatShortDate } from "../../../utils";
-import { DidCardInfoKeriProps } from "./DidCardInfoKeri.types";
+import { IdentityCardInfoKeriProps } from "./IdentityCardInfoKeri.types";
 import { SignifyApi } from "../../../core/aries/modules/signify/signifyApi";
 
-const DidCardInfoKeri = ({ cardData, setShowToast }: DidCardInfoKeriProps) => {
+const IdentityCardInfoKeri = ({
+  cardData,
+  setShowToast,
+}: IdentityCardInfoKeriProps) => {
   return (
     <>
       {cardData.di !== "" && (
@@ -361,4 +364,4 @@ const DidCardInfoKeri = ({ cardData, setShowToast }: DidCardInfoKeriProps) => {
   );
 };
 
-export { DidCardInfoKeri };
+export { IdentityCardInfoKeri };

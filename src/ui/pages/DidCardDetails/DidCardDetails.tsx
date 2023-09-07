@@ -35,8 +35,8 @@ import {
   KERIDetails,
 } from "../../../core/aries/ariesAgent.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { DidCardInfoKey } from "../../components/DidCardInfoKey";
-import { DidCardInfoKeri } from "../../components/DidCardInfoKeri";
+import { IdentityCardInfoKey } from "../../components/IdentityCardInfoKey";
+import { IdentityCardInfoKeri } from "../../components/IdentityCardInfoKeri";
 
 const DidCardDetails = () => {
   const history = useHistory();
@@ -157,12 +157,12 @@ const DidCardDetails = () => {
             />
             <div className="card-details-content">
               {cardData.method === IdentityType.KEY ? (
-                <DidCardInfoKey
+                <IdentityCardInfoKey
                   cardData={cardData as DIDDetails}
                   setShowToast={setShowToast}
                 />
               ) : (
-                <DidCardInfoKeri
+                <IdentityCardInfoKeri
                   cardData={cardData as KERIDetails}
                   setShowToast={setShowToast}
                 />

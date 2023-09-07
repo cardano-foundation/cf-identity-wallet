@@ -1,8 +1,8 @@
 import { KERIDetails } from "../../../core/aries/ariesAgent.types";
 
-interface DidCardInfoKeriProps {
+interface IdentityCardInfoKeriProps {
   cardData: KERIDetails;
   setShowToast: (value: boolean) => void;
 }
 
-export type { DidCardInfoKeriProps };
+export type { IdentityCardInfoKeriProps };
