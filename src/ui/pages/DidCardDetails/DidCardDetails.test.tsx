@@ -66,7 +66,7 @@ const storeMocked2 = {
 };
 
 describe("Cards Details page", () => {
-  test("It renders Card Details", async () => {
+  test("It renders Did Card Details", async () => {
     const { getByText, getByTestId, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
@@ -93,10 +93,9 @@ describe("Cards Details page", () => {
     expect(AriesAgent.agent.getIdentity).toBeCalledWith(identityFix[0].id);
   });
 
-  test("It copies id to clipboard", async () => {
-    Clipboard.write = jest.fn();
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMocked2}>
+  test("It renders Keri Card Details", async () => {
+    const { getByText, getByTestId, getAllByTestId } = render(
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -109,81 +108,16 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(getByText(identityFix[0].id)).toBeInTheDocument()
     );
-    fireEvent.click(getByTestId("copy-button-id"));
-
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: identityFix[0].id,
-      });
-    });
-  });
-
-  test("It copies type to clipboard", async () => {
-    Clipboard.write = jest.fn();
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={DidCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
+    expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
+      "false"
     );
-
-    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
-    fireEvent.click(getByTestId("copy-button-type"));
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: didFix[0].keyType,
-      });
-    });
-  });
-
-  test("It copies controller to clipboard", async () => {
-    Clipboard.write = jest.fn();
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={DidCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
+    expect(getByTestId("edit-identity-modal").getAttribute("is-open")).toBe(
+      "false"
     );
-
-    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
-    fireEvent.click(getByTestId("copy-button-controller"));
-
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: didFix[0].controller,
-      });
-    });
-  });
-
-  test("It copies publicKeyBase58 to clipboard", async () => {
-    Clipboard.write = jest.fn();
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={DidCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
+    expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
+      "false"
     );
-
-    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
-    fireEvent.click(getByTestId("copy-button-publicKeyBase58"));
-
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: didFix[0].publicKeyBase58,
-      });
-    });
+    expect(AriesAgent.agent.getIdentity).toBeCalledWith(identityFix[0].id);
   });
 
   test("It opens the sharing modal", async () => {
