@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { waitForIonicReact } from "@ionic/react-test-utils";
-import { identityFix } from "../../__fixtures__/identityFix";
+import { didFix, identityFix } from "../../__fixtures__/identityFix";
 import { DidCardDetails } from "./DidCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
@@ -93,104 +93,98 @@ describe("Cards Details page", () => {
     expect(AriesAgent.agent.getIdentity).toBeCalledWith(identityFix[0].id);
   });
 
-  // test("It copies id to clipboard", async () => {
-  //   Clipboard.write = jest.fn();
-  //   const { getByText, getByTestId } = render(
-  //     <Provider store={storeMocked2}>
-  //       <MemoryRouter initialEntries={[path]}>
-  //         <Route
-  //           path={path}
-  //           component={DidCardDetails}
-  //         />
-  //       </MemoryRouter>
-  //     </Provider>
-  //   );
+  test("It copies id to clipboard", async () => {
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked2}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={DidCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
 
-  //   await waitFor(() =>
-  //     expect(getByText(identityFix[0].id)).toBeInTheDocument()
-  //   );
-  //   fireEvent.click(getByTestId("copy-button-id"));
+    await waitFor(() =>
+      expect(getByText(identityFix[0].id)).toBeInTheDocument()
+    );
+    fireEvent.click(getByTestId("copy-button-id"));
 
-  //   await waitFor(() => {
-  //     expect(Clipboard.write).toHaveBeenCalledWith({
-  //       string: identityFix[0].id,
-  //     });
-  //   });
-  // });
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: identityFix[0].id,
+      });
+    });
+  });
 
-  // test("It copies type to clipboard", async () => {
-  //   Clipboard.write = jest.fn();
-  //   const { getByText, getByTestId } = render(
-  //     <Provider store={storeMocked}>
-  //       <MemoryRouter initialEntries={[path]}>
-  //         <Route
-  //           path={path}
-  //           component={DidCardDetails}
-  //         />
-  //       </MemoryRouter>
-  //     </Provider>
-  //   );
+  test("It copies type to clipboard", async () => {
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={DidCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
 
-  //   await waitFor(() =>
-  //     expect(getByText(identityFix[0].id)).toBeInTheDocument()
-  //   );
-  //   fireEvent.click(getByTestId("copy-button-type"));
-  //   await waitFor(() => {
-  //     expect(Clipboard.write).toHaveBeenCalledWith({
-  //       string: identityFix[0].keyType,
-  //     });
-  //   });
-  // });
+    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
+    fireEvent.click(getByTestId("copy-button-type"));
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: didFix[0].keyType,
+      });
+    });
+  });
 
-  // test("It copies controller to clipboard", async () => {
-  //   Clipboard.write = jest.fn();
-  //   const { getByText, getByTestId } = render(
-  //     <Provider store={storeMocked}>
-  //       <MemoryRouter initialEntries={[path]}>
-  //         <Route
-  //           path={path}
-  //           component={DidCardDetails}
-  //         />
-  //       </MemoryRouter>
-  //     </Provider>
-  //   );
+  test("It copies controller to clipboard", async () => {
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={DidCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
 
-  //   await waitFor(() =>
-  //     expect(getByText(identityFix[0].id)).toBeInTheDocument()
-  //   );
-  //   fireEvent.click(getByTestId("copy-button-controller"));
+    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
+    fireEvent.click(getByTestId("copy-button-controller"));
 
-  //   await waitFor(() => {
-  //     expect(Clipboard.write).toHaveBeenCalledWith({
-  //       string: identityFix[0].controller,
-  //     });
-  //   });
-  // });
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: didFix[0].controller,
+      });
+    });
+  });
 
-  // test("It copies publicKeyBase58 to clipboard", async () => {
-  //   Clipboard.write = jest.fn();
-  //   const { getByText, getByTestId } = render(
-  //     <Provider store={storeMocked}>
-  //       <MemoryRouter initialEntries={[path]}>
-  //         <Route
-  //           path={path}
-  //           component={DidCardDetails}
-  //         />
-  //       </MemoryRouter>
-  //     </Provider>
-  //   );
+  test("It copies publicKeyBase58 to clipboard", async () => {
+    Clipboard.write = jest.fn();
+    const { getByText, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={DidCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
 
-  //   await waitFor(() =>
-  //     expect(getByText(identityFix[0].id)).toBeInTheDocument()
-  //   );
-  //   fireEvent.click(getByTestId("copy-button-publicKeyBase58"));
+    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
+    fireEvent.click(getByTestId("copy-button-publicKeyBase58"));
 
-  //   await waitFor(() => {
-  //     expect(Clipboard.write).toHaveBeenCalledWith({
-  //       string: identityFix[0].publicKeyBase58,
-  //     });
-  //   });
-  // });
+    await waitFor(() => {
+      expect(Clipboard.write).toHaveBeenCalledWith({
+        string: didFix[0].publicKeyBase58,
+      });
+    });
+  });
 
   test("It opens the sharing modal", async () => {
     const { getByTestId } = render(
