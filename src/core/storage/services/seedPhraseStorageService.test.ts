@@ -66,7 +66,7 @@ Addresses.entropyToBip32NoPasscode = jest
 Addresses.hexToBech32Bip32Private = jest
   .fn()
   .mockReturnValue(rootExtendedPrivateKey);
-Addresses.bip39PrivateToPublic = jest
+Addresses.bip32PrivateToPublic = jest
   .fn()
   .mockReturnValue(rootExtendedPublicKey);
 

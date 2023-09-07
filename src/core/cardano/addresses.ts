@@ -35,7 +35,7 @@ class Addresses {
     return Bip32PrivateKey.from_bytes(Buffer.from(HexXPrv, "hex")).to_bech32();
   }
 
-  static bip39PrivateToPublic(Bech32XPrv: string): string {
+  static bip32PrivateToPublic(Bech32XPrv: string): string {
     return Bip32PrivateKey.from_bech32(Bech32XPrv).to_public().to_bech32();
   }
 
