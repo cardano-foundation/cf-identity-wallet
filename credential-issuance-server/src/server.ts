@@ -117,7 +117,7 @@ httpInboundTransport.app.get("/credential", async (req, res) => {
           '@context': [CREDENTIALS_CONTEXT_V1_URL, 'https://www.w3.org/2018/credentials/examples/v1'],
           type: ['VerifiableCredential', 'UniversityDegreeCredential'],
           issuer: did.didState.did as string,
-          issuanceDate: '2017-10-22T12:23:48Z',
+          issuanceDate: '2022-10-22T12:23:48Z',
           credentialSubject: {
             degree: {
               type: 'BachelorDegree',

@@ -59,6 +59,8 @@ import {
   IdentityMetadataRecord,
   IdentityMetadataRecordProps,
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
+import {getNativeDocumentLoader} from "@aries-framework/core/build/modules/vc/libraries/nativeDocumentLoader.native";
+import {documentLoader} from "./documentLoader";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -125,7 +127,9 @@ class AriesAgent {
           ],
           autoAcceptCredentials: AutoAcceptCredential.Always,
         }),
-        w3cCredentials: new W3cCredentialsModule({}),
+        w3cCredentials: new W3cCredentialsModule({
+          documentLoader: documentLoader,
+        }),
       },
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
