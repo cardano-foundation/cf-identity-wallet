@@ -8,6 +8,7 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { filteredDidFix } from "../../__fixtures__/filteredIdentityFix";
 import { DidCardDetails } from "../../pages/DidCardDetails";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
 
 const path = TabsRoutePath.DIDS + "/" + identityFix[0].id;
 
@@ -63,6 +64,32 @@ const storeMocked2 = {
 };
 
 describe("Cards Details page", () => {
+  test("It renders Did Card Details", async () => {
+    const { getByText, getByTestId, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={DidCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() =>
+      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+    );
+    expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
+      "false"
+    );
+    expect(getByTestId("edit-identity-modal").getAttribute("is-open")).toBe(
+      "false"
+    );
+    expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
+      "false"
+    );
+    expect(AriesAgent.agent.getIdentity).toBeCalledWith(filteredDidFix[0].id);
+  });
   test("It copies id to clipboard", async () => {
     Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(

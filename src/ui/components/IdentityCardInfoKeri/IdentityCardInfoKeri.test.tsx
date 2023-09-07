@@ -3,18 +3,19 @@ import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
-import { keriFix, identityFix } from "../../__fixtures__/identityFix";
+import { keriFix } from "../../__fixtures__/identityFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { filteredKeriFix } from "../../__fixtures__/filteredIdentityFix";
 import { DidCardDetails } from "../../pages/DidCardDetails";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
 
-const path = TabsRoutePath.DIDS + "/" + identityFix[0].id;
+const path = TabsRoutePath.DIDS + "/" + filteredKeriFix[0].id;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: identityFix[0].id,
+    id: filteredKeriFix[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
@@ -24,7 +25,7 @@ jest.mock("../../../core/aries/ariesAgent", () => ({
     agent: {
       getIdentity: jest
         .fn()
-        .mockResolvedValue({ type: "key", result: identityFix[0] }),
+        .mockResolvedValue({ type: "keri", result: filteredKeriFix[0] }),
     },
   },
 }));
@@ -57,16 +58,10 @@ const storeMocked = {
   dispatch: dispatchMock,
 };
 
-const storeMocked2 = {
-  ...mockStore({ ...initialState }),
-  dispatch: jest.fn(),
-};
-
 describe("Cards Details page", () => {
-  test("It copies id to clipboard", async () => {
-    Clipboard.write = jest.fn();
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMocked2}>
+  test("It renders Keri Card Details", async () => {
+    const { getByText, getByTestId, getAllByTestId } = render(
+      <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -77,82 +72,17 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(identityFix[0].id)).toBeInTheDocument()
+      expect(getByText(filteredKeriFix[0].id)).toBeInTheDocument()
     );
-    fireEvent.click(getByTestId("copy-button-id"));
-
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: identityFix[0].id,
-      });
-    });
+    expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
+      "false"
+    );
+    expect(getByTestId("edit-identity-modal").getAttribute("is-open")).toBe(
+      "false"
+    );
+    expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
+      "false"
+    );
+    expect(AriesAgent.agent.getIdentity).toBeCalledWith(filteredKeriFix[0].id);
   });
-
-  // test("It copies type to clipboard", async () => {
-  //   Clipboard.write = jest.fn();
-  //   const { getByText, getByTestId } = render(
-  //     <Provider store={storeMocked}>
-  //       <MemoryRouter initialEntries={[path]}>
-  //         <Route
-  //           path={path}
-  //           component={DidCardDetails}
-  //         />
-  //       </MemoryRouter>
-  //     </Provider>
-  //   );
-
-  //   await waitFor(() => expect(getByText(keriFix[0].id)).toBeInTheDocument());
-  //   fireEvent.click(getByTestId("copy-button-type"));
-  //   await waitFor(() => {
-  //     expect(Clipboard.write).toHaveBeenCalledWith({
-  //       string: keriFix[0].keyType,
-  //     });
-  //   });
-  // });
-
-  // test("It copies controller to clipboard", async () => {
-  //   Clipboard.write = jest.fn();
-  //   const { getByText, getByTestId } = render(
-  //     <Provider store={storeMocked}>
-  //       <MemoryRouter initialEntries={[path]}>
-  //         <Route
-  //           path={path}
-  //           component={DidCardDetails}
-  //         />
-  //       </MemoryRouter>
-  //     </Provider>
-  //   );
-
-  //   await waitFor(() => expect(getByText(keriFix[0].id)).toBeInTheDocument());
-  //   fireEvent.click(getByTestId("copy-button-controller"));
-
-  //   await waitFor(() => {
-  //     expect(Clipboard.write).toHaveBeenCalledWith({
-  //       string: keriFix[0].controller,
-  //     });
-  //   });
-  // });
-
-  // test("It copies publicKeyBase58 to clipboard", async () => {
-  //   Clipboard.write = jest.fn();
-  //   const { getByText, getByTestId } = render(
-  //     <Provider store={storeMocked}>
-  //       <MemoryRouter initialEntries={[path]}>
-  //         <Route
-  //           path={path}
-  //           component={DidCardDetails}
-  //         />
-  //       </MemoryRouter>
-  //     </Provider>
-  //   );
-
-  //   await waitFor(() => expect(getByText(keriFix[0].id)).toBeInTheDocument());
-  //   fireEvent.click(getByTestId("copy-button-publicKeyBase58"));
-
-  //   await waitFor(() => {
-  //     expect(Clipboard.write).toHaveBeenCalledWith({
-  //       string: keriFix[0].publicKeyBase58,
-  //     });
-  //   });
-  // });
 });

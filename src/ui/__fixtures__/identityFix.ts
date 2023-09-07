@@ -15,26 +15,6 @@ const didFix: DIDDetails[] = [
     controller: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
     publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
   },
-  {
-    id: "did:key:z6MkpNyGdYK5Ey1pCf5cyQoZxVeeGifA1ZQv1S9gbLD1857n",
-    method: IdentityType.KEY,
-    displayName: "Public ID",
-    createdAtUTC: "2023-01-01T19:23:24Z",
-    colors: ["#FFBC60", "#FFA21F"],
-    keyType: "Ed25519",
-    controller: "did:key:z6MkpNyGdYK5Ey1pCf5cyQoZxVeeGifA1ZQv1S9gbLD1857n",
-    publicKeyBase58: "AviE3J4dnDBYoGNXZDGUjiSSh96uRXM6AEvHSUJqVLdY",
-  },
-  {
-    id: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQv",
-    method: IdentityType.KEY,
-    displayName: "Offline ID",
-    createdAtUTC: "2023-01-01T19:23:24Z",
-    colors: ["#D9EDDF", "#ACD8B9"],
-    keyType: "Ed25519",
-    controller: "did:key:z6MkpNycy1S9gpCf5857nQoZxVbLD1GdYK5Ey1eeGifA1ZQv",
-    publicKeyBase58: "AviE3J4duRYoGNXZDGUjiSShXM6AEvHSUJqVnDB96LdY",
-  },
 ];
 
 const keriFix: KERIDetails[] = [

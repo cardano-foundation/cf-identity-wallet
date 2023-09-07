@@ -10,7 +10,10 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
-import { filteredDidFix } from "../../__fixtures__/filteredIdentityFix";
+import {
+  filteredDidFix,
+  filteredKeriFix,
+} from "../../__fixtures__/filteredIdentityFix";
 
 const path = TabsRoutePath.DIDS + "/" + identityFix[0].id;
 
@@ -34,7 +37,7 @@ jest.mock("../../../core/aries/ariesAgent", () => ({
 
 const mockStore = configureStore();
 const dispatchMock = jest.fn();
-const initialState = {
+const initialStateDidKey = {
   stateCache: {
     routes: [TabsRoutePath.DIDS],
     authentication: {
@@ -54,75 +57,41 @@ const initialState = {
     identities: filteredDidFix,
   },
 };
+const initialStateKeri = {
+  stateCache: {
+    routes: [TabsRoutePath.DIDS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+      passwordIsSet: true,
+    },
+  },
+  seedPhraseCache: {
+    seedPhrase160:
+      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+    seedPhrase256: "",
+    selected: FIFTEEN_WORDS_BIT_LENGTH,
+  },
+  identitiesCache: {
+    identities: filteredKeriFix,
+  },
+};
 
-const storeMocked = {
-  ...mockStore(initialState),
+const storeMockedDidKey = {
+  ...mockStore(initialStateDidKey),
   dispatch: dispatchMock,
 };
 
-const storeMocked2 = {
-  ...mockStore({ ...initialState }),
-  dispatch: jest.fn(),
+const storeMockedKeri = {
+  ...mockStore(initialStateKeri),
+  dispatch: dispatchMock,
 };
 
 describe("Cards Details page", () => {
-  test("It renders Did Card Details", async () => {
-    const { getByText, getByTestId, getAllByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={DidCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    await waitFor(() =>
-      expect(getByText(identityFix[0].id)).toBeInTheDocument()
-    );
-    expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
-      "false"
-    );
-    expect(getByTestId("edit-identity-modal").getAttribute("is-open")).toBe(
-      "false"
-    );
-    expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
-      "false"
-    );
-    expect(AriesAgent.agent.getIdentity).toBeCalledWith(identityFix[0].id);
-  });
-
-  test("It renders Keri Card Details", async () => {
-    const { getByText, getByTestId, getAllByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={DidCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    await waitFor(() =>
-      expect(getByText(identityFix[0].id)).toBeInTheDocument()
-    );
-    expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
-      "false"
-    );
-    expect(getByTestId("edit-identity-modal").getAttribute("is-open")).toBe(
-      "false"
-    );
-    expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
-      "false"
-    );
-    expect(AriesAgent.agent.getIdentity).toBeCalledWith(identityFix[0].id);
-  });
-
   test("It opens the sharing modal", async () => {
     const { getByTestId } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMockedDidKey}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -146,7 +115,7 @@ describe("Cards Details page", () => {
 
   test("It opens the edit modal", async () => {
     const { getByText, getByTestId } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMockedDidKey}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -157,7 +126,7 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(identityFix[0].id)).toBeInTheDocument()
+      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
@@ -170,7 +139,7 @@ describe("Cards Details page", () => {
 
   test("It shows the button to access the editor", async () => {
     const { getByText, getByTestId } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMockedDidKey}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -181,7 +150,7 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(identityFix[0].id)).toBeInTheDocument()
+      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
@@ -194,7 +163,7 @@ describe("Cards Details page", () => {
 
   test.skip("It shows the editor", async () => {
     const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMockedDidKey}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -205,7 +174,7 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(identityFix[0].id)).toBeInTheDocument()
+      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
@@ -226,7 +195,7 @@ describe("Cards Details page", () => {
 
   test("It asks to verify the password when users try to delete the did using the button in the modal", async () => {
     const { getByTestId, getByText, getAllByText } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMockedDidKey}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -237,7 +206,7 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(identityFix[0].id)).toBeInTheDocument()
+      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("edit-button"));
@@ -270,7 +239,7 @@ describe("Cards Details page", () => {
 
   test("It shows the warning when I click on the big delete button", async () => {
     const { getByTestId, getByText } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMockedDidKey}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -281,7 +250,7 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(identityFix[0].id)).toBeInTheDocument()
+      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));
@@ -296,7 +265,7 @@ describe("Cards Details page", () => {
 
   test.skip("It deletes the did using the big button", async () => {
     const { getByTestId, getByText, queryByText } = render(
-      <Provider store={storeMocked}>
+      <Provider store={storeMockedDidKey}>
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
@@ -307,7 +276,7 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(identityFix[0].id)).toBeInTheDocument()
+      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));
