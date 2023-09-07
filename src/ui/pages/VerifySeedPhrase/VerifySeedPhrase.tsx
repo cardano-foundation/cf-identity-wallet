@@ -95,12 +95,14 @@ const VerifySeedPhrase = () => {
 
   const storeIdentitySeedPhrase = async () => {
     const seedPhraseString = originalSeedPhrase.join(" ");
-    const convertToEntropy = Addresses.convertToEntropy(seedPhraseString);
+    const entropy = Addresses.convertToEntropy(seedPhraseString);
     await SecureStorage.set(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-      Addresses.convertEntropyToHexXPrvNoPasscode(convertToEntropy)
+      Addresses.bech32ToHexBip32Private(
+        Addresses.entropyToBip32NoPasscode(entropy)
+      )
     );
-    await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, convertToEntropy);
+    await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, entropy);
     handleNavigate();
   };
 
@@ -175,9 +177,9 @@ const VerifySeedPhrase = () => {
         onBack={
           seedPhraseType === generateSeedPhraseState.onboarding
             ? () => {
-                handleClearState();
-                handleExit();
-              }
+              handleClearState();
+              handleExit();
+            }
             : () => setAlertExitIsOpen(true)
         }
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
