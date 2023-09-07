@@ -20,6 +20,13 @@ import {
   CredentialState,
   CredentialExchangeRecord,
   KeyDidRegistrar,
+  CredentialsModule,
+  V2CredentialProtocol,
+  JsonLdCredentialFormatService,
+  AutoAcceptCredential,
+  W3cCredentialsModule,
+  ConsoleLogger,
+  LogLevel,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -60,6 +67,7 @@ const config: InitConfig = {
     key: "idw", // Right now, this key isn't used as we don't have encryption.
   },
   autoUpdateStorageOnStartup: true,
+  logger: new ConsoleLogger(LogLevel.debug),
 };
 
 const agentDependencies: AgentDependencies = {
@@ -104,11 +112,20 @@ class AriesAgent {
         ...(platformIsNative
           ? { sqliteStorage: new SqliteStorageModule() }
           : { ionicStorage: new IonicStorageModule() }),
-        signify: new SignifyModule(),
+        // signify: new SignifyModule(),
         mediationRecipient: new MediationRecipientModule({
           mediatorInvitationUrl: "", // TODO: must add it when devops had supported infrastructure
           mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
         }),
+        credentials: new CredentialsModule({
+          credentialProtocols: [
+            new V2CredentialProtocol({
+              credentialFormats: [new JsonLdCredentialFormatService()],
+            }),
+          ],
+          autoAcceptCredentials: AutoAcceptCredential.Always,
+        }),
+        w3cCredentials: new W3cCredentialsModule({}),
       },
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
@@ -136,7 +153,7 @@ class AriesAgent {
 
   async start(): Promise<void> {
     await this.agent.initialize();
-    await this.agent.modules.signify.start();
+    // await this.agent.modules.signify.start();
     // @TODO - uncomment for demo, can remove if not used
     // await AriesAgent.agent.registerLibP2pInbound(LibP2p.libP2p);
     // await AriesAgent.agent.registerLibP2pOutbound(LibP2p.libP2p);

@@ -3,8 +3,8 @@ import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
 import { ICreateIdentifierResult } from "./signifyApi.types";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
+  static readonly LOCAL_KERIA_ENDPOINT = "http://172.16.1.225:3901";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://172.16.1.225:3903";
   static readonly SIGNIFY_BRAN = "0123456789abcdefghijk"; // @TODO - foconnor: Shouldn't be hard-coded.
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =

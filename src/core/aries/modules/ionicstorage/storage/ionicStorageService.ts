@@ -24,7 +24,8 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
 
     const value = JsonTransformer.serialize(record);
     const tags = record.getTags() as Record<string, string>;
-
+    console.log("Save")
+    console.log(value, tags)
     if (await session.get(record.id)) {
       throw new RecordDuplicateError(
         `${IonicStorageService.RECORD_ALREADY_EXISTS_ERROR_MSG} ${record.id}`,
@@ -104,7 +105,8 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
   ): Promise<T> {
     assertIonicStorageWallet(agentContext.wallet);
     const session = agentContext.wallet.store;
-
+    console.log("Get by id")
+    console.log(id)
     // @TODO - foconnor: Missing check for recordClass type.
     const record = await session.get(id);
 
@@ -142,7 +144,9 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
     assertIonicStorageWallet(agentContext.wallet);
     const session = agentContext.wallet.store;
     const instances: T[] = [];
-
+    console.log("Find by query")
+    console.log(recordClass)
+    console.log(query)
     // Right now we just support SimpleQuery and not AdvancedQuery as it's not something we need right now.
     // This is also really inefficient but OK for now.
     await session.forEach((record) => {
@@ -166,6 +170,8 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
         instances.push(deserializeRecord(record, recordClass));
       }
     });
+    console.log("Instances")
+    console.log(instances)
     return instances;
   }
 }

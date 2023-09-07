@@ -11,6 +11,8 @@ import {
   JsonLdCredentialFormatService,
   W3cCredentialsModule,
   WsOutboundTransport,
+  CREDENTIALS_CONTEXT_V1_URL, KeyType,
+  // KeyType,
 } from "@aries-framework/core";
 import type { Socket } from "net";
 import { Server } from "ws";
@@ -38,8 +40,8 @@ const agentConfig: InitConfig = {
   endpoints,
   label: "Aries Framework JavaScript",
   walletConfig: {
-    id: "AriesFrameworkJavaScript",
-    key: "AriesFrameworkJavaScript",
+    id: "test-wallet-1-2",
+    key: "DZ9hPqFWTPxemcGea72C1X1nusqk5wFNLq6QPjwXGqAa",
   },
   logger: new ConsoleLogger(LogLevel.debug),
 };
@@ -96,36 +98,42 @@ httpInboundTransport.app.get("/ping", async (req, res) => {
 httpInboundTransport.app.get("/credential", async (req, res) => {
   // @TODO: check exist connection ID for return
   const connectionId = req.query.connectionId as string;
-  const indyCredentialExchangeRecord = await agent.credentials.offerCredential({
+  // const dids = await agent.dids.getCreatedDids();
+  // console.log(dids);
+  const did = await agent.dids.create({
+    method: "key",
+    options: { keyType: KeyType.Ed25519 },
+  });
+  console.log(did.didState.did)
+  console.log(did)
+  const connection = await agent.connections.getById(connectionId);
+  console.log(connection.did)
+  const w3Credential = await agent.credentials.offerCredential({
     protocolVersion: "v2" as never,
     connectionId: connectionId,
     credentialFormats: {
       jsonld: {
         credential: {
-          "@context": [
-            "https://www.w3.org/ns/credentials/v2",
-            "https://www.w3.org/ns/credentials/examples/v2",
-          ],
-          type: ["VerifiableCredential", "ExampleDegreeCredential"],
-          // @TODO: for test
-          issuer: "did:key:z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL",
-          issuanceDate: "2017-10-22T12:23:48Z",
+          '@context': [CREDENTIALS_CONTEXT_V1_URL, 'https://www.w3.org/2018/credentials/examples/v1'],
+          type: ['VerifiableCredential', 'UniversityDegreeCredential'],
+          issuer: did.didState.did as string,
+          issuanceDate: '2017-10-22T12:23:48Z',
           credentialSubject: {
             degree: {
-              type: "BachelorDegree",
-              name: "Bachelor of Science and Arts",
+              type: 'BachelorDegree',
+              name: 'Bachelor of Science and Arts',
             },
           },
         },
         options: {
-          proofType: "Ed25519Signature2018",
-          proofPurpose: "assertionMethod",
+          proofType: 'Ed25519Signature2018',
+          proofPurpose: 'assertionMethod',
         },
       },
     },
     autoAcceptCredential: AutoAcceptCredential.Always,
   });
-  res.send(indyCredentialExchangeRecord);
+  res.send(w3Credential);
 });
 
 const main = async () => {
