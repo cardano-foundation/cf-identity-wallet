@@ -1,7 +1,5 @@
-import {
-  CredentialMetadataRecord,
-  CredentialMetadataRecordProps,
-} from "./credentialMetadataRecord.types";
+import { CredentialMetadataRecord } from "./credentialMetadataRecord";
+import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types";
 
 const mockData: CredentialMetadataRecordProps = {
   id: "credential:z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",
