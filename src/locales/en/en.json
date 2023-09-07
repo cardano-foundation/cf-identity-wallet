@@ -255,16 +255,44 @@
         "type": "Type",
         "controller": "Controller",
         "publickeybase": "Public Key Base 58",
-        "delegator": "Delegator Identifier Prefix",
-        "signingkeyslist": "List of Signing Keys",
-        "signingkeysthreshold": "Keys Signing Threshold",
-        "nextkeyslist": "List of Next Key Digests",
-        "nextkeysthreshold": "Next Keys Signing Threshold",
-        "creationtimestamp": "Creation Timestamp",
-        "rotationtimestamp": "Last Key Rotation Timestamp",
-        "sequencenumber": "Sequence Number",
-        "backerslist": "List of Backers",
-        "backeraddress": "Backer Address",
+        "delegator": {
+          "title": "Delegator Identifier Prefix",
+          "icon": "DI"
+        },
+        "signingkeyslist": {
+          "title": "List of Signing Keys",
+          "icon": "K"
+        },
+        "signingkeysthreshold": {
+          "title": "Keys Signing Threshold",
+          "icon": "KT"
+        },
+        "nextkeyslist": {
+          "title": "List of Next Key Digests",
+          "icon": "N"
+        },
+        "nextkeysthreshold": {
+          "title": "Next Keys Signing Threshold",
+          "icon": "NT"
+        },
+        "creationtimestamp": {
+          "title": "Creation Timestamp"
+        },
+        "rotationtimestamp": {
+          "title": "Last Key Rotation Timestamp",
+          "icon": "DT"
+        },
+        "sequencenumber": {
+          "title": "Sequence Number",
+          "icon": "S"
+        },
+        "backerslist": {
+          "title": "List of Backers",
+          "icon": "B"
+        },
+        "backeraddress": {
+          "title": "Backer Address"
+        },
         "delete": {
           "button": "Delete identity",
           "alert": {

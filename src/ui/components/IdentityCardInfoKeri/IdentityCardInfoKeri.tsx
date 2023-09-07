@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 import { IonButton, IonIcon } from "@ionic/react";
 import {
   copyOutline,
   calendarNumberOutline,
-  pricetagOutline,
   personCircleOutline,
 } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { writeToClipboard } from "../../../utils/clipboard";
-import { formatShortDate } from "../../../utils";
+import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { IdentityCardInfoKeriProps } from "./IdentityCardInfoKeri.types";
 import { SignifyApi } from "../../../core/aries/modules/signify/signifyApi";
 
@@ -20,7 +18,7 @@ const IdentityCardInfoKeri = ({
     <>
       {cardData.di !== "" && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.delegator")}</h3>
+          <h3>{i18n.t("dids.card.details.delegator.title")}</h3>
           <div className="card-details-info-block-inner">
             <span
               className="card-details-info-block-line"
@@ -30,14 +28,9 @@ const IdentityCardInfoKeri = ({
                 setShowToast(true);
               }}
             >
-              <span>
-                <IonIcon
-                  slot="icon-only"
-                  icon={pricetagOutline}
-                  color="primary"
-                />
+              <span className="card-details-info-block-text-icon">
+                {i18n.t("dids.card.details.delegator.icon")}
               </span>
-
               <span className="card-details-info-block-data">
                 {cardData.di}
               </span>
@@ -58,7 +51,7 @@ const IdentityCardInfoKeri = ({
       )}
       {cardData.k.length && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.signingkeyslist")}</h3>
+          <h3>{i18n.t("dids.card.details.signingkeyslist.title")}</h3>
           <div className="card-details-info-block-inner">
             {cardData.k.map((item, index) => {
               return (
@@ -71,14 +64,9 @@ const IdentityCardInfoKeri = ({
                     setShowToast(true);
                   }}
                 >
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={pricetagOutline}
-                      color="primary"
-                    />
+                  <span className="card-details-info-block-text-icon">
+                    {i18n.t("dids.card.details.signingkeyslist.icon")}
                   </span>
-
                   <span className="card-details-info-block-data">{item}</span>
                   <span>
                     <IonButton
@@ -99,20 +87,15 @@ const IdentityCardInfoKeri = ({
       )}
       {cardData.kt > 1 && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.signingkeysthreshold")}</h3>
+          <h3>{i18n.t("dids.card.details.signingkeysthreshold.title")}</h3>
           <div className="card-details-info-block-inner">
             <span
               className="card-details-info-block-line"
               data-testid="signing-keys-threshold"
             >
-              <span>
-                <IonIcon
-                  slot="icon-only"
-                  icon={pricetagOutline}
-                  color="primary"
-                />
+              <span className="card-details-info-block-text-icon">
+                {i18n.t("dids.card.details.signingkeysthreshold.icon")}
               </span>
-
               <span className="card-details-info-block-data">
                 {cardData.kt}
               </span>
@@ -133,7 +116,7 @@ const IdentityCardInfoKeri = ({
       )}
       {cardData.n.length && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.nextkeyslist")}</h3>
+          <h3>{i18n.t("dids.card.details.nextkeyslist.title")}</h3>
           <div className="card-details-info-block-inner">
             {cardData.n.map((item, index) => {
               return (
@@ -146,14 +129,9 @@ const IdentityCardInfoKeri = ({
                     setShowToast(true);
                   }}
                 >
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={pricetagOutline}
-                      color="primary"
-                    />
+                  <span className="card-details-info-block-text-icon">
+                    {i18n.t("dids.card.details.nextkeyslist.icon")}
                   </span>
-
                   <span className="card-details-info-block-data">{item}</span>
                   <span>
                     <IonButton
@@ -174,20 +152,15 @@ const IdentityCardInfoKeri = ({
       )}
       {cardData.nt > 1 && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.nextkeysthreshold")}</h3>
+          <h3>{i18n.t("dids.card.details.nextkeysthreshold.title")}</h3>
           <div className="card-details-info-block-inner">
             <span
               className="card-details-info-block-line"
               data-testid="next-keys-threshold"
             >
-              <span>
-                <IonIcon
-                  slot="icon-only"
-                  icon={pricetagOutline}
-                  color="primary"
-                />
+              <span className="card-details-info-block-text-icon">
+                {i18n.t("dids.card.details.nextkeysthreshold.icon")}
               </span>
-
               <span className="card-details-info-block-data">
                 {cardData.nt}
               </span>
@@ -207,7 +180,7 @@ const IdentityCardInfoKeri = ({
         </div>
       )}
       <div className="card-details-info-block">
-        <h3>{i18n.t("dids.card.details.creationtimestamp")}</h3>
+        <h3>{i18n.t("dids.card.details.creationtimestamp.title")}</h3>
         <div className="card-details-info-block-inner">
           <span
             className="card-details-info-block-line"
@@ -223,28 +196,27 @@ const IdentityCardInfoKeri = ({
 
             <span className="card-details-info-block-data">
               {formatShortDate(cardData.createdAtUTC)}
+              {" - "}
+              {formatTimeToSec(cardData.createdAtUTC)}
             </span>
           </span>
         </div>
       </div>
       {cardData.s > 0 && cardData.dt && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.rotationtimestamp")}</h3>
+          <h3>{i18n.t("dids.card.details.rotationtimestamp.title")}</h3>
           <div className="card-details-info-block-inner">
             <span
               className="card-details-info-block-line"
               data-testid="rotation-timestamp"
             >
-              <span>
-                <IonIcon
-                  slot="icon-only"
-                  icon={calendarNumberOutline}
-                  color="primary"
-                />
+              <span className="card-details-info-block-text-icon">
+                {i18n.t("dids.card.details.rotationtimestamp.icon")}
               </span>
-
               <span className="card-details-info-block-data">
                 {formatShortDate(cardData.dt)}
+                {" - "}
+                {formatTimeToSec(cardData.dt)}
               </span>
             </span>
           </div>
@@ -252,20 +224,15 @@ const IdentityCardInfoKeri = ({
       )}
       {cardData.s > 0 && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.sequencenumber")}</h3>
+          <h3>{i18n.t("dids.card.details.sequencenumber.title")}</h3>
           <div className="card-details-info-block-inner">
             <span
               className="card-details-info-block-line"
               data-testid="sequence-number"
             >
-              <span>
-                <IonIcon
-                  slot="icon-only"
-                  icon={pricetagOutline}
-                  color="primary"
-                />
+              <span className="card-details-info-block-text-icon">
+                {i18n.t("dids.card.details.sequencenumber.icon")}
               </span>
-
               <span className="card-details-info-block-data">{cardData.s}</span>
               <span>
                 <IonButton
@@ -284,7 +251,7 @@ const IdentityCardInfoKeri = ({
       )}
       {cardData.b.length && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.backerslist")}</h3>
+          <h3>{i18n.t("dids.card.details.backerslist.title")}</h3>
           <div className="card-details-info-block-inner">
             {cardData.b.map((item, index) => {
               return (
@@ -297,14 +264,9 @@ const IdentityCardInfoKeri = ({
                     setShowToast(true);
                   }}
                 >
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={pricetagOutline}
-                      color="primary"
-                    />
+                  <span className="card-details-info-block-text-icon">
+                    {i18n.t("dids.card.details.backerslist.icon")}
                   </span>
-
                   <span className="card-details-info-block-data">{item}</span>
                   <span>
                     <IonButton
@@ -324,7 +286,7 @@ const IdentityCardInfoKeri = ({
         </div>
       )}
       <div className="card-details-info-block">
-        <h3>{i18n.t("dids.card.details.backeraddress")}</h3>
+        <h3>{i18n.t("dids.card.details.backeraddress.title")}</h3>
         <div className="card-details-info-block-inner">
           <span
             className="card-details-info-block-line"
@@ -338,7 +300,7 @@ const IdentityCardInfoKeri = ({
             <span>
               <IonIcon
                 slot="icon-only"
-                icon={pricetagOutline}
+                icon={personCircleOutline}
                 color="primary"
               />
             </span>
