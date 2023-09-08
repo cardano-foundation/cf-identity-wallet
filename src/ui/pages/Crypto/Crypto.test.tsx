@@ -8,7 +8,6 @@ import { TabsRoutePath } from "../../../routes/paths";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { blurredCryptoData } from "../../constants/dictionary";
 
 describe("Crypto Tab", () => {
   test("Renders Crypto Tab", () => {

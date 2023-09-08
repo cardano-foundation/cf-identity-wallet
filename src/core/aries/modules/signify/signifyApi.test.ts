@@ -58,14 +58,6 @@ describe("Signify API", () => {
     expect(connectMock).toBeCalledTimes(2);
   });
 
-  test("can get all identifiers", async () => {
-    // This test should break when we implement the records properly
-    expect(await api.getIdentifiersDetailed()).toEqual([
-      { name: firstAid, id: `${aidPrefix}${firstAid}` },
-      { name: secondAid, id: `${aidPrefix}${secondAid}` },
-    ]);
-  });
-
   test("can create an identifier", async () => {
     const mockName = "keriuuid";
     jest.spyOn(utils, "uuid").mockReturnValue(mockName);

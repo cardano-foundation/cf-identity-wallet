@@ -1,0 +1,27 @@
+.qr-code-scanner {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  ion-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
+    .qr-code-scanner-text {
+      display: block;
+      text-align: center;
+      width: 100%;
+      color: var(--ion-color-light);
+      padding-inline: 20vw;
+    }
+
+    .qr-code-scanner-icon {
+      width: 18rem;
+      height: 18rem;
+      margin: 1.5rem 0;
+      --ionicon-stroke-width: 0.938rem;
+    }
+  }
+}
