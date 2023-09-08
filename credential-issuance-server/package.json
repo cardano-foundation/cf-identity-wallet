@@ -5,7 +5,9 @@
     "main": "server.ts",
     "scripts": {
         "test": "test",
-        "start": "ts-node src/server.ts"
+        "start": "node build/server.js",
+        "start:dev": "npx nodemon",
+        "build": "rimraf ./build && tsc"
     },
     "author": "",
     "license": "ISC",
@@ -19,6 +21,8 @@
         "ws": "^8.13.0"
     },
     "devDependencies": {
+        "nodemon": "^3.0.1",
+        "rimraf": "^5.0.1",
         "ts-node": "^10.9.1"
     }
 }

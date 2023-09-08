@@ -11,7 +11,7 @@
       "pretty": true,
       "strict": true,
       "sourceMap": true,
-      "outDir": "./dist",
+      "outDir": "./build",
       "skipLibCheck": true,
       "noImplicitAny": false,
       "esModuleInterop": true,
