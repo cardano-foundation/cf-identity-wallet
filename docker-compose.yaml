@@ -5,8 +5,16 @@ services:
     build:
       context: ./webrtc-relay
       dockerfile: Dockerfile
-    container_name: webrtc-relay
     tty: true
     ports:
-      - 51986:51986
+      - "51986:51986"
+    restart: always
+  issuer-server:
+    container_name: issuer-server
+    build:
+      context: ./credential-issuance-server
+      dockerfile: Dockerfile
+    tty: true
+    ports:
+      - "3001:3001"
     restart: always
