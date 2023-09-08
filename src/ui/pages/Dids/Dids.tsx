@@ -1,12 +1,6 @@
-import {
-  IonButton,
-  IonIcon,
-  IonPage,
-  IonToast,
-  useIonViewWillEnter,
-} from "@ionic/react";
+import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Dids.scss";
@@ -14,15 +8,10 @@ import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getIdentitiesCache } from "../../../store/reducers/identitiesCache";
-import {
-  getCurrentRoute,
-  getStateCache,
-  setCurrentOperation,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentity } from "../../components/CreateIdentity";
-import { cardTypes, toastState } from "../../constants/dictionary";
+import { cardTypes } from "../../constants/dictionary";
 
 interface AdditionalButtonsProps {
   handleCreateDid: () => void;
@@ -60,24 +49,12 @@ const AdditionalButtons = ({ handleCreateDid }: AdditionalButtonsProps) => {
 
 const Dids = () => {
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
-  const currentRoute = useAppSelector(getCurrentRoute);
   const didsData = useAppSelector(getIdentitiesCache);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.DIDS }));
   });
-
-  useEffect(() => {
-    if (
-      stateCache.currentOperation === toastState.identityDeleted &&
-      currentRoute?.path === TabsRoutePath.DIDS
-    ) {
-      setShowToast(true);
-    }
-  }, [stateCache.currentOperation, currentRoute]);
 
   return (
     <IonPage
@@ -107,18 +84,6 @@ const Dids = () => {
         <CreateIdentity
           modalIsOpen={modalIsOpen}
           setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
-        />
-        <IonToast
-          isOpen={showToast}
-          onDidDismiss={() => {
-            setShowToast(false);
-            dispatch(setCurrentOperation(""));
-          }}
-          message={`${i18n.t("toast.identitydeleted")}`}
-          color="secondary"
-          position="top"
-          cssClass="confirmation-toast"
-          duration={1500}
         />
       </TabLayout>
     </IonPage>

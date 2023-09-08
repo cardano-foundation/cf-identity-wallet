@@ -18,8 +18,8 @@ import { pencilOutline, shareOutline, trashOutline } from "ionicons/icons";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
 import { i18n } from "../../../i18n";
-import { EditIdentityProps } from "./EditIdentity.types";
-import "./EditIdentity.scss";
+import { IdentityOptionsProps } from "./IdentityOptions.types";
+import "./IdentityOptions.scss";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import { VerifyPassword } from "../VerifyPassword";
@@ -31,21 +31,26 @@ import {
 } from "../../../store/reducers/identitiesCache";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../../../routes/paths";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
 import { VerifyPasscode } from "../VerifyPasscode";
+import { operationState } from "../../constants/dictionary";
 
-const EditIdentity = ({
+const IdentityOptions = ({
   isOpen,
   setIsOpen,
   cardData,
   setCardData,
-}: EditIdentityProps) => {
+}: IdentityOptionsProps) => {
+  const dispatch = useAppDispatch();
   const identitiesData = useAppSelector(getIdentitiesCache);
   const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
-  const [editIsOpen, setEditIsOpen] = useState(false);
+  const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
@@ -56,19 +61,18 @@ const EditIdentity = ({
     newDisplayName.length > 0 &&
     newDisplayName.length <= DISPLAY_NAME_LENGTH &&
     newDisplayName !== cardData.displayName;
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     setNewDisplayName(cardData.displayName);
   }, [cardData.displayName]);
 
   const handleDismiss = () => {
-    setEditIsOpen(false);
+    setEditorIsOpen(false);
     setIsOpen(false);
   };
 
   const handleClose = () => {
-    setEditIsOpen(false);
+    setEditorIsOpen(false);
     setIsOpen(true);
   };
 
@@ -80,7 +84,7 @@ const EditIdentity = ({
 
   const handleSubmit = () => {
     setActionType("edit");
-    setEditIsOpen(false);
+    setEditorIsOpen(false);
     setIsOpen(false);
     if (
       !stateCache?.authentication.passwordIsSkipped &&
@@ -106,17 +110,11 @@ const EditIdentity = ({
     if (actionType === "delete") {
       history.push(TabsRoutePath.DIDS);
     }
-
-    if (actionType === "edit") {
-      // @TODO - sdisalvo: Check toast message is correct
-    }
   };
 
   const verifyAction = () => {
     handleDismiss();
     if (actionType === "edit") {
-      // @TODO - sdisalvo: Update Database.
-      // Remember to update DidCardDetails file too.
       const updatedIdentities = [...identitiesData];
       const index = updatedIdentities.findIndex(
         (identity) => identity.id === cardData.id
@@ -128,8 +126,6 @@ const EditIdentity = ({
       setCardData({ ...cardData, displayName: newDisplayName });
       dispatch(setIdentitiesCache(updatedIdentities));
     } else if (actionType === "delete") {
-      // @TODO - sdisalvo: Update Database.
-      // Remember to update DidCardDetails file too.
       const updatedIdentities = identitiesData.filter(
         (item) => item.id !== cardData.id
       );
@@ -156,45 +152,56 @@ const EditIdentity = ({
         initialBreakpoint={0.35}
         breakpoints={[0, 0.35]}
         className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
-        data-testid="edit-identity-modal"
+        data-testid="identity-options-modal"
         onDidDismiss={handleDismiss}
       >
         <div
-          className={`edit-identity modal ${editIsOpen ? "editor" : "menu"}`}
+          className={`identity-options modal ${
+            editorOptionsIsOpen ? "editor" : "menu"
+          }`}
         >
           <IonHeader
             translucent={true}
             className="ion-no-border"
           >
             <IonToolbar color="light">
-              {editIsOpen && (
+              {editorOptionsIsOpen && (
                 <IonButtons slot="start">
                   <IonButton
                     className="close-button-label"
-                    onClick={handleClose}
+                    onClick={() => {
+                      handleClose();
+                      dispatch(setCurrentOperation(""));
+                    }}
                     data-testid="close-button"
                   >
-                    {i18n.t("editidentity.cancel")}
+                    {i18n.t("identityoptions.cancel")}
                   </IonButton>
                 </IonButtons>
               )}
-              <IonTitle data-testid="edit-identity-title">
-                <h2>{i18n.t("editidentity.title")}</h2>
+              <IonTitle data-testid="identity-options-title">
+                <h2>
+                  {i18n.t(
+                    editorOptionsIsOpen
+                      ? "identityoptions.edit"
+                      : "identityoptions.title"
+                  )}
+                </h2>
               </IonTitle>
             </IonToolbar>
           </IonHeader>
 
           <IonContent
-            className="edit-identity-body"
+            className="identity-options-body"
             color="light"
           >
-            {editIsOpen ? (
-              <IonGrid className="edit-identity-inner">
+            {editorOptionsIsOpen ? (
+              <IonGrid className="identity-options-inner">
                 <IonRow>
                   <IonCol size="12">
                     <CustomInput
                       dataTestId="edit-display-name"
-                      title={`${i18n.t("editidentity.inner.label")}`}
+                      title={`${i18n.t("identityoptions.inner.label")}`}
                       hiddenInput={false}
                       autofocus={true}
                       onChangeInput={setNewDisplayName}
@@ -204,7 +211,7 @@ const EditIdentity = ({
                 </IonRow>
                 {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
                   <ErrorMessage
-                    message={`${i18n.t("editidentity.inner.error")}`}
+                    message={`${i18n.t("identityoptions.inner.error")}`}
                     timeout={false}
                   />
                 ) : (
@@ -218,19 +225,22 @@ const EditIdentity = ({
                   onClick={handleSubmit}
                   disabled={!verifyDisplayName}
                 >
-                  {i18n.t("editidentity.inner.confirm")}
+                  {i18n.t("identityoptions.inner.confirm")}
                 </IonButton>
               </IonGrid>
             ) : (
-              <IonGrid className="edit-identity-main">
+              <IonGrid className="identity-options-main">
                 <IonRow>
                   <IonCol size="12">
                     <span
-                      className="edit-identity-option"
-                      data-testid="edit-identity-edit-button"
+                      className="identity-options-option"
+                      data-testid="identity-options-identity-options-button"
                       onClick={() => {
+                        dispatch(
+                          setCurrentOperation(operationState.renameIdentity)
+                        );
                         setNewDisplayName(cardData.displayName);
-                        setEditIsOpen(true);
+                        setEditorIsOpen(true);
                       }}
                     >
                       <span>
@@ -241,13 +251,13 @@ const EditIdentity = ({
                           />
                         </IonButton>
                       </span>
-                      <span className="edit-identity-label">
-                        {i18n.t("editidentity.name")}
+                      <span className="identity-options-label">
+                        {i18n.t("identityoptions.edit")}
                       </span>
                     </span>
                     <span
-                      className="edit-identity-option"
-                      data-testid="edit-identity-share-button"
+                      className="identity-options-option"
+                      data-testid="identity-options-share-button"
                       onClick={async () => {
                         await Share.share({
                           text: cardData.displayName + " " + cardData.id,
@@ -262,14 +272,19 @@ const EditIdentity = ({
                           />
                         </IonButton>
                       </span>
-                      <span className="edit-identity-info-block-data">
-                        {i18n.t("editidentity.share")}
+                      <span className="identity-options-info-block-data">
+                        {i18n.t("identityoptions.share")}
                       </span>
                     </span>
                     <span
-                      className="edit-identity-option"
-                      data-testid="edit-identity-delete-button"
-                      onClick={handleDelete}
+                      className="identity-options-option"
+                      data-testid="identity-options-delete-button"
+                      onClick={() => {
+                        handleDelete();
+                        dispatch(
+                          setCurrentOperation(operationState.deleteIdentity)
+                        );
+                      }}
                     >
                       <span>
                         <IonButton shape="round">
@@ -279,8 +294,8 @@ const EditIdentity = ({
                           />
                         </IonButton>
                       </span>
-                      <span className="edit-identity-label">
-                        {i18n.t("editidentity.delete")}
+                      <span className="identity-options-label">
+                        {i18n.t("identityoptions.delete")}
                       </span>
                     </span>
                   </IonCol>
@@ -309,6 +324,8 @@ const EditIdentity = ({
             setVerifyPasscodeIsOpen(true);
           }
         }}
+        actionCancel={() => dispatch(setCurrentOperation(""))}
+        actionDismiss={() => dispatch(setCurrentOperation(""))}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
@@ -324,4 +341,4 @@ const EditIdentity = ({
   );
 };
 
-export { EditIdentity };
+export { IdentityOptions };

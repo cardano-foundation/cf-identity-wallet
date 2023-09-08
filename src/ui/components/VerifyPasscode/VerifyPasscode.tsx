@@ -10,7 +10,9 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
+  getCurrentOperation,
   getCurrentRoute,
+  getStateCache,
   setAuthentication,
   setCurrentOperation,
   setCurrentRoute,
@@ -19,7 +21,7 @@ import { RoutePath } from "../../../routes";
 import { VerifyPasscodeProps } from "./VerifyPasscode.types";
 import "./VerifyPasscode.scss";
 import { TabsRoutePath } from "../../../routes/paths";
-import { toastState } from "../../constants/dictionary";
+import { operationState, toastState } from "../../constants/dictionary";
 
 const VerifyPasscode = ({
   isOpen,
@@ -28,6 +30,7 @@ const VerifyPasscode = ({
 }: VerifyPasscodeProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const currentOperation = useAppSelector(getCurrentOperation);
   const currentRoute = useAppSelector(getCurrentRoute);
   const [currentAction, setCurrentAction] = useState("");
   const authentication = useAppSelector(getAuthentication);
@@ -47,17 +50,29 @@ const VerifyPasscode = ({
 
   useEffect(() => {
     let operation = "";
-    if (currentRoute?.path?.includes(TabsRoutePath.DIDS)) {
+    if (
+      currentRoute?.path?.includes(TabsRoutePath.DIDS) &&
+      currentOperation === operationState.deleteIdentity
+    ) {
       operation = toastState.identityDeleted;
-    } else if (currentRoute?.path?.includes(TabsRoutePath.CREDS)) {
+    } else if (
+      currentRoute?.path?.includes(TabsRoutePath.CREDS) &&
+      currentOperation === operationState.deleteCredential
+    ) {
       operation = toastState.credentialDeleted;
-    } else if (currentRoute?.path?.includes(TabsRoutePath.CRYPTO)) {
+    } else if (
+      currentRoute?.path?.includes(TabsRoutePath.CRYPTO) &&
+      currentOperation === operationState.deleteWallet
+    ) {
       operation = toastState.walletDeleted;
-    } else if (currentRoute?.path?.includes(RoutePath.CONNECTION_DETAILS)) {
+    } else if (
+      currentRoute?.path?.includes(RoutePath.CONNECTION_DETAILS) &&
+      currentOperation === operationState.deleteConnection
+    ) {
       operation = toastState.connectionDeleted;
     }
     setCurrentAction(operation);
-  }, [currentRoute?.path]);
+  }, [currentRoute?.path, currentOperation]);
 
   const handleClearState = () => {
     setPasscode("");

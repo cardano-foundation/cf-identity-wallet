@@ -26,6 +26,8 @@ import {
 } from "../../../core/aries/ariesAgent.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { toastState } from "../../constants/dictionary";
 
 const CreateIdentity = ({
   modalIsOpen,
@@ -79,6 +81,7 @@ const CreateIdentity = ({
         colors: [newColor[1], newColor[0]],
       };
       dispatch(setIdentitiesCache([...identityData, newIdentity]));
+      dispatch(setCurrentOperation(toastState.identityCreated));
       resetModal();
     }
   };

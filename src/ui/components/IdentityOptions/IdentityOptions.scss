@@ -1,4 +1,4 @@
-.edit-identity {
+.identity-options {
   .close-button-label {
     color: var(--ion-color-primary);
   }
@@ -11,7 +11,7 @@
     text-align: center;
   }
 
-  .edit-identity-main {
+  .identity-options-main {
     margin-top: 0.5rem;
 
     ion-col {
@@ -40,7 +40,7 @@
       margin: 0;
     }
 
-    .edit-identity-option {
+    .identity-options-option {
       display: flex;
 
       > * {
@@ -55,7 +55,7 @@
     }
   }
 
-  .edit-identity-inner {
+  .identity-options-inner {
     .error-message,
     .error-placeholder {
       margin-bottom: 1rem;

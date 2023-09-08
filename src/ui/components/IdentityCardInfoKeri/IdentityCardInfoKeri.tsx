@@ -9,11 +9,12 @@ import { writeToClipboard } from "../../../utils/clipboard";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { IdentityCardInfoKeriProps } from "./IdentityCardInfoKeri.types";
 import { SignifyApi } from "../../../core/aries/modules/signify/signifyApi";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { toastState } from "../../constants/dictionary";
+import { useAppDispatch } from "../../../store/hooks";
 
-const IdentityCardInfoKeri = ({
-  cardData,
-  setShowToast,
-}: IdentityCardInfoKeriProps) => {
+const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
+  const dispatch = useAppDispatch();
   return (
     <>
       {cardData.di !== "" && (
@@ -25,7 +26,7 @@ const IdentityCardInfoKeri = ({
               data-testid="delegator-copy-button"
               onClick={() => {
                 writeToClipboard(cardData.di);
-                setShowToast(true);
+                dispatch(setCurrentOperation(toastState.copiedToClipboard));
               }}
             >
               <span className="card-details-info-block-text-icon">
@@ -61,7 +62,7 @@ const IdentityCardInfoKeri = ({
                   key={index}
                   onClick={() => {
                     writeToClipboard(item);
-                    setShowToast(true);
+                    dispatch(setCurrentOperation(toastState.copiedToClipboard));
                   }}
                 >
                   <span className="card-details-info-block-text-icon">
@@ -126,7 +127,7 @@ const IdentityCardInfoKeri = ({
                   key={index}
                   onClick={() => {
                     writeToClipboard(item);
-                    setShowToast(true);
+                    dispatch(setCurrentOperation(toastState.copiedToClipboard));
                   }}
                 >
                   <span className="card-details-info-block-text-icon">
@@ -261,7 +262,7 @@ const IdentityCardInfoKeri = ({
                   key={index}
                   onClick={() => {
                     writeToClipboard(item);
-                    setShowToast(true);
+                    dispatch(setCurrentOperation(toastState.copiedToClipboard));
                   }}
                 >
                   <span className="card-details-info-block-text-icon">
@@ -294,7 +295,7 @@ const IdentityCardInfoKeri = ({
             onClick={() => {
               // @TODO - foconnor: This metadata in the future should come with Signify, for now we are "assuming" the address.
               writeToClipboard(SignifyApi.BACKER_ADDRESS);
-              setShowToast(true);
+              dispatch(setCurrentOperation(toastState.copiedToClipboard));
             }}
           >
             <span>

@@ -1,28 +1,17 @@
-import {
-  IonButton,
-  IonIcon,
-  IonPage,
-  IonToast,
-  useIonViewWillEnter,
-} from "@ionic/react";
+import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Creds.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getCurrentRoute,
-  getStateCache,
-  setCurrentOperation,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
 import { Connections } from "../Connections";
-import { cardTypes, toastState } from "../../constants/dictionary";
+import { cardTypes } from "../../constants/dictionary";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -65,11 +54,8 @@ const AdditionalButtons = ({
 
 const Creds = () => {
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
-  const currentRoute = useAppSelector(getCurrentRoute);
   const credsData = useAppSelector(getCredsCache);
   const [showConnections, setShowConnections] = useState(false);
-  const [showToast, setShowToast] = useState(false);
 
   const handleCreateCred = () => {
     // @TODO - sdisalvo: Function to create Credential
@@ -82,15 +68,6 @@ const Creds = () => {
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
   );
-
-  useEffect(() => {
-    if (
-      stateCache.currentOperation === toastState.credentialDeleted &&
-      currentRoute?.path === TabsRoutePath.CREDS
-    ) {
-      setShowToast(true);
-    }
-  }, [stateCache.currentOperation, currentRoute]);
 
   return (
     <>
@@ -129,18 +106,6 @@ const Creds = () => {
               testId="creds-cards-placeholder"
             />
           )}
-          <IonToast
-            isOpen={showToast}
-            onDidDismiss={() => {
-              setShowToast(false);
-              dispatch(setCurrentOperation(""));
-            }}
-            message={`${i18n.t("toast.credentialdeleted")}`}
-            color="secondary"
-            position="top"
-            cssClass="confirmation-toast"
-            duration={1500}
-          />
         </TabLayout>
       </IonPage>
     </>

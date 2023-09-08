@@ -82,7 +82,7 @@ describe("Cards Details page", () => {
     expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
       "false"
     );
-    expect(getByTestId("edit-identity-modal").getAttribute("is-open")).toBe(
+    expect(getByTestId("identity-options-modal").getAttribute("is-open")).toBe(
       "false"
     );
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(

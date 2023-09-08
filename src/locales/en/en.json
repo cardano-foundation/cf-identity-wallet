@@ -435,10 +435,10 @@
     "copykey": "Copy identity key",
     "more": "More share options"
   },
-  "editidentity": {
-    "title": "Edit identity",
+  "identityoptions": {
+    "title": "Identity Options",
     "cancel": "Cancel",
-    "name": "Edit identity",
+    "edit": "Edit identity",
     "share": "Share identity",
     "delete": "Delete identity",
     "inner": {
@@ -521,11 +521,13 @@
     }
   },
   "toast": {
-    "clipboard": "Copied to clipboard",
+    "copiedtoclipboard": "Copied to clipboard",
     "walletcreated": "Seed phrase verified",
+    "walletrenamed": "Account renamed successfully",
     "walletrestored": "Seed phrase verified",
     "walletdeleted": "Account deleted successfully",
     "identitycreated": "New identity created successfully",
+    "identityrenamed": "Identity successfully renamed",
     "identitydeleted": "Identity successfully deleted",
     "credentialdeleted": "Credential deleted successfully",
     "connectiondeleted": "Connection deleted successfully",

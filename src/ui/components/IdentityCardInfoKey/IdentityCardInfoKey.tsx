@@ -10,11 +10,12 @@ import { i18n } from "../../../i18n";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { formatShortDate } from "../../../utils";
 import { IdentityCardInfoKeyProps } from "./IdentityCardInfoKey.types";
+import { toastState } from "../../constants/dictionary";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { useAppDispatch } from "../../../store/hooks";
 
-const IdentityCardInfoKey = ({
-  cardData,
-  setShowToast,
-}: IdentityCardInfoKeyProps) => {
+const IdentityCardInfoKey = ({ cardData }: IdentityCardInfoKeyProps) => {
+  const dispatch = useAppDispatch();
   return (
     <>
       <div className="card-details-info-block">
@@ -25,7 +26,7 @@ const IdentityCardInfoKey = ({
             data-testid="copy-button-id"
             onClick={() => {
               writeToClipboard(cardData.id);
-              setShowToast(true);
+              dispatch(setCurrentOperation(toastState.copiedToClipboard));
             }}
           >
             <span>
@@ -75,7 +76,7 @@ const IdentityCardInfoKey = ({
             data-testid="copy-button-type"
             onClick={() => {
               writeToClipboard(cardData.keyType);
-              setShowToast(true);
+              dispatch(setCurrentOperation(toastState.copiedToClipboard));
             }}
           >
             <span>
@@ -111,7 +112,7 @@ const IdentityCardInfoKey = ({
             data-testid="copy-button-controller"
             onClick={() => {
               writeToClipboard(cardData.controller);
-              setShowToast(true);
+              dispatch(setCurrentOperation(toastState.copiedToClipboard));
             }}
           >
             <span>
@@ -148,7 +149,7 @@ const IdentityCardInfoKey = ({
             data-testid="copy-button-publicKeyBase58"
             onClick={() => {
               writeToClipboard(cardData.publicKeyBase58);
-              setShowToast(true);
+              dispatch(setCurrentOperation(toastState.copiedToClipboard));
             }}
           >
             <span>

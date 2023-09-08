@@ -129,10 +129,10 @@ describe("Cards Details page", () => {
       expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
     );
     act(() => {
-      fireEvent.click(getByTestId("edit-button"));
+      fireEvent.click(getByTestId("identity-options-button"));
     });
 
-    expect(getByTestId("edit-identity-modal").getAttribute("is-open")).toBe(
+    expect(getByTestId("identity-options-modal").getAttribute("is-open")).toBe(
       "true"
     );
   });
@@ -153,11 +153,13 @@ describe("Cards Details page", () => {
       expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
     );
     act(() => {
-      fireEvent.click(getByTestId("edit-button"));
+      fireEvent.click(getByTestId("identity-options-button"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("edit-identity-edit-button")).toBeInTheDocument();
+      expect(
+        getByTestId("identity-options-identity-options-button")
+      ).toBeInTheDocument();
     });
   });
 
@@ -177,19 +179,23 @@ describe("Cards Details page", () => {
       expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
     );
     act(() => {
-      fireEvent.click(getByTestId("edit-button"));
+      fireEvent.click(getByTestId("identity-options-button"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("edit-identity-edit-button")).toBeInTheDocument();
+      expect(
+        getByTestId("identity-options-identity-options-button")
+      ).toBeInTheDocument();
     });
 
     act(() => {
-      fireEvent.click(getByTestId("edit-identity-edit-button"));
+      fireEvent.click(getByTestId("identity-options-identity-options-button"));
     });
 
     await waitFor(() => {
-      expect(getByText(EN_TRANSLATIONS.editidentity.inner.label)).toBeVisible();
+      expect(
+        getByText(EN_TRANSLATIONS.identityoptions.inner.label)
+      ).toBeVisible();
     });
   });
 
@@ -209,15 +215,15 @@ describe("Cards Details page", () => {
       expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
     );
     act(() => {
-      fireEvent.click(getByTestId("edit-button"));
+      fireEvent.click(getByTestId("identity-options-button"));
     });
 
     await waitFor(() => {
-      expect(getByTestId("edit-identity-delete-button")).toBeInTheDocument();
+      expect(getByTestId("identity-options-delete-button")).toBeInTheDocument();
     });
 
     act(() => {
-      fireEvent.click(getAllByText(EN_TRANSLATIONS.editidentity.delete)[0]);
+      fireEvent.click(getAllByText(EN_TRANSLATIONS.identityoptions.delete)[0]);
     });
 
     await waitFor(() => {

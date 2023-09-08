@@ -4,7 +4,6 @@ import {
   IonIcon,
   IonPage,
   IonSpinner,
-  IonToast,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { shareOutline, ellipsisVertical, trashOutline } from "ionicons/icons";
@@ -18,10 +17,10 @@ import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getStateCache,
+  setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import { ShareIdentity } from "../../components/ShareIdentity";
-import { EditIdentity } from "../../components/EditIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import {
@@ -37,6 +36,8 @@ import {
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { IdentityCardInfoKey } from "../../components/IdentityCardInfoKey";
 import { IdentityCardInfoKeri } from "../../components/IdentityCardInfoKeri";
+import { operationState } from "../../constants/dictionary";
+import { IdentityOptions } from "../../components/IdentityOptions";
 
 const DidCardDetails = () => {
   const history = useHistory();
@@ -44,10 +45,9 @@ const DidCardDetails = () => {
   const stateCache = useAppSelector(getStateCache);
   const identitiesData = useAppSelector(getIdentitiesCache);
   const [shareIsOpen, setShareIsOpen] = useState(false);
-  const [editIsOpen, setEditIsOpen] = useState(false);
+  const [identityOptionsIsOpen, setIdentityOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<
     DIDDetails | KERIDetails | undefined
@@ -87,7 +87,7 @@ const DidCardDetails = () => {
   const handleDelete = () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
-    // Remember to update EditIdentity file too.
+    // Remember to update identityoptions file too.
     if (cardData) {
       const updatedIdentities = identitiesData.filter(
         (item) => item.id !== cardData.id
@@ -116,10 +116,10 @@ const DidCardDetails = () => {
         </IonButton>
         <IonButton
           shape="round"
-          className="edit-button"
-          data-testid="edit-button"
+          className="identity-options-button"
+          data-testid="identity-options-button"
           onClick={() => {
-            setEditIsOpen(true);
+            setIdentityOptionsIsOpen(true);
           }}
         >
           <IonIcon
@@ -157,15 +157,9 @@ const DidCardDetails = () => {
             />
             <div className="card-details-content">
               {cardData.method === IdentityType.KEY ? (
-                <IdentityCardInfoKey
-                  cardData={cardData as DIDDetails}
-                  setShowToast={setShowToast}
-                />
+                <IdentityCardInfoKey cardData={cardData as DIDDetails} />
               ) : (
-                <IdentityCardInfoKeri
-                  cardData={cardData as KERIDetails}
-                  setShowToast={setShowToast}
-                />
+                <IdentityCardInfoKeri cardData={cardData as KERIDetails} />
               )}
               <IonButton
                 shape="round"
@@ -173,7 +167,10 @@ const DidCardDetails = () => {
                 color="danger"
                 data-testid="card-details-delete-button"
                 className="delete-button"
-                onClick={() => setAlertIsOpen(true)}
+                onClick={() => {
+                  setAlertIsOpen(true);
+                  dispatch(setCurrentOperation(operationState.deleteIdentity));
+                }}
               >
                 <IonIcon
                   slot="icon-only"
@@ -195,9 +192,9 @@ const DidCardDetails = () => {
           />
         )}
         {cardData && (
-          <EditIdentity
-            isOpen={editIsOpen}
-            setIsOpen={setEditIsOpen}
+          <IdentityOptions
+            isOpen={identityOptionsIsOpen}
+            setIsOpen={setIdentityOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
           />
@@ -223,6 +220,8 @@ const DidCardDetails = () => {
               setVerifyPasscodeIsOpen(true);
             }
           }}
+          actionCancel={() => dispatch(setCurrentOperation(""))}
+          actionDismiss={() => dispatch(setCurrentOperation(""))}
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
@@ -233,15 +232,6 @@ const DidCardDetails = () => {
           isOpen={verifyPasscodeIsOpen}
           setIsOpen={setVerifyPasscodeIsOpen}
           onVerify={handleDelete}
-        />
-        <IonToast
-          isOpen={showToast}
-          onDidDismiss={() => setShowToast(false)}
-          message={`${i18n.t("toast.clipboard")}`}
-          color="secondary"
-          position="top"
-          cssClass="confirmation-toast"
-          duration={1500}
         />
       </TabLayout>
     </IonPage>

@@ -9,7 +9,6 @@ import {
   IonModal,
   IonRow,
   IonTitle,
-  IonToast,
   IonToolbar,
 } from "@ionic/react";
 import { useState } from "react";
@@ -25,14 +24,16 @@ import { i18n } from "../../../i18n";
 import { CryptoReceiveAddressProps } from "./CryptoReceiveAddress.types";
 import { writeToClipboard } from "../../../utils/clipboard";
 import "./CryptoReceiveAddress.scss";
-import { blurredCryptoData } from "../../constants/dictionary";
+import { blurredCryptoData, toastState } from "../../constants/dictionary";
+import { useAppDispatch } from "../../../store/hooks";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
 
 const CryptoReceiveAddress = ({
   isOpen,
   setIsOpen,
   accountData,
 }: CryptoReceiveAddressProps) => {
-  const [showToast, setShowToast] = useState(false);
+  const dispatch = useAppDispatch();
   const [hideDetails, setHideDetails] = useState(false);
 
   const refresh = () => {
@@ -117,7 +118,9 @@ const CryptoReceiveAddress = ({
                       data-testid="copy-button-address"
                       onClick={() => {
                         writeToClipboard(accountData.address);
-                        setShowToast(true);
+                        dispatch(
+                          setCurrentOperation(toastState.copiedToClipboard)
+                        );
                       }}
                     >
                       <span className="receive-crypto-modal-info-block-data">
@@ -147,7 +150,9 @@ const CryptoReceiveAddress = ({
                       data-testid="copy-button-type"
                       onClick={() => {
                         writeToClipboard(accountData.derivationPath);
-                        setShowToast(true);
+                        dispatch(
+                          setCurrentOperation(toastState.copiedToClipboard)
+                        );
                       }}
                     >
                       <span className="receive-crypto-modal-info-block-data">
@@ -208,15 +213,6 @@ const CryptoReceiveAddress = ({
           </IonGrid>
         </IonContent>
       </div>
-      <IonToast
-        isOpen={showToast}
-        onDidDismiss={() => setShowToast(false)}
-        message={`${i18n.t("toast.clipboard")}`}
-        color="secondary"
-        position="top"
-        cssClass="confirmation-toast"
-        duration={1500}
-      />
     </IonModal>
   );
 };

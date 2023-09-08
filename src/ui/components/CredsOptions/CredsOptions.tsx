@@ -22,10 +22,15 @@ import { Alert } from "../Alert";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../../../routes/paths";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { setCredsCache } from "../../../store/reducers/credsCache";
+import { VerifyPasscode } from "../VerifyPasscode";
+import { operationState } from "../../constants/dictionary";
 
 const CredsOptions = ({
   optionsIsOpen,
@@ -37,6 +42,7 @@ const CredsOptions = ({
   const [viewIsOpen, setViewIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const dispatch = useAppDispatch();
 
   const handleCloseOptions = () => setOptionsIsOpen(false);
@@ -123,7 +129,12 @@ const CredsOptions = ({
                   <span
                     className="creds-option"
                     data-testid="creds-options-delete-button"
-                    onClick={handleDelete}
+                    onClick={() => {
+                      handleDelete();
+                      dispatch(
+                        setCurrentOperation(operationState.deleteCredential)
+                      );
+                    }}
                   >
                     <span>
                       <IonButton shape="round">
@@ -191,11 +202,27 @@ const CredsOptions = ({
           "creds.card.details.delete.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t("creds.card.details.delete.alert.cancel")}`}
-        actionConfirm={() => setVerifyPasswordIsOpen(true)}
+        actionConfirm={() => {
+          if (
+            !stateCache?.authentication.passwordIsSkipped &&
+            stateCache?.authentication.passwordIsSet
+          ) {
+            setVerifyPasswordIsOpen(true);
+          } else {
+            setVerifyPasscodeIsOpen(true);
+          }
+        }}
+        actionCancel={() => dispatch(setCurrentOperation(""))}
+        actionDismiss={() => dispatch(setCurrentOperation(""))}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
+        onVerify={verifyAction}
+      />
+      <VerifyPasscode
+        isOpen={verifyPasscodeIsOpen}
+        setIsOpen={setVerifyPasscodeIsOpen}
         onVerify={verifyAction}
       />
     </>
