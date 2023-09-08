@@ -240,7 +240,7 @@
       "symbol": "Contains a symbol !@#$%^&*()"
     }
   },
-  "dids": {
+  "identity": {
     "tab": {
       "title": "Identities",
       "create": "Create an identity"
@@ -301,8 +301,24 @@
             "cancel": "Cancel"
           }
         },
-        "toast": {
-          "clipboard": "Copied to clipboard"
+        "options": {
+          "title": "Identity options",
+          "cancel": "Cancel",
+          "view": "View JSON",
+          "edit": "Edit identity",
+          "share": "Share identity",
+          "delete": "Delete identity",
+          "inner": {
+            "label": "Display name",
+            "confirm": "Confirm changes",
+            "error": "Must be less than 32 characters long"
+          }
+        },
+        "view": {
+          "cancel": "Cancel",
+          "title": "Identity JSON",
+          "copy": "Copy JSON",
+          "save": "Save to device"
         }
       }
     }
@@ -434,18 +450,6 @@
     "divider": "or",
     "copykey": "Copy identity key",
     "more": "More share options"
-  },
-  "identityoptions": {
-    "title": "Identity Options",
-    "cancel": "Cancel",
-    "edit": "Edit identity",
-    "share": "Share identity",
-    "delete": "Delete identity",
-    "inner": {
-      "label": "Display name",
-      "confirm": "Confirm changes",
-      "error": "Must be less than 32 characters long"
-    }
   },
   "createidentity": {
     "title": "Create new identity",

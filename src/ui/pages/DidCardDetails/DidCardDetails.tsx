@@ -87,7 +87,7 @@ const DidCardDetails = () => {
   const handleDelete = () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
-    // Remember to update identityoptions file too.
+    // Remember to update identity.card.details.options file too.
     if (cardData) {
       const updatedIdentities = identitiesData.filter(
         (item) => item.id !== cardData.id
@@ -136,7 +136,7 @@ const DidCardDetails = () => {
     <IonPage className="tab-layout card-details">
       <TabLayout
         header={true}
-        title={`${i18n.t("dids.card.details.done")}`}
+        title={`${i18n.t("identity.card.details.done")}`}
         titleSize="h3"
         titleAction={handleDone}
         menuButton={false}
@@ -178,7 +178,7 @@ const DidCardDetails = () => {
                   icon={trashOutline}
                   color="primary"
                 />
-                {i18n.t("dids.card.details.delete.button")}
+                {i18n.t("identity.card.details.delete.button")}
               </IonButton>
             </div>
           </>
@@ -203,12 +203,12 @@ const DidCardDetails = () => {
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
           dataTestId="alert-confirm"
-          headerText={i18n.t("dids.card.details.delete.alert.title")}
+          headerText={i18n.t("identity.card.details.delete.alert.title")}
           confirmButtonText={`${i18n.t(
-            "dids.card.details.delete.alert.confirm"
+            "identity.card.details.delete.alert.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "dids.card.details.delete.alert.cancel"
+            "identity.card.details.delete.alert.cancel"
           )}`}
           actionConfirm={() => {
             if (

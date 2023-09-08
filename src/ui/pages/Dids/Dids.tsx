@@ -63,7 +63,7 @@ const Dids = () => {
     >
       <TabLayout
         header={true}
-        title={`${i18n.t("dids.tab.title")}`}
+        title={`${i18n.t("identity.tab.title")}`}
         menuButton={true}
         additionalButtons={
           <AdditionalButtons handleCreateDid={() => setModalIsOpen(true)} />
@@ -76,7 +76,7 @@ const Dids = () => {
           />
         ) : (
           <CardsPlaceholder
-            buttonLabel={i18n.t("dids.tab.create")}
+            buttonLabel={i18n.t("identity.tab.create")}
             buttonAction={() => setModalIsOpen(true)}
             testId="dids-cards-placeholder"
           />

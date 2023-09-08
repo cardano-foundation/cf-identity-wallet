@@ -11,6 +11,27 @@
     text-align: center;
   }
 
+  &.modal.viewer {
+    ion-title h2 {
+      text-align: center;
+    }
+
+    .identity-options-inner {
+      overflow: scroll;
+      height: calc(92vh - (4rem + 6.25rem + env(safe-area-inset-bottom)));
+    }
+
+    .footer-col ion-button {
+      &:first-child {
+        margin-bottom: 0.63rem;
+      }
+
+      ion-icon {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
   .identity-options-main {
     margin-top: 0.5rem;
 
@@ -55,14 +76,12 @@
     }
   }
 
-  .identity-options-inner {
-    .error-message,
-    .error-placeholder {
-      margin-bottom: 1rem;
-    }
-
-    .error-placeholder {
-      height: 1.375rem;
-    }
+  pre {
+    overflow: hidden;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
   }
 }

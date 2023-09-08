@@ -14,7 +14,14 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { Share } from "@capacitor/share";
-import { pencilOutline, shareOutline, trashOutline } from "ionicons/icons";
+import {
+  codeSlashOutline,
+  pencilOutline,
+  shareOutline,
+  trashOutline,
+  copyOutline,
+  downloadOutline,
+} from "ionicons/icons";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
 import { i18n } from "../../../i18n";
@@ -38,7 +45,9 @@ import {
 import { updateReduxState } from "../../../store/utils";
 import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
 import { VerifyPasscode } from "../VerifyPasscode";
-import { operationState } from "../../constants/dictionary";
+import { operationState, toastState } from "../../constants/dictionary";
+import { PageLayout } from "../layout/PageLayout";
+import { writeToClipboard } from "../../../utils/clipboard";
 
 const IdentityOptions = ({
   isOpen,
@@ -53,6 +62,7 @@ const IdentityOptions = ({
   const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [viewIsOpen, setViewIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [actionType, setActionType] = useState("");
@@ -81,6 +91,8 @@ const IdentityOptions = ({
     setIsOpen(false);
     setAlertIsOpen(true);
   };
+
+  const handleCloseView = () => setViewIsOpen(false);
 
   const handleSubmit = () => {
     setActionType("edit");
@@ -175,7 +187,7 @@ const IdentityOptions = ({
                     }}
                     data-testid="close-button"
                   >
-                    {i18n.t("identityoptions.cancel")}
+                    {i18n.t("identity.card.details.options.cancel")}
                   </IonButton>
                 </IonButtons>
               )}
@@ -183,8 +195,8 @@ const IdentityOptions = ({
                 <h2>
                   {i18n.t(
                     editorOptionsIsOpen
-                      ? "identityoptions.edit"
-                      : "identityoptions.title"
+                      ? "identity.card.details.options.edit"
+                      : "identity.card.details.options.title"
                   )}
                 </h2>
               </IonTitle>
@@ -201,7 +213,9 @@ const IdentityOptions = ({
                   <IonCol size="12">
                     <CustomInput
                       dataTestId="edit-display-name"
-                      title={`${i18n.t("identityoptions.inner.label")}`}
+                      title={`${i18n.t(
+                        "identity.card.details.options.inner.label"
+                      )}`}
                       hiddenInput={false}
                       autofocus={true}
                       onChangeInput={setNewDisplayName}
@@ -211,7 +225,9 @@ const IdentityOptions = ({
                 </IonRow>
                 {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
                   <ErrorMessage
-                    message={`${i18n.t("identityoptions.inner.error")}`}
+                    message={`${i18n.t(
+                      "identity.card.details.options.inner.error"
+                    )}`}
                     timeout={false}
                   />
                 ) : (
@@ -225,13 +241,33 @@ const IdentityOptions = ({
                   onClick={handleSubmit}
                   disabled={!verifyDisplayName}
                 >
-                  {i18n.t("identityoptions.inner.confirm")}
+                  {i18n.t("identity.card.details.options.inner.confirm")}
                 </IonButton>
               </IonGrid>
             ) : (
               <IonGrid className="identity-options-main">
                 <IonRow>
                   <IonCol size="12">
+                    <span
+                      className="identity-options-option"
+                      data-testid="identity-options-view-button"
+                      onClick={() => {
+                        setIsOpen(false);
+                        setViewIsOpen(true);
+                      }}
+                    >
+                      <span>
+                        <IonButton shape="round">
+                          <IonIcon
+                            slot="icon-only"
+                            icon={codeSlashOutline}
+                          />
+                        </IonButton>
+                      </span>
+                      <span className="identity-options-label">
+                        {i18n.t("identity.card.details.options.view")}
+                      </span>
+                    </span>
                     <span
                       className="identity-options-option"
                       data-testid="identity-options-identity-options-button"
@@ -252,7 +288,7 @@ const IdentityOptions = ({
                         </IonButton>
                       </span>
                       <span className="identity-options-label">
-                        {i18n.t("identityoptions.edit")}
+                        {i18n.t("identity.card.details.options.edit")}
                       </span>
                     </span>
                     <span
@@ -273,13 +309,14 @@ const IdentityOptions = ({
                         </IonButton>
                       </span>
                       <span className="identity-options-info-block-data">
-                        {i18n.t("identityoptions.share")}
+                        {i18n.t("identity.card.details.options.share")}
                       </span>
                     </span>
                     <span
                       className="identity-options-option"
                       data-testid="identity-options-delete-button"
                       onClick={() => {
+                        setIsOpen(false);
                         handleDelete();
                         dispatch(
                           setCurrentOperation(operationState.deleteIdentity)
@@ -295,7 +332,7 @@ const IdentityOptions = ({
                         </IonButton>
                       </span>
                       <span className="identity-options-label">
-                        {i18n.t("identityoptions.delete")}
+                        {i18n.t("identity.card.details.options.delete")}
                       </span>
                     </span>
                   </IonCol>
@@ -305,15 +342,82 @@ const IdentityOptions = ({
           </IonContent>
         </div>
       </IonModal>
+      <IonModal
+        isOpen={viewIsOpen}
+        initialBreakpoint={1}
+        breakpoints={[1]}
+        className="page-layout"
+        data-testid="view-identity-modal"
+        onDidDismiss={handleCloseView}
+      >
+        <div className="identity-options modal viewer">
+          <PageLayout
+            header={true}
+            closeButton={true}
+            closeButtonLabel={`${i18n.t("identity.card.details.view.cancel")}`}
+            closeButtonAction={handleCloseView}
+            title={`${i18n.t("identity.card.details.view.title")}`}
+          >
+            <IonGrid className="identity-options-inner">
+              <pre>{JSON.stringify(cardData, null, 2)}</pre>
+            </IonGrid>
+            <IonGrid>
+              <IonRow>
+                <IonCol className="footer-col">
+                  <IonButton
+                    shape="round"
+                    expand="block"
+                    fill="outline"
+                    className="secondary-button"
+                    onClick={() => {
+                      writeToClipboard(JSON.stringify(cardData, null, 2));
+                      dispatch(
+                        setCurrentOperation(toastState.copiedToClipboard)
+                      );
+                    }}
+                  >
+                    <IonIcon
+                      slot="icon-only"
+                      size="small"
+                      icon={copyOutline}
+                      color="primary"
+                    />
+                    {i18n.t("identity.card.details.view.copy")}
+                  </IonButton>
+                  <IonButton
+                    shape="round"
+                    expand="block"
+                    className="ion-primary-button"
+                    onClick={() => {
+                      // @TODO - sdisalvo: Save to device
+                      return;
+                    }}
+                  >
+                    <IonIcon
+                      slot="icon-only"
+                      size="small"
+                      icon={downloadOutline}
+                      color="primary"
+                    />
+                    {i18n.t("identity.card.details.view.save")}
+                  </IonButton>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          </PageLayout>
+        </div>
+      </IonModal>
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm"
-        headerText={i18n.t("dids.card.details.delete.alert.title")}
+        headerText={i18n.t("identity.card.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
-          "dids.card.details.delete.alert.confirm"
+          "identity.card.details.delete.alert.confirm"
         )}`}
-        cancelButtonText={`${i18n.t("dids.card.details.delete.alert.cancel")}`}
+        cancelButtonText={`${i18n.t(
+          "identity.card.details.delete.alert.cancel"
+        )}`}
         actionConfirm={() => {
           if (
             !stateCache?.authentication.passwordIsSkipped &&

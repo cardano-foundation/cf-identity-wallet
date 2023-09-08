@@ -11,6 +11,10 @@
     text-align: center;
   }
 
+  .creds-options-body {
+    height: 90vh;
+  }
+
   .creds-options-main {
     margin-top: 0.5rem;
 
@@ -56,13 +60,17 @@
   }
 
   .creds-options-inner {
-    .error-message,
-    .error-placeholder {
-      margin-bottom: 1rem;
+    overflow: scroll;
+    height: calc(92vh - (4rem + 6.25rem + env(safe-area-inset-bottom)));
+  }
+
+  .footer-col ion-button {
+    &:first-child {
+      margin-bottom: 0.63rem;
     }
 
-    .error-placeholder {
-      height: 1.375rem;
+    ion-icon {
+      margin-right: 0.5rem;
     }
   }
 

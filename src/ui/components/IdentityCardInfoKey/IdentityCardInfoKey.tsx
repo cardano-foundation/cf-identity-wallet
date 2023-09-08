@@ -19,7 +19,7 @@ const IdentityCardInfoKey = ({ cardData }: IdentityCardInfoKeyProps) => {
   return (
     <>
       <div className="card-details-info-block">
-        <h3>{i18n.t("dids.card.details.information")}</h3>
+        <h3>{i18n.t("identity.card.details.information")}</h3>
         <div className="card-details-info-block-inner">
           <span
             className="card-details-info-block-line"
@@ -69,7 +69,7 @@ const IdentityCardInfoKey = ({ cardData }: IdentityCardInfoKeyProps) => {
         </div>
       </div>
       <div className="card-details-info-block">
-        <h3>{i18n.t("dids.card.details.type")}</h3>
+        <h3>{i18n.t("identity.card.details.type")}</h3>
         <div className="card-details-info-block-inner">
           <span
             className="card-details-info-block-line"
@@ -105,7 +105,7 @@ const IdentityCardInfoKey = ({ cardData }: IdentityCardInfoKeyProps) => {
         </div>
       </div>
       <div className="card-details-info-block">
-        <h3>{i18n.t("dids.card.details.controller")}</h3>
+        <h3>{i18n.t("identity.card.details.controller")}</h3>
         <div className="card-details-info-block-inner">
           <span
             className="card-details-info-block-line"
@@ -142,7 +142,7 @@ const IdentityCardInfoKey = ({ cardData }: IdentityCardInfoKeyProps) => {
         </div>
       </div>
       <div className="card-details-info-block">
-        <h3>{i18n.t("dids.card.details.publickeybase")}</h3>
+        <h3>{i18n.t("identity.card.details.publickeybase")}</h3>
         <div className="card-details-info-block-inner">
           <span
             className="card-details-info-block-line"

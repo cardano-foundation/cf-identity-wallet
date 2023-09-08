@@ -19,7 +19,7 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
     <>
       {cardData.di !== "" && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.delegator.title")}</h3>
+          <h3>{i18n.t("identity.card.details.delegator.title")}</h3>
           <div className="card-details-info-block-inner">
             <span
               className="card-details-info-block-line"
@@ -30,7 +30,7 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
               }}
             >
               <span className="card-details-info-block-text-icon">
-                {i18n.t("dids.card.details.delegator.icon")}
+                {i18n.t("identity.card.details.delegator.icon")}
               </span>
               <span className="card-details-info-block-data">
                 {cardData.di}
@@ -52,7 +52,7 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
       )}
       {cardData.k.length && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.signingkeyslist.title")}</h3>
+          <h3>{i18n.t("identity.card.details.signingkeyslist.title")}</h3>
           <div className="card-details-info-block-inner">
             {cardData.k.map((item, index) => {
               return (
@@ -66,7 +66,7 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
                   }}
                 >
                   <span className="card-details-info-block-text-icon">
-                    {i18n.t("dids.card.details.signingkeyslist.icon")}
+                    {i18n.t("identity.card.details.signingkeyslist.icon")}
                   </span>
                   <span className="card-details-info-block-data">{item}</span>
                   <span>
@@ -88,14 +88,14 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
       )}
       {cardData.kt > 1 && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.signingkeysthreshold.title")}</h3>
+          <h3>{i18n.t("identity.card.details.signingkeysthreshold.title")}</h3>
           <div className="card-details-info-block-inner">
             <span
               className="card-details-info-block-line"
               data-testid="signing-keys-threshold"
             >
               <span className="card-details-info-block-text-icon">
-                {i18n.t("dids.card.details.signingkeysthreshold.icon")}
+                {i18n.t("identity.card.details.signingkeysthreshold.icon")}
               </span>
               <span className="card-details-info-block-data">
                 {cardData.kt}
@@ -117,7 +117,7 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
       )}
       {cardData.n.length && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.nextkeyslist.title")}</h3>
+          <h3>{i18n.t("identity.card.details.nextkeyslist.title")}</h3>
           <div className="card-details-info-block-inner">
             {cardData.n.map((item, index) => {
               return (
@@ -131,7 +131,7 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
                   }}
                 >
                   <span className="card-details-info-block-text-icon">
-                    {i18n.t("dids.card.details.nextkeyslist.icon")}
+                    {i18n.t("identity.card.details.nextkeyslist.icon")}
                   </span>
                   <span className="card-details-info-block-data">{item}</span>
                   <span>
@@ -153,14 +153,14 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
       )}
       {cardData.nt > 1 && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.nextkeysthreshold.title")}</h3>
+          <h3>{i18n.t("identity.card.details.nextkeysthreshold.title")}</h3>
           <div className="card-details-info-block-inner">
             <span
               className="card-details-info-block-line"
               data-testid="next-keys-threshold"
             >
               <span className="card-details-info-block-text-icon">
-                {i18n.t("dids.card.details.nextkeysthreshold.icon")}
+                {i18n.t("identity.card.details.nextkeysthreshold.icon")}
               </span>
               <span className="card-details-info-block-data">
                 {cardData.nt}
@@ -181,7 +181,7 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
         </div>
       )}
       <div className="card-details-info-block">
-        <h3>{i18n.t("dids.card.details.creationtimestamp.title")}</h3>
+        <h3>{i18n.t("identity.card.details.creationtimestamp.title")}</h3>
         <div className="card-details-info-block-inner">
           <span
             className="card-details-info-block-line"
@@ -205,14 +205,14 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
       </div>
       {cardData.s > 0 && cardData.dt && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.rotationtimestamp.title")}</h3>
+          <h3>{i18n.t("identity.card.details.rotationtimestamp.title")}</h3>
           <div className="card-details-info-block-inner">
             <span
               className="card-details-info-block-line"
               data-testid="rotation-timestamp"
             >
               <span className="card-details-info-block-text-icon">
-                {i18n.t("dids.card.details.rotationtimestamp.icon")}
+                {i18n.t("identity.card.details.rotationtimestamp.icon")}
               </span>
               <span className="card-details-info-block-data">
                 {formatShortDate(cardData.dt)}
@@ -225,14 +225,14 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
       )}
       {cardData.s > 0 && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.sequencenumber.title")}</h3>
+          <h3>{i18n.t("identity.card.details.sequencenumber.title")}</h3>
           <div className="card-details-info-block-inner">
             <span
               className="card-details-info-block-line"
               data-testid="sequence-number"
             >
               <span className="card-details-info-block-text-icon">
-                {i18n.t("dids.card.details.sequencenumber.icon")}
+                {i18n.t("identity.card.details.sequencenumber.icon")}
               </span>
               <span className="card-details-info-block-data">{cardData.s}</span>
               <span>
@@ -252,7 +252,7 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
       )}
       {cardData.b.length && (
         <div className="card-details-info-block">
-          <h3>{i18n.t("dids.card.details.backerslist.title")}</h3>
+          <h3>{i18n.t("identity.card.details.backerslist.title")}</h3>
           <div className="card-details-info-block-inner">
             {cardData.b.map((item, index) => {
               return (
@@ -266,7 +266,7 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
                   }}
                 >
                   <span className="card-details-info-block-text-icon">
-                    {i18n.t("dids.card.details.backerslist.icon")}
+                    {i18n.t("identity.card.details.backerslist.icon")}
                   </span>
                   <span className="card-details-info-block-data">{item}</span>
                   <span>
@@ -287,7 +287,7 @@ const IdentityCardInfoKeri = ({ cardData }: IdentityCardInfoKeriProps) => {
         </div>
       )}
       <div className="card-details-info-block">
-        <h3>{i18n.t("dids.card.details.backeraddress.title")}</h3>
+        <h3>{i18n.t("identity.card.details.backeraddress.title")}</h3>
         <div className="card-details-info-block-inner">
           <span
             className="card-details-info-block-line"
