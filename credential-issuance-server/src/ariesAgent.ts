@@ -24,7 +24,7 @@ const agentConfig: InitConfig = {
     id: "idw-server",
     key: "idw-server",
   },
-  logger: new ConsoleLogger(LogLevel.debug),
+  logger: new ConsoleLogger(LogLevel.info),
 };
 
 export class AriesAgent {
