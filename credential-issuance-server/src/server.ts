@@ -1,5 +1,6 @@
 import express from "express";
 import {HttpInboundTransport} from "@aries-framework/node";
+import cors from "cors";
 import {config} from "./config";
 import {AriesAgent} from "./ariesAgent";
 import router from "./routes";
@@ -10,6 +11,7 @@ async function startServer() {
   const agent = AriesAgent.agent;
   await agent.start(httpServer);
   httpServer.app.use(router)
+  httpServer.app.use(cors());
   log(`Listening on port ${config.port}`)
 }
 
