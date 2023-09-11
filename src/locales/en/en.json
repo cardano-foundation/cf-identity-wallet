@@ -240,7 +240,7 @@
       "symbol": "Contains a symbol !@#$%^&*()"
     }
   },
-  "dids": {
+  "identity": {
     "tab": {
       "title": "Identities",
       "create": "Create an identity"
@@ -255,6 +255,44 @@
         "type": "Type",
         "controller": "Controller",
         "publickeybase": "Public Key Base 58",
+        "delegator": {
+          "title": "Delegator Identifier Prefix",
+          "icon": "DI"
+        },
+        "signingkeyslist": {
+          "title": "List of Signing Keys",
+          "icon": "K"
+        },
+        "signingkeysthreshold": {
+          "title": "Keys Signing Threshold",
+          "icon": "KT"
+        },
+        "nextkeyslist": {
+          "title": "List of Next Key Digests",
+          "icon": "N"
+        },
+        "nextkeysthreshold": {
+          "title": "Next Keys Signing Threshold",
+          "icon": "NT"
+        },
+        "creationtimestamp": {
+          "title": "Creation Timestamp"
+        },
+        "rotationtimestamp": {
+          "title": "Last Key Rotation Timestamp",
+          "icon": "DT"
+        },
+        "sequencenumber": {
+          "title": "Sequence Number",
+          "icon": "S"
+        },
+        "backerslist": {
+          "title": "List of Backers",
+          "icon": "B"
+        },
+        "backeraddress": {
+          "title": "Backer Address"
+        },
         "delete": {
           "button": "Delete identity",
           "alert": {
@@ -263,8 +301,24 @@
             "cancel": "Cancel"
           }
         },
-        "toast": {
-          "clipboard": "Copied to clipboard"
+        "options": {
+          "title": "Identity options",
+          "cancel": "Cancel",
+          "view": "View JSON",
+          "edit": "Edit identity",
+          "share": "Share identity",
+          "delete": "Delete identity",
+          "inner": {
+            "label": "Display name",
+            "confirm": "Confirm changes",
+            "error": "Must be less than 32 characters long"
+          }
+        },
+        "view": {
+          "cancel": "Cancel",
+          "title": "Identity JSON",
+          "copy": "Copy JSON",
+          "save": "Save to device"
         }
       }
     }
@@ -397,18 +451,6 @@
     "copykey": "Copy identity key",
     "more": "More share options"
   },
-  "editidentity": {
-    "title": "Edit identity",
-    "cancel": "Cancel",
-    "name": "Edit identity",
-    "share": "Share identity",
-    "delete": "Delete identity",
-    "inner": {
-      "label": "Display name",
-      "confirm": "Confirm changes",
-      "error": "Must be less than 32 characters long"
-    }
-  },
   "createidentity": {
     "title": "Create new identity",
     "displayname": {
@@ -483,11 +525,13 @@
     }
   },
   "toast": {
-    "clipboard": "Copied to clipboard",
+    "copiedtoclipboard": "Copied to clipboard",
     "walletcreated": "Seed phrase verified",
+    "walletrenamed": "Account renamed successfully",
     "walletrestored": "Seed phrase verified",
     "walletdeleted": "Account deleted successfully",
     "identitycreated": "New identity created successfully",
+    "identityrenamed": "Identity successfully renamed",
     "identitydeleted": "Identity successfully deleted",
     "credentialdeleted": "Credential deleted successfully",
     "connectiondeleted": "Connection deleted successfully",

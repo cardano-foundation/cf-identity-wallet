@@ -10,7 +10,10 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { ConnectionOptions } from "../../components/ConnectionOptions";
@@ -21,6 +24,7 @@ import {
   setConnectionsCache,
 } from "../../../store/reducers/connectionsCache";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
+import { operationState } from "../../constants/dictionary";
 
 const ConnectionDetails = () => {
   const history = useHistory();
@@ -171,7 +175,10 @@ const ConnectionDetails = () => {
             color="danger"
             data-testid="connection-details-delete-button"
             className="delete-button"
-            onClick={() => setAlertIsOpen(true)}
+            onClick={() => {
+              setAlertIsOpen(true);
+              dispatch(setCurrentOperation(operationState.deleteConnection));
+            }}
           >
             <IonIcon
               slot="icon-only"
@@ -208,6 +215,8 @@ const ConnectionDetails = () => {
               setVerifyPasscodeIsOpen(true);
             }
           }}
+          actionCancel={() => dispatch(setCurrentOperation(""))}
+          actionDismiss={() => dispatch(setCurrentOperation(""))}
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}

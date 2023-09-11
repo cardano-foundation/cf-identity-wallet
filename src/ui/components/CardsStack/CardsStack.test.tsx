@@ -2,7 +2,7 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { CLEAR_STATE_DELAY, CardsStack, NAVIGATION_DELAY } from "./CardsStack";
-import { didsFix } from "../../__fixtures__/didsFix";
+import { identityFix } from "../../__fixtures__/identityFix";
 import { store } from "../../../store";
 import { DidCardDetails } from "../../pages/DidCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
@@ -14,7 +14,7 @@ jest.mock("../../../core/aries/ariesAgent", () => ({
     agent: {
       getIdentity: jest
         .fn()
-        .mockResolvedValue({ type: "key", result: didsFix[0] }),
+        .mockResolvedValue({ type: "key", result: identityFix[0] }),
     },
   },
 }));
@@ -24,11 +24,11 @@ describe("Cards Stack Component", () => {
       <Provider store={store}>
         <CardsStack
           cardsType={cardTypes.dids}
-          cardsData={didsFix}
+          cardsData={identityFix}
         />
       </Provider>
     );
-    const firstCardId = getByText(didsFix[0].id);
+    const firstCardId = getByText(identityFix[0].id);
     expect(firstCardId).toBeInTheDocument();
   });
 
@@ -37,7 +37,7 @@ describe("Cards Stack Component", () => {
       <Provider store={store}>
         <CardsStack
           cardsType={cardTypes.dids}
-          cardsData={didsFix}
+          cardsData={identityFix}
         />
       </Provider>
     );
@@ -69,7 +69,7 @@ describe("Cards Stack Component", () => {
         <Provider store={store}>
           <CardsStack
             cardsType={cardTypes.dids}
-            cardsData={didsFix}
+            cardsData={identityFix}
           />
           <Route
             path={TabsRoutePath.DID_DETAILS}

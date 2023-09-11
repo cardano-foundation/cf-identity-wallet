@@ -11,7 +11,6 @@ import {
   IonLabel,
   IonRow,
   IonSearchbar,
-  IonToast,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { addOutline, hourglassOutline } from "ionicons/icons";
@@ -29,11 +28,8 @@ import "./Connections.scss";
 import { formatShortDate } from "../../../utils";
 import { AddConnection } from "../../components/AddConnection";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { connectionStatus, toastState } from "../../constants/dictionary";
-import {
-  getStateCache,
-  setCurrentOperation,
-} from "../../../store/reducers/stateCache";
+import { connectionStatus } from "../../constants/dictionary";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
@@ -96,13 +92,6 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
     MappedConnections[]
   >([]);
   const [addConnectionIsOpen, setAddConnectionIsOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
-
-  useEffect(() => {
-    if (stateCache.currentOperation === toastState.connectionDeleted) {
-      setShowToast(true);
-    }
-  }, [stateCache.currentOperation]);
 
   const handleAddConnection = () => {
     setAddConnectionIsOpen(true);
@@ -252,18 +241,6 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           testId="connections-cards-placeholder"
         />
       )}
-      <IonToast
-        isOpen={showToast}
-        onDidDismiss={() => {
-          setShowToast(false);
-          dispatch(setCurrentOperation(""));
-        }}
-        message={`${i18n.t("toast.connectiondeleted")}`}
-        color="secondary"
-        position="top"
-        cssClass="confirmation-toast"
-        duration={1500}
-      />
     </TabLayout>
   );
 };

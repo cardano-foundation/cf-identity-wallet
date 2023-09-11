@@ -14,12 +14,16 @@ import { pencilOutline, trashOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { ConnectionOptionsProps } from "./ConnectionOptions.types";
 import "./ConnectionOptions.scss";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { operationState } from "../../constants/dictionary";
+import { useAppDispatch } from "../../../store/hooks";
 
 const ConnectionOptions = ({
   optionsIsOpen,
   setOptionsIsOpen,
   handleDelete,
 }: ConnectionOptionsProps) => {
+  const dispatch = useAppDispatch();
   return (
     <>
       <IonModal
@@ -51,7 +55,7 @@ const ConnectionOptions = ({
                 <IonCol size="12">
                   <span
                     className="connection-options-option"
-                    data-testid="connection-options-edit-button"
+                    data-testid="connection-options-identity-options-button"
                   >
                     <span>
                       <IonButton shape="round">
@@ -68,7 +72,12 @@ const ConnectionOptions = ({
                   <span
                     className="connection-options-option"
                     data-testid="connection-options-delete-button"
-                    onClick={handleDelete}
+                    onClick={() => {
+                      handleDelete();
+                      dispatch(
+                        setCurrentOperation(operationState.deleteConnection)
+                      );
+                    }}
                   >
                     <span>
                       <IonButton shape="round">

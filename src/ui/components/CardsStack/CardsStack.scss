@@ -29,24 +29,40 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+
     .card-header {
       display: flex;
       justify-content: space-between;
+      font-weight: bold;
+
       .card-logo {
         max-width: 7.5rem;
         max-height: 1.375rem;
       }
     }
+
+    .card-body {
+      font-size: 0.625rem;
+      letter-spacing: 0.09375rem;
+    }
+
     .card-footer {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+
       .card-footer-column {
         display: flex;
         flex-direction: column;
+
         .card-footer-column-label {
           font-size: 0.625rem;
           color: var(--ion-color-secondary);
+        }
+
+        .card-footer-column-info {
+          font-size: 0.875rem;
+          color: var(--ion-color-primary);
         }
       }
     }
