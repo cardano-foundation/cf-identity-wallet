@@ -290,6 +290,32 @@ class AriesAgent {
     await this.agent.credentials.acceptOffer({ credentialRecordId });
   }
 
+  async requestCredential(url: string): Promise<boolean> {
+    const abortController = new AbortController();
+    const id = setTimeout(() => abortController.abort(), 1000 * 60);
+
+    let response: Response | undefined;
+    let responseMessage: string | undefined;
+    try {
+      response = await fetch(url, {
+        method: "GET",
+        signal: abortController.signal,
+      });
+      clearTimeout(id);
+      responseMessage = await response.text();
+    } catch (error: any) {
+      if (!(error.name == "AbortError")) {
+        throw error;
+      }
+    }
+    if (response !== undefined && responseMessage !== undefined) {
+      if (response.status === 200) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async acceptRequest(connectionId: string) {
     await this.agent.connections.acceptRequest(connectionId);
   }
