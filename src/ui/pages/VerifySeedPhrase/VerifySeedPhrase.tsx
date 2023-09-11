@@ -185,7 +185,7 @@ const VerifySeedPhrase = () => {
         progressBarBuffer={1}
         footer={true}
         primaryButtonText={`${i18n.t(
-          "verifyseedphrase." + seedPhraseType + ".continue.button"
+          "verifyseedphrase." + seedPhraseType + ".button.continue"
         )}`}
         primaryButtonAction={() => handleContinue()}
         primaryButtonDisabled={

@@ -224,7 +224,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
+      EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
     const alertWrapper = getByTestId("alert-confirm");
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
@@ -265,7 +265,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
+      EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
     const alertWrapper = getByTestId("alert-confirm");
 
@@ -297,7 +297,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
+      EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
 
     act(() => {
