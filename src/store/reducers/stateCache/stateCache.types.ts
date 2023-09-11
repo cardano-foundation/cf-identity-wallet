@@ -20,6 +20,7 @@ interface StateCacheProps {
   authentication: AuthenticationCacheProps;
   currentOperation: string;
   defaultCryptoAccount: string;
+  connectionRequest: string;
 }
 
 export type {

@@ -11,10 +11,11 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCurrentOperation,
   getCurrentRoute,
+  setConnectionRequest,
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { toastState } from "../../constants/dictionary";
+import { operationState } from "../../constants/dictionary";
 
 const Scanner = () => {
   const dispatch = useAppDispatch();
@@ -61,7 +62,13 @@ const Scanner = () => {
         BarcodeScanner.hideBackground();
         const result = await startScan();
         if (result.hasContent) {
-          dispatch(setCurrentOperation(toastState.qrSuccess));
+          stopScan();
+          if (currentOperation === operationState.scanConnection) {
+            dispatch(setConnectionRequest(result.content));
+          } else {
+            // @TODO - sdisalvo: handle other scan cases
+          }
+          dispatch(setCurrentOperation(""));
         }
       }
     }
@@ -70,13 +77,15 @@ const Scanner = () => {
   useEffect(() => {
     if (
       currentRoute?.path === TabsRoutePath.SCAN ||
-      currentOperation === "scan"
+      currentOperation === operationState.scanConnection
     ) {
       initScan();
     } else {
       stopScan();
     }
   }, [currentOperation, currentRoute]);
+
+  const handleConnectionRequest = () => {};
 
   return (
     <>

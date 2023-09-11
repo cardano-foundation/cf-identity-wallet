@@ -18,6 +18,7 @@ const initialState: StateCacheProps = {
     passwordIsSkipped: true,
   },
   currentOperation: "",
+  connectionRequest: "",
   defaultCryptoAccount: "",
 };
 
@@ -53,6 +54,9 @@ const stateCacheSlice = createSlice({
     setCurrentOperation: (state, action: PayloadAction<string>) => {
       state.currentOperation = action.payload;
     },
+    setConnectionRequest: (state, action: PayloadAction<string>) => {
+      state.connectionRequest = action.payload;
+    },
   },
 });
 
@@ -63,6 +67,7 @@ const {
   removeRoute,
   setAuthentication,
   setCurrentOperation,
+  setConnectionRequest,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -72,6 +77,8 @@ const getCurrentRoute = (state: RootState) =>
 const getAuthentication = (state: RootState) => state.stateCache.authentication;
 const getCurrentOperation = (state: RootState) =>
   state.stateCache.currentOperation;
+const getConnectionRequest = (state: RootState) =>
+  state.stateCache.connectionRequest;
 
 export type {
   CurrentRouteCacheProps,
@@ -93,4 +100,6 @@ export {
   setAuthentication,
   getCurrentOperation,
   setCurrentOperation,
+  setConnectionRequest,
+  getConnectionRequest,
 };

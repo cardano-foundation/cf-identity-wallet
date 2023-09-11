@@ -10,8 +10,9 @@ import {
 } from "../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { FullPageScanner } from "./pages/FullPageScanner";
-import { toastState } from "./constants/dictionary";
+import { operationState, toastState } from "./constants/dictionary";
 import { i18n } from "../i18n";
+import { ConnectionRequest } from "./pages/ConnectionRequest";
 
 setupIonicReact();
 
@@ -22,7 +23,7 @@ const App = () => {
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
-    setShowScan(currentOperation === "scan");
+    setShowScan(currentOperation === operationState.scanConnection);
     setShowToast(Object.values(toastState).indexOf(currentOperation) > -1);
   }, [currentOperation]);
 
@@ -35,6 +36,7 @@ const App = () => {
           ) : (
             <Routes />
           )}
+          <ConnectionRequest />
           <IonToast
             isOpen={showToast}
             onDidDismiss={() => {

@@ -75,6 +75,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     setInitialised(true);
   };
 
+  // @TODO - sdisalvo: Figure where is the best place for this
+  //
+  // AriesAgent.agent.onConnectionStateChange((event) => {
+  //   console.log(JSON.stringify(event, null, 2));
+  // });
+
   return initialised ? <>{props.children}</> : <></>;
 };
 

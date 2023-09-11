@@ -23,6 +23,7 @@ const operationState = {
   deleteIdentity: "deleteIdentity",
   deleteConnection: "deleteConnection",
   deleteCredential: "deleteCredential",
+  scanConnection: "scanConnection",
 };
 
 const toastState = {

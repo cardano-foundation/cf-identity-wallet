@@ -208,7 +208,7 @@ class AriesAgent {
     connectionRecord?: ConnectionRecord | undefined;
   }> {
     return this.agent.oob.receiveInvitationFromUrl(url, {
-      autoAcceptConnection: true,
+      autoAcceptConnection: false,
       autoAcceptInvitation: true,
       reuseConnection: true,
     });

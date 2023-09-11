@@ -13,6 +13,7 @@ import { AddConnectionProps } from "./AddConnection.types";
 import "./AddConnection.scss";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { operationState } from "../../constants/dictionary";
 
 const AddConnection = ({
   addConnectionIsOpen,
@@ -44,8 +45,9 @@ const AddConnection = ({
                   className="add-connection-modal-option"
                   data-testid="add-connection-modal-scan-qr-code"
                   onClick={() => {
-                    dispatch(setCurrentOperation("scan"));
-                    setAddConnectionIsOpen(false);
+                    dispatch(
+                      setCurrentOperation(operationState.scanConnection)
+                    );
                   }}
                 >
                   <span>

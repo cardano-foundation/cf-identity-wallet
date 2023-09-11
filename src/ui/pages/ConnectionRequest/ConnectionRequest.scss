@@ -1,0 +1,29 @@
+.connection-request {
+  background: var(--ion-color-light);
+  z-index: 102 !important;
+  padding-inline: 0;
+  overflow: initial !important;
+
+  ion-header {
+    margin-bottom: -1px;
+    padding-inline: 1.25rem;
+  }
+
+  &.show {
+    right: 0;
+    left: 0;
+    width: 100%;
+    transition-property: right;
+    transition-property: left;
+    transition-duration: 0.5s;
+  }
+
+  &.hide {
+    right: -100%;
+    left: 100%;
+    width: 100%;
+    transition-property: right;
+    transition-property: left;
+    transition-duration: 0.5s;
+  }
+}

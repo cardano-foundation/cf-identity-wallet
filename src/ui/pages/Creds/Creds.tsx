@@ -61,10 +61,6 @@ const Creds = () => {
     // @TODO - sdisalvo: Function to create Credential
   };
 
-  const handleConnections = () => {
-    setShowConnections(!showConnections);
-  };
-
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
   );
@@ -89,8 +85,8 @@ const Creds = () => {
           menuButton={true}
           additionalButtons={
             <AdditionalButtons
+              handleConnections={() => setShowConnections(true)}
               handleCreateCred={handleCreateCred}
-              handleConnections={handleConnections}
             />
           }
         >
