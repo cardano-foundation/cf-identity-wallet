@@ -172,60 +172,62 @@ const CredsOptions = ({
         onDidDismiss={handleCloseView}
       >
         <div className="creds-options modal viewer">
-          <PageLayout
-            header={true}
-            closeButton={true}
-            closeButtonLabel={`${i18n.t("creds.card.details.view.cancel")}`}
-            closeButtonAction={handleCloseView}
-            title={`${i18n.t("creds.card.details.view.title")}`}
-          >
-            <IonGrid className="creds-options-inner">
-              <pre>{JSON.stringify(cred, null, 2)}</pre>
-            </IonGrid>
-            <IonGrid>
-              <IonRow>
-                <IonCol className="footer-col">
-                  <IonButton
-                    shape="round"
-                    expand="block"
-                    fill="outline"
-                    className="secondary-button"
-                    onClick={() => {
-                      writeToClipboard(JSON.stringify(cred, null, 2));
-                      dispatch(
-                        setCurrentOperation(toastState.copiedToClipboard)
-                      );
-                    }}
-                  >
-                    <IonIcon
-                      slot="icon-only"
-                      size="small"
-                      icon={copyOutline}
-                      color="primary"
-                    />
-                    {i18n.t("creds.card.details.view.copy")}
-                  </IonButton>
-                  <IonButton
-                    shape="round"
-                    expand="block"
-                    className="ion-primary-button"
-                    onClick={() => {
-                      // @TODO - sdisalvo: Save to device
-                      return;
-                    }}
-                  >
-                    <IonIcon
-                      slot="icon-only"
-                      size="small"
-                      icon={downloadOutline}
-                      color="primary"
-                    />
-                    {i18n.t("creds.card.details.view.save")}
-                  </IonButton>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </PageLayout>
+          {!cred ? null : (
+            <PageLayout
+              header={true}
+              closeButton={true}
+              closeButtonLabel={`${i18n.t("creds.card.details.view.cancel")}`}
+              closeButtonAction={handleCloseView}
+              title={`${i18n.t("creds.card.details.view.title")}`}
+            >
+              <IonGrid className="creds-options-inner">
+                <pre>{JSON.stringify(cred, null, 2)}</pre>
+              </IonGrid>
+              <IonGrid>
+                <IonRow>
+                  <IonCol className="footer-col">
+                    <IonButton
+                      shape="round"
+                      expand="block"
+                      fill="outline"
+                      className="secondary-button"
+                      onClick={() => {
+                        writeToClipboard(JSON.stringify(cred, null, 2));
+                        dispatch(
+                          setCurrentOperation(toastState.copiedToClipboard)
+                        );
+                      }}
+                    >
+                      <IonIcon
+                        slot="icon-only"
+                        size="small"
+                        icon={copyOutline}
+                        color="primary"
+                      />
+                      {i18n.t("creds.card.details.view.copy")}
+                    </IonButton>
+                    <IonButton
+                      shape="round"
+                      expand="block"
+                      className="ion-primary-button"
+                      onClick={() => {
+                        // @TODO - sdisalvo: Save to device
+                        return;
+                      }}
+                    >
+                      <IonIcon
+                        slot="icon-only"
+                        size="small"
+                        icon={downloadOutline}
+                        color="primary"
+                      />
+                      {i18n.t("creds.card.details.view.save")}
+                    </IonButton>
+                  </IonCol>
+                </IonRow>
+              </IonGrid>
+            </PageLayout>
+          )}
         </div>
       </IonModal>
       <Alert

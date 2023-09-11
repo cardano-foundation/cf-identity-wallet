@@ -339,58 +339,62 @@ const IdentityOptions = ({
         onDidDismiss={() => setViewIsOpen(false)}
       >
         <div className="identity-options modal viewer">
-          <PageLayout
-            header={true}
-            closeButton={true}
-            closeButtonLabel={`${i18n.t("identity.card.details.view.cancel")}`}
-            closeButtonAction={() => setViewIsOpen(false)}
-            title={`${i18n.t("identity.card.details.view.title")}`}
-          >
-            <IonGrid className="identity-options-inner">
-              <pre>{JSON.stringify(cardData, null, 2)}</pre>
-            </IonGrid>
-            <IonGrid>
-              <IonRow>
-                <IonCol className="footer-col">
-                  <IonButton
-                    shape="round"
-                    expand="block"
-                    fill="outline"
-                    className="secondary-button"
-                    onClick={() => {
-                      writeToClipboard(JSON.stringify(cardData, null, 2));
-                      dispatch(
-                        setCurrentOperation(toastState.copiedToClipboard)
-                      );
-                    }}
-                  >
-                    <IonIcon
-                      slot="icon-only"
-                      size="small"
-                      icon={copyOutline}
-                    />
-                    {i18n.t("identity.card.details.view.copy")}
-                  </IonButton>
-                  <IonButton
-                    shape="round"
-                    expand="block"
-                    className="ion-primary-button"
-                    onClick={() => {
-                      // @TODO - sdisalvo: Save to device
-                      return;
-                    }}
-                  >
-                    <IonIcon
-                      slot="icon-only"
-                      size="small"
-                      icon={downloadOutline}
-                    />
-                    {i18n.t("identity.card.details.view.save")}
-                  </IonButton>
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </PageLayout>
+          {!cardData ? null : (
+            <PageLayout
+              header={true}
+              closeButton={true}
+              closeButtonLabel={`${i18n.t(
+                "identity.card.details.view.cancel"
+              )}`}
+              closeButtonAction={() => setViewIsOpen(false)}
+              title={`${i18n.t("identity.card.details.view.title")}`}
+            >
+              <IonGrid className="identity-options-inner">
+                <pre>{JSON.stringify(cardData, null, 2)}</pre>
+              </IonGrid>
+              <IonGrid>
+                <IonRow>
+                  <IonCol className="footer-col">
+                    <IonButton
+                      shape="round"
+                      expand="block"
+                      fill="outline"
+                      className="secondary-button"
+                      onClick={() => {
+                        writeToClipboard(JSON.stringify(cardData, null, 2));
+                        dispatch(
+                          setCurrentOperation(toastState.copiedToClipboard)
+                        );
+                      }}
+                    >
+                      <IonIcon
+                        slot="icon-only"
+                        size="small"
+                        icon={copyOutline}
+                      />
+                      {i18n.t("identity.card.details.view.copy")}
+                    </IonButton>
+                    <IonButton
+                      shape="round"
+                      expand="block"
+                      className="ion-primary-button"
+                      onClick={() => {
+                        // @TODO - sdisalvo: Save to device
+                        return;
+                      }}
+                    >
+                      <IonIcon
+                        slot="icon-only"
+                        size="small"
+                        icon={downloadOutline}
+                      />
+                      {i18n.t("identity.card.details.view.save")}
+                    </IonButton>
+                  </IonCol>
+                </IonRow>
+              </IonGrid>
+            </PageLayout>
+          )}
         </div>
       </IonModal>
       <Alert
