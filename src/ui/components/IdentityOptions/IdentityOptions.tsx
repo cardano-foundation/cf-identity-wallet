@@ -76,6 +76,17 @@ const IdentityOptions = ({
     setNewDisplayName(cardData.displayName);
   }, [cardData.displayName]);
 
+  useEffect(() => {
+    if (Capacitor.isNativePlatform()) {
+      Keyboard.addListener("keyboardWillShow", () => {
+        setkeyboardIsOpen(true);
+      });
+      Keyboard.addListener("keyboardWillHide", () => {
+        setkeyboardIsOpen(false);
+      });
+    }
+  }, []);
+
   const handleDismiss = () => {
     setEditorIsOpen(false);
     setIsOpen(false);
@@ -92,20 +103,30 @@ const IdentityOptions = ({
     setAlertIsOpen(true);
   };
 
-  const handleCloseView = () => setViewIsOpen(false);
-
   const handleSubmit = () => {
     setActionType("edit");
     setEditorIsOpen(false);
     setIsOpen(false);
-    if (
-      !stateCache?.authentication.passwordIsSkipped &&
-      stateCache?.authentication.passwordIsSet
-    ) {
-      setVerifyPasswordIsOpen(true);
-    } else {
-      setVerifyPasscodeIsOpen(true);
-    }
+    const updatedIdentities = [...identitiesData];
+    const index = updatedIdentities.findIndex(
+      (identity) => identity.id === cardData.id
+    );
+    updatedIdentities[index] = {
+      ...updatedIdentities[index],
+      displayName: newDisplayName,
+    };
+    setCardData({ ...cardData, displayName: newDisplayName });
+    dispatch(setIdentitiesCache(updatedIdentities));
+    handleDone();
+  };
+
+  const verifyAction = () => {
+    handleDismiss();
+    const updatedIdentities = identitiesData.filter(
+      (item) => item.id !== cardData.id
+    );
+    dispatch(setIdentitiesCache(updatedIdentities));
+    handleDone();
   };
 
   const handleDone = () => {
@@ -123,39 +144,6 @@ const IdentityOptions = ({
       history.push(TabsRoutePath.DIDS);
     }
   };
-
-  const verifyAction = () => {
-    handleDismiss();
-    if (actionType === "edit") {
-      const updatedIdentities = [...identitiesData];
-      const index = updatedIdentities.findIndex(
-        (identity) => identity.id === cardData.id
-      );
-      updatedIdentities[index] = {
-        ...updatedIdentities[index],
-        displayName: newDisplayName,
-      };
-      setCardData({ ...cardData, displayName: newDisplayName });
-      dispatch(setIdentitiesCache(updatedIdentities));
-    } else if (actionType === "delete") {
-      const updatedIdentities = identitiesData.filter(
-        (item) => item.id !== cardData.id
-      );
-      dispatch(setIdentitiesCache(updatedIdentities));
-    }
-    handleDone();
-  };
-
-  useEffect(() => {
-    if (Capacitor.isNativePlatform()) {
-      Keyboard.addListener("keyboardWillShow", () => {
-        setkeyboardIsOpen(true);
-      });
-      Keyboard.addListener("keyboardWillHide", () => {
-        setkeyboardIsOpen(false);
-      });
-    }
-  }, []);
 
   return (
     <>
@@ -348,14 +336,14 @@ const IdentityOptions = ({
         breakpoints={[1]}
         className="page-layout"
         data-testid="view-identity-modal"
-        onDidDismiss={handleCloseView}
+        onDidDismiss={() => setViewIsOpen(false)}
       >
         <div className="identity-options modal viewer">
           <PageLayout
             header={true}
             closeButton={true}
             closeButtonLabel={`${i18n.t("identity.card.details.view.cancel")}`}
-            closeButtonAction={handleCloseView}
+            closeButtonAction={() => setViewIsOpen(false)}
             title={`${i18n.t("identity.card.details.view.title")}`}
           >
             <IonGrid className="identity-options-inner">
@@ -380,7 +368,6 @@ const IdentityOptions = ({
                       slot="icon-only"
                       size="small"
                       icon={copyOutline}
-                      color="primary"
                     />
                     {i18n.t("identity.card.details.view.copy")}
                   </IonButton>
@@ -397,7 +384,6 @@ const IdentityOptions = ({
                       slot="icon-only"
                       size="small"
                       icon={downloadOutline}
-                      color="primary"
                     />
                     {i18n.t("identity.card.details.view.save")}
                   </IonButton>

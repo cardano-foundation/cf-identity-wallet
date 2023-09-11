@@ -18,10 +18,12 @@
 
     .identity-options-inner {
       overflow: scroll;
-      height: calc(92vh - (4rem + 6.25rem + env(safe-area-inset-bottom)));
+      height: calc(92vh - (11.5rem + env(safe-area-inset-bottom)));
     }
 
     .footer-col ion-button {
+      --color-selected: white !important;
+
       &:first-child {
         margin-bottom: 0.63rem;
       }
