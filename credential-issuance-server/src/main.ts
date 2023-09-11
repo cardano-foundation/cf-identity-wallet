@@ -1,13 +1,18 @@
 import { clear } from "console";
 import { prompt } from "inquirer";
 
-import { BaseInquirer, ConfirmOptions, Output, Title } from "./types/baseInquirer";
+import {
+  BaseInquirer,
+  ConfirmOptions,
+  Output,
+  Title,
+} from "./types/baseInquirer";
 import { startServer } from "./server";
 import qrcode from "qrcode-terminal";
 import { AriesAgent } from "./ariesAgent";
 export const main = async () => {
   clear();
-  console.log("Starting server aries agent...")
+  console.log("Starting server aries agent...");
   const faber = await MainInquirer.build();
   await faber.processAnswer();
 };
@@ -21,6 +26,7 @@ enum PromptOptions {
 export class MainInquirer extends BaseInquirer {
   public promptOptionsString: string[];
   public agent: AriesAgent;
+  public connectionId: string = "";
 
   public constructor() {
     super();
@@ -34,7 +40,13 @@ export class MainInquirer extends BaseInquirer {
   }
 
   private async getPromptChoice() {
-    return prompt([this.inquireOptions(Object.values(PromptOptions))]);
+    let choices;
+    if (!this.connectionId) {
+      choices = [PromptOptions.CreateInvitation, PromptOptions.Exit];
+    } else {
+      choices = Object.values(PromptOptions);
+    }
+    return prompt([this.inquireOptions(choices)]);
   }
 
   public async processAnswer() {
@@ -60,22 +72,15 @@ export class MainInquirer extends BaseInquirer {
     console.log("Invitation URL: ", url);
     qrcode.generate(url, { small: true });
     await this.agent.waitForConnection(outOfBandId);
-  }
-
-  public async offderCredential() {
-    console.log("Creating invitaion URL ..., credential will automatically send to you when connecting to this connection!");
-    const { url, outOfBandId } = await this.agent.createInvitation();
-    console.log("Invitation URL: ", url);
-    qrcode.generate(url, { small: true });
-    await this.agent.waitForConnection(outOfBandId);
     const [connectionRecord] = await this.agent.connectionFindAllByOutOfBandId(
       outOfBandId
     );
-    if (connectionRecord) {
-    console.log("Starting offer credential to this agent with connectionId: ", connectionRecord.id);
-      await this.agent.offerCredential(connectionRecord.id);
-      console.log(Output.OfferCredentialSuccess)
-    }
+    if (connectionRecord) this.connectionId = connectionRecord.id;
+  }
+
+  public async offderCredential() {
+    await this.agent.offerCredential(this.connectionId);
+    console.log(Output.OfferCredentialSuccess);
   }
 
   public async exit() {
