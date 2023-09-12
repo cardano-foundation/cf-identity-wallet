@@ -39,6 +39,8 @@ const toastState = {
   connectionDeleted: "connectionDeleted",
   qrSuccess: "qrSuccess",
   qrError: "qrError",
+  connectionRequestPending: "connectionRequestPending",
+  newConnectionAdded: "newConnectionAdded",
 };
 
 const defaultCredentialsCardData = {

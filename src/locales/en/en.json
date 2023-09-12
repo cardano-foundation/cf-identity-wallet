@@ -536,7 +536,9 @@
     "credentialdeleted": "Credential deleted successfully",
     "connectiondeleted": "Connection deleted successfully",
     "qrsuccess": "QR code scanned successfully",
-    "qrerror": "QR code not recognised"
+    "qrerror": "QR code not recognised",
+    "connectionrequestpending": "Connection request pending",
+    "newconnectionadded": "New connection added"
   },
   "scan": {
     "tab": {
@@ -551,6 +553,12 @@
     "button": {
       "connect": "Connect",
       "cancel": "Cancel"
-    }
+    },
+    "alert": {
+      "title": "Are you sure about proceeding with your connection to 'Passport Office'?",
+      "confirm": "Yes, connect",
+      "cancel": "Cancel"
+    },
+    "success": "Connection successful"
   }
 }

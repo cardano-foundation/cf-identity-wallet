@@ -1,17 +1,21 @@
 import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Creds.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  getCurrentOperation,
+  setCurrentOperation,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
 import { Connections } from "../Connections";
-import { cardTypes } from "../../constants/dictionary";
+import { cardTypes, toastState } from "../../constants/dictionary";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -54,6 +58,7 @@ const AdditionalButtons = ({
 
 const Creds = () => {
   const dispatch = useAppDispatch();
+  const currentOperation = useAppSelector(getCurrentOperation);
   const credsData = useAppSelector(getCredsCache);
   const [showConnections, setShowConnections] = useState(false);
 
@@ -64,6 +69,16 @@ const Creds = () => {
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
   );
+
+  useEffect(() => {
+    if (currentOperation === toastState.connectionRequestPending) {
+      setShowConnections(true);
+      // @TODO - sdisalvo: show this toast when "state": "completed"
+      setTimeout(() => {
+        dispatch(setCurrentOperation(toastState.newConnectionAdded));
+      }, 4000);
+    }
+  }, [currentOperation]);
 
   return (
     <>
