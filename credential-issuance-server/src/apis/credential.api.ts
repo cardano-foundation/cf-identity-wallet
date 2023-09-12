@@ -37,11 +37,10 @@ export async function credentialApi(req: Request, res: Response): Promise<void> 
 }
 
 export async function createOfferInvitation(_: Request, res: Response): Promise<void> {
-  const invitation = await AriesAgent.agent.createOfferInvitation();
   const response: IResponseData<string> = {
     statusCode: 200,
     success: true,
-    data: invitation
+    data: await AriesAgent.agent.createOfferInvitation(),
   }
   httpResponse(res, response);
 }
