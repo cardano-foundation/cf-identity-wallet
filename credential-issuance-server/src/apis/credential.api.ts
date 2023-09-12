@@ -35,3 +35,13 @@ export async function credentialApi(req: Request, res: Response): Promise<void> 
   }
   httpResponse(res, response);
 }
+
+export async function createOfferAttachment(_: Request, res: Response): Promise<void> {
+  const attachment = await AriesAgent.agent.createOfferAttachment();
+  const response: IResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: attachment
+  }
+  httpResponse(res, response);
+}

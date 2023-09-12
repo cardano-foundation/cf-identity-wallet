@@ -10,5 +10,6 @@ export const config = {
     ping: "/ping",
     invitation: "/invitation",
     credential: "/credential",
+    offerAttachment: "/offerAttachment",
   }
 }

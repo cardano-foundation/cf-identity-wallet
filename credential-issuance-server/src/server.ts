@@ -7,12 +7,12 @@ import router from "./routes";
 import { log } from "./log";
 async function startServer() {
   const app = express();
+  app.use(cors())
   const httpServer = new HttpInboundTransport({ app, port: config.port });
   const agent = AriesAgent.agent;
   await agent.start(httpServer);
-  httpServer.app.use(router);
-  httpServer.app.use(cors());
-  log(`Listening on port ${config.port}`);
+  httpServer.app.use(router)
+  log(`Listening on port ${config.port}`)
 }
 
 export { startServer };
