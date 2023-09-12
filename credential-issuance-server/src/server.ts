@@ -1,8 +1,8 @@
 import express from "express";
-import {HttpInboundTransport} from "@aries-framework/node";
+import { HttpInboundTransport } from "@aries-framework/node";
 import cors from "cors";
-import {config} from "./config";
-import {AriesAgent} from "./ariesAgent";
+import { config } from "./config";
+import { AriesAgent } from "./ariesAgent";
 import router from "./routes";
 import { log } from "./log";
 async function startServer() {
@@ -15,7 +15,4 @@ async function startServer() {
   log(`Listening on port ${config.port}`)
 }
 
-startServer().then(() => log("Server started"))
-  .catch((err) => {
-    throw err;
-  })
+export { startServer };
