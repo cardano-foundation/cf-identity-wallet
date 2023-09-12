@@ -113,7 +113,7 @@ export class AriesAgent {
       autoAcceptCredential: AutoAcceptCredential.Always,
     });
   }
-  async createOfferAttachment(){
+  async createOfferInvitation(){
     const did = await this.agent.dids.create({
       method: "key",
       options: { keyType: KeyType.Ed25519 },
