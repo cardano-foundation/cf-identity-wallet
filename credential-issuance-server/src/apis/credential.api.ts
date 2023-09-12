@@ -36,12 +36,12 @@ export async function credentialApi(req: Request, res: Response): Promise<void> 
   httpResponse(res, response);
 }
 
-export async function createOfferAttachment(_: Request, res: Response): Promise<void> {
-  const attachment = await AriesAgent.agent.createOfferAttachment();
+export async function createOfferInvitation(_: Request, res: Response): Promise<void> {
+  const invitation = await AriesAgent.agent.createOfferInvitation();
   const response: IResponseData<string> = {
     statusCode: 200,
     success: true,
-    data: attachment
+    data: invitation
   }
   httpResponse(res, response);
 }
