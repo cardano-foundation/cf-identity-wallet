@@ -9,7 +9,7 @@ import {
   JsonLdCredentialFormatService,
   KeyType,
   LogLevel,
-  V2CredentialProtocol,
+  V2CredentialProtocol, V2OfferCredentialMessage,
   W3cCredentialsModule
 } from "@aries-framework/core";
 import {AskarModule} from "@aries-framework/askar";
@@ -113,5 +113,41 @@ export class AriesAgent {
       autoAcceptCredential: AutoAcceptCredential.Always,
     });
   }
-
+  async createOfferAttachment(){
+    const did = await this.agent.dids.create({
+      method: "key",
+      options: { keyType: KeyType.Ed25519 },
+    });
+    const { message } = await this.agent.credentials.createOffer({
+      comment: "V2 Out of Band offer (W3C)",
+      autoAcceptCredential: AutoAcceptCredential.Never,
+      credentialFormats: {
+        jsonld: {
+          credential: {
+            "@context": [CREDENTIALS_CONTEXT_V1_URL, "https://www.w3.org/2018/credentials/examples/v1"],
+            type: ["VerifiableCredential", "UniversityDegreeCredential"],
+            issuer: did.didState.did as string,
+            issuanceDate: "2017-10-22T12:23:48Z",
+            credentialSubject: {
+              degree: {
+                type: "BachelorDegree",
+                name: "Bachelor of Science and Arts",
+              },
+            },
+          },
+          options: {
+            proofType: "Ed25519Signature2018",
+            proofPurpose: "assertionMethod",
+          },
+        },
+      },
+      protocolVersion: "v2" as never,
+    });
+    const offerMessage = message as V2OfferCredentialMessage
+    const { outOfBandInvitation } = await this.agent.oob.createInvitation({
+      autoAcceptConnection: true,
+      messages: [offerMessage]
+    });
+    return outOfBandInvitation.toUrl({ domain: config.endpoint });
+  }
 }
