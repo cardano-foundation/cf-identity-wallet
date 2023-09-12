@@ -302,6 +302,7 @@ class AriesAgent {
       response = await fetch(url, {
         method: "GET",
         signal: abortController.signal,
+        headers: { "Content-type": this.agent.config.didCommMimeType },
       });
       clearTimeout(id);
       responseMessage = await response.text();
