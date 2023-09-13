@@ -63,11 +63,7 @@ const Scanner = () => {
         const result = await startScan();
         if (result.hasContent) {
           stopScan();
-          if (currentOperation === operationState.scanConnection) {
-            dispatch(setConnectionRequest(result.content));
-          } else {
-            // @TODO - sdisalvo: handle other scan cases
-          }
+          dispatch(setConnectionRequest(result.content));
           dispatch(setCurrentOperation(""));
         }
       }
@@ -84,8 +80,6 @@ const Scanner = () => {
       stopScan();
     }
   }, [currentOperation, currentRoute]);
-
-  const handleConnectionRequest = () => {};
 
   return (
     <>

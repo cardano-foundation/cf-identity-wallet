@@ -5,6 +5,7 @@ import {
   swapHorizontalOutline,
   checkmark,
 } from "ionicons/icons";
+import i18next from "i18next";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { i18n } from "../../../i18n";
 import "./ConnectionRequest.scss";
@@ -15,11 +16,12 @@ import {
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { toastState } from "../../constants/dictionary";
+import { connectionType, toastState } from "../../constants/dictionary";
 import { Alert } from "../../components/Alert";
 import {
   connectionRequestData,
   connectionRequestPlaceholder,
+  credentialRequestData,
 } from "../../__fixtures__/connectionsFix";
 import { ConnectionRequestData } from "../Connections/Connections.types";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
@@ -33,6 +35,7 @@ const ConnectionRequest = () => {
   const [connectionData, setConnectionData] = useState<ConnectionRequestData>(
     connectionRequestPlaceholder
   );
+  const [connectionRequestType, setConnectionRequestType] = useState("");
 
   useEffect(() => {
     // @TODO - sdisalvo: this is listening for connection requests
@@ -42,9 +45,15 @@ const ConnectionRequest = () => {
       //
       //  await AriesAgent.agent.receiveInvitationFromUrl(connectionRequest);
       //
-      //  Update the local data - remember to replace connectionRequestData with real values from the above request
+      //  Update the local data - remember to replace the value we are passing
+      //  to "setConnectionData()" with real values from the above request
       //
-      setConnectionData(connectionRequestData);
+      setConnectionData(credentialRequestData);
+      if (credentialRequestData.goal_code === connectionType.connection) {
+        setConnectionRequestType(connectionType.connection);
+      } else if (credentialRequestData.goal_code === connectionType.issuevc) {
+        setConnectionRequestType(connectionType.credential);
+      }
       //
       // and show the connection request page accordingly
       setShowConnectionRequest(true);
@@ -65,7 +74,14 @@ const ConnectionRequest = () => {
       handleReset();
       // the new connection will be displayed in the View Connections with chip stating ‘Pending'
       // and a toast message will be shown as well (setting a delay to wait for the animation to finish)
-      dispatch(setCurrentOperation(toastState.connectionRequestPending));
+      let operation = "";
+      if (connectionData.goal_code === connectionType.connection) {
+        operation = toastState.connectionRequestPending;
+      }
+      if (connectionData.goal_code === connectionType.issuevc) {
+        operation = toastState.credentialRequestPending;
+      }
+      dispatch(setCurrentOperation(operation));
     }, TOAST_MESSAGE_DELAY);
   };
 
@@ -112,7 +128,7 @@ const ConnectionRequest = () => {
           <IonRow className="connection-request-info-row">
             <IonCol size="12">
               <span>
-                {connectionData.goal_code + i18n.t("connectionrequest.request")}
+                {connectionRequestType + i18n.t("connectionrequest.request")}
               </span>
               <strong>{connectionData.label}</strong>
             </IonCol>
@@ -128,7 +144,9 @@ const ConnectionRequest = () => {
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm"
-        headerText={i18n.t("connectionrequest.alert.title")}
+        headerText={i18next.t("connectionrequest.alert.title", {
+          initiator: connectionData.label,
+        })}
         confirmButtonText={`${i18n.t("connectionrequest.alert.confirm")}`}
         cancelButtonText={`${i18n.t("connectionrequest.alert.cancel")}`}
         actionConfirm={handleConnect}

@@ -372,11 +372,6 @@
       "create": "Add a connection",
       "searchconnections": "Search connections"
     },
-    "modal": {
-      "title": "Add a connection",
-      "scan": "Scan a QR code",
-      "provide": "Provide a QR code"
-    },
     "details": {
       "done": "Done",
       "label": "Label",
@@ -400,6 +395,11 @@
         }
       }
     }
+  },
+  "connectmodal": {
+    "title": "Add a ",
+    "scan": "Scan a QR code",
+    "provide": "Provide a QR code"
   },
   "verifypassword": {
     "title": "Enter password",
@@ -538,7 +538,9 @@
     "qrsuccess": "QR code scanned successfully",
     "qrerror": "QR code not recognised",
     "connectionrequestpending": "Connection request pending",
-    "newconnectionadded": "New connection added"
+    "newconnectionadded": "New connection added",
+    "credentialrequestpending": "Credential request pending",
+    "newcredentialadded": "New credential added"
   },
   "scan": {
     "tab": {
@@ -556,7 +558,7 @@
       "cancel": "Cancel"
     },
     "alert": {
-      "title": "Are you sure about proceeding with your connection to 'Passport Office'?",
+      "title": "Are you sure about proceeding with your connection to {{initiator}}?",
       "confirm": "Yes, connect",
       "cancel": "Cancel"
     },

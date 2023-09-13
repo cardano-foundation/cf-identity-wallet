@@ -9,31 +9,32 @@ import {
 import { scanCircleOutline, qrCodeOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
-import { AddConnectionProps } from "./AddConnection.types";
-import "./AddConnection.scss";
+import { ConnectModalProps } from "./ConnectModal.types";
+import "./ConnectModal.scss";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { operationState } from "../../constants/dictionary";
 
-const AddConnection = ({
-  addConnectionIsOpen,
-  setAddConnectionIsOpen,
-}: AddConnectionProps) => {
+const ConnectModal = ({
+  type,
+  ConnectModalIsOpen,
+  setConnectModalIsOpen,
+}: ConnectModalProps) => {
   const dispatch = useAppDispatch();
   return (
     <IonModal
-      isOpen={addConnectionIsOpen}
+      isOpen={ConnectModalIsOpen}
       initialBreakpoint={0.3}
       breakpoints={[0, 0.3]}
       className="page-layout short-modal"
       data-testid="add-connection-modal"
-      onDidDismiss={() => setAddConnectionIsOpen(false)}
+      onDidDismiss={() => setConnectModalIsOpen(false)}
     >
       <div className="add-connection-modal modal">
         <PageLayout
           header={true}
           closeButton={false}
-          title={`${i18n.t("connections.modal.title")}`}
+          title={`${i18n.t("connectmodal.title") + type}`}
         >
           <IonGrid>
             <IonRow>
@@ -59,7 +60,7 @@ const AddConnection = ({
                     </IonButton>
                   </span>
                   <span className="add-connection-modal-label">
-                    {i18n.t("connections.modal.scan")}
+                    {i18n.t("connectmodal.scan")}
                   </span>
                 </span>
                 <span
@@ -75,7 +76,7 @@ const AddConnection = ({
                     </IonButton>
                   </span>
                   <span className="add-connection-modal-label">
-                    {i18n.t("connections.modal.provide")}
+                    {i18n.t("connectmodal.provide")}
                   </span>
                 </span>
               </IonCol>
@@ -87,4 +88,4 @@ const AddConnection = ({
   );
 };
 
-export { AddConnection };
+export { ConnectModal };

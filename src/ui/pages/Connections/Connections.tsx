@@ -26,9 +26,13 @@ import {
 } from "./Connections.types";
 import "./Connections.scss";
 import { formatShortDate } from "../../../utils";
-import { AddConnection } from "../../components/AddConnection";
+import { ConnectModal } from "../../components/ConnectModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { connectionStatus, toastState } from "../../constants/dictionary";
+import {
+  connectionStatus,
+  connectionType,
+  toastState,
+} from "../../constants/dictionary";
 import {
   getCurrentOperation,
   getStateCache,
@@ -99,10 +103,10 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
-  const [addConnectionIsOpen, setAddConnectionIsOpen] = useState(false);
+  const [ConnectModalIsOpen, setConnectModalIsOpen] = useState(false);
 
-  const handleAddConnection = () => {
-    setAddConnectionIsOpen(true);
+  const handleConnectModal = () => {
+    setConnectModalIsOpen(true);
   };
 
   const handleShowConnectionDetails = (item: ConnectionsProps) => {
@@ -123,7 +127,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
         shape="round"
         className="add-button"
         data-testid="add-connection-button"
-        onClick={handleAddConnection}
+        onClick={handleConnectModal}
       >
         <IonIcon
           slot="icon-only"
@@ -187,7 +191,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   };
 
   useEffect(() => {
-    // @TODO - sdisalvo: This one is listening for pending connections
+    // @TODO - sdisalvo: This one is listening for pending connection requests
     if (currentOperation === toastState.connectionRequestPending) {
       setShowConnections(true);
       // Fetch new data - remember to replace connectionRequestData with real values
@@ -278,15 +282,16 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
               </IonRow>
             </IonGrid>
           </IonContent>
-          <AddConnection
-            addConnectionIsOpen={addConnectionIsOpen}
-            setAddConnectionIsOpen={setAddConnectionIsOpen}
+          <ConnectModal
+            type={connectionType.connection}
+            ConnectModalIsOpen={ConnectModalIsOpen}
+            setConnectModalIsOpen={setConnectModalIsOpen}
           />
         </>
       ) : (
         <CardsPlaceholder
           buttonLabel={i18n.t("connections.tab.create")}
-          buttonAction={handleAddConnection}
+          buttonAction={handleConnectModal}
           testId="connections-cards-placeholder"
         />
       )}

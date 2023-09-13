@@ -22,6 +22,7 @@ describe("credsCacheSlice", () => {
         nameOnCredential: "Thomas A. Mayfield",
         issuerLogo: "https://placehold.co/120x22",
         colors: ["#FFBC60", "#FFA21F"],
+        status: "confirmed",
       },
     ];
     const newState = credsCacheSlice.reducer(
@@ -44,6 +45,7 @@ describe("getCredsCache", () => {
             nameOnCredential: "Thomas A. Mayfield",
             issuerLogo: "https://placehold.co/120x22",
             colors: ["#FFBC60", "#FFA21F"],
+            status: "confirmed",
           },
           {
             id: "did:example:ebfeb1f712ebc6f1c276e12ec22",
@@ -52,6 +54,7 @@ describe("getCredsCache", () => {
             nameOnCredential: "Thomas A. Mayfield",
             issuerLogo: "https://placehold.co/120x22",
             colors: ["#FFBC60", "#FFA21F"],
+            status: "confirmed",
           },
         ],
       },

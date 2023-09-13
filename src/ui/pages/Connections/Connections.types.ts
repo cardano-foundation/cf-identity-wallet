@@ -30,7 +30,7 @@ interface ConnectionRequestData {
   goal_code: string;
   goal: string;
   handshake_protocols: string[];
-  requestattach: string[];
+  requestattach: any[];
   service: {
     id: string;
     type: string;
