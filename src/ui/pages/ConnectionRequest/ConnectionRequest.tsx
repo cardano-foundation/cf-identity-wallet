@@ -15,9 +15,14 @@ import {
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
 import { toastState } from "../../constants/dictionary";
 import { Alert } from "../../components/Alert";
+import {
+  connectionRequestData,
+  connectionRequestPlaceholder,
+} from "../../__fixtures__/connectionsFix";
+import { ConnectionRequestData } from "../Connections/Connections.types";
+import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
 
 const ConnectionRequest = () => {
   const dispatch = useAppDispatch();
@@ -25,9 +30,25 @@ const ConnectionRequest = () => {
   const [showConnectionRequest, setShowConnectionRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [connectionData, setConnectionData] = useState<ConnectionRequestData>(
+    connectionRequestPlaceholder
+  );
 
   useEffect(() => {
-    setShowConnectionRequest(!!connectionRequest.length);
+    // @TODO - sdisalvo: this is listening for connection requests
+    if (connectionRequest.length) {
+      //  If we have a connection request, initiate the Aries agent to fetch data and wait for "state": "request-sent"
+      //  it can't currently be tested in my local - will come back to it
+      //
+      //  await AriesAgent.agent.receiveInvitationFromUrl(connectionRequest);
+      //
+      //  Update the local data - remember to replace connectionRequestData with real values from the above request
+      //
+      setConnectionData(connectionRequestData);
+      //
+      // and show the connection request page accordingly
+      setShowConnectionRequest(true);
+    }
   }, [connectionRequest]);
 
   const handleReset = () => {
@@ -37,13 +58,15 @@ const ConnectionRequest = () => {
   };
 
   const handleConnect = async () => {
+    // @TODO - sdisalvo: If the user selects confirm, the connection must be accepted
+    // by calling acceptRequest from the agent and passing the ID of the connection
     setInitiateAnimation(true);
-    // await AriesAgent.agent.receiveInvitationFromUrl(connectionRequest);
     setTimeout(() => {
       handleReset();
-      // @TODO - sdisalvo: show this toast when "state": "request-sent"
+      // the new connection will be displayed in the View Connections with chip stating ‘Pending'
+      // and a toast message will be shown as well (setting a delay to wait for the animation to finish)
       dispatch(setCurrentOperation(toastState.connectionRequestPending));
-    }, 4000);
+    }, TOAST_MESSAGE_DELAY);
   };
 
   return (
@@ -81,15 +104,17 @@ const ConnectionRequest = () => {
             </div>
             <div className="connection-request-provider-logo">
               <img
-                src={CardanoLogo}
+                src={connectionData.profileUrl}
                 alt="connection-request-provider-logo"
               />
             </div>
           </IonRow>
           <IonRow className="connection-request-info-row">
             <IonCol size="12">
-              <span>Connection request from</span>
-              <strong>Passport Office</strong>
+              <span>
+                {connectionData.goal_code + i18n.t("connectionrequest.request")}
+              </span>
+              <strong>{connectionData.label}</strong>
             </IonCol>
           </IonRow>
           <IonRow className="connection-request-status">

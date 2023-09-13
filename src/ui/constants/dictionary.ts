@@ -8,7 +8,7 @@ const cardTypes = {
 
 const connectionStatus = {
   pending: "pending",
-  status: "confirmed",
+  confirmed: "confirmed",
 };
 
 const operationState = {

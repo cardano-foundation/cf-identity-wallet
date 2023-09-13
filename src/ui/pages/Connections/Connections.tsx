@@ -28,13 +28,19 @@ import "./Connections.scss";
 import { formatShortDate } from "../../../utils";
 import { AddConnection } from "../../components/AddConnection";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { connectionStatus } from "../../constants/dictionary";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import { connectionStatus, toastState } from "../../constants/dictionary";
+import {
+  getCurrentOperation,
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import { connectionRequestData } from "../../__fixtures__/connectionsFix";
+import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
 
 const ConnectionItem = ({
   item,
@@ -86,8 +92,10 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const connectionsData: ConnectionsProps[] =
-    useAppSelector(getConnectionsCache);
+  const currentOperation = useAppSelector(getCurrentOperation);
+  const [connectionsData, setConnectionsData] = useState<ConnectionsProps[]>(
+    useAppSelector(getConnectionsCache)
+  );
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
@@ -177,6 +185,47 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
       element.scrollIntoView({ behavior: "smooth" });
     }
   };
+
+  useEffect(() => {
+    // @TODO - sdisalvo: This one is listening for pending connections
+    if (currentOperation === toastState.connectionRequestPending) {
+      setShowConnections(true);
+      // Fetch new data - remember to replace connectionRequestData with real values
+      const timeElapsed = Date.now();
+      const today = new Date(timeElapsed);
+      const connectionData = {
+        id: connectionRequestData.id,
+        issuer: connectionRequestData.label,
+        issuanceDate: today.toISOString(),
+        issuerLogo: connectionRequestData.profileUrl,
+        status: connectionStatus.pending,
+      };
+      const newConnectionsData = [...connectionsData, connectionData];
+      // Update existing connections adding the new one with status "pending"
+      setConnectionsData(newConnectionsData);
+      // Add function here to receive a "state": "completed" from the agent then pass a boolean to the variable below
+      const state = true;
+      setTimeout(() => {
+        // Adding a timeout to wait until the previous toast for pending connection will close
+        // also emulating a delay in the response from the agent
+        if (state) {
+          const updatedData = () => {
+            const data = newConnectionsData;
+            for (const i in data) {
+              if (data[i].id == connectionData.id) {
+                data[i].status = connectionStatus.confirmed;
+                break;
+              }
+            }
+            return data;
+          };
+          // update the state of the displayed connection removing the "pending" label and show toast
+          setConnectionsData(updatedData);
+          dispatch(setCurrentOperation(toastState.newConnectionAdded));
+        }
+      }, TOAST_MESSAGE_DELAY);
+    }
+  }, [currentOperation]);
 
   return (
     <TabLayout

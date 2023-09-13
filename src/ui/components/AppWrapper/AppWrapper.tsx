@@ -76,6 +76,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   // @TODO - sdisalvo: Figure where is the best place for this
+  // it can't currently be tested in my local - will come back to it
   //
   // AriesAgent.agent.onConnectionStateChange((event) => {
   //   console.log(JSON.stringify(event, null, 2));

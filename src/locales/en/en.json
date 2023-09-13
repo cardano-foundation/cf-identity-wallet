@@ -550,6 +550,7 @@
   },
   "connectionrequest": {
     "title": "Connect",
+    "request": " request from",
     "button": {
       "connect": "Connect",
       "cancel": "Cancel"
