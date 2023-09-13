@@ -4,12 +4,14 @@ import { IncomingStreamData } from "@libp2p/interface/src/stream-handler";
 import { OutboundPackage } from "@aries-framework/core";
 import { Connection } from "@libp2p/interface/connection";
 import { Stream } from "@libp2p/interface/src/connection";
-import { LibP2pInboundTransport } from "../libP2pInboundTransport";
+import { PeerId } from "@libp2p/interface/dist/src/peer-id/index";
 import { LibP2pService } from "./libP2p.service";
+import { LibP2pInboundTransport } from "../libP2pInboundTransport";
+import { IPeerIdJSON } from "./libP2p.types";
 
 // @TODO - config env or input from user
-// eslint-disable-next-line no-undef
 export const LIBP2P_RELAY =
+  // eslint-disable-next-line no-undef
   process.env.REACT_APP_LIBP2P_RELAY ??
   "/ip4/127.0.0.1/tcp/51986/ws/p2p/QmUDSANiD1VyciqTgUBTw9egXHAtmamrtR1sa8SNf4aPHa";
 export const schemaPrefix = "libp2p:/";
@@ -88,20 +90,29 @@ export class LibP2p {
       : undefined;
   }
 
-  public async initNode() {
-    const node = await this.libP2pService.createNode();
+  public async initNode(peerId?: PeerId) {
+    const node = await this.libP2pService.createNode(peerId);
     this.setNode(node);
     this.setPeerId(this.node.peerId.toString());
     return this;
   }
 
-  public async start() {
+  public async start(peerIdJSON?: IPeerIdJSON) {
     if (this.isStart) return this;
     if (!this.node || !this.node.isStarted()) {
-      await this.initNode();
+      if (peerIdJSON) {
+        const peerId = await this.libP2pService.createFromJSON(peerIdJSON);
+        await this.initNode(peerId);
+      } else {
+        await this.initNode();
+      }
     }
     this.isStart = true;
     return this;
+  }
+
+  public getPeerJson(): IPeerIdJSON {
+    return this.libP2pService.getPeerJson(this.node);
   }
 
   public async stop(): Promise<void> {

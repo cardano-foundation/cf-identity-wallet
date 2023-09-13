@@ -5,6 +5,7 @@ import type {
   Logger,
 } from "@aries-framework/core";
 import { LibP2p } from "./libp2p/libP2p";
+import { getPeerFromStorage, savePeer } from "./libP2p.peer";
 
 export class LibP2pOutboundTransport implements OutboundTransport {
   private agent!: Agent;
@@ -19,7 +20,14 @@ export class LibP2pOutboundTransport implements OutboundTransport {
   public async start(agent: Agent): Promise<void> {
     this.agent = agent;
     this.logger = this.agent.config.logger;
-    await this.libP2p.start();
+    const existingPeerId = await getPeerFromStorage(agent);
+    if (existingPeerId) {
+      await this.libP2p.start(JSON.parse(existingPeerId.value));
+    } else {
+      await this.libP2p.start();
+      const peerId = this.libP2p.getPeerJson();
+      await savePeer(agent, peerId);
+    }
     this.libP2p.setUsageStatusOfOutbound(true);
     this.logger.debug("Starting LibP2p outbound transport");
   }
