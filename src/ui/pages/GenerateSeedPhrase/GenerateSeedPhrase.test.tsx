@@ -15,10 +15,7 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
-import {
-  generateSeedPhraseState,
-  onboardingRoute,
-} from "../../constants/dictionary";
+import { operationState, onboardingRoute } from "../../constants/dictionary";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
@@ -56,10 +53,7 @@ const storeMocked = (initialState: StoreMocked) => {
 
 describe("Generate Seed Phrase screen from Onboarding", () => {
   beforeAll(() => {
-    history.push(
-      RoutePath.GENERATE_SEED_PHRASE,
-      generateSeedPhraseState.onboarding
-    );
+    history.push(RoutePath.GENERATE_SEED_PHRASE, operationState.onboarding);
   });
 
   test("User can see Title and Security Overlay", () => {
@@ -335,11 +329,11 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       </Provider>
     );
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    expect(termsCheckbox.hasAttribute('[checked="false'));
+    expect(termsCheckbox.hasAttribute("[checked=\"false"));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute('[checked="true'));
+    expect(termsCheckbox.hasAttribute("[checked=\"true"));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute('[checked="false'));
+    expect(termsCheckbox.hasAttribute("[checked=\"false"));
   });
 
   test("calls handleOnBack when back button is clicked", async () => {
@@ -394,7 +388,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
   beforeAll(() => {
     history.push(
       RoutePath.GENERATE_SEED_PHRASE,
-      generateSeedPhraseState.additional
+      operationState.newCryptoAccount
     );
   });
 
@@ -441,9 +435,9 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
     await waitFor(() => expect(overlay).toHaveClass("hidden"));
 
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    expect(termsCheckbox.hasAttribute('[checked="false'));
+    expect(termsCheckbox.hasAttribute("[checked=\"false"));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute('[checked="true'));
+    expect(termsCheckbox.hasAttribute("[checked=\"true"));
 
     const continueButton = getByTestId("continue-button");
 
@@ -483,7 +477,7 @@ describe.skip("Restore account from existing seed phrase", () => {
   beforeAll(() => {
     history.push(
       RoutePath.GENERATE_SEED_PHRASE,
-      generateSeedPhraseState.restore
+      operationState.restoreCryptoAccount
     );
   });
 
@@ -511,7 +505,7 @@ describe.skip("Restore account from existing seed phrase", () => {
 
   test("User can enter a seed phrase", async () => {
     window.history.pushState(
-      { type: generateSeedPhraseState.restore },
+      { type: operationState.restoreCryptoAccount },
       "",
       RoutePath.GENERATE_SEED_PHRASE
     );

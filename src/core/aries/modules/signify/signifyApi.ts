@@ -3,12 +3,18 @@ import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
 import { ICreateIdentifierResult } from "./signifyApi.types";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
+  static readonly LOCAL_KERIA_ENDPOINT =
+    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3901";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
+    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3903";
   static readonly SIGNIFY_BRAN = "0123456789abcdefghijk"; // @TODO - foconnor: Shouldn't be hard-coded.
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
+
+  // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
+  static readonly BACKER_ADDRESS =
+    "addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm";
   static readonly BACKER_CONFIG = {
     toad: 1,
     wits: [SignifyApi.BACKER_AID],
@@ -16,9 +22,7 @@ export class SignifyApi {
     ncount: 1,
     isith: "1",
     nsith: "1",
-    data: [
-      { ca: "addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm" },
-    ],
+    data: [{ ca: SignifyApi.BACKER_ADDRESS }],
   };
 
   private signifyClient!: SignifyClient;
@@ -63,20 +67,6 @@ export class SignifyApi {
       signifyName,
       identifier: op.name.replace("witness.", ""),
     };
-  }
-
-  async getIdentifiersDetailed(): Promise<any[]> {
-    // @TODO - foconnor: We shouldn't need to individually re-pull every identifier
-    // but we don't have the records in place in Aries yet, so this is just to get created at date (even though after a rotation it will be wrong).
-    return (
-      await Promise.all(
-        (
-          await this.signifyClient.identifiers().list()
-        ).map(async (aid: any) => {
-          return this.signifyClient.identifiers().get(aid.name);
-        })
-      )
-    ).flat();
   }
 
   async getIdentifierByName(name: string): Promise<any> {

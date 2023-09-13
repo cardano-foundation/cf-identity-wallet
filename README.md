@@ -31,9 +31,7 @@ mediator_1             | https://localhost:2015?c_i=eyJAdHlwZSI6ICJkaWQ6c292OkJ6
 You can fill it into [ariesAgent.ts](https://github.com/cardano-foundation/cf-identity-wallet/blob/f2733cfdc962583fb962f12006e0c9e27ea113ef/src/core/aries/ariesAgent.ts#L98) to use mediator for communicate multi agents.
 
 ## Deployment steps before building
-At present to create KERI AIDs we use a combination of KERIA and Signify-TS.
-KERIA for now is deployed locally in Docker Compose and pushes key event material to a KERI cardano-backer running on our AWS account.
-To launch KERIA:
+Our DIDComm over LibP2P implementation currently depends on a locally deployed WebRTC relay.
 ```
 docker compose up -d
 ```

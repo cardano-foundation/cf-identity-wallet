@@ -20,6 +20,7 @@ import {
   CredentialState,
   CredentialExchangeRecord,
   KeyDidRegistrar,
+  WsOutboundTransport,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -31,7 +32,7 @@ import {
   MiscRecordId,
   CryptoAccountRecord,
 } from "./modules";
-import { HttpOutboundTransport, WsOutboundTransport } from "./transports";
+import { HttpOutboundTransport } from "./transports";
 import {
   Blockchain,
   GetIdentityResult,
@@ -39,6 +40,7 @@ import {
   UpdateIdentityMetadata,
 } from "./ariesAgent.types";
 import type {
+  CredentialShortDetails,
   CryptoAccountRecordShortDetails,
   DIDDetails,
   IdentityShortDetails,
@@ -52,6 +54,7 @@ import {
   IdentityMetadataRecord,
   IdentityMetadataRecordProps,
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
+import { CredentialMetadataRecord } from "./modules/generalStorage/repositories/credentialMetadataRecord";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -84,7 +87,9 @@ class AriesAgent {
     "DID metadata missing for stored DID";
   static readonly UNEXPECTED_MISSING_DID_RESULT_ON_CREATE =
     "DID was successfully created but the DID was not returned in the state returned";
-  static readonly DID_NOT_ARCHIVED = "DID was not archived";
+  static readonly RECORD_NOT_ARCHIVED = "Record was not archived";
+  static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
+    "Credential metadata missing for stored credential";
 
   private static instance: AriesAgent;
   private readonly agent: Agent;
@@ -106,7 +111,8 @@ class AriesAgent {
           : { ionicStorage: new IonicStorageModule() }),
         signify: new SignifyModule(),
         mediationRecipient: new MediationRecipientModule({
-          mediatorInvitationUrl: "", // TODO: must add it when devops had supported infrastructure
+          mediatorInvitationUrl:
+            "http://dev.mediator.cf-keripy.metadata.dev.cf-deployments.org:2015/invitation?oob=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvb3V0LW9mLWJhbmQvMS4xL2ludml0YXRpb24iLCJAaWQiOiIzY2E3NjhhYS1kNWUyLTRiMGYtYjIwOC0yNGNiMjMxZTdhNTgiLCJsYWJlbCI6IkFyaWVzIEZyYW1ld29yayBKYXZhU2NyaXB0IE1lZGlhdG9yIiwiYWNjZXB0IjpbImRpZGNvbW0vYWlwMSIsImRpZGNvbW0vYWlwMjtlbnY9cmZjMTkiXSwiaGFuZHNoYWtlX3Byb3RvY29scyI6WyJodHRwczovL2RpZGNvbW0ub3JnL2RpZGV4Y2hhbmdlLzEuMCIsImh0dHBzOi8vZGlkY29tbS5vcmcvY29ubmVjdGlvbnMvMS4wIl0sInNlcnZpY2VzIjpbeyJpZCI6IiNpbmxpbmUtMCIsInNlcnZpY2VFbmRwb2ludCI6Imh0dHA6Ly9kZXYubWVkaWF0b3IuY2Yta2VyaXB5Lm1ldGFkYXRhLmRldi5jZi1kZXBsb3ltZW50cy5vcmc6MjAxNSIsInR5cGUiOiJkaWQtY29tbXVuaWNhdGlvbiIsInJlY2lwaWVudEtleXMiOlsiZGlkOmtleTp6Nk1rdmk1RG1nbTg2Q1FUM3JveDZ2dExZNzN0RUZzVkVjSkRYdXNSWDRZdDloczQiXSwicm91dGluZ0tleXMiOltdfSx7ImlkIjoiI2lubGluZS0xIiwic2VydmljZUVuZHBvaW50Ijoid3M6Ly9kZXYubWVkaWF0b3IuY2Yta2VyaXB5Lm1ldGFkYXRhLmRldi5jZi1kZXBsb3ltZW50cy5vcmc6MjAxNSIsInR5cGUiOiJkaWQtY29tbXVuaWNhdGlvbiIsInJlY2lwaWVudEtleXMiOlsiZGlkOmtleTp6Nk1rdmk1RG1nbTg2Q1FUM3JveDZ2dExZNzN0RUZzVkVjSkRYdXNSWDRZdDloczQiXSwicm91dGluZ0tleXMiOltdfV19",
           mediatorPickupStrategy: MediatorPickupStrategy.Implicit,
         }),
       },
@@ -377,7 +383,7 @@ class AriesAgent {
     return result.didState.did;
   }
 
-  async getMetadataById(id: string): Promise<IdentityMetadataRecord> {
+  async getIdentityMetadataById(id: string): Promise<IdentityMetadataRecord> {
     const metadata =
       await this.agent.modules.generalStorage.getIdentityMetadata(id);
     if (!metadata) {
@@ -435,7 +441,7 @@ class AriesAgent {
         };
       }
     } else {
-      const metadata = await this.getMetadataById(identifier);
+      const metadata = await this.getIdentityMetadataById(identifier);
       const aid = await this.agent.modules.signify.getIdentifierByName(
         metadata.signifyName as string
       );
@@ -450,23 +456,15 @@ class AriesAgent {
           displayName: metadata.displayName,
           createdAtUTC: metadata.createdAt.toISOString(),
           colors: metadata.colors,
-          sequenceNumber: aid.state.s,
-          priorEventSaid: aid.state.p,
-          eventSaid: aid.state.d,
-          eventTimestamp: aid.state.dt,
-          eventType: aid.state.et,
-          keySigningThreshold: aid.state.kt,
-          signingKeys: aid.state.k,
-          nextKeysThreshold: aid.state.nt,
-          nextKeys: aid.state.n,
-          backerThreshold: aid.state.bt,
-          backerAids: aid.state.b,
-          lastEstablishmentEvent: {
-            said: aid.state.ee.d,
-            sequence: aid.state.ee.s,
-            backerToAdd: aid.state.ee.ba,
-            backerToRemove: aid.state.ee.br,
-          },
+          s: parseInt(aid.state.s),
+          dt: new Date(aid.state.dt).toISOString(),
+          kt: parseInt(aid.state.kt),
+          k: aid.state.k,
+          nt: parseInt(aid.state.nt),
+          n: aid.state.n,
+          bt: parseInt(aid.state.bt),
+          b: aid.state.b,
+          di: aid.state.di,
         },
       };
     }
@@ -487,7 +485,7 @@ class AriesAgent {
     if (!signingKey.publicKeyBase58) {
       throw new Error(`${AriesAgent.UNEXPECTED_DID_DOC_FORMAT} ${record.did}`);
     }
-    const metadata = await this.getMetadataById(record.did);
+    const metadata = await this.getIdentityMetadataById(record.did);
 
     return {
       id: record.did,
@@ -501,9 +499,11 @@ class AriesAgent {
     };
   }
 
-  validArchivedIdentity(metadata: IdentityMetadataRecord): void {
+  private validArchivedRecord(
+    metadata: IdentityMetadataRecord | CredentialMetadataRecord
+  ): void {
     if (!metadata.isArchived) {
-      throw new Error(`${AriesAgent.DID_NOT_ARCHIVED} ${metadata.id}`);
+      throw new Error(`${AriesAgent.RECORD_NOT_ARCHIVED} ${metadata.id}`);
     }
   }
 
@@ -518,8 +518,8 @@ class AriesAgent {
   }
 
   async deleteIdentity(identifier: string): Promise<void> {
-    const metadata = await this.getMetadataById(identifier);
-    this.validArchivedIdentity(metadata);
+    const metadata = await this.getIdentityMetadataById(identifier);
+    this.validArchivedRecord(metadata);
     await this.agent.modules.generalStorage.deleteIdentityMetadata(identifier);
   }
 
@@ -530,12 +530,64 @@ class AriesAgent {
   }
 
   async restoreIdentity(identifier: string): Promise<void> {
-    const metadata = await this.getMetadataById(identifier);
-    this.validArchivedIdentity(metadata);
+    const metadata = await this.getIdentityMetadataById(identifier);
+    this.validArchivedRecord(metadata);
     return this.agent.modules.generalStorage.updateIdentityMetadata(
       identifier,
       { isArchived: false }
     );
+  }
+
+  // Credentials functions
+  async getCredentials(
+    isGetArchive = false
+  ): Promise<CredentialShortDetails[]> {
+    const listMetadatas =
+      await this.agent.modules.generalStorage.getAllCredentialMetadata(
+        isGetArchive
+      );
+    return listMetadatas.map((element: CredentialMetadataRecord) => ({
+      nameOnCredential: element.nameOnCredential,
+      id: element.id,
+      colors: element.colors,
+      issuanceDate: element.issuanceDate,
+      issuerLogo: element.issuerLogo,
+      credentialType: element.credentialType,
+    }));
+  }
+
+  private async getCredentialMetadataById(
+    id: string
+  ): Promise<CredentialMetadataRecord> {
+    const metadata =
+      await this.agent.modules.generalStorage.getCredentialMetadata(id);
+    if (!metadata) {
+      throw new Error(
+        `${AriesAgent.CREDENTIAL_MISSING_METADATA_ERROR_MSG} ${id}`
+      );
+    }
+    return metadata;
+  }
+
+  async deleteCredential(id: string): Promise<void> {
+    const metadata = await this.getCredentialMetadataById(id);
+    this.validArchivedRecord(metadata);
+    await this.agent.credentials.deleteById(id);
+    await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
+  }
+
+  async archiveCredential(id: string): Promise<void> {
+    await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
+      isArchived: true,
+    });
+  }
+
+  async restoreCredential(id: string): Promise<void> {
+    const metadata = await this.getIdentityMetadataById(id);
+    this.validArchivedRecord(metadata);
+    await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
+      isArchived: false,
+    });
   }
 }
 

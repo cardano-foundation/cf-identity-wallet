@@ -3,7 +3,6 @@ import {
   IonIcon,
   IonModal,
   IonPage,
-  IonToast,
   useIonViewWillEnter,
 } from "@ionic/react";
 import Blockies from "react-18-blockies";
@@ -20,7 +19,6 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   setCurrentRoute,
   getCurrentRoute,
-  getStateCache,
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -53,9 +51,7 @@ import { CryptoReceiveAddress } from "../../components/CryptoReceiveAddress";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
   const currentRoute = useAppSelector(getCurrentRoute);
-  const [showToast, setShowToast] = useState(false);
   const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
     getCryptoAccountsCache
   );
@@ -100,17 +96,6 @@ const Crypto = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }));
     setShowAssetsTransactions(true);
   });
-
-  useEffect(() => {
-    if (
-      (stateCache.currentOperation === toastState.walletCreated ||
-        stateCache.currentOperation === toastState.walletRestored ||
-        stateCache.currentOperation === toastState.walletDeleted) &&
-      currentRoute?.path === TabsRoutePath.CRYPTO
-    ) {
-      setShowToast(true);
-    }
-  }, [stateCache.currentOperation, currentRoute]);
 
   useEffect(() => {
     if (!currentRoute?.path || currentRoute.path !== TabsRoutePath.CRYPTO) {
@@ -312,18 +297,6 @@ const Crypto = () => {
               testId="crypto-cards-placeholder"
             />
           )}
-          <IonToast
-            isOpen={showToast}
-            message={`${i18n.t("toast." + stateCache.currentOperation)}`}
-            onDidDismiss={() => {
-              setShowToast(false);
-              dispatch(setCurrentOperation(""));
-            }}
-            color="secondary"
-            position="top"
-            cssClass="confirmation-toast"
-            duration={1500}
-          />
         </TabLayout>
       </IonPage>
       <MyWallets
@@ -347,7 +320,6 @@ const Crypto = () => {
         usesIdentitySeedPhrase={true}
         onDone={() => {
           dispatch(setCurrentOperation(toastState.walletCreated));
-          setShowToast(true);
         }}
       />
     </>

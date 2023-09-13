@@ -11,19 +11,33 @@ const connectionStatus = {
   status: "confirmed",
 };
 
-const generateSeedPhraseState = {
+const operationState = {
   onboarding: "onboarding",
-  additional: "newcryptoaccount",
-  restore: "restorecryptoaccount",
+  newCryptoAccount: "newCryptoAccount",
+  restoreCryptoAccount: "restoreCryptoAccount",
+  createWallet: "createWallet",
+  renameWallet: "renameWallet",
+  restoreWallet: "restoreWallet",
+  deleteWallet: "deleteWallet",
+  renameIdentity: "renameIdentity",
+  deleteIdentity: "deleteIdentity",
+  deleteConnection: "deleteConnection",
+  deleteCredential: "deleteCredential",
 };
 
 const toastState = {
+  copiedToClipboard: "copiedToClipboard",
   walletCreated: "walletCreated",
+  walletRenamed: "walletRenamed",
   walletRestored: "walletRestored",
   walletDeleted: "walletDeleted",
+  identityCreated: "identityCreated",
+  identityRenamed: "identityRenamed",
   identityDeleted: "identityDeleted",
   credentialDeleted: "credentialDeleted",
   connectionDeleted: "connectionDeleted",
+  qrSuccess: "qrSuccess",
+  qrError: "qrError",
 };
 
 const defaultCredentialsCardData = {
@@ -94,11 +108,11 @@ const onboardingRoute = {
 export {
   cardTypes,
   connectionStatus,
-  generateSeedPhraseState,
+  operationState,
+  toastState,
   defaultCredentialsCardData,
   defaultCryptoAccountData,
   defaultConnectionData,
   blurredCryptoData,
   onboardingRoute,
-  toastState,
 };

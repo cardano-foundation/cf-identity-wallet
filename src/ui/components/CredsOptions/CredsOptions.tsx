@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   IonButton,
-  IonButtons,
   IonCol,
   IonContent,
   IonGrid,
@@ -13,7 +12,12 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { codeSlashOutline, trashOutline } from "ionicons/icons";
+import {
+  codeSlashOutline,
+  trashOutline,
+  copyOutline,
+  downloadOutline,
+} from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { CredsOptionsProps } from "./CredsOptions.types";
 import "./CredsOptions.scss";
@@ -22,10 +26,17 @@ import { Alert } from "../Alert";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../../../routes/paths";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { setCredsCache } from "../../../store/reducers/credsCache";
+import { VerifyPasscode } from "../VerifyPasscode";
+import { operationState, toastState } from "../../constants/dictionary";
+import { PageLayout } from "../layout/PageLayout";
+import { writeToClipboard } from "../../../utils/clipboard";
 
 const CredsOptions = ({
   optionsIsOpen,
@@ -37,6 +48,7 @@ const CredsOptions = ({
   const [viewIsOpen, setViewIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const dispatch = useAppDispatch();
 
   const handleCloseOptions = () => setOptionsIsOpen(false);
@@ -106,7 +118,10 @@ const CredsOptions = ({
                   <span
                     className="creds-option"
                     data-testid="creds-options-view-button"
-                    onClick={() => setViewIsOpen(true)}
+                    onClick={() => {
+                      handleCloseOptions();
+                      setViewIsOpen(true);
+                    }}
                   >
                     <span>
                       <IonButton shape="round">
@@ -123,7 +138,12 @@ const CredsOptions = ({
                   <span
                     className="creds-option"
                     data-testid="creds-options-delete-button"
-                    onClick={handleDelete}
+                    onClick={() => {
+                      handleDelete();
+                      dispatch(
+                        setCurrentOperation(operationState.deleteCredential)
+                      );
+                    }}
                   >
                     <span>
                       <IonButton shape="round">
@@ -152,34 +172,62 @@ const CredsOptions = ({
         onDidDismiss={handleCloseView}
       >
         <div className="creds-options modal viewer">
-          <IonHeader
-            translucent={true}
-            className="ion-no-border"
-          >
-            <IonToolbar color="light">
-              <IonButtons slot="start">
-                <IonButton
-                  className="close-button-label"
-                  onClick={handleCloseView}
-                  data-testid="close-button"
-                >
-                  {i18n.t("creds.card.details.view.cancel")}
-                </IonButton>
-              </IonButtons>
-              <IonTitle data-testid="creds-options-title">
-                <h2>{i18n.t("creds.card.details.view.title")}</h2>
-              </IonTitle>
-            </IonToolbar>
-          </IonHeader>
-
-          <IonContent
-            className="creds-options-body"
-            color="light"
-          >
-            <IonGrid className="creds-options-inner">
-              <pre>{JSON.stringify(cred, null, 2)}</pre>
-            </IonGrid>
-          </IonContent>
+          {!cred ? null : (
+            <PageLayout
+              header={true}
+              closeButton={true}
+              closeButtonLabel={`${i18n.t("creds.card.details.view.cancel")}`}
+              closeButtonAction={handleCloseView}
+              title={`${i18n.t("creds.card.details.view.title")}`}
+            >
+              <IonGrid className="creds-options-inner">
+                <pre>{JSON.stringify(cred, null, 2)}</pre>
+              </IonGrid>
+              <IonGrid>
+                <IonRow>
+                  <IonCol className="footer-col">
+                    <IonButton
+                      shape="round"
+                      expand="block"
+                      fill="outline"
+                      className="secondary-button"
+                      onClick={() => {
+                        writeToClipboard(JSON.stringify(cred, null, 2));
+                        dispatch(
+                          setCurrentOperation(toastState.copiedToClipboard)
+                        );
+                      }}
+                    >
+                      <IonIcon
+                        slot="icon-only"
+                        size="small"
+                        icon={copyOutline}
+                        color="primary"
+                      />
+                      {i18n.t("creds.card.details.view.copy")}
+                    </IonButton>
+                    <IonButton
+                      shape="round"
+                      expand="block"
+                      className="ion-primary-button"
+                      onClick={() => {
+                        // @TODO - sdisalvo: Save to device
+                        return;
+                      }}
+                    >
+                      <IonIcon
+                        slot="icon-only"
+                        size="small"
+                        icon={downloadOutline}
+                        color="primary"
+                      />
+                      {i18n.t("creds.card.details.view.save")}
+                    </IonButton>
+                  </IonCol>
+                </IonRow>
+              </IonGrid>
+            </PageLayout>
+          )}
         </div>
       </IonModal>
       <Alert
@@ -191,11 +239,27 @@ const CredsOptions = ({
           "creds.card.details.delete.alert.confirm"
         )}`}
         cancelButtonText={`${i18n.t("creds.card.details.delete.alert.cancel")}`}
-        actionConfirm={() => setVerifyPasswordIsOpen(true)}
+        actionConfirm={() => {
+          if (
+            !stateCache?.authentication.passwordIsSkipped &&
+            stateCache?.authentication.passwordIsSet
+          ) {
+            setVerifyPasswordIsOpen(true);
+          } else {
+            setVerifyPasscodeIsOpen(true);
+          }
+        }}
+        actionCancel={() => dispatch(setCurrentOperation(""))}
+        actionDismiss={() => dispatch(setCurrentOperation(""))}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
+        onVerify={verifyAction}
+      />
+      <VerifyPasscode
+        isOpen={verifyPasscodeIsOpen}
+        setIsOpen={setVerifyPasscodeIsOpen}
         onVerify={verifyAction}
       />
     </>

@@ -11,6 +11,18 @@ body {
   .md {
     text-transform: none;
   }
+
+  &.scanner-active > div:last-child {
+    display: block;
+    z-index: -10;
+    --background: var(--ion-color-secondary) !important;
+    --ion-background-color: var(--ion-color-secondary) !important;
+    background-color: var(--ion-color-secondary) !important;
+
+    &.hide {
+      display: none;
+    }
+  }
 }
 
 ion-content {
@@ -206,7 +218,7 @@ ion-modal {
       flex-direction: column;
       background-color: white;
       border-radius: 1rem;
-      padding: 0.938rem;
+      padding: 1.15rem;
 
       .card-details-info-block-line {
         display: flex;
@@ -221,19 +233,30 @@ ion-modal {
           margin-bottom: 1rem;
         }
 
+        .card-details-info-block-text-icon {
+          font-size: 1.125rem;
+        }
+
         .card-details-info-block-data {
-          flex-grow: 1;
-          margin-left: 1.078rem;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
+          width: 100%;
+          margin-left: 1.13rem;
+          overflow: hidden;
+          white-space: nowrap;
+          --mask: linear-gradient(
+            to right,
+            rgba(var(--ion-color-secondary-rgb)) 0,
+            rgba(var(--ion-color-secondary-rgb)) 85%,
+            rgba(0, 0, 0, 0.5) 90%,
+            rgba(0, 0, 0, 0) 100%
+          );
+          -webkit-mask: var(--mask);
+          mask: var(--mask);
         }
       }
 
       ion-button,
       ion-button.md {
-        width: 2.8125rem;
-        height: 2.8125rem;
+        height: 1.7rem;
         margin: 0;
         --background: transparent;
         --box-shadow: none;
@@ -277,6 +300,23 @@ ion-toast {
   &.confirmation-toast {
     &::part(message) {
       color: var(--ion-color-light);
+    }
+  }
+}
+
+.qr-code-scanner-full-page {
+  ion-header ion-toolbar {
+    margin-top: 0.625rem;
+
+    .back-button {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 1.5rem;
+      background: var(--ion-color-light-grey);
+    }
+
+    ion-icon {
+      font-size: 1.85em !important;
     }
   }
 }

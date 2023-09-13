@@ -26,6 +26,8 @@ import {
 } from "../../../core/aries/ariesAgent.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { toastState } from "../../constants/dictionary";
 
 const CreateIdentity = ({
   modalIsOpen,
@@ -65,20 +67,21 @@ const CreateIdentity = ({
     const newColor = colorGenerator.generateNextColor();
     const type = selectedType === 0 ? IdentityType.KEY : IdentityType.KERI;
     // @TODO: for test, should set colors
-    const did = await AriesAgent.agent.createIdentity({
+    const identifier = await AriesAgent.agent.createIdentity({
       displayName: displayNameValue,
       method: type,
       colors: [newColor[1], newColor[0]],
     });
-    if (did) {
+    if (identifier) {
       const newIdentity: IdentityShortDetails = {
-        id: did,
+        id: identifier,
         method: type,
         displayName: displayNameValue,
         createdAtUTC: new Date().toISOString(),
         colors: [newColor[1], newColor[0]],
       };
       dispatch(setIdentitiesCache([...identityData, newIdentity]));
+      dispatch(setCurrentOperation(toastState.identityCreated));
       resetModal();
     }
   };
