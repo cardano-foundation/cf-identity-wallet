@@ -55,6 +55,9 @@ import {
   IdentityMetadataRecordProps,
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
 import { CredentialMetadataRecord } from "./modules/generalStorage/repositories/credentialMetadataRecord";
+import { MeerkatTransport } from "./transports/meerkat/merkatTransport";
+import { MeerkatOutboundTransport } from "./transports/meerkatOutboundTransport";
+import { MeerkatInboundTransport } from "./transports/meerkatInboundTransport";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -133,6 +136,25 @@ class AriesAgent {
     this.agent.registerOutboundTransport(outBoundTransport);
   }
 
+  async registerMeerkatTransport(agent: Agent) {
+    const identifier = await this.getMiscRecordValueById(
+      MiscRecordId.MEERKAT_IDENTIFIER_KEY
+    );
+    const meerkatTransport = new MeerkatTransport(agent, identifier);
+    if (!identifier) {
+      await this.storeMiscRecord(
+        MiscRecordId.MEERKAT_IDENTIFIER_KEY,
+        meerkatTransport.getIdentifier()
+      );
+    }
+    const inboundTransport = new MeerkatInboundTransport(meerkatTransport);
+    const outboundTransport = new MeerkatOutboundTransport(meerkatTransport);
+    await inboundTransport.start(agent);
+    await outboundTransport.start(agent);
+    this.agent.registerOutboundTransport(outboundTransport);
+    this.agent.registerInboundTransport(inboundTransport);
+  }
+
   static get agent() {
     if (!this.instance) {
       this.instance = new AriesAgent();
@@ -146,6 +168,7 @@ class AriesAgent {
     // @TODO - uncomment for demo, can remove if not used
     // await AriesAgent.agent.registerLibP2pInbound(LibP2p.libP2p);
     // await AriesAgent.agent.registerLibP2pOutbound(LibP2p.libP2p);
+    // await AriesAgent.agent.registerMeerkatTransport(this.agent);
     AriesAgent.ready = true;
   }
 
@@ -166,6 +189,28 @@ class AriesAgent {
     return createInvitation.outOfBandInvitation.toUrl({
       domain: libP2pDomain,
     });
+  }
+
+  async createMeerkatInvitation() {
+    const domains = this.agent.config.endpoints;
+    const meerkatDomain = domains.find((domain) => domain.includes("meerkat"));
+    if (!meerkatDomain) {
+      throw new Error(AriesAgent.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
+    }
+
+    const record = await this.agent.oob.createInvitation({
+      autoAcceptConnection: true,
+    });
+
+    const invitationUrl = record.outOfBandInvitation.toUrl({
+      domain: meerkatDomain,
+    });
+
+    return {
+      record,
+      invitation: record.outOfBandInvitation,
+      invitationUrl,
+    };
   }
 
   async createMediatorInvitation() {
