@@ -132,7 +132,7 @@
       width: 5rem;
       height: 5rem;
       border-radius: 5rem;
-      background-color: black;
+      background-color: var(--ion-color-primary);
 
       ion-icon {
         width: 4.875rem;
@@ -193,8 +193,25 @@
       }
 
       span {
-        text-transform: capitalize;
+        font-size: 0.875rem;
+        font-weight: 400;
+        color: var(--ion-color-secondary);
+        margin-bottom: 0.3rem;
+
+        &:first-letter {
+          text-transform: capitalize;
+        }
+      }
+
+      strong {
+        font-size: 1rem;
+        color: var(--ion-color-primary);
       }
     }
+  }
+
+  .page-footer .secondary-button {
+    border: 1px solid var(--ion-color-dark-grey);
+    border-radius: 1.875rem;
   }
 }
