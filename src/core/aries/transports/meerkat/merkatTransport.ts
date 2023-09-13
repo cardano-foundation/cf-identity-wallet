@@ -54,9 +54,8 @@ class MeerkatTransport {
             endpoint,
             MESSAGE_CHANNEL,
             outboundPackage.payload,
-            (response: unknown) => {
-              this.logger.info("Response from server: " + response);
-              resolve(response);
+            (_response: unknown) => {
+              resolve(true);
             }
           );
         } catch (error) {
