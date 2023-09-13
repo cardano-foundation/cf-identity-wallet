@@ -1,0 +1,217 @@
+.connection-request {
+  background: var(--ion-color-light);
+  margin-top: 0;
+  z-index: 102 !important;
+  overflow: initial !important;
+
+  &.show {
+    right: 0;
+    left: 0;
+    width: 100%;
+    transition-property: right;
+    transition-property: left;
+    transition-duration: 0.5s;
+  }
+
+  &.hide {
+    right: -100%;
+    left: 100%;
+    width: 100%;
+    transition-property: right;
+    transition-property: left;
+    transition-duration: 0.5s;
+  }
+
+  h2 {
+    width: 100%;
+    text-align: center;
+    position: absolute;
+  }
+
+  &.animation-on {
+    h2 {
+      top: -5rem;
+      visibility: hidden;
+      opacity: 0;
+      transition: opacity 0.5s, visibility 1s, top 1s;
+    }
+
+    .connection-request-user-logo,
+    .connection-request-provider-logo {
+      left: calc(50% - 2.5rem);
+      visibility: hidden;
+      transition: left 0.7s, visibility 2s;
+      transition-delay: 0.7s;
+    }
+
+    .connection-request-checkmark-logo span {
+      width: 5rem !important;
+      height: 5rem !important;
+      visibility: visible;
+      opacity: 1;
+      transition-delay: 2s;
+      transition-property: opacity 2s, visibility 1s, height 3s, width 3s;
+    }
+
+    .connection-request-info-row {
+      top: 70vh;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.5s, visibility 1s, top 1s;
+    }
+
+    .connection-request-status {
+      top: 50vh;
+      transition: top 0.5s;
+      transition-delay: 2.7s;
+    }
+
+    ion-footer {
+      bottom: -10rem;
+      transition: bottom 1s;
+    }
+  }
+
+  &.animation-off {
+    h2 {
+      top: 2rem;
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .connection-request-user-logo {
+      left: calc(50% - 7.25rem);
+    }
+
+    .connection-request-provider-logo {
+      left: calc(50% + 2.5rem);
+    }
+
+    .connection-request-user-logo,
+    .connection-request-provider-logo,
+    .connection-request-provider-logo,
+    .connection-request-info-row {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .connection-request-checkmark-logo {
+      opacity: 0;
+      visibility: hidden;
+      width: 2rem !important;
+      height: 2rem !important;
+    }
+
+    .connection-request-status {
+      top: 100vh;
+    }
+
+    ion-footer {
+      bottom: 1rem;
+    }
+  }
+
+  .connection-request-content {
+    height: 80rem;
+  }
+
+  .connection-request-icons-row {
+    .connection-request-user-logo,
+    .connection-request-swap-logo,
+    .connection-request-provider-logo,
+    .connection-request-checkmark-logo {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      position: absolute;
+      top: 35vh;
+    }
+
+    .connection-request-user-logo {
+      width: 5rem;
+      height: 5rem;
+      border-radius: 5rem;
+      background-color: var(--ion-color-primary);
+
+      ion-icon {
+        width: 4.875rem;
+        height: 4.875rem;
+        margin: 0 auto;
+      }
+    }
+
+    .connection-request-swap-logo,
+    .connection-request-checkmark-logo {
+      width: 5rem;
+      height: 5rem;
+      left: calc(50% - (2.75rem / 2));
+
+      span {
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: 2.75rem;
+        text-align: center;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        background: var(--ion-color-primary-gradient);
+
+        ion-icon {
+          width: 1.875rem;
+          height: 1.875rem;
+          margin: 0 auto;
+        }
+      }
+    }
+
+    .connection-request-checkmark-logo {
+      left: calc(50% - (5rem / 2));
+    }
+
+    .connection-request-provider-logo {
+      img {
+        width: 5rem;
+        height: 5rem;
+        border-radius: 5rem;
+      }
+    }
+  }
+
+  .connection-request-info-row,
+  .connection-request-status {
+    position: absolute;
+    top: 50vh;
+    width: 100%;
+
+    ion-col {
+      display: flex;
+      flex-direction: column;
+
+      > * {
+        text-align: center;
+      }
+
+      span {
+        font-size: 0.875rem;
+        font-weight: 400;
+        color: var(--ion-color-secondary);
+        margin-bottom: 0.3rem;
+
+        &:first-letter {
+          text-transform: capitalize;
+        }
+      }
+
+      strong {
+        font-size: 1rem;
+        color: var(--ion-color-primary);
+      }
+    }
+  }
+
+  .page-footer .secondary-button {
+    border: 1px solid var(--ion-color-dark-grey);
+    border-radius: 1.875rem;
+  }
+}

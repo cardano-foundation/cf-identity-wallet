@@ -25,9 +25,29 @@ interface MappedConnections {
   value: ConnectionsProps[];
 }
 
+interface ConnectionRequestData {
+  label: string;
+  goal_code: string;
+  goal: string;
+  handshake_protocols: string[];
+  requestattach: string[];
+  service: {
+    id: string;
+    type: string;
+    recipientKeys: string[];
+    routingKeys: string[];
+    serviceEndpoint: string;
+  }[];
+  profileUrl: string;
+  public_did: string;
+  type: string;
+  id: string;
+}
+
 export type {
   ConnectionsProps,
   ConnectionItemProps,
   ConnectionsComponentProps,
   MappedConnections,
+  ConnectionRequestData,
 };

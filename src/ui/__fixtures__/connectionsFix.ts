@@ -52,4 +52,49 @@ const connectionsFix = [
   },
 ];
 
-export { connectionsFix };
+const connectionRequestPlaceholder = {
+  label: "",
+  goal_code: "",
+  goal: "",
+  handshake_protocols: [],
+  requestattach: [],
+  service: [
+    {
+      id: "",
+      type: "",
+      recipientKeys: [],
+      routingKeys: [],
+      serviceEndpoint: "",
+    },
+  ],
+  profileUrl: "",
+  public_did: "",
+  type: "",
+  id: "",
+};
+
+const connectionRequestData = {
+  label: "SunCrest Medical",
+  goal_code: "connection",
+  goal: "Setup passwordless login",
+  handshake_protocols: ["did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/connections/1.0"],
+  requestattach: [],
+  service: [
+    {
+      id: "8nMzYxqi1nrGXJLpPLNjft;indy",
+      type: "IndyAgent",
+      recipientKeys: ["5F1SZ9WZusiiD29urKJYJkA6Nc5WggYcXzxjC37edPG3"],
+      routingKeys: [
+        "5F1SZ9WZusiiD29urKJYJkA6Nc5WggYcXzxjC37edPG3",
+        "3mo3P6XzDzBvuktCgDQarACzzeV7zxrSExnicpuH7t83",
+      ],
+      serviceEndpoint: "https://vas.evernym.com/agency/msg",
+    },
+  ],
+  profileUrl: "https://i.postimg.cc/bvs8K9bJ/Sun-Crest-Medical-logo.png",
+  public_did: "did:sov:W2u9PzjDmhKM5xLABjAqav",
+  type: "did:sov:BzCbsNYhMrjHiqZDTUASHg;spec/out-of-band/1.0/invitation",
+  id: "565a1185-9df7-415d-8ab8-fd8e81ad3161",
+};
+
+export { connectionsFix, connectionRequestData, connectionRequestPlaceholder };

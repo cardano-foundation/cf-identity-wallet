@@ -265,7 +265,7 @@ const GenerateSeedPhrase = () => {
           progressBarBuffer={1}
           footer={true}
           primaryButtonText={`${i18n.t(
-            "generateseedphrase." + seedPhraseType + ".continue.button"
+            "generateseedphrase." + seedPhraseType + ".button.continue"
           )}`}
           primaryButtonAction={() => {
             if (stateRestore) {

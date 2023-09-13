@@ -8,7 +8,7 @@ const cardTypes = {
 
 const connectionStatus = {
   pending: "pending",
-  status: "confirmed",
+  confirmed: "confirmed",
 };
 
 const operationState = {
@@ -23,6 +23,7 @@ const operationState = {
   deleteIdentity: "deleteIdentity",
   deleteConnection: "deleteConnection",
   deleteCredential: "deleteCredential",
+  scanConnection: "scanConnection",
 };
 
 const toastState = {
@@ -38,6 +39,8 @@ const toastState = {
   connectionDeleted: "connectionDeleted",
   qrSuccess: "qrSuccess",
   qrError: "qrError",
+  connectionRequestPending: "connectionRequestPending",
+  newConnectionAdded: "newConnectionAdded",
 };
 
 const defaultCredentialsCardData = {
