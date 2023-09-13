@@ -5,7 +5,6 @@ services:
     build:
       context: ./webrtc-relay
       dockerfile: Dockerfile
-    container_name: webrtc-relay
     tty: true
     ports:
       - 51986:51986
