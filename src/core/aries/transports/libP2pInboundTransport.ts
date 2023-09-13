@@ -1,6 +1,6 @@
 import { Agent, Logger, InboundTransport } from "@aries-framework/core";
 import { LibP2p } from "./libp2p/libP2p";
-import { getPeerFromStorage, savePeer } from "./lipP2p.peer";
+import { getPeerFromStorage, savePeer } from "./libP2p.peer";
 
 export class LibP2pInboundTransport implements InboundTransport {
   private agent!: Agent;

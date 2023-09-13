@@ -11,12 +11,14 @@ import { noise } from "@chainsafe/libp2p-noise";
 import { identifyService } from "libp2p/identify";
 import { Libp2pOptions } from "libp2p/src/index";
 import { PeerId } from "@libp2p/interface/dist/src/peer-id/index";
+import { createFromJSON } from "@libp2p/peer-id-factory";
 import { IPeerIdJSON } from "./libP2p.types";
 
 export class LibP2pService {
   public multiaddr = multiaddr;
   public pushable = pushable;
   public pipe = pipe;
+  public createFromJSON = createFromJSON;
   public mplex = mplex;
   public noise = noise;
 

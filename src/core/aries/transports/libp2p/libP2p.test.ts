@@ -8,6 +8,7 @@ import { OutboundPackage } from "@aries-framework/core";
 import { EncryptedMessage } from "@aries-framework/core/build/types";
 import { TextEncoder, TextDecoder } from "util";
 import { LibP2p, LIBP2P_RELAY, schemaPrefix } from "./libP2p";
+// eslint-disable-next-line no-undef
 Object.assign(global, { TextDecoder, TextEncoder });
 // Mock dependencies and methods
 jest.mock("./libP2p.service", () => ({
@@ -21,8 +22,8 @@ jest.mock("./libP2p.service", () => ({
     noise: jest.fn(),
     fromString: jest.fn(),
     toString: jest.fn(),
-    createNode: jest.fn<Partial<Libp2p>, any>(() => ({
-      peerId: peerId as any as PeerId,
+    createNode: jest.fn<Partial<Libp2p>, never>(() => ({
+      peerId: peerId as never as PeerId,
       isStarted: jest.fn(() => false),
       handle: jest.fn(),
       addEventListener: jest.fn(),
@@ -34,11 +35,17 @@ jest.mock("./libP2p.service", () => ({
     advertising: jest.fn(() => endpoint),
     getNodeEndpoint: jest.fn(() => endpoint),
     timeOut: jest.fn(() => [Promise.resolve(), 0]),
+    createFromJSON: jest.fn(),
   })),
 }));
 const libP2p = LibP2p.libP2p;
 const peerId = "12D3KooWBneTYQJQPYSh8pvkSuoctUjkeyoEjqeY7UEsbpc5rtm4";
 const endpoint = `${schemaPrefix}${LIBP2P_RELAY}/p2p-circuit/webrtc/p2p/${peerId}`;
+const peerIdJSON = {
+  id: peerId,
+  privKey: "privKey",
+  pubKey: "pubKey",
+};
 
 describe("LibP2p webrtc class test", () => {
   beforeEach(async () => {
@@ -60,8 +67,15 @@ describe("LibP2p webrtc class test", () => {
     expect(libP2p.peerId).toEqual(peerId);
   });
 
+  test("LibP2p should successfully start with exist peer", async () => {
+    libP2p.setNode(undefined as never);
+    libP2p.isStart = false;
+    const result = await libP2p.start(peerIdJSON);
+    expect(result).toEqual(libP2p);
+  });
+
   test("LibP2p should successfully start without init node", async () => {
-    libP2p.setNode(undefined as any);
+    libP2p.setNode(undefined as never);
     const result = await libP2p.start();
     expect(result).toEqual(libP2p);
   });
@@ -155,7 +169,7 @@ describe("LibP2p webrtc class test", () => {
       payload: payload,
       responseRequested: false,
     };
-    libP2p.setNode(undefined as any);
+    libP2p.setNode(undefined as never);
     await expect(libP2p.sendMessage(outboundPackage)).rejects.toThrowError(
       LibP2p.NOT_INIT_NODE_ERROR_MSG
     );

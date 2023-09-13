@@ -4,7 +4,6 @@ import { IncomingStreamData } from "@libp2p/interface/src/stream-handler";
 import { OutboundPackage } from "@aries-framework/core";
 import { Connection } from "@libp2p/interface/connection";
 import { Stream } from "@libp2p/interface/src/connection";
-import { createFromJSON } from "@libp2p/peer-id-factory";
 import { PeerId } from "@libp2p/interface/dist/src/peer-id/index";
 import { LibP2pService } from "./libP2p.service";
 import { LibP2pInboundTransport } from "../libP2pInboundTransport";
@@ -102,7 +101,7 @@ export class LibP2p {
     if (this.isStart) return this;
     if (!this.node || !this.node.isStarted()) {
       if (peerIdJSON) {
-        const peerId = await createFromJSON(peerIdJSON);
+        const peerId = await this.libP2pService.createFromJSON(peerIdJSON);
         await this.initNode(peerId);
       } else {
         await this.initNode();
