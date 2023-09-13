@@ -62,12 +62,3 @@ Please include a summary of the changes and a brief description about this PR
 ##### _After_
 
 [comment]: <> (Add screenshots)
-
-#### Browser
-##### _Before_
-
-[comment]: <> (Add screenshots)
-
-##### _After_
-
-[comment]: <> (Add screenshots)
