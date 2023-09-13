@@ -137,14 +137,18 @@ class AriesAgent {
   }
 
   async registerMeerkatTransport(agent: Agent) {
-    const identifier = await this.getMiscRecordValueById(
-      MiscRecordId.MEERKAT_IDENTIFIER_KEY
+    const profile = await this.getMiscRecordValueById(
+      MiscRecordId.MEERKAT_PROFILE_KEY
     );
-    const meerkatTransport = new MeerkatTransport(agent, identifier);
-    if (!identifier) {
+    let meerkatTransport: MeerkatTransport;
+    if (profile) {
+      const [identifier, seed] = profile.split(":");
+      meerkatTransport = new MeerkatTransport(agent, identifier, seed);
+    } else {
+      meerkatTransport = new MeerkatTransport(agent);
       await this.storeMiscRecord(
-        MiscRecordId.MEERKAT_IDENTIFIER_KEY,
-        meerkatTransport.getIdentifier()
+        MiscRecordId.MEERKAT_PROFILE_KEY,
+        meerkatTransport.getProfile()
       );
     }
     const inboundTransport = new MeerkatInboundTransport(meerkatTransport);
@@ -198,9 +202,7 @@ class AriesAgent {
       throw new Error(AriesAgent.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
     }
 
-    const record = await this.agent.oob.createInvitation({
-      autoAcceptConnection: true,
-    });
+    const record = await this.agent.oob.createInvitation();
 
     const invitationUrl = record.outOfBandInvitation.toUrl({
       domain: meerkatDomain,

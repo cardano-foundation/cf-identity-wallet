@@ -15,24 +15,25 @@ class MeerkatTransport {
   private agent!: Agent;
   private logger!: Logger;
 
-  constructor(agent: Agent, identifier?: string) {
+  constructor(agent: Agent, identifier?: string, seed?: string) {
     this.agent = agent;
     this.meerkat = new Meerkat({
       announce: ANNOUNCE_LIST,
       identifier,
+      seed,
     });
     this.logger = this.agent.config.logger;
 
     this.meerkat.on("connections", (clients) => {
-      this.logger.debug(`Connections count: ${clients}`);
-      this.logger.debug(`Server ready: ${this.meerkat.identifier}`);
+      this.logger.info(`Connections count: ${clients}`);
+      this.logger.info(`Server ready: ${this.meerkat.identifier}`);
     });
 
     this.meerkat.register(
       MESSAGE_CHANNEL,
       (address: string, message: { [key: string]: unknown }) => {
-        this.logger.debug(`Message received: ${JSON.stringify(message)}`);
-        this.logger.debug(`Transmitted by the server: ${address}`);
+        this.logger.info(`Message received: ${JSON.stringify(message)}`);
+        this.logger.info(`Transmitted by the server: ${address}`);
         this.agent.receiveMessage(message);
       }
     );
@@ -47,14 +48,14 @@ class MeerkatTransport {
     });
     await new Promise((resolve, reject) => {
       peerConnect.on("server", () => {
-        this.logger.debug("Connected to server: " + endpoint);
+        this.logger.info("Connected to server: " + endpoint);
         try {
           peerConnect.rpc(
             endpoint,
             MESSAGE_CHANNEL,
             outboundPackage.payload,
             (response: unknown) => {
-              this.logger.debug("Response from server: " + response);
+              this.logger.info("Response from server: " + response);
               resolve(response);
             }
           );
@@ -63,10 +64,12 @@ class MeerkatTransport {
         }
       });
     });
+    peerConnect.removeAllListeners();
     peerConnect.close();
   }
 
   async close() {
+    this.meerkat.removeAllListeners();
     this.meerkat.close();
   }
 
@@ -74,8 +77,8 @@ class MeerkatTransport {
     return schemaPrefix + this.meerkat.identifier;
   }
 
-  getIdentifier(): string {
-    return this.meerkat.identifier;
+  getProfile(): string {
+    return this.meerkat.identifier + ":" + this.meerkat.seed;
   }
 }
 
