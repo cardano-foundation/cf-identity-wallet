@@ -1,7 +1,27 @@
-# ID Wallet
-An open-source Decentralised Identity (DID) and Verifiable Credential (VC) Wallet complying to W3C and DIDComm standards utilising Local-First Software design and development principles.  The wallet also features a bespoke Cardano Crypto Wallet. 
+<div align="center">
+  <img src="https://cryptologos.cc/logos/cardano-ada-logo.svg?v=026" alt="Cardano Foundation | Identity Wallet" height="150" />
+  <hr />
+    <h1 align="center" style="border-bottom: none">Cardano Foundation | Identity Wallet</h1>
 
-# Mediator serivce
+![GitHub](https://img.shields.io/github/license/cardano-foundation/cf-identity-wallet)
+![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/cardano-foundation/cf-identity-wallet)
+
+  <hr/>
+</div>
+
+# Overview
+
+An open-source Decentralised Identity (DID) and Verifiable Credential (VC) Wallet complying to W3C and DIDComm standards utilising Local-First Software design and development principles. The wallet also features a bespoke Cardano Crypto Wallet.
+
+# Features
+
+TODO
+
+# Running the app
+
+TODO: Rewrite this section
+
+## Mediator service
 You can know how to mediator work in [link](https://github.com/hyperledger/aries-cloudagent-python/blob/main/Mediation.md#mediator-message-flow-overview).
 When deploy mediator services success by docker-compose, you can see invitation URL in log of mediator container:
 ```console
@@ -18,8 +38,13 @@ To launch KERIA:
 docker compose up -d
 ```
 
-## Building the app
+# Building the app
+
 TODO
+
+# Testing
+
+TODO: rewrite this section
 
 ## End to end testing
 ### `npm run start-appium`
@@ -38,3 +63,12 @@ Runs the WebdriverIO test runner with the provided TypeScript configuration file
     `npm run dev`
 3. Run the test in terminal C:
     `npm run e2e:web`
+
+# Contributing
+
+All contributions are welcome. Feel free to open a new thread on the issue tracker or submit a new pull request. Please read [CONTRIBUTING.md](CONTRIBUTING.md) first. Thanks!
+
+# Additional Docs
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
+- [SECURITY.md](SECURITY.md)
+- [CHANGELOG.md](CHANGELOG.md)
