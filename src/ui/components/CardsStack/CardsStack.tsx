@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
-import { CredCardProps, DidCardProps, CredProps } from "./CardsStack.types";
 import "./CardsStack.scss";
-import { i18n } from "../../../i18n";
+import { IonChip, IonIcon } from "@ionic/react";
+import { hourglassOutline } from "ionicons/icons";
 import { formatShortDate } from "../../../utils";
+import { i18n } from "../../../i18n";
+import { CredCardProps, DidCardProps, CredProps } from "./CardsStack.types";
 import {
   DIDDetails,
   IdentityShortDetails,
@@ -18,7 +20,7 @@ const CLEAR_STATE_DELAY = 1000;
 const CredCard = ({
   cardData,
   isActive,
-  index = 0,
+  index,
   onHandleShowCardDetails,
 }: CredCardProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -28,6 +30,12 @@ const CredCard = ({
   } else if (index !== 0) {
     shadowClass = "top-shadow";
   }
+
+  const divStyle = {
+    background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
+    zIndex: index,
+  };
+
   return (
     <>
       <div
@@ -45,22 +53,35 @@ const CredCard = ({
             onHandleShowCardDetails(index);
           }
         }}
-        style={{
-          background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
-        }}
+        style={divStyle}
       >
-        <div className="cards-stack-cred-layout">
+        <div className={`cards-stack-cred-layout ${cardData.status}`}>
           <div className="card-header">
-            <img
-              src={cardData.issuerLogo}
-              className="card-logo"
-              alt="card-logo"
-            />
-            <span>{cardData.credentialType}</span>
+            <span className="card-logo">
+              <img
+                src={cardData.issuerLogo}
+                alt="card-logo"
+              />
+            </span>
+            {cardData.status === connectionStatus.pending ? (
+              <IonChip>
+                <IonIcon
+                  icon={hourglassOutline}
+                  color="primary"
+                ></IonIcon>
+                <span>{connectionStatus.pending}</span>
+              </IonChip>
+            ) : (
+              <span className="credential-type">{cardData.credentialType}</span>
+            )}
           </div>
           <div className="card-body">
             <span>
-              {cardData.status === connectionStatus.pending ? "Pending..." : ""}
+              {cardData.status === connectionStatus.pending ? (
+                <>&nbsp;</>
+              ) : (
+                <>&nbsp;</>
+              )}
             </span>
           </div>
           <div className="card-footer">
@@ -68,13 +89,25 @@ const CredCard = ({
               <span className="card-footer-column-label">
                 {i18n.t("creds.card.layout.name")}
               </span>
-              <span>{cardData.nameOnCredential}</span>
+              <span className="card-footer-column-value">
+                {cardData.status === connectionStatus.pending ? (
+                  <>&nbsp;</>
+                ) : (
+                  cardData.nameOnCredential
+                )}
+              </span>
             </div>
             <div className="card-footer-column">
               <span className="card-footer-column-label">
                 {i18n.t("creds.card.layout.issued")}
               </span>
-              <span>{formatShortDate(cardData.issuanceDate)}</span>
+              <span className="card-footer-column-value">
+                {cardData.status === connectionStatus.pending ? (
+                  <>&nbsp;</>
+                ) : (
+                  formatShortDate(cardData.issuanceDate)
+                )}
+              </span>
             </div>
           </div>
         </div>
