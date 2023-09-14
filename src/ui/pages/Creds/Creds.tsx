@@ -89,8 +89,6 @@ const Creds = () => {
   useEffect(() => {
     // @TODO - sdisalvo: This one is listening for pending credential requests
     if (currentOperation === toastState.credentialRequestPending) {
-      // Ensure we are on the correct page i.e. request coming while we're somewhere else
-      // dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }));
       //
       // Fetch new data - remember to replace "defaultCredentialsCardData" with real values
       const timeElapsed = Date.now();

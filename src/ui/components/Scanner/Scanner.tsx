@@ -15,7 +15,7 @@ import {
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { operationState } from "../../constants/dictionary";
+import { operationState, toastState } from "../../constants/dictionary";
 
 const Scanner = () => {
   const dispatch = useAppDispatch();
@@ -72,8 +72,10 @@ const Scanner = () => {
 
   useEffect(() => {
     if (
-      currentRoute?.path === TabsRoutePath.SCAN ||
-      currentOperation === operationState.scanConnection
+      (currentRoute?.path === TabsRoutePath.SCAN ||
+        currentOperation === operationState.scanConnection) &&
+      currentOperation !== toastState.connectionRequestPending &&
+      currentOperation !== toastState.credentialRequestPending
     ) {
       initScan();
     } else {

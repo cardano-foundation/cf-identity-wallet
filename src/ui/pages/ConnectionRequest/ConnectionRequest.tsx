@@ -45,18 +45,16 @@ const ConnectionRequest = () => {
       //
       //  await AriesAgent.agent.receiveInvitationFromUrl(connectionRequest);
       //
-      //  Update the local data - remember to replace the value we are passing
-      //  to "setConnectionData()" with real values from the above request
-      //
-      setConnectionData(credentialRequestData);
-      // This is where we detect what type of request is incoming
-      if (credentialRequestData.goal_code === connectionType.connection) {
+      //  Remember to replace "agentData" below with real values from the above request
+      const agentData = credentialRequestData;
+      setConnectionData(agentData);
+      // This is where we detect what type of request is incoming (more cases can be added in the future)
+      if (agentData.goal_code === connectionType.connection) {
         setConnectionRequestType(connectionType.connection);
-      } else if (credentialRequestData.goal_code === connectionType.issuevc) {
+      } else if (agentData.goal_code === connectionType.issuevc) {
         setConnectionRequestType(connectionType.credential);
       }
-      //
-      // and show the connection request page accordingly
+      // Display the connection request page with the correct data
       setShowConnectionRequest(true);
     }
   }, [connectionRequest]);

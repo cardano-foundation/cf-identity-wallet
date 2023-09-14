@@ -11,7 +11,7 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { onboardingRoute } from "../../ui/constants/dictionary";
+import { onboardingRoute, toastState } from "../../ui/constants/dictionary";
 
 const getNextRootRoute = (store: StoreState) => {
   const authentication = store.stateCache.authentication;
@@ -137,6 +137,18 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
   });
 };
 
+const getNextScanRoute = (data: DataProps) => {
+  const currentOperation = data?.state?.currentOperation;
+  let path;
+  if (
+    currentOperation === toastState.connectionRequestPending ||
+    currentOperation === toastState.credentialRequestPending
+  ) {
+    path = TabsRoutePath.CREDS;
+  }
+  return { pathname: path };
+};
+
 const getNextRoute = (
   currentPath: string,
   data: DataProps
@@ -189,6 +201,10 @@ const nextRoute: Record<string, any> = {
   },
   [TabsRoutePath.CREDS]: {
     nextPath: () => getNextCredentialsRoute(),
+    updateRedux: [],
+  },
+  [TabsRoutePath.SCAN]: {
+    nextPath: (data: DataProps) => getNextScanRoute(data),
     updateRedux: [],
   },
 };
