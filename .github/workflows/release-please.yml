@@ -1,0 +1,23 @@
+name: Create a new Release
+
+on:
+  push:
+    branches: ["main"]
+
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create_release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🚀 release-please-action
+        uses: google-github-actions/release-please-action@v3
+        with:
+          release-type: node
+          package-name: cardano-foundation-identity-wallet
+          bump-minor-pre-major: true
+          bump-patch-for-minor-pre-major: true
