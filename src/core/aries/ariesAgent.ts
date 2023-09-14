@@ -29,6 +29,8 @@ import {
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
+import { CredentialFormatPayload } from "@aries-framework/core/build/modules/credentials/formats";
+import { CredentialFormatsFromProtocols } from "@aries-framework/core/build/modules/credentials/protocol/CredentialProtocolOptions";
 import { CapacitorFileSystem } from "./dependencies";
 import {
   IonicStorageModule,
@@ -288,6 +290,48 @@ class AriesAgent {
 
   async acceptCredentialOffer(credentialRecordId: string) {
     await this.agent.credentials.acceptOffer({ credentialRecordId });
+  }
+
+  async requestCredentialFromUrl(url: string): Promise<boolean> {
+    const abortController = new AbortController();
+    const id = setTimeout(() => abortController.abort(), 1000 * 60);
+
+    let response: Response | undefined;
+    let responseMessage: string | undefined;
+    try {
+      response = await fetch(url, {
+        method: "GET",
+        signal: abortController.signal,
+        headers: { "Content-type": this.agent.config.didCommMimeType },
+      });
+      clearTimeout(id);
+      responseMessage = await response.text();
+    } catch (error: any) {
+      if (!(error.name == "AbortError")) {
+        throw error;
+      }
+    }
+    if (response !== undefined && responseMessage !== undefined) {
+      if (response.status === 200) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  async proposeCredential(
+    connectionId: string,
+    credentialFormats: CredentialFormatPayload<
+      CredentialFormatsFromProtocols<[V2CredentialProtocol]>,
+      "createProposal"
+    >
+  ) {
+    return this.agent.credentials.proposeCredential({
+      protocolVersion: "v2" as never,
+      connectionId: connectionId,
+      credentialFormats: credentialFormats,
+      autoAcceptCredential: AutoAcceptCredential.Always,
+    });
   }
 
   async acceptRequest(connectionId: string) {
