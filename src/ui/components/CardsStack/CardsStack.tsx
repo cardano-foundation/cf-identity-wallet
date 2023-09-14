@@ -9,7 +9,8 @@ import {
   IdentityShortDetails,
   IdentityType,
 } from "../../../core/aries/ariesAgent.types";
-import { cardTypes } from "../../constants/dictionary";
+import { cardTypes, connectionStatus } from "../../constants/dictionary";
+import { Alert } from "../Alert";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -20,6 +21,7 @@ const CredCard = ({
   index = 0,
   onHandleShowCardDetails,
 }: CredCardProps) => {
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
   let shadowClass = "";
   if (index === 0) {
     shadowClass = "bottom-shadow";
@@ -27,49 +29,63 @@ const CredCard = ({
     shadowClass = "top-shadow";
   }
   return (
-    <div
-      key={index}
-      data-testid={`cred-card-stack${
-        index !== undefined ? `-index-${index}` : ""
-      }`}
-      className={`cards-stack-card ${isActive ? "active" : ""} ${shadowClass}`}
-      onClick={() => {
-        if (onHandleShowCardDetails) {
-          onHandleShowCardDetails(index);
-        }
-      }}
-      style={{
-        background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
-      }}
-    >
-      <div className="cards-stack-cred-layout">
-        <div className="card-header">
-          <img
-            src={cardData.issuerLogo}
-            className="card-logo"
-            alt="card-logo"
-          />
-          <span>{cardData.credentialType}</span>
-        </div>
-        <div className="card-body">
-          <span> </span>
-        </div>
-        <div className="card-footer">
-          <div className="card-footer-column">
-            <span className="card-footer-column-label">
-              {i18n.t("creds.card.layout.name")}
-            </span>
-            <span>{cardData.nameOnCredential}</span>
+    <>
+      <div
+        key={index}
+        data-testid={`cred-card-stack${
+          index !== undefined ? `-index-${index}` : ""
+        }`}
+        className={`cards-stack-card ${
+          isActive ? "active" : ""
+        } ${shadowClass}`}
+        onClick={() => {
+          if (cardData.status === connectionStatus.pending) {
+            setAlertIsOpen(true);
+          } else if (onHandleShowCardDetails) {
+            onHandleShowCardDetails(index);
+          }
+        }}
+        style={{
+          background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
+        }}
+      >
+        <div className="cards-stack-cred-layout">
+          <div className="card-header">
+            <img
+              src={cardData.issuerLogo}
+              className="card-logo"
+              alt="card-logo"
+            />
+            <span>{cardData.credentialType}</span>
           </div>
-          <div className="card-footer-column">
-            <span className="card-footer-column-label">
-              {i18n.t("creds.card.layout.issued")}
-            </span>
-            <span>{formatShortDate(cardData.issuanceDate)}</span>
+          <div className="card-body">
+            <span> </span>
+          </div>
+          <div className="card-footer">
+            <div className="card-footer-column">
+              <span className="card-footer-column-label">
+                {i18n.t("creds.card.layout.name")}
+              </span>
+              <span>{cardData.nameOnCredential}</span>
+            </div>
+            <div className="card-footer-column">
+              <span className="card-footer-column-label">
+                {i18n.t("creds.card.layout.issued")}
+              </span>
+              <span>{formatShortDate(cardData.issuanceDate)}</span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+      <Alert
+        isOpen={alertIsOpen}
+        setIsOpen={setAlertIsOpen}
+        dataTestId="alert-confirm"
+        headerText={i18n.t("creds.create.alert.title")}
+        confirmButtonText={`${i18n.t("creds.create.alert.confirm")}`}
+        actionConfirm={() => setAlertIsOpen(false)}
+      />
+    </>
   );
 };
 
