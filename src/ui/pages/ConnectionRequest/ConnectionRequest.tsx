@@ -49,6 +49,7 @@ const ConnectionRequest = () => {
       //  to "setConnectionData()" with real values from the above request
       //
       setConnectionData(credentialRequestData);
+      // This is where we detect what type of request is incoming
       if (credentialRequestData.goal_code === connectionType.connection) {
         setConnectionRequestType(connectionType.connection);
       } else if (credentialRequestData.goal_code === connectionType.issuevc) {

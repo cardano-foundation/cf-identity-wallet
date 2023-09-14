@@ -26,6 +26,7 @@ import { ConnectModal } from "../../components/ConnectModal";
 import { credentialRequestData } from "../../__fixtures__/connectionsFix";
 import { CredProps } from "../../components/CardsStack/CardsStack.types";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
+import { ColorGenerator } from "../../utils/ColorGenerator";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -74,6 +75,8 @@ const Creds = () => {
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showConnections, setShowConnections] = useState(false);
   const [addCredentialIsOpen, setAddCredentialIsOpen] = useState(false);
+  const colorGenerator = new ColorGenerator();
+  const newColor = colorGenerator.generateNextColor();
 
   const handleCreateCred = () => {
     setAddCredentialIsOpen(true);
@@ -97,8 +100,7 @@ const Creds = () => {
         id: credentialRequestData.id,
         issuanceDate: today.toISOString(),
         issuerLogo: credentialRequestData.profileUrl,
-        // @TODO - sdisalvo: need to implement color generator
-        colors: ["#92FFC0", "#47FF94"],
+        colors: [newColor[1], newColor[0]],
         status: connectionStatus.pending,
       };
       const newCredsData = [...credsData, credentialData];
