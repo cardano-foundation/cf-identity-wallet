@@ -4,7 +4,7 @@ import type {
   OutboundPackage,
   Logger,
 } from "@aries-framework/core";
-import { MeerkatTransport } from "./meerkat/merkatTransport";
+import { MeerkatTransport } from "./meerkat/meerkatTransport";
 
 export class MeerkatOutboundTransport implements OutboundTransport {
   private agent!: Agent;

@@ -55,7 +55,7 @@ import {
   IdentityMetadataRecordProps,
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
 import { CredentialMetadataRecord } from "./modules/generalStorage/repositories/credentialMetadataRecord";
-import { MeerkatTransport } from "./transports/meerkat/merkatTransport";
+import { MeerkatTransport } from "./transports/meerkat/meerkatTransport";
 import { MeerkatOutboundTransport } from "./transports/meerkatOutboundTransport";
 
 const config: InitConfig = {
