@@ -18,7 +18,9 @@ async function createServer() {
   const server = await createLibp2p({
     peerId: id,
     addresses: {
-      listen: [`/ip4/127.0.0.1/tcp/${PORT}/ws`]
+      listen: [`/ip4/127.0.0.1/tcp/${PORT}/ws`],
+      // Change in production
+      // announce: ['/dns/example.com/tcp/443/wss/p2p/12D3KooWC8Dgp67cGoAuJxGwtZCPhzqcZNHMeuFgRhavxt2iTk4H']
     },
     transports: [
       webSockets({
