@@ -57,7 +57,6 @@ import {
 import { CredentialMetadataRecord } from "./modules/generalStorage/repositories/credentialMetadataRecord";
 import { MeerkatTransport } from "./transports/meerkat/merkatTransport";
 import { MeerkatOutboundTransport } from "./transports/meerkatOutboundTransport";
-import { MeerkatInboundTransport } from "./transports/meerkatInboundTransport";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -151,12 +150,9 @@ class AriesAgent {
         meerkatTransport.getProfile()
       );
     }
-    const inboundTransport = new MeerkatInboundTransport(meerkatTransport);
     const outboundTransport = new MeerkatOutboundTransport(meerkatTransport);
-    await inboundTransport.start(agent);
     await outboundTransport.start(agent);
     this.agent.registerOutboundTransport(outboundTransport);
-    this.agent.registerInboundTransport(inboundTransport);
   }
 
   static get agent() {

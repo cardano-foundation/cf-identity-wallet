@@ -20,6 +20,11 @@ export class MeerkatOutboundTransport implements OutboundTransport {
   public async start(agent: Agent): Promise<void> {
     this.agent = agent;
     this.logger = this.agent.config.logger;
+    const endpoint = this.meerkatTransport.getEndpoint();
+    if (endpoint) {
+      const endpoints = this.agent.config.endpoints;
+      this.agent.config.endpoints = [...endpoints, endpoint];
+    }
   }
 
   public async stop(): Promise<void> {
