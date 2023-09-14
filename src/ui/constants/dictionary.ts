@@ -11,6 +11,12 @@ const connectionStatus = {
   confirmed: "confirmed",
 };
 
+const connectionType = {
+  connection: "connection",
+  issuevc: "issue-vc",
+  credential: "credential",
+};
+
 const operationState = {
   onboarding: "onboarding",
   newCryptoAccount: "newCryptoAccount",
@@ -41,6 +47,8 @@ const toastState = {
   qrError: "qrError",
   connectionRequestPending: "connectionRequestPending",
   newConnectionAdded: "newConnectionAdded",
+  credentialRequestPending: "credentialRequestPending",
+  newCredentialAdded: "newCredentialAdded",
 };
 
 const defaultCredentialsCardData = {
@@ -67,6 +75,7 @@ const defaultCredentialsCardData = {
     suspended: false,
   },
   colors: ["", ""],
+  status: "",
 };
 
 const defaultCryptoAccountData: CryptoAccountProps = {
@@ -118,4 +127,5 @@ export {
   defaultConnectionData,
   blurredCryptoData,
   onboardingRoute,
+  connectionType,
 };

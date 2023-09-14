@@ -15,7 +15,7 @@ import {
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { operationState } from "../../constants/dictionary";
+import { operationState, toastState } from "../../constants/dictionary";
 
 const Scanner = () => {
   const dispatch = useAppDispatch();
@@ -63,11 +63,7 @@ const Scanner = () => {
         const result = await startScan();
         if (result.hasContent) {
           stopScan();
-          if (currentOperation === operationState.scanConnection) {
-            dispatch(setConnectionRequest(result.content));
-          } else {
-            // @TODO - sdisalvo: handle other scan cases
-          }
+          dispatch(setConnectionRequest(result.content));
           dispatch(setCurrentOperation(""));
         }
       }
@@ -76,16 +72,16 @@ const Scanner = () => {
 
   useEffect(() => {
     if (
-      currentRoute?.path === TabsRoutePath.SCAN ||
-      currentOperation === operationState.scanConnection
+      (currentRoute?.path === TabsRoutePath.SCAN ||
+        currentOperation === operationState.scanConnection) &&
+      currentOperation !== toastState.connectionRequestPending &&
+      currentOperation !== toastState.credentialRequestPending
     ) {
       initScan();
     } else {
       stopScan();
     }
   }, [currentOperation, currentRoute]);
-
-  const handleConnectionRequest = () => {};
 
   return (
     <>
