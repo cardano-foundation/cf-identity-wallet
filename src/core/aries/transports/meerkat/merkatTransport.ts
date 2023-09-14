@@ -31,10 +31,15 @@ class MeerkatTransport {
 
     this.meerkat.register(
       MESSAGE_CHANNEL,
-      (address: string, message: { [key: string]: unknown }) => {
+      (
+        address: string,
+        message: { [key: string]: unknown },
+        callback: Function
+      ) => {
         this.logger.info(`Message received: ${JSON.stringify(message)}`);
         this.logger.info(`Transmitted by the server: ${address}`);
         this.agent.receiveMessage(message);
+        callback(true);
       }
     );
   }

@@ -23,7 +23,7 @@ export class MeerkatOutboundTransport implements OutboundTransport {
   }
 
   public async stop(): Promise<void> {
-    this.meerkatTransport.close()
+    this.meerkatTransport.close();
   }
 
   public async sendMessage(outboundPackage: OutboundPackage): Promise<void> {

@@ -10,7 +10,7 @@ import { MiscRecord } from "./miscRecord";
 
 enum MiscRecordId {
   OP_PASS_HINT = "app-op-password-hint",
-  MEERKAT_PROFILE_KEY = "meerkat-profile"
+  MEERKAT_PROFILE_KEY = "meerkat-profile",
 }
 
 @injectable()
