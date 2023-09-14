@@ -15,7 +15,7 @@ const filteredCredsFix = [
     nameOnCredential: "Thomas A. Mayfield",
     issuerLogo: "https://www.w3.org/Icons/WWW/w3c_home_nb-v.svg",
     colors: ["#D9EDDF", "#ACD8B9"],
-    status: "pending",
+    status: "confirmed",
   },
 ];
 

@@ -51,7 +51,7 @@ const credsFix = [
       suspended: false,
     },
     colors: ["#D9EDDF", "#ACD8B9"],
-    status: "pending",
+    status: "confirmed",
   },
 ];
 

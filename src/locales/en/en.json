@@ -568,6 +568,6 @@
       "confirm": "Yes, connect",
       "cancel": "Cancel"
     },
-    "success": "Connection successful"
+    "success": "{{action}} pending"
   }
 }

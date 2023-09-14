@@ -206,6 +206,10 @@
       strong {
         font-size: 1rem;
         color: var(--ion-color-primary);
+
+        &:first-letter {
+          text-transform: capitalize;
+        }
       }
     }
   }

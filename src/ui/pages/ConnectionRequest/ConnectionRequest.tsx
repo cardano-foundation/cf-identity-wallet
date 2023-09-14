@@ -134,7 +134,11 @@ const ConnectionRequest = () => {
           </IonRow>
           <IonRow className="connection-request-status">
             <IonCol size="12">
-              <strong>{i18n.t("connectionrequest.success")}</strong>
+              <strong>
+                {i18next.t("connectionrequest.success", {
+                  action: connectionRequestType,
+                })}
+              </strong>
             </IonCol>
           </IonRow>
         </IonGrid>

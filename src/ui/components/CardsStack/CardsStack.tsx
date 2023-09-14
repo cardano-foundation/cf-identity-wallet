@@ -59,7 +59,9 @@ const CredCard = ({
             <span>{cardData.credentialType}</span>
           </div>
           <div className="card-body">
-            <span> </span>
+            <span>
+              {cardData.status === connectionStatus.pending ? "Pending..." : ""}
+            </span>
           </div>
           <div className="card-footer">
             <div className="card-footer-column">
