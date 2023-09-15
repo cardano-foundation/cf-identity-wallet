@@ -26,11 +26,10 @@ import {
   JsonLdCredentialFormatService,
   AutoAcceptCredential,
   W3cCredentialsModule,
+  ProposeCredentialOptions,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
-import { CredentialFormatPayload } from "@aries-framework/core/build/modules/credentials/formats";
-import { CredentialFormatsFromProtocols } from "@aries-framework/core/build/modules/credentials/protocol/CredentialProtocolOptions";
 import { CapacitorFileSystem } from "./dependencies";
 import {
   IonicStorageModule,
@@ -62,7 +61,7 @@ import {
   IdentityMetadataRecordProps,
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
 import { CredentialMetadataRecord } from "./modules/generalStorage/repositories/credentialMetadataRecord";
-import { documentLoader } from "./modules/documentLoader/documentLoader";
+import { documentLoader } from "./documentLoader";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -321,13 +320,13 @@ class AriesAgent {
 
   async proposeCredential(
     connectionId: string,
-    credentialFormats: CredentialFormatPayload<
-      CredentialFormatsFromProtocols<[V2CredentialProtocol]>,
-      "createProposal"
-    >
+    credentialFormats: ProposeCredentialOptions["credentialFormats"]
   ) {
-    return this.agent.credentials.proposeCredential({
-      protocolVersion: "v2" as never,
+    const agent = this.agent as Agent<{
+      credentials: CredentialsModule<[V2CredentialProtocol]>;
+    }>;
+    return agent.credentials.proposeCredential({
+      protocolVersion: "v2",
       connectionId: connectionId,
       credentialFormats: credentialFormats,
       autoAcceptCredential: AutoAcceptCredential.Always,
