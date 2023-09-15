@@ -14,13 +14,13 @@ export class LibP2pInboundTransport implements InboundTransport {
     const agentConfig = agent.config;
     this.logger = agentConfig.logger;
     this.agent = agent;
-    const existingPeerId = await getPeerFromStorage(agent);
+    const existingPeerId = await getPeerFromStorage();
     if (existingPeerId) {
-      await this.libP2p.start(JSON.parse(existingPeerId.value));
+      await this.libP2p.start(JSON.parse(existingPeerId as string));
     } else {
       await this.libP2p.start();
       const peerId = this.libP2p.getPeerJson();
-      await savePeer(agent, peerId);
+      await savePeer(peerId);
     }
     await this.libP2p.handleInboundMessage();
     await this.libP2p.advertising();

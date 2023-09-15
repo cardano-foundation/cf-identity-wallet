@@ -6,7 +6,7 @@ import {
   EncryptedMessage,
 } from "@aries-framework/core";
 import { CapacitorFileSystem } from "../dependencies";
-import { IonicStorageModule, MiscRecord } from "../modules";
+import { IonicStorageModule } from "../modules";
 import { LibP2p } from "./libp2p/libP2p";
 import { LibP2pOutboundTransport } from "./libP2pOutboundTransport";
 import * as libP2pPeer from "./libP2p.peer";
@@ -28,7 +28,7 @@ jest.mock("./libp2p/libP2p", () => ({
   },
 }));
 const savePeer = jest.spyOn(libP2pPeer, "savePeer");
-savePeer.mockReturnValue(new Promise((resolve) => resolve(null)));
+savePeer.mockReturnValue(new Promise((resolve) => resolve(undefined)));
 const getPeerFromStorage = jest.spyOn(libP2pPeer, "getPeerFromStorage");
 
 const agentDependencies: AgentDependencies = {
@@ -84,9 +84,7 @@ describe("LibP2p webrtc outbound transport test", () => {
 
   test("should successfully start when second run", async () => {
     await LibP2p.libP2p.start();
-    getPeerFromStorage.mockReturnValue(
-      new Promise((resolve) => resolve({ id: "", value: "{}" } as MiscRecord))
-    );
+    getPeerFromStorage.mockReturnValue(new Promise((resolve) => resolve({})));
     agent.registerOutboundTransport(libP2pOutboundTransport);
     await expect(libP2pOutboundTransport.start(agent)).resolves.toBeUndefined();
   });

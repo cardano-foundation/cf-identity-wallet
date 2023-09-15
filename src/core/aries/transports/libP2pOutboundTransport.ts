@@ -20,13 +20,13 @@ export class LibP2pOutboundTransport implements OutboundTransport {
   public async start(agent: Agent): Promise<void> {
     this.agent = agent;
     this.logger = this.agent.config.logger;
-    const existingPeerId = await getPeerFromStorage(agent);
+    const existingPeerId = await getPeerFromStorage();
     if (existingPeerId) {
-      await this.libP2p.start(JSON.parse(existingPeerId.value));
+      await this.libP2p.start(JSON.parse(existingPeerId as string));
     } else {
       await this.libP2p.start();
       const peerId = this.libP2p.getPeerJson();
-      await savePeer(agent, peerId);
+      await savePeer(peerId);
     }
     this.libP2p.setUsageStatusOfOutbound(true);
     this.logger.debug("Starting LibP2p outbound transport");

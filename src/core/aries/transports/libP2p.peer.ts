@@ -1,23 +1,16 @@
-import { Agent } from "@aries-framework/core";
 import { PeerIdJSON } from "./libp2p/libP2p.types";
-import { MiscRecord } from "../modules";
+import { KeyStoreKeys, SecureStorage, SecureStorageItem } from "../../storage";
 
-export async function getPeerFromStorage(
-  agent: Agent
-): Promise<MiscRecord | null> {
+export async function getPeerFromStorage(): Promise<SecureStorageItem | null> {
   try {
-    return await agent.modules.generalStorage.getMiscRecordById(
-      "LIP_P2P_PEER_ID"
-    );
+    return await SecureStorage.get(KeyStoreKeys.LIBP2P_PEER);
   } catch (e) {
     return null;
   }
 }
-export async function savePeer(agent: Agent, value: PeerIdJSON) {
-  return await agent.modules.generalStorage.saveMiscRecord(
-    new MiscRecord({
-      id: "LIP_P2P_PEER_ID",
-      value: JSON.stringify(value),
-    })
+export async function savePeer(value: PeerIdJSON) {
+  return await SecureStorage.set(
+    KeyStoreKeys.LIBP2P_PEER,
+    JSON.stringify(value)
   );
 }
