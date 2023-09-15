@@ -1,6 +1,6 @@
 import { expect, test } from "@jest/globals";
-import { Libp2p } from "@libp2p/interface/src/index";
-import { PeerId } from "@libp2p/interface/dist/src/peer-id/index";
+import { Libp2p } from "@libp2p/interface";
+import { PeerId } from "@libp2p/interface/peer-id";
 import { IncomingStreamData } from "@libp2p/interface/src/stream-handler";
 import { Connection, Stream } from "@libp2p/interface/src/connection";
 import { Pushable } from "it-pushable";
@@ -23,7 +23,7 @@ jest.mock("./libP2p.service", () => ({
     fromString: jest.fn(),
     toString: jest.fn(),
     createNode: jest.fn<Partial<Libp2p>, never>(() => ({
-      peerId: peerId as never as PeerId,
+      peerId: peerId as any as PeerId,
       isStarted: jest.fn(() => false),
       handle: jest.fn(),
       addEventListener: jest.fn(),
@@ -68,14 +68,14 @@ describe("LibP2p webrtc class test", () => {
   });
 
   test("LibP2p should successfully start with exist peer", async () => {
-    libP2p.setNode(undefined as never);
+    libP2p.setNode(undefined as any);
     libP2p.isStart = false;
     const result = await libP2p.start(peerIdJSON);
     expect(result).toEqual(libP2p);
   });
 
   test("LibP2p should successfully start without init node", async () => {
-    libP2p.setNode(undefined as never);
+    libP2p.setNode(undefined as any);
     const result = await libP2p.start();
     expect(result).toEqual(libP2p);
   });
@@ -169,7 +169,7 @@ describe("LibP2p webrtc class test", () => {
       payload: payload,
       responseRequested: false,
     };
-    libP2p.setNode(undefined as never);
+    libP2p.setNode(undefined as any);
     await expect(libP2p.sendMessage(outboundPackage)).rejects.toThrowError(
       LibP2p.NOT_INIT_NODE_ERROR_MSG
     );

@@ -4,10 +4,10 @@ import { IncomingStreamData } from "@libp2p/interface/src/stream-handler";
 import { OutboundPackage } from "@aries-framework/core";
 import { Connection } from "@libp2p/interface/connection";
 import { Stream } from "@libp2p/interface/src/connection";
-import { PeerId } from "@libp2p/interface/dist/src/peer-id/index";
+import { PeerId } from "@libp2p/interface/peer-id";
 import { LibP2pService } from "./libP2p.service";
 import { LibP2pInboundTransport } from "../libP2pInboundTransport";
-import { IPeerIdJSON } from "./libP2p.types";
+import { PeerIdJSON } from "./libP2p.types";
 
 // @TODO - config env or input from user
 export const LIBP2P_RELAY =
@@ -97,7 +97,7 @@ export class LibP2p {
     return this;
   }
 
-  public async start(peerIdJSON?: IPeerIdJSON) {
+  public async start(peerIdJSON?: PeerIdJSON) {
     if (this.isStart) return this;
     if (!this.node || !this.node.isStarted()) {
       if (peerIdJSON) {
@@ -111,7 +111,7 @@ export class LibP2p {
     return this;
   }
 
-  public getPeerJson(): IPeerIdJSON {
+  public getPeerJson(): PeerIdJSON {
     return this.libP2pService.getPeerJson(this.node);
   }
 
