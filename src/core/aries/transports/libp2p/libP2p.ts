@@ -94,7 +94,9 @@ export class LibP2p {
     const node = await this.libP2pService.createNode(peerId);
     this.setNode(node);
     this.setPeerId(this.node.peerId.toString());
-    this.handleCLoseConnection();
+    this.node.addEventListener("connection:close", (event) => {
+      this.updateConnectionTool(event);
+    });
     return this;
   }
 
@@ -140,12 +142,6 @@ export class LibP2p {
         libP2pTools.isActive = false;
       }
     }
-  }
-
-  public handleCLoseConnection() {
-    this.node.addEventListener("connection:close", (event) => {
-      this.updateConnectionTool(event);
-    });
   }
 
   /*
