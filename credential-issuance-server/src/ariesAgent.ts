@@ -34,7 +34,12 @@ const agentConfig: InitConfig = {
 
 class AriesAgent {
   private static instance: AriesAgent;
-  private readonly agent: Agent;
+  private readonly agent: Agent<{
+    credentials: CredentialsModule<V2CredentialProtocol<JsonLdCredentialFormatService[]>[]>,
+    askar: AskarModule,
+    w3cCredentials: W3cCredentialsModule
+  }>;
+
   private constructor() {
     this.agent = new Agent({
       config: agentConfig,
@@ -65,6 +70,7 @@ class AriesAgent {
     }
     return this.instance;
   }
+
   async start(httpInboundTransport: HttpInboundTransport): Promise<void> {
     this.agent.registerInboundTransport(httpInboundTransport);
     await this.agent.initialize();
@@ -96,7 +102,7 @@ class AriesAgent {
       options: { keyType: KeyType.Ed25519 },
     });
     return this.agent.credentials.offerCredential({
-      protocolVersion: "v2" as never,
+      protocolVersion: "v2",
       connectionId: connectionId,
       credentialFormats: {
         jsonld: {
@@ -124,14 +130,15 @@ class AriesAgent {
       autoAcceptCredential: AutoAcceptCredential.Always,
     });
   }
-  async createOfferInvitation(){
+
+  async createOfferInvitation() {
     const did = await this.agent.dids.create({
       method: "key",
       options: { keyType: KeyType.Ed25519 },
     });
     const { message } = await this.agent.credentials.createOffer({
       comment: "V2 Out of Band offer (W3C)",
-      autoAcceptCredential: AutoAcceptCredential.Never,
+      autoAcceptCredential: AutoAcceptCredential.Always,
       credentialFormats: {
         jsonld: {
           credential: {
@@ -155,7 +162,7 @@ class AriesAgent {
           },
         },
       },
-      protocolVersion: "v2" as never,
+      protocolVersion: "v2",
     });
     const offerMessage = message as V2OfferCredentialMessage;
     const { outOfBandInvitation } = await this.agent.oob.createInvitation({
@@ -164,6 +171,7 @@ class AriesAgent {
     });
     return outOfBandInvitation.toUrl({ domain: config.endpoint });
   }
+
   async waitForConnection(outOfBandId: string) {
     console.log("Waiting for agent to finish connection...");
 
@@ -172,7 +180,7 @@ class AriesAgent {
         // Timeout of 60 seconds
         const timeoutId = setTimeout(
           () => reject(new Error(Output.MissingConnectionRecord)),
-          60000
+          60000,
         );
 
         // Start listener
@@ -183,7 +191,7 @@ class AriesAgent {
 
             clearTimeout(timeoutId);
             resolve(e.payload.connectionRecord);
-          }
+          },
         );
 
         // Also retrieve the connection record by invitation if the event has already fired
@@ -203,7 +211,7 @@ class AriesAgent {
       });
     } catch (e) {
       console.log(
-        "\nTimeout of 60 seconds reached.. Returning to home screen.\n"
+        "\nTimeout of 60 seconds reached.. Returning to home screen.\n",
       );
       return;
     }
@@ -211,12 +219,12 @@ class AriesAgent {
   }
 
   async connectionFindAllByOutOfBandId(
-    outOfBandId: string
+    outOfBandId: string,
   ): Promise<ConnectionRecord[]> {
     return this.agent.connections.findAllByOutOfBandId(outOfBandId);
   }
 }
 
 export {
-  AriesAgent
-}
+  AriesAgent,
+};
