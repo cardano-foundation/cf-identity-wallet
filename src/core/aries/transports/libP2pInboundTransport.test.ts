@@ -72,7 +72,7 @@ describe("LibP2p webrtc inbound transport test", () => {
 
   test("should successfully start when second run", async () => {
     await LibP2p.libP2p.start();
-    getPeerFromStorage.mockReturnValue(new Promise((resolve) => resolve({})));
+    getPeerFromStorage.mockReturnValue(new Promise((resolve) => resolve("{}")));
     agent.registerInboundTransport(libP2pInboundTransport);
     await expect(libP2pInboundTransport.start(agent)).resolves.toBeUndefined();
   });
