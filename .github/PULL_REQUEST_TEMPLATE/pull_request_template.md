@@ -25,6 +25,10 @@ Please include a summary of the changes and a brief description about this PR
 
 ## Checklist before requesting a review
 
+### Issue ticket number and link
+
+- [ ] This PR has a valid GitHub issue or ticket number: [link]
+
 ### Testing & Validation
 
 - [ ] This PR has been tested/validated in IOS, Android and browser.
