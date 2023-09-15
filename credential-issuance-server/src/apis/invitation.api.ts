@@ -3,7 +3,7 @@ import { AriesAgent } from "../ariesAgent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 
-export async function invitationApi(_: Request, res: Response) {
+async function invitationApi(_: Request, res: Response) {
   const { url } = await AriesAgent.agent.createInvitation();
   const response: ResponseData<string> = {
     statusCode: 200,
@@ -11,4 +11,8 @@ export async function invitationApi(_: Request, res: Response) {
     data: url,
   };
   httpResponse(res, response);
+}
+
+export {
+  invitationApi
 }

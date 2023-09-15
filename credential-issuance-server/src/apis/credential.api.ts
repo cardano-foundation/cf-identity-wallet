@@ -4,7 +4,7 @@ import { AriesAgent } from "../ariesAgent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 
-export async function credentialApi(req: Request, res: Response): Promise<void> {
+async function credentialApi(req: Request, res: Response): Promise<void> {
   const connectionId = req.query.connectionId as string;
   if (!connectionId) {
     const response: ResponseData<unknown> = {
@@ -36,11 +36,16 @@ export async function credentialApi(req: Request, res: Response): Promise<void> 
   httpResponse(res, response);
 }
 
-export async function createOfferInvitation(_: Request, res: Response): Promise<void> {
+async function createOfferInvitation(_: Request, res: Response): Promise<void> {
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
     data: await AriesAgent.agent.createOfferInvitation(),
   };
   httpResponse(res, response);
+}
+
+export {
+  credentialApi,
+  createOfferInvitation
 }

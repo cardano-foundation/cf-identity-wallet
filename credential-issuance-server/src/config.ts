@@ -2,7 +2,7 @@
 const port = process.env.PORT ? Number(process.env.PORT) : 3001;
 // eslint-disable-next-line no-undef
 const endpoint = process.env.ENDPOINT ?? `http://localhost:${port}`
-export const config = {
+const config = {
   endpoint: endpoint,
   endpoints: [endpoint],
   port,
@@ -12,4 +12,8 @@ export const config = {
     credential: "/credential",
     createOfferInvitation: "/createOfferInvitation",
   }
+}
+
+export {
+  config
 }
