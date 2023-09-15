@@ -1,12 +1,16 @@
-import {Request, Response} from "express";
-import {IResponseData} from "../types/response.type";
-import {httpResponse} from "../utils/response.util";
+import { Request, Response } from "express";
+import { ResponseData } from "../types/response.type";
+import { httpResponse } from "../utils/response.util";
 
-export function ping(_: Request, res: Response) {
-  const response: IResponseData<string> = {
+function ping(_: Request, res: Response) {
+  const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
     data: "pong",
-  }
+  };
   httpResponse(res, response);
 }
+
+export {
+  ping,
+};

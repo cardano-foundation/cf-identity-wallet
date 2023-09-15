@@ -32,7 +32,7 @@ const agentConfig: InitConfig = {
   // logger: new ConsoleLogger(LogLevel.info), // Uncomment it to view logs from aries agent
 };
 
-export class AriesAgent {
+class AriesAgent {
   private static instance: AriesAgent;
   private readonly agent: Agent;
   private constructor() {
@@ -215,4 +215,8 @@ export class AriesAgent {
   ): Promise<ConnectionRecord[]> {
     return this.agent.connections.findAllByOutOfBandId(outOfBandId);
   }
+}
+
+export {
+  AriesAgent
 }

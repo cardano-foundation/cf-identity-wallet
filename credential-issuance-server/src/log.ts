@@ -1,4 +1,8 @@
-export function log(...args: unknown[]) {
+function log(...args: unknown[]) {
   // eslint-disable-next-line no-console
   console.log(...args);
+}
+
+export {
+  log
 }

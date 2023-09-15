@@ -6,10 +6,10 @@ import {
 } from "@aries-framework/core";
 import jsonld from "@aries-framework/core/build/modules/vc/libraries/jsonld";
 import { getNativeDocumentLoader } from "@aries-framework/core/build/modules/vc/libraries/nativeDocumentLoader.native";
-export function isDid(potentialDid: string) {
+function isDid(potentialDid: string) {
   return potentialDid.startsWith("did:");
 }
-export function documentLoader(agentContext: AgentContext): DocumentLoader {
+function documentLoader(agentContext: AgentContext): DocumentLoader {
   const didResolver =
     agentContext.dependencyManager.resolve(DidResolverService);
   async function loader(url: string) {
@@ -42,3 +42,5 @@ export function documentLoader(agentContext: AgentContext): DocumentLoader {
 
   return loader.bind(loader);
 }
+
+export { documentLoader };
