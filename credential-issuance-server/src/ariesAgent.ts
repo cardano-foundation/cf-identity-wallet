@@ -6,6 +6,7 @@ import {
   CredentialsModule,
   HttpOutboundTransport,
   InitConfig,
+  JsonLdCredentialDetailFormat,
   JsonLdCredentialFormatService,
   KeyType,
   // LogLevel,
@@ -92,6 +93,30 @@ class AriesAgent {
     }
   }
 
+  getCredentialExample(did: string): JsonLdCredentialDetailFormat {
+    return {
+      credential: {
+        "@context": [
+          CREDENTIALS_CONTEXT_V1_URL,
+          "https://www.w3.org/2018/credentials/examples/v1",
+        ],
+        type: ["VerifiableCredential", "UniversityDegreeCredential"],
+        issuer: did,
+        issuanceDate: "2022-10-22T12:23:48Z",
+        credentialSubject: {
+          degree: {
+            type: "BachelorDegree",
+            name: "Bachelor of Science and Arts",
+          },
+        },
+      },
+      options: {
+        proofType: "Ed25519Signature2018",
+        proofPurpose: "assertionMethod",
+      },
+    };
+  }
+
   async offerCredential(connectionId: string) {
     const did = await this.agent.dids.create({
       method: "key",
@@ -101,33 +126,13 @@ class AriesAgent {
       protocolVersion: "v2",
       connectionId: connectionId,
       credentialFormats: {
-        jsonld: {
-          credential: {
-            "@context": [
-              CREDENTIALS_CONTEXT_V1_URL,
-              "https://www.w3.org/2018/credentials/examples/v1",
-            ],
-            type: ["VerifiableCredential", "UniversityDegreeCredential"],
-            issuer: did.didState.did as string,
-            issuanceDate: "2022-10-22T12:23:48Z",
-            credentialSubject: {
-              degree: {
-                type: "BachelorDegree",
-                name: "Bachelor of Science and Arts",
-              },
-            },
-          },
-          options: {
-            proofType: "Ed25519Signature2018",
-            proofPurpose: "assertionMethod",
-          },
-        },
+        jsonld: this.getCredentialExample(did.didState.did as string),
       },
       autoAcceptCredential: AutoAcceptCredential.Always,
     });
   }
 
-  async createOfferInvitation() {
+  async createInvitationWithCredential() {
     const did = await this.agent.dids.create({
       method: "key",
       options: { keyType: KeyType.Ed25519 },
@@ -136,27 +141,7 @@ class AriesAgent {
       comment: "V2 Out of Band offer (W3C)",
       autoAcceptCredential: AutoAcceptCredential.Always,
       credentialFormats: {
-        jsonld: {
-          credential: {
-            "@context": [
-              CREDENTIALS_CONTEXT_V1_URL,
-              "https://www.w3.org/2018/credentials/examples/v1",
-            ],
-            type: ["VerifiableCredential", "UniversityDegreeCredential"],
-            issuer: did.didState.did as string,
-            issuanceDate: "2017-10-22T12:23:48Z",
-            credentialSubject: {
-              degree: {
-                type: "BachelorDegree",
-                name: "Bachelor of Science and Arts",
-              },
-            },
-          },
-          options: {
-            proofType: "Ed25519Signature2018",
-            proofPurpose: "assertionMethod",
-          },
-        },
+        jsonld: this.getCredentialExample(did.didState.did as string),
       },
       protocolVersion: "v2",
     });
@@ -166,6 +151,29 @@ class AriesAgent {
       messages: [offerMessage],
     });
     return outOfBandInvitation.toUrl({ domain: config.endpoint });
+  }
+
+  async createInvitationWithCredentialConnectionless() {
+    const did = await this.agent.dids.create({
+      method: "key",
+      options: { keyType: KeyType.Ed25519 },
+    });
+    const { message, credentialRecord } = await this.agent.credentials.createOffer({
+      comment: "V2 Out of Band offer (W3C)",
+      autoAcceptCredential: AutoAcceptCredential.Always,
+      credentialFormats: {
+        jsonld: this.getCredentialExample(did.didState.did as string),
+      },
+      protocolVersion: "v2",
+    });
+    const offerMessage = message as V2OfferCredentialMessage;
+    // @TODO: change when update latest aries framework, use createInvitation function instead (maybe use handshake = false)
+    const { invitationUrl } = await this.agent.oob.createLegacyConnectionlessInvitation({
+      recordId: credentialRecord.id,
+      message: offerMessage,
+      domain: config.endpoint,
+    });
+    return invitationUrl;
   }
 }
 

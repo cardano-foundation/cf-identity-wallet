@@ -5,6 +5,7 @@ import { config } from "./config";
 import { AriesAgent } from "./ariesAgent";
 import router from "./routes";
 import { log } from "./log";
+
 async function startServer() {
   const app = express();
   app.use(cors());

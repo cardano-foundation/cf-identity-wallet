@@ -36,16 +36,26 @@ async function credentialApi(req: Request, res: Response): Promise<void> {
   httpResponse(res, response);
 }
 
-async function createOfferInvitation(_: Request, res: Response): Promise<void> {
+async function invitationWithCredential(_: Request, res: Response): Promise<void> {
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
-    data: await AriesAgent.agent.createOfferInvitation(),
+    data: await AriesAgent.agent.createInvitationWithCredential(),
+  };
+  httpResponse(res, response);
+}
+
+async function invitationWithCredentialConnectionless(_: Request, res: Response): Promise<void> {
+  const response: ResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: await AriesAgent.agent.createInvitationWithCredentialConnectionless(),
   };
   httpResponse(res, response);
 }
 
 export {
   credentialApi,
-  createOfferInvitation
-}
+  invitationWithCredential,
+  invitationWithCredentialConnectionless,
+};

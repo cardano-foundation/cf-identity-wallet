@@ -4,5 +4,5 @@ function log(...args: unknown[]) {
 }
 
 export {
-  log
-}
+  log,
+};

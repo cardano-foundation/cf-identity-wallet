@@ -14,5 +14,5 @@ async function invitationApi(_: Request, res: Response) {
 }
 
 export {
-  invitationApi
-}
+  invitationApi,
+};
