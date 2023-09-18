@@ -40,12 +40,22 @@ async function createOfferInvitation(_: Request, res: Response): Promise<void> {
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
-    data: await AriesAgent.agent.createOfferInvitation(),
+    data: await AriesAgent.agent.createOfferInvitationWithConnection(),
+  };
+  httpResponse(res, response);
+}
+
+async function createOfferInvitationWithConnectionLess(_: Request, res: Response): Promise<void> {
+  const response: ResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: await AriesAgent.agent.createOfferInvitationWithConnectionLess(),
   };
   httpResponse(res, response);
 }
 
 export {
   credentialApi,
-  createOfferInvitation
+  createOfferInvitation,
+  createOfferInvitationWithConnectionLess,
 }

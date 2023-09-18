@@ -27,6 +27,7 @@ import {
   AutoAcceptCredential,
   W3cCredentialsModule,
   ProposeCredentialOptions,
+  JsonEncoder,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -232,6 +233,14 @@ class AriesAgent {
       autoAcceptInvitation: true,
       reuseConnection: true,
     });
+  }
+
+  async receiveInvitationCredentialWithConnectionLess(
+    url: string
+  ): Promise<void> {
+    const rawMessage = url.split("?d_m=")[1];
+    const message = JsonEncoder.fromBase64(rawMessage);
+    await this.agent.receiveMessage(message);
   }
 
   /**

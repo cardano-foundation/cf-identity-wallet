@@ -12,9 +12,9 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
-        "@aries-framework/askar": "0.4.0-alpha.119",
-        "@aries-framework/core": "0.4.0-alpha.119",
-        "@aries-framework/node": "0.4.0-alpha.119",
+        "@aries-framework/askar": "0.4.0-alpha.122",
+        "@aries-framework/core": "0.4.0-alpha.122",
+        "@aries-framework/node": "0.4.0-alpha.122",
         "@hyperledger/aries-askar-nodejs": "^0.1.1",
         "axios": "^1.5.0",
         "cors": "^2.8.5",
