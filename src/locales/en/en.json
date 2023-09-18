@@ -377,7 +377,10 @@
       "done": "Done",
       "select": "Select",
       "selectall": "Select All",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "restore": "Restore",
+      "selectedamount": "{{amount}} Credentials Selected"
     }
   },
   "connections": {
