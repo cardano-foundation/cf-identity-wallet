@@ -45,7 +45,7 @@ async function createOfferInvitation(_: Request, res: Response): Promise<void> {
   httpResponse(res, response);
 }
 
-async function createOfferInvitationWithConnectionLess(_: Request, res: Response): Promise<void> {
+async function invitationWithCredential(_: Request, res: Response): Promise<void> {
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
@@ -57,5 +57,5 @@ async function createOfferInvitationWithConnectionLess(_: Request, res: Response
 export {
   credentialApi,
   createOfferInvitation,
-  createOfferInvitationWithConnectionLess,
+  invitationWithCredential,
 };
