@@ -1,3 +1,18 @@
+.cards-stack-page {
+  min-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  ion-button {
+    margin: 2rem auto;
+
+    &::part(native) {
+      padding: 0.625rem 1rem;
+    }
+  }
+}
+
 .cards-stack-container {
   display: flex;
   flex-direction: column;
@@ -116,14 +131,11 @@
   }
 }
 
-.top-shadow {
-  box-shadow: 0px -5px 5px rgba(54, 60, 74, 0.25);
-}
-
-.bottom-shadow {
+.cards-stack-card:not(:first-child) {
+  margin-top: -10rem;
   box-shadow: 0px 5px 5px rgba(54, 60, 74, 0.25);
 }
 
-.cards-stack-card:not(:first-child) {
-  margin-top: -10rem;
+.card-details .cards-stack-card:first-child {
+  box-shadow: 0px -5px 5px rgba(54, 60, 74, 0.25);
 }

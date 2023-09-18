@@ -326,7 +326,8 @@
   "creds": {
     "tab": {
       "title": "Credentials",
-      "create": "Create a credential"
+      "create": "Create a credential",
+      "viewarchived": "View archived credentials"
     },
     "card": {
       "layout": {

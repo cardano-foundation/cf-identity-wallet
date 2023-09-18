@@ -47,21 +47,6 @@ describe("Cards Stack Component", () => {
     expect(secondCard).toHaveClass("top-shadow");
   });
 
-  test("It renders correct shadow on Cred card", () => {
-    const { getByTestId } = render(
-      <Provider store={store}>
-        <CardsStack
-          cardsType={cardTypes.creds}
-          cardsData={credsFix}
-        />
-      </Provider>
-    );
-    const firstCard = getByTestId("cred-card-stack-index-0");
-    expect(firstCard).toHaveClass("bottom-shadow");
-    const secondCard = getByTestId("cred-card-stack-index-1");
-    expect(secondCard).toHaveClass("top-shadow");
-  });
-
   test("It navigates to Did Card Details and back", async () => {
     jest.useFakeTimers();
     const { findByTestId } = render(
