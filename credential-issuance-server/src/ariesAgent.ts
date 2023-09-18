@@ -132,7 +132,7 @@ class AriesAgent {
     });
   }
 
-  async createOfferInvitationWithConnection() {
+  async createInvitationWithCredential() {
     const did = await this.agent.dids.create({
       method: "key",
       options: { keyType: KeyType.Ed25519 },
@@ -153,7 +153,7 @@ class AriesAgent {
     return outOfBandInvitation.toUrl({ domain: config.endpoint });
   }
 
-  async createOfferInvitationWithConnectionLess() {
+  async createInvitationWithCredentialConnectionless() {
     const did = await this.agent.dids.create({
       method: "key",
       options: { keyType: KeyType.Ed25519 },

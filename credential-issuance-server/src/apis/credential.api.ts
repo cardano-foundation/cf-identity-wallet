@@ -40,7 +40,7 @@ async function invitationWithCredential(_: Request, res: Response): Promise<void
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
-    data: await AriesAgent.agent.createOfferInvitationWithConnection(),
+    data: await AriesAgent.agent.createInvitationWithCredential(),
   };
   httpResponse(res, response);
 }
@@ -49,7 +49,7 @@ async function invitationWithCredentialConnectionless(_: Request, res: Response)
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
-    data: await AriesAgent.agent.createOfferInvitationWithConnectionLess(),
+    data: await AriesAgent.agent.createInvitationWithCredentialConnectionless(),
   };
   httpResponse(res, response);
 }
