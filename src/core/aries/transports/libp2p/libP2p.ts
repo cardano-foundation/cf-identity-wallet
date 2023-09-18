@@ -31,7 +31,7 @@ interface IUsageStatusOfNode {
 export class LibP2p {
   private static instance: LibP2p;
   private node!: Libp2p;
-  private webRTCConnections: Map<string, ILibP2pTools>;
+  public webRTCConnections: Map<string, ILibP2pTools>;
   public endpoint?: string;
   public peerId!: string;
   public inBoundTransport: LibP2pInboundTransport;
@@ -94,6 +94,9 @@ export class LibP2p {
     const node = await this.libP2pService.createNode(peerId);
     this.setNode(node);
     this.setPeerId(this.node.peerId.toString());
+    this.node.addEventListener("connection:close", (event) => {
+      this.updateConnectionTool(event);
+    });
     return this;
   }
 
@@ -128,8 +131,17 @@ export class LibP2p {
   }
 
   public async handleInboundMessage() {
-    // event
     await this.node.handle("/aries/1.0.0", this.receiveMessage.bind(this));
+  }
+
+  public updateConnectionTool(event: CustomEvent<Connection>) {
+    if (event.detail?.multiplexer === "/webrtc") {
+      const peerId = event.detail.remotePeer.toString();
+      const libP2pTools = this.webRTCConnections.get(peerId);
+      if (libP2pTools) {
+        libP2pTools.isActive = false;
+      }
+    }
   }
 
   /*
@@ -199,9 +211,20 @@ export class LibP2p {
       throw new Error(LibP2p.ENDPOINT_IS_NOT_DEFINED_ERROR_MSG);
     }
     const getEndpoint = outboundPackage.endpoint?.replace(schemaPrefix, "");
+    // Get peerId from endpoint
+    const peerId = getEndpoint?.split("/").pop();
+    if (!peerId) {
+      throw new Error(LibP2p.NOT_FOUND_PEER_ID_ERROR_MSG);
+    }
     let libP2pTools: ILibP2pTools | undefined =
-      this.webRTCConnections.get(getEndpoint);
-    if (!libP2pTools) {
+      this.webRTCConnections.get(peerId);
+    if (!libP2pTools || !libP2pTools?.isActive) {
+      if (libP2pTools && !libP2pTools.isActive) {
+        // Gracefully close the connection.
+        await libP2pTools.outgoingStream.close();
+        await libP2pTools.connection.close();
+        this.webRTCConnections.delete(peerId);
+      }
       const ma = this.libP2pService.multiaddr(getEndpoint);
       const connection = await this.node.dial(ma);
       const outgoingStream = await connection.newStream(["/aries/1.0.0"]);
@@ -213,10 +236,7 @@ export class LibP2p {
         connection,
         isActive: true,
       };
-      this.webRTCConnections = this.webRTCConnections.set(
-        getEndpoint,
-        libP2pTools
-      );
+      this.webRTCConnections = this.webRTCConnections.set(peerId, libP2pTools);
     }
     libP2pTools.sender.push(
       new TextEncoder().encode(JSON.stringify(outboundPackage.payload))
