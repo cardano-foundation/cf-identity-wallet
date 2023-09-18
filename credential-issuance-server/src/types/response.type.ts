@@ -1,10 +1,10 @@
 interface ResponseData<T> {
-    data: T;
-    error?: string;
-    success: boolean;
-    statusCode: number;
+  data: T;
+  error?: string;
+  success: boolean;
+  statusCode: number;
 }
 
 export type {
-  ResponseData
-}
+  ResponseData,
+};

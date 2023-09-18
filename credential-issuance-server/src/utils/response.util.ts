@@ -6,5 +6,5 @@ function httpResponse<T>(res: Response, responseData: ResponseData<T>) {
 }
 
 export {
-  httpResponse
-}
+  httpResponse,
+};

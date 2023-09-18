@@ -12,5 +12,5 @@ async function requestAndGenQR(endpoint: string) {
 }
 
 export {
-  requestAndGenQR
-}
+  requestAndGenQR,
+};

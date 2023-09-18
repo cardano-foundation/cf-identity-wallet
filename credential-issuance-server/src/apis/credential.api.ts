@@ -58,4 +58,4 @@ export {
   credentialApi,
   createOfferInvitation,
   createOfferInvitationWithConnectionLess,
-}
+};
