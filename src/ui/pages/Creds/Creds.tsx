@@ -79,6 +79,8 @@ const Creds = () => {
   const [credsData, setCredsData] = useState<CredProps[]>(
     useAppSelector(getCredsCache)
   );
+  const confirmedCreds = credsData.filter((item) => item.isArchived === false);
+  const archivedCreds = credsData.filter((item) => item.isArchived === true);
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showConnections, setShowConnections] = useState(false);
   const [addCredentialIsOpen, setAddCredentialIsOpen] = useState(false);
@@ -108,6 +110,7 @@ const Creds = () => {
         issuanceDate: today.toISOString(),
         issuerLogo: credentialRequestData.profileUrl,
         colors: [newColor[1], newColor[0]],
+        isArchived: false,
         status: connectionStatus.pending,
       };
       const newCredsData = [...credsData, credentialData];
@@ -162,11 +165,11 @@ const Creds = () => {
             />
           }
         >
-          {credsData.length ? (
+          {confirmedCreds.length ? (
             <>
               <CardsStack
                 cardsType={cardTypes.creds}
-                cardsData={credsData}
+                cardsData={confirmedCreds}
               />
               <div className="archived-credentials-button-container">
                 <IonButton
@@ -192,10 +195,12 @@ const Creds = () => {
             connectModalIsOpen={addCredentialIsOpen}
             setConnectModalIsOpen={setAddCredentialIsOpen}
           />
-          <ArchivedCredentials
-            archivedCredentialsIsOpen={archivedCredentialsIsOpen}
-            setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
-          />
+          {archivedCreds.length && (
+            <ArchivedCredentials
+              archivedCredentialsIsOpen={archivedCredentialsIsOpen}
+              setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
+            />
+          )}
         </TabLayout>
       </IonPage>
     </>

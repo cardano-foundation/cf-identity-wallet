@@ -41,6 +41,7 @@ import {
   toastState,
 } from "../../constants/dictionary";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
+import { CredProps } from "../../components/CardsStack/CardsStack.types";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -131,7 +132,7 @@ const CredCardDetails = () => {
         ) : (
           <>
             <CredCard
-              cardData={cardData}
+              cardData={cardData as CredProps}
               isActive={false}
             />
             <div className="card-details-content">

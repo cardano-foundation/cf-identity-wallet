@@ -22,6 +22,7 @@ describe("credsCacheSlice", () => {
         nameOnCredential: "Thomas A. Mayfield",
         issuerLogo: "https://placehold.co/120x22",
         colors: ["#FFBC60", "#FFA21F"],
+        isArchived: false,
         status: "confirmed",
       },
     ];
