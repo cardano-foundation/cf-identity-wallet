@@ -16,9 +16,11 @@
         "@aries-framework/core": "0.4.0-alpha.119",
         "@aries-framework/node": "0.4.0-alpha.119",
         "@hyperledger/aries-askar-nodejs": "^0.1.1",
+        "axios": "^1.5.0",
         "cors": "^2.8.5",
         "express": "^4.18.2",
         "net": "^1.0.2",
+        "qrcode-terminal": "^0.12.0",
         "ws": "^8.13.0"
     },
     "devDependencies": {
