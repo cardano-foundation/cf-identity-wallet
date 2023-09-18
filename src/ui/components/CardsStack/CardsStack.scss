@@ -1,18 +1,3 @@
-.cards-stack-page {
-  min-height: 85vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-
-  ion-button {
-    margin: 2rem auto;
-
-    &::part(native) {
-      padding: 0.625rem 1rem;
-    }
-  }
-}
-
 .cards-stack-container {
   display: flex;
   flex-direction: column;
@@ -46,6 +31,10 @@
     justify-content: space-between;
 
     &.pending {
+      .card-body {
+        margin-inline: 5rem;
+      }
+
       .card-body,
       .card-footer-column-value {
         opacity: 0.4;
@@ -93,7 +82,6 @@
       font-size: 0.625rem;
       letter-spacing: 0.09375rem;
       text-align: center;
-      margin-inline: 5rem;
     }
 
     .card-footer {

@@ -371,6 +371,13 @@
         "title": "Once this credential is visible you'll receive a notification. Until then you won't be able to access more details.",
         "confirm": "Ok"
       }
+    },
+    "archived": {
+      "title": "Archived",
+      "done": "Done",
+      "select": "Select",
+      "selectall": "Select All",
+      "cancel": "Cancel"
     }
   },
   "connections": {

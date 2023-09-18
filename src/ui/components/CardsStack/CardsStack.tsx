@@ -179,7 +179,6 @@ const CardsStack = ({
 }) => {
   const history = useHistory();
   const [isActive, setIsActive] = useState(false);
-  const [viewArchived, setViewArchived] = useState(false);
 
   const renderCards = (cardsData: IdentityShortDetails[] | CredProps[]) => {
     return cardsData.map(
@@ -225,22 +224,7 @@ const CardsStack = ({
     }, CLEAR_STATE_DELAY);
   };
 
-  return (
-    <div className="cards-stack-page">
-      <div className="cards-stack-container">{renderCards(cardsData)}</div>
-      {cardsType === cardTypes.creds && !isActive && (
-        <IonButton
-          fill="outline"
-          className="secondary-button"
-          onClick={() => setViewArchived(!viewArchived)}
-        >
-          <IonLabel color="secondary">
-            {i18n.t("creds.tab.viewarchived")}
-          </IonLabel>
-        </IonButton>
-      )}
-    </div>
-  );
+  return <div className="cards-stack-container">{renderCards(cardsData)}</div>;
 };
 
 export { DidCard, CredCard, CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };

@@ -1,4 +1,10 @@
-import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonLabel,
+  IonPage,
+  useIonViewWillEnter,
+} from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -26,6 +32,8 @@ import { credentialRequestData } from "../../__fixtures__/connectionsFix";
 import { CredProps } from "../../components/CardsStack/CardsStack.types";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
 import { ColorGenerator } from "../../utils/ColorGenerator";
+import { ArchivedCredentials } from "../../components/ArchivedCredentials";
+import "./Creds.scss";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -74,6 +82,8 @@ const Creds = () => {
   const currentOperation = useAppSelector(getCurrentOperation);
   const [showConnections, setShowConnections] = useState(false);
   const [addCredentialIsOpen, setAddCredentialIsOpen] = useState(false);
+  const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
+    useState(false);
   const colorGenerator = new ColorGenerator();
   const newColor = colorGenerator.generateNextColor();
 
@@ -153,10 +163,23 @@ const Creds = () => {
           }
         >
           {credsData.length ? (
-            <CardsStack
-              cardsType={cardTypes.creds}
-              cardsData={credsData}
-            />
+            <>
+              <CardsStack
+                cardsType={cardTypes.creds}
+                cardsData={credsData}
+              />
+              <div className="archived-credentials-button-container">
+                <IonButton
+                  fill="outline"
+                  className="secondary-button"
+                  onClick={() => setArchivedCredentialsIsOpen(true)}
+                >
+                  <IonLabel color="secondary">
+                    {i18n.t("creds.tab.viewarchived")}
+                  </IonLabel>
+                </IonButton>
+              </div>
+            </>
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("creds.tab.create")}
@@ -166,8 +189,12 @@ const Creds = () => {
           )}
           <ConnectModal
             type={connectionType.credential}
-            ConnectModalIsOpen={addCredentialIsOpen}
+            connectModalIsOpen={addCredentialIsOpen}
             setConnectModalIsOpen={setAddCredentialIsOpen}
+          />
+          <ArchivedCredentials
+            archivedCredentialsIsOpen={archivedCredentialsIsOpen}
+            setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
           />
         </TabLayout>
       </IonPage>

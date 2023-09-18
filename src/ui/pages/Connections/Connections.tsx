@@ -103,7 +103,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
-  const [ConnectModalIsOpen, setConnectModalIsOpen] = useState(false);
+  const [connectModalIsOpen, setConnectModalIsOpen] = useState(false);
 
   const handleConnectModal = () => {
     setConnectModalIsOpen(true);
@@ -284,7 +284,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           </IonContent>
           <ConnectModal
             type={connectionType.connection}
-            ConnectModalIsOpen={ConnectModalIsOpen}
+            connectModalIsOpen={connectModalIsOpen}
             setConnectModalIsOpen={setConnectModalIsOpen}
           />
         </>

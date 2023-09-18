@@ -1,6 +1,6 @@
 interface ConnectModalProps {
   type: string;
-  ConnectModalIsOpen: boolean;
+  connectModalIsOpen: boolean;
   setConnectModalIsOpen: (value: boolean) => void;
 }
 
