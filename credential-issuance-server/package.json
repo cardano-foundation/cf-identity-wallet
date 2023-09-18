@@ -7,6 +7,9 @@
         "test": "test",
         "start": "node build/server.js",
         "start:dev": "npx nodemon",
+        "cli:invitation": "npx ts-node ./src/cli/invitation.ts",
+        "cli:offer-credential": "npx ts-node ./src/cli/offerInvitation.ts",
+        "cli:offer-credential-connection-less": "npx ts-node ./src/cli/offerInvitationConnectionLess.ts",
         "build": "rimraf ./build && tsc"
     },
     "author": "",
