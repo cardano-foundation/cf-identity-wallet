@@ -30,35 +30,7 @@ export class LibP2pService {
         webSockets({
           filter: filters.all,
         }),
-        webRTC({
-          rtcConfiguration: {
-            iceServers: [
-              {
-                urls: "stun:stun.relay.metered.ca:80",
-              },
-              {
-                urls: "turn:a.relay.metered.ca:80",
-                username: "1ac83a86eca838ead6a30f11",
-                credential: "EacPSfgKhX3VRB9d",
-              },
-              {
-                urls: "turn:a.relay.metered.ca:80?transport=tcp",
-                username: "1ac83a86eca838ead6a30f11",
-                credential: "EacPSfgKhX3VRB9d",
-              },
-              {
-                urls: "turn:a.relay.metered.ca:443",
-                username: "1ac83a86eca838ead6a30f11",
-                credential: "EacPSfgKhX3VRB9d",
-              },
-              {
-                urls: "turn:a.relay.metered.ca:443?transport=tcp",
-                username: "1ac83a86eca838ead6a30f11",
-                credential: "EacPSfgKhX3VRB9d",
-              },
-            ],
-          },
-        }),
+        webRTC(),
         circuitRelayTransport({
           discoverRelays: 1,
         }),
