@@ -1,9 +1,6 @@
 import {
   Agent,
   AutoAcceptCredential,
-  ConnectionEventTypes,
-  ConnectionRecord,
-  ConnectionStateChangedEvent,
   // ConsoleLogger,
   CREDENTIALS_CONTEXT_V1_URL,
   CredentialsModule,
@@ -20,7 +17,6 @@ import { AskarModule } from "@aries-framework/askar";
 import { ariesAskar } from "@hyperledger/aries-askar-nodejs";
 import { agentDependencies, HttpInboundTransport } from "@aries-framework/node";
 import { config } from "./config";
-import { Output } from "./types/baseInquirer";
 
 const agentConfig: InitConfig = {
   endpoints: config.endpoints,
@@ -170,58 +166,6 @@ class AriesAgent {
       messages: [offerMessage],
     });
     return outOfBandInvitation.toUrl({ domain: config.endpoint });
-  }
-
-  async waitForConnection(outOfBandId: string) {
-    console.log("Waiting for agent to finish connection...");
-
-    const getConnectionRecord = (outOfBandId: string) =>
-      new Promise<ConnectionRecord>((resolve, reject) => {
-        // Timeout of 60 seconds
-        const timeoutId = setTimeout(
-          () => reject(new Error(Output.MissingConnectionRecord)),
-          60000,
-        );
-
-        // Start listener
-        this.agent.events.on<ConnectionStateChangedEvent>(
-          ConnectionEventTypes.ConnectionStateChanged,
-          (e) => {
-            if (e.payload.connectionRecord.outOfBandId !== outOfBandId) return;
-
-            clearTimeout(timeoutId);
-            resolve(e.payload.connectionRecord);
-          },
-        );
-
-        // Also retrieve the connection record by invitation if the event has already fired
-        void this.agent.connections
-          .findAllByOutOfBandId(outOfBandId)
-          .then(([connectionRecord]) => {
-            if (connectionRecord) {
-              clearTimeout(timeoutId);
-              resolve(connectionRecord);
-            }
-          });
-      });
-    try {
-      const connectionRecord = await getConnectionRecord(outOfBandId);
-      await this.agent.connections.returnWhenIsConnected(connectionRecord.id, {
-        timeoutMs: 60000,
-      });
-    } catch (e) {
-      console.log(
-        "\nTimeout of 60 seconds reached.. Returning to home screen.\n",
-      );
-      return;
-    }
-    console.log(Output.ConnectionEstablished);
-  }
-
-  async connectionFindAllByOutOfBandId(
-    outOfBandId: string,
-  ): Promise<ConnectionRecord[]> {
-    return this.agent.connections.findAllByOutOfBandId(outOfBandId);
   }
 }
 
