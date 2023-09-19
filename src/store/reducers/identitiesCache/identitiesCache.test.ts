@@ -6,9 +6,9 @@ import {
 } from "./identitiesCache";
 import { RootState } from "../../index";
 import {
-  IdentityShortDetails,
-  IdentityType,
-} from "../../../core/aries/ariesAgent.types";
+  IdentifierShortDetails,
+  IdentifierType,
+} from "../../../core/agent/agent.types";
 
 describe("identitiesCacheSlice", () => {
   const initialState = {
@@ -21,10 +21,10 @@ describe("identitiesCacheSlice", () => {
   });
 
   it("should handle setIdentitiesCache", () => {
-    const identities: IdentityShortDetails[] = [
+    const identities: IdentifierShortDetails[] = [
       {
         id: "id-1",
-        method: IdentityType.KEY,
+        method: IdentifierType.KEY,
         displayName: "example-name",
         createdAtUTC: "example-date",
         colors: ["#92FFC0", "#47FF94"],
@@ -45,14 +45,14 @@ describe("getIdentitiesCache", () => {
         identities: [
           {
             id: "id-1",
-            method: IdentityType.KEY,
+            method: IdentifierType.KEY,
             displayName: "example-name-1",
             createdAtUTC: "example-date",
             colors: ["#92FFC0", "#47FF94"],
           },
           {
             id: "id-2",
-            method: IdentityType.KEY,
+            method: IdentifierType.KEY,
             displayName: "example-name-2",
             createdAtUTC: "example-date",
             colors: ["#FFBC60", "#FFA21F"],

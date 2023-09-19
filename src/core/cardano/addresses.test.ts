@@ -6,8 +6,6 @@ const validSeedPhrase15Words =
 const entropy15Words = "df9ed25ed146bf43336a5d7cf7395994";
 const rootXprvKey15Words =
   "xprv1vzrzr76vqyqlavclduhawqvtae2pq8lk0424q7t8rzfjyhhp530zxv2fwq5a3pd4vdzqtu6s2zxdjhww8xg4qwcs7y5dqne5k7mz27p6rcaath83rl20nz0v9nwdaga9fkufjuucza8vmny8qpkzwstk5quneyk9";
-const rootXpubKey15Words =
-  "xpub1ulhlm5wqg24wrdvxphvjtys8lcq83hyz8x2egsgp9eqyjy5xqgvn583m6hw0z875lxy7ctxum6362ndcn9ees96wehxgwqrvyaqhdgqv0khjm";
 const mainnetAddr0 =
   "addr1qx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwqfjkjv7";
 const testnetAddr0 =

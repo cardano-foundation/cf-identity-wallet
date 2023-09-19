@@ -21,11 +21,11 @@ import {
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
 import {
-  IdentityShortDetails,
-  IdentityType,
-} from "../../../core/aries/ariesAgent.types";
+  IdentifierShortDetails,
+  IdentifierType,
+} from "../../../core/agent/agent.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const CreateIdentity = ({
   modalIsOpen,
@@ -63,15 +63,15 @@ const CreateIdentity = ({
   const handleCreateIdentity = async () => {
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
-    const type = selectedType === 0 ? IdentityType.KEY : IdentityType.KERI;
+    const type = selectedType === 0 ? IdentifierType.KEY : IdentifierType.KERI;
     // @TODO: for test, should set colors
-    const did = await AriesAgent.agent.createIdentity({
+    const did = await AriesAgent.agent.identifiers.createIdentifier({
       displayName: displayNameValue,
       method: type,
       colors: [newColor[1], newColor[0]],
     });
     if (did) {
-      const newIdentity: IdentityShortDetails = {
+      const newIdentity: IdentifierShortDetails = {
         id: did,
         method: type,
         displayName: displayNameValue,

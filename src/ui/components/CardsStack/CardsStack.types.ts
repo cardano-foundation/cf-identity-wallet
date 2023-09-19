@@ -1,4 +1,4 @@
-import { IdentityShortDetails } from "../../../core/aries/ariesAgent.types";
+import { IdentifierShortDetails } from "../../../core/agent/agent.types";
 
 interface CredProps {
   id: string;
@@ -27,7 +27,7 @@ interface CredProps {
 }
 
 interface DidCardProps {
-  cardData: IdentityShortDetails;
+  cardData: IdentifierShortDetails;
   isActive: boolean;
   index?: number;
   onHandleShowCardDetails?: (index: number | undefined) => void;

@@ -39,8 +39,8 @@ import {
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
 import { formatShortDate } from "../../../utils";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
-import { DIDDetails, IdentityType } from "../../../core/aries/ariesAgent.types";
+import { AriesAgent } from "../../../core/agent/agent";
+import { DIDDetails, IdentifierType } from "../../../core/agent/agent.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 
 const DidCardDetails = () => {
@@ -59,8 +59,8 @@ const DidCardDetails = () => {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const cardDetailsResult = await AriesAgent.agent.getIdentity(params.id);
-      if (cardDetailsResult && cardDetailsResult.type === IdentityType.KEY) {
+      const cardDetailsResult = await AriesAgent.agent.identifiers.getIdentifier(params.id);
+      if (cardDetailsResult && cardDetailsResult.type === IdentifierType.KEY) {
         setCardData(cardDetailsResult.result);
       } else {
         // @TODO - foconnor: Should put KERI one here when its ready - this was just easier to get the types to work.

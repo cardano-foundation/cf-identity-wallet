@@ -18,8 +18,8 @@ import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { RoutePath } from "../../../routes";
 import { PasswordRegexProps, RegexItemProps } from "./CreatePassword.types";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
-import { MiscRecordId } from "../../../core/aries/modules";
+import { AriesAgent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/modules";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {

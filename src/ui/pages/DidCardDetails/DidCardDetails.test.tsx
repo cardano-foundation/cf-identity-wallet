@@ -10,7 +10,7 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { filteredDidsFix } from "../../__fixtures__/filteredDidsFix";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const path = TabsRoutePath.DIDS + "/" + didsFix[0].id;
 
@@ -88,7 +88,7 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
-    expect(AriesAgent.agent.getIdentity).toBeCalledWith(didsFix[0].id);
+    expect(AriesAgent.agent.identifiers.getIdentifier).toBeCalledWith(didsFix[0].id);
   });
 
   test("It copies id to clipboard", async () => {

@@ -1,4 +1,4 @@
-import { DIDDetails } from "../../../core/aries/ariesAgent.types";
+import { DIDDetails } from "../../../core/agent/agent.types";
 
 interface EditIdentityProps {
   isOpen: boolean;

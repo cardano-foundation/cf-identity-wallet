@@ -1,4 +1,4 @@
-import { AriesAgent } from "../../aries/ariesAgent";
+import { AriesAgent } from "../../agent/agent";
 import { Addresses } from "../../cardano";
 import { KeyStoreKeys, SecureStorage } from "..";
 
@@ -28,7 +28,7 @@ class SeedPhraseStorageService {
     );
 
     // This will throw if we try to add a seed phrase already in use.
-    await AriesAgent.agent.storeCryptoAccountRecord(
+    await AriesAgent.agent.crypto.storeCryptoAccountRecord(
       id,
       addresses.addresses,
       addresses.rewardAddresses,
@@ -46,7 +46,7 @@ class SeedPhraseStorageService {
         rootExtendedPrivateKey
       );
     } catch (err) {
-      await AriesAgent.agent.removeCryptoAccountRecordById(id);
+      await AriesAgent.agent.crypto.removeCryptoAccountRecordById(id);
       throw err;
     }
   }
@@ -58,7 +58,7 @@ class SeedPhraseStorageService {
       throw new Error(SeedPhraseStorageService.AGENT_NOT_READY);
     }
 
-    if (await AriesAgent.agent.cryptoAccountIdentitySeedPhraseExists()) {
+    if (await AriesAgent.agent.crypto.cryptoAccountIdentitySeedPhraseExists()) {
       throw new Error(SeedPhraseStorageService.IDENTITY_SEED_PHRASE_IN_USE);
     }
 
@@ -76,7 +76,7 @@ class SeedPhraseStorageService {
     const addresses = Addresses.deriveFirstBaseAndRewardAddrs(
       rootExtendedPrivateKey
     );
-    await AriesAgent.agent.storeCryptoAccountRecord(
+    await AriesAgent.agent.crypto.storeCryptoAccountRecord(
       id,
       addresses.addresses,
       addresses.rewardAddresses,

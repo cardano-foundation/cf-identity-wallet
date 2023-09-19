@@ -9,7 +9,7 @@ import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { AriesAgent } from "../../../core/agent/agent";
 import {
   setCryptoAccountsCache,
   setHideCryptoBalances,
@@ -45,7 +45,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const storedIdentities = await AriesAgent.agent.getIdentities();
+    const storedIdentities = await AriesAgent.agent.identifiers.getIdentifiers();
     // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
     const storedCryptoAccounts: CryptoAccountProps[] = [];
 
@@ -73,6 +73,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setConnectionsCache(connectionsFix));
 
     setInitialised(true);
+
   };
 
   return initialised ? <>{props.children}</> : <></>;
