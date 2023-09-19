@@ -1,49 +1,50 @@
 import {
-  InitConfig,
   Agent,
   AgentDependencies,
-  RecordNotFoundError,
-  DidsModule,
-  KeyDidResolver,
-  KeyType,
-  DidRecord,
-  OutOfBandRecord,
-  ConnectionRecord,
-  MediationRecipientModule,
-  MediatorPickupStrategy,
   ConnectionEventTypes,
+  ConnectionRecord,
   ConnectionStateChangedEvent,
+  CredentialEventTypes,
+  CredentialExchangeRecord,
+  CredentialState,
+  CredentialStateChangedEvent,
   DidExchangeRole,
   DidExchangeState,
-  CredentialEventTypes,
-  CredentialStateChangedEvent,
-  CredentialState,
-  CredentialExchangeRecord,
+  DidRecord,
+  DidsModule,
+  InitConfig,
   KeyDidRegistrar,
+  KeyDidResolver,
+  KeyType,
+  MediationRecipientModule,
+  MediatorPickupStrategy,
+  OutOfBandRecord,
+  Query,
+  RecordNotFoundError,
   WsOutboundTransport,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
 import { CapacitorFileSystem } from "./dependencies";
 import {
-  IonicStorageModule,
+  CryptoAccountRecord,
   GeneralStorageModule,
+  IonicStorageModule,
   MiscRecord,
   MiscRecordId,
-  CryptoAccountRecord,
 } from "./modules";
 import { HttpOutboundTransport } from "./transports";
-import {
-  Blockchain,
-  GetIdentityResult,
-  IdentityType,
-  UpdateIdentityMetadata,
-} from "./ariesAgent.types";
 import type {
   CredentialShortDetails,
   CryptoAccountRecordShortDetails,
   DIDDetails,
   IdentityShortDetails,
+} from "./ariesAgent.types";
+import {
+  Blockchain,
+  GetIdentityResult,
+  IdentityType,
+  UpdateIdentityMetadata,
 } from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
@@ -68,8 +69,10 @@ const config: InitConfig = {
 const agentDependencies: AgentDependencies = {
   FileSystem: CapacitorFileSystem,
   EventEmitterClass: EventEmitter,
+  // eslint-disable-next-line no-undef
   fetch: global.fetch as unknown as AgentDependencies["fetch"],
   WebSocketClass:
+    // eslint-disable-next-line no-undef
     global.WebSocket as unknown as AgentDependencies["WebSocketClass"],
 };
 
@@ -230,22 +233,60 @@ class AriesAgent {
   }
 
   /**
-   * Lister event request connection.
-   * @param callback
+   * Role: Responder, Check to see if there are incoming connection requests
+   * @param connectionRecord
    */
-  onRequestConnection(callback: (event: ConnectionRecord) => void) {
-    this.agent.events.on(
-      ConnectionEventTypes.ConnectionStateChanged,
-      async (event: ConnectionStateChangedEvent) => {
-        if (
-          event.payload.connectionRecord.role === DidExchangeRole.Responder &&
-          event.payload.connectionRecord.state ===
-            DidExchangeState.RequestReceived
-        ) {
-          callback(event.payload.connectionRecord);
-        }
-      }
+  isNewConnectionRequest(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Responder &&
+      connectionRecord.state === DidExchangeState.RequestReceived
     );
+  }
+
+  /**
+   * Role: invitee
+   * @param connectionRecord
+   */
+  isDetectNewRequestSend(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Requester &&
+      connectionRecord.state === DidExchangeState.RequestSent
+    );
+  }
+
+  /**
+   * Role: invitee
+   * @param connectionRecord
+   */
+  isConnectionResponded(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Requester &&
+      connectionRecord.state === DidExchangeState.ResponseReceived
+    );
+  }
+
+  /**
+   * Role: invitee, inviter
+   * @param connectionRecord
+   */
+  isConnected(connectionRecord: ConnectionRecord) {
+    return connectionRecord.state === DidExchangeState.Completed;
+  }
+
+  /**
+   * Role: inviter
+   * @param connectionId
+   */
+  async acceptRequestConnection(connectionId: string) {
+    await this.agent.connections.acceptRequest(connectionId);
+  }
+
+  /**
+   * Role: invitee
+   * @param connectionId
+   */
+  async acceptResponseConnection(connectionId: string) {
+    await this.agent.connections.acceptResponse(connectionId);
   }
 
   /**
@@ -269,10 +310,6 @@ class AriesAgent {
 
   async acceptCredentialOffer(credentialRecordId: string) {
     await this.agent.credentials.acceptOffer({ credentialRecordId });
-  }
-
-  async acceptRequest(connectionId: string) {
-    await this.agent.connections.acceptRequest(connectionId);
   }
 
   async storeMiscRecord(id: MiscRecordId, value: string) {
@@ -313,7 +350,7 @@ class AriesAgent {
 
   async getAllCryptoAccountRecord(): Promise<
     CryptoAccountRecordShortDetails[]
-  > {
+    > {
     const cryptoAccountRecordsShortDetails: CryptoAccountRecordShortDetails[] =
       [];
     const listRecords =
@@ -588,6 +625,16 @@ class AriesAgent {
     await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
       isArchived: false,
     });
+  }
+
+  async listConnections(
+    query: Query<ConnectionRecord> = {}
+  ): Promise<ConnectionRecord[]> {
+    return this.agent.connections.findAllByQuery(query);
+  }
+
+  async getOutOfBandById(oobId: string): Promise<OutOfBandRecord> {
+    return this.agent.oob.getById(oobId);
   }
 }
 

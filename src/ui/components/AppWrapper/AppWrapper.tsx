@@ -40,6 +40,29 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
   const initApp = async () => {
     await AriesAgent.agent.start();
+    AriesAgent.agent.onConnectionStateChange((event) => {
+      if (
+        AriesAgent.agent.isDetectNewRequestSend(event.payload.connectionRecord)
+      ) {
+        //handle new connection request send
+      }
+      if (
+        AriesAgent.agent.isConnectionResponded(event.payload.connectionRecord)
+      ) {
+        // handle connection response (when use receiveInvitationFromUrl function with autoAcceptConnection = false)
+        // AriesAgent.agent.acceptResponseConnection(event.payload.connectionRecord.id)
+      }
+      if (
+        AriesAgent.agent.isNewConnectionRequest(event.payload.connectionRecord)
+      ) {
+        //handle incoming connection request, when use createInvitation function, with autoAcceptConnection = false
+        // AriesAgent.agent.acceptRequestConnection(event.payload.connectionRecord.id)
+      }
+      if (AriesAgent.agent.isConnected(event.payload.connectionRecord)) {
+        //handle new connection added
+      }
+    });
+
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
