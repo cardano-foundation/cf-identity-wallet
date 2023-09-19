@@ -5,16 +5,16 @@ import { invitationApi } from "./apis/invitation.api";
 import {
   invitationWithCredential,
   invitationWithCredentialConnectionless,
-  credentialApi,
+  offerCredentialOverConnection,
 } from "./apis/credential.api";
 
 const router = express.Router();
 router.get(config.path.ping, ping);
 router.get(config.path.invitation, invitationApi);
-router.get(config.path.credential, credentialApi);
-router.get(config.path.createOfferInvitation, invitationWithCredential);
+router.get(config.path.credential, offerCredentialOverConnection);
+router.get(config.path.invitationWithCredential, invitationWithCredential);
 router.get(
-  config.path.createOfferInvitationWithConnectionLess,
+  config.path.invitationWithCredentialConnectionless,
   invitationWithCredentialConnectionless
 );
 

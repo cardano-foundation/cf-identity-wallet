@@ -10,8 +10,8 @@ const config = {
     ping: "/ping",
     invitation: "/invitation",
     credential: "/credential",
-    createOfferInvitation: "/offerInvitation",
-    createOfferInvitationWithConnectionLess:
+    invitationWithCredential: "/offerCredentialWithConnection",
+    invitationWithCredentialConnectionless:
       "/offerCredentialWithConnectionLess",
   },
 };

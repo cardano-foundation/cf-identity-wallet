@@ -4,7 +4,7 @@ import { AriesAgent } from "../ariesAgent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 
-async function credentialApi(req: Request, res: Response): Promise<void> {
+async function offerCredentialOverConnection(req: Request, res: Response): Promise<void> {
   const connectionId = req.query.connectionId as string;
   if (!connectionId) {
     const response: ResponseData<unknown> = {
@@ -61,7 +61,7 @@ async function invitationWithCredentialConnectionless(
 }
 
 export {
-  credentialApi,
+  offerCredentialOverConnection,
   invitationWithCredential,
   invitationWithCredentialConnectionless,
 };

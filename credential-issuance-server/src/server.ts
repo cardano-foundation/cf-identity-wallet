@@ -16,8 +16,4 @@ async function startServer() {
   log(`Listening on port ${config.port}`);
 }
 
-startServer()
-  .then(() => log("Server started"))
-  .catch((err) => {
-    throw err;
-  });
+void startServer();
