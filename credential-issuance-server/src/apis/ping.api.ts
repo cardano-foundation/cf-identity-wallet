@@ -11,6 +11,4 @@ function ping(_: Request, res: Response) {
   httpResponse(res, response);
 }
 
-export {
-  ping,
-};
+export { ping };

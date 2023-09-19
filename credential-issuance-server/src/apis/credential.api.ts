@@ -36,7 +36,10 @@ async function credentialApi(req: Request, res: Response): Promise<void> {
   httpResponse(res, response);
 }
 
-async function invitationWithCredential(_: Request, res: Response): Promise<void> {
+async function invitationWithCredential(
+  _: Request,
+  res: Response
+): Promise<void> {
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
@@ -45,7 +48,10 @@ async function invitationWithCredential(_: Request, res: Response): Promise<void
   httpResponse(res, response);
 }
 
-async function invitationWithCredentialConnectionless(_: Request, res: Response): Promise<void> {
+async function invitationWithCredentialConnectionless(
+  _: Request,
+  res: Response
+): Promise<void> {
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,

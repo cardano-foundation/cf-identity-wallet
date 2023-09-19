@@ -32,9 +32,11 @@ const agentConfig: InitConfig = {
 class AriesAgent {
   private static instance: AriesAgent;
   private readonly agent: Agent<{
-    credentials: CredentialsModule<V2CredentialProtocol<JsonLdCredentialFormatService[]>[]>,
-    askar: AskarModule,
-    w3cCredentials: W3cCredentialsModule
+    credentials: CredentialsModule<
+      V2CredentialProtocol<JsonLdCredentialFormatService[]>[]
+    >;
+    askar: AskarModule;
+    w3cCredentials: W3cCredentialsModule;
   }>;
 
   private constructor() {
@@ -158,25 +160,25 @@ class AriesAgent {
       method: "key",
       options: { keyType: KeyType.Ed25519 },
     });
-    const { message, credentialRecord } = await this.agent.credentials.createOffer({
-      comment: "V2 Out of Band offer (W3C)",
-      autoAcceptCredential: AutoAcceptCredential.Always,
-      credentialFormats: {
-        jsonld: this.getCredentialExample(did.didState.did as string),
-      },
-      protocolVersion: "v2",
-    });
+    const { message, credentialRecord } =
+      await this.agent.credentials.createOffer({
+        comment: "V2 Out of Band offer (W3C)",
+        autoAcceptCredential: AutoAcceptCredential.Always,
+        credentialFormats: {
+          jsonld: this.getCredentialExample(did.didState.did as string),
+        },
+        protocolVersion: "v2",
+      });
     const offerMessage = message as V2OfferCredentialMessage;
     // @TODO: change when update latest aries framework, use createInvitation function instead (maybe use handshake = false)
-    const { invitationUrl } = await this.agent.oob.createLegacyConnectionlessInvitation({
-      recordId: credentialRecord.id,
-      message: offerMessage,
-      domain: config.endpoint,
-    });
+    const { invitationUrl } =
+      await this.agent.oob.createLegacyConnectionlessInvitation({
+        recordId: credentialRecord.id,
+        message: offerMessage,
+        domain: config.endpoint,
+      });
     return invitationUrl;
   }
 }
 
-export {
-  AriesAgent,
-};
+export { AriesAgent };

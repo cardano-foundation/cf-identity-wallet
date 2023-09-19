@@ -5,6 +5,4 @@ interface ResponseData<T> {
   statusCode: number;
 }
 
-export type {
-  ResponseData,
-};
+export type { ResponseData };

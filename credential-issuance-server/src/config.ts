@@ -11,10 +11,9 @@ const config = {
     invitation: "/invitation",
     credential: "/credential",
     createOfferInvitation: "/offerInvitation",
-    createOfferInvitationWithConnectionLess: "/offerCredentialWithConnectionLess",
+    createOfferInvitationWithConnectionLess:
+      "/offerCredentialWithConnectionLess",
   },
 };
 
-export {
-  config,
-};
+export { config };

@@ -13,6 +13,4 @@ async function invitationApi(_: Request, res: Response) {
   httpResponse(res, response);
 }
 
-export {
-  invitationApi,
-};
+export { invitationApi };
