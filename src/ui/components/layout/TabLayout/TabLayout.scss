@@ -1,5 +1,13 @@
 .tab-layout {
   padding-inline: 1.25rem;
+
+  &.card-details {
+    ion-button:not(.action-button-label),
+    ion-button.md:not(.action-button-label) {
+      background: var(--ion-color-light);
+    }
+  }
+
   ion-toolbar,
   .toolbar-container,
   ion-grid,
@@ -16,14 +24,28 @@
       margin-inline: 0;
     }
 
-    ion-button,
-    ion-button.md {
+    ion-button:not(.action-button-label),
+    ion-button.md:not(.action-button-label) {
       width: 2.8125rem;
       height: 2.8125rem;
       border-radius: 1.5rem;
       background: var(--ion-color-light-grey);
+
       &:not(:first-child) {
         margin-left: 0.5rem;
+      }
+    }
+
+    .action-button-label {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 700;
+      --opacity: 1;
+      color: var(--ion-color-action-blue) !important;
+      background: var(--ion-color-light-grey);
+
+      &::part(native) {
+        padding: 0;
       }
     }
 

@@ -14,6 +14,7 @@ import {
   informationCircleOutline,
   personCircleOutline,
   trashOutline,
+  archiveOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -57,6 +58,7 @@ const CredCardDetails = () => {
     ...defaultCredentialsCardData,
     id: params.id,
   });
+  const isArchived = cardData.isArchived;
 
   useEffect(() => {
     const cardDetails = creds.find((cred) => cred.id === params.id);
@@ -81,11 +83,40 @@ const CredCardDetails = () => {
     history.push(backPath.pathname);
   };
 
-  const handleDelete = () => {
+  const handleArchiveCredential = () => {
+    // @TODO - sdisalvo: hook up function to delete credential
     setVerifyPasswordIsOpen(false);
-    // @TODO - sdisalvo: Update Database.
-    // Remember to update CredCardoptions file too.
+    const updatedCreds = creds;
+    for (const i in updatedCreds) {
+      if (updatedCreds[i].id == cardData.id) {
+        updatedCreds[i].isArchived = true;
+        break;
+      }
+    }
+    setCreds(updatedCreds);
+    dispatch(setCredsCache(updatedCreds));
+    handleDone();
+  };
+
+  const handleDeleteCredential = () => {
+    // @TODO - sdisalvo: hook up function to delete credential
+    setVerifyPasswordIsOpen(false);
     const updatedCreds = creds.filter((item) => item.id !== cardData.id);
+    setCreds(updatedCreds);
+    dispatch(setCredsCache(updatedCreds));
+    handleDone();
+  };
+
+  const handleRestoreCredential = () => {
+    // @TODO - sdisalvo: hook up function to restore credential
+    setVerifyPasswordIsOpen(false);
+    const updatedCreds = creds;
+    for (const i in updatedCreds) {
+      if (updatedCreds[i].id == cardData.id) {
+        updatedCreds[i].isArchived = false;
+        break;
+      }
+    }
     setCreds(updatedCreds);
     dispatch(setCredsCache(updatedCreds));
     handleDone();
@@ -120,7 +151,10 @@ const CredCardDetails = () => {
         titleSize="h3"
         titleAction={handleDone}
         menuButton={false}
-        additionalButtons={<AdditionalButtons />}
+        additionalButtons={!isArchived && <AdditionalButtons />}
+        actionButton={isArchived}
+        actionButtonAction={() => handleRestoreCredential()}
+        actionButtonLabel={`${i18n.t("creds.card.details.restore")}`}
       >
         {cardData.receivingDid.length === 0 ? (
           <div
@@ -319,17 +353,23 @@ const CredCardDetails = () => {
                 onClick={() => {
                   setAlertIsOpen(true);
                   dispatch(
-                    setCurrentOperation(operationState.deleteCredential)
+                    setCurrentOperation(
+                      isArchived
+                        ? operationState.deleteCredential
+                        : operationState.restoreCredential
+                    )
                   );
                 }}
               >
                 <IonIcon
                   slot="icon-only"
                   size="small"
-                  icon={trashOutline}
+                  icon={isArchived ? trashOutline : archiveOutline}
                   color="primary"
                 />
-                {i18n.t("creds.card.details.delete.button")}
+                {isArchived
+                  ? i18n.t("creds.card.details.button.delete")
+                  : i18n.t("creds.card.details.button.archive")}
               </IonButton>
             </div>
           </>
@@ -338,17 +378,28 @@ const CredCardDetails = () => {
           optionsIsOpen={optionsIsOpen}
           setOptionsIsOpen={setOptionsIsOpen}
           id={cardData.id}
+          credsOptionAction={
+            isArchived ? handleDeleteCredential : handleArchiveCredential
+          }
         />
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
           dataTestId="alert-delete"
-          headerText={i18n.t("creds.card.details.delete.alert.title")}
+          headerText={i18n.t(
+            isArchived
+              ? "creds.card.details.alert.delete.title"
+              : "creds.card.details.alert.archive.title"
+          )}
           confirmButtonText={`${i18n.t(
-            "creds.card.details.delete.alert.confirm"
+            isArchived
+              ? "creds.card.details.alert.delete.confirm"
+              : "creds.card.details.alert.archive.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "creds.card.details.delete.alert.cancel"
+            isArchived
+              ? "creds.card.details.alert.delete.cancel"
+              : "creds.card.details.alert.archive.cancel"
           )}`}
           actionConfirm={() => {
             if (
@@ -366,12 +417,16 @@ const CredCardDetails = () => {
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
-          onVerify={handleDelete}
+          onVerify={
+            isArchived ? handleDeleteCredential : handleArchiveCredential
+          }
         />
         <VerifyPasscode
           isOpen={verifyPasscodeIsOpen}
           setIsOpen={setVerifyPasscodeIsOpen}
-          onVerify={handleDelete}
+          onVerify={
+            isArchived ? handleDeleteCredential : handleArchiveCredential
+          }
         />
       </TabLayout>
     </IonPage>

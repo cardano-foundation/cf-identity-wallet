@@ -1,7 +1,8 @@
 interface CredsOptionsProps {
   optionsIsOpen: boolean;
-  setOptionsIsOpen: (value: boolean) => void;
+  credsOptionAction: () => void;
   id: string;
+  setOptionsIsOpen: (value: boolean) => void;
 }
 
 export type { CredsOptionsProps };

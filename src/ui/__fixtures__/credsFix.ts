@@ -80,7 +80,7 @@ const credsFix = [
       suspended: false,
     },
     colors: ["#FFBC60", "#FFA21F"],
-    isArchived: false,
+    isArchived: true,
     status: "confirmed",
   },
   {
@@ -108,7 +108,7 @@ const credsFix = [
       suspended: false,
     },
     colors: ["#D9EDDF", "#ACD8B9"],
-    isArchived: false,
+    isArchived: true,
     status: "confirmed",
   },
 ];

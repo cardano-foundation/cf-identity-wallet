@@ -177,7 +177,7 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
+        getByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)
       ).toBeVisible();
     });
   });

@@ -68,7 +68,7 @@ describe("Verify Passcode on Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
+        getByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)
       ).toBeVisible();
     });
 
@@ -81,7 +81,7 @@ describe("Verify Passcode on Cards Details page", () => {
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.confirm)
+        getByText(EN_TRANSLATIONS.creds.card.details.alert.archive.confirm)
       );
     });
 

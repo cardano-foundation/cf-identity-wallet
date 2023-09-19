@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
 import {
   IonButton,
   IonButtons,
@@ -27,6 +28,7 @@ const ArchivedCredentials = ({
   archivedCredentialsIsOpen,
   setArchivedCredentialsIsOpen,
 }: ArchivedCredentialsProps) => {
+  const history = useHistory();
   const archivedCredentials = useAppSelector(getCredsCache).filter(
     (item) => item.isArchived === true
   );
@@ -63,7 +65,10 @@ const ArchivedCredentials = ({
               className="credential-color"
               style={credentialColor}
             />
-            <IonCol className="credential-info">
+            <IonCol
+              className="credential-info"
+              onClick={() => handleShowCardDetails(credential.id)}
+            >
               <IonLabel className="credential-name">
                 {credential.credentialType}
               </IonLabel>
@@ -75,6 +80,12 @@ const ArchivedCredentials = ({
         </IonGrid>
       </IonItem>
     );
+  };
+
+  const handleShowCardDetails = (id: string) => {
+    const pathname = `/tabs/creds/${id}`;
+    history.push({ pathname: pathname });
+    setArchivedCredentialsIsOpen(false);
   };
 
   const handleSelectCredentials = (id: string) => {

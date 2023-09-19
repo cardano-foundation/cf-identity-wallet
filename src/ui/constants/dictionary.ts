@@ -29,6 +29,8 @@ const operationState = {
   deleteIdentity: "deleteIdentity",
   deleteConnection: "deleteConnection",
   deleteCredential: "deleteCredential",
+  archiveCredential: "archiveCredential",
+  restoreCredential: "restoreCredential",
   scanConnection: "scanConnection",
 };
 
@@ -76,6 +78,7 @@ const defaultCredentialsCardData = {
   },
   colors: ["", ""],
   status: "",
+  isArchived: false,
 };
 
 const defaultCryptoAccountData: CryptoAccountProps = {
