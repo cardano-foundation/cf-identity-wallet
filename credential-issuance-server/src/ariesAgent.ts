@@ -1,7 +1,7 @@
 import {
   Agent,
   AutoAcceptCredential,
-  ConsoleLogger,
+  // ConsoleLogger,
   CREDENTIALS_CONTEXT_V1_URL,
   CredentialsModule,
   HttpOutboundTransport,
@@ -9,7 +9,7 @@ import {
   JsonLdCredentialDetailFormat,
   JsonLdCredentialFormatService,
   KeyType,
-  LogLevel,
+  // LogLevel,
   V2CredentialProtocol,
   V2OfferCredentialMessage,
   W3cCredentialsModule,
@@ -26,7 +26,7 @@ const agentConfig: InitConfig = {
     id: "idw-server",
     key: "idw-server",
   },
-  logger: new ConsoleLogger(LogLevel.test), // Uncomment it to view logs from aries agent
+  // logger: new ConsoleLogger(LogLevel.info), // Uncomment it to view logs from aries agent
 };
 
 class AriesAgent {
@@ -91,6 +91,19 @@ class AriesAgent {
     try {
       return await this.agent.connections.getById(connectionId);
     } catch (e) {
+      return null;
+    }
+  }
+
+  async getConnectionByDidOfInvitee(did: string) {
+    try {
+      const connection = await this.agent.connections.findAllByQuery({
+        theirDid: did,
+      });
+      // get first record
+      return connection?.[0];
+    }
+    catch (e) {
       return null;
     }
   }

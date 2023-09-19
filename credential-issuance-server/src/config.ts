@@ -8,6 +8,7 @@ const config = {
   port,
   path: {
     ping: "/ping",
+    getConnectionByDid: "/getConnectionByDid",
     invitation: "/invitation",
     credential: "/credential",
     invitationWithCredential: "/offerCredentialWithConnection",

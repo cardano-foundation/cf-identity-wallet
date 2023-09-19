@@ -7,9 +7,11 @@ import {
   invitationWithCredentialConnectionless,
   offerCredentialOverConnection,
 } from "./apis/credential.api";
+import { getConnectionByDid } from "./apis/connection.api";
 
 const router = express.Router();
 router.get(config.path.ping, ping);
+router.get(config.path.getConnectionByDid, getConnectionByDid);
 router.get(config.path.invitation, invitationApi);
 router.get(config.path.credential, offerCredentialOverConnection);
 router.get(config.path.invitationWithCredential, invitationWithCredential);
