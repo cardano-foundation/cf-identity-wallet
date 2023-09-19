@@ -44,6 +44,7 @@ const ArchivedCredentials = ({
       background: `linear-gradient(91.86deg, ${credential.colors[0]} 28.76%, ${credential.colors[1]} 119.14%)`,
       zIndex: index,
     };
+
     return (
       <IonItem>
         <IonGrid>
@@ -51,7 +52,10 @@ const ArchivedCredentials = ({
             {activeList && (
               <IonCol className="credential-selector">
                 <IonCheckbox
-                  onIonChange={() => handleSelectCredentials(credential.id)}
+                  checked={selectedCredentials.includes(credential.id)}
+                  onIonChange={() => {
+                    handleSelectCredentials(credential.id);
+                  }}
                 />
               </IonCol>
             )}
@@ -79,6 +83,7 @@ const ArchivedCredentials = ({
     for (let i = 0; i < data.length; i++) {
       if (data[i] === id) {
         match = true;
+        break;
       }
     }
     if (match) {
@@ -90,11 +95,11 @@ const ArchivedCredentials = ({
   };
 
   const handleDeleteCredentials = () => {
-    //
+    // @TODO - sdisalvo: hook up function to delete credential
   };
 
   const handleRestoreCredentials = () => {
-    //
+    // @TODO - sdisalvo: hook up function to restore credential
   };
 
   return (
@@ -115,7 +120,10 @@ const ArchivedCredentials = ({
           closeButtonAction={() => setArchivedCredentialsIsOpen(false)}
           closeButtonLabel={`${i18n.t("creds.archived.done")}`}
           actionButton={true}
-          actionButtonAction={() => setActiveList(!activeList)}
+          actionButtonAction={() => {
+            setSelectedCredentials([]);
+            setActiveList(!activeList);
+          }}
           actionButtonLabel={`${
             activeList
               ? i18n.t("creds.archived.cancel")
