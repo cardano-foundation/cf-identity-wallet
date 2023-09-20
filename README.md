@@ -4,7 +4,8 @@
     <h1 align="center" style="border-bottom: none">Cardano Foundation | Identity Wallet</h1>
 
 ![GitHub](https://img.shields.io/github/license/cardano-foundation/cf-identity-wallet)
-![GitHub tag (latest by date)](https://img.shields.io/github/v/tag/cardano-foundation/cf-identity-wallet)
+![GitHub package.json version (subfolder of monorepo)](https://img.shields.io/github/package-json/v/jorgenavben/prueba-release-please)
+![Discord](https://img.shields.io/discord/1022471509173882950)
 
   <hr/>
 </div>
@@ -16,6 +17,12 @@ An open-source Decentralised Identity (DID) and Verifiable Credential (VC) Walle
 # Features
 
 TODO
+
+# Try it now
+
+You can access the latest version of our app without installation by visiting this [link](https://cf-identity-wallet.vercel.app).
+
+Enjoy exploring our app's features directly in your browser.
 
 # Running the app
 
@@ -31,7 +38,9 @@ mediator_1             | https://localhost:2015?c_i=eyJAdHlwZSI6ICJkaWQ6c292OkJ6
 You can fill it into [ariesAgent.ts](https://github.com/cardano-foundation/cf-identity-wallet/blob/f2733cfdc962583fb962f12006e0c9e27ea113ef/src/core/aries/ariesAgent.ts#L98) to use mediator for communicate multi agents.
 
 ## Deployment steps before building
-Our DIDComm over LibP2P implementation currently depends on a locally deployed WebRTC relay.
+At present to create KERI AIDs we use a combination of KERIA and Signify-TS.
+KERIA for now is deployed locally in Docker Compose and pushes key event material to a KERI cardano-backer running on our AWS account.
+To launch KERIA:
 ```
 docker compose up -d
 ```
