@@ -34,6 +34,14 @@ interface CredentialShortDetails {
   credentialType: string;
 }
 
+interface ConnectionShortDetails {
+  id: string;
+  issuer: string;
+  issuanceDate: string;
+  issuerLogo: string;
+  status: string;
+}
+
 interface DIDDetails extends IdentityShortDetails {
   keyType: string;
   controller: string;
@@ -50,6 +58,13 @@ interface KERIDetails extends IdentityShortDetails {
   bt: number;
   b: string[];
   di: string;
+}
+
+interface ConnectionDetails extends ConnectionShortDetails {
+  goalCode?: string;
+  handshakeProtocols?: string[];
+  requestAttachments?: string[];
+  serviceEndpoints?: string[];
 }
 
 type GetIdentityResult =
@@ -70,4 +85,6 @@ export type {
   GetIdentityResult,
   UpdateIdentityMetadata,
   CredentialShortDetails,
+  ConnectionShortDetails,
+  ConnectionDetails,
 };

@@ -1,11 +1,13 @@
 import {
   Agent,
   AgentDependencies,
+  AutoAcceptCredential,
   ConnectionEventTypes,
   ConnectionRecord,
   ConnectionStateChangedEvent,
   CredentialEventTypes,
   CredentialExchangeRecord,
+  CredentialsModule,
   CredentialState,
   CredentialStateChangedEvent,
   DidExchangeRole,
@@ -13,22 +15,20 @@ import {
   DidRecord,
   DidsModule,
   InitConfig,
+  JsonEncoder,
+  JsonLdCredentialFormatService,
   KeyDidRegistrar,
   KeyDidResolver,
   KeyType,
   MediationRecipientModule,
   MediatorPickupStrategy,
+  OutOfBandDidCommService,
   OutOfBandRecord,
-  Query,
-  RecordNotFoundError,
-  WsOutboundTransport,
-  CredentialsModule,
-  V2CredentialProtocol,
-  JsonLdCredentialFormatService,
-  AutoAcceptCredential,
-  W3cCredentialsModule,
   ProposeCredentialOptions,
-  JsonEncoder,
+  RecordNotFoundError,
+  V2CredentialProtocol,
+  W3cCredentialsModule,
+  WsOutboundTransport,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -42,6 +42,7 @@ import {
 } from "./modules";
 import { HttpOutboundTransport } from "./transports";
 import type {
+  ConnectionDetails,
   CredentialShortDetails,
   CryptoAccountRecordShortDetails,
   DIDDetails,
@@ -64,6 +65,7 @@ import {
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
 import { CredentialMetadataRecord } from "./modules/generalStorage/repositories/credentialMetadataRecord";
 import { documentLoader } from "./documentLoader";
+import CardanoLogo from "../../ui/assets/images/CardanoLogo.jpg";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -183,6 +185,7 @@ class AriesAgent {
 
     const createInvitation = await this.agent.oob.createInvitation({
       autoAcceptConnection: false,
+      goalCode: "connection",
     });
 
     return createInvitation.outOfBandInvitation.toUrl({
@@ -191,7 +194,9 @@ class AriesAgent {
   }
 
   async createMediatorInvitation() {
-    const record = await this.agent?.oob.createInvitation();
+    const record = await this.agent?.oob.createInvitation({
+      goalCode: "connection",
+    });
     if (!record) {
       throw new Error("Could not create new invitation");
     }
@@ -263,10 +268,22 @@ class AriesAgent {
    * Role: Responder, Check to see if there are incoming connection requests
    * @param connectionRecord
    */
-  isNewConnectionRequest(connectionRecord: ConnectionRecord) {
+  isConnectionRequestReceived(connectionRecord: ConnectionRecord) {
     return (
       connectionRecord.role === DidExchangeRole.Responder &&
-      connectionRecord.state === DidExchangeState.RequestReceived
+      connectionRecord.state === DidExchangeState.RequestReceived &&
+      !connectionRecord.autoAcceptConnection
+    );
+  }
+  /**
+   * Role: Responder, after accepted incoming connection requests
+   * @param connectionRecord
+   */
+  isConnectionResponseSent(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Responder &&
+      connectionRecord.state === DidExchangeState.ResponseSent &&
+      !connectionRecord.autoAcceptConnection
     );
   }
 
@@ -274,7 +291,7 @@ class AriesAgent {
    * Role: invitee
    * @param connectionRecord
    */
-  isDetectNewRequestSend(connectionRecord: ConnectionRecord) {
+  isConnectionRequestSent(connectionRecord: ConnectionRecord) {
     return (
       connectionRecord.role === DidExchangeRole.Requester &&
       connectionRecord.state === DidExchangeState.RequestSent
@@ -285,10 +302,11 @@ class AriesAgent {
    * Role: invitee
    * @param connectionRecord
    */
-  isConnectionResponded(connectionRecord: ConnectionRecord) {
+  isConnectionResponseReceived(connectionRecord: ConnectionRecord) {
     return (
       connectionRecord.role === DidExchangeRole.Requester &&
-      connectionRecord.state === DidExchangeState.ResponseReceived
+      connectionRecord.state === DidExchangeState.ResponseReceived &&
+      !connectionRecord.autoAcceptConnection
     );
   }
 
@@ -296,7 +314,7 @@ class AriesAgent {
    * Role: invitee, inviter
    * @param connectionRecord
    */
-  isConnected(connectionRecord: ConnectionRecord) {
+  isConnectionConnected(connectionRecord: ConnectionRecord) {
     return connectionRecord.state === DidExchangeState.Completed;
   }
 
@@ -450,6 +468,7 @@ class AriesAgent {
   async removeCryptoAccountRecordById(id: string): Promise<void> {
     await this.agent.modules.generalStorage.removeCryptoRecordById(id);
   }
+
   async createIdentityMetadataRecord(data: IdentityMetadataRecordProps) {
     const dataCreate = {
       id: data.id,
@@ -700,15 +719,63 @@ class AriesAgent {
     });
   }
 
-  async listConnections(
-    query: Query<ConnectionRecord> = {}
-  ): Promise<ConnectionRecord[]> {
-    return this.agent.connections.findAllByQuery(query);
+  async getConnections(): Promise<ConnectionDetails[]> {
+    const connections = await this.agent.connections.getAll();
+    const outOfBandRecords = await this.agent.oob.getAll();
+    const connectionsDetails: ConnectionDetails[] = [];
+    connections.forEach((connection) => {
+      let connectionDetails: ConnectionDetails;
+      const outOfBandRecord = outOfBandRecords.find(
+        (oob) => oob.id === connection.outOfBandId
+      );
+      if (outOfBandRecord) {
+        connectionDetails = this.getConnectionDetails(
+          connection,
+          outOfBandRecord
+        );
+        connectionsDetails.push(connectionDetails);
+      }
+    });
+    return connectionsDetails;
   }
 
-  async getOutOfBandById(oobId: string): Promise<OutOfBandRecord> {
-    return this.agent.oob.getById(oobId);
+  private getConnectionDetails(
+    connection: ConnectionRecord,
+    outOfBandRecord: OutOfBandRecord
+  ): ConnectionDetails {
+    return {
+      issuer: outOfBandRecord.outOfBandInvitation.label,
+      issuerLogo: CardanoLogo,
+      id: connection.id,
+      status:
+        connection.state === DidExchangeState.Completed
+          ? "confirmed"
+          : "pending",
+      issuanceDate: connection.createdAt.toISOString(),
+      goalCode: outOfBandRecord.outOfBandInvitation.goalCode,
+      handshakeProtocols:
+        outOfBandRecord.outOfBandInvitation.handshakeProtocols,
+      requestAttachments: outOfBandRecord.outOfBandInvitation
+        .getRequests()
+        ?.map((request) => request["@id"]),
+      serviceEndpoints: outOfBandRecord.outOfBandInvitation
+        .getServices()
+        ?.filter((service) => typeof service !== "string")
+        .map(
+          (service) => (service as OutOfBandDidCommService)?.serviceEndpoint
+        ),
+    };
+  }
+
+  async getConnectionById(id: string): Promise<ConnectionDetails> {
+    const connection = await this.agent.connections.getById(id);
+    const outOfBandRecord = await this.agent.oob.getById(
+      connection?.outOfBandId as string
+    );
+    // if (!connection || !outOfBandRecord) {
+    //
+    // }
+    return this.getConnectionDetails(connection, outOfBandRecord);
   }
 }
-
 export { AriesAgent, agentDependencies };

@@ -1,14 +1,15 @@
-import { useEffect, ReactNode, useState } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
   setAuthentication,
+  setConnectionRequest,
+  setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import {
   setCryptoAccountsCache,
@@ -20,6 +21,8 @@ import {
 } from "../../../core/storage/preferences";
 import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
+import { ConnectionRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import { toastState } from "../../constants/dictionary";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -40,29 +43,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
   const initApp = async () => {
     await AriesAgent.agent.start();
-    AriesAgent.agent.onConnectionStateChange((event) => {
-      if (
-        AriesAgent.agent.isDetectNewRequestSend(event.payload.connectionRecord)
-      ) {
-        //handle new connection request send
-      }
-      if (
-        AriesAgent.agent.isConnectionResponded(event.payload.connectionRecord)
-      ) {
-        // handle connection response (when use receiveInvitationFromUrl function with autoAcceptConnection = false)
-        // AriesAgent.agent.acceptResponseConnection(event.payload.connectionRecord.id)
-      }
-      if (
-        AriesAgent.agent.isNewConnectionRequest(event.payload.connectionRecord)
-      ) {
-        //handle incoming connection request, when use createInvitation function, with autoAcceptConnection = false
-        // AriesAgent.agent.acceptRequestConnection(event.payload.connectionRecord.id)
-      }
-      if (AriesAgent.agent.isConnected(event.payload.connectionRecord)) {
-        //handle new connection added
-      }
-    });
-
+    const connections = await AriesAgent.agent.getConnections();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
@@ -93,17 +74,62 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setIdentitiesCache(storedIdentities));
     dispatch(setCredsCache(filteredCredsFix));
     dispatch(setCryptoAccountsCache(storedCryptoAccounts));
-    dispatch(setConnectionsCache(connectionsFix));
+    dispatch(setConnectionsCache(connections));
+
+    AriesAgent.agent.onConnectionStateChange(async (event) => {
+      const connections = await AriesAgent.agent.getConnections();
+      // @TODO: FOR TEST
+      // eslint-disable-next-line no-console
+      console.log("onConnectionStateChange", event);
+      if (
+        AriesAgent.agent.isConnectionRequestSent(event.payload.connectionRecord)
+      ) {
+        dispatch(setConnectionsCache(connections));
+        dispatch(setCurrentOperation(toastState.connectionRequestPending));
+      }
+      if (
+        AriesAgent.agent.isConnectionResponseReceived(
+          event.payload.connectionRecord
+        )
+      ) {
+        dispatch(
+          setConnectionRequest({
+            id: event.payload.connectionRecord.id,
+            type: ConnectionRequestType.CONNECTION_RESPONSE,
+          })
+        );
+      }
+      if (
+        AriesAgent.agent.isConnectionRequestReceived(
+          event.payload.connectionRecord
+        )
+      ) {
+        dispatch(setConnectionsCache(connections));
+        dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
+        dispatch(
+          setConnectionRequest({
+            id: event.payload.connectionRecord.id,
+            type: ConnectionRequestType.CONNECTION_INCOMING,
+          })
+        );
+      }
+      if (
+        AriesAgent.agent.isConnectionResponseSent(
+          event.payload.connectionRecord
+        )
+      ) {
+        dispatch(setCurrentOperation(toastState.connectionRequestPending));
+      }
+      if (
+        AriesAgent.agent.isConnectionConnected(event.payload.connectionRecord)
+      ) {
+        dispatch(setConnectionsCache(connections));
+        dispatch(setCurrentOperation(toastState.newConnectionAdded));
+      }
+    });
 
     setInitialised(true);
   };
-
-  // @TODO - sdisalvo: Figure where is the best place for this
-  // it can't currently be tested in my local - will come back to it
-  //
-  // AriesAgent.agent.onConnectionStateChange((event) => {
-  //   console.log(JSON.stringify(event, null, 2));
-  // });
 
   return initialised ? <>{props.children}</> : <></>;
 };

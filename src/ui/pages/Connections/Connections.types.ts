@@ -1,14 +1,6 @@
-interface ConnectionsProps {
-  id: string;
-  issuer: string;
-  issuanceDate: string;
-  issuerLogo: string;
-  status: string;
-  goalCodes?: string;
-  handshakeProtocol?: string;
-  requestAttachments?: string;
-  serviceEndpoints?: string;
-}
+import { ConnectionDetails } from "../../../core/aries/ariesAgent.types";
+
+type ConnectionsProps = ConnectionDetails;
 
 interface ConnectionItemProps {
   key: number;

@@ -46,6 +46,7 @@ const toastState = {
   qrSuccess: "qrSuccess",
   qrError: "qrError",
   connectionRequestPending: "connectionRequestPending",
+  connectionRequestIncoming: "connectionRequestIncoming",
   newConnectionAdded: "newConnectionAdded",
   credentialRequestPending: "credentialRequestPending",
   newCredentialAdded: "newCredentialAdded",
@@ -105,7 +106,7 @@ const defaultConnectionData: ConnectionsProps = {
   issuer: "",
   issuanceDate: "",
   issuerLogo: "",
-  status: "",
+  status: "pending",
 };
 
 const blurredCryptoData = "••••••••••••••••••";

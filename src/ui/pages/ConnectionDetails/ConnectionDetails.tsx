@@ -126,7 +126,7 @@ const ConnectionDetails = () => {
             <div className="connection-details-info-block-inner">
               <span className="connection-details-info-block-line">
                 <span className="connection-details-info-block-data">
-                  {connectionDetails?.goalCodes ||
+                  {connectionDetails?.goalCode ||
                     i18n.t("connections.details.notavailable")}
                 </span>
               </span>
@@ -138,7 +138,7 @@ const ConnectionDetails = () => {
             <div className="connection-details-info-block-inner">
               <span className="connection-details-info-block-line">
                 <span className="connection-details-info-block-data">
-                  {connectionDetails?.handshakeProtocol ||
+                  {connectionDetails?.handshakeProtocols?.toString() ||
                     i18n.t("connections.details.notavailable")}
                 </span>
               </span>
@@ -150,7 +150,7 @@ const ConnectionDetails = () => {
             <div className="connection-details-info-block-inner">
               <span className="connection-details-info-block-line">
                 <span className="connection-details-info-block-data">
-                  {connectionDetails?.requestAttachments ||
+                  {connectionDetails?.requestAttachments?.toString() ||
                     i18n.t("connections.details.notavailable")}
                 </span>
               </span>
@@ -162,7 +162,7 @@ const ConnectionDetails = () => {
             <div className="connection-details-info-block-inner">
               <span className="connection-details-info-block-line">
                 <span className="connection-details-info-block-data">
-                  {connectionDetails?.serviceEndpoints ||
+                  {connectionDetails?.serviceEndpoints?.toString() ||
                     i18n.t("connections.details.notavailable")}
                 </span>
               </span>
