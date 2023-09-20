@@ -28,6 +28,16 @@ import {
   W3cCredentialsModule,
   ProposeCredentialOptions,
   JsonEncoder,
+  AriesFrameworkError,
+  OutOfBandInvitation,
+  JsonTransformer,
+  MessageValidator,
+  ConnectionInvitationMessage,
+  OutOfBandDidCommService,
+  OutOfBandInvitationOptions,
+  HandshakeProtocol,
+  DidKey,
+  Key,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -63,6 +73,11 @@ import {
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
 import { CredentialMetadataRecord } from "./modules/generalStorage/repositories/credentialMetadataRecord";
 import { documentLoader } from "./documentLoader";
+import { parseUrl } from "query-string";
+import {
+  parseMessageType,
+  supportsIncomingMessageType,
+} from "@aries-framework/core/build/utils/messageType";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -228,11 +243,24 @@ class AriesAgent {
     outOfBandRecord: OutOfBandRecord;
     connectionRecord?: ConnectionRecord | undefined;
   }> {
-    return this.agent.oob.receiveInvitationFromUrl(url, {
-      autoAcceptConnection: true,
-      autoAcceptInvitation: true,
-      reuseConnection: true,
-    });
+    const parsedUrl = parseUrl(url).query;
+    if (parsedUrl["oob"] || parsedUrl["d_m"] || parsedUrl["c_i"]) {
+      return this.agent.oob.receiveInvitationFromUrl(url, {
+        autoAcceptConnection: true,
+        autoAcceptInvitation: true,
+        reuseConnection: true,
+      });
+    } else {
+      try {
+        return this.agent.oob.receiveInvitation(
+          await this.oobInvitationFromShortUrl(await this.fetchShortUrl(url))
+        );
+      } catch (error) {
+        throw new AriesFrameworkError(
+          "InvitationUrl is invalid. It needs to contain one, and only one, of the following parameters: `oob`, `c_i` or `d_m`, or be valid shortened URL"
+        );
+      }
+    }
   }
 
   async receiveInvitationCredentialWithConnectionLess(
@@ -384,7 +412,7 @@ class AriesAgent {
 
   async getAllCryptoAccountRecord(): Promise<
     CryptoAccountRecordShortDetails[]
-    > {
+  > {
     const cryptoAccountRecordsShortDetails: CryptoAccountRecordShortDetails[] =
       [];
     const listRecords =
@@ -667,6 +695,129 @@ class AriesAgent {
     await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
       isArchived: false,
     });
+  }
+
+  private async fetchShortUrl(invitationUrl: string) {
+    const abortController = new AbortController();
+    const id = setTimeout(() => abortController.abort(), 15000);
+    let response;
+    try {
+      response = await fetch(invitationUrl, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      throw new AriesFrameworkError(
+        `Get request failed on provided url ${invitationUrl}`
+      );
+    }
+    clearTimeout(id);
+    return response;
+  }
+
+  private async oobInvitationFromShortUrl(
+    response: Response
+  ): Promise<OutOfBandInvitation> {
+    if (response) {
+      if (
+        response.headers.get("Content-Type")?.startsWith("application/json") &&
+        response.ok
+      ) {
+        const invitationJson = await response.json();
+        const parsedMessageType = parseMessageType(invitationJson["@type"]);
+        if (
+          supportsIncomingMessageType(
+            parsedMessageType,
+            OutOfBandInvitation.type
+          )
+        ) {
+          const invitation = JsonTransformer.fromJSON(
+            invitationJson,
+            OutOfBandInvitation
+          );
+          MessageValidator.validateSync(invitation);
+          return invitation;
+        } else if (
+          supportsIncomingMessageType(
+            parsedMessageType,
+            ConnectionInvitationMessage.type
+          )
+        ) {
+          const invitation = JsonTransformer.fromJSON(
+            invitationJson,
+            ConnectionInvitationMessage
+          );
+          MessageValidator.validateSync(invitation);
+          return this.convertToNewInvitation(invitation);
+        } else {
+          throw new AriesFrameworkError(
+            `Invitation with '@type' ${parsedMessageType.messageTypeUri} not supported.`
+          );
+        }
+      } else if (response["url"]) {
+        // The following if else is for here for trinsic shorten urls
+        // Because the redirect targets a deep link the automatic redirect does not occur
+        let responseUrl;
+        const location = response.headers.get("Location");
+        if ((response.status === 302 || response.status === 301) && location)
+          responseUrl = location;
+        else responseUrl = response["url"];
+
+        return this.agent.oob.parseInvitation(responseUrl);
+      }
+    }
+    throw new AriesFrameworkError(
+      "HTTP request time out or did not receive valid response"
+    );
+  }
+
+  private verkeyToDidKey(key: string) {
+    if (key.startsWith(`did:key:`)) return key;
+    const publicKeyBase58 = key;
+    const ed25519Key = Key.fromPublicKeyBase58(
+      publicKeyBase58,
+      KeyType.Ed25519
+    );
+    const didKey = new DidKey(ed25519Key);
+    return didKey.did;
+  }
+
+  private convertToNewInvitation(oldInvitation: ConnectionInvitationMessage) {
+    let service;
+
+    if (oldInvitation.did) {
+      service = oldInvitation.did;
+    } else if (
+      oldInvitation.serviceEndpoint &&
+      oldInvitation.recipientKeys &&
+      oldInvitation.recipientKeys.length > 0
+    ) {
+      service = new OutOfBandDidCommService({
+        id: "#inline",
+        recipientKeys: oldInvitation.recipientKeys?.map(this.verkeyToDidKey),
+        routingKeys: oldInvitation.routingKeys?.map(this.verkeyToDidKey),
+        serviceEndpoint: oldInvitation.serviceEndpoint,
+      });
+    } else {
+      throw new Error(
+        "Missing required serviceEndpoint, routingKeys and/or did fields in connection invitation"
+      );
+    }
+
+    const options: OutOfBandInvitationOptions = {
+      id: oldInvitation.id,
+      label: oldInvitation.label,
+      imageUrl: oldInvitation.imageUrl,
+      appendedAttachments: oldInvitation.appendedAttachments,
+      accept: ["didcomm/aip1", "didcomm/aip2;env=rfc19"],
+      services: [service],
+      handshakeProtocols: [HandshakeProtocol.Connections],
+    };
+
+    return new OutOfBandInvitation(options);
   }
 }
 

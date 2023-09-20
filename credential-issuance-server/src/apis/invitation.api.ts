@@ -1,7 +1,7 @@
 import { Request, Response } from "express";
 import { AriesAgent } from "../ariesAgent";
 import { ResponseData } from "../types/response.type";
-import { httpResponse } from "../utils/response.util";
+import { generableQRcodeWithUrl, httpResponse } from "../utils/response.util";
 
 async function invitationApi(_: Request, res: Response) {
   const { url } = await AriesAgent.agent.createInvitation();
