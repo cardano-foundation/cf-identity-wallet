@@ -119,9 +119,14 @@ const ConnectionRequest = () => {
           <IonRow className="connection-request-status">
             <IonCol size="12">
               <strong>
-                {i18next.t("connectionrequest.success", {
-                  action: connectionRequestType,
-                })}
+                {connectionRequest.type ===
+                ConnectionRequestType.CONNECTION_INCOMING
+                  ? i18next.t("connectionrequest.pending", {
+                    action: connectionRequestType,
+                  })
+                  : i18next.t("connectionrequest.success", {
+                    action: connectionRequestType,
+                  })}
               </strong>
             </IonCol>
           </IonRow>

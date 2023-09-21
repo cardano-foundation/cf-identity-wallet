@@ -569,6 +569,7 @@
       "confirm": "Yes, connect",
       "cancel": "Cancel"
     },
-    "success": "{{action}} pending"
+    "pending": "{{action}} pending",
+    "success": "{{action}} successfully"
   }
 }
