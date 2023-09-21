@@ -15,7 +15,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { connectionType, toastState } from "../../constants/dictionary";
+import { connectionType } from "../../constants/dictionary";
 import { Alert } from "../../components/Alert";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
 import { ConnectionDetails } from "../../../core/aries/ariesAgent.types";
@@ -57,11 +57,11 @@ const ConnectionRequest = () => {
   const handleConnect = async () => {
     setInitiateAnimation(true);
     if (connectionRequest.type === ConnectionRequestType.CONNECTION_INCOMING) {
-      await AriesAgent.agent.acceptRequestConnection(connectionRequest.id);
+      void AriesAgent.agent.acceptRequestConnection(connectionRequest.id);
     } else if (
       connectionRequest.type === ConnectionRequestType.CONNECTION_RESPONSE
     ) {
-      await AriesAgent.agent.acceptResponseConnection(connectionRequest.id);
+      void AriesAgent.agent.acceptResponseConnection(connectionRequest.id);
     }
     setTimeout(() => {
       handleReset();

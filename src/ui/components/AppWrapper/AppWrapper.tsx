@@ -43,7 +43,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
   const initApp = async () => {
     await AriesAgent.agent.start();
-    let connectionsDetails = await AriesAgent.agent.getConnections();
+    const connectionsDetails = await AriesAgent.agent.getConnections();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
@@ -78,9 +78,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     AriesAgent.agent.onConnectionStateChange(async (event) => {
       const connectionRecord = event.payload.connectionRecord;
-      connectionsDetails = connectionsDetails.filter(
-        (connectionDetails) => connectionDetails.id !== connectionRecord.id
-      );
+      const connectionsDetails = await AriesAgent.agent.getConnections();
       if (connectionRecord.outOfBandId)
         connectionsDetails.push(
           AriesAgent.agent.getConnectionDetails(
