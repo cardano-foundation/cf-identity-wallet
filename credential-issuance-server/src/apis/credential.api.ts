@@ -2,9 +2,12 @@ import { Request, Response } from "express";
 import { CONNECTION_NOT_FOUND, MISSING_CONNECTION_ID } from "../errors";
 import { AriesAgent } from "../ariesAgent";
 import { ResponseData } from "../types/response.type";
-import { httpResponse } from "../utils/response.util";
+import { generableQRcodeWithUrl, httpResponse } from "../utils/response.util";
 
-async function offerCredentialOverConnection(req: Request, res: Response): Promise<void> {
+async function offerCredentialOverConnection(
+  req: Request,
+  res: Response
+): Promise<void> {
   const connectionId = req.query.connectionId as string;
   if (!connectionId) {
     const response: ResponseData<unknown> = {
@@ -43,7 +46,9 @@ async function invitationWithCredential(
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
-    data: await AriesAgent.agent.createInvitationWithCredential(),
+    data: generableQRcodeWithUrl(
+      await AriesAgent.agent.createInvitationWithCredential()
+    ),
   };
   httpResponse(res, response);
 }
@@ -55,7 +60,9 @@ async function invitationWithCredentialConnectionless(
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
-    data: await AriesAgent.agent.createInvitationWithCredentialConnectionless(),
+    data: generableQRcodeWithUrl(
+      await AriesAgent.agent.createInvitationWithCredentialConnectionless()
+    ),
   };
   httpResponse(res, response);
 }

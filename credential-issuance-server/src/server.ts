@@ -1,5 +1,5 @@
 import express from "express";
-import { HttpInboundTransport } from "@aries-framework/node";
+import { HttpInboundTransport } from "./utils/httpInboundTransport";
 import cors from "cors";
 import { config } from "./config";
 import { AriesAgent } from "./ariesAgent";
