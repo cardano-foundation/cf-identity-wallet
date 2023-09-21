@@ -1,12 +1,5 @@
-import { useEffect, useState } from "react";
-import {
-  IonCol,
-  IonGrid,
-  IonIcon,
-  IonRow,
-  IonToast,
-  isPlatform,
-} from "@ionic/react";
+import { useEffect } from "react";
+import { IonCol, IonGrid, IonIcon, IonRow, isPlatform } from "@ionic/react";
 import {
   BarcodeScanner,
   SupportedFormat,
@@ -21,12 +14,12 @@ import {
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
+import { toastState } from "../../constants/dictionary";
 
 const Scanner = () => {
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentRoute = useAppSelector(getCurrentRoute);
-  const [showToast, setShowToast] = useState(false);
 
   const checkPermission = async () => {
     const status = await BarcodeScanner.checkPermission({ force: true });
@@ -68,8 +61,7 @@ const Scanner = () => {
         BarcodeScanner.hideBackground();
         const result = await startScan();
         if (result.hasContent) {
-          setShowToast(true);
-          dispatch(setCurrentOperation(""));
+          dispatch(setCurrentOperation(toastState.qrSuccess));
         }
       }
     }
@@ -107,15 +99,6 @@ const Scanner = () => {
           />
         </IonRow>
       </IonGrid>
-      <IonToast
-        isOpen={showToast}
-        onDidDismiss={() => setShowToast(false)}
-        message={`${i18n.t("toast.qrsuccess")}`}
-        color="secondary"
-        position="top"
-        cssClass="confirmation-toast"
-        duration={1500}
-      />
     </>
   );
 };

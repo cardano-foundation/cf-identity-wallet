@@ -11,6 +11,10 @@ export class SignifyApi {
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
+
+  // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
+  static readonly BACKER_ADDRESS =
+    "addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm";
   static readonly BACKER_CONFIG = {
     toad: 1,
     wits: [SignifyApi.BACKER_AID],
@@ -18,9 +22,7 @@ export class SignifyApi {
     ncount: 1,
     isith: "1",
     nsith: "1",
-    data: [
-      { ca: "addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm" },
-    ],
+    data: [{ ca: SignifyApi.BACKER_ADDRESS }],
   };
 
   private signifyClient!: SignifyClient;

@@ -1,81 +1,141 @@
-import { createMemoryHistory } from "history";
-import {
-  ionFireEvent as fireEvent,
-  waitForIonicReact,
-} from "@ionic/react-test-utils";
-import { Provider } from "react-redux";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
-import { Route, Router } from "react-router-dom";
-import { render, waitFor } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
-import { VerifyPasscode } from "./VerifyPasscode";
+import { Provider } from "react-redux";
+import { MemoryRouter, Route } from "react-router-dom";
+import { waitForIonicReact } from "@ionic/react-test-utils";
+import { AnyAction, Store } from "@reduxjs/toolkit";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { SecureStorage } from "../../../core/storage";
-import { TabsRoutePath } from "../navigation/TabsMenu";
-import { RoutePath } from "../../../routes";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { credsFix } from "../../__fixtures__/credsFix";
+import { CredCardDetails } from "../../pages/CredCardDetails";
 
-interface StoreMocked {
+const path = TabsRoutePath.CREDS + "/" + credsFix[0].id;
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: () => ({
+    id: credsFix[0].id,
+  }),
+  useRouteMatch: () => ({ url: path }),
+}));
+
+const initialStateNoPassword = {
   stateCache: {
-    routes: TabsRoutePath[];
+    routes: [TabsRoutePath.CREDS],
     authentication: {
-      loggedIn: boolean;
-      time: number;
-      passcodeIsSet: boolean;
-      seedPhraseIsSet?: boolean;
-    };
-    currentRoute: string;
-  };
-  cryptoAccountsCache: {
-    cryptoAccounts: never[];
-  };
-}
-
-const mockStore = configureStore();
-const dispatchMock = jest.fn();
-const history = createMemoryHistory();
-const storeMocked = (initialState: StoreMocked) => {
-  return {
-    ...mockStore(initialState),
-    dispatch: dispatchMock,
-  };
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+      passwordIsSet: false,
+      passwordIsSkipped: true,
+    },
+  },
+  seedPhraseCache: {
+    seedPhrase160:
+      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+    seedPhrase256: "",
+    selected: FIFTEEN_WORDS_BIT_LENGTH,
+  },
 };
 
-describe("Verify Passcode modal", () => {
-  const initialState = {
-    stateCache: {
-      routes: [TabsRoutePath.CRYPTO],
-      authentication: {
-        loggedIn: true,
-        time: Date.now(),
-        passcodeIsSet: true,
-      },
-      currentRoute: TabsRoutePath.CRYPTO,
-    },
-    cryptoAccountsCache: {
-      cryptoAccounts: [],
-    },
-  };
+describe("Verify Passcode on Cards Details page", () => {
+  let storeMocked: Store<unknown, AnyAction>;
+  beforeEach(() => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateNoPassword),
+      dispatch: dispatchMock,
+    };
+  });
 
-  test.skip("It loads the modal", async () => {
-    const mockSetIsOpen = jest.fn();
-    const storedPass = "storedPass";
-    const secureStorageGetMock = jest
-      .spyOn(SecureStorage, "get")
-      .mockResolvedValue(storedPass);
-    const { queryByText, getByText, getByTestId } = render(
-      <Provider store={storeMocked(initialState)}>
-        <VerifyPasscode
-          isOpen={true}
-          setIsOpen={mockSetIsOpen}
-          onVerify={() => {
-            /**/
-          }}
-        />
+  test("It renders verify passcode when clicking on the big button", async () => {
+    const { getByTestId, getByText, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredCardDetails}
+          />
+        </MemoryRouter>
       </Provider>
     );
 
-    expect(getByTestId("verify-passcode")).toBeInTheDocument();
-    waitForIonicReact();
-    expect(getByText(EN_TRANSLATIONS.verifypasscode.title)).toBeVisible();
+    act(() => {
+      fireEvent.click(getByTestId("card-details-delete-button"));
+    });
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
+      ).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getAllByTestId("verify-passcode")[1]).toHaveAttribute(
+        "is-open",
+        "false"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.confirm)
+      );
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getAllByTestId("verify-passcode")[1]).toHaveAttribute(
+        "is-open",
+        "true"
+      );
+    });
+  });
+
+  test.skip("It asks to verify the passcode when users try to delete the cred using the button in the modal", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateNoPassword),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    expect(getAllByTestId("verify-passcode")[1].getAttribute("is-open")).toBe(
+      "false"
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("options-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("creds-options-delete-button")).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("creds-options-delete-button"));
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getAllByTestId("verify-passcode")[1]).toHaveAttribute(
+        "is-open",
+        "true"
+      );
+    });
   });
 });

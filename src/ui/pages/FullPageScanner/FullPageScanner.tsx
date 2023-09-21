@@ -52,4 +52,4 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
   );
 };
 
-export default FullPageScanner;
+export { FullPageScanner };

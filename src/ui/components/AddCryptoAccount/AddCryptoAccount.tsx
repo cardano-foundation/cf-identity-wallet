@@ -25,7 +25,7 @@ import {
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
-import { generateSeedPhraseState } from "../../constants/dictionary";
+import { operationState } from "../../constants/dictionary";
 
 const AddCryptoAccount = ({
   addAccountIsOpen,
@@ -101,7 +101,10 @@ const AddCryptoAccount = ({
                   data-testid="add-crypto-account-generate-button"
                   onClick={() => {
                     setAddAccountIsOpen(false);
-                    handleNewAccount(generateSeedPhraseState.additional);
+                    dispatch(
+                      setCurrentOperation(operationState.newCryptoAccount)
+                    );
+                    handleNewAccount(operationState.newCryptoAccount);
                   }}
                 >
                   <span>
@@ -121,7 +124,10 @@ const AddCryptoAccount = ({
                   data-testid="add-crypto-account-restore-button"
                   onClick={() => {
                     setAddAccountIsOpen(false);
-                    handleNewAccount(generateSeedPhraseState.restore);
+                    dispatch(
+                      setCurrentOperation(operationState.restoreCryptoAccount)
+                    );
+                    handleNewAccount(operationState.restoreCryptoAccount);
                   }}
                 >
                   <span>

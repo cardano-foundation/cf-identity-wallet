@@ -23,10 +23,7 @@ import {
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import {
-  generateSeedPhraseState,
-  toastState,
-} from "../../constants/dictionary";
+import { operationState, toastState } from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
@@ -38,7 +35,7 @@ const VerifySeedPhrase = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
-    ? generateSeedPhraseState.onboarding
+    ? operationState.onboarding
     : (history?.location?.state as GenerateSeedPhraseProps)?.type ||
       stateCache?.currentOperation;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
@@ -111,7 +108,7 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      if (seedPhraseType === generateSeedPhraseState.onboarding) {
+      if (seedPhraseType === operationState.onboarding) {
         storeIdentitySeedPhrase();
       } else {
         setChooseAccountNameIsOpen(true);
@@ -126,7 +123,7 @@ const VerifySeedPhrase = () => {
       store: { stateCache },
       state: {
         type:
-          seedPhraseType !== generateSeedPhraseState.onboarding
+          seedPhraseType !== operationState.onboarding
             ? toastState.walletCreated
             : "",
         currentOperation: stateCache.currentOperation,
@@ -169,13 +166,13 @@ const VerifySeedPhrase = () => {
         id="verify-seedphrase"
         header={true}
         title={
-          seedPhraseType !== generateSeedPhraseState.onboarding
+          seedPhraseType !== operationState.onboarding
             ? `${i18n.t("verifyseedphrase." + seedPhraseType + ".title")}`
             : undefined
         }
         backButton={true}
         onBack={
-          seedPhraseType === generateSeedPhraseState.onboarding
+          seedPhraseType === operationState.onboarding
             ? () => {
               handleClearState();
               handleExit();
@@ -183,7 +180,7 @@ const VerifySeedPhrase = () => {
             : () => setAlertExitIsOpen(true)
         }
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
-        progressBar={seedPhraseType === generateSeedPhraseState.onboarding}
+        progressBar={seedPhraseType === operationState.onboarding}
         progressBarValue={1}
         progressBarBuffer={1}
         footer={true}
@@ -198,7 +195,7 @@ const VerifySeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              {seedPhraseType === generateSeedPhraseState.onboarding && (
+              {seedPhraseType === operationState.onboarding && (
                 <h2>
                   {i18n.t("verifyseedphrase." + seedPhraseType + ".title")}
                 </h2>

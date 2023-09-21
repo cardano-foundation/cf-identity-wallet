@@ -33,7 +33,11 @@ import {
   PreferencesStorage,
 } from "../../../core/storage/preferences";
 import { VerifyPasscode } from "../VerifyPasscode";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
+import { operationState } from "../../constants/dictionary";
 
 const MyWallets = ({
   myWalletsIsOpen,
@@ -174,6 +178,7 @@ const MyWallets = ({
             color="dark-grey"
             onClick={(event) => {
               event.stopPropagation();
+              dispatch(setCurrentOperation(operationState.renameWallet));
               setSelectedAccount({
                 name: account.name,
                 address: account.address,
@@ -189,6 +194,7 @@ const MyWallets = ({
             className="delete-button"
             onClick={(event) => {
               event.stopPropagation();
+              dispatch(setCurrentOperation(operationState.deleteWallet));
               setSelectedAccount({
                 name: account.name,
                 address: account.address,
@@ -219,7 +225,10 @@ const MyWallets = ({
         breakpoints={[0, 1]}
         className="page-layout"
         data-testid="my-wallets"
-        onDidDismiss={() => setMyWalletsIsOpen(false)}
+        onDidDismiss={() => {
+          setMyWalletsIsOpen(false);
+          dispatch(setCurrentOperation(""));
+        }}
       >
         <div className="my-wallets modal">
           <PageLayout
