@@ -43,7 +43,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
   const initApp = async () => {
     await AriesAgent.agent.start();
-    const connections = await AriesAgent.agent.getConnections();
+    let connectionsDetails = await AriesAgent.agent.getConnections();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
@@ -74,56 +74,49 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setIdentitiesCache(storedIdentities));
     dispatch(setCredsCache(filteredCredsFix));
     dispatch(setCryptoAccountsCache(storedCryptoAccounts));
-    dispatch(setConnectionsCache(connections));
+    dispatch(setConnectionsCache(connectionsDetails));
 
     AriesAgent.agent.onConnectionStateChange(async (event) => {
-      const connections = await AriesAgent.agent.getConnections();
-      // @TODO: FOR TEST
-      // eslint-disable-next-line no-console
-      console.log("onConnectionStateChange", event);
-      if (
-        AriesAgent.agent.isConnectionRequestSent(event.payload.connectionRecord)
-      ) {
-        dispatch(setConnectionsCache(connections));
+      const connectionRecord = event.payload.connectionRecord;
+      connectionsDetails = connectionsDetails.filter(
+        (connectionDetails) => connectionDetails.id !== connectionRecord.id
+      );
+      if (connectionRecord.outOfBandId)
+        connectionsDetails.push(
+          AriesAgent.agent.getConnectionDetails(
+            connectionRecord,
+            await AriesAgent.agent.getOutOfBandRecordById(
+              connectionRecord.outOfBandId
+            )
+          )
+        );
+      if (AriesAgent.agent.isConnectionRequestSent(connectionRecord)) {
+        dispatch(setConnectionsCache(connectionsDetails));
         dispatch(setCurrentOperation(toastState.connectionRequestPending));
       }
-      if (
-        AriesAgent.agent.isConnectionResponseReceived(
-          event.payload.connectionRecord
-        )
-      ) {
+      if (AriesAgent.agent.isConnectionResponseReceived(connectionRecord)) {
         dispatch(
           setConnectionRequest({
-            id: event.payload.connectionRecord.id,
+            id: connectionRecord.id,
             type: ConnectionRequestType.CONNECTION_RESPONSE,
           })
         );
       }
-      if (
-        AriesAgent.agent.isConnectionRequestReceived(
-          event.payload.connectionRecord
-        )
-      ) {
-        dispatch(setConnectionsCache(connections));
+      if (AriesAgent.agent.isConnectionRequestReceived(connectionRecord)) {
+        dispatch(setConnectionsCache(connectionsDetails));
         dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
         dispatch(
           setConnectionRequest({
-            id: event.payload.connectionRecord.id,
+            id: connectionRecord.id,
             type: ConnectionRequestType.CONNECTION_INCOMING,
           })
         );
       }
-      if (
-        AriesAgent.agent.isConnectionResponseSent(
-          event.payload.connectionRecord
-        )
-      ) {
+      if (AriesAgent.agent.isConnectionResponseSent(connectionRecord)) {
         dispatch(setCurrentOperation(toastState.connectionRequestPending));
       }
-      if (
-        AriesAgent.agent.isConnectionConnected(event.payload.connectionRecord)
-      ) {
-        dispatch(setConnectionsCache(connections));
+      if (AriesAgent.agent.isConnectionConnected(connectionRecord)) {
+        dispatch(setConnectionsCache(connectionsDetails));
         dispatch(setCurrentOperation(toastState.newConnectionAdded));
       }
     });

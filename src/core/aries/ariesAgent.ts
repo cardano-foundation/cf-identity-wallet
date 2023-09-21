@@ -739,7 +739,7 @@ class AriesAgent {
     return connectionsDetails;
   }
 
-  private getConnectionDetails(
+  public getConnectionDetails(
     connection: ConnectionRecord,
     outOfBandRecord: OutOfBandRecord
   ): ConnectionDetails {
@@ -776,6 +776,9 @@ class AriesAgent {
     //
     // }
     return this.getConnectionDetails(connection, outOfBandRecord);
+  }
+  async getOutOfBandRecordById(id: string): Promise<OutOfBandRecord> {
+    return this.agent.oob.getById(id);
   }
 }
 export { AriesAgent, agentDependencies };
