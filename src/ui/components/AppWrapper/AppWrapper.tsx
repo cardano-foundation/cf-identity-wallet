@@ -79,15 +79,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     AriesAgent.agent.onConnectionStateChange(async (event) => {
       const connectionRecord = event.payload.connectionRecord;
       const connectionsDetails = await AriesAgent.agent.getConnections();
-      if (connectionRecord.outOfBandId)
-        connectionsDetails.push(
-          AriesAgent.agent.getConnectionDetails(
-            connectionRecord,
-            await AriesAgent.agent.getOutOfBandRecordById(
-              connectionRecord.outOfBandId
-            )
-          )
-        );
       if (AriesAgent.agent.isConnectionRequestSent(connectionRecord)) {
         dispatch(setConnectionsCache(connectionsDetails));
         dispatch(setCurrentOperation(toastState.connectionRequestPending));
