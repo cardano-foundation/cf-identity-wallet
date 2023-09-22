@@ -10,6 +10,7 @@ enum KeyStoreKeys {
   APP_OP_PASSWORD = "app-operations-password",
   CRYPTO_ENTROPY_PREFIX = "crypto-entropy-",
   CRYPTO_ROOT_XPRV_KEY_PREFIX = "crypto-root-xprv-key-",
+  LIBP2P_PEER = "libp2p-peer",
 }
 
 class SecureStorage {
