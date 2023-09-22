@@ -28,7 +28,7 @@ jest.mock("./libp2p/libP2p", () => ({
   },
 }));
 const savePeer = jest.spyOn(libP2pPeer, "savePeer");
-savePeer.mockReturnValue(new Promise((resolve) => resolve(undefined)));
+savePeer.mockResolvedValue(undefined);
 const getPeerFromStorage = jest.spyOn(libP2pPeer, "getPeerFromStorage");
 
 const agentDependencies: AgentDependencies = {
@@ -77,14 +77,14 @@ describe("LibP2p webrtc outbound transport test", () => {
 
   test("should successfully start when first run", async () => {
     await LibP2p.libP2p.start();
-    getPeerFromStorage.mockReturnValue(new Promise((resolve) => resolve(null)));
+    getPeerFromStorage.mockResolvedValue(null);
     agent.registerOutboundTransport(libP2pOutboundTransport);
     await expect(libP2pOutboundTransport.start(agent)).resolves.toBeUndefined();
   });
 
   test("should successfully start when second run", async () => {
     await LibP2p.libP2p.start();
-    getPeerFromStorage.mockReturnValue(new Promise((resolve) => resolve("{}")));
+    getPeerFromStorage.mockResolvedValue("{}");
     agent.registerOutboundTransport(libP2pOutboundTransport);
     await expect(libP2pOutboundTransport.start(agent)).resolves.toBeUndefined();
   });

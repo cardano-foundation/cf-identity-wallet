@@ -54,8 +54,8 @@ export class LibP2pService {
   }
 
   public getPeerJson(node: Libp2p): PeerIdJSON {
-    const privateKey = node.peerId.privateKey as any as Uint8Array;
-    const publicKey = node.peerId.publicKey as any as Uint8Array;
+    const privateKey = node.peerId.privateKey as Uint8Array;
+    const publicKey = node.peerId.publicKey as Uint8Array;
     const privateKeyString = btoa(
       String.fromCharCode.apply(null, Array.from(privateKey))
     );
