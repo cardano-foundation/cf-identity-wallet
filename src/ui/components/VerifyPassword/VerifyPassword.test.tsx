@@ -1,37 +1,166 @@
-import { render, waitFor, fireEvent } from "@testing-library/react";
-import { act } from "react-dom/test-utils";
-import { VerifyPassword } from "./VerifyPassword";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import configureStore from "redux-mock-store";
+import { Provider } from "react-redux";
+import { MemoryRouter, Route } from "react-router-dom";
+import { waitForIonicReact } from "@ionic/react-test-utils";
+import { AnyAction, Store } from "@reduxjs/toolkit";
+import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { SecureStorage } from "../../../core/storage";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { credsFix } from "../../__fixtures__/credsFix";
+import { CredCardDetails } from "../../pages/CredCardDetails";
 
-describe("Verify Password modal", () => {
-  test.skip("User can close the modal by clicking on the backdrop", async () => {
-    const mockSetIsOpen = jest.fn();
-    const storedPass = "storedPass";
-    const secureStorageGetMock = jest
-      .spyOn(SecureStorage, "get")
-      .mockResolvedValue(storedPass);
-    const { queryByText, getByText, getByTestId } = render(
-      <VerifyPassword
-        isOpen={true}
-        setIsOpen={mockSetIsOpen}
-        onVerify={() => {
-          /**/
-        }}
-      />
+const path = TabsRoutePath.CREDS + "/" + credsFix[0].id;
+
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useParams: () => ({
+    id: credsFix[0].id,
+  }),
+  useRouteMatch: () => ({ url: path }),
+}));
+
+const initialStateNoPassword = {
+  stateCache: {
+    routes: [TabsRoutePath.CREDS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+      passwordIsSet: false,
+      passwordIsSkipped: true,
+    },
+  },
+  seedPhraseCache: {
+    seedPhrase160:
+      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+    seedPhrase256: "",
+    selected: FIFTEEN_WORDS_BIT_LENGTH,
+  },
+};
+
+const initialStateWithPassword = {
+  stateCache: {
+    routes: [TabsRoutePath.CREDS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+      passwordIsSet: true,
+      passwordIsSkipped: false,
+    },
+  },
+  seedPhraseCache: {
+    seedPhrase160:
+      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+    seedPhrase256: "",
+    selected: FIFTEEN_WORDS_BIT_LENGTH,
+  },
+};
+
+describe("Verify Password on Cards Details page", () => {
+  let storeMocked: Store<unknown, AnyAction>;
+  beforeEach(() => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateNoPassword),
+      dispatch: dispatchMock,
+    };
+  });
+
+  test("It renders verify password when clicking on the big button", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateWithPassword),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getByText, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
     );
 
-    expect(getByTestId("verify-password")).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS.verifypassword.title)).toBeVisible();
-
-    const backdrop = document.querySelector("ion-backdrop");
     act(() => {
-      backdrop && fireEvent.click(backdrop);
+      fireEvent.click(getByTestId("card-details-delete-button"));
     });
 
     await waitFor(() => {
-      expect(backdrop).not.toBeInTheDocument();
+      expect(
+        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
+      ).toBeVisible();
     });
-    expect(queryByText(EN_TRANSLATIONS.verifypassword.title)).toBeNull();
+
+    await waitFor(() => {
+      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
+        "is-open",
+        "false"
+      );
+    });
+
+    act(() => {
+      fireEvent.click(
+        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.confirm)
+      );
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
+        "is-open",
+        "true"
+      );
+    });
+  });
+
+  test.skip("It asks to verify the password when users try to delete the cred using the button in the modal", async () => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateWithPassword),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    expect(getAllByTestId("verify-password")[1].getAttribute("is-open")).toBe(
+      "false"
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("options-button"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("creds-options-delete-button")).toBeInTheDocument();
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("creds-options-delete-button"));
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
+        "is-open",
+        "true"
+      );
+    });
   });
 });

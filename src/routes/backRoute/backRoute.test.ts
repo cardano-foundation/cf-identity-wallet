@@ -41,6 +41,7 @@ describe("getBackRoute", () => {
           time: 0,
         },
         currentOperation: "",
+        connectionRequest: "",
         defaultCryptoAccount: "",
       },
       identitiesCache: { identities: [] },
@@ -121,6 +122,7 @@ describe("getBackRoute", () => {
           passwordIsSkipped: true,
         },
         currentOperation: "",
+        connectionRequest: "",
         defaultCryptoAccount: "",
       },
       seedPhraseCache: {
@@ -196,6 +198,7 @@ describe("getPreviousRoute", () => {
           time: 0,
         },
         currentOperation: "",
+        connectionRequest: "",
         defaultCryptoAccount: "",
       },
       identitiesCache: { identities: [] },

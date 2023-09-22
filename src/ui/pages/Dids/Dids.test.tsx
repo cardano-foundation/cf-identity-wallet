@@ -11,7 +11,8 @@ import {
   NAVIGATION_DELAY,
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { filteredDidsFix } from "../../__fixtures__/filteredDidsFix";
+import { filteredIdentityFix } from "../../__fixtures__/filteredIdentityFix";
+
 jest.mock("../../../core/aries/ariesAgent", () => ({
   AriesAgent: {
     agent: {
@@ -28,11 +29,13 @@ describe("Dids Tab", () => {
     );
 
     expect(getByTestId("dids-tab")).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS.dids.tab.title)).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.identity.tab.title)).toBeInTheDocument();
     expect(getByTestId("contacts-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
     expect(
-      getByTestId(`menu-button-${EN_TRANSLATIONS.dids.tab.title.toLowerCase()}`)
+      getByTestId(
+        `menu-button-${EN_TRANSLATIONS.identity.tab.title.toLowerCase()}`
+      )
     ).toBeInTheDocument();
   });
 
@@ -50,7 +53,7 @@ describe("Dids Tab", () => {
       },
       seedPhraseCache: {},
       identitiesCache: {
-        identities: filteredDidsFix,
+        identities: filteredIdentityFix,
       },
     };
 
@@ -75,24 +78,24 @@ describe("Dids Tab", () => {
       </MemoryRouter>
     );
 
-    const firstCardId = getByText(filteredDidsFix[0].id);
+    const firstCardId = getByText(filteredIdentityFix[0].id);
 
     act(() => {
       fireEvent.click(firstCardId);
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 
-    expect(getByText(EN_TRANSLATIONS.dids.card.details.done)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.identity.card.details.done)).toBeVisible();
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 
     const doneButton = getByTestId(
-      `tab-title-${EN_TRANSLATIONS.dids.card.details.done.toLowerCase()}`
+      `tab-title-${EN_TRANSLATIONS.identity.card.details.done.toLowerCase()}`
     );
 
     act(() => {
       fireEvent.click(doneButton);
     });
-    expect(queryByText(EN_TRANSLATIONS.dids.tab.title)).toBeVisible();
+    expect(queryByText(EN_TRANSLATIONS.identity.tab.title)).toBeVisible();
   });
 });

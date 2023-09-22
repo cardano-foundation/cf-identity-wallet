@@ -1,4 +1,4 @@
-.edit-identity {
+.identity-options {
   .close-button-label {
     color: var(--ion-color-primary);
   }
@@ -11,7 +11,30 @@
     text-align: center;
   }
 
-  .edit-identity-main {
+  &.modal.viewer {
+    ion-title h2 {
+      text-align: center;
+    }
+
+    .identity-options-inner {
+      overflow: scroll;
+      height: calc(92vh - (11.5rem + env(safe-area-inset-bottom)));
+    }
+
+    .footer-col ion-button {
+      --color-selected: white !important;
+
+      &:first-child {
+        margin-bottom: 0.63rem;
+      }
+
+      ion-icon {
+        margin-right: 0.5rem;
+      }
+    }
+  }
+
+  .identity-options-main {
     margin-top: 0.5rem;
 
     ion-col {
@@ -40,7 +63,7 @@
       margin: 0;
     }
 
-    .edit-identity-option {
+    .identity-options-option {
       display: flex;
 
       > * {
@@ -55,14 +78,12 @@
     }
   }
 
-  .edit-identity-inner {
-    .error-message,
-    .error-placeholder {
-      margin-bottom: 1rem;
-    }
-
-    .error-placeholder {
-      height: 1.375rem;
-    }
+  pre {
+    overflow: hidden;
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    white-space: -pre-wrap;
+    white-space: -o-pre-wrap;
+    word-wrap: break-word;
   }
 }

@@ -6,7 +6,7 @@
     "dev": "webpack serve --config webpack/webpack.dev.js --host 0.0.0.0 --port 3003",
     "build": "webpack --config webpack/webpack.prod.js",
     "build:cap": "npm run build && npx cap sync",
-    "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}'",
+    "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}' 'credential-issuance-server/src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
     "test:cardano": "jest --config jest.config.cardano.ts",
@@ -17,6 +17,7 @@
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "^3.0.1",
     "@aries-framework/core": "^0.4.0-alpha.119",
+    "@capacitor-community/barcode-scanner": "^3.0.3",
     "@capacitor-community/sqlite": "^4.6.3",
     "@capacitor/android": "^4.7.1",
     "@capacitor/clipboard": "^4.1.0",

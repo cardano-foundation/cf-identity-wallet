@@ -11,7 +11,6 @@ import {
   IonLabel,
   IonRow,
   IonSearchbar,
-  IonToast,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { addOutline, hourglassOutline } from "ionicons/icons";
@@ -27,10 +26,15 @@ import {
 } from "./Connections.types";
 import "./Connections.scss";
 import { formatShortDate } from "../../../utils";
-import { AddConnection } from "../../components/AddConnection";
+import { ConnectModal } from "../../components/ConnectModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { connectionStatus, toastState } from "../../constants/dictionary";
 import {
+  connectionStatus,
+  connectionType,
+  toastState,
+} from "../../constants/dictionary";
+import {
+  getCurrentOperation,
   getStateCache,
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
@@ -39,6 +43,8 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import { connectionRequestData } from "../../__fixtures__/connectionsFix";
+import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
 
 const ConnectionItem = ({
   item,
@@ -90,22 +96,17 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const connectionsData: ConnectionsProps[] =
-    useAppSelector(getConnectionsCache);
+  const currentOperation = useAppSelector(getCurrentOperation);
+  const [connectionsData, setConnectionsData] = useState<ConnectionsProps[]>(
+    useAppSelector(getConnectionsCache)
+  );
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
-  const [addConnectionIsOpen, setAddConnectionIsOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
+  const [ConnectModalIsOpen, setConnectModalIsOpen] = useState(false);
 
-  useEffect(() => {
-    if (stateCache.currentOperation === toastState.connectionDeleted) {
-      setShowToast(true);
-    }
-  }, [stateCache.currentOperation]);
-
-  const handleAddConnection = () => {
-    setAddConnectionIsOpen(true);
+  const handleConnectModal = () => {
+    setConnectModalIsOpen(true);
   };
 
   const handleShowConnectionDetails = (item: ConnectionsProps) => {
@@ -126,7 +127,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
         shape="round"
         className="add-button"
         data-testid="add-connection-button"
-        onClick={handleAddConnection}
+        onClick={handleConnectModal}
       >
         <IonIcon
           slot="icon-only"
@@ -189,6 +190,47 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
     }
   };
 
+  useEffect(() => {
+    // @TODO - sdisalvo: This one is listening for pending connection requests
+    if (currentOperation === toastState.connectionRequestPending) {
+      setShowConnections(true);
+      // Fetch new data - remember to replace connectionRequestData with real values
+      const timeElapsed = Date.now();
+      const today = new Date(timeElapsed);
+      const connectionData = {
+        id: connectionRequestData.id,
+        issuer: connectionRequestData.label,
+        issuanceDate: today.toISOString(),
+        issuerLogo: connectionRequestData.profileUrl,
+        status: connectionStatus.pending,
+      };
+      const newConnectionsData = [...connectionsData, connectionData];
+      // Update existing connections adding the new one with status "pending"
+      setConnectionsData(newConnectionsData);
+      // Add function here to receive a "state": "completed" from the agent then pass a boolean to the variable below
+      const state = true;
+      setTimeout(() => {
+        // Adding a timeout to wait until the previous toast for pending connection will close
+        // also emulating a delay in the response from the agent
+        if (state) {
+          const updatedData = () => {
+            const data = newConnectionsData;
+            for (const i in data) {
+              if (data[i].id == connectionData.id) {
+                data[i].status = connectionStatus.confirmed;
+                break;
+              }
+            }
+            return data;
+          };
+          // update the state of the displayed connection removing the "pending" label and show toast
+          setConnectionsData(updatedData);
+          dispatch(setCurrentOperation(toastState.newConnectionAdded));
+        }
+      }, TOAST_MESSAGE_DELAY);
+    }
+  }, [currentOperation]);
+
   return (
     <TabLayout
       header={true}
@@ -240,30 +282,19 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
               </IonRow>
             </IonGrid>
           </IonContent>
-          <AddConnection
-            addConnectionIsOpen={addConnectionIsOpen}
-            setAddConnectionIsOpen={setAddConnectionIsOpen}
+          <ConnectModal
+            type={connectionType.connection}
+            ConnectModalIsOpen={ConnectModalIsOpen}
+            setConnectModalIsOpen={setConnectModalIsOpen}
           />
         </>
       ) : (
         <CardsPlaceholder
           buttonLabel={i18n.t("connections.tab.create")}
-          buttonAction={handleAddConnection}
+          buttonAction={handleConnectModal}
           testId="connections-cards-placeholder"
         />
       )}
-      <IonToast
-        isOpen={showToast}
-        onDidDismiss={() => {
-          setShowToast(false);
-          dispatch(setCurrentOperation(""));
-        }}
-        message={`${i18n.t("toast.connectionDeleted")}`}
-        color="secondary"
-        position="top"
-        cssClass="confirmation-toast"
-        duration={1500}
-      />
     </TabLayout>
   );
 };

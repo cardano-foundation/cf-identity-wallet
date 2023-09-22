@@ -8,22 +8,47 @@ const cardTypes = {
 
 const connectionStatus = {
   pending: "pending",
-  status: "confirmed",
+  confirmed: "confirmed",
 };
 
-const generateSeedPhraseState = {
+const connectionType = {
+  connection: "connection",
+  issuevc: "issue-vc",
+  credential: "credential",
+};
+
+const operationState = {
   onboarding: "onboarding",
-  additional: "newcryptoaccount",
-  restore: "restorecryptoaccount",
+  newCryptoAccount: "newCryptoAccount",
+  restoreCryptoAccount: "restoreCryptoAccount",
+  createWallet: "createWallet",
+  renameWallet: "renameWallet",
+  restoreWallet: "restoreWallet",
+  deleteWallet: "deleteWallet",
+  renameIdentity: "renameIdentity",
+  deleteIdentity: "deleteIdentity",
+  deleteConnection: "deleteConnection",
+  deleteCredential: "deleteCredential",
+  scanConnection: "scanConnection",
 };
 
 const toastState = {
+  copiedToClipboard: "copiedToClipboard",
   walletCreated: "walletCreated",
+  walletRenamed: "walletRenamed",
   walletRestored: "walletRestored",
   walletDeleted: "walletDeleted",
+  identityCreated: "identityCreated",
+  identityRenamed: "identityRenamed",
   identityDeleted: "identityDeleted",
   credentialDeleted: "credentialDeleted",
   connectionDeleted: "connectionDeleted",
+  qrSuccess: "qrSuccess",
+  qrError: "qrError",
+  connectionRequestPending: "connectionRequestPending",
+  newConnectionAdded: "newConnectionAdded",
+  credentialRequestPending: "credentialRequestPending",
+  newCredentialAdded: "newCredentialAdded",
 };
 
 const defaultCredentialsCardData = {
@@ -50,6 +75,7 @@ const defaultCredentialsCardData = {
     suspended: false,
   },
   colors: ["", ""],
+  status: "",
 };
 
 const defaultCryptoAccountData: CryptoAccountProps = {
@@ -94,11 +120,12 @@ const onboardingRoute = {
 export {
   cardTypes,
   connectionStatus,
-  generateSeedPhraseState,
+  operationState,
+  toastState,
   defaultCredentialsCardData,
   defaultCryptoAccountData,
   defaultConnectionData,
   blurredCryptoData,
   onboardingRoute,
-  toastState,
+  connectionType,
 };

@@ -23,6 +23,8 @@ import {
   getCryptoAccountsCache,
   setCryptoAccountsCache,
 } from "../../../store/reducers/cryptoAccountsCache";
+import { setCurrentOperation } from "../../../store/reducers/stateCache";
+import { toastState } from "../../constants/dictionary";
 
 const RenameWallet = ({
   isOpen,
@@ -45,11 +47,13 @@ const RenameWallet = ({
   const handleClose = () => {
     setIsOpen(false);
     setNewWalletName(name);
+    dispatch(setCurrentOperation(""));
   };
 
   const handleSubmit = () => {
     handleRename();
     setIsOpen(false);
+    dispatch(setCurrentOperation(toastState.walletRenamed));
   };
 
   const handleRename = () => {

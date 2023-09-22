@@ -31,7 +31,7 @@ import {
   SEED_PHRASE_SUGGESTIONS,
 } from "../../../constants/appConstants";
 import {
-  generateSeedPhraseState,
+  operationState,
   onboardingRoute,
   toastState,
 } from "../../constants/dictionary";
@@ -62,12 +62,15 @@ const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const currentOperation = useAppSelector(getCurrentOperation);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
-    ? generateSeedPhraseState.onboarding
-    : (history?.location?.state as GenerateSeedPhraseProps)?.type ||
-      stateCache?.currentOperation;
-  const stateOnboarding = seedPhraseType === generateSeedPhraseState.onboarding;
-  const stateRestore = seedPhraseType === generateSeedPhraseState.restore;
+    ? operationState.onboarding
+    : (
+      (history?.location?.state as GenerateSeedPhraseProps)?.type ||
+        currentOperation
+    ).toLowerCase();
+  const stateOnboarding = seedPhraseType === operationState.onboarding;
+  const stateRestore = currentOperation === operationState.restoreCryptoAccount;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
@@ -85,18 +88,6 @@ const GenerateSeedPhrase = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
   const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
-  const routeCache = useAppSelector(getCurrentOperation);
-  const [route, setRoute] = useState("");
-
-  useEffect(() => {
-    if (location.search === onboardingRoute.createRoute) {
-      setRoute(onboardingRoute.create);
-    } else if (location.search === onboardingRoute.restoreRoute) {
-      setRoute(onboardingRoute.restore);
-    } else if (routeCache.length) {
-      setRoute(routeCache);
-    }
-  }, [routeCache, route]);
 
   useEffect(() => {
     setSeedPhrase(seedPhrase);
@@ -237,11 +228,11 @@ const GenerateSeedPhrase = () => {
     const filteredSuggestions =
       isTyping && query.length
         ? bip39Seeds
-            .filter(
-              (suggestion: string) =>
-                suggestion.toLowerCase().indexOf(query) > -1
-            )
-            .splice(0, SEED_PHRASE_SUGGESTIONS)
+          .filter(
+            (suggestion: string) =>
+              suggestion.toLowerCase().indexOf(query) > -1
+          )
+          .splice(0, SEED_PHRASE_SUGGESTIONS)
         : [];
     setSuggestions(filteredSuggestions);
   };
@@ -274,7 +265,7 @@ const GenerateSeedPhrase = () => {
           progressBarBuffer={1}
           footer={true}
           primaryButtonText={`${i18n.t(
-            "generateseedphrase." + seedPhraseType + ".continue.button"
+            "generateseedphrase." + seedPhraseType + ".button.continue"
           )}`}
           primaryButtonAction={() => {
             if (stateRestore) {
@@ -496,6 +487,8 @@ const GenerateSeedPhrase = () => {
               "generateseedphrase.alert.exit.button.cancel"
             )}`}
             actionConfirm={handleExit}
+            actionCancel={() => dispatch(setCurrentOperation(""))}
+            actionDismiss={() => dispatch(setCurrentOperation(""))}
           />
           <ChooseAccountName
             chooseAccountNameIsOpen={chooseAccountNameIsOpen}

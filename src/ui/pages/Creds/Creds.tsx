@@ -1,10 +1,4 @@
-import {
-  IonButton,
-  IonIcon,
-  IonPage,
-  IonToast,
-  useIonViewWillEnter,
-} from "@ionic/react";
+import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -14,16 +8,25 @@ import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getCurrentRoute,
-  getStateCache,
+  getCurrentOperation,
   setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
 import { Connections } from "../Connections";
-import { cardTypes, toastState } from "../../constants/dictionary";
-import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import {
+  cardTypes,
+  connectionStatus,
+  connectionType,
+  defaultCredentialsCardData,
+  toastState,
+} from "../../constants/dictionary";
+import { ConnectModal } from "../../components/ConnectModal";
+import { credentialRequestData } from "../../__fixtures__/connectionsFix";
+import { CredProps } from "../../components/CardsStack/CardsStack.types";
+import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
+import { ColorGenerator } from "../../utils/ColorGenerator";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -50,8 +53,8 @@ const AdditionalButtons = ({
       </IonButton>
       <IonButton
         shape="round"
-        className="add-button"
-        data-testid="add-button"
+        className="add-credential-button"
+        data-testid="add-credential-button"
         onClick={handleCreateCred}
       >
         <IonIcon
@@ -66,18 +69,17 @@ const AdditionalButtons = ({
 
 const Creds = () => {
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
-  const currentRoute = useAppSelector(getCurrentRoute);
-  const credsData = useAppSelector(getCredsCache);
+  const [credsData, setCredsData] = useState<CredProps[]>(
+    useAppSelector(getCredsCache)
+  );
+  const currentOperation = useAppSelector(getCurrentOperation);
   const [showConnections, setShowConnections] = useState(false);
-  const [showToast, setShowToast] = useState(false);
+  const [addCredentialIsOpen, setAddCredentialIsOpen] = useState(false);
+  const colorGenerator = new ColorGenerator();
+  const newColor = colorGenerator.generateNextColor();
 
   const handleCreateCred = () => {
-    // @TODO - sdisalvo: Function to create Credential
-  };
-
-  const handleConnections = () => {
-    setShowConnections(!showConnections);
+    setAddCredentialIsOpen(true);
   };
 
   useIonViewWillEnter(() =>
@@ -85,13 +87,46 @@ const Creds = () => {
   );
 
   useEffect(() => {
-    if (
-      stateCache.currentOperation === toastState.credentialDeleted &&
-      currentRoute?.path === TabsRoutePath.CREDS
-    ) {
-      setShowToast(true);
+    // @TODO - sdisalvo: This one is listening for pending credential requests
+    if (currentOperation === toastState.credentialRequestPending) {
+      //
+      // Fetch new data - remember to replace "defaultCredentialsCardData" with real values
+      const timeElapsed = Date.now();
+      const today = new Date(timeElapsed);
+      const credentialData = {
+        ...defaultCredentialsCardData,
+        id: credentialRequestData.id,
+        issuanceDate: today.toISOString(),
+        issuerLogo: credentialRequestData.profileUrl,
+        colors: [newColor[1], newColor[0]],
+        status: connectionStatus.pending,
+      };
+      const newCredsData = [...credsData, credentialData];
+      // Update existing creds adding the new one with status "pending"
+      setCredsData(newCredsData);
+      // Add function here to receive a "state": "completed" from the agent then pass a boolean to the variable below
+      const state = true;
+      setTimeout(() => {
+        // Adding a timeout to wait until the previous toast for pending connection will close
+        // also emulating a delay in the response from the agent
+        if (state) {
+          const updatedData = () => {
+            const data = newCredsData;
+            for (const i in data) {
+              if (data[i].id == credentialData.id) {
+                data[i].status = connectionStatus.confirmed;
+                break;
+              }
+            }
+            return data;
+          };
+          // update the state of the displayed connection removing the "pending" label and show toast
+          setCredsData(updatedData);
+          dispatch(setCurrentOperation(toastState.newCredentialAdded));
+        }
+      }, TOAST_MESSAGE_DELAY);
     }
-  }, [stateCache.currentOperation, currentRoute]);
+  }, [currentOperation]);
 
   return (
     <>
@@ -113,8 +148,8 @@ const Creds = () => {
           menuButton={true}
           additionalButtons={
             <AdditionalButtons
+              handleConnections={() => setShowConnections(true)}
               handleCreateCred={handleCreateCred}
-              handleConnections={handleConnections}
             />
           }
         >
@@ -130,17 +165,10 @@ const Creds = () => {
               testId="creds-cards-placeholder"
             />
           )}
-          <IonToast
-            isOpen={showToast}
-            onDidDismiss={() => {
-              setShowToast(false);
-              dispatch(setCurrentOperation(""));
-            }}
-            message={`${i18n.t("toast.credentialDeleted")}`}
-            color="secondary"
-            position="top"
-            cssClass="confirmation-toast"
-            duration={1500}
+          <ConnectModal
+            type={connectionType.credential}
+            ConnectModalIsOpen={addCredentialIsOpen}
+            setConnectModalIsOpen={setAddCredentialIsOpen}
           />
         </TabLayout>
       </IonPage>

@@ -4,19 +4,9 @@ import {
   IonIcon,
   IonPage,
   IonSpinner,
-  IonToast,
   useIonViewWillEnter,
 } from "@ionic/react";
-import {
-  shareOutline,
-  ellipsisVertical,
-  keyOutline,
-  copyOutline,
-  calendarNumberOutline,
-  pricetagOutline,
-  personCircleOutline,
-  trashOutline,
-} from "ionicons/icons";
+import { shareOutline, ellipsisVertical, trashOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -27,21 +17,27 @@ import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getStateCache,
+  setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
-import { writeToClipboard } from "../../../utils/clipboard";
 import { ShareIdentity } from "../../components/ShareIdentity";
-import { EditIdentity } from "../../components/EditIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import {
   getIdentitiesCache,
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
-import { formatShortDate } from "../../../utils";
 import { AriesAgent } from "../../../core/agent/agent";
-import { DIDDetails, IdentifierType } from "../../../core/agent/agent.types";
+import {
+  DIDDetails,
+  IdentifierType,
+  KERIDetails,
+} from "../../../core/agent/agent.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
+import { IdentityCardInfoKey } from "../../components/IdentityCardInfoKey";
+import { IdentityCardInfoKeri } from "../../components/IdentityCardInfoKeri";
+import { operationState } from "../../constants/dictionary";
+import { IdentityOptions } from "../../components/IdentityOptions";
 
 const DidCardDetails = () => {
   const history = useHistory();
@@ -49,24 +45,23 @@ const DidCardDetails = () => {
   const stateCache = useAppSelector(getStateCache);
   const identitiesData = useAppSelector(getIdentitiesCache);
   const [shareIsOpen, setShareIsOpen] = useState(false);
-  const [editIsOpen, setEditIsOpen] = useState(false);
+  const [identityOptionsIsOpen, setIdentityOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
-  const [showToast, setShowToast] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<DIDDetails | undefined>();
+  const [cardData, setCardData] = useState<
+    DIDDetails | KERIDetails | undefined
+  >();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
   useEffect(() => {
     const fetchDetails = async () => {
       const cardDetailsResult = await AriesAgent.agent.identifiers.getIdentifier(params.id);
-      if (cardDetailsResult && cardDetailsResult.type === IdentifierType.KEY) {
+      if (cardDetailsResult) {
         setCardData(cardDetailsResult.result);
       } else {
-        // @TODO - foconnor: Should put KERI one here when its ready - this was just easier to get the types to work.
-        setCardData(undefined);
+        // @TODO - Error handling.
       }
-      // @TODO - Error handling.
     };
     fetchDetails();
   }, [params.id]);
@@ -92,7 +87,7 @@ const DidCardDetails = () => {
   const handleDelete = () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
-    // Remember to update EditIdentity file too.
+    // Remember to update identity.card.details.options file too.
     if (cardData) {
       const updatedIdentities = identitiesData.filter(
         (item) => item.id !== cardData.id
@@ -121,10 +116,10 @@ const DidCardDetails = () => {
         </IonButton>
         <IonButton
           shape="round"
-          className="edit-button"
-          data-testid="edit-button"
+          className="identity-options-button"
+          data-testid="identity-options-button"
           onClick={() => {
-            setEditIsOpen(true);
+            setIdentityOptionsIsOpen(true);
           }}
         >
           <IonIcon
@@ -141,7 +136,7 @@ const DidCardDetails = () => {
     <IonPage className="tab-layout card-details">
       <TabLayout
         header={true}
-        title={`${i18n.t("dids.card.details.done")}`}
+        title={`${i18n.t("identity.card.details.done")}`}
         titleSize="h3"
         titleAction={handleDone}
         menuButton={false}
@@ -161,172 +156,21 @@ const DidCardDetails = () => {
               isActive={false}
             />
             <div className="card-details-content">
-              <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.information")}</h3>
-                <div className="card-details-info-block-inner">
-                  <span
-                    className="card-details-info-block-line"
-                    data-testid="copy-button-id"
-                    onClick={() => {
-                      writeToClipboard(cardData.id);
-                      setShowToast(true);
-                    }}
-                  >
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={keyOutline}
-                        color="primary"
-                      />
-                    </span>
-
-                    <span className="card-details-info-block-data">
-                      {cardData.id.substring(0, 13)}...
-                      {cardData.id.slice(-5)}
-                    </span>
-                    <span>
-                      <IonButton
-                        shape="round"
-                        className="copy-button"
-                      >
-                        <IonIcon
-                          slot="icon-only"
-                          icon={copyOutline}
-                        />
-                      </IonButton>
-                    </span>
-                  </span>
-                  <span className="card-details-info-block-line">
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={calendarNumberOutline}
-                        color="primary"
-                      />
-                    </span>
-
-                    <span className="card-details-info-block-data">
-                      {formatShortDate(cardData?.createdAtUTC)}
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.type")}</h3>
-                <div className="card-details-info-block-inner">
-                  <span
-                    className="card-details-info-block-line"
-                    data-testid="copy-button-type"
-                    onClick={() => {
-                      writeToClipboard(cardData.keyType);
-                      setShowToast(true);
-                    }}
-                  >
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={pricetagOutline}
-                        color="primary"
-                      />
-                    </span>
-
-                    <span className="card-details-info-block-data">
-                      {cardData.keyType}
-                    </span>
-                    <span>
-                      <IonButton
-                        shape="round"
-                        className="copy-button"
-                      >
-                        <IonIcon
-                          slot="icon-only"
-                          icon={copyOutline}
-                        />
-                      </IonButton>
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.controller")}</h3>
-                <div className="card-details-info-block-inner">
-                  <span
-                    className="card-details-info-block-line"
-                    data-testid="copy-button-controller"
-                    onClick={() => {
-                      writeToClipboard(cardData.controller);
-                      setShowToast(true);
-                    }}
-                  >
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={personCircleOutline}
-                        color="primary"
-                      />
-                    </span>
-
-                    <span className="card-details-info-block-data">
-                      {cardData.controller.substring(0, 13)}...
-                      {cardData.controller.slice(-5)}
-                    </span>
-                    <span>
-                      <IonButton
-                        shape="round"
-                        className="copy-button"
-                      >
-                        <IonIcon
-                          slot="icon-only"
-                          icon={copyOutline}
-                        />
-                      </IonButton>
-                    </span>
-                  </span>
-                </div>
-              </div>
-              <div className="card-details-info-block">
-                <h3>{i18n.t("dids.card.details.publickeybase")}</h3>
-                <div className="card-details-info-block-inner">
-                  <span
-                    className="card-details-info-block-line"
-                    data-testid="copy-button-publicKeyBase58"
-                    onClick={() => {
-                      writeToClipboard(cardData.publicKeyBase58);
-                      setShowToast(true);
-                    }}
-                  >
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={keyOutline}
-                        color="primary"
-                      />
-                    </span>
-                    <span className="card-details-info-block-data">
-                      {cardData.publicKeyBase58.substring(0, 5)}...
-                      {cardData.publicKeyBase58.slice(-5)}
-                    </span>
-                    <span>
-                      <IonButton
-                        shape="round"
-                        className="copy-button"
-                      >
-                        <IonIcon
-                          slot="icon-only"
-                          icon={copyOutline}
-                        />
-                      </IonButton>
-                    </span>
-                  </span>
-                </div>
-              </div>
+              {cardData.method === IdentifierType.KEY ? (
+                <IdentityCardInfoKey cardData={cardData as DIDDetails} />
+              ) : (
+                <IdentityCardInfoKeri cardData={cardData as KERIDetails} />
+              )}
               <IonButton
                 shape="round"
                 expand="block"
                 color="danger"
                 data-testid="card-details-delete-button"
                 className="delete-button"
-                onClick={() => setAlertIsOpen(true)}
+                onClick={() => {
+                  setAlertIsOpen(true);
+                  dispatch(setCurrentOperation(operationState.deleteIdentity));
+                }}
               >
                 <IonIcon
                   slot="icon-only"
@@ -334,7 +178,7 @@ const DidCardDetails = () => {
                   icon={trashOutline}
                   color="primary"
                 />
-                {i18n.t("dids.card.details.delete.button")}
+                {i18n.t("identity.card.details.delete.button")}
               </IonButton>
             </div>
           </>
@@ -348,9 +192,9 @@ const DidCardDetails = () => {
           />
         )}
         {cardData && (
-          <EditIdentity
-            isOpen={editIsOpen}
-            setIsOpen={setEditIsOpen}
+          <IdentityOptions
+            isOpen={identityOptionsIsOpen}
+            setIsOpen={setIdentityOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
           />
@@ -359,12 +203,12 @@ const DidCardDetails = () => {
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
           dataTestId="alert-confirm"
-          headerText={i18n.t("dids.card.details.delete.alert.title")}
+          headerText={i18n.t("identity.card.details.delete.alert.title")}
           confirmButtonText={`${i18n.t(
-            "dids.card.details.delete.alert.confirm"
+            "identity.card.details.delete.alert.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "dids.card.details.delete.alert.cancel"
+            "identity.card.details.delete.alert.cancel"
           )}`}
           actionConfirm={() => {
             if (
@@ -376,6 +220,8 @@ const DidCardDetails = () => {
               setVerifyPasscodeIsOpen(true);
             }
           }}
+          actionCancel={() => dispatch(setCurrentOperation(""))}
+          actionDismiss={() => dispatch(setCurrentOperation(""))}
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
@@ -386,15 +232,6 @@ const DidCardDetails = () => {
           isOpen={verifyPasscodeIsOpen}
           setIsOpen={setVerifyPasscodeIsOpen}
           onVerify={handleDelete}
-        />
-        <IonToast
-          isOpen={showToast}
-          onDidDismiss={() => setShowToast(false)}
-          message={`${i18n.t("toast.clipboard")}`}
-          color="secondary"
-          position="top"
-          cssClass="confirmation-toast"
-          duration={1500}
         />
       </TabLayout>
     </IonPage>

@@ -1,5 +1,5 @@
 import { useHistory } from "react-router-dom";
-import { IonButton, IonPage } from "@ionic/react";
+import { IonPage } from "@ionic/react";
 import { i18n } from "../../../i18n";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";

@@ -230,10 +230,10 @@ const CreatePassword = () => {
         closeButtonAction={() => handleClose()}
         title={`${i18n.t("createpassword.title")}`}
         footer={true}
-        primaryButtonText={`${i18n.t("createpassword.buttons.continue")}`}
+        primaryButtonText={`${i18n.t("createpassword.button.continue")}`}
         primaryButtonAction={() => handleContinue(false)}
         primaryButtonDisabled={!validated}
-        secondaryButtonText={`${i18n.t("createpassword.buttons.skip")}`}
+        secondaryButtonText={`${i18n.t("createpassword.button.skip")}`}
         secondaryButtonAction={() => setAlertIsOpen(true)}
       >
         <IonGrid>
@@ -266,15 +266,15 @@ const CreatePassword = () => {
           {(createPasswordValue !== "" &&
             !PasswordValidator.validatePassword(createPasswordValue)) ||
           !PasswordValidator.isValidCharacters(createPasswordValue) ? (
-            <ErrorMessage
-              message={
-                createPasswordValue.length
-                  ? PasswordValidator.getErrorByPriority(createPasswordValue)
-                  : undefined
-              }
-              timeout={false}
-            />
-          ) : null}
+              <ErrorMessage
+                message={
+                  createPasswordValue.length
+                    ? PasswordValidator.getErrorByPriority(createPasswordValue)
+                    : undefined
+                }
+                timeout={false}
+              />
+            ) : null}
           {createPasswordValue && (
             <IonRow>
               <IonCol size="12">

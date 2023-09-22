@@ -23,6 +23,7 @@ interface CredProps {
     revoked: boolean;
     suspended: boolean;
   };
+  status: string;
   colors: string[];
 }
 

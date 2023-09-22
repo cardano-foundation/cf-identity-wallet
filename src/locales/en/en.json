@@ -53,8 +53,8 @@
         "top": "Think of your secret recovery phrase as a safety net for your identity. If you ever lose your phone or switch to a new wallet, this phrase will help you recover your identity.",
         "bottom": "It's important to keep these words safe and sound! Store them in a secure location, like a password manager, and remember to never share them with anyone."
       },
-      "continue": {
-        "button": "Continue"
+      "button": {
+        "continue": "Continue"
       }
     },
     "newcryptoaccount": {
@@ -63,8 +63,8 @@
         "top": "Think of your secret recovery phrase as a safety net for your identity. If you ever lose your phone or switch to a new wallet, this phrase will help you recover your identity.",
         "bottom": "It's important to keep these words safe and sound! Store them in a secure location, like a password manager, and remember to never share them with anyone."
       },
-      "continue": {
-        "button": "Generate seed phrase"
+      "button": {
+        "continue": "Generate seed phrase"
       }
     },
     "restorecryptoaccount": {
@@ -74,8 +74,8 @@
         "top": "Restore a crypto account based on an existing seed phrase.",
         "bottom": ""
       },
-      "continue": {
-        "button": "Verify seed phrase"
+      "button": {
+        "continue": "Verify seed phrase"
       }
     },
     "segment": "{{length}} words",
@@ -149,14 +149,14 @@
   "verifyseedphrase": {
     "onboarding": {
       "title": "Verify your seed phrase",
-      "continue": {
-        "button": "Continue"
+      "button": {
+        "continue": "Continue"
       }
     },
     "newcryptoaccount": {
       "title": "Verify seed phrase",
-      "continue": {
-        "button": "Verify seed phrase"
+      "button": {
+        "continue": "Verify seed phrase"
       }
     },
     "paragraph": {
@@ -208,7 +208,7 @@
         "placeholder": "Create a password hint"
       }
     },
-    "buttons": {
+    "button": {
       "continue": "Create password",
       "skip": "Skip"
     },
@@ -240,7 +240,7 @@
       "symbol": "Contains a symbol !@#$%^&*()"
     }
   },
-  "dids": {
+  "identity": {
     "tab": {
       "title": "Identities",
       "create": "Create an identity"
@@ -255,6 +255,44 @@
         "type": "Type",
         "controller": "Controller",
         "publickeybase": "Public Key Base 58",
+        "delegator": {
+          "title": "Delegator Identifier Prefix",
+          "icon": "DI"
+        },
+        "signingkeyslist": {
+          "title": "List of Signing Keys",
+          "icon": "K"
+        },
+        "signingkeysthreshold": {
+          "title": "Keys Signing Threshold",
+          "icon": "KT"
+        },
+        "nextkeyslist": {
+          "title": "List of Next Key Digests",
+          "icon": "N"
+        },
+        "nextkeysthreshold": {
+          "title": "Next Keys Signing Threshold",
+          "icon": "NT"
+        },
+        "creationtimestamp": {
+          "title": "Creation Timestamp"
+        },
+        "rotationtimestamp": {
+          "title": "Last Key Rotation Timestamp",
+          "icon": "DT"
+        },
+        "sequencenumber": {
+          "title": "Sequence Number",
+          "icon": "S"
+        },
+        "backerslist": {
+          "title": "List of Backers",
+          "icon": "B"
+        },
+        "backeraddress": {
+          "title": "Backer Address"
+        },
         "delete": {
           "button": "Delete identity",
           "alert": {
@@ -263,8 +301,24 @@
             "cancel": "Cancel"
           }
         },
-        "toast": {
-          "clipboard": "Copied to clipboard"
+        "options": {
+          "title": "Identity options",
+          "cancel": "Cancel",
+          "view": "View JSON",
+          "edit": "Edit identity",
+          "share": "Share identity",
+          "delete": "Delete identity",
+          "inner": {
+            "label": "Display name",
+            "confirm": "Confirm changes",
+            "error": "Must be less than 32 characters long"
+          }
+        },
+        "view": {
+          "cancel": "Cancel",
+          "title": "Identity JSON",
+          "copy": "Copy JSON",
+          "save": "Save to device"
         }
       }
     }
@@ -310,6 +364,12 @@
           "clipboard": "Copied to clipboard"
         }
       }
+    },
+    "create": {
+      "alert": {
+        "title": "Once this credential is visible you'll receive a notification. Until then you won't be able to access more details.",
+        "confirm": "Ok"
+      }
     }
   },
   "connections": {
@@ -317,11 +377,6 @@
       "title": "Connections",
       "create": "Add a connection",
       "searchconnections": "Search connections"
-    },
-    "modal": {
-      "title": "Add a connection",
-      "scan": "Scan a QR code",
-      "provide": "Provide a QR code"
     },
     "details": {
       "done": "Done",
@@ -346,6 +401,11 @@
         }
       }
     }
+  },
+  "connectmodal": {
+    "title": "Add a ",
+    "scan": "Scan a QR code",
+    "provide": "Provide a QR code"
   },
   "verifypassword": {
     "title": "Enter password",
@@ -396,18 +456,6 @@
     "divider": "or",
     "copykey": "Copy identity key",
     "more": "More share options"
-  },
-  "editidentity": {
-    "title": "Edit identity",
-    "cancel": "Cancel",
-    "name": "Edit identity",
-    "share": "Share identity",
-    "delete": "Delete identity",
-    "inner": {
-      "label": "Display name",
-      "confirm": "Confirm changes",
-      "error": "Must be less than 32 characters long"
-    }
   },
   "createidentity": {
     "title": "Create new identity",
@@ -483,13 +531,43 @@
     }
   },
   "toast": {
-    "clipboard": "Copied to clipboard",
-    "walletCreated": "Seed phrase verified",
-    "walletRestored": "Seed phrase verified",
-    "walletDeleted": "Account deleted successfully",
-    "identityCreated": "New identity created successfully",
-    "identityDeleted": "Identity successfully deleted",
-    "credentialDeleted": "Credential deleted successfully",
-    "connectionDeleted": "Connection deleted successfully"
+    "copiedtoclipboard": "Copied to clipboard",
+    "walletcreated": "Seed phrase verified",
+    "walletrenamed": "Account renamed successfully",
+    "walletrestored": "Seed phrase verified",
+    "walletdeleted": "Account deleted successfully",
+    "identitycreated": "New identity created successfully",
+    "identityrenamed": "Identity successfully renamed",
+    "identitydeleted": "Identity successfully deleted",
+    "credentialdeleted": "Credential deleted successfully",
+    "connectiondeleted": "Connection deleted successfully",
+    "qrsuccess": "QR code scanned successfully",
+    "qrerror": "QR code not recognised",
+    "connectionrequestpending": "Connection request pending",
+    "newconnectionadded": "New connection added",
+    "credentialrequestpending": "Credential request pending",
+    "newcredentialadded": "New credential added"
+  },
+  "scan": {
+    "tab": {
+      "title": "Align the QR code within the frame to scan"
+    },
+    "alert": {
+      "title": "Would you like to grant permission for using your camera?"
+    }
+  },
+  "connectionrequest": {
+    "title": "Connect",
+    "request": " request from",
+    "button": {
+      "connect": "Connect",
+      "cancel": "Cancel"
+    },
+    "alert": {
+      "title": "Are you sure about proceeding with your connection to {{initiator}}?",
+      "confirm": "Yes, connect",
+      "cancel": "Cancel"
+    },
+    "success": "{{action}} pending"
   }
 }

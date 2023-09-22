@@ -7,6 +7,8 @@ import {
   MiscRepository,
   IdentifierMetadataRepository,
   IdentifierMetadataRecord,
+  CredentialMetadataRecord,
+  CredentialMetadataRepository,
 } from "./repositories";
 import { IdentifierType } from "../../agent.types";
 
@@ -19,17 +21,20 @@ export class GeneralStorageApi {
   private miscRepository: MiscRepository;
   private cryptoAccountRepository: CryptoAccountRepository;
   private identifierMetadataRepository: IdentifierMetadataRepository;
+  private credentialMetadataRepository: CredentialMetadataRepository;
   private agentContext: AgentContext;
 
   constructor(
     settingsMiscRepository: MiscRepository,
     settingsCryptoAccountRepository: CryptoAccountRepository,
     settingIdentifierMetadataRepository: IdentifierMetadataRepository,
+    settingsCredentialMetadataRepository: CredentialMetadataRepository,
     agentContext: AgentContext
   ) {
     this.miscRepository = settingsMiscRepository;
     this.cryptoAccountRepository = settingsCryptoAccountRepository;
     this.identifierMetadataRepository = settingIdentifierMetadataRepository;
+    this.credentialMetadataRepository = settingsCredentialMetadataRepository;
     this.agentContext = agentContext;
   }
 
@@ -122,6 +127,43 @@ export class GeneralStorageApi {
       if (data.displayName) record.displayName = data.displayName;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
       return this.identifierMetadataRepository.update(this.agentContext, record);
+    }
+  }
+
+  // Credential metadata function list
+  async saveCredentialMetadataRecord(
+    record: CredentialMetadataRecord
+  ): Promise<void> {
+    await this.credentialMetadataRepository.save(this.agentContext, record);
+  }
+
+  async getAllCredentialMetadata(
+    isArchived: boolean
+  ): Promise<CredentialMetadataRecord[]> {
+    return this.credentialMetadataRepository.findByQuery(this.agentContext, {
+      isArchived,
+    });
+  }
+
+  async getCredentialMetadata(
+    id: string
+  ): Promise<CredentialMetadataRecord | null> {
+    return this.credentialMetadataRepository.findById(this.agentContext, id);
+  }
+
+  async deleteCredentialMetadata(id: string): Promise<void> {
+    return this.credentialMetadataRepository.deleteById(this.agentContext, id);
+  }
+
+  async updateCredentialMetadata(
+    id: string,
+    data: Omit<Partial<CredentialMetadataRecord>, "id" | "createdAt">
+  ): Promise<void> {
+    const record = await this.getCredentialMetadata(id);
+    if (record) {
+      if (data.colors) record.colors = data.colors;
+      if (data.isArchived !== undefined) record.isArchived = data.isArchived;
+      await this.credentialMetadataRepository.update(this.agentContext, record);
     }
   }
 }
