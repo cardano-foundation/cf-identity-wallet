@@ -1,6 +1,6 @@
 import { expect, test } from "@jest/globals";
-import { Libp2p } from "@libp2p/interface/src/index";
-import { PeerId } from "@libp2p/interface/dist/src/peer-id/index";
+import { Libp2p } from "@libp2p/interface";
+import { PeerId } from "@libp2p/interface/peer-id";
 import { IncomingStreamData } from "@libp2p/interface/src/stream-handler";
 import { Connection, Stream } from "@libp2p/interface/src/connection";
 import { Pushable } from "it-pushable";
@@ -8,8 +8,12 @@ import { OutboundPackage } from "@aries-framework/core";
 import { EncryptedMessage } from "@aries-framework/core/build/types";
 import { TextEncoder, TextDecoder } from "util";
 import { LibP2p, LIBP2P_RELAY, schemaPrefix } from "./libP2p";
+// eslint-disable-next-line no-undef
 Object.assign(global, { TextDecoder, TextEncoder });
 // Mock dependencies and methods
+jest.mock("../libP2pInboundTransport", () => ({
+  LibP2pInboundTransport: jest.fn(),
+}));
 jest.mock("./libP2p.service", () => ({
   LibP2pService: jest.fn(() => ({
     multiaddr: jest.fn(),
@@ -21,7 +25,7 @@ jest.mock("./libP2p.service", () => ({
     noise: jest.fn(),
     fromString: jest.fn(),
     toString: jest.fn(),
-    createNode: jest.fn<Partial<Libp2p>, any>(() => ({
+    createNode: jest.fn<Partial<Libp2p>, never>(() => ({
       peerId: peerId as any as PeerId,
       isStarted: jest.fn(() => false),
       handle: jest.fn(),
@@ -34,17 +38,28 @@ jest.mock("./libP2p.service", () => ({
     advertising: jest.fn(() => endpoint),
     getNodeEndpoint: jest.fn(() => endpoint),
     timeOut: jest.fn(() => [Promise.resolve(), 0]),
+    createFromJSON: jest.fn(),
+    getPeerJson: jest.fn(() => peerIdJSON),
   })),
 }));
 const libP2p = LibP2p.libP2p;
 const peerId = "12D3KooWBneTYQJQPYSh8pvkSuoctUjkeyoEjqeY7UEsbpc5rtm4";
 const endpoint = `${schemaPrefix}${LIBP2P_RELAY}/p2p-circuit/webrtc/p2p/${peerId}`;
+const peerIdJSON = {
+  id: peerId,
+  privKey: "privKey",
+  pubKey: "pubKey",
+};
 
 describe("LibP2p webrtc class test", () => {
   beforeEach(async () => {
     await libP2p.initNode();
     await libP2p.start();
     libP2p.setEndpoint(undefined as any);
+  });
+
+  afterEach(async () => {
+    libP2p.webRTCConnections.clear();
   });
 
   test("LibP2p get instance: should successfully get the instance ", async () => {
@@ -58,6 +73,13 @@ describe("LibP2p webrtc class test", () => {
 
   test("LibP2p should successfully get peerId", async () => {
     expect(libP2p.peerId).toEqual(peerId);
+  });
+
+  test("LibP2p should successfully start with exist peer", async () => {
+    libP2p.setNode(undefined as any);
+    libP2p.isStart = false;
+    const result = await libP2p.start(peerIdJSON);
+    expect(result).toEqual(libP2p);
   });
 
   test("LibP2p should successfully start without init node", async () => {
@@ -75,6 +97,30 @@ describe("LibP2p webrtc class test", () => {
     await libP2p.initNode();
     const result = await libP2p.start();
     expect(result).toEqual(libP2p);
+  });
+
+  test("LibP2p should successfully getPeerJson", async () => {
+    const result = libP2p.getPeerJson();
+    expect(result).toEqual(peerIdJSON);
+  });
+
+  test("LibP2p should successfully getPeerJson", async () => {
+    const mockEvent: Partial<CustomEvent<Partial<Connection>>> = {
+      detail: {
+        multiplexer: "/webrtc",
+        remotePeer: {
+          toString: jest.fn(() => peerId),
+        } as never as PeerId,
+      },
+    };
+    libP2p.webRTCConnections.set(peerId, {
+      isActive: true,
+      connection: {} as any as Connection,
+      outgoingStream: {} as any as Stream,
+      sender: {} as any as Pushable<Uint8Array, void, unknown>,
+    });
+    libP2p.updateConnectionTool(mockEvent as any as CustomEvent<Connection>);
+    expect(libP2p.webRTCConnections.get(peerId)?.isActive).toEqual(false);
   });
 
   test("LibP2p advertising should throw error when node not start", async () => {
@@ -208,7 +254,52 @@ describe("LibP2p webrtc class test", () => {
     );
   });
 
-  test("LibP2p successfully when sendMessage", async () => {
+  test("LibP2p fail when sendMessage payload without peerId", async () => {
+    const payload: EncryptedMessage = {} as EncryptedMessage;
+    const outboundPackage: OutboundPackage = {
+      connectionId: "",
+      payload: payload,
+      responseRequested: false,
+      endpoint: "libp2p:/",
+    };
+    await expect(libP2p.sendMessage(outboundPackage)).rejects.toThrowError(
+      LibP2p.NOT_FOUND_PEER_ID_ERROR_MSG
+    );
+  });
+
+  test("LibP2p successfully when sendMessage with inactive connection", async () => {
+    libP2p.webRTCConnections.set(
+      "12D3KooWP2mYvnf3S2E77PRUMWTXbkKXmyJpkGQhTHGGnHzJ1pUC",
+      {
+        isActive: false,
+        connection: {
+          close: jest.fn(),
+        } as any as Connection,
+        outgoingStream: {
+          close: jest.fn(),
+        } as any as Stream,
+        sender: {} as any as Pushable<Uint8Array, void, unknown>,
+      }
+    );
+    const payload: EncryptedMessage = {
+      protected: "reqProtected",
+      iv: "reqIv",
+      ciphertext: "reqCiphertext",
+      tag: "reqTag",
+    };
+    const outboundPackage: OutboundPackage = {
+      connectionId: "1",
+      endpoint:
+        "libp2p://dns/libp2p-relay-9aff91ec2cbd.herokuapp.com/tcp/443/wss/p2p/QmUDSANiD1VyciqTgUBTw9egXHAtmamrtR1sa8SNf4aPHa/p2p-circuit/webrtc/p2p/12D3KooWP2mYvnf3S2E77PRUMWTXbkKXmyJpkGQhTHGGnHzJ1pUC",
+      payload: payload,
+      responseRequested: false,
+    };
+    const pipeMessageMockFn = jest.spyOn(libP2p, "pipeMessage");
+    pipeMessageMockFn.mockResolvedValue(undefined as any);
+    await expect(libP2p.sendMessage(outboundPackage)).resolves.toBeUndefined();
+  });
+
+  test("LibP2p successfully when sendMessage without exits connection", async () => {
     const payload: EncryptedMessage = {
       protected: "reqProtected",
       iv: "reqIv",
