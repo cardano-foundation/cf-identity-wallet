@@ -3,6 +3,7 @@ import { CapacitorFileSystem } from "../dependencies";
 import { IonicStorageModule } from "../modules";
 import { LibP2p, LIBP2P_RELAY, schemaPrefix } from "./libp2p/libP2p";
 import { LibP2pInboundTransport } from "./libP2pInboundTransport";
+import * as libP2pPeer from "./libP2p.peer";
 
 const eventEmitterMock = jest.fn();
 const peerId = "12D3KooWBneTYQJQPYSh8pvkSuoctUjkeyoEjqeY7UEsbpc5rtm4";
@@ -18,9 +19,14 @@ jest.mock("./libp2p/libP2p", () => ({
       setUsageStatusOfInbound: jest.fn(),
       getEndpoint: jest.fn(() => endpoint),
       stop: jest.fn(),
+      getPeerJson: jest.fn(),
     },
   },
 }));
+
+const savePeer = jest.spyOn(libP2pPeer, "savePeer");
+savePeer.mockResolvedValue(undefined);
+const getPeerFromStorage = jest.spyOn(libP2pPeer, "getPeerFromStorage");
 
 const agentDependencies: AgentDependencies = {
   FileSystem: CapacitorFileSystem,
@@ -57,9 +63,17 @@ describe("LibP2p webrtc inbound transport test", () => {
     libP2pInboundTransport = new LibP2pInboundTransport(libP2p);
   });
 
-  test("should successfully start", async () => {
+  test("should successfully start when first run", async () => {
     await LibP2p.libP2p.start();
-    await agent.registerInboundTransport(libP2pInboundTransport);
+    getPeerFromStorage.mockResolvedValue(null);
+    agent.registerInboundTransport(libP2pInboundTransport);
+    await expect(libP2pInboundTransport.start(agent)).resolves.toBeUndefined();
+  });
+
+  test("should successfully start when second run", async () => {
+    await LibP2p.libP2p.start();
+    getPeerFromStorage.mockResolvedValue("{}");
+    agent.registerInboundTransport(libP2pInboundTransport);
     await expect(libP2pInboundTransport.start(agent)).resolves.toBeUndefined();
   });
 

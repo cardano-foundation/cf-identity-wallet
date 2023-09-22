@@ -1,5 +1,6 @@
 import { Agent, Logger, InboundTransport } from "@aries-framework/core";
 import { LibP2p } from "./libp2p";
+import { getPeerFromStorage, savePeer } from "./libP2p.peer";
 
 class LibP2pInboundTransport implements InboundTransport {
   private agent!: Agent;
@@ -13,7 +14,14 @@ class LibP2pInboundTransport implements InboundTransport {
     const agentConfig = agent.config;
     this.logger = agentConfig.logger;
     this.agent = agent;
-    await this.libP2p.start();
+    const existingPeerId = await getPeerFromStorage();
+    if (existingPeerId) {
+      await this.libP2p.start(JSON.parse(existingPeerId as string));
+    } else {
+      await this.libP2p.start();
+      const peerId = this.libP2p.getPeerJson();
+      await savePeer(peerId);
+    }
     await this.libP2p.handleInboundMessage();
     await this.libP2p.advertising();
     this.libP2p.setUsageStatusOfInbound(true);

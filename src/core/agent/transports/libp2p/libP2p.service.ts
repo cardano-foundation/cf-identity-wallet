@@ -5,20 +5,23 @@ import * as filters from "@libp2p/websockets/filters";
 import { pushable } from "it-pushable";
 import { pipe } from "it-pipe";
 import { mplex } from "@libp2p/mplex";
-import { createLibp2p, Libp2p } from "libp2p";
+import { createLibp2p, Libp2p, Libp2pOptions } from "libp2p";
 import { circuitRelayTransport } from "libp2p/circuit-relay";
 import { noise } from "@chainsafe/libp2p-noise";
 import { identifyService } from "libp2p/identify";
-import { Libp2pOptions } from "libp2p/src/index";
+import { PeerId } from "@libp2p/interface/peer-id";
+import { createFromJSON } from "@libp2p/peer-id-factory";
+import { PeerIdJSON } from "./libP2p.types";
 
 class LibP2pService {
   public multiaddr = multiaddr;
   public pushable = pushable;
   public pipe = pipe;
+  public createFromJSON = createFromJSON;
   public mplex = mplex;
   public noise = noise;
 
-  public async createNode() {
+  public async createNode(peerId?: PeerId) {
     const options: Libp2pOptions = {
       addresses: {
         listen: ["/webrtc"],
@@ -44,7 +47,26 @@ class LibP2pService {
       },
       start: true,
     };
+    if (peerId) {
+      options.peerId = peerId;
+    }
     return createLibp2p(options);
+  }
+
+  public getPeerJson(node: Libp2p): PeerIdJSON {
+    const privateKey = node.peerId.privateKey as Uint8Array;
+    const publicKey = node.peerId.publicKey as Uint8Array;
+    const privateKeyString = btoa(
+      String.fromCharCode.apply(null, Array.from(privateKey))
+    );
+    const publicKeyString = btoa(
+      String.fromCharCode.apply(null, Array.from(publicKey))
+    );
+    return {
+      id: node.peerId.toString(),
+      privKey: privateKeyString,
+      pubKey: publicKeyString,
+    };
   }
 
   public getNodeEndpoint(node: Libp2p): string {
@@ -58,7 +80,7 @@ class LibP2pService {
         () => {
           reject(new Error(message));
         },
-        5 * 1000,
+        10 * 1000,
         message
       );
     });

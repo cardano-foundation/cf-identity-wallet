@@ -3,11 +3,12 @@ import { createLibp2p } from "libp2p"
 import { noise } from "@chainsafe/libp2p-noise"
 import { circuitRelayServer } from "libp2p/circuit-relay"
 import { webSockets } from "@libp2p/websockets"
+import * as filters from "@libp2p/websockets/filters"
 import { identifyService } from "libp2p/identify"
 import { createFromJSON } from "@libp2p/peer-id-factory";
-import { yamux } from "@chainsafe/libp2p-yamux"
 const PORT = process.env.PORT || 51986
-
+const log = console.log
+const maxConnections = 5000
 async function createServer() {
   const id = await createFromJSON({
     "id": "QmUDSANiD1VyciqTgUBTw9egXHAtmamrtR1sa8SNf4aPHa",
@@ -17,43 +18,41 @@ async function createServer() {
   const server = await createLibp2p({
     peerId: id,
     addresses: {
-      listen: [`/ip4/127.0.0.1/tcp/${PORT}/ws`]
+      listen: [`/ip4/127.0.0.1/tcp/${PORT}/ws`],
+      // Change in production
+      // announce: ['/dns/example.com/tcp/443/wss/p2p/12D3KooWC8Dgp67cGoAuJxGwtZCPhzqcZNHMeuFgRhavxt2iTk4H']
     },
     transports: [
-      webSockets()
+      webSockets({
+        filter: filters.all
+      }),
     ],
-    connectionEncryption: [
-      noise()
-    ],
-    streamMuxers: [
-      yamux(), mplex()
-    ],
+    connectionEncryption: [noise()],
+    streamMuxers: [mplex()],
     services: {
       identify: identifyService(),
-      relay: circuitRelayServer()
+      relay: circuitRelayServer({
+        reservations: {
+          maxReservations: maxConnections,
+          applyDefaultLimit: false
+        },
+        maxInboundHopStreams: maxConnections,
+        maxOutboundStopStreams: maxConnections
+      })
     },
-    relay: {
-      enabled: true,
-      hop: {
-        enabled: true
-      },
-      advertise: {
-        enabled: true,
-      }
+    connectionManager: {
+      maxConnections: maxConnections,
+      inboundConnectionThreshold: Infinity
     }
-
   })
-  console.log(`Node started with id ${server.peerId.toString()}`)
-  console.log("Listening on:")
-  server.getMultiaddrs().forEach((ma) => console.log(ma.toString()))
+  log(`Node started with id ${server.peerId.toString()}`)
+  log("Listening on:")
+  server.getMultiaddrs().forEach((ma) => log(ma.toString()))
   return server;
 }
 
 async function main() {
-  console.log("Starting relay node...")
-  let server; 
-  server = await createServer();
-  await server.start();
+  log("Starting relay node...")
+  await createServer();
 }
-
 main();
