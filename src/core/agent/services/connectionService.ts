@@ -36,29 +36,6 @@ class ConnectionService extends AgentService {
     );
   }
 
-  async receiveInvitationFromUrl(url: string): Promise<{
-    outOfBandRecord: OutOfBandRecord;
-    connectionRecord?: ConnectionRecord;
-  }> {
-    return this.agent.oob.receiveInvitationFromUrl(url, {
-      autoAcceptConnection: true,
-      autoAcceptInvitation: true,
-      reuseConnection: true,
-    });
-  }
-
-  async receiveAttachmentFromUrlConnectionless(url: string): Promise<void> {
-    const split = url.split("?d_m=");
-    if (split.length !== 2) {
-      throw new Error(ConnectionService.INVALID_CONNECTIONLESS_MSG);
-    }
-    await this.agent.receiveMessage(JsonEncoder.fromBase64(split[1]));
-  }
-
-  async acceptRequest(connectionId: string) {
-    await this.agent.connections.acceptRequest(connectionId);
-  }
-
   /**
    * Role: Responder, Check to see if there are incoming connection requests
    * @param connectionRecord
@@ -70,6 +47,7 @@ class ConnectionService extends AgentService {
       !connectionRecord.autoAcceptConnection
     );
   }
+
   /**
    * Role: Responder, after accepted incoming connection requests
    * @param connectionRecord
@@ -77,8 +55,7 @@ class ConnectionService extends AgentService {
   isConnectionResponseSent(connectionRecord: ConnectionRecord) {
     return (
       connectionRecord.role === DidExchangeRole.Responder &&
-      connectionRecord.state === DidExchangeState.ResponseSent &&
-      !connectionRecord.autoAcceptConnection
+      connectionRecord.state === DidExchangeState.ResponseSent
     );
   }
 
@@ -113,18 +90,29 @@ class ConnectionService extends AgentService {
     return connectionRecord.state === DidExchangeState.Completed;
   }
 
-  /**
-   * Role: inviter
-   * @param connectionId
-   */
+  async receiveInvitationFromUrl(url: string): Promise<{
+    outOfBandRecord: OutOfBandRecord;
+    connectionRecord?: ConnectionRecord;
+  }> {
+    return this.agent.oob.receiveInvitationFromUrl(url, {
+      autoAcceptConnection: true,
+      autoAcceptInvitation: true,
+      reuseConnection: true,
+    });
+  }
+
+  async receiveAttachmentFromUrlConnectionless(url: string): Promise<void> {
+    const split = url.split("?d_m=");
+    if (split.length !== 2) {
+      throw new Error(ConnectionService.INVALID_CONNECTIONLESS_MSG);
+    }
+    await this.agent.receiveMessage(JsonEncoder.fromBase64(split[1]));
+  }
+
   async acceptRequestConnection(connectionId: string) {
     await this.agent.connections.acceptRequest(connectionId);
   }
 
-  /**
-   * Role: invitee
-   * @param connectionId
-   */
   async acceptResponseConnection(connectionId: string) {
     await this.agent.connections.acceptResponse(connectionId);
   }
@@ -160,9 +148,9 @@ class ConnectionService extends AgentService {
   ): ConnectionShortDetails {
     return {
       id: connection.id,
-      issuer: connection.theirLabel ?? "",
-      issuanceDate: connection.createdAt.toISOString(),
-      issuerLogo: connection.imageUrl,
+      label: connection.theirLabel ?? "",
+      connectionDate: connection.createdAt.toISOString(),
+      logo: connection.imageUrl,
       status:
         connection.state === DidExchangeState.Completed
           ? ConnectionStatus.CONFIRMED
@@ -170,20 +158,29 @@ class ConnectionService extends AgentService {
     };
   }
 
+  async getConnectionById(id: string): Promise<ConnectionDetails> {
+    const connection = await this.agent.connections.getById(id);
+    let outOfBandRecord: OutOfBandRecord | undefined;
+    if (connection.outOfBandId) {
+      outOfBandRecord = await this.agent.oob.getById(connection.outOfBandId);
+    }
+    return this.getConnectionDetails(connection, outOfBandRecord);
+  }
+
   private getConnectionDetails(
     connection: ConnectionRecord,
     outOfBandRecord?: OutOfBandRecord
   ): ConnectionDetails {
     return {
-      issuer: connection?.theirLabel ?? "",
-      issuerLogo:
+      label: connection?.theirLabel ?? "",
+      logo:
         connection?.imageUrl ?? outOfBandRecord?.outOfBandInvitation?.imageUrl,
       id: connection.id,
       status:
         connection.state === DidExchangeState.Completed
           ? ConnectionStatus.CONFIRMED
           : ConnectionStatus.PENDING,
-      issuanceDate: connection.createdAt.toISOString(),
+      connectionDate: connection.createdAt.toISOString(),
       goalCode: outOfBandRecord?.outOfBandInvitation.goalCode,
       handshakeProtocols:
         outOfBandRecord?.outOfBandInvitation.handshakeProtocols,
@@ -197,23 +194,6 @@ class ConnectionService extends AgentService {
           (service) => (service as OutOfBandDidCommService)?.serviceEndpoint
         ),
     };
-  }
-
-  async getConnectionById(id: string): Promise<ConnectionDetails> {
-    const connection = await this.agent.connections.getById(id);
-    let outOfBandRecord: OutOfBandRecord | undefined;
-    try {
-      outOfBandRecord = await this.agent.oob.getById(
-        connection?.outOfBandId as string
-      );
-    } catch (e) {
-      // Not found outOfBandRecord
-      outOfBandRecord = undefined;
-    }
-    return this.getConnectionDetails(connection, outOfBandRecord);
-  }
-  async getOutOfBandRecordById(id: string): Promise<OutOfBandRecord> {
-    return this.agent.oob.getById(id);
   }
 
   // @TODO - foconnor: fix and add tests;

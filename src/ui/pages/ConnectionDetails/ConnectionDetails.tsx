@@ -105,15 +105,15 @@ const ConnectionDetails = () => {
           <div className="connection-details-header">
             <div className="connection-details-logo">
               <img
-                src={connectionDetails?.issuerLogo ?? CardanoLogo}
+                src={connectionDetails?.logo ?? CardanoLogo}
                 alt="connection-logo"
               />
             </div>
             <span className="connection-details-issuer">
-              {connectionDetails?.issuer}
+              {connectionDetails?.label}
             </span>
             <span className="connection-details-date">
-              {formatShortDate(`${connectionDetails?.issuanceDate}`)}
+              {formatShortDate(`${connectionDetails?.connectionDate}`)}
             </span>
           </div>
 
@@ -122,7 +122,7 @@ const ConnectionDetails = () => {
             <div className="connection-details-info-block-inner">
               <span className="connection-details-info-block-line">
                 <span className="connection-details-info-block-data">
-                  {connectionDetails?.issuer}
+                  {connectionDetails?.label}
                 </span>
               </span>
             </div>
@@ -133,7 +133,7 @@ const ConnectionDetails = () => {
             <div className="connection-details-info-block-inner">
               <span className="connection-details-info-block-line">
                 <span className="connection-details-info-block-data">
-                  {formatShortDate(`${connectionDetails?.issuanceDate}`)}
+                  {formatShortDate(`${connectionDetails?.connectionDate}`)}
                 </span>
               </span>
             </div>

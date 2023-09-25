@@ -34,6 +34,7 @@ const ConnectionRequest = () => {
   useEffect(() => {
     async function handle() {
       if (connectionRequest.id.length > 0) {
+        // @TODO - foconnor: This call also gets the OOBI - double check if we need the OOBI here - if not, split into 2 functions
         const agentData = await AriesAgent.agent.connections.getConnectionById(
           connectionRequest.id
         );
@@ -112,7 +113,7 @@ const ConnectionRequest = () => {
             </div>
             <div className="connection-request-provider-logo">
               <img
-                src={connectionData?.issuerLogo ?? CardanoLogo}
+                src={connectionData?.logo ?? CardanoLogo}
                 alt="connection-request-provider-logo"
               />
             </div>
@@ -122,7 +123,7 @@ const ConnectionRequest = () => {
               <span>
                 {connectionRequestType + i18n.t("connectionrequest.request")}
               </span>
-              <strong>{connectionData?.issuer}</strong>
+              <strong>{connectionData?.label}</strong>
             </IonCol>
           </IonRow>
           <IonRow className="connection-request-status">
@@ -146,7 +147,7 @@ const ConnectionRequest = () => {
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm"
         headerText={i18next.t("connectionrequest.alert.title", {
-          initiator: connectionData?.issuer,
+          initiator: connectionData?.label,
         })}
         confirmButtonText={`${i18n.t("connectionrequest.alert.confirm")}`}
         cancelButtonText={`${i18n.t("connectionrequest.alert.cancel")}`}

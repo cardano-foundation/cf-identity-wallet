@@ -106,9 +106,9 @@ const defaultCryptoAccountData: CryptoAccountProps = {
 
 const defaultConnectionData: ConnectionShortDetails = {
   id: "",
-  issuer: "",
-  issuanceDate: "",
-  issuerLogo: "",
+  label: "",
+  connectionDate: "",
+  logo: "",
   status: ConnectionStatus.PENDING,
 };
 

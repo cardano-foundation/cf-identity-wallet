@@ -23,9 +23,9 @@ describe("connectionsCacheSlice", () => {
     const connections: ConnectionShortDetails[] = [
       {
         id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
-        issuer: "Cambridge University",
-        issuanceDate: "2017-08-13T19:23:24Z",
-        issuerLogo: "logo.png",
+        label: "Cambridge University",
+        connectionDate: "2017-08-13T19:23:24Z",
+        logo: "logo.png",
         status: ConnectionStatus.PENDING,
       },
     ];
@@ -39,9 +39,9 @@ describe("connectionsCacheSlice", () => {
   it("should handle updateOrAddConnectionCache", () => {
     const connection: ConnectionShortDetails = {
       id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
-      issuer: "Cambridge University",
-      issuanceDate: "2017-08-13T19:23:24Z",
-      issuerLogo: "logo.png",
+      label: "Cambridge University",
+      connectionDate: "2017-08-13T19:23:24Z",
+      logo: "logo.png",
       status: ConnectionStatus.PENDING,
     };
     const newState = connectionsCacheSlice.reducer(
@@ -59,16 +59,16 @@ describe("getConnectionsCache", () => {
         connections: [
           {
             id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
-            issuer: "Cambridge University",
-            issuanceDate: "2017-08-13T19:23:24Z",
-            issuerLogo: "logo.png",
+            label: "Cambridge University",
+            connectionDate: "2017-08-13T19:23:24Z",
+            logo: "logo.png",
             status: "pending",
           },
           {
             id: "did:example:ebfeb1ebc6f1c276ef71212ec22",
-            issuer: "Passport Office",
-            issuanceDate: "2017-08-13T19:23:24Z",
-            issuerLogo: "logo.png",
+            label: "Passport Office",
+            connectionDate: "2017-08-13T19:23:24Z",
+            logo: "logo.png",
             status: "confirmed",
           },
         ],

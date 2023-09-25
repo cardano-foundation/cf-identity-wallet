@@ -41,9 +41,9 @@ interface CredentialShortDetails {
 
 interface ConnectionShortDetails {
   id: string;
-  issuer: string;
-  issuanceDate: string;
-  issuerLogo?: string;
+  label: string;
+  connectionDate: string;
+  logo?: string;
   status: ConnectionStatus;
 }
 
