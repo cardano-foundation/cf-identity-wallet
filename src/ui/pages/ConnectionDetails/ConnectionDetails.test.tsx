@@ -22,7 +22,7 @@ jest.mock("../../../core/agent/agent", () => ({
           logo: ".png",
           status: "pending",
         }),
-      }
+      },
     },
   },
 }));

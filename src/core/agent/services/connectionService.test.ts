@@ -56,17 +56,17 @@ const incomingConnectionRecordNoAutoAccept = new ConnectionRecord({
   role: DidExchangeRole.Responder,
   autoAcceptConnection: false,
   theirLabel: label,
-  imageUrl: logoUrl
+  imageUrl: logoUrl,
 });
 const incomingConnectionRecordAutoAccept = new ConnectionRecord({
   state: DidExchangeState.RequestReceived,
   role: DidExchangeRole.Responder,
-  autoAcceptConnection: true
+  autoAcceptConnection: true,
 });
 const connectionAcceptedRecordAutoAccept = new ConnectionRecord({
   state: DidExchangeState.ResponseSent,
   role: DidExchangeRole.Responder,
-  autoAcceptConnection: true
+  autoAcceptConnection: true,
 });
 const requestedConnectionRecord = new ConnectionRecord({
   state: DidExchangeState.RequestSent,
@@ -88,80 +88,128 @@ const completedConnectionRecord = new ConnectionRecord({
   imageUrl: logoUrl,
   state: DidExchangeState.Completed,
   role: DidExchangeRole.Requester,
-  outOfBandId: oobiId
+  outOfBandId: oobiId,
 });
 
 // Callbacks need to be tested at an integration/e2e test level
 describe("Connection service of agent - ConnectionRecord helpers", () => {
   // There are a number of permutations for these but these are the main cases to cover in case connectionService regresses by accident.
-  
+
   // Incoming connections
   test("connection record represents incoming connection", () => {
-    expect(connectionService.isConnectionRequestReceived(incomingConnectionRecordNoAutoAccept)).toBe(true);
+    expect(
+      connectionService.isConnectionRequestReceived(
+        incomingConnectionRecordNoAutoAccept
+      )
+    ).toBe(true);
   });
 
   test("incoming connection should be ignored if auto accept is true", () => {
-    expect(connectionService.isConnectionRequestReceived(incomingConnectionRecordAutoAccept)).toBe(false);
+    expect(
+      connectionService.isConnectionRequestReceived(
+        incomingConnectionRecordAutoAccept
+      )
+    ).toBe(false);
   });
 
   test("accepted connections are not incoming (ready to be accepted)", () => {
-    expect(connectionService.isConnectionRequestReceived(connectionAcceptedRecordAutoAccept)).toBe(false);
+    expect(
+      connectionService.isConnectionRequestReceived(
+        connectionAcceptedRecordAutoAccept
+      )
+    ).toBe(false);
   });
 
   test("accepted connections are not incoming (ready to be accepted)", () => {
-    expect(connectionService.isConnectionRequestReceived(connectionAcceptedRecordAutoAccept)).toBe(false);
+    expect(
+      connectionService.isConnectionRequestReceived(
+        connectionAcceptedRecordAutoAccept
+      )
+    ).toBe(false);
   });
-
 
   // Acceptance to incoming connections
   test("connection record represents accepted incoming connection", () => {
-    expect(connectionService.isConnectionResponseSent(connectionAcceptedRecordAutoAccept)).toBe(true);
+    expect(
+      connectionService.isConnectionResponseSent(
+        connectionAcceptedRecordAutoAccept
+      )
+    ).toBe(true);
   });
 
   test("incoming connections are not responses", () => {
-    expect(connectionService.isConnectionResponseSent(incomingConnectionRecordAutoAccept)).toBe(false);
+    expect(
+      connectionService.isConnectionResponseSent(
+        incomingConnectionRecordAutoAccept
+      )
+    ).toBe(false);
   });
 
   test("requested connection response is not an incoming connection response", async () => {
-    expect(connectionService.isConnectionResponseSent(requestedConnectionAcceptedRecord)).toBe(false);
+    expect(
+      connectionService.isConnectionResponseSent(
+        requestedConnectionAcceptedRecord
+      )
+    ).toBe(false);
   });
-
 
   // Connection requests
   test("connection record represents a requested connection", () => {
-    expect(connectionService.isConnectionRequestSent(requestedConnectionRecord)).toBe(true);
+    expect(
+      connectionService.isConnectionRequestSent(requestedConnectionRecord)
+    ).toBe(true);
   });
 
   test("incoming connection is not a requested connection", () => {
-    expect(connectionService.isConnectionRequestSent(incomingConnectionRecordAutoAccept)).toBe(false);
+    expect(
+      connectionService.isConnectionRequestSent(
+        incomingConnectionRecordAutoAccept
+      )
+    ).toBe(false);
   });
 
   test("acceptance to initially requested connection is not the first request", () => {
-    expect(connectionService.isConnectionRequestSent(requestedConnectionAcceptedRecord)).toBe(false);
+    expect(
+      connectionService.isConnectionRequestSent(
+        requestedConnectionAcceptedRecord
+      )
+    ).toBe(false);
   });
 
-  
   // Requested connection response
   test("connection record represents other party's acceptance of a requested connection", () => {
-    expect(connectionService.isConnectionResponseReceived(requestedConnectionAcceptedRecord)).toBe(true);
+    expect(
+      connectionService.isConnectionResponseReceived(
+        requestedConnectionAcceptedRecord
+      )
+    ).toBe(true);
   });
 
   test("auto accept true records are ignored when checking for other party's acceptance of a requested connection", () => {
-    expect(connectionService.isConnectionResponseReceived(requestedConnectionAcceptedRecordAutoAccept)).toBe(false);
+    expect(
+      connectionService.isConnectionResponseReceived(
+        requestedConnectionAcceptedRecordAutoAccept
+      )
+    ).toBe(false);
   });
 
   test("initial request is not other party's acceptance yet", () => {
-    expect(connectionService.isConnectionResponseReceived(requestedConnectionRecord)).toBe(false);
+    expect(
+      connectionService.isConnectionResponseReceived(requestedConnectionRecord)
+    ).toBe(false);
   });
-
 
   // Connected
   test("connection record represents completed connection", () => {
-    expect(connectionService.isConnectionConnected(completedConnectionRecord)).toBe(true);
+    expect(
+      connectionService.isConnectionConnected(completedConnectionRecord)
+    ).toBe(true);
   });
 
   test("non completed connection check", () => {
-    expect(connectionService.isConnectionConnected(requestedConnectionRecord)).toBe(false);
+    expect(
+      connectionService.isConnectionConnected(requestedConnectionRecord)
+    ).toBe(false);
   });
 });
 
@@ -224,20 +272,28 @@ describe("Connection service of agent", () => {
   });
 
   test("can get all connections", async () => {
-    agent.connections.getAll = jest.fn().mockResolvedValue([incomingConnectionRecordNoAutoAccept, completedConnectionRecord]);
-    expect(await connectionService.getConnections()).toStrictEqual([{
-      id: id1,
-      connectionDate: nowISO,
-      label,
-      logo: logoUrl,
-      status: ConnectionStatus.PENDING
-    }, {
-      id: id2,
-      connectionDate: nowISO,
-      label,
-      logo: logoUrl,
-      status: ConnectionStatus.CONFIRMED
-    }]);
+    agent.connections.getAll = jest
+      .fn()
+      .mockResolvedValue([
+        incomingConnectionRecordNoAutoAccept,
+        completedConnectionRecord,
+      ]);
+    expect(await connectionService.getConnections()).toStrictEqual([
+      {
+        id: id1,
+        connectionDate: nowISO,
+        label,
+        logo: logoUrl,
+        status: ConnectionStatus.PENDING,
+      },
+      {
+        id: id2,
+        connectionDate: nowISO,
+        label,
+        logo: logoUrl,
+        status: ConnectionStatus.CONFIRMED,
+      },
+    ]);
     expect(agent.connections.getAll).toBeCalled();
   });
 
@@ -249,9 +305,13 @@ describe("Connection service of agent", () => {
 
   // @TODO - foconnor: Add some tests for diff combos of handshake protocols + request attachments
   test("can get connection (detailed view) by id that had oobi", async () => {
-    agent.connections.getById = jest.fn().mockResolvedValue(completedConnectionRecord);
+    agent.connections.getById = jest
+      .fn()
+      .mockResolvedValue(completedConnectionRecord);
     agent.oob.getById = jest.fn().mockResolvedValue(oobRecord);
-    expect(await connectionService.getConnectionById(completedConnectionRecord.id)).toStrictEqual({
+    expect(
+      await connectionService.getConnectionById(completedConnectionRecord.id)
+    ).toStrictEqual({
       id: id2,
       connectionDate: nowISO,
       label,
@@ -260,16 +320,26 @@ describe("Connection service of agent", () => {
       goalCode: oobi.goalCode,
       handshakeProtocols: oobi.handshakeProtocols,
       requestAttachments: oobi.appendedAttachments,
-      serviceEndpoints: []  // @TODO - foconnor: This shouldn't be empty
+      serviceEndpoints: [], // @TODO - foconnor: This shouldn't be empty
     });
-    expect(agent.connections.getById).toBeCalledWith(completedConnectionRecord.id);
-    expect(agent.oob.getById).toBeCalledWith(completedConnectionRecord.outOfBandId);
+    expect(agent.connections.getById).toBeCalledWith(
+      completedConnectionRecord.id
+    );
+    expect(agent.oob.getById).toBeCalledWith(
+      completedConnectionRecord.outOfBandId
+    );
   });
 
   test("can get connection (detailed view) by id that had no oobi", async () => {
-    agent.connections.getById = jest.fn().mockResolvedValue(incomingConnectionRecordNoAutoAccept);
+    agent.connections.getById = jest
+      .fn()
+      .mockResolvedValue(incomingConnectionRecordNoAutoAccept);
     agent.oob.getById = jest.fn().mockResolvedValue(oobRecord);
-    expect(await connectionService.getConnectionById(incomingConnectionRecordNoAutoAccept.id)).toStrictEqual({
+    expect(
+      await connectionService.getConnectionById(
+        incomingConnectionRecordNoAutoAccept.id
+      )
+    ).toStrictEqual({
       id: id1,
       connectionDate: nowISO,
       label,
@@ -278,9 +348,11 @@ describe("Connection service of agent", () => {
       goalCode: undefined,
       handshakeProtocols: undefined,
       requestAttachments: undefined,
-      serviceEndpoints: undefined
+      serviceEndpoints: undefined,
     });
-    expect(agent.connections.getById).toBeCalledWith(incomingConnectionRecordNoAutoAccept.id);
+    expect(agent.connections.getById).toBeCalledWith(
+      incomingConnectionRecordNoAutoAccept.id
+    );
     expect(agent.oob.getById).not.toBeCalled();
   });
 });

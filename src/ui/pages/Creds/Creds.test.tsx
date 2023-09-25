@@ -167,9 +167,9 @@ describe("Creds Tab", () => {
       expect(queryByTestId("connections-cards-placeholder")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].issuer)).toBeVisible();
+    expect(getByText(connectionsFix[0].label)).toBeVisible();
     expect(
-      getByText(formatShortDate(`${connectionsFix[0].issuanceDate}`))
+      getByText(formatShortDate(`${connectionsFix[0].connectionDate}`))
     ).toBeVisible();
     expect(getByText(connectionsFix[0].status)).toBeVisible();
   });
