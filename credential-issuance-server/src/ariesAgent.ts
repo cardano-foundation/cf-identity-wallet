@@ -16,9 +16,8 @@ import {
 } from "@aries-framework/core";
 import { AskarModule } from "@aries-framework/askar";
 import { ariesAskar } from "@hyperledger/aries-askar-nodejs";
-import { agentDependencies } from "@aries-framework/node";
+import { HttpInboundTransport, agentDependencies } from "@aries-framework/node";
 import { config } from "./config";
-import { HttpInboundTransport } from "./utils/httpInboundTransport";
 
 const agentConfig: InitConfig = {
   endpoints: config.endpoints,
