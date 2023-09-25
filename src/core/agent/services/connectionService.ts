@@ -2,9 +2,13 @@ import {
   ConnectionEventTypes,
   ConnectionRecord,
   ConnectionStateChangedEvent,
+  DidExchangeRole,
+  DidExchangeState,
   JsonEncoder,
+  OutOfBandDidCommService,
   OutOfBandRecord,
 } from "@aries-framework/core";
+import { ConnectionDetails, ConnectionShortDetails, ConnectionStatus } from "../agent.types";
 // import { LibP2p } from "../transports/libp2p/libP2p";
 // import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
 import { AgentService } from "./agentService";
@@ -53,6 +57,76 @@ class ConnectionService extends AgentService {
     await this.agent.connections.acceptRequest(connectionId);
   }
 
+  /**
+   * Role: Responder, Check to see if there are incoming connection requests
+   * @param connectionRecord
+   */
+  isConnectionRequestReceived(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Responder &&
+      connectionRecord.state === DidExchangeState.RequestReceived &&
+      !connectionRecord.autoAcceptConnection
+    );
+  }
+  /**
+   * Role: Responder, after accepted incoming connection requests
+   * @param connectionRecord
+   */
+  isConnectionResponseSent(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Responder &&
+      connectionRecord.state === DidExchangeState.ResponseSent &&
+      !connectionRecord.autoAcceptConnection
+    );
+  }
+
+  /**
+   * Role: invitee
+   * @param connectionRecord
+   */
+  isConnectionRequestSent(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Requester &&
+      connectionRecord.state === DidExchangeState.RequestSent
+    );
+  }
+
+  /**
+   * Role: invitee
+   * @param connectionRecord
+   */
+  isConnectionResponseReceived(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Requester &&
+      connectionRecord.state === DidExchangeState.ResponseReceived &&
+      !connectionRecord.autoAcceptConnection
+    );
+  }
+
+  /**
+   * Role: invitee, inviter
+   * @param connectionRecord
+   */
+  isConnectionConnected(connectionRecord: ConnectionRecord) {
+    return connectionRecord.state === DidExchangeState.Completed;
+  }
+
+  /**
+   * Role: inviter
+   * @param connectionId
+   */
+  async acceptRequestConnection(connectionId: string) {
+    await this.agent.connections.acceptRequest(connectionId);
+  }
+
+  /**
+   * Role: invitee
+   * @param connectionId
+   */
+  async acceptResponseConnection(connectionId: string) {
+    await this.agent.connections.acceptResponse(connectionId);
+  }
+
   async createMediatorInvitation() {
     const record = await this.agent.oob.createInvitation();
     if (!record) {
@@ -68,6 +142,76 @@ class ConnectionService extends AgentService {
       invitation: record.outOfBandInvitation,
       invitationUrl,
     };
+  }
+
+  async getConnections(): Promise<ConnectionShortDetails[]> {
+    const connections = await this.agent.connections.getAll();
+    const connectionsDetails: ConnectionShortDetails[] = [];
+    connections.forEach((connection) => {
+      connectionsDetails.push(this.getConnectionShortDetails(connection));
+    });
+    return connectionsDetails;
+  }
+
+  getConnectionShortDetails(
+    connection: ConnectionRecord
+  ): ConnectionShortDetails {
+    return {
+      id: connection.id,
+      issuer: connection.theirLabel ?? "",
+      issuanceDate: connection.createdAt.toISOString(),
+      issuerLogo: connection.imageUrl,
+      status:
+        connection.state === DidExchangeState.Completed
+          ? ConnectionStatus.CONFIRMED
+          : ConnectionStatus.PENDING,
+    };
+  }
+
+  private getConnectionDetails(
+    connection: ConnectionRecord,
+    outOfBandRecord?: OutOfBandRecord
+  ): ConnectionDetails {
+    return {
+      issuer: connection?.theirLabel ?? "",
+      issuerLogo:
+        connection?.imageUrl ?? outOfBandRecord?.outOfBandInvitation?.imageUrl,
+      id: connection.id,
+      status:
+        connection.state === DidExchangeState.Completed
+          ? ConnectionStatus.CONFIRMED
+          : ConnectionStatus.PENDING,
+      issuanceDate: connection.createdAt.toISOString(),
+      goalCode: outOfBandRecord?.outOfBandInvitation.goalCode,
+      handshakeProtocols:
+        outOfBandRecord?.outOfBandInvitation.handshakeProtocols,
+      requestAttachments: outOfBandRecord?.outOfBandInvitation
+        .getRequests()
+        ?.map((request) => request["@id"]),
+      serviceEndpoints: outOfBandRecord?.outOfBandInvitation
+        .getServices()
+        ?.filter((service) => typeof service !== "string")
+        .map(
+          (service) => (service as OutOfBandDidCommService)?.serviceEndpoint
+        ),
+    };
+  }
+
+  async getConnectionById(id: string): Promise<ConnectionDetails> {
+    const connection = await this.agent.connections.getById(id);
+    let outOfBandRecord: OutOfBandRecord | undefined;
+    try {
+      outOfBandRecord = await this.agent.oob.getById(
+        connection?.outOfBandId as string
+      );
+    } catch (e) {
+      // Not found outOfBandRecord
+      outOfBandRecord = undefined;
+    }
+    return this.getConnectionDetails(connection, outOfBandRecord);
+  }
+  async getOutOfBandRecordById(id: string): Promise<OutOfBandRecord> {
+    return this.agent.oob.getById(id);
   }
 
   // @TODO - foconnor: fix and add tests;

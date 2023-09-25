@@ -14,18 +14,31 @@ interface AuthenticationCacheProps {
   passwordIsSet: boolean;
   passwordIsSkipped: boolean;
 }
+enum ConnectionRequestType {
+  CONNECTION_RESPONSE = "connection-response",
+  ISSUE_VC = "issue-vc",
+  CONNECTION_INCOMING = "connection-incoming",
+}
+
+interface ConnectionRequestProps {
+  id: string;
+  type?: ConnectionRequestType;
+}
 
 interface StateCacheProps {
   routes: CurrentRouteCacheProps[];
   authentication: AuthenticationCacheProps;
   currentOperation: string;
   defaultCryptoAccount: string;
-  connectionRequest: string;
+  connectionRequest: ConnectionRequestProps;
 }
+
+export { ConnectionRequestType };
 
 export type {
   PayloadData,
   CurrentRouteCacheProps,
   AuthenticationCacheProps,
   StateCacheProps,
+  ConnectionRequestProps,
 };
