@@ -20,7 +20,10 @@ import {
   PreferencesStorage,
 } from "../../../core/storage/preferences";
 import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
-import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
+import {
+  setConnectionsCache,
+  updateOrAddConnectionCache,
+} from "../../../store/reducers/connectionsCache";
 import { ConnectionRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { toastState } from "../../constants/dictionary";
 
@@ -78,9 +81,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     AriesAgent.agent.onConnectionStateChange(async (event) => {
       const connectionRecord = event.payload.connectionRecord;
-      const connectionsDetails = await AriesAgent.agent.getConnections();
+      const connectionDetails =
+        AriesAgent.agent.getConnectionShortDetails(connectionRecord);
       if (AriesAgent.agent.isConnectionRequestSent(connectionRecord)) {
-        dispatch(setConnectionsCache(connectionsDetails));
+        dispatch(updateOrAddConnectionCache(connectionDetails));
         dispatch(setCurrentOperation(toastState.connectionRequestPending));
       }
       if (AriesAgent.agent.isConnectionResponseReceived(connectionRecord)) {
@@ -92,7 +96,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         );
       }
       if (AriesAgent.agent.isConnectionRequestReceived(connectionRecord)) {
-        dispatch(setConnectionsCache(connectionsDetails));
+        dispatch(updateOrAddConnectionCache(connectionDetails));
         dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
         dispatch(
           setConnectionRequest({
@@ -105,7 +109,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         dispatch(setCurrentOperation(toastState.connectionRequestPending));
       }
       if (AriesAgent.agent.isConnectionConnected(connectionRecord)) {
-        dispatch(setConnectionsCache(connectionsDetails));
+        dispatch(updateOrAddConnectionCache(connectionDetails));
         dispatch(setCurrentOperation(toastState.newConnectionAdded));
       }
     });

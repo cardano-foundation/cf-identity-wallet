@@ -21,7 +21,7 @@ import { i18n } from "../../../i18n";
 import {
   ConnectionItemProps,
   ConnectionsComponentProps,
-  ConnectionsProps,
+  ConnectionShortDetails,
   MappedConnections,
 } from "./Connections.types";
 import "./Connections.scss";
@@ -29,10 +29,7 @@ import { formatShortDate } from "../../../utils";
 import { ConnectModal } from "../../components/ConnectModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { connectionStatus, connectionType } from "../../constants/dictionary";
-import {
-  getCurrentOperation,
-  getStateCache,
-} from "../../../store/reducers/stateCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
@@ -91,27 +88,6 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const connectionsCache = useAppSelector(getConnectionsCache);
-  const [connectionsData, setConnectionsData] =
-    useState<ConnectionsProps[]>(connectionsCache);
-  //TODO: FOR TEST
-  const [inputValueInvitationLink, setInputValueInvitationLink] = useState("");
-  const [displayInvitationLink, setDisplayInvitationLink] = useState("");
-
-  const handleInputInvitationLinkChange = (event: any) => {
-    setInputValueInvitationLink(event.target.value);
-  };
-  const handleReceiveInvitationClick = async () => {
-    const agent = AriesAgent.agent;
-    await agent.receiveInvitationFromUrl(inputValueInvitationLink);
-  };
-  const handleCreateNewInvitationClick = async () => {
-    const agent = AriesAgent.agent;
-    const res = await agent.createMediatorInvitation();
-    setDisplayInvitationLink(res.invitationUrl);
-    // eslint-disable-next-line no-console
-    console.log(res);
-  };
-  //TODO: END TEST
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
@@ -121,7 +97,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
     setConnectModalIsOpen(true);
   };
 
-  const handleShowConnectionDetails = (item: ConnectionsProps) => {
+  const handleShowConnectionDetails = async (item: ConnectionShortDetails) => {
     const data: DataProps = {
       store: { stateCache },
     };
@@ -129,7 +105,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push({
       pathname: nextPath.pathname,
-      state: item,
+      state: await AriesAgent.agent.getConnectionById(item.id),
     });
   };
 
@@ -151,8 +127,8 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   };
 
   useEffect(() => {
-    if (connectionsData.length) {
-      const sortedConnections = [...connectionsData].sort(function (a, b) {
+    if (connectionsCache.length) {
+      const sortedConnections = [...connectionsCache].sort(function (a, b) {
         const textA = a.issuer.toUpperCase();
         const textB = b.issuer.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
@@ -172,9 +148,9 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
       }));
       setMappedConnections(mapToArray);
     }
-  }, [connectionsData]);
+  }, [connectionsCache]);
 
-  const AlphabeticList = ({ items }: { items: ConnectionsProps[] }) => {
+  const AlphabeticList = ({ items }: { items: ConnectionShortDetails[] }) => {
     return (
       <>
         {items.map((connection, index) => {
@@ -202,10 +178,6 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
     }
   };
 
-  useEffect(() => {
-    setConnectionsData(connectionsCache);
-  }, [connectionsCache]);
-
   return (
     <TabLayout
       header={true}
@@ -215,23 +187,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
       menuButton={true}
       additionalButtons={<AdditionalButtons />}
     >
-      {/*TODO: FOR TEST*/}
-      <center>
-        <h1>Input invitation link</h1>
-        <input
-          type="text"
-          placeholder="Enter text..."
-          value={inputValueInvitationLink}
-          onChange={handleInputInvitationLinkChange}
-        />
-        <IonButton onClick={handleReceiveInvitationClick}>Set</IonButton>
-        {/*<p>Invitation link: {displayInvitationLink}</p>*/}
-        <IonButton onClick={handleCreateNewInvitationClick}>
-          Create invitation link
-        </IonButton>
-      </center>
-      {/*TODO: END TEST*/}
-      {connectionsData.length ? (
+      {connectionsCache.length ? (
         <>
           <IonSearchbar
             placeholder={`${i18n.t("connections.tab.searchconnections")}`}

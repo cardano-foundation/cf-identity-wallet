@@ -9,6 +9,11 @@ enum Blockchain {
   CARDANO = "Cardano",
 }
 
+enum ConnectionStatus {
+  CONFIRMED = "confirmed",
+  PENDING = "pending",
+}
+
 interface CryptoAccountRecordShortDetails {
   id: string;
   displayName: string;
@@ -39,7 +44,7 @@ interface ConnectionShortDetails {
   issuer: string;
   issuanceDate: string;
   issuerLogo: string;
-  status: string;
+  status: ConnectionStatus;
 }
 
 interface DIDDetails extends IdentityShortDetails {
@@ -76,7 +81,7 @@ type UpdateIdentityMetadata = Omit<
   "id" | "isArchived" | "name" | "method" | "createdAt"
 >;
 
-export { IdentityType, Blockchain };
+export { IdentityType, Blockchain, ConnectionStatus };
 export type {
   CryptoAccountRecordShortDetails,
   IdentityShortDetails,

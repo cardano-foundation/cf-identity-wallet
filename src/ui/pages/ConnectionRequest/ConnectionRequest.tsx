@@ -57,11 +57,11 @@ const ConnectionRequest = () => {
   const handleConnect = async () => {
     setInitiateAnimation(true);
     if (connectionRequest.type === ConnectionRequestType.CONNECTION_INCOMING) {
-      void AriesAgent.agent.acceptRequestConnection(connectionRequest.id);
+      await AriesAgent.agent.acceptRequestConnection(connectionRequest.id);
     } else if (
       connectionRequest.type === ConnectionRequestType.CONNECTION_RESPONSE
     ) {
-      void AriesAgent.agent.acceptResponseConnection(connectionRequest.id);
+      await AriesAgent.agent.acceptResponseConnection(connectionRequest.id);
     }
     setTimeout(() => {
       handleReset();

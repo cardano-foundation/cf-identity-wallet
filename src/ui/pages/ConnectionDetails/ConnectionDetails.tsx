@@ -1,11 +1,14 @@
 import { IonButton, IonIcon, IonPage } from "@ionic/react";
 import { ellipsisVertical, trashOutline } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../../utils";
 import "./ConnectionDetails.scss";
-import { ConnectionsProps } from "../Connections/Connections.types";
+import {
+  ConnectionDetails as ConnectionData,
+  ConnectionShortDetails,
+} from "../Connections/Connections.types";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
@@ -25,18 +28,30 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { operationState } from "../../constants/dictionary";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
 
 const ConnectionDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const connectionsData = useAppSelector(getConnectionsCache);
-  const connectionDetails = history?.location?.state as ConnectionsProps;
+  const connectionShortDetails = history?.location
+    ?.state as ConnectionShortDetails;
+  const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
+  useEffect(() => {
+    async function getDetails() {
+      const connectionDetails = await AriesAgent.agent.getConnectionById(
+        connectionShortDetails.id
+      );
+      setConnectionDetails(connectionDetails);
+    }
+    getDetails();
+  }, []);
   const handleDone = () => {
     const data: DataProps = {
       store: { stateCache },
@@ -53,7 +68,8 @@ const ConnectionDetails = () => {
     setOptionsIsOpen(false);
     setAlertIsOpen(true);
   };
-
+  // handle loading
+  if (!connectionDetails) return <div></div>;
   const verifyAction = () => {
     // @TODO - sdisalvo: Update core
     const updatedConnections = connectionsData.filter(

@@ -43,6 +43,7 @@ import {
 import { HttpOutboundTransport } from "./transports";
 import type {
   ConnectionDetails,
+  ConnectionShortDetails,
   CredentialShortDetails,
   CryptoAccountRecordShortDetails,
   DIDDetails,
@@ -50,6 +51,7 @@ import type {
 } from "./ariesAgent.types";
 import {
   Blockchain,
+  ConnectionStatus,
   GetIdentityResult,
   IdentityType,
   UpdateIdentityMetadata,
@@ -719,46 +721,53 @@ class AriesAgent {
     });
   }
 
-  async getConnections(): Promise<ConnectionDetails[]> {
+  async getConnections(): Promise<ConnectionShortDetails[]> {
     const connections = await this.agent.connections.getAll();
-    const outOfBandRecords = await this.agent.oob.getAll();
-    const connectionsDetails: ConnectionDetails[] = [];
+    const connectionsDetails: ConnectionShortDetails[] = [];
     connections.forEach((connection) => {
-      let connectionDetails: ConnectionDetails;
-      const outOfBandRecord = outOfBandRecords.find(
-        (oob) => oob.id === connection.outOfBandId
-      );
-      if (outOfBandRecord) {
-        connectionDetails = this.getConnectionDetails(
-          connection,
-          outOfBandRecord
-        );
-        connectionsDetails.push(connectionDetails);
-      }
+      connectionsDetails.push(this.getConnectionShortDetails(connection));
     });
     return connectionsDetails;
   }
 
-  public getConnectionDetails(
+  getConnectionShortDetails(
+    connection: ConnectionRecord
+  ): ConnectionShortDetails {
+    return {
+      id: connection.id,
+      issuer: connection.theirLabel ?? "",
+      issuanceDate: connection.createdAt.toISOString(),
+      issuerLogo: connection.imageUrl ?? CardanoLogo,
+      status:
+        connection.state === DidExchangeState.Completed
+          ? ConnectionStatus.CONFIRMED
+          : ConnectionStatus.PENDING,
+    };
+  }
+
+  private getConnectionDetails(
     connection: ConnectionRecord,
-    outOfBandRecord: OutOfBandRecord
+    outOfBandRecord?: OutOfBandRecord
   ): ConnectionDetails {
     return {
-      issuer: outOfBandRecord.outOfBandInvitation.label,
-      issuerLogo: CardanoLogo,
+      issuer: connection?.theirLabel ?? "",
+      issuerLogo:
+        connection?.imageUrl ??
+        outOfBandRecord?.outOfBandInvitation?.imageUrl ??
+        CardanoLogo,
       id: connection.id,
       status:
         connection.state === DidExchangeState.Completed
-          ? "confirmed"
-          : "pending",
+          ? ConnectionStatus.CONFIRMED
+          : ConnectionStatus.PENDING,
       issuanceDate: connection.createdAt.toISOString(),
-      goalCode: outOfBandRecord.outOfBandInvitation.goalCode,
+      goalCode: outOfBandRecord?.outOfBandInvitation.goalCode,
       handshakeProtocols:
-        outOfBandRecord.outOfBandInvitation.handshakeProtocols,
-      requestAttachments: outOfBandRecord.outOfBandInvitation
+        outOfBandRecord?.outOfBandInvitation.handshakeProtocols,
+      requestAttachments: outOfBandRecord?.outOfBandInvitation
         .getRequests()
         ?.map((request) => request["@id"]),
-      serviceEndpoints: outOfBandRecord.outOfBandInvitation
+      serviceEndpoints: outOfBandRecord?.outOfBandInvitation
         .getServices()
         ?.filter((service) => typeof service !== "string")
         .map(
@@ -769,12 +778,15 @@ class AriesAgent {
 
   async getConnectionById(id: string): Promise<ConnectionDetails> {
     const connection = await this.agent.connections.getById(id);
-    const outOfBandRecord = await this.agent.oob.getById(
-      connection?.outOfBandId as string
-    );
-    // if (!connection || !outOfBandRecord) {
-    //
-    // }
+    let outOfBandRecord: OutOfBandRecord | undefined;
+    try {
+      outOfBandRecord = await this.agent.oob.getById(
+        connection?.outOfBandId as string
+      );
+    } catch (e) {
+      // Not found outOfBandRecord
+      outOfBandRecord = undefined;
+    }
     return this.getConnectionDetails(connection, outOfBandRecord);
   }
   async getOutOfBandRecordById(id: string): Promise<OutOfBandRecord> {
