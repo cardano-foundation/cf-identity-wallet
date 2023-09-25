@@ -2,6 +2,7 @@ import {
   ConnectionEventTypes,
   ConnectionRecord,
   ConnectionStateChangedEvent,
+  JsonEncoder,
   OutOfBandRecord,
 } from "@aries-framework/core";
 // import { LibP2p } from "../transports/libp2p/libP2p";
@@ -34,6 +35,13 @@ class ConnectionService extends AgentService {
       autoAcceptInvitation: true,
       reuseConnection: true,
     });
+  }
+
+  async receiveInvitationCredentialWithConnectionLess(
+    url: string
+  ): Promise<void> {
+    const rawMessage = url.split("?d_m=")[1];
+    await this.agent.receiveMessage(JsonEncoder.fromBase64(rawMessage));
   }
 
   async acceptRequest(connectionId: string) {

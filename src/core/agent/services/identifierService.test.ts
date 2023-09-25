@@ -154,11 +154,9 @@ describe("Identifier service of agent", () => {
 
   test("resolved did key document in unexpected format: missing vkey pubkey", async () => {
     agent.dids.getCreatedDids = jest.fn().mockResolvedValue([didRecord]);
-    agent.dids.resolve = jest
-      .fn()
-      .mockResolvedValue({
-        didDocument: { verificationMethod: [{ id: "key0", type: keyType }] },
-      });
+    agent.dids.resolve = jest.fn().mockResolvedValue({
+      didDocument: { verificationMethod: [{ id: "key0", type: keyType }] },
+    });
     await expect(identifierService.getIdentifier(did)).rejects.toThrowError(
       IdentifierService.UNEXPECTED_DID_DOC_FORMAT
     );
@@ -168,15 +166,13 @@ describe("Identifier service of agent", () => {
 
   test("missing did identifier metadata record", async () => {
     agent.dids.getCreatedDids = jest.fn().mockResolvedValue([didRecord]);
-    agent.dids.resolve = jest
-      .fn()
-      .mockResolvedValue({
-        didDocument: {
-          verificationMethod: [
-            { id: "key0", type: keyType, publicKeyBase58: pkey },
-          ],
-        },
-      });
+    agent.dids.resolve = jest.fn().mockResolvedValue({
+      didDocument: {
+        verificationMethod: [
+          { id: "key0", type: keyType, publicKeyBase58: pkey },
+        ],
+      },
+    });
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(null);
@@ -192,15 +188,13 @@ describe("Identifier service of agent", () => {
 
   test("can get a did identifier in detailed view", async () => {
     agent.dids.getCreatedDids = jest.fn().mockResolvedValue([didRecord]);
-    agent.dids.resolve = jest
-      .fn()
-      .mockResolvedValue({
-        didDocument: {
-          verificationMethod: [
-            { id: "key0", type: keyType, publicKeyBase58: pkey },
-          ],
-        },
-      });
+    agent.dids.resolve = jest.fn().mockResolvedValue({
+      didDocument: {
+        verificationMethod: [
+          { id: "key0", type: keyType, publicKeyBase58: pkey },
+        ],
+      },
+    });
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(didMetadataRecord);

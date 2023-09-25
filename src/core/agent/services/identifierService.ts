@@ -27,7 +27,7 @@ class IdentifierService extends AgentService {
     "Identifier metadata record does not exist";
   static readonly UNEXPECTED_MISSING_DID_RESULT_ON_CREATE =
     "DID was successfully created but the DID was not returned in the state returned";
-  static readonly DID_NOT_ARCHIVED = "DID was not archived";
+  static readonly IDENTIFIER_NOT_ARCHIVED = "Identifier was not archived";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identities: IdentifierShortDetails[] = [];
@@ -160,6 +160,15 @@ class IdentifierService extends AgentService {
     );
   }
 
+  async restoreIdentity(identifier: string): Promise<void> {
+    const metadata = await this.getMetadataById(identifier);
+    this.validArchivedIdentifier(metadata);
+    return this.agent.modules.generalStorage.updateIdentifierMetadata(
+      identifier,
+      { isArchived: false }
+    );
+  }
+
   private async getMetadataById(id: string): Promise<IdentifierMetadataRecord> {
     const metadata =
       await this.agent.modules.generalStorage.getIdentifierMetadata(id);
@@ -226,7 +235,9 @@ class IdentifierService extends AgentService {
 
   private validArchivedIdentifier(metadata: IdentifierMetadataRecord): void {
     if (!metadata.isArchived) {
-      throw new Error(`${IdentifierService.DID_NOT_ARCHIVED} ${metadata.id}`);
+      throw new Error(
+        `${IdentifierService.IDENTIFIER_NOT_ARCHIVED} ${metadata.id}`
+      );
     }
   }
 }
