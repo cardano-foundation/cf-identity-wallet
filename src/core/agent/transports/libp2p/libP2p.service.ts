@@ -103,4 +103,4 @@ class LibP2pService {
   }
 }
 
-export { LibP2pService }
+export { LibP2pService };

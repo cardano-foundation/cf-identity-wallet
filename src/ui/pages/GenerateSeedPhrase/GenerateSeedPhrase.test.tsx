@@ -329,11 +329,11 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       </Provider>
     );
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    expect(termsCheckbox.hasAttribute("[checked=\"false"));
+    expect(termsCheckbox.hasAttribute('[checked="false'));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"true"));
+    expect(termsCheckbox.hasAttribute('[checked="true'));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"false"));
+    expect(termsCheckbox.hasAttribute('[checked="false'));
   });
 
   test("calls handleOnBack when back button is clicked", async () => {
@@ -435,9 +435,9 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
     await waitFor(() => expect(overlay).toHaveClass("hidden"));
 
     const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    expect(termsCheckbox.hasAttribute("[checked=\"false"));
+    expect(termsCheckbox.hasAttribute('[checked="false'));
     fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"true"));
+    expect(termsCheckbox.hasAttribute('[checked="true'));
 
     const continueButton = getByTestId("continue-button");
 

@@ -28,7 +28,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getIdentifier: jest
           .fn()
           .mockResolvedValue({ type: "keri", result: identityFix[1] }),
-      }
+      },
     },
   },
 }));
@@ -92,7 +92,9 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
-    expect(AriesAgent.agent.identifiers.getIdentifier).toBeCalledWith(filteredKeriFix[0].id);
+    expect(AriesAgent.agent.identifiers.getIdentifier).toBeCalledWith(
+      filteredKeriFix[0].id
+    );
   });
 
   test("It copies delegator identifier, signing key, next key digest, backer address to clipboard", async () => {

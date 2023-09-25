@@ -1,4 +1,9 @@
-import { CredentialEventTypes, CredentialExchangeRecord, CredentialState, CredentialStateChangedEvent } from "@aries-framework/core";
+import {
+  CredentialEventTypes,
+  CredentialExchangeRecord,
+  CredentialState,
+  CredentialStateChangedEvent,
+} from "@aries-framework/core";
 import { AgentService } from "./agentService";
 
 class CredentialService extends AgentService {
@@ -22,4 +27,4 @@ class CredentialService extends AgentService {
   }
 }
 
-export { CredentialService }
+export { CredentialService };

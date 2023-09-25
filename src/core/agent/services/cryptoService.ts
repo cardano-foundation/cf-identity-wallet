@@ -53,4 +53,4 @@ class CryptoService extends AgentService {
   }
 }
 
-export { CryptoService }
+export { CryptoService };

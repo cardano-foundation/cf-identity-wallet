@@ -3,12 +3,12 @@ import { CredentialService } from "./credentialService";
 
 const agent = jest.mocked({
   credentials: {
-    acceptOffer: jest.fn()
+    acceptOffer: jest.fn(),
   },
   events: {
-    on: jest.fn()
-  }
-})
+    on: jest.fn(),
+  },
+});
 const credentialService = new CredentialService(agent as any as Agent);
 
 // Callbacks need to be tested at an integration/e2e test level
@@ -20,6 +20,8 @@ describe("Credential service of agent", () => {
   test("can accept a credential", async () => {
     const credentialRecordId = "connection1";
     await credentialService.acceptCredentialOffer(credentialRecordId);
-    expect(agent.credentials.acceptOffer).toBeCalledWith({ credentialRecordId });
+    expect(agent.credentials.acceptOffer).toBeCalledWith({
+      credentialRecordId,
+    });
   });
 });

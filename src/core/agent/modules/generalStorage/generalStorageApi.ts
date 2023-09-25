@@ -74,13 +74,17 @@ export class GeneralStorageApi {
     await this.identifierMetadataRepository.save(this.agentContext, record);
   }
 
-  async getAllAvailableIdentifierMetadata(): Promise<IdentifierMetadataRecord[]> {
+  async getAllAvailableIdentifierMetadata(): Promise<
+    IdentifierMetadataRecord[]
+  > {
     return this.identifierMetadataRepository.findByQuery(this.agentContext, {
       isArchived: false,
     });
   }
 
-  async getAllArchivedIdentifierMetadata(): Promise<IdentifierMetadataRecord[]> {
+  async getAllArchivedIdentifierMetadata(): Promise<
+    IdentifierMetadataRecord[]
+  > {
     return this.identifierMetadataRepository.findByQuery(this.agentContext, {
       isArchived: true,
     });
@@ -126,7 +130,10 @@ export class GeneralStorageApi {
       if (data.colors) record.colors = data.colors;
       if (data.displayName) record.displayName = data.displayName;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
-      return this.identifierMetadataRepository.update(this.agentContext, record);
+      return this.identifierMetadataRepository.update(
+        this.agentContext,
+        record
+      );
     }
   }
 

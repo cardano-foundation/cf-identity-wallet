@@ -81,7 +81,9 @@ describe("Seed phrase storage service", () => {
     await seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase(
       displayName
     );
-    expect(AriesAgent.agent.crypto.cryptoAccountIdentitySeedPhraseExists).toBeCalled();
+    expect(
+      AriesAgent.agent.crypto.cryptoAccountIdentitySeedPhraseExists
+    ).toBeCalled();
     expect(SecureStorage.get).toBeCalledWith(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
@@ -116,7 +118,9 @@ describe("Seed phrase storage service", () => {
     ).rejects.toThrowError(
       SeedPhraseStorageService.IDENTITY_SEED_PHRASE_IN_USE
     );
-    expect(AriesAgent.agent.crypto.cryptoAccountIdentitySeedPhraseExists).toBeCalled();
+    expect(
+      AriesAgent.agent.crypto.cryptoAccountIdentitySeedPhraseExists
+    ).toBeCalled();
     expect(SecureStorage.get).not.toBeCalled();
     expect(AriesAgent.agent.crypto.storeCryptoAccountRecord).not.toBeCalled();
   });
@@ -216,8 +220,8 @@ describe("Seed phrase storage service", () => {
       `${KeyStoreKeys.CRYPTO_ROOT_XPRV_KEY_PREFIX}${rootExtendedPublicKey}`,
       rootExtendedPrivateKey
     );
-    expect(AriesAgent.agent.crypto.removeCryptoAccountRecordById).toBeCalledWith(
-      rootExtendedPublicKey
-    );
+    expect(
+      AriesAgent.agent.crypto.removeCryptoAccountRecordById
+    ).toBeCalledWith(rootExtendedPublicKey);
   });
 });

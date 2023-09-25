@@ -1,10 +1,20 @@
 import { DidRecord, KeyType } from "@aries-framework/core";
-import { DIDDetails, GetIdentifierResult, IdentifierShortDetails, IdentifierType, UpdateIdentifierMetadata } from "../agent.types";
-import { IdentifierMetadataRecord, IdentifierMetadataRecordProps } from "../modules/generalStorage/repositories/identifierMetadataRecord";
+import {
+  DIDDetails,
+  GetIdentifierResult,
+  IdentifierShortDetails,
+  IdentifierType,
+  UpdateIdentifierMetadata,
+} from "../agent.types";
+import {
+  IdentifierMetadataRecord,
+  IdentifierMetadataRecordProps,
+} from "../modules/generalStorage/repositories/identifierMetadataRecord";
 import { AgentService } from "./agentService";
 
 class IdentifierService extends AgentService {
-  static readonly DID_MISSING_INCORRECT = "DID returned from agent was of unexpected DID method";
+  static readonly DID_MISSING_INCORRECT =
+    "DID returned from agent was of unexpected DID method";
   static readonly DID_MISSING_DISPLAY_NAME =
     "DID display name missing for stored DID";
   static readonly DID_MISSING_DID_DOC =
@@ -55,7 +65,9 @@ class IdentifierService extends AgentService {
 
       const method = <IdentifierType>storedDid[0].getTag("method")?.toString();
       if (!method || method !== IdentifierType.KEY) {
-        throw new Error(`${IdentifierService.DID_MISSING_INCORRECT} ${identifier}`);
+        throw new Error(
+          `${IdentifierService.DID_MISSING_INCORRECT} ${identifier}`
+        );
       }
       return {
         type: IdentifierType.KEY,
@@ -113,7 +125,9 @@ class IdentifierService extends AgentService {
       options: { keyType: KeyType.Ed25519 },
     });
     if (!result.didState.did) {
-      throw new Error(IdentifierService.UNEXPECTED_MISSING_DID_RESULT_ON_CREATE);
+      throw new Error(
+        IdentifierService.UNEXPECTED_MISSING_DID_RESULT_ON_CREATE
+      );
     }
     await this.createIdentifierMetadataRecord({
       id: result.didState.did,
@@ -135,7 +149,9 @@ class IdentifierService extends AgentService {
   async deleteIdentifier(identifier: string): Promise<void> {
     const metadata = await this.getMetadataById(identifier);
     this.validArchivedIdentifier(metadata);
-    await this.agent.modules.generalStorage.deleteIdentifierMetadata(identifier);
+    await this.agent.modules.generalStorage.deleteIdentifierMetadata(
+      identifier
+    );
   }
 
   async archiveIdentifier(identifier: string): Promise<void> {
@@ -148,12 +164,16 @@ class IdentifierService extends AgentService {
     const metadata =
       await this.agent.modules.generalStorage.getIdentifierMetadata(id);
     if (!metadata) {
-      throw new Error(`${IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING} ${id}`);
+      throw new Error(
+        `${IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING} ${id}`
+      );
     }
     return metadata;
   }
 
-  private async createIdentifierMetadataRecord(data: IdentifierMetadataRecordProps) {
+  private async createIdentifierMetadataRecord(
+    data: IdentifierMetadataRecordProps
+  ) {
     const dataCreate = {
       id: data.id,
       displayName: data.displayName,
@@ -162,7 +182,9 @@ class IdentifierService extends AgentService {
       signifyName: data.signifyName,
     };
     const record = new IdentifierMetadataRecord(dataCreate);
-    return this.agent.modules.generalStorage.saveIdentifierMetadataRecord(record);
+    return this.agent.modules.generalStorage.saveIdentifierMetadataRecord(
+      record
+    );
   }
 
   private isDidIdentifier(identifier: string): boolean {
@@ -178,11 +200,15 @@ class IdentifierService extends AgentService {
     }
 
     if (!(didDoc.verificationMethod && didDoc.verificationMethod.length)) {
-      throw new Error(`${IdentifierService.UNEXPECTED_DID_DOC_FORMAT} ${record.did}`);
+      throw new Error(
+        `${IdentifierService.UNEXPECTED_DID_DOC_FORMAT} ${record.did}`
+      );
     }
     const signingKey = didDoc.verificationMethod[0];
     if (!signingKey.publicKeyBase58) {
-      throw new Error(`${IdentifierService.UNEXPECTED_DID_DOC_FORMAT} ${record.did}`);
+      throw new Error(
+        `${IdentifierService.UNEXPECTED_DID_DOC_FORMAT} ${record.did}`
+      );
     }
     const metadata = await this.getMetadataById(record.did);
 
@@ -205,4 +231,4 @@ class IdentifierService extends AgentService {
   }
 }
 
-export { IdentifierService }
+export { IdentifierService };

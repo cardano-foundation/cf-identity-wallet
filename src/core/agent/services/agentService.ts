@@ -8,4 +8,4 @@ abstract class AgentService {
   }
 }
 
-export { AgentService }
+export { AgentService };

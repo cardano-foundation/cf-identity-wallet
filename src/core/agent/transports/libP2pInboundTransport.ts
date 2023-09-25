@@ -44,4 +44,4 @@ class LibP2pInboundTransport implements InboundTransport {
   }
 }
 
-export { LibP2pInboundTransport }
+export { LibP2pInboundTransport };

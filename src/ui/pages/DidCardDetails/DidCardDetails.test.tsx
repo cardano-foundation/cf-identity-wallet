@@ -33,7 +33,7 @@ jest.mock("../../../core/agent/agent", () => ({
           .fn()
           .mockResolvedValue({ type: "key", result: identityFix[0] }),
       },
-    }
+    },
   },
 }));
 

@@ -1,4 +1,10 @@
-import { Agent, OutOfBandInvitation, OutOfBandRecord, OutOfBandRole, OutOfBandState } from "@aries-framework/core";
+import {
+  Agent,
+  OutOfBandInvitation,
+  OutOfBandRecord,
+  OutOfBandRole,
+  OutOfBandState,
+} from "@aries-framework/core";
 import { ConnectionService } from "./connectionService";
 
 const agent = jest.mocked({
@@ -7,22 +13,24 @@ const agent = jest.mocked({
     createInvitation: jest.fn(),
   },
   connections: {
-    acceptRequest: jest.fn()
-  }
-})
+    acceptRequest: jest.fn(),
+  },
+});
 const connectionService = new ConnectionService(agent as any as Agent);
 
 const oobi = new OutOfBandInvitation({
   label: "label",
-  services: ["http://localhost:5341"]
+  services: ["http://localhost:5341"],
 });
 const oobRecord = new OutOfBandRecord({
   outOfBandInvitation: oobi,
   role: OutOfBandRole.Sender,
-  state: OutOfBandState.PrepareResponse
+  state: OutOfBandState.PrepareResponse,
 });
-const oobUrlStart = "didcomm://invite?oob=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvb3V0LW9mLWJhbmQvMS4xL2ludml0YXRpb24iLCJAaWQiOi";
-const oobUrlEnd = "iLCJsYWJlbCI6ImxhYmVsIiwic2VydmljZXMiOlsiaHR0cDovL2xvY2FsaG9zdDo1MzQxIl19";
+const oobUrlStart =
+  "didcomm://invite?oob=eyJAdHlwZSI6Imh0dHBzOi8vZGlkY29tbS5vcmcvb3V0LW9mLWJhbmQvMS4xL2ludml0YXRpb24iLCJAaWQiOi";
+const oobUrlEnd =
+  "iLCJsYWJlbCI6ImxhYmVsIiwic2VydmljZXMiOlsiaHR0cDovL2xvY2FsaG9zdDo1MzQxIl19";
 
 // Callbacks need to be tested at an integration/e2e test level
 describe("Connection service of agent", () => {
@@ -34,7 +42,10 @@ describe("Connection service of agent", () => {
     const oobi = "http://localhost?oob=3423";
     await connectionService.receiveInvitationFromUrl(oobi);
     // We aren't too concerned with testing the config passed
-    expect(agent.oob.receiveInvitationFromUrl).toBeCalledWith(oobi, expect.any(Object));
+    expect(agent.oob.receiveInvitationFromUrl).toBeCalledWith(
+      oobi,
+      expect.any(Object)
+    );
   });
 
   test("can accept a request by connection id", async () => {
@@ -53,6 +64,8 @@ describe("Connection service of agent", () => {
   });
 
   test("errors appropriately if we invitation is wrong", async () => {
-    await expect(connectionService.createMediatorInvitation()).rejects.toThrowError(ConnectionService.COULD_NOT_CREATE_OOB_VIA_MEDIATOR);
+    await expect(
+      connectionService.createMediatorInvitation()
+    ).rejects.toThrowError(ConnectionService.COULD_NOT_CREATE_OOB_VIA_MEDIATOR);
   });
 });

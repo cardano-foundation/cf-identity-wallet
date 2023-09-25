@@ -45,7 +45,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const storedIdentities = await AriesAgent.agent.identifiers.getIdentifiers();
+    const storedIdentities =
+      await AriesAgent.agent.identifiers.getIdentifiers();
     // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
     const storedCryptoAccounts: CryptoAccountProps[] = [];
 
@@ -73,7 +74,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setConnectionsCache(connectionsFix));
 
     setInitialised(true);
-
   };
 
   // @TODO - sdisalvo: Figure where is the best place for this

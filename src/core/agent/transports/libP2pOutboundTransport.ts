@@ -48,4 +48,4 @@ class LibP2pOutboundTransport implements OutboundTransport {
   }
 }
 
-export { LibP2pOutboundTransport }
+export { LibP2pOutboundTransport };

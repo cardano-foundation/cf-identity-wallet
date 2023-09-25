@@ -9,7 +9,7 @@ jest.mock("../../../core/agent/agent", () => ({
       start: jest.fn(),
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
-      }
+      },
     },
   },
 }));

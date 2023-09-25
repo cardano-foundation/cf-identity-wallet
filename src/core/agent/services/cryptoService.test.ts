@@ -11,9 +11,9 @@ const agent = jest.mocked({
       getAllCryptoRecord: jest.fn(),
       cryptoAccountIdentitySeedPhraseExists: jest.fn(),
       removeCryptoRecordById: jest.fn(),
-    }
-  }
-})
+    },
+  },
+});
 const cryptoService = new CryptoService(agent as any as Agent);
 
 const addresses = new Map([
@@ -28,17 +28,17 @@ const addresses = new Map([
         ]),
       ],
     ]),
-  ]
+  ],
 ]);
 const rewardAddresses = new Map([
-  [NetworkType.MAINNET, ["mainnetRewardAddr0"]]
+  [NetworkType.MAINNET, ["mainnetRewardAddr0"]],
 ]);
 
 const cryptoAccountNormalProps = {
   id: "cryptoAccountNormal",
   displayName: "Crypto Account Normal Seed Phrase",
   addresses,
-  rewardAddresses, 
+  rewardAddresses,
 };
 const cryptoAccountNormal = new CryptoAccountRecord(cryptoAccountNormalProps);
 
@@ -46,10 +46,12 @@ const cryptoAccountIdentitySPProps = {
   id: "cryptoAccountIdentity",
   displayName: "Crypto Account Identity Seed Phrase",
   addresses,
-  rewardAddresses, 
+  rewardAddresses,
   usesIdentitySeedPhrase: true,
 };
-const cryptoAccountIdentitySP = new CryptoAccountRecord(cryptoAccountIdentitySPProps);
+const cryptoAccountIdentitySP = new CryptoAccountRecord(
+  cryptoAccountIdentitySPProps
+);
 
 describe("Crypto service of agent (handles storage)", () => {
   beforeEach(() => {
@@ -57,9 +59,17 @@ describe("Crypto service of agent (handles storage)", () => {
   });
 
   test("can save a crypto record for account with new seed phrase", async () => {
-    await cryptoService.storeCryptoAccountRecord(cryptoAccountNormalProps.id, addresses, rewardAddresses, cryptoAccountNormalProps.displayName);
-    expect(agent.modules.generalStorage.saveCryptoRecord).toBeCalledWith(expect.any(CryptoAccountRecord));
-    const newRecord: CryptoAccountRecord = agent.modules.generalStorage.saveCryptoRecord.mock.calls[0][0];
+    await cryptoService.storeCryptoAccountRecord(
+      cryptoAccountNormalProps.id,
+      addresses,
+      rewardAddresses,
+      cryptoAccountNormalProps.displayName
+    );
+    expect(agent.modules.generalStorage.saveCryptoRecord).toBeCalledWith(
+      expect.any(CryptoAccountRecord)
+    );
+    const newRecord: CryptoAccountRecord =
+      agent.modules.generalStorage.saveCryptoRecord.mock.calls[0][0];
     expect(newRecord.id).toEqual(cryptoAccountNormalProps.id);
     expect(newRecord.displayName).toEqual(cryptoAccountNormalProps.displayName);
     expect(newRecord.addresses).toEqual(addresses);
@@ -68,49 +78,77 @@ describe("Crypto service of agent (handles storage)", () => {
   });
 
   test("can save a crypto record for identity seed phrase account", async () => {
-    await cryptoService.storeCryptoAccountRecord(cryptoAccountIdentitySPProps.id, addresses, rewardAddresses, cryptoAccountIdentitySPProps.displayName, true);
-    expect(agent.modules.generalStorage.saveCryptoRecord).toBeCalledWith(expect.any(CryptoAccountRecord));
-    const newRecord: CryptoAccountRecord = agent.modules.generalStorage.saveCryptoRecord.mock.calls[0][0];
+    await cryptoService.storeCryptoAccountRecord(
+      cryptoAccountIdentitySPProps.id,
+      addresses,
+      rewardAddresses,
+      cryptoAccountIdentitySPProps.displayName,
+      true
+    );
+    expect(agent.modules.generalStorage.saveCryptoRecord).toBeCalledWith(
+      expect.any(CryptoAccountRecord)
+    );
+    const newRecord: CryptoAccountRecord =
+      agent.modules.generalStorage.saveCryptoRecord.mock.calls[0][0];
     expect(newRecord.id).toEqual(cryptoAccountIdentitySPProps.id);
-    expect(newRecord.displayName).toEqual(cryptoAccountIdentitySPProps.displayName);
+    expect(newRecord.displayName).toEqual(
+      cryptoAccountIdentitySPProps.displayName
+    );
     expect(newRecord.addresses).toEqual(addresses);
     expect(newRecord.rewardAddresses).toEqual(rewardAddresses);
     expect(newRecord.usesIdentitySeedPhrase).toEqual(true);
   });
 
   test("can get all crypto account records", async () => {
-    agent.modules.generalStorage.getAllCryptoRecord = jest.fn().mockResolvedValue([cryptoAccountNormal, cryptoAccountIdentitySP]);
-    expect(await cryptoService.getAllCryptoAccountRecord()).toStrictEqual([{
-      blockchain: Blockchain.CARDANO,
-      displayName: cryptoAccountNormalProps.displayName,
-      id: cryptoAccountNormalProps.id,
-      totalADAinUSD: 0,
-      usesIdentitySeedPhrase: false,
-    }, {
-      blockchain: Blockchain.CARDANO,
-      displayName: cryptoAccountIdentitySPProps.displayName,
-      id: cryptoAccountIdentitySPProps.id,
-      totalADAinUSD: 0,
-      usesIdentitySeedPhrase: true,
-    }]);
+    agent.modules.generalStorage.getAllCryptoRecord = jest
+      .fn()
+      .mockResolvedValue([cryptoAccountNormal, cryptoAccountIdentitySP]);
+    expect(await cryptoService.getAllCryptoAccountRecord()).toStrictEqual([
+      {
+        blockchain: Blockchain.CARDANO,
+        displayName: cryptoAccountNormalProps.displayName,
+        id: cryptoAccountNormalProps.id,
+        totalADAinUSD: 0,
+        usesIdentitySeedPhrase: false,
+      },
+      {
+        blockchain: Blockchain.CARDANO,
+        displayName: cryptoAccountIdentitySPProps.displayName,
+        id: cryptoAccountIdentitySPProps.id,
+        totalADAinUSD: 0,
+        usesIdentitySeedPhrase: true,
+      },
+    ]);
   });
 
   test("does not error if there are no crypto account records", async () => {
-    agent.modules.generalStorage.getAllCryptoRecord = jest.fn().mockResolvedValue([]);
+    agent.modules.generalStorage.getAllCryptoRecord = jest
+      .fn()
+      .mockResolvedValue([]);
     expect(await cryptoService.getAllCryptoAccountRecord()).toEqual([]);
   });
 
   test("can check if identity seed phrase has been used for a crypto account", async () => {
-    agent.modules.generalStorage.cryptoAccountIdentitySeedPhraseExists = jest.fn().mockResolvedValue(false);
-    expect(await cryptoService.cryptoAccountIdentitySeedPhraseExists()).toEqual(false);
-    agent.modules.generalStorage.cryptoAccountIdentitySeedPhraseExists = jest.fn().mockResolvedValue(true);
-    expect(await cryptoService.cryptoAccountIdentitySeedPhraseExists()).toEqual(true);
+    agent.modules.generalStorage.cryptoAccountIdentitySeedPhraseExists = jest
+      .fn()
+      .mockResolvedValue(false);
+    expect(await cryptoService.cryptoAccountIdentitySeedPhraseExists()).toEqual(
+      false
+    );
+    agent.modules.generalStorage.cryptoAccountIdentitySeedPhraseExists = jest
+      .fn()
+      .mockResolvedValue(true);
+    expect(await cryptoService.cryptoAccountIdentitySeedPhraseExists()).toEqual(
+      true
+    );
   });
 
   test("can remove a crypto account by ID", async () => {
     const id = "id";
     agent.modules.generalStorage.removeCryptoRecordById = jest.fn();
     await cryptoService.removeCryptoAccountRecordById(id);
-    expect(agent.modules.generalStorage.removeCryptoRecordById).toBeCalledWith(id);
+    expect(agent.modules.generalStorage.removeCryptoRecordById).toBeCalledWith(
+      id
+    );
   });
 });

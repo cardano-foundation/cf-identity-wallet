@@ -266,15 +266,15 @@ const CreatePassword = () => {
           {(createPasswordValue !== "" &&
             !PasswordValidator.validatePassword(createPasswordValue)) ||
           !PasswordValidator.isValidCharacters(createPasswordValue) ? (
-              <ErrorMessage
-                message={
-                  createPasswordValue.length
-                    ? PasswordValidator.getErrorByPriority(createPasswordValue)
-                    : undefined
-                }
-                timeout={false}
-              />
-            ) : null}
+            <ErrorMessage
+              message={
+                createPasswordValue.length
+                  ? PasswordValidator.getErrorByPriority(createPasswordValue)
+                  : undefined
+              }
+              timeout={false}
+            />
+          ) : null}
           {createPasswordValue && (
             <IonRow>
               <IonCol size="12">

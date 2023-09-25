@@ -56,7 +56,8 @@ const DidCardDetails = () => {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const cardDetailsResult = await AriesAgent.agent.identifiers.getIdentifier(params.id);
+      const cardDetailsResult =
+        await AriesAgent.agent.identifiers.getIdentifier(params.id);
       if (cardDetailsResult) {
         setCardData(cardDetailsResult.result);
       } else {

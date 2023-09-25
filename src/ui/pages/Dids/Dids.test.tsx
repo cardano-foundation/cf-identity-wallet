@@ -18,7 +18,7 @@ jest.mock("../../../core/agent/agent", () => ({
     agent: {
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({}),
-      }
+      },
     },
   },
 }));

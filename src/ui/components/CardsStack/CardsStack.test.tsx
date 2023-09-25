@@ -16,7 +16,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getIdentifier: jest
           .fn()
           .mockResolvedValue({ type: "key", result: identityFix[0] }),
-      }
+      },
     },
   },
 }));

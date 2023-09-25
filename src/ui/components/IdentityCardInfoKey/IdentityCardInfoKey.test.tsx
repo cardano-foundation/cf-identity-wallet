@@ -28,7 +28,7 @@ jest.mock("../../../core/agent/agent", () => ({
           .fn()
           .mockResolvedValue({ type: "key", result: identityFix[0] }),
       },
-    }
+    },
   },
 }));
 
@@ -90,7 +90,9 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
-    expect(AriesAgent.agent.identifiers.getIdentifier).toBeCalledWith(filteredDidFix[0].id);
+    expect(AriesAgent.agent.identifiers.getIdentifier).toBeCalledWith(
+      filteredDidFix[0].id
+    );
   });
   test("It copies id to clipboard", async () => {
     Clipboard.write = jest.fn();

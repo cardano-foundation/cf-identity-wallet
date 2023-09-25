@@ -22,7 +22,12 @@ import {
 import { HttpOutboundTransport } from "./transports";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
-import { CryptoService, ConnectionService, CredentialService, IdentifierService } from "./services";
+import {
+  CryptoService,
+  ConnectionService,
+  CredentialService,
+  IdentifierService,
+} from "./services";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -51,19 +56,22 @@ class AriesAgent {
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
   private cryptoService!: CryptoService;
-  
+
   get identifiers() {
-    if (!this.identifierService) this.identifierService = new IdentifierService(this.agent);
+    if (!this.identifierService)
+      this.identifierService = new IdentifierService(this.agent);
     return this.identifierService;
   }
 
   get connections() {
-    if (!this.connectionService) this.connectionService = new ConnectionService(this.agent);
+    if (!this.connectionService)
+      this.connectionService = new ConnectionService(this.agent);
     return this.connectionService;
   }
 
   get credentials() {
-    if (!this.credentialService) this.credentialService = new CredentialService(this.agent);
+    if (!this.credentialService)
+      this.credentialService = new CredentialService(this.agent);
     return this.credentialService;
   }
 
