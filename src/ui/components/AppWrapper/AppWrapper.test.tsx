@@ -8,6 +8,8 @@ jest.mock("../../../core/aries/ariesAgent", () => ({
     agent: {
       start: jest.fn(),
       getIdentities: jest.fn().mockResolvedValue([]),
+      getConnections: jest.fn().mockResolvedValue([]),
+      onConnectionStateChange: jest.fn(),
     },
   },
 }));

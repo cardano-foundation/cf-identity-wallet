@@ -105,7 +105,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push({
       pathname: nextPath.pathname,
-      state: await AriesAgent.agent.getConnectionById(item.id),
+      state: item,
     });
   };
 
