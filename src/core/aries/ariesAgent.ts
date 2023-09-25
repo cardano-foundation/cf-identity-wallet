@@ -67,7 +67,6 @@ import {
 } from "./modules/generalStorage/repositories/identityMetadataRecord";
 import { CredentialMetadataRecord } from "./modules/generalStorage/repositories/credentialMetadataRecord";
 import { documentLoader } from "./documentLoader";
-import CardanoLogo from "../../ui/assets/images/CardanoLogo.jpg";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -187,7 +186,6 @@ class AriesAgent {
 
     const createInvitation = await this.agent.oob.createInvitation({
       autoAcceptConnection: false,
-      goalCode: "connection",
     });
 
     return createInvitation.outOfBandInvitation.toUrl({
@@ -196,9 +194,7 @@ class AriesAgent {
   }
 
   async createMediatorInvitation() {
-    const record = await this.agent?.oob.createInvitation({
-      goalCode: "connection",
-    });
+    const record = await this.agent?.oob.createInvitation();
     if (!record) {
       throw new Error("Could not create new invitation");
     }
@@ -737,7 +733,7 @@ class AriesAgent {
       id: connection.id,
       issuer: connection.theirLabel ?? "",
       issuanceDate: connection.createdAt.toISOString(),
-      issuerLogo: connection.imageUrl ?? CardanoLogo,
+      issuerLogo: connection.imageUrl,
       status:
         connection.state === DidExchangeState.Completed
           ? ConnectionStatus.CONFIRMED
@@ -752,9 +748,7 @@ class AriesAgent {
     return {
       issuer: connection?.theirLabel ?? "",
       issuerLogo:
-        connection?.imageUrl ??
-        outOfBandRecord?.outOfBandInvitation?.imageUrl ??
-        CardanoLogo,
+        connection?.imageUrl ?? outOfBandRecord?.outOfBandInvitation?.imageUrl,
       id: connection.id,
       status:
         connection.state === DidExchangeState.Completed

@@ -43,7 +43,7 @@ interface ConnectionShortDetails {
   id: string;
   issuer: string;
   issuanceDate: string;
-  issuerLogo: string;
+  issuerLogo?: string;
   status: ConnectionStatus;
 }
 

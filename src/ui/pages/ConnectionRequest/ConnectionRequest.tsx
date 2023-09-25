@@ -20,6 +20,7 @@ import { Alert } from "../../components/Alert";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
 import { ConnectionDetails } from "../../../core/aries/ariesAgent.types";
 import { ConnectionRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
 const ConnectionRequest = () => {
   const dispatch = useAppDispatch();
@@ -37,9 +38,13 @@ const ConnectionRequest = () => {
           connectionRequest.id
         );
         setConnectionData(agentData);
-        if (agentData?.goalCode === connectionType.connection) {
+        if (
+          connectionRequest.type ===
+            ConnectionRequestType.CONNECTION_INCOMING ||
+          connectionRequest.type === ConnectionRequestType.CONNECTION_RESPONSE
+        ) {
           setConnectionRequestType(connectionType.connection);
-        } else if (agentData?.goalCode === connectionType.issuevc) {
+        } else if (connectionRequest.type === ConnectionRequestType.ISSUE_VC) {
           setConnectionRequestType(connectionType.credential);
         }
         setShowConnectionRequest(true);
@@ -57,11 +62,11 @@ const ConnectionRequest = () => {
   const handleConnect = async () => {
     setInitiateAnimation(true);
     if (connectionRequest.type === ConnectionRequestType.CONNECTION_INCOMING) {
-      await AriesAgent.agent.acceptRequestConnection(connectionRequest.id);
+      AriesAgent.agent.acceptRequestConnection(connectionRequest.id);
     } else if (
       connectionRequest.type === ConnectionRequestType.CONNECTION_RESPONSE
     ) {
-      await AriesAgent.agent.acceptResponseConnection(connectionRequest.id);
+      AriesAgent.agent.acceptResponseConnection(connectionRequest.id);
     }
     setTimeout(() => {
       handleReset();
@@ -103,7 +108,7 @@ const ConnectionRequest = () => {
             </div>
             <div className="connection-request-provider-logo">
               <img
-                src={connectionData?.issuerLogo}
+                src={connectionData?.issuerLogo ?? CardanoLogo}
                 alt="connection-request-provider-logo"
               />
             </div>

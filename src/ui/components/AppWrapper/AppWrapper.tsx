@@ -81,21 +81,25 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     AriesAgent.agent.onConnectionStateChange(async (event) => {
       const connectionRecord = event.payload.connectionRecord;
-      const connectionDetails =
-        AriesAgent.agent.getConnectionShortDetails(connectionRecord);
       if (AriesAgent.agent.isConnectionRequestSent(connectionRecord)) {
+        const connectionDetails =
+          AriesAgent.agent.getConnectionShortDetails(connectionRecord);
         dispatch(updateOrAddConnectionCache(connectionDetails));
         dispatch(setCurrentOperation(toastState.connectionRequestPending));
-      }
-      if (AriesAgent.agent.isConnectionResponseReceived(connectionRecord)) {
+      } else if (
+        AriesAgent.agent.isConnectionResponseReceived(connectionRecord)
+      ) {
         dispatch(
           setConnectionRequest({
             id: connectionRecord.id,
             type: ConnectionRequestType.CONNECTION_RESPONSE,
           })
         );
-      }
-      if (AriesAgent.agent.isConnectionRequestReceived(connectionRecord)) {
+      } else if (
+        AriesAgent.agent.isConnectionRequestReceived(connectionRecord)
+      ) {
+        const connectionDetails =
+          AriesAgent.agent.getConnectionShortDetails(connectionRecord);
         dispatch(updateOrAddConnectionCache(connectionDetails));
         dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
         dispatch(
@@ -104,11 +108,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
             type: ConnectionRequestType.CONNECTION_INCOMING,
           })
         );
-      }
-      if (AriesAgent.agent.isConnectionResponseSent(connectionRecord)) {
+      } else if (AriesAgent.agent.isConnectionResponseSent(connectionRecord)) {
         dispatch(setCurrentOperation(toastState.connectionRequestPending));
-      }
-      if (AriesAgent.agent.isConnectionConnected(connectionRecord)) {
+      } else if (AriesAgent.agent.isConnectionConnected(connectionRecord)) {
+        const connectionDetails =
+          AriesAgent.agent.getConnectionShortDetails(connectionRecord);
         dispatch(updateOrAddConnectionCache(connectionDetails));
         dispatch(setCurrentOperation(toastState.newConnectionAdded));
       }

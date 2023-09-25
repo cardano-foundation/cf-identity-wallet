@@ -29,6 +29,7 @@ import {
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { operationState } from "../../constants/dictionary";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
+import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
 const ConnectionDetails = () => {
   const history = useHistory();
@@ -103,7 +104,7 @@ const ConnectionDetails = () => {
           <div className="connection-details-header">
             <div className="connection-details-logo">
               <img
-                src={connectionDetails?.issuerLogo}
+                src={connectionDetails?.issuerLogo ?? CardanoLogo}
                 alt="connection-logo"
               />
             </div>

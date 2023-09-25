@@ -35,7 +35,7 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
 const ConnectionItem = ({
   item,
@@ -50,7 +50,7 @@ const ConnectionItem = ({
             className="connection-logo"
           >
             <img
-              src={item?.issuerLogo}
+              src={item?.issuerLogo ?? CardanoLogo}
               alt="connection-logo"
             />
           </IonCol>
