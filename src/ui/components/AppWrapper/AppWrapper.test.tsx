@@ -3,11 +3,13 @@ import { Provider } from "react-redux";
 import { AppWrapper } from "./AppWrapper";
 import { store } from "../../../store";
 
-jest.mock("../../../core/aries/ariesAgent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
       start: jest.fn(),
-      getIdentities: jest.fn().mockResolvedValue([]),
+      identifiers: {
+        getIdentifiers: jest.fn().mockResolvedValue([]),
+      }
     },
   },
 }));

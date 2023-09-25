@@ -44,16 +44,7 @@ const rewardAddressesMap = new Map([
   [NetworkType.TESTNET, ["testnetRewardAddr"]],
 ]);
 
-jest.mock("../../aries/ariesAgent", () => ({
-  AriesAgent: {
-    agent: {
-      cryptoAccountIdentitySeedPhraseExists: jest.fn().mockResolvedValue(false),
-      storeCryptoAccountRecord: jest.fn(),
-      removeCryptoAccountRecordById: jest.fn(),
-    },
-  },
-}));
-
+jest.mock("../../agent/services/cryptoService");
 jest.mock("../../cardano/addresses");
 Addresses.deriveFirstBaseAndRewardAddrs = jest.fn().mockReturnValue({
   addresses: addressesMap,

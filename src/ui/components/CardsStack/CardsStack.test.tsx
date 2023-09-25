@@ -9,12 +9,14 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
 import { cardTypes } from "../../constants/dictionary";
-jest.mock("../../../core/aries/ariesAgent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest
-        .fn()
-        .mockResolvedValue({ type: "key", result: identityFix[0] }),
+      identifiers: {
+        getIdentifier: jest
+          .fn()
+          .mockResolvedValue({ type: "key", result: identityFix[0] }),
+      }
     },
   },
 }));

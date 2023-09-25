@@ -51,7 +51,10 @@ class ConnectionService extends AgentService {
     };
   }
 
-  // @TODO - foconnor: fix and add tests - jest issues but these aren't used outside of demos atm.
+
+  // @TODO - foconnor: fix and add tests;
+  // These libs are ESM exported and not working in Jest right now - can fix later.
+  
   // async enableP2P() {
   //   const inBoundTransport = LibP2p.libP2p.inBoundTransport;
   //   await inBoundTransport.start(this.agent);

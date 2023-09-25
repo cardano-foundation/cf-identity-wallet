@@ -13,10 +13,12 @@ import {
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { filteredIdentityFix } from "../../__fixtures__/filteredIdentityFix";
 
-jest.mock("../../../core/aries/ariesAgent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest.fn().mockResolvedValue({}),
+      identifiers: {
+        getIdentifier: jest.fn().mockResolvedValue({}),
+      }
     },
   },
 }));

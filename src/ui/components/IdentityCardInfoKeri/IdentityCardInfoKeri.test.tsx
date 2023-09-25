@@ -21,12 +21,14 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-jest.mock("../../../core/aries/ariesAgent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest
-        .fn()
-        .mockResolvedValue({ type: "keri", result: identityFix[1] }),
+      identifiers: {
+        getIdentifier: jest
+          .fn()
+          .mockResolvedValue({ type: "keri", result: identityFix[1] }),
+      }
     },
   },
 }));
