@@ -1,19 +1,12 @@
-interface ConnectionsProps {
-  id: string;
-  issuer: string;
-  issuanceDate: string;
-  issuerLogo: string;
-  status: string;
-  goalCodes?: string;
-  handshakeProtocol?: string;
-  requestAttachments?: string;
-  serviceEndpoints?: string;
-}
+import {
+  ConnectionDetails,
+  ConnectionShortDetails,
+} from "../../../core/aries/ariesAgent.types";
 
 interface ConnectionItemProps {
   key: number;
-  item: ConnectionsProps;
-  handleShowConnectionDetails: (value: ConnectionsProps) => void;
+  item: ConnectionShortDetails;
+  handleShowConnectionDetails: (value: ConnectionShortDetails) => void;
 }
 
 interface ConnectionsComponentProps {
@@ -22,7 +15,7 @@ interface ConnectionsComponentProps {
 
 interface MappedConnections {
   key: string;
-  value: ConnectionsProps[];
+  value: ConnectionShortDetails[];
 }
 
 interface ConnectionRequestData {
@@ -45,7 +38,8 @@ interface ConnectionRequestData {
 }
 
 export type {
-  ConnectionsProps,
+  ConnectionShortDetails,
+  ConnectionDetails,
   ConnectionItemProps,
   ConnectionsComponentProps,
   MappedConnections,
