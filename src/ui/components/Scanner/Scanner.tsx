@@ -11,11 +11,11 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCurrentOperation,
   getCurrentRoute,
-  setConnectionRequest,
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { operationState, toastState } from "../../constants/dictionary";
+import { AriesAgent } from "../../../core/aries/ariesAgent";
 
 const Scanner = () => {
   const dispatch = useAppDispatch();
@@ -63,7 +63,7 @@ const Scanner = () => {
         const result = await startScan();
         if (result.hasContent) {
           stopScan();
-          dispatch(setConnectionRequest(result.content));
+          await AriesAgent.agent.receiveInvitationFromUrl(result.content);
           dispatch(setCurrentOperation(""));
         }
       }

@@ -1,56 +1,60 @@
 import {
-  InitConfig,
   Agent,
   AgentDependencies,
-  RecordNotFoundError,
-  DidsModule,
-  KeyDidResolver,
-  KeyType,
-  DidRecord,
-  OutOfBandRecord,
-  ConnectionRecord,
-  MediationRecipientModule,
-  MediatorPickupStrategy,
+  AutoAcceptCredential,
   ConnectionEventTypes,
+  ConnectionRecord,
   ConnectionStateChangedEvent,
+  CredentialEventTypes,
+  CredentialExchangeRecord,
+  CredentialsModule,
+  CredentialState,
+  CredentialStateChangedEvent,
   DidExchangeRole,
   DidExchangeState,
-  CredentialEventTypes,
-  CredentialStateChangedEvent,
-  CredentialState,
-  CredentialExchangeRecord,
-  KeyDidRegistrar,
-  WsOutboundTransport,
-  CredentialsModule,
-  V2CredentialProtocol,
-  JsonLdCredentialFormatService,
-  AutoAcceptCredential,
-  W3cCredentialsModule,
-  ProposeCredentialOptions,
+  DidRecord,
+  DidsModule,
+  InitConfig,
   JsonEncoder,
+  JsonLdCredentialFormatService,
+  KeyDidRegistrar,
+  KeyDidResolver,
+  KeyType,
+  MediationRecipientModule,
+  MediatorPickupStrategy,
+  OutOfBandDidCommService,
+  OutOfBandRecord,
+  ProposeCredentialOptions,
+  RecordNotFoundError,
+  V2CredentialProtocol,
+  W3cCredentialsModule,
+  WsOutboundTransport,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
 import { CapacitorFileSystem } from "./dependencies";
 import {
-  IonicStorageModule,
+  CryptoAccountRecord,
   GeneralStorageModule,
+  IonicStorageModule,
   MiscRecord,
   MiscRecordId,
-  CryptoAccountRecord,
 } from "./modules";
 import { HttpOutboundTransport } from "./transports";
-import {
-  Blockchain,
-  GetIdentityResult,
-  IdentityType,
-  UpdateIdentityMetadata,
-} from "./ariesAgent.types";
 import type {
+  ConnectionDetails,
+  ConnectionShortDetails,
   CredentialShortDetails,
   CryptoAccountRecordShortDetails,
   DIDDetails,
   IdentityShortDetails,
+} from "./ariesAgent.types";
+import {
+  Blockchain,
+  ConnectionStatus,
+  GetIdentityResult,
+  IdentityType,
+  UpdateIdentityMetadata,
 } from "./ariesAgent.types";
 import { NetworkType } from "../cardano/addresses.types";
 import { SignifyModule } from "./modules/signify";
@@ -259,22 +263,73 @@ class AriesAgent {
   }
 
   /**
-   * Lister event request connection.
-   * @param callback
+   * Role: Responder, Check to see if there are incoming connection requests
+   * @param connectionRecord
    */
-  onRequestConnection(callback: (event: ConnectionRecord) => void) {
-    this.agent.events.on(
-      ConnectionEventTypes.ConnectionStateChanged,
-      async (event: ConnectionStateChangedEvent) => {
-        if (
-          event.payload.connectionRecord.role === DidExchangeRole.Responder &&
-          event.payload.connectionRecord.state ===
-            DidExchangeState.RequestReceived
-        ) {
-          callback(event.payload.connectionRecord);
-        }
-      }
+  isConnectionRequestReceived(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Responder &&
+      connectionRecord.state === DidExchangeState.RequestReceived &&
+      !connectionRecord.autoAcceptConnection
     );
+  }
+  /**
+   * Role: Responder, after accepted incoming connection requests
+   * @param connectionRecord
+   */
+  isConnectionResponseSent(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Responder &&
+      connectionRecord.state === DidExchangeState.ResponseSent &&
+      !connectionRecord.autoAcceptConnection
+    );
+  }
+
+  /**
+   * Role: invitee
+   * @param connectionRecord
+   */
+  isConnectionRequestSent(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Requester &&
+      connectionRecord.state === DidExchangeState.RequestSent
+    );
+  }
+
+  /**
+   * Role: invitee
+   * @param connectionRecord
+   */
+  isConnectionResponseReceived(connectionRecord: ConnectionRecord) {
+    return (
+      connectionRecord.role === DidExchangeRole.Requester &&
+      connectionRecord.state === DidExchangeState.ResponseReceived &&
+      !connectionRecord.autoAcceptConnection
+    );
+  }
+
+  /**
+   * Role: invitee, inviter
+   * @param connectionRecord
+   */
+  isConnectionConnected(connectionRecord: ConnectionRecord) {
+    return connectionRecord.state === DidExchangeState.Completed;
+  }
+
+  /**
+   * Role: inviter
+   * @param connectionId
+   */
+  async acceptRequestConnection(connectionId: string) {
+    await this.agent.connections.acceptRequest(connectionId);
+  }
+
+  /**
+   * Role: invitee
+   * @param connectionId
+   */
+  async acceptResponseConnection(connectionId: string) {
+    await this.agent.connections.acceptResponse(connectionId);
   }
 
   /**
@@ -411,6 +466,7 @@ class AriesAgent {
   async removeCryptoAccountRecordById(id: string): Promise<void> {
     await this.agent.modules.generalStorage.removeCryptoRecordById(id);
   }
+
   async createIdentityMetadataRecord(data: IdentityMetadataRecordProps) {
     const dataCreate = {
       id: data.id,
@@ -660,6 +716,75 @@ class AriesAgent {
       isArchived: false,
     });
   }
-}
 
+  async getConnections(): Promise<ConnectionShortDetails[]> {
+    const connections = await this.agent.connections.getAll();
+    const connectionsDetails: ConnectionShortDetails[] = [];
+    connections.forEach((connection) => {
+      connectionsDetails.push(this.getConnectionShortDetails(connection));
+    });
+    return connectionsDetails;
+  }
+
+  getConnectionShortDetails(
+    connection: ConnectionRecord
+  ): ConnectionShortDetails {
+    return {
+      id: connection.id,
+      issuer: connection.theirLabel ?? "",
+      issuanceDate: connection.createdAt.toISOString(),
+      issuerLogo: connection.imageUrl,
+      status:
+        connection.state === DidExchangeState.Completed
+          ? ConnectionStatus.CONFIRMED
+          : ConnectionStatus.PENDING,
+    };
+  }
+
+  private getConnectionDetails(
+    connection: ConnectionRecord,
+    outOfBandRecord?: OutOfBandRecord
+  ): ConnectionDetails {
+    return {
+      issuer: connection?.theirLabel ?? "",
+      issuerLogo:
+        connection?.imageUrl ?? outOfBandRecord?.outOfBandInvitation?.imageUrl,
+      id: connection.id,
+      status:
+        connection.state === DidExchangeState.Completed
+          ? ConnectionStatus.CONFIRMED
+          : ConnectionStatus.PENDING,
+      issuanceDate: connection.createdAt.toISOString(),
+      goalCode: outOfBandRecord?.outOfBandInvitation.goalCode,
+      handshakeProtocols:
+        outOfBandRecord?.outOfBandInvitation.handshakeProtocols,
+      requestAttachments: outOfBandRecord?.outOfBandInvitation
+        .getRequests()
+        ?.map((request) => request["@id"]),
+      serviceEndpoints: outOfBandRecord?.outOfBandInvitation
+        .getServices()
+        ?.filter((service) => typeof service !== "string")
+        .map(
+          (service) => (service as OutOfBandDidCommService)?.serviceEndpoint
+        ),
+    };
+  }
+
+  async getConnectionById(id: string): Promise<ConnectionDetails> {
+    const connection = await this.agent.connections.getById(id);
+    let outOfBandRecord: OutOfBandRecord | undefined;
+    try {
+      outOfBandRecord = await this.agent.oob.getById(
+        connection?.outOfBandId as string
+      );
+    } catch (e) {
+      // Not found outOfBandRecord
+      outOfBandRecord = undefined;
+    }
+    return this.getConnectionDetails(connection, outOfBandRecord);
+  }
+  async getOutOfBandRecordById(id: string): Promise<OutOfBandRecord> {
+    return this.agent.oob.getById(id);
+  }
+}
 export { AriesAgent, agentDependencies };

@@ -21,30 +21,21 @@ import { i18n } from "../../../i18n";
 import {
   ConnectionItemProps,
   ConnectionsComponentProps,
-  ConnectionsProps,
+  ConnectionShortDetails,
   MappedConnections,
 } from "./Connections.types";
 import "./Connections.scss";
 import { formatShortDate } from "../../../utils";
 import { ConnectModal } from "../../components/ConnectModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  connectionStatus,
-  connectionType,
-  toastState,
-} from "../../constants/dictionary";
-import {
-  getCurrentOperation,
-  getStateCache,
-  setCurrentOperation,
-} from "../../../store/reducers/stateCache";
+import { connectionStatus, connectionType } from "../../constants/dictionary";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
-import { connectionRequestData } from "../../__fixtures__/connectionsFix";
-import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
+import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
 const ConnectionItem = ({
   item,
@@ -59,7 +50,7 @@ const ConnectionItem = ({
             className="connection-logo"
           >
             <img
-              src={item?.issuerLogo}
+              src={item?.issuerLogo ?? CardanoLogo}
               alt="connection-logo"
             />
           </IonCol>
@@ -96,10 +87,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const currentOperation = useAppSelector(getCurrentOperation);
-  const [connectionsData, setConnectionsData] = useState<ConnectionsProps[]>(
-    useAppSelector(getConnectionsCache)
-  );
+  const connectionsCache = useAppSelector(getConnectionsCache);
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
@@ -109,7 +97,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
     setConnectModalIsOpen(true);
   };
 
-  const handleShowConnectionDetails = (item: ConnectionsProps) => {
+  const handleShowConnectionDetails = async (item: ConnectionShortDetails) => {
     const data: DataProps = {
       store: { stateCache },
     };
@@ -139,8 +127,8 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   };
 
   useEffect(() => {
-    if (connectionsData.length) {
-      const sortedConnections = [...connectionsData].sort(function (a, b) {
+    if (connectionsCache.length) {
+      const sortedConnections = [...connectionsCache].sort(function (a, b) {
         const textA = a.issuer.toUpperCase();
         const textB = b.issuer.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
@@ -160,9 +148,9 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
       }));
       setMappedConnections(mapToArray);
     }
-  }, [connectionsData]);
+  }, [connectionsCache]);
 
-  const AlphabeticList = ({ items }: { items: ConnectionsProps[] }) => {
+  const AlphabeticList = ({ items }: { items: ConnectionShortDetails[] }) => {
     return (
       <>
         {items.map((connection, index) => {
@@ -190,47 +178,6 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
     }
   };
 
-  useEffect(() => {
-    // @TODO - sdisalvo: This one is listening for pending connection requests
-    if (currentOperation === toastState.connectionRequestPending) {
-      setShowConnections(true);
-      // Fetch new data - remember to replace connectionRequestData with real values
-      const timeElapsed = Date.now();
-      const today = new Date(timeElapsed);
-      const connectionData = {
-        id: connectionRequestData.id,
-        issuer: connectionRequestData.label,
-        issuanceDate: today.toISOString(),
-        issuerLogo: connectionRequestData.profileUrl,
-        status: connectionStatus.pending,
-      };
-      const newConnectionsData = [...connectionsData, connectionData];
-      // Update existing connections adding the new one with status "pending"
-      setConnectionsData(newConnectionsData);
-      // Add function here to receive a "state": "completed" from the agent then pass a boolean to the variable below
-      const state = true;
-      setTimeout(() => {
-        // Adding a timeout to wait until the previous toast for pending connection will close
-        // also emulating a delay in the response from the agent
-        if (state) {
-          const updatedData = () => {
-            const data = newConnectionsData;
-            for (const i in data) {
-              if (data[i].id == connectionData.id) {
-                data[i].status = connectionStatus.confirmed;
-                break;
-              }
-            }
-            return data;
-          };
-          // update the state of the displayed connection removing the "pending" label and show toast
-          setConnectionsData(updatedData);
-          dispatch(setCurrentOperation(toastState.newConnectionAdded));
-        }
-      }, TOAST_MESSAGE_DELAY);
-    }
-  }, [currentOperation]);
-
   return (
     <TabLayout
       header={true}
@@ -240,7 +187,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
       menuButton={true}
       additionalButtons={<AdditionalButtons />}
     >
-      {connectionsData.length ? (
+      {connectionsCache.length ? (
         <>
           <IonSearchbar
             placeholder={`${i18n.t("connections.tab.searchconnections")}`}

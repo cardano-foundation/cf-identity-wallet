@@ -1,4 +1,7 @@
-import { ConnectionsProps } from "../pages/Connections/Connections.types";
+import {
+  ConnectionShortDetails,
+  ConnectionStatus,
+} from "../../core/aries/ariesAgent.types";
 import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
 
 const cardTypes = {
@@ -7,8 +10,8 @@ const cardTypes = {
 };
 
 const connectionStatus = {
-  pending: "pending",
-  confirmed: "confirmed",
+  pending: ConnectionStatus.PENDING,
+  confirmed: ConnectionStatus.CONFIRMED,
 };
 
 const connectionType = {
@@ -48,6 +51,7 @@ const toastState = {
   qrSuccess: "qrSuccess",
   qrError: "qrError",
   connectionRequestPending: "connectionRequestPending",
+  connectionRequestIncoming: "connectionRequestIncoming",
   newConnectionAdded: "newConnectionAdded",
   credentialRequestPending: "credentialRequestPending",
   newCredentialAdded: "newCredentialAdded",
@@ -103,12 +107,12 @@ const defaultCryptoAccountData: CryptoAccountProps = {
   transactions: [],
 };
 
-const defaultConnectionData: ConnectionsProps = {
+const defaultConnectionData: ConnectionShortDetails = {
   id: "",
   issuer: "",
   issuanceDate: "",
   issuerLogo: "",
-  status: "",
+  status: ConnectionStatus.PENDING,
 };
 
 const blurredCryptoData = "••••••••••••••••••";
