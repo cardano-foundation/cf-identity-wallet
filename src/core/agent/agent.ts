@@ -118,7 +118,7 @@ class AriesAgent {
     this.agent = new Agent({
       config,
       dependencies: agentDependencies,
-      modules: agentModules 
+      modules: agentModules,
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
     this.agent.registerOutboundTransport(new WsOutboundTransport());

@@ -1,4 +1,9 @@
-import { Agent, DidDocumentRole, DidRecord, KeyType } from "@aries-framework/core";
+import {
+  Agent,
+  DidDocumentRole,
+  DidRecord,
+  KeyType,
+} from "@aries-framework/core";
 import { IdentifierService } from "./identifierService";
 import { IdentifierMetadataRecord } from "../modules/generalStorage/repositories/identifierMetadataRecord";
 import { IdentifierType } from "../agent.types";
@@ -43,7 +48,10 @@ const didMetadataRecordProps = {
   createdAt: now,
 };
 const didMetadataRecord = new IdentifierMetadataRecord(didMetadataRecordProps);
-const archivedMetadataRecord = new IdentifierMetadataRecord({...didMetadataRecordProps, isArchived: true });
+const archivedMetadataRecord = new IdentifierMetadataRecord({
+  ...didMetadataRecordProps,
+  isArchived: true,
+});
 
 const keriMetadataRecordProps = {
   id: "aidHere",
@@ -81,7 +89,7 @@ const aidReturnedBySignify = {
     bt: "bt",
     b: "b",
     di: "di",
-  }
+  },
 };
 
 describe("Identifier service of agent", () => {
@@ -164,7 +172,7 @@ describe("Identifier service of agent", () => {
 
   test("resolved did key document missing actual did document entry", async () => {
     agent.dids.getCreatedDids = jest.fn().mockResolvedValue([didRecord]);
-    agent.dids.resolve = jest.fn().mockResolvedValue({ });
+    agent.dids.resolve = jest.fn().mockResolvedValue({});
     await expect(identifierService.getIdentifier(did)).rejects.toThrowError(
       IdentifierService.DID_MISSING_DID_DOC
     );
@@ -250,7 +258,9 @@ describe("Identifier service of agent", () => {
   });
 
   test("search for non existant keri aid (in db)", async () => {
-    await expect(identifierService.getIdentifier(keriMetadataRecord.id)).rejects.toThrowError(
+    await expect(
+      identifierService.getIdentifier(keriMetadataRecord.id)
+    ).rejects.toThrowError(
       IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING
     );
     expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
@@ -262,7 +272,9 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    expect(await identifierService.getIdentifier(keriMetadataRecord.id)).toBe(undefined);
+    expect(await identifierService.getIdentifier(keriMetadataRecord.id)).toBe(
+      undefined
+    );
     expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
       keriMetadataRecord.id
     );
@@ -275,17 +287,21 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    agent.modules.signify.getIdentifierByName = jest.fn().mockResolvedValue(aidReturnedBySignify);
-    expect(await identifierService.getIdentifier(keriMetadataRecord.id)).toStrictEqual({
+    agent.modules.signify.getIdentifierByName = jest
+      .fn()
+      .mockResolvedValue(aidReturnedBySignify);
+    expect(
+      await identifierService.getIdentifier(keriMetadataRecord.id)
+    ).toStrictEqual({
       type: IdentifierType.KERI,
       result: {
         id: keriMetadataRecord.id,
-        method: IdentifierType.KERI,  // @TODO - foconnor: Redundant info.
+        method: IdentifierType.KERI, // @TODO - foconnor: Redundant info.
         displayName: keriMetadataRecordProps.displayName,
         createdAtUTC: nowISO,
         colors,
-        ...aidReturnedBySignify.state
-      }
+        ...aidReturnedBySignify.state,
+      },
     });
   });
 
@@ -297,16 +313,21 @@ describe("Identifier service of agent", () => {
       identifier: aid,
       signifyName,
     });
-    expect(await identifierService.createIdentifier({
-      method: IdentifierType.KERI,
-      displayName,
-      colors
-    })).toBe(aid);
-    expect(agent.dids.create).not.toBeCalledWith();  // Just in case
+    expect(
+      await identifierService.createIdentifier({
+        method: IdentifierType.KERI,
+        displayName,
+        colors,
+      })
+    ).toBe(aid);
+    expect(agent.dids.create).not.toBeCalledWith(); // Just in case
     expect(agent.modules.signify.createIdentifier).toBeCalled();
-    expect(agent.modules.generalStorage.saveIdentifierMetadataRecord).toBeCalledWith(expect.any(IdentifierMetadataRecord));
+    expect(
+      agent.modules.generalStorage.saveIdentifierMetadataRecord
+    ).toBeCalledWith(expect.any(IdentifierMetadataRecord));
     const newRecord: IdentifierMetadataRecord =
-      agent.modules.generalStorage.saveIdentifierMetadataRecord.mock.calls[0][0];
+      agent.modules.generalStorage.saveIdentifierMetadataRecord.mock
+        .calls[0][0];
     expect(newRecord.id).toEqual(aid);
     expect(newRecord.displayName).toEqual(displayName);
     expect(newRecord.colors).toEqual(colors);
@@ -319,22 +340,27 @@ describe("Identifier service of agent", () => {
     const displayName = "newDisplayName";
     agent.dids.create = jest.fn().mockResolvedValue({
       didState: {
-        did
-      }
+        did,
+      },
     });
-    expect(await identifierService.createIdentifier({
-      method: IdentifierType.KEY,
-      displayName,
-      colors
-    })).toBe(did);
-    expect(agent.modules.signify.createIdentifier).not.toBeCalled();  // Just in case
+    expect(
+      await identifierService.createIdentifier({
+        method: IdentifierType.KEY,
+        displayName,
+        colors,
+      })
+    ).toBe(did);
+    expect(agent.modules.signify.createIdentifier).not.toBeCalled(); // Just in case
     expect(agent.dids.create).toBeCalledWith({
       method: IdentifierType.KEY,
       options: { keyType: KeyType.Ed25519 },
     });
-    expect(agent.modules.generalStorage.saveIdentifierMetadataRecord).toBeCalledWith(expect.any(IdentifierMetadataRecord));
+    expect(
+      agent.modules.generalStorage.saveIdentifierMetadataRecord
+    ).toBeCalledWith(expect.any(IdentifierMetadataRecord));
     const newRecord: IdentifierMetadataRecord =
-      agent.modules.generalStorage.saveIdentifierMetadataRecord.mock.calls[0][0];
+      agent.modules.generalStorage.saveIdentifierMetadataRecord.mock
+        .calls[0][0];
     expect(newRecord.id).toEqual(did);
     expect(newRecord.displayName).toEqual(displayName);
     expect(newRecord.colors).toEqual(colors);
@@ -344,67 +370,123 @@ describe("Identifier service of agent", () => {
   test("should not create metadata record if did:key create result malformed", async () => {
     const displayName = "newDisplayName";
     agent.dids.create = jest.fn().mockResolvedValue({
-      didState: {}
+      didState: {},
     });
-    await expect(identifierService.createIdentifier({
-      method: IdentifierType.KEY,
-      displayName,
-      colors
-    })).rejects.toThrowError(IdentifierService.UNEXPECTED_MISSING_DID_RESULT_ON_CREATE);
-    expect(agent.modules.signify.createIdentifier).not.toBeCalled();  // Just in case
+    await expect(
+      identifierService.createIdentifier({
+        method: IdentifierType.KEY,
+        displayName,
+        colors,
+      })
+    ).rejects.toThrowError(
+      IdentifierService.UNEXPECTED_MISSING_DID_RESULT_ON_CREATE
+    );
+    expect(agent.modules.signify.createIdentifier).not.toBeCalled(); // Just in case
     expect(agent.dids.create).toBeCalledWith({
       method: IdentifierType.KEY,
       options: { keyType: KeyType.Ed25519 },
     });
-    expect(agent.modules.generalStorage.saveIdentifierMetadataRecord).not.toBeCalled();
+    expect(
+      agent.modules.generalStorage.saveIdentifierMetadataRecord
+    ).not.toBeCalled();
   });
-  
+
   // For archive/delete/restore tests there is no difference between did:key and keri
   test("can archive any identifier (re-archiving does nothing)", async () => {
     const id = "id";
     await identifierService.archiveIdentifier(id);
-    expect(agent.modules.generalStorage.archiveIdentifierMetadata).toBeCalledWith(id);
+    expect(
+      agent.modules.generalStorage.archiveIdentifierMetadata
+    ).toBeCalledWith(id);
   });
 
   test("can delete an archived identifier (identifier and metadata record)", async () => {
-    agent.modules.generalStorage.getIdentifierMetadata = jest.fn().mockResolvedValue(archivedMetadataRecord);
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(archivedMetadataRecord);
     await identifierService.deleteIdentifier(archivedMetadataRecord.id);
-    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(archivedMetadataRecord.id);
-    expect(agent.modules.generalStorage.deleteIdentifierMetadata).toBeCalledWith(archivedMetadataRecord.id);
+    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id
+    );
+    expect(
+      agent.modules.generalStorage.deleteIdentifierMetadata
+    ).toBeCalledWith(archivedMetadataRecord.id);
   });
 
   test("cannot delete a non-archived credential", async () => {
-    agent.modules.generalStorage.getIdentifierMetadata = jest.fn().mockResolvedValue(didMetadataRecord);
-    await expect(identifierService.deleteIdentifier(didMetadataRecord.id)).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
-    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(didMetadataRecord.id);
-    expect(agent.modules.generalStorage.deleteIdentifierMetadata).not.toBeCalled();
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(didMetadataRecord);
+    await expect(
+      identifierService.deleteIdentifier(didMetadataRecord.id)
+    ).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
+    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
+      didMetadataRecord.id
+    );
+    expect(
+      agent.modules.generalStorage.deleteIdentifierMetadata
+    ).not.toBeCalled();
   });
 
   test("cannot delete a credential without a metadata record", async () => {
-    agent.modules.generalStorage.getIdentifierMetadata = jest.fn().mockResolvedValue(null);
-    await expect(identifierService.deleteIdentifier(didMetadataRecord.id)).rejects.toThrowError(IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING);
-    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(didMetadataRecord.id);
-    expect(agent.modules.generalStorage.deleteIdentifierMetadata).not.toBeCalled();
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(null);
+    await expect(
+      identifierService.deleteIdentifier(didMetadataRecord.id)
+    ).rejects.toThrowError(
+      IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING
+    );
+    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
+      didMetadataRecord.id
+    );
+    expect(
+      agent.modules.generalStorage.deleteIdentifierMetadata
+    ).not.toBeCalled();
   });
 
   test("can restore an archived credential", async () => {
-    agent.modules.generalStorage.getIdentifierMetadata = jest.fn().mockResolvedValue(archivedMetadataRecord);
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(archivedMetadataRecord);
     await identifierService.restoreIdentity(archivedMetadataRecord.id);
-    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(archivedMetadataRecord.id);
-    expect(agent.modules.generalStorage.updateIdentifierMetadata).toBeCalledWith(archivedMetadataRecord.id, { isArchived: false });
+    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id
+    );
+    expect(
+      agent.modules.generalStorage.updateIdentifierMetadata
+    ).toBeCalledWith(archivedMetadataRecord.id, { isArchived: false });
   });
 
   test("cannot restore a non-archived credential", async () => {
-    agent.modules.generalStorage.getIdentifierMetadata = jest.fn().mockResolvedValue(didMetadataRecord);
-    await expect(identifierService.restoreIdentity(didMetadataRecord.id)).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
-    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(didMetadataRecord.id);
-    expect(agent.modules.generalStorage.updateIdentifierMetadata).not.toBeCalled();
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(didMetadataRecord);
+    await expect(
+      identifierService.restoreIdentity(didMetadataRecord.id)
+    ).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
+    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
+      didMetadataRecord.id
+    );
+    expect(
+      agent.modules.generalStorage.updateIdentifierMetadata
+    ).not.toBeCalled();
   });
 
   test("cannot restore a credential without a metadata record", async () => {
-    agent.modules.generalStorage.getIdentifierMetadata = jest.fn().mockResolvedValue(null);
-    await expect(identifierService.restoreIdentity(didMetadataRecord.id)).rejects.toThrowError(IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING);
-    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(didMetadataRecord.id);
-    expect(agent.modules.generalStorage.updateIdentifierMetadata).not.toBeCalled();
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(null);
+    await expect(
+      identifierService.restoreIdentity(didMetadataRecord.id)
+    ).rejects.toThrowError(
+      IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING
+    );
+    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
+      didMetadataRecord.id
+    );
+    expect(
+      agent.modules.generalStorage.updateIdentifierMetadata
+    ).not.toBeCalled();
   });
 });

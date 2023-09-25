@@ -8,7 +8,11 @@ import {
   OutOfBandDidCommService,
   OutOfBandRecord,
 } from "@aries-framework/core";
-import { ConnectionDetails, ConnectionShortDetails, ConnectionStatus } from "../agent.types";
+import {
+  ConnectionDetails,
+  ConnectionShortDetails,
+  ConnectionStatus,
+} from "../agent.types";
 // import { LibP2p } from "../transports/libp2p/libP2p";
 // import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
 import { AgentService } from "./agentService";
@@ -43,9 +47,7 @@ class ConnectionService extends AgentService {
     });
   }
 
-  async receiveAttachmentFromUrlConnectionless(
-    url: string
-  ): Promise<void> {
+  async receiveAttachmentFromUrlConnectionless(url: string): Promise<void> {
     const split = url.split("?d_m=");
     if (split.length !== 2) {
       throw new Error(ConnectionService.INVALID_CONNECTIONLESS_MSG);

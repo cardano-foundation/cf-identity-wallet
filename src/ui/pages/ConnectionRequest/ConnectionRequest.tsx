@@ -62,11 +62,15 @@ const ConnectionRequest = () => {
   const handleConnect = async () => {
     setInitiateAnimation(true);
     if (connectionRequest.type === ConnectionRequestType.CONNECTION_INCOMING) {
-      AriesAgent.agent.connections.acceptRequestConnection(connectionRequest.id);
+      AriesAgent.agent.connections.acceptRequestConnection(
+        connectionRequest.id
+      );
     } else if (
       connectionRequest.type === ConnectionRequestType.CONNECTION_RESPONSE
     ) {
-      AriesAgent.agent.connections.acceptResponseConnection(connectionRequest.id);
+      AriesAgent.agent.connections.acceptResponseConnection(
+        connectionRequest.id
+      );
     }
     setTimeout(() => {
       handleReset();
@@ -127,11 +131,11 @@ const ConnectionRequest = () => {
                 {connectionRequest.type ===
                 ConnectionRequestType.CONNECTION_INCOMING
                   ? i18next.t("connectionrequest.pending", {
-                    action: connectionRequestType,
-                  })
+                      action: connectionRequestType,
+                    })
                   : i18next.t("connectionrequest.success", {
-                    action: connectionRequestType,
-                  })}
+                      action: connectionRequestType,
+                    })}
               </strong>
             </IonCol>
           </IonRow>

@@ -63,7 +63,9 @@ const Scanner = () => {
         const result = await startScan();
         if (result.hasContent) {
           stopScan();
-          await AriesAgent.agent.connections.receiveInvitationFromUrl(result.content);
+          await AriesAgent.agent.connections.receiveInvitationFromUrl(
+            result.content
+          );
           dispatch(setCurrentOperation(""));
         }
       }

@@ -46,9 +46,10 @@ const ConnectionDetails = () => {
 
   useEffect(() => {
     async function getDetails() {
-      const connectionDetails = await AriesAgent.agent.connections.getConnectionById(
-        connectionShortDetails.id
-      );
+      const connectionDetails =
+        await AriesAgent.agent.connections.getConnectionById(
+          connectionShortDetails.id
+        );
       setConnectionDetails(connectionDetails);
     }
     getDetails();

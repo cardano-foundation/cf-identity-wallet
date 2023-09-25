@@ -13,7 +13,7 @@ jest.mock("../../../core/agent/agent", () => ({
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
         onConnectionStateChange: jest.fn(),
-      }
+      },
     },
   },
 }));

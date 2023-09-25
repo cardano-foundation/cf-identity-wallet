@@ -62,7 +62,7 @@ class CredentialService extends AgentService {
       credentialType: element.credentialType,
     }));
   }
-  
+
   async archiveCredential(id: string): Promise<void> {
     await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
       isArchived: true,
