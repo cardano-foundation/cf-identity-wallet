@@ -11,16 +11,18 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { Creds } from "../Creds";
 import { ConnectionDetails } from "./ConnectionDetails";
 
-jest.mock("../../../core/aries/ariesAgent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
-      getConnectionById: jest.fn().mockResolvedValue({
-        id: "ebfeb1ebc6f1c276ef71212ec20",
-        issuer: "Cambridge University",
-        issuanceDate: "2017-08-14T19:23:24Z",
-        issuerLogo: ".png",
-        status: "pending",
-      }),
+      connections: {
+        getConnectionById: jest.fn().mockResolvedValue({
+          id: "ebfeb1ebc6f1c276ef71212ec20",
+          label: "Cambridge University",
+          connectionDate: "2017-08-14T19:23:24Z",
+          logo: ".png",
+          status: "pending",
+        }),
+      }
     },
   },
 }));
@@ -80,10 +82,10 @@ describe("ConnectionDetails Page", () => {
       expect(queryByTestId("connection-item-0")).toBeNull();
     });
 
-    expect(getByText(connectionsFix[0].issuer)).toBeVisible();
+    expect(getByText(connectionsFix[0].label)).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].issuer));
+      fireEvent.click(getByText(connectionsFix[0].label));
     });
 
     await waitFor(() =>
@@ -95,7 +97,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(connectionsFix[1].issuer)).toBeVisible();
+      expect(getByText(connectionsFix[1].label)).toBeVisible();
     });
   });
 
@@ -125,7 +127,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].issuer));
+      fireEvent.click(getByText(connectionsFix[0].label));
     });
 
     act(() => {
@@ -177,7 +179,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].issuer));
+      fireEvent.click(getByText(connectionsFix[0].label));
     });
 
     act(() => {
@@ -225,7 +227,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByText(connectionsFix[0].issuer));
+      fireEvent.click(getByText(connectionsFix[0].label));
     });
 
     act(() => {
