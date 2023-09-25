@@ -56,11 +56,6 @@ type GetIdentifierResult =
   | { type: IdentifierType.KERI; result: KERIDetails }
   | { type: IdentifierType.KEY; result: DIDDetails };
 
-type UpdateIdentifierMetadata = Omit<
-  Partial<IdentifierMetadataRecordProps>,
-  "id" | "isArchived" | "name" | "method" | "createdAt"
->;
-
 export { IdentifierType, Blockchain };
 export type {
   CryptoAccountRecordShortDetails,
@@ -68,6 +63,5 @@ export type {
   DIDDetails,
   KERIDetails,
   GetIdentifierResult,
-  UpdateIdentifierMetadata,
   CredentialShortDetails,
 };

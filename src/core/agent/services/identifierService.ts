@@ -4,7 +4,6 @@ import {
   GetIdentifierResult,
   IdentifierShortDetails,
   IdentifierType,
-  UpdateIdentifierMetadata,
 } from "../agent.types";
 import {
   IdentifierMetadataRecord,
@@ -120,6 +119,7 @@ class IdentifierService extends AgentService {
       });
       return identifier;
     }
+
     const result = await this.agent.dids.create({
       method: type,
       options: { keyType: KeyType.Ed25519 },
@@ -136,13 +136,9 @@ class IdentifierService extends AgentService {
     return result.didState.did;
   }
 
-  async updateIdentifierMetadata(
-    identifier: string,
-    metadata: UpdateIdentifierMetadata
-  ): Promise<void> {
-    return this.agent.modules.generalStorage.updateIdentifierMetadata(
-      identifier,
-      metadata
+  async archiveIdentifier(identifier: string): Promise<void> {
+    return this.agent.modules.generalStorage.archiveIdentifierMetadata(
+      identifier
     );
   }
 
@@ -150,12 +146,6 @@ class IdentifierService extends AgentService {
     const metadata = await this.getMetadataById(identifier);
     this.validArchivedIdentifier(metadata);
     await this.agent.modules.generalStorage.deleteIdentifierMetadata(
-      identifier
-    );
-  }
-
-  async archiveIdentifier(identifier: string): Promise<void> {
-    return this.agent.modules.generalStorage.archiveIdentifierMetadata(
       identifier
     );
   }
@@ -183,14 +173,13 @@ class IdentifierService extends AgentService {
   private async createIdentifierMetadataRecord(
     data: IdentifierMetadataRecordProps
   ) {
-    const dataCreate = {
+    const record = new IdentifierMetadataRecord({
       id: data.id,
       displayName: data.displayName,
       colors: data.colors,
       method: data.method,
       signifyName: data.signifyName,
-    };
-    const record = new IdentifierMetadataRecord(dataCreate);
+    });
     return this.agent.modules.generalStorage.saveIdentifierMetadataRecord(
       record
     );
@@ -219,6 +208,8 @@ class IdentifierService extends AgentService {
         `${IdentifierService.UNEXPECTED_DID_DOC_FORMAT} ${record.did}`
       );
     }
+
+    // @TODO - foconnor: We should get this first in case it doesn't exist and fail fast.
     const metadata = await this.getMetadataById(record.did);
 
     return {

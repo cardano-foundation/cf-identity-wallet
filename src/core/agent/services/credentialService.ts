@@ -62,18 +62,18 @@ class CredentialService extends AgentService {
       credentialType: element.credentialType,
     }));
   }
+  
+  async archiveCredential(id: string): Promise<void> {
+    await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
+      isArchived: true,
+    });
+  }
 
   async deleteCredential(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
     await this.agent.credentials.deleteById(id);
     await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
-  }
-
-  async archiveCredential(id: string): Promise<void> {
-    await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
-      isArchived: true,
-    });
   }
 
   async restoreCredential(id: string): Promise<void> {

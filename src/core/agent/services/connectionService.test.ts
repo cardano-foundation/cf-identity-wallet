@@ -15,6 +15,7 @@ const agent = jest.mocked({
   connections: {
     acceptRequest: jest.fn(),
   },
+  receiveMessage: jest.fn()
 });
 const connectionService = new ConnectionService(agent as any as Agent);
 
@@ -67,5 +68,15 @@ describe("Connection service of agent", () => {
     await expect(
       connectionService.createMediatorInvitation()
     ).rejects.toThrowError(ConnectionService.COULD_NOT_CREATE_OOB_VIA_MEDIATOR);
+  });
+
+  test("can receive a valid message via oobi attachment", async () => {
+    await connectionService.receiveAttachmentFromUrlConnectionless("http://localhost:4320?d_m=InRlc3QgbWVzc2FnZSI=");
+    expect(agent.receiveMessage).toBeCalledWith("test message");
+  });
+
+  test("receiving attachment should error if url invalid", async () => {
+    await expect(connectionService.receiveAttachmentFromUrlConnectionless("http://localhost:4320?c_i=InRlc3QgbWVzc2FnZSI=")).rejects.toThrowError(ConnectionService.INVALID_CONNECTIONLESS_MSG);
+    expect(agent.receiveMessage).not.toBeCalled();
   });
 });

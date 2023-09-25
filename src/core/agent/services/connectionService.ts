@@ -14,6 +14,8 @@ class ConnectionService extends AgentService {
   //   "No domain found in config";
   static readonly COULD_NOT_CREATE_OOB_VIA_MEDIATOR =
     "Could not create new mediator oob invitation";
+  static readonly INVALID_CONNECTIONLESS_MSG =
+    "Invalid connectionless OOBI - does not contain d_m parameter";
 
   onConnectionStateChange(
     callback: (event: ConnectionStateChangedEvent) => void
@@ -37,11 +39,14 @@ class ConnectionService extends AgentService {
     });
   }
 
-  async receiveInvitationCredentialWithConnectionLess(
+  async receiveAttachmentFromUrlConnectionless(
     url: string
   ): Promise<void> {
-    const rawMessage = url.split("?d_m=")[1];
-    await this.agent.receiveMessage(JsonEncoder.fromBase64(rawMessage));
+    const split = url.split("?d_m=");
+    if (split.length !== 2) {
+      throw new Error(ConnectionService.INVALID_CONNECTIONLESS_MSG);
+    }
+    await this.agent.receiveMessage(JsonEncoder.fromBase64(split[1]));
   }
 
   async acceptRequest(connectionId: string) {
