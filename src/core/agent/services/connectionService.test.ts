@@ -355,4 +355,15 @@ describe("Connection service of agent", () => {
     );
     expect(agent.oob.getById).not.toBeCalled();
   });
+
+  test("must call fetch url first when invitation url contains /shorten", async () => {
+    const shortUrl = "http://localhost:3000/shorten/abc123";
+    const fullUrl = "http://localhost?oob=3423";
+    global.fetch = jest.fn().mockResolvedValue({ url: fullUrl });
+    await connectionService.receiveInvitationFromUrl(shortUrl);
+    expect(agent.oob.receiveInvitationFromUrl).toBeCalledWith(
+      fullUrl,
+      expect.any(Object)
+    );
+  });
 });
