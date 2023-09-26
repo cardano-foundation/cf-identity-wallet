@@ -18,8 +18,8 @@ import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { RoutePath } from "../../../routes";
 import { PasswordRegexProps, RegexItemProps } from "./CreatePassword.types";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
-import { MiscRecordId } from "../../../core/aries/modules";
+import { AriesAgent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/modules";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -266,15 +266,15 @@ const CreatePassword = () => {
           {(createPasswordValue !== "" &&
             !PasswordValidator.validatePassword(createPasswordValue)) ||
           !PasswordValidator.isValidCharacters(createPasswordValue) ? (
-              <ErrorMessage
-                message={
-                  createPasswordValue.length
-                    ? PasswordValidator.getErrorByPriority(createPasswordValue)
-                    : undefined
-                }
-                timeout={false}
-              />
-            ) : null}
+            <ErrorMessage
+              message={
+                createPasswordValue.length
+                  ? PasswordValidator.getErrorByPriority(createPasswordValue)
+                  : undefined
+              }
+              timeout={false}
+            />
+          ) : null}
           {createPasswordValue && (
             <IonRow>
               <IonCol size="12">

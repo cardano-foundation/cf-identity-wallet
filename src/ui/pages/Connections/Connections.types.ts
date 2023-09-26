@@ -1,7 +1,7 @@
 import {
   ConnectionDetails,
   ConnectionShortDetails,
-} from "../../../core/aries/ariesAgent.types";
+} from "../../../core/agent/agent.types";
 
 interface ConnectionItemProps {
   key: number;

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
-import { ConnectionShortDetails } from "../../../core/aries/ariesAgent.types";
+import { ConnectionShortDetails } from "../../../core/agent/agent.types";
 const initialState: { connections: ConnectionShortDetails[] } = {
   connections: [],
 };

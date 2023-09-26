@@ -8,7 +8,7 @@ import { i18n } from "../../../i18n";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { IdentityCardInfoKeriProps } from "./IdentityCardInfoKeri.types";
-import { SignifyApi } from "../../../core/aries/modules/signify/signifyApi";
+import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { toastState } from "../../constants/dictionary";
 import { useAppDispatch } from "../../../store/hooks";

@@ -8,7 +8,7 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { filteredKeriFix } from "../../__fixtures__/filteredIdentityFix";
 import { DidCardDetails } from "../../pages/DidCardDetails";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { AriesAgent } from "../../../core/agent/agent";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 
 const path = TabsRoutePath.DIDS + "/" + identityFix[1].id;
@@ -21,12 +21,14 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-jest.mock("../../../core/aries/ariesAgent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest
-        .fn()
-        .mockResolvedValue({ type: "keri", result: identityFix[1] }),
+      identifiers: {
+        getIdentifier: jest
+          .fn()
+          .mockResolvedValue({ type: "keri", result: identityFix[1] }),
+      },
     },
   },
 }));
@@ -90,7 +92,9 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
-    expect(AriesAgent.agent.getIdentity).toBeCalledWith(filteredKeriFix[0].id);
+    expect(AriesAgent.agent.identifiers.getIdentifier).toBeCalledWith(
+      filteredKeriFix[0].id
+    );
   });
 
   test("It copies delegator identifier, signing key, next key digest, backer address to clipboard", async () => {
