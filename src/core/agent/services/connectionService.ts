@@ -1,4 +1,5 @@
 import {
+  AriesFrameworkError,
   ConnectionEventTypes,
   ConnectionRecord,
   ConnectionStateChangedEvent,
@@ -95,6 +96,10 @@ class ConnectionService extends AgentService {
     outOfBandRecord: OutOfBandRecord;
     connectionRecord?: ConnectionRecord;
   }> {
+    if (url.includes("/shorten")) {
+      const response = await this.fetchShortUrl(url);
+      url = response.url;
+    }
     return this.agent.oob.receiveInvitationFromUrl(url, {
       autoAcceptConnection: true,
       autoAcceptInvitation: true,
@@ -195,6 +200,27 @@ class ConnectionService extends AgentService {
           (service) => (service as OutOfBandDidCommService)?.serviceEndpoint
         ),
     };
+  }
+
+  private async fetchShortUrl(invitationUrl: string) {
+    const abortController = new AbortController();
+    const id = setTimeout(() => abortController.abort(), 15000);
+    let response;
+    try {
+      response = await fetch(invitationUrl, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      throw new AriesFrameworkError(
+        `Get request failed on provided url ${invitationUrl}`
+      );
+    }
+    clearTimeout(id);
+    return response;
   }
 
   // @TODO - foconnor: fix and add tests;
