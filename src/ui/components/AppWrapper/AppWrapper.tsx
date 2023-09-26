@@ -10,7 +10,7 @@ import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { AriesAgent } from "../../../core/agent/agent";
 import {
   setCryptoAccountsCache,
   setHideCryptoBalances,
@@ -46,13 +46,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
   const initApp = async () => {
     await AriesAgent.agent.start();
-    const connectionsDetails = await AriesAgent.agent.getConnections();
+    const connectionsDetails =
+      await AriesAgent.agent.connections.getConnections();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const storedIdentities = await AriesAgent.agent.getIdentities();
+    const storedIdentities =
+      await AriesAgent.agent.identifiers.getIdentifiers();
     // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
     const storedCryptoAccounts: CryptoAccountProps[] = [];
 
@@ -79,15 +81,21 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setCryptoAccountsCache(storedCryptoAccounts));
     dispatch(setConnectionsCache(connectionsDetails));
 
-    AriesAgent.agent.onConnectionStateChange(async (event) => {
+    AriesAgent.agent.connections.onConnectionStateChange(async (event) => {
       const connectionRecord = event.payload.connectionRecord;
-      if (AriesAgent.agent.isConnectionRequestSent(connectionRecord)) {
+      if (
+        AriesAgent.agent.connections.isConnectionRequestSent(connectionRecord)
+      ) {
         const connectionDetails =
-          AriesAgent.agent.getConnectionShortDetails(connectionRecord);
+          AriesAgent.agent.connections.getConnectionShortDetails(
+            connectionRecord
+          );
         dispatch(updateOrAddConnectionCache(connectionDetails));
         dispatch(setCurrentOperation(toastState.connectionRequestPending));
       } else if (
-        AriesAgent.agent.isConnectionResponseReceived(connectionRecord)
+        AriesAgent.agent.connections.isConnectionResponseReceived(
+          connectionRecord
+        )
       ) {
         dispatch(
           setConnectionRequest({
@@ -96,10 +104,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
           })
         );
       } else if (
-        AriesAgent.agent.isConnectionRequestReceived(connectionRecord)
+        AriesAgent.agent.connections.isConnectionRequestReceived(
+          connectionRecord
+        )
       ) {
         const connectionDetails =
-          AriesAgent.agent.getConnectionShortDetails(connectionRecord);
+          AriesAgent.agent.connections.getConnectionShortDetails(
+            connectionRecord
+          );
         dispatch(updateOrAddConnectionCache(connectionDetails));
         dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
         dispatch(
@@ -108,11 +120,17 @@ const AppWrapper = (props: { children: ReactNode }) => {
             type: ConnectionRequestType.CONNECTION_INCOMING,
           })
         );
-      } else if (AriesAgent.agent.isConnectionResponseSent(connectionRecord)) {
+      } else if (
+        AriesAgent.agent.connections.isConnectionResponseSent(connectionRecord)
+      ) {
         dispatch(setCurrentOperation(toastState.connectionRequestPending));
-      } else if (AriesAgent.agent.isConnectionConnected(connectionRecord)) {
+      } else if (
+        AriesAgent.agent.connections.isConnectionConnected(connectionRecord)
+      ) {
         const connectionDetails =
-          AriesAgent.agent.getConnectionShortDetails(connectionRecord);
+          AriesAgent.agent.connections.getConnectionShortDetails(
+            connectionRecord
+          );
         dispatch(updateOrAddConnectionCache(connectionDetails));
         dispatch(setCurrentOperation(toastState.newConnectionAdded));
       }

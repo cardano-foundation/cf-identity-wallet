@@ -8,9 +8,9 @@ import { i18n } from "../../../i18n";
 import { CredCardProps, DidCardProps, CredProps } from "./CardsStack.types";
 import {
   DIDDetails,
-  IdentityShortDetails,
-  IdentityType,
-} from "../../../core/aries/ariesAgent.types";
+  IdentifierShortDetails,
+  IdentifierType,
+} from "../../../core/agent/agent.types";
 import { cardTypes, connectionStatus } from "../../constants/dictionary";
 import { Alert } from "../Alert";
 
@@ -156,7 +156,7 @@ const DidCard = ({
       <div className="cards-stack-did-layout">
         <div className="card-header">
           <span>
-            {cardData.method === IdentityType.KEY ? "did:key" : "KERI"}
+            {cardData.method === IdentifierType.KEY ? "did:key" : "KERI"}
           </span>
           <span>{cardData.displayName}</span>
         </div>
@@ -183,19 +183,19 @@ const CardsStack = ({
   cardsData,
 }: {
   cardsType: string;
-  cardsData: IdentityShortDetails[] | CredProps[];
+  cardsData: IdentifierShortDetails[] | CredProps[];
 }) => {
   const history = useHistory();
   const [isActive, setIsActive] = useState(false);
 
-  const renderCards = (cardsData: IdentityShortDetails[] | CredProps[]) => {
+  const renderCards = (cardsData: IdentifierShortDetails[] | CredProps[]) => {
     return cardsData.map(
-      (cardData: IdentityShortDetails | CredProps, index: number) =>
+      (cardData: IdentifierShortDetails | CredProps, index: number) =>
         cardsType === cardTypes.dids ? (
           <DidCard
             key={index}
             index={index}
-            cardData={cardData as IdentityShortDetails}
+            cardData={cardData as IdentifierShortDetails}
             isActive={isActive}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
           />

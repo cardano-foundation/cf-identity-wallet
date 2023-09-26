@@ -9,7 +9,7 @@ import { DidCardDetails } from "./DidCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { AriesAgent } from "../../../core/agent/agent";
 import {
   filteredDidFix,
   filteredKeriFix,
@@ -25,12 +25,14 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-jest.mock("../../../core/aries/ariesAgent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest
-        .fn()
-        .mockResolvedValue({ type: "key", result: identityFix[0] }),
+      identifiers: {
+        getIdentifier: jest
+          .fn()
+          .mockResolvedValue({ type: "key", result: identityFix[0] }),
+      },
     },
   },
 }));

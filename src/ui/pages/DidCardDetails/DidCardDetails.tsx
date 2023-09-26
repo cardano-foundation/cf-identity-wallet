@@ -27,12 +27,12 @@ import {
   getIdentitiesCache,
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { AriesAgent } from "../../../core/agent/agent";
 import {
   DIDDetails,
-  IdentityType,
+  IdentifierType,
   KERIDetails,
-} from "../../../core/aries/ariesAgent.types";
+} from "../../../core/agent/agent.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { IdentityCardInfoKey } from "../../components/IdentityCardInfoKey";
 import { IdentityCardInfoKeri } from "../../components/IdentityCardInfoKeri";
@@ -56,7 +56,8 @@ const DidCardDetails = () => {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const cardDetailsResult = await AriesAgent.agent.getIdentity(params.id);
+      const cardDetailsResult =
+        await AriesAgent.agent.identifiers.getIdentifier(params.id);
       if (cardDetailsResult) {
         setCardData(cardDetailsResult.result);
       } else {
@@ -156,7 +157,7 @@ const DidCardDetails = () => {
               isActive={false}
             />
             <div className="card-details-content">
-              {cardData.method === IdentityType.KEY ? (
+              {cardData.method === IdentifierType.KEY ? (
                 <IdentityCardInfoKey cardData={cardData as DIDDetails} />
               ) : (
                 <IdentityCardInfoKeri cardData={cardData as KERIDetails} />

@@ -13,12 +13,12 @@ import {
   getConnectionRequest,
   setConnectionRequest,
 } from "../../../store/reducers/stateCache";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { connectionType } from "../../constants/dictionary";
 import { Alert } from "../../components/Alert";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
-import { ConnectionDetails } from "../../../core/aries/ariesAgent.types";
+import { ConnectionDetails } from "../../../core/agent/agent.types";
 import { ConnectionRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
@@ -34,7 +34,8 @@ const ConnectionRequest = () => {
   useEffect(() => {
     async function handle() {
       if (connectionRequest.id.length > 0) {
-        const agentData = await AriesAgent.agent.getConnectionById(
+        // @TODO - foconnor: This call also gets the OOBI - double check if we need the OOBI here - if not, split into 2 functions
+        const agentData = await AriesAgent.agent.connections.getConnectionById(
           connectionRequest.id
         );
         setConnectionData(agentData);
@@ -62,11 +63,15 @@ const ConnectionRequest = () => {
   const handleConnect = async () => {
     setInitiateAnimation(true);
     if (connectionRequest.type === ConnectionRequestType.CONNECTION_INCOMING) {
-      AriesAgent.agent.acceptRequestConnection(connectionRequest.id);
+      AriesAgent.agent.connections.acceptRequestConnection(
+        connectionRequest.id
+      );
     } else if (
       connectionRequest.type === ConnectionRequestType.CONNECTION_RESPONSE
     ) {
-      AriesAgent.agent.acceptResponseConnection(connectionRequest.id);
+      AriesAgent.agent.connections.acceptResponseConnection(
+        connectionRequest.id
+      );
     }
     setTimeout(() => {
       handleReset();
@@ -108,7 +113,7 @@ const ConnectionRequest = () => {
             </div>
             <div className="connection-request-provider-logo">
               <img
-                src={connectionData?.issuerLogo ?? CardanoLogo}
+                src={connectionData?.logo ?? CardanoLogo}
                 alt="connection-request-provider-logo"
               />
             </div>
@@ -118,7 +123,7 @@ const ConnectionRequest = () => {
               <span>
                 {connectionRequestType + i18n.t("connectionrequest.request")}
               </span>
-              <strong>{connectionData?.issuer}</strong>
+              <strong>{connectionData?.label}</strong>
             </IonCol>
           </IonRow>
           <IonRow className="connection-request-status">
@@ -127,11 +132,11 @@ const ConnectionRequest = () => {
                 {connectionRequest.type ===
                 ConnectionRequestType.CONNECTION_INCOMING
                   ? i18next.t("connectionrequest.pending", {
-                    action: connectionRequestType,
-                  })
+                      action: connectionRequestType,
+                    })
                   : i18next.t("connectionrequest.success", {
-                    action: connectionRequestType,
-                  })}
+                      action: connectionRequestType,
+                    })}
               </strong>
             </IonCol>
           </IonRow>
@@ -142,7 +147,7 @@ const ConnectionRequest = () => {
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm"
         headerText={i18next.t("connectionrequest.alert.title", {
-          initiator: connectionData?.issuer,
+          initiator: connectionData?.label,
         })}
         confirmButtonText={`${i18n.t("connectionrequest.alert.confirm")}`}
         cancelButtonText={`${i18n.t("connectionrequest.alert.cancel")}`}

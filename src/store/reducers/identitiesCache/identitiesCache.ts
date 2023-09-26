@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IdentityShortDetails } from "../../../core/aries/ariesAgent.types";
+import { IdentifierShortDetails } from "../../../core/agent/agent.types";
 import { RootState } from "../../index";
-const initialState: { identities: IdentityShortDetails[] } = {
+const initialState: { identities: IdentifierShortDetails[] } = {
   identities: [],
 };
 const identitiesCacheSlice = createSlice({
@@ -10,7 +10,7 @@ const identitiesCacheSlice = createSlice({
   reducers: {
     setIdentitiesCache: (
       state,
-      action: PayloadAction<IdentityShortDetails[]>
+      action: PayloadAction<IdentifierShortDetails[]>
     ) => {
       state.identities = action.payload;
     },

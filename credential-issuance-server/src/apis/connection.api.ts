@@ -16,7 +16,9 @@ async function getConnectionByDid(req: Request, res: Response): Promise<void> {
     httpResponse(res, response);
     return;
   }
-  const connectionRecord = await AriesAgent.agent.getConnectionByDidOfInvitee(did);
+  const connectionRecord = await AriesAgent.agent.getConnectionByDidOfInvitee(
+    did
+  );
   if (!connectionRecord) {
     const response: ResponseData<unknown> = {
       statusCode: 404,
@@ -27,7 +29,7 @@ async function getConnectionByDid(req: Request, res: Response): Promise<void> {
     httpResponse(res, response);
     return;
   }
-  const response: ResponseData<{connectionId: string}> = {
+  const response: ResponseData<{ connectionId: string }> = {
     statusCode: 200,
     success: true,
     data: {

@@ -174,9 +174,9 @@ const VerifySeedPhrase = () => {
         onBack={
           seedPhraseType === operationState.onboarding
             ? () => {
-              handleClearState();
-              handleExit();
-            }
+                handleClearState();
+                handleExit();
+              }
             : () => setAlertExitIsOpen(true)
         }
         currentPath={RoutePath.VERIFY_SEED_PHRASE}

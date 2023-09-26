@@ -1,7 +1,7 @@
 import {
   ConnectionShortDetails,
   ConnectionStatus,
-} from "../../core/aries/ariesAgent.types";
+} from "../../core/agent/agent.types";
 import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
 
 const cardTypes = {
@@ -106,9 +106,9 @@ const defaultCryptoAccountData: CryptoAccountProps = {
 
 const defaultConnectionData: ConnectionShortDetails = {
   id: "",
-  issuer: "",
-  issuanceDate: "",
-  issuerLogo: "",
+  label: "",
+  connectionDate: "",
+  logo: "",
   status: ConnectionStatus.PENDING,
 };
 
