@@ -15,17 +15,13 @@ class CredentialService extends AgentService {
     "Credential metadata missing for stored credential";
   static readonly CREDENTIAL_NOT_ARCHIVED = "Credential was not archived";
 
-  onCredentialOfferReceived(
+  onCredentialStateChanged(
     callback: (event: CredentialExchangeRecord) => void
   ) {
     this.agent.events.on(
       CredentialEventTypes.CredentialStateChanged,
       async (event: CredentialStateChangedEvent) => {
-        if (
-          event.payload.credentialRecord.state === CredentialState.OfferReceived
-        ) {
-          callback(event.payload.credentialRecord);
-        }
+        callback(event.payload.credentialRecord);
       }
     );
   }
