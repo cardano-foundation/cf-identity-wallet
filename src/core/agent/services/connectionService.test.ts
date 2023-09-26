@@ -66,7 +66,7 @@ const incomingConnectionRecordAutoAccept = new ConnectionRecord({
 const connectionAcceptedRecordAutoAccept = new ConnectionRecord({
   state: DidExchangeState.ResponseSent,
   role: DidExchangeRole.Responder,
-  autoAcceptConnection: true,
+  autoAcceptConnection: false,
 });
 const requestedConnectionRecord = new ConnectionRecord({
   state: DidExchangeState.RequestSent,
