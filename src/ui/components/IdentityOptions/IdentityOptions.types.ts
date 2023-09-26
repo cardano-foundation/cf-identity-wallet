@@ -1,4 +1,4 @@
-import { DIDDetails, KERIDetails } from "../../../core/aries/ariesAgent.types";
+import { DIDDetails, KERIDetails } from "../../../core/agent/agent.types";
 
 interface IdentityOptionsProps {
   isOpen: boolean;

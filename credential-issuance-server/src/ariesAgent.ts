@@ -102,8 +102,7 @@ class AriesAgent {
       });
       // get first record
       return connection?.[0];
-    }
-    catch (e) {
+    } catch (e) {
       return null;
     }
   }

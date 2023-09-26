@@ -6,7 +6,6 @@ import {
 } from "lucid-cardano";
 
 import dotenv from "dotenv";
-import { Addresses } from "./addresses";
 import { BLOCKFROST_PREPROD_SELF_HOSTED } from "./provider/config";
 import { TransactionBuilder } from "./transaction";
 

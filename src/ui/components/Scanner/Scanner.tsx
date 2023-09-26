@@ -15,7 +15,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { operationState, toastState } from "../../constants/dictionary";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const Scanner = () => {
   const dispatch = useAppDispatch();
@@ -63,7 +63,9 @@ const Scanner = () => {
         const result = await startScan();
         if (result.hasContent) {
           stopScan();
-          await AriesAgent.agent.receiveInvitationFromUrl(result.content);
+          await AriesAgent.agent.connections.receiveInvitationFromUrl(
+            result.content
+          );
           dispatch(setCurrentOperation(""));
         }
       }

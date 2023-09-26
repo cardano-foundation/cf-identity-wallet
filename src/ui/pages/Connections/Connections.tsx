@@ -50,7 +50,7 @@ const ConnectionItem = ({
             className="connection-logo"
           >
             <img
-              src={item?.issuerLogo ?? CardanoLogo}
+              src={item?.logo ?? CardanoLogo}
               alt="connection-logo"
             />
           </IonCol>
@@ -58,9 +58,9 @@ const ConnectionItem = ({
             size="6.25"
             className="connection-info"
           >
-            <IonLabel className="connection-name">{item?.issuer}</IonLabel>
+            <IonLabel className="connection-name">{item?.label}</IonLabel>
             <IonLabel className="connection-date">
-              {formatShortDate(`${item?.issuanceDate}`)}
+              {formatShortDate(`${item?.connectionDate}`)}
             </IonLabel>
           </IonCol>
           <IonCol
@@ -129,15 +129,15 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   useEffect(() => {
     if (connectionsCache.length) {
       const sortedConnections = [...connectionsCache].sort(function (a, b) {
-        const textA = a.issuer.toUpperCase();
-        const textB = b.issuer.toUpperCase();
+        const textA = a.label.toUpperCase();
+        const textB = b.label.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
       });
 
       const mapConnections = ((m, a) => (
         a.forEach((s) => {
-          const a = m.get(s.issuer[0]) || [];
-          m.set(s.issuer[0], (a.push(s), a));
+          const a = m.get(s.label[0]) || [];
+          m.set(s.label[0], (a.push(s), a));
         }),
         m
       ))(new Map(), sortedConnections);

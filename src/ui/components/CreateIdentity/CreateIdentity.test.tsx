@@ -5,13 +5,7 @@ import { Store, AnyAction } from "@reduxjs/toolkit";
 import { CreateIdentity } from "./CreateIdentity";
 import { filteredIdentityFix } from "../../__fixtures__/filteredIdentityFix";
 
-jest.mock("../../../core/aries/ariesAgent", () => ({
-  AriesAgent: {
-    agent: {
-      getIdentity: jest.fn().mockResolvedValue({}),
-    },
-  },
-}));
+jest.mock("../../../core/agent/agent");
 describe("Create Identity modal", () => {
   const mockOnClose = jest.fn();
 

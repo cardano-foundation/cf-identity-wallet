@@ -1,13 +1,13 @@
 import {
   DIDDetails,
-  IdentityType,
+  IdentifierType,
   KERIDetails,
-} from "../../core/aries/ariesAgent.types";
+} from "../../core/agent/agent.types";
 
 const didFix: DIDDetails[] = [
   {
     id: "did:key:z6MkpNyGdYK5Ey1pCf5cy1S9gbLD1857nQoZxVeeGifA1ZQv",
-    method: IdentityType.KEY,
+    method: IdentifierType.KEY,
     displayName: "Anonymous ID",
     createdAtUTC: "2023-01-01T19:23:24Z",
     colors: ["#92FFC0", "#47FF94"],
@@ -20,7 +20,7 @@ const didFix: DIDDetails[] = [
 const keriFix: KERIDetails[] = [
   {
     id: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
-    method: IdentityType.KERI,
+    method: IdentifierType.KERI,
     displayName: "Professional ID",
     createdAtUTC: "2023-01-01T19:23:24Z",
     colors: ["#47E0FF", "#00C6EF"],

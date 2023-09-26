@@ -8,8 +8,8 @@ import { ErrorMessage, MESSAGE_MILLISECONDS } from "../ErrorMessage";
 import "./VerifyPassword.scss";
 import { Alert } from "../Alert";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
-import { MiscRecordId } from "../../../core/aries/modules";
+import { AriesAgent } from "../../../core/agent/agent";
+import { MiscRecordId } from "../../../core/agent/modules";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCurrentOperation,
