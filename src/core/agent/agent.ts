@@ -137,7 +137,7 @@ class AriesAgent {
     if (!AriesAgent.ready) {
       await this.agent.initialize();
       await this.agent.modules.signify.start();
-      await AriesAgent.agent.connections.enableP2P();
+      // await AriesAgent.agent.connections.enableP2P();
       AriesAgent.ready = true;
     }
   }
