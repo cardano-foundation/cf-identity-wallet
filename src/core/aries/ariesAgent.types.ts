@@ -9,6 +9,11 @@ enum Blockchain {
   CARDANO = "Cardano",
 }
 
+enum ConnectionStatus {
+  CONFIRMED = "confirmed",
+  PENDING = "pending",
+}
+
 interface CryptoAccountRecordShortDetails {
   id: string;
   displayName: string;
@@ -34,6 +39,14 @@ interface CredentialShortDetails {
   credentialType: string;
 }
 
+interface ConnectionShortDetails {
+  id: string;
+  issuer: string;
+  issuanceDate: string;
+  issuerLogo?: string;
+  status: ConnectionStatus;
+}
+
 interface DIDDetails extends IdentityShortDetails {
   keyType: string;
   controller: string;
@@ -52,6 +65,13 @@ interface KERIDetails extends IdentityShortDetails {
   di: string;
 }
 
+interface ConnectionDetails extends ConnectionShortDetails {
+  goalCode?: string;
+  handshakeProtocols?: string[];
+  requestAttachments?: string[];
+  serviceEndpoints?: string[];
+}
+
 type GetIdentityResult =
   | { type: IdentityType.KERI; result: KERIDetails }
   | { type: IdentityType.KEY; result: DIDDetails };
@@ -61,7 +81,7 @@ type UpdateIdentityMetadata = Omit<
   "id" | "isArchived" | "name" | "method" | "createdAt"
 >;
 
-export { IdentityType, Blockchain };
+export { IdentityType, Blockchain, ConnectionStatus };
 export type {
   CryptoAccountRecordShortDetails,
   IdentityShortDetails,
@@ -70,4 +90,6 @@ export type {
   GetIdentityResult,
   UpdateIdentityMetadata,
   CredentialShortDetails,
+  ConnectionShortDetails,
+  ConnectionDetails,
 };

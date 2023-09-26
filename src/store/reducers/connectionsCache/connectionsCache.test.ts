@@ -3,9 +3,11 @@ import {
   connectionsCacheSlice,
   getConnectionsCache,
   setConnectionsCache,
+  updateOrAddConnectionCache,
 } from "./connectionsCache";
 import { RootState } from "../../index";
-import { ConnectionsProps } from "../../../ui/pages/Connections/Connections.types";
+import { ConnectionShortDetails } from "../../../ui/pages/Connections/Connections.types";
+import { ConnectionStatus } from "../../../core/aries/ariesAgent.types";
 
 describe("connectionsCacheSlice", () => {
   const initialState = {
@@ -18,13 +20,13 @@ describe("connectionsCacheSlice", () => {
   });
 
   it("should handle setConnectionsCache", () => {
-    const connections: ConnectionsProps[] = [
+    const connections: ConnectionShortDetails[] = [
       {
         id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
         issuer: "Cambridge University",
         issuanceDate: "2017-08-13T19:23:24Z",
         issuerLogo: "logo.png",
-        status: "pending",
+        status: ConnectionStatus.PENDING,
       },
     ];
     const newState = connectionsCacheSlice.reducer(
@@ -32,6 +34,21 @@ describe("connectionsCacheSlice", () => {
       setConnectionsCache(connections)
     );
     expect(newState.connections).toEqual(connections);
+  });
+
+  it("should handle updateOrAddConnectionCache", () => {
+    const connection: ConnectionShortDetails = {
+      id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
+      issuer: "Cambridge University",
+      issuanceDate: "2017-08-13T19:23:24Z",
+      issuerLogo: "logo.png",
+      status: ConnectionStatus.PENDING,
+    };
+    const newState = connectionsCacheSlice.reducer(
+      initialState,
+      updateOrAddConnectionCache(connection)
+    );
+    expect(newState.connections).toContainEqual(connection);
   });
 });
 

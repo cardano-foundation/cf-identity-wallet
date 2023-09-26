@@ -4,6 +4,7 @@ import {
   StateCacheProps,
   AuthenticationCacheProps,
   CurrentRouteCacheProps,
+  ConnectionRequestProps,
 } from "./stateCache.types";
 import { RoutePath } from "../../../routes";
 
@@ -18,7 +19,7 @@ const initialState: StateCacheProps = {
     passwordIsSkipped: true,
   },
   currentOperation: "",
-  connectionRequest: "",
+  connectionRequest: { id: "" },
   defaultCryptoAccount: "",
 };
 
@@ -54,7 +55,10 @@ const stateCacheSlice = createSlice({
     setCurrentOperation: (state, action: PayloadAction<string>) => {
       state.currentOperation = action.payload;
     },
-    setConnectionRequest: (state, action: PayloadAction<string>) => {
+    setConnectionRequest: (
+      state,
+      action: PayloadAction<ConnectionRequestProps>
+    ) => {
       state.connectionRequest = action.payload;
     },
   },

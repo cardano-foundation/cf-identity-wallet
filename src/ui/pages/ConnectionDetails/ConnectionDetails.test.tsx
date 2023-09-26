@@ -11,6 +11,25 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { Creds } from "../Creds";
 import { ConnectionDetails } from "./ConnectionDetails";
 
+jest.mock("../../../core/aries/ariesAgent", () => ({
+  AriesAgent: {
+    agent: {
+      getConnectionById: jest.fn().mockResolvedValue({
+        id: "ebfeb1ebc6f1c276ef71212ec20",
+        issuer: "Cambridge University",
+        issuanceDate: "2017-08-14T19:23:24Z",
+        issuerLogo: ".png",
+        status: "pending",
+      }),
+    },
+  },
+}));
+jest.mock("@aparajita/capacitor-secure-storage", () => ({
+  SecureStorage: {
+    get: jest.fn(),
+  },
+}));
+
 describe("ConnectionDetails Page", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();

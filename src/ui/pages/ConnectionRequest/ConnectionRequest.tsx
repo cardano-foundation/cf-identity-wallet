@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 import { IonCol, IonGrid, IonIcon, IonPage, IonRow } from "@ionic/react";
 import {
+  checkmark,
   personCircleOutline,
   swapHorizontalOutline,
-  checkmark,
 } from "ionicons/icons";
 import i18next from "i18next";
 import { PageLayout } from "../../components/layout/PageLayout";
@@ -12,19 +12,15 @@ import "./ConnectionRequest.scss";
 import {
   getConnectionRequest,
   setConnectionRequest,
-  setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/aries/ariesAgent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { connectionType, toastState } from "../../constants/dictionary";
+import { connectionType } from "../../constants/dictionary";
 import { Alert } from "../../components/Alert";
-import {
-  connectionRequestData,
-  connectionRequestPlaceholder,
-  credentialRequestData,
-} from "../../__fixtures__/connectionsFix";
-import { ConnectionRequestData } from "../Connections/Connections.types";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
+import { ConnectionDetails } from "../../../core/aries/ariesAgent.types";
+import { ConnectionRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
 const ConnectionRequest = () => {
   const dispatch = useAppDispatch();
@@ -32,55 +28,48 @@ const ConnectionRequest = () => {
   const [showConnectionRequest, setShowConnectionRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const [connectionData, setConnectionData] = useState<ConnectionRequestData>(
-    connectionRequestPlaceholder
-  );
+  const [connectionData, setConnectionData] = useState<ConnectionDetails>();
   const [connectionRequestType, setConnectionRequestType] = useState("");
 
   useEffect(() => {
-    // @TODO - sdisalvo: this is listening for connection requests
-    if (connectionRequest.length) {
-      //  If we have a connection request, initiate the Aries agent to fetch data and wait for "state": "request-sent"
-      //  it can't currently be tested in my local - will come back to it
-      //
-      //  await AriesAgent.agent.receiveInvitationFromUrl(connectionRequest);
-      //
-      //  Remember to replace "agentData" below with real values from the above request
-      const agentData = credentialRequestData;
-      setConnectionData(agentData);
-      // This is where we detect what type of request is incoming (more cases can be added in the future)
-      if (agentData.goal_code === connectionType.connection) {
-        setConnectionRequestType(connectionType.connection);
-      } else if (agentData.goal_code === connectionType.issuevc) {
-        setConnectionRequestType(connectionType.credential);
+    async function handle() {
+      if (connectionRequest.id.length > 0) {
+        const agentData = await AriesAgent.agent.getConnectionById(
+          connectionRequest.id
+        );
+        setConnectionData(agentData);
+        if (
+          connectionRequest.type ===
+            ConnectionRequestType.CONNECTION_INCOMING ||
+          connectionRequest.type === ConnectionRequestType.CONNECTION_RESPONSE
+        ) {
+          setConnectionRequestType(connectionType.connection);
+        } else if (connectionRequest.type === ConnectionRequestType.ISSUE_VC) {
+          setConnectionRequestType(connectionType.credential);
+        }
+        setShowConnectionRequest(true);
       }
-      // Display the connection request page with the correct data
-      setShowConnectionRequest(true);
     }
-  }, [connectionRequest]);
+    void handle();
+  }, [connectionRequest.id]);
 
   const handleReset = () => {
-    dispatch(setConnectionRequest(""));
+    dispatch(setConnectionRequest({ id: "" }));
     setShowConnectionRequest(false);
     setInitiateAnimation(false);
   };
 
   const handleConnect = async () => {
-    // @TODO - sdisalvo: If the user selects confirm, the connection must be accepted
-    // by calling acceptRequest from the agent and passing the ID of the connection
     setInitiateAnimation(true);
+    if (connectionRequest.type === ConnectionRequestType.CONNECTION_INCOMING) {
+      AriesAgent.agent.acceptRequestConnection(connectionRequest.id);
+    } else if (
+      connectionRequest.type === ConnectionRequestType.CONNECTION_RESPONSE
+    ) {
+      AriesAgent.agent.acceptResponseConnection(connectionRequest.id);
+    }
     setTimeout(() => {
       handleReset();
-      // the new connection will be displayed in the View Connections with chip stating ‘Pending'
-      // and a toast message will be shown as well (setting a delay to wait for the animation to finish)
-      let operation = "";
-      if (connectionData.goal_code === connectionType.connection) {
-        operation = toastState.connectionRequestPending;
-      }
-      if (connectionData.goal_code === connectionType.issuevc) {
-        operation = toastState.credentialRequestPending;
-      }
-      dispatch(setCurrentOperation(operation));
     }, TOAST_MESSAGE_DELAY);
   };
 
@@ -119,7 +108,7 @@ const ConnectionRequest = () => {
             </div>
             <div className="connection-request-provider-logo">
               <img
-                src={connectionData.profileUrl}
+                src={connectionData?.issuerLogo ?? CardanoLogo}
                 alt="connection-request-provider-logo"
               />
             </div>
@@ -129,15 +118,20 @@ const ConnectionRequest = () => {
               <span>
                 {connectionRequestType + i18n.t("connectionrequest.request")}
               </span>
-              <strong>{connectionData.label}</strong>
+              <strong>{connectionData?.issuer}</strong>
             </IonCol>
           </IonRow>
           <IonRow className="connection-request-status">
             <IonCol size="12">
               <strong>
-                {i18next.t("connectionrequest.success", {
-                  action: connectionRequestType,
-                })}
+                {connectionRequest.type ===
+                ConnectionRequestType.CONNECTION_INCOMING
+                  ? i18next.t("connectionrequest.pending", {
+                    action: connectionRequestType,
+                  })
+                  : i18next.t("connectionrequest.success", {
+                    action: connectionRequestType,
+                  })}
               </strong>
             </IonCol>
           </IonRow>
@@ -148,7 +142,7 @@ const ConnectionRequest = () => {
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm"
         headerText={i18next.t("connectionrequest.alert.title", {
-          initiator: connectionData.label,
+          initiator: connectionData?.issuer,
         })}
         confirmButtonText={`${i18n.t("connectionrequest.alert.confirm")}`}
         cancelButtonText={`${i18n.t("connectionrequest.alert.cancel")}`}
