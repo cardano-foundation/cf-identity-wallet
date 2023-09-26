@@ -13,13 +13,13 @@ import {
   ConnectionShortDetails,
   ConnectionStatus,
 } from "../agent.types";
-// import { LibP2p } from "../transports/libp2p/libP2p";
-// import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
+import { LibP2p } from "../transports/libp2p/libP2p";
+import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
 import { AgentService } from "./agentService";
 
 class ConnectionService extends AgentService {
-  // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
-  //   "No domain found in config";
+  static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
+    "No domain found in config";
   static readonly COULD_NOT_CREATE_OOB_VIA_MEDIATOR =
     "Could not create new mediator oob invitation";
   static readonly INVALID_CONNECTIONLESS_MSG =
@@ -55,7 +55,8 @@ class ConnectionService extends AgentService {
   isConnectionResponseSent(connectionRecord: ConnectionRecord) {
     return (
       connectionRecord.role === DidExchangeRole.Responder &&
-      connectionRecord.state === DidExchangeState.ResponseSent
+      connectionRecord.state === DidExchangeState.ResponseSent &&
+      !connectionRecord.autoAcceptConnection
     );
   }
 
@@ -196,34 +197,31 @@ class ConnectionService extends AgentService {
     };
   }
 
-  // @TODO - foconnor: fix and add tests;
-  // These libs are ESM exported and not working in Jest right now - can fix later.
+  async enableP2P() {
+    const inBoundTransport = LibP2p.libP2p.inBoundTransport;
+    await inBoundTransport.start(this.agent);
+    this.agent.registerInboundTransport(inBoundTransport);
 
-  // async enableP2P() {
-  //   const inBoundTransport = LibP2p.libP2p.inBoundTransport;
-  //   await inBoundTransport.start(this.agent);
-  //   this.agent.registerInboundTransport(inBoundTransport);
+    const outBoundTransport = new LibP2pOutboundTransport(LibP2p.libP2p);
+    await outBoundTransport.start(this.agent);
+    this.agent.registerOutboundTransport(outBoundTransport);
+  }
 
-  //   const outBoundTransport = new LibP2pOutboundTransport(LibP2p.libP2p);
-  //   await outBoundTransport.start(this.agent);
-  //   this.agent.registerOutboundTransport(outBoundTransport);
-  // }
+  async createNewWebRtcInvitation() {
+    const domains = this.agent.config.endpoints;
+    const libP2pDomain = domains.find((domain) => domain.includes("libp2p"));
+    if (!libP2pDomain) {
+      throw new Error(ConnectionService.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
+    }
 
-  // async createNewWebRtcInvitation() {
-  //   const domains = this.agent.config.endpoints;
-  //   const libP2pDomain = domains.find((domain) => domain.includes("libp2p"));
-  //   if (!libP2pDomain) {
-  //     throw new Error(ConnectionService.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
-  //   }
+    const createInvitation = await this.agent.oob.createInvitation({
+      autoAcceptConnection: false,
+    });
 
-  //   const createInvitation = await this.agent.oob.createInvitation({
-  //     autoAcceptConnection: false,
-  //   });
-
-  //   return createInvitation.outOfBandInvitation.toUrl({
-  //     domain: libP2pDomain,
-  //   });
-  // }
+    return createInvitation.outOfBandInvitation.toUrl({
+      domain: libP2pDomain,
+    });
+  }
 }
 
 export { ConnectionService };

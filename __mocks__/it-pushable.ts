@@ -1,0 +1,1 @@
+export const pushable = jest.fn();

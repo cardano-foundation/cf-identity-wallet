@@ -47,8 +47,10 @@ const config: InitConfig = {
 const agentDependencies: AgentDependencies = {
   FileSystem: CapacitorFileSystem,
   EventEmitterClass: EventEmitter,
+  // eslint-disable-next-line no-undef
   fetch: global.fetch as unknown as AgentDependencies["fetch"],
   WebSocketClass:
+    // eslint-disable-next-line no-undef
     global.WebSocket as unknown as AgentDependencies["WebSocketClass"],
 };
 
@@ -135,6 +137,7 @@ class AriesAgent {
     if (!AriesAgent.ready) {
       await this.agent.initialize();
       await this.agent.modules.signify.start();
+      await AriesAgent.agent.connections.enableP2P();
       AriesAgent.ready = true;
     }
   }

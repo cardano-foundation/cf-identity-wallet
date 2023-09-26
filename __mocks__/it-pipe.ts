@@ -1,0 +1,1 @@
+export const pipe = jest.fn();
