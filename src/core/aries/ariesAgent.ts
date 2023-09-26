@@ -29,6 +29,7 @@ import {
   V2CredentialProtocol,
   W3cCredentialsModule,
   WsOutboundTransport,
+  AriesFrameworkError
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -790,6 +791,26 @@ class AriesAgent {
   }
   async getOutOfBandRecordById(id: string): Promise<OutOfBandRecord> {
     return this.agent.oob.getById(id);
+  }
+  private async fetchShortUrl(invitationUrl: string) {
+    const abortController = new AbortController();
+    const id = setTimeout(() => abortController.abort(), 15000);
+    let response;
+    try {
+      response = await fetch(invitationUrl, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
+    } catch (error) {
+      throw new AriesFrameworkError(
+        `Get request failed on provided url ${invitationUrl}`
+      );
+    }
+    clearTimeout(id);
+    return response;
   }
 }
 export { AriesAgent, agentDependencies };
