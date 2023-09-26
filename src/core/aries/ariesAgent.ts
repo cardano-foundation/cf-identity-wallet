@@ -235,7 +235,7 @@ class AriesAgent {
       url = response.url;
     }
     return this.agent.oob.receiveInvitationFromUrl(url, {
-      autoAcceptConnection: true,
+      autoAcceptConnection: false,
       autoAcceptInvitation: true,
       reuseConnection: true,
     });
