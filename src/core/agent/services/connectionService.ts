@@ -173,6 +173,13 @@ class ConnectionService extends AgentService {
     return this.getConnectionDetails(connection, outOfBandRecord);
   }
 
+  async getConnectionShortDetailById(
+    id: string
+  ): Promise<ConnectionShortDetails> {
+    const connection = await this.agent.connections.getById(id);
+    return this.getConnectionDetails(connection, undefined);
+  }
+
   private getConnectionDetails(
     connection: ConnectionRecord,
     outOfBandRecord?: OutOfBandRecord

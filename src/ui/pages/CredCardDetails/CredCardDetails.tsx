@@ -19,7 +19,6 @@ import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
-import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -32,7 +31,6 @@ import {
 import { writeToClipboard } from "../../../utils/clipboard";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
-import { setCredsCache } from "../../../store/reducers/credsCache";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
 import {
@@ -41,6 +39,8 @@ import {
   toastState,
 } from "../../constants/dictionary";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
+import { CredentialDetails } from "../../../core/agent/agent.types";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -50,16 +50,19 @@ const CredCardDetails = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
-  const [creds, setCreds] = useState(credsFix);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState({
+  const [cardData, setCardData] = useState<CredentialDetails>({
     ...defaultCredentialsCardData,
     id: params.id,
   });
 
   useEffect(() => {
-    const cardDetails = creds.find((cred) => cred.id === params.id);
-    if (cardDetails) setCardData(cardDetails);
+    async function getCredDetails() {
+      const cardDetails =
+        await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
+      setCardData(cardDetails);
+    }
+    getCredDetails();
   }, [params.id]);
 
   useIonViewWillEnter(() => {
@@ -84,9 +87,9 @@ const CredCardDetails = () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
     // Remember to update CredCardoptions file too.
-    const updatedCreds = creds.filter((item) => item.id !== cardData.id);
-    setCreds(updatedCreds);
-    dispatch(setCredsCache(updatedCreds));
+    // const updatedCreds = creds.filter((item) => item.id !== cardData.id);
+    // setCreds(updatedCreds);
+    // dispatch(setCredsCache(updatedCreds));
     handleDone();
   };
 
@@ -110,7 +113,17 @@ const CredCardDetails = () => {
       </>
     );
   };
-
+  const formatDate = (date?: string) => {
+    return date ? (
+      <>
+        {formatShortDate(date)}
+        {" - "}
+        {formatTimeToSec(date)}
+      </>
+    ) : (
+      "N/A"
+    );
+  };
   return (
     <IonPage className="tab-layout card-details">
       <TabLayout
@@ -121,7 +134,7 @@ const CredCardDetails = () => {
         menuButton={false}
         additionalButtons={<AdditionalButtons />}
       >
-        {cardData.receivingDid.length === 0 ? (
+        {cardData?.receivingDid?.length === 0 ? (
           <div
             className="spinner-container"
             data-testid="spinner-container"
@@ -131,7 +144,7 @@ const CredCardDetails = () => {
         ) : (
           <>
             <CredCard
-              cardData={cardData}
+              cardData={cardData as CredentialDetails}
               isActive={false}
             />
             <div className="card-details-content">
@@ -231,9 +244,7 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {formatShortDate(cardData.issuanceDate)}
-                      {" - "}
-                      {formatTimeToSec(cardData.issuanceDate)}
+                      {formatDate(cardData.issuanceDate)}
                     </span>
                   </span>
                 </div>
@@ -251,9 +262,7 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {formatShortDate(cardData.expirationDate)}
-                      {" - "}
-                      {formatTimeToSec(cardData.expirationDate)}
+                      {formatDate(cardData.expirationDate)}
                     </span>
                   </span>
                 </div>

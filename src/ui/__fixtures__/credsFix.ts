@@ -1,4 +1,7 @@
-const credsFix = [
+import { CredentialDetails } from "../../core/agent/agent.types";
+import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+
+const credsFix: CredentialDetails[] = [
   {
     id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
     type: ["UniversityDegreeCredential"],
@@ -24,7 +27,7 @@ const credsFix = [
       suspended: false,
     },
     colors: ["#FFBC60", "#FFA21F"],
-    status: "confirmed",
+    status: CredentialMetadataRecordStatus.CONFIRMED,
   },
   {
     id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
@@ -51,7 +54,7 @@ const credsFix = [
       suspended: false,
     },
     colors: ["#D9EDDF", "#ACD8B9"],
-    status: "confirmed",
+    status: CredentialMetadataRecordStatus.CONFIRMED,
   },
 ];
 

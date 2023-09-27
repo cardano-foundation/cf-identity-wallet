@@ -1,13 +1,21 @@
 import { BaseRecord } from "@aries-framework/core";
-import { CredentialMetadataRecordProps } from "./credentialMetadataRecord.types";
+import {
+  CredentialMetadataRecordProps,
+  CredentialMetadataRecordStatus,
+} from "./credentialMetadataRecord.types";
 
-class CredentialMetadataRecord extends BaseRecord {
+class CredentialMetadataRecord
+  extends BaseRecord
+  implements CredentialMetadataRecordProps
+{
   nameOnCredential!: string;
   colors!: [string, string];
   isArchived?: boolean;
   issuanceDate!: string;
-  issuerLogo!: string;
+  issuerLogo!: string | undefined;
   credentialType!: string;
+  status!: CredentialMetadataRecordStatus;
+  credentialRecordId!: string;
 
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;
@@ -17,6 +25,7 @@ class CredentialMetadataRecord extends BaseRecord {
 
     if (props) {
       this.id = props.id;
+      this.credentialRecordId = props.credentialRecordId;
       this.nameOnCredential = props.nameOnCredential;
       this.colors = props.colors;
       this.isArchived = props.isArchived ?? false;
@@ -24,6 +33,7 @@ class CredentialMetadataRecord extends BaseRecord {
       this.issuanceDate = props.issuanceDate;
       this.issuerLogo = props.issuerLogo;
       this.credentialType = props.credentialType;
+      this.status = props.status;
     }
   }
 
@@ -31,6 +41,7 @@ class CredentialMetadataRecord extends BaseRecord {
     return {
       ...this._tags,
       isArchived: this.isArchived,
+      credentialRecordId: this.credentialRecordId,
     };
   }
 }

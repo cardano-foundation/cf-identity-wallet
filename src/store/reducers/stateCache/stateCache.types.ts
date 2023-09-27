@@ -14,15 +14,15 @@ interface AuthenticationCacheProps {
   passwordIsSet: boolean;
   passwordIsSkipped: boolean;
 }
-enum ConnectionRequestType {
+enum ConnectionCredentialRequestType {
   CONNECTION_RESPONSE = "connection-response",
-  ISSUE_VC = "issue-vc",
+  CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
   CONNECTION_INCOMING = "connection-incoming",
 }
 
-interface ConnectionRequestProps {
+interface ConnectionCredentialRequestProps {
   id: string;
-  type?: ConnectionRequestType;
+  type?: ConnectionCredentialRequestType;
 }
 
 interface StateCacheProps {
@@ -30,15 +30,15 @@ interface StateCacheProps {
   authentication: AuthenticationCacheProps;
   currentOperation: string;
   defaultCryptoAccount: string;
-  connectionRequest: ConnectionRequestProps;
+  connectionCredentialRequest: ConnectionCredentialRequestProps;
 }
 
-export { ConnectionRequestType };
+export { ConnectionCredentialRequestType };
 
 export type {
   PayloadData,
   CurrentRouteCacheProps,
   AuthenticationCacheProps,
   StateCacheProps,
-  ConnectionRequestProps,
+  ConnectionCredentialRequestProps,
 };

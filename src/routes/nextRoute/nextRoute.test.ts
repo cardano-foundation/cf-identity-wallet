@@ -33,7 +33,7 @@ describe("NextRoute", () => {
           passwordIsSkipped: true,
         },
         currentOperation: "",
-        connectionRequest: { id: "" },
+        connectionCredentialRequest: { id: "" },
         defaultCryptoAccount: "",
       },
       seedPhraseCache: {
@@ -153,7 +153,7 @@ describe("getNextRoute", () => {
         passwordIsSkipped: true,
       },
       currentOperation: "",
-      connectionRequest: { id: "" },
+      connectionCredentialRequest: { id: "" },
       defaultCryptoAccount: "",
     },
     seedPhraseCache: {

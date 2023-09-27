@@ -3,13 +3,15 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
   setAuthentication,
-  setConnectionRequest,
+  setConnectionCredentialRequest,
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
-import { setCredsCache } from "../../../store/reducers/credsCache";
-import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
+import {
+  setCredsCache,
+  updateOrAddCredsCache,
+} from "../../../store/reducers/credsCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import {
   setCryptoAccountsCache,
@@ -24,8 +26,13 @@ import {
   setConnectionsCache,
   updateOrAddConnectionCache,
 } from "../../../store/reducers/connectionsCache";
-import { ConnectionRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { toastState } from "../../constants/dictionary";
+import {
+  CredentialMetadataRecordProps,
+  CredentialMetadataRecordStatus,
+} from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { ColorGenerator } from "../../utils/ColorGenerator";
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -48,6 +55,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     await AriesAgent.agent.start();
     const connectionsDetails =
       await AriesAgent.agent.connections.getConnections();
+    const credentials = await AriesAgent.agent.credentials.getCredentials();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
@@ -77,7 +85,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
 
     dispatch(setIdentitiesCache(storedIdentities));
-    dispatch(setCredsCache(filteredCredsFix));
+    dispatch(setCredsCache(credentials));
     dispatch(setCryptoAccountsCache(storedCryptoAccounts));
     dispatch(setConnectionsCache(connectionsDetails));
 
@@ -98,9 +106,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
         )
       ) {
         dispatch(
-          setConnectionRequest({
+          setConnectionCredentialRequest({
             id: connectionRecord.id,
-            type: ConnectionRequestType.CONNECTION_RESPONSE,
+            type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
           })
         );
       } else if (
@@ -115,9 +123,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
         dispatch(updateOrAddConnectionCache(connectionDetails));
         dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
         dispatch(
-          setConnectionRequest({
+          setConnectionCredentialRequest({
             id: connectionRecord.id,
-            type: ConnectionRequestType.CONNECTION_INCOMING,
+            type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
           })
         );
       } else if (
@@ -135,7 +143,42 @@ const AppWrapper = (props: { children: ReactNode }) => {
         dispatch(setCurrentOperation(toastState.newConnectionAdded));
       }
     });
-
+    AriesAgent.agent.credentials.onCredentialStateChanged(async (event) => {
+      const credentialRecord = event;
+      if (
+        AriesAgent.agent.credentials.isCredentialOfferReceived(credentialRecord)
+      ) {
+        dispatch(
+          setConnectionCredentialRequest({
+            id: credentialRecord.id,
+            type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+          })
+        );
+      } else if (
+        AriesAgent.agent.credentials.isCredentialRequestSent(credentialRecord)
+      ) {
+        const credentialDetails: CredentialMetadataRecordProps = {
+          id: `metadata:${credentialRecord.id}`,
+          credentialRecordId: credentialRecord.id,
+          isArchived: false,
+          colors: new ColorGenerator().generateNextColor() as [string, string],
+          credentialType: "",
+          issuanceDate: credentialRecord.createdAt.toISOString(),
+          nameOnCredential: "",
+          status: CredentialMetadataRecordStatus.PENDING,
+        };
+        await AriesAgent.agent.credentials.createMetadata(credentialDetails);
+        dispatch(setCurrentOperation(toastState.credentialRequestPending));
+        dispatch(updateOrAddCredsCache(credentialDetails));
+      } else if (
+        AriesAgent.agent.credentials.isCredentialDone(credentialRecord)
+      ) {
+        const credentialMetadata =
+          await AriesAgent.agent.credentials.updateMetadata(credentialRecord);
+        dispatch(setCurrentOperation(toastState.newCredentialAdded));
+        dispatch(updateOrAddCredsCache(credentialMetadata));
+      }
+    });
     setInitialised(true);
   };
 

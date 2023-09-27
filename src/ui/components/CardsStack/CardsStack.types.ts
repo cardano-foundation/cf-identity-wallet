@@ -1,31 +1,7 @@
-import { IdentifierShortDetails } from "../../../core/agent/agent.types";
-
-interface CredProps {
-  id: string;
-  type?: string[];
-  connection?: string;
-  issuanceDate: string;
-  expirationDate?: string;
-  receivingDid?: string;
-  credentialType: string;
-  nameOnCredential: string;
-  issuerLogo: string;
-  credentialSubject?: {
-    degree: {
-      education: string;
-      type: string;
-      name: string;
-    };
-  };
-  proofType?: string;
-  proofValue?: string;
-  credentialStatus?: {
-    revoked: boolean;
-    suspended: boolean;
-  };
-  status: string;
-  colors: string[];
-}
+import {
+  IdentifierShortDetails,
+  CredentialShortDetails,
+} from "../../../core/agent/agent.types";
 
 interface DidCardProps {
   cardData: IdentifierShortDetails;
@@ -35,10 +11,10 @@ interface DidCardProps {
 }
 
 interface CredCardProps {
-  cardData: CredProps;
+  cardData: CredentialShortDetails;
   isActive: boolean;
   index?: number;
   onHandleShowCardDetails?: (index: number | undefined) => void;
 }
 
-export type { DidCardProps, CredProps, CredCardProps };
+export type { DidCardProps, CredentialShortDetails, CredCardProps };

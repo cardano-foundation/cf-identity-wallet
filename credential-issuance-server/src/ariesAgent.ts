@@ -119,10 +119,13 @@ class AriesAgent {
         issuanceDate: "2022-10-22T12:23:48Z",
         credentialSubject: {
           degree: {
-            type: "BachelorDegree",
+            type: "Bachelor Degree",
             name: "Bachelor of Science and Arts",
+            givenName: "John",
+            familyName: "Smith",
           },
         },
+        expirationDate: "2100-10-22T12:23:48Z"
       },
       options: {
         proofType: "Ed25519Signature2018",

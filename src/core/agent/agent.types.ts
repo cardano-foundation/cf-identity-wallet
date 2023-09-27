@@ -1,4 +1,5 @@
 import { IdentifierMetadataRecordProps } from "./modules/generalStorage/repositories/identifierMetadataRecord";
+import { CredentialMetadataRecordProps } from "./modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 enum IdentifierType {
   KEY = "key",
@@ -30,14 +31,10 @@ interface IdentifierShortDetails {
   colors: [string, string];
 }
 
-interface CredentialShortDetails {
-  id: string;
-  nameOnCredential: string;
-  colors: [string, string];
-  issuanceDate: string;
-  issuerLogo: string;
-  credentialType: string;
-}
+type CredentialShortDetails = Omit<
+  CredentialMetadataRecordProps,
+  "credentialRecordId"
+>;
 
 interface ConnectionShortDetails {
   id: string;
@@ -72,6 +69,26 @@ interface ConnectionDetails extends ConnectionShortDetails {
   serviceEndpoints?: string[];
 }
 
+interface CredentialDetails extends CredentialShortDetails {
+  type: string[];
+  connection?: string;
+  expirationDate?: string;
+  receivingDid?: string;
+  credentialSubject: {
+    degree: {
+      education: string;
+      type: string;
+      name: string;
+    };
+  };
+  proofType: string;
+  proofValue: string;
+  credentialStatus?: {
+    revoked: boolean;
+    suspended: boolean;
+  };
+}
+
 type GetIdentifierResult =
   | { type: IdentifierType.KERI; result: KERIDetails }
   | { type: IdentifierType.KEY; result: DIDDetails };
@@ -89,6 +106,7 @@ export type {
   KERIDetails,
   GetIdentifierResult,
   CredentialShortDetails,
+  CredentialDetails,
   ConnectionShortDetails,
   ConnectionDetails,
 };

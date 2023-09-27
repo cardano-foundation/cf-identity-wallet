@@ -1,6 +1,7 @@
 import { Agent, AutoAcceptCredential } from "@aries-framework/core";
 import { CredentialMetadataRecord } from "../modules";
 import { CredentialService } from "./credentialService";
+import { CredentialMetadataRecordStatus } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 const agent = jest.mocked({
   credentials: {
@@ -36,13 +37,14 @@ const credentialMetadataProps = {
   issuanceDate: nowISO,
   issuerLogo: "issuerLogoHere",
   credentialType: "credType",
+  status: CredentialMetadataRecordStatus.CONFIRMED,
+  credentialRecordId: "1",
 };
 const credentialMetadataRecordA = new CredentialMetadataRecord(
   credentialMetadataProps
 );
 const credentialMetadataRecordB = new CredentialMetadataRecord({
   ...credentialMetadataProps,
-  id: id2,
 });
 const archivedMetadataRecord = new CredentialMetadataRecord({
   ...credentialMetadataProps,

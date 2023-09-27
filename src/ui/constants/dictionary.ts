@@ -1,8 +1,10 @@
 import {
   ConnectionShortDetails,
   ConnectionStatus,
+  CredentialDetails,
 } from "../../core/agent/agent.types";
 import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
+import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 const cardTypes = {
   creds: "creds",
@@ -55,7 +57,7 @@ const toastState = {
   newCredentialAdded: "newCredentialAdded",
 };
 
-const defaultCredentialsCardData = {
+const defaultCredentialsCardData: CredentialDetails = {
   id: "",
   type: [""],
   connection: "",
@@ -79,7 +81,7 @@ const defaultCredentialsCardData = {
     suspended: false,
   },
   colors: ["", ""],
-  status: "",
+  status: CredentialMetadataRecordStatus.PENDING,
 };
 
 const defaultCryptoAccountData: CryptoAccountProps = {

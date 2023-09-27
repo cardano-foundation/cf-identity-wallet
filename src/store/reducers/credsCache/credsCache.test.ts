@@ -1,7 +1,8 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import { credsCacheSlice, getCredsCache, setCredsCache } from "./credsCache";
-import { CredProps } from "../../../ui/components/CardsStack/CardsStack.types";
+import { CredentialShortDetails } from "../../../ui/components/CardsStack/CardsStack.types";
 import { RootState } from "../../index";
+import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 describe("credsCacheSlice", () => {
   const initialState = {
@@ -14,7 +15,7 @@ describe("credsCacheSlice", () => {
   });
 
   it("should handle setCredsCache", () => {
-    const creds: CredProps[] = [
+    const creds: CredentialShortDetails[] = [
       {
         id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
         issuanceDate: "2010-01-01T19:23:24Z",
@@ -22,7 +23,7 @@ describe("credsCacheSlice", () => {
         nameOnCredential: "Thomas A. Mayfield",
         issuerLogo: "https://placehold.co/120x22",
         colors: ["#FFBC60", "#FFA21F"],
-        status: "confirmed",
+        status: CredentialMetadataRecordStatus.CONFIRMED,
       },
     ];
     const newState = credsCacheSlice.reducer(
