@@ -21,10 +21,6 @@ const credsFix: CredentialDetails[] = [
     proofType: "Ed25519Signature2020",
     proofValue:
       "z58DAdFfa9SkqZMVZs6ZjWp1CktyGesjuTSwRdoWhPxAQpic7ndSayn1PzAfGFCF5bppETSTojQCrfFPP2oumHKtz",
-    credentialStatus: {
-      revoked: false,
-      suspended: false,
-    },
     colors: ["#FFBC60", "#FFA21F"],
     status: CredentialMetadataRecordStatus.CONFIRMED,
   },
@@ -47,10 +43,6 @@ const credsFix: CredentialDetails[] = [
     proofType: "Ed25519Signature2020",
     proofValue:
       "z58DAdFfa9SkqZMVPxAQpic7ndSayn1PzZs6ZjWp1CktyGesjuTSwRdoWhAfGFCF5bppETSTojQCrfFPP2oumHKtz",
-    credentialStatus: {
-      revoked: false,
-      suspended: false,
-    },
     colors: ["#D9EDDF", "#ACD8B9"],
     status: CredentialMetadataRecordStatus.CONFIRMED,
   },

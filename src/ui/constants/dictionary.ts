@@ -74,10 +74,6 @@ const defaultCredentialsCardData: CredentialDetails = {
   },
   proofType: "",
   proofValue: "",
-  credentialStatus: {
-    revoked: false,
-    suspended: false,
-  },
   colors: ["", ""],
   status: CredentialMetadataRecordStatus.PENDING,
 };

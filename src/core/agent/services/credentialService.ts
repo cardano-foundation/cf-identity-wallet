@@ -7,8 +7,9 @@ import {
   ProposeCredentialOptions,
   V2OfferCredentialMessage,
   W3cVerifiableCredential,
+  LinkedDataProof,
+  AriesFrameworkError,
 } from "@aries-framework/core";
-import { LinkedDataProof } from "@aries-framework/core/build/modules/vc/models/LinkedDataProof";
 import { CredentialDetails, CredentialShortDetails } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
@@ -40,17 +41,6 @@ class CredentialService extends AgentService {
   isCredentialOfferReceived(credentialRecord: CredentialExchangeRecord) {
     return (
       credentialRecord.state === CredentialState.OfferReceived &&
-      !credentialRecord.autoAcceptCredential
-    );
-  }
-
-  /**
-   * Role: holder, check to see if incoming credential received
-   * @param credentialRecord
-   */
-  isCredentialReceived(credentialRecord: CredentialExchangeRecord) {
-    return (
-      credentialRecord.state === CredentialState.CredentialReceived &&
       !credentialRecord.autoAcceptCredential
     );
   }
@@ -131,10 +121,6 @@ class CredentialService extends AgentService {
       credentialSubject: credentialSubject,
       proofType: proof.type,
       proofValue: proof.jws ?? "Not verifiable",
-      credentialStatus: {
-        revoked: false,
-        suspended: false,
-      },
     };
   }
 
@@ -177,7 +163,9 @@ class CredentialService extends AgentService {
       credentialRecord?.connectionId ?? ""
     );
     if (!metadata) {
-      throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
+      throw new AriesFrameworkError(
+        CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+      );
     }
     const data = {
       credentialType: w3cCredential.credential.type?.[1] ?? "",
@@ -231,9 +219,7 @@ class CredentialService extends AgentService {
     const metadata =
       await this.agent.modules.generalStorage.getCredentialMetadata(id);
     if (!metadata) {
-      throw new Error(
-        `${CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG} ${id}`
-      );
+      throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
     }
     return metadata;
   }

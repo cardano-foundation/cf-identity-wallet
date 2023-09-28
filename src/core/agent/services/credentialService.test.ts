@@ -1,16 +1,41 @@
-import { Agent, AutoAcceptCredential } from "@aries-framework/core";
+import {
+  Agent,
+  Attachment,
+  AutoAcceptCredential,
+  CredentialEventTypes,
+  CredentialExchangeRecord,
+  CredentialState,
+  CredentialStateChangedEvent,
+  V2OfferCredentialMessage,
+  W3cCredentialRecord,
+} from "@aries-framework/core";
+import { EventEmitter } from "events";
 import { CredentialMetadataRecord } from "../modules";
 import { CredentialService } from "./credentialService";
-import { CredentialMetadataRecordStatus } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
+import {
+  CredentialMetadataRecordProps,
+  CredentialMetadataRecordStatus,
+} from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { ColorGenerator } from "../../../ui/utils/ColorGenerator";
+
+const eventEmitter = new EventEmitter();
 
 const agent = jest.mocked({
   credentials: {
     acceptOffer: jest.fn(),
     proposeCredential: jest.fn(),
     deleteById: jest.fn(),
+    getById: jest.fn(),
+    findOfferMessage: jest.fn(),
+  },
+  connections: {
+    findById: jest.fn(),
   },
   events: {
-    on: jest.fn(),
+    on: eventEmitter.on.bind(eventEmitter),
+  },
+  eventEmitter: {
+    emit: eventEmitter.emit.bind(eventEmitter),
   },
   modules: {
     generalStorage: {
@@ -18,7 +43,12 @@ const agent = jest.mocked({
       updateCredentialMetadata: jest.fn(),
       deleteCredentialMetadata: jest.fn(),
       getCredentialMetadata: jest.fn(),
+      saveCredentialMetadataRecord: jest.fn(),
+      getCredentialMetadataByCredentialRecordId: jest.fn(),
     },
+  },
+  w3cCredentials: {
+    getCredentialRecordById: jest.fn(),
   },
 });
 const credentialService = new CredentialService(agent as any as Agent);
@@ -29,6 +59,7 @@ const colors: [string, string] = ["#fff", "#fff"];
 
 const id1 = "id1";
 const id2 = "id2";
+const credentialRecordId1 = "cId1";
 const credentialMetadataProps = {
   id: id1,
   colors,
@@ -37,13 +68,105 @@ const credentialMetadataProps = {
   issuerLogo: "issuerLogoHere",
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
-  credentialRecordId: "1",
+  credentialRecordId: credentialRecordId1,
 };
+const credentialExchangeProps = {
+  id: credentialRecordId1,
+  connectionId: "1",
+  threadId: "1",
+  protocolVersion: "v2",
+  credentials: [
+    {
+      credentialRecordId: credentialRecordId1,
+      credentialRecordType: "CredentialRecord",
+    },
+  ],
+};
+
+const credentialDoneExchangeRecord = new CredentialExchangeRecord({
+  ...credentialExchangeProps,
+  state: CredentialState.Done,
+});
+
+const credentialOfferReceivedRecordAutoAccept = new CredentialExchangeRecord({
+  ...credentialExchangeProps,
+  state: CredentialState.OfferReceived,
+  autoAcceptCredential: undefined,
+});
+
+const credentialRequestSentRecordAutoAccept = new CredentialExchangeRecord({
+  ...credentialExchangeProps,
+  state: CredentialState.RequestSent,
+  autoAcceptCredential: undefined,
+});
+
+const w3cCredentialRecord = new W3cCredentialRecord({
+  tags: {
+    expandedTypes: [
+      "https://www.w3.org/2018/credentials#VerifiableCredential",
+      "https://example.org/examples#UniversityDegreeCredential",
+    ],
+    issuerId: "did:key:z6MkgbKgxfW1zgGVwRRmGLrwmFiNT6MZjPvG7xQ8LhAJonbx",
+    subjectIds: [],
+    schemaIds: [],
+    contexts: [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://www.w3.org/2018/credentials/examples/v1",
+    ],
+    proofTypes: ["Ed25519Signature2018"],
+  },
+  id: "5c030818-0a6c-416f-a5f4-7076b2de42a9",
+  credential: {
+    type: ["VerifiableCredential", "UniversityDegreeCredential"],
+    context: [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://www.w3.org/2018/credentials/examples/v1",
+    ],
+    issuer: "did:key:z6MkgbKgxfW1zgGVwRRmGLrwmFiNT6MZjPvG7xQ8LhAJonbx",
+    issuanceDate: nowISO,
+    credentialSubject: {
+      id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
+      degree: {
+        type: "Bachelor Degree",
+        name: "Bachelor of Science and Arts",
+        givenName: "John",
+        familyName: "Smith",
+      },
+    } as any,
+    expirationDate: "2100-10-22T12:23:48Z",
+    proof: {
+      verificationMethod:
+        "did:key:z6MkgbKgxfW1zgGVwRRmGLrwmFiNT6MZjPvG7xQ8LhAJonbx#z6MkgbKgxfW1zgGVwRRmGLrwmFiNT6MZjPvG7xQ8LhAJonbx",
+      type: "Ed25519Signature2018",
+      proofPurpose: "assertionMethod",
+      jws: "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
+    },
+  } as any as W3cCredentialRecord["credential"],
+});
+
+const offerAttachment = new Attachment({
+  id: "attachId",
+  mimeType: "application/json",
+  data: { base64: "eyJkYXRhIjogIm1lc3NhZ2UifQ==" },
+});
+
+const v2OfferCredentialMessage = new V2OfferCredentialMessage({
+  credentialPreview: {} as any,
+  offerAttachments: [offerAttachment],
+  formats: [
+    {
+      attachmentId: "c2b9f232-16c8-44d0-a757-ea15d712af01",
+      format: "aries/ld-proof-vc-detail@v1.0",
+    },
+  ],
+});
+
 const credentialMetadataRecordA = new CredentialMetadataRecord(
   credentialMetadataProps
 );
 const credentialMetadataRecordB = new CredentialMetadataRecord({
   ...credentialMetadataProps,
+  id: id2,
 });
 const archivedMetadataRecord = new CredentialMetadataRecord({
   ...credentialMetadataProps,
@@ -89,6 +212,7 @@ describe("Credential service of agent", () => {
         credentialType: credentialMetadataRecordA.credentialType,
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataProps.issuerLogo,
+        status: CredentialMetadataRecordStatus.CONFIRMED,
       },
       {
         id: id2,
@@ -96,6 +220,7 @@ describe("Credential service of agent", () => {
         credentialType: credentialMetadataRecordB.credentialType,
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataRecordB.issuerLogo,
+        status: CredentialMetadataRecordStatus.CONFIRMED,
       },
     ]);
   });
@@ -212,5 +337,136 @@ describe("Credential service of agent", () => {
     expect(
       agent.modules.generalStorage.updateCredentialMetadata
     ).not.toBeCalled();
+  });
+
+  test("callback will run when have a event listener", async () => {
+    const callback = jest.fn();
+    credentialService.onCredentialStateChanged(callback);
+    const event: CredentialStateChangedEvent = {
+      type: CredentialEventTypes.CredentialStateChanged,
+      payload: {
+        credentialRecord: credentialDoneExchangeRecord,
+        previousState: CredentialState.CredentialReceived,
+      },
+      metadata: {
+        contextCorrelationId: id1,
+      },
+    };
+    agent.eventEmitter.emit(CredentialEventTypes.CredentialStateChanged, event);
+    expect(callback).toBeCalledWith(event.payload.credentialRecord);
+  });
+
+  test("check incoming offer receiver (ready to be accepted)", () => {
+    expect(
+      credentialService.isCredentialOfferReceived(
+        credentialOfferReceivedRecordAutoAccept
+      )
+    ).toBe(true);
+  });
+
+  test("check credential is done", () => {
+    expect(
+      credentialService.isCredentialDone(credentialDoneExchangeRecord)
+    ).toBe(true);
+  });
+
+  test("after accepted credential", () => {
+    expect(
+      credentialService.isCredentialRequestSent(
+        credentialRequestSentRecordAutoAccept
+      )
+    ).toBe(true);
+  });
+
+  test("get credential successfully record by id", () => {
+    credentialService.getCredentialRecordById(credentialDoneExchangeRecord.id);
+    expect(agent.credentials.getById).toBeCalledWith(
+      credentialDoneExchangeRecord.id
+    );
+  });
+
+  test("get credential details successfully record by id", async () => {
+    agent.modules.generalStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(credentialMetadataRecordA);
+    agent.credentials.getById = jest
+      .fn()
+      .mockResolvedValue(credentialDoneExchangeRecord);
+    agent.w3cCredentials.getCredentialRecordById = jest
+      .fn()
+      .mockResolvedValue(w3cCredentialRecord);
+
+    await expect(
+      credentialService.getCredentialDetailsById(credentialMetadataRecordA.id)
+    ).resolves.toStrictEqual({
+      id: credentialMetadataRecordA.id,
+      colors: credentialMetadataRecordA.colors,
+      connection: credentialDoneExchangeRecord.connectionId,
+      credentialSubject: w3cCredentialRecord.credential.credentialSubject,
+      credentialType: "credType",
+      expirationDate: "2100-10-22T12:23:48Z",
+      issuanceDate: nowISO,
+      issuerLogo: "issuerLogoHere",
+      proofType: "Ed25519Signature2018",
+      proofValue:
+        "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
+      receivingDid: "did:example:ebfeb1f712ebc6f1c276e12ec21",
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+      type: ["VerifiableCredential", "UniversityDegreeCredential"],
+    });
+  });
+
+  test("get preview credential successfully by credentialRecord", async () => {
+    agent.credentials.findOfferMessage = jest
+      .fn()
+      .mockResolvedValue(v2OfferCredentialMessage);
+    const data = await credentialService.getPreviewCredential(
+      credentialDoneExchangeRecord
+    );
+    expect(data).toStrictEqual({
+      data: "message",
+    });
+  });
+
+  test("create metadata record successfully", async () => {
+    await credentialService.createMetadata(credentialMetadataProps);
+    expect(
+      agent.modules.generalStorage.saveCredentialMetadataRecord
+    ).toBeCalled();
+  });
+
+  test("update metadata completed without connection successfully when credential is done", async () => {
+    agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
+      jest.fn().mockResolvedValue(credentialMetadataRecordA);
+    agent.w3cCredentials.getCredentialRecordById = jest
+      .fn()
+      .mockResolvedValue(w3cCredentialRecord);
+    const dataAfterUpdate = await credentialService.updateMetadataCompleted(
+      credentialDoneExchangeRecord
+    );
+    expect(dataAfterUpdate).toStrictEqual({
+      colors: credentialMetadataRecordA.colors,
+      credentialType: w3cCredentialRecord.credential.type[1],
+      id: id1,
+      isArchived: false,
+      issuanceDate: w3cCredentialRecord.credential.issuanceDate,
+      issuerLogo: undefined,
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+    });
+  });
+
+  test("update metadata completed with connection successfully when credential is done", async () => {
+    agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
+      jest.fn().mockResolvedValue(credentialMetadataRecordA);
+    agent.w3cCredentials.getCredentialRecordById = jest
+      .fn()
+      .mockResolvedValue(w3cCredentialRecord);
+    agent.connections.findById = jest
+      .fn()
+      .mockResolvedValue({ imageUrl: "mockUrl" });
+    const dataAfterUpdate = await credentialService.updateMetadataCompleted(
+      credentialDoneExchangeRecord
+    );
+    expect(dataAfterUpdate.issuerLogo).toEqual("mockUrl");
   });
 });

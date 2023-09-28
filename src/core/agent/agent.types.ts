@@ -77,10 +77,6 @@ interface CredentialDetails extends CredentialShortDetails {
   credentialSubject: any;
   proofType: string;
   proofValue: string;
-  credentialStatus?: {
-    revoked: boolean;
-    suspended: boolean;
-  };
 }
 
 type GetIdentifierResult =
