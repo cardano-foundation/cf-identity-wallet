@@ -26,7 +26,7 @@ const ConnectionCredentialRequest = () => {
   const connectionCredentialRequest = useAppSelector(
     getConnectionCredentialRequest
   );
-  const [showConnectionRequest, setShowConnectionRequest] = useState(false);
+  const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [requestData, setRequestData] = useState<{
@@ -71,7 +71,7 @@ const ConnectionCredentialRequest = () => {
           }
           setRequestType(connectionType.credential);
         }
-        setShowConnectionRequest(true);
+        setShowRequest(true);
       }
     }
     void handle();
@@ -79,7 +79,7 @@ const ConnectionCredentialRequest = () => {
 
   const handleReset = () => {
     dispatch(setConnectionCredentialRequest({ id: "" }));
-    setShowConnectionRequest(false);
+    setShowRequest(false);
     setInitiateAnimation(false);
   };
 
@@ -115,61 +115,61 @@ const ConnectionCredentialRequest = () => {
   return (
     <IonPage
       // @TODO: edit class name
-      className={`page-layout connection-request safe-area ${
-        showConnectionRequest ? "show" : "hide"
+      className={`page-layout request safe-area ${
+        showRequest ? "show" : "hide"
       } ${initiateAnimation ? "animation-on" : "animation-off"}`}
-      data-testid="connection-request"
+      data-testid="request"
     >
       <PageLayout
         footer={true}
-        primaryButtonText={`${i18n.t("connectionrequest.button.connect")}`}
+        primaryButtonText={`${i18n.t("request.button.connect")}`}
         primaryButtonAction={() => setAlertIsOpen(true)}
-        secondaryButtonText={`${i18n.t("connectionrequest.button.cancel")}`}
+        secondaryButtonText={`${i18n.t("request.button.cancel")}`}
         secondaryButtonAction={() => handleReset()}
       >
-        <h2>{i18n.t("connectionrequest.title")}</h2>
-        <IonGrid className="connection-request-content">
-          <IonRow className="connection-request-icons-row">
-            <div className="connection-request-user-logo">
+        <h2>{i18n.t("request.title")}</h2>
+        <IonGrid className="request-content">
+          <IonRow className="request-icons-row">
+            <div className="request-user-logo">
               <IonIcon
                 icon={personCircleOutline}
                 color="light"
               />
             </div>
-            <div className="connection-request-swap-logo">
+            <div className="request-swap-logo">
               <span>
                 <IonIcon icon={swapHorizontalOutline} />
               </span>
             </div>
-            <div className="connection-request-checkmark-logo">
+            <div className="request-checkmark-logo">
               <span>
                 <IonIcon icon={checkmark} />
               </span>
             </div>
-            <div className="connection-request-provider-logo">
+            <div className="request-provider-logo">
               <img
                 src={requestData?.logo ?? CardanoLogo}
-                alt="connection-request-provider-logo"
+                alt="request-provider-logo"
               />
             </div>
           </IonRow>
-          <IonRow className="connection-request-info-row">
+          <IonRow className="request-info-row">
             <IonCol size="12">
-              <span>{requestType + i18n.t("connectionrequest.request")}</span>
+              <span>{requestType + i18n.t("request.request")}</span>
               <strong>{requestData?.label}</strong>
             </IonCol>
           </IonRow>
-          <IonRow className="connection-request-status">
+          <IonRow className="request-status">
             <IonCol size="12">
               <strong>
                 {connectionCredentialRequest.type ===
                   ConnectionCredentialRequestType.CONNECTION_INCOMING ||
                 connectionCredentialRequest.type ===
                   ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
-                  ? i18next.t("connectionrequest.pending", {
+                  ? i18next.t("request.pending", {
                     action: requestType,
                   })
-                  : i18next.t("connectionrequest.success", {
+                  : i18next.t("request.success", {
                     action: requestType,
                   })}
               </strong>
@@ -181,11 +181,11 @@ const ConnectionCredentialRequest = () => {
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm"
-        headerText={i18next.t("connectionrequest.alert.title", {
+        headerText={i18next.t("request.alert.title", {
           initiator: requestData?.label,
         })}
-        confirmButtonText={`${i18n.t("connectionrequest.alert.confirm")}`}
-        cancelButtonText={`${i18n.t("connectionrequest.alert.cancel")}`}
+        confirmButtonText={`${i18n.t("request.alert.confirm")}`}
+        cancelButtonText={`${i18n.t("request.alert.cancel")}`}
         actionConfirm={handleConnect}
         actionCancel={handleReset}
         actionDismiss={handleReset}

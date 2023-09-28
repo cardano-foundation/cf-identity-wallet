@@ -557,7 +557,7 @@
       "title": "Would you like to grant permission for using your camera?"
     }
   },
-  "connectionrequest": {
+  "request": {
     "title": "Connect",
     "request": " request from",
     "button": {
