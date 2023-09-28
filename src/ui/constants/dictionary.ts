@@ -18,7 +18,6 @@ const connectionStatus = {
 
 const connectionType = {
   connection: "connection",
-  issuevc: "issue-vc",
   credential: "credential",
 };
 

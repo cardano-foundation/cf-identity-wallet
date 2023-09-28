@@ -67,6 +67,7 @@ const ConnectionCredentialRequest = () => {
               );
             setRequestData({ label: agentData.label, logo: agentData.logo });
           } else {
+            // @TODO: handle case when connectionId is not present
             setRequestData({ label: "W3C" });
           }
           setRequestType(connectionType.credential);
@@ -114,7 +115,6 @@ const ConnectionCredentialRequest = () => {
 
   return (
     <IonPage
-      // @TODO: edit class name
       className={`page-layout request safe-area ${
         showRequest ? "show" : "hide"
       } ${initiateAnimation ? "animation-on" : "animation-off"}`}
@@ -122,12 +122,20 @@ const ConnectionCredentialRequest = () => {
     >
       <PageLayout
         footer={true}
-        primaryButtonText={`${i18n.t("request.button.connect")}`}
+        primaryButtonText={
+          requestType === connectionType.connection
+            ? `${i18n.t("request.button.connect")}`
+            : `${i18n.t("request.button.accept-offer")}`
+        }
         primaryButtonAction={() => setAlertIsOpen(true)}
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
         secondaryButtonAction={() => handleReset()}
       >
-        <h2>{i18n.t("request.title")}</h2>
+        {requestType === connectionType.connection ? (
+          <h2>{i18n.t("request.connection-title")}</h2>
+        ) : (
+          <h2>{i18n.t("request.credential-title")}</h2>
+        )}
         <IonGrid className="request-content">
           <IonRow className="request-icons-row">
             <div className="request-user-logo">
@@ -155,7 +163,13 @@ const ConnectionCredentialRequest = () => {
           </IonRow>
           <IonRow className="request-info-row">
             <IonCol size="12">
-              <span>{requestType + i18n.t("request.request")}</span>
+              {requestType === connectionType.connection ? (
+                <span>
+                  {requestType + i18n.t("request.request-connection")}
+                </span>
+              ) : (
+                <span>{requestType + i18n.t("request.offer-credential")}</span>
+              )}
               <strong>{requestData?.label}</strong>
             </IonCol>
           </IonRow>
@@ -181,10 +195,19 @@ const ConnectionCredentialRequest = () => {
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm"
-        headerText={i18next.t("request.alert.title", {
-          initiator: requestData?.label,
-        })}
-        confirmButtonText={`${i18n.t("request.alert.confirm")}`}
+        headerText={i18next.t(
+          requestType === connectionType.connection
+            ? "request.alert.title-confirm-connection"
+            : "request.alert.title-confirm-credential",
+          {
+            initiator: requestData?.label,
+          }
+        )}
+        confirmButtonText={
+          requestType === connectionType.connection
+            ? `${i18n.t("request.alert.confirm-connection")}`
+            : `${i18n.t("request.alert.confirm-credential")}`
+        }
         cancelButtonText={`${i18n.t("request.alert.cancel")}`}
         actionConfirm={handleConnect}
         actionCancel={handleReset}
