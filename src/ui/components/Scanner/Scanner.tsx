@@ -63,6 +63,7 @@ const Scanner = () => {
         const result = await startScan();
         if (result.hasContent) {
           stopScan();
+          // @TODO: try catch and handle invalid QR code
           await AriesAgent.agent.connections.receiveInvitationFromUrl(
             result.content
           );

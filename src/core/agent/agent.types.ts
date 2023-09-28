@@ -74,13 +74,7 @@ interface CredentialDetails extends CredentialShortDetails {
   connection?: string;
   expirationDate?: string;
   receivingDid?: string;
-  credentialSubject: {
-    degree: {
-      education: string;
-      type: string;
-      name: string;
-    };
-  };
+  credentialSubject: any;
   proofType: string;
   proofValue: string;
   credentialStatus?: {

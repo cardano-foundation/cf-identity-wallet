@@ -4,7 +4,6 @@ enum CredentialMetadataRecordStatus {
 }
 interface CredentialMetadataRecordProps {
   id: string;
-  nameOnCredential: string;
   colors: [string, string];
   createdAt?: Date;
   isArchived?: boolean;

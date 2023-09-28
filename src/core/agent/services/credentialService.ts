@@ -5,6 +5,8 @@ import {
   CredentialState,
   CredentialStateChangedEvent,
   ProposeCredentialOptions,
+  V2OfferCredentialMessage,
+  W3cVerifiableCredential,
 } from "@aries-framework/core";
 import { LinkedDataProof } from "@aries-framework/core/build/modules/vc/models/LinkedDataProof";
 import { CredentialDetails, CredentialShortDetails } from "../agent.types";
@@ -96,7 +98,6 @@ class CredentialService extends AgentService {
     metadata: CredentialMetadataRecord
   ): CredentialShortDetails {
     return {
-      nameOnCredential: metadata.nameOnCredential,
       id: metadata.id,
       colors: metadata.colors,
       issuanceDate: metadata.issuanceDate,
@@ -119,38 +120,37 @@ class CredentialService extends AgentService {
       await this.agent.w3cCredentials.getCredentialRecordById(
         credentialRecord.credentials[0].credentialRecordId
       );
-    const credentialSubject = w3cCredential.credential
-      .credentialSubject as any as {
-      degree: {
-        education: string;
-        type: string;
-        givenName: string;
-        familyName: string;
-      };
-    };
+    const credentialSubject = w3cCredential.credential.credentialSubject as any;
     const proof = w3cCredential.credential.proof as LinkedDataProof;
     return {
       ...this.getCredentialShortDetails(metadata),
       type: w3cCredential.credential.type,
       connection: credentialRecord.connectionId,
       expirationDate: w3cCredential.credential?.expirationDate,
-      receivingDid: w3cCredential.credential.issuerId,
-      credentialSubject: {
-        degree: {
-          education: "N/A",
-          type: credentialSubject?.degree?.type ?? "N/A",
-          name:
-            `${credentialSubject?.degree?.givenName} ${credentialSubject?.degree?.familyName}` ??
-            "N/A",
-        },
-      },
-      proofType: proof?.type ?? "N/A",
-      proofValue: proof?.jws ?? "N/A",
+      receivingDid: credentialSubject?.id,
+      credentialSubject: credentialSubject,
+      proofType: proof.type,
+      proofValue: proof.jws ?? "Not verifiable",
       credentialStatus: {
         revoked: false,
         suspended: false,
       },
     };
+  }
+
+  async getPreviewCredential(credentialRecord: CredentialExchangeRecord) {
+    const v2OfferCredentialMessage: V2OfferCredentialMessage | null =
+      await this.agent.credentials.findOfferMessage(credentialRecord.id);
+    if (!v2OfferCredentialMessage) {
+      return null;
+    }
+    const attachments = v2OfferCredentialMessage.offerAttachments;
+    // Current, get first attachment, handle later
+    const attachment = attachments?.[0];
+    if (!attachment) {
+      return null;
+    }
+    return attachment.getDataAsJson<W3cVerifiableCredential>();
   }
 
   async createMetadata(data: CredentialMetadataRecordProps) {
@@ -162,7 +162,7 @@ class CredentialService extends AgentService {
     );
   }
 
-  async updateMetadata(
+  async updateMetadataCompleted(
     credentialRecord: CredentialExchangeRecord
   ): Promise<CredentialShortDetails> {
     const metadata =
@@ -179,15 +179,8 @@ class CredentialService extends AgentService {
     if (!metadata) {
       throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
     }
-    const credentialSubject = w3cCredential.credential.credentialSubject as any;
     const data = {
-      credentialType:
-        credentialSubject?.degree?.type ??
-        w3cCredential.credential.type.toString() ??
-        "",
-      nameOnCredential:
-        `${credentialSubject?.degree?.givenName} ${credentialSubject?.degree?.familyName}` ??
-        "",
+      credentialType: w3cCredential.credential.type?.[1] ?? "",
       status: CredentialMetadataRecordStatus.CONFIRMED,
     };
     await this.agent.modules.generalStorage.updateCredentialMetadata(
@@ -201,7 +194,6 @@ class CredentialService extends AgentService {
       isArchived: metadata.isArchived ?? false,
       issuanceDate: metadata.issuanceDate,
       issuerLogo: connection?.imageUrl ?? undefined,
-      nameOnCredential: data.nameOnCredential,
       status: data.status,
     };
   }

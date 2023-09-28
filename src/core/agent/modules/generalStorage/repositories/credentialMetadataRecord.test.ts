@@ -6,7 +6,6 @@ import {
 
 const mockData: CredentialMetadataRecordProps = {
   id: "credential:z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",
-  nameOnCredential: "New credential",
   colors: ["#000000", "#FFFFFF"],
   isArchived: true,
   issuanceDate: "2010-01-01T19:23:24Z",
@@ -25,7 +24,6 @@ describe("Credential metadata record", () => {
     });
     settingsRecord.getTags();
     expect(settingsRecord.id).toBe(mockData.id);
-    expect(settingsRecord.nameOnCredential).toBe(mockData.nameOnCredential);
     expect(settingsRecord.createdAt).toBe(createdAt);
     expect(settingsRecord.isArchived).toBe(mockData.isArchived);
     expect(settingsRecord.issuanceDate).toBe(mockData.issuanceDate);
@@ -40,7 +38,6 @@ describe("Credential metadata record", () => {
     await new Promise((resolve) => setTimeout(resolve, 10));
     const settingsRecord = new CredentialMetadataRecord({
       id: mockData.id,
-      nameOnCredential: mockData.nameOnCredential,
       colors: mockData.colors,
       isArchived: mockData.isArchived,
       issuanceDate: "2010-01-01T19:23:24Z",
@@ -58,7 +55,6 @@ describe("Credential metadata record", () => {
     const createdAt = new Date();
     const settingsRecord = new CredentialMetadataRecord({
       id: mockData.id,
-      nameOnCredential: mockData.nameOnCredential,
       colors: mockData.colors,
       createdAt: createdAt,
       issuanceDate: "2010-01-01T19:23:24Z",

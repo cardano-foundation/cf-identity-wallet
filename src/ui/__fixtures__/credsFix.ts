@@ -10,7 +10,6 @@ const credsFix: CredentialDetails[] = [
     expirationDate: "2012-01-01T19:23:24Z",
     receivingDid: "did:example:ebfeb1ebc6f1c276ef71212ec21",
     credentialType: "University Credential",
-    nameOnCredential: "Thomas A. Mayfield",
     issuerLogo: "https://www.w3.org/Icons/WWW/w3c_home_nb-v.svg",
     credentialSubject: {
       degree: {
@@ -37,7 +36,6 @@ const credsFix: CredentialDetails[] = [
     expirationDate: "2012-01-01T19:23:24Z",
     receivingDid: "did:example:ebfeb1f712ebc6f1c276e12ec21",
     credentialType: "University Credential",
-    nameOnCredential: "Thomas A. Mayfield",
     issuerLogo: "https://www.w3.org/Icons/WWW/w3c_home_nb-v.svg",
     credentialSubject: {
       degree: {

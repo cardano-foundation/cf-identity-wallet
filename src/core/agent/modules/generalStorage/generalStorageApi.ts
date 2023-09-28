@@ -180,8 +180,6 @@ export class GeneralStorageApi {
       if (data.colors) record.colors = data.colors;
       if (data.status) record.status = data.status;
       if (data.credentialType) record.credentialType = data.credentialType;
-      if (data.nameOnCredential)
-        record.nameOnCredential = data.nameOnCredential;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
       await this.credentialMetadataRepository.update(this.agentContext, record);
     }

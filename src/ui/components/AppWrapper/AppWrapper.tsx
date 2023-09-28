@@ -164,7 +164,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
           colors: new ColorGenerator().generateNextColor() as [string, string],
           credentialType: "",
           issuanceDate: credentialRecord.createdAt.toISOString(),
-          nameOnCredential: "",
           status: CredentialMetadataRecordStatus.PENDING,
         };
         await AriesAgent.agent.credentials.createMetadata(credentialDetails);
@@ -174,7 +173,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
         AriesAgent.agent.credentials.isCredentialDone(credentialRecord)
       ) {
         const credentialMetadata =
-          await AriesAgent.agent.credentials.updateMetadata(credentialRecord);
+          await AriesAgent.agent.credentials.updateMetadataCompleted(
+            credentialRecord
+          );
         dispatch(setCurrentOperation(toastState.newCredentialAdded));
         dispatch(updateOrAddCredsCache(credentialMetadata));
       }

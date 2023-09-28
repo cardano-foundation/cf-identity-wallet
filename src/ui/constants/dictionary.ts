@@ -65,7 +65,6 @@ const defaultCredentialsCardData: CredentialDetails = {
   expirationDate: "",
   receivingDid: "",
   credentialType: "",
-  nameOnCredential: "",
   issuerLogo: "",
   credentialSubject: {
     degree: {

@@ -31,7 +31,6 @@ const id1 = "id1";
 const id2 = "id2";
 const credentialMetadataProps = {
   id: id1,
-  nameOnCredential: "Your name here",
   colors,
   createdAt: now,
   issuanceDate: nowISO,
@@ -90,7 +89,6 @@ describe("Credential service of agent", () => {
         credentialType: credentialMetadataRecordA.credentialType,
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataProps.issuerLogo,
-        nameOnCredential: credentialMetadataRecordA.nameOnCredential,
       },
       {
         id: id2,
@@ -98,7 +96,6 @@ describe("Credential service of agent", () => {
         credentialType: credentialMetadataRecordB.credentialType,
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataRecordB.issuerLogo,
-        nameOnCredential: credentialMetadataRecordB.nameOnCredential,
       },
     ]);
   });

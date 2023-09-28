@@ -80,7 +80,9 @@ const CredCard = ({
                 <span>{CredentialMetadataRecordStatus.PENDING}</span>
               </IonChip>
             ) : (
-              <span className="credential-type">{cardData.credentialType}</span>
+              <span className="credential-type">
+                {cardData.credentialType.replace(/([a-z])([A-Z])/g, "$1 $2")}
+              </span>
             )}
           </div>
           <div className="card-body">
@@ -101,7 +103,8 @@ const CredCard = ({
                 {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
                   <>&nbsp;</>
                 ) : (
-                  cardData.nameOnCredential
+                  // cardData.nameOnCredential
+                  ""
                 )}
               </span>
             </div>

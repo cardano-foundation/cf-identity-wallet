@@ -50,6 +50,8 @@ const ConnectionCredentialRequest = () => {
             );
           setRequestData({ label: agentData.label, logo: agentData.logo });
           setRequestType(connectionType.connection);
+          // Preview credential
+          // await AriesAgent.agent.credentials.getPreviewCredential(credentialRecord);
         } else if (
           connectionCredentialRequest.type ===
           ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED

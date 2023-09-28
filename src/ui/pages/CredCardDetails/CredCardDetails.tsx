@@ -113,15 +113,13 @@ const CredCardDetails = () => {
       </>
     );
   };
-  const formatDate = (date?: string) => {
-    return date ? (
+  const formatDateTime = (date: string) => {
+    return (
       <>
         {formatShortDate(date)}
         {" - "}
         {formatTimeToSec(date)}
       </>
-    ) : (
-      "N/A"
     );
   };
   return (
@@ -171,6 +169,7 @@ const CredCardDetails = () => {
                 </div>
               </div>
 
+              {/*@TODO: handle attributes, credentialSubject, it can come in many formats*/}
               <div className="card-details-info-block">
                 <h3>{i18n.t("creds.card.details.attributes")}</h3>
                 <div className="card-details-info-block-inner">
@@ -183,7 +182,7 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {cardData.credentialSubject.degree.education}
+                      {cardData.credentialSubject?.degree?.education}
                     </span>
                   </span>
                   <span className="card-details-info-block-line">
@@ -195,7 +194,7 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {cardData.credentialSubject.degree.type}
+                      {cardData.credentialSubject?.degree?.type}
                     </span>
                   </span>
                   <span className="card-details-info-block-line">
@@ -207,30 +206,32 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {cardData.credentialSubject.degree.name}
+                      {`${cardData.credentialSubject?.degree?.givenName} ${cardData.credentialSubject?.degree?.familyName}`}
                     </span>
                   </span>
                 </div>
               </div>
 
-              <div className="card-details-info-block">
-                <h3>{i18n.t("creds.card.details.connection")}</h3>
-                <div className="card-details-info-block-inner">
-                  <span className="card-details-info-block-line">
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={personCircleOutline}
-                        color="primary"
-                      />
-                    </span>
+              {cardData.connection ? (
+                <div className="card-details-info-block">
+                  <h3>{i18n.t("creds.card.details.connection")}</h3>
+                  <div className="card-details-info-block-inner">
+                    <span className="card-details-info-block-line">
+                      <span>
+                        <IonIcon
+                          slot="icon-only"
+                          icon={personCircleOutline}
+                          color="primary"
+                        />
+                      </span>
 
-                    <span className="card-details-info-block-data">
-                      {cardData.connection}
+                      <span className="card-details-info-block-data">
+                        {cardData.connection}
+                      </span>
                     </span>
-                  </span>
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
               <div className="card-details-info-block">
                 <h3>{i18n.t("creds.card.details.issuancedate")}</h3>
@@ -244,29 +245,31 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {formatDate(cardData.issuanceDate)}
+                      {formatDateTime(cardData.issuanceDate)}
                     </span>
                   </span>
                 </div>
               </div>
 
-              <div className="card-details-info-block">
-                <h3>{i18n.t("creds.card.details.expirationdate")}</h3>
-                <div className="card-details-info-block-inner">
-                  <span className="card-details-info-block-line">
-                    <span>
-                      <IonIcon
-                        slot="icon-only"
-                        icon={calendarNumberOutline}
-                        color="primary"
-                      />
+              {cardData.expirationDate ? (
+                <div className="card-details-info-block">
+                  <h3>{i18n.t("creds.card.details.expirationdate")}</h3>
+                  <div className="card-details-info-block-inner">
+                    <span className="card-details-info-block-line">
+                      <span>
+                        <IonIcon
+                          slot="icon-only"
+                          icon={calendarNumberOutline}
+                          color="primary"
+                        />
+                      </span>
+                      <span className="card-details-info-block-data">
+                        {formatDateTime(cardData.expirationDate)}
+                      </span>
                     </span>
-                    <span className="card-details-info-block-data">
-                      {formatDate(cardData.expirationDate)}
-                    </span>
-                  </span>
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
               <div className="card-details-info-block">
                 <h3>{i18n.t("creds.card.details.prooftypes")}</h3>

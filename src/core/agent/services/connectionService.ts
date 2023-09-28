@@ -92,15 +92,16 @@ class ConnectionService extends AgentService {
     return connectionRecord.state === DidExchangeState.Completed;
   }
 
-  async receiveInvitationFromUrl(url: string): Promise<{
-    outOfBandRecord: OutOfBandRecord;
-    connectionRecord?: ConnectionRecord;
-  }> {
+  async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
       url = response.url;
     }
-    return this.agent.oob.receiveInvitationFromUrl(url, {
+    if (url.includes("?d_m=")) {
+      // @TODO: remove when upgrade aries
+      return this.receiveAttachmentFromUrlConnectionless(url);
+    }
+    await this.agent.oob.receiveInvitationFromUrl(url, {
       autoAcceptConnection: true,
       autoAcceptInvitation: true,
       reuseConnection: true,
