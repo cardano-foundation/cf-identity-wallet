@@ -408,7 +408,7 @@ describe("Connection service of agent", () => {
 
   test("callback will run when have a event listener", async () => {
     const callback = jest.fn();
-    connectionService.onConnectionStateChange(callback);
+    connectionService.onConnectionStateChanged(callback);
     const event: ConnectionStateChangedEvent = {
       type: ConnectionEventTypes.ConnectionStateChanged,
       payload: {

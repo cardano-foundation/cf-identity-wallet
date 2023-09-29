@@ -1,4 +1,8 @@
 import { ReactNode, useEffect, useState } from "react";
+import {
+  ConnectionStateChangedEvent,
+  CredentialStateChangedEvent,
+} from "@aries-framework/core";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
@@ -33,6 +37,94 @@ import {
   CredentialMetadataRecordStatus,
 } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
+import { CredentialShortDetails } from "../../../core/agent/agent.types";
+
+const connectionStateChangedHandler = async (
+  event: ConnectionStateChangedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  const connectionRecord = event.payload.connectionRecord;
+  if (AriesAgent.agent.connections.isConnectionRequestSent(connectionRecord)) {
+    const connectionDetails =
+      AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
+    dispatch(updateOrAddConnectionCache(connectionDetails));
+    dispatch(setCurrentOperation(toastState.connectionRequestPending));
+  } else if (
+    AriesAgent.agent.connections.isConnectionResponseReceived(connectionRecord)
+  ) {
+    dispatch(
+      setConnectionCredentialRequest({
+        id: connectionRecord.id,
+        type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
+      })
+    );
+  } else if (
+    AriesAgent.agent.connections.isConnectionRequestReceived(connectionRecord)
+  ) {
+    const connectionDetails =
+      AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
+    dispatch(updateOrAddConnectionCache(connectionDetails));
+    dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
+    dispatch(
+      setConnectionCredentialRequest({
+        id: connectionRecord.id,
+        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+      })
+    );
+  } else if (
+    AriesAgent.agent.connections.isConnectionResponseSent(connectionRecord)
+  ) {
+    dispatch(setCurrentOperation(toastState.connectionRequestPending));
+  } else if (
+    AriesAgent.agent.connections.isConnectionConnected(connectionRecord)
+  ) {
+    const connectionDetails =
+      AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
+    dispatch(updateOrAddConnectionCache(connectionDetails));
+    dispatch(setCurrentOperation(toastState.newConnectionAdded));
+  }
+};
+
+const credentialStateChangedHandler = async (
+  event: CredentialStateChangedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  const credentialRecord = event.payload.credentialRecord;
+  if (
+    AriesAgent.agent.credentials.isCredentialOfferReceived(credentialRecord)
+  ) {
+    dispatch(
+      setConnectionCredentialRequest({
+        id: credentialRecord.id,
+        type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+      })
+    );
+  } else if (
+    AriesAgent.agent.credentials.isCredentialRequestSent(credentialRecord)
+  ) {
+    const credentialDetails: CredentialShortDetails = {
+      id: `metadata:${credentialRecord.id}`,
+      isArchived: false,
+      colors: new ColorGenerator().generateNextColor() as [string, string],
+      credentialType: "",
+      issuanceDate: credentialRecord.createdAt.toISOString(),
+      status: CredentialMetadataRecordStatus.PENDING,
+    };
+    await AriesAgent.agent.credentials.createMetadata({
+      ...credentialDetails,
+      credentialRecordId: credentialRecord.id,
+    });
+    dispatch(setCurrentOperation(toastState.credentialRequestPending));
+    dispatch(updateOrAddCredsCache(credentialDetails));
+  } else if (AriesAgent.agent.credentials.isCredentialDone(credentialRecord)) {
+    const credentialShortDetails =
+      await AriesAgent.agent.credentials.updateMetadataCompleted(
+        credentialRecord
+      );
+    dispatch(setCurrentOperation(toastState.newCredentialAdded));
+    dispatch(updateOrAddCredsCache(credentialShortDetails));
+  }
+};
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -89,96 +181,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setCryptoAccountsCache(storedCryptoAccounts));
     dispatch(setConnectionsCache(connectionsDetails));
 
-    AriesAgent.agent.connections.onConnectionStateChange(async (event) => {
-      const connectionRecord = event.payload.connectionRecord;
-      if (
-        AriesAgent.agent.connections.isConnectionRequestSent(connectionRecord)
-      ) {
-        const connectionDetails =
-          AriesAgent.agent.connections.getConnectionShortDetails(
-            connectionRecord
-          );
-        dispatch(updateOrAddConnectionCache(connectionDetails));
-        dispatch(setCurrentOperation(toastState.connectionRequestPending));
-      } else if (
-        AriesAgent.agent.connections.isConnectionResponseReceived(
-          connectionRecord
-        )
-      ) {
-        dispatch(
-          setConnectionCredentialRequest({
-            id: connectionRecord.id,
-            type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
-          })
-        );
-      } else if (
-        AriesAgent.agent.connections.isConnectionRequestReceived(
-          connectionRecord
-        )
-      ) {
-        const connectionDetails =
-          AriesAgent.agent.connections.getConnectionShortDetails(
-            connectionRecord
-          );
-        dispatch(updateOrAddConnectionCache(connectionDetails));
-        dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
-        dispatch(
-          setConnectionCredentialRequest({
-            id: connectionRecord.id,
-            type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
-          })
-        );
-      } else if (
-        AriesAgent.agent.connections.isConnectionResponseSent(connectionRecord)
-      ) {
-        dispatch(setCurrentOperation(toastState.connectionRequestPending));
-      } else if (
-        AriesAgent.agent.connections.isConnectionConnected(connectionRecord)
-      ) {
-        const connectionDetails =
-          AriesAgent.agent.connections.getConnectionShortDetails(
-            connectionRecord
-          );
-        dispatch(updateOrAddConnectionCache(connectionDetails));
-        dispatch(setCurrentOperation(toastState.newConnectionAdded));
-      }
+    AriesAgent.agent.connections.onConnectionStateChanged((event) => {
+      return connectionStateChangedHandler(event, dispatch);
     });
-    AriesAgent.agent.credentials.onCredentialStateChanged(async (event) => {
-      const credentialRecord = event;
-      if (
-        AriesAgent.agent.credentials.isCredentialOfferReceived(credentialRecord)
-      ) {
-        dispatch(
-          setConnectionCredentialRequest({
-            id: credentialRecord.id,
-            type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
-          })
-        );
-      } else if (
-        AriesAgent.agent.credentials.isCredentialRequestSent(credentialRecord)
-      ) {
-        const credentialDetails: CredentialMetadataRecordProps = {
-          id: `metadata:${credentialRecord.id}`,
-          credentialRecordId: credentialRecord.id,
-          isArchived: false,
-          colors: new ColorGenerator().generateNextColor() as [string, string],
-          credentialType: "",
-          issuanceDate: credentialRecord.createdAt.toISOString(),
-          status: CredentialMetadataRecordStatus.PENDING,
-        };
-        await AriesAgent.agent.credentials.createMetadata(credentialDetails);
-        dispatch(setCurrentOperation(toastState.credentialRequestPending));
-        dispatch(updateOrAddCredsCache(credentialDetails));
-      } else if (
-        AriesAgent.agent.credentials.isCredentialDone(credentialRecord)
-      ) {
-        const credentialMetadata =
-          await AriesAgent.agent.credentials.updateMetadataCompleted(
-            credentialRecord
-          );
-        dispatch(setCurrentOperation(toastState.newCredentialAdded));
-        dispatch(updateOrAddCredsCache(credentialMetadata));
-      }
+    AriesAgent.agent.credentials.onCredentialStateChanged((event) => {
+      return credentialStateChangedHandler(event, dispatch);
     });
     setInitialised(true);
   };
@@ -186,4 +193,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
   return initialised ? <>{props.children}</> : <></>;
 };
 
-export { AppWrapper };
+export {
+  AppWrapper,
+  connectionStateChangedHandler,
+  credentialStateChangedHandler,
+};

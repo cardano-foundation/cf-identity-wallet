@@ -353,7 +353,7 @@ describe("Credential service of agent", () => {
       },
     };
     agent.eventEmitter.emit(CredentialEventTypes.CredentialStateChanged, event);
-    expect(callback).toBeCalledWith(event.payload.credentialRecord);
+    expect(callback).toBeCalledWith(event);
   });
 
   test("check incoming offer receiver (ready to be accepted)", () => {

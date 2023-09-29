@@ -25,12 +25,12 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_NOT_ARCHIVED = "Credential was not archived";
 
   onCredentialStateChanged(
-    callback: (event: CredentialExchangeRecord) => void
+    callback: (event: CredentialStateChangedEvent) => void
   ) {
     this.agent.events.on(
       CredentialEventTypes.CredentialStateChanged,
       async (event: CredentialStateChangedEvent) => {
-        callback(event.payload.credentialRecord);
+        callback(event);
       }
     );
   }

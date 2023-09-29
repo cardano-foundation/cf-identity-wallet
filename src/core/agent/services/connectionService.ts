@@ -26,7 +26,7 @@ class ConnectionService extends AgentService {
   static readonly INVALID_CONNECTIONLESS_MSG =
     "Invalid connectionless OOBI - does not contain d_m parameter";
 
-  onConnectionStateChange(
+  onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
   ) {
     this.agent.events.on(
