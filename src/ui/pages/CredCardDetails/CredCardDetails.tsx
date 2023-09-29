@@ -122,6 +122,8 @@ const CredCardDetails = () => {
       </>
     );
   };
+  // @TODO: handle when credentialSubject is an array
+  const credentialSubject = cardData.credentialSubject as any;
   return (
     <IonPage className="tab-layout card-details">
       <TabLayout
@@ -182,7 +184,7 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {cardData.credentialSubject?.degree?.education}
+                      {credentialSubject?.degree?.education}
                     </span>
                   </span>
                   <span className="card-details-info-block-line">
@@ -194,7 +196,7 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {cardData.credentialSubject?.degree?.type}
+                      {credentialSubject?.type}
                     </span>
                   </span>
                   <span className="card-details-info-block-line">
@@ -206,7 +208,7 @@ const CredCardDetails = () => {
                       />
                     </span>
                     <span className="card-details-info-block-data">
-                      {`${cardData.credentialSubject?.degree?.givenName} ${cardData.credentialSubject?.degree?.familyName}`}
+                      {`${credentialSubject?.givenName} ${credentialSubject?.familyName}`}
                     </span>
                   </span>
                 </div>

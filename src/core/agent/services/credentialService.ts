@@ -9,6 +9,7 @@ import {
   W3cVerifiableCredential,
   LinkedDataProof,
   AriesFrameworkError,
+  JsonCredential,
 } from "@aries-framework/core";
 import { CredentialDetails, CredentialShortDetails } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
@@ -106,21 +107,27 @@ class CredentialService extends AgentService {
     const credentialRecord = await this.getCredentialRecordById(
       metadata.credentialRecordId
     );
+    // current, get first credential, handle later
     const w3cCredential =
       await this.agent.w3cCredentials.getCredentialRecordById(
         credentialRecord.credentials[0].credentialRecordId
       );
-    const credentialSubject = w3cCredential.credential.credentialSubject as any;
+    const credentialSubject = w3cCredential.credential
+      .credentialSubject as any as JsonCredential["credentialSubject"];
     const proof = w3cCredential.credential.proof as LinkedDataProof;
     return {
       ...this.getCredentialShortDetails(metadata),
       type: w3cCredential.credential.type,
       connection: credentialRecord.connectionId,
       expirationDate: w3cCredential.credential?.expirationDate,
-      receivingDid: credentialSubject?.id,
+      // @TODO: handle array of credentialSubject later
+      receivingDid: !Array.isArray(credentialSubject)
+        ? (credentialSubject?.id as string)
+        : undefined,
       credentialSubject: credentialSubject,
       proofType: proof.type,
-      proofValue: proof.jws ?? "Not verifiable",
+      // when credential is done, proofValue must have a value
+      proofValue: proof.jws as string,
     };
   }
 

@@ -1,4 +1,5 @@
-import { IdentifierMetadataRecordProps } from "./modules/generalStorage/repositories/identifierMetadataRecord";
+import { JsonCredential } from "@aries-framework/core";
+import { IdentifierMetadataRecordProps } from "./modules";
 import { CredentialMetadataRecordProps } from "./modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 enum IdentifierType {
@@ -74,7 +75,7 @@ interface CredentialDetails extends CredentialShortDetails {
   connection?: string;
   expirationDate?: string;
   receivingDid?: string;
-  credentialSubject: any;
+  credentialSubject: JsonCredential["credentialSubject"];
   proofType: string;
   proofValue: string;
 }
