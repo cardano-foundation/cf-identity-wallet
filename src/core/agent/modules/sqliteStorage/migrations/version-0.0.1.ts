@@ -11,14 +11,14 @@ const DATA_V001 = {
     `CREATE TABLE IF NOT EXISTS items_tags (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             item_id TEXT NOT NULL,
-            name TEXT NOT NULL,
-            value TEXT NOT NULL,
-            type TEXT NOT NULL,
+            name TEXT,
+            value TEXT,
+            type TEXT,
             FOREIGN KEY (item_id) REFERENCES items (id)
                 ON DELETE CASCADE ON UPDATE CASCADE
         );`,
-    `CREATE INDEX IF NOT EXISTS ix_items_tags_item_id ON items_tags (item_id);`,
-    `CREATE INDEX IF NOT EXISTS ix_items_tags_name ON items_tags (name, value);`,
+    "CREATE INDEX IF NOT EXISTS ix_items_tags_item_id ON items_tags (item_id);",
+    "CREATE INDEX IF NOT EXISTS ix_items_tags_name ON items_tags (name, value);",
   ],
 };
 export { DATA_V001 };
