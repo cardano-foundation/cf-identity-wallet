@@ -19,27 +19,56 @@ import { PageLayout } from "../layout/PageLayout";
 import { ArchivedCredentialsProps } from "./ArchivedCredentials.types";
 import { i18n } from "../../../i18n";
 import "./ArchivedCredentials.scss";
-import { useAppSelector } from "../../../store/hooks";
-import { getCredsCache } from "../../../store/reducers/credsCache";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
+import {
+  getCredsCache,
+  setCredsCache,
+} from "../../../store/reducers/credsCache";
 import { CredProps } from "../CardsStack/CardsStack.types";
 import { formatShortDate } from "../../../utils";
+import { VerifyPassword } from "../VerifyPassword";
+import { VerifyPasscode } from "../VerifyPasscode";
+import {
+  Alert as AlertDelete,
+  Alert as AlertRestore,
+} from "../../components/Alert";
+import {
+  getStateCache,
+  setCurrentOperation,
+} from "../../../store/reducers/stateCache";
+import { AriesAgent } from "../../../core/agent/agent";
+import { CredentialShortDetails } from "../../../core/agent/agent.types";
 
 const ArchivedCredentials = ({
   archivedCredentialsIsOpen,
   setArchivedCredentialsIsOpen,
 }: ArchivedCredentialsProps) => {
   const history = useHistory();
-  const archivedCredentials = useAppSelector(getCredsCache).filter(
-    (item) => item.isArchived === true
+  const dispatch = useAppDispatch();
+  const stateCache = useAppSelector(getStateCache);
+  const [creds, setCreds] = useState(
+    useAppSelector(getCredsCache).filter((item) => item.isArchived === true)
   );
   const [activeList, setActiveList] = useState(false);
   const [selectedCredentials, setSelectedCredentials] = useState<string[]>([]);
+  const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
+  const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [alertDeleteIsOpen, setAlertDeleteIsOpen] = useState(false);
+  const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
 
   interface CredentialItemProps {
     key: number;
     index: number;
     credential: CredProps;
   }
+
+  const selectAll = () => {
+    const data = [];
+    for (const i in creds) {
+      data.push(creds[i].id);
+    }
+    return data;
+  };
 
   const CredentialItem = ({ credential, index }: CredentialItemProps) => {
     const credentialColor = {
@@ -105,12 +134,41 @@ const ArchivedCredentials = ({
     setSelectedCredentials(data);
   };
 
-  const handleDeleteCredentials = () => {
+  const handleDeleteCredentials = async () => {
     // @TODO - sdisalvo: hook up function to delete credential
+    // setVerifyPasswordIsOpen(false);
+    // for (const i in selectedCredentials) {
+    //   await AriesAgent.agent.credentials.deleteCredential(
+    //     selectedCredentials[i]
+    //   );
+    // }
+    // await AriesAgent.agent.credentials
+    //   .getCredentials(true)
+    //   .then((results) => {
+    //     setCreds(results);
+    //     dispatch(setCredsCache(results));
+    //   })
+    //   .catch((error) => {
+    //     throw new Error(error);
+    //   });
   };
 
-  const handleRestoreCredentials = () => {
+  const handleRestoreCredentials = async () => {
     // @TODO - sdisalvo: hook up function to restore credential
+    // for (const i in selectedCredentials) {
+    //   await AriesAgent.agent.credentials.restoreCredential(
+    //     selectedCredentials[i]
+    //   );
+    // }
+    // await AriesAgent.agent.credentials
+    //   .getCredentials(true)
+    //   .then((results) => {
+    //     setCreds(results);
+    //     dispatch(setCredsCache(results));
+    //   })
+    //   .catch((error) => {
+    //     throw new Error(error);
+    //   });
   };
 
   return (
@@ -128,8 +186,20 @@ const ArchivedCredentials = ({
         <PageLayout
           header={true}
           closeButton={true}
-          closeButtonAction={() => setArchivedCredentialsIsOpen(false)}
-          closeButtonLabel={`${i18n.t("creds.archived.done")}`}
+          closeButtonAction={() =>
+            activeList
+              ? selectedCredentials.length > 0
+                ? setSelectedCredentials([])
+                : setSelectedCredentials(selectAll)
+              : setArchivedCredentialsIsOpen(false)
+          }
+          closeButtonLabel={`${
+            activeList
+              ? selectedCredentials.length > 0
+                ? i18n.t("creds.archived.deselectall")
+                : i18n.t("creds.archived.selectall")
+              : i18n.t("creds.archived.done")
+          }`}
           actionButton={true}
           actionButtonAction={() => {
             setSelectedCredentials([]);
@@ -138,7 +208,7 @@ const ArchivedCredentials = ({
           actionButtonLabel={`${
             activeList
               ? i18n.t("creds.archived.cancel")
-              : i18n.t("creds.archived.select")
+              : i18n.t("creds.archived.edit")
           }`}
           title={`${i18n.t("creds.archived.title")}`}
         >
@@ -146,7 +216,7 @@ const ArchivedCredentials = ({
             lines="none"
             className="archived-credentials-list"
           >
-            {archivedCredentials.map((credential: CredProps, index: number) => {
+            {creds.map((credential: CredProps, index: number) => {
               return (
                 <CredentialItem
                   key={index}
@@ -156,41 +226,90 @@ const ArchivedCredentials = ({
               );
             })}
           </IonList>
-          <IonFooter
-            collapse="fade"
-            className="archived-credentials-footer ion-no-border"
-          >
-            <IonToolbar
-              color="light"
-              className="page-footer"
+          {activeList ? (
+            <IonFooter
+              collapse="fade"
+              className="archived-credentials-footer ion-no-border"
             >
-              <IonButtons slot="start">
-                <IonButton
-                  className="delete-credentials-label"
-                  onClick={() => handleDeleteCredentials()}
-                  data-testid="delete-credentials"
-                >
-                  {i18n.t("creds.archived.delete")}
-                </IonButton>
-              </IonButtons>
-              <div className="selected-amount-credentials-label">
-                {i18next.t("creds.archived.selectedamount", {
-                  amount: selectedCredentials.length,
-                })}
-              </div>
-              <IonButtons slot="end">
-                <IonButton
-                  className="restore-credentials-label"
-                  onClick={() => handleRestoreCredentials()}
-                  data-testid="restore-credentials"
-                >
-                  {i18n.t("creds.archived.restore")}
-                </IonButton>
-              </IonButtons>
-            </IonToolbar>
-          </IonFooter>
+              <IonToolbar
+                color="light"
+                className="page-footer"
+              >
+                <IonButtons slot="start">
+                  <IonButton
+                    className="delete-credentials-label"
+                    onClick={() => setAlertDeleteIsOpen(true)}
+                    data-testid="delete-credentials"
+                  >
+                    {i18n.t("creds.archived.delete")}
+                  </IonButton>
+                </IonButtons>
+                <div className="selected-amount-credentials-label">
+                  {i18next.t("creds.archived.selectedamount", {
+                    amount: selectedCredentials.length,
+                  })}
+                </div>
+                <IonButtons slot="end">
+                  <IonButton
+                    className="restore-credentials-label"
+                    onClick={() => setAlertRestoreIsOpen(true)}
+                    data-testid="restore-credentials"
+                  >
+                    {i18n.t("creds.archived.restore")}
+                  </IonButton>
+                </IonButtons>
+              </IonToolbar>
+            </IonFooter>
+          ) : null}
         </PageLayout>
       </div>
+      <AlertDelete
+        isOpen={alertDeleteIsOpen}
+        setIsOpen={setAlertDeleteIsOpen}
+        dataTestId="alert-delete"
+        headerText={i18n.t("creds.card.details.alert.delete.title")}
+        confirmButtonText={`${i18n.t(
+          "creds.card.details.alert.delete.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t("creds.card.details.alert.delete.cancel")}`}
+        actionConfirm={() => {
+          if (
+            !stateCache?.authentication.passwordIsSkipped &&
+            stateCache?.authentication.passwordIsSet
+          ) {
+            setVerifyPasswordIsOpen(true);
+          } else {
+            setVerifyPasscodeIsOpen(true);
+          }
+        }}
+        actionCancel={() => dispatch(setCurrentOperation(""))}
+        actionDismiss={() => dispatch(setCurrentOperation(""))}
+      />
+      <AlertRestore
+        isOpen={alertRestoreIsOpen}
+        setIsOpen={setAlertRestoreIsOpen}
+        dataTestId="alert-restore"
+        headerText={i18n.t("creds.card.details.alert.restore.title")}
+        confirmButtonText={`${i18n.t(
+          "creds.card.details.alert.restore.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "creds.card.details.alert.restore.cancel"
+        )}`}
+        actionConfirm={() => handleRestoreCredentials()}
+        actionCancel={() => dispatch(setCurrentOperation(""))}
+        actionDismiss={() => dispatch(setCurrentOperation(""))}
+      />
+      <VerifyPassword
+        isOpen={verifyPasswordIsOpen}
+        setIsOpen={setVerifyPasswordIsOpen}
+        onVerify={handleDeleteCredentials}
+      />
+      <VerifyPasscode
+        isOpen={verifyPasscodeIsOpen}
+        setIsOpen={setVerifyPasscodeIsOpen}
+        onVerify={handleDeleteCredentials}
+      />
     </IonModal>
   );
 };

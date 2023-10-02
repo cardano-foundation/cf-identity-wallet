@@ -389,8 +389,9 @@
     "archived": {
       "title": "Archived",
       "done": "Done",
-      "select": "Select",
+      "edit": "Edit",
       "selectall": "Select All",
+      "deselectall": "Deselect all",
       "cancel": "Cancel",
       "delete": "Delete",
       "restore": "Restore",
