@@ -61,6 +61,10 @@ class CredentialService extends AgentService {
     await this.agent.credentials.acceptOffer({ credentialRecordId });
   }
 
+  async declineCredentialOffer(credentialRecordId: string) {
+    await this.agent.credentials.declineOffer(credentialRecordId);
+  }
+
   async proposeCredential(
     connectionId: string,
     credentialFormats: ProposeCredentialOptions["credentialFormats"]

@@ -84,6 +84,18 @@ const ConnectionCredentialRequest = () => {
     setInitiateAnimation(false);
   };
 
+  const handleCancel = async () => {
+    if (
+      connectionCredentialRequest.type ===
+      ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
+    ) {
+      await AriesAgent.agent.credentials.declineCredentialOffer(
+        connectionCredentialRequest.id
+      );
+    }
+    handleReset();
+  };
+
   const handleConnect = async () => {
     setInitiateAnimation(true);
     if (
@@ -129,7 +141,8 @@ const ConnectionCredentialRequest = () => {
         }
         primaryButtonAction={() => setAlertIsOpen(true)}
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
-        secondaryButtonAction={() => handleReset()}
+        // add dismiss action if needed
+        secondaryButtonAction={() => handleCancel()}
       >
         {requestType === connectionType.connection ? (
           <h2>{i18n.t("request.connection-title")}</h2>
@@ -210,7 +223,7 @@ const ConnectionCredentialRequest = () => {
         }
         cancelButtonText={`${i18n.t("request.alert.cancel")}`}
         actionConfirm={handleConnect}
-        actionCancel={handleReset}
+        actionCancel={handleCancel}
         actionDismiss={handleReset}
       />
     </IonPage>

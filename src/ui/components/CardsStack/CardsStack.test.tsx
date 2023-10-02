@@ -9,6 +9,7 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
 import { cardTypes } from "../../constants/dictionary";
+import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
@@ -65,6 +66,21 @@ describe("Cards Stack Component", () => {
     expect(firstCard).toHaveClass("bottom-shadow");
     const secondCard = getByTestId("cred-card-stack-index-1");
     expect(secondCard).toHaveClass("top-shadow");
+  });
+
+  test("It renders on Cred card with card pending", () => {
+    const { getByText } = render(
+      <Provider store={store}>
+        <CardsStack
+          cardsType={cardTypes.creds}
+          cardsData={[
+            { ...credsFix[0], status: CredentialMetadataRecordStatus.PENDING },
+          ]}
+        />
+      </Provider>
+    );
+    const labelPending = getByText(CredentialMetadataRecordStatus.PENDING);
+    expect(labelPending).toBeInTheDocument();
   });
 
   test("It navigates to Did Card Details and back", async () => {
