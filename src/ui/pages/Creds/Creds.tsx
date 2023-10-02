@@ -76,9 +76,8 @@ const AdditionalButtons = ({
 
 const Creds = () => {
   const dispatch = useAppDispatch();
-  const [credsData, setCredsData] = useState<CredProps[]>(
-    useAppSelector(getCredsCache)
-  );
+  const credsCache = useAppSelector(getCredsCache);
+  const [credsData, setCredsData] = useState<CredProps[]>(credsCache);
   const confirmedCreds = credsData.filter((item) => item.isArchived === false);
   const archivedCreds = credsData.filter((item) => item.isArchived === true);
   const currentOperation = useAppSelector(getCurrentOperation);
@@ -96,6 +95,10 @@ const Creds = () => {
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
   );
+
+  useEffect(() => {
+    setCredsData(credsCache);
+  }, [credsCache]);
 
   useEffect(() => {
     // @TODO - sdisalvo: This one is listening for pending credential requests
@@ -171,17 +174,19 @@ const Creds = () => {
                 cardsType={cardTypes.creds}
                 cardsData={confirmedCreds}
               />
-              <div className="archived-credentials-button-container">
-                <IonButton
-                  fill="outline"
-                  className="secondary-button"
-                  onClick={() => setArchivedCredentialsIsOpen(true)}
-                >
-                  <IonLabel color="secondary">
-                    {i18n.t("creds.tab.viewarchived")}
-                  </IonLabel>
-                </IonButton>
-              </div>
+              {archivedCreds.length ? (
+                <div className="archived-credentials-button-container">
+                  <IonButton
+                    fill="outline"
+                    className="secondary-button"
+                    onClick={() => setArchivedCredentialsIsOpen(true)}
+                  >
+                    <IonLabel color="secondary">
+                      {i18n.t("creds.tab.viewarchived")}
+                    </IonLabel>
+                  </IonButton>
+                </div>
+              ) : null}
             </>
           ) : (
             <CardsPlaceholder
@@ -195,12 +200,12 @@ const Creds = () => {
             connectModalIsOpen={addCredentialIsOpen}
             setConnectModalIsOpen={setAddCredentialIsOpen}
           />
-          {archivedCreds.length && (
+          {archivedCreds.length ? (
             <ArchivedCredentials
               archivedCredentialsIsOpen={archivedCredentialsIsOpen}
               setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
             />
-          )}
+          ) : null}
         </TabLayout>
       </IonPage>
     </>

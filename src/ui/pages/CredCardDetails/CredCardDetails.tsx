@@ -32,7 +32,10 @@ import {
 } from "../../../store/reducers/stateCache";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { VerifyPassword } from "../../components/VerifyPassword";
-import { Alert } from "../../components/Alert";
+import {
+  Alert as AlertDeleteArchive,
+  Alert as AlertRestore,
+} from "../../components/Alert";
 import { setCredsCache } from "../../../store/reducers/credsCache";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
@@ -49,7 +52,9 @@ const CredCardDetails = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [alertDeleteArchiveIsOpen, setAlertDeleteArchiveIsOpen] =
+    useState(false);
+  const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [creds, setCreds] = useState(credsFix);
@@ -109,7 +114,6 @@ const CredCardDetails = () => {
 
   const handleRestoreCredential = () => {
     // @TODO - sdisalvo: hook up function to restore credential
-    setVerifyPasswordIsOpen(false);
     const updatedCreds = creds;
     for (const i in updatedCreds) {
       if (updatedCreds[i].id == cardData.id) {
@@ -153,7 +157,7 @@ const CredCardDetails = () => {
         menuButton={false}
         additionalButtons={!isArchived && <AdditionalButtons />}
         actionButton={isArchived}
-        actionButtonAction={() => handleRestoreCredential()}
+        actionButtonAction={() => setAlertRestoreIsOpen(true)}
         actionButtonLabel={`${i18n.t("creds.card.details.restore")}`}
       >
         {cardData.receivingDid.length === 0 ? (
@@ -351,7 +355,7 @@ const CredCardDetails = () => {
                 data-testid="card-details-delete-button"
                 className="delete-button"
                 onClick={() => {
-                  setAlertIsOpen(true);
+                  setAlertDeleteArchiveIsOpen(true);
                   dispatch(
                     setCurrentOperation(
                       isArchived
@@ -382,9 +386,9 @@ const CredCardDetails = () => {
             isArchived ? handleDeleteCredential : handleArchiveCredential
           }
         />
-        <Alert
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
+        <AlertDeleteArchive
+          isOpen={alertDeleteArchiveIsOpen}
+          setIsOpen={setAlertDeleteArchiveIsOpen}
           dataTestId="alert-delete"
           headerText={i18n.t(
             isArchived
@@ -411,6 +415,21 @@ const CredCardDetails = () => {
               setVerifyPasscodeIsOpen(true);
             }
           }}
+          actionCancel={() => dispatch(setCurrentOperation(""))}
+          actionDismiss={() => dispatch(setCurrentOperation(""))}
+        />
+        <AlertRestore
+          isOpen={alertRestoreIsOpen}
+          setIsOpen={setAlertRestoreIsOpen}
+          dataTestId="alert-restore"
+          headerText={i18n.t("creds.card.details.alert.restore.title")}
+          confirmButtonText={`${i18n.t(
+            "creds.card.details.alert.restore.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "creds.card.details.alert.restore.cancel"
+          )}`}
+          actionConfirm={() => handleRestoreCredential()}
           actionCancel={() => dispatch(setCurrentOperation(""))}
           actionDismiss={() => dispatch(setCurrentOperation(""))}
         />
