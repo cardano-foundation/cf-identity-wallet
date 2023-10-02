@@ -1,10 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  waitFor,
-  screen,
-} from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
 import { setupIonicReact } from "@ionic/react";
@@ -17,8 +11,6 @@ import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCa
 import { AriesAgent } from "../../../core/agent/agent";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { i18n } from "../../../i18n";
-import { credsFix } from "../../__fixtures__/credsFix";
-import { CredentialShortDetails } from "../../../core/agent/agent.types";
 
 setupIonicReact();
 mockIonicReact();

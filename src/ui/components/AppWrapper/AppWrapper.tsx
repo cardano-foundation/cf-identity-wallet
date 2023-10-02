@@ -32,10 +32,7 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { toastState } from "../../constants/dictionary";
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
 
