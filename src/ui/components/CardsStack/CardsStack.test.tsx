@@ -10,6 +10,7 @@ import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
 import { cardTypes } from "../../constants/dictionary";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { AriesAgent } from "../../../core/agent/agent";
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
@@ -121,6 +122,9 @@ describe("Cards Stack Component", () => {
 
   test("It navigates to Cred Card Details and back", async () => {
     jest.useFakeTimers();
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFix[0]);
     const { findByTestId } = render(
       <MemoryRouter>
         <Provider store={store}>

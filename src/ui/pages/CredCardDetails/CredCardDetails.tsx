@@ -89,6 +89,7 @@ const CredCardDetails = () => {
     // dispatch(setCredsCache(updatedCreds));
     handleDone();
   };
+  if (!cardData) return null;
 
   const AdditionalButtons = () => {
     return (
