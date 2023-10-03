@@ -59,10 +59,9 @@ const toastState = {
 const defaultCredentialsCardData: CredentialDetails = {
   id: "",
   type: [""],
-  connection: "",
+  connectionId: "",
   issuanceDate: "",
   expirationDate: "",
-  receivingDid: "",
   credentialType: "",
   issuerLogo: "",
   credentialSubject: {

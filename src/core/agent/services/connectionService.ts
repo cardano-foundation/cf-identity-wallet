@@ -178,7 +178,7 @@ class ConnectionService extends AgentService {
     id: string
   ): Promise<ConnectionShortDetails> {
     const connection = await this.agent.connections.getById(id);
-    return this.getConnectionDetails(connection, undefined);
+    return this.getConnectionShortDetails(connection);
   }
 
   private getConnectionDetails(

@@ -5,10 +5,9 @@ const credsFix: CredentialDetails[] = [
   {
     id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
     type: ["VerifiableCredential", "UniversityDegreeCredential"],
-    connection: "idHere",
+    connectionId: "idHere",
     issuanceDate: "2010-01-01T19:23:24Z",
     expirationDate: "2012-01-01T19:23:24Z",
-    receivingDid: "did:example:ebfeb1ebc6f1c276ef71212ec21",
     credentialType: "University Credential",
     issuerLogo: "https://www.w3.org/Icons/WWW/w3c_home_nb-v.svg",
     credentialSubject: {
@@ -25,10 +24,9 @@ const credsFix: CredentialDetails[] = [
   {
     id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
     type: ["VerifiableCredential", "UniversityDegreeCredential"],
-    connection: "idHere",
+    connectionId: "idHere",
     issuanceDate: "2010-01-01T19:23:24Z",
     expirationDate: "2012-01-01T19:23:24Z",
-    receivingDid: "did:example:ebfeb1f712ebc6f1c276e12ec21",
     credentialType: "University Credential",
     issuerLogo: "https://www.w3.org/Icons/WWW/w3c_home_nb-v.svg",
     credentialSubject: {

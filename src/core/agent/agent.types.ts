@@ -72,9 +72,8 @@ interface ConnectionDetails extends ConnectionShortDetails {
 
 interface CredentialDetails extends CredentialShortDetails {
   type: string[];
-  connection?: string;
+  connectionId?: string;
   expirationDate?: string;
-  receivingDid?: string;
   credentialSubject: JsonCredential["credentialSubject"];
   proofType: string;
   proofValue: string;

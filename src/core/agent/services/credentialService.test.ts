@@ -94,6 +94,12 @@ const credentialOfferReceivedRecordAutoAccept = new CredentialExchangeRecord({
   autoAcceptCredential: undefined,
 });
 
+const credentialOfferReceivedRecordNoAutoAccept = new CredentialExchangeRecord({
+  ...credentialExchangeProps,
+  state: CredentialState.OfferReceived,
+  autoAcceptCredential: AutoAcceptCredential.Always,
+});
+
 const credentialRequestSentRecordAutoAccept = new CredentialExchangeRecord({
   ...credentialExchangeProps,
   state: CredentialState.RequestSent,
@@ -364,6 +370,14 @@ describe("Credential service of agent", () => {
     ).toBe(true);
   });
 
+  test("check incoming offer receiver should be ignored if auto accept is always", () => {
+    expect(
+      credentialService.isCredentialOfferReceived(
+        credentialOfferReceivedRecordNoAutoAccept
+      )
+    ).toBe(false);
+  });
+
   test("check credential is done", () => {
     expect(
       credentialService.isCredentialDone(credentialDoneExchangeRecord)
@@ -401,7 +415,7 @@ describe("Credential service of agent", () => {
     ).resolves.toStrictEqual({
       id: credentialMetadataRecordA.id,
       colors: credentialMetadataRecordA.colors,
-      connection: credentialDoneExchangeRecord.connectionId,
+      connectionId: credentialDoneExchangeRecord.connectionId,
       credentialSubject: w3cCredentialRecord.credential.credentialSubject,
       credentialType: "credType",
       expirationDate: "2100-10-22T12:23:48Z",
@@ -410,7 +424,6 @@ describe("Credential service of agent", () => {
       proofType: "Ed25519Signature2018",
       proofValue:
         "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
-      receivingDid: "did:example:ebfeb1f712ebc6f1c276e12ec21",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       type: ["VerifiableCredential", "UniversityDegreeCredential"],
     });

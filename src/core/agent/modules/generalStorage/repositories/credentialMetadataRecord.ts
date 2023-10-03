@@ -11,7 +11,7 @@ class CredentialMetadataRecord
   colors!: [string, string];
   isArchived?: boolean;
   issuanceDate!: string;
-  issuerLogo!: string | undefined;
+  issuerLogo?: string;
   credentialType!: string;
   status!: CredentialMetadataRecordStatus;
   credentialRecordId!: string;

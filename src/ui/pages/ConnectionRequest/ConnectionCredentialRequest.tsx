@@ -50,8 +50,6 @@ const ConnectionCredentialRequest = () => {
             );
           setRequestData({ label: agentData.label, logo: agentData.logo });
           setRequestType(connectionType.connection);
-          // Preview credential
-          // await AriesAgent.agent.credentials.getPreviewCredential(credentialRecord);
         } else if (
           connectionCredentialRequest.type ===
           ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
@@ -96,7 +94,7 @@ const ConnectionCredentialRequest = () => {
     handleReset();
   };
 
-  const handleConnect = async () => {
+  const handleAccept = async () => {
     setInitiateAnimation(true);
     if (
       connectionCredentialRequest.type ===
@@ -222,7 +220,7 @@ const ConnectionCredentialRequest = () => {
             : `${i18n.t("request.alert.confirm-credential")}`
         }
         cancelButtonText={`${i18n.t("request.alert.cancel")}`}
-        actionConfirm={handleConnect}
+        actionConfirm={handleAccept}
         actionCancel={handleCancel}
         actionDismiss={handleReset}
       />

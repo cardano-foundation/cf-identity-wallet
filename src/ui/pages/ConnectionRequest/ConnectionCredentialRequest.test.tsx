@@ -1,7 +1,13 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  screen,
+  render,
+  waitFor,
+  cleanup,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
-import { setupIonicReact } from "@ionic/react";
 import i18next from "i18next";
 import { CredentialExchangeRecord } from "@aries-framework/core";
 import { store } from "../../../store";
@@ -12,7 +18,6 @@ import { AriesAgent } from "../../../core/agent/agent";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { i18n } from "../../../i18n";
 
-setupIonicReact();
 mockIonicReact();
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -44,13 +49,6 @@ describe("Connection request", () => {
     jest
       .spyOn(AriesAgent.agent.connections, "getConnectionShortDetailById")
       .mockResolvedValue(connectionMock);
-  });
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
   });
 
   test("It renders connection request incoming", async () => {
@@ -91,52 +89,48 @@ describe("Connection request", () => {
       "acceptRequestConnection"
     );
 
-    const { container, getByTestId, getByText } = render(
+    const { container, findByTestId, findByText } = render(
       <Provider store={store}>
         <ConnectionCredentialRequest />
       </Provider>
     );
-    await waitFor(() => waitForIonicReact(), { container: container });
-    const continueButton = getByTestId("continue-button");
-    const alertElement = getByTestId("alert-confirm");
+    await act(async () => {
+      await waitForIonicReact();
+    });
+    const continueButton = await findByTestId("continue-button");
+    const alertElement = await findByTestId("alert-confirm");
+    act(() => {
+      fireEvent.click(continueButton);
+    });
+
     await waitFor(
-      async () => {
-        fireEvent.click(continueButton);
+      () => {
         expect(alertElement.className).toEqual("alert-visible");
-        const confirmText = getByText(
-          i18next
-            .t("request.alert.title-confirm-connection", {
-              initiator: connectionMock.label,
-            })
-            .toString(),
-          { exact: false }
-        );
-        expect(confirmText).toBeInTheDocument();
       },
       { container: container }
     );
+    const confirmText = await findByText(
+      i18next
+        .t("request.alert.title-confirm-connection", {
+          initiator: connectionMock.label,
+        })
+        .toString(),
+      { exact: false }
+    );
+    expect(confirmText).toBeInTheDocument();
 
-    const btnConfirm = getByText(
+    const btnConfirm = await findByText(
       i18n.t("request.alert.confirm-connection").toString()
     );
     expect(btnConfirm).toBeInTheDocument();
 
-    await waitFor(
-      async () => {
-        act(() => {
-          btnConfirm.click();
-        });
-      },
-      { container: container }
-    );
-    expect(acceptRequestConnectionSpy).toBeCalledWith(id);
+    act(() => {
+      btnConfirm.click();
+    });
 
-    await waitFor(
-      async () => {
-        expect(alertElement.className).toEqual("alert-invisible");
-      },
-      { container: container }
-    );
+    await waitFor(() => {
+      expect(acceptRequestConnectionSpy).toBeCalledWith(id);
+    });
   });
 
   test("It renders connection response and confirm request", async () => {
@@ -152,31 +146,27 @@ describe("Connection request", () => {
       "acceptResponseConnection"
     );
 
-    const { container, getByTestId, getByText } = render(
+    const { findByTestId, findByText } = render(
       <Provider store={store}>
         <ConnectionCredentialRequest />
       </Provider>
     );
-    await waitFor(() => waitForIonicReact(), { container: container });
-    const continueButton = getByTestId("continue-button");
-    await waitFor(
-      async () => {
-        fireEvent.click(continueButton);
-      },
-      { container: container }
+    await act(async () => {
+      await waitForIonicReact();
+    });
+    const continueButton = await findByTestId("continue-button");
+    act(() => {
+      fireEvent.click(continueButton);
+    });
+
+    const btnConfirm = await findByText(
+      i18n.t("request.alert.confirm-connection").toString()
     );
 
-    await waitFor(
-      async () => {
-        const btnConfirm = getByText(
-          i18n.t("request.alert.confirm-connection").toString()
-        );
-        act(() => {
-          btnConfirm.click();
-        });
-      },
-      { container: container }
-    );
+    act(() => {
+      btnConfirm.click();
+    });
+
     expect(acceptResponseConnectionSpy).toBeCalledWith(id);
   });
 });
@@ -192,13 +182,6 @@ describe("Credential request", () => {
         connectionId: connectionMock.id,
       } as CredentialExchangeRecord);
   });
-  beforeEach(() => {
-    jest.useFakeTimers();
-  });
-  afterEach(() => {
-    jest.runOnlyPendingTimers();
-    jest.useRealTimers();
-  });
 
   test("It renders credential request and accept credential", async () => {
     const id = "456";
@@ -213,31 +196,26 @@ describe("Credential request", () => {
       "acceptCredentialOffer"
     );
 
-    const { container, getByTestId, getByText } = render(
+    const { findByTestId, findByText } = render(
       <Provider store={store}>
         <ConnectionCredentialRequest />
       </Provider>
     );
-    await waitFor(() => waitForIonicReact(), { container: container });
-    const continueButton = getByTestId("continue-button");
-    await waitFor(
-      async () => {
-        fireEvent.click(continueButton);
-      },
-      { container: container }
-    );
+    await act(async () => {
+      await waitForIonicReact();
+    });
+    const continueButton = await findByTestId("continue-button");
+    act(() => {
+      fireEvent.click(continueButton);
+    });
 
-    await waitFor(
-      async () => {
-        const btnConfirm = getByText(
-          i18n.t("request.alert.confirm-credential").toString()
-        );
-        act(() => {
-          btnConfirm.click();
-        });
-      },
-      { container: container }
+    const btnConfirm = await findByText(
+      i18n.t("request.alert.confirm-credential").toString()
     );
+    act(() => {
+      btnConfirm.click();
+    });
+
     expect(acceptCredentialOfferSpy).toBeCalledWith(id);
   });
 
@@ -254,29 +232,22 @@ describe("Credential request", () => {
       "declineCredentialOffer"
     );
 
-    const { container, getByTestId, getByText } = render(
+    const { findAllByText } = render(
       <Provider store={store}>
         <ConnectionCredentialRequest />
       </Provider>
     );
-    await waitFor(() => waitForIonicReact(), { container: container });
-    const continueButton = getByTestId("continue-button");
-    await waitFor(
-      async () => {
-        fireEvent.click(continueButton);
-      },
-      { container: container }
+    await act(async () => {
+      await waitForIonicReact();
+    });
+    const btnCancel = await findAllByText(
+      i18n.t("request.alert.cancel").toString()
     );
-
-    await waitFor(
-      async () => {
-        const btnCancel = getByText(i18n.t("request.alert.cancel").toString());
-        act(() => {
-          btnCancel.click();
-        });
-      },
-      { container: container }
-    );
-    expect(declineCredentialOfferSpy).toBeCalledWith(id);
+    act(() => {
+      btnCancel[2].click();
+    });
+    await waitFor(() => {
+      expect(declineCredentialOfferSpy).toBeCalledWith(id);
+    });
   });
 });

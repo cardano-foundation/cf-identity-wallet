@@ -122,15 +122,10 @@ class CredentialService extends AgentService {
     return {
       ...this.getCredentialShortDetails(metadata),
       type: w3cCredential.credential.type,
-      connection: credentialRecord.connectionId,
+      connectionId: credentialRecord.connectionId,
       expirationDate: w3cCredential.credential?.expirationDate,
-      // @TODO: handle array of credentialSubject later
-      receivingDid: !Array.isArray(credentialSubject)
-        ? (credentialSubject?.id as string)
-        : undefined,
       credentialSubject: credentialSubject,
       proofType: proof.type,
-      // when credential is done, proofValue must have a value
       proofValue: proof.jws as string,
     };
   }
