@@ -23,6 +23,9 @@ const agent = jest.mocked({
     getAll: jest.fn(),
     getById: jest.fn(),
   },
+  credentials : {
+    findAllByQuery : jest.fn()
+  },
   receiveMessage: jest.fn(),
 });
 const connectionService = new ConnectionService(agent as any as Agent);
@@ -366,4 +369,13 @@ describe("Connection service of agent", () => {
       expect.any(Object)
     );
   });
+
+  test("must call filler credential by query when get connection history", async () => {
+    const connectionIdTest = "testId"
+    agent.credentials.findAllByQuery = jest.fn().mockResolvedValue([]);
+    expect(await connectionService.getConnectionHistoryById(connectionIdTest)).toStrictEqual([]);
+    expect(agent.credentials.findAllByQuery).toBeCalledWith({
+      credentialId : connectionIdTest
+    })
+  })
 });
