@@ -140,10 +140,17 @@ class ConnectionService extends AgentService {
     };
   }
 
+  private isMediatorConnection(connection: ConnectionRecord) {
+    return connection.connectionTypes.includes("mediator");
+  }
+
   async getConnections(): Promise<ConnectionShortDetails[]> {
     const connections = await this.agent.connections.getAll();
     const connectionsDetails: ConnectionShortDetails[] = [];
     connections.forEach((connection) => {
+      if (this.isMediatorConnection(connection)) {
+        return;
+      }
       connectionsDetails.push(this.getConnectionShortDetails(connection));
     });
     return connectionsDetails;
