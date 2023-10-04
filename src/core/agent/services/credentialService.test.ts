@@ -27,6 +27,7 @@ const agent = jest.mocked({
     deleteById: jest.fn(),
     getById: jest.fn(),
     findOfferMessage: jest.fn(),
+    negotiateOffer: jest.fn(),
   },
   connections: {
     findById: jest.fn(),
@@ -481,5 +482,28 @@ describe("Credential service of agent", () => {
       credentialDoneExchangeRecord
     );
     expect(dataAfterUpdate.issuerLogo).toEqual("mockUrl");
+  });
+
+  test("negotiate credential with preview credential", async () => {
+    credentialService.getPreviewCredential = jest.fn().mockResolvedValue({
+      options: {},
+      credential: {},
+    });
+    const testDid = "did:key:test";
+    await credentialService.negotiateOfferWithDid(
+      testDid,
+      credentialOfferReceivedRecordNoAutoAccept
+    );
+    expect(agent.credentials.negotiateOffer).toBeCalledWith({
+      credentialRecordId: credentialOfferReceivedRecordNoAutoAccept.id,
+      credentialFormats: {
+        jsonld: {
+          options: {},
+          credential: {
+            id: testDid,
+          },
+        },
+      },
+    });
   });
 });

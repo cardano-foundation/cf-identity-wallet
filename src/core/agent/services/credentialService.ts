@@ -23,8 +23,8 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
     "Credential metadata missing for stored credential";
   static readonly CREDENTIAL_NOT_ARCHIVED = "Credential was not archived";
-  static readonly CREDENTIAL_MISSING_DID_DOC =
-    "Did document to negotiate offer is missing";
+  static readonly CREDENTIAL_MISSING_FOR_NEGOTIATE =
+    "Credential missing for negotiation";
 
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
@@ -219,19 +219,11 @@ class CredentialService extends AgentService {
     subjectDid: string,
     credentialExchangeRecord: CredentialExchangeRecord
   ): Promise<void> {
-    const did = await this.agent.dids.resolve(subjectDid);
-    if (!did.didDocument) {
-      throw new Error(
-        `${CredentialService.CREDENTIAL_MISSING_DID_DOC} ${subjectDid}`
-      );
-    }
     const w3cCredential = await this.getPreviewCredential(
       credentialExchangeRecord
     );
     if (!w3cCredential) {
-      throw new Error(
-        `${CredentialService.CREDENTIAL_MISSING_DID_DOC} ${subjectDid}`
-      );
+      throw new Error(`${CredentialService.CREDENTIAL_MISSING_FOR_NEGOTIATE}`);
     }
     await this.agent.credentials.negotiateOffer({
       credentialRecordId: credentialExchangeRecord.id,
