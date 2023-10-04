@@ -174,7 +174,9 @@ class CredentialService extends AgentService {
       );
     }
     const data = {
-      credentialType: w3cCredential.credential.type?.[1] ?? "",
+      credentialType: w3cCredential.credential.type?.find(
+        (t) => t !== "VerifiableCredential"
+      ),
       status: CredentialMetadataRecordStatus.CONFIRMED,
     };
     await this.agent.modules.generalStorage.updateCredentialMetadata(
@@ -183,7 +185,7 @@ class CredentialService extends AgentService {
     );
     return {
       colors: metadata.colors,
-      credentialType: data.credentialType,
+      credentialType: data.credentialType || "",
       id: metadata.id,
       isArchived: metadata.isArchived ?? false,
       issuanceDate: metadata.issuanceDate,
