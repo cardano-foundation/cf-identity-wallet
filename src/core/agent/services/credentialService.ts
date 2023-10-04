@@ -6,10 +6,10 @@ import {
   CredentialStateChangedEvent,
   ProposeCredentialOptions,
   V2OfferCredentialMessage,
-  W3cVerifiableCredential,
   LinkedDataProof,
   AriesFrameworkError,
   JsonCredential,
+  JsonLdCredentialDetailFormat,
 } from "@aries-framework/core";
 import { CredentialDetails, CredentialShortDetails } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
@@ -23,6 +23,8 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
     "Credential metadata missing for stored credential";
   static readonly CREDENTIAL_NOT_ARCHIVED = "Credential was not archived";
+  static readonly CREDENTIAL_MISSING_DID_DOC =
+    "Did document to negotiate offer is missing";
 
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
@@ -142,7 +144,7 @@ class CredentialService extends AgentService {
     if (!attachment) {
       return null;
     }
-    return attachment.getDataAsJson<W3cVerifiableCredential>();
+    return attachment.getDataAsJson<JsonLdCredentialDetailFormat>();
   }
 
   async createMetadata(data: CredentialMetadataRecordProps) {
@@ -210,6 +212,38 @@ class CredentialService extends AgentService {
     this.validArchivedCredential(metadata);
     await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
       isArchived: false,
+    });
+  }
+
+  async negotiateOfferWithDid(
+    subjectDid: string,
+    credentialExchangeRecord: CredentialExchangeRecord
+  ): Promise<void> {
+    const did = await this.agent.dids.resolve(subjectDid);
+    if (!did.didDocument) {
+      throw new Error(
+        `${CredentialService.CREDENTIAL_MISSING_DID_DOC} ${subjectDid}`
+      );
+    }
+    const w3cCredential = await this.getPreviewCredential(
+      credentialExchangeRecord
+    );
+    if (!w3cCredential) {
+      throw new Error(
+        `${CredentialService.CREDENTIAL_MISSING_DID_DOC} ${subjectDid}`
+      );
+    }
+    await this.agent.credentials.negotiateOffer({
+      credentialRecordId: credentialExchangeRecord.id,
+      credentialFormats: {
+        jsonld: {
+          ...w3cCredential,
+          credential: {
+            ...w3cCredential.credential,
+            id: subjectDid,
+          },
+        },
+      },
     });
   }
 
