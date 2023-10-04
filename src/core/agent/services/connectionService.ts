@@ -186,7 +186,7 @@ class ConnectionService extends AgentService {
     id: string
   ): Promise<CredentialExchangeRecord[]> {
     const connectionRecords = await this.agent.credentials.findAllByQuery({
-      credentialId: id,
+      connectionId: id,
     });
     return connectionRecords;
   }
