@@ -5,6 +5,7 @@ import {
   ConnectionStateChangedEvent,
   CredentialExchangeRecord,
   ConnectionType,
+  CredentialExchangeRecord,
   DidExchangeRole,
   DidExchangeState,
   JsonEncoder,
