@@ -47,6 +47,10 @@ const ConnectionDetails = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [notes, setNotes] = useState<NotesProps[]>([]);
 
+  useEffect(() => {
+    console.log(notes);
+  }, [notes]);
+
   interface NotesProps {
     title: string;
     message: string;
@@ -60,8 +64,8 @@ const ConnectionDetails = () => {
         );
       setConnectionDetails(connectionDetails);
     }
-    getDetails();
-  }, []);
+    if (connectionShortDetails?.id) getDetails();
+  }, [connectionShortDetails?.id]);
 
   const handleDone = () => {
     const data: DataProps = {
@@ -135,70 +139,70 @@ const ConnectionDetails = () => {
           <div className="connection-details-info-block">
             <h3>{i18n.t("connections.details.label")}</h3>
             <div className="connection-details-info-block-inner">
-              <span className="connection-details-info-block-line">
-                <span className="connection-details-info-block-data">
+              <div className="connection-details-info-block-line">
+                <div className="connection-details-info-block-data">
                   {connectionDetails?.label}
-                </span>
-              </span>
+                </div>
+              </div>
             </div>
           </div>
 
           <div className="connection-details-info-block">
             <h3>{i18n.t("connections.details.date")}</h3>
             <div className="connection-details-info-block-inner">
-              <span className="connection-details-info-block-line">
-                <span className="connection-details-info-block-data">
+              <div className="connection-details-info-block-line">
+                <div className="connection-details-info-block-data">
                   {formatShortDate(`${connectionDetails?.connectionDate}`)}
-                </span>
-              </span>
+                </div>
+              </div>
             </div>
           </div>
 
           <div className="connection-details-info-block">
             <h3>{i18n.t("connections.details.goalcodes")}</h3>
             <div className="connection-details-info-block-inner">
-              <span className="connection-details-info-block-line">
-                <span className="connection-details-info-block-data">
+              <div className="connection-details-info-block-line">
+                <div className="connection-details-info-block-data">
                   {connectionDetails?.goalCode ||
                     i18n.t("connections.details.notavailable")}
-                </span>
-              </span>
+                </div>
+              </div>
             </div>
           </div>
 
           <div className="connection-details-info-block">
             <h3>{i18n.t("connections.details.handshake")}</h3>
             <div className="connection-details-info-block-inner">
-              <span className="connection-details-info-block-line">
-                <span className="connection-details-info-block-data">
+              <div className="connection-details-info-block-line">
+                <div className="connection-details-info-block-data">
                   {connectionDetails?.handshakeProtocols?.toString() ||
                     i18n.t("connections.details.notavailable")}
-                </span>
-              </span>
+                </div>
+              </div>
             </div>
           </div>
 
           <div className="connection-details-info-block">
             <h3>{i18n.t("connections.details.attachments")}</h3>
             <div className="connection-details-info-block-inner">
-              <span className="connection-details-info-block-line">
-                <span className="connection-details-info-block-data">
+              <div className="connection-details-info-block-line">
+                <div className="connection-details-info-block-data">
                   {connectionDetails?.requestAttachments?.toString() ||
                     i18n.t("connections.details.notavailable")}
-                </span>
-              </span>
+                </div>
+              </div>
             </div>
           </div>
 
           <div className="connection-details-info-block">
             <h3>{i18n.t("connections.details.endpoints")}</h3>
             <div className="connection-details-info-block-inner">
-              <span className="connection-details-info-block-line">
-                <span className="connection-details-info-block-data">
+              <div className="connection-details-info-block-line">
+                <div className="connection-details-info-block-data">
                   {connectionDetails?.serviceEndpoints?.toString() ||
                     i18n.t("connections.details.notavailable")}
-                </span>
-              </span>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -210,14 +214,14 @@ const ConnectionDetails = () => {
                   className="connection-details-info-block-inner"
                   key={index}
                 >
-                  <span className="connection-details-info-block-line">
-                    <span className="connection-details-info-block-data">
+                  <div className="connection-details-info-block-line">
+                    <div className="connection-details-info-block-data">
                       {note.title}
-                    </span>
-                    <span className="connection-details-info-block-note">
+                    </div>
+                    <div className="connection-details-info-block-note">
                       {note.message}
-                    </span>
-                  </span>
+                    </div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -310,36 +314,62 @@ const ConnectionDetails = () => {
                       className="connection-details-info-block-inner"
                       key={index}
                     >
-                      <span className="connection-details-info-block-line">
-                        <span className="connection-details-info-block-data">
-                          {i18n.t("connections.details.title")}
+                      <div className="connection-details-info-block-line">
+                        <div className="connection-details-info-block-data">
+                          <div className="connection-details-info-block-title">
+                            <span>{i18n.t("connections.details.title")}</span>
+                            <span>{note.title.length}/64</span>
+                          </div>
                           <IonInput
-                            // dataTestId={`edit-connections-modal-title-${index + 1}`}
+                            data-testid={`edit-connections-modal-note-title-${
+                              index + 1
+                            }`}
                             onIonChange={(e) => {
                               const newNotes = notes;
                               newNotes[index].title =
                                 (e.target.value as string) ?? "";
                               setNotes(newNotes);
-                              console.log(newNotes);
                             }}
                             value={note.title}
                           />
-                        </span>
-                        <span className="connection-details-info-block-data">
-                          {i18n.t("connections.details.message")}
+                        </div>
+                        <div className="connection-details-info-block-data">
+                          <div className="connection-details-info-block-title">
+                            <span>{i18n.t("connections.details.message")}</span>
+                            <span>{note.message.length}/576</span>
+                          </div>
                           <IonInput
-                            // dataTestId={`edit-connections-modal-title-${index + 1}`}
+                            data-testid={`edit-connections-modal-note-message-${
+                              index + 1
+                            }`}
                             onIonChange={(e) => {
                               const newNotes = notes;
                               newNotes[index].message =
                                 (e.target.value as string) ?? "";
                               setNotes(newNotes);
-                              console.log(newNotes);
                             }}
                             value={note.message}
                           />
-                        </span>
-                      </span>
+                        </div>
+                      </div>
+                      <div className="connection-details-delete-note">
+                        <IonButton
+                          shape="round"
+                          color={"danger"}
+                          onClick={() => {
+                            const newNotes = notes;
+                            if (index > -1) {
+                              newNotes.splice(index, 1);
+                            }
+                            setNotes(newNotes);
+                          }}
+                        >
+                          <IonIcon
+                            slot="icon-only"
+                            icon={trashOutline}
+                          />
+                        </IonButton>
+                      </div>
                     </div>
                   ))}
                 </>
@@ -353,7 +383,7 @@ const ConnectionDetails = () => {
               <IonButton
                 shape="round"
                 className="ion-primary-button"
-                onClick={() =>
+                onClick={() => {
                   setNotes([
                     ...notes,
                     {
@@ -362,8 +392,8 @@ const ConnectionDetails = () => {
                       }),
                       message: "",
                     },
-                  ])
-                }
+                  ]);
+                }}
               >
                 <IonIcon
                   slot="icon-only"
