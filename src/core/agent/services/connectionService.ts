@@ -3,6 +3,7 @@ import {
   ConnectionEventTypes,
   ConnectionRecord,
   ConnectionStateChangedEvent,
+  ConnectionType,
   DidExchangeRole,
   DidExchangeState,
   JsonEncoder,
@@ -141,7 +142,7 @@ class ConnectionService extends AgentService {
   }
 
   private isMediatorConnection(connection: ConnectionRecord) {
-    return connection.connectionTypes.includes("mediator");
+    return connection.connectionTypes.includes(ConnectionType.Mediator);
   }
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
