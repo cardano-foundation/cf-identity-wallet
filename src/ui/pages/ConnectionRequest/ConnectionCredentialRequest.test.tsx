@@ -1,13 +1,7 @@
-import {
-  act,
-  fireEvent,
-  screen,
-  render,
-  waitFor,
-  cleanup,
-} from "@testing-library/react";
+import { mockIonicReact } from "@ionic/react-test-utils";
+mockIonicReact();
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { mockIonicReact, waitForIonicReact } from "@ionic/react-test-utils";
 import i18next from "i18next";
 import { CredentialExchangeRecord } from "@aries-framework/core";
 import { store } from "../../../store";
@@ -17,8 +11,6 @@ import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCa
 import { AriesAgent } from "../../../core/agent/agent";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { i18n } from "../../../i18n";
-
-mockIonicReact();
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -94,9 +86,6 @@ describe("Connection request", () => {
         <ConnectionCredentialRequest />
       </Provider>
     );
-    await act(async () => {
-      await waitForIonicReact();
-    });
     const continueButton = await findByTestId("continue-button");
     const alertElement = await findByTestId("alert-confirm");
     act(() => {
@@ -151,9 +140,6 @@ describe("Connection request", () => {
         <ConnectionCredentialRequest />
       </Provider>
     );
-    await act(async () => {
-      await waitForIonicReact();
-    });
     const continueButton = await findByTestId("continue-button");
     act(() => {
       fireEvent.click(continueButton);
@@ -201,9 +187,6 @@ describe("Credential request", () => {
         <ConnectionCredentialRequest />
       </Provider>
     );
-    await act(async () => {
-      await waitForIonicReact();
-    });
     const continueButton = await findByTestId("continue-button");
     act(() => {
       fireEvent.click(continueButton);
@@ -232,19 +215,16 @@ describe("Credential request", () => {
       "declineCredentialOffer"
     );
 
-    const { findAllByText } = render(
+    const { findByText } = render(
       <Provider store={store}>
         <ConnectionCredentialRequest />
       </Provider>
     );
-    await act(async () => {
-      await waitForIonicReact();
-    });
-    const btnCancel = await findAllByText(
+    const btnCancel = await findByText(
       i18n.t("request.alert.cancel").toString()
     );
     act(() => {
-      btnCancel[2].click();
+      btnCancel.click();
     });
     await waitFor(() => {
       expect(declineCredentialOfferSpy).toBeCalledWith(id);
