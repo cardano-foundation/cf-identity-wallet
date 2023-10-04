@@ -1,4 +1,5 @@
-.connection-details {
+.connection-details,
+.edit-connections-modal {
   ion-toolbar ion-buttons {
     ion-button {
       color: var(--ion-color-secondary);
@@ -18,41 +19,6 @@
   .connection-details-content {
     & > * {
       margin: 1.56rem 0 1rem;
-    }
-
-    .connection-details-header {
-      display: flex;
-      flex-direction: column;
-
-      & > * {
-        display: flex;
-        flex-direction: row;
-        justify-content: center;
-      }
-    }
-
-    .connection-details-logo {
-      margin-bottom: 0.94rem;
-
-      img {
-        width: 5.5rem;
-        height: 5.5rem;
-        border-radius: 2.75rem;
-      }
-    }
-
-    .connection-details-issuer {
-      font-size: 1.5rem;
-      color: var(--ion-color-primary);
-      font-weight: 700;
-      line-height: 1.375rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .connection-details-date {
-      font-size: 1rem;
-      color: var(--ion-color-secondary);
-      font-weight: 500;
     }
   }
 
@@ -112,5 +78,62 @@
       margin-right: 0.5rem;
       --ion-color-base: white !important;
     }
+  }
+}
+
+.connection-details-header {
+  display: flex;
+  flex-direction: column;
+
+  & > * {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.connection-details-logo {
+  margin-bottom: 0.94rem;
+
+  img {
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 2.75rem;
+  }
+}
+
+.connection-details-issuer {
+  font-size: 1.5rem;
+  color: var(--ion-color-primary);
+  font-weight: 700;
+  line-height: 1.375rem;
+  margin-bottom: 0.5rem;
+}
+
+.connection-details-date {
+  font-size: 1rem;
+  color: var(--ion-color-secondary);
+  font-weight: 500;
+}
+
+.edit-connections-modal {
+  .close-button-label,
+  .action-button-label {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 700;
+    --opacity: 1;
+
+    &::part(native) {
+      padding: 0;
+    }
+  }
+
+  .close-button-label {
+    color: var(--ion-color-secondary) !important;
+  }
+
+  .action-button-label {
+    color: var(--ion-color-action-blue) !important;
   }
 }
