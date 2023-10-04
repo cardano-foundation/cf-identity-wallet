@@ -185,10 +185,10 @@ class ConnectionService extends AgentService {
   async getConnectionHistoryById(
     id: string
   ): Promise<CredentialExchangeRecord[]> {
-    const connectionRecords = await this.agent.credentials.findAllByQuery({
+    const credentialRecords = await this.agent.credentials.findAllByQuery({
       connectionId: id,
     });
-    return connectionRecords;
+    return credentialRecords;
   }
 
   private getConnectionDetails(

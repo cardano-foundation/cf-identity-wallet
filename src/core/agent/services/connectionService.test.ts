@@ -375,7 +375,7 @@ describe("Connection service of agent", () => {
     agent.credentials.findAllByQuery = jest.fn().mockResolvedValue([]);
     expect(await connectionService.getConnectionHistoryById(connectionIdTest)).toStrictEqual([]);
     expect(agent.credentials.findAllByQuery).toBeCalledWith({
-      credentialId : connectionIdTest
+      connectionId : connectionIdTest
     })
   })
 });
