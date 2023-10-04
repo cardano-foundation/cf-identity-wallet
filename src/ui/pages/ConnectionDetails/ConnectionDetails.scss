@@ -136,4 +136,48 @@
   .action-button-label {
     color: var(--ion-color-action-blue) !important;
   }
+
+  .connection-details-info-block-data {
+    ion-input {
+      border-radius: 0.5rem;
+      border: 1px solid var(--ion-color-dark-grey);
+      margin: 0.5rem 0 1.56rem;
+      min-height: 1.25rem;
+
+      input {
+        --padding-top: 0.875rem;
+        --padding-bottom: 0.875rem;
+        --padding-start: 1.25rem;
+      }
+
+      &.has-focus {
+        border-color: var(--ion-color-secondary);
+      }
+    }
+
+    &:last-child ion-input {
+      margin-bottom: 0;
+    }
+  }
+
+  .connection-details-add-note {
+    position: fixed;
+    bottom: 2.19rem;
+    right: 1.25rem;
+
+    ion-button {
+      width: 3.375rem;
+      height: 3.375rem;
+      border-radius: 1.875rem;
+
+      &::part(native) {
+        padding: 0.875rem 0.84375rem 1rem 1.03125rem;
+      }
+
+      ion-icon {
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+    }
+  }
 }

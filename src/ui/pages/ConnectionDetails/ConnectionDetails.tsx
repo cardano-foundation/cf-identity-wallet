@@ -1,5 +1,5 @@
-import { IonButton, IonIcon, IonModal, IonPage } from "@ionic/react";
-import { ellipsisVertical, trashOutline } from "ionicons/icons";
+import { IonButton, IonIcon, IonInput, IonModal, IonPage } from "@ionic/react";
+import { ellipsisVertical, trashOutline, createOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import i18next from "i18next";
@@ -45,7 +45,12 @@ const ConnectionDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [notes, setNotes] = useState(["Hello", "World"]);
+  const [notes, setNotes] = useState<NotesProps[]>([]);
+
+  interface NotesProps {
+    title: string;
+    message: string;
+  }
 
   useEffect(() => {
     async function getDetails() {
@@ -57,6 +62,7 @@ const ConnectionDetails = () => {
     }
     getDetails();
   }, []);
+
   const handleDone = () => {
     const data: DataProps = {
       store: { stateCache },
@@ -101,29 +107,6 @@ const ConnectionDetails = () => {
         <span className="connection-details-date">
           {formatShortDate(`${connectionDetails?.connectionDate}`)}
         </span>
-      </div>
-    );
-  };
-
-  const ConnectionDetailsNotes = () => {
-    return (
-      <div className="connection-details-info-block">
-        <h3>{i18n.t("connections.details.notes")}</h3>
-        {notes.map((note, index) => (
-          <div
-            className="connection-details-info-block-inner"
-            key={index}
-          >
-            <span className="connection-details-info-block-line">
-              <span className="connection-details-info-block-data">
-                {i18next.t("connections.details.note", {
-                  index: index + 1,
-                })}
-              </span>
-              <span className="connection-details-info-block-note">{note}</span>
-            </span>
-          </div>
-        ))}
       </div>
     );
   };
@@ -219,7 +202,26 @@ const ConnectionDetails = () => {
             </div>
           </div>
 
-          {notes && <ConnectionDetailsNotes />}
+          {notes.length > 0 && (
+            <div className="connection-details-info-block">
+              <h3>{i18n.t("connections.details.notes")}</h3>
+              {notes.map((note, index) => (
+                <div
+                  className="connection-details-info-block-inner"
+                  key={index}
+                >
+                  <span className="connection-details-info-block-line">
+                    <span className="connection-details-info-block-data">
+                      {note.title}
+                    </span>
+                    <span className="connection-details-info-block-note">
+                      {note.message}
+                    </span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
 
           <IonButton
             shape="round"
@@ -292,14 +294,83 @@ const ConnectionDetails = () => {
           <PageLayout
             header={true}
             closeButton={true}
-            closeButtonLabel={`${i18n.t("verifypassword.cancel")}`}
+            closeButtonLabel={`${i18n.t("connections.details.cancel")}`}
             closeButtonAction={() => setModalIsOpen(false)}
             actionButton={true}
             actionButtonAction={() => setModalIsOpen(false)}
-            actionButtonLabel={`${i18n.t("verifypassword.confirm")}`}
+            actionButtonLabel={`${i18n.t("connections.details.confirm")}`}
           >
             <ConnectionDetailsHeader />
-            <ConnectionDetailsNotes />
+            <div className="connection-details-info-block">
+              {notes.length ? (
+                <>
+                  <h3>{i18n.t("connections.details.notes")}</h3>
+                  {notes.map((note, index) => (
+                    <div
+                      className="connection-details-info-block-inner"
+                      key={index}
+                    >
+                      <span className="connection-details-info-block-line">
+                        <span className="connection-details-info-block-data">
+                          {i18n.t("connections.details.title")}
+                          <IonInput
+                            // dataTestId={`edit-connections-modal-title-${index + 1}`}
+                            onIonChange={(e) => {
+                              const newNotes = notes;
+                              newNotes[index].title =
+                                (e.target.value as string) ?? "";
+                              setNotes(newNotes);
+                              console.log(newNotes);
+                            }}
+                            value={note.title}
+                          />
+                        </span>
+                        <span className="connection-details-info-block-data">
+                          {i18n.t("connections.details.message")}
+                          <IonInput
+                            // dataTestId={`edit-connections-modal-title-${index + 1}`}
+                            onIonChange={(e) => {
+                              const newNotes = notes;
+                              newNotes[index].message =
+                                (e.target.value as string) ?? "";
+                              setNotes(newNotes);
+                              console.log(newNotes);
+                            }}
+                            value={note.message}
+                          />
+                        </span>
+                      </span>
+                    </div>
+                  ))}
+                </>
+              ) : (
+                <i className="connection-details-info-block-nonotes">
+                  {i18n.t("connections.details.nocurrentnotes")}
+                </i>
+              )}
+            </div>
+            <div className="connection-details-add-note">
+              <IonButton
+                shape="round"
+                className="ion-primary-button"
+                onClick={() =>
+                  setNotes([
+                    ...notes,
+                    {
+                      title: i18next.t("connections.details.note", {
+                        index: notes.length + 1,
+                      }),
+                      message: "",
+                    },
+                  ])
+                }
+              >
+                <IonIcon
+                  slot="icon-only"
+                  icon={createOutline}
+                />
+              </IonButton>
+            </div>
           </PageLayout>
         </div>
       </IonModal>
