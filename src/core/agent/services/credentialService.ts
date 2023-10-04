@@ -25,6 +25,7 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_NOT_ARCHIVED = "Credential was not archived";
   static readonly CREDENTIAL_MISSING_FOR_NEGOTIATE =
     "Credential missing for negotiation";
+  static readonly CREATED_DID_NOT_FOUND = "Referenced public did not found";
 
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
@@ -219,6 +220,12 @@ class CredentialService extends AgentService {
     subjectDid: string,
     credentialExchangeRecord: CredentialExchangeRecord
   ): Promise<void> {
+    const [createdDid] = await this.agent.dids.getCreatedDids({
+      did: subjectDid,
+    });
+    if (!createdDid) {
+      throw new Error(`${CredentialService.CREATED_DID_NOT_FOUND}`);
+    }
     const w3cCredential = await this.getPreviewCredential(
       credentialExchangeRecord
     );

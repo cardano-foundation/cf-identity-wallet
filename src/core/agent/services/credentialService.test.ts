@@ -51,6 +51,9 @@ const agent = jest.mocked({
   w3cCredentials: {
     getCredentialRecordById: jest.fn(),
   },
+  dids: {
+    getCreatedDids: jest.fn(),
+  },
 });
 const credentialService = new CredentialService(agent as any as Agent);
 
@@ -485,15 +488,35 @@ describe("Credential service of agent", () => {
   });
 
   test("negotiate credential with preview credential", async () => {
+    const testDid = "did:key:test";
+    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([]);
+
+    await expect(
+      credentialService.negotiateOfferWithDid(
+        testDid,
+        credentialOfferReceivedRecordNoAutoAccept
+      )
+    ).rejects.toThrowError(CredentialService.CREATED_DID_NOT_FOUND);
+
+    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([{ did: testDid }]);
+
+    await expect(
+      credentialService.negotiateOfferWithDid(
+        testDid,
+        credentialOfferReceivedRecordNoAutoAccept
+      )
+    ).rejects.toThrowError(CredentialService.CREDENTIAL_MISSING_FOR_NEGOTIATE);
+
     credentialService.getPreviewCredential = jest.fn().mockResolvedValue({
       options: {},
       credential: {},
     });
-    const testDid = "did:key:test";
+
     await credentialService.negotiateOfferWithDid(
       testDid,
       credentialOfferReceivedRecordNoAutoAccept
     );
+
     expect(agent.credentials.negotiateOffer).toBeCalledWith({
       credentialRecordId: credentialOfferReceivedRecordNoAutoAccept.id,
       credentialFormats: {
