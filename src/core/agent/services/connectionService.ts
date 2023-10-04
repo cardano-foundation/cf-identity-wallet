@@ -5,7 +5,6 @@ import {
   ConnectionStateChangedEvent,
   CredentialExchangeRecord,
   ConnectionType,
-  CredentialExchangeRecord,
   DidExchangeRole,
   DidExchangeState,
   JsonEncoder,
@@ -183,11 +182,13 @@ class ConnectionService extends AgentService {
     return this.getConnectionDetails(connection, outOfBandRecord);
   }
 
-  async getConnectionHistoryById(id: string): Promise<CredentialExchangeRecord[]> {
+  async getConnectionHistoryById(
+    id: string
+  ): Promise<CredentialExchangeRecord[]> {
     const connectionRecords = await this.agent.credentials.findAllByQuery({
-      credentialId : id
-    })
-    return connectionRecords
+      credentialId: id,
+    });
+    return connectionRecords;
   }
 
   private getConnectionDetails(
