@@ -52,8 +52,9 @@ const ConnectionDetails = () => {
         );
       setConnectionDetails(connectionDetails);
     }
-    getDetails();
-  }, []);
+    if (connectionShortDetails?.id) getDetails();
+  }, [connectionShortDetails?.id]);
+
   const handleDone = () => {
     const data: DataProps = {
       store: { stateCache },
