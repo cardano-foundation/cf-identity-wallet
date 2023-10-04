@@ -124,13 +124,17 @@ class AriesAgent {
         ],
         type: ["VerifiableCredential", "UniversityDegreeCredential"],
         issuer: did,
+        name: "University Degree Credential",
         issuanceDate: "2022-10-22T12:23:48Z",
         credentialSubject: {
-          degree: {
-            type: "BachelorDegree",
-            name: "Bachelor of Science and Arts",
-          },
+          // @TODO: handle later, it should be did of holder
+          id: "did:example:abcdef1234567",
+          type: "BachelorDegree",
+          name: "Bachelor of Science and Arts",
+          givenName: "John",
+          familyName: "Smith",
         },
+        expirationDate: "2100-10-22T12:23:48Z"
       },
       options: {
         proofType: "Ed25519Signature2018",

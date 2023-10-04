@@ -79,8 +79,8 @@ const CredsOptions = ({
     handleCloseOptions();
     // @TODO - sdisalvo: Update Database.
     // Remember to update CredCardDetails file too.
-    const updatedCreds = credsFix.filter((item) => item.id !== id);
-    dispatch(setCredsCache(updatedCreds));
+    // const updatedCreds = credsFix.filter((item) => item.id !== id);
+    // dispatch(setCredsCache(updatedCreds));
     handleDone();
   };
 

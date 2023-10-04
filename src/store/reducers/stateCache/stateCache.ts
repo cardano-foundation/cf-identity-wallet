@@ -4,7 +4,7 @@ import {
   StateCacheProps,
   AuthenticationCacheProps,
   CurrentRouteCacheProps,
-  ConnectionRequestProps,
+  ConnectionCredentialRequestProps,
 } from "./stateCache.types";
 import { RoutePath } from "../../../routes";
 
@@ -19,7 +19,7 @@ const initialState: StateCacheProps = {
     passwordIsSkipped: true,
   },
   currentOperation: "",
-  connectionRequest: { id: "" },
+  connectionCredentialRequest: { id: "" },
   defaultCryptoAccount: "",
 };
 
@@ -55,11 +55,11 @@ const stateCacheSlice = createSlice({
     setCurrentOperation: (state, action: PayloadAction<string>) => {
       state.currentOperation = action.payload;
     },
-    setConnectionRequest: (
+    setConnectionCredentialRequest: (
       state,
-      action: PayloadAction<ConnectionRequestProps>
+      action: PayloadAction<ConnectionCredentialRequestProps>
     ) => {
-      state.connectionRequest = action.payload;
+      state.connectionCredentialRequest = action.payload;
     },
   },
 });
@@ -71,7 +71,7 @@ const {
   removeRoute,
   setAuthentication,
   setCurrentOperation,
-  setConnectionRequest,
+  setConnectionCredentialRequest,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -81,8 +81,8 @@ const getCurrentRoute = (state: RootState) =>
 const getAuthentication = (state: RootState) => state.stateCache.authentication;
 const getCurrentOperation = (state: RootState) =>
   state.stateCache.currentOperation;
-const getConnectionRequest = (state: RootState) =>
-  state.stateCache.connectionRequest;
+const getConnectionCredentialRequest = (state: RootState) =>
+  state.stateCache.connectionCredentialRequest;
 
 export type {
   CurrentRouteCacheProps,
@@ -104,6 +104,6 @@ export {
   setAuthentication,
   getCurrentOperation,
   setCurrentOperation,
-  setConnectionRequest,
-  getConnectionRequest,
+  setConnectionCredentialRequest,
+  getConnectionCredentialRequest,
 };

@@ -1,4 +1,4 @@
-.connection-request {
+.request {
   background: var(--ion-color-light);
   margin-top: 0;
   z-index: 102 !important;
@@ -36,15 +36,15 @@
       transition: opacity 0.5s, visibility 1s, top 1s;
     }
 
-    .connection-request-user-logo,
-    .connection-request-provider-logo {
+    .request-user-logo,
+    .request-provider-logo {
       left: calc(50% - 2.5rem);
       visibility: hidden;
       transition: left 0.7s, visibility 2s;
       transition-delay: 0.7s;
     }
 
-    .connection-request-checkmark-logo span {
+    .request-checkmark-logo span {
       width: 5rem !important;
       height: 5rem !important;
       visibility: visible;
@@ -53,14 +53,14 @@
       transition-property: opacity 2s, visibility 1s, height 3s, width 3s;
     }
 
-    .connection-request-info-row {
+    .request-info-row {
       top: 70vh;
       opacity: 0;
       visibility: hidden;
       transition: opacity 0.5s, visibility 1s, top 1s;
     }
 
-    .connection-request-status {
+    .request-status {
       top: 50vh;
       transition: top 0.5s;
       transition-delay: 2.7s;
@@ -79,30 +79,30 @@
       opacity: 1;
     }
 
-    .connection-request-user-logo {
+    .request-user-logo {
       left: calc(50% - 7.25rem);
     }
 
-    .connection-request-provider-logo {
+    .request-provider-logo {
       left: calc(50% + 2.5rem);
     }
 
-    .connection-request-user-logo,
-    .connection-request-provider-logo,
-    .connection-request-provider-logo,
-    .connection-request-info-row {
+    .request-user-logo,
+    .request-provider-logo,
+    .request-provider-logo,
+    .request-info-row {
       visibility: visible;
       opacity: 1;
     }
 
-    .connection-request-checkmark-logo {
+    .request-checkmark-logo {
       opacity: 0;
       visibility: hidden;
       width: 2rem !important;
       height: 2rem !important;
     }
 
-    .connection-request-status {
+    .request-status {
       top: 100vh;
     }
 
@@ -111,15 +111,15 @@
     }
   }
 
-  .connection-request-content {
+  .request-content {
     height: 80rem;
   }
 
-  .connection-request-icons-row {
-    .connection-request-user-logo,
-    .connection-request-swap-logo,
-    .connection-request-provider-logo,
-    .connection-request-checkmark-logo {
+  .request-icons-row {
+    .request-user-logo,
+    .request-swap-logo,
+    .request-provider-logo,
+    .request-checkmark-logo {
       margin: 0;
       display: flex;
       flex-direction: column;
@@ -128,7 +128,7 @@
       top: 35vh;
     }
 
-    .connection-request-user-logo {
+    .request-user-logo {
       width: 5rem;
       height: 5rem;
       border-radius: 5rem;
@@ -141,8 +141,8 @@
       }
     }
 
-    .connection-request-swap-logo,
-    .connection-request-checkmark-logo {
+    .request-swap-logo,
+    .request-checkmark-logo {
       width: 5rem;
       height: 5rem;
       left: calc(50% - (2.75rem / 2));
@@ -165,11 +165,11 @@
       }
     }
 
-    .connection-request-checkmark-logo {
+    .request-checkmark-logo {
       left: calc(50% - (5rem / 2));
     }
 
-    .connection-request-provider-logo {
+    .request-provider-logo {
       img {
         width: 5rem;
         height: 5rem;
@@ -178,8 +178,8 @@
     }
   }
 
-  .connection-request-info-row,
-  .connection-request-status {
+  .request-info-row,
+  .request-status {
     position: absolute;
     top: 50vh;
     width: 100%;

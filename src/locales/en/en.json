@@ -557,16 +557,21 @@
       "title": "Would you like to grant permission for using your camera?"
     }
   },
-  "connectionrequest": {
-    "title": "Connect",
-    "request": " request from",
+  "request": {
+    "connection-title": "Connect",
+    "credential-title": "Credential offer",
+    "request-connection": " request from",
+    "offer-credential": " offer from",
     "button": {
       "connect": "Connect",
+      "accept-offer": "Accept credential",
       "cancel": "Cancel"
     },
     "alert": {
-      "title": "Are you sure about proceeding with your connection to {{initiator}}?",
-      "confirm": "Yes, connect",
+      "title-confirm-connection": "Are you sure about proceeding with your connection to {{initiator}}?",
+      "title-confirm-credential": "Are you sure you want to continue with {{initiator}}?",
+      "confirm-connection": "Yes, connect",
+      "confirm-credential": "Yes, accept credential",
       "cancel": "Cancel"
     },
     "pending": "{{action}} pending",

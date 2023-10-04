@@ -47,8 +47,10 @@ const config: InitConfig = {
 const agentDependencies: AgentDependencies = {
   FileSystem: CapacitorFileSystem,
   EventEmitterClass: EventEmitter,
+  // eslint-disable-next-line no-undef
   fetch: global.fetch as unknown as AgentDependencies["fetch"],
   WebSocketClass:
+    // eslint-disable-next-line no-undef
     global.WebSocket as unknown as AgentDependencies["WebSocketClass"],
 };
 
@@ -73,7 +75,7 @@ const agentModules = {
         credentialFormats: [new JsonLdCredentialFormatService()],
       }),
     ],
-    autoAcceptCredentials: AutoAcceptCredential.Always,
+    autoAcceptCredentials: AutoAcceptCredential.ContentApproved,
   }),
   w3cCredentials: new W3cCredentialsModule({
     documentLoader: documentLoader,

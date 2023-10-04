@@ -26,7 +26,7 @@ class ConnectionService extends AgentService {
   static readonly INVALID_CONNECTIONLESS_MSG =
     "Invalid connectionless OOBI - does not contain d_m parameter";
 
-  onConnectionStateChange(
+  onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
   ) {
     this.agent.events.on(
@@ -92,15 +92,16 @@ class ConnectionService extends AgentService {
     return connectionRecord.state === DidExchangeState.Completed;
   }
 
-  async receiveInvitationFromUrl(url: string): Promise<{
-    outOfBandRecord: OutOfBandRecord;
-    connectionRecord?: ConnectionRecord;
-  }> {
+  async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
       url = response.url;
     }
-    return this.agent.oob.receiveInvitationFromUrl(url, {
+    if (url.includes("?d_m=")) {
+      // @TODO: remove when upgrade aries
+      return this.receiveAttachmentFromUrlConnectionless(url);
+    }
+    await this.agent.oob.receiveInvitationFromUrl(url, {
       autoAcceptConnection: true,
       autoAcceptInvitation: true,
       reuseConnection: true,
@@ -171,6 +172,13 @@ class ConnectionService extends AgentService {
       outOfBandRecord = await this.agent.oob.getById(connection.outOfBandId);
     }
     return this.getConnectionDetails(connection, outOfBandRecord);
+  }
+
+  async getConnectionShortDetailById(
+    id: string
+  ): Promise<ConnectionShortDetails> {
+    const connection = await this.agent.connections.getById(id);
+    return this.getConnectionShortDetails(connection);
   }
 
   private getConnectionDetails(
