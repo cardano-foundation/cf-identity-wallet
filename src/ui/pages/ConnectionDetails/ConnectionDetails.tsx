@@ -2,6 +2,7 @@ import { IonButton, IonIcon, IonPage } from "@ionic/react";
 import { ellipsisVertical, trashOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import i18next from "i18next";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../../utils";
 import "./ConnectionDetails.scss";
@@ -43,6 +44,7 @@ const ConnectionDetails = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const notes = ["Hello", "World"];
 
   useEffect(() => {
     async function getDetails() {
@@ -186,6 +188,29 @@ const ConnectionDetails = () => {
               </span>
             </div>
           </div>
+
+          {notes && (
+            <div className="connection-details-info-block">
+              <h3>{i18n.t("connections.details.notes")}</h3>
+              {notes.map((note, index) => (
+                <div
+                  className="connection-details-info-block-inner"
+                  key={index}
+                >
+                  <span className="connection-details-info-block-line">
+                    <span className="connection-details-info-block-data">
+                      {i18next.t("connections.details.note", {
+                        index: index + 1,
+                      })}
+                    </span>
+                    <span className="connection-details-info-block-note">
+                      {note}
+                    </span>
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
 
           <IonButton
             shape="round"

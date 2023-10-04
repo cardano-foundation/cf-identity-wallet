@@ -387,6 +387,8 @@
       "attachments": "Request Attachments",
       "endpoints": "Service Endpoints",
       "notavailable": "N/A",
+      "notes": "Notes",
+      "note": "Note #{{index}}",
       "delete": "Delete connection",
       "options": {
         "title": "Connection options",
