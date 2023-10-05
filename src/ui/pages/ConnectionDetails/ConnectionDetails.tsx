@@ -2,7 +2,6 @@ import { IonButton, IonIcon, IonInput, IonModal, IonPage } from "@ionic/react";
 import { ellipsisVertical, trashOutline, createOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import i18next from "i18next";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../../utils";
 import "./ConnectionDetails.scss";
@@ -47,13 +46,10 @@ const ConnectionDetails = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [notes, setNotes] = useState<NotesProps[]>([]);
 
-  useEffect(() => {
-    console.log(notes);
-  }, [notes]);
-
   interface NotesProps {
     title: string;
     message: string;
+    index: number;
   }
 
   useEffect(() => {
@@ -111,6 +107,64 @@ const ConnectionDetails = () => {
         <span className="connection-details-date">
           {formatShortDate(`${connectionDetails?.connectionDate}`)}
         </span>
+      </div>
+    );
+  };
+
+  const Note = ({ title, message, index }: NotesProps) => {
+    const [newTitle, setNewTitle] = useState(title);
+    const [newMessage, setNewMessage] = useState(message);
+
+    return (
+      <div className="connection-details-info-block-inner">
+        <div className="connection-details-info-block-line">
+          <div className="connection-details-info-block-data">
+            <div className="connection-details-info-block-title">
+              <span>{i18n.t("connections.details.title")}</span>
+              <span>{title.length}/64</span>
+            </div>
+            <IonInput
+              data-testid={`edit-connections-modal-note-title-${index + 1}`}
+              onIonChange={(e) => setNewTitle(`${e.target.value ?? ""}`)}
+              onIonBlur={() => {
+                const newNotes = [...notes];
+                newNotes[index].title = newTitle;
+              }}
+              value={newTitle}
+            />
+          </div>
+          <div className="connection-details-info-block-data">
+            <div className="connection-details-info-block-title">
+              <span>{i18n.t("connections.details.message")}</span>
+              <span>{message.length}/576</span>
+            </div>
+            <IonInput
+              data-testid={`edit-connections-modal-note-message-${index + 1}`}
+              onIonChange={(e) => setNewMessage(`${e.target.value ?? ""}`)}
+              onIonBlur={() => {
+                const newNotes = [...notes];
+                newNotes[index].message = newMessage;
+              }}
+              value={newMessage}
+            />
+          </div>
+        </div>
+        <div className="connection-details-delete-note">
+          <IonButton
+            shape="round"
+            color={"danger"}
+            onClick={() => {
+              const newNotes = [...notes];
+              newNotes.splice(index, 1);
+              setNotes(newNotes);
+            }}
+          >
+            <IonIcon
+              slot="icon-only"
+              icon={trashOutline}
+            />
+          </IonButton>
+        </div>
       </div>
     );
   };
@@ -310,67 +364,12 @@ const ConnectionDetails = () => {
                 <>
                   <h3>{i18n.t("connections.details.notes")}</h3>
                   {notes.map((note, index) => (
-                    <div
-                      className="connection-details-info-block-inner"
+                    <Note
+                      title={note.title}
+                      message={note.message}
+                      index={index}
                       key={index}
-                    >
-                      <div className="connection-details-info-block-line">
-                        <div className="connection-details-info-block-data">
-                          <div className="connection-details-info-block-title">
-                            <span>{i18n.t("connections.details.title")}</span>
-                            <span>{note.title.length}/64</span>
-                          </div>
-                          <IonInput
-                            data-testid={`edit-connections-modal-note-title-${
-                              index + 1
-                            }`}
-                            onIonChange={(e) => {
-                              const newNotes = notes;
-                              newNotes[index].title =
-                                (e.target.value as string) ?? "";
-                              setNotes(newNotes);
-                            }}
-                            value={note.title}
-                          />
-                        </div>
-                        <div className="connection-details-info-block-data">
-                          <div className="connection-details-info-block-title">
-                            <span>{i18n.t("connections.details.message")}</span>
-                            <span>{note.message.length}/576</span>
-                          </div>
-                          <IonInput
-                            data-testid={`edit-connections-modal-note-message-${
-                              index + 1
-                            }`}
-                            onIonChange={(e) => {
-                              const newNotes = notes;
-                              newNotes[index].message =
-                                (e.target.value as string) ?? "";
-                              setNotes(newNotes);
-                            }}
-                            value={note.message}
-                          />
-                        </div>
-                      </div>
-                      <div className="connection-details-delete-note">
-                        <IonButton
-                          shape="round"
-                          color={"danger"}
-                          onClick={() => {
-                            const newNotes = notes;
-                            if (index > -1) {
-                              newNotes.splice(index, 1);
-                            }
-                            setNotes(newNotes);
-                          }}
-                        >
-                          <IonIcon
-                            slot="icon-only"
-                            icon={trashOutline}
-                          />
-                        </IonButton>
-                      </div>
-                    </div>
+                    />
                   ))}
                 </>
               ) : (
@@ -387,10 +386,9 @@ const ConnectionDetails = () => {
                   setNotes([
                     ...notes,
                     {
-                      title: i18next.t("connections.details.note", {
-                        index: notes.length + 1,
-                      }),
+                      title: "",
                       message: "",
+                      index: notes.length,
                     },
                   ]);
                 }}

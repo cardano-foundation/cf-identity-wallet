@@ -389,7 +389,6 @@
       "notavailable": "N/A",
       "notes": "Notes",
       "nocurrentnotes": "No current notes",
-      "note": "Note #{{index}}",
       "cancel": "Cancel",
       "confirm": "Confirm",
       "title": "Title",
