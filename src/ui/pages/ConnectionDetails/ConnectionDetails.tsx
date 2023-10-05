@@ -1,6 +1,6 @@
 import { IonButton, IonIcon, IonInput, IonModal, IonPage } from "@ionic/react";
 import { ellipsisVertical, trashOutline, createOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../../utils";
@@ -21,7 +21,10 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { ConnectionOptions } from "../../components/ConnectionOptions";
 import { VerifyPassword } from "../../components/VerifyPassword";
-import { Alert } from "../../components/Alert";
+import {
+  Alert as AlertDeleteConnection,
+  Alert as AlertDeleteNote,
+} from "../../components/Alert";
 import {
   getConnectionsCache,
   setConnectionsCache,
@@ -40,17 +43,14 @@ const ConnectionDetails = () => {
     ?.state as ConnectionShortDetails;
   const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [alertDeleteConnectionIsOpen, setAlertDeleteConnectionIsOpen] =
+    useState(false);
+  const [alertDeleteNoteIsOpen, setAlertDeleteNoteIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [notes, setNotes] = useState<NotesProps[]>([]);
-
-  interface NotesProps {
-    title: string;
-    message: string;
-    index: number;
-  }
+  const currentNoteIndex = useRef(0);
 
   useEffect(() => {
     async function getDetails() {
@@ -77,7 +77,7 @@ const ConnectionDetails = () => {
 
   const handleDelete = () => {
     setOptionsIsOpen(false);
-    setAlertIsOpen(true);
+    setAlertDeleteConnectionIsOpen(true);
   };
   // handle loading
   if (!connectionDetails) return <div></div>;
@@ -110,6 +110,12 @@ const ConnectionDetails = () => {
       </div>
     );
   };
+
+  interface NotesProps {
+    title: string;
+    message: string;
+    index: number;
+  }
 
   const Note = ({ title, message, index }: NotesProps) => {
     const [newTitle, setNewTitle] = useState(title);
@@ -154,9 +160,8 @@ const ConnectionDetails = () => {
             shape="round"
             color={"danger"}
             onClick={() => {
-              const newNotes = [...notes];
-              newNotes.splice(index, 1);
-              setNotes(newNotes);
+              currentNoteIndex.current = index;
+              setAlertDeleteNoteIsOpen(true);
             }}
           >
             <IonIcon
@@ -260,7 +265,7 @@ const ConnectionDetails = () => {
             </div>
           </div>
 
-          {notes.length > 0 && (
+          {notes.length > 0 ? (
             <div className="connection-details-info-block">
               <h3>{i18n.t("connections.details.notes")}</h3>
               {notes.map((note, index) => (
@@ -279,7 +284,7 @@ const ConnectionDetails = () => {
                 </div>
               ))}
             </div>
-          )}
+          ) : null}
 
           <IonButton
             shape="round"
@@ -288,7 +293,7 @@ const ConnectionDetails = () => {
             data-testid="connection-details-delete-button"
             className="delete-button"
             onClick={() => {
-              setAlertIsOpen(true);
+              setAlertDeleteConnectionIsOpen(true);
               dispatch(setCurrentOperation(operationState.deleteConnection));
             }}
           >
@@ -307,9 +312,9 @@ const ConnectionDetails = () => {
           handleEdit={setModalIsOpen}
           handleDelete={handleDelete}
         />
-        <Alert
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
+        <AlertDeleteConnection
+          isOpen={alertDeleteConnectionIsOpen}
+          setIsOpen={setAlertDeleteConnectionIsOpen}
           dataTestId="alert-confirm"
           headerText={i18n.t("connections.details.options.alert.title")}
           confirmButtonText={`${i18n.t(
@@ -402,6 +407,29 @@ const ConnectionDetails = () => {
           </PageLayout>
         </div>
       </IonModal>
+      <AlertDeleteNote
+        isOpen={alertDeleteNoteIsOpen}
+        setIsOpen={setAlertDeleteNoteIsOpen}
+        dataTestId="alert-confirm"
+        headerText={i18n.t("connections.details.options.alert.title")}
+        confirmButtonText={`${i18n.t(
+          "connections.details.options.alert.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "connections.details.options.alert.cancel"
+        )}`}
+        actionConfirm={() => {
+          const newNotes = [...notes];
+          newNotes.splice(currentNoteIndex.current, 1);
+          setNotes(newNotes);
+        }}
+        actionCancel={() => {
+          setAlertDeleteNoteIsOpen(false);
+        }}
+        actionDismiss={() => {
+          setAlertDeleteNoteIsOpen(false);
+        }}
+      />
     </IonPage>
   );
 };
