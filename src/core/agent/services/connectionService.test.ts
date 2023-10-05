@@ -8,7 +8,7 @@ import {
   OutOfBandRole,
   OutOfBandState,
 } from "@aries-framework/core";
-import { ConnectionStatus } from "../agent.types";
+import { ConnectionHistoryType, ConnectionStatus } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 
 const agent = jest.mocked({
@@ -372,8 +372,15 @@ describe("Connection service of agent", () => {
 
   test("must call filler credential by query when get connection history", async () => {
     const connectionIdTest = "testId"
-    agent.credentials.findAllByQuery = jest.fn().mockResolvedValue([]);
-    expect(await connectionService.getConnectionHistoryById(connectionIdTest)).toStrictEqual([]);
+    agent.credentials.findAllByQuery = jest.fn().mockResolvedValue([{
+      credentialId : 1
+    }]);
+    expect(await connectionService.getConnectionHistoryById(connectionIdTest)).toStrictEqual([{
+      type : ConnectionHistoryType.CREDENTIAL,
+      data : {
+        credentialId : 1
+      }
+    }]);
     expect(agent.credentials.findAllByQuery).toBeCalledWith({
       connectionId : connectionIdTest
     })

@@ -13,6 +13,8 @@ import {
 } from "@aries-framework/core";
 import {
   ConnectionDetails,
+  ConnectionHistoryRecord,
+  ConnectionHistoryType,
   ConnectionShortDetails,
   ConnectionStatus,
 } from "../agent.types";
@@ -184,11 +186,20 @@ class ConnectionService extends AgentService {
 
   async getConnectionHistoryById(
     id: string
-  ): Promise<CredentialExchangeRecord[]> {
+  ): Promise<ConnectionHistoryRecord[]> {
+    let histories: ConnectionHistoryRecord[] = [];
     const credentialRecords = await this.agent.credentials.findAllByQuery({
       connectionId: id,
     });
-    return credentialRecords;
+    histories.push(
+      ...credentialRecords.map((record) => {
+        return {
+          type: ConnectionHistoryType.CREDENTIAL,
+          data: record,
+        };
+      })
+    );
+    return histories;
   }
 
   private getConnectionDetails(

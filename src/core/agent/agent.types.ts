@@ -1,3 +1,4 @@
+import { CredentialExchangeRecord } from "@aries-framework/core";
 import { IdentifierMetadataRecordProps } from "./modules/generalStorage/repositories/identifierMetadataRecord";
 
 enum IdentifierType {
@@ -12,6 +13,15 @@ enum Blockchain {
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
+}
+
+enum ConnectionHistoryType {
+  CREDENTIAL = "credential" 
+}
+
+interface ConnectionHistoryRecord {
+  type : ConnectionHistoryType,
+  data : CredentialExchangeRecord
 }
 
 interface CryptoAccountRecordShortDetails {
@@ -81,7 +91,7 @@ type UpdateIdentityMetadata = Omit<
   "id" | "isArchived" | "name" | "method" | "createdAt"
 >;
 
-export { IdentifierType, Blockchain, ConnectionStatus };
+export { IdentifierType, Blockchain, ConnectionStatus, ConnectionHistoryType };
 export type {
   CryptoAccountRecordShortDetails,
   IdentifierShortDetails,
@@ -91,4 +101,5 @@ export type {
   CredentialShortDetails,
   ConnectionShortDetails,
   ConnectionDetails,
+  ConnectionHistoryRecord
 };
