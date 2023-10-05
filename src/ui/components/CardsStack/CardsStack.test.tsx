@@ -9,6 +9,8 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
 import { cardTypes } from "../../constants/dictionary";
+import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { AriesAgent } from "../../../core/agent/agent";
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
@@ -16,6 +18,9 @@ jest.mock("../../../core/agent/agent", () => ({
         getIdentifier: jest
           .fn()
           .mockResolvedValue({ type: "key", result: identityFix[0] }),
+      },
+      credentials: {
+        getCredentialDetailsById: jest.fn().mockResolvedValue({}),
       },
     },
   },
@@ -64,6 +69,21 @@ describe("Cards Stack Component", () => {
     expect(secondCard).toHaveClass("top-shadow");
   });
 
+  test("It renders on Cred card with card pending", () => {
+    const { getByText } = render(
+      <Provider store={store}>
+        <CardsStack
+          cardsType={cardTypes.creds}
+          cardsData={[
+            { ...credsFix[0], status: CredentialMetadataRecordStatus.PENDING },
+          ]}
+        />
+      </Provider>
+    );
+    const labelPending = getByText(CredentialMetadataRecordStatus.PENDING);
+    expect(labelPending).toBeInTheDocument();
+  });
+
   test("It navigates to Did Card Details and back", async () => {
     jest.useFakeTimers();
     const { findByTestId } = render(
@@ -102,6 +122,9 @@ describe("Cards Stack Component", () => {
 
   test("It navigates to Cred Card Details and back", async () => {
     jest.useFakeTimers();
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFix[0]);
     const { findByTestId } = render(
       <MemoryRouter>
         <Provider store={store}>

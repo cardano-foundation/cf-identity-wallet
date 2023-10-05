@@ -1,1 +1,1 @@
-export * from "./ConnectionRequest";
+export * from "./ConnectionCredentialRequest";

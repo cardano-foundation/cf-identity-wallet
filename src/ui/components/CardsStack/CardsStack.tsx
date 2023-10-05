@@ -5,14 +5,19 @@ import { IonChip, IonIcon } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
 import { formatShortDate } from "../../../utils";
 import { i18n } from "../../../i18n";
-import { CredCardProps, DidCardProps, CredProps } from "./CardsStack.types";
+import {
+  CredCardProps,
+  CredentialShortDetails,
+  DidCardProps,
+} from "./CardsStack.types";
 import {
   DIDDetails,
   IdentifierShortDetails,
   IdentifierType,
 } from "../../../core/agent/agent.types";
-import { cardTypes, connectionStatus } from "../../constants/dictionary";
+import { cardTypes } from "../../constants/dictionary";
 import { Alert } from "../Alert";
+import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -47,7 +52,7 @@ const CredCard = ({
           isActive ? "active" : ""
         } ${shadowClass}`}
         onClick={() => {
-          if (cardData.status === connectionStatus.pending) {
+          if (cardData.status === CredentialMetadataRecordStatus.PENDING) {
             setAlertIsOpen(true);
           } else if (onHandleShowCardDetails) {
             onHandleShowCardDetails(index);
@@ -59,25 +64,30 @@ const CredCard = ({
           <div className="card-header">
             <span className="card-logo">
               <img
-                src={cardData.issuerLogo}
+                src={
+                  cardData.issuerLogo ??
+                  "https://www.w3.org/Icons/WWW/w3c_home_nb-v.svg"
+                }
                 alt="card-logo"
               />
             </span>
-            {cardData.status === connectionStatus.pending ? (
+            {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
               <IonChip>
                 <IonIcon
                   icon={hourglassOutline}
                   color="primary"
                 ></IonIcon>
-                <span>{connectionStatus.pending}</span>
+                <span>{CredentialMetadataRecordStatus.PENDING}</span>
               </IonChip>
             ) : (
-              <span className="credential-type">{cardData.credentialType}</span>
+              <span className="credential-type">
+                {cardData.credentialType.replace(/([a-z])([A-Z])/g, "$1 $2")}
+              </span>
             )}
           </div>
           <div className="card-body">
             <span>
-              {cardData.status === connectionStatus.pending ? (
+              {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
                 <>&nbsp;</>
               ) : (
                 <>&nbsp;</>
@@ -90,10 +100,11 @@ const CredCard = ({
                 {i18n.t("creds.card.layout.name")}
               </span>
               <span className="card-footer-column-value">
-                {cardData.status === connectionStatus.pending ? (
+                {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
                   <>&nbsp;</>
                 ) : (
-                  cardData.nameOnCredential
+                  // cardData.nameOnCredential
+                  ""
                 )}
               </span>
             </div>
@@ -102,7 +113,7 @@ const CredCard = ({
                 {i18n.t("creds.card.layout.issued")}
               </span>
               <span className="card-footer-column-value">
-                {cardData.status === connectionStatus.pending ? (
+                {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
                   <>&nbsp;</>
                 ) : (
                   formatShortDate(cardData.issuanceDate)
@@ -183,14 +194,19 @@ const CardsStack = ({
   cardsData,
 }: {
   cardsType: string;
-  cardsData: IdentifierShortDetails[] | CredProps[];
+  cardsData: IdentifierShortDetails[] | CredentialShortDetails[];
 }) => {
   const history = useHistory();
   const [isActive, setIsActive] = useState(false);
 
-  const renderCards = (cardsData: IdentifierShortDetails[] | CredProps[]) => {
+  const renderCards = (
+    cardsData: IdentifierShortDetails[] | CredentialShortDetails[]
+  ) => {
     return cardsData.map(
-      (cardData: IdentifierShortDetails | CredProps, index: number) =>
+      (
+        cardData: IdentifierShortDetails | CredentialShortDetails,
+        index: number
+      ) =>
         cardsType === cardTypes.dids ? (
           <DidCard
             key={index}
@@ -203,7 +219,7 @@ const CardsStack = ({
           <CredCard
             key={index}
             index={index}
-            cardData={cardData as CredProps}
+            cardData={cardData as CredentialShortDetails}
             isActive={isActive}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
           />
@@ -219,7 +235,7 @@ const CardsStack = ({
       const data = cardsData[index] as DIDDetails;
       pathname = `/tabs/dids/${data.id}`;
     } else {
-      const data = cardsData[index] as CredProps;
+      const data = cardsData[index] as CredentialShortDetails;
       pathname = `/tabs/creds/${data.id}`;
     }
 

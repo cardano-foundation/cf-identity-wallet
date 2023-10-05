@@ -12,7 +12,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { FullPageScanner } from "./pages/FullPageScanner";
 import { operationState, toastState } from "./constants/dictionary";
 import { i18n } from "../i18n";
-import { ConnectionRequest } from "./pages/ConnectionRequest";
+import { ConnectionCredentialRequest } from "./pages/ConnectionRequest";
 
 setupIonicReact();
 
@@ -36,7 +36,7 @@ const App = () => {
           ) : (
             <Routes />
           )}
-          <ConnectionRequest />
+          <ConnectionCredentialRequest />
           <IonToast
             isOpen={showToast}
             onDidDismiss={() => {
