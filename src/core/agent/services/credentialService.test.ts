@@ -23,6 +23,7 @@ const agent = jest.mocked({
     deleteById: jest.fn(),
     getById: jest.fn(),
     findOfferMessage: jest.fn(),
+    negotiateOffer: jest.fn(),
   },
   connections: {
     findById: jest.fn(),
@@ -45,6 +46,9 @@ const agent = jest.mocked({
   },
   w3cCredentials: {
     getCredentialRecordById: jest.fn(),
+  },
+  dids: {
+    getCreatedDids: jest.fn(),
   },
 });
 const credentialService = new CredentialService(agent as any as Agent);
@@ -428,6 +432,60 @@ describe("Credential service of agent", () => {
       credentialDoneExchangeRecord
     );
     expect(dataAfterUpdate.issuerLogo).toEqual("mockUrl");
+  });
+
+  test("negotiation credential must fail if did haven't found", async () => {
+    const testDid = "did:key:test";
+    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([]);
+
+    await expect(
+      credentialService.negotiateOfferWithDid(
+        testDid,
+        credentialOfferReceivedRecordNoAutoAccept
+      )
+    ).rejects.toThrowError(CredentialService.CREATED_DID_NOT_FOUND);
+  });
+
+  test("negotiation credential must fail if credential preview haven't found", async () => {
+    const testDid = "did:key:test";
+
+    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([{ did: testDid }]);
+
+    await expect(
+      credentialService.negotiateOfferWithDid(
+        testDid,
+        credentialOfferReceivedRecordNoAutoAccept
+      )
+    ).rejects.toThrowError(CredentialService.CREDENTIAL_MISSING_FOR_NEGOTIATE);
+  });
+
+  test("negotiation credential with preview credential run successfully", async () => {
+    const testDid = "did:key:test";
+    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([{ did: testDid }]);
+
+    credentialService.getPreviewCredential = jest.fn().mockResolvedValue({
+      options: {},
+      credential: {},
+    });
+
+    await credentialService.negotiateOfferWithDid(
+      testDid,
+      credentialOfferReceivedRecordNoAutoAccept
+    );
+
+    expect(agent.credentials.negotiateOffer).toBeCalledWith({
+      credentialRecordId: credentialOfferReceivedRecordNoAutoAccept.id,
+      credentialFormats: {
+        jsonld: {
+          options: {},
+          credential: {
+            credentialSubject: {
+              id: testDid,
+            },
+          },
+        },
+      },
+    });
   });
 });
 

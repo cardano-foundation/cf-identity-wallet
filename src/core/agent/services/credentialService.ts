@@ -6,10 +6,10 @@ import {
   CredentialStateChangedEvent,
   ProposeCredentialOptions,
   V2OfferCredentialMessage,
-  W3cVerifiableCredential,
   LinkedDataProof,
   AriesFrameworkError,
   JsonCredential,
+  JsonLdCredentialDetailFormat,
 } from "@aries-framework/core";
 import { CredentialDetails, CredentialShortDetails } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
@@ -23,6 +23,9 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
     "Credential metadata missing for stored credential";
   static readonly CREDENTIAL_NOT_ARCHIVED = "Credential was not archived";
+  static readonly CREDENTIAL_MISSING_FOR_NEGOTIATE =
+    "Credential missing for negotiation";
+  static readonly CREATED_DID_NOT_FOUND = "Referenced public did not found";
 
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
@@ -142,7 +145,7 @@ class CredentialService extends AgentService {
     if (!attachment) {
       return null;
     }
-    return attachment.getDataAsJson<W3cVerifiableCredential>();
+    return attachment.getDataAsJson<JsonLdCredentialDetailFormat>();
   }
 
   async createMetadata(data: CredentialMetadataRecordProps) {
@@ -212,6 +215,39 @@ class CredentialService extends AgentService {
     this.validArchivedCredential(metadata);
     await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
       isArchived: false,
+    });
+  }
+
+  async negotiateOfferWithDid(
+    subjectDid: string,
+    credentialExchangeRecord: CredentialExchangeRecord
+  ): Promise<void> {
+    const [createdDid] = await this.agent.dids.getCreatedDids({
+      did: subjectDid,
+    });
+    if (!createdDid) {
+      throw new Error(`${CredentialService.CREATED_DID_NOT_FOUND}`);
+    }
+    const w3cCredential = await this.getPreviewCredential(
+      credentialExchangeRecord
+    );
+    if (!w3cCredential) {
+      throw new Error(`${CredentialService.CREDENTIAL_MISSING_FOR_NEGOTIATE}`);
+    }
+    await this.agent.credentials.negotiateOffer({
+      credentialRecordId: credentialExchangeRecord.id,
+      credentialFormats: {
+        jsonld: {
+          ...w3cCredential,
+          credential: {
+            ...w3cCredential.credential,
+            credentialSubject: {
+              ...w3cCredential.credential.credentialSubject,
+              id: subjectDid,
+            },
+          },
+        },
+      },
     });
   }
 
