@@ -200,13 +200,13 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     category: string,
     query?: Query<T>
   ): Promise<StorageObject[]> {
-    let values = [category];
+    const values = [category];
     let scan_query = SqliteStorageService.SCAN_QUERY_SQL;
     if (query) {
       for (const [queryKey, queryVal] of Object.entries(query)) {
         if (queryVal) {
           if (Array.isArray(queryVal)) {
-            let generateValueFinds = Array.from("?".repeat(queryVal.length));
+            const generateValueFinds = Array.from("?".repeat(queryVal.length));
             scan_query +=
               " AND " +
               SqliteStorageService.SCAN_TAGS_SQL_IN +
@@ -241,7 +241,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     id: string,
     sObject: StorageObject
   ): Promise<void> {
-    let transactionStatements = [];
+    const transactionStatements = [];
     transactionStatements.push({
       statement: SqliteStorageService.INSERT_ITEMS_SQL,
       values: [id, sObject.category, sObject.name, sObject.value],
@@ -255,7 +255,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     id: string,
     sObject: StorageObject
   ): Promise<void> {
-    let transactionStatements = [];
+    const transactionStatements = [];
 
     transactionStatements.push({
       statement: SqliteStorageService.UPDATE_ITEMS_SQL,
@@ -285,14 +285,16 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
 
   private getTagsInsertSql(itemId: string, tags: Record<string, unknown>) {
     const statements = [];
-    for (let key in tags) {
+    for (const key in tags) {
       if (tags[key]) {
         if (Array.isArray(tags[key])) {
           (tags[key] as Array<string>).forEach((value) => {
-            statements.push({
-              statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
-              values: [itemId, key, value, TagDataType.ARRAY],
-            });
+            if (value) {
+              statements.push({
+                statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
+                values: [itemId, key, value, TagDataType.ARRAY],
+              });
+            }
           });
         } else {
           statements.push({

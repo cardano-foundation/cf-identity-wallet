@@ -1,6 +1,8 @@
 import {
   Agent,
+  ConnectionEventTypes,
   ConnectionRecord,
+  ConnectionStateChangedEvent,
   DidExchangeRole,
   DidExchangeState,
   OutOfBandInvitation,
@@ -8,8 +10,11 @@ import {
   OutOfBandRole,
   OutOfBandState,
 } from "@aries-framework/core";
+import { EventEmitter } from "events";
 import { ConnectionStatus } from "../agent.types";
 import { ConnectionService } from "./connectionService";
+
+const eventEmitter = new EventEmitter();
 
 const agent = jest.mocked({
   oob: {
@@ -24,7 +29,14 @@ const agent = jest.mocked({
     getById: jest.fn(),
   },
   receiveMessage: jest.fn(),
+  events: {
+    on: eventEmitter.on.bind(eventEmitter),
+  },
+  eventEmitter: {
+    emit: eventEmitter.emit.bind(eventEmitter),
+  },
 });
+
 const connectionService = new ConnectionService(agent as any as Agent);
 
 const oobi = new OutOfBandInvitation({
@@ -359,11 +371,55 @@ describe("Connection service of agent", () => {
   test("must call fetch url first when invitation url contains /shorten", async () => {
     const shortUrl = "http://localhost:3000/shorten/abc123";
     const fullUrl = "http://localhost?oob=3423";
+    // eslint-disable-next-line no-undef
     global.fetch = jest.fn().mockResolvedValue({ url: fullUrl });
     await connectionService.receiveInvitationFromUrl(shortUrl);
     expect(agent.oob.receiveInvitationFromUrl).toBeCalledWith(
       fullUrl,
       expect.any(Object)
     );
+  });
+
+  test("can get connection (short detail view) by id", async () => {
+    agent.connections.getById = jest
+      .fn()
+      .mockResolvedValue(completedConnectionRecord);
+    expect(
+      await connectionService.getConnectionShortDetailById(
+        completedConnectionRecord.id
+      )
+    ).toEqual({
+      id: id2,
+      connectionDate: nowISO,
+      label,
+      logo: logoUrl,
+      status: ConnectionStatus.CONFIRMED,
+    });
+    expect(agent.connections.getById).toBeCalledWith(
+      completedConnectionRecord.id
+    );
+  });
+
+  test("can receive offer credential with connectionless", async () => {
+    const url = "http://localhost:4320?d_m=InRlc3QgbWVzc2FnZSI=";
+    await connectionService.receiveInvitationFromUrl(url);
+    expect(agent.receiveMessage).toBeCalledWith("test message");
+  });
+
+  test("callback will run when have a event listener", async () => {
+    const callback = jest.fn();
+    connectionService.onConnectionStateChanged(callback);
+    const event: ConnectionStateChangedEvent = {
+      type: ConnectionEventTypes.ConnectionStateChanged,
+      payload: {
+        connectionRecord: completedConnectionRecord,
+        previousState: DidExchangeState.ResponseReceived,
+      },
+      metadata: {
+        contextCorrelationId: id1,
+      },
+    };
+    agent.eventEmitter.emit(ConnectionEventTypes.ConnectionStateChanged, event);
+    expect(callback).toBeCalledWith(event);
   });
 });

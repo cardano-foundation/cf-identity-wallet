@@ -1,7 +1,13 @@
 import { PayloadAction } from "@reduxjs/toolkit";
-import { credsCacheSlice, getCredsCache, setCredsCache } from "./credsCache";
-import { CredProps } from "../../../ui/components/CardsStack/CardsStack.types";
+import {
+  credsCacheSlice,
+  getCredsCache,
+  setCredsCache,
+  updateOrAddCredsCache,
+} from "./credsCache";
+import { CredentialShortDetails } from "../../../ui/components/CardsStack/CardsStack.types";
 import { RootState } from "../../index";
+import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 describe("credsCacheSlice", () => {
   const initialState = {
@@ -14,15 +20,14 @@ describe("credsCacheSlice", () => {
   });
 
   it("should handle setCredsCache", () => {
-    const creds: CredProps[] = [
+    const creds: CredentialShortDetails[] = [
       {
         id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
         issuanceDate: "2010-01-01T19:23:24Z",
         credentialType: "University Credential",
-        nameOnCredential: "Thomas A. Mayfield",
         issuerLogo: "https://placehold.co/120x22",
         colors: ["#FFBC60", "#FFA21F"],
-        status: "confirmed",
+        status: CredentialMetadataRecordStatus.CONFIRMED,
       },
     ];
     const newState = credsCacheSlice.reducer(
@@ -30,6 +35,52 @@ describe("credsCacheSlice", () => {
       setCredsCache(creds)
     );
     expect(newState.creds).toEqual(creds);
+  });
+
+  it("should handle add cred when cred does not exist", () => {
+    const cred: CredentialShortDetails = {
+      id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
+      issuanceDate: "2010-01-01T19:23:24Z",
+      credentialType: "University Credential",
+      issuerLogo: "https://placehold.co/120x22",
+      colors: ["#FFBC60", "#FFA21F"],
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+    };
+    const newState = credsCacheSlice.reducer(
+      initialState,
+      updateOrAddCredsCache(cred)
+    );
+    expect(newState.creds).toEqual([cred]);
+  });
+
+  it("should handle update cred when cred exist", () => {
+    const credId1 = "did:example:ebfeb1f712ebc6f1c276e12ec21";
+    const credId2 = "did:example:ebfeb1f712ebc6f1c276e12ec22";
+    const cred1: CredentialShortDetails = {
+      id: credId1,
+      issuanceDate: "2010-01-01T19:23:24Z",
+      credentialType: "University Credential",
+      issuerLogo: "https://placehold.co/120x22",
+      colors: ["#FFBC60", "#FFA21F"],
+      status: CredentialMetadataRecordStatus.PENDING,
+    };
+    const cred2: CredentialShortDetails = {
+      id: credId2,
+      issuanceDate: "2010-01-01T19:23:24Z",
+      credentialType: "University Credential",
+      issuerLogo: "https://placehold.co/120x22",
+      colors: ["#FFBC60", "#FFA21F"],
+      status: CredentialMetadataRecordStatus.PENDING,
+    };
+    const updateCred: CredentialShortDetails = {
+      ...cred1,
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+    };
+    const newState = credsCacheSlice.reducer(
+      { creds: [cred1, cred2] },
+      updateOrAddCredsCache(updateCred)
+    );
+    expect(newState.creds).toEqual([cred2, updateCred]);
   });
 });
 
@@ -51,7 +102,6 @@ describe("getCredsCache", () => {
             id: "did:example:ebfeb1f712ebc6f1c276e12ec22",
             issuanceDate: "2010-01-01T19:23:24Z",
             credentialType: "University Credential",
-            nameOnCredential: "Thomas A. Mayfield",
             issuerLogo: "https://placehold.co/120x22",
             colors: ["#FFBC60", "#FFA21F"],
             status: "confirmed",

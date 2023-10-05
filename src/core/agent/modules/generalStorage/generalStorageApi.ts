@@ -76,7 +76,7 @@ export class GeneralStorageApi {
 
   async getAllAvailableIdentifierMetadata(): Promise<
     IdentifierMetadataRecord[]
-  > {
+    > {
     return this.identifierMetadataRepository.findByQuery(this.agentContext, {
       isArchived: false,
     });
@@ -84,7 +84,7 @@ export class GeneralStorageApi {
 
   async getAllArchivedIdentifierMetadata(): Promise<
     IdentifierMetadataRecord[]
-  > {
+    > {
     return this.identifierMetadataRepository.findByQuery(this.agentContext, {
       isArchived: true,
     });
@@ -158,6 +158,15 @@ export class GeneralStorageApi {
     return this.credentialMetadataRepository.findById(this.agentContext, id);
   }
 
+  async getCredentialMetadataByCredentialRecordId(
+    credentialRecordId: string
+  ): Promise<CredentialMetadataRecord | null> {
+    return this.credentialMetadataRepository.findSingleByQuery(
+      this.agentContext,
+      { credentialRecordId }
+    );
+  }
+
   async deleteCredentialMetadata(id: string): Promise<void> {
     return this.credentialMetadataRepository.deleteById(this.agentContext, id);
   }
@@ -169,6 +178,8 @@ export class GeneralStorageApi {
     const record = await this.getCredentialMetadata(id);
     if (record) {
       if (data.colors) record.colors = data.colors;
+      if (data.status) record.status = data.status;
+      if (data.credentialType) record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
       await this.credentialMetadataRepository.update(this.agentContext, record);
     }

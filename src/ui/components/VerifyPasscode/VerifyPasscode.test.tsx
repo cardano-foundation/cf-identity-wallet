@@ -9,6 +9,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const path = TabsRoutePath.CREDS + "/" + credsFix[0].id;
 
@@ -18,6 +19,16 @@ jest.mock("react-router-dom", () => ({
     id: credsFix[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
+}));
+
+jest.mock("../../../core/agent/agent", () => ({
+  AriesAgent: {
+    agent: {
+      credentials: {
+        getCredentialDetailsById: jest.fn(),
+      },
+    },
+  },
 }));
 
 const initialStateNoPassword = {
@@ -51,7 +62,10 @@ describe("Verify Passcode on Cards Details page", () => {
   });
 
   test("It renders verify passcode when clicking on the big button", async () => {
-    const { getByTestId, getByText, getAllByTestId } = render(
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFix[0]);
+    const { findByTestId, getByText, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -62,8 +76,9 @@ describe("Verify Passcode on Cards Details page", () => {
       </Provider>
     );
 
+    const deleteButton = await findByTestId("card-details-delete-button");
     act(() => {
-      fireEvent.click(getByTestId("card-details-delete-button"));
+      fireEvent.click(deleteButton);
     });
 
     await waitFor(() => {

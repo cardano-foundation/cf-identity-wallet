@@ -1,32 +1,18 @@
 import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Creds.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getCurrentOperation,
-  setCurrentOperation,
-  setCurrentRoute,
-} from "../../../store/reducers/stateCache";
+import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { getCredsCache } from "../../../store/reducers/credsCache";
 import { Connections } from "../Connections";
-import {
-  cardTypes,
-  connectionStatus,
-  connectionType,
-  defaultCredentialsCardData,
-  toastState,
-} from "../../constants/dictionary";
+import { cardTypes, connectionType } from "../../constants/dictionary";
 import { ConnectModal } from "../../components/ConnectModal";
-import { credentialRequestData } from "../../__fixtures__/connectionsFix";
-import { CredProps } from "../../components/CardsStack/CardsStack.types";
-import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
-import { ColorGenerator } from "../../utils/ColorGenerator";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -69,14 +55,9 @@ const AdditionalButtons = ({
 
 const Creds = () => {
   const dispatch = useAppDispatch();
-  const [credsData, setCredsData] = useState<CredProps[]>(
-    useAppSelector(getCredsCache)
-  );
-  const currentOperation = useAppSelector(getCurrentOperation);
+  const credsData = useAppSelector(getCredsCache);
   const [showConnections, setShowConnections] = useState(false);
   const [addCredentialIsOpen, setAddCredentialIsOpen] = useState(false);
-  const colorGenerator = new ColorGenerator();
-  const newColor = colorGenerator.generateNextColor();
 
   const handleCreateCred = () => {
     setAddCredentialIsOpen(true);
@@ -85,48 +66,6 @@ const Creds = () => {
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
   );
-
-  useEffect(() => {
-    // @TODO - sdisalvo: This one is listening for pending credential requests
-    if (currentOperation === toastState.credentialRequestPending) {
-      //
-      // Fetch new data - remember to replace "defaultCredentialsCardData" with real values
-      const timeElapsed = Date.now();
-      const today = new Date(timeElapsed);
-      const credentialData = {
-        ...defaultCredentialsCardData,
-        id: credentialRequestData.id,
-        issuanceDate: today.toISOString(),
-        issuerLogo: credentialRequestData.profileUrl,
-        colors: [newColor[1], newColor[0]],
-        status: connectionStatus.pending,
-      };
-      const newCredsData = [...credsData, credentialData];
-      // Update existing creds adding the new one with status "pending"
-      setCredsData(newCredsData);
-      // Add function here to receive a "state": "completed" from the agent then pass a boolean to the variable below
-      const state = true;
-      setTimeout(() => {
-        // Adding a timeout to wait until the previous toast for pending connection will close
-        // also emulating a delay in the response from the agent
-        if (state) {
-          const updatedData = () => {
-            const data = newCredsData;
-            for (const i in data) {
-              if (data[i].id == credentialData.id) {
-                data[i].status = connectionStatus.confirmed;
-                break;
-              }
-            }
-            return data;
-          };
-          // update the state of the displayed connection removing the "pending" label and show toast
-          setCredsData(updatedData);
-          dispatch(setCurrentOperation(toastState.newCredentialAdded));
-        }
-      }, TOAST_MESSAGE_DELAY);
-    }
-  }, [currentOperation]);
 
   return (
     <>

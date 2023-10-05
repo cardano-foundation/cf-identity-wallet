@@ -1,4 +1,6 @@
-import { IdentifierMetadataRecordProps } from "./modules/generalStorage/repositories/identifierMetadataRecord";
+import { JsonCredential } from "@aries-framework/core";
+import { IdentifierMetadataRecordProps } from "./modules";
+import { CredentialMetadataRecordProps } from "./modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 enum IdentifierType {
   KEY = "key",
@@ -30,14 +32,10 @@ interface IdentifierShortDetails {
   colors: [string, string];
 }
 
-interface CredentialShortDetails {
-  id: string;
-  nameOnCredential: string;
-  colors: [string, string];
-  issuanceDate: string;
-  issuerLogo: string;
-  credentialType: string;
-}
+type CredentialShortDetails = Omit<
+  CredentialMetadataRecordProps,
+  "credentialRecordId"
+>;
 
 interface ConnectionShortDetails {
   id: string;
@@ -72,6 +70,15 @@ interface ConnectionDetails extends ConnectionShortDetails {
   serviceEndpoints?: string[];
 }
 
+interface CredentialDetails extends CredentialShortDetails {
+  type: string[];
+  connectionId?: string;
+  expirationDate?: string;
+  credentialSubject: JsonCredential["credentialSubject"];
+  proofType: string;
+  proofValue: string;
+}
+
 type GetIdentifierResult =
   | { type: IdentifierType.KERI; result: KERIDetails }
   | { type: IdentifierType.KEY; result: DIDDetails };
@@ -89,6 +96,7 @@ export type {
   KERIDetails,
   GetIdentifierResult,
   CredentialShortDetails,
+  CredentialDetails,
   ConnectionShortDetails,
   ConnectionDetails,
 };
