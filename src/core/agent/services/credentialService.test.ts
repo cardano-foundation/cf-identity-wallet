@@ -12,11 +12,7 @@ import {
 import { EventEmitter } from "events";
 import { CredentialMetadataRecord } from "../modules";
 import { CredentialService } from "./credentialService";
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { ColorGenerator } from "../../../ui/utils/ColorGenerator";
+import { CredentialMetadataRecordStatus } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 const eventEmitter = new EventEmitter();
 
@@ -487,7 +483,7 @@ describe("Credential service of agent", () => {
     expect(dataAfterUpdate.issuerLogo).toEqual("mockUrl");
   });
 
-  test("negotiate credential with preview credential", async () => {
+  test("negotiation credential must fail if did haven't found", async () => {
     const testDid = "did:key:test";
     agent.dids.getCreatedDids = jest.fn().mockResolvedValue([]);
 
@@ -497,6 +493,10 @@ describe("Credential service of agent", () => {
         credentialOfferReceivedRecordNoAutoAccept
       )
     ).rejects.toThrowError(CredentialService.CREATED_DID_NOT_FOUND);
+  });
+
+  test("negotiation credential must fail if credential preview haven't found", async () => {
+    const testDid = "did:key:test";
 
     agent.dids.getCreatedDids = jest.fn().mockResolvedValue([{ did: testDid }]);
 
@@ -506,6 +506,11 @@ describe("Credential service of agent", () => {
         credentialOfferReceivedRecordNoAutoAccept
       )
     ).rejects.toThrowError(CredentialService.CREDENTIAL_MISSING_FOR_NEGOTIATE);
+  });
+
+  test("negotiation credential with preview credential run successfully", async () => {
+    const testDid = "did:key:test";
+    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([{ did: testDid }]);
 
     credentialService.getPreviewCredential = jest.fn().mockResolvedValue({
       options: {},
