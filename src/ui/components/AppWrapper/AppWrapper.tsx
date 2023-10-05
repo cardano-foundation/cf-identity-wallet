@@ -49,10 +49,14 @@ const connectionStateChangedHandler = async (
   } else if (
     AriesAgent.agent.connections.isConnectionResponseReceived(connectionRecord)
   ) {
+    const connectionDetails =
+      AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
     dispatch(
       setConnectionCredentialRequest({
         id: connectionRecord.id,
         type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
+        logo: connectionDetails.logo,
+        label: connectionDetails.label,
       })
     );
   } else if (
@@ -66,6 +70,8 @@ const connectionStateChangedHandler = async (
       setConnectionCredentialRequest({
         id: connectionRecord.id,
         type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        logo: connectionDetails.logo,
+        label: connectionDetails.label,
       })
     );
   } else if (
@@ -90,10 +96,19 @@ const credentialStateChangedHandler = async (
   if (
     AriesAgent.agent.credentials.isCredentialOfferReceived(credentialRecord)
   ) {
+    let connection;
+    if (credentialRecord.connectionId) {
+      connection =
+        await AriesAgent.agent.connections.getConnectionShortDetailById(
+          credentialRecord?.connectionId
+        );
+    }
     dispatch(
       setConnectionCredentialRequest({
         id: credentialRecord.id,
         type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+        logo: connection?.logo,
+        label: connection?.label,
       })
     );
   } else if (

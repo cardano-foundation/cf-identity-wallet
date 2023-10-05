@@ -23,6 +23,8 @@ enum ConnectionCredentialRequestType {
 interface ConnectionCredentialRequestProps {
   id: string;
   type?: ConnectionCredentialRequestType;
+  logo?: string;
+  label?: string;
 }
 
 interface StateCacheProps {

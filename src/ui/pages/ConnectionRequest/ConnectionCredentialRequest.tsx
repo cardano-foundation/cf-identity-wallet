@@ -44,26 +44,20 @@ const ConnectionCredentialRequest = () => {
           connectionCredentialRequest.type ===
             ConnectionCredentialRequestType.CONNECTION_RESPONSE
         ) {
-          const agentData =
-            await AriesAgent.agent.connections.getConnectionShortDetailById(
-              connectionCredentialRequest.id
-            );
-          setRequestData({ label: agentData.label, logo: agentData.logo });
+          setRequestData({
+            label: connectionCredentialRequest.label as string,
+            logo: connectionCredentialRequest.logo as string,
+          });
           setRequestType(connectionType.connection);
         } else if (
           connectionCredentialRequest.type ===
           ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
         ) {
-          const credentialRecord =
-            await AriesAgent.agent.credentials.getCredentialRecordById(
-              connectionCredentialRequest.id
-            );
-          if (credentialRecord.connectionId) {
-            const agentData =
-              await AriesAgent.agent.connections.getConnectionShortDetailById(
-                credentialRecord.connectionId
-              );
-            setRequestData({ label: agentData.label, logo: agentData.logo });
+          if (connectionCredentialRequest.label) {
+            setRequestData({
+              label: connectionCredentialRequest.label,
+              logo: connectionCredentialRequest.logo,
+            });
           } else {
             // @TODO: handle case when connectionId is not present
             setRequestData({ label: "W3C" });

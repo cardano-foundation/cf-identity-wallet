@@ -89,7 +89,6 @@ const CredCardDetails = () => {
     // dispatch(setCredsCache(updatedCreds));
     handleDone();
   };
-  if (!cardData) return null;
 
   const AdditionalButtons = () => {
     return (
@@ -181,12 +180,12 @@ const CredCardDetails = () => {
                 <span>
                   <IonIcon
                     slot="icon-only"
-                    icon={keyOutline}
+                    icon={informationCircleOutline}
                     color="primary"
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {credentialSubject?.education as string}
+                  {credentialSubject.type as string}
                 </span>
               </span>
               <span className="card-details-info-block-line">
@@ -198,19 +197,7 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {credentialSubject?.type as string}
-                </span>
-              </span>
-              <span className="card-details-info-block-line">
-                <span>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={informationCircleOutline}
-                    color="primary"
-                  />
-                </span>
-                <span className="card-details-info-block-data">
-                  {`${credentialSubject?.givenName} ${credentialSubject?.familyName}`}
+                  {`${credentialSubject.name}`}
                 </span>
               </span>
             </div>

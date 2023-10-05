@@ -16,12 +16,10 @@ jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
       connections: {
-        getConnectionShortDetailById: jest.fn(),
         acceptRequestConnection: jest.fn(),
         acceptResponseConnection: jest.fn(),
       },
       credentials: {
-        getCredentialRecordById: jest.fn(),
         acceptCredentialOffer: jest.fn(),
         declineCredentialOffer: jest.fn(),
       },
@@ -37,17 +35,13 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 const connectionMock = connectionsFix[0];
 
 describe("Connection request", () => {
-  beforeAll(() => {
-    jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionShortDetailById")
-      .mockResolvedValue(connectionMock);
-  });
-
   test("It renders connection request incoming", async () => {
     store.dispatch(
       setConnectionCredentialRequest({
         id: "123",
         type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        logo: connectionMock.logo,
+        label: connectionMock.label,
       })
     );
     const { container, getByText } = render(
@@ -74,6 +68,8 @@ describe("Connection request", () => {
       setConnectionCredentialRequest({
         id: id,
         type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        logo: connectionMock.logo,
+        label: connectionMock.label,
       })
     );
     const acceptRequestConnectionSpy = jest.spyOn(
@@ -128,6 +124,8 @@ describe("Connection request", () => {
       setConnectionCredentialRequest({
         id: id,
         type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
+        logo: connectionMock.logo,
+        label: connectionMock.label,
       })
     );
     const acceptResponseConnectionSpy = jest.spyOn(
@@ -158,23 +156,14 @@ describe("Connection request", () => {
 });
 
 describe("Credential request", () => {
-  beforeAll(() => {
-    jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionShortDetailById")
-      .mockResolvedValue(connectionMock);
-    jest
-      .spyOn(AriesAgent.agent.credentials, "getCredentialRecordById")
-      .mockResolvedValue({
-        connectionId: connectionMock.id,
-      } as CredentialExchangeRecord);
-  });
-
   test("It renders credential request and accept credential", async () => {
     const id = "456";
     store.dispatch(
       setConnectionCredentialRequest({
         id: id,
         type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+        logo: connectionMock.logo,
+        label: connectionMock.label,
       })
     );
     const acceptCredentialOfferSpy = jest.spyOn(

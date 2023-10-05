@@ -12,11 +12,7 @@ import {
 import { EventEmitter } from "events";
 import { CredentialMetadataRecord } from "../modules";
 import { CredentialService } from "./credentialService";
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { ColorGenerator } from "../../../ui/utils/ColorGenerator";
+import { CredentialMetadataRecordStatus } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 const eventEmitter = new EventEmitter();
 
@@ -135,8 +131,6 @@ const w3cCredentialRecord = new W3cCredentialRecord({
       degree: {
         type: "Bachelor Degree",
         name: "Bachelor of Science and Arts",
-        givenName: "John",
-        familyName: "Smith",
       },
     } as any,
     expirationDate: "2100-10-22T12:23:48Z",
@@ -362,7 +356,7 @@ describe("Credential service of agent", () => {
     expect(callback).toBeCalledWith(event);
   });
 
-  test("check incoming offer receiver (ready to be accepted)", () => {
+  test("credential record represents incoming offer", () => {
     expect(
       credentialService.isCredentialOfferReceived(
         credentialOfferReceivedRecordAutoAccept
@@ -370,7 +364,7 @@ describe("Credential service of agent", () => {
     ).toBe(true);
   });
 
-  test("check incoming offer receiver should be ignored if auto accept is always", () => {
+  test("credential record represents incoming offer should be ignored if auto accept is always", () => {
     expect(
       credentialService.isCredentialOfferReceived(
         credentialOfferReceivedRecordNoAutoAccept
@@ -378,7 +372,7 @@ describe("Credential service of agent", () => {
     ).toBe(false);
   });
 
-  test("check credential is done", () => {
+  test("credential record represents done", () => {
     expect(
       credentialService.isCredentialDone(credentialDoneExchangeRecord)
     ).toBe(true);

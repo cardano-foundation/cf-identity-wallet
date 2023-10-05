@@ -41,6 +41,7 @@ jest.mock("../../../core/agent/agent", () => ({
         isConnectionRequestReceived: jest.fn(),
         isConnectionResponseSent: jest.fn(),
         isConnectionConnected: jest.fn(),
+        getConnectionShortDetailById: jest.fn(),
       },
       credentials: {
         getCredentials: jest.fn().mockResolvedValue([]),
@@ -78,9 +79,15 @@ describe("App Wrapper", () => {
 
 const connectionStateChangedEventMock = {
   payload: {
-    connectionRecord: { id: "id" },
+    connectionRecord: { id: "id", imageUrl: "png", theirLabel: "idw" },
   },
 } as ConnectionStateChangedEvent;
+const connectionShortDetailsMock = {
+  id: "id",
+  label: "idw",
+  logo: "png",
+} as ConnectionShortDetails;
+
 const dispatch = jest.fn();
 describe("Connection state changed handler", () => {
   beforeAll(() => {
@@ -88,7 +95,7 @@ describe("Connection state changed handler", () => {
       AriesAgent.agent.connections,
       "getConnectionShortDetails"
     );
-    getConnectionShortDetailsSpy.mockReturnValue({} as ConnectionShortDetails);
+    getConnectionShortDetailsSpy.mockReturnValue(connectionShortDetailsMock);
   });
 
   test("handles connection state request sent", async () => {
@@ -102,7 +109,7 @@ describe("Connection state changed handler", () => {
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      updateOrAddConnectionCache({} as ConnectionShortDetails)
+      updateOrAddConnectionCache(connectionShortDetailsMock)
     );
     expect(dispatch).toBeCalledWith(
       setCurrentOperation(toastState.connectionRequestPending)
@@ -123,6 +130,8 @@ describe("Connection state changed handler", () => {
       setConnectionCredentialRequest({
         id: "id",
         type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
+        logo: "png",
+        label: "idw",
       })
     );
   });
@@ -138,7 +147,7 @@ describe("Connection state changed handler", () => {
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      updateOrAddConnectionCache({} as ConnectionShortDetails)
+      updateOrAddConnectionCache(connectionShortDetailsMock)
     );
     expect(dispatch).toBeCalledWith(
       setCurrentOperation(toastState.connectionRequestIncoming)
@@ -147,6 +156,8 @@ describe("Connection state changed handler", () => {
       setConnectionCredentialRequest({
         id: "id",
         type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        logo: "png",
+        label: "idw",
       })
     );
   });
@@ -177,7 +188,7 @@ describe("Connection state changed handler", () => {
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      updateOrAddConnectionCache({} as ConnectionShortDetails)
+      updateOrAddConnectionCache(connectionShortDetailsMock)
     );
     expect(dispatch).toBeCalledWith(
       setCurrentOperation(toastState.newConnectionAdded)
@@ -193,7 +204,7 @@ jest.mock("../../utils/ColorGenerator", () => ({
 const now = new Date();
 const credentialStateChangedEventMock = {
   payload: {
-    credentialRecord: { id: "id", createdAt: now },
+    credentialRecord: { id: "id", createdAt: now, connectionId: "cid2" },
   },
 } as CredentialStateChangedEvent;
 describe("Credential state changed handler", () => {
@@ -203,6 +214,9 @@ describe("Credential state changed handler", () => {
       "isCredentialOfferReceived"
     );
     isCredentialOfferReceivedSpy.mockImplementationOnce(() => true);
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnectionShortDetailById")
+      .mockResolvedValue(connectionShortDetailsMock);
     await credentialStateChangedHandler(
       credentialStateChangedEventMock,
       dispatch
@@ -211,6 +225,8 @@ describe("Credential state changed handler", () => {
       setConnectionCredentialRequest({
         id: credentialStateChangedEventMock.payload.credentialRecord.id,
         type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+        label: connectionShortDetailsMock.label,
+        logo: connectionShortDetailsMock.logo,
       })
     );
   });
