@@ -528,7 +528,9 @@ describe("Credential service of agent", () => {
         jsonld: {
           options: {},
           credential: {
-            id: testDid,
+            credentialSubject: {
+              id: testDid,
+            },
           },
         },
       },

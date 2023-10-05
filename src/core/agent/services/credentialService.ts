@@ -239,7 +239,10 @@ class CredentialService extends AgentService {
           ...w3cCredential,
           credential: {
             ...w3cCredential.credential,
-            id: subjectDid,
+            credentialSubject: {
+              ...w3cCredential.credential.credentialSubject,
+              id: subjectDid,
+            },
           },
         },
       },
