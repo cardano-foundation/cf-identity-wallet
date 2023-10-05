@@ -339,53 +339,6 @@ describe("Credential service of agent", () => {
     ).not.toBeCalled();
   });
 
-  test("callback will run when have a event listener", async () => {
-    const callback = jest.fn();
-    credentialService.onCredentialStateChanged(callback);
-    const event: CredentialStateChangedEvent = {
-      type: CredentialEventTypes.CredentialStateChanged,
-      payload: {
-        credentialRecord: credentialDoneExchangeRecord,
-        previousState: CredentialState.CredentialReceived,
-      },
-      metadata: {
-        contextCorrelationId: id1,
-      },
-    };
-    agent.eventEmitter.emit(CredentialEventTypes.CredentialStateChanged, event);
-    expect(callback).toBeCalledWith(event);
-  });
-
-  test("credential record represents incoming offer", () => {
-    expect(
-      credentialService.isCredentialOfferReceived(
-        credentialOfferReceivedRecordAutoAccept
-      )
-    ).toBe(true);
-  });
-
-  test("credential record represents incoming offer should be ignored if auto accept is always", () => {
-    expect(
-      credentialService.isCredentialOfferReceived(
-        credentialOfferReceivedRecordNoAutoAccept
-      )
-    ).toBe(false);
-  });
-
-  test("credential record represents done", () => {
-    expect(
-      credentialService.isCredentialDone(credentialDoneExchangeRecord)
-    ).toBe(true);
-  });
-
-  test("after accepted credential", () => {
-    expect(
-      credentialService.isCredentialRequestSent(
-        credentialRequestSentRecordAutoAccept
-      )
-    ).toBe(true);
-  });
-
   test("get credential successfully record by id", () => {
     credentialService.getCredentialRecordById(credentialDoneExchangeRecord.id);
     expect(agent.credentials.getById).toBeCalledWith(
@@ -475,5 +428,54 @@ describe("Credential service of agent", () => {
       credentialDoneExchangeRecord
     );
     expect(dataAfterUpdate.issuerLogo).toEqual("mockUrl");
+  });
+});
+
+describe("Credential service of agent - CredentialExchangeRecord helpers", () => {
+  test("callback will run when have a event listener", async () => {
+    const callback = jest.fn();
+    credentialService.onCredentialStateChanged(callback);
+    const event: CredentialStateChangedEvent = {
+      type: CredentialEventTypes.CredentialStateChanged,
+      payload: {
+        credentialRecord: credentialDoneExchangeRecord,
+        previousState: CredentialState.CredentialReceived,
+      },
+      metadata: {
+        contextCorrelationId: id1,
+      },
+    };
+    agent.eventEmitter.emit(CredentialEventTypes.CredentialStateChanged, event);
+    expect(callback).toBeCalledWith(event);
+  });
+
+  test("credential record represents incoming offer", () => {
+    expect(
+      credentialService.isCredentialOfferReceived(
+        credentialOfferReceivedRecordAutoAccept
+      )
+    ).toBe(true);
+  });
+
+  test("credential record represents incoming offer should be ignored if auto accept is always", () => {
+    expect(
+      credentialService.isCredentialOfferReceived(
+        credentialOfferReceivedRecordNoAutoAccept
+      )
+    ).toBe(false);
+  });
+
+  test("credential record represents after accepted credential", () => {
+    expect(
+      credentialService.isCredentialRequestSent(
+        credentialRequestSentRecordAutoAccept
+      )
+    ).toBe(true);
+  });
+
+  test("credential record represents done", () => {
+    expect(
+      credentialService.isCredentialDone(credentialDoneExchangeRecord)
+    ).toBe(true);
   });
 });
