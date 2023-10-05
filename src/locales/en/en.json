@@ -401,9 +401,16 @@
           "delete": "Delete connection"
         },
         "alert": {
-          "title": "Are you sure you want to delete this connection?",
-          "confirm": "Yes, I'm sure",
-          "cancel": "Cancel"
+          "deleteconnection": {
+            "title": "Are you sure you want to delete this connection?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          },
+          "deletenote": {
+            "title": "Are you sure you want to delete this note?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          }
         }
       }
     }

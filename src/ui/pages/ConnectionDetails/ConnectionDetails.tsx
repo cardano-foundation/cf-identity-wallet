@@ -49,6 +49,9 @@ const ConnectionDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  {
+    /* Replace the empty array `([])` in the following line with something like `connectionDetails.notes` */
+  }
   const [notes, setNotes] = useState<NotesProps[]>([]);
   const currentNoteIndex = useRef(0);
 
@@ -265,6 +268,7 @@ const ConnectionDetails = () => {
             </div>
           </div>
 
+          {/* Replace `notes` in this block of code with something like `connectionDetails.notes` */}
           {notes.length > 0 ? (
             <div className="connection-details-info-block">
               <h3>{i18n.t("connections.details.notes")}</h3>
@@ -315,13 +319,15 @@ const ConnectionDetails = () => {
         <AlertDeleteConnection
           isOpen={alertDeleteConnectionIsOpen}
           setIsOpen={setAlertDeleteConnectionIsOpen}
-          dataTestId="alert-confirm"
-          headerText={i18n.t("connections.details.options.alert.title")}
+          dataTestId="alert-confirm-delete-connection"
+          headerText={i18n.t(
+            "connections.details.options.alert.deleteconnection.title"
+          )}
           confirmButtonText={`${i18n.t(
-            "connections.details.options.alert.confirm"
+            "connections.details.options.alert.deleteconnection.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "connections.details.options.alert.cancel"
+            "connections.details.options.alert.deleteconnection.cancel"
           )}`}
           actionConfirm={() => {
             if (
@@ -358,9 +364,15 @@ const ConnectionDetails = () => {
             header={true}
             closeButton={true}
             closeButtonLabel={`${i18n.t("connections.details.cancel")}`}
-            closeButtonAction={() => setModalIsOpen(false)}
+            closeButtonAction={() => {
+              // Reset `setNotes` pulling initial values from core
+              setModalIsOpen(false);
+            }}
             actionButton={true}
-            actionButtonAction={() => setModalIsOpen(false)}
+            actionButtonAction={() => {
+              // Save new updated values to core
+              setModalIsOpen(false);
+            }}
             actionButtonLabel={`${i18n.t("connections.details.confirm")}`}
           >
             <ConnectionDetailsHeader />
@@ -410,13 +422,15 @@ const ConnectionDetails = () => {
       <AlertDeleteNote
         isOpen={alertDeleteNoteIsOpen}
         setIsOpen={setAlertDeleteNoteIsOpen}
-        dataTestId="alert-confirm"
-        headerText={i18n.t("connections.details.options.alert.title")}
+        dataTestId="alert-confirm-delete-note"
+        headerText={i18n.t(
+          "connections.details.options.alert.deletenote.title"
+        )}
         confirmButtonText={`${i18n.t(
-          "connections.details.options.alert.confirm"
+          "connections.details.options.alert.deletenote.confirm"
         )}`}
         cancelButtonText={`${i18n.t(
-          "connections.details.options.alert.cancel"
+          "connections.details.options.alert.deletenote.cancel"
         )}`}
         actionConfirm={() => {
           const newNotes = [...notes];

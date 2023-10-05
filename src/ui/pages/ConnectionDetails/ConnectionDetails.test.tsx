@@ -188,7 +188,10 @@ describe("ConnectionDetails Page", () => {
 
     await waitFor(() =>
       expect(
-        getByText(EN_TRANSLATIONS.connections.details.options.alert.title)
+        getByText(
+          EN_TRANSLATIONS.connections.details.options.alert.deleteconnection
+            .title
+        )
       ).toBeVisible()
     );
 
@@ -246,7 +249,10 @@ describe("ConnectionDetails Page", () => {
 
     await waitFor(() =>
       expect(
-        getByText(EN_TRANSLATIONS.connections.details.options.alert.title)
+        getByText(
+          EN_TRANSLATIONS.connections.details.options.alert.deleteconnection
+            .title
+        )
       ).toBeVisible()
     );
   });
