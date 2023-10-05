@@ -17,4 +17,9 @@ services:
     tty: true
     ports:
       - "3001:3001"
+    volumes:
+      - issuer-server-data:/root/.afj
     restart: always
+
+volumes:
+  issuer-server-data:
