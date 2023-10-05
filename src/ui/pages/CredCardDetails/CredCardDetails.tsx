@@ -242,7 +242,7 @@ const CredCardDetails = () => {
             </div>
           </div>
 
-          {cardData.expirationDate ? (
+          {cardData.expirationDate && (
             <div className="card-details-info-block">
               <h3>{i18n.t("creds.card.details.expirationdate")}</h3>
               <div className="card-details-info-block-inner">
@@ -260,7 +260,7 @@ const CredCardDetails = () => {
                 </span>
               </div>
             </div>
-          ) : null}
+          )}
 
           <div className="card-details-info-block">
             <h3>{i18n.t("creds.card.details.prooftypes")}</h3>
