@@ -35,6 +35,13 @@ const agent = jest.mocked({
   eventEmitter: {
     emit: eventEmitter.emit.bind(eventEmitter),
   },
+  genericRecords: {
+    save: jest.fn(),
+    deleteById: jest.fn(),
+    findById: jest.fn(),
+    update: jest.fn(),
+    findAllByQuery: jest.fn(),
+  },
 });
 
 const connectionService = new ConnectionService(agent as any as Agent);
@@ -320,6 +327,7 @@ describe("Connection service of agent", () => {
     agent.connections.getById = jest
       .fn()
       .mockResolvedValue(completedConnectionRecord);
+    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
     agent.oob.getById = jest.fn().mockResolvedValue(oobRecord);
     expect(
       await connectionService.getConnectionById(completedConnectionRecord.id)
@@ -333,6 +341,7 @@ describe("Connection service of agent", () => {
       handshakeProtocols: oobi.handshakeProtocols,
       requestAttachments: oobi.appendedAttachments,
       serviceEndpoints: [], // @TODO - foconnor: This shouldn't be empty
+      notes: [],
     });
     expect(agent.connections.getById).toBeCalledWith(
       completedConnectionRecord.id
@@ -346,6 +355,7 @@ describe("Connection service of agent", () => {
     agent.connections.getById = jest
       .fn()
       .mockResolvedValue(incomingConnectionRecordNoAutoAccept);
+    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
     agent.oob.getById = jest.fn().mockResolvedValue(oobRecord);
     expect(
       await connectionService.getConnectionById(
@@ -361,6 +371,7 @@ describe("Connection service of agent", () => {
       handshakeProtocols: undefined,
       requestAttachments: undefined,
       serviceEndpoints: undefined,
+      notes: [],
     });
     expect(agent.connections.getById).toBeCalledWith(
       incomingConnectionRecordNoAutoAccept.id
@@ -421,5 +432,59 @@ describe("Connection service of agent", () => {
     };
     agent.eventEmitter.emit(ConnectionEventTypes.ConnectionStateChanged, event);
     expect(callback).toBeCalledWith(event);
+  });
+
+  test("can save connection note with generic records", async () => {
+    const connectionId = "connectionId";
+    const note = {
+      title: "title",
+      message: "message",
+    };
+    await connectionService.createConnectionNote(connectionId, note);
+    expect(agent.genericRecords.save).toBeCalledWith({
+      id: expect.any(String),
+      content: note,
+      tags: { connectionId },
+    });
+  });
+
+  test("can delete connection note with id", async () => {
+    const connectionNoteId = "connectionId";
+    await connectionService.deleteConnectionNodeById(connectionNoteId);
+    expect(agent.genericRecords.deleteById).toBeCalledWith(connectionNoteId);
+  });
+
+  test("cannot update connection note because connection note invalid", async () => {
+    const connectionId = "connectionId";
+    const note = {
+      title: "title",
+      message: "message",
+    };
+    await expect(
+      connectionService.updateConnectionNodeById(connectionId, note)
+    ).rejects.toThrowError(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
+  });
+
+  test("can update connection note by id", async () => {
+    const mockGenericRecords = {
+      id: "id",
+      content: {
+        title: "title",
+        message: "message",
+      },
+    };
+    agent.genericRecords.findById = jest
+      .fn()
+      .mockResolvedValue(mockGenericRecords);
+    const connectionId = "connectionId";
+    const note = {
+      title: "title",
+      message: "message2",
+    };
+    await connectionService.updateConnectionNodeById(connectionId, note);
+    expect(agent.genericRecords.update).toBeCalledWith({
+      ...mockGenericRecords,
+      content: note,
+    });
   });
 });
