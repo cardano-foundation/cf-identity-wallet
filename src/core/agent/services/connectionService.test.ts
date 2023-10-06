@@ -11,7 +11,7 @@ import {
   OutOfBandState,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
-import { ConnectionStatus } from "../agent.types";
+import { ConnectionStatus, GenericRecordType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 
 const eventEmitter = new EventEmitter();
@@ -444,7 +444,7 @@ describe("Connection service of agent", () => {
     expect(agent.genericRecords.save).toBeCalledWith({
       id: expect.any(String),
       content: note,
-      tags: { connectionId },
+      tags: { connectionId, type: GenericRecordType.CONNECTION_NOTE },
     });
   });
 
