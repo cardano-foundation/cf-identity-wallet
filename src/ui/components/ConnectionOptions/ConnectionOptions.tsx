@@ -56,7 +56,7 @@ const ConnectionOptions = ({
                 <IonCol size="12">
                   <span
                     className="connection-options-option"
-                    data-testid="connection-options-edit-button"
+                    data-testid="connection-options-manage-button"
                     onClick={() => {
                       setOptionsIsOpen(false);
                       handleEdit(true);

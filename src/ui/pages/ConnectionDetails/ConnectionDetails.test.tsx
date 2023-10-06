@@ -209,7 +209,7 @@ describe("ConnectionDetails Page", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, queryByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
         <Provider store={storeMocked}>
           <Route
@@ -238,9 +238,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     await waitFor(() =>
-      expect(
-        getByText(EN_TRANSLATIONS.connections.details.options.title)
-      ).toBeVisible()
+      expect(getByTestId("connection-options-delete-button")).toBeVisible()
     );
 
     act(() => {
@@ -248,12 +246,77 @@ describe("ConnectionDetails Page", () => {
     });
 
     await waitFor(() =>
-      expect(
+      expect(getByTestId("alert-confirm-delete-connection")).toBeVisible()
+    );
+
+    await waitFor(() =>
+      expect(getByTestId("alert-confirm-delete-connection")).toHaveClass(
+        "alert-visible"
+      )
+    );
+
+    act(() => {
+      fireEvent.click(
         getByText(
           EN_TRANSLATIONS.connections.details.options.alert.deleteconnection
-            .title
+            .confirm
         )
-      ).toBeVisible()
+      );
+    });
+
+    await waitFor(() =>
+      expect(queryByTestId("alert-confirm-delete-connection")).toBeNull()
+    );
+  });
+
+  test("Open Manage Connection notes modal", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getByText, queryByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.CREDS}
+            component={Creds}
+          />
+
+          <Route
+            path={RoutePath.CONNECTION_DETAILS}
+            component={ConnectionDetails}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
+
+    act(() => {
+      fireEvent.click(getByText(connectionsFix[0].label));
+    });
+
+    act(() => {
+      fireEvent.click(getByTestId("action-button"));
+    });
+
+    await waitFor(() =>
+      expect(getByTestId("connection-options-manage-button")).toBeVisible()
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("connection-options-manage-button"));
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() =>
+      expect(getByTestId("edit-connections-modal")).toHaveAttribute(
+        "is-open",
+        "true"
+      )
     );
   });
 });
