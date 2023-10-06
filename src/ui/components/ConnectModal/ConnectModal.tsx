@@ -17,13 +17,13 @@ import { operationState } from "../../constants/dictionary";
 
 const ConnectModal = ({
   type,
-  ConnectModalIsOpen,
+  connectModalIsOpen,
   setConnectModalIsOpen,
 }: ConnectModalProps) => {
   const dispatch = useAppDispatch();
   return (
     <IonModal
-      isOpen={ConnectModalIsOpen}
+      isOpen={connectModalIsOpen}
       initialBreakpoint={0.3}
       breakpoints={[0, 0.3]}
       className="page-layout short-modal"

@@ -91,10 +91,11 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
-  const [ConnectModalIsOpen, setConnectModalIsOpen] = useState(false);
+  const [connectModalIsOpen, setConnectModalIsOpen] = useState(false);
 
   const handleConnectModal = () => {
     setConnectModalIsOpen(true);
+    console.log(connectModalIsOpen);
   };
 
   const handleShowConnectionDetails = async (item: ConnectionShortDetails) => {
@@ -229,11 +230,6 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
               </IonRow>
             </IonGrid>
           </IonContent>
-          <ConnectModal
-            type={connectionType.connection}
-            ConnectModalIsOpen={ConnectModalIsOpen}
-            setConnectModalIsOpen={setConnectModalIsOpen}
-          />
         </>
       ) : (
         <CardsPlaceholder
@@ -242,6 +238,11 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
           testId="connections-cards-placeholder"
         />
       )}
+      <ConnectModal
+        type={connectionType.connection}
+        connectModalIsOpen={connectModalIsOpen}
+        setConnectModalIsOpen={setConnectModalIsOpen}
+      />
     </TabLayout>
   );
 };
