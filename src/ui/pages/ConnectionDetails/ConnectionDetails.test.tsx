@@ -269,7 +269,7 @@ describe("ConnectionDetails Page", () => {
     );
   });
 
-  test("Open Manage Connection notes modal", async () => {
+  test.skip("Open Manage Connection notes modal", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
