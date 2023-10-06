@@ -95,7 +95,6 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
 
   const handleConnectModal = () => {
     setConnectModalIsOpen(true);
-    console.log(connectModalIsOpen);
   };
 
   const handleShowConnectionDetails = async (item: ConnectionShortDetails) => {
