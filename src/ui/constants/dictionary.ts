@@ -54,6 +54,8 @@ const toastState = {
   newConnectionAdded: "newConnectionAdded",
   credentialRequestPending: "credentialRequestPending",
   newCredentialAdded: "newCredentialAdded",
+  notesUpdated: "notesUpdated",
+  noteRemoved: "noteRemoved",
 };
 
 const defaultCredentialsCardData: CredentialDetails = {

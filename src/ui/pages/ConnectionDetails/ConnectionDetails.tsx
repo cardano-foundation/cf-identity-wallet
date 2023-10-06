@@ -1,4 +1,11 @@
-import { IonButton, IonIcon, IonInput, IonModal, IonPage } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonInput,
+  IonModal,
+  IonPage,
+  IonTextarea,
+} from "@ionic/react";
 import { ellipsisVertical, trashOutline, createOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -30,7 +37,7 @@ import {
   setConnectionsCache,
 } from "../../../store/reducers/connectionsCache";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { operationState } from "../../constants/dictionary";
+import { operationState, toastState } from "../../constants/dictionary";
 import { AriesAgent } from "../../../core/agent/agent";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
@@ -50,9 +57,11 @@ const ConnectionDetails = () => {
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   {
-    /* Replace the empty array `([])` in the following line with something like `connectionDetails.notes` */
+    /* @TODO - sdisalvo: Replace empty array in `coreNotes` below 
+    with something like `connectionDetails.notes` and delete this comment */
   }
-  const [notes, setNotes] = useState<NotesProps[]>([]);
+  const coreNotes: NotesProps[] = [];
+  const [notes, setNotes] = useState<NotesProps[]>(coreNotes);
   const currentNoteIndex = useRef(0);
 
   useEffect(() => {
@@ -82,12 +91,10 @@ const ConnectionDetails = () => {
     setOptionsIsOpen(false);
     setAlertDeleteConnectionIsOpen(true);
   };
-  // handle loading
-  if (!connectionDetails) return <div></div>;
+
   const verifyAction = () => {
-    // @TODO - sdisalvo: Update core
     const updatedConnections = connectionsData.filter(
-      (item) => item.id !== connectionDetails.id
+      (item) => item.id !== connectionDetails?.id
     );
     dispatch(setConnectionsCache(updatedConnections));
     handleDone();
@@ -123,6 +130,8 @@ const ConnectionDetails = () => {
   const Note = ({ title, message, index }: NotesProps) => {
     const [newTitle, setNewTitle] = useState(title);
     const [newMessage, setNewMessage] = useState(message);
+    const TITLE_MAX_LENGTH = 64;
+    const MESSAGE_MAX_LENGTH = 576;
 
     return (
       <div className="connection-details-info-block-inner">
@@ -130,7 +139,9 @@ const ConnectionDetails = () => {
           <div className="connection-details-info-block-data">
             <div className="connection-details-info-block-title">
               <span>{i18n.t("connections.details.title")}</span>
-              <span>{title.length}/64</span>
+              <span>
+                {newTitle.length}/{TITLE_MAX_LENGTH}
+              </span>
             </div>
             <IonInput
               data-testid={`edit-connections-modal-note-title-${index + 1}`}
@@ -145,9 +156,12 @@ const ConnectionDetails = () => {
           <div className="connection-details-info-block-data">
             <div className="connection-details-info-block-title">
               <span>{i18n.t("connections.details.message")}</span>
-              <span>{message.length}/576</span>
+              <span>
+                {newMessage.length}/{MESSAGE_MAX_LENGTH}
+              </span>
             </div>
-            <IonInput
+            <IonTextarea
+              autoGrow={true}
               data-testid={`edit-connections-modal-note-message-${index + 1}`}
               onIonChange={(e) => setNewMessage(`${e.target.value ?? ""}`)}
               onIonBlur={() => {
@@ -268,7 +282,6 @@ const ConnectionDetails = () => {
             </div>
           </div>
 
-          {/* Replace `notes` in this block of code with something like `connectionDetails.notes` */}
           {notes.length > 0 ? (
             <div className="connection-details-info-block">
               <h3>{i18n.t("connections.details.notes")}</h3>
@@ -278,10 +291,10 @@ const ConnectionDetails = () => {
                   key={index}
                 >
                   <div className="connection-details-info-block-line">
-                    <div className="connection-details-info-block-data">
+                    <div className="connection-details-info-block-note-title">
                       {note.title}
                     </div>
-                    <div className="connection-details-info-block-note">
+                    <div className="connection-details-info-block-note-message">
                       {note.message}
                     </div>
                   </div>
@@ -357,7 +370,12 @@ const ConnectionDetails = () => {
         isOpen={modalIsOpen}
         className={""}
         data-testid="edit-connections-modal"
-        onDidDismiss={() => setModalIsOpen(false)}
+        onDidDismiss={() => {
+          if (modalIsOpen && notes !== coreNotes) {
+            setNotes(coreNotes);
+          }
+          setModalIsOpen(false);
+        }}
       >
         <div className="edit-connections-modal modal">
           <PageLayout
@@ -365,56 +383,67 @@ const ConnectionDetails = () => {
             closeButton={true}
             closeButtonLabel={`${i18n.t("connections.details.cancel")}`}
             closeButtonAction={() => {
-              // Reset `setNotes` pulling initial values from core
+              if (notes !== coreNotes) {
+                setNotes(coreNotes);
+              }
               setModalIsOpen(false);
             }}
             actionButton={true}
             actionButtonAction={() => {
-              // Save new updated values to core
+              const filteredNotes = notes.filter(
+                (note) => note.title !== "" && note.message !== ""
+              );
+              if (filteredNotes !== coreNotes) {
+                setNotes(filteredNotes);
+                // @TODO - sdisalvo: Save new updated values to core and delete this comment
+                dispatch(setCurrentOperation(toastState.notesUpdated));
+              }
               setModalIsOpen(false);
             }}
             actionButtonLabel={`${i18n.t("connections.details.confirm")}`}
           >
-            <ConnectionDetailsHeader />
-            <div className="connection-details-info-block">
-              {notes.length ? (
-                <>
-                  <h3>{i18n.t("connections.details.notes")}</h3>
-                  {notes.map((note, index) => (
-                    <Note
-                      title={note.title}
-                      message={note.message}
-                      index={index}
-                      key={index}
-                    />
-                  ))}
-                </>
-              ) : (
-                <i className="connection-details-info-block-nonotes">
-                  {i18n.t("connections.details.nocurrentnotes")}
-                </i>
-              )}
-            </div>
-            <div className="connection-details-add-note">
-              <IonButton
-                shape="round"
-                className="ion-primary-button"
-                onClick={() => {
-                  setNotes([
-                    ...notes,
-                    {
-                      title: "",
-                      message: "",
-                      index: notes.length,
-                    },
-                  ]);
-                }}
-              >
-                <IonIcon
-                  slot="icon-only"
-                  icon={createOutline}
-                />
-              </IonButton>
+            <div className="connection-details-content">
+              <ConnectionDetailsHeader />
+              <div className="connection-details-info-block">
+                {notes.length ? (
+                  <>
+                    <h3>{i18n.t("connections.details.notes")}</h3>
+                    {notes.map((note, index) => (
+                      <Note
+                        title={note.title}
+                        message={note.message}
+                        index={index}
+                        key={index}
+                      />
+                    ))}
+                  </>
+                ) : (
+                  <i className="connection-details-info-block-nonotes">
+                    {i18n.t("connections.details.nocurrentnotes")}
+                  </i>
+                )}
+              </div>
+              <div className="connection-details-add-note">
+                <IonButton
+                  shape="round"
+                  className="ion-primary-button"
+                  onClick={() => {
+                    setNotes([
+                      ...notes,
+                      {
+                        title: "",
+                        message: "",
+                        index: notes.length,
+                      },
+                    ]);
+                  }}
+                >
+                  <IonIcon
+                    slot="icon-only"
+                    icon={createOutline}
+                  />
+                </IonButton>
+              </div>
             </div>
           </PageLayout>
         </div>
@@ -436,6 +465,7 @@ const ConnectionDetails = () => {
           const newNotes = [...notes];
           newNotes.splice(currentNoteIndex.current, 1);
           setNotes(newNotes);
+          dispatch(setCurrentOperation(toastState.noteRemoved));
         }}
         actionCancel={() => {
           setAlertDeleteNoteIsOpen(false);

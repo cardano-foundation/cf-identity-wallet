@@ -40,11 +40,12 @@
       flex-direction: column;
       background-color: white;
       border-radius: 1rem;
-      padding: 0.938rem;
+      padding: 0.75rem 1.25rem;
 
       .connection-details-info-block-line {
         display: flex;
         flex-direction: column;
+        margin: 0.5rem 0;
 
         > * {
           display: flex;
@@ -52,11 +53,9 @@
           justify-content: center;
         }
 
-        &:not(:last-child) {
-          margin-bottom: 1rem;
-        }
-
-        .connection-details-info-block-data {
+        .connection-details-info-block-data,
+        .connection-details-info-block-note-title,
+        .connection-details-info-block-note-message {
           flex-grow: 1;
           display: flex;
           flex-direction: column;
@@ -64,11 +63,8 @@
           font-weight: 500;
         }
 
-        .connection-details-info-block-note {
-          font-size: 1rem;
-          font-style: normal;
+        .connection-details-info-block-note-message {
           font-weight: 400;
-          line-height: 1.375rem;
           margin-top: 0.63rem;
         }
       }
@@ -187,16 +183,18 @@
   }
 
   .connection-details-info-block-data {
-    ion-input {
+    ion-input,
+    ion-textarea {
       border-radius: 0.5rem;
       border: 1px solid var(--ion-color-dark-grey);
-      margin: 0.5rem 0 1.56rem;
+      margin-top: 0.5rem;
       min-height: 1.25rem;
 
-      input {
-        --padding-top: 0.875rem;
-        --padding-bottom: 0.875rem;
-        --padding-start: 1.25rem;
+      input,
+      textarea,
+      .textarea-wrapper::after {
+        overflow: hidden;
+        padding: 0.875rem 1.25rem;
       }
 
       &.has-focus {
@@ -204,8 +202,8 @@
       }
     }
 
-    &:last-child ion-input {
-      margin-bottom: 0;
+    ion-input {
+      margin-bottom: 1.56rem;
     }
   }
 

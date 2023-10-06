@@ -71,7 +71,7 @@ const ConnectionOptions = ({
                       </IonButton>
                     </span>
                     <span className="connection-options-label">
-                      {i18n.t("connections.details.options.labels.edit")}
+                      {i18n.t("connections.details.options.labels.manage")}
                     </span>
                   </span>
                   <span

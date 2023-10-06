@@ -326,7 +326,7 @@
   "creds": {
     "tab": {
       "title": "Credentials",
-      "create": "Create a credential"
+      "create": "Add a credential"
     },
     "card": {
       "layout": {
@@ -397,7 +397,7 @@
       "options": {
         "title": "Connection options",
         "labels": {
-          "edit": "Edit connection",
+          "manage": "Manage notes",
           "delete": "Delete connection"
         },
         "alert": {
@@ -560,7 +560,9 @@
     "connectionrequestpending": "Connection request pending",
     "newconnectionadded": "New connection added",
     "credentialrequestpending": "Credential request pending",
-    "newcredentialadded": "New credential added"
+    "newcredentialadded": "New credential added",
+    "notesupdated": "Nodes updated successfully",
+    "noteremoved": "Note removed successfully"
   },
   "scan": {
     "tab": {
