@@ -402,17 +402,15 @@ const ConnectionDetails = () => {
                 const filteredNotes = notes.filter(
                   (note) => note.title !== "" && note.message !== ""
                 );
-                // Check if the filteredNotes are different than what's in core
+                // This is checking if the filteredNotes are different than what's in core
                 //
-                // NOTE: There's a current bug here where filteredNotes !== coreNotes even if
-                // when you console.log them they look exactly the same.
+                // BUG: filteredNotes !== coreNotes even if they look exactly the same.
                 //
                 if (filteredNotes !== coreNotes) {
-                  // If so, these are now our notes to work with
                   setNotes(filteredNotes);
                   console.log("filteredNotes", filteredNotes);
                   console.log("coreNotes", coreNotes);
-                  // The new ones won't have an id yet, so we can send them to core for creation
+                  // The new notes only have a temp id so we can send them to core for creation
                   filteredNotes.forEach((note) => {
                     if (note.id.includes("temp")) {
                       AriesAgent.agent.connections.createConnectionNote(
@@ -437,7 +435,8 @@ const ConnectionDetails = () => {
                       noteCore.title !== noteFind.title ||
                       noteCore.message !== noteFind.message
                       //
-                      // NOTE: There's a current bug here, for some reason filteredNotes === coreNotes
+                      // NOTE: There's a current bug here, for some reason
+                      // noteCore.title !== noteFind.title and noteCore.message !== noteFind.message
                       // so updateConnections will never run
                       //
                     ) {
@@ -447,6 +446,7 @@ const ConnectionDetails = () => {
                       );
                     }
                   });
+                  // Because of the bug filteredNotes !== coreNotes this will always run
                   dispatch(setCurrentOperation(toastState.notesUpdated));
                 }
                 setModalIsOpen(false);
