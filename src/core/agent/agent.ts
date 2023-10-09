@@ -32,6 +32,7 @@ import {
   ConnectionService,
   CredentialService,
   IdentifierService,
+  MessageService,
 } from "./services";
 import { documentLoader } from "./documentLoader";
 
@@ -90,6 +91,7 @@ class AriesAgent {
   // @TODO - foconnor: Registering these should be more generic, but OK for now
   private identifierService!: IdentifierService;
   private connectionService!: ConnectionService;
+  private messageService!: MessageService;
   private credentialService!: CredentialService;
   private cryptoService!: CryptoService;
 
@@ -103,6 +105,12 @@ class AriesAgent {
     if (!this.connectionService)
       this.connectionService = new ConnectionService(this.agent);
     return this.connectionService;
+  }
+
+  get messages() {
+    if (!this.messageService)
+      this.messageService = new MessageService(this.agent);
+    return this.messageService;
   }
 
   get credentials() {

@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import {
+  BasicMessageStateChangedEvent,
   ConnectionStateChangedEvent,
   CredentialStateChangedEvent,
 } from "@aries-framework/core";
@@ -35,6 +36,7 @@ import { toastState } from "../../constants/dictionary";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
+import { PICKUP_MESSAGES_DELAY } from "../../../constants/appConstants";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -138,6 +140,13 @@ const credentialStateChangedHandler = async (
   }
 };
 
+const messageStateChangedHandler = async (
+  event: BasicMessageStateChangedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  const messageRecord = event.payload.basicMessageRecord;
+};
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -199,6 +208,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
     AriesAgent.agent.credentials.onCredentialStateChanged((event) => {
       return credentialStateChangedHandler(event, dispatch);
     });
+    AriesAgent.agent.messages.onBasicMessageStateChanged((event) => {
+      return messageStateChangedHandler(event, dispatch);
+    });
+    // pickup messages
+    setTimeout(async () => {
+      AriesAgent.agent.messages.pickupMessagesV1FromMediator();
+    }, PICKUP_MESSAGES_DELAY);
+
     setInitialised(true);
   };
 
