@@ -1,5 +1,6 @@
-import { CredentialExchangeRecord } from "@aries-framework/core";
-import { IdentifierMetadataRecordProps } from "./modules/generalStorage/repositories/identifierMetadataRecord";
+import { JsonCredential } from "@aries-framework/core";
+import { IdentifierMetadataRecordProps } from "./modules";
+import { CredentialMetadataRecordProps } from "./modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 enum IdentifierType {
   KEY = "key",
@@ -15,13 +16,8 @@ enum ConnectionStatus {
   PENDING = "pending",
 }
 
-enum ConnectionHistoryType {
-  CREDENTIAL = "credential" 
-}
-
-interface ConnectionHistoryRecord {
-  type : ConnectionHistoryType,
-  data : CredentialExchangeRecord
+enum GenericRecordType {
+  CONNECTION_NOTE = "connection-note",
 }
 
 interface CryptoAccountRecordShortDetails {
@@ -40,14 +36,10 @@ interface IdentifierShortDetails {
   colors: [string, string];
 }
 
-interface CredentialShortDetails {
-  id: string;
-  nameOnCredential: string;
-  colors: [string, string];
-  issuanceDate: string;
-  issuerLogo: string;
-  credentialType: string;
-}
+type CredentialShortDetails = Omit<
+  CredentialMetadataRecordProps,
+  "credentialRecordId"
+>;
 
 interface ConnectionShortDetails {
   id: string;
@@ -75,11 +67,29 @@ interface KERIDetails extends IdentifierShortDetails {
   di: string;
 }
 
+type ConnectionNoteDetails = {
+  id: string;
+  title: string;
+  message: string;
+};
+
+type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
+
 interface ConnectionDetails extends ConnectionShortDetails {
   goalCode?: string;
   handshakeProtocols?: string[];
   requestAttachments?: string[];
   serviceEndpoints?: string[];
+  notes?: ConnectionNoteDetails[];
+}
+
+interface CredentialDetails extends CredentialShortDetails {
+  type: string[];
+  connectionId?: string;
+  expirationDate?: string;
+  credentialSubject: JsonCredential["credentialSubject"];
+  proofType: string;
+  proofValue: string;
 }
 
 type GetIdentifierResult =
@@ -91,7 +101,7 @@ type UpdateIdentityMetadata = Omit<
   "id" | "isArchived" | "name" | "method" | "createdAt"
 >;
 
-export { IdentifierType, Blockchain, ConnectionStatus, ConnectionHistoryType };
+export { IdentifierType, Blockchain, ConnectionStatus, GenericRecordType };
 export type {
   CryptoAccountRecordShortDetails,
   IdentifierShortDetails,
@@ -99,7 +109,9 @@ export type {
   KERIDetails,
   GetIdentifierResult,
   CredentialShortDetails,
+  CredentialDetails,
   ConnectionShortDetails,
   ConnectionDetails,
-  ConnectionHistoryRecord
+  ConnectionNoteDetails,
+  ConnectionNoteProps,
 };

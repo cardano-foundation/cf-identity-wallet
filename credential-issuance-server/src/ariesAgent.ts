@@ -39,6 +39,10 @@ class AriesAgent {
     w3cCredentials: W3cCredentialsModule;
   }>;
 
+  private masterDid;
+
+
+
   private constructor() {
     this.agent = new Agent({
       config: agentConfig,
@@ -73,6 +77,10 @@ class AriesAgent {
   async start(httpInboundTransport: HttpInboundTransport): Promise<void> {
     this.agent.registerInboundTransport(httpInboundTransport);
     await this.agent.initialize();
+    this.masterDid = await this.agent.dids.create({
+      method: "key",
+      options: { keyType: KeyType.Ed25519 },
+    });
   }
 
   async createInvitation() {
@@ -118,11 +126,12 @@ class AriesAgent {
         issuer: did,
         issuanceDate: "2022-10-22T12:23:48Z",
         credentialSubject: {
-          degree: {
-            type: "BachelorDegree",
-            name: "Bachelor of Science and Arts",
-          },
+          // @TODO: handle later, it should be did of holder
+          id: "did:example:abcdef1234567",
+          type: "BachelorDegree",
+          name: "Bachelor of Science and Arts"
         },
+        expirationDate: "2100-10-22T12:23:48Z"
       },
       options: {
         proofType: "Ed25519Signature2018",
@@ -132,30 +141,23 @@ class AriesAgent {
   }
 
   async offerCredential(connectionId: string) {
-    const did = await this.agent.dids.create({
-      method: "key",
-      options: { keyType: KeyType.Ed25519 },
-    });
-    return this.agent.credentials.offerCredential({
+ 
+   return this.agent.credentials.offerCredential({
       protocolVersion: "v2",
       connectionId: connectionId,
       credentialFormats: {
-        jsonld: this.getCredentialExample(did.didState.did as string),
+        jsonld: this.getCredentialExample(this.masterDid.didState.did as string),
       },
       autoAcceptCredential: AutoAcceptCredential.Always,
     });
   }
 
   async createInvitationWithCredential() {
-    const did = await this.agent.dids.create({
-      method: "key",
-      options: { keyType: KeyType.Ed25519 },
-    });
     const { message } = await this.agent.credentials.createOffer({
       comment: "V2 Out of Band offer (W3C)",
       autoAcceptCredential: AutoAcceptCredential.Always,
       credentialFormats: {
-        jsonld: this.getCredentialExample(did.didState.did as string),
+        jsonld: this.getCredentialExample(this.masterDid.didState.did as string),
       },
       protocolVersion: "v2",
     });
@@ -168,16 +170,12 @@ class AriesAgent {
   }
 
   async createInvitationWithCredentialConnectionless() {
-    const did = await this.agent.dids.create({
-      method: "key",
-      options: { keyType: KeyType.Ed25519 },
-    });
     const { message, credentialRecord } =
       await this.agent.credentials.createOffer({
         comment: "V2 Out of Band offer (W3C)",
         autoAcceptCredential: AutoAcceptCredential.Always,
         credentialFormats: {
-          jsonld: this.getCredentialExample(did.didState.did as string),
+          jsonld: this.getCredentialExample(this.masterDid.didState.did as string),
         },
         protocolVersion: "v2",
       });

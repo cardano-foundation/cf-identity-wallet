@@ -1,4 +1,10 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  waitFor,
+  screen,
+} from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
@@ -9,8 +15,19 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { credsFix } from "../../__fixtures__/credsFix";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const path = TabsRoutePath.CREDS + "/" + credsFix[0].id;
+
+jest.mock("../../../core/agent/agent", () => ({
+  AriesAgent: {
+    agent: {
+      credentials: {
+        getCredentialDetailsById: jest.fn(),
+      },
+    },
+  },
+}));
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
@@ -41,6 +58,11 @@ const initialStateNoPassword = {
 
 describe("Cards Details page", () => {
   let storeMocked: Store<unknown, AnyAction>;
+  beforeAll(() => {
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFix[0]);
+  });
   beforeEach(() => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
@@ -61,16 +83,18 @@ describe("Cards Details page", () => {
         </MemoryRouter>
       </Provider>
     );
-    expect(getByText(credsFix[0].credentialType)).toBeInTheDocument();
-    expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
-      "false"
-    );
-    expect(getByTestId("view-creds-modal").getAttribute("is-open")).toBe(
-      "false"
-    );
-    expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
-      "false"
-    );
+    await waitFor(() => {
+      expect(getByText(credsFix[0].credentialType)).toBeInTheDocument();
+      expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
+        "false"
+      );
+      expect(getByTestId("view-creds-modal").getAttribute("is-open")).toBe(
+        "false"
+      );
+      expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
+        "false"
+      );
+    });
   });
 
   test("It copies id to clipboard", async () => {
@@ -79,7 +103,7 @@ describe("Cards Details page", () => {
       .mockImplementation(async (text: string): Promise<void> => {
         return;
       });
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -89,9 +113,8 @@ describe("Cards Details page", () => {
         </MemoryRouter>
       </Provider>
     );
-
-    fireEvent.click(getByTestId("copy-button-proof-value"));
-
+    const copyButton = await findByTestId("copy-button-proof-value");
+    fireEvent.click(copyButton);
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
         string: credsFix[0].proofValue,
@@ -100,7 +123,7 @@ describe("Cards Details page", () => {
   });
 
   test("It opens the options modal", async () => {
-    const { getByTestId } = render(
+    const { findByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -111,17 +134,15 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
-      "false"
-    );
-
+    const credsOptionsModal = await findByTestId("creds-options-modal");
+    expect(credsOptionsModal.getAttribute("is-open")).toBe("false");
+    const optionsButton = await findByTestId("options-button");
     act(() => {
-      fireEvent.click(getByTestId("options-button"));
+      fireEvent.click(optionsButton);
     });
 
-    expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
-      "true"
-    );
+    const credsOptionsModalOpen = await findByTestId("creds-options-modal");
+    expect(credsOptionsModalOpen.getAttribute("is-open")).toBe("true");
   });
 
   test.skip("It shows the credential viewer", async () => {
@@ -160,7 +181,7 @@ describe("Cards Details page", () => {
   });
 
   test("It shows the warning when I click on the big delete button", async () => {
-    const { getByTestId, getByText } = render(
+    const { findByTestId, findByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -170,15 +191,16 @@ describe("Cards Details page", () => {
         </MemoryRouter>
       </Provider>
     );
-
+    const deleteButton = await findByTestId("card-details-delete-button");
     act(() => {
-      fireEvent.click(getByTestId("card-details-delete-button"));
+      fireEvent.click(deleteButton);
     });
 
+    const deleteAlert = await findByText(
+      EN_TRANSLATIONS.creds.card.details.delete.alert.title
+    );
     await waitFor(() => {
-      expect(
-        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
-      ).toBeVisible();
+      expect(deleteAlert).toBeVisible();
     });
   });
 });

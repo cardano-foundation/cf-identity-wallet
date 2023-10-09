@@ -5,29 +5,67 @@ import {
   CredentialState,
   CredentialStateChangedEvent,
   ProposeCredentialOptions,
+  V2OfferCredentialMessage,
+  LinkedDataProof,
+  AriesFrameworkError,
+  JsonCredential,
+  JsonLdCredentialDetailFormat,
 } from "@aries-framework/core";
-import { CredentialShortDetails } from "../agent.types";
+import { CredentialDetails, CredentialShortDetails } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
+import {
+  CredentialMetadataRecordProps,
+  CredentialMetadataRecordStatus,
+} from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
     "Credential metadata missing for stored credential";
   static readonly CREDENTIAL_NOT_ARCHIVED = "Credential was not archived";
+  static readonly CREDENTIAL_MISSING_FOR_NEGOTIATE =
+    "Credential missing for negotiation";
+  static readonly CREATED_DID_NOT_FOUND = "Referenced public did not found";
 
   onCredentialStateChanged(
-    callback: (event: CredentialExchangeRecord) => void
+    callback: (event: CredentialStateChangedEvent) => void
   ) {
     this.agent.events.on(
       CredentialEventTypes.CredentialStateChanged,
       async (event: CredentialStateChangedEvent) => {
-        callback(event.payload.credentialRecord);
+        callback(event);
       }
+    );
+  }
+
+  /**
+   * Role: holder, check to see if incoming credential offer received
+   * @param credentialRecord
+   */
+  isCredentialOfferReceived(credentialRecord: CredentialExchangeRecord) {
+    return (
+      credentialRecord.state === CredentialState.OfferReceived &&
+      !credentialRecord.autoAcceptCredential
+    );
+  }
+
+  isCredentialDone(credentialRecord: CredentialExchangeRecord) {
+    return credentialRecord.state === CredentialState.Done;
+  }
+
+  isCredentialRequestSent(credentialRecord: CredentialExchangeRecord) {
+    return (
+      credentialRecord.state === CredentialState.RequestSent &&
+      !credentialRecord.autoAcceptCredential
     );
   }
 
   async acceptCredentialOffer(credentialRecordId: string) {
     await this.agent.credentials.acceptOffer({ credentialRecordId });
+  }
+
+  async declineCredentialOffer(credentialRecordId: string) {
+    await this.agent.credentials.declineOffer(credentialRecordId);
   }
 
   async proposeCredential(
@@ -49,14 +87,114 @@ class CredentialService extends AgentService {
       await this.agent.modules.generalStorage.getAllCredentialMetadata(
         isGetArchive
       );
-    return listMetadatas.map((element: CredentialMetadataRecord) => ({
-      nameOnCredential: element.nameOnCredential,
-      id: element.id,
-      colors: element.colors,
-      issuanceDate: element.issuanceDate,
-      issuerLogo: element.issuerLogo,
-      credentialType: element.credentialType,
-    }));
+    return listMetadatas.map((element: CredentialMetadataRecord) =>
+      this.getCredentialShortDetails(element)
+    );
+  }
+
+  getCredentialShortDetails(
+    metadata: CredentialMetadataRecord
+  ): CredentialShortDetails {
+    return {
+      id: metadata.id,
+      colors: metadata.colors,
+      issuanceDate: metadata.issuanceDate,
+      issuerLogo: metadata.issuerLogo,
+      credentialType: metadata.credentialType,
+      status: metadata.status,
+    };
+  }
+
+  async getCredentialRecordById(id: string): Promise<CredentialExchangeRecord> {
+    return this.agent.credentials.getById(id);
+  }
+
+  async getCredentialDetailsById(id: string): Promise<CredentialDetails> {
+    const metadata = await this.getMetadataById(id);
+    const credentialRecord = await this.getCredentialRecordById(
+      metadata.credentialRecordId
+    );
+    // current, get first credential, handle later
+    const w3cCredential =
+      await this.agent.w3cCredentials.getCredentialRecordById(
+        credentialRecord.credentials[0].credentialRecordId
+      );
+    const credentialSubject = w3cCredential.credential
+      .credentialSubject as any as JsonCredential["credentialSubject"];
+    const proof = w3cCredential.credential.proof as LinkedDataProof;
+    return {
+      ...this.getCredentialShortDetails(metadata),
+      type: w3cCredential.credential.type,
+      connectionId: credentialRecord.connectionId,
+      expirationDate: w3cCredential.credential?.expirationDate,
+      credentialSubject: credentialSubject,
+      proofType: proof.type,
+      proofValue: proof.jws as string,
+    };
+  }
+
+  async getPreviewCredential(credentialRecord: CredentialExchangeRecord) {
+    const v2OfferCredentialMessage: V2OfferCredentialMessage | null =
+      await this.agent.credentials.findOfferMessage(credentialRecord.id);
+    if (!v2OfferCredentialMessage) {
+      return null;
+    }
+    const attachments = v2OfferCredentialMessage.offerAttachments;
+    // Current, get first attachment, handle later
+    const attachment = attachments?.[0];
+    if (!attachment) {
+      return null;
+    }
+    return attachment.getDataAsJson<JsonLdCredentialDetailFormat>();
+  }
+
+  async createMetadata(data: CredentialMetadataRecordProps) {
+    const metadataRecord = new CredentialMetadataRecord({
+      ...data,
+    });
+    await this.agent.modules.generalStorage.saveCredentialMetadataRecord(
+      metadataRecord
+    );
+  }
+
+  async updateMetadataCompleted(
+    credentialRecord: CredentialExchangeRecord
+  ): Promise<CredentialShortDetails> {
+    const metadata =
+      await this.agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId(
+        credentialRecord.id
+      );
+    const w3cCredential =
+      await this.agent.w3cCredentials.getCredentialRecordById(
+        credentialRecord.credentials[0].credentialRecordId
+      );
+    const connection = await this.agent.connections.findById(
+      credentialRecord?.connectionId ?? ""
+    );
+    if (!metadata) {
+      throw new AriesFrameworkError(
+        CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+      );
+    }
+    const data = {
+      credentialType: w3cCredential.credential.type?.find(
+        (t) => t !== "VerifiableCredential"
+      ),
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+    };
+    await this.agent.modules.generalStorage.updateCredentialMetadata(
+      metadata?.id,
+      data
+    );
+    return {
+      colors: metadata.colors,
+      credentialType: data.credentialType || "",
+      id: metadata.id,
+      isArchived: metadata.isArchived ?? false,
+      issuanceDate: metadata.issuanceDate,
+      issuerLogo: connection?.imageUrl ?? undefined,
+      status: data.status,
+    };
   }
 
   async archiveCredential(id: string): Promise<void> {
@@ -79,6 +217,39 @@ class CredentialService extends AgentService {
     });
   }
 
+  async negotiateOfferWithDid(
+    subjectDid: string,
+    credentialExchangeRecord: CredentialExchangeRecord
+  ): Promise<void> {
+    const [createdDid] = await this.agent.dids.getCreatedDids({
+      did: subjectDid,
+    });
+    if (!createdDid) {
+      throw new Error(`${CredentialService.CREATED_DID_NOT_FOUND}`);
+    }
+    const w3cCredential = await this.getPreviewCredential(
+      credentialExchangeRecord
+    );
+    if (!w3cCredential) {
+      throw new Error(`${CredentialService.CREDENTIAL_MISSING_FOR_NEGOTIATE}`);
+    }
+    await this.agent.credentials.negotiateOffer({
+      credentialRecordId: credentialExchangeRecord.id,
+      credentialFormats: {
+        jsonld: {
+          ...w3cCredential,
+          credential: {
+            ...w3cCredential.credential,
+            credentialSubject: {
+              ...w3cCredential.credential.credentialSubject,
+              id: subjectDid,
+            },
+          },
+        },
+      },
+    });
+  }
+
   private validArchivedCredential(metadata: CredentialMetadataRecord): void {
     if (!metadata.isArchived) {
       throw new Error(
@@ -91,9 +262,7 @@ class CredentialService extends AgentService {
     const metadata =
       await this.agent.modules.generalStorage.getCredentialMetadata(id);
     if (!metadata) {
-      throw new Error(
-        `${CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG} ${id}`
-      );
+      throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
     }
     return metadata;
   }

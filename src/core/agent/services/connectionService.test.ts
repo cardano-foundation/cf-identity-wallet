@@ -1,6 +1,8 @@
 import {
   Agent,
+  ConnectionEventTypes,
   ConnectionRecord,
+  ConnectionStateChangedEvent,
   DidExchangeRole,
   DidExchangeState,
   OutOfBandInvitation,
@@ -8,8 +10,11 @@ import {
   OutOfBandRole,
   OutOfBandState,
 } from "@aries-framework/core";
-import { ConnectionHistoryType, ConnectionStatus } from "../agent.types";
+import { EventEmitter } from "events";
+import { ConnectionStatus, GenericRecordType } from "../agent.types";
 import { ConnectionService } from "./connectionService";
+
+const eventEmitter = new EventEmitter();
 
 const agent = jest.mocked({
   oob: {
@@ -27,7 +32,21 @@ const agent = jest.mocked({
     findAllByQuery : jest.fn()
   },
   receiveMessage: jest.fn(),
+  events: {
+    on: eventEmitter.on.bind(eventEmitter),
+  },
+  eventEmitter: {
+    emit: eventEmitter.emit.bind(eventEmitter),
+  },
+  genericRecords: {
+    save: jest.fn(),
+    deleteById: jest.fn(),
+    findById: jest.fn(),
+    update: jest.fn(),
+    findAllByQuery: jest.fn(),
+  },
 });
+
 const connectionService = new ConnectionService(agent as any as Agent);
 
 const oobi = new OutOfBandInvitation({
@@ -311,6 +330,7 @@ describe("Connection service of agent", () => {
     agent.connections.getById = jest
       .fn()
       .mockResolvedValue(completedConnectionRecord);
+    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
     agent.oob.getById = jest.fn().mockResolvedValue(oobRecord);
     expect(
       await connectionService.getConnectionById(completedConnectionRecord.id)
@@ -324,6 +344,7 @@ describe("Connection service of agent", () => {
       handshakeProtocols: oobi.handshakeProtocols,
       requestAttachments: oobi.appendedAttachments,
       serviceEndpoints: [], // @TODO - foconnor: This shouldn't be empty
+      notes: [],
     });
     expect(agent.connections.getById).toBeCalledWith(
       completedConnectionRecord.id
@@ -337,6 +358,7 @@ describe("Connection service of agent", () => {
     agent.connections.getById = jest
       .fn()
       .mockResolvedValue(incomingConnectionRecordNoAutoAccept);
+    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
     agent.oob.getById = jest.fn().mockResolvedValue(oobRecord);
     expect(
       await connectionService.getConnectionById(
@@ -352,6 +374,7 @@ describe("Connection service of agent", () => {
       handshakeProtocols: undefined,
       requestAttachments: undefined,
       serviceEndpoints: undefined,
+      notes: [],
     });
     expect(agent.connections.getById).toBeCalledWith(
       incomingConnectionRecordNoAutoAccept.id
@@ -362,6 +385,7 @@ describe("Connection service of agent", () => {
   test("must call fetch url first when invitation url contains /shorten", async () => {
     const shortUrl = "http://localhost:3000/shorten/abc123";
     const fullUrl = "http://localhost?oob=3423";
+    // eslint-disable-next-line no-undef
     global.fetch = jest.fn().mockResolvedValue({ url: fullUrl });
     await connectionService.receiveInvitationFromUrl(shortUrl);
     expect(agent.oob.receiveInvitationFromUrl).toBeCalledWith(
@@ -370,19 +394,100 @@ describe("Connection service of agent", () => {
     );
   });
 
-  test("must call filler credential by query when get connection history", async () => {
-    const connectionIdTest = "testId"
-    agent.credentials.findAllByQuery = jest.fn().mockResolvedValue([{
-      credentialId : 1
-    }]);
-    expect(await connectionService.getConnectionHistoryById(connectionIdTest)).toStrictEqual([{
-      type : ConnectionHistoryType.CREDENTIAL,
-      data : {
-        credentialId : 1
-      }
-    }]);
-    expect(agent.credentials.findAllByQuery).toBeCalledWith({
-      connectionId : connectionIdTest
-    })
-  })
+  test("can get connection (short detail view) by id", async () => {
+    agent.connections.getById = jest
+      .fn()
+      .mockResolvedValue(completedConnectionRecord);
+    expect(
+      await connectionService.getConnectionShortDetailById(
+        completedConnectionRecord.id
+      )
+    ).toEqual({
+      id: id2,
+      connectionDate: nowISO,
+      label,
+      logo: logoUrl,
+      status: ConnectionStatus.CONFIRMED,
+    });
+    expect(agent.connections.getById).toBeCalledWith(
+      completedConnectionRecord.id
+    );
+  });
+
+  test("can receive offer credential with connectionless", async () => {
+    const url = "http://localhost:4320?d_m=InRlc3QgbWVzc2FnZSI=";
+    await connectionService.receiveInvitationFromUrl(url);
+    expect(agent.receiveMessage).toBeCalledWith("test message");
+  });
+
+  test("callback will run when have a event listener", async () => {
+    const callback = jest.fn();
+    connectionService.onConnectionStateChanged(callback);
+    const event: ConnectionStateChangedEvent = {
+      type: ConnectionEventTypes.ConnectionStateChanged,
+      payload: {
+        connectionRecord: completedConnectionRecord,
+        previousState: DidExchangeState.ResponseReceived,
+      },
+      metadata: {
+        contextCorrelationId: id1,
+      },
+    };
+    agent.eventEmitter.emit(ConnectionEventTypes.ConnectionStateChanged, event);
+    expect(callback).toBeCalledWith(event);
+  });
+
+  test("can save connection note with generic records", async () => {
+    const connectionId = "connectionId";
+    const note = {
+      title: "title",
+      message: "message",
+    };
+    await connectionService.createConnectionNote(connectionId, note);
+    expect(agent.genericRecords.save).toBeCalledWith({
+      id: expect.any(String),
+      content: note,
+      tags: { connectionId, type: GenericRecordType.CONNECTION_NOTE },
+    });
+  });
+
+  test("can delete connection note with id", async () => {
+    const connectionNoteId = "connectionId";
+    await connectionService.deleteConnectionNodeById(connectionNoteId);
+    expect(agent.genericRecords.deleteById).toBeCalledWith(connectionNoteId);
+  });
+
+  test("cannot update connection note because connection note invalid", async () => {
+    const connectionId = "connectionId";
+    const note = {
+      title: "title",
+      message: "message",
+    };
+    await expect(
+      connectionService.updateConnectionNodeById(connectionId, note)
+    ).rejects.toThrowError(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
+  });
+
+  test("can update connection note by id", async () => {
+    const mockGenericRecords = {
+      id: "id",
+      content: {
+        title: "title",
+        message: "message",
+      },
+    };
+    agent.genericRecords.findById = jest
+      .fn()
+      .mockResolvedValue(mockGenericRecords);
+    const connectionId = "connectionId";
+    const note = {
+      title: "title",
+      message: "message2",
+    };
+    await connectionService.updateConnectionNodeById(connectionId, note);
+    expect(agent.genericRecords.update).toBeCalledWith({
+      ...mockGenericRecords,
+      content: note,
+    });
+  });
 });
