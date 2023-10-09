@@ -7,8 +7,11 @@ const API = config.path.invitationWithCredentialConnectionless;
 const main = async () => {
   // eslint-disable-next-line no-undef
   const body = process.argv[2];
-  const credentialJsonData = getCredentialJsonData(body);
-  log("Credential: ", credentialJsonData);
+  let credentialJsonData: unknown;
+  if (body) {
+    credentialJsonData  = getCredentialJsonData(body);
+    log("Credential: ", credentialJsonData);
+  }
   await postRequestAndGenQR(`${config.endpoint}${API}`, credentialJsonData);
 };
 void main();
