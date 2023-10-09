@@ -56,10 +56,6 @@ const ConnectionDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  {
-    /* @TODO - sdisalvo: Replace empty array in `coreNotes` below 
-    with something like `connectionDetails.notes` and delete this comment */
-  }
   const [coreNotes, setCoreNotes] = useState<NotesProps[]>([]);
   const [notes, setNotes] = useState<NotesProps[]>([]);
   const currentNoteId = useRef("");
@@ -77,7 +73,11 @@ const ConnectionDetails = () => {
       }
     }
     if (connectionShortDetails?.id) getDetails();
-  }, [connectionShortDetails?.id]);
+  }, [connectionShortDetails?.id, modalIsOpen]);
+
+  useEffect(() => {
+    console.log(coreNotes);
+  }, [coreNotes]);
 
   const handleDone = () => {
     const data: DataProps = {
@@ -397,13 +397,19 @@ const ConnectionDetails = () => {
               }}
               actionButton={true}
               actionButtonAction={() => {
+                // Remove notes with empty title or empty message
                 const filteredNotes = notes.filter(
                   (note) => note.title !== "" && note.message !== ""
                 );
+                // Check if the filteredNotes are different than what's in core
                 if (filteredNotes !== coreNotes) {
+                  // If so, these are now our notes to work with
                   setNotes(filteredNotes);
+                  console.log("filteredNotes", filteredNotes);
+                  console.log("coreNotes", coreNotes);
+                  // The new ones won't have an id yet, so we can send them to core for creation
                   filteredNotes.forEach((note) => {
-                    if (!note.id) {
+                    if (note.id.includes("temp")) {
                       AriesAgent.agent.connections.createConnectionNote(
                         connectionDetails.id,
                         note
@@ -411,23 +417,25 @@ const ConnectionDetails = () => {
                     }
                   });
                   coreNotes.forEach((noteCore) => {
+                    // Check saved notes in core
                     const noteFind = filteredNotes.find(
                       (noteFilter) => noteCore.id === noteFilter.id
                     );
+                    // If you can't find the ID, delete the note in the core
                     if (!noteFind) {
                       AriesAgent.agent.connections.deleteConnectionNoteById(
                         noteCore.id
                       );
-                    } else {
-                      if (
-                        noteCore.title !== noteFind.title ||
-                        noteCore.message !== noteFind.message
-                      ) {
-                        AriesAgent.agent.connections.updateConnectionNoteById(
-                          noteCore.id,
-                          noteFind
-                        );
-                      }
+                    }
+                    // If title or message are different, update them
+                    else if (
+                      noteCore.title !== noteFind.title ||
+                      noteCore.message !== noteFind.message
+                    ) {
+                      AriesAgent.agent.connections.updateConnectionNoteById(
+                        noteCore.id,
+                        noteFind
+                      );
                     }
                   });
                   dispatch(setCurrentOperation(toastState.notesUpdated));
@@ -467,7 +475,7 @@ const ConnectionDetails = () => {
                         {
                           title: "",
                           message: "",
-                          id: "",
+                          id: "temp" + notes.length,
                         },
                       ]);
                     }}
