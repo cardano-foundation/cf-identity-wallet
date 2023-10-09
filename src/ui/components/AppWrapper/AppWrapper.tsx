@@ -213,7 +213,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     });
     // pickup messages
     setTimeout(async () => {
-      AriesAgent.agent.messages.pickupMessagesV1FromMediator();
+      AriesAgent.agent.messages.pickupMessagesFromMediator();
     }, PICKUP_MESSAGES_DELAY);
 
     setInitialised(true);

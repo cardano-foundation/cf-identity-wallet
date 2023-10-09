@@ -2,6 +2,7 @@ import {
   BasicMessageEventTypes,
   BasicMessageStateChangedEvent,
   ConnectionType,
+  DidExchangeState,
 } from "@aries-framework/core";
 import { AgentService } from "./agentService";
 
@@ -12,22 +13,19 @@ class MessageService extends AgentService {
         ConnectionType.Mediator,
       ]);
     const connection = mediatorConnections.find(
-      (connection) => connection.state === "completed"
+      (connection) => connection.state === DidExchangeState.Completed
     );
     if (connection) {
       return connection.id;
     }
   }
 
-  async pickupMessagesV1FromMediator() {
+  async pickupMessagesFromMediator(protocolVersion: "v1" | "v2" = "v2") {
     const mediatorConnectionId = await this.getMediatorConnectionId();
-    this.agent.config.logger.info("Picking up messages from mediator", {
-      mediatorConnectionId,
-    });
     if (mediatorConnectionId) {
       return this.agent.messagePickup.pickupMessages({
         connectionId: mediatorConnectionId,
-        protocolVersion: "v1",
+        protocolVersion,
       });
     }
   }
