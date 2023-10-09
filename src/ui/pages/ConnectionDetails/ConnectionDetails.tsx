@@ -60,9 +60,9 @@ const ConnectionDetails = () => {
     /* @TODO - sdisalvo: Replace empty array in `coreNotes` below 
     with something like `connectionDetails.notes` and delete this comment */
   }
-  const coreNotes: NotesProps[] = [];
+  const [coreNotes, setCoreNotes] = useState<NotesProps[]>([]);
   const [notes, setNotes] = useState<NotesProps[]>(coreNotes);
-  const currentNoteIndex = useRef(0);
+  const currentNoteId = useRef("");
 
   useEffect(() => {
     async function getDetails() {
@@ -124,10 +124,10 @@ const ConnectionDetails = () => {
   interface NotesProps {
     title: string;
     message: string;
-    index: number;
+    id: string;
   }
 
-  const Note = ({ title, message, index }: NotesProps) => {
+  const Note = ({ title, message, id }: NotesProps) => {
     const [newTitle, setNewTitle] = useState(title);
     const [newMessage, setNewMessage] = useState(message);
     const TITLE_MAX_LENGTH = 64;
@@ -144,11 +144,12 @@ const ConnectionDetails = () => {
               </span>
             </div>
             <IonInput
-              data-testid={`edit-connections-modal-note-title-${index + 1}`}
+              data-testid={`edit-connections-modal-note-title-${id}`}
               onIonChange={(e) => setNewTitle(`${e.target.value ?? ""}`)}
               onIonBlur={() => {
                 const newNotes = [...notes];
-                newNotes[index].title = newTitle;
+                const noteIndex = newNotes.map((el) => el.id).indexOf(id);
+                newNotes[noteIndex].title = newTitle;
               }}
               value={newTitle}
             />
@@ -162,11 +163,12 @@ const ConnectionDetails = () => {
             </div>
             <IonTextarea
               autoGrow={true}
-              data-testid={`edit-connections-modal-note-message-${index + 1}`}
+              data-testid={`edit-connections-modal-note-message-${id}`}
               onIonChange={(e) => setNewMessage(`${e.target.value ?? ""}`)}
               onIonBlur={() => {
                 const newNotes = [...notes];
-                newNotes[index].message = newMessage;
+                const noteIndex = newNotes.map((el) => el.id).indexOf(id);
+                newNotes[noteIndex].message = newMessage;
               }}
               value={newMessage}
             />
@@ -177,7 +179,7 @@ const ConnectionDetails = () => {
             shape="round"
             color={"danger"}
             onClick={() => {
-              currentNoteIndex.current = index;
+              currentNoteId.current = id;
               setAlertDeleteNoteIsOpen(true);
             }}
           >
@@ -395,7 +397,14 @@ const ConnectionDetails = () => {
               );
               if (filteredNotes !== coreNotes) {
                 setNotes(filteredNotes);
-                // @TODO - sdisalvo: Save new updated values to core and delete this comment
+
+                // For each note, if
+
+                // AriesAgent.agent.connections.createConnectionNote(
+                //   connectionDetails.id,
+                //   note
+                // );
+
                 dispatch(setCurrentOperation(toastState.notesUpdated));
               }
               setModalIsOpen(false);
@@ -412,7 +421,7 @@ const ConnectionDetails = () => {
                       <Note
                         title={note.title}
                         message={note.message}
-                        index={index}
+                        id={note.id}
                         key={index}
                       />
                     ))}
@@ -433,7 +442,7 @@ const ConnectionDetails = () => {
                       {
                         title: "",
                         message: "",
-                        index: notes.length,
+                        id: "",
                       },
                     ]);
                   }}
@@ -463,7 +472,10 @@ const ConnectionDetails = () => {
         )}`}
         actionConfirm={() => {
           const newNotes = [...notes];
-          newNotes.splice(currentNoteIndex.current, 1);
+          const noteIndex = newNotes
+            .map((el) => el.id)
+            .indexOf(currentNoteId.current);
+          newNotes.splice(noteIndex, 1);
           setNotes(newNotes);
           dispatch(setCurrentOperation(toastState.noteRemoved));
         }}
