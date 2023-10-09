@@ -209,11 +209,13 @@ class ConnectionService extends AgentService {
     });
   }
 
-  async updateConnectionNodeById(
+  async updateConnectionNoteById(
     connetionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.agent.genericRecords.findById(connetionNoteId);
+    const noteRecord = await this.agent.genericRecords.findById(
+      connetionNoteId
+    );
     if (!noteRecord) {
       throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
     }
@@ -221,7 +223,7 @@ class ConnectionService extends AgentService {
     await this.agent.genericRecords.update(noteRecord);
   }
 
-  async deleteConnectionNodeById(connetionNoteId: string) {
+  async deleteConnectionNoteById(connetionNoteId: string) {
     return this.agent.genericRecords.deleteById(connetionNoteId);
   }
 
