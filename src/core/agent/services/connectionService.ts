@@ -3,7 +3,6 @@ import {
   ConnectionEventTypes,
   ConnectionRecord,
   ConnectionStateChangedEvent,
-  CredentialExchangeRecord,
   ConnectionType,
   DidExchangeRole,
   DidExchangeState,
@@ -14,7 +13,7 @@ import {
 } from "@aries-framework/core";
 import {
   ConnectionDetails,
-  ConnectionHistoryRecord,
+  ConnectionHistoryItem,
   ConnectionHistoryType,
   ConnectionNoteDetails,
   ConnectionNoteProps,
@@ -232,8 +231,8 @@ class ConnectionService extends AgentService {
 
   async getConnectionHistoryById(
     connectionId: string
-  ): Promise<ConnectionHistoryRecord[]> {
-    let histories: ConnectionHistoryRecord[] = [];
+  ): Promise<ConnectionHistoryItem[]> {
+    let histories: ConnectionHistoryItem[] = [];
     const credentialRecords =
       await this.agent.modules.generalStorage.getCredentialMetadataByConnectionId(
         connectionId

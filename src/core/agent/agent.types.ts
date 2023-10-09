@@ -24,7 +24,7 @@ enum ConnectionHistoryType {
   CREDENTIAL,
 }
 
-interface ConnectionHistoryRecord {
+interface ConnectionHistoryItem {
   type: ConnectionHistoryType;
   timestamp: string;
 }
@@ -129,5 +129,5 @@ export type {
   ConnectionDetails,
   ConnectionNoteDetails,
   ConnectionNoteProps,
-  ConnectionHistoryRecord,
+  ConnectionHistoryItem,
 };
