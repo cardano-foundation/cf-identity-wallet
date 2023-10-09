@@ -9,11 +9,15 @@ import {
   JsonEncoder,
   OutOfBandDidCommService,
   OutOfBandRecord,
+  utils,
 } from "@aries-framework/core";
 import {
   ConnectionDetails,
+  ConnectionNoteDetails,
+  ConnectionNoteProps,
   ConnectionShortDetails,
   ConnectionStatus,
+  GenericRecordType,
 } from "../agent.types";
 // import { LibP2p } from "../transports/libp2p/libP2p";
 // import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
@@ -26,6 +30,8 @@ class ConnectionService extends AgentService {
     "Could not create new mediator oob invitation";
   static readonly INVALID_CONNECTIONLESS_MSG =
     "Invalid connectionless OOBI - does not contain d_m parameter";
+  static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
+    "Connection note record not found";
 
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
@@ -189,10 +195,56 @@ class ConnectionService extends AgentService {
     return this.getConnectionShortDetails(connection);
   }
 
-  private getConnectionDetails(
+  async createConnectionNote(
+    connectionId: string,
+    note: ConnectionNoteProps
+  ): Promise<void> {
+    await this.agent.genericRecords.save({
+      id: utils.uuid(),
+      content: note,
+      tags: {
+        connectionId,
+        type: GenericRecordType.CONNECTION_NOTE,
+      },
+    });
+  }
+
+  async updateConnectionNodeById(
+    connetionNoteId: string,
+    note: ConnectionNoteProps
+  ) {
+    const noteRecord = await this.agent.genericRecords.findById(connetionNoteId);
+    if (!noteRecord) {
+      throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
+    }
+    noteRecord.content = note;
+    await this.agent.genericRecords.update(noteRecord);
+  }
+
+  async deleteConnectionNodeById(connetionNoteId: string) {
+    return this.agent.genericRecords.deleteById(connetionNoteId);
+  }
+
+  private async getConnectNotesByConnectionId(
+    connectionId: string
+  ): Promise<ConnectionNoteDetails[]> {
+    const notes = await this.agent.genericRecords.findAllByQuery({
+      connectionId,
+      type: GenericRecordType.CONNECTION_NOTE,
+    });
+    return notes.map((note) => {
+      return {
+        id: note.id,
+        title: note.content.title as string,
+        message: note.content.message as string,
+      };
+    });
+  }
+
+  private async getConnectionDetails(
     connection: ConnectionRecord,
     outOfBandRecord?: OutOfBandRecord
-  ): ConnectionDetails {
+  ): Promise<ConnectionDetails> {
     return {
       label: connection?.theirLabel ?? "",
       logo:
@@ -215,6 +267,7 @@ class ConnectionService extends AgentService {
         .map(
           (service) => (service as OutOfBandDidCommService)?.serviceEndpoint
         ),
+      notes: await this.getConnectNotesByConnectionId(connection.id),
     };
   }
 

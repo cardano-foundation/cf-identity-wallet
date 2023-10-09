@@ -16,6 +16,10 @@ enum ConnectionStatus {
   PENDING = "pending",
 }
 
+enum GenericRecordType {
+  CONNECTION_NOTE = "connection-note",
+}
+
 interface CryptoAccountRecordShortDetails {
   id: string;
   displayName: string;
@@ -63,11 +67,29 @@ interface KERIDetails extends IdentifierShortDetails {
   di: string;
 }
 
+type ConnectionNoteDetails = {
+  id: string;
+  title: string;
+  message: string;
+};
+
+type ConnectionNoteProps = Pick<ConnectionNoteDetails, "title" | "message">;
+
 interface ConnectionDetails extends ConnectionShortDetails {
   goalCode?: string;
   handshakeProtocols?: string[];
   requestAttachments?: string[];
   serviceEndpoints?: string[];
+  notes?: ConnectionNoteDetails[];
+}
+
+interface CredentialDetails extends CredentialShortDetails {
+  type: string[];
+  connectionId?: string;
+  expirationDate?: string;
+  credentialSubject: JsonCredential["credentialSubject"];
+  proofType: string;
+  proofValue: string;
 }
 
 interface CredentialDetails extends CredentialShortDetails {
@@ -88,7 +110,7 @@ type UpdateIdentityMetadata = Omit<
   "id" | "isArchived" | "name" | "method" | "createdAt"
 >;
 
-export { IdentifierType, Blockchain, ConnectionStatus };
+export { IdentifierType, Blockchain, ConnectionStatus, GenericRecordType };
 export type {
   CryptoAccountRecordShortDetails,
   IdentifierShortDetails,
@@ -99,4 +121,6 @@ export type {
   CredentialDetails,
   ConnectionShortDetails,
   ConnectionDetails,
+  ConnectionNoteDetails,
+  ConnectionNoteProps,
 };
