@@ -561,7 +561,7 @@
     "newconnectionadded": "New connection added",
     "credentialrequestpending": "Credential request pending",
     "newcredentialadded": "New credential added",
-    "notesupdated": "Nodes updated successfully",
+    "notesupdated": "Notes updated successfully",
     "noteremoved": "Note removed successfully"
   },
   "scan": {

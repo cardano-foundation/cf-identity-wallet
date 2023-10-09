@@ -372,124 +372,115 @@ const ConnectionDetails = () => {
           onVerify={verifyAction}
         />
       </PageLayout>
-      {connectionDetails && (
-        <IonModal
-          isOpen={modalIsOpen}
-          className={""}
-          data-testid="edit-connections-modal"
-          onDidDismiss={() => {
-            if (modalIsOpen && notes !== coreNotes) {
-              setNotes(coreNotes);
-            }
-            setModalIsOpen(false);
-          }}
-        >
-          <div className="edit-connections-modal modal">
-            <PageLayout
-              header={true}
-              closeButton={true}
-              closeButtonLabel={`${i18n.t("connections.details.cancel")}`}
-              closeButtonAction={() => {
-                if (notes !== coreNotes) {
-                  setNotes(coreNotes);
-                }
-                setModalIsOpen(false);
-              }}
-              actionButton={true}
-              actionButtonAction={() => {
-                const filteredNotes = notes.filter(
-                  (note) => note.title !== "" && note.message !== ""
-                );
-                if (filteredNotes !== coreNotes) {
-                  filteredNotes.forEach((note) => {
-                    if (!note.id) {
-                      AriesAgent.agent.connections.createConnectionNote(
-                        connectionDetails.id,
-                        note
-                      );
-                    }
-                  });
-                  coreNotes.forEach((noteCore) => {
-                    const noteFind = filteredNotes.find(
-                      (noteFilter) => noteCore.id === noteFilter.id
+      <IonModal
+        isOpen={modalIsOpen}
+        className={"safe-area"}
+        data-testid="edit-connections-modal"
+        onDidDismiss={() => {
+          if (modalIsOpen && notes !== coreNotes) {
+            setNotes(coreNotes);
+          }
+          setModalIsOpen(false);
+        }}
+      >
+        <div className="edit-connections-modal modal">
+          <PageLayout
+            header={true}
+            closeButton={true}
+            closeButtonLabel={`${i18n.t("connections.details.cancel")}`}
+            closeButtonAction={() => {
+              if (notes !== coreNotes) {
+                setNotes(coreNotes);
+              }
+              setModalIsOpen(false);
+            }}
+            actionButton={true}
+            actionButtonAction={() => {
+              const filteredNotes = notes.filter(
+                (note) => note.title !== "" && note.message !== ""
+              );
+              if (filteredNotes !== coreNotes) {
+                setNotes(filteredNotes);
+                filteredNotes.forEach((note) => {
+                  if (!note.id) {
+                    AriesAgent.agent.connections.createConnectionNote(
+                      connectionDetails.id,
+                      note
                     );
-                    if (!noteFind) {
-                      AriesAgent.agent.connections.deleteConnectionNoteById(
-                        noteCore.id
+                  }
+                });
+                coreNotes.forEach((noteCore) => {
+                  const noteFind = filteredNotes.find(
+                    (noteFilter) => noteCore.id === noteFilter.id
+                  );
+                  if (!noteFind) {
+                    AriesAgent.agent.connections.deleteConnectionNoteById(
+                      noteCore.id
+                    );
+                  } else {
+                    if (
+                      noteCore.title !== noteFind.title ||
+                      noteCore.message !== noteFind.message
+                    ) {
+                      AriesAgent.agent.connections.updateConnectionNoteById(
+                        noteCore.id,
+                        noteFind
                       );
-                    } else {
-                      if (
-                        noteCore.title !== noteFind.title ||
-                        noteCore.message !== noteFind.message
-                      ) {
-                        AriesAgent.agent.connections.updateConnectionNoteById(
-                          noteCore.id,
-                          noteFind
-                        );
-                      }
                     }
-                  });
-
-                  // For each note, if
-
-                  // AriesAgent.agent.connections.createConnectionNote(
-                  //   connectionDetails.id!,
-                  //   note
-                  // );
-
-                  dispatch(setCurrentOperation(toastState.notesUpdated));
-                }
-                setModalIsOpen(false);
-              }}
-              actionButtonLabel={`${i18n.t("connections.details.confirm")}`}
-            >
-              <div className="connection-details-content">
-                <ConnectionDetailsHeader />
-                <div className="connection-details-info-block">
-                  {notes.length ? (
-                    <>
-                      <h3>{i18n.t("connections.details.notes")}</h3>
-                      {notes.map((note, index) => (
-                        <Note
-                          title={note.title}
-                          message={note.message}
-                          id={note.id}
-                          key={index}
-                        />
-                      ))}
-                    </>
-                  ) : (
-                    <i className="connection-details-info-block-nonotes">
-                      {i18n.t("connections.details.nocurrentnotes")}
-                    </i>
-                  )}
-                </div>
-                <div className="connection-details-add-note">
-                  <IonButton
-                    shape="round"
-                    className="ion-primary-button"
-                    onClick={() => {
-                      setNotes([
-                        ...notes,
-                        {
-                          title: "",
-                          message: "",
-                          id: "",
-                        },
-                      ]);
-                    }}
-                  >
-                    <IonIcon
-                      slot="icon-only"
-                      icon={createOutline}
-                    />
-                  </IonButton>
-                </div>
+                  }
+                });
+                dispatch(setCurrentOperation(toastState.notesUpdated));
+              }
+              setModalIsOpen(false);
+            }}
+            actionButtonLabel={`${i18n.t("connections.details.confirm")}`}
+          >
+            <div className="connection-details-content">
+              <ConnectionDetailsHeader />
+              <div className="connection-details-info-block">
+                {notes.length ? (
+                  <>
+                    <h3>{i18n.t("connections.details.notes")}</h3>
+                    {notes.map((note, index) => (
+                      <Note
+                        title={note.title}
+                        message={note.message}
+                        id={note.id}
+                        key={index}
+                      />
+                    ))}
+                  </>
+                ) : (
+                  <i className="connection-details-info-block-nonotes">
+                    {i18n.t("connections.details.nocurrentnotes")}
+                  </i>
+                )}
               </div>
-            </PageLayout>
-          </div>
-        </IonModal>
-      )}
+              <div className="connection-details-add-note">
+                <IonButton
+                  shape="round"
+                  className="ion-primary-button"
+                  onClick={() => {
+                    setNotes([
+                      ...notes,
+                      {
+                        title: "",
+                        message: "",
+                        id: "",
+                      },
+                    ]);
+                  }}
+                >
+                  <IonIcon
+                    slot="icon-only"
+                    icon={createOutline}
+                  />
+                </IonButton>
+              </div>
+            </div>
+          </PageLayout>
+        </div>
+      </IonModal>
 
       <AlertDeleteNote
         isOpen={alertDeleteNoteIsOpen}
