@@ -63,8 +63,7 @@ class ConnectionService extends AgentService {
   isConnectionResponseSent(connectionRecord: ConnectionRecord) {
     return (
       connectionRecord.role === DidExchangeRole.Responder &&
-      connectionRecord.state === DidExchangeState.ResponseSent &&
-      !connectionRecord.autoAcceptConnection
+      connectionRecord.state === DidExchangeState.ResponseSent
     );
   }
 
@@ -213,7 +212,9 @@ class ConnectionService extends AgentService {
     connetionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.agent.genericRecords.findById(connetionNoteId);
+    const noteRecord = await this.agent.genericRecords.findById(
+      connetionNoteId
+    );
     if (!noteRecord) {
       throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
     }
