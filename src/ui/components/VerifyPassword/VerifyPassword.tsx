@@ -9,7 +9,7 @@ import "./VerifyPassword.scss";
 import { Alert } from "../Alert";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { AriesAgent } from "../../../core/agent/agent";
-import { MiscRecordId } from "../../../core/agent/modules";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCurrentOperation,
@@ -89,9 +89,11 @@ const VerifyPassword = ({
         setStoredPassword(`${password}`);
       }
 
-      const hint = await AriesAgent.agent.getMiscRecordValueById(
-        MiscRecordId.OP_PASS_HINT
-      );
+      const hint = (
+        await AriesAgent.agent.genericRecords.findById(
+          MiscRecordId.OP_PASS_HINT
+        )
+      )?.content?.value;
       if (hint) {
         setStoredHint(`${hint}`);
       }

@@ -18,12 +18,7 @@ import {
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
 import { CapacitorFileSystem } from "./dependencies";
-import {
-  IonicStorageModule,
-  GeneralStorageModule,
-  MiscRecord,
-  MiscRecordId,
-} from "./modules";
+import { IonicStorageModule, GeneralStorageModule } from "./modules";
 import { HttpOutboundTransport } from "./transports";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
@@ -116,6 +111,10 @@ class AriesAgent {
     return this.cryptoService;
   }
 
+  get genericRecords() {
+    return this.agent.genericRecords;
+  }
+
   private constructor() {
     this.agent = new Agent({
       config,
@@ -138,24 +137,6 @@ class AriesAgent {
       await this.agent.initialize();
       await this.agent.modules.signify.start();
       AriesAgent.ready = true;
-    }
-  }
-
-  async storeMiscRecord(id: MiscRecordId, value: string) {
-    await this.agent.modules.generalStorage.saveMiscRecord(
-      new MiscRecord({ id, value })
-    );
-  }
-
-  async getMiscRecordValueById(id: MiscRecordId): Promise<string | undefined> {
-    try {
-      return (await this.agent.modules.generalStorage.getMiscRecordById(id))
-        .value;
-    } catch (e) {
-      if (e instanceof RecordNotFoundError) {
-        return undefined;
-      }
-      throw e;
     }
   }
 }
