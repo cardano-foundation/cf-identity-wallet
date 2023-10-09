@@ -14,6 +14,8 @@ import {
 } from "@aries-framework/core";
 import {
   ConnectionDetails,
+  ConnectionHistoryRecord,
+  ConnectionHistoryType,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
@@ -210,11 +212,13 @@ class ConnectionService extends AgentService {
     });
   }
 
-  async updateConnectionNodeById(
+  async updateConnectionNoteById(
     connetionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.agent.genericRecords.findById(connetionNoteId);
+    const noteRecord = await this.agent.genericRecords.findById(
+      connetionNoteId
+    );
     if (!noteRecord) {
       throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
     }
@@ -222,8 +226,27 @@ class ConnectionService extends AgentService {
     await this.agent.genericRecords.update(noteRecord);
   }
 
-  async deleteConnectionNodeById(connetionNoteId: string) {
+  async deleteConnectionNoteById(connetionNoteId: string) {
     return this.agent.genericRecords.deleteById(connetionNoteId);
+  }
+
+  async getConnectionHistoryById(
+    connectionId: string
+  ): Promise<ConnectionHistoryRecord[]> {
+    let histories: ConnectionHistoryRecord[] = [];
+    const credentialRecords =
+      await this.agent.modules.generalStorage.getCredentialMetadataByConnectionId(
+        connectionId
+      );
+    histories = histories.concat(
+      credentialRecords.map((record) => {
+        return {
+          type: ConnectionHistoryType.CREDENTIAL,
+          timestamp: record.createdAt.toISOString(),
+        };
+      })
+    );
+    return histories;
   }
 
   private async getConnectNotesByConnectionId(

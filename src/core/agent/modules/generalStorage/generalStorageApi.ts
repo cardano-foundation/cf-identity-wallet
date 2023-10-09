@@ -167,6 +167,14 @@ export class GeneralStorageApi {
     );
   }
 
+  async getCredentialMetadataByConnectionId(
+    connectionId: string
+  ): Promise<CredentialMetadataRecord[]> {
+    return this.credentialMetadataRepository.findByQuery(this.agentContext, {
+      connectionId,
+    });
+  }
+
   async deleteCredentialMetadata(id: string): Promise<void> {
     return this.credentialMetadataRepository.deleteById(this.agentContext, id);
   }

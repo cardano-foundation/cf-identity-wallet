@@ -11,7 +11,11 @@ import {
   OutOfBandState,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
-import { ConnectionStatus, GenericRecordType } from "../agent.types";
+import {
+  ConnectionHistoryType,
+  ConnectionStatus,
+  GenericRecordType,
+} from "../agent.types";
 import { ConnectionService } from "./connectionService";
 
 const eventEmitter = new EventEmitter();
@@ -28,8 +32,10 @@ const agent = jest.mocked({
     getAll: jest.fn(),
     getById: jest.fn(),
   },
-  credentials : {
-    findAllByQuery : jest.fn()
+  modules: {
+    generalStorage: {
+      getCredentialMetadataByConnectionId: jest.fn(),
+    },
   },
   receiveMessage: jest.fn(),
   events: {
@@ -453,7 +459,7 @@ describe("Connection service of agent", () => {
 
   test("can delete connection note with id", async () => {
     const connectionNoteId = "connectionId";
-    await connectionService.deleteConnectionNodeById(connectionNoteId);
+    await connectionService.deleteConnectionNoteById(connectionNoteId);
     expect(agent.genericRecords.deleteById).toBeCalledWith(connectionNoteId);
   });
 
@@ -464,7 +470,7 @@ describe("Connection service of agent", () => {
       message: "message",
     };
     await expect(
-      connectionService.updateConnectionNodeById(connectionId, note)
+      connectionService.updateConnectionNoteById(connectionId, note)
     ).rejects.toThrowError(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
   });
 
@@ -484,10 +490,33 @@ describe("Connection service of agent", () => {
       title: "title",
       message: "message2",
     };
-    await connectionService.updateConnectionNodeById(connectionId, note);
+    await connectionService.updateConnectionNoteById(connectionId, note);
     expect(agent.genericRecords.update).toBeCalledWith({
       ...mockGenericRecords,
       content: note,
     });
+  });
+
+  test("must call filler credential by query when get connection history", async () => {
+    const connectionIdTest = "testId";
+    agent.modules.generalStorage.getCredentialMetadataByConnectionId = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          credentialId: 1,
+          createdAt: now,
+        },
+      ]);
+    expect(
+      await connectionService.getConnectionHistoryById(connectionIdTest)
+    ).toEqual([
+      {
+        type: ConnectionHistoryType.CREDENTIAL,
+        timestamp: nowISO,
+      },
+    ]);
+    expect(
+      agent.modules.generalStorage.getCredentialMetadataByConnectionId
+    ).toBeCalledWith(connectionIdTest);
   });
 });

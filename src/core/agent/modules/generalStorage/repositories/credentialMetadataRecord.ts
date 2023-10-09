@@ -15,6 +15,7 @@ class CredentialMetadataRecord
   credentialType!: string;
   status!: CredentialMetadataRecordStatus;
   credentialRecordId!: string;
+  connectionId?: string;
 
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;
@@ -32,6 +33,7 @@ class CredentialMetadataRecord
       this.issuerLogo = props.issuerLogo;
       this.credentialType = props.credentialType;
       this.status = props.status;
+      this.connectionId = props.connectionId;
     }
   }
 

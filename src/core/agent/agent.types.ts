@@ -20,6 +20,15 @@ enum GenericRecordType {
   CONNECTION_NOTE = "connection-note",
 }
 
+enum ConnectionHistoryType {
+  CREDENTIAL,
+}
+
+interface ConnectionHistoryRecord {
+  type: ConnectionHistoryType;
+  timestamp: string;
+}
+
 interface CryptoAccountRecordShortDetails {
   id: string;
   displayName: string;
@@ -101,7 +110,13 @@ type UpdateIdentityMetadata = Omit<
   "id" | "isArchived" | "name" | "method" | "createdAt"
 >;
 
-export { IdentifierType, Blockchain, ConnectionStatus, GenericRecordType };
+export {
+  IdentifierType,
+  Blockchain,
+  ConnectionStatus,
+  GenericRecordType,
+  ConnectionHistoryType,
+};
 export type {
   CryptoAccountRecordShortDetails,
   IdentifierShortDetails,
@@ -114,4 +129,5 @@ export type {
   ConnectionDetails,
   ConnectionNoteDetails,
   ConnectionNoteProps,
+  ConnectionHistoryRecord,
 };
