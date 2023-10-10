@@ -11,3 +11,9 @@
    - `npm run cli:invitation` - get OOB invitation
    - `npm run cli:offer-credential` - issue credential with connection
    - `npm run cli:offer-credential-connection-less` - issue credential without connection
+5. CLI with another credential
+   - `npm run cli:offer-credential degree-credential.json`
+   - `npm run cli:offer-credential-connection-less degree-credential.json`
+   - `npm run cli:offer-credential degree-credential-with-expiration.json`
+   - `npm run cli:offer-credential-connection-less degree-credential-with-expiration.json`
+   - `npm run cli:offer-credential resident-card-with-expiration.json`
