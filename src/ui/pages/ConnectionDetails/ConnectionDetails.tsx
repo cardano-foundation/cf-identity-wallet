@@ -40,6 +40,7 @@ import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { operationState, toastState } from "../../constants/dictionary";
 import { AriesAgent } from "../../../core/agent/agent";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
+import { InfoBlockProps, NotesProps } from "./ConnectionDetails.types";
 
 const ConnectionDetails = () => {
   const history = useHistory();
@@ -59,6 +60,7 @@ const ConnectionDetails = () => {
   const [coreNotes, setCoreNotes] = useState<NotesProps[]>([]);
   const [notes, setNotes] = useState<NotesProps[]>([]);
   const currentNoteId = useRef("");
+  const TEMP_ID_PREFIX = "temp";
 
   useEffect(() => {
     async function getDetails() {
@@ -68,17 +70,12 @@ const ConnectionDetails = () => {
         );
       setConnectionDetails(connectionDetails);
       if (connectionDetails.notes) {
-        setCoreNotes([...connectionDetails.notes]);
-        setNotes([...connectionDetails.notes]);
+        setCoreNotes(connectionDetails.notes);
+        setNotes(structuredClone(connectionDetails.notes));
       }
     }
     if (connectionShortDetails?.id) getDetails();
   }, [connectionShortDetails?.id, modalIsOpen]);
-
-  useEffect(() => {
-    // Added this here to print out the coreNotes every time there is an update
-    console.log("coreNotes", coreNotes);
-  }, [coreNotes]);
 
   const handleDone = () => {
     const data: DataProps = {
@@ -126,11 +123,18 @@ const ConnectionDetails = () => {
     );
   };
 
-  interface NotesProps {
-    title: string;
-    message: string;
-    id: string;
-  }
+  const ConnectionDetailsInfoBlock = ({ title, children }: InfoBlockProps) => {
+    return (
+      <div className="connection-details-info-block">
+        <h3>{title}</h3>
+        <div className="connection-details-info-block-inner">
+          <div className="connection-details-info-block-line">
+            <div className="connection-details-info-block-data">{children}</div>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   const Note = ({ title, message, id }: NotesProps) => {
     const [newTitle, setNewTitle] = useState(title);
@@ -218,77 +222,40 @@ const ConnectionDetails = () => {
       >
         <div className="connection-details-content">
           <ConnectionDetailsHeader />
-
-          <div className="connection-details-info-block">
-            <h3>{i18n.t("connections.details.label")}</h3>
-            <div className="connection-details-info-block-inner">
-              <div className="connection-details-info-block-line">
-                <div className="connection-details-info-block-data">
-                  {connectionDetails?.label}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="connection-details-info-block">
-            <h3>{i18n.t("connections.details.date")}</h3>
-            <div className="connection-details-info-block-inner">
-              <div className="connection-details-info-block-line">
-                <div className="connection-details-info-block-data">
-                  {formatShortDate(`${connectionDetails?.connectionDate}`)}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="connection-details-info-block">
-            <h3>{i18n.t("connections.details.goalcodes")}</h3>
-            <div className="connection-details-info-block-inner">
-              <div className="connection-details-info-block-line">
-                <div className="connection-details-info-block-data">
-                  {connectionDetails?.goalCode ||
-                    i18n.t("connections.details.notavailable")}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="connection-details-info-block">
-            <h3>{i18n.t("connections.details.handshake")}</h3>
-            <div className="connection-details-info-block-inner">
-              <div className="connection-details-info-block-line">
-                <div className="connection-details-info-block-data">
-                  {connectionDetails?.handshakeProtocols?.toString() ||
-                    i18n.t("connections.details.notavailable")}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="connection-details-info-block">
-            <h3>{i18n.t("connections.details.attachments")}</h3>
-            <div className="connection-details-info-block-inner">
-              <div className="connection-details-info-block-line">
-                <div className="connection-details-info-block-data">
-                  {connectionDetails?.requestAttachments?.toString() ||
-                    i18n.t("connections.details.notavailable")}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="connection-details-info-block">
-            <h3>{i18n.t("connections.details.endpoints")}</h3>
-            <div className="connection-details-info-block-inner">
-              <div className="connection-details-info-block-line">
-                <div className="connection-details-info-block-data">
-                  {connectionDetails?.serviceEndpoints?.toString() ||
-                    i18n.t("connections.details.notavailable")}
-                </div>
-              </div>
-            </div>
-          </div>
-
+          <ConnectionDetailsInfoBlock
+            title={i18n.t("connections.details.label")}
+          >
+            {connectionDetails?.label}
+          </ConnectionDetailsInfoBlock>
+          <ConnectionDetailsInfoBlock
+            title={i18n.t("connections.details.date")}
+          >
+            {formatShortDate(`${connectionDetails?.connectionDate}`)}
+          </ConnectionDetailsInfoBlock>
+          <ConnectionDetailsInfoBlock
+            title={i18n.t("connections.details.goalcodes")}
+          >
+            {connectionDetails?.goalCode ||
+              i18n.t("connections.details.notavailable")}
+          </ConnectionDetailsInfoBlock>
+          <ConnectionDetailsInfoBlock
+            title={i18n.t("connections.details.handshake")}
+          >
+            {connectionDetails?.handshakeProtocols?.toString() ||
+              i18n.t("connections.details.notavailable")}
+          </ConnectionDetailsInfoBlock>
+          <ConnectionDetailsInfoBlock
+            title={i18n.t("connections.details.attachments")}
+          >
+            {connectionDetails?.requestAttachments?.toString() ||
+              i18n.t("connections.details.notavailable")}
+          </ConnectionDetailsInfoBlock>
+          <ConnectionDetailsInfoBlock
+            title={i18n.t("connections.details.endpoints")}
+          >
+            {connectionDetails?.serviceEndpoints?.toString() ||
+              i18n.t("connections.details.notavailable")}
+          </ConnectionDetailsInfoBlock>
           {notes.length > 0 ? (
             <div className="connection-details-info-block">
               <h3>{i18n.t("connections.details.notes")}</h3>
@@ -376,7 +343,7 @@ const ConnectionDetails = () => {
       {connectionDetails && (
         <IonModal
           isOpen={modalIsOpen}
-          className={"safe-area"}
+          className="edit-connections-modal"
           data-testid="edit-connections-modal"
           onDidDismiss={() => {
             if (modalIsOpen && notes !== coreNotes) {
@@ -385,7 +352,7 @@ const ConnectionDetails = () => {
             setModalIsOpen(false);
           }}
         >
-          <div className="edit-connections-modal modal">
+          <div className="modal">
             <PageLayout
               header={true}
               closeButton={true}
@@ -398,56 +365,45 @@ const ConnectionDetails = () => {
               }}
               actionButton={true}
               actionButtonAction={() => {
-                // Remove notes with empty title or empty message
                 const filteredNotes = notes.filter(
                   (note) => note.title !== "" && note.message !== ""
                 );
-                // This is checking if the filteredNotes are different than what's in core
-                //
-                // BUG: filteredNotes !== coreNotes even if they look exactly the same.
-                //
                 if (filteredNotes !== coreNotes) {
                   setNotes(filteredNotes);
-                  console.log("filteredNotes", filteredNotes);
-                  console.log("coreNotes", coreNotes);
-                  // The new notes only have a temp id so we can send them to core for creation
+                  let update = false;
                   filteredNotes.forEach((note) => {
-                    if (note.id.includes("temp")) {
+                    if (note.id.includes(TEMP_ID_PREFIX)) {
                       AriesAgent.agent.connections.createConnectionNote(
                         connectionDetails.id,
                         note
                       );
+                      update = true;
                     }
                   });
                   coreNotes.forEach((noteCore) => {
-                    // Check saved notes in core
                     const noteFind = filteredNotes.find(
                       (noteFilter) => noteCore.id === noteFilter.id
                     );
-                    // If you can't find the ID, delete the note in the core
                     if (!noteFind) {
                       AriesAgent.agent.connections.deleteConnectionNoteById(
                         noteCore.id
                       );
-                    }
-                    // If title or message are different, update them
-                    else if (
+                      update = true;
+                    } else if (
                       noteCore.title !== noteFind.title ||
                       noteCore.message !== noteFind.message
-                      //
-                      // NOTE: There's a current bug here, for some reason
-                      // noteCore.title !== noteFind.title and noteCore.message !== noteFind.message
-                      // so updateConnections will never run
-                      //
                     ) {
                       AriesAgent.agent.connections.updateConnectionNoteById(
                         noteCore.id,
                         noteFind
                       );
+                      update = true;
                     }
                   });
-                  // Because of the bug filteredNotes !== coreNotes this will always run
-                  dispatch(setCurrentOperation(toastState.notesUpdated));
+                  if (update) {
+                    dispatch(setCurrentOperation(toastState.notesUpdated));
+                    update = false;
+                  }
                 }
                 setModalIsOpen(false);
               }}
@@ -484,7 +440,7 @@ const ConnectionDetails = () => {
                         {
                           title: "",
                           message: "",
-                          id: "temp" + notes.length,
+                          id: TEMP_ID_PREFIX + notes.length,
                         },
                       ]);
                     }}
