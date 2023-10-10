@@ -9,6 +9,10 @@
     padding-inline: 1.25rem;
   }
 
+  .cards-placeholder-container {
+    padding-inline: 1.25rem;
+  }
+
   &.show {
     right: 0;
     left: 0;
@@ -42,6 +46,10 @@
 
   ion-title {
     margin-left: 3.2rem;
+
+    &.md {
+      margin-left: 0.94rem;
+    }
   }
 
   > ion-content {

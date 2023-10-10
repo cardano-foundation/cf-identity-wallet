@@ -450,7 +450,7 @@ describe("Connection service of agent", () => {
 
   test("can delete connection note with id", async () => {
     const connectionNoteId = "connectionId";
-    await connectionService.deleteConnectionNodeById(connectionNoteId);
+    await connectionService.deleteConnectionNoteById(connectionNoteId);
     expect(agent.genericRecords.deleteById).toBeCalledWith(connectionNoteId);
   });
 
@@ -461,7 +461,7 @@ describe("Connection service of agent", () => {
       message: "message",
     };
     await expect(
-      connectionService.updateConnectionNodeById(connectionId, note)
+      connectionService.updateConnectionNoteById(connectionId, note)
     ).rejects.toThrowError(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
   });
 
@@ -481,7 +481,7 @@ describe("Connection service of agent", () => {
       title: "title",
       message: "message2",
     };
-    await connectionService.updateConnectionNodeById(connectionId, note);
+    await connectionService.updateConnectionNoteById(connectionId, note);
     expect(agent.genericRecords.update).toBeCalledWith({
       ...mockGenericRecords,
       content: note,

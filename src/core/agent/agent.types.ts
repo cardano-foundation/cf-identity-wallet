@@ -92,6 +92,15 @@ interface CredentialDetails extends CredentialShortDetails {
   proofValue: string;
 }
 
+interface CredentialDetails extends CredentialShortDetails {
+  type: string[];
+  connectionId?: string;
+  expirationDate?: string;
+  credentialSubject: JsonCredential["credentialSubject"];
+  proofType: string;
+  proofValue: string;
+}
+
 type GetIdentifierResult =
   | { type: IdentifierType.KERI; result: KERIDetails }
   | { type: IdentifierType.KEY; result: DIDDetails };

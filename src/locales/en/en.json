@@ -326,7 +326,7 @@
   "creds": {
     "tab": {
       "title": "Credentials",
-      "create": "Create a credential"
+      "create": "Add a credential"
     },
     "card": {
       "layout": {
@@ -387,17 +387,30 @@
       "attachments": "Request Attachments",
       "endpoints": "Service Endpoints",
       "notavailable": "N/A",
+      "notes": "Notes",
+      "nocurrentnotes": "No current notes",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "title": "Title",
+      "message": "Message",
       "delete": "Delete connection",
       "options": {
         "title": "Connection options",
         "labels": {
-          "edit": "Edit connection",
+          "manage": "Manage notes",
           "delete": "Delete connection"
         },
         "alert": {
-          "title": "Are you sure you want to delete this connection?",
-          "confirm": "Yes, I'm sure",
-          "cancel": "Cancel"
+          "deleteconnection": {
+            "title": "Are you sure you want to delete this connection?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          },
+          "deletenote": {
+            "title": "Are you sure you want to delete this note?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          }
         }
       }
     }
@@ -547,7 +560,9 @@
     "connectionrequestpending": "Connection request pending",
     "newconnectionadded": "New connection added",
     "credentialrequestpending": "Credential request pending",
-    "newcredentialadded": "New credential added"
+    "newcredentialadded": "New credential added",
+    "notesupdated": "Notes updated successfully",
+    "noteremoved": "Note removed successfully"
   },
   "scan": {
     "tab": {

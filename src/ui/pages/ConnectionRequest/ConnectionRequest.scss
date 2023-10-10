@@ -3,6 +3,9 @@
   margin-top: 0;
   z-index: 102 !important;
   overflow: initial !important;
+  margin-top: constant(safe-area-inset-top);
+  margin-top: env(safe-area-inset-top);
+  --safe-area-inset-top: env(safe-area-inset-top);
 
   &.show {
     right: 0;
@@ -67,7 +70,7 @@
     }
 
     ion-footer {
-      bottom: -10rem;
+      bottom: -15rem;
       transition: bottom 1s;
     }
   }
