@@ -20,6 +20,8 @@ import { Connections } from "../Connections";
 import { cardTypes, connectionType } from "../../constants/dictionary";
 import { ConnectModal } from "../../components/ConnectModal";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
+import { AriesAgent } from "../../../core/agent/agent";
+import { CredentialShortDetails } from "../../components/CardsStack/CardsStack.types";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -62,14 +64,39 @@ const AdditionalButtons = ({
 
 const Creds = () => {
   const dispatch = useAppDispatch();
-  const credsCache = useAppSelector(getCredsCache);
-  const [credsData, setCredsData] = useState(credsCache);
-  const confirmedCreds = credsData.filter((item) => item.isArchived === false);
-  const archivedCreds = credsData.filter((item) => item.isArchived === true);
+  const [currentCreds, setCurrentCreds] = useState<CredentialShortDetails[]>(
+    []
+  );
+  const [archivedCreds, setArchivedCreds] = useState<CredentialShortDetails[]>(
+    []
+  );
   const [showConnections, setShowConnections] = useState(false);
   const [addCredentialIsOpen, setAddCredentialIsOpen] = useState(false);
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
+
+  const fetchCurrentCreds = async () => {
+    try {
+      const creds = await AriesAgent.agent.credentials.getCredentials();
+      setCurrentCreds(creds);
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
+    }
+  };
+
+  const fetchArchivedCreds = async () => {
+    try {
+      const creds = await AriesAgent.agent.credentials.getCredentials(true);
+      setArchivedCreds(creds);
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
+    }
+  };
+
+  useEffect(() => {
+    fetchCurrentCreds();
+    fetchArchivedCreds();
+  }, [archivedCredentialsIsOpen]);
 
   const handleCreateCred = () => {
     setAddCredentialIsOpen(true);
@@ -78,10 +105,6 @@ const Creds = () => {
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
   );
-
-  useEffect(() => {
-    setCredsData(credsCache);
-  }, [credsCache]);
 
   return (
     <>
@@ -108,26 +131,11 @@ const Creds = () => {
             />
           }
         >
-          {confirmedCreds.length ? (
-            <>
-              <CardsStack
-                cardsType={cardTypes.creds}
-                cardsData={confirmedCreds}
-              />
-              {archivedCreds.length ? (
-                <div className="archived-credentials-button-container">
-                  <IonButton
-                    fill="outline"
-                    className="secondary-button"
-                    onClick={() => setArchivedCredentialsIsOpen(true)}
-                  >
-                    <IonLabel color="secondary">
-                      {i18n.t("creds.tab.viewarchived")}
-                    </IonLabel>
-                  </IonButton>
-                </div>
-              ) : null}
-            </>
+          {currentCreds.length ? (
+            <CardsStack
+              cardsType={cardTypes.creds}
+              cardsData={currentCreds}
+            />
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("creds.tab.create")}
@@ -135,6 +143,19 @@ const Creds = () => {
               testId="creds-cards-placeholder"
             />
           )}
+          {archivedCreds.length ? (
+            <div className="archived-credentials-button-container">
+              <IonButton
+                fill="outline"
+                className="secondary-button"
+                onClick={() => setArchivedCredentialsIsOpen(true)}
+              >
+                <IonLabel color="secondary">
+                  {i18n.t("creds.tab.viewarchived")}
+                </IonLabel>
+              </IonButton>
+            </div>
+          ) : null}
           <ConnectModal
             type={connectionType.credential}
             connectModalIsOpen={addCredentialIsOpen}

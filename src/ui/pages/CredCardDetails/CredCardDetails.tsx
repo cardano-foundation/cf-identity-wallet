@@ -45,11 +45,16 @@ import {
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { CredentialDetails } from "../../../core/agent/agent.types";
 import { AriesAgent } from "../../../core/agent/agent";
+import {
+  getCredsCache,
+  setCredsCache,
+} from "../../../store/reducers/credsCache";
 
 const CredCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const credsCache = useAppSelector(getCredsCache);
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteArchiveIsOpen, setAlertDeleteArchiveIsOpen] =
     useState(false);
@@ -87,44 +92,46 @@ const CredCardDetails = () => {
     history.push(backPath.pathname);
   };
 
-  const handleArchiveCredential = () => {
-    // @TODO - sdisalvo: hook up function to delete credential
-    // setVerifyPasswordIsOpen(false);
-    // const updatedCreds = creds;
-    // for (const i in updatedCreds) {
-    //   if (updatedCreds[i].id == cardData.id) {
-    //     updatedCreds[i].isArchived = true;
-    //     break;
-    //   }
-    // }
-    // setCreds(updatedCreds);
-    // dispatch(setCredsCache(updatedCreds));
-    // handleDone();
-  };
-
-  const handleDeleteCredential = () => {
-    // @TODO - sdisalvo: hook up function to delete credential
+  const handleArchiveCredential = async () => {
+    // @TODO - sdisalvo: hook up function to archive credential
     setVerifyPasswordIsOpen(false);
-    // @TODO - sdisalvo: Update Database.
-    // Remember to update CredCardoptions file too.
-    // const updatedCreds = creds.filter((item) => item.id !== cardData.id);
-    // setCreds(updatedCreds);
-    // dispatch(setCredsCache(updatedCreds));
+    setVerifyPasscodeIsOpen(false);
+    await AriesAgent.agent.credentials.archiveCredential(params.id);
+    const creds = [...credsCache];
+    for (const i in creds) {
+      if (creds[i].id == params.id) {
+        creds[i].isArchived = true;
+        break;
+      }
+    }
+    dispatch(setCredsCache(creds));
     handleDone();
   };
 
-  const handleRestoreCredential = () => {
+  const handleDeleteCredential = async () => {
+    // @TODO - sdisalvo: hook up function to delete credential
+    setVerifyPasswordIsOpen(false);
+    setVerifyPasscodeIsOpen(false);
+    await AriesAgent.agent.credentials.deleteCredential(params.id);
+    const creds = credsCache.filter((item) => item.id !== params.id);
+    dispatch(setCredsCache(creds));
+    handleDone();
+  };
+
+  const handleRestoreCredential = async () => {
     // @TODO - sdisalvo: hook up function to restore credential
-    // const updatedCreds = creds;
-    // for (const i in updatedCreds) {
-    //   if (updatedCreds[i].id == cardData.id) {
-    //     updatedCreds[i].isArchived = false;
-    //     break;
-    //   }
-    // }
-    // setCreds(updatedCreds);
-    // dispatch(setCredsCache(updatedCreds));
-    // handleDone();
+    setVerifyPasswordIsOpen(false);
+    setVerifyPasscodeIsOpen(false);
+    await AriesAgent.agent.credentials.restoreCredential(params.id);
+    const creds = [...credsCache];
+    for (const i in creds) {
+      if (creds[i].id == params.id) {
+        creds[i].isArchived = false;
+        break;
+      }
+    }
+    dispatch(setCredsCache(creds));
+    handleDone();
   };
 
   const AdditionalButtons = () => {

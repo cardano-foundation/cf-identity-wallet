@@ -18,6 +18,7 @@ import {
 import { cardTypes } from "../../constants/dictionary";
 import { Alert } from "../Alert";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -35,6 +36,11 @@ const CredCard = ({
     zIndex: index,
   };
 
+  const handleArchiveCredential = async (id: string) => {
+    // @TODO - sdisalvo: TO BE REMOVED temporary function to archive credential
+    await AriesAgent.agent.credentials.archiveCredential(id);
+  };
+
   return (
     <>
       <div
@@ -45,7 +51,8 @@ const CredCard = ({
         className={`cards-stack-card ${isActive ? "active" : ""}`}
         onClick={() => {
           if (cardData.status === CredentialMetadataRecordStatus.PENDING) {
-            setAlertIsOpen(true);
+            //  setAlertIsOpen(true);
+            handleArchiveCredential(cardData.id);
           } else if (onHandleShowCardDetails) {
             onHandleShowCardDetails(index);
           }
