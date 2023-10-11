@@ -1,6 +1,12 @@
-import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonLabel,
+  IonPage,
+  useIonViewWillEnter,
+} from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Creds.scss";
@@ -13,6 +19,7 @@ import { getCredsCache } from "../../../store/reducers/credsCache";
 import { Connections } from "../Connections";
 import { cardTypes, connectionType } from "../../constants/dictionary";
 import { ConnectModal } from "../../components/ConnectModal";
+import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -55,9 +62,14 @@ const AdditionalButtons = ({
 
 const Creds = () => {
   const dispatch = useAppDispatch();
-  const credsData = useAppSelector(getCredsCache);
+  const credsCache = useAppSelector(getCredsCache);
+  const [credsData, setCredsData] = useState(credsCache);
+  const confirmedCreds = credsData.filter((item) => item.isArchived === false);
+  const archivedCreds = credsData.filter((item) => item.isArchived === true);
   const [showConnections, setShowConnections] = useState(false);
   const [addCredentialIsOpen, setAddCredentialIsOpen] = useState(false);
+  const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
+    useState(false);
 
   const handleCreateCred = () => {
     setAddCredentialIsOpen(true);
@@ -66,6 +78,10 @@ const Creds = () => {
   useIonViewWillEnter(() =>
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
   );
+
+  useEffect(() => {
+    setCredsData(credsCache);
+  }, [credsCache]);
 
   return (
     <>
@@ -92,11 +108,26 @@ const Creds = () => {
             />
           }
         >
-          {credsData.length ? (
-            <CardsStack
-              cardsType={cardTypes.creds}
-              cardsData={credsData}
-            />
+          {confirmedCreds.length ? (
+            <>
+              <CardsStack
+                cardsType={cardTypes.creds}
+                cardsData={confirmedCreds}
+              />
+              {archivedCreds.length ? (
+                <div className="archived-credentials-button-container">
+                  <IonButton
+                    fill="outline"
+                    className="secondary-button"
+                    onClick={() => setArchivedCredentialsIsOpen(true)}
+                  >
+                    <IonLabel color="secondary">
+                      {i18n.t("creds.tab.viewarchived")}
+                    </IonLabel>
+                  </IonButton>
+                </div>
+              ) : null}
+            </>
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("creds.tab.create")}
@@ -109,6 +140,12 @@ const Creds = () => {
             connectModalIsOpen={addCredentialIsOpen}
             setConnectModalIsOpen={setAddCredentialIsOpen}
           />
+          {archivedCreds.length ? (
+            <ArchivedCredentials
+              archivedCredentialsIsOpen={archivedCredentialsIsOpen}
+              setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
+            />
+          ) : null}
         </TabLayout>
       </IonPage>
     </>

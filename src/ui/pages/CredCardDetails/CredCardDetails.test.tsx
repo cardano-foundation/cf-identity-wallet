@@ -180,7 +180,7 @@ describe("Cards Details page", () => {
     });
   });
 
-  test("It shows the warning when I click on the big delete button", async () => {
+  test("It shows the warning when I click on the big archive button", async () => {
     const { findByTestId, findByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
@@ -191,13 +191,13 @@ describe("Cards Details page", () => {
         </MemoryRouter>
       </Provider>
     );
-    const deleteButton = await findByTestId("card-details-delete-button");
+    const deleteButton = await findByTestId("card-details-archive-button");
     act(() => {
       fireEvent.click(deleteButton);
     });
 
     const deleteAlert = await findByText(
-      EN_TRANSLATIONS.creds.card.details.delete.alert.title
+      EN_TRANSLATIONS.creds.card.details.alert.archive.title
     );
     await waitFor(() => {
       expect(deleteAlert).toBeVisible();

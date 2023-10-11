@@ -80,7 +80,7 @@ describe("Verify Password on Cards Details page", () => {
     };
   });
 
-  test("It renders verify password when clicking on the big button", async () => {
+  test("It renders verify password when clicking on the big archive button", async () => {
     jest
       .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
       .mockResolvedValue(credsFix[0]);
@@ -101,15 +101,15 @@ describe("Verify Password on Cards Details page", () => {
       </Provider>
     );
 
-    const deleteButton = await findByTestId("card-details-delete-button");
+    const archiveButton = await findByTestId("card-details-archive-button");
 
     act(() => {
-      fireEvent.click(deleteButton);
+      fireEvent.click(archiveButton);
     });
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
+        getByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)
       ).toBeVisible();
     });
 
@@ -122,7 +122,7 @@ describe("Verify Password on Cards Details page", () => {
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.confirm)
+        getByText(EN_TRANSLATIONS.creds.card.details.alert.archive.confirm)
       );
     });
 
@@ -136,7 +136,7 @@ describe("Verify Password on Cards Details page", () => {
     });
   });
 
-  test.skip("It asks to verify the password when users try to delete the cred using the button in the modal", async () => {
+  test.skip("It asks to verify the password when users try to archive the cred using the button in the modal", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     storeMocked = {
@@ -163,11 +163,11 @@ describe("Verify Password on Cards Details page", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("creds-options-delete-button")).toBeInTheDocument();
+      expect(getByTestId("creds-options-archive-button")).toBeInTheDocument();
     });
 
     act(() => {
-      fireEvent.click(getByTestId("creds-options-delete-button"));
+      fireEvent.click(getByTestId("creds-options-archive-button"));
     });
 
     await waitForIonicReact();

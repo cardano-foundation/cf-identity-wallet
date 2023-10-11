@@ -76,14 +76,14 @@ describe("Verify Passcode on Cards Details page", () => {
       </Provider>
     );
 
-    const deleteButton = await findByTestId("card-details-delete-button");
+    const archiveButton = await findByTestId("card-details-archive-button");
     act(() => {
-      fireEvent.click(deleteButton);
+      fireEvent.click(archiveButton);
     });
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
+        getByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)
       ).toBeVisible();
     });
 
@@ -96,7 +96,7 @@ describe("Verify Passcode on Cards Details page", () => {
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.confirm)
+        getByText(EN_TRANSLATIONS.creds.card.details.alert.archive.confirm)
       );
     });
 
@@ -137,11 +137,11 @@ describe("Verify Passcode on Cards Details page", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("creds-options-delete-button")).toBeInTheDocument();
+      expect(getByTestId("creds-options-archive-button")).toBeInTheDocument();
     });
 
     act(() => {
-      fireEvent.click(getByTestId("creds-options-delete-button"));
+      fireEvent.click(getByTestId("creds-options-archive-button"));
     });
 
     await waitForIonicReact();

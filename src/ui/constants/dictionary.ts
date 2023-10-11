@@ -32,6 +32,8 @@ const operationState = {
   renameIdentity: "renameIdentity",
   deleteIdentity: "deleteIdentity",
   deleteConnection: "deleteConnection",
+  archiveCredential: "archiveCredential",
+  restoreCredential: "restoreCredential",
   deleteCredential: "deleteCredential",
   scanConnection: "scanConnection",
 };
