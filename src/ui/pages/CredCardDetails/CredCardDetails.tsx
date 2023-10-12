@@ -21,7 +21,6 @@ import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import { CredCard } from "../../components/CardsStack";
-import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -395,7 +394,7 @@ const CredCardDetails = () => {
         <AlertDeleteArchive
           isOpen={alertDeleteArchiveIsOpen}
           setIsOpen={setAlertDeleteArchiveIsOpen}
-          dataTestId="alert-delete"
+          dataTestId="alert-delete-archive"
           headerText={i18n.t(
             isArchived
               ? "creds.card.details.alert.delete.title"

@@ -48,7 +48,7 @@ const initialStateNoPassword = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  credsCache: { creds: [] },
+  credsCache: { creds: credsFix },
 };
 
 describe("Verify Passcode on Cards Details page", () => {

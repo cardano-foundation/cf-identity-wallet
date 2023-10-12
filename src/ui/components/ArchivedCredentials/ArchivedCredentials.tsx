@@ -68,7 +68,7 @@ const ArchivedCredentials = ({
 
   useEffect(() => {
     fetchArchivedCreds();
-  }, []);
+  }, [credsCache]);
 
   const resetList = () => {
     setActiveList(false);
