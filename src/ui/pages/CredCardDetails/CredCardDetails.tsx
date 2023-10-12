@@ -118,6 +118,7 @@ const CredCardDetails = () => {
   const handleDeleteCredential = async () => {
     await AriesAgent.agent.credentials.deleteCredential(params.id);
     dispatch(setCurrentOperation(toastState.credentialDeleted));
+    history.push(TabsRoutePath.CREDS);
   };
 
   const handleRestoreCredential = async () => {
