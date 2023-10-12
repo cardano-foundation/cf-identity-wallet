@@ -25,6 +25,7 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
+  getCurrentOperation,
   getStateCache,
   setCurrentOperation,
   setCurrentRoute,
@@ -46,6 +47,7 @@ const CredCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const currentOperation = useAppSelector(getCurrentOperation);
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteArchiveIsOpen, setAlertDeleteArchiveIsOpen] =
     useState(false);
@@ -116,7 +118,7 @@ const CredCardDetails = () => {
   const handleRestoreCredential = async () => {
     await AriesAgent.agent.credentials.restoreCredential(params.id);
     dispatch(setCurrentOperation(toastState.credentialRestored));
-    handleDone();
+    history.push(TabsRoutePath.CREDS);
   };
 
   const onVerify = () => {
