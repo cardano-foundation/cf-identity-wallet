@@ -75,6 +75,11 @@ const getNextCredentialsRoute = () => {
   return { pathname: path };
 };
 
+const getNextCredentialDetailsRoute = () => {
+  const path = TabsRoutePath.CREDS;
+  return { pathname: path };
+};
+
 const getNextSetPasscodeRoute = (store: StoreState) => {
   const seedPhraseIsSet = !!store.seedPhraseCache?.seedPhrase160;
 
@@ -205,6 +210,10 @@ const nextRoute: Record<string, any> = {
   },
   [TabsRoutePath.SCAN]: {
     nextPath: (data: DataProps) => getNextScanRoute(data),
+    updateRedux: [],
+  },
+  [TabsRoutePath.CRED_DETAILS]: {
+    nextPath: () => getNextCredentialDetailsRoute(),
     updateRedux: [],
   },
 };

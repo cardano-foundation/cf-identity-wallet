@@ -45,6 +45,7 @@ import {
   getCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
+import { getNextRoute } from "../../../routes/nextRoute";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -59,17 +60,15 @@ const CredCardDetails = () => {
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<CredentialDetails>();
-  const [isArchived, setIsArchived] = useState(false);
+  const isArchived =
+    credsCache.filter((item) => item.id === params.id).length === 0;
 
   useEffect(() => {
     getCredDetails();
-    getArchivedCreds();
   }, [params.id]);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
-    getCredDetails();
-    getArchivedCreds();
   });
 
   const getCredDetails = async () => {
@@ -78,31 +77,18 @@ const CredCardDetails = () => {
     setCardData(cardDetails);
   };
 
-  const getArchivedCreds = async () => {
-    try {
-      const archivedCreds = await AriesAgent.agent.credentials.getCredentials(
-        true
-      );
-      setIsArchived(
-        !!archivedCreds.filter((item) => item.id === params.id).length
-      );
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
-  };
-
   const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
+    const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CRED_DETAILS, {
       store: { stateCache },
     });
 
     updateReduxState(
-      backPath.pathname,
+      nextPath.pathname,
       { store: { stateCache } },
       dispatch,
       updateRedux
     );
-    history.push(backPath.pathname);
+    history.push(nextPath.pathname);
   };
 
   const handleArchiveCredential = async () => {
@@ -118,7 +104,6 @@ const CredCardDetails = () => {
   const handleDeleteCredential = async () => {
     await AriesAgent.agent.credentials.deleteCredential(params.id);
     dispatch(setCurrentOperation(toastState.credentialDeleted));
-    history.push(TabsRoutePath.CREDS);
   };
 
   const handleRestoreCredential = async () => {
@@ -134,7 +119,7 @@ const CredCardDetails = () => {
       // @TODO - sdisalvo: handle error
     }
     dispatch(setCurrentOperation(toastState.credentialRestored));
-    history.push(TabsRoutePath.CREDS);
+    handleDone();
   };
 
   const onVerify = () => {
