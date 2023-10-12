@@ -95,6 +95,10 @@ class IonicStorageWallet implements Wallet {
     return this.session;
   }
 
+  get supportedKeyTypes() {
+    return []; // TODO: must define it
+  }
+
   async create(walletConfig: WalletConfig): Promise<void> {
     await this.createAndOpen(walletConfig);
     await this.close();

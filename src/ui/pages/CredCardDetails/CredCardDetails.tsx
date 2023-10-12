@@ -281,8 +281,10 @@ const CredCardDetails = () => {
                 className="card-details-info-block-line"
                 data-testid="copy-button-proof-value"
                 onClick={() => {
-                  writeToClipboard(cardData.proofValue);
-                  dispatch(setCurrentOperation(toastState.copiedToClipboard));
+                  if (cardData.proofValue) {
+                    writeToClipboard(cardData.proofValue);
+                    dispatch(setCurrentOperation(toastState.copiedToClipboard));
+                  }
                 }}
               >
                 <span>
@@ -293,8 +295,8 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {cardData.proofValue.substring(0, 13)}...
-                  {cardData.proofValue.slice(-5)}
+                  {cardData.proofValue?.substring(0, 13)}...
+                  {cardData.proofValue?.slice(-5)}
                 </span>
                 <span>
                   <IonButton

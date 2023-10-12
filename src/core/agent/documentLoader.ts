@@ -3,9 +3,12 @@ import {
   AriesFrameworkError,
   DidResolverService,
   DocumentLoader,
+  vcLibraries,
 } from "@aries-framework/core";
-import jsonld from "@aries-framework/core/build/modules/vc/libraries/jsonld";
-import { getNativeDocumentLoader } from "@aries-framework/core/build/modules/vc/libraries/nativeDocumentLoader.native";
+import { getNativeDocumentLoader } from "@aries-framework/core/build/modules/vc/data-integrity/libraries/nativeDocumentLoader.native";
+
+const { jsonld } = vcLibraries;
+
 function isDid(potentialDid: string) {
   return potentialDid.startsWith("did:");
 }
