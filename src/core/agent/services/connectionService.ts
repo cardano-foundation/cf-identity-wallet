@@ -63,8 +63,7 @@ class ConnectionService extends AgentService {
   isConnectionResponseSent(connectionRecord: ConnectionRecord) {
     return (
       connectionRecord.role === DidExchangeRole.Responder &&
-      connectionRecord.state === DidExchangeState.ResponseSent &&
-      !connectionRecord.autoAcceptConnection
+      connectionRecord.state === DidExchangeState.ResponseSent
     );
   }
 
