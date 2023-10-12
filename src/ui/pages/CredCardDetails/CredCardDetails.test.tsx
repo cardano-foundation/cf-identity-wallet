@@ -54,6 +54,7 @@ const initialStateNoPassword = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
+  credsCache: { creds: [] },
 };
 
 describe("Cards Details page", () => {
@@ -191,7 +192,9 @@ describe("Cards Details page", () => {
         </MemoryRouter>
       </Provider>
     );
-    const deleteButton = await findByTestId("card-details-archive-button");
+    const deleteButton = await findByTestId(
+      "card-details-delete-archive-button"
+    );
     act(() => {
       fireEvent.click(deleteButton);
     });

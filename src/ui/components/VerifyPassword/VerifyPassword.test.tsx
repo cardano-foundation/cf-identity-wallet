@@ -48,6 +48,7 @@ const initialStateNoPassword = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
+  credsCache: { creds: [] },
 };
 
 const initialStateWithPassword = {
@@ -67,6 +68,7 @@ const initialStateWithPassword = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
+  credsCache: { creds: [] },
 };
 
 describe("Verify Password on Cards Details page", () => {
@@ -101,7 +103,9 @@ describe("Verify Password on Cards Details page", () => {
       </Provider>
     );
 
-    const archiveButton = await findByTestId("card-details-archive-button");
+    const archiveButton = await findByTestId(
+      "card-details-delete-archive-button"
+    );
 
     act(() => {
       fireEvent.click(archiveButton);

@@ -13,9 +13,11 @@ import "./Creds.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  getCurrentOperation,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
-import { getCredsCache } from "../../../store/reducers/credsCache";
 import { Connections } from "../Connections";
 import { cardTypes, connectionType } from "../../constants/dictionary";
 import { ConnectModal } from "../../components/ConnectModal";
@@ -64,6 +66,7 @@ const AdditionalButtons = ({
 
 const Creds = () => {
   const dispatch = useAppDispatch();
+  const currentOperation = useAppSelector(getCurrentOperation);
   const [currentCreds, setCurrentCreds] = useState<CredentialShortDetails[]>(
     []
   );
@@ -96,15 +99,17 @@ const Creds = () => {
   useEffect(() => {
     fetchCurrentCreds();
     fetchArchivedCreds();
-  }, [archivedCredentialsIsOpen]);
+  }, [archivedCredentialsIsOpen, addCredentialIsOpen, currentOperation]);
 
   const handleCreateCred = () => {
     setAddCredentialIsOpen(true);
   };
 
-  useIonViewWillEnter(() =>
-    dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }))
-  );
+  useIonViewWillEnter(() => {
+    dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }));
+    fetchCurrentCreds();
+    fetchArchivedCreds();
+  });
 
   return (
     <>

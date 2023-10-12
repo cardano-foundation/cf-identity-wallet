@@ -19,10 +19,6 @@ import { PageLayout } from "../layout/PageLayout";
 import { i18n } from "../../../i18n";
 import "./ArchivedCredentials.scss";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getCredsCache,
-  setCredsCache,
-} from "../../../store/reducers/credsCache";
 import { formatShortDate } from "../../../utils";
 import { VerifyPassword } from "../VerifyPassword";
 import { VerifyPasscode } from "../VerifyPasscode";
@@ -37,6 +33,7 @@ import {
 import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
 import { ArchivedCredentialsProps } from "./ArchivedCredentials.types";
+import { toastState } from "../../constants/dictionary";
 
 const ArchivedCredentials = ({
   archivedCredentialsIsOpen,
@@ -45,7 +42,6 @@ const ArchivedCredentials = ({
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const credsCache = useAppSelector(getCredsCache);
   const [archivedCreds, setArchivedCreds] = useState<CredentialShortDetails[]>(
     []
   );
@@ -73,6 +69,9 @@ const ArchivedCredentials = ({
     setActiveList(false);
     setSelectedCredentials([]);
     fetchArchivedCreds();
+    if (!archivedCreds) {
+      setArchivedCredentialsIsOpen(false);
+    }
   };
 
   const selectAll = () => {
@@ -154,28 +153,18 @@ const ArchivedCredentials = ({
   };
 
   const handleDeleteCredential = async (id: string) => {
-    // @TODO - sdisalvo: hook up function to delete credential
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.deleteCredential(id);
-    const creds = credsCache.filter((item) => item.id !== id);
-    dispatch(setCredsCache(creds));
+    dispatch(setCurrentOperation(toastState.credentialsDeleted));
     resetList();
   };
 
   const handleRestoreCredential = async (id: string) => {
-    // @TODO - sdisalvo: hook up function to restore credential
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.restoreCredential(id);
-    const creds = [...credsCache];
-    for (const i in creds) {
-      if (creds[i].id == id) {
-        creds[i].isArchived = false;
-        break;
-      }
-    }
-    dispatch(setCredsCache(creds));
+    dispatch(setCurrentOperation(toastState.credentialsRestored));
     resetList();
   };
 

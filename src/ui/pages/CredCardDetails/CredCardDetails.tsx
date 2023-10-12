@@ -37,24 +37,15 @@ import {
 } from "../../components/Alert";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
-import {
-  defaultCredentialsCardData,
-  operationState,
-  toastState,
-} from "../../constants/dictionary";
+import { operationState, toastState } from "../../constants/dictionary";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { CredentialDetails } from "../../../core/agent/agent.types";
 import { AriesAgent } from "../../../core/agent/agent";
-import {
-  getCredsCache,
-  setCredsCache,
-} from "../../../store/reducers/credsCache";
 
 const CredCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const credsCache = useAppSelector(getCredsCache);
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteArchiveIsOpen, setAlertDeleteArchiveIsOpen] =
     useState(false);
@@ -63,20 +54,37 @@ const CredCardDetails = () => {
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<CredentialDetails>();
-  const isArchived = cardData?.isArchived;
+  const [isArchived, setIsArchived] = useState(false);
 
   useEffect(() => {
-    async function getCredDetails() {
-      const cardDetails =
-        await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
-      setCardData(cardDetails);
-    }
     getCredDetails();
+    getArchivedCreds();
   }, [params.id]);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
+    getCredDetails();
+    getArchivedCreds();
   });
+
+  const getCredDetails = async () => {
+    const cardDetails =
+      await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
+    setCardData(cardDetails);
+  };
+
+  const getArchivedCreds = async () => {
+    try {
+      const archivedCreds = await AriesAgent.agent.credentials.getCredentials(
+        true
+      );
+      setIsArchived(
+        !!archivedCreds.filter((item) => item.id === params.id).length
+      );
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
+    }
+  };
 
   const handleDone = () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
@@ -93,44 +101,32 @@ const CredCardDetails = () => {
   };
 
   const handleArchiveCredential = async () => {
-    // @TODO - sdisalvo: hook up function to archive credential
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.archiveCredential(params.id);
-    const creds = [...credsCache];
-    for (const i in creds) {
-      if (creds[i].id == params.id) {
-        creds[i].isArchived = true;
-        break;
-      }
-    }
-    dispatch(setCredsCache(creds));
+    dispatch(setCurrentOperation(toastState.credentialArchived));
     handleDone();
   };
 
   const handleDeleteCredential = async () => {
-    // @TODO - sdisalvo: hook up function to delete credential
-    setVerifyPasswordIsOpen(false);
-    setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.deleteCredential(params.id);
-    const creds = credsCache.filter((item) => item.id !== params.id);
-    dispatch(setCredsCache(creds));
-    handleDone();
+    dispatch(setCurrentOperation(toastState.credentialDeleted));
   };
 
   const handleRestoreCredential = async () => {
-    // @TODO - sdisalvo: hook up function to restore credential
+    await AriesAgent.agent.credentials.restoreCredential(params.id);
+    dispatch(setCurrentOperation(toastState.credentialRestored));
+    handleDone();
+  };
+
+  const onVerify = () => {
+    if (isArchived) {
+      handleDeleteCredential();
+    } else {
+      handleArchiveCredential();
+    }
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
-    await AriesAgent.agent.credentials.restoreCredential(params.id);
-    const creds = [...credsCache];
-    for (const i in creds) {
-      if (creds[i].id == params.id) {
-        creds[i].isArchived = false;
-        break;
-      }
-    }
-    dispatch(setCredsCache(creds));
     handleDone();
   };
 
@@ -361,7 +357,7 @@ const CredCardDetails = () => {
             shape="round"
             expand="block"
             color="danger"
-            data-testid="card-details-delete-button"
+            data-testid="card-details-delete-archive-button"
             className="delete-button"
             onClick={() => {
               setAlertDeleteArchiveIsOpen(true);
@@ -369,7 +365,7 @@ const CredCardDetails = () => {
                 setCurrentOperation(
                   isArchived
                     ? operationState.deleteCredential
-                    : operationState.restoreCredential
+                    : operationState.archiveCredential
                 )
               );
             }}
@@ -443,16 +439,12 @@ const CredCardDetails = () => {
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
-          onVerify={
-            isArchived ? handleDeleteCredential : handleArchiveCredential
-          }
+          onVerify={onVerify}
         />
         <VerifyPasscode
           isOpen={verifyPasscodeIsOpen}
           setIsOpen={setVerifyPasscodeIsOpen}
-          onVerify={
-            isArchived ? handleDeleteCredential : handleArchiveCredential
-          }
+          onVerify={onVerify}
         />
       </TabLayout>
     </IonPage>
