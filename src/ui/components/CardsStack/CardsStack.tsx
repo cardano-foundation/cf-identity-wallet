@@ -36,11 +36,6 @@ const CredCard = ({
     zIndex: index,
   };
 
-  const handleArchiveCredential = async (id: string) => {
-    // @TODO - sdisalvo: TO BE REMOVED temporary function to archive credential
-    await AriesAgent.agent.credentials.archiveCredential(id);
-  };
-
   return (
     <>
       <div
@@ -51,8 +46,7 @@ const CredCard = ({
         className={`cards-stack-card ${isActive ? "active" : ""}`}
         onClick={() => {
           if (cardData.status === CredentialMetadataRecordStatus.PENDING) {
-            //  setAlertIsOpen(true);
-            handleArchiveCredential(cardData.id);
+            setAlertIsOpen(true);
           } else if (onHandleShowCardDetails) {
             onHandleShowCardDetails(index);
           }

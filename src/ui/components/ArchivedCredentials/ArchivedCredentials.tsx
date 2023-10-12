@@ -34,6 +34,10 @@ import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
 import { ArchivedCredentialsProps } from "./ArchivedCredentials.types";
 import { toastState } from "../../constants/dictionary";
+import {
+  getCredsCache,
+  setCredsCache,
+} from "../../../store/reducers/credsCache";
 
 const ArchivedCredentials = ({
   archivedCredentialsIsOpen,
@@ -41,6 +45,7 @@ const ArchivedCredentials = ({
 }: ArchivedCredentialsProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const credsCache = useAppSelector(getCredsCache);
   const stateCache = useAppSelector(getStateCache);
   const [archivedCreds, setArchivedCreds] = useState<CredentialShortDetails[]>(
     []
@@ -156,12 +161,22 @@ const ArchivedCredentials = ({
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.deleteCredential(id);
+    setArchivedCreds(credsCache.filter((item) => item.id !== id));
   };
 
   const handleRestoreCredential = async (id: string) => {
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.restoreCredential(id);
+    setArchivedCreds(credsCache.filter((item) => item.id !== id));
+    try {
+      const metadata = await AriesAgent.agent.credentials.getMetadataById(id);
+      const creds =
+        await AriesAgent.agent.credentials.getCredentialShortDetails(metadata);
+      dispatch(setCredsCache([...credsCache, creds]));
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
+    }
   };
 
   return (

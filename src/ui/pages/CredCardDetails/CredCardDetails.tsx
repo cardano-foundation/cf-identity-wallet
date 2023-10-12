@@ -25,7 +25,6 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getCurrentOperation,
   getStateCache,
   setCurrentOperation,
   setCurrentRoute,
@@ -42,12 +41,16 @@ import { operationState, toastState } from "../../constants/dictionary";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { CredentialDetails } from "../../../core/agent/agent.types";
 import { AriesAgent } from "../../../core/agent/agent";
+import {
+  getCredsCache,
+  setCredsCache,
+} from "../../../store/reducers/credsCache";
 
 const CredCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const credsCache = useAppSelector(getCredsCache);
   const stateCache = useAppSelector(getStateCache);
-  const currentOperation = useAppSelector(getCurrentOperation);
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteArchiveIsOpen, setAlertDeleteArchiveIsOpen] =
     useState(false);
@@ -106,6 +109,8 @@ const CredCardDetails = () => {
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.archiveCredential(params.id);
+    const creds = credsCache.filter((item) => item.id !== params.id);
+    dispatch(setCredsCache(creds));
     dispatch(setCurrentOperation(toastState.credentialArchived));
     handleDone();
   };
@@ -117,6 +122,16 @@ const CredCardDetails = () => {
 
   const handleRestoreCredential = async () => {
     await AriesAgent.agent.credentials.restoreCredential(params.id);
+    try {
+      const metadata = await AriesAgent.agent.credentials.getMetadataById(
+        params.id
+      );
+      const creds =
+        await AriesAgent.agent.credentials.getCredentialShortDetails(metadata);
+      dispatch(setCredsCache([...credsCache, creds]));
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
+    }
     dispatch(setCurrentOperation(toastState.credentialRestored));
     history.push(TabsRoutePath.CREDS);
   };

@@ -24,6 +24,7 @@ import { ConnectModal } from "../../components/ConnectModal";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialShortDetails } from "../../components/CardsStack/CardsStack.types";
+import { getCredsCache } from "../../../store/reducers/credsCache";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -66,10 +67,11 @@ const AdditionalButtons = ({
 
 const Creds = () => {
   const dispatch = useAppDispatch();
+  const credsCache = useAppSelector(getCredsCache);
   const currentOperation = useAppSelector(getCurrentOperation);
-  const [currentCreds, setCurrentCreds] = useState<CredentialShortDetails[]>(
-    []
-  );
+  const [currentCreds, setCurrentCreds] = useState<CredentialShortDetails[]>([
+    ...credsCache,
+  ]);
   const [archivedCreds, setArchivedCreds] = useState<CredentialShortDetails[]>(
     []
   );
