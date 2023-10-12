@@ -156,16 +156,12 @@ const ArchivedCredentials = ({
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.deleteCredential(id);
-    dispatch(setCurrentOperation(toastState.credentialsDeleted));
-    resetList();
   };
 
   const handleRestoreCredential = async (id: string) => {
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.restoreCredential(id);
-    dispatch(setCurrentOperation(toastState.credentialsRestored));
-    resetList();
   };
 
   return (
@@ -295,25 +291,49 @@ const ArchivedCredentials = ({
         cancelButtonText={`${i18n.t(
           "creds.card.details.alert.restore.cancel"
         )}`}
-        actionConfirm={() =>
-          selectedCredentials.forEach((id) => handleRestoreCredential(id))
-        }
+        actionConfirm={() => {
+          selectedCredentials.forEach((id) => handleRestoreCredential(id));
+          dispatch(
+            setCurrentOperation(
+              selectedCredentials.length === 1
+                ? toastState.credentialRestored
+                : toastState.credentialsRestored
+            )
+          );
+          resetList();
+        }}
         actionCancel={() => dispatch(setCurrentOperation(""))}
         actionDismiss={() => dispatch(setCurrentOperation(""))}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={() =>
-          selectedCredentials.forEach((id) => handleDeleteCredential(id))
-        }
+        onVerify={() => {
+          selectedCredentials.forEach((id) => handleDeleteCredential(id));
+          dispatch(
+            setCurrentOperation(
+              selectedCredentials.length === 1
+                ? toastState.credentialDeleted
+                : toastState.credentialsDeleted
+            )
+          );
+          resetList();
+        }}
       />
       <VerifyPasscode
         isOpen={verifyPasscodeIsOpen}
         setIsOpen={setVerifyPasscodeIsOpen}
-        onVerify={() =>
-          selectedCredentials.forEach((id) => handleDeleteCredential(id))
-        }
+        onVerify={() => {
+          selectedCredentials.forEach((id) => handleDeleteCredential(id));
+          dispatch(
+            setCurrentOperation(
+              selectedCredentials.length === 1
+                ? toastState.credentialDeleted
+                : toastState.credentialsDeleted
+            )
+          );
+          resetList();
+        }}
       />
     </IonModal>
   );
