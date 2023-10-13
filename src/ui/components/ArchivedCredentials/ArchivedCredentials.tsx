@@ -142,14 +142,7 @@ const ArchivedCredentials = ({
 
   const handleSelectCredentials = (id: string) => {
     let data = selectedCredentials;
-    let match = false;
-    for (let i = 0; i < data.length; i++) {
-      if (data[i] === id) {
-        match = true;
-        break;
-      }
-    }
-    if (match) {
+    if (data.find((item) => item === id)) {
       data = data.filter((item) => item !== id);
     } else {
       data = [...selectedCredentials, id];
