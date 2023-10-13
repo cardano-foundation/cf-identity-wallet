@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
-import { IonChip, IonIcon } from "@ionic/react";
+import { IonButton, IonChip, IonIcon, IonLabel } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
 import { formatShortDate } from "../../../utils";
 import { i18n } from "../../../i18n";
@@ -18,6 +18,7 @@ import {
 import { cardTypes } from "../../constants/dictionary";
 import { Alert } from "../Alert";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -29,12 +30,6 @@ const CredCard = ({
   onHandleShowCardDetails,
 }: CredCardProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  let shadowClass = "";
-  if (index === 0) {
-    shadowClass = "bottom-shadow";
-  } else if (index !== 0) {
-    shadowClass = "top-shadow";
-  }
 
   const divStyle = {
     background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
@@ -48,9 +43,7 @@ const CredCard = ({
         data-testid={`cred-card-stack${
           index !== undefined ? `-index-${index}` : ""
         }`}
-        className={`cards-stack-card ${
-          isActive ? "active" : ""
-        } ${shadowClass}`}
+        className={`cards-stack-card ${isActive ? "active" : ""}`}
         onClick={() => {
           if (cardData.status === CredentialMetadataRecordStatus.PENDING) {
             setAlertIsOpen(true);

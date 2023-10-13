@@ -326,7 +326,8 @@
   "creds": {
     "tab": {
       "title": "Credentials",
-      "create": "Add a credential"
+      "create": "Add a credential",
+      "viewarchived": "View archived credentials"
     },
     "card": {
       "layout": {
@@ -335,6 +336,7 @@
       },
       "details": {
         "done": "Done",
+        "restore": "Restore",
         "types": "Types",
         "attributes": "Attributes",
         "connection": "Connection",
@@ -344,7 +346,7 @@
         "options": {
           "title": "Credential options",
           "view": "View JSON",
-          "delete": "Delete credential"
+          "archive": "Archive credential"
         },
         "view": {
           "cancel": "Cancel",
@@ -352,11 +354,24 @@
           "copy": "Copy JSON",
           "save": "Save to device"
         },
-        "delete": {
-          "button": "Delete credential",
-          "alert": {
+        "button": {
+          "delete": "Delete credential",
+          "archive": "Archive credential"
+        },
+        "alert": {
+          "archive": {
+            "title": "Are you sure you want to archive this credential?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          },
+          "delete": {
             "title": "Are you sure you want to delete this credential?",
             "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          },
+          "restore": {
+            "title": "Are you sure you want to view this with your other credentials?",
+            "confirm": "Yes, restore credential",
             "cancel": "Cancel"
           }
         },
@@ -369,6 +384,39 @@
       "alert": {
         "title": "Once this credential is visible you'll receive a notification. Until then you won't be able to access more details.",
         "confirm": "Ok"
+      }
+    },
+    "archived": {
+      "title": "Archived",
+      "done": "Done",
+      "edit": "Edit",
+      "selectall": "Select All",
+      "deselectall": "Deselect all",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "restore": "Restore",
+      "selectedamount": "{{amount}} Credentials Selected",
+      "alert": {
+        "restoresingle": {
+          "title": "Are you sure you want to view this with your other credentials?",
+          "confirm": "Yes, restore credential",
+          "cancel": "Cancel"
+        },
+        "restoremultiple": {
+          "title": "Are you sure you want to view these with your other credentials?",
+          "confirm": "Yes, restore credentials",
+          "cancel": "Cancel"
+        },
+        "deletesingle": {
+          "title": "This will delete the selected credential from your wallet permanently",
+          "confirm": "Delete from wallet",
+          "cancel": "Cancel"
+        },
+        "deletemultiple": {
+          "title": "This will delete the selected credentials from your wallet permanently",
+          "confirm": "Delete from wallet",
+          "cancel": "Cancel"
+        }
       }
     }
   },
@@ -553,6 +601,10 @@
     "identityrenamed": "Identity successfully renamed",
     "identitydeleted": "Identity successfully deleted",
     "credentialdeleted": "Credential deleted successfully",
+    "credentialsdeleted": "Credentials deleted successfully",
+    "credentialarchived": "Credential archived successfully",
+    "credentialrestored": "Credential restored successfully",
+    "credentialsrestored": "Credentials restored successfully",
     "connectiondeleted": "Connection deleted successfully",
     "qrsuccess": "QR code scanned successfully",
     "qrerror": "QR code not recognised",

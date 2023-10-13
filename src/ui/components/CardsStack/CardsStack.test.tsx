@@ -39,36 +39,6 @@ describe("Cards Stack Component", () => {
     expect(firstCardId).toBeInTheDocument();
   });
 
-  test("It renders correct shadow on Did card", () => {
-    const { getByTestId } = render(
-      <Provider store={store}>
-        <CardsStack
-          cardsType={cardTypes.dids}
-          cardsData={identityFix}
-        />
-      </Provider>
-    );
-    const firstCard = getByTestId("did-card-stack-index-0");
-    expect(firstCard).toHaveClass("bottom-shadow");
-    const secondCard = getByTestId("did-card-stack-index-1");
-    expect(secondCard).toHaveClass("top-shadow");
-  });
-
-  test("It renders correct shadow on Cred card", () => {
-    const { getByTestId } = render(
-      <Provider store={store}>
-        <CardsStack
-          cardsType={cardTypes.creds}
-          cardsData={credsFix}
-        />
-      </Provider>
-    );
-    const firstCard = getByTestId("cred-card-stack-index-0");
-    expect(firstCard).toHaveClass("bottom-shadow");
-    const secondCard = getByTestId("cred-card-stack-index-1");
-    expect(secondCard).toHaveClass("top-shadow");
-  });
-
   test("It renders on Cred card with card pending", () => {
     const { getByText } = render(
       <Provider store={store}>

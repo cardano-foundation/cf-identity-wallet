@@ -14,7 +14,7 @@ import {
 } from "@ionic/react";
 import {
   codeSlashOutline,
-  trashOutline,
+  archiveOutline,
   copyOutline,
   downloadOutline,
 } from "ionicons/icons";
@@ -32,16 +32,16 @@ import {
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { credsFix } from "../../__fixtures__/credsFix";
-import { setCredsCache } from "../../../store/reducers/credsCache";
 import { VerifyPasscode } from "../VerifyPasscode";
 import { operationState, toastState } from "../../constants/dictionary";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../../utils/clipboard";
 
 const CredsOptions = ({
+  id,
   optionsIsOpen,
   setOptionsIsOpen,
-  id,
+  credsOptionAction,
 }: CredsOptionsProps) => {
   const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
@@ -79,8 +79,7 @@ const CredsOptions = ({
     handleCloseOptions();
     // @TODO - sdisalvo: Update Database.
     // Remember to update CredCardDetails file too.
-    const updatedCreds = credsFix.filter((item) => item.id !== id);
-    dispatch(setCredsCache(updatedCreds));
+    credsOptionAction();
     handleDone();
   };
 
@@ -137,11 +136,11 @@ const CredsOptions = ({
                   </span>
                   <span
                     className="creds-option"
-                    data-testid="creds-options-delete-button"
+                    data-testid="creds-options-archive-button"
                     onClick={() => {
                       handleDelete();
                       dispatch(
-                        setCurrentOperation(operationState.deleteCredential)
+                        setCurrentOperation(operationState.archiveCredential)
                       );
                     }}
                   >
@@ -149,12 +148,12 @@ const CredsOptions = ({
                       <IonButton shape="round">
                         <IonIcon
                           slot="icon-only"
-                          icon={trashOutline}
+                          icon={archiveOutline}
                         />
                       </IonButton>
                     </span>
                     <span className="creds-options-label">
-                      {i18n.t("creds.card.details.options.delete")}
+                      {i18n.t("creds.card.details.options.archive")}
                     </span>
                   </span>
                 </IonCol>
@@ -234,11 +233,13 @@ const CredsOptions = ({
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm"
-        headerText={i18n.t("creds.card.details.delete.alert.title")}
+        headerText={i18n.t("creds.card.details.alert.archive.title")}
         confirmButtonText={`${i18n.t(
-          "creds.card.details.delete.alert.confirm"
+          "creds.card.details.alert.archive.confirm"
         )}`}
-        cancelButtonText={`${i18n.t("creds.card.details.delete.alert.cancel")}`}
+        cancelButtonText={`${i18n.t(
+          "creds.card.details.alert.archive.cancel"
+        )}`}
         actionConfirm={() => {
           if (
             !stateCache?.authentication.passwordIsSkipped &&

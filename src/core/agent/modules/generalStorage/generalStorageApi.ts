@@ -2,9 +2,6 @@ import { AgentContext, DidRepository, injectable } from "@aries-framework/core";
 import {
   CryptoAccountRecord,
   CryptoAccountRepository,
-  MiscRecord,
-  MiscRecordId,
-  MiscRepository,
   IdentifierMetadataRepository,
   IdentifierMetadataRecord,
   CredentialMetadataRecord,
@@ -18,32 +15,21 @@ import { IdentifierType } from "../../agent.types";
  */
 @injectable()
 export class GeneralStorageApi {
-  private miscRepository: MiscRepository;
   private cryptoAccountRepository: CryptoAccountRepository;
   private identifierMetadataRepository: IdentifierMetadataRepository;
   private credentialMetadataRepository: CredentialMetadataRepository;
   private agentContext: AgentContext;
 
   constructor(
-    settingsMiscRepository: MiscRepository,
     settingsCryptoAccountRepository: CryptoAccountRepository,
     settingIdentifierMetadataRepository: IdentifierMetadataRepository,
     settingsCredentialMetadataRepository: CredentialMetadataRepository,
     agentContext: AgentContext
   ) {
-    this.miscRepository = settingsMiscRepository;
     this.cryptoAccountRepository = settingsCryptoAccountRepository;
     this.identifierMetadataRepository = settingIdentifierMetadataRepository;
     this.credentialMetadataRepository = settingsCredentialMetadataRepository;
     this.agentContext = agentContext;
-  }
-
-  async saveMiscRecord(record: MiscRecord): Promise<void> {
-    await this.miscRepository.save(this.agentContext, record);
-  }
-
-  async getMiscRecordById(id: MiscRecordId): Promise<MiscRecord> {
-    return this.miscRepository.getById(this.agentContext, id);
   }
 
   async saveCryptoRecord(record: CryptoAccountRecord): Promise<void> {
@@ -165,6 +151,14 @@ export class GeneralStorageApi {
       this.agentContext,
       { credentialRecordId }
     );
+  }
+
+  async getCredentialMetadataByConnectionId(
+    connectionId: string
+  ): Promise<CredentialMetadataRecord[]> {
+    return this.credentialMetadataRepository.findByQuery(this.agentContext, {
+      connectionId,
+    });
   }
 
   async deleteCredentialMetadata(id: string): Promise<void> {

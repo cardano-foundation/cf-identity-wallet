@@ -31,6 +31,10 @@
     justify-content: space-between;
 
     &.pending {
+      .card-body {
+        margin-inline: 5rem;
+      }
+
       .card-body,
       .card-footer-column-value {
         opacity: 0.4;
@@ -78,7 +82,6 @@
       font-size: 0.625rem;
       letter-spacing: 0.09375rem;
       text-align: center;
-      margin-inline: 5rem;
     }
 
     .card-footer {
@@ -116,14 +119,14 @@
   }
 }
 
-.top-shadow {
-  box-shadow: 0px -5px 5px rgba(54, 60, 74, 0.25);
-}
-
-.bottom-shadow {
+.cards-stack-card {
   box-shadow: 0px 5px 5px rgba(54, 60, 74, 0.25);
+
+  &:not(:first-child) {
+    margin-top: -10rem;
+  }
 }
 
-.cards-stack-card:not(:first-child) {
-  margin-top: -10rem;
+.card-details .cards-stack-card:first-child {
+  box-shadow: 0px -5px 5px rgba(54, 60, 74, 0.25);
 }

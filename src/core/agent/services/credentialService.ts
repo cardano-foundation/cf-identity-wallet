@@ -210,7 +210,6 @@ class CredentialService extends AgentService {
   async deleteCredential(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
-    await this.agent.credentials.deleteById(id);
     await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
   }
 
@@ -263,7 +262,7 @@ class CredentialService extends AgentService {
     }
   }
 
-  private async getMetadataById(id: string): Promise<CredentialMetadataRecord> {
+  async getMetadataById(id: string): Promise<CredentialMetadataRecord> {
     const metadata =
       await this.agent.modules.generalStorage.getCredentialMetadata(id);
     if (!metadata) {
