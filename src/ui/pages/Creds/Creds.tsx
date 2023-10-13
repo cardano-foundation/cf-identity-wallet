@@ -106,7 +106,7 @@ const Creds = () => {
           )}
           <ConnectModal
             type={connectionType.credential}
-            ConnectModalIsOpen={addCredentialIsOpen}
+            connectModalIsOpen={addCredentialIsOpen}
             setConnectModalIsOpen={setAddCredentialIsOpen}
           />
         </TabLayout>

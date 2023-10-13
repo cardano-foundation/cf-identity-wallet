@@ -12,15 +12,19 @@ body {
     text-transform: none;
   }
 
-  &.scanner-active > div:last-child {
-    display: block;
-    z-index: -10;
-    --background: var(--ion-color-secondary) !important;
-    --ion-background-color: var(--ion-color-secondary) !important;
-    background-color: var(--ion-color-secondary) !important;
+  &.scanner-active {
+    background-color: transparent;
 
-    &.hide {
-      display: none;
+    > div:last-child {
+      display: block;
+      z-index: -10;
+      --background: var(--ion-color-secondary) !important;
+      --ion-background-color: var(--ion-color-secondary) !important;
+      background-color: var(--ion-color-secondary) !important;
+
+      &.hide {
+        display: none;
+      }
     }
   }
 }

@@ -96,6 +96,11 @@ const connectionAcceptedRecordAutoAccept = new ConnectionRecord({
   role: DidExchangeRole.Responder,
   autoAcceptConnection: false,
 });
+const connectionAcceptedRecord = new ConnectionRecord({
+  state: DidExchangeState.ResponseSent,
+  role: DidExchangeRole.Responder,
+  autoAcceptConnection: true,
+});
 const requestedConnectionRecord = new ConnectionRecord({
   state: DidExchangeState.RequestSent,
   role: DidExchangeRole.Requester,
@@ -154,6 +159,12 @@ describe("Connection service of agent - ConnectionRecord helpers", () => {
         connectionAcceptedRecordAutoAccept
       )
     ).toBe(false);
+  });
+
+  test("connection record represents accepted", () => {
+    expect(
+      connectionService.isConnectionResponseSent(connectionAcceptedRecord)
+    ).toBe(true);
   });
 
   // Acceptance to incoming connections

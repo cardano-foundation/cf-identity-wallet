@@ -21,6 +21,7 @@ import { useAppDispatch } from "../../../store/hooks";
 const ConnectionOptions = ({
   optionsIsOpen,
   setOptionsIsOpen,
+  handleEdit,
   handleDelete,
 }: ConnectionOptionsProps) => {
   const dispatch = useAppDispatch();
@@ -55,7 +56,11 @@ const ConnectionOptions = ({
                 <IonCol size="12">
                   <span
                     className="connection-options-option"
-                    data-testid="connection-options-identity-options-button"
+                    data-testid="connection-options-manage-button"
+                    onClick={() => {
+                      setOptionsIsOpen(false);
+                      handleEdit(true);
+                    }}
                   >
                     <span>
                       <IonButton shape="round">
@@ -66,7 +71,7 @@ const ConnectionOptions = ({
                       </IonButton>
                     </span>
                     <span className="connection-options-label">
-                      {i18n.t("connections.details.options.labels.edit")}
+                      {i18n.t("connections.details.options.labels.manage")}
                     </span>
                   </span>
                   <span
