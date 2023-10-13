@@ -10,6 +10,9 @@ interface TabLayoutProps {
   titleAction?: () => void;
   menuButton?: boolean;
   additionalButtons?: ReactNode;
+  actionButton?: boolean;
+  actionButtonAction?: () => void;
+  actionButtonLabel?: string;
   children?: ReactNode;
 }
 

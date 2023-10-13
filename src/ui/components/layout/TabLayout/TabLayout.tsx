@@ -21,6 +21,9 @@ const TabLayout = ({
   titleAction,
   menuButton,
   additionalButtons,
+  actionButton,
+  actionButtonAction,
+  actionButtonLabel,
   children,
 }: TabLayoutProps) => {
   return (
@@ -56,6 +59,16 @@ const TabLayout = ({
 
             <IonButtons slot="end">
               {additionalButtons}
+
+              {actionButton && actionButtonLabel && (
+                <IonButton
+                  className="action-button-label"
+                  onClick={actionButtonAction}
+                  data-testid="action-button"
+                >
+                  {actionButtonLabel}
+                </IonButton>
+              )}
 
               {menuButton && (
                 <IonButton

@@ -258,7 +258,7 @@ class CredentialService extends AgentService {
     }
   }
 
-  private async getMetadataById(id: string): Promise<CredentialMetadataRecord> {
+  async getMetadataById(id: string): Promise<CredentialMetadataRecord> {
     const metadata =
       await this.agent.modules.generalStorage.getCredentialMetadata(id);
     if (!metadata) {
