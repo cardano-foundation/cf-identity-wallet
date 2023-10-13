@@ -16,6 +16,7 @@ import {
   trashOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
+import { JsonObject } from "@aries-framework/core";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
@@ -33,11 +34,7 @@ import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
-import {
-  defaultCredentialsCardData,
-  operationState,
-  toastState,
-} from "../../constants/dictionary";
+import { operationState, toastState } from "../../constants/dictionary";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { CredentialDetails } from "../../../core/agent/agent.types";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -57,6 +54,7 @@ const CredCardDetails = () => {
     async function getCredDetails() {
       const cardDetails =
         await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
+
       setCardData(cardDetails);
     }
     getCredDetails();
@@ -185,7 +183,7 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {credentialSubject.type as string}
+                  {(credentialSubject.degree as JsonObject).type as string}
                 </span>
               </span>
               <span className="card-details-info-block-line">
@@ -197,7 +195,7 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {`${credentialSubject.name}`}
+                  {(credentialSubject.degree as JsonObject).name as string}
                 </span>
               </span>
             </div>
@@ -295,8 +293,10 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {cardData.proofValue?.substring(0, 13)}...
-                  {cardData.proofValue?.slice(-5)}
+                  {cardData.proofValue &&
+                    cardData.proofValue?.substring(0, 13) +
+                      "..." +
+                      cardData.proofValue?.slice(-5)}
                 </span>
                 <span>
                   <IonButton
