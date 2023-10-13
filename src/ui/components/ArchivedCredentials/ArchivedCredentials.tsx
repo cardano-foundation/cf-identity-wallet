@@ -160,8 +160,12 @@ const ArchivedCredentials = ({
   const handleDeleteCredential = async (id: string) => {
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
-    await AriesAgent.agent.credentials.deleteCredential(id);
-    setArchivedCreds(credsCache.filter((item) => item.id !== id));
+    try {
+      await AriesAgent.agent.credentials.deleteCredential(id);
+      setArchivedCreds(credsCache.filter((item) => item.id !== id));
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
+    }
   };
 
   const handleRestoreCredential = async (id: string) => {

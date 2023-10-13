@@ -101,8 +101,12 @@ const CredCardDetails = () => {
   };
 
   const handleDeleteCredential = async () => {
-    await AriesAgent.agent.credentials.deleteCredential(params.id);
-    dispatch(setCurrentOperation(toastState.credentialDeleted));
+    try {
+      await AriesAgent.agent.credentials.deleteCredential(params.id);
+      dispatch(setCurrentOperation(toastState.credentialDeleted));
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
+    }
   };
 
   const handleRestoreCredential = async () => {
