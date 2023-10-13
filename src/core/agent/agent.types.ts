@@ -21,7 +21,7 @@ enum GenericRecordType {
 }
 
 enum ConnectionHistoryType {
-  CREDENTIAL,
+  CREDENTIAL_ACCEPTED,
 }
 
 interface ConnectionHistoryItem {
