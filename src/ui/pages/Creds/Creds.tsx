@@ -24,7 +24,10 @@ import { ConnectModal } from "../../components/ConnectModal";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialShortDetails } from "../../components/CardsStack/CardsStack.types";
-import { getCredsCache } from "../../../store/reducers/credsCache";
+import {
+  getCredsCache,
+  setCredsCache,
+} from "../../../store/reducers/credsCache";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -84,6 +87,7 @@ const Creds = () => {
     try {
       const creds = await AriesAgent.agent.credentials.getCredentials();
       setCurrentCreds(creds);
+      dispatch(setCredsCache(creds));
     } catch (e) {
       // @TODO - sdisalvo: handle error
     }

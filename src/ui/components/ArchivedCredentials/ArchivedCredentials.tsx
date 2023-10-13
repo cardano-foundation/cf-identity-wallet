@@ -321,8 +321,14 @@ const ArchivedCredentials = ({
           );
           resetList();
         }}
-        actionCancel={() => dispatch(setCurrentOperation(""))}
-        actionDismiss={() => dispatch(setCurrentOperation(""))}
+        actionCancel={() => {
+          dispatch(setCurrentOperation(""));
+          setArchivedCredentialsIsOpen(false);
+        }}
+        actionDismiss={() => {
+          dispatch(setCurrentOperation(""));
+          setArchivedCredentialsIsOpen(false);
+        }}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
