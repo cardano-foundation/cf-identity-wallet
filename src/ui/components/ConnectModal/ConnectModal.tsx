@@ -7,6 +7,7 @@ import {
   IonIcon,
 } from "@ionic/react";
 import { scanCircleOutline, qrCodeOutline } from "ionicons/icons";
+import { useState } from "react";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { ConnectModalProps } from "./ConnectModal.types";
@@ -14,6 +15,9 @@ import "./ConnectModal.scss";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { operationState } from "../../constants/dictionary";
+import { ShareQR } from "../ShareQR/ShareQR";
+import { AriesAgent } from "../../../core/agent/agent";
+import { MoreOptions } from "../ShareQR/MoreOptions";
 
 const ConnectModal = ({
   type,
@@ -21,6 +25,14 @@ const ConnectModal = ({
   setConnectModalIsOpen,
 }: ConnectModalProps) => {
   const dispatch = useAppDispatch();
+  const [invitationLink, setInvitationLink] = useState<string>();
+
+  async function handleProvideQr() {
+    const invitationLink =
+      await AriesAgent.agent.connections.createMediatorInvitation();
+    setInvitationLink(invitationLink.invitationUrl);
+  }
+
   return (
     <IonModal
       isOpen={connectModalIsOpen}
@@ -66,6 +78,7 @@ const ConnectModal = ({
                 <span
                   className="add-connection-modal-option"
                   data-testid="add-connection-modal-provide-qr-code"
+                  onClick={handleProvideQr}
                 >
                   <span>
                     <IonButton shape="round">
@@ -82,6 +95,24 @@ const ConnectModal = ({
               </IonCol>
             </IonRow>
           </IonGrid>
+          {invitationLink && (
+            <ShareQR
+              isOpen={!!invitationLink}
+              setIsOpen={() => setInvitationLink(undefined)}
+              header={{
+                title: i18n.t("connectmodal.connect"),
+                titlePosition: "center",
+              }}
+              content={{
+                QRData: invitationLink,
+              }}
+              moreComponent={<MoreOptions text={""} />}
+              modalOptions={{
+                initialBreakpoint: 0.65,
+                breakpoints: [0, 0.65],
+              }}
+            />
+          )}
         </PageLayout>
       </div>
     </IonModal>

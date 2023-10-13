@@ -418,6 +418,7 @@
   "connectmodal": {
     "title": "Add a ",
     "scan": "Scan a QR code",
+    "connect": "Scan to connect",
     "provide": "Provide a QR code"
   },
   "verifypassword": {
@@ -542,6 +543,10 @@
       "divider": "or",
       "more": "More share options"
     }
+  },
+  "shareqr": {
+    "divider": "or",
+    "more": "More share options"
   },
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",

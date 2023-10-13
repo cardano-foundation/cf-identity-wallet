@@ -1,4 +1,4 @@
-.receive-crypto-modal {
+.share-qr-modal {
   ion-toolbar {
     margin: 0.625rem auto;
 
@@ -57,7 +57,7 @@
     border-radius: 1rem;
   }
 
-  .receive-crypto-modal-blur-overlay-container {
+  .share-qr-modal-blur-overlay-container {
     position: absolute;
     left: calc(50% - (16.875rem / 2));
     height: 16.875rem;
@@ -67,7 +67,7 @@
     border-radius: 1rem;
     box-shadow: 0px 2px 4px rgba(54, 60, 74, 0.2);
 
-    .receive-crypto-modal-blur-overlay-inner {
+    .share-qr-modal-blur-overlay-inner {
       display: none;
     }
   }
@@ -78,7 +78,7 @@
       opacity: 0.3;
     }
 
-    .receive-crypto-modal-blur-overlay-inner {
+    .share-qr-modal-blur-overlay-inner {
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -94,31 +94,31 @@
       }
     }
 
-    .receive-crypto-modal-info-block-data {
+    .share-qr-modal-info-block-data {
       letter-spacing: 0.3125rem;
     }
   }
 
-  .receive-crypto-modal-divider {
+  .share-qr-modal-divider {
     display: flex;
     margin: 1.56rem auto;
 
-    .receive-crypto-modal-divider-line {
+    .share-qr-modal-divider-line {
       border-bottom: 1px solid var(--ion-color-dark-grey);
       display: flex;
       flex-grow: 2;
       margin-bottom: 0.5rem;
     }
-    .receive-crypto-modal-divider-text {
+    .share-qr-modal-divider-text {
       margin-inline: 0.5rem;
     }
   }
 
-  .receive-crypto-modal-content {
+  .share-qr-modal-content {
     margin-top: 1.56rem;
   }
 
-  .receive-crypto-modal-info-block {
+  .share-qr-modal-info-block {
     margin-inline: calc((100% - 270px) / 2);
 
     h3 {
@@ -126,7 +126,7 @@
       margin-bottom: 0.63rem;
       text-align: center;
     }
-    .receive-crypto-modal-info-block-inner {
+    .share-qr-modal-info-block-inner {
       display: flex;
       flex-direction: column;
       background-color: white;
@@ -134,10 +134,10 @@
       border-radius: 1.875rem;
       padding: 0.7rem 1.3rem;
 
-      .receive-crypto-modal-info-block-line {
+      .share-qr-modal-info-block-line {
         display: flex;
 
-        .receive-crypto-modal-info-block-data {
+        .share-qr-modal-info-block-data {
           flex-grow: 1;
           display: flex;
           flex-direction: column;
@@ -168,7 +168,7 @@
     }
   }
 
-  .receive-crypto-modal-option {
+  .share-qr-modal-option {
     display: flex;
 
     > * {
