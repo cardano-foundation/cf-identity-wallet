@@ -240,7 +240,7 @@ class ConnectionService extends AgentService {
     histories = histories.concat(
       credentialRecords.map((record) => {
         return {
-          type: ConnectionHistoryType.CREDENTIAL,
+          type: ConnectionHistoryType.CREDENTIAL_ACCEPTED,
           timestamp: record.createdAt.toISOString(),
         };
       })
