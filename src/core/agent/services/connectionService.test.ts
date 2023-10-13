@@ -511,7 +511,7 @@ describe("Connection service of agent", () => {
       await connectionService.getConnectionHistoryById(connectionIdTest)
     ).toEqual([
       {
-        type: ConnectionHistoryType.CREDENTIAL,
+        type: ConnectionHistoryType.CREDENTIAL_ACCEPTED,
         timestamp: nowISO,
       },
     ]);
