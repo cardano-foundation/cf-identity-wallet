@@ -188,7 +188,11 @@ const ArchivedCredentials = ({
       isOpen={archivedCredentialsIsOpen}
       className={""}
       data-testid="archived-credentials"
-      onDidDismiss={() => setArchivedCredentialsIsOpen(false)}
+      onDidDismiss={() => {
+        setArchivedCredentialsIsOpen(false);
+        setActiveList(false);
+        setSelectedCredentials([]);
+      }}
     >
       <div
         className={`archived-credentials modal ${
@@ -321,14 +325,8 @@ const ArchivedCredentials = ({
           );
           resetList();
         }}
-        actionCancel={() => {
-          dispatch(setCurrentOperation(""));
-          setArchivedCredentialsIsOpen(false);
-        }}
-        actionDismiss={() => {
-          dispatch(setCurrentOperation(""));
-          setArchivedCredentialsIsOpen(false);
-        }}
+        actionCancel={() => dispatch(setCurrentOperation(""))}
+        actionDismiss={() => dispatch(setCurrentOperation(""))}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
