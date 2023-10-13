@@ -1,5 +1,7 @@
 import { Request, Response } from "express";
 import { getCache } from "../utils/node-cache";
+import { ResponseData } from "../types/response.type";
+import { generableQRcodeWithUrl, httpResponse } from "../utils/response.util";
 
 function getFullUrl(req: Request, res: Response) {
   const { id } = req.params;
@@ -7,7 +9,18 @@ function getFullUrl(req: Request, res: Response) {
   if (!fullUrl) {
     return res.status(404).send("Url is invalid or expired");
   }
-  return res.redirect(fullUrl);
+  // @TODO: FOR TESTING
+  return res.send(fullUrl);
 }
 
-export { getFullUrl };
+async function createShortenUrl(req: Request, res: Response) {
+  const { url } = req.query;
+  const response: ResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: generableQRcodeWithUrl(url as string),
+  };
+  httpResponse(res, response);
+}
+
+export { getFullUrl, createShortenUrl };

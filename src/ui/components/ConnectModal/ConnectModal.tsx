@@ -8,6 +8,7 @@ import {
 } from "@ionic/react";
 import { scanCircleOutline, qrCodeOutline } from "ionicons/icons";
 import { useState } from "react";
+import { JsonEncoder } from "@aries-framework/core";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { ConnectModalProps } from "./ConnectModal.types";
@@ -30,7 +31,12 @@ const ConnectModal = ({
   async function handleProvideQr() {
     const invitationLink =
       await AriesAgent.agent.connections.createMediatorInvitation();
-    setInvitationLink(invitationLink.invitationUrl);
+    // @TODO: FOR TESTING, change 10.4.21.37 => to ip
+    const shortUrlResponse = await fetch(
+      "http://10.4.21.37:3001/shorten?url=" + invitationLink.invitationUrl
+    );
+    const res = JsonEncoder.fromString(await shortUrlResponse.text());
+    setInvitationLink(res.data);
   }
 
   return (

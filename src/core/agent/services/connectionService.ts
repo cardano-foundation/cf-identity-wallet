@@ -102,7 +102,8 @@ class ConnectionService extends AgentService {
   async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
-      url = response.url;
+      // @TODO: FOR TESTING
+      url = await response.text();
     }
     if (url.includes("?d_m=")) {
       // @TODO: remove when upgrade aries
