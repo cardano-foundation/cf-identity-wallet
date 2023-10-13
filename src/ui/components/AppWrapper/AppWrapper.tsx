@@ -36,7 +36,6 @@ import { toastState } from "../../constants/dictionary";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
-import { PICKUP_MESSAGES_DELAY } from "../../../constants/appConstants";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -212,10 +211,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       return messageStateChangedHandler(event, dispatch);
     });
     // pickup messages
-    setTimeout(async () => {
-      AriesAgent.agent.messages.pickupMessagesFromMediator();
-    }, PICKUP_MESSAGES_DELAY);
-
+    AriesAgent.agent.messages.pickupMessagesFromMediator();
     setInitialised(true);
   };
 
