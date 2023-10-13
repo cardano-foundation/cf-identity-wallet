@@ -7,6 +7,17 @@ import {
 import { AgentService } from "./agentService";
 
 class MessageService extends AgentService {
+  onBasicMessageStateChanged(
+    callback: (event: BasicMessageStateChangedEvent) => void
+  ) {
+    this.agent.events.on(
+      BasicMessageEventTypes.BasicMessageStateChanged,
+      async (event: BasicMessageStateChangedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
   async getMediatorConnectionId(): Promise<string | undefined> {
     const mediatorConnections =
       await this.agent.connections.findAllByConnectionTypes([
@@ -28,17 +39,6 @@ class MessageService extends AgentService {
         protocolVersion,
       });
     }
-  }
-
-  onBasicMessageStateChanged(
-    callback: (event: BasicMessageStateChangedEvent) => void
-  ) {
-    this.agent.events.on(
-      BasicMessageEventTypes.BasicMessageStateChanged,
-      async (event: BasicMessageStateChangedEvent) => {
-        callback(event);
-      }
-    );
   }
 
   async sendMessage(connectionId: string, message: string) {

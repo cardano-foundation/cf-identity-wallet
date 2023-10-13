@@ -30,6 +30,20 @@ const agent = jest.mocked({
 
 const messageService = new MessageService(agent as any as Agent);
 
+describe("Message service of agent - BasicMessageRecord helper", () => {
+  test("should emit event when basic message state changed", async () => {
+    const callback = jest.fn();
+    const event: BasicMessageStateChangedEvent = {
+      type: BasicMessageEventTypes.BasicMessageStateChanged,
+      payload: {} as BasicMessageStateChangedEvent["payload"],
+      metadata: {} as EventMetadata,
+    };
+    messageService.onBasicMessageStateChanged(callback);
+    eventEmitter.emit(BasicMessageEventTypes.BasicMessageStateChanged, event);
+    expect(callback).toBeCalledWith(event);
+  });
+});
+
 describe("Message service of agent", () => {
   test("should not return mediator connectionId", async () => {
     const connectionId = await messageService.getMediatorConnectionId();
@@ -87,17 +101,5 @@ describe("Message service of agent", () => {
     const sendMessageSpy = jest.spyOn(agent.basicMessages, "sendMessage");
     await messageService.sendMessage("connectionId", "message");
     expect(sendMessageSpy).toBeCalledWith("connectionId", "message");
-  });
-
-  test("should emit event when basic message state changed", async () => {
-    const callback = jest.fn();
-    const event: BasicMessageStateChangedEvent = {
-      type: BasicMessageEventTypes.BasicMessageStateChanged,
-      payload: {} as BasicMessageStateChangedEvent["payload"],
-      metadata: {} as EventMetadata,
-    };
-    messageService.onBasicMessageStateChanged(callback);
-    eventEmitter.emit(BasicMessageEventTypes.BasicMessageStateChanged, event);
-    expect(callback).toBeCalledWith(event);
   });
 });
