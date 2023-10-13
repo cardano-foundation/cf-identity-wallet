@@ -54,6 +54,7 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),
+        pickupMessagesFromMediator: jest.fn(),
       },
     },
   },
