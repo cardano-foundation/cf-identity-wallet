@@ -52,6 +52,10 @@ jest.mock("../../../core/agent/agent", () => ({
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
       },
+      messages: {
+        onBasicMessageStateChanged: jest.fn(),
+        pickupMessagesFromMediator: jest.fn(),
+      },
     },
   },
 }));

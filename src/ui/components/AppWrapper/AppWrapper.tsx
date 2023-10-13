@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import {
+  BasicMessageStateChangedEvent,
   ConnectionStateChangedEvent,
   CredentialStateChangedEvent,
 } from "@aries-framework/core";
@@ -139,6 +140,13 @@ const credentialStateChangedHandler = async (
   }
 };
 
+const messageStateChangedHandler = async (
+  event: BasicMessageStateChangedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  const messageRecord = event.payload.basicMessageRecord;
+};
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -200,6 +208,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     AriesAgent.agent.credentials.onCredentialStateChanged((event) => {
       return credentialStateChangedHandler(event, dispatch);
     });
+    AriesAgent.agent.messages.onBasicMessageStateChanged((event) => {
+      return messageStateChangedHandler(event, dispatch);
+    });
+    // pickup messages
+    AriesAgent.agent.messages.pickupMessagesFromMediator();
     setInitialised(true);
   };
 
