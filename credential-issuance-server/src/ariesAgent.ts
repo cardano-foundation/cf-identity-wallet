@@ -139,7 +139,7 @@ class AriesAgent {
       },
     };
   }
-  getCredential(credential: any): JsonLdCredentialDetailFormat {
+  getCredential(credential: JsonLdCredentialDetailFormat["credential"]): JsonLdCredentialDetailFormat {
     return {
       credential: {
         ...credential,
@@ -165,7 +165,7 @@ class AriesAgent {
     });
   }
 
-  async createInvitationWithCredential(credential?: any) {
+  async createInvitationWithCredential(credential?: JsonLdCredentialDetailFormat["credential"]) {
     const { message } = await this.agent.credentials.createOffer({
       comment: "V2 Out of Band offer (W3C)",
       autoAcceptCredential: AutoAcceptCredential.Always,
@@ -182,7 +182,7 @@ class AriesAgent {
     return outOfBandInvitation.toUrl({ domain: config.endpoint });
   }
 
-  async createInvitationWithCredentialConnectionless(credential?: any) {
+  async createInvitationWithCredentialConnectionless(credential?: JsonLdCredentialDetailFormat["credential"]) {
     const { message, credentialRecord } =
       await this.agent.credentials.createOffer({
         comment: "V2 Out of Band offer (W3C)",
