@@ -183,7 +183,7 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {(credentialSubject.degree as JsonObject).type as string}
+                  {(credentialSubject.degree as JsonObject)?.type as string}
                 </span>
               </span>
               <span className="card-details-info-block-line">
@@ -195,7 +195,7 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {(credentialSubject.degree as JsonObject).name as string}
+                  {(credentialSubject.degree as JsonObject)?.name as string}
                 </span>
               </span>
             </div>
