@@ -20,6 +20,15 @@ enum GenericRecordType {
   CONNECTION_NOTE = "connection-note",
 }
 
+enum ConnectionHistoryType {
+  CREDENTIAL_ACCEPTED,
+}
+
+interface ConnectionHistoryItem {
+  type: ConnectionHistoryType;
+  timestamp: string;
+}
+
 enum MiscRecordId {
   OP_PASS_HINT = "app-op-password-hint",
 }
@@ -119,6 +128,7 @@ export {
   Blockchain,
   ConnectionStatus,
   GenericRecordType,
+  ConnectionHistoryType,
   MiscRecordId,
 };
 export type {
@@ -133,4 +143,5 @@ export type {
   ConnectionDetails,
   ConnectionNoteDetails,
   ConnectionNoteProps,
+  ConnectionHistoryItem,
 };

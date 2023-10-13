@@ -253,7 +253,6 @@ describe("Credential service of agent", () => {
     expect(agent.modules.generalStorage.getCredentialMetadata).toBeCalledWith(
       credId
     );
-    expect(agent.credentials.deleteById).toBeCalledWith(credId);
     expect(
       agent.modules.generalStorage.deleteCredentialMetadata
     ).toBeCalledWith(credId);

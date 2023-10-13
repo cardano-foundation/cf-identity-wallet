@@ -13,6 +13,8 @@ import {
 } from "@aries-framework/core";
 import {
   ConnectionDetails,
+  ConnectionHistoryItem,
+  ConnectionHistoryType,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
@@ -224,6 +226,25 @@ class ConnectionService extends AgentService {
 
   async deleteConnectionNoteById(connetionNoteId: string) {
     return this.agent.genericRecords.deleteById(connetionNoteId);
+  }
+
+  async getConnectionHistoryById(
+    connectionId: string
+  ): Promise<ConnectionHistoryItem[]> {
+    let histories: ConnectionHistoryItem[] = [];
+    const credentialRecords =
+      await this.agent.modules.generalStorage.getCredentialMetadataByConnectionId(
+        connectionId
+      );
+    histories = histories.concat(
+      credentialRecords.map((record) => {
+        return {
+          type: ConnectionHistoryType.CREDENTIAL_ACCEPTED,
+          timestamp: record.createdAt.toISOString(),
+        };
+      })
+    );
+    return histories;
   }
 
   private async getConnectNotesByConnectionId(
