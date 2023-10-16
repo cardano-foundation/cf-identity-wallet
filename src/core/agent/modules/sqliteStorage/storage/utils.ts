@@ -1,4 +1,8 @@
-import type { BaseRecord, BaseRecordConstructor } from "@aries-framework/core";
+import type {
+  BaseRecord,
+  BaseRecordConstructor,
+  Query,
+} from "@aries-framework/core";
 import {
   JsonTransformer,
   Wallet,
@@ -34,27 +38,27 @@ function deserializeRecord<T extends BaseRecord>(
 }
 
 function resolveTagsFromDb(tagDb: string): Record<string, unknown> | null {
-  let tags: Record<string, unknown> = {};
+  const tags: Record<string, unknown> = {};
   const tagsParseArrays = tagDb?.split(",") || [];
   tagsParseArrays.forEach((tag: string) => {
     const tagParse = tag.split("|");
     switch (tagParse[0]) {
-      case TagDataType.ARRAY: {
-        if (tags[tagParse[1]]) {
-          (tags[tagParse[1]] as Array<string>).push(tagParse[2]);
-        } else {
-          tags[tagParse[1]] = [tagParse[2]];
-        }
-        break;
+    case TagDataType.ARRAY: {
+      if (tags[tagParse[1]]) {
+        (tags[tagParse[1]] as Array<string>).push(tagParse[2]);
+      } else {
+        tags[tagParse[1]] = [tagParse[2]];
       }
-      case TagDataType.STRING: {
-        tags[tagParse[1]] = tagParse[2];
-        break;
-      }
-      default:
-        throw new AriesFrameworkError(
-          `Expected tag type to be in enum TagDataType, found ${tagParse[0]}`
-        );
+      break;
+    }
+    case TagDataType.STRING: {
+      tags[tagParse[1]] = tagParse[2];
+      break;
+    }
+    default:
+      throw new AriesFrameworkError(
+        `Expected tag type to be in enum TagDataType, found ${tagParse[0]}`
+      );
     }
   });
   return tags;
@@ -65,9 +69,33 @@ enum TagDataType {
   ARRAY = "array",
 }
 
+function isNilOrEmptyString(value: unknown) {
+  if (value == null || value == "") {
+    return true;
+  }
+  return false;
+}
+
+function convertDbParameters<T extends BaseRecord>(
+  params: Record<string, unknown> | Query<T>
+): Record<string, unknown> {
+  const result: Record<string, unknown> = {};
+  for (const [queryKey, queryVal] of Object.entries(params)) {
+    if (isNilOrEmptyString(queryVal)) continue;
+    if (typeof queryVal === "boolean") {
+      result[queryKey] = queryVal ? "1" : "0";
+      continue;
+    }
+    result[queryKey] = queryVal;
+  }
+  return result;
+}
+
 export {
   assertSqliteStorageWallet,
   deserializeRecord,
   resolveTagsFromDb,
   TagDataType,
+  convertDbParameters,
+  isNilOrEmptyString as isNilorEmptyString,
 };

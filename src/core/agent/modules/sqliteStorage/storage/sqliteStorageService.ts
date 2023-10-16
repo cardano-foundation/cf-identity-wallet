@@ -12,7 +12,9 @@ import {
 import {
   TagDataType,
   assertSqliteStorageWallet,
+  convertDbParameters,
   deserializeRecord,
+  isNilorEmptyString,
   resolveTagsFromDb,
 } from "./utils";
 import { StorageObject } from "./sqliteStorageService.types";
@@ -203,24 +205,20 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     const values = [category];
     let scan_query = SqliteStorageService.SCAN_QUERY_SQL;
     if (query) {
-      for (const [queryKey, queryVal] of Object.entries(query)) {
-        if (queryVal) {
-          if (Array.isArray(queryVal)) {
-            const generateValueFinds = Array.from("?".repeat(queryVal.length));
-            scan_query +=
-              " AND " +
-              SqliteStorageService.SCAN_TAGS_SQL_IN +
-              "(" +
-              generateValueFinds.join() +
-              "))";
-            values.push(queryKey, ...queryVal);
-          } else {
-            scan_query += " AND " + SqliteStorageService.SCAN_TAGS_SQL_EQ;
-            values.push(
-              queryKey,
-              typeof queryVal == "boolean" ? (queryVal ? "1" : "0") : queryVal
-            );
-          }
+      const dbQuery = convertDbParameters(query);
+      for (const [queryKey, queryVal] of Object.entries(dbQuery)) {
+        if (Array.isArray(queryVal)) {
+          const generateValueFinds = Array.from("?".repeat(queryVal.length));
+          scan_query +=
+            " AND " +
+            SqliteStorageService.SCAN_TAGS_SQL_IN +
+            "(" +
+            generateValueFinds.join() +
+            "))";
+          values.push(queryKey, ...queryVal);
+        } else {
+          scan_query += " AND " + SqliteStorageService.SCAN_TAGS_SQL_EQ;
+          values.push(queryKey, queryVal as string);
         }
       }
     }
@@ -285,23 +283,22 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
 
   private getTagsInsertSql(itemId: string, tags: Record<string, unknown>) {
     const statements = [];
-    for (const key in tags) {
-      if (tags[key]) {
-        if (Array.isArray(tags[key])) {
-          (tags[key] as Array<string>).forEach((value) => {
-            if (value) {
-              statements.push({
-                statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
-                values: [itemId, key, value, TagDataType.ARRAY],
-              });
-            }
-          });
-        } else {
-          statements.push({
-            statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
-            values: [itemId, key, tags[key], TagDataType.STRING],
-          });
-        }
+    const tagDbs = convertDbParameters(tags);
+    for (const key in tagDbs) {
+      if (Array.isArray(tagDbs[key])) {
+        (tagDbs[key] as Array<string>).forEach((value) => {
+          if (!isNilorEmptyString(value)) {
+            statements.push({
+              statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
+              values: [itemId, key, value, TagDataType.ARRAY],
+            });
+          }
+        });
+      } else {
+        statements.push({
+          statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
+          values: [itemId, key, tagDbs[key], TagDataType.STRING],
+        });
       }
     }
     return statements;
