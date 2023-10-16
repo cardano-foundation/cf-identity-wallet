@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
-import { IonButton, IonChip, IonIcon, IonLabel } from "@ionic/react";
+import { IonChip, IonIcon } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
 import { formatShortDate } from "../../../utils";
 import { i18n } from "../../../i18n";
@@ -18,7 +18,14 @@ import {
 import { cardTypes } from "../../constants/dictionary";
 import { Alert } from "../Alert";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { AriesAgent } from "../../../core/agent/agent";
+import BackgroundDidKey01 from "../../../ui/assets/images/did-key-01.png";
+import BackgroundDidKey02 from "../../../ui/assets/images/did-key-02.png";
+import BackgroundDidKey03 from "../../../ui/assets/images/did-key-03.png";
+import BackgroundDidKey04 from "../../../ui/assets/images/did-key-04.png";
+import BackgroundKERI01 from "../../../ui/assets/images/keri-01.png";
+import BackgroundKERI02 from "../../../ui/assets/images/keri-02.png";
+import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
+import KERILogo from "../../../ui/assets/images/keri-logo.svg";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -57,10 +64,7 @@ const CredCard = ({
           <div className="card-header">
             <span className="card-logo">
               <img
-                src={
-                  cardData.issuerLogo ??
-                  "https://www.w3.org/Icons/WWW/w3c_home_nb-v.svg"
-                }
+                src={cardData.issuerLogo ?? W3CLogo}
                 alt="card-logo"
               />
             </span>
@@ -134,12 +138,15 @@ const DidCard = ({
   index = 0,
   onHandleShowCardDetails,
 }: DidCardProps) => {
-  let shadowClass = "";
-  if (index === 0) {
-    shadowClass = "bottom-shadow";
-  } else if (index !== 0) {
-    shadowClass = "top-shadow";
-  }
+  const divStyle = {
+    backgroundImage: `url(${
+      cardData.method === IdentifierType.KEY
+        ? BackgroundDidKey01
+        : BackgroundKERI01
+    })`,
+    backgroundSize: "cover",
+    zIndex: index,
+  };
 
   return (
     <div
@@ -147,25 +154,27 @@ const DidCard = ({
       data-testid={`did-card-stack${
         index !== undefined ? `-index-${index}` : ""
       }`}
-      className={`cards-stack-card ${isActive ? "active" : ""} ${shadowClass}`}
+      className={`cards-stack-card ${isActive ? "active" : ""}`}
       onClick={() => {
         if (onHandleShowCardDetails) {
           onHandleShowCardDetails(index);
         }
       }}
-      style={{
-        background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
-      }}
+      style={divStyle}
     >
       <div className="cards-stack-did-layout">
         <div className="card-header">
-          <span>
-            {cardData.method === IdentifierType.KEY ? "did:key" : "KERI"}
+          <span className="card-logo">
+            <img
+              src={cardData.method === IdentifierType.KEY ? W3CLogo : KERILogo}
+              alt="card-logo"
+            />
+            {cardData.method === IdentifierType.KEY ? "did:key" : ""}
           </span>
           <span>{cardData.displayName}</span>
         </div>
         <div className="card-body">
-          <span>{cardData.id}</span>
+          <span>{""}</span>
         </div>
         <div className="card-footer">
           <span className="card-footer-column">
@@ -174,6 +183,13 @@ const DidCard = ({
             </span>
             <span className="card-footer-column-info">
               {formatShortDate(cardData.createdAtUTC)}
+            </span>
+          </span>
+          <span className="card-footer-column">
+            <span className="card-footer-column-info">
+              {cardData.method === IdentifierType.KEY
+                ? cardData.id.substring(8, 13) + "..." + cardData.id.slice(-5)
+                : cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
             </span>
           </span>
         </div>

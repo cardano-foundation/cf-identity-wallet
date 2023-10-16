@@ -79,7 +79,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
       "false"
@@ -108,13 +114,19 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(identityFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     fireEvent.click(getByTestId("copy-button-id"));
 
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: identityFix[0].id,
+        string: filteredDidFix[0].id,
       });
     });
   });
@@ -132,7 +144,13 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        getByText(
+          didFix[0].id.substring(8, 13) + "..." + didFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
+    );
     fireEvent.click(getByTestId("copy-button-type"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
@@ -154,7 +172,13 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        getByText(
+          didFix[0].id.substring(8, 13) + "..." + didFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
+    );
     fireEvent.click(getByTestId("copy-button-controller"));
 
     await waitFor(() => {
@@ -177,7 +201,13 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        getByText(
+          didFix[0].id.substring(8, 13) + "..." + didFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
+    );
     fireEvent.click(getByTestId("copy-button-publicKeyBase58"));
 
     await waitFor(() => {

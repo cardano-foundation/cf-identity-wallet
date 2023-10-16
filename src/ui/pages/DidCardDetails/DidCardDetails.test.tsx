@@ -128,7 +128,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("identity-options-button"));
@@ -152,7 +158,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("identity-options-button"));
@@ -178,7 +190,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("identity-options-button"));
@@ -214,7 +232,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("identity-options-button"));
@@ -260,7 +284,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));
@@ -286,7 +316,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));
