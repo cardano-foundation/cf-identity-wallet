@@ -75,7 +75,7 @@ enum TagDataType {
 }
 
 function isNilOrEmptyString(value: unknown): boolean {
-  if (value === null || value === "") {
+  if (value == null || value === "") {
     return true;
   }
   return false;
