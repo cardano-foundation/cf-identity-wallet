@@ -108,11 +108,12 @@ const ConnectModal = ({
               }}
               content={{
                 QRData: invitationLink,
+                copyBLock: [{ content: invitationLink }],
               }}
               moreComponent={<MoreOptions text={""} />}
               modalOptions={{
-                initialBreakpoint: 0.65,
-                breakpoints: [0, 0.65],
+                initialBreakpoint: 0.7,
+                breakpoints: [0, 0.7],
               }}
             />
           )}
