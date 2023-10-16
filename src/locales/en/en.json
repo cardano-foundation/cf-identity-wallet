@@ -527,6 +527,9 @@
     "identitytype": {
       "title": "Identity type"
     },
+    "theme": {
+      "title": "Choose a theme"
+    },
     "confirmbutton": "Create identity",
     "error": {
       "maxlength": "Must be less than 32 characters long"

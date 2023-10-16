@@ -36,9 +36,8 @@ const CreateIdentity = ({
   const dispatch = useAppDispatch();
   const identityData = useAppSelector(getIdentitiesCache);
   const [displayNameValue, setDisplayNameValue] = useState("");
-  const [selectedType, setSelectedType] = useState<number | undefined>(
-    undefined
-  );
+  const [selectedType, setSelectedType] = useState(0);
+  const [selectedTheme, setSelectedTheme] = useState(0);
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
 
   const displayNameValueIsValid =
@@ -59,7 +58,7 @@ const CreateIdentity = ({
   const resetModal = () => {
     setModalIsOpen(false);
     setDisplayNameValue("");
-    setSelectedType(undefined);
+    setSelectedType(0);
   };
 
   const handleCreateIdentity = async () => {
@@ -89,8 +88,8 @@ const CreateIdentity = ({
   return (
     <IonModal
       isOpen={modalIsOpen}
-      initialBreakpoint={0.45}
-      breakpoints={[0, 0.45]}
+      initialBreakpoint={0.675}
+      breakpoints={[0, 0.675]}
       className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
       data-testid="create-identity-modal"
       onDidDismiss={() => resetModal()}
@@ -104,7 +103,7 @@ const CreateIdentity = ({
           title={`${i18n.t("createidentity.title")}`}
         >
           <IonGrid>
-            <IonRow>
+            <IonRow className="identity-name-input">
               <IonCol>
                 <CustomInput
                   dataTestId="display-name-input"
@@ -131,10 +130,15 @@ const CreateIdentity = ({
                 "createidentity.identitytype.title"
               )}`}</span>
             </IonRow>
-            <IonRow>
+            <IonRow className="identity-type-input">
               <IonCol className="col-left">
                 <IonItem
-                  onClick={() => setSelectedType(0)}
+                  onClick={() => {
+                    setSelectedType(0);
+                    if (selectedTheme > 3) {
+                      setSelectedTheme(0);
+                    }
+                  }}
                   className={`type-input ${
                     selectedType === 0 ? "selectedType" : ""
                   }`}
@@ -146,7 +150,12 @@ const CreateIdentity = ({
               </IonCol>
               <IonCol className="col-right">
                 <IonItem
-                  onClick={() => setSelectedType(1)}
+                  onClick={() => {
+                    setSelectedType(1);
+                    if (selectedTheme < 4) {
+                      setSelectedTheme(4);
+                    }
+                  }}
                   className={`type-input ${
                     selectedType === 1 ? "selectedType" : ""
                   }`}
@@ -157,6 +166,73 @@ const CreateIdentity = ({
                 </IonItem>
               </IonCol>
             </IonRow>
+            <IonRow>
+              <span className="type-input-title">{`${i18n.t(
+                "createidentity.theme.title"
+              )}`}</span>
+            </IonRow>
+            {selectedType === 0 ? (
+              <>
+                <IonRow className="identity-theme-input">
+                  <IonCol className="col-left">
+                    <IonItem
+                      onClick={() => setSelectedTheme(0)}
+                      className={`type-input ${
+                        selectedTheme === 0 ? "selectedTheme" : ""
+                      }`}
+                    ></IonItem>
+                  </IonCol>
+                  <IonCol className="col-right">
+                    <IonItem
+                      onClick={() => setSelectedTheme(1)}
+                      className={`type-input ${
+                        selectedTheme === 1 ? "selectedTheme" : ""
+                      }`}
+                    ></IonItem>
+                  </IonCol>
+                </IonRow>
+                <IonRow className="identity-theme-input">
+                  <IonCol className="col-left">
+                    <IonItem
+                      onClick={() => setSelectedTheme(2)}
+                      className={`type-input ${
+                        selectedTheme === 2 ? "selectedTheme" : ""
+                      }`}
+                    ></IonItem>
+                  </IonCol>
+                  <IonCol className="col-right">
+                    <IonItem
+                      onClick={() => setSelectedTheme(3)}
+                      className={`type-input ${
+                        selectedTheme === 3 ? "selectedTheme" : ""
+                      }`}
+                    ></IonItem>
+                  </IonCol>
+                </IonRow>
+              </>
+            ) : (
+              <>
+                <IonRow className="identity-theme-input">
+                  <IonCol className="col-left">
+                    <IonItem
+                      onClick={() => setSelectedTheme(4)}
+                      className={`type-input ${
+                        selectedTheme === 4 ? "selectedTheme" : ""
+                      }`}
+                    ></IonItem>
+                  </IonCol>
+                  <IonCol className="col-right">
+                    <IonItem
+                      onClick={() => setSelectedTheme(5)}
+                      className={`type-input ${
+                        selectedTheme === 5 ? "selectedTheme" : ""
+                      }`}
+                    ></IonItem>
+                  </IonCol>
+                </IonRow>
+              </>
+            )}
+
             <IonRow className="continue-button-container">
               <IonCol>
                 <IonButton
