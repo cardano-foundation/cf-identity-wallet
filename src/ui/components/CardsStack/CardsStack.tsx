@@ -187,8 +187,9 @@ const DidCard = ({
           </span>
           <span className="card-footer-column">
             <span className="card-footer-column-info">
-              {cardData.id.substring(0, 13)}...
-              {cardData.id.slice(-5)}
+              {cardData.method === IdentifierType.KEY
+                ? cardData.id.substring(8, 13) + "..." + cardData.id.slice(-5)
+                : cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
             </span>
           </span>
         </div>
