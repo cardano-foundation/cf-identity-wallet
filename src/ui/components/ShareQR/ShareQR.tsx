@@ -84,9 +84,11 @@ const ShareQR = ({
         >
           <IonGrid className={hideDetails ? "hide" : ""}>
             <IonRow>
-              <IonCol size="12">
+              <IonCol
+                size="12"
+                data-testid="share-qr-modal-qr-code"
+              >
                 <QRCode
-                  data-testid="share-qr-modal-qr-code"
                   value={content.QRData}
                   size={250}
                   fgColor={"black"}

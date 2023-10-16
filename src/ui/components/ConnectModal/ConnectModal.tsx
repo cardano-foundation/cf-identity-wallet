@@ -14,7 +14,7 @@ import { ConnectModalProps } from "./ConnectModal.types";
 import "./ConnectModal.scss";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { operationState } from "../../constants/dictionary";
+import { connectionType, operationState } from "../../constants/dictionary";
 import { ShareQR } from "../ShareQR/ShareQR";
 import { AriesAgent } from "../../../core/agent/agent";
 import { MoreOptions } from "../ShareQR/MoreOptions";
@@ -98,7 +98,7 @@ const ConnectModal = ({
               </IonCol>
             </IonRow>
           </IonGrid>
-          {invitationLink && (
+          {type === connectionType.connection && invitationLink && (
             <ShareQR
               isOpen={!!invitationLink}
               setIsOpen={() => setInvitationLink(undefined)}
