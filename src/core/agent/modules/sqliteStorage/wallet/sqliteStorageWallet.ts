@@ -103,6 +103,10 @@ class SqliteStorageWallet implements Wallet {
     return this.session;
   }
 
+  get supportedKeyTypes() {
+    return [KeyType.Ed25519, KeyType.X25519];
+  }
+
   async create(walletConfig: WalletConfig): Promise<void> {
     await this.createAndOpen(walletConfig);
     await this.close();

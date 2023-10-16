@@ -102,16 +102,7 @@ interface CredentialDetails extends CredentialShortDetails {
   expirationDate?: string;
   credentialSubject: JsonCredential["credentialSubject"];
   proofType: string;
-  proofValue: string;
-}
-
-interface CredentialDetails extends CredentialShortDetails {
-  type: string[];
-  connectionId?: string;
-  expirationDate?: string;
-  credentialSubject: JsonCredential["credentialSubject"];
-  proofType: string;
-  proofValue: string;
+  proofValue?: string;
 }
 
 type GetIdentifierResult =

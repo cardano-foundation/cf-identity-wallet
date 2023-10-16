@@ -6,10 +6,10 @@ import {
   CredentialStateChangedEvent,
   ProposeCredentialOptions,
   V2OfferCredentialMessage,
-  LinkedDataProof,
   AriesFrameworkError,
   JsonCredential,
   JsonLdCredentialDetailFormat,
+  W3cJsonLdVerifiableCredential,
 } from "@aries-framework/core";
 import { CredentialDetails, CredentialShortDetails } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
@@ -121,15 +121,21 @@ class CredentialService extends AgentService {
       );
     const credentialSubject = w3cCredential.credential
       .credentialSubject as any as JsonCredential["credentialSubject"];
-    const proof = w3cCredential.credential.proof as LinkedDataProof;
+    const credential =
+      w3cCredential.credential as W3cJsonLdVerifiableCredential;
+    const proof = credential.proof;
     return {
       ...this.getCredentialShortDetails(metadata),
       type: w3cCredential.credential.type,
       connectionId: credentialRecord.connectionId,
       expirationDate: w3cCredential.credential?.expirationDate,
       credentialSubject: credentialSubject,
-      proofType: proof.type,
-      proofValue: proof.jws as string,
+      proofType: Array.isArray(proof)
+        ? proof.map((p) => p.type).join(",")
+        : proof.type,
+      proofValue: Array.isArray(proof)
+        ? proof.map((p) => p.jws).join(",")
+        : proof.jws,
     };
   }
 
