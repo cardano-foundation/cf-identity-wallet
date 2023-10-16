@@ -117,43 +117,41 @@ const ShareQR = ({
                 >
                   {content?.copyBLock?.map((item, index) => {
                     return (
-                      <>
-                        <div
-                          className="share-qr-modal-info-block"
-                          key={index}
-                        >
-                          {item.title && <h3>{item.title}</h3>}
-                          <div className="share-qr-modal-info-block-inner">
-                            <span
-                              className="share-qr-modal-info-block-line"
-                              data-testid="copy-button-type"
-                              onClick={() => {
-                                writeToClipboard(item.content);
-                                dispatch(
-                                  setCurrentOperation(
-                                    toastState.copiedToClipboard
-                                  )
-                                );
-                              }}
-                            >
-                              <span className="share-qr-modal-info-block-data">
-                                {hideDetails ? blurredCryptoData : item.content}
-                              </span>
-                              <span>
-                                <IonButton
-                                  shape="round"
-                                  className="copy-button"
-                                >
-                                  <IonIcon
-                                    slot="icon-only"
-                                    icon={copyOutline}
-                                  />
-                                </IonButton>
-                              </span>
+                      <div
+                        className="share-qr-modal-info-block"
+                        key={index}
+                      >
+                        {item.title && <h3>{item.title}</h3>}
+                        <div className="share-qr-modal-info-block-inner">
+                          <span
+                            className="share-qr-modal-info-block-line"
+                            data-testid="copy-button-type"
+                            onClick={() => {
+                              writeToClipboard(item.content);
+                              dispatch(
+                                setCurrentOperation(
+                                  toastState.copiedToClipboard
+                                )
+                              );
+                            }}
+                          >
+                            <span className="share-qr-modal-info-block-data">
+                              {hideDetails ? blurredCryptoData : item.content}
                             </span>
-                          </div>
+                            <span>
+                              <IonButton
+                                shape="round"
+                                className="copy-button"
+                              >
+                                <IonIcon
+                                  slot="icon-only"
+                                  icon={copyOutline}
+                                />
+                              </IonButton>
+                            </span>
+                          </span>
                         </div>
-                      </>
+                      </div>
                     );
                   })}
                 </IonCol>

@@ -298,16 +298,16 @@ const Crypto = () => {
                   QRData: defaultAccountData.address,
                   copyBLock: [
                     {
-                      content: `${defaultAccountData.address.substring(0, 22)}`,
+                      content: `${defaultAccountData.address.substring(
+                        0,
+                        22
+                      )}...`,
                     },
                     {
                       title: i18n.t(
                         "crypto.receivemodal.derivationpath"
                       ) as string,
-                      content: `${defaultAccountData.address.substring(
-                        0,
-                        22
-                      )}...`,
+                      content: defaultAccountData.derivationPath,
                     },
                   ],
                 }}

@@ -321,10 +321,7 @@ describe("Crypto Tab", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("receive-crypto-modal")).toHaveAttribute(
-        "is-open",
-        "false"
-      );
+      expect(getByTestId("share-qr-modal")).toHaveAttribute("is-open", "false");
     });
 
     act(() => {
@@ -332,10 +329,7 @@ describe("Crypto Tab", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("receive-crypto-modal")).toHaveAttribute(
-        "is-open",
-        "true"
-      );
+      expect(getByTestId("share-qr-modal")).toHaveAttribute("is-open", "true");
     });
 
     expect(document.querySelector("canvas")).toBeVisible();
