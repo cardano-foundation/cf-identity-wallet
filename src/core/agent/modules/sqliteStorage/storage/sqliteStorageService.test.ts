@@ -11,6 +11,7 @@ import { agentDependencies } from "../../../agent";
 import { SqliteStorageWallet } from "../wallet";
 import { TestRecord } from "./testRecord";
 import { StorageObject } from "./sqliteStorageService.types";
+import { convertDbQuery } from "./utils";
 
 const startTime = new Date();
 
@@ -59,7 +60,7 @@ const getAllKvMock = jest
       category: string,
       query
     ): Promise<StorageObject[]> => {
-      let records = [
+      const records = [
         {
           category: TestRecord.type,
           name: existingRecord.id,
@@ -314,5 +315,21 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
     );
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(0);
+  });
+});
+
+describe("Aries - Sqlite Storage Module: Util", () => {
+  test("convertDbQuery should work correctly", () => {
+    const query = {
+      field1: undefined,
+      field2: true,
+      field3: false,
+      field4: "string",
+    };
+    expect(convertDbQuery(query)).toEqual({
+      field2: "1",
+      field3: "0",
+      field4: "string",
+    });
   });
 });
