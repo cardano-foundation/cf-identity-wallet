@@ -9,7 +9,6 @@ import {
   AriesFrameworkError,
   JsonCredential,
   JsonLdCredentialDetailFormat,
-  W3cVerifiableCredential,
   W3cJsonLdVerifiableCredential,
 } from "@aries-framework/core";
 import { CredentialDetails, CredentialShortDetails } from "../agent.types";
@@ -19,7 +18,6 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { LinkedDataProof } from "@aries-framework/core/build/modules/vc/data-integrity/models/LinkedDataProof";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
