@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "^3.0.1",
-    "@aries-framework/core": "^0.4.0-alpha.119",
+    "@aries-framework/core": "^0.4.2",
     "@capacitor-community/barcode-scanner": "^3.0.3",
     "@capacitor-community/sqlite": "^4.6.3",
     "@capacitor/android": "^4.7.1",

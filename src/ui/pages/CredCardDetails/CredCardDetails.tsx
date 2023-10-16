@@ -17,6 +17,7 @@ import {
   archiveOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
+import { JsonObject } from "@aries-framework/core";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
@@ -234,7 +235,7 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {credentialSubject.type as string}
+                  {(credentialSubject.degree as JsonObject)?.type as string}
                 </span>
               </span>
               <span className="card-details-info-block-line">
@@ -246,7 +247,7 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {`${credentialSubject.name}`}
+                  {(credentialSubject.degree as JsonObject)?.name as string}
                 </span>
               </span>
             </div>
@@ -330,8 +331,10 @@ const CredCardDetails = () => {
                 className="card-details-info-block-line"
                 data-testid="copy-button-proof-value"
                 onClick={() => {
-                  writeToClipboard(cardData.proofValue);
-                  dispatch(setCurrentOperation(toastState.copiedToClipboard));
+                  if (cardData.proofValue) {
+                    writeToClipboard(cardData.proofValue);
+                    dispatch(setCurrentOperation(toastState.copiedToClipboard));
+                  }
                 }}
               >
                 <span>
@@ -342,8 +345,10 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {cardData.proofValue.substring(0, 13)}...
-                  {cardData.proofValue.slice(-5)}
+                  {cardData.proofValue &&
+                    cardData.proofValue?.substring(0, 13) +
+                      "..." +
+                      cardData.proofValue?.slice(-5)}
                 </span>
                 <span>
                   <IonButton
