@@ -132,8 +132,12 @@ class CredentialService extends AgentService {
       connectionId: credentialRecord.connectionId,
       expirationDate: w3cCredential.credential?.expirationDate,
       credentialSubject: credentialSubject,
-      proofType: Array.isArray(proof) ? proof[0].type : proof.type,
-      proofValue: Array.isArray(proof) ? proof[0].jws : proof.jws,
+      proofType: Array.isArray(proof)
+        ? proof.map((p) => p.type).join(",")
+        : proof.type,
+      proofValue: Array.isArray(proof)
+        ? proof.map((p) => p.jws).join(",")
+        : proof.jws,
     };
   }
 

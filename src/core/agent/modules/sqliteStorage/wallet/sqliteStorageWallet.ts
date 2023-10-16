@@ -104,7 +104,7 @@ class SqliteStorageWallet implements Wallet {
   }
 
   get supportedKeyTypes() {
-    return []; // TODO: must define it
+    return [KeyType.Ed25519];
   }
 
   async create(walletConfig: WalletConfig): Promise<void> {
