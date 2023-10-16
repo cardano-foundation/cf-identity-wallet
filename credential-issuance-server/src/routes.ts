@@ -8,7 +8,7 @@ import {
   offerCredentialOverConnection,
 } from "./apis/credential.api";
 import { getConnectionByDid } from "./apis/connection.api";
-import { getFullUrl } from "./apis/shorten.api";
+import { getShortenUrl, getFullUrl } from "./apis/shorten.api";
 
 const router = express.Router();
 router.get(config.path.ping, ping);
@@ -21,5 +21,6 @@ router.get(
   invitationWithCredentialConnectionless
 );
 router.get(config.path.shorten, getFullUrl);
+router.get(config.path.getShorten, getShortenUrl);
 
 export default router;

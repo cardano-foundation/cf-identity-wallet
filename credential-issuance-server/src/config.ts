@@ -15,6 +15,7 @@ const config = {
     invitationWithCredentialConnectionless:
       "/offerCredentialWithConnectionLess",
     shorten: "/shorten/:id",
+    getShorten: "/shorten",
   },
 };
 

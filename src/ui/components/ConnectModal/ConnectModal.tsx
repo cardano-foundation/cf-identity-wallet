@@ -28,9 +28,12 @@ const ConnectModal = ({
   const [invitationLink, setInvitationLink] = useState<string>();
 
   async function handleProvideQr() {
-    const invitationLink =
+    const invitation =
       await AriesAgent.agent.connections.createMediatorInvitation();
-    setInvitationLink(invitationLink.invitationUrl);
+    const shortUrl = await AriesAgent.agent.connections.getShortenUrl(
+      invitation.invitationUrl
+    );
+    setInvitationLink(shortUrl);
   }
 
   return (
