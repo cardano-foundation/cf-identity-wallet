@@ -80,7 +80,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredKeriFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredKeriFix[0].id.substring(0, 5) +
+            "..." +
+            filteredKeriFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     expect(getByText(filteredKeriFix[0].displayName)).toBeInTheDocument();
     expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
@@ -149,7 +155,13 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(keriFix[0].id)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        getByText(
+          keriFix[0].id.substring(0, 5) + "..." + keriFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
+    );
     await waitFor(() => expect(getByText(keriFix[0].kt)).toBeInTheDocument());
     await waitFor(() => expect(getByText(keriFix[0].nt)).toBeInTheDocument());
     await waitFor(() =>

@@ -6,7 +6,7 @@ import {
 
 const didFix: DIDDetails[] = [
   {
-    id: "did:key:z6MkpNyGdYK5Ey1pCf5cy1S9gbLD1857nQoZxVeeGifA1ZQv",
+    id: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
     method: IdentifierType.KEY,
     displayName: "Anonymous ID",
     createdAtUTC: "2023-01-01T19:23:24Z",

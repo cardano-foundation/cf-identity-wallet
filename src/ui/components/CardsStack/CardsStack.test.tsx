@@ -35,7 +35,9 @@ describe("Cards Stack Component", () => {
         />
       </Provider>
     );
-    const firstCardId = getByText(identityFix[0].id);
+    const firstCardId = getByText(
+      identityFix[0].id.substring(8, 13) + "..." + identityFix[0].id.slice(-5)
+    );
     expect(firstCardId).toBeInTheDocument();
   });
 
