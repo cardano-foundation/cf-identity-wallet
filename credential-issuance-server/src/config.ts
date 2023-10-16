@@ -1,7 +1,7 @@
 // eslint-disable-next-line no-undef
 const port = process.env.PORT ? Number(process.env.PORT) : 3001;
 // eslint-disable-next-line no-undef
-const endpoint = process.env.ENDPOINT ?? `http://10.4.21.37:${port}`; // @TODO: FOR TESTING, CHANGE TO YOUR IP ADDRESS
+const endpoint = process.env.ENDPOINT ?? `http://localhost:${port}`;
 const config = {
   endpoint: endpoint,
   endpoints: [endpoint],
@@ -15,7 +15,7 @@ const config = {
     invitationWithCredentialConnectionless:
       "/offerCredentialWithConnectionLess",
     shorten: "/shorten/:id",
-    createShorten: "/shorten",
+    getShorten: "/shorten",
   },
 };
 

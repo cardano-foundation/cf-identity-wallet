@@ -9,11 +9,10 @@ function getFullUrl(req: Request, res: Response) {
   if (!fullUrl) {
     return res.status(404).send("Url is invalid or expired");
   }
-  // @TODO: FOR TESTING
   return res.send(fullUrl);
 }
 
-async function createShortenUrl(req: Request, res: Response) {
+async function getShortenUrl(req: Request, res: Response) {
   const { url } = req.query;
   const response: ResponseData<string> = {
     statusCode: 200,
@@ -23,4 +22,4 @@ async function createShortenUrl(req: Request, res: Response) {
   httpResponse(res, response);
 }
 
-export { getFullUrl, createShortenUrl };
+export { getFullUrl, getShortenUrl };

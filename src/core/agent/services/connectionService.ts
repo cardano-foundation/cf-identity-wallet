@@ -23,6 +23,10 @@ import {
 // import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
 import { AgentService } from "./agentService";
 
+const SERVER_GET_SHORTEN_URL =
+  // eslint-disable-next-line no-undef
+  process.env.REACT_APP_SERVER_GET_SHORTEN_URL ?? "http://localhost:3001";
+
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
   //   "No domain found in config";
@@ -102,7 +106,6 @@ class ConnectionService extends AgentService {
   async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
-      // @TODO: FOR TESTING
       url = await response.text();
     }
     if (url.includes("?d_m=")) {
@@ -114,6 +117,14 @@ class ConnectionService extends AgentService {
       autoAcceptInvitation: true,
       reuseConnection: true,
     });
+  }
+
+  async getShortenUrl(invitationUrl: string): Promise<string> {
+    const getUrl = await fetch(
+      `${SERVER_GET_SHORTEN_URL}/shorten?url=${invitationUrl}`
+    );
+    const response = await getUrl.text();
+    return JsonEncoder.fromString(response).data;
   }
 
   async receiveAttachmentFromUrlConnectionless(url: string): Promise<void> {
