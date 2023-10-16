@@ -12,9 +12,9 @@ import {
 import {
   TagDataType,
   assertSqliteStorageWallet,
-  convertDbParameters,
+  convertDbQuery,
   deserializeRecord,
-  isNilorEmptyString,
+  isNilOrEmptyString,
   resolveTagsFromDb,
 } from "./utils";
 import { StorageObject } from "./sqliteStorageService.types";
@@ -205,7 +205,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     const values = [category];
     let scan_query = SqliteStorageService.SCAN_QUERY_SQL;
     if (query) {
-      const dbQuery = convertDbParameters(query);
+      const dbQuery = convertDbQuery(query);
       for (const [queryKey, queryVal] of Object.entries(dbQuery)) {
         if (Array.isArray(queryVal)) {
           const generateValueFinds = Array.from("?".repeat(queryVal.length));
@@ -283,21 +283,27 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
 
   private getTagsInsertSql(itemId: string, tags: Record<string, unknown>) {
     const statements = [];
-    const tagDbs = convertDbParameters(tags);
-    for (const key in tagDbs) {
-      if (Array.isArray(tagDbs[key])) {
-        (tagDbs[key] as Array<string>).forEach((value) => {
-          if (!isNilorEmptyString(value)) {
+    for (const key in tags) {
+      if (isNilOrEmptyString(tags[key])) continue;
+      if (Array.isArray(tags[key])) {
+        (tags[key] as Array<string>).forEach((value) => {
+          if (!isNilOrEmptyString(value)) {
             statements.push({
               statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
               values: [itemId, key, value, TagDataType.ARRAY],
             });
           }
         });
+      } else if (typeof tags[key] == "boolean") {
+        const value = tags[key] ? "1" : "0";
+        statements.push({
+          statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
+          values: [itemId, key, value, TagDataType.BOOLEAN],
+        });
       } else {
         statements.push({
           statement: SqliteStorageService.INSERT_ITEM_TAG_SQL,
-          values: [itemId, key, tagDbs[key], TagDataType.STRING],
+          values: [itemId, key, tags[key], TagDataType.STRING],
         });
       }
     }

@@ -55,6 +55,10 @@ function resolveTagsFromDb(tagDb: string): Record<string, unknown> | null {
       tags[tagParse[1]] = tagParse[2];
       break;
     }
+    case TagDataType.BOOLEAN: {
+      tags[tagParse[1]] = tagParse[2] === "1" ? true : false;
+      break;
+    }
     default:
       throw new AriesFrameworkError(
         `Expected tag type to be in enum TagDataType, found ${tagParse[0]}`
@@ -67,17 +71,18 @@ function resolveTagsFromDb(tagDb: string): Record<string, unknown> | null {
 enum TagDataType {
   STRING = "string",
   ARRAY = "array",
+  BOOLEAN = "boolean",
 }
 
-function isNilOrEmptyString(value: unknown) {
-  if (value == null || value == "") {
+function isNilOrEmptyString(value: unknown): boolean {
+  if (value === null || value === "") {
     return true;
   }
   return false;
 }
 
-function convertDbParameters<T extends BaseRecord>(
-  params: Record<string, unknown> | Query<T>
+function convertDbQuery<T extends BaseRecord>(
+  params: Query<T>
 ): Record<string, unknown> {
   const result: Record<string, unknown> = {};
   for (const [queryKey, queryVal] of Object.entries(params)) {
@@ -96,6 +101,6 @@ export {
   deserializeRecord,
   resolveTagsFromDb,
   TagDataType,
-  convertDbParameters,
-  isNilOrEmptyString as isNilorEmptyString,
+  convertDbQuery,
+  isNilOrEmptyString,
 };
