@@ -1,7 +1,7 @@
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "http://127.0.0.1:3001/credentials/summit/v1"
+    "http://127.0.0.1:3001/credentials/schemas/summit/v1"
   ],
   "type": [
     "VerifiableCredential",

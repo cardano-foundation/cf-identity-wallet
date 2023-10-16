@@ -16,8 +16,8 @@ const config = {
       "/offerCredentialWithConnectionLess",
     shorten: "/shorten/:id",
     credentials: {
-      summit: "/credentials/summit/v1",
-      resident: "/credentials/citizenship/v1",
+      summit: "/credentials/schemas/summit/v1",
+      resident: "/credentials/schemas/citizenship/v1",
     }
   },
 };
