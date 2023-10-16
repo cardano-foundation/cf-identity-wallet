@@ -188,7 +188,7 @@ describe("Aries - Ionic Storage Module: Wallet Open and Close", () => {
   });
 
   test("wallet supported key types", async () => {
-    expect(wallet.supportedKeyTypes).toEqual([KeyType.Ed25519]);
+    expect(wallet.supportedKeyTypes).toEqual([KeyType.Ed25519, KeyType.X25519]);
   });
 });
 

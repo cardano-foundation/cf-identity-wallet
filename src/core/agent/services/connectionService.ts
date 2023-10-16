@@ -105,23 +105,11 @@ class ConnectionService extends AgentService {
       const response = await this.fetchShortUrl(url);
       url = response.url;
     }
-    if (url.includes("?d_m=")) {
-      // @TODO: remove when upgrade aries
-      return this.receiveAttachmentFromUrlConnectionless(url);
-    }
     await this.agent.oob.receiveInvitationFromUrl(url, {
       autoAcceptConnection: true,
       autoAcceptInvitation: true,
       reuseConnection: true,
     });
-  }
-
-  async receiveAttachmentFromUrlConnectionless(url: string): Promise<void> {
-    const split = url.split("?d_m=");
-    if (split.length !== 2) {
-      throw new Error(ConnectionService.INVALID_CONNECTIONLESS_MSG);
-    }
-    await this.agent.receiveMessage(JsonEncoder.fromBase64(split[1]));
   }
 
   async acceptRequestConnection(connectionId: string) {

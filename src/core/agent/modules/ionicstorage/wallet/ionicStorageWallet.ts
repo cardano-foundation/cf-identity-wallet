@@ -96,7 +96,7 @@ class IonicStorageWallet implements Wallet {
   }
 
   get supportedKeyTypes() {
-    return [KeyType.Ed25519];
+    return [KeyType.Ed25519, KeyType.X25519];
   }
 
   async create(walletConfig: WalletConfig): Promise<void> {
