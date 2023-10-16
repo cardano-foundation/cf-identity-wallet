@@ -17,3 +17,4 @@
    - `npm run cli:offer-credential degree-credential-with-expiration.json`
    - `npm run cli:offer-credential-connection-less degree-credential-with-expiration.json`
    - `npm run cli:offer-credential resident-card-with-expiration.json`
+   - `npm run cli:offer-credential summit-access-pass.json`
