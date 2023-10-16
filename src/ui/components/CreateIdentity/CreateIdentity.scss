@@ -17,19 +17,25 @@
     font-weight: 500;
     line-height: 1.375rem;
   }
+
   ion-item.input-item .input-line ion-input input::placeholder {
     font-size: 1rem;
   }
+
   .hide-title ion-item.input-item ion-label[position="stacked"] {
     opacity: 0;
   }
+
   .error-message-container {
     height: 1rem;
   }
+
   .type-input-title {
     margin-top: 0.563rem;
   }
-  .type-input {
+
+  .type-input,
+  .theme-input {
     --background: var(--ion-color-light);
     --inner-border-width: 0;
     border: 1px solid var(--ion-color-dark-grey);
@@ -37,26 +43,37 @@
     border-radius: 0.5rem;
     width: 100%;
   }
-  .selectedType {
+
+  .selected-type {
     border: 1px solid var(--ion-color-secondary) !important;
     --background: var(--ion-color-medium-grey);
   }
-  .selectedTheme {
+
+  .selected-theme {
     border: 1px solid var(--ion-color-secondary) !important;
-    --background: var(--ion-color-medium-grey);
   }
+
+  .identity-theme-input .theme-input {
+    &::part(native) {
+      background-color: transparent;
+    }
+  }
+
   .col-left {
     margin-right: 0.313rem;
   }
+
   .col-right {
     margin-left: 0.313rem;
   }
+
   .centered-text {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 90%;
   }
+
   .continue-button-container {
     margin-top: 1.688rem;
   }

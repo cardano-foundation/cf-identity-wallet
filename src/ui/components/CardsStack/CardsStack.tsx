@@ -18,12 +18,12 @@ import {
 import { cardTypes } from "../../constants/dictionary";
 import { Alert } from "../Alert";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import BackgroundDidKey01 from "../../../ui/assets/images/did-key-01.png";
-import BackgroundDidKey02 from "../../../ui/assets/images/did-key-02.png";
-import BackgroundDidKey03 from "../../../ui/assets/images/did-key-03.png";
-import BackgroundDidKey04 from "../../../ui/assets/images/did-key-04.png";
-import BackgroundKERI01 from "../../../ui/assets/images/keri-01.png";
-import BackgroundKERI02 from "../../../ui/assets/images/keri-02.png";
+import BackgroundDidKey0 from "../../../ui/assets/images/did-key-0.png";
+import BackgroundDidKey1 from "../../../ui/assets/images/did-key-1.png";
+import BackgroundDidKey2 from "../../../ui/assets/images/did-key-2.png";
+import BackgroundDidKey3 from "../../../ui/assets/images/did-key-3.png";
+import BackgroundKERI0 from "../../../ui/assets/images/keri-0.png";
+import BackgroundKERI1 from "../../../ui/assets/images/keri-1.png";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import KERILogo from "../../../ui/assets/images/keri-logo.svg";
 
@@ -141,8 +141,8 @@ const DidCard = ({
   const divStyle = {
     backgroundImage: `url(${
       cardData.method === IdentifierType.KEY
-        ? BackgroundDidKey01
-        : BackgroundKERI01
+        ? BackgroundDidKey0
+        : BackgroundKERI0
     })`,
     backgroundSize: "cover",
     zIndex: index,

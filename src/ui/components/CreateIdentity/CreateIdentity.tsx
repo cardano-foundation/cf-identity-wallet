@@ -28,6 +28,12 @@ import { ColorGenerator } from "../../utils/ColorGenerator";
 import { AriesAgent } from "../../../core/agent/agent";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { toastState } from "../../constants/dictionary";
+import BackgroundDidKey0 from "../../../ui/assets/images/did-key-0.png";
+import BackgroundDidKey1 from "../../../ui/assets/images/did-key-1.png";
+import BackgroundDidKey2 from "../../../ui/assets/images/did-key-2.png";
+import BackgroundDidKey3 from "../../../ui/assets/images/did-key-3.png";
+import BackgroundKERI0 from "../../../ui/assets/images/keri-0.png";
+import BackgroundKERI1 from "../../../ui/assets/images/keri-1.png";
 
 const CreateIdentity = ({
   modalIsOpen,
@@ -140,7 +146,7 @@ const CreateIdentity = ({
                     }
                   }}
                   className={`type-input ${
-                    selectedType === 0 ? "selectedType" : ""
+                    selectedType === 0 ? "selected-type" : ""
                   }`}
                 >
                   <div className="centered-text">
@@ -157,7 +163,7 @@ const CreateIdentity = ({
                     }
                   }}
                   className={`type-input ${
-                    selectedType === 1 ? "selectedType" : ""
+                    selectedType === 1 ? "selected-type" : ""
                   }`}
                 >
                   <div className="centered-text">
@@ -177,17 +183,25 @@ const CreateIdentity = ({
                   <IonCol className="col-left">
                     <IonItem
                       onClick={() => setSelectedTheme(0)}
-                      className={`type-input ${
-                        selectedTheme === 0 ? "selectedTheme" : ""
+                      className={`theme-input ${
+                        selectedTheme === 0 ? "selected-theme" : ""
                       }`}
+                      style={{
+                        backgroundImage: `url(${BackgroundDidKey0})`,
+                        backgroundSize: "cover",
+                      }}
                     ></IonItem>
                   </IonCol>
                   <IonCol className="col-right">
                     <IonItem
                       onClick={() => setSelectedTheme(1)}
-                      className={`type-input ${
-                        selectedTheme === 1 ? "selectedTheme" : ""
+                      className={`theme-input ${
+                        selectedTheme === 1 ? "selected-theme" : ""
                       }`}
+                      style={{
+                        backgroundImage: `url(${BackgroundDidKey1})`,
+                        backgroundSize: "cover",
+                      }}
                     ></IonItem>
                   </IonCol>
                 </IonRow>
@@ -195,17 +209,25 @@ const CreateIdentity = ({
                   <IonCol className="col-left">
                     <IonItem
                       onClick={() => setSelectedTheme(2)}
-                      className={`type-input ${
-                        selectedTheme === 2 ? "selectedTheme" : ""
+                      className={`theme-input ${
+                        selectedTheme === 2 ? "selected-theme" : ""
                       }`}
+                      style={{
+                        backgroundImage: `url(${BackgroundDidKey2})`,
+                        backgroundSize: "cover",
+                      }}
                     ></IonItem>
                   </IonCol>
                   <IonCol className="col-right">
                     <IonItem
                       onClick={() => setSelectedTheme(3)}
-                      className={`type-input ${
-                        selectedTheme === 3 ? "selectedTheme" : ""
+                      className={`theme-input ${
+                        selectedTheme === 3 ? "selectedtheme" : ""
                       }`}
+                      style={{
+                        backgroundImage: `url(${BackgroundDidKey3})`,
+                        backgroundSize: "cover",
+                      }}
                     ></IonItem>
                   </IonCol>
                 </IonRow>
@@ -216,17 +238,25 @@ const CreateIdentity = ({
                   <IonCol className="col-left">
                     <IonItem
                       onClick={() => setSelectedTheme(4)}
-                      className={`type-input ${
-                        selectedTheme === 4 ? "selectedTheme" : ""
+                      className={`theme-input ${
+                        selectedTheme === 4 ? "selected-theme" : ""
                       }`}
+                      style={{
+                        backgroundImage: `url(${BackgroundKERI0})`,
+                        backgroundSize: "cover",
+                      }}
                     ></IonItem>
                   </IonCol>
                   <IonCol className="col-right">
                     <IonItem
                       onClick={() => setSelectedTheme(5)}
-                      className={`type-input ${
-                        selectedTheme === 5 ? "selectedTheme" : ""
+                      className={`theme-input ${
+                        selectedTheme === 5 ? "selected-theme" : ""
                       }`}
+                      style={{
+                        backgroundImage: `url(${BackgroundKERI1})`,
+                        backgroundSize: "cover",
+                      }}
                     ></IonItem>
                   </IonCol>
                 </IonRow>
