@@ -519,7 +519,7 @@
     "more": "More share options"
   },
   "createidentity": {
-    "title": "Create new identity",
+    "title": "Add an identity",
     "displayname": {
       "title": "Display name",
       "placeholder": "Create a name for this identity"

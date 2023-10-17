@@ -1,4 +1,8 @@
 .create-identity {
+  ion-grid {
+    padding-top: 0;
+  }
+
   ion-title {
     position: absolute;
     width: 100%;
@@ -7,15 +11,12 @@
     left: 0;
   }
 
-  .close-button-label {
-    color: var(--ion-color-primary);
-  }
-
   .type-input-title,
   ion-item.input-item ion-label[position="stacked"] {
     font-size: 1rem;
     font-weight: 500;
     line-height: 1.375rem;
+    margin-top: 0;
   }
 
   ion-item.input-item .input-line ion-input input::placeholder {
@@ -49,22 +50,61 @@
     --background: var(--ion-color-medium-grey);
   }
 
-  .selected-theme {
-    border: 1px solid var(--ion-color-secondary) !important;
-  }
+  .identity-type-input,
+  .identity-theme-input {
+    justify-content: space-between;
+    margin-bottom: 0.725rem;
 
-  .identity-theme-input .theme-input {
-    &::part(native) {
-      background-color: transparent;
+    ion-col {
+      max-width: calc(50% - 0.3rem);
+      margin: 0.3rem 0;
     }
   }
 
-  .col-left {
-    margin-right: 0.313rem;
-  }
+  .identity-theme-input {
+    ion-col {
+      height: 5.9375rem;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid var(--ion-color-dark-grey);
+      background: var(--ion-color-light);
 
-  .col-right {
-    margin-left: 0.313rem;
+      &.selected-theme {
+        border: 1px solid var(--ion-color-secondary) !important;
+        background: var(--ion-color-medium-grey);
+      }
+
+      .theme-input {
+        height: 100%;
+        border-radius: 0.25rem;
+
+        .selected-theme-checkmark {
+          width: 1.375rem;
+          height: 1.375rem;
+          border-radius: 1.375rem;
+          background: var(--ion-color-light);
+          position: absolute;
+          top: 0;
+          right: -0.438rem;
+          text-align: center;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          .selected-theme-checkmark-inner {
+            width: 1.125rem;
+            height: 1.125rem;
+            margin: auto;
+            border-radius: 1.125rem;
+            background: var(--ion-color-primary-gradient);
+          }
+        }
+
+        &::part(native) {
+          background-color: transparent;
+        }
+      }
+    }
   }
 
   .centered-text {
@@ -72,9 +112,5 @@
     justify-content: center;
     align-items: center;
     width: 90%;
-  }
-
-  .continue-button-container {
-    margin-top: 1.688rem;
   }
 }
