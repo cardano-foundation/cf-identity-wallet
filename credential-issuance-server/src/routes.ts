@@ -9,7 +9,7 @@ import {
 } from "./apis/credential.api";
 import { getConnectionByDid } from "./apis/connection.api";
 import { getFullUrl } from "./apis/shorten.api";
-import { residentCard, summitAccessPass } from "./apis/credential-context";
+import { summitAccessPass } from "./apis/credential-context";
 
 const router = express.Router();
 router.get(config.path.ping, ping);
@@ -22,7 +22,6 @@ router.post(
   invitationWithCredentialConnectionless
 );
 router.get(config.path.shorten, getFullUrl);
-router.get(config.path.credentials.resident, residentCard);
 router.get(config.path.credentials.summit, summitAccessPass);
 
 export default router;

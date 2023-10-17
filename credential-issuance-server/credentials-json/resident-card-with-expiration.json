@@ -2,7 +2,7 @@
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://w3id.org/security/suites/ed25519-2020/v1",
-    "http://127.0.0.1:3001/credentials/schemas/citizenship/v1"
+    "https://w3id.org/citizenship/v1"
   ],
   "id": "https://www.uscis.gov/green-card/credential/875970870",
   "type": ["VerifiableCredential", "PermanentResidentCard"],
@@ -15,12 +15,12 @@
     "id": "did:key:z6MktNjjqFdTksu46nngQ1xhisB1J426DcjLSA1rKwYHzM4B",
     "type": ["PermanentResident", "Person"],
     "birthCountry": "The Bahamas",
-    "category": "IR1",
-    "USCIS#": "000-000-310",
     "givenName": "John",
     "familyName": "Smith",
     "gender": "Male",
     "image": "static/johnsmith_photo.jpg",
-    "residentSince": "2022-10-10T10:12:12Z"
+    "residentSince": "2022-10-10T10:12:12Z",
+    "lprCategory": "C09",
+    "lprNumber": "999-999-999"
   }
 }

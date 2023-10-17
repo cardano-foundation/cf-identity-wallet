@@ -17,7 +17,6 @@ const config = {
     shorten: "/shorten/:id",
     credentials: {
       summit: "/credentials/schemas/summit/v1",
-      resident: "/credentials/schemas/citizenship/v1",
     }
   },
 };
