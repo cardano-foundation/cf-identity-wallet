@@ -18,7 +18,7 @@
   height: 12.5rem;
   width: 100%;
   margin-top: 1.5rem;
-  padding: 0.625rem 0.938rem;
+  padding: 0.75rem 1.25rem;
   border-radius: 1rem;
   font-size: 0.875rem;
   line-height: 1.375rem;
@@ -31,6 +31,10 @@
     justify-content: space-between;
 
     &.pending {
+      .card-body {
+        margin-inline: 5rem;
+      }
+
       .card-body,
       .card-footer-column-value {
         opacity: 0.4;
@@ -46,8 +50,6 @@
 
       .card-logo {
         display: flex;
-        flex-direction: column;
-        justify-content: center;
         img {
           max-height: 1.375rem;
         }
@@ -78,17 +80,17 @@
       font-size: 0.625rem;
       letter-spacing: 0.09375rem;
       text-align: center;
-      margin-inline: 5rem;
     }
 
     .card-footer {
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       justify-content: space-between;
 
       .card-footer-column {
         display: flex;
         flex-direction: column;
+        justify-content: center;
 
         &:first-child .card-footer-column-value {
           width: 40vw;
@@ -100,30 +102,67 @@
 
         .card-footer-column-label {
           font-size: 0.625rem;
-          color: var(--ion-color-secondary);
+          font-weight: 700;
         }
 
         .card-footer-column-info {
           font-size: 0.875rem;
-          color: var(--ion-color-primary);
+          font-weight: 700;
         }
       }
     }
   }
 
-  .cards-stack-cred-layout .card-footer {
-    flex-direction: row;
+  .cards-stack-did-layout {
+    color: var(--ion-color-light);
+
+    .card-logo {
+      display: flex;
+      flex-direction: row;
+      line-height: normal;
+
+      img {
+        margin-right: 0.5rem;
+      }
+    }
+
+    .card-footer-column-label {
+      color: white;
+    }
+
+    .card-footer-column-info {
+      color: var(--ion-color-light);
+    }
+  }
+
+  .cards-stack-cred-layout {
+    .card-logo {
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card-footer {
+      flex-direction: row;
+
+      .card-footer-column-label {
+        color: var(--ion-color-secondary);
+      }
+
+      .card-footer-column-info {
+        color: var(--ion-color-primary);
+      }
+    }
   }
 }
 
-.top-shadow {
-  box-shadow: 0px -5px 5px rgba(54, 60, 74, 0.25);
-}
-
-.bottom-shadow {
+.cards-stack-card {
   box-shadow: 0px 5px 5px rgba(54, 60, 74, 0.25);
+
+  &:not(:first-child) {
+    margin-top: -10rem;
+  }
 }
 
-.cards-stack-card:not(:first-child) {
-  margin-top: -10rem;
+.card-details .cards-stack-card:first-child {
+  box-shadow: 0px -5px 5px rgba(54, 60, 74, 0.25);
 }

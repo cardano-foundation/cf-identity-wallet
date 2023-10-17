@@ -1,5 +1,6 @@
 import { ReactNode, useEffect, useState } from "react";
 import {
+  BasicMessageStateChangedEvent,
   ConnectionStateChangedEvent,
   CredentialStateChangedEvent,
 } from "@aries-framework/core";
@@ -121,6 +122,7 @@ const credentialStateChangedHandler = async (
       credentialType: "",
       issuanceDate: credentialRecord.createdAt.toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
+      connectionId: credentialRecord.connectionId,
     };
     await AriesAgent.agent.credentials.createMetadata({
       ...credentialDetails,
@@ -136,6 +138,13 @@ const credentialStateChangedHandler = async (
     dispatch(setCurrentOperation(toastState.newCredentialAdded));
     dispatch(updateOrAddCredsCache(credentialShortDetails));
   }
+};
+
+const messageStateChangedHandler = async (
+  event: BasicMessageStateChangedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  const messageRecord = event.payload.basicMessageRecord;
 };
 
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -199,6 +208,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     AriesAgent.agent.credentials.onCredentialStateChanged((event) => {
       return credentialStateChangedHandler(event, dispatch);
     });
+    AriesAgent.agent.messages.onBasicMessageStateChanged((event) => {
+      return messageStateChangedHandler(event, dispatch);
+    });
+    // pickup messages
+    AriesAgent.agent.messages.pickupMessagesFromMediator();
     setInitialised(true);
   };
 

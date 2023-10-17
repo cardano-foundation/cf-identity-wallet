@@ -18,12 +18,7 @@ import {
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
 import { CapacitorFileSystem } from "./dependencies";
-import {
-  IonicStorageModule,
-  GeneralStorageModule,
-  MiscRecord,
-  MiscRecordId,
-} from "./modules";
+import { IonicStorageModule, GeneralStorageModule } from "./modules";
 import { HttpOutboundTransport } from "./transports";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
@@ -32,6 +27,7 @@ import {
   ConnectionService,
   CredentialService,
   IdentifierService,
+  MessageService,
 } from "./services";
 import { documentLoader } from "./documentLoader";
 
@@ -90,6 +86,7 @@ class AriesAgent {
   // @TODO - foconnor: Registering these should be more generic, but OK for now
   private identifierService!: IdentifierService;
   private connectionService!: ConnectionService;
+  private messageService!: MessageService;
   private credentialService!: CredentialService;
   private cryptoService!: CryptoService;
 
@@ -105,6 +102,12 @@ class AriesAgent {
     return this.connectionService;
   }
 
+  get messages() {
+    if (!this.messageService)
+      this.messageService = new MessageService(this.agent);
+    return this.messageService;
+  }
+
   get credentials() {
     if (!this.credentialService)
       this.credentialService = new CredentialService(this.agent);
@@ -114,6 +117,10 @@ class AriesAgent {
   get crypto() {
     if (!this.cryptoService) this.cryptoService = new CryptoService(this.agent);
     return this.cryptoService;
+  }
+
+  get genericRecords() {
+    return this.agent.genericRecords;
   }
 
   private constructor() {
@@ -138,24 +145,6 @@ class AriesAgent {
       await this.agent.initialize();
       await this.agent.modules.signify.start();
       AriesAgent.ready = true;
-    }
-  }
-
-  async storeMiscRecord(id: MiscRecordId, value: string) {
-    await this.agent.modules.generalStorage.saveMiscRecord(
-      new MiscRecord({ id, value })
-    );
-  }
-
-  async getMiscRecordValueById(id: MiscRecordId): Promise<string | undefined> {
-    try {
-      return (await this.agent.modules.generalStorage.getMiscRecordById(id))
-        .value;
-    } catch (e) {
-      if (e instanceof RecordNotFoundError) {
-        return undefined;
-      }
-      throw e;
     }
   }
 }

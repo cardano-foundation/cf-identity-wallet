@@ -4,6 +4,7 @@ import {
   render,
   waitFor,
   screen,
+  getByTestId,
 } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
@@ -37,7 +38,7 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-const initialStateNoPassword = {
+const initialStateNoPasswordCurrent = {
   stateCache: {
     routes: [TabsRoutePath.CREDS],
     authentication: {
@@ -54,9 +55,30 @@ const initialStateNoPassword = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
+  credsCache: { creds: credsFix },
 };
 
-describe("Cards Details page", () => {
+const initialStateNoPasswordArchived = {
+  stateCache: {
+    routes: [TabsRoutePath.CREDS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+      passwordIsSet: false,
+      passwordIsSkipped: true,
+    },
+  },
+  seedPhraseCache: {
+    seedPhrase160:
+      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+    seedPhrase256: "",
+    selected: FIFTEEN_WORDS_BIT_LENGTH,
+  },
+  credsCache: { creds: [] },
+};
+
+describe("Cards Details page - current not archived credential", () => {
   let storeMocked: Store<unknown, AnyAction>;
   beforeAll(() => {
     jest
@@ -67,7 +89,7 @@ describe("Cards Details page", () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     storeMocked = {
-      ...mockStore(initialStateNoPassword),
+      ...mockStore(initialStateNoPasswordCurrent),
       dispatch: dispatchMock,
     };
   });
@@ -180,8 +202,8 @@ describe("Cards Details page", () => {
     });
   });
 
-  test("It shows the warning when I click on the big delete button", async () => {
-    const { findByTestId, findByText } = render(
+  test("It shows the warning when I click on the big archive button", async () => {
+    const { findByTestId, queryByText, queryByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -191,16 +213,73 @@ describe("Cards Details page", () => {
         </MemoryRouter>
       </Provider>
     );
-    const deleteButton = await findByTestId("card-details-delete-button");
+    const deleteButton = await findByTestId(
+      "card-details-delete-archive-button"
+    );
     act(() => {
       fireEvent.click(deleteButton);
     });
 
-    const deleteAlert = await findByText(
-      EN_TRANSLATIONS.creds.card.details.delete.alert.title
-    );
     await waitFor(() => {
-      expect(deleteAlert).toBeVisible();
+      expect(queryByTestId("alert-delete-archive")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)
+      ).toBeVisible();
+    });
+  });
+});
+
+describe("Cards Details page - archived credential", () => {
+  let storeMocked: Store<unknown, AnyAction>;
+  beforeAll(() => {
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFix[0]);
+  });
+  beforeEach(() => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateNoPasswordArchived),
+      dispatch: dispatchMock,
+    };
+  });
+
+  test("It shows the restore alert", async () => {
+    const { queryByTestId, queryByText, getByText } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS.creds.card.details.restore)
+      ).toBeVisible();
+    });
+
+    const restoreButton = getByText(EN_TRANSLATIONS.creds.card.details.restore);
+
+    act(() => {
+      fireEvent.click(restoreButton);
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("alert-restore")).toBeInTheDocument();
+    });
+
+    await waitFor(() => {
+      expect(
+        queryByText(EN_TRANSLATIONS.creds.card.details.alert.restore.title)
+      ).toBeVisible();
     });
   });
 });

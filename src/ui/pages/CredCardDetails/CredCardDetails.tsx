@@ -14,13 +14,14 @@ import {
   informationCircleOutline,
   personCircleOutline,
   trashOutline,
+  archiveOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
+import { JsonObject } from "@aries-framework/core";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import { CredCard } from "../../components/CardsStack";
-import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -30,35 +31,39 @@ import {
 } from "../../../store/reducers/stateCache";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { VerifyPassword } from "../../components/VerifyPassword";
-import { Alert } from "../../components/Alert";
+import {
+  Alert as AlertDeleteArchive,
+  Alert as AlertRestore,
+} from "../../components/Alert";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
-import {
-  defaultCredentialsCardData,
-  operationState,
-  toastState,
-} from "../../constants/dictionary";
+import { operationState, toastState } from "../../constants/dictionary";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { CredentialDetails } from "../../../core/agent/agent.types";
 import { AriesAgent } from "../../../core/agent/agent";
+import {
+  getCredsCache,
+  setCredsCache,
+} from "../../../store/reducers/credsCache";
+import { getNextRoute } from "../../../routes/nextRoute";
 
 const CredCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
+  const credsCache = useAppSelector(getCredsCache);
   const stateCache = useAppSelector(getStateCache);
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [alertDeleteArchiveIsOpen, setAlertDeleteArchiveIsOpen] =
+    useState(false);
+  const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<CredentialDetails>();
+  const isArchived =
+    credsCache.filter((item) => item.id === params.id).length === 0;
 
   useEffect(() => {
-    async function getCredDetails() {
-      const cardDetails =
-        await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
-      setCardData(cardDetails);
-    }
     getCredDetails();
   }, [params.id]);
 
@@ -66,27 +71,69 @@ const CredCardDetails = () => {
     dispatch(setCurrentRoute({ path: history.location.pathname }));
   });
 
+  const getCredDetails = async () => {
+    const cardDetails =
+      await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
+    setCardData(cardDetails);
+  };
+
   const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(TabsRoutePath.CRED_DETAILS, {
+    const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CRED_DETAILS, {
       store: { stateCache },
     });
 
     updateReduxState(
-      backPath.pathname,
+      nextPath.pathname,
       { store: { stateCache } },
       dispatch,
       updateRedux
     );
-    history.push(backPath.pathname);
+    history.push(nextPath.pathname);
   };
 
-  const handleDelete = () => {
+  const handleArchiveCredential = async () => {
     setVerifyPasswordIsOpen(false);
-    // @TODO - sdisalvo: Update Database.
-    // Remember to update CredCardoptions file too.
-    // const updatedCreds = creds.filter((item) => item.id !== cardData.id);
-    // setCreds(updatedCreds);
-    // dispatch(setCredsCache(updatedCreds));
+    setVerifyPasscodeIsOpen(false);
+    await AriesAgent.agent.credentials.archiveCredential(params.id);
+    const creds = credsCache.filter((item) => item.id !== params.id);
+    dispatch(setCredsCache(creds));
+    dispatch(setCurrentOperation(toastState.credentialArchived));
+    handleDone();
+  };
+
+  const handleDeleteCredential = async () => {
+    try {
+      await AriesAgent.agent.credentials.deleteCredential(params.id);
+      dispatch(setCurrentOperation(toastState.credentialDeleted));
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
+    }
+  };
+
+  const handleRestoreCredential = async () => {
+    await AriesAgent.agent.credentials.restoreCredential(params.id);
+    try {
+      const metadata = await AriesAgent.agent.credentials.getMetadataById(
+        params.id
+      );
+      const creds =
+        await AriesAgent.agent.credentials.getCredentialShortDetails(metadata);
+      dispatch(setCredsCache([...credsCache, creds]));
+    } catch (e) {
+      // @TODO - sdisalvo: handle error
+    }
+    dispatch(setCurrentOperation(toastState.credentialRestored));
+    handleDone();
+  };
+
+  const onVerify = () => {
+    if (isArchived) {
+      handleDeleteCredential();
+    } else {
+      handleArchiveCredential();
+    }
+    setVerifyPasswordIsOpen(false);
+    setVerifyPasscodeIsOpen(false);
     handleDone();
   };
 
@@ -142,7 +189,10 @@ const CredCardDetails = () => {
         titleSize="h3"
         titleAction={handleDone}
         menuButton={false}
-        additionalButtons={<AdditionalButtons />}
+        additionalButtons={!isArchived && <AdditionalButtons />}
+        actionButton={isArchived}
+        actionButtonAction={() => setAlertRestoreIsOpen(true)}
+        actionButtonLabel={`${i18n.t("creds.card.details.restore")}`}
       >
         <CredCard
           cardData={cardData}
@@ -185,7 +235,7 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {credentialSubject.type as string}
+                  {(credentialSubject.degree as JsonObject)?.type as string}
                 </span>
               </span>
               <span className="card-details-info-block-line">
@@ -197,7 +247,7 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {`${credentialSubject.name}`}
+                  {(credentialSubject.degree as JsonObject)?.name as string}
                 </span>
               </span>
             </div>
@@ -281,8 +331,10 @@ const CredCardDetails = () => {
                 className="card-details-info-block-line"
                 data-testid="copy-button-proof-value"
                 onClick={() => {
-                  writeToClipboard(cardData.proofValue);
-                  dispatch(setCurrentOperation(toastState.copiedToClipboard));
+                  if (cardData.proofValue) {
+                    writeToClipboard(cardData.proofValue);
+                    dispatch(setCurrentOperation(toastState.copiedToClipboard));
+                  }
                 }}
               >
                 <span>
@@ -293,8 +345,10 @@ const CredCardDetails = () => {
                   />
                 </span>
                 <span className="card-details-info-block-data">
-                  {cardData.proofValue.substring(0, 13)}...
-                  {cardData.proofValue.slice(-5)}
+                  {cardData.proofValue &&
+                    cardData.proofValue?.substring(0, 13) +
+                      "..." +
+                      cardData.proofValue?.slice(-5)}
                 </span>
                 <span>
                   <IonButton
@@ -314,37 +368,56 @@ const CredCardDetails = () => {
             shape="round"
             expand="block"
             color="danger"
-            data-testid="card-details-delete-button"
+            data-testid="card-details-delete-archive-button"
             className="delete-button"
             onClick={() => {
-              setAlertIsOpen(true);
-              dispatch(setCurrentOperation(operationState.deleteCredential));
+              setAlertDeleteArchiveIsOpen(true);
+              dispatch(
+                setCurrentOperation(
+                  isArchived
+                    ? operationState.deleteCredential
+                    : operationState.archiveCredential
+                )
+              );
             }}
           >
             <IonIcon
               slot="icon-only"
               size="small"
-              icon={trashOutline}
+              icon={isArchived ? trashOutline : archiveOutline}
               color="primary"
             />
-            {i18n.t("creds.card.details.delete.button")}
+            {isArchived
+              ? i18n.t("creds.card.details.button.delete")
+              : i18n.t("creds.card.details.button.archive")}
           </IonButton>
         </div>
         <CredsOptions
           optionsIsOpen={optionsIsOpen}
           setOptionsIsOpen={setOptionsIsOpen}
           id={params.id}
+          credsOptionAction={
+            isArchived ? handleDeleteCredential : handleArchiveCredential
+          }
         />
-        <Alert
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
-          dataTestId="alert-delete"
-          headerText={i18n.t("creds.card.details.delete.alert.title")}
+        <AlertDeleteArchive
+          isOpen={alertDeleteArchiveIsOpen}
+          setIsOpen={setAlertDeleteArchiveIsOpen}
+          dataTestId="alert-delete-archive"
+          headerText={i18n.t(
+            isArchived
+              ? "creds.card.details.alert.delete.title"
+              : "creds.card.details.alert.archive.title"
+          )}
           confirmButtonText={`${i18n.t(
-            "creds.card.details.delete.alert.confirm"
+            isArchived
+              ? "creds.card.details.alert.delete.confirm"
+              : "creds.card.details.alert.archive.confirm"
           )}`}
           cancelButtonText={`${i18n.t(
-            "creds.card.details.delete.alert.cancel"
+            isArchived
+              ? "creds.card.details.alert.delete.cancel"
+              : "creds.card.details.alert.archive.cancel"
           )}`}
           actionConfirm={() => {
             if (
@@ -359,15 +432,30 @@ const CredCardDetails = () => {
           actionCancel={() => dispatch(setCurrentOperation(""))}
           actionDismiss={() => dispatch(setCurrentOperation(""))}
         />
+        <AlertRestore
+          isOpen={alertRestoreIsOpen}
+          setIsOpen={setAlertRestoreIsOpen}
+          dataTestId="alert-restore"
+          headerText={i18n.t("creds.card.details.alert.restore.title")}
+          confirmButtonText={`${i18n.t(
+            "creds.card.details.alert.restore.confirm"
+          )}`}
+          cancelButtonText={`${i18n.t(
+            "creds.card.details.alert.restore.cancel"
+          )}`}
+          actionConfirm={() => handleRestoreCredential()}
+          actionCancel={() => dispatch(setCurrentOperation(""))}
+          actionDismiss={() => dispatch(setCurrentOperation(""))}
+        />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
-          onVerify={handleDelete}
+          onVerify={onVerify}
         />
         <VerifyPasscode
           isOpen={verifyPasscodeIsOpen}
           setIsOpen={setVerifyPasscodeIsOpen}
-          onVerify={handleDelete}
+          onVerify={onVerify}
         />
       </TabLayout>
     </IonPage>

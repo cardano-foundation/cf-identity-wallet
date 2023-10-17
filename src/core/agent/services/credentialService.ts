@@ -6,10 +6,10 @@ import {
   CredentialStateChangedEvent,
   ProposeCredentialOptions,
   V2OfferCredentialMessage,
-  LinkedDataProof,
   AriesFrameworkError,
   JsonCredential,
   JsonLdCredentialDetailFormat,
+  W3cJsonLdVerifiableCredential,
 } from "@aries-framework/core";
 import { CredentialDetails, CredentialShortDetails } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
@@ -121,15 +121,21 @@ class CredentialService extends AgentService {
       );
     const credentialSubject = w3cCredential.credential
       .credentialSubject as any as JsonCredential["credentialSubject"];
-    const proof = w3cCredential.credential.proof as LinkedDataProof;
+    const credential =
+      w3cCredential.credential as W3cJsonLdVerifiableCredential;
+    const proof = credential.proof;
     return {
       ...this.getCredentialShortDetails(metadata),
       type: w3cCredential.credential.type,
       connectionId: credentialRecord.connectionId,
       expirationDate: w3cCredential.credential?.expirationDate,
       credentialSubject: credentialSubject,
-      proofType: proof.type,
-      proofValue: proof.jws as string,
+      proofType: Array.isArray(proof)
+        ? proof.map((p) => p.type).join(",")
+        : proof.type,
+      proofValue: Array.isArray(proof)
+        ? proof.map((p) => p.jws).join(",")
+        : proof.jws,
     };
   }
 
@@ -206,7 +212,6 @@ class CredentialService extends AgentService {
   async deleteCredential(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
-    await this.agent.credentials.deleteById(id);
     await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
   }
 
@@ -259,7 +264,7 @@ class CredentialService extends AgentService {
     }
   }
 
-  private async getMetadataById(id: string): Promise<CredentialMetadataRecord> {
+  async getMetadataById(id: string): Promise<CredentialMetadataRecord> {
     const metadata =
       await this.agent.modules.generalStorage.getCredentialMetadata(id);
     if (!metadata) {

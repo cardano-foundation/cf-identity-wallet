@@ -80,10 +80,16 @@ describe("Dids Tab", () => {
       </MemoryRouter>
     );
 
-    const firstCardId = getByText(filteredIdentityFix[0].id);
+    expect(
+      getByText(
+        filteredIdentityFix[0].id.substring(8, 13) +
+          "..." +
+          filteredIdentityFix[0].id.slice(-5)
+      )
+    ).toBeVisible();
 
     act(() => {
-      fireEvent.click(firstCardId);
+      fireEvent.click(getByTestId("did-card-stack-index-0"));
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 

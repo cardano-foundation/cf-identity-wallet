@@ -214,6 +214,10 @@ describe("Aries - SQLite Storage Module: Wallet Open and Close", () => {
   test("store getter should throw if the wallet session is not open", async () => {
     expect(() => wallet.store).toThrowError("No Wallet Session is opened");
   });
+
+  test("wallet supported key types", async () => {
+    expect(wallet.supportedKeyTypes).toEqual([KeyType.Ed25519, KeyType.X25519]);
+  });
 });
 
 describe("Aries - SQLite Storage Module: Wallet Key Operations", () => {

@@ -13,6 +13,8 @@ import {
 } from "@aries-framework/core";
 import {
   ConnectionDetails,
+  ConnectionHistoryItem,
+  ConnectionHistoryType,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
@@ -67,8 +69,7 @@ class ConnectionService extends AgentService {
   isConnectionResponseSent(connectionRecord: ConnectionRecord) {
     return (
       connectionRecord.role === DidExchangeRole.Responder &&
-      connectionRecord.state === DidExchangeState.ResponseSent &&
-      !connectionRecord.autoAcceptConnection
+      connectionRecord.state === DidExchangeState.ResponseSent
     );
   }
 
@@ -107,10 +108,6 @@ class ConnectionService extends AgentService {
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
       url = await response.text();
-    }
-    if (url.includes("?d_m=")) {
-      // @TODO: remove when upgrade aries
-      return this.receiveAttachmentFromUrlConnectionless(url);
     }
     await this.agent.oob.receiveInvitationFromUrl(url, {
       autoAcceptConnection: true,
@@ -238,6 +235,25 @@ class ConnectionService extends AgentService {
 
   async deleteConnectionNoteById(connectionNoteId: string) {
     return this.agent.genericRecords.deleteById(connectionNoteId);
+  }
+
+  async getConnectionHistoryById(
+    connectionId: string
+  ): Promise<ConnectionHistoryItem[]> {
+    let histories: ConnectionHistoryItem[] = [];
+    const credentialRecords =
+      await this.agent.modules.generalStorage.getCredentialMetadataByConnectionId(
+        connectionId
+      );
+    histories = histories.concat(
+      credentialRecords.map((record) => {
+        return {
+          type: ConnectionHistoryType.CREDENTIAL_ACCEPTED,
+          timestamp: record.createdAt.toISOString(),
+        };
+      })
+    );
+    return histories;
   }
 
   private async getConnectNotesByConnectionId(

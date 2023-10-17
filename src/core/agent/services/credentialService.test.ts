@@ -8,6 +8,7 @@ import {
   CredentialStateChangedEvent,
   V2OfferCredentialMessage,
   W3cCredentialRecord,
+  W3cJsonLdVerifiableCredential,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { CredentialMetadataRecord } from "../modules";
@@ -148,6 +149,23 @@ const w3cCredentialRecord = new W3cCredentialRecord({
   } as any as W3cCredentialRecord["credential"],
 });
 
+const w3cCredentialRecordArrayProof = {
+  ...w3cCredentialRecord,
+  credential: {
+    ...w3cCredentialRecord.credential,
+    proof: [
+      {
+        ...(w3cCredentialRecord.credential as W3cJsonLdVerifiableCredential)
+          .proof,
+      },
+      {
+        ...(w3cCredentialRecord.credential as W3cJsonLdVerifiableCredential)
+          .proof,
+      },
+    ],
+  },
+};
+
 const offerAttachment = new Attachment({
   id: "attachId",
   mimeType: "application/json",
@@ -253,7 +271,6 @@ describe("Credential service of agent", () => {
     expect(agent.modules.generalStorage.getCredentialMetadata).toBeCalledWith(
       credId
     );
-    expect(agent.credentials.deleteById).toBeCalledWith(credId);
     expect(
       agent.modules.generalStorage.deleteCredentialMetadata
     ).toBeCalledWith(credId);
@@ -375,6 +392,36 @@ describe("Credential service of agent", () => {
       proofType: "Ed25519Signature2018",
       proofValue:
         "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+      type: ["VerifiableCredential", "UniversityDegreeCredential"],
+    });
+  });
+
+  test("get credential details successfully record by id array proof", async () => {
+    agent.modules.generalStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(credentialMetadataRecordA);
+    agent.credentials.getById = jest
+      .fn()
+      .mockResolvedValue(credentialDoneExchangeRecord);
+    agent.w3cCredentials.getCredentialRecordById = jest
+      .fn()
+      .mockResolvedValue(w3cCredentialRecordArrayProof);
+
+    await expect(
+      credentialService.getCredentialDetailsById(credentialMetadataRecordA.id)
+    ).resolves.toStrictEqual({
+      id: credentialMetadataRecordA.id,
+      colors: credentialMetadataRecordA.colors,
+      connectionId: credentialDoneExchangeRecord.connectionId,
+      credentialSubject: w3cCredentialRecord.credential.credentialSubject,
+      credentialType: "credType",
+      expirationDate: "2100-10-22T12:23:48Z",
+      issuanceDate: nowISO,
+      issuerLogo: "issuerLogoHere",
+      proofType: "Ed25519Signature2018,Ed25519Signature2018",
+      proofValue:
+        "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw,eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       type: ["VerifiableCredential", "UniversityDegreeCredential"],
     });

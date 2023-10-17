@@ -52,6 +52,10 @@ jest.mock("../../../core/agent/agent", () => ({
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
       },
+      messages: {
+        onBasicMessageStateChanged: jest.fn(),
+        pickupMessagesFromMediator: jest.fn(),
+      },
     },
   },
 }));
@@ -254,6 +258,7 @@ describe("Credential state changed handler", () => {
         issuanceDate:
           credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
         status: CredentialMetadataRecordStatus.PENDING,
+        connectionId: "cid2",
       })
     );
   });
