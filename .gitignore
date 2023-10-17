@@ -29,3 +29,5 @@ yarn-error.log*
 
 /resources/android
 /resources/ios
+/ios/App/App/Assets.xcassets
+/android/app/src/main/res
