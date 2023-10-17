@@ -26,3 +26,5 @@ yarn-debug.log*
 yarn-error.log*
 
 /.idea
+android/app/src/main/res/
+ ios/App/App/Assets.xcassets/AppIcon.appiconse
