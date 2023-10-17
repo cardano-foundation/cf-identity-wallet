@@ -378,7 +378,7 @@ describe("Identifier service of agent", () => {
     expect(newRecord.method).toEqual(IdentifierType.KEY);
   });
 
-  test("can update a did:key identifier theme", async () => {
+  test("can update a did:key identifier", async () => {
     const did = "did:key:test";
     const displayName = "newDisplayName";
     agent.dids.create = jest.fn().mockResolvedValue({
@@ -395,13 +395,16 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(didMetadataRecord);
-    await identifierService.updateIdentityTheme(did, 1);
+    await identifierService.updateIdentity(did, {
+      theme: 1,
+      displayName: "test",
+    });
     expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
       did
     );
     expect(
       agent.modules.generalStorage.updateIdentifierMetadata
-    ).toBeCalledWith(did, { theme: 1 });
+    ).toBeCalledWith(did, { theme: 1, displayName: "test" });
   });
 
   test("cannot create a keri identifier if theme is not valid", async () => {
