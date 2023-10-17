@@ -125,14 +125,6 @@ class ConnectionService extends AgentService {
     return JsonEncoder.fromString(response).data;
   }
 
-  async receiveAttachmentFromUrlConnectionless(url: string): Promise<void> {
-    const split = url.split("?d_m=");
-    if (split.length !== 2) {
-      throw new Error(ConnectionService.INVALID_CONNECTIONLESS_MSG);
-    }
-    await this.agent.receiveMessage(JsonEncoder.fromBase64(split[1]));
-  }
-
   async acceptRequestConnection(connectionId: string) {
     await this.agent.connections.acceptRequest(connectionId);
   }
