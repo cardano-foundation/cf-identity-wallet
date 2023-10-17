@@ -27,3 +27,16 @@ Runs the WebdriverIO test runner with the provided TypeScript configuration file
     `npm run dev`
 3. Run the test in terminal C:
     `npm run e2e:web`
+
+#### Generate icons
+
+Install global tool
+```
+npm install -g cordova-res
+```
+
+Generating icons and copying to each platform
+```
+cordova-res android --skip-config --copy
+cordova-res ios --skip-config --copy
+```
