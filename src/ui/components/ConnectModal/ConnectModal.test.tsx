@@ -9,17 +9,6 @@ import { i18n } from "../../../i18n";
 import { ConnectModal } from "./ConnectModal";
 import { connectionType, operationState } from "../../constants/dictionary";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { AriesAgent } from "../../../core/agent/agent";
-jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
-    agent: {
-      connections: {
-        createMediatorInvitation: jest.fn(),
-        getShortenUrl: jest.fn(),
-      },
-    },
-  },
-}));
 
 describe("Connection modal", () => {
   test("It renders connection modal", async () => {
@@ -66,16 +55,6 @@ describe("Connection modal", () => {
   });
 
   test("It should open share a QR code component successfully", async () => {
-    jest
-      .spyOn(AriesAgent.agent.connections, "createMediatorInvitation")
-      .mockResolvedValue({
-        invitationUrl: "http://example.com?oob=abc123",
-        record: {} as OutOfBandRecord,
-        invitation: {} as OutOfBandInvitation,
-      });
-    jest
-      .spyOn(AriesAgent.agent.connections, "getShortenUrl")
-      .mockResolvedValue("http://example.com/shorten/123");
     const handleProvideQr = jest.fn();
     const { getByTestId } = render(
       <Provider store={store}>
