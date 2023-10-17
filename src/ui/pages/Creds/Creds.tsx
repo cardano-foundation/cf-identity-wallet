@@ -172,7 +172,7 @@ const Creds = () => {
             connectModalIsOpen={addCredentialIsOpen}
             setConnectModalIsOpen={setAddCredentialIsOpen}
             handleProvideQr={() => {
-              // handle
+              // @TODO: add credential sharing function
             }}
           />
           {archivedCreds.length ? (

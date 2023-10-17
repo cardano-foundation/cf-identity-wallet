@@ -291,8 +291,6 @@ const Crypto = () => {
                 header={{
                   title: i18n.t("crypto.receivemodal.title"),
                   titlePosition: "center",
-                  // eslint-disable-next-line @typescript-eslint/no-empty-function
-                  onRefresh: () => {},
                 }}
                 content={{
                   QRData: defaultAccountData.address,
