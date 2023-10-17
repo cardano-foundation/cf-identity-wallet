@@ -72,10 +72,15 @@ const CreateIdentity = ({
     const newColor = colorGenerator.generateNextColor();
     const type = selectedType === 0 ? IdentifierType.KEY : IdentifierType.KERI;
     // @TODO: for test, should set colors
+    let theme = selectedTheme;
+    if (type === IdentifierType.KERI) {
+      theme = selectedTheme === 5 ? 1 : 0;
+    }
     const identifier = await AriesAgent.agent.identifiers.createIdentifier({
       displayName: displayNameValue,
       method: type,
       colors: [newColor[1], newColor[0]],
+      theme,
     });
     if (identifier) {
       const newIdentity: IdentifierShortDetails = {
@@ -84,6 +89,7 @@ const CreateIdentity = ({
         displayName: displayNameValue,
         createdAtUTC: new Date().toISOString(),
         colors: [newColor[1], newColor[0]],
+        theme: selectedTheme,
       };
       dispatch(setIdentitiesCache([...identityData, newIdentity]));
       dispatch(setCurrentOperation(toastState.identityCreated));

@@ -29,6 +29,17 @@ import KERILogo from "../../../ui/assets/images/keri-logo.svg";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
+const MAPPING_THEME_BACKGROUND_DID_KEY: Record<number, unknown> = {
+  0: BackgroundDidKey0,
+  1: BackgroundDidKey1,
+  2: BackgroundDidKey2,
+  3: BackgroundDidKey3,
+};
+
+const MAPPING_THEME_BACKGROUND_KERI: Record<number, unknown> = {
+  0: BackgroundKERI0,
+  1: BackgroundKERI1,
+};
 
 const CredCard = ({
   cardData,
@@ -141,8 +152,8 @@ const DidCard = ({
   const divStyle = {
     backgroundImage: `url(${
       cardData.method === IdentifierType.KEY
-        ? BackgroundDidKey0
-        : BackgroundKERI0
+        ? MAPPING_THEME_BACKGROUND_DID_KEY[cardData.theme || 0]
+        : MAPPING_THEME_BACKGROUND_KERI[cardData.theme || 0]
     })`,
     backgroundSize: "cover",
     zIndex: index,
