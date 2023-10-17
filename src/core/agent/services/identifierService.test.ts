@@ -395,7 +395,7 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(didMetadataRecord);
-    await identifierService.updateIdentity(did, {
+    await identifierService.updateIdentifier(did, {
       theme: 1,
       displayName: "test",
     });
