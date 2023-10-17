@@ -139,10 +139,23 @@ class AriesAgent {
       },
     };
   }
+  getCredential(credential: JsonLdCredentialDetailFormat["credential"]): JsonLdCredentialDetailFormat {
+    return {
+      credential: {
+        ...credential,
+        issuer: this.masterDid.didState.did as string,
+        issuanceDate: new Date().toISOString(),
+      },
+      options: {
+        proofType: "Ed25519Signature2018",
+        proofPurpose: "assertionMethod",
+      },
+    };
+  }
 
   async offerCredential(connectionId: string) {
- 
-   return this.agent.credentials.offerCredential({
+
+    return this.agent.credentials.offerCredential({
       protocolVersion: "v2",
       connectionId: connectionId,
       credentialFormats: {
@@ -152,12 +165,12 @@ class AriesAgent {
     });
   }
 
-  async createInvitationWithCredential() {
+  async createInvitationWithCredential(credential?: JsonLdCredentialDetailFormat["credential"]) {
     const { message } = await this.agent.credentials.createOffer({
       comment: "V2 Out of Band offer (W3C)",
       autoAcceptCredential: AutoAcceptCredential.Always,
       credentialFormats: {
-        jsonld: this.getCredentialExample(this.masterDid.didState.did as string),
+        jsonld: credential ? this.getCredential(credential) : this.getCredentialExample(this.masterDid.didState.did as string),
       },
       protocolVersion: "v2",
     });
@@ -169,13 +182,13 @@ class AriesAgent {
     return outOfBandInvitation.toUrl({ domain: config.endpoint });
   }
 
-  async createInvitationWithCredentialConnectionless() {
+  async createInvitationWithCredentialConnectionless(credential?: JsonLdCredentialDetailFormat["credential"]) {
     const { message, credentialRecord } =
       await this.agent.credentials.createOffer({
         comment: "V2 Out of Band offer (W3C)",
         autoAcceptCredential: AutoAcceptCredential.Always,
         credentialFormats: {
-          jsonld: this.getCredentialExample(this.masterDid.didState.did as string),
+          jsonld: credential ? this.getCredential(credential) : this.getCredentialExample(this.masterDid.didState.did as string),
         },
         protocolVersion: "v2",
       });
