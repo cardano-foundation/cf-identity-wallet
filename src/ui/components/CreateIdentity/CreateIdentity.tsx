@@ -30,12 +30,7 @@ import { ColorGenerator } from "../../utils/ColorGenerator";
 import { AriesAgent } from "../../../core/agent/agent";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { toastState } from "../../constants/dictionary";
-import BackgroundDidKey0 from "../../../ui/assets/images/did-key-0.png";
-import BackgroundDidKey1 from "../../../ui/assets/images/did-key-1.png";
-import BackgroundDidKey2 from "../../../ui/assets/images/did-key-2.png";
-import BackgroundDidKey3 from "../../../ui/assets/images/did-key-3.png";
-import BackgroundKERI0 from "../../../ui/assets/images/keri-0.png";
-import BackgroundKERI1 from "../../../ui/assets/images/keri-1.png";
+import { IdentityThemeSelector } from "../IdentityThemeSelector";
 
 const CreateIdentity = ({
   modalIsOpen,
@@ -50,14 +45,6 @@ const CreateIdentity = ({
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
   const typeIsSelectedIsValid = selectedType !== undefined;
-  const MAPPING_THEME_BACKGROUND: Record<number, unknown> = {
-    0: BackgroundDidKey0,
-    1: BackgroundDidKey1,
-    2: BackgroundDidKey2,
-    3: BackgroundDidKey3,
-    4: BackgroundKERI0,
-    5: BackgroundKERI1,
-  };
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -106,22 +93,6 @@ const CreateIdentity = ({
     }
   };
 
-  const Checkmark = () => {
-    return (
-      <div
-        className="selected-theme-checkmark"
-        data-testid="selected-theme-checkmark"
-      >
-        <div className="selected-theme-checkmark-inner">
-          <IonIcon
-            slot="icon-only"
-            icon={checkmark}
-          />
-        </div>
-      </div>
-    );
-  };
-
   interface TypeItemProps {
     index: number;
     text: string;
@@ -146,27 +117,6 @@ const CreateIdentity = ({
           <div className="centered-text">
             <span>{text}</span>
           </div>
-        </IonItem>
-      </IonCol>
-    );
-  };
-
-  interface ThemeItemProps {
-    index: number;
-  }
-
-  const ThemeItem = ({ index }: ThemeItemProps) => {
-    return (
-      <IonCol className={`${selectedTheme === index ? "selected-theme" : ""}`}>
-        <IonItem
-          onClick={() => setSelectedTheme(index)}
-          className="theme-input"
-          style={{
-            backgroundImage: `url(${MAPPING_THEME_BACKGROUND[index]})`,
-            backgroundSize: "cover",
-          }}
-        >
-          {selectedTheme === index && <Checkmark />}
         </IonItem>
       </IonCol>
     );
@@ -201,6 +151,7 @@ const CreateIdentity = ({
                 />
               </IonCol>
             </IonRow>
+
             <IonRow className="error-message-container">
               {displayNameValue.length !== 0 && !displayNameValueIsValid ? (
                 <ErrorMessage
@@ -209,11 +160,13 @@ const CreateIdentity = ({
                 />
               ) : null}
             </IonRow>
+
             <IonRow>
               <span className="type-input-title">{`${i18n.t(
                 "createidentity.identitytype.title"
               )}`}</span>
             </IonRow>
+
             <IonRow className="identity-type-input">
               <TypeItem
                 index={0}
@@ -224,30 +177,17 @@ const CreateIdentity = ({
                 text={i18n.t("createidentity.identitytype.keri")}
               />
             </IonRow>
+
             <IonRow>
               <span className="type-input-title">{`${i18n.t(
                 "createidentity.theme.title"
               )}`}</span>
             </IonRow>
-            {selectedType === 0 ? (
-              <>
-                <IonRow className="identity-theme-input">
-                  <ThemeItem index={0} />
-                  <ThemeItem index={1} />
-                </IonRow>
-                <IonRow className="identity-theme-input">
-                  <ThemeItem index={2} />
-                  <ThemeItem index={3} />
-                </IonRow>
-              </>
-            ) : (
-              <>
-                <IonRow className="identity-theme-input">
-                  <ThemeItem index={4} />
-                  <ThemeItem index={5} />
-                </IonRow>
-              </>
-            )}
+            <IdentityThemeSelector
+              identityType={selectedType}
+              selectedTheme={selectedTheme}
+              setSelectedTheme={setSelectedTheme}
+            />
 
             <IonRow className="continue-button-container">
               <IonCol>
