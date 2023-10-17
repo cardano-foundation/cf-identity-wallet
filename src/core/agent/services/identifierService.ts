@@ -52,6 +52,7 @@ class IdentifierService extends AgentService {
         id: metadata.id,
         createdAtUTC: metadata.createdAt.toISOString(),
         colors: metadata.colors,
+        theme: metadata.theme,
       });
     }
     return identities;
@@ -94,6 +95,7 @@ class IdentifierService extends AgentService {
           displayName: metadata.displayName,
           createdAtUTC: metadata.createdAt.toISOString(),
           colors: metadata.colors,
+          theme: metadata.theme,
           s: aid.state.s,
           dt: aid.state.dt,
           kt: aid.state.kt,
@@ -235,6 +237,7 @@ class IdentifierService extends AgentService {
       displayName: metadata.displayName,
       createdAtUTC: record.createdAt.toISOString(),
       colors: metadata.colors,
+      theme: metadata.theme,
       controller: record.did,
       keyType: signingKey.type.toString(),
       publicKeyBase58: signingKey.publicKeyBase58,

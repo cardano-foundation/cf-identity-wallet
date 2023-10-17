@@ -111,6 +111,7 @@ describe("Identifier service of agent", () => {
         colors,
         method: IdentifierType.KEY,
         createdAtUTC: nowISO,
+        theme: 0,
       },
       {
         id: keriMetadataRecord.id,
@@ -118,6 +119,7 @@ describe("Identifier service of agent", () => {
         colors,
         method: IdentifierType.KERI,
         createdAtUTC: nowISO,
+        theme: 0,
       },
     ]);
   });
@@ -133,6 +135,7 @@ describe("Identifier service of agent", () => {
         colors,
         method: IdentifierType.KEY,
         createdAtUTC: nowISO,
+        theme: 0,
       },
       {
         id: keriMetadataRecord.id,
@@ -140,6 +143,7 @@ describe("Identifier service of agent", () => {
         colors,
         method: IdentifierType.KERI,
         createdAtUTC: nowISO,
+        theme: 0,
       },
     ]);
   });
@@ -252,6 +256,7 @@ describe("Identifier service of agent", () => {
         displayName: didMetadataRecordProps.displayName,
         colors: didMetadataRecordProps.colors,
         controller: did,
+        theme: 0,
         keyType,
         publicKeyBase58: pkey,
         createdAtUTC: nowISO,
@@ -303,6 +308,7 @@ describe("Identifier service of agent", () => {
         displayName: keriMetadataRecordProps.displayName,
         createdAtUTC: nowISO,
         colors,
+        theme: 0,
         ...aidReturnedBySignify.state,
       },
     });
