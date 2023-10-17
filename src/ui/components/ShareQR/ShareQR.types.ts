@@ -10,7 +10,7 @@ interface ShareQRProps {
   };
   content: {
     QRData: string;
-    copyBLock?: { title?: string; content: string }[];
+    copyBlock?: { title?: string; content: string }[];
   };
   // eslint-disable-next-line no-undef
   moreComponent?: JSX.Element;

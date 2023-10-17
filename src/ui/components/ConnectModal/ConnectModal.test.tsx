@@ -29,6 +29,7 @@ describe("Connection modal", () => {
           type={connectionType.connection}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}
+          handleProvideQr={jest.fn()}
         />
       </Provider>
     );
@@ -51,6 +52,7 @@ describe("Connection modal", () => {
           type={connectionType.connection}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}
+          handleProvideQr={jest.fn()}
         />
       </Provider>
     );
@@ -74,13 +76,14 @@ describe("Connection modal", () => {
     jest
       .spyOn(AriesAgent.agent.connections, "getShortenUrl")
       .mockResolvedValue("http://example.com/shorten/123");
-
+    const handleProvideQr = jest.fn();
     const { getByTestId } = render(
       <Provider store={store}>
         <ConnectModal
           type={connectionType.connection}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}
+          handleProvideQr={handleProvideQr}
         />
       </Provider>
     );
@@ -89,7 +92,7 @@ describe("Connection modal", () => {
       fireEvent.click(btn);
     });
     await waitFor(() => {
-      expect(getByTestId("share-qr-modal")).toBeInTheDocument();
+      expect(handleProvideQr).toBeCalled();
     });
   });
 });

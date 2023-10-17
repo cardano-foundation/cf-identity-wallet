@@ -90,7 +90,7 @@ describe("Share QR component", () => {
           header={props.header}
           content={{
             ...props.content,
-            copyBLock: copyBlock,
+            copyBlock: copyBlock,
           }}
           moreComponent={props.moreComponent}
           modalOptions={props.modalOptions}

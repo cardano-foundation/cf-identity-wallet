@@ -36,6 +36,9 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
+import { ShareQR } from "../../components/ShareQR/ShareQR";
+import { MoreOptions } from "../../components/ShareQR/MoreOptions";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const ConnectionItem = ({
   item,
@@ -92,6 +95,17 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
     MappedConnections[]
   >([]);
   const [connectModalIsOpen, setConnectModalIsOpen] = useState(false);
+  const [invitationLink, setInvitationLink] = useState<string>();
+
+  async function handleProvideQr() {
+    const invitation =
+      await AriesAgent.agent.connections.createMediatorInvitation();
+    const shortUrl = await AriesAgent.agent.connections.getShortenUrl(
+      invitation.invitationUrl
+    );
+    setInvitationLink(shortUrl);
+    setConnectModalIsOpen(false);
+  }
 
   const handleConnectModal = () => {
     setConnectModalIsOpen(true);
@@ -241,7 +255,27 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
         type={connectionType.connection}
         connectModalIsOpen={connectModalIsOpen}
         setConnectModalIsOpen={setConnectModalIsOpen}
+        handleProvideQr={handleProvideQr}
       />
+      {invitationLink && (
+        <ShareQR
+          isOpen={!!invitationLink}
+          setIsOpen={() => setInvitationLink(undefined)}
+          header={{
+            title: i18n.t("connectmodal.connect"),
+            titlePosition: "center",
+          }}
+          content={{
+            QRData: invitationLink,
+            copyBlock: [{ content: invitationLink }],
+          }}
+          moreComponent={<MoreOptions text={invitationLink} />}
+          modalOptions={{
+            initialBreakpoint: 0.7,
+            breakpoints: [0, 0.7],
+          }}
+        />
+      )}
     </TabLayout>
   );
 };

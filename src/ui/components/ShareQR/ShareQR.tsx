@@ -111,13 +111,13 @@ const ShareQR = ({
               </IonCol>
             </IonRow>
 
-            {content?.copyBLock && (
+            {content?.copyBlock && (
               <IonRow>
                 <IonCol
                   size="12"
                   className="share-qr-modal-content"
                 >
-                  {content?.copyBLock?.map((item, index) => {
+                  {content?.copyBlock?.map((item, index) => {
                     return (
                       <div
                         className="share-qr-modal-info-block"

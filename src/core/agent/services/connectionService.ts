@@ -119,6 +119,7 @@ class ConnectionService extends AgentService {
     });
   }
 
+  // @TODO: this is a temporary feature, an api should be added in the mediator to get the shorten url
   async getShortenUrl(invitationUrl: string): Promise<string> {
     const getUrl = await fetch(
       `${SERVER_GET_SHORTEN_URL}/shorten?url=${invitationUrl}`
@@ -222,11 +223,11 @@ class ConnectionService extends AgentService {
   }
 
   async updateConnectionNoteById(
-    connetionNoteId: string,
+    connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
     const noteRecord = await this.agent.genericRecords.findById(
-      connetionNoteId
+      connectionNoteId
     );
     if (!noteRecord) {
       throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
@@ -235,8 +236,8 @@ class ConnectionService extends AgentService {
     await this.agent.genericRecords.update(noteRecord);
   }
 
-  async deleteConnectionNoteById(connetionNoteId: string) {
-    return this.agent.genericRecords.deleteById(connetionNoteId);
+  async deleteConnectionNoteById(connectionNoteId: string) {
+    return this.agent.genericRecords.deleteById(connectionNoteId);
   }
 
   private async getConnectNotesByConnectionId(

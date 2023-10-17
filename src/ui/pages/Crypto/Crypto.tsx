@@ -296,7 +296,7 @@ const Crypto = () => {
                 }}
                 content={{
                   QRData: defaultAccountData.address,
-                  copyBLock: [
+                  copyBlock: [
                     {
                       content: `${defaultAccountData.address.substring(
                         0,
@@ -311,7 +311,9 @@ const Crypto = () => {
                     },
                   ],
                 }}
-                moreComponent={<MoreOptions text={""} />}
+                moreComponent={
+                  <MoreOptions text={defaultAccountData.address} />
+                }
               />
             </>
           ) : (

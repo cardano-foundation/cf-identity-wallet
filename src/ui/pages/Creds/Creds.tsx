@@ -108,6 +108,9 @@ const Creds = () => {
             type={connectionType.credential}
             connectModalIsOpen={addCredentialIsOpen}
             setConnectModalIsOpen={setAddCredentialIsOpen}
+            handleProvideQr={() => {
+              // handle
+            }}
           />
         </TabLayout>
       </IonPage>
