@@ -167,12 +167,15 @@ class IdentifierService extends AgentService {
     );
   }
 
-  async updateIdentityTheme(identifier: string, theme: number): Promise<void> {
+  async updateIdentity(
+    identifier: string,
+    data: Pick<IdentifierMetadataRecordProps, "theme" | "displayName">
+  ): Promise<void> {
     const metadata = await this.getMetadataById(identifier);
     this.validIdentifierMetadata(metadata);
     return this.agent.modules.generalStorage.updateIdentifierMetadata(
       identifier,
-      { theme }
+      { theme: data.theme, displayName: data.displayName }
     );
   }
 

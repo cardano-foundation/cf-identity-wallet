@@ -115,6 +115,7 @@ export class GeneralStorageApi {
     if (record) {
       if (data.colors) record.colors = data.colors;
       if (data.displayName) record.displayName = data.displayName;
+      if (data.theme) record.theme = data.theme;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
       return this.identifierMetadataRepository.update(
         this.agentContext,
