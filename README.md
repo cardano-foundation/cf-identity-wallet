@@ -27,3 +27,24 @@ Runs the WebdriverIO test runner with the provided TypeScript configuration file
     `npm run dev`
 3. Run the test in terminal C:
     `npm run e2e:web`
+
+### Generate icons
+
+Install cordova resources tool:
+```
+npm install -g cordova-res
+```
+
+Create a `resources` folder in the root directory with:
+- icon.png (1024x1024)
+- splash.png (2732x2732)
+
+For iOS: 
+```
+cordova-res ios --skip-config --copy
+```
+For Android: 
+```
+cordova-res Android --skip-config --copy
+```
+Known [issue](https://github.com/ionic-team/capacitor-assets/issues/137) from Capacitor requires to set icons manually in Android Studio.
