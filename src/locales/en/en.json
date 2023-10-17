@@ -525,7 +525,9 @@
       "placeholder": "Create a name for this identity"
     },
     "identitytype": {
-      "title": "Identity type"
+      "title": "Identity type",
+      "didkey": "did:key",
+      "keri": "KERI:aid"
     },
     "theme": {
       "title": "Choose a theme"

@@ -109,10 +109,10 @@ const CreateIdentity = ({
   const Checkmark = () => {
     return (
       <div
-        className="selected-account-checkmark"
-        data-testid="selected-account-checkmark"
+        className="selected-theme-checkmark"
+        data-testid="selected-theme-checkmark"
       >
-        <div className="selected-account-checkmark-inner">
+        <div className="selected-theme-checkmark-inner">
           <IonIcon
             slot="icon-only"
             icon={checkmark}
@@ -217,11 +217,11 @@ const CreateIdentity = ({
             <IonRow className="identity-type-input">
               <TypeItem
                 index={0}
-                text={"DID:KEY"}
+                text={i18n.t("createidentity.identitytype.didkey")}
               />
               <TypeItem
                 index={1}
-                text={"KERI"}
+                text={i18n.t("createidentity.identitytype.keri")}
               />
             </IonRow>
             <IonRow>

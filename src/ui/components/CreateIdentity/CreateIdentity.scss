@@ -79,13 +79,13 @@
         border-radius: 0.25rem;
 
         .selected-theme-checkmark {
-          width: 1.375rem;
-          height: 1.375rem;
-          border-radius: 1.375rem;
-          background: var(--ion-color-light);
+          width: 1.5rem;
+          height: 1.5rem;
+          border-radius: 1.5rem;
+          background: var(--ion-color-primary-gradient);
           position: absolute;
-          top: 0;
-          right: -0.438rem;
+          top: 0.25rem;
+          right: 0.25rem;
           text-align: center;
           display: flex;
           flex-direction: column;
@@ -96,7 +96,6 @@
             height: 1.125rem;
             margin: auto;
             border-radius: 1.125rem;
-            background: var(--ion-color-primary-gradient);
           }
         }
 
