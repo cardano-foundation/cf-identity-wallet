@@ -7,6 +7,7 @@ import BackgroundDidKey3 from "../../../ui/assets/images/did-key-3.png";
 import BackgroundKERI0 from "../../../ui/assets/images/keri-0.png";
 import BackgroundKERI1 from "../../../ui/assets/images/keri-1.png";
 import { IdentityThemeSelectorProps } from "./IdentityThemeSelector.types";
+import "./IdentityThemeSelector.scss";
 
 const IdentityThemeSelector = ({
   identityType,
@@ -59,7 +60,10 @@ const IdentityThemeSelector = ({
     );
   };
   return (
-    <>
+    <div
+      className="identity-theme-selector"
+      data-testId="identity-theme-selector"
+    >
       {identityType === 0 ? (
         <>
           <IonRow className="identity-theme-input">
@@ -77,7 +81,7 @@ const IdentityThemeSelector = ({
           <ThemeItem index={5} />
         </IonRow>
       )}
-    </>
+    </div>
   );
 };
 
