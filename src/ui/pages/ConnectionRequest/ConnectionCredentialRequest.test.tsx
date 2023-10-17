@@ -54,7 +54,7 @@ describe("Connection request", () => {
         const title = container.querySelector("h2");
         const label = getByText(connectionMock.label);
         expect(title).toHaveTextContent(
-          i18n.t("request.connection-title").toString()
+          i18n.t("request.connection.title").toString()
         );
         expect(label).toBeInTheDocument();
       },
@@ -83,7 +83,7 @@ describe("Connection request", () => {
       </Provider>
     );
     const continueButton = await findByTestId("continue-button");
-    const alertElement = await findByTestId("alert-confirm");
+    const alertElement = await findByTestId("alert-confirm-connection");
     act(() => {
       fireEvent.click(continueButton);
     });
@@ -96,7 +96,7 @@ describe("Connection request", () => {
     );
     const confirmText = await findByText(
       i18next
-        .t("request.alert.title-confirm-connection", {
+        .t("request.connection.alert.titleconfirm", {
           initiator: connectionMock.label,
         })
         .toString(),
@@ -105,7 +105,7 @@ describe("Connection request", () => {
     expect(confirmText).toBeInTheDocument();
 
     const btnConfirm = await findByText(
-      i18n.t("request.alert.confirm-connection").toString()
+      i18n.t("request.connection.alert.confirm").toString()
     );
     expect(btnConfirm).toBeInTheDocument();
 
@@ -144,7 +144,7 @@ describe("Connection request", () => {
     });
 
     const btnConfirm = await findByText(
-      i18n.t("request.alert.confirm-connection").toString()
+      i18n.t("request.connection.alert.confirm").toString()
     );
 
     act(() => {
@@ -182,7 +182,7 @@ describe("Credential request", () => {
     });
 
     const btnConfirm = await findByText(
-      i18n.t("request.alert.confirm-credential").toString()
+      i18n.t("request.credential.alert.confirm").toString()
     );
     act(() => {
       btnConfirm.click();
