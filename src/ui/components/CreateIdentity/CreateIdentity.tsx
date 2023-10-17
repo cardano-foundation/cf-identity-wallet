@@ -2,7 +2,6 @@ import {
   IonButton,
   IonCol,
   IonGrid,
-  IonIcon,
   IonItem,
   IonModal,
   IonRow,
@@ -10,7 +9,6 @@ import {
 import { useEffect, useState } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
-import { checkmark } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
 import { CreateIdentityProps } from "./CreateIdentity.types";
