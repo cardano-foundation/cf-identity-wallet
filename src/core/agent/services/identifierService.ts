@@ -167,7 +167,7 @@ class IdentifierService extends AgentService {
     );
   }
 
-  async updateIdentity(
+  async updateIdentifier(
     identifier: string,
     data: Pick<IdentifierMetadataRecordProps, "theme" | "displayName">
   ): Promise<void> {
