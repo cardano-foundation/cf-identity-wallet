@@ -62,7 +62,7 @@ const IdentityThemeSelector = ({
   return (
     <div
       className="identity-theme-selector"
-      data-testId="identity-theme-selector"
+      data-testid="identity-theme-selector"
     >
       {identityType === 0 ? (
         <>
