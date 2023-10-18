@@ -279,8 +279,8 @@ const IdentityOptions = ({
       </IonModal>
       <IonModal
         isOpen={editorOptionsIsOpen}
-        initialBreakpoint={0.6}
-        breakpoints={[0, 0.6]}
+        initialBreakpoint={0.65}
+        breakpoints={[0, 0.65]}
         className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
         data-testid="identity-options-modal"
         onDidDismiss={() => setEditorIsOpen(false)}
@@ -327,18 +327,18 @@ const IdentityOptions = ({
                   />
                 </IonCol>
               </IonRow>
-              {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
-                <ErrorMessage
-                  message={`${i18n.t(
-                    "identity.card.details.options.inner.error"
-                  )}`}
-                  timeout={false}
-                />
-              ) : (
-                <div className="error-placeholder" />
-              )}
+              <IonRow className="error-message-container">
+                {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
+                  <ErrorMessage
+                    message={`${i18n.t(
+                      "identity.card.details.options.inner.error"
+                    )}`}
+                    timeout={false}
+                  />
+                ) : null}
+              </IonRow>
               <IonRow>
-                <span className="type-input-title">{`${i18n.t(
+                <span className="theme-input-title">{`${i18n.t(
                   "identity.card.details.options.inner.theme"
                 )}`}</span>
               </IonRow>

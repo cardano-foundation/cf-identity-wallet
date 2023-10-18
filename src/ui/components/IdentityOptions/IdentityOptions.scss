@@ -1,6 +1,18 @@
 .identity-options {
+  .error-message-container {
+    height: 1rem;
+  }
+
   .close-button-label {
     color: var(--ion-color-primary);
+  }
+
+  .input-item {
+    ion-label,
+    .theme-input-title {
+      font-size: 1rem;
+      font-weight: 500;
+    }
   }
 
   h2 {
