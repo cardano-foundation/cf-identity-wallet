@@ -101,10 +101,8 @@ const CreateIdentity = ({
       <IonCol>
         <IonItem
           onClick={() => {
-            if (selectedTheme > 3) {
+            if (selectedType !== index) {
               setSelectedTheme(0);
-            } else {
-              setSelectedTheme(4);
             }
             setSelectedType(index);
           }}

@@ -35,13 +35,15 @@ const IdentityThemeSelector = ({
   }
 
   const ThemeItem = ({ index }: ThemeItemProps) => {
-    const MAPPING_THEME_BACKGROUND: Record<number, unknown> = {
+    const MAPPING_THEME_BACKGROUND_DID_KEY: Record<number, unknown> = {
       0: BackgroundDidKey0,
       1: BackgroundDidKey1,
       2: BackgroundDidKey2,
       3: BackgroundDidKey3,
-      4: BackgroundKERI0,
-      5: BackgroundKERI1,
+    };
+    const MAPPING_THEME_BACKGROUND_KERI: Record<number, unknown> = {
+      0: BackgroundKERI0,
+      1: BackgroundKERI1,
     };
 
     return (
@@ -50,7 +52,11 @@ const IdentityThemeSelector = ({
           onClick={() => setSelectedTheme(index)}
           className="theme-input"
           style={{
-            backgroundImage: `url(${MAPPING_THEME_BACKGROUND[index]})`,
+            backgroundImage: `url(${
+              identityType === 0
+                ? MAPPING_THEME_BACKGROUND_DID_KEY[index]
+                : MAPPING_THEME_BACKGROUND_KERI[index]
+            })`,
             backgroundSize: "cover",
           }}
         >
@@ -77,8 +83,8 @@ const IdentityThemeSelector = ({
         </>
       ) : (
         <IonRow className="identity-theme-input">
-          <ThemeItem index={4} />
-          <ThemeItem index={5} />
+          <ThemeItem index={0} />
+          <ThemeItem index={1} />
         </IonRow>
       )}
     </div>
