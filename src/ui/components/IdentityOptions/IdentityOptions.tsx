@@ -139,7 +139,7 @@ const IdentityOptions = ({
     handleDone();
   };
 
-  const handleDone = () => {
+  const handleDone = async () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
       store: { stateCache },
     });
@@ -151,6 +151,8 @@ const IdentityOptions = ({
       updateRedux
     );
     if (actionType === "delete") {
+      await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
+      await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
       history.push(TabsRoutePath.DIDS);
     }
   };
