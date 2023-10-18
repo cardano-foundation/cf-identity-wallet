@@ -59,6 +59,7 @@ const CreateIdentity = ({
     setModalIsOpen(false);
     setDisplayNameValue("");
     setSelectedType(0);
+    setSelectedTheme(0);
   };
 
   const handleCreateIdentity = async () => {
@@ -121,8 +122,8 @@ const CreateIdentity = ({
   return (
     <IonModal
       isOpen={modalIsOpen}
-      initialBreakpoint={0.75}
-      breakpoints={[0, 0.75]}
+      initialBreakpoint={0.8}
+      breakpoints={[0, 0.8]}
       className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
       data-testid="create-identity-modal"
       onDidDismiss={() => resetModal()}

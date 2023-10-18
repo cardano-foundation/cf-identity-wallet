@@ -283,7 +283,11 @@ const IdentityOptions = ({
         breakpoints={[0, 0.65]}
         className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
         data-testid="edit-identity-modal"
-        onDidDismiss={() => setEditorIsOpen(false)}
+        onDidDismiss={() => {
+          setEditorIsOpen(false);
+          setNewDisplayName(cardData.displayName);
+          setNewSelectedTheme(cardData.theme);
+        }}
       >
         <div className="identity-options modal editor">
           <IonHeader
