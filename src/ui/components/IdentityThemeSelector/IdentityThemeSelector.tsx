@@ -50,6 +50,7 @@ const IdentityThemeSelector = ({
       <IonCol className={`${selectedTheme === index ? "selected-theme" : ""}`}>
         <IonItem
           onClick={() => setSelectedTheme(index)}
+          data-testid={`identity-theme-selector-item-${identityType}${index}`}
           className="theme-input"
           style={{
             backgroundImage: `url(${

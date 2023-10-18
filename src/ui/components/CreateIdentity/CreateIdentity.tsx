@@ -66,7 +66,6 @@ const CreateIdentity = ({
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
     const type = selectedType === 0 ? IdentifierType.KEY : IdentifierType.KERI;
-    // @TODO: for test, should set colors
     let theme = selectedTheme;
     if (type === IdentifierType.KERI) {
       theme = selectedTheme === 5 ? 1 : 0;
@@ -164,7 +163,10 @@ const CreateIdentity = ({
               )}`}</span>
             </IonRow>
 
-            <IonRow className="identity-type-input">
+            <IonRow
+              className="identity-type-selector"
+              data-testid="identity-type-selector"
+            >
               <TypeItem
                 index={0}
                 text={i18n.t("createidentity.identitytype.didkey")}
