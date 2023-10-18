@@ -12,7 +12,10 @@ import {
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
+import {
+  setFavouritesIdentitiesCache,
+  setIdentitiesCache,
+} from "../../../store/reducers/identitiesCache";
 import {
   setCredsCache,
   updateOrAddCredsCache,
@@ -36,6 +39,8 @@ import { toastState } from "../../constants/dictionary";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
+import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
+import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -186,6 +191,20 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(setHideCryptoBalances(!!hideCryptoBalances.hidden));
     } catch (e) {
       // @TODO - sdisalvo: handle error
+    }
+
+    try {
+      const didsFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_DIDS_FAVOURITES
+      );
+
+      dispatch(
+        setFavouritesIdentitiesCache(
+          didsFavourites.favourites as FavouriteIdentity[]
+        )
+      );
+    } catch (e) {
+      // @TODO: handle error
     }
 
     dispatch(

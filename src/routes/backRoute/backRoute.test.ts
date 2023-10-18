@@ -44,7 +44,7 @@ describe("getBackRoute", () => {
         connectionCredentialRequest: { id: "" },
         defaultCryptoAccount: "",
       },
-      identitiesCache: { identities: [] },
+      identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [] },
       cryptoAccountsCache: {
         cryptoAccounts: [],
@@ -130,7 +130,7 @@ describe("getBackRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      identitiesCache: { identities: [] },
+      identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [] },
       cryptoAccountsCache: {
         cryptoAccounts: [],
@@ -201,7 +201,7 @@ describe("getPreviousRoute", () => {
         connectionCredentialRequest: { id: "" },
         defaultCryptoAccount: "",
       },
-      identitiesCache: { identities: [] },
+      identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [] },
       cryptoAccountsCache: {
         cryptoAccounts: [],

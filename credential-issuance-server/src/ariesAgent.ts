@@ -41,8 +41,6 @@ class AriesAgent {
 
   private masterDid;
 
-
-
   private constructor() {
     this.agent = new Agent({
       config: agentConfig,
@@ -129,9 +127,9 @@ class AriesAgent {
           // @TODO: handle later, it should be did of holder
           id: "did:example:abcdef1234567",
           type: "BachelorDegree",
-          name: "Bachelor of Science and Arts"
+          name: "Bachelor of Science and Arts",
         },
-        expirationDate: "2100-10-22T12:23:48Z"
+        expirationDate: "2100-10-22T12:23:48Z",
       },
       options: {
         proofType: "Ed25519Signature2018",
@@ -141,12 +139,13 @@ class AriesAgent {
   }
 
   async offerCredential(connectionId: string) {
- 
-   return this.agent.credentials.offerCredential({
+    return this.agent.credentials.offerCredential({
       protocolVersion: "v2",
       connectionId: connectionId,
       credentialFormats: {
-        jsonld: this.getCredentialExample(this.masterDid.didState.did as string),
+        jsonld: this.getCredentialExample(
+          this.masterDid.didState.did as string
+        ),
       },
       autoAcceptCredential: AutoAcceptCredential.Always,
     });
@@ -157,7 +156,9 @@ class AriesAgent {
       comment: "V2 Out of Band offer (W3C)",
       autoAcceptCredential: AutoAcceptCredential.Always,
       credentialFormats: {
-        jsonld: this.getCredentialExample(this.masterDid.didState.did as string),
+        jsonld: this.getCredentialExample(
+          this.masterDid.didState.did as string
+        ),
       },
       protocolVersion: "v2",
     });
@@ -175,7 +176,9 @@ class AriesAgent {
         comment: "V2 Out of Band offer (W3C)",
         autoAcceptCredential: AutoAcceptCredential.Always,
         credentialFormats: {
-          jsonld: this.getCredentialExample(this.masterDid.didState.did as string),
+          jsonld: this.getCredentialExample(
+            this.masterDid.didState.did as string
+          ),
         },
         protocolVersion: "v2",
       });

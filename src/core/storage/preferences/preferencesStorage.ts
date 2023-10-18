@@ -10,6 +10,7 @@ enum PreferencesKeys {
   APP_LANGUAGE = "app-language",
   APP_DEFAULT_CRYPTO_ACCOUNT = "app-default-crypto-account",
   APP_HIDE_CRYPTO_BALANCES = "app-hide-crypto-balances",
+  APP_DIDS_FAVOURITES = "app-dids-favourites",
 }
 
 class PreferencesStorage {
