@@ -48,6 +48,7 @@ import { VerifyPasscode } from "../VerifyPasscode";
 import { operationState, toastState } from "../../constants/dictionary";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../../utils/clipboard";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const IdentityOptions = ({
   isOpen,
@@ -103,7 +104,7 @@ const IdentityOptions = ({
     setAlertIsOpen(true);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setActionType("edit");
     setEditorIsOpen(false);
     setIsOpen(false);
@@ -115,6 +116,10 @@ const IdentityOptions = ({
       ...updatedIdentities[index],
       displayName: newDisplayName,
     };
+    await AriesAgent.agent.identifiers.updateIdentifier(cardData.id, {
+      displayName: newDisplayName,
+      theme: 0,
+    });
     setCardData({ ...cardData, displayName: newDisplayName });
     dispatch(setIdentitiesCache(updatedIdentities));
     handleDone();
