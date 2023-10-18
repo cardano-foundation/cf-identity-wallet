@@ -147,7 +147,7 @@ const DidCard = ({
   onHandleShowCardDetails,
 }: DidCardProps) => {
   const divStyle = {
-    backgroundImage: `url(${MAPPING_THEME_BACKGROUND[cardData.theme || 0]})`,
+    backgroundImage: `url(${MAPPING_THEME_BACKGROUND[cardData.theme]})`,
     backgroundSize: "cover",
     zIndex: index,
   };
