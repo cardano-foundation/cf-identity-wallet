@@ -310,6 +310,7 @@
           "delete": "Delete identity",
           "inner": {
             "label": "Display name",
+            "theme": "Edit theme",
             "confirm": "Confirm changes",
             "error": "Must be less than 32 characters long"
           }
@@ -603,7 +604,7 @@
     "walletrestored": "Seed phrase verified",
     "walletdeleted": "Account deleted successfully",
     "identitycreated": "New identity created successfully",
-    "identityrenamed": "Identity successfully renamed",
+    "identityupdated": "Identity successfully updated",
     "identitydeleted": "Identity successfully deleted",
     "credentialdeleted": "Credential deleted successfully",
     "credentialsdeleted": "Credentials deleted successfully",

@@ -194,8 +194,8 @@ const DidCardDetails = () => {
         )}
         {cardData && (
           <IdentityOptions
-            isOpen={identityOptionsIsOpen}
-            setIsOpen={setIdentityOptionsIsOpen}
+            optionsIsOpen={identityOptionsIsOpen}
+            setOptionsIsOpen={setIdentityOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
           />
