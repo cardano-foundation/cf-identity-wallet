@@ -47,6 +47,7 @@ interface IdentifierShortDetails {
   displayName: string;
   createdAtUTC: string;
   colors: [string, string];
+  theme?: number;
 }
 
 type CredentialShortDetails = Omit<

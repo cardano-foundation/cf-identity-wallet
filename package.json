@@ -21,6 +21,7 @@
     "@capacitor-community/sqlite": "^4.6.3",
     "@capacitor/android": "^4.7.1",
     "@capacitor/clipboard": "^4.1.0",
+    "@capacitor/splash-screen": "^4.1.4",
     "@capacitor/core": "^4.7.1",
     "@capacitor/filesystem": "^4.1.4",
     "@capacitor/ios": "^4.7.1",

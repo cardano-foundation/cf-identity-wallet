@@ -9,6 +9,7 @@ interface IdentifierMetadataRecordProps {
   signifyName?: string;
   createdAt?: Date;
   isArchived?: boolean;
+  theme?: number;
 }
 
 class IdentifierMetadataRecord
@@ -20,6 +21,7 @@ class IdentifierMetadataRecord
   colors!: [string, string];
   isArchived?: boolean;
   signifyName?: string | undefined;
+  theme?: number;
 
   static readonly type = "IdentifierMetadataRecord";
   readonly type = IdentifierMetadataRecord.type;
@@ -35,6 +37,7 @@ class IdentifierMetadataRecord
       this.signifyName = props.signifyName;
       this.isArchived = props.isArchived ?? false;
       this.createdAt = props.createdAt ?? new Date();
+      this.theme = props.theme || 0;
     }
   }
 
