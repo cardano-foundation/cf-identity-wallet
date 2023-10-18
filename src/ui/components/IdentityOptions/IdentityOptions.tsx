@@ -282,7 +282,7 @@ const IdentityOptions = ({
         initialBreakpoint={0.65}
         breakpoints={[0, 0.65]}
         className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
-        data-testid="identity-options-modal"
+        data-testid="edit-identity-modal"
         onDidDismiss={() => setEditorIsOpen(false)}
       >
         <div className="identity-options modal editor">
