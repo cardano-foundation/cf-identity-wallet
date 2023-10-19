@@ -92,6 +92,10 @@ const IdentityOptions = ({
     }
   }, []);
 
+  useEffect(() => {
+    setNewSelectedTheme(cardData.theme);
+  }, [editorOptionsIsOpen]);
+
   const handleClose = () => {
     setEditorIsOpen(false);
     setOptionsIsOpen(false);
