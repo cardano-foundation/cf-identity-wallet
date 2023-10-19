@@ -27,12 +27,18 @@ interface ConnectionCredentialRequestProps {
   label?: string;
 }
 
+interface QueueProps<T> {
+  isPaused?: boolean;
+  isProcessing: boolean;
+  queues: T[];
+}
+
 interface StateCacheProps {
   routes: CurrentRouteCacheProps[];
   authentication: AuthenticationCacheProps;
   currentOperation: string;
   defaultCryptoAccount: string;
-  connectionCredentialRequest: ConnectionCredentialRequestProps;
+  queueConnectionCredentialRequest: QueueProps<ConnectionCredentialRequestProps>;
 }
 
 export { ConnectionCredentialRequestType };
@@ -43,4 +49,5 @@ export type {
   AuthenticationCacheProps,
   StateCacheProps,
   ConnectionCredentialRequestProps,
+  QueueProps,
 };

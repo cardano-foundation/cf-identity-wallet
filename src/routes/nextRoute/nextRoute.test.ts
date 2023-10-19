@@ -33,8 +33,11 @@ describe("NextRoute", () => {
           passwordIsSkipped: true,
         },
         currentOperation: "",
-        connectionCredentialRequest: { id: "" },
         defaultCryptoAccount: "",
+        queueConnectionCredentialRequest: {
+          isProcessing: false,
+          queues: [],
+        },
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -153,8 +156,11 @@ describe("getNextRoute", () => {
         passwordIsSkipped: true,
       },
       currentOperation: "",
-      connectionCredentialRequest: { id: "" },
       defaultCryptoAccount: "",
+      queueConnectionCredentialRequest: {
+        isProcessing: false,
+        queues: [],
+      },
     },
     seedPhraseCache: {
       seedPhrase160: "",

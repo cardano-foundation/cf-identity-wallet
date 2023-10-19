@@ -41,8 +41,11 @@ describe("getBackRoute", () => {
           time: 0,
         },
         currentOperation: "",
-        connectionCredentialRequest: { id: "" },
         defaultCryptoAccount: "",
+        queueConnectionCredentialRequest: {
+          isProcessing: false,
+          queues: [],
+        },
       },
       identitiesCache: { identities: [] },
       credsCache: { creds: [] },
@@ -122,8 +125,11 @@ describe("getBackRoute", () => {
           passwordIsSkipped: true,
         },
         currentOperation: "",
-        connectionCredentialRequest: { id: "" },
         defaultCryptoAccount: "",
+        queueConnectionCredentialRequest: {
+          isProcessing: false,
+          queues: [],
+        },
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -198,8 +204,11 @@ describe("getPreviousRoute", () => {
           time: 0,
         },
         currentOperation: "",
-        connectionCredentialRequest: { id: "" },
         defaultCryptoAccount: "",
+        queueConnectionCredentialRequest: {
+          isProcessing: false,
+          queues: [],
+        },
       },
       identitiesCache: { identities: [] },
       credsCache: { creds: [] },

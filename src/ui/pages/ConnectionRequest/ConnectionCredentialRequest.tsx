@@ -10,8 +10,9 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import { i18n } from "../../../i18n";
 import "./ConnectionRequest.scss";
 import {
-  getConnectionCredentialRequest,
-  setConnectionCredentialRequest,
+  getQueueConnectionCredentialRequest,
+  setPauseQueueConnectionCredentialRequest,
+  setResolveConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -23,9 +24,12 @@ import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
 const ConnectionCredentialRequest = () => {
   const dispatch = useAppDispatch();
-  const connectionCredentialRequest = useAppSelector(
-    getConnectionCredentialRequest
+  const queueConnectionCredentialRequest = useAppSelector(
+    getQueueConnectionCredentialRequest
   );
+  const connectionCredentialRequest = queueConnectionCredentialRequest.isPaused
+    ? { id: "" }
+    : queueConnectionCredentialRequest.queues[0] ?? { id: "" };
   const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -71,9 +75,17 @@ const ConnectionCredentialRequest = () => {
   }, [connectionCredentialRequest.id]);
 
   const handleReset = () => {
-    dispatch(setConnectionCredentialRequest({ id: "" }));
     setShowRequest(false);
     setInitiateAnimation(false);
+    setTimeout(() => {
+      dispatch(setResolveConnectionCredentialRequest());
+      // @TODO: for test pause functionality, remove this
+      dispatch(setPauseQueueConnectionCredentialRequest(true));
+    }, 1000);
+    // @TODO: for test pause functionality, remove this
+    setTimeout(() => {
+      dispatch(setPauseQueueConnectionCredentialRequest(false));
+    }, 5000);
   };
 
   const handleCancel = async () => {

@@ -13,8 +13,8 @@ import { store } from "../../../store";
 import { AriesAgent } from "../../../core/agent/agent";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import {
-  setConnectionCredentialRequest,
   setCurrentOperation,
+  setQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { toastState } from "../../constants/dictionary";
 import {
@@ -131,7 +131,7 @@ describe("Connection state changed handler", () => {
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: "id",
         type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
         logo: "png",
@@ -157,7 +157,7 @@ describe("Connection state changed handler", () => {
       setCurrentOperation(toastState.connectionRequestIncoming)
     );
     expect(dispatch).toBeCalledWith(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: "id",
         type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
         logo: "png",
@@ -226,7 +226,7 @@ describe("Credential state changed handler", () => {
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: credentialStateChangedEventMock.payload.credentialRecord.id,
         type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
         label: connectionShortDetailsMock.label,

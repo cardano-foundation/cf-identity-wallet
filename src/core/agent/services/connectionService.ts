@@ -106,7 +106,7 @@ class ConnectionService extends AgentService {
       url = response.url;
     }
     await this.agent.oob.receiveInvitationFromUrl(url, {
-      autoAcceptConnection: true,
+      autoAcceptConnection: false,
       autoAcceptInvitation: true,
       reuseConnection: true,
     });
