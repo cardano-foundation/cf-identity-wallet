@@ -12,8 +12,8 @@ import {
 import { AgentService } from "./agentService";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
-  [IdentifierType.KERI]: [0, 1],
   [IdentifierType.KEY]: [0, 1, 2, 3],
+  [IdentifierType.KERI]: [4, 5],
 };
 
 class IdentifierService extends AgentService {

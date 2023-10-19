@@ -15,30 +15,17 @@ import {
   IdentifierShortDetails,
   IdentifierType,
 } from "../../../core/agent/agent.types";
-import { cardTypes } from "../../constants/dictionary";
+import {
+  MAPPING_THEME_BACKGROUND,
+  cardTypes,
+} from "../../constants/dictionary";
 import { Alert } from "../Alert";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import BackgroundDidKey0 from "../../../ui/assets/images/did-key-0.png";
-import BackgroundDidKey1 from "../../../ui/assets/images/did-key-1.png";
-import BackgroundDidKey2 from "../../../ui/assets/images/did-key-2.png";
-import BackgroundDidKey3 from "../../../ui/assets/images/did-key-3.png";
-import BackgroundKERI0 from "../../../ui/assets/images/keri-0.png";
-import BackgroundKERI1 from "../../../ui/assets/images/keri-1.png";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import KERILogo from "../../../ui/assets/images/keri-logo.svg";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
-const MAPPING_THEME_BACKGROUND_DID_KEY: Record<number, unknown> = {
-  0: BackgroundDidKey0,
-  1: BackgroundDidKey1,
-  2: BackgroundDidKey2,
-  3: BackgroundDidKey3,
-};
-const MAPPING_THEME_BACKGROUND_KERI: Record<number, unknown> = {
-  0: BackgroundKERI0,
-  1: BackgroundKERI1,
-};
 
 const CredCard = ({
   cardData,
@@ -149,11 +136,7 @@ const DidCard = ({
   onHandleShowCardDetails,
 }: DidCardProps) => {
   const divStyle = {
-    backgroundImage: `url(${
-      cardData.method === IdentifierType.KEY
-        ? MAPPING_THEME_BACKGROUND_DID_KEY[cardData.theme]
-        : MAPPING_THEME_BACKGROUND_KERI[cardData.theme]
-    })`,
+    backgroundImage: `url(${MAPPING_THEME_BACKGROUND[cardData.theme]})`,
     backgroundSize: "cover",
     zIndex: index,
   };

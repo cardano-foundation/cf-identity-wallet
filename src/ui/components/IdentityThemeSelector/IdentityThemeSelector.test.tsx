@@ -2,7 +2,7 @@ import { fireEvent, render, waitFor } from "@testing-library/react";
 import { IdentityThemeSelector } from "./IdentityThemeSelector";
 
 describe("Identity Theme Selector", () => {
-  test("It switches from did:key 0 to did:key 1 theme", async () => {
+  test("It switches did:key from theme 0 to theme 1", async () => {
     const setNewSelectedTheme = jest.fn();
     const { getByTestId } = render(
       <IdentityThemeSelector
@@ -16,19 +16,19 @@ describe("Identity Theme Selector", () => {
       expect(getByTestId("identity-theme-selector")).toBeInTheDocument()
     );
 
-    fireEvent.click(getByTestId("identity-theme-selector-item-01"));
+    fireEvent.click(getByTestId("identity-theme-selector-item-1"));
 
     await waitFor(() => {
       expect(setNewSelectedTheme).toHaveBeenCalledWith(1);
     });
   });
 
-  test("It switches from KERI 0 to KERI 1 theme", async () => {
+  test("It switches KERI card from theme 4 to theme 5", async () => {
     const setNewSelectedTheme = jest.fn();
     const { getByTestId } = render(
       <IdentityThemeSelector
         identityType={1}
-        selectedTheme={0}
+        selectedTheme={4}
         setSelectedTheme={setNewSelectedTheme}
       />
     );
@@ -37,10 +37,10 @@ describe("Identity Theme Selector", () => {
       expect(getByTestId("identity-theme-selector")).toBeInTheDocument()
     );
 
-    fireEvent.click(getByTestId("identity-theme-selector-item-11"));
+    fireEvent.click(getByTestId("identity-theme-selector-item-4"));
 
     await waitFor(() => {
-      expect(setNewSelectedTheme).toHaveBeenCalledWith(1);
+      expect(setNewSelectedTheme).toHaveBeenCalledWith(4);
     });
   });
 });

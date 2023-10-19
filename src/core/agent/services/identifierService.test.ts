@@ -438,7 +438,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KERI,
         displayName,
         colors,
-        theme: 5,
+        theme: 8,
       })
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
   });

@@ -11,7 +11,7 @@ import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
-import { CreateIdentityProps } from "./CreateIdentity.types";
+import { CreateIdentityProps, TypeItemProps } from "./CreateIdentity.types";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import "./CreateIdentity.scss";
@@ -66,15 +66,11 @@ const CreateIdentity = ({
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
     const type = selectedType === 0 ? IdentifierType.KEY : IdentifierType.KERI;
-    let theme = selectedTheme;
-    if (type === IdentifierType.KERI) {
-      theme = selectedTheme === 5 ? 1 : 0;
-    }
     const identifier = await AriesAgent.agent.identifiers.createIdentifier({
       displayName: displayNameValue,
       method: type,
       colors: [newColor[1], newColor[0]],
-      theme,
+      theme: selectedTheme,
     });
     if (identifier) {
       const newIdentity: IdentifierShortDetails = {
@@ -91,18 +87,13 @@ const CreateIdentity = ({
     }
   };
 
-  interface TypeItemProps {
-    index: number;
-    text: string;
-  }
-
   const TypeItem = ({ index, text }: TypeItemProps) => {
     return (
       <IonCol>
         <IonItem
           onClick={() => {
             if (selectedType !== index) {
-              setSelectedTheme(0);
+              setSelectedTheme(index === 0 ? 0 : 4);
             }
             setSelectedType(index);
           }}

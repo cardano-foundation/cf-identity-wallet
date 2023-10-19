@@ -5,6 +5,12 @@ import {
 } from "../../core/agent/agent.types";
 import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
 import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import BackgroundDidKey0 from "../assets/images/did-key-0.png";
+import BackgroundDidKey1 from "../assets/images/did-key-1.png";
+import BackgroundDidKey2 from "../assets/images/did-key-2.png";
+import BackgroundDidKey3 from "../assets/images/did-key-3.png";
+import BackgroundKERI0 from "../assets/images/keri-0.png";
+import BackgroundKERI1 from "../assets/images/keri-1.png";
 
 const cardTypes = {
   creds: "creds",
@@ -124,6 +130,15 @@ const onboardingRoute = {
   restoreRoute: "?route=onboardingrestore",
 };
 
+const MAPPING_THEME_BACKGROUND: Record<number, unknown> = {
+  0: BackgroundDidKey0,
+  1: BackgroundDidKey1,
+  2: BackgroundDidKey2,
+  3: BackgroundDidKey3,
+  4: BackgroundKERI0,
+  5: BackgroundKERI1,
+};
+
 export {
   cardTypes,
   connectionStatus,
@@ -135,4 +150,5 @@ export {
   blurredCryptoData,
   onboardingRoute,
   connectionType,
+  MAPPING_THEME_BACKGROUND,
 };
