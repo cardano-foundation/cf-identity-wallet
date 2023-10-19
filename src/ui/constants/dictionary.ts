@@ -6,10 +6,10 @@ import {
 import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
 import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 
-const cardTypes = {
-  creds: "creds",
-  dids: "dids",
-};
+enum CardTypes {
+  CREDS = "creds",
+  DIDS = "dids",
+}
 
 const connectionStatus = {
   pending: ConnectionStatus.PENDING,
@@ -125,7 +125,7 @@ const onboardingRoute = {
 };
 
 export {
-  cardTypes,
+  CardTypes,
   connectionStatus,
   operationState,
   toastState,

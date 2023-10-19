@@ -15,7 +15,6 @@ import {
   IdentifierShortDetails,
   IdentifierType,
 } from "../../../core/agent/agent.types";
-import { cardTypes } from "../../constants/dictionary";
 import { Alert } from "../Alert";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import BackgroundDidKey01 from "../../../ui/assets/images/did-key-01.png";
@@ -26,6 +25,7 @@ import BackgroundKERI01 from "../../../ui/assets/images/keri-01.png";
 import BackgroundKERI02 from "../../../ui/assets/images/keri-02.png";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import KERILogo from "../../../ui/assets/images/keri-logo.svg";
+import { CardTypes } from "../../constants/dictionary";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -216,7 +216,7 @@ const CardsStack = ({
         cardData: IdentifierShortDetails | CredentialShortDetails,
         index: number
       ) =>
-        cardsType === cardTypes.dids ? (
+        cardsType === CardTypes.DIDS ? (
           <DidCard
             key={index}
             index={index}
@@ -240,7 +240,7 @@ const CardsStack = ({
     setIsActive(true);
     let pathname = "";
 
-    if (cardsType === cardTypes.dids) {
+    if (cardsType === CardTypes.DIDS) {
       const data = cardsData[index] as DIDDetails;
       pathname = `/tabs/dids/${data.id}`;
     } else {

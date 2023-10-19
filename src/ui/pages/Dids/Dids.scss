@@ -1,5 +1,14 @@
 .dids-tab {
   .cards-stack-container {
-    height: 90vh;
+    // height: 90vh;
+  }
+
+  .cards-title {
+    color: var(--ion-color-primary);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-top: 40px;
   }
 }

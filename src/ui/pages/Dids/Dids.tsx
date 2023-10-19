@@ -7,11 +7,14 @@ import "./Dids.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { getIdentitiesCache } from "../../../store/reducers/identitiesCache";
+import {
+  getFavouritesIdentitiesCache,
+  getIdentitiesCache,
+} from "../../../store/reducers/identitiesCache";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentity } from "../../components/CreateIdentity";
-import { cardTypes } from "../../constants/dictionary";
+import { CardTypes } from "../../constants/dictionary";
 
 interface AdditionalButtonsProps {
   handleCreateDid: () => void;
@@ -50,11 +53,35 @@ const AdditionalButtons = ({ handleCreateDid }: AdditionalButtonsProps) => {
 const Dids = () => {
   const dispatch = useAppDispatch();
   const didsData = useAppSelector(getIdentitiesCache);
+  const favouritesDids = useAppSelector(getFavouritesIdentitiesCache);
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.DIDS }));
   });
+
+  const findTimeById = (id: string) => {
+    const found = favouritesDids.find((item) => item.id === id);
+    return found ? found.time : null;
+  };
+
+  const favDids = didsData.filter((did) =>
+    favouritesDids.some((fav) => fav.id === did.id)
+  );
+  const sortedFavDids = favDids.sort((a, b) => {
+    const timeA = findTimeById(a.id);
+    const timeB = findTimeById(b.id);
+
+    if (timeA === null && timeB === null) return 0;
+    if (timeA === null) return 1;
+    if (timeB === null) return -1;
+
+    return timeA - timeB;
+  });
+
+  const allDids = didsData.filter(
+    (did) => !favouritesDids.some((fav) => fav.id === did.id)
+  );
 
   return (
     <IonPage
@@ -70,10 +97,32 @@ const Dids = () => {
         }
       >
         {didsData.length ? (
-          <CardsStack
-            cardsType={cardTypes.dids}
-            cardsData={didsData}
-          />
+          <>
+            {favDids.length ? (
+              <>
+                {allDids.length ? (
+                  <div className="cards-title">Favourites</div>
+                ) : null}
+                <CardsStack
+                  cardsType={CardTypes.DIDS}
+                  cardsData={favDids}
+                />
+              </>
+            ) : null}
+            {allDids.length ? (
+              <>
+                {favDids.length ? (
+                  <div className="cards-title cards-title-all">
+                    All Identities
+                  </div>
+                ) : null}
+                <CardsStack
+                  cardsType={CardTypes.DIDS}
+                  cardsData={allDids}
+                />
+              </>
+            ) : null}
+          </>
         ) : (
           <CardsPlaceholder
             buttonLabel={i18n.t("identity.tab.create")}
@@ -81,6 +130,7 @@ const Dids = () => {
             testId="dids-cards-placeholder"
           />
         )}
+
         <CreateIdentity
           modalIsOpen={modalIsOpen}
           setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}

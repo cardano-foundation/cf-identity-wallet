@@ -19,7 +19,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { Connections } from "../Connections";
-import { cardTypes, connectionType } from "../../constants/dictionary";
+import { CardTypes, connectionType } from "../../constants/dictionary";
 import { ConnectModal } from "../../components/ConnectModal";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -144,7 +144,7 @@ const Creds = () => {
         >
           {currentCreds.length ? (
             <CardsStack
-              cardsType={cardTypes.creds}
+              cardsType={CardTypes.CREDS}
               cardsData={currentCreds}
             />
           ) : (
