@@ -6,7 +6,10 @@ import BackgroundDidKey2 from "../../../ui/assets/images/did-key-2.png";
 import BackgroundDidKey3 from "../../../ui/assets/images/did-key-3.png";
 import BackgroundKERI0 from "../../../ui/assets/images/keri-0.png";
 import BackgroundKERI1 from "../../../ui/assets/images/keri-1.png";
-import { IdentityThemeSelectorProps } from "./IdentityThemeSelector.types";
+import {
+  IdentityThemeSelectorProps,
+  ThemeItemProps,
+} from "./IdentityThemeSelector.types";
 import "./IdentityThemeSelector.scss";
 
 const IdentityThemeSelector = ({
@@ -29,10 +32,6 @@ const IdentityThemeSelector = ({
       </div>
     );
   };
-
-  interface ThemeItemProps {
-    index: number;
-  }
 
   const ThemeItem = ({ index }: ThemeItemProps) => {
     const MAPPING_THEME_BACKGROUND_DID_KEY: Record<number, unknown> = {

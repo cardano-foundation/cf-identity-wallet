@@ -4,4 +4,8 @@ interface IdentityThemeSelectorProps {
   setSelectedTheme: (value: number) => void;
 }
 
-export type { IdentityThemeSelectorProps };
+interface ThemeItemProps {
+  index: number;
+}
+
+export type { IdentityThemeSelectorProps, ThemeItemProps };
