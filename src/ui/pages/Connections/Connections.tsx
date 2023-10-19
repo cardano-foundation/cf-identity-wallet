@@ -269,7 +269,12 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
             QRData: invitationLink,
             copyBlock: [{ content: invitationLink }],
           }}
-          moreComponent={<MoreOptions text={invitationLink} />}
+          moreComponent={
+            <MoreOptions
+              onClick={() => setInvitationLink(undefined)}
+              text={invitationLink}
+            />
+          }
           modalOptions={{
             initialBreakpoint: 0.7,
             breakpoints: [0, 0.7],

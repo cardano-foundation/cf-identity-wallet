@@ -3,7 +3,13 @@ import { Share } from "@capacitor/share";
 import { openOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 
-const MoreOptions = ({ text }: { text: string }) => {
+const MoreOptions = ({
+  text,
+  onClick,
+}: {
+  text: string;
+  onClick?: () => void;
+}) => {
   return (
     <IonGrid>
       <IonRow>
@@ -12,6 +18,7 @@ const MoreOptions = ({ text }: { text: string }) => {
             className="share-qr-modal-option"
             data-testid="share-qr-modal-share-button"
             onClick={async () => {
+              if (onClick) onClick();
               await Share.share({
                 text: text,
               });
