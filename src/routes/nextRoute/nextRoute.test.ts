@@ -42,7 +42,7 @@ describe("NextRoute", () => {
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       identitiesCache: { identities: [], favourites: [] },
-      credsCache: { creds: [] },
+      credsCache: { creds: [], favourites: [] },
       cryptoAccountsCache: {
         cryptoAccounts: [],
         defaultCryptoAccount: "",
@@ -162,7 +162,7 @@ describe("getNextRoute", () => {
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
     identitiesCache: { identities: [], favourites: [] },
-    credsCache: { creds: [] },
+    credsCache: { creds: [], favourites: [] },
     cryptoAccountsCache: {
       cryptoAccounts: [],
       defaultCryptoAccount: "",

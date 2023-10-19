@@ -18,6 +18,7 @@ import {
 } from "../../../store/reducers/identitiesCache";
 import {
   setCredsCache,
+  setFavouritesCredsCache,
   updateOrAddCredsCache,
 } from "../../../store/reducers/credsCache";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -197,10 +198,18 @@ const AppWrapper = (props: { children: ReactNode }) => {
       const didsFavourites = await PreferencesStorage.get(
         PreferencesKeys.APP_DIDS_FAVOURITES
       );
-
       dispatch(
         setFavouritesIdentitiesCache(
           didsFavourites.favourites as FavouriteIdentity[]
+        )
+      );
+
+      const credsFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_CREDS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesCredsCache(
+          credsFavourites.favourites as FavouriteIdentity[]
         )
       );
     } catch (e) {

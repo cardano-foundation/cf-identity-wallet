@@ -11,6 +11,7 @@ enum PreferencesKeys {
   APP_DEFAULT_CRYPTO_ACCOUNT = "app-default-crypto-account",
   APP_HIDE_CRYPTO_BALANCES = "app-hide-crypto-balances",
   APP_DIDS_FAVOURITES = "app-dids-favourites",
+  APP_CREDS_FAVOURITES = "app-creds-favourites",
 }
 
 class PreferencesStorage {
