@@ -1,25 +1,17 @@
 .create-identity-modal {
-  .blur-overlay {
-    display: block;
-    width: 100vw;
-    height: 100vh;
-    position: fixed;
-    z-index: 99;
-    top: 0;
-    left: 0;
+  .spinner-container {
+    z-index: 1;
+    display: flex;
+    height: 100%;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
     background: rgba(3, 3, 33, 0.2);
-    backdrop-filter: blur(2.5px);
-
-    .spinner-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 50vh;
-    }
+    padding-bottom: 50vh;
   }
 
-  &.blur {
-    backdrop-filter: blur(2.5px);
+  &.blur .create-identity {
+    filter: blur(0.2rem);
   }
 }
 

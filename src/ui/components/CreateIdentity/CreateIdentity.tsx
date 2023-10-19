@@ -58,6 +58,12 @@ const CreateIdentity = ({
     }
   }, []);
 
+  useEffect(() => {
+    blur
+      ? document?.querySelector("ion-router-outlet")?.classList.add("blur")
+      : document?.querySelector("ion-router-outlet")?.classList.remove("blur");
+  }, [blur]);
+
   const resetModal = () => {
     setModalIsOpen(false);
     setBlur(false);
@@ -125,13 +131,11 @@ const CreateIdentity = ({
       onDidDismiss={() => resetModal()}
     >
       {blur ? (
-        <div className="blur-overlay">
-          <div
-            className="spinner-container"
-            data-testid="spinner-container"
-          >
-            <IonSpinner name="circular" />
-          </div>
+        <div
+          className="spinner-container"
+          data-testid="spinner-container"
+        >
+          <IonSpinner name="circular" />
         </div>
       ) : null}
       <div className="create-identity modal">
