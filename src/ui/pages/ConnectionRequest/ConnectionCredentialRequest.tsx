@@ -11,7 +11,6 @@ import { i18n } from "../../../i18n";
 import "./ConnectionRequest.scss";
 import {
   getQueueConnectionCredentialRequest,
-  setPauseQueueConnectionCredentialRequest,
   setResolveConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -79,13 +78,7 @@ const ConnectionCredentialRequest = () => {
     setInitiateAnimation(false);
     setTimeout(() => {
       dispatch(setResolveConnectionCredentialRequest());
-      // @TODO: for test pause functionality, remove this
-      dispatch(setPauseQueueConnectionCredentialRequest(true));
-    }, 1000);
-    // @TODO: for test pause functionality, remove this
-    setTimeout(() => {
-      dispatch(setPauseQueueConnectionCredentialRequest(false));
-    }, 5000);
+    }, 1 * 1000);
   };
 
   const handleCancel = async () => {

@@ -9,7 +9,10 @@ import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCa
 import { AriesAgent } from "../../../core/agent/agent";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { i18n } from "../../../i18n";
-import { setQueueConnectionCredentialRequest } from "../../../store/reducers/stateCache";
+import {
+  setQueueConnectionCredentialRequest,
+  setResolveConnectionCredentialRequest,
+} from "../../../store/reducers/stateCache";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -34,6 +37,9 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
 const connectionMock = connectionsFix[0];
 
 describe("Connection request", () => {
+  afterEach(() => {
+    store.dispatch(setResolveConnectionCredentialRequest());
+  });
   test("It renders connection request incoming", async () => {
     store.dispatch(
       setQueueConnectionCredentialRequest({
@@ -155,6 +161,10 @@ describe("Connection request", () => {
 });
 
 describe("Credential request", () => {
+  afterEach(() => {
+    store.dispatch(setResolveConnectionCredentialRequest());
+  });
+
   test("It renders credential request and accept credential", async () => {
     const id = "456";
     store.dispatch(

@@ -70,7 +70,7 @@ const stateCacheSlice = createSlice({
       action: PayloadAction<ConnectionCredentialRequestProps>
     ) => {
       const isPaused = state.queueConnectionCredentialRequest.isPaused;
-      if (!state.queueConnectionCredentialRequest.isProcessing && !isPaused) {
+      if (!isPaused && !state.queueConnectionCredentialRequest.isProcessing) {
         state.queueConnectionCredentialRequest.isProcessing = true;
       }
       state.queueConnectionCredentialRequest.queues.push(action.payload);
@@ -88,9 +88,10 @@ const stateCacheSlice = createSlice({
       state,
       action: PayloadAction<ConnectionCredentialRequestProps[]>
     ) => {
+      const isPaused = state.queueConnectionCredentialRequest.isPaused;
       if (
+        isPaused &&
         !state.queueConnectionCredentialRequest.isProcessing &&
-        state.queueConnectionCredentialRequest.queues.length === 0 &&
         action.payload.length > 0
       ) {
         state.queueConnectionCredentialRequest.isProcessing = true;
@@ -111,6 +112,7 @@ const {
   setResolveConnectionCredentialRequest,
   setQueueConnectionCredentialRequest,
   setPauseQueueConnectionCredentialRequest,
+  setBatchConnectionCredentialRequest,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -147,4 +149,5 @@ export {
   setPauseQueueConnectionCredentialRequest,
   setQueueConnectionCredentialRequest,
   setResolveConnectionCredentialRequest,
+  setBatchConnectionCredentialRequest,
 };
