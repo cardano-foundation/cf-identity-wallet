@@ -324,3 +324,7 @@ ion-toast {
     }
   }
 }
+
+ion-router-outlet.blur {
+  filter: blur(0.1rem);
+}

@@ -3,4 +3,9 @@ interface CreateIdentityProps {
   setModalIsOpen: (value: boolean) => void;
 }
 
-export type { CreateIdentityProps };
+interface TypeItemProps {
+  index: number;
+  text: string;
+}
+
+export type { CreateIdentityProps, TypeItemProps };

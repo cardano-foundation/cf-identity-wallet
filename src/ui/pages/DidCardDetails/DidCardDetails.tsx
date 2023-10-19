@@ -85,7 +85,7 @@ const DidCardDetails = () => {
     history.push(backPath.pathname);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
     // Remember to update identity.card.details.options file too.
@@ -93,6 +93,8 @@ const DidCardDetails = () => {
       const updatedIdentities = identitiesData.filter(
         (item) => item.id !== cardData.id
       );
+      await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
+      await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
       dispatch(setIdentitiesCache(updatedIdentities));
     }
     handleDone();
@@ -148,7 +150,7 @@ const DidCardDetails = () => {
             className="spinner-container"
             data-testid="spinner-container"
           >
-            <IonSpinner name="dots" />
+            <IonSpinner name="circular" />
           </div>
         ) : (
           <>
@@ -194,8 +196,8 @@ const DidCardDetails = () => {
         )}
         {cardData && (
           <IdentityOptions
-            isOpen={identityOptionsIsOpen}
-            setIsOpen={setIdentityOptionsIsOpen}
+            optionsIsOpen={identityOptionsIsOpen}
+            setOptionsIsOpen={setIdentityOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
           />
