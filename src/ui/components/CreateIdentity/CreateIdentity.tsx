@@ -41,7 +41,7 @@ const CreateIdentity = ({
   const [selectedType, setSelectedType] = useState(0);
   const [selectedTheme, setSelectedTheme] = useState(0);
   const [blur, setBlur] = useState(false);
-  const CREATE_IDENTITY_BLUR_TIMEOUT = 100;
+  const CREATE_IDENTITY_BLUR_TIMEOUT = 250;
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
@@ -130,7 +130,7 @@ const CreateIdentity = ({
             className="spinner-container"
             data-testid="spinner-container"
           >
-            <IonSpinner name="dots" />
+            <IonSpinner name="circular" />
           </div>
         </div>
       ) : null}

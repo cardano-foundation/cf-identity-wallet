@@ -172,7 +172,7 @@ const CredCardDetails = () => {
         className="spinner-container"
         data-testid="spinner-container"
       >
-        <IonSpinner name="dots" />
+        <IonSpinner name="circular" />
       </div>
     );
 
