@@ -5,6 +5,7 @@ import {
   IonItem,
   IonModal,
   IonRow,
+  IonSpinner,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { Keyboard } from "@capacitor/keyboard";
@@ -39,6 +40,8 @@ const CreateIdentity = ({
   const [displayNameValue, setDisplayNameValue] = useState("");
   const [selectedType, setSelectedType] = useState(0);
   const [selectedTheme, setSelectedTheme] = useState(0);
+  const [blur, setBlur] = useState(false);
+  const CREATE_IDENTITY_BLUR_TIMEOUT = 100;
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
@@ -57,6 +60,7 @@ const CreateIdentity = ({
 
   const resetModal = () => {
     setModalIsOpen(false);
+    setBlur(false);
     setDisplayNameValue("");
     setSelectedType(0);
     setSelectedTheme(0);
@@ -114,10 +118,22 @@ const CreateIdentity = ({
       isOpen={modalIsOpen}
       initialBreakpoint={0.8}
       breakpoints={[0, 0.8]}
-      className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
+      className={`page-layout create-identity-modal ${
+        keyboardIsOpen ? "extended-modal" : ""
+      } ${blur ? "blur" : ""}`}
       data-testid="create-identity-modal"
       onDidDismiss={() => resetModal()}
     >
+      {blur ? (
+        <div className="blur-overlay">
+          <div
+            className="spinner-container"
+            data-testid="spinner-container"
+          >
+            <IonSpinner name="dots" />
+          </div>
+        </div>
+      ) : null}
       <div className="create-identity modal">
         <PageLayout
           header={true}
@@ -186,7 +202,12 @@ const CreateIdentity = ({
                   expand="block"
                   className="ion-primary-button"
                   data-testid="continue-button"
-                  onClick={handleCreateIdentity}
+                  onClick={() => {
+                    setBlur(true);
+                    setTimeout(() => {
+                      handleCreateIdentity();
+                    }, CREATE_IDENTITY_BLUR_TIMEOUT);
+                  }}
                   disabled={!(displayNameValueIsValid && typeIsSelectedIsValid)}
                 >
                   {`${i18n.t("createidentity.confirmbutton")}`}

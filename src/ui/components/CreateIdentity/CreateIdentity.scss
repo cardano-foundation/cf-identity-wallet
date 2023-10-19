@@ -1,3 +1,28 @@
+.create-identity-modal {
+  .blur-overlay {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    z-index: 99;
+    top: 0;
+    left: 0;
+    background: rgba(3, 3, 33, 0.2);
+    backdrop-filter: blur(2.5px);
+
+    .spinner-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 50vh;
+    }
+  }
+
+  &.blur {
+    backdrop-filter: blur(2.5px);
+  }
+}
+
 .create-identity {
   ion-grid {
     padding-top: 0;
