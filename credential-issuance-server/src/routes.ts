@@ -22,7 +22,7 @@ router.post(
   invitationWithCredentialConnectionless
 );
 router.get(config.path.shorten, getFullUrl);
-router.get(config.path.getShorten, getShortenUrl);
+router.post(config.path.getShorten, getShortenUrl);
 router.get(config.path.credentials.summit, summitAccessPass);
 
 export default router;

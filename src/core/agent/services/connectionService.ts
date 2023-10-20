@@ -118,9 +118,10 @@ class ConnectionService extends AgentService {
 
   // @TODO: this is a temporary feature, an api should be added in the mediator to get the shorten url
   async getShortenUrl(invitationUrl: string): Promise<string> {
-    const getUrl = await fetch(
-      `${SERVER_GET_SHORTEN_URL}/shorten?url=${invitationUrl}`
-    );
+    const getUrl = await fetch(`${SERVER_GET_SHORTEN_URL}/shorten`, {
+      method: "POST",
+      body: JSON.stringify({ url: invitationUrl }),
+    });
     const response = await getUrl.text();
     return JsonEncoder.fromString(response).data;
   }
