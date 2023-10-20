@@ -21,7 +21,7 @@ import { config } from "./config";
 
 const agentConfig: InitConfig = {
   endpoints: config.endpoints,
-  label: "idw-server",
+  label: "Credential Issuance Service",
   walletConfig: {
     id: "idw-server",
     key: "idw-server",
