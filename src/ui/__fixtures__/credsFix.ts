@@ -42,4 +42,21 @@ const credsFix: CredentialDetails[] = [
   },
 ];
 
-export { credsFix };
+const universityDegreeCredential = {
+  "@context": [
+    "https://www.w3.org/2018/credentials/v1",
+    "https://www.w3.org/2018/credentials/examples/v1",
+  ],
+  type: ["VerifiableCredential", "UniversityDegreeCredential"],
+  credentialSubject: {
+    id: "did:key:z6Mkvdhigk2EwyFy1ZYNvVrwRZYGujePLha9zLkB9JNGshRg",
+    name: "John Smith",
+    degree: {
+      type: "BachelorDegree",
+      name: "Bachelor of Science and Arts",
+    },
+  },
+  expirationDate: "2025-12-11T11:11:11Z",
+};
+
+export { credsFix, universityDegreeCredential };
