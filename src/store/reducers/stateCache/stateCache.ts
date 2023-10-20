@@ -62,8 +62,11 @@ const stateCacheSlice = createSlice({
       state,
       action: PayloadAction<boolean>
     ) => {
-      state.queueConnectionCredentialRequest.isPaused = action.payload;
-      if (action) state.queueConnectionCredentialRequest.isProcessing = false;
+      state.queueConnectionCredentialRequest = {
+        ...state.queueConnectionCredentialRequest,
+        isPaused: action.payload,
+        isProcessing: !action.payload,
+      };
     },
     setQueueConnectionCredentialRequest: (
       state,

@@ -26,9 +26,10 @@ const ConnectionCredentialRequest = () => {
   const queueConnectionCredentialRequest = useAppSelector(
     getQueueConnectionCredentialRequest
   );
-  const connectionCredentialRequest = queueConnectionCredentialRequest.isPaused
-    ? { id: "" }
-    : queueConnectionCredentialRequest.queues[0] ?? { id: "" };
+  const connectionCredentialRequest =
+    !queueConnectionCredentialRequest.isProcessing
+      ? { id: "" }
+      : queueConnectionCredentialRequest.queues[0] ?? { id: "" };
   const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -78,7 +79,7 @@ const ConnectionCredentialRequest = () => {
     setInitiateAnimation(false);
     setTimeout(() => {
       dispatch(setResolveConnectionCredentialRequest());
-    }, 1 * 1000);
+    }, 0.5 * 1000);
   };
 
   const handleCancel = async () => {
