@@ -42,6 +42,7 @@ jest.mock("../../../core/agent/agent", () => ({
         isConnectionResponseSent: jest.fn(),
         isConnectionConnected: jest.fn(),
         getConnectionShortDetailById: jest.fn(),
+        getUnhandledConnections: jest.fn(),
       },
       credentials: {
         getCredentials: jest.fn().mockResolvedValue([]),
@@ -51,6 +52,7 @@ jest.mock("../../../core/agent/agent", () => ({
         createMetadata: jest.fn(),
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
+        getUnhandledCredentials: jest.fn(),
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),
