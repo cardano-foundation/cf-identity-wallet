@@ -2,6 +2,7 @@ import { act, fireEvent, render } from "@testing-library/react";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { AnyAction, Store } from "@reduxjs/toolkit";
 import { Dids } from "./Dids";
 import { store } from "../../../store";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -11,7 +12,15 @@ import {
   NAVIGATION_DELAY,
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { filteredIdentityFix } from "../../__fixtures__/filteredIdentityFix";
+import {
+  filteredDidFix,
+  filteredIdentityFix,
+} from "../../__fixtures__/filteredIdentityFix";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import {
+  addFavouriteIdentityCache,
+  identitiesCacheSlice,
+} from "../../../store/reducers/identitiesCache";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -22,7 +31,60 @@ jest.mock("../../../core/agent/agent", () => ({
     },
   },
 }));
+
+const mockStore = configureStore();
+const dispatchMock = jest.fn();
+
+const initialState = {
+  stateCache: {
+    routes: [TabsRoutePath.DIDS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+      passwordIsSet: true,
+    },
+  },
+  seedPhraseCache: {
+    seedPhrase160:
+      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+    seedPhrase256: "",
+    selected: FIFTEEN_WORDS_BIT_LENGTH,
+  },
+  identitiesCache: {
+    identities: filteredIdentityFix,
+    favourites: [
+      {
+        id: filteredIdentityFix[0].id,
+        time: 1,
+      },
+    ],
+  },
+};
+
+let mockedStore: Store<unknown, AnyAction>;
 describe("Dids Tab", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+
+    mockedStore = {
+      ...mockStore(initialState),
+      dispatch: dispatchMock,
+    };
+  });
+
+  test("Renders favourites in Dids", () => {
+    const { getByText } = render(
+      <Provider store={mockedStore}>
+        <Dids />
+      </Provider>
+    );
+
+    expect(getByText("Favourites")).toBeInTheDocument();
+  });
+
   test("Renders Dids Tab and all elements in it", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
