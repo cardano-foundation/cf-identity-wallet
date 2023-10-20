@@ -310,7 +310,10 @@ const Crypto = () => {
                   ],
                 }}
                 moreComponent={
-                  <MoreOptions text={defaultAccountData.address} />
+                  <MoreOptions
+                    text={defaultAccountData.address}
+                    onClick={() => setReceiveIsOpen(false)}
+                  />
                 }
               />
             </>
