@@ -11,7 +11,6 @@ import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
-import { DidCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -38,6 +37,7 @@ import { IdentityCardInfoKey } from "../../components/IdentityCardInfoKey";
 import { IdentityCardInfoKeri } from "../../components/IdentityCardInfoKeri";
 import { operationState } from "../../constants/dictionary";
 import { IdentityOptions } from "../../components/IdentityOptions";
+import { IdentityCardTemplate } from "../../components/IdentityCardTemplate";
 
 const DidCardDetails = () => {
   const history = useHistory();
@@ -154,7 +154,7 @@ const DidCardDetails = () => {
           </div>
         ) : (
           <>
-            <DidCard
+            <IdentityCardTemplate
               cardData={cardData}
               isActive={false}
             />

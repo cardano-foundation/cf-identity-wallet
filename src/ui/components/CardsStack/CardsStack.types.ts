@@ -1,14 +1,4 @@
-import {
-  IdentifierShortDetails,
-  CredentialShortDetails,
-} from "../../../core/agent/agent.types";
-
-interface DidCardProps {
-  cardData: IdentifierShortDetails;
-  isActive: boolean;
-  index?: number;
-  onHandleShowCardDetails?: (index: number | undefined) => void;
-}
+import { CredentialShortDetails } from "../../../core/agent/agent.types";
 
 interface CredCardProps {
   cardData: CredentialShortDetails;
@@ -17,4 +7,4 @@ interface CredCardProps {
   onHandleShowCardDetails?: (index: number | undefined) => void;
 }
 
-export type { DidCardProps, CredentialShortDetails, CredCardProps };
+export type { CredentialShortDetails, CredCardProps };

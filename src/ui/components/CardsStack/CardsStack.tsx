@@ -5,11 +5,7 @@ import { IonChip, IonIcon } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
 import { formatShortDate } from "../../../utils";
 import { i18n } from "../../../i18n";
-import {
-  CredCardProps,
-  CredentialShortDetails,
-  DidCardProps,
-} from "./CardsStack.types";
+import { CredCardProps, CredentialShortDetails } from "./CardsStack.types";
 import {
   DIDDetails,
   IdentifierShortDetails,
@@ -23,6 +19,7 @@ import { Alert } from "../Alert";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import KERILogo from "../../../ui/assets/images/keri-logo.svg";
+import { IdentityCardTemplate } from "../IdentityCardTemplate";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -129,68 +126,6 @@ const CredCard = ({
   );
 };
 
-const DidCard = ({
-  cardData,
-  isActive,
-  index = 0,
-  onHandleShowCardDetails,
-}: DidCardProps) => {
-  const divStyle = {
-    backgroundImage: `url(${MAPPING_THEME_BACKGROUND[cardData.theme]})`,
-    backgroundSize: "cover",
-    zIndex: index,
-  };
-
-  return (
-    <div
-      key={index}
-      data-testid={`did-card-stack${
-        index !== undefined ? `-index-${index}` : ""
-      }`}
-      className={`cards-stack-card ${isActive ? "active" : ""}`}
-      onClick={() => {
-        if (onHandleShowCardDetails) {
-          onHandleShowCardDetails(index);
-        }
-      }}
-      style={divStyle}
-    >
-      <div className="cards-stack-did-layout">
-        <div className="card-header">
-          <span className="card-logo">
-            <img
-              src={cardData.method === IdentifierType.KEY ? W3CLogo : KERILogo}
-              alt="card-logo"
-            />
-            {cardData.method === IdentifierType.KEY ? "did:key" : ""}
-          </span>
-          <span>{cardData.displayName}</span>
-        </div>
-        <div className="card-body">
-          <span>{""}</span>
-        </div>
-        <div className="card-footer">
-          <span className="card-footer-column">
-            <span className="card-footer-column-label">
-              {i18n.t("identity.card.layout.created")}
-            </span>
-            <span className="card-footer-column-info">
-              {formatShortDate(cardData.createdAtUTC)}
-            </span>
-          </span>
-          <span className="card-footer-column">
-            <span className="card-footer-column-info">
-              {cardData.method === IdentifierType.KEY
-                ? cardData.id.substring(8, 13) + "..." + cardData.id.slice(-5)
-                : cardData.id.substring(0, 5) + "..." + cardData.id.slice(-5)}
-            </span>
-          </span>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const CardsStack = ({
   cardsType,
   cardsData,
@@ -210,7 +145,7 @@ const CardsStack = ({
         index: number
       ) =>
         cardsType === cardTypes.dids ? (
-          <DidCard
+          <IdentityCardTemplate
             key={index}
             index={index}
             cardData={cardData as IdentifierShortDetails}
@@ -253,4 +188,4 @@ const CardsStack = ({
   return <div className="cards-stack-container">{renderCards(cardsData)}</div>;
 };
 
-export { DidCard, CredCard, CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };
+export { CredCard, CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };
