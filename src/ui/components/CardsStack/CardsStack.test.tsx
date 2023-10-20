@@ -73,7 +73,7 @@ describe("Cards Stack Component", () => {
       </MemoryRouter>
     );
 
-    const firstCard = await findByTestId("did-card-stack-index-0");
+    const firstCard = await findByTestId("identity-card-template-index-0");
     await waitFor(() => expect(firstCard).not.toHaveClass("active"));
 
     act(() => {
@@ -112,7 +112,7 @@ describe("Cards Stack Component", () => {
       </MemoryRouter>
     );
 
-    const firstCard = await findByTestId("cred-card-stack-index-0");
+    const firstCard = await findByTestId("cred-card-template-index-0");
     await waitFor(() => expect(firstCard).not.toHaveClass("active"));
 
     act(() => {

@@ -7,6 +7,7 @@ import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/gene
 import { formatShortDate } from "../../../utils";
 import { i18n } from "../../../i18n";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
+import "./CredCardTemplate.scss";
 
 const CredCardTemplate = ({
   cardData,
@@ -25,10 +26,10 @@ const CredCardTemplate = ({
     <>
       <div
         key={index}
-        data-testid={`cred-card-stack${
+        data-testid={`cred-card-template${
           index !== undefined ? `-index-${index}` : ""
         }`}
-        className={`cards-stack-card ${isActive ? "active" : ""}`}
+        className={`cred-card-template ${isActive ? "active" : ""}`}
         onClick={() => {
           if (cardData.status === CredentialMetadataRecordStatus.PENDING) {
             setAlertIsOpen(true);
@@ -38,7 +39,7 @@ const CredCardTemplate = ({
         }}
         style={divStyle}
       >
-        <div className={`cards-stack-cred-layout ${cardData.status}`}>
+        <div className={`cred-card-template-inner ${cardData.status}`}>
           <div className="card-header">
             <span className="card-logo">
               <img

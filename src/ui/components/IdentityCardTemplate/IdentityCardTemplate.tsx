@@ -5,6 +5,7 @@ import { MAPPING_THEME_BACKGROUND } from "../../constants/dictionary";
 import { IdentityCardTemplateProps } from "./IdentityCardTemplate.types";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import KERILogo from "../../../ui/assets/images/keri-logo.svg";
+import "./IdentityCardTemplate.scss";
 
 const IdentityCardTemplate = ({
   cardData,
@@ -21,10 +22,10 @@ const IdentityCardTemplate = ({
   return (
     <div
       key={index}
-      data-testid={`did-card-stack${
+      data-testid={`identity-card-template${
         index !== undefined ? `-index-${index}` : ""
       }`}
-      className={`cards-stack-card ${isActive ? "active" : ""}`}
+      className={`identity-card-template ${isActive ? "active" : ""}`}
       onClick={() => {
         if (onHandleShowCardDetails) {
           onHandleShowCardDetails(index);
@@ -32,7 +33,7 @@ const IdentityCardTemplate = ({
       }}
       style={divStyle}
     >
-      <div className="cards-stack-did-layout">
+      <div className="identity-card-template-inner">
         <div className="card-header">
           <span className="card-logo">
             <img
