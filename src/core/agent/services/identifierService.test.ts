@@ -46,11 +46,13 @@ const didMetadataRecordProps = {
   colors,
   method: IdentifierType.KEY,
   createdAt: now,
+  theme: 0,
 };
 const didMetadataRecord = new IdentifierMetadataRecord(didMetadataRecordProps);
 const archivedMetadataRecord = new IdentifierMetadataRecord({
   ...didMetadataRecordProps,
   isArchived: true,
+  theme: 0,
 });
 
 const keriMetadataRecordProps = {
@@ -60,6 +62,7 @@ const keriMetadataRecordProps = {
   method: IdentifierType.KERI,
   signifyName: "uuid-here",
   createdAt: now,
+  theme: 0,
 };
 const keriMetadataRecord = new IdentifierMetadataRecord(
   keriMetadataRecordProps
@@ -108,6 +111,7 @@ describe("Identifier service of agent", () => {
         colors,
         method: IdentifierType.KEY,
         createdAtUTC: nowISO,
+        theme: 0,
       },
       {
         id: keriMetadataRecord.id,
@@ -115,6 +119,7 @@ describe("Identifier service of agent", () => {
         colors,
         method: IdentifierType.KERI,
         createdAtUTC: nowISO,
+        theme: 0,
       },
     ]);
   });
@@ -130,6 +135,7 @@ describe("Identifier service of agent", () => {
         colors,
         method: IdentifierType.KEY,
         createdAtUTC: nowISO,
+        theme: 0,
       },
       {
         id: keriMetadataRecord.id,
@@ -137,6 +143,7 @@ describe("Identifier service of agent", () => {
         colors,
         method: IdentifierType.KERI,
         createdAtUTC: nowISO,
+        theme: 0,
       },
     ]);
   });
@@ -249,6 +256,7 @@ describe("Identifier service of agent", () => {
         displayName: didMetadataRecordProps.displayName,
         colors: didMetadataRecordProps.colors,
         controller: did,
+        theme: 0,
         keyType,
         publicKeyBase58: pkey,
         createdAtUTC: nowISO,
@@ -300,6 +308,7 @@ describe("Identifier service of agent", () => {
         displayName: keriMetadataRecordProps.displayName,
         createdAtUTC: nowISO,
         colors,
+        theme: 0,
         ...aidReturnedBySignify.state,
       },
     });
@@ -318,6 +327,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KERI,
         displayName,
         colors,
+        theme: 0,
       })
     ).toBe(aid);
     expect(agent.dids.create).not.toBeCalledWith(); // Just in case
@@ -348,6 +358,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KEY,
         displayName,
         colors,
+        theme: 0,
       })
     ).toBe(did);
     expect(agent.modules.signify.createIdentifier).not.toBeCalled(); // Just in case
@@ -367,6 +378,71 @@ describe("Identifier service of agent", () => {
     expect(newRecord.method).toEqual(IdentifierType.KEY);
   });
 
+  test("can update a did:key identifier", async () => {
+    const did = "did:key:test";
+    const displayName = "newDisplayName";
+    agent.dids.create = jest.fn().mockResolvedValue({
+      didState: {
+        did,
+      },
+    });
+    await identifierService.createIdentifier({
+      method: IdentifierType.KEY,
+      displayName,
+      colors,
+      theme: 0,
+    });
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(didMetadataRecord);
+    await identifierService.updateIdentifier(did, {
+      theme: 1,
+      displayName: "test",
+    });
+    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
+      did
+    );
+    expect(
+      agent.modules.generalStorage.updateIdentifierMetadata
+    ).toBeCalledWith(did, { theme: 1, displayName: "test" });
+  });
+
+  test("cannot create a keri identifier if theme is not valid", async () => {
+    const aid = "newIdentifierAid";
+    const displayName = "newDisplayName";
+    const signifyName = "newUuidHere";
+    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+      identifier: aid,
+      signifyName,
+    });
+    await expect(
+      identifierService.createIdentifier({
+        method: IdentifierType.KERI,
+        displayName,
+        colors,
+        theme: 3,
+      })
+    ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
+  });
+
+  test("cannot create a did:key identifier if theme is not valid", async () => {
+    const aid = "newIdentifierAid";
+    const displayName = "newDisplayName";
+    const signifyName = "newUuidHere";
+    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+      identifier: aid,
+      signifyName,
+    });
+    await expect(
+      identifierService.createIdentifier({
+        method: IdentifierType.KERI,
+        displayName,
+        colors,
+        theme: 8,
+      })
+    ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
+  });
+
   test("should not create metadata record if did:key create result malformed", async () => {
     const displayName = "newDisplayName";
     agent.dids.create = jest.fn().mockResolvedValue({
@@ -377,6 +453,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KEY,
         displayName,
         colors,
+        theme: 0,
       })
     ).rejects.toThrowError(
       IdentifierService.UNEXPECTED_MISSING_DID_RESULT_ON_CREATE

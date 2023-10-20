@@ -39,4 +39,17 @@ describe("Create Identity modal", () => {
     );
     expect(getByTestId("create-identity-modal")).toBeInTheDocument();
   });
+
+  test.skip("should display the elements inside the modal", () => {
+    const { getByTestId } = render(
+      <Provider store={mockedStore}>
+        <CreateIdentity
+          modalIsOpen={true}
+          setModalIsOpen={mockOnClose}
+        />
+      </Provider>
+    );
+    expect(getByTestId("identity-type-selector")).toBeInTheDocument();
+    expect(getByTestId("identity-theme-selector")).toBeInTheDocument();
+  });
 });

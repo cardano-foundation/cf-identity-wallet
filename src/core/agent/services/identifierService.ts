@@ -11,6 +11,11 @@ import {
 } from "../modules/generalStorage/repositories/identifierMetadataRecord";
 import { AgentService } from "./agentService";
 
+const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
+  [IdentifierType.KEY]: [0, 1, 2, 3],
+  [IdentifierType.KERI]: [4, 5],
+};
+
 class IdentifierService extends AgentService {
   static readonly DID_MISSING_INCORRECT =
     "DID returned from agent was of unexpected DID method";
@@ -27,6 +32,7 @@ class IdentifierService extends AgentService {
   static readonly UNEXPECTED_MISSING_DID_RESULT_ON_CREATE =
     "DID was successfully created but the DID was not returned in the state returned";
   static readonly IDENTIFIER_NOT_ARCHIVED = "Identifier was not archived";
+  static readonly THEME_WAS_NOT_VALID = "Identifier theme was not valid";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identities: IdentifierShortDetails[] = [];
@@ -46,6 +52,7 @@ class IdentifierService extends AgentService {
         id: metadata.id,
         createdAtUTC: metadata.createdAt.toISOString(),
         colors: metadata.colors,
+        theme: metadata.theme,
       });
     }
     return identities;
@@ -88,6 +95,7 @@ class IdentifierService extends AgentService {
           displayName: metadata.displayName,
           createdAtUTC: metadata.createdAt.toISOString(),
           colors: metadata.colors,
+          theme: metadata.theme,
           s: aid.state.s,
           dt: aid.state.dt,
           kt: aid.state.kt,
@@ -159,6 +167,18 @@ class IdentifierService extends AgentService {
     );
   }
 
+  async updateIdentifier(
+    identifier: string,
+    data: Pick<IdentifierMetadataRecordProps, "theme" | "displayName">
+  ): Promise<void> {
+    const metadata = await this.getMetadataById(identifier);
+    this.validIdentifierMetadata(metadata);
+    return this.agent.modules.generalStorage.updateIdentifierMetadata(
+      identifier,
+      { theme: data.theme, displayName: data.displayName }
+    );
+  }
+
   private async getMetadataById(id: string): Promise<IdentifierMetadataRecord> {
     const metadata =
       await this.agent.modules.generalStorage.getIdentifierMetadata(id);
@@ -173,12 +193,14 @@ class IdentifierService extends AgentService {
   private async createIdentifierMetadataRecord(
     data: IdentifierMetadataRecordProps
   ) {
+    this.validIdentifierMetadata(data);
     const record = new IdentifierMetadataRecord({
       id: data.id,
       displayName: data.displayName,
       colors: data.colors,
       method: data.method,
       signifyName: data.signifyName,
+      theme: data.theme,
     });
     return this.agent.modules.generalStorage.saveIdentifierMetadataRecord(
       record
@@ -218,6 +240,7 @@ class IdentifierService extends AgentService {
       displayName: metadata.displayName,
       createdAtUTC: record.createdAt.toISOString(),
       colors: metadata.colors,
+      theme: metadata.theme,
       controller: record.did,
       keyType: signingKey.type.toString(),
       publicKeyBase58: signingKey.publicKeyBase58,
@@ -228,6 +251,19 @@ class IdentifierService extends AgentService {
     if (!metadata.isArchived) {
       throw new Error(
         `${IdentifierService.IDENTIFIER_NOT_ARCHIVED} ${metadata.id}`
+      );
+    }
+  }
+
+  private validIdentifierMetadata(
+    metadata: IdentifierMetadataRecordProps
+  ): void {
+    if (
+      metadata.theme &&
+      !identifierTypeMappingTheme[metadata.method].includes(metadata.theme)
+    ) {
+      throw new Error(
+        `${IdentifierService.THEME_WAS_NOT_VALID} ${metadata.id}`
       );
     }
   }

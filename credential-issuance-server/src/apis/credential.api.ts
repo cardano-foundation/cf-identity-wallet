@@ -40,28 +40,30 @@ async function offerCredentialOverConnection(
 }
 
 async function invitationWithCredential(
-  _: Request,
+  req: Request,
   res: Response
 ): Promise<void> {
+  const credential = req.body;
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
     data: generableQRcodeWithUrl(
-      await AriesAgent.agent.createInvitationWithCredential()
+      await AriesAgent.agent.createInvitationWithCredential(Object.keys(credential).length === 0 ? undefined : credential)
     ),
   };
   httpResponse(res, response);
 }
 
 async function invitationWithCredentialConnectionless(
-  _: Request,
+  req: Request,
   res: Response
 ): Promise<void> {
+  const credential = req.body;
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
     data: generableQRcodeWithUrl(
-      await AriesAgent.agent.createInvitationWithCredentialConnectionless()
+      await AriesAgent.agent.createInvitationWithCredentialConnectionless(Object.keys(credential).length === 0 ? undefined : credential)
     ),
   };
   httpResponse(res, response);
