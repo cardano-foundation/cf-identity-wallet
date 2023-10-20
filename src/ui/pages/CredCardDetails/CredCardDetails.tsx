@@ -21,7 +21,6 @@ import { JsonObject } from "@aries-framework/core";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
-import { CredCard } from "../../components/CardsStack";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -46,6 +45,7 @@ import {
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 import { getNextRoute } from "../../../routes/nextRoute";
+import { CredCardTemplate } from "../../components/CredCardTemplate";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -194,7 +194,7 @@ const CredCardDetails = () => {
         actionButtonAction={() => setAlertRestoreIsOpen(true)}
         actionButtonLabel={`${i18n.t("creds.card.details.restore")}`}
       >
-        <CredCard
+        <CredCardTemplate
           cardData={cardData}
           isActive={false}
         />

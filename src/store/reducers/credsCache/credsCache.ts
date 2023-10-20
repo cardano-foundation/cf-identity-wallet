@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { CredentialShortDetails } from "../../../ui/components/CardsStack/CardsStack.types";
 import { RootState } from "../../index";
+import { CredentialShortDetails } from "../../../core/agent/agent.types";
 const initialState: { creds: CredentialShortDetails[] } = {
   creds: [],
 };

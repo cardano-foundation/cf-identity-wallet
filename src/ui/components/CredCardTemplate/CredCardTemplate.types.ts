@@ -1,10 +1,10 @@
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
 
-interface CredCardProps {
+interface CredCardTemplateProps {
   cardData: CredentialShortDetails;
   isActive: boolean;
   index?: number;
   onHandleShowCardDetails?: (index: number | undefined) => void;
 }
 
-export type { CredentialShortDetails, CredCardProps };
+export type { CredCardTemplateProps };
