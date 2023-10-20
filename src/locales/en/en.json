@@ -614,7 +614,8 @@
     "credentialrequestpending": "Credential request pending",
     "newcredentialadded": "New credential added",
     "notesupdated": "Notes updated successfully",
-    "noteremoved": "Note removed successfully"
+    "noteremoved": "Note removed successfully",
+    "maxfavouritesreached": "Maximum of 5 favourites reached"
   },
   "scan": {
     "tab": {

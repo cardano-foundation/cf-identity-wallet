@@ -26,6 +26,7 @@ import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialShortDetails } from "../../components/CardsStack/CardsStack.types";
 import {
   getCredsCache,
+  getFavouritesCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 
@@ -71,6 +72,7 @@ const AdditionalButtons = ({
 const Creds = () => {
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
+  const favCredsCache = useAppSelector(getFavouritesCredsCache);
   const currentOperation = useAppSelector(getCurrentOperation);
   const [currentCreds, setCurrentCreds] = useState<CredentialShortDetails[]>([
     ...credsCache,
@@ -117,6 +119,30 @@ const Creds = () => {
     fetchArchivedCreds();
   });
 
+  const findTimeById = (id: string) => {
+    const found = favCredsCache.find((item) => item.id === id);
+    return found ? found.time : null;
+  };
+
+  const favDids = credsCache.filter((did) =>
+    favCredsCache.some((fav) => fav.id === did.id)
+  );
+
+  const sortedFavDids = favDids.sort((a, b) => {
+    const timeA = findTimeById(a.id);
+    const timeB = findTimeById(b.id);
+
+    if (timeA === null && timeB === null) return 0;
+    if (timeA === null) return 1;
+    if (timeB === null) return -1;
+
+    return timeA - timeB;
+  });
+
+  const allDids = credsCache.filter(
+    (did) => !favCredsCache.some((fav) => fav.id === did.id)
+  );
+
   return (
     <>
       <IonPage
@@ -143,10 +169,32 @@ const Creds = () => {
           }
         >
           {currentCreds.length ? (
-            <CardsStack
-              cardsType={CardTypes.CREDS}
-              cardsData={currentCreds}
-            />
+            <>
+              {favDids.length ? (
+                <>
+                  {allDids.length ? (
+                    <div className="cards-title">Favourites</div>
+                  ) : null}
+                  <CardsStack
+                    cardsType={CardTypes.CREDS}
+                    cardsData={sortedFavDids}
+                  />
+                </>
+              ) : null}
+              {allDids.length ? (
+                <>
+                  {favDids.length ? (
+                    <div className="cards-title cards-title-all">
+                      All Identities
+                    </div>
+                  ) : null}
+                  <CardsStack
+                    cardsType={CardTypes.CREDS}
+                    cardsData={allDids}
+                  />
+                </>
+              ) : null}
+            </>
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("creds.tab.create")}

@@ -39,7 +39,11 @@ import {
 } from "../../components/Alert";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
-import { operationState, toastState } from "../../constants/dictionary";
+import {
+  MAX_FAVOURITES,
+  operationState,
+  toastState,
+} from "../../constants/dictionary";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { CredentialDetails } from "../../../core/agent/agent.types";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -165,6 +169,11 @@ const CredCardDetails = () => {
             /*TODO: handle error*/
           });
       } else {
+        if (favouritesCredsCache.length >= MAX_FAVOURITES) {
+          dispatch(setCurrentOperation(toastState.maxFavouritesReached));
+          return;
+        }
+
         PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
           favourites: [{ id, time: Date.now() }, ...favouritesCredsCache],
         })

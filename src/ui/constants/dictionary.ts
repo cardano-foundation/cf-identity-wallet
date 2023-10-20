@@ -6,6 +6,8 @@ import {
 import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
 import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 
+const MAX_FAVOURITES = 5;
+
 enum CardTypes {
   CREDS = "creds",
   DIDS = "dids",
@@ -62,6 +64,7 @@ const toastState = {
   newCredentialAdded: "newCredentialAdded",
   notesUpdated: "notesUpdated",
   noteRemoved: "noteRemoved",
+  maxFavouritesReached: "maxFavouritesReached",
 };
 
 const defaultCredentialsCardData: CredentialDetails = {
@@ -125,6 +128,7 @@ const onboardingRoute = {
 };
 
 export {
+  MAX_FAVOURITES,
   CardTypes,
   connectionStatus,
   operationState,

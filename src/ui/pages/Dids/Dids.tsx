@@ -68,6 +68,7 @@ const Dids = () => {
   const favDids = didsData.filter((did) =>
     favouritesDids.some((fav) => fav.id === did.id)
   );
+
   const sortedFavDids = favDids.sort((a, b) => {
     const timeA = findTimeById(a.id);
     const timeB = findTimeById(b.id);
@@ -105,7 +106,7 @@ const Dids = () => {
                 ) : null}
                 <CardsStack
                   cardsType={CardTypes.DIDS}
-                  cardsData={favDids}
+                  cardsData={sortedFavDids}
                 />
               </>
             ) : null}

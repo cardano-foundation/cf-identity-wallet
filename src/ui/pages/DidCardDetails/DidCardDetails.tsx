@@ -45,7 +45,11 @@ import {
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { IdentityCardInfoKey } from "../../components/IdentityCardInfoKey";
 import { IdentityCardInfoKeri } from "../../components/IdentityCardInfoKeri";
-import { operationState } from "../../constants/dictionary";
+import {
+  MAX_FAVOURITES,
+  operationState,
+  toastState,
+} from "../../constants/dictionary";
 import { IdentityOptions } from "../../components/IdentityOptions";
 import {
   PreferencesKeys,
@@ -131,6 +135,11 @@ const DidCardDetails = () => {
             /*TODO: handle error*/
           });
       } else {
+        if (favouritesIdentitiesData.length >= MAX_FAVOURITES) {
+          dispatch(setCurrentOperation(toastState.maxFavouritesReached));
+          return;
+        }
+
         PreferencesStorage.set(PreferencesKeys.APP_DIDS_FAVOURITES, {
           favourites: [{ id, time: Date.now() }, ...favouritesIdentitiesData],
         })
