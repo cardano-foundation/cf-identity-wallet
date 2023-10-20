@@ -32,6 +32,7 @@ const agentDependencies: AgentDependencies = {
   FileSystem: CapacitorFileSystem,
   EventEmitterClass:
     eventEmitterMock as unknown as AgentDependencies["EventEmitterClass"],
+  // eslint-disable-next-line no-undef
   fetch: global.fetch as unknown as AgentDependencies["fetch"],
   WebSocketClass: {} as unknown as AgentDependencies["WebSocketClass"],
 };

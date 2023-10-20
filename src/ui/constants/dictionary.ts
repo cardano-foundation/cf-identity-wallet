@@ -12,10 +12,12 @@ import BackgroundDidKey3 from "../assets/images/did-key-3.png";
 import BackgroundKERI0 from "../assets/images/keri-0.png";
 import BackgroundKERI1 from "../assets/images/keri-1.png";
 
-const cardTypes = {
-  creds: "creds",
-  dids: "dids",
-};
+const MAX_FAVOURITES = 5;
+
+enum CardTypes {
+  CREDS = "creds",
+  DIDS = "dids",
+}
 
 const connectionStatus = {
   pending: ConnectionStatus.PENDING,
@@ -68,6 +70,7 @@ const toastState = {
   newCredentialAdded: "newCredentialAdded",
   notesUpdated: "notesUpdated",
   noteRemoved: "noteRemoved",
+  maxFavouritesReached: "maxFavouritesReached",
 };
 
 const defaultCredentialsCardData: CredentialDetails = {
@@ -140,7 +143,8 @@ const MAPPING_THEME_BACKGROUND: Record<number, unknown> = {
 };
 
 export {
-  cardTypes,
+  MAX_FAVOURITES,
+  CardTypes,
   connectionStatus,
   operationState,
   toastState,

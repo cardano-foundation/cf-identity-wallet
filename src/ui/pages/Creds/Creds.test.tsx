@@ -1,6 +1,7 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
+import { AnyAction, Store } from "@reduxjs/toolkit";
 import { Creds } from "./Creds";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
@@ -8,45 +9,73 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { formatShortDate } from "../../../utils";
 
+const initialStateEmpty = {
+  stateCache: {
+    routes: [TabsRoutePath.CREDS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+    },
+  },
+  seedPhraseCache: {},
+  credsCache: {
+    creds: [],
+  },
+  connectionsCache: {
+    connections: [],
+  },
+};
+
+const initialStateFull = {
+  stateCache: {
+    routes: [TabsRoutePath.CREDS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+    },
+  },
+  seedPhraseCache: {},
+  credsCache: {
+    creds: filteredCredsFix,
+    favourites: [
+      {
+        id: filteredCredsFix[0].id,
+        time: 1,
+      },
+    ],
+  },
+  connectionsCache: {
+    connections: connectionsFix,
+  },
+};
+
+let mockedStore: Store<unknown, AnyAction>;
 describe("Creds Tab", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
 
-  const initialStateEmpty = {
-    stateCache: {
-      routes: [TabsRoutePath.CREDS],
-      authentication: {
-        loggedIn: true,
-        time: Date.now(),
-        passcodeIsSet: true,
-      },
-    },
-    seedPhraseCache: {},
-    credsCache: {
-      creds: [],
-    },
-    connectionsCache: {
-      connections: [],
-    },
-  };
+  beforeEach(() => {
+    jest.resetAllMocks();
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
 
-  const initialStateFull = {
-    stateCache: {
-      routes: [TabsRoutePath.CREDS],
-      authentication: {
-        loggedIn: true,
-        time: Date.now(),
-        passcodeIsSet: true,
-      },
-    },
-    seedPhraseCache: {},
-    credsCache: {
-      creds: filteredCredsFix,
-    },
-    connectionsCache: {
-      connections: connectionsFix,
-    },
-  };
+    mockedStore = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+  });
+
+  test("Renders favourites in Creds", () => {
+    const { getByText } = render(
+      <Provider store={mockedStore}>
+        <Creds />
+      </Provider>
+    );
+
+    expect(getByText(EN_TRANSLATIONS.creds.tab.favourites)).toBeInTheDocument();
+  });
 
   test("Renders Creds Tab", () => {
     const storeMocked = {
@@ -93,7 +122,7 @@ describe("Creds Tab", () => {
       </Provider>
     );
 
-    expect(getByTestId("cred-card-template-index-0")).toBeInTheDocument();
+    expect(getByTestId("cred-card-template-favs-index-0")).toBeInTheDocument();
   });
 
   test("Toggle Connections view", async () => {

@@ -1,17 +1,23 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
+  addFavouritesCredsCache,
   credsCacheSlice,
   getCredsCache,
+  getFavouritesCredsCache,
+  removeFavouritesCredsCache,
   setCredsCache,
+  setFavouritesCredsCache,
   updateOrAddCredsCache,
 } from "./credsCache";
 import { RootState } from "../../index";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
+import { FavouriteIdentity } from "../identitiesCache/identitiesCache.types";
 
 describe("credsCacheSlice", () => {
   const initialState = {
     creds: [],
+    favourites: [],
   };
   it("should return the initial state", () => {
     expect(credsCacheSlice.reducer(undefined, {} as PayloadAction)).toEqual(
@@ -77,14 +83,57 @@ describe("credsCacheSlice", () => {
       status: CredentialMetadataRecordStatus.CONFIRMED,
     };
     const newState = credsCacheSlice.reducer(
-      { creds: [cred1, cred2] },
+      { creds: [cred1, cred2], favourites: [] },
       updateOrAddCredsCache(updateCred)
     );
     expect(newState.creds).toEqual([cred2, updateCred]);
   });
+
+  it("should handle setFavouritesCredsCache", () => {
+    const favs: FavouriteIdentity[] = [
+      {
+        id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
+        time: 1,
+      },
+    ];
+    const newState = credsCacheSlice.reducer(
+      initialState,
+      setFavouritesCredsCache(favs)
+    );
+    expect(newState.favourites).toEqual(favs);
+  });
+
+  it("should handle addFavouritesCredsCache", () => {
+    const fav: FavouriteIdentity = {
+      id: "abcd",
+      time: 1,
+    };
+    const newState = credsCacheSlice.reducer(
+      initialState,
+      addFavouritesCredsCache(fav)
+    );
+    expect(newState.favourites).toEqual([fav]);
+  });
+
+  it("should handle removeFavouritesCredsCache", () => {
+    const state = {
+      creds: [],
+      favourites: [
+        {
+          id: "abcd",
+          time: 1,
+        },
+      ],
+    };
+    const newState = credsCacheSlice.reducer(
+      state,
+      removeFavouritesCredsCache("abcd")
+    );
+    expect(newState.favourites).toEqual([]);
+  });
 });
 
-describe("getCredsCache", () => {
+describe("get methods for CredsCache", () => {
   it("should return the creds cache from RootState", () => {
     const state = {
       credsCache: {
@@ -111,5 +160,23 @@ describe("getCredsCache", () => {
     } as RootState;
     const credsCache = getCredsCache(state);
     expect(credsCache).toEqual(state.credsCache.creds);
+  });
+  it("should return the favourites creds cache from RootState", () => {
+    const state = {
+      credsCache: {
+        favourites: [
+          {
+            id: "abcd",
+            time: 1,
+          },
+          {
+            id: "efgh",
+            time: 2,
+          },
+        ],
+      },
+    } as RootState;
+    const favouritesCredsCache = getFavouritesCredsCache(state);
+    expect(favouritesCredsCache).toEqual(state.credsCache.favourites);
   });
 });
