@@ -8,7 +8,7 @@ import {
   offerCredentialOverConnection,
 } from "./apis/credential.api";
 import { getConnectionByDid } from "./apis/connection.api";
-import { getShortenUrl, getFullUrl } from "./apis/shorten.api";
+import { createShortenUrl, getFullUrl } from "./apis/shorten.api";
 import { summitAccessPass } from "./apis/credential-context";
 
 const router = express.Router();
@@ -22,7 +22,7 @@ router.post(
   invitationWithCredentialConnectionless
 );
 router.get(config.path.shorten, getFullUrl);
-router.post(config.path.getShorten, getShortenUrl);
+router.post(config.path.createShorten, createShortenUrl);
 router.get(config.path.credentials.summit, summitAccessPass);
 
 export default router;

@@ -121,6 +121,9 @@ class ConnectionService extends AgentService {
     const getUrl = await fetch(`${SERVER_GET_SHORTEN_URL}/shorten`, {
       method: "POST",
       body: JSON.stringify({ url: invitationUrl }),
+      headers: {
+        "Content-Type": "application/json",
+      },
     });
     const response = await getUrl.text();
     return JsonEncoder.fromString(response).data;

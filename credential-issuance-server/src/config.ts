@@ -15,7 +15,7 @@ const config = {
     invitationWithCredentialConnectionless:
       "/offerCredentialWithConnectionLess",
     shorten: "/shorten/:id",
-    getShorten: "/shorten",
+    createShorten: "/shorten",
     credentials: {
       summit: "/credentials/schemas/summit/v1",
     }

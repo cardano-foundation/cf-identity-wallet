@@ -12,8 +12,8 @@ function getFullUrl(req: Request, res: Response) {
   return res.send(fullUrl);
 }
 
-async function getShortenUrl(req: Request, res: Response) {
-  const { url } = req.query;
+async function createShortenUrl(req: Request, res: Response) {
+  const { url } = req.body;
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
@@ -22,4 +22,4 @@ async function getShortenUrl(req: Request, res: Response) {
   httpResponse(res, response);
 }
 
-export { getFullUrl, getShortenUrl };
+export { getFullUrl, createShortenUrl };
