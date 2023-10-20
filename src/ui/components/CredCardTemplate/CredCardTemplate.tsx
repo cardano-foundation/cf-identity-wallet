@@ -4,10 +4,10 @@ import { hourglassOutline } from "ionicons/icons";
 import { Alert } from "../Alert";
 import { CredCardTemplateProps } from "./CredCardTemplate.types";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { formatShortDate } from "../../../utils";
 import { i18n } from "../../../i18n";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import "./CredCardTemplate.scss";
+import CardBodyPending from "./CardBodyPending";
 
 const CredCardTemplate = ({
   cardData,
@@ -61,42 +61,9 @@ const CredCardTemplate = ({
               </span>
             )}
           </div>
-          <div className="card-body">
-            <span>
-              {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
-                <>&nbsp;</>
-              ) : (
-                <>&nbsp;</>
-              )}
-            </span>
-          </div>
-          <div className="card-footer">
-            <div className="card-footer-column">
-              <span className="card-footer-column-label">
-                {i18n.t("creds.card.layout.name")}
-              </span>
-              <span className="card-footer-column-value">
-                {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
-                  <>&nbsp;</>
-                ) : (
-                  // cardData.nameOnCredential
-                  ""
-                )}
-              </span>
-            </div>
-            <div className="card-footer-column">
-              <span className="card-footer-column-label">
-                {i18n.t("creds.card.layout.issued")}
-              </span>
-              <span className="card-footer-column-value">
-                {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
-                  <>&nbsp;</>
-                ) : (
-                  formatShortDate(cardData.issuanceDate)
-                )}
-              </span>
-            </div>
-          </div>
+          {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
+            <CardBodyPending />
+          ) : null}
         </div>
       </div>
       <Alert
