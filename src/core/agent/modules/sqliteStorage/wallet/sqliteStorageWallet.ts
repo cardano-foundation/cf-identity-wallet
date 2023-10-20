@@ -83,7 +83,7 @@ class SqliteStorageWallet implements Wallet {
   static readonly STORAGE_KEY_CATEGORY = "KeyPairRecord";
   static readonly VERSION_DATABASE_KEY = "VERSION_DATABASE_KEY";
 
-  static readonly GET_KV_SQL = `SELECT * FROM kv where key = ?`;
+  static readonly GET_KV_SQL = "SELECT * FROM kv where key = ?";
   static readonly INSERT_KV_SQL =
     "INSERT OR REPLACE INTO kv (key,value) VALUES (?,?)";
 
@@ -467,10 +467,12 @@ class SqliteStorageWallet implements Wallet {
 
   // These intentionally do nothing - right now we don't support proper safe migration via backups.
   // IndexedDB is not our target storage so this is a temp solution.
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async export(_exportConfig: WalletExportImportConfig): Promise<void> {}
   async import(
     _walletConfig: WalletConfig,
     _importConfig: WalletExportImportConfig
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ): Promise<void> {}
 
   async openDB(walletConfig: WalletConfig): Promise<void> {
@@ -502,7 +504,7 @@ class SqliteStorageWallet implements Wallet {
       await this.getCurrentVersionDatabase()
     );
     if (unMigrationSqls) {
-      let migrationStatements: { statement: string; values?: string[] }[] =
+      const migrationStatements: { statement: string; values?: string[] }[] =
         unMigrationSqls.sqls.map((sql) => {
           return { statement: sql };
         });

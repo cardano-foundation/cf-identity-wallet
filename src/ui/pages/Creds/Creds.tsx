@@ -223,6 +223,9 @@ const Creds = () => {
             type={connectionType.credential}
             connectModalIsOpen={addCredentialIsOpen}
             setConnectModalIsOpen={setAddCredentialIsOpen}
+            handleProvideQr={() => {
+              // @TODO: add credential sharing function
+            }}
           />
           {archivedCreds.length ? (
             <ArchivedCredentials

@@ -470,6 +470,7 @@
   "connectmodal": {
     "title": "Add a ",
     "scan": "Scan a QR code",
+    "connect": "Scan to connect",
     "provide": "Provide a QR code"
   },
   "verifypassword": {
@@ -600,6 +601,10 @@
       "more": "More share options"
     }
   },
+  "shareqr": {
+    "divider": "or",
+    "more": "More share options"
+  },
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
     "walletcreated": "Seed phrase verified",
@@ -635,20 +640,28 @@
     }
   },
   "request": {
-    "connection-title": "Connect",
-    "credential-title": "Credential offer",
-    "request-connection": " request from",
-    "offer-credential": " offer from",
+    "connection": {
+      "title": "Connect",
+      "requestconnection": " request from",
+      "alert": {
+        "titleconfirm": "Are you sure about proceeding with your connection to {{initiator}}?",
+        "confirm": "Yes, connect"
+      }
+    },
+    "credential": {
+      "title": "Credential offer",
+      "offercredential": " offer from",
+      "alert": {
+        "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
+        "confirm": "Yes, accept credential"
+      }
+    },
     "button": {
       "connect": "Connect",
-      "accept-offer": "Accept credential",
+      "acceptoffer": "Accept credential",
       "cancel": "Cancel"
     },
     "alert": {
-      "title-confirm-connection": "Are you sure about proceeding with your connection to {{initiator}}?",
-      "title-confirm-credential": "Are you sure you want to continue with {{initiator}}?",
-      "confirm-connection": "Yes, connect",
-      "confirm-credential": "Yes, accept credential",
       "cancel": "Cancel"
     },
     "pending": "{{action}} pending",
