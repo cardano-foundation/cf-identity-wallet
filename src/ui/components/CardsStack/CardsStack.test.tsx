@@ -8,9 +8,9 @@ import { DidCardDetails } from "../../pages/DidCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
-import { cardTypes } from "../../constants/dictionary";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { AriesAgent } from "../../../core/agent/agent";
+import { CardTypes } from "../../constants/dictionary";
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
@@ -30,7 +30,8 @@ describe("Cards Stack Component", () => {
     const { getByText } = render(
       <Provider store={store}>
         <CardsStack
-          cardsType={cardTypes.dids}
+          name="example"
+          cardsType={CardTypes.DIDS}
           cardsData={identityFix}
         />
       </Provider>
@@ -45,7 +46,8 @@ describe("Cards Stack Component", () => {
     const { getByText } = render(
       <Provider store={store}>
         <CardsStack
-          cardsType={cardTypes.creds}
+          name="example"
+          cardsType={CardTypes.CREDS}
           cardsData={[
             { ...credsFix[0], status: CredentialMetadataRecordStatus.PENDING },
           ]}
@@ -62,7 +64,8 @@ describe("Cards Stack Component", () => {
       <MemoryRouter>
         <Provider store={store}>
           <CardsStack
-            cardsType={cardTypes.dids}
+            name="example"
+            cardsType={CardTypes.DIDS}
             cardsData={identityFix}
           />
           <Route
@@ -73,7 +76,7 @@ describe("Cards Stack Component", () => {
       </MemoryRouter>
     );
 
-    const firstCard = await findByTestId("did-card-stack-index-0");
+    const firstCard = await findByTestId("did-card-stack-example-index-0");
     await waitFor(() => expect(firstCard).not.toHaveClass("active"));
 
     act(() => {
@@ -101,7 +104,8 @@ describe("Cards Stack Component", () => {
       <MemoryRouter>
         <Provider store={store}>
           <CardsStack
-            cardsType={cardTypes.creds}
+            name="example"
+            cardsType={CardTypes.CREDS}
             cardsData={credsFix}
           />
           <Route
@@ -112,7 +116,7 @@ describe("Cards Stack Component", () => {
       </MemoryRouter>
     );
 
-    const firstCard = await findByTestId("cred-card-stack-index-0");
+    const firstCard = await findByTestId("cred-card-stack-example-index-0");
     await waitFor(() => expect(firstCard).not.toHaveClass("active"));
 
     act(() => {

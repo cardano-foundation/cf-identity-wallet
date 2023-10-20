@@ -243,7 +243,8 @@
   "identity": {
     "tab": {
       "title": "Identities",
-      "create": "Create an identity"
+      "create": "Create an identity",
+      "alldids": "All identities"
     },
     "card": {
       "layout": {
@@ -328,7 +329,9 @@
     "tab": {
       "title": "Credentials",
       "create": "Add a credential",
-      "viewarchived": "View archived credentials"
+      "viewarchived": "View archived credentials",
+      "favourites": "Favourites",
+      "allcreds": "All Credentials"
     },
     "card": {
       "layout": {
@@ -620,7 +623,8 @@
     "credentialrequestpending": "Credential request pending",
     "newcredentialadded": "New credential added",
     "notesupdated": "Notes updated successfully",
-    "noteremoved": "Note removed successfully"
+    "noteremoved": "Note removed successfully",
+    "maxfavouritesreached": "Maximum of 5 favourites reached"
   },
   "scan": {
     "tab": {

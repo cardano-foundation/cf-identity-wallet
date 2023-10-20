@@ -17,7 +17,7 @@ import {
 } from "../../../core/agent/agent.types";
 import {
   MAPPING_THEME_BACKGROUND,
-  cardTypes,
+  CardTypes,
 } from "../../constants/dictionary";
 import { Alert } from "../Alert";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
@@ -28,6 +28,7 @@ const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
 
 const CredCard = ({
+  name,
   cardData,
   isActive,
   index,
@@ -44,8 +45,8 @@ const CredCard = ({
     <>
       <div
         key={index}
-        data-testid={`cred-card-stack${
-          index !== undefined ? `-index-${index}` : ""
+        data-testid={`cred-card-stack-${
+          index !== undefined ? `${name}-index-${index}` : ""
         }`}
         className={`cards-stack-card ${isActive ? "active" : ""}`}
         onClick={() => {
@@ -130,6 +131,7 @@ const CredCard = ({
 };
 
 const DidCard = ({
+  name = "default",
   cardData,
   isActive,
   index = 0,
@@ -144,8 +146,8 @@ const DidCard = ({
   return (
     <div
       key={index}
-      data-testid={`did-card-stack${
-        index !== undefined ? `-index-${index}` : ""
+      data-testid={`did-card-stack-${
+        index !== undefined ? `${name}-index-${index}` : ""
       }`}
       className={`cards-stack-card ${isActive ? "active" : ""}`}
       onClick={() => {
@@ -192,9 +194,11 @@ const DidCard = ({
 };
 
 const CardsStack = ({
+  name,
   cardsType,
   cardsData,
 }: {
+  name: string;
   cardsType: string;
   cardsData: IdentifierShortDetails[] | CredentialShortDetails[];
 }) => {
@@ -209,8 +213,9 @@ const CardsStack = ({
         cardData: IdentifierShortDetails | CredentialShortDetails,
         index: number
       ) =>
-        cardsType === cardTypes.dids ? (
+        cardsType === CardTypes.DIDS ? (
           <DidCard
+            name={name}
             key={index}
             index={index}
             cardData={cardData as IdentifierShortDetails}
@@ -219,6 +224,7 @@ const CardsStack = ({
           />
         ) : (
           <CredCard
+            name={name}
             key={index}
             index={index}
             cardData={cardData as CredentialShortDetails}
@@ -233,7 +239,7 @@ const CardsStack = ({
     setIsActive(true);
     let pathname = "";
 
-    if (cardsType === cardTypes.dids) {
+    if (cardsType === CardTypes.DIDS) {
       const data = cardsData[index] as DIDDetails;
       pathname = `/tabs/dids/${data.id}`;
     } else {

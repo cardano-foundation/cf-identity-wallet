@@ -15,6 +15,8 @@ import {
   personCircleOutline,
   trashOutline,
   archiveOutline,
+  heart,
+  heartOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { JsonObject } from "@aries-framework/core";
@@ -37,20 +39,36 @@ import {
 } from "../../components/Alert";
 import { formatShortDate, formatTimeToSec } from "../../../utils";
 import { CredsOptions } from "../../components/CredsOptions";
-import { operationState, toastState } from "../../constants/dictionary";
+import {
+  MAX_FAVOURITES,
+  operationState,
+  toastState,
+} from "../../constants/dictionary";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { CredentialDetails } from "../../../core/agent/agent.types";
 import { AriesAgent } from "../../../core/agent/agent";
 import {
+  addFavouritesCredsCache,
   getCredsCache,
+  getFavouritesCredsCache,
+  removeFavouritesCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 import { getNextRoute } from "../../../routes/nextRoute";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences";
+import {
+  addFavouriteIdentityCache,
+  removeFavouriteIdentityCache,
+} from "../../../store/reducers/identitiesCache";
 
 const CredCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
+  const favouritesCredsCache = useAppSelector(getFavouritesCredsCache);
   const stateCache = useAppSelector(getStateCache);
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteArchiveIsOpen, setAlertDeleteArchiveIsOpen] =
@@ -62,6 +80,7 @@ const CredCardDetails = () => {
   const [cardData, setCardData] = useState<CredentialDetails>();
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
+  const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
 
   useEffect(() => {
     getCredDetails();
@@ -138,8 +157,57 @@ const CredCardDetails = () => {
   };
 
   const AdditionalButtons = () => {
+    const handleSetFavourite = (id: string) => {
+      if (isFavourite) {
+        PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
+          favourites: favouritesCredsCache.filter((fav) => fav.id !== id),
+        })
+          .then(() => {
+            dispatch(removeFavouritesCredsCache(id));
+          })
+          .catch((error) => {
+            /*TODO: handle error*/
+          });
+      } else {
+        if (favouritesCredsCache.length >= MAX_FAVOURITES) {
+          dispatch(setCurrentOperation(toastState.maxFavouritesReached));
+          return;
+        }
+
+        PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
+          favourites: [{ id, time: Date.now() }, ...favouritesCredsCache],
+        })
+          .then(() => {
+            dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
+          })
+          .catch((error) => {
+            /*TODO: handle error*/
+          });
+      }
+    };
     return (
       <>
+        <IonButton
+          shape="round"
+          className={`heart-button-${
+            isFavourite ? "favourite" : "no-favourite"
+          }`}
+          data-testid="heart-button"
+          onClick={() => {
+            handleSetFavourite(params.id);
+          }}
+        >
+          <IonIcon
+            slot="icon-only"
+            icon={isFavourite ? heart : heartOutline}
+            className={`heart-icon-${
+              isFavourite ? "favourite" : "no-favourite"
+            }`}
+            data-testid={`heart-icon-${
+              isFavourite ? "favourite" : "no-favourite"
+            }`}
+          />
+        </IonButton>
         <IonButton
           shape="round"
           className="options-button"

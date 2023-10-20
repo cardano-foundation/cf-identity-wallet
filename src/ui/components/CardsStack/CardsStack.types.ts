@@ -4,6 +4,7 @@ import {
 } from "../../../core/agent/agent.types";
 
 interface DidCardProps {
+  name?: string;
   cardData: IdentifierShortDetails;
   isActive: boolean;
   index?: number;
@@ -11,6 +12,7 @@ interface DidCardProps {
 }
 
 interface CredCardProps {
+  name?: string;
   cardData: CredentialShortDetails;
   isActive: boolean;
   index?: number;
