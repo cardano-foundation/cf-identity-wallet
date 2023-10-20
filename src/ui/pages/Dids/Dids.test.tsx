@@ -12,15 +12,8 @@ import {
   NAVIGATION_DELAY,
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import {
-  filteredDidFix,
-  filteredIdentityFix,
-} from "../../__fixtures__/filteredIdentityFix";
+import { filteredIdentityFix } from "../../__fixtures__/filteredIdentityFix";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import {
-  addFavouriteIdentityCache,
-  identitiesCacheSlice,
-} from "../../../store/reducers/identitiesCache";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -31,9 +24,6 @@ jest.mock("../../../core/agent/agent", () => ({
     },
   },
 }));
-
-const mockStore = configureStore();
-const dispatchMock = jest.fn();
 
 const initialState = {
   stateCache: {
@@ -82,7 +72,7 @@ describe("Dids Tab", () => {
       </Provider>
     );
 
-    expect(getByText("Favourites")).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.creds.tab.favourites)).toBeInTheDocument();
   });
 
   test("Renders Dids Tab and all elements in it", () => {
