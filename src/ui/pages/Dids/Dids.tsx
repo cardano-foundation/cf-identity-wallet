@@ -61,12 +61,12 @@ const Dids = () => {
   });
 
   const findTimeById = (id: string) => {
-    const found = favouritesDids.find((item) => item.id === id);
+    const found = favouritesDids?.find((item) => item.id === id);
     return found ? found.time : null;
   };
 
   const favDids = didsData.filter((did) =>
-    favouritesDids.some((fav) => fav.id === did.id)
+    favouritesDids?.some((fav) => fav.id === did.id)
   );
 
   const sortedFavDids = favDids.sort((a, b) => {
@@ -81,7 +81,7 @@ const Dids = () => {
   });
 
   const allDids = didsData.filter(
-    (did) => !favouritesDids.some((fav) => fav.id === did.id)
+    (did) => !favouritesDids?.some((fav) => fav.id === did.id)
   );
 
   return (
@@ -107,6 +107,7 @@ const Dids = () => {
                   </div>
                 ) : null}
                 <CardsStack
+                  name="favs"
                   cardsType={CardTypes.DIDS}
                   cardsData={sortedFavDids}
                 />
@@ -120,6 +121,7 @@ const Dids = () => {
                   </div>
                 ) : null}
                 <CardsStack
+                  name="alldids"
                   cardsType={CardTypes.DIDS}
                   cardsData={allDids}
                 />

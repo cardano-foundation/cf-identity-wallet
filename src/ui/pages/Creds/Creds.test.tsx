@@ -122,7 +122,7 @@ describe("Creds Tab", () => {
       </Provider>
     );
 
-    expect(getByTestId("cred-card-stack-index-0")).toBeInTheDocument();
+    expect(getByTestId("cred-card-stack-favs-index-0")).toBeInTheDocument();
   });
 
   test("Toggle Connections view", async () => {

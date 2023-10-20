@@ -80,7 +80,7 @@ const CredCardDetails = () => {
   const [cardData, setCardData] = useState<CredentialDetails>();
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
-  const isFavourite = favouritesCredsCache.some((fav) => fav.id === params.id);
+  const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
 
   useEffect(() => {
     getCredDetails();

@@ -74,7 +74,7 @@ const DidCardDetails = () => {
   >();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
-  const isFavourite = favouritesIdentitiesData.some(
+  const isFavourite = favouritesIdentitiesData?.some(
     (fav) => fav.id === params.id
   );
 

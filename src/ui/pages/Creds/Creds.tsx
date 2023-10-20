@@ -125,7 +125,7 @@ const Creds = () => {
   };
 
   const favDids = credsCache.filter((did) =>
-    favCredsCache.some((fav) => fav.id === did.id)
+    favCredsCache?.some((fav) => fav.id === did.id)
   );
 
   const sortedFavDids = favDids.sort((a, b) => {
@@ -140,7 +140,7 @@ const Creds = () => {
   });
 
   const allDids = credsCache.filter(
-    (did) => !favCredsCache.some((fav) => fav.id === did.id)
+    (did) => !favCredsCache?.some((fav) => fav.id === did.id)
   );
 
   return (
@@ -178,6 +178,7 @@ const Creds = () => {
                     </div>
                   ) : null}
                   <CardsStack
+                    name="favs"
                     cardsType={CardTypes.CREDS}
                     cardsData={sortedFavDids}
                   />
@@ -191,6 +192,7 @@ const Creds = () => {
                     </div>
                   ) : null}
                   <CardsStack
+                    name="allcreds"
                     cardsType={CardTypes.CREDS}
                     cardsData={allDids}
                   />
