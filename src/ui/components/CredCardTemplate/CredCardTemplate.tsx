@@ -10,6 +10,7 @@ import "./CredCardTemplate.scss";
 import CardBodyPending from "./CardBodyPending";
 
 const CredCardTemplate = ({
+  name,
   cardData,
   isActive,
   index,
@@ -26,8 +27,8 @@ const CredCardTemplate = ({
     <>
       <div
         key={index}
-        data-testid={`cred-card-template${
-          index !== undefined ? `-index-${index}` : ""
+        data-testid={`cred-card-template-${
+          index !== undefined ? `${name}-index-${index}` : ""
         }`}
         className={`cred-card-template ${isActive ? "active" : ""}`}
         onClick={() => {

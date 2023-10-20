@@ -8,6 +8,7 @@ import KERILogo from "../../../ui/assets/images/keri-logo.svg";
 import "./IdentityCardTemplate.scss";
 
 const IdentityCardTemplate = ({
+  name = "default",
   cardData,
   isActive,
   index = 0,
@@ -22,8 +23,8 @@ const IdentityCardTemplate = ({
   return (
     <div
       key={index}
-      data-testid={`identity-card-template${
-        index !== undefined ? `-index-${index}` : ""
+      data-testid={`identity-card-template-${
+        index !== undefined ? `${name}-index-${index}` : ""
       }`}
       className={`identity-card-template ${isActive ? "active" : ""}`}
       onClick={() => {
