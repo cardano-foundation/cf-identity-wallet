@@ -27,7 +27,8 @@ import { AgentService } from "./agentService";
 
 const SERVER_GET_SHORTEN_URL =
   // eslint-disable-next-line no-undef
-  process.env.REACT_APP_SERVER_GET_SHORTEN_URL ?? "http://localhost:3001";
+  process.env.REACT_APP_SERVER_GET_SHORTEN_URL ??
+  "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org";
 
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
