@@ -175,7 +175,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
   const initApp = async () => {
-    // await AriesAgent.agent.start();
+    await AriesAgent.agent.start();
     const connectionsDetails: ConnectionShortDetails[] = []; // =
     // await AriesAgent.agent.connections.getConnections();
     const credentials: CredentialShortDetails[] = []; //await AriesAgent.agent.credentials.getCredentials();
