@@ -276,8 +276,8 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
             />
           }
           modalOptions={{
-            initialBreakpoint: 0.7,
-            breakpoints: [0, 0.7],
+            initialBreakpoint: 0.75,
+            breakpoints: [0, 0.75],
           }}
         />
       )}
