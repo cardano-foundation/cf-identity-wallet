@@ -17,8 +17,8 @@ import {
 } from "../../../core/agent/agent.types";
 import {
   MAPPING_THEME_BACKGROUND,
-  cardTypes,
-  CardTypes } from "../../constants/dictionary";
+  CardTypes,
+} from "../../constants/dictionary";
 import { Alert } from "../Alert";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";

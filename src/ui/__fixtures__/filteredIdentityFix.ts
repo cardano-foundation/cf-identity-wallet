@@ -18,6 +18,7 @@ const filteredDidFix: IdentifierShortDetails[] = [
     displayName: "Anonymous ID",
     createdAtUTC: "2023-01-01T19:23:24Z",
     colors: ["#92FFC0", "#47FF94"],
+    theme: 1,
   },
 ];
 
@@ -36,6 +37,7 @@ const filteredKeriFix: IdentifierShortDetails[] = [
     displayName: "Professional ID",
     createdAtUTC: "2023-01-01T19:23:24Z",
     colors: ["#47E0FF", "#00C6EF"],
+    theme: 1,
   },
 ];
 

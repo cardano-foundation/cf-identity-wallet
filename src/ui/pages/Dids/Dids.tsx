@@ -116,7 +116,7 @@ const Dids = () => {
               <>
                 {favDids.length ? (
                   <div className="cards-title cards-title-all">
-                    {i18n.t("creds.tab.alldids")}
+                    {i18n.t("identity.tab.alldids")}
                   </div>
                 ) : null}
                 <CardsStack
