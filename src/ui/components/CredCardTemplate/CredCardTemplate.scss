@@ -6,6 +6,7 @@
   border-radius: 1rem;
   font-size: 0.875rem;
   line-height: 1.375rem;
+  text-shadow: 0px 2px 4px rgba(12, 64, 90, 0.5);
 
   &.active:not(:first-child):hover {
     position: absolute;
@@ -23,23 +24,77 @@
     box-shadow: 0px -5px 5px rgba(54, 60, 74, 0.25);
   }
 
+  &.university-degree-credential {
+    background: var(--ion-color-gradient-university-card);
+
+    .cred-card-template-inner {
+      color: var(--ion-color-light);
+
+      &.pending .card-footer-column-label {
+        color: white;
+      }
+    }
+  }
+
+  &.access-pass-credential {
+    .cred-card-template-inner {
+      color: var(--ion-color-primary);
+
+      &.pending .card-footer-column-label {
+        color: var(--ion-color-secondary);
+      }
+    }
+  }
+
+  &.permanent-resident-card {
+    .cred-card-template-inner {
+      color: var(--ion-color-primary);
+
+      &.pending .card-footer-column-label {
+        color: var(--ion-color-secondary);
+      }
+    }
+  }
+
   .cred-card-template-inner {
     height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    color: var(--ion-color-light);
 
     &.pending {
       .card-body {
         margin-inline: 5rem;
       }
 
-      .card-body,
-      .card-footer-column-value {
-        opacity: 0.4;
-        border-radius: 0.25rem;
-        background: var(--ion-color-secondary);
+      .card-footer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .card-footer-column {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          &:first-child .card-footer-column-value {
+            width: 40vw;
+          }
+
+          &:last-child .card-footer-column-value {
+            width: 20vw;
+          }
+
+          .card-footer-column-label {
+            font-size: 0.625rem;
+            font-weight: 700;
+          }
+
+          .card-footer-column-value {
+            border-radius: 0.25rem;
+            background: var(--ion-color-medium-grey);
+          }
+        }
       }
     }
 
@@ -84,38 +139,6 @@
       font-size: 0.625rem;
       letter-spacing: 0.09375rem;
       text-align: center;
-    }
-
-    .card-footer {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-
-      .card-footer-column {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-
-        &:first-child .card-footer-column-value {
-          width: 40vw;
-        }
-
-        &:last-child .card-footer-column-value {
-          width: 20vw;
-        }
-
-        .card-footer-column-label {
-          font-size: 0.625rem;
-          font-weight: 700;
-          color: var(--ion-color-secondary);
-        }
-
-        .card-footer-column-info {
-          font-size: 0.875rem;
-          font-weight: 700;
-          color: var(--ion-color-primary);
-        }
-      }
     }
   }
 }

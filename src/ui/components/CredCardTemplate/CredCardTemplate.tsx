@@ -30,7 +30,11 @@ const CredCardTemplate = ({
         data-testid={`cred-card-template-${
           index !== undefined ? `${name}-index-${index}` : ""
         }`}
-        className={`cred-card-template ${isActive ? "active" : ""}`}
+        className={`cred-card-template ${
+          isActive ? "active" : ""
+        } ${cardData.credentialType
+          .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
+          .toLowerCase()}`}
         onClick={() => {
           if (cardData.status === CredentialMetadataRecordStatus.PENDING) {
             setAlertIsOpen(true);
@@ -65,6 +69,7 @@ const CredCardTemplate = ({
           {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
             <CardBodyPending />
           ) : null}
+          <CardBodyPending />
         </div>
       </div>
       <Alert

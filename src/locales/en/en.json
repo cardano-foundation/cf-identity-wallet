@@ -335,8 +335,8 @@
     },
     "card": {
       "layout": {
-        "name": "NAME",
-        "issued": "ISSUED"
+        "type": "TYPE",
+        "validity": "VALID FROM - TO"
       },
       "details": {
         "done": "Done",

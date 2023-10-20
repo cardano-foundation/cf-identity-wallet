@@ -11,7 +11,7 @@ const CardBodyPending = () => {
       <div className="card-footer">
         <div className="card-footer-column">
           <span className="card-footer-column-label">
-            {i18n.t("creds.card.layout.name")}
+            {i18n.t("creds.card.layout.type")}
           </span>
           <span className="card-footer-column-value">
             <>&nbsp;</>
@@ -19,7 +19,7 @@ const CardBodyPending = () => {
         </div>
         <div className="card-footer-column">
           <span className="card-footer-column-label">
-            {i18n.t("creds.card.layout.issued")}
+            {i18n.t("creds.card.layout.validity")}
           </span>
           <span className="card-footer-column-value">
             <>&nbsp;</>
