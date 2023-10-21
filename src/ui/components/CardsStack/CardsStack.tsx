@@ -48,7 +48,7 @@ const CardsStack = ({
             name={name}
             key={index}
             index={index}
-            cardData={cardData as CredentialShortDetails}
+            shortData={cardData as CredentialShortDetails}
             isActive={isActive}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
           />

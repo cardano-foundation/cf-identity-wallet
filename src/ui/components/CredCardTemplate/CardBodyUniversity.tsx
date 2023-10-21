@@ -1,30 +1,25 @@
-import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialDetails } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../../utils";
-import { CredCardTemplateProps } from "./CredCardTemplate.types";
 
-const CardBodyUniversity = ({ cardData }: CredCardTemplateProps) => {
+// @TODO - sdisalvo: cardData should be of type CredentialDetails
+const CardBodyUniversity = ({ cardData }: any) => {
   return (
-    <div className="card-body">
-      <span>
-        {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
+    <>
+      <div className="card-body">
+        <span>
           <>&nbsp;</>
-        ) : (
-          <>&nbsp;</>
-        )}
-      </span>
+        </span>
+      </div>
       <div className="card-footer">
         <div className="card-footer-column">
           <span className="card-footer-column-label">
-            {i18n.t("creds.card.layout.name")}
+            {i18n.t("creds.card.layout.type")}
           </span>
           <span className="card-footer-column-value">
-            {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
-              <>&nbsp;</>
-            ) : (
-              // cardData.nameOnCredential
-              ""
-            )}
+            {cardData.credentialSubject.degree.type
+              .replace(/([A-Z][a-z])/g, " $1")
+              .replace(/(\d)/g, " $1")}
           </span>
         </div>
         <div className="card-footer-column">
@@ -32,15 +27,11 @@ const CardBodyUniversity = ({ cardData }: CredCardTemplateProps) => {
             {i18n.t("creds.card.layout.issued")}
           </span>
           <span className="card-footer-column-value">
-            {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
-              <>&nbsp;</>
-            ) : (
-              formatShortDate(cardData.issuanceDate)
-            )}
+            {formatShortDate(cardData.issuanceDate)}
           </span>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

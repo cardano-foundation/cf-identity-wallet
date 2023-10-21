@@ -24,14 +24,73 @@
     box-shadow: 0px -5px 5px rgba(54, 60, 74, 0.25);
   }
 
+  &.color-based-background {
+    .cred-card-template-inner {
+      color: var(--ion-color-light);
+
+      &.pending .card-footer-column-label {
+        color: white;
+      }
+    }
+  }
+
   &.university-degree-credential {
+    position: relative;
     background: var(--ion-color-gradient-university-card);
+
+    > img {
+      position: absolute;
+      top: -20%;
+      left: -20%;
+      width: 140%;
+      max-width: 140%;
+      z-index: -1;
+      opacity: 0.04;
+    }
 
     .cred-card-template-inner {
       color: var(--ion-color-light);
 
       &.pending .card-footer-column-label {
         color: white;
+      }
+
+      .card-footer {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        .card-footer-column {
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+
+          &:first-child {
+            .card-footer-column-label,
+            .card-footer-column-value {
+              text-align: left;
+              width: 40vw;
+            }
+          }
+
+          &:last-child {
+            .card-footer-column-label,
+            .card-footer-column-value {
+              text-align: right;
+              width: 30vw;
+            }
+          }
+
+          .card-footer-column-label {
+            font-size: 0.625rem;
+            font-weight: 700;
+          }
+
+          .card-footer-column-value {
+            font-weight: 700;
+            font-size: 0.875rem;
+          }
+        }
       }
     }
   }
@@ -77,12 +136,12 @@
           flex-direction: column;
           justify-content: center;
 
-          &:first-child .card-footer-column-value {
-            width: 40vw;
+          &:first-child .card-footer-column-label {
+            text-align: left;
           }
 
-          &:last-child .card-footer-column-value {
-            width: 20vw;
+          &:last-child .card-footer-column-label {
+            text-align: right;
           }
 
           .card-footer-column-label {
@@ -91,6 +150,7 @@
           }
 
           .card-footer-column-value {
+            width: 28vw;
             border-radius: 0.25rem;
             background: var(--ion-color-medium-grey);
           }

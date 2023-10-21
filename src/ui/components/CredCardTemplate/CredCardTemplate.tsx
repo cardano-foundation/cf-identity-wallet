@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IonChip, IonIcon } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
 import { Alert } from "../Alert";
@@ -8,20 +8,46 @@ import { i18n } from "../../../i18n";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import "./CredCardTemplate.scss";
 import CardBodyPending from "./CardBodyPending";
+import CardBodyUniversity from "./CardBodyUniversity";
+import { CredentialDetails } from "../../../core/agent/agent.types";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const CredCardTemplate = ({
   name,
-  cardData,
+  shortData,
   isActive,
   index,
   onHandleShowCardDetails,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-
-  const divStyle = {
-    background: `linear-gradient(91.86deg, ${cardData.colors[0]} 28.76%, ${cardData.colors[1]} 119.14%)`,
+  const [cardData, setCardData] = useState<CredentialDetails>();
+  const isCardTemplate =
+    shortData.credentialType ===
+    ("UniversityDegreeCredential" ||
+      "AccessPassCredential" ||
+      "PermanentResidentCard");
+  const colorBasedBackground = {
+    background: `linear-gradient(91.86deg, ${shortData.colors[0]} 28.76%, ${shortData.colors[1]} 119.14%)`,
     zIndex: index,
   };
+
+  const getCredDetails = async () => {
+    /* @TODO - sdisalvo: getting an error when passing shortData.id to getCredentialDetailsById().
+    Got no error if I pass a hardcoded string like "metadata:59a8e6f7-97d3-494a-84ab-4ddecc5673c8"
+    When I console.log both I get the same thing, not sure why this error is showing up.
+
+    "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'credentialRecordId')
+    at CredentialService.getCredentialDetailsById (credentialService.ts:61:1)
+    at async getCredDetails (CredCardTemplate.tsx:25:1)"
+    */
+    const cardDetails =
+      await AriesAgent.agent.credentials.getCredentialDetailsById(shortData.id);
+    setCardData(cardDetails);
+  };
+
+  useEffect(() => {
+    getCredDetails();
+  }, [shortData.id]);
 
   return (
     <>
@@ -30,29 +56,37 @@ const CredCardTemplate = ({
         data-testid={`cred-card-template-${
           index !== undefined ? `${name}-index-${index}` : ""
         }`}
-        className={`cred-card-template ${
-          isActive ? "active" : ""
-        } ${cardData.credentialType
-          .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
-          .toLowerCase()}`}
+        className={`cred-card-template ${isActive ? "active" : ""} ${
+          isCardTemplate
+            ? shortData.credentialType
+              .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
+              .toLowerCase()
+            : "color-based-background"
+        }`}
         onClick={() => {
-          if (cardData.status === CredentialMetadataRecordStatus.PENDING) {
+          if (shortData.status === CredentialMetadataRecordStatus.PENDING) {
             setAlertIsOpen(true);
           } else if (onHandleShowCardDetails) {
             onHandleShowCardDetails(index);
           }
         }}
-        style={divStyle}
+        style={isCardTemplate ? { zIndex: index } : colorBasedBackground}
       >
-        <div className={`cred-card-template-inner ${cardData.status}`}>
+        {shortData.credentialType === "UniversityDegreeCredential" && (
+          <img
+            src={W3CLogo}
+            alt="w3c-card-background"
+          />
+        )}
+        <div className={`cred-card-template-inner ${shortData.status}`}>
           <div className="card-header">
             <span className="card-logo">
               <img
-                src={cardData.issuerLogo ?? W3CLogo}
+                src={shortData.issuerLogo ?? W3CLogo}
                 alt="card-logo"
               />
             </span>
-            {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
+            {shortData.status === CredentialMetadataRecordStatus.PENDING ? (
               <IonChip>
                 <IonIcon
                   icon={hourglassOutline}
@@ -62,14 +96,17 @@ const CredCardTemplate = ({
               </IonChip>
             ) : (
               <span className="credential-type">
-                {cardData.credentialType.replace(/([a-z])([A-Z])/g, "$1 $2")}
+                {shortData.credentialType.replace(/([a-z])([A-Z])/g, "$1 $2")}
               </span>
             )}
           </div>
-          {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
+          {shortData.status === CredentialMetadataRecordStatus.PENDING && (
             <CardBodyPending />
-          ) : null}
-          <CardBodyPending />
+          )}
+          {shortData.credentialType === "UniversityDegreeCredential" &&
+            cardData !== undefined && (
+            <CardBodyUniversity cardData={cardData} />
+          )}
         </div>
       </div>
       <Alert

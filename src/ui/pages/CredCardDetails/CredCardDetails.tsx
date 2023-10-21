@@ -59,10 +59,6 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences";
-import {
-  addFavouriteIdentityCache,
-  removeFavouriteIdentityCache,
-} from "../../../store/reducers/identitiesCache";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -263,7 +259,7 @@ const CredCardDetails = () => {
         actionButtonLabel={`${i18n.t("creds.card.details.restore")}`}
       >
         <CredCardTemplate
-          cardData={cardData}
+          shortData={cardData}
           isActive={false}
         />
         <div className="card-details-content">

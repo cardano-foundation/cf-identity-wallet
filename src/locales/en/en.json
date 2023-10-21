@@ -336,7 +336,8 @@
     "card": {
       "layout": {
         "type": "TYPE",
-        "validity": "VALID FROM - TO"
+        "validity": "VALID FROM - TO",
+        "issued": "ISSUED"
       },
       "details": {
         "done": "Done",
