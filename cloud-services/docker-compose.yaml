@@ -43,7 +43,7 @@ services:
       - mediator-wallet:/root/.indy_client
     restart: unless-stopped
     environment:
-      - AGENT_ENDPOINTS=http://dev.mediator.cf-keripy.metadata.dev.cf-deployments.org:2015,ws://dev.mediator.cf-keripy.metadata.dev.cf-deployments.org:2015
+      - AGENT_ENDPOINTS=https://dev.mediator.cf-keripy.metadata.dev.cf-deployments.org,wss://dev.mediator.cf-keripy.metadata.dev.cf-deployments.org
 
 volumes:
   keria-data:
