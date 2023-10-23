@@ -533,7 +533,7 @@
     "identitytype": {
       "title": "Identity type",
       "didkey": "did:key",
-      "keri": "KERI:aid"
+      "keri": "KERI AID"
     },
     "theme": {
       "title": "Choose a theme"

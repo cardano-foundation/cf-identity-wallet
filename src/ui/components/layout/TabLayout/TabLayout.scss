@@ -2,8 +2,8 @@
   padding-inline: 1.25rem;
 
   &.card-details {
-    ion-button:not(.action-button-label):not(.copy-button),
-    ion-button.md:not(.action-button-label):not(.copy-button) {
+    ion-button.in-toolbar,
+    ion-button.in-toolbar.md {
       background: var(--ion-color-light);
     }
   }
