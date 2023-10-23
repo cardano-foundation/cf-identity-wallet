@@ -127,7 +127,7 @@ describe("State Cache", () => {
     ]);
   });
 
-  test("should set resolve connection credential request", () => {
+  test("should set dequeue connection credential request", () => {
     const initialStateMock: StateCacheProps = JSON.parse(
       JSON.stringify(initialState)
     );
