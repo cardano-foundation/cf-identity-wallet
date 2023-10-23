@@ -3,23 +3,23 @@
     "slides": [
       {
         "title": "Welcome to your Cardano Foundation Identity Wallet",
-        "description": "A secure and easy-to-use tool that allows you to manage your digital identity and control your personal data"
+        "description": "An opensource mobile digital wallet that enables you to securely manage your own identity in a privacy-preserving and self-sovereign manner."
       },
       {
-        "title": "Securerly manage your digital identity",
-        "description": "Securely manage your digital identity and share your personal data with confidence"
+        "title": "Empowerment with Self-Sovereign Identity (SSI)",
+        "description": "Embrace SSI principles, store private keys locally in your mobile device's Hardware Security Module, and control your identity."
       },
       {
-        "title": "Take control of your personal data",
-        "description": "Say goodbye to the days of handing over your personal data to third-party companies"
+        "title": "Privacy & Security: Your Top Priorities",
+        "description": "Prioritize privacy and security with Decentralized Identifiers and Verifiable Credentials. Control your data, what you share, with whom, and for how long."
       },
       {
-        "title": "Verify your identity with ease",
-        "description": "Verify your identity for various online services, without sharing unnecessary personal information"
+        "title": "Embrace Interoperability for a Wider Reach",
+        "description": "Supporting new and existing standards, ecosystems, and frameworks is crucial to achieving widespread adoption and seamless interoperability."
       },
       {
-        "title": "Experience the power of decentralized identity",
-        "description": "As a decentralized identity platform, you take control of your digital identity and your personal data"
+        "title": "Decentralize Your Digital Identity",
+        "description": "Traditional identity systems offer minimal control over your digital identifiers. Decentralized technology transfers ownership and control to you."
       }
     ],
     "getstarted": {
