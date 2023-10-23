@@ -19,8 +19,12 @@ const initialState: StateCacheProps = {
     passwordIsSkipped: true,
   },
   currentOperation: "",
-  connectionCredentialRequest: { id: "" },
   defaultCryptoAccount: "",
+  queueConnectionCredentialRequest: {
+    isProcessing: false,
+    queues: [],
+    isPaused: false,
+  },
 };
 
 const stateCacheSlice = createSlice({
@@ -55,11 +59,49 @@ const stateCacheSlice = createSlice({
     setCurrentOperation: (state, action: PayloadAction<string>) => {
       state.currentOperation = action.payload;
     },
-    setConnectionCredentialRequest: (
+    setPauseQueueConnectionCredentialRequest: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.queueConnectionCredentialRequest = {
+        ...state.queueConnectionCredentialRequest,
+        isPaused: action.payload,
+        isProcessing: !action.payload,
+      };
+    },
+    setQueueConnectionCredentialRequest: (
       state,
       action: PayloadAction<ConnectionCredentialRequestProps>
     ) => {
-      state.connectionCredentialRequest = action.payload;
+      const isPaused = state.queueConnectionCredentialRequest.isPaused;
+      if (!isPaused && !state.queueConnectionCredentialRequest.isProcessing) {
+        state.queueConnectionCredentialRequest.isProcessing = true;
+      }
+      state.queueConnectionCredentialRequest.queues.push(action.payload);
+    },
+    dequeueCredentialCredentialRequest: (state) => {
+      if (state.queueConnectionCredentialRequest.queues.length > 0) {
+        state.queueConnectionCredentialRequest.queues.shift();
+        const isPaused = state.queueConnectionCredentialRequest.isPaused;
+        state.queueConnectionCredentialRequest.isProcessing = isPaused
+          ? false
+          : state.queueConnectionCredentialRequest.queues.length > 0;
+      }
+    },
+    enqueueConnectionCredentialRequest: (
+      state,
+      action: PayloadAction<ConnectionCredentialRequestProps[]>
+    ) => {
+      const isPaused = state.queueConnectionCredentialRequest.isPaused;
+      if (
+        isPaused &&
+        !state.queueConnectionCredentialRequest.isProcessing &&
+        action.payload.length > 0
+      ) {
+        state.queueConnectionCredentialRequest.isProcessing = true;
+      }
+      state.queueConnectionCredentialRequest.queues =
+        state.queueConnectionCredentialRequest.queues.concat(action.payload);
     },
   },
 });
@@ -71,7 +113,10 @@ const {
   removeRoute,
   setAuthentication,
   setCurrentOperation,
-  setConnectionCredentialRequest,
+  dequeueCredentialCredentialRequest,
+  setQueueConnectionCredentialRequest,
+  setPauseQueueConnectionCredentialRequest,
+  enqueueConnectionCredentialRequest,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -81,8 +126,8 @@ const getCurrentRoute = (state: RootState) =>
 const getAuthentication = (state: RootState) => state.stateCache.authentication;
 const getCurrentOperation = (state: RootState) =>
   state.stateCache.currentOperation;
-const getConnectionCredentialRequest = (state: RootState) =>
-  state.stateCache.connectionCredentialRequest;
+const getQueueConnectionCredentialRequest = (state: RootState) =>
+  state.stateCache.queueConnectionCredentialRequest;
 
 export type {
   CurrentRouteCacheProps,
@@ -104,6 +149,9 @@ export {
   setAuthentication,
   getCurrentOperation,
   setCurrentOperation,
-  setConnectionCredentialRequest,
-  getConnectionCredentialRequest,
+  getQueueConnectionCredentialRequest,
+  setPauseQueueConnectionCredentialRequest,
+  setQueueConnectionCredentialRequest,
+  dequeueCredentialCredentialRequest,
+  enqueueConnectionCredentialRequest,
 };

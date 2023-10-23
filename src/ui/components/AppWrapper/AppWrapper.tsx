@@ -8,8 +8,8 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
   setAuthentication,
-  setConnectionCredentialRequest,
   setCurrentOperation,
+  setQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import {
@@ -59,7 +59,7 @@ const connectionStateChangedHandler = async (
     const connectionDetails =
       AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
     dispatch(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: connectionRecord.id,
         type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
         logo: connectionDetails.logo,
@@ -74,7 +74,7 @@ const connectionStateChangedHandler = async (
     dispatch(updateOrAddConnectionCache(connectionDetails));
     dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
     dispatch(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: connectionRecord.id,
         type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
         logo: connectionDetails.logo,
@@ -111,7 +111,7 @@ const credentialStateChangedHandler = async (
         );
     }
     dispatch(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: credentialRecord.id,
         type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
         logo: connection?.logo,
