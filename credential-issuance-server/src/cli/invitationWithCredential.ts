@@ -9,7 +9,7 @@ const main = async () => {
   const body = process.argv[2];
   let credentialJsonData: unknown;
   if (body) {
-    credentialJsonData  = getCredentialJsonData(body);
+    credentialJsonData = getCredentialJsonData(body);
     log("Credential: ", credentialJsonData);
   }
   await postRequestAndGenQR(`${config.endpoint}${API}`, credentialJsonData);

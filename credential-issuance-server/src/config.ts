@@ -18,7 +18,7 @@ const config = {
     createShorten: "/shorten",
     credentials: {
       summit: "/credentials/schemas/summit/v1",
-    }
+    },
   },
 };
 

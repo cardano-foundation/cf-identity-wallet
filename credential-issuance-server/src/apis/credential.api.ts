@@ -48,7 +48,9 @@ async function invitationWithCredential(
     statusCode: 200,
     success: true,
     data: generableQRcodeWithUrl(
-      await AriesAgent.agent.createInvitationWithCredential(Object.keys(credential).length === 0 ? undefined : credential)
+      await AriesAgent.agent.createInvitationWithCredential(
+        Object.keys(credential).length === 0 ? undefined : credential
+      )
     ),
   };
   httpResponse(res, response);
@@ -63,7 +65,9 @@ async function invitationWithCredentialConnectionless(
     statusCode: 200,
     success: true,
     data: generableQRcodeWithUrl(
-      await AriesAgent.agent.createInvitationWithCredentialConnectionless(Object.keys(credential).length === 0 ? undefined : credential)
+      await AriesAgent.agent.createInvitationWithCredentialConnectionless(
+        Object.keys(credential).length === 0 ? undefined : credential
+      )
     ),
   };
   httpResponse(res, response);
