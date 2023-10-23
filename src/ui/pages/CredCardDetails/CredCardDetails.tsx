@@ -9,14 +9,13 @@ import {
 import {
   ellipsisVertical,
   keyOutline,
-  copyOutline,
   calendarNumberOutline,
   informationCircleOutline,
-  personCircleOutline,
   trashOutline,
   archiveOutline,
   heart,
   heartOutline,
+  pricetagOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { JsonObject } from "@aries-framework/core";
@@ -30,7 +29,6 @@ import {
   setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
-import { writeToClipboard } from "../../../utils/clipboard";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import {
   Alert as AlertDeleteArchive,
@@ -59,6 +57,11 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences";
+import { ConnectionDetails } from "../Connections/Connections.types";
+import {
+  CardDetailsBlock,
+  CardDetailsItem,
+} from "../../components/CardDetailsElements";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -74,6 +77,8 @@ const CredCardDetails = () => {
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<CredentialDetails>();
+  const [connectionDetails, setConnectionDetails] =
+    useState<ConnectionDetails>();
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
@@ -90,6 +95,15 @@ const CredCardDetails = () => {
     const cardDetails =
       await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
     setCardData(cardDetails);
+
+    const connectionDetails =
+      cardDetails.connectionId &&
+      (await AriesAgent.agent.connections?.getConnectionById(
+        cardDetails.connectionId
+      ));
+    if (connectionDetails) {
+      setConnectionDetails(connectionDetails);
+    }
   };
 
   const handleDone = () => {
@@ -181,6 +195,7 @@ const CredCardDetails = () => {
           });
       }
     };
+
     return (
       <>
         <IonButton
@@ -221,15 +236,7 @@ const CredCardDetails = () => {
       </>
     );
   };
-  const formatDateTime = (date: string) => {
-    return (
-      <>
-        {formatShortDate(date)}
-        {" - "}
-        {formatTimeToSec(date)}
-      </>
-    );
-  };
+
   if (!cardData)
     return (
       <div
@@ -245,6 +252,7 @@ const CredCardDetails = () => {
   if (Array.isArray(credentialSubject)) {
     return null;
   }
+
   return (
     <IonPage className="tab-layout card-details">
       <TabLayout
@@ -263,34 +271,25 @@ const CredCardDetails = () => {
           isActive={false}
         />
         <div className="card-details-content">
-          <div className="card-details-info-block">
-            <h3>{i18n.t("creds.card.details.types")}</h3>
-            <div className="card-details-info-block-inner">
-              {cardData.type.map((type: string, index: number) => (
-                <span
-                  className="card-details-info-block-line"
-                  key={index}
-                >
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={informationCircleOutline}
-                      color="primary"
-                    />
-                  </span>
-                  <span className="card-details-info-block-data">
-                    {cardData.type[index]}
-                  </span>
-                </span>
-              ))}
-            </div>
-          </div>
+          <CardDetailsBlock title="creds.card.details.type">
+            <CardDetailsItem
+              info={cardData.credentialType
+                .replace(/([A-Z][a-z])/g, " $1")
+                .replace(/(\d)/g, " $1")}
+              copyButton={false}
+              icon={informationCircleOutline}
+              testId="card-details-credential-type"
+            />
+          </CardDetailsBlock>
+          <CardDetailsBlock title="creds.card.details.attributes">
+            <CardDetailsItem
+              info={credentialSubject.id as string}
+              copyButton={true}
+              testId="card-details-credential-id"
+            />
+          </CardDetailsBlock>
 
-          {/*@TODO: handle attributes, credentialSubject, it can come in many formats*/}
-          <div className="card-details-info-block">
-            <h3>{i18n.t("creds.card.details.attributes")}</h3>
-            <div className="card-details-info-block-inner">
-              <span className="card-details-info-block-line">
+          {/* <span className="card-details-info-block-line">
                 <span>
                   <IonIcon
                     slot="icon-only"
@@ -313,121 +312,67 @@ const CredCardDetails = () => {
                 <span className="card-details-info-block-data">
                   {(credentialSubject.degree as JsonObject)?.name as string}
                 </span>
-              </span>
-            </div>
-          </div>
-
-          {cardData.connectionId && (
-            <div className="card-details-info-block">
-              <h3>{i18n.t("creds.card.details.connection")}</h3>
-              <div className="card-details-info-block-inner">
-                <span className="card-details-info-block-line">
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={personCircleOutline}
-                      color="primary"
-                    />
-                  </span>
-
-                  <span className="card-details-info-block-data">
-                    {cardData.connectionId}
-                  </span>
-                </span>
-              </div>
-            </div>
+              </span> */}
+          {connectionDetails?.label && (
+            <CardDetailsBlock title="creds.card.details.connection">
+              <CardDetailsItem
+                info={connectionDetails.label}
+                copyButton={false}
+                icon={pricetagOutline}
+                testId="card-details-connection-label"
+              />
+              <CardDetailsItem
+                info={connectionDetails.id}
+                copyButton={true}
+                icon={keyOutline}
+                testId="card-details-connection-id"
+              />
+            </CardDetailsBlock>
           )}
-
-          <div className="card-details-info-block">
-            <h3>{i18n.t("creds.card.details.issuancedate")}</h3>
-            <div className="card-details-info-block-inner">
-              <span className="card-details-info-block-line">
-                <span>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={calendarNumberOutline}
-                    color="primary"
-                  />
-                </span>
-                <span className="card-details-info-block-data">
-                  {formatDateTime(cardData.issuanceDate)}
-                </span>
-              </span>
-            </div>
-          </div>
-
-          {cardData.expirationDate && (
-            <div className="card-details-info-block">
-              <h3>{i18n.t("creds.card.details.expirationdate")}</h3>
-              <div className="card-details-info-block-inner">
-                <span className="card-details-info-block-line">
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={calendarNumberOutline}
-                      color="primary"
-                    />
-                  </span>
-                  <span className="card-details-info-block-data">
-                    {formatDateTime(cardData.expirationDate)}
-                  </span>
-                </span>
-              </div>
-            </div>
-          )}
-
-          <div className="card-details-info-block">
-            <h3>{i18n.t("creds.card.details.prooftypes")}</h3>
-            <div className="card-details-info-block-inner">
-              <span className="card-details-info-block-line">
-                <span>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={informationCircleOutline}
-                    color="primary"
-                  />
-                </span>
-                <span className="card-details-info-block-data">
-                  {cardData.proofType}
-                </span>
-              </span>
-              <span
-                className="card-details-info-block-line"
-                data-testid="copy-button-proof-value"
-                onClick={() => {
-                  if (cardData.proofValue) {
-                    writeToClipboard(cardData.proofValue);
-                    dispatch(setCurrentOperation(toastState.copiedToClipboard));
-                  }
-                }}
-              >
-                <span>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={keyOutline}
-                    color="primary"
-                  />
-                </span>
-                <span className="card-details-info-block-data">
-                  {cardData.proofValue &&
-                    cardData.proofValue?.substring(0, 13) +
-                      "..." +
-                      cardData.proofValue?.slice(-5)}
-                </span>
-                <span>
-                  <IonButton
-                    shape="round"
-                    className="copy-button"
-                  >
-                    <IonIcon
-                      slot="icon-only"
-                      icon={copyOutline}
-                    />
-                  </IonButton>
-                </span>
-              </span>
-            </div>
-          </div>
+          <CardDetailsBlock title="creds.card.details.issuancedate">
+            <CardDetailsItem
+              info={
+                cardData.issuanceDate
+                  ? formatShortDate(cardData.issuanceDate) +
+                    " - " +
+                    formatTimeToSec(cardData.issuanceDate)
+                  : i18n.t("creds.card.details.notavailable")
+              }
+              copyButton={false}
+              icon={calendarNumberOutline}
+              testId="card-details-issuance-date"
+            />
+          </CardDetailsBlock>
+          <CardDetailsBlock title="creds.card.details.expirationdate">
+            <CardDetailsItem
+              info={
+                cardData.expirationDate
+                  ? formatShortDate(cardData.expirationDate) +
+                    " - " +
+                    formatTimeToSec(cardData.expirationDate)
+                  : i18n.t("creds.card.details.notavailable")
+              }
+              copyButton={false}
+              icon={calendarNumberOutline}
+              testId="card-details-expiration-date"
+            />
+          </CardDetailsBlock>
+          <CardDetailsBlock title="creds.card.details.prooftypes">
+            <CardDetailsItem
+              info={cardData.proofType}
+              copyButton={false}
+              icon={informationCircleOutline}
+              testId="card-details-proof-type"
+            />
+            {cardData.proofValue && (
+              <CardDetailsItem
+                info={cardData.proofValue}
+                copyButton={true}
+                icon={keyOutline}
+                testId="card-details-proof-value"
+              />
+            )}
+          </CardDetailsBlock>
           <IonButton
             shape="round"
             expand="block"
