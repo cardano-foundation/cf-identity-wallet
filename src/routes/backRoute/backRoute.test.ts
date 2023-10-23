@@ -45,6 +45,7 @@ describe("getBackRoute", () => {
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
+          isPaused: false,
         },
       },
       identitiesCache: { identities: [] },
@@ -129,6 +130,7 @@ describe("getBackRoute", () => {
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
+          isPaused: false,
         },
       },
       seedPhraseCache: {
@@ -208,6 +210,7 @@ describe("getPreviousRoute", () => {
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
+          isPaused: false,
         },
       },
       identitiesCache: { identities: [] },

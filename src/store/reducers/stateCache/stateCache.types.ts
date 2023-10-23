@@ -28,7 +28,7 @@ interface ConnectionCredentialRequestProps {
 }
 
 interface QueueProps<T> {
-  isPaused?: boolean;
+  isPaused: boolean;
   isProcessing: boolean;
   queues: T[];
 }

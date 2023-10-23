@@ -11,7 +11,7 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { i18n } from "../../../i18n";
 import {
   setQueueConnectionCredentialRequest,
-  setResolveConnectionCredentialRequest,
+  dequeueCredentialCredentialRequest,
 } from "../../../store/reducers/stateCache";
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -38,7 +38,7 @@ const connectionMock = connectionsFix[0];
 
 describe("Connection request", () => {
   afterEach(() => {
-    store.dispatch(setResolveConnectionCredentialRequest());
+    store.dispatch(dequeueCredentialCredentialRequest());
   });
   test("It renders connection request incoming", async () => {
     store.dispatch(
@@ -162,7 +162,7 @@ describe("Connection request", () => {
 
 describe("Credential request", () => {
   afterEach(() => {
-    store.dispatch(setResolveConnectionCredentialRequest());
+    store.dispatch(dequeueCredentialCredentialRequest());
   });
 
   test("It renders credential request and accept credential", async () => {
