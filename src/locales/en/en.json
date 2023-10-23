@@ -342,12 +342,13 @@
       "details": {
         "done": "Done",
         "restore": "Restore",
-        "types": "Types",
+        "type": "Type",
         "attributes": "Attributes",
         "connection": "Connection",
         "issuancedate": "Issuance Date",
         "expirationdate": "Expiration date",
         "prooftypes": "Proof Types",
+        "notavailable": "N/A",
         "options": {
           "title": "Credential options",
           "view": "View JSON",
