@@ -32,14 +32,6 @@ const CredCardTemplate = ({
   };
 
   const getCredDetails = async () => {
-    /* @TODO - sdisalvo: getting an error when passing shortData.id to getCredentialDetailsById().
-    Got no error if I pass a hardcoded string like "metadata:59a8e6f7-97d3-494a-84ab-4ddecc5673c8"
-    When I console.log both I get the same thing, not sure why this error is showing up.
-
-    "Uncaught (in promise) TypeError: Cannot read properties of undefined (reading 'credentialRecordId')
-    at CredentialService.getCredentialDetailsById (credentialService.ts:61:1)
-    at async getCredDetails (CredCardTemplate.tsx:25:1)"
-    */
     const cardDetails =
       await AriesAgent.agent.credentials.getCredentialDetailsById(shortData.id);
     setCardData(cardDetails);
