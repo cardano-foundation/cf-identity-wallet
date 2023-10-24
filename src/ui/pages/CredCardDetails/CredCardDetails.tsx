@@ -259,14 +259,32 @@ const CredCardDetails = () => {
         <div className="credential-subject-json">
           {object.map((item, index) => {
             return (
-              <>
-                <strong key={index}>{item[0]}</strong>
-                {typeof item[1] === ("string" || "number") ? (
+              <span
+                className="card-details-info-block-line"
+                key={index}
+              >
+                <strong>{item[0]}</strong>
+                {typeof item[1] === ("string" || "number") && (
                   <span>{`${item[1]}`}</span>
-                ) : (
-                  "Object"
                 )}
-              </>
+                {typeof item[1] === "object" &&
+                  item[1] !== null &&
+                  Object.entries(item[1]).map((sub: any, i: number) => {
+                    return (
+                      <span
+                        className="card-details-info-block-line"
+                        key={i}
+                      >
+                        <strong>{sub[0]}</strong>
+                        {typeof sub[1] === ("string" || "number") ? (
+                          <span>{`${sub[1]}`}</span>
+                        ) : (
+                          "Object"
+                        )}
+                      </span>
+                    );
+                  })}
+              </span>
             );
           })}
         </div>
@@ -301,15 +319,6 @@ const CredCardDetails = () => {
               />
             </CardDetailsBlock>
             <CardDetailsBlock title="creds.card.details.attributes">
-              <CardDetailsItem
-                info={credentialSubject.id as string}
-                copyButton={true}
-                testId="card-details-credential-id"
-              />
-              <CardDetailsItem
-                info={credentialSubject.name as string}
-                testId="card-details-credential-name"
-              />
               <PrintJson />
             </CardDetailsBlock>
             {connectionDetails?.label && (
