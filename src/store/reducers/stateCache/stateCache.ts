@@ -9,6 +9,7 @@ import {
 import { RoutePath } from "../../../routes";
 
 const initialState: StateCacheProps = {
+  initialized: false,
   routes: [],
   authentication: {
     loggedIn: false,
@@ -31,6 +32,9 @@ const stateCacheSlice = createSlice({
   name: "stateCache",
   initialState,
   reducers: {
+    setInitialized: (state, action: PayloadAction<boolean>) => {
+      state.initialized = action.payload;
+    },
     setCurrentRoute: (state, action: PayloadAction<CurrentRouteCacheProps>) => {
       const filteredRoutes = state.routes.filter(
         (route) => action.payload.path !== route.path
@@ -107,6 +111,7 @@ const stateCacheSlice = createSlice({
 });
 
 const {
+  setInitialized,
   setCurrentRoute,
   removeCurrentRoute,
   removeSetPasscodeRoute,
@@ -120,6 +125,7 @@ const {
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
+const getIsInitialized = (state: RootState) => state.stateCache.initialized;
 const getRoutes = (state: RootState) => state.stateCache.routes;
 const getCurrentRoute = (state: RootState) =>
   state.stateCache.routes.length ? state.stateCache.routes[0] : undefined;
@@ -137,6 +143,8 @@ export type {
 
 export {
   initialState,
+  setInitialized,
+  getIsInitialized,
   getStateCache,
   stateCacheSlice,
   getRoutes,

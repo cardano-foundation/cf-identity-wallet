@@ -34,6 +34,7 @@ interface QueueProps<T> {
 }
 
 interface StateCacheProps {
+  initialized: boolean;
   routes: CurrentRouteCacheProps[];
   authentication: AuthenticationCacheProps;
   currentOperation: string;

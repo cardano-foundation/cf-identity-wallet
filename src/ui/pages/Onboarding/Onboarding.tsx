@@ -15,11 +15,13 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { onboardingRoute } from "../../constants/dictionary";
-import introImg0 from "../../assets/images/intro-0.png";
+import introImg0 from "../../assets/lottie/wallet.json";
 import introImg1 from "../../assets/images/intro-1.png";
 import introImg2 from "../../assets/images/intro-2.png";
 import introImg3 from "../../assets/images/intro-3.png";
 import introImg4 from "../../assets/images/intro-4.png";
+
+export type IntroImg0Type = typeof introImg0;
 
 const Onboarding = () => {
   const history = useHistory();
@@ -29,7 +31,8 @@ const Onboarding = () => {
     {
       title: i18n.t("onboarding.slides.0.title"),
       description: i18n.t("onboarding.slides.0.description"),
-      image: introImg0,
+      image: "",
+      lottie: introImg0,
     },
     {
       title: i18n.t("onboarding.slides.1.title"),
