@@ -61,9 +61,26 @@ jest.mock("../../../core/agent/agent", () => ({
 }));
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
+    set: jest.fn(),
     get: jest.fn(),
   },
 }));
+
+describe("App Wrapper", () => {
+  test("renders children components", async () => {
+    const { getByText } = render(
+      <Provider store={store}>
+        <AppWrapper>
+          <div>App Content</div>
+        </AppWrapper>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByText("App Content")).toBeInTheDocument();
+    });
+  });
+});
 
 const connectionStateChangedEventMock = {
   payload: {
