@@ -256,11 +256,20 @@ const CredCardDetails = () => {
     const PrintJson = () => {
       const object = Object.entries(cardData.credentialSubject);
       return (
-        <>
+        <div className="credential-subject-json">
           {object.map((item, index) => {
-            return <strong key={index}>{item[0]}</strong>;
+            return (
+              <>
+                <strong key={index}>{item[0]}</strong>
+                {typeof item[1] === ("string" || "number") ? (
+                  <span>{`${item[1]}`}</span>
+                ) : (
+                  "Object"
+                )}
+              </>
+            );
           })}
-        </>
+        </div>
       );
     };
 
