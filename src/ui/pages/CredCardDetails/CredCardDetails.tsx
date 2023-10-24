@@ -254,11 +254,11 @@ const CredCardDetails = () => {
     }
 
     const PrintJson = () => {
-      const object = Object.entries(cardData.credentialSubject as JsonObject);
+      const object = Object.entries(cardData.credentialSubject);
       return (
         <>
           {object.map((item, index) => {
-            <strong>{object[index][0]}</strong>;
+            return <strong key={index}>{item[0]}</strong>;
           })}
         </>
       );
