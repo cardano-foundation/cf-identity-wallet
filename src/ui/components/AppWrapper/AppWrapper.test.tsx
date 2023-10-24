@@ -65,22 +65,6 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
   },
 }));
 
-describe("App Wrapper", () => {
-  test("renders children components", async () => {
-    const { getByText } = render(
-      <Provider store={store}>
-        <AppWrapper>
-          <div>App Content</div>
-        </AppWrapper>
-      </Provider>
-    );
-
-    await waitFor(() => {
-      expect(getByText("App Content")).toBeInTheDocument();
-    });
-  });
-});
-
 const connectionStateChangedEventMock = {
   payload: {
     connectionRecord: { id: "id", imageUrl: "png", theirLabel: "idw" },

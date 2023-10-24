@@ -152,11 +152,6 @@ const messageStateChangedHandler = async (
 ) => {
   const messageRecord = event.payload.basicMessageRecord;
 };
-const cleanKeyStore = async () => {
-  await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, "");
-  await SecureStorage.set(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY, "");
-  await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
-};
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -183,7 +178,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(setInitialized(isInitialized?.initialized as boolean));
     } catch (e) {
       // TODO
-      await cleanKeyStore();
+      await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, "");
+      await SecureStorage.set(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY, "");
+      await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
     }
 
     await AriesAgent.agent.start();
@@ -264,7 +261,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
 export {
   AppWrapper,
-  cleanKeyStore,
   connectionStateChangedHandler,
   credentialStateChangedHandler,
 };
