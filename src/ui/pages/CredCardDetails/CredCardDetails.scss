@@ -1,0 +1,47 @@
+.card-details-content {
+  .card-details-json-column {
+    display: flex;
+    flex-direction: column;
+    &:not(div) {
+      margin-top: 1rem;
+    }
+  }
+
+  .card-details-json-row {
+    display: flex;
+    flex-direction: row;
+    &:not(:first-of-type) {
+      margin-top: 1rem;
+    }
+  }
+
+  .card-details-json-column,
+  .card-details-json-row {
+    strong {
+      text-transform: capitalize;
+      margin-right: 0.35rem;
+    }
+  }
+
+  .card-details-attributes-id {
+    strong {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .card-details-info-block-data {
+      width: 50% !important;
+    }
+  }
+
+  .card-details-json-nested {
+    margin-top: 1rem;
+
+    strong {
+      border-left: 2px solid grey;
+      padding-left: 0.35rem;
+      margin-left: 1rem;
+    }
+  }
+}

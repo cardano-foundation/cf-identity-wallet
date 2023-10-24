@@ -62,6 +62,7 @@ import {
   CardDetailsBlock,
   CardDetailsItem,
 } from "../../components/CardDetailsElements";
+import "./CredCardDetails.scss";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -253,41 +254,74 @@ const CredCardDetails = () => {
       return null;
     }
 
+    const nestedObject = (item: any) => {
+      return (
+        <>
+          {typeof item === ("string" || "number") && <span>{item}</span>}
+          {typeof item === "object" && item !== null && (
+            <div className="card-details-json-column">
+              {Object.entries(item).map((sub: any, i: number) => {
+                return (
+                  <div
+                    className={`card-details-json-${
+                      typeof sub[1] !== ("string" || "number")
+                        ? "column"
+                        : "nested"
+                    }`}
+                    key={i}
+                  >
+                    <span className="card-details-json-row">
+                      <strong>{sub[0] + ":"}</strong>
+                      {nestedObject(sub[1])}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </>
+      );
+    };
+
     const PrintJson = () => {
       const object = Object.entries(cardData.credentialSubject);
       return (
-        <div className="credential-subject-json">
+        <>
           {object.map((item, index) => {
             return (
-              <span
-                className="card-details-info-block-line"
+              <div
+                className={
+                  typeof item[1] !== ("string" || "number")
+                    ? "card-details-json-column"
+                    : "card-details-json-row"
+                }
                 key={index}
               >
-                <strong>{item[0]}</strong>
-                {typeof item[1] === ("string" || "number") && (
-                  <span>{`${item[1]}`}</span>
+                {item[0] === "id" ? (
+                  <span className="card-details-json-row card-details-attributes-id">
+                    <strong>{item[0] + ":"}</strong>
+                    <CardDetailsItem
+                      info={item[1] as string}
+                      copyButton={true}
+                      testId="card-details-attributes-id"
+                    />
+                  </span>
+                ) : (
+                  <span
+                    className={
+                      typeof item[1] !== ("string" || "number")
+                        ? "card-details-json-column"
+                        : "card-details-json-row"
+                    }
+                  >
+                    <strong>{item[0] + ":"}</strong>
+                    {nestedObject(item[1])}
+                  </span>
                 )}
-                {typeof item[1] === "object" &&
-                  item[1] !== null &&
-                  Object.entries(item[1]).map((sub: any, i: number) => {
-                    return (
-                      <span
-                        className="card-details-info-block-line"
-                        key={i}
-                      >
-                        <strong>{sub[0]}</strong>
-                        {typeof sub[1] === ("string" || "number") ? (
-                          <span>{`${sub[1]}`}</span>
-                        ) : (
-                          "Object"
-                        )}
-                      </span>
-                    );
-                  })}
-              </span>
+              </div>
             );
           })}
-        </div>
+        </>
       );
     };
 
