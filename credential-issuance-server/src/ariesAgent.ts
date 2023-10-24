@@ -18,6 +18,7 @@ import { AskarModule } from "@aries-framework/askar";
 import { ariesAskar } from "@hyperledger/aries-askar-nodejs";
 import { HttpInboundTransport, agentDependencies } from "@aries-framework/node";
 import { config } from "./config";
+import { documentLoader } from "./utils/documentLoader";
 
 const agentConfig: InitConfig = {
   endpoints: config.endpoints,
@@ -58,7 +59,9 @@ class AriesAgent {
           ],
           autoAcceptCredentials: AutoAcceptCredential.Always,
         }),
-        w3cCredentials: new W3cCredentialsModule(),
+        w3cCredentials: new W3cCredentialsModule({
+          documentLoader: documentLoader,
+        }),
       },
     });
     const httpOutboundTransport = new HttpOutboundTransport();
