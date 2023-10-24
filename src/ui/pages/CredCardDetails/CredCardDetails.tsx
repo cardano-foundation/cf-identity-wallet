@@ -18,7 +18,6 @@ import {
   pricetagOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { JsonObject } from "@aries-framework/core";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
@@ -286,38 +285,11 @@ const CredCardDetails = () => {
                 copyButton={true}
                 testId="card-details-credential-id"
               />
-            </CardDetailsBlock>
-            <CardDetailsBlock title="creds.card.details.attributes">
               <CardDetailsItem
                 info={credentialSubject.name as string}
                 testId="card-details-credential-name"
               />
             </CardDetailsBlock>
-            {JSON.stringify(credentialSubject, null, 2)}
-            {/* <span className="card-details-info-block-line">
-                <span>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={informationCircleOutline}
-                    color="primary"
-                  />
-                </span>
-                <span className="card-details-info-block-data">
-                  {(credentialSubject.degree as JsonObject)?.type as string}
-                </span>
-              </span>
-              <span className="card-details-info-block-line">
-                <span>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={informationCircleOutline}
-                    color="primary"
-                  />
-                </span>
-                <span className="card-details-info-block-data">
-                  {(credentialSubject.degree as JsonObject)?.name as string}
-                </span>
-              </span> */}
             {connectionDetails?.label && (
               <CardDetailsBlock title="creds.card.details.connection">
                 <CardDetailsItem
