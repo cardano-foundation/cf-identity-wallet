@@ -390,7 +390,7 @@ const CredCardDetails = () => {
           <CredsOptions
             optionsIsOpen={optionsIsOpen}
             setOptionsIsOpen={setOptionsIsOpen}
-            id={params.id}
+            cardData={cardData}
             credsOptionAction={
               isArchived ? handleDeleteCredential : handleArchiveCredential
             }
