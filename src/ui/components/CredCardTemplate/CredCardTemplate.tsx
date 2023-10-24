@@ -49,6 +49,29 @@ const CredCardTemplate = ({
     getCredDetails();
   }, [shortData.id]);
 
+  const credtest = {
+    colors: ["#efdf8f", "#f5ecbc"],
+    connectionId: "2de4f329-7e2e-43cf-a7d3-1410d9a1e52a",
+    credentialSubject: {
+      degree: {
+        type: "BachelorDegree",
+        name: "Bachelor of Science and Arts",
+      },
+      id: "did:key:z6MkmRj92U1CNY191kqFx4JWJ5ZCuXLg8Y2VJ16gWTLt3SmR",
+      name: "John Smith",
+    },
+    credentialType: "UniversityDegreeCredential",
+    expirationDate: "2025-01-01T19:23:24Z",
+    id: "metadata:b410295c-08b8-4c5c-84fb-988989a3e1b3",
+    issuanceDate: "2023-10-23T16:33:08.810Z",
+    issuerLogo: "https://www.w3.org/Icons/WWW/w3c_home_nb-v.svg",
+    proofType: "Ed25519Signature2020",
+    proofValue:
+      "z58DAdFfa9SkqZMVPxAQpic7ndSayn1PzZs6ZjWp1CktyGesjuTSwRdoWhAfGFCF5bppETSTojQCrfFPP2oumHKtz",
+    status: "confirmed",
+    type: ["VerifiableCredential", "UniversityDegreeCredential"],
+  };
+
   return (
     <>
       <div
