@@ -9,6 +9,7 @@ import {
   getAuthentication,
   setAuthentication,
   setCurrentOperation,
+  setInitialized,
   setQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
@@ -41,7 +42,6 @@ import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/gene
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
 import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
-import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -152,6 +152,11 @@ const messageStateChangedHandler = async (
 ) => {
   const messageRecord = event.payload.basicMessageRecord;
 };
+const cleanKeyStore = async () => {
+  await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, "");
+  await SecureStorage.set(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY, "");
+  await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
+};
 
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -171,6 +176,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
   const initApp = async () => {
+    try {
+      const isInitialized = await PreferencesStorage.get(
+        PreferencesKeys.APP_ALREADY_INIT
+      );
+      dispatch(setInitialized(isInitialized?.initialized as boolean));
+    } catch (e) {
+      // TODO
+      await cleanKeyStore();
+    }
+
     await AriesAgent.agent.start();
     const connectionsDetails =
       await AriesAgent.agent.connections.getConnections();
@@ -249,6 +264,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
 export {
   AppWrapper,
+  cleanKeyStore,
   connectionStateChangedHandler,
   credentialStateChangedHandler,
 };

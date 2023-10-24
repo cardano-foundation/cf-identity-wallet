@@ -31,6 +31,7 @@ describe("getBackRoute", () => {
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {
+        initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
@@ -116,6 +117,7 @@ describe("getBackRoute", () => {
   test("should update store correctly after /passcodelogin route", () => {
     storeMock = {
       stateCache: {
+        initialized: true,
         routes: [],
         authentication: {
           loggedIn: false,
@@ -196,6 +198,7 @@ describe("getPreviousRoute", () => {
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {
+        initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
