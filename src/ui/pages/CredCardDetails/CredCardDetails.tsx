@@ -18,6 +18,7 @@ import {
   pricetagOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
+import { JsonObject } from "@aries-framework/core";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
@@ -252,6 +253,17 @@ const CredCardDetails = () => {
       return null;
     }
 
+    const PrintJson = () => {
+      const object = Object.entries(cardData.credentialSubject as JsonObject);
+      return (
+        <>
+          {object.map((item, index) => {
+            <strong>{object[index][0]}</strong>;
+          })}
+        </>
+      );
+    };
+
     return (
       <IonPage className="tab-layout card-details">
         <TabLayout
@@ -289,6 +301,7 @@ const CredCardDetails = () => {
                 info={credentialSubject.name as string}
                 testId="card-details-credential-name"
               />
+              <PrintJson />
             </CardDetailsBlock>
             {connectionDetails?.label && (
               <CardDetailsBlock title="creds.card.details.connection">
