@@ -39,11 +39,11 @@ function documentLoader(agentContext: AgentContext): DocumentLoader {
   async function loader(url: string) {
     // Cache context documents
     let context = DOCUMENTS[url];
+    if (!context) {
+      const withoutFragment = url.split("#")[0];
+      context = DOCUMENTS[withoutFragment];
+    }
     if (context) {
-      if (!context) {
-        const withoutFragment = url.split("#")[0];
-        context = DOCUMENTS[withoutFragment];
-      }
       return {
         contextUrl: null,
         documentUrl: url,
