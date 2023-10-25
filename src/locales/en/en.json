@@ -137,7 +137,8 @@
     "alert": {
       "text": {
         "verify": "If you've forgotten your passcode, please verify your seed phrase to gain access to your wallet",
-        "restart": "You currently haven't generated a seed phrase, would you like to start your onboarding again?"
+        "restart": "You currently haven't generated a seed phrase, would you like to start your onboarding again?",
+        "restartpasscode": "Would you like to reset your passcode?"
       },
       "button": {
         "verify": "Verify your seed phrase",

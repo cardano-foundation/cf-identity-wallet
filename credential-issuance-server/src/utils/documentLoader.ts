@@ -1,6 +1,7 @@
 import {
   AgentContext,
-  AriesFrameworkError, CREDENTIALS_CONTEXT_V1_URL,
+  AriesFrameworkError,
+  CREDENTIALS_CONTEXT_V1_URL,
   DidResolverService,
   DocumentLoader,
   JsonObject,
@@ -21,7 +22,7 @@ const { jsonld } = vcLibraries;
 function isDid(potentialDid: string) {
   return potentialDid.startsWith("did:");
 }
-const DOCUMENTS: { [key: string]: any }= {
+const DOCUMENTS: { [key: string]: any } = {
   [CREDENTIALS_CONTEXT_V1_URL]: CREDENTIALS_V1,
   "https://w3id.org/citizenship/v1": CITIZENSHIP_V1,
   "https://www.w3.org/2018/credentials/examples/v1": CREDENTIALS_EXAMPLES_V1,
@@ -30,7 +31,7 @@ const DOCUMENTS: { [key: string]: any }= {
   "https://ns.did.ai/suites/x25519-2019/v1/": X25519_2019,
   "https://www.w3.org/ns/odrl.jsonld": ODRL,
   "https://w3id.org/did/v1": DID_V1,
-}
+};
 
 function documentLoader(agentContext: AgentContext): DocumentLoader {
   const didResolver =
@@ -39,15 +40,15 @@ function documentLoader(agentContext: AgentContext): DocumentLoader {
     // Cache context documents
     let context = DOCUMENTS[url];
     if (!context) {
-      const withoutFragment = url.split("#")[0]
-      context = DOCUMENTS[withoutFragment]
+      const withoutFragment = url.split("#")[0];
+      context = DOCUMENTS[withoutFragment];
     }
     if (context) {
       return {
         contextUrl: null,
         documentUrl: url,
         document: context as JsonObject,
-      }
+      };
     }
 
     if (isDid(url)) {
