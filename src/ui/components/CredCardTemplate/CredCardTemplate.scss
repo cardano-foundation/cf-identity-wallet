@@ -1,12 +1,12 @@
 .cred-card-template {
-  height: 12.5rem;
+  height: 13.375rem;
   width: 100%;
   margin-top: 1.5rem;
-  padding: 0.75rem 1.25rem;
+  padding: 1.25rem 1.56rem;
   border-radius: 1rem;
   font-size: 0.875rem;
   line-height: 1.375rem;
-  text-shadow: 0px 2px 4px rgba(12, 64, 90, 0.5);
+  overflow: hidden;
 
   &.active:not(:first-child):hover {
     position: absolute;
@@ -38,12 +38,13 @@
   &.generic-w3c-template {
     position: relative;
     background: var(--ion-color-gradient-university-card);
+    text-shadow: 0px 2px 4px rgba(12, 64, 90, 0.5);
 
     > img {
       position: absolute;
-      top: -20%;
-      left: -20%;
-      width: 140%;
+      top: -5%;
+      left: -8%;
+      width: 117%;
       max-width: 140%;
       opacity: 0.04;
     }
@@ -106,6 +107,19 @@
   }
 
   &.permanent-resident-card {
+    position: relative;
+    background: var(--ion-color-gradient-residency-card);
+    text-shadow: 0px 2px 4px rgba(187, 187, 187, 0.2);
+
+    > img {
+      position: absolute;
+      top: -25%;
+      left: 0%;
+      width: 285%;
+      max-width: 315%;
+      opacity: 0.04;
+    }
+
     .cred-card-template-inner {
       color: var(--ion-color-primary);
 
