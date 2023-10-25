@@ -11,13 +11,26 @@ import { CredCardDetails } from "../../pages/CredCardDetails";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { AriesAgent } from "../../../core/agent/agent";
 import { CardTypes } from "../../constants/dictionary";
+
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
       identifiers: {
-        getIdentifier: jest
-          .fn()
-          .mockResolvedValue({ type: "key", result: identityFix[0] }),
+        getIdentifier: jest.fn().mockResolvedValue({
+          type: "key",
+          result: {
+            id: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
+            method: "key",
+            displayName: "Anonymous ID",
+            createdAtUTC: "2023-01-01T19:23:24Z",
+            colors: ["#92FFC0", "#47FF94"],
+            theme: 0,
+            keyType: "Ed25519",
+            controller:
+              "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
+            publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
+          },
+        }),
       },
       credentials: {
         getCredentialDetailsById: jest.fn().mockResolvedValue({}),
@@ -25,6 +38,7 @@ jest.mock("../../../core/agent/agent", () => ({
     },
   },
 }));
+
 describe("Cards Stack Component", () => {
   test("It renders Cards Stack", () => {
     const { getByText } = render(
@@ -76,7 +90,9 @@ describe("Cards Stack Component", () => {
       </MemoryRouter>
     );
 
-    const firstCard = await findByTestId("did-card-stack-example-index-0");
+    const firstCard = await findByTestId(
+      "identity-card-template-example-index-0"
+    );
     await waitFor(() => expect(firstCard).not.toHaveClass("active"));
 
     act(() => {
@@ -116,7 +132,7 @@ describe("Cards Stack Component", () => {
       </MemoryRouter>
     );
 
-    const firstCard = await findByTestId("cred-card-stack-example-index-0");
+    const firstCard = await findByTestId("cred-card-template-example-index-0");
     await waitFor(() => expect(firstCard).not.toHaveClass("active"));
 
     act(() => {

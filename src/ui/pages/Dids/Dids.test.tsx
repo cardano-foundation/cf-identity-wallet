@@ -141,7 +141,7 @@ describe("Dids Tab", () => {
     ).toBeVisible();
 
     act(() => {
-      fireEvent.click(getByTestId("did-card-stack-alldids-index-0"));
+      fireEvent.click(getByTestId("identity-card-template-alldids-index-0"));
       jest.advanceTimersByTime(NAVIGATION_DELAY);
     });
 

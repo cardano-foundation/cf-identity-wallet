@@ -210,12 +210,13 @@ ion-modal {
   }
 
   .card-details-content > * {
-    margin: 2rem 0 1rem;
+    margin: 1.56rem 0 1rem;
   }
 
   .card-details-info-block {
     h3 {
       margin: 0.938rem;
+      font-weight: 500;
     }
     .card-details-info-block-inner {
       display: flex;
@@ -241,9 +242,13 @@ ion-modal {
           font-size: 1.125rem;
         }
 
+        .card-details-info-block-icon,
+        .card-details-info-block-text-icon {
+          margin-right: 0.94rem;
+        }
+
         .card-details-info-block-data {
           width: 100%;
-          margin-left: 1.13rem;
           overflow: hidden;
           white-space: nowrap;
           --mask: linear-gradient(

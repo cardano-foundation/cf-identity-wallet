@@ -335,18 +335,20 @@
     },
     "card": {
       "layout": {
-        "name": "NAME",
+        "type": "TYPE",
+        "validity": "VALID FROM - TO",
         "issued": "ISSUED"
       },
       "details": {
         "done": "Done",
         "restore": "Restore",
-        "types": "Types",
+        "type": "Type",
         "attributes": "Attributes",
         "connection": "Connection",
         "issuancedate": "Issuance Date",
         "expirationdate": "Expiration date",
         "prooftypes": "Proof Types",
+        "notavailable": "N/A",
         "options": {
           "title": "Credential options",
           "view": "View JSON",
@@ -532,7 +534,7 @@
     "identitytype": {
       "title": "Identity type",
       "didkey": "did:key",
-      "keri": "KERI:aid"
+      "keri": "KERI AID"
     },
     "theme": {
       "title": "Choose a theme"

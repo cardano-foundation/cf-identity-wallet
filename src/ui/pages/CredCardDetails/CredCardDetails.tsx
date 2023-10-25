@@ -9,21 +9,18 @@ import {
 import {
   ellipsisVertical,
   keyOutline,
-  copyOutline,
   calendarNumberOutline,
   informationCircleOutline,
-  personCircleOutline,
   trashOutline,
   archiveOutline,
   heart,
   heartOutline,
+  pricetagOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { JsonObject } from "@aries-framework/core";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
-import { CredCard } from "../../components/CardsStack";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -31,7 +28,6 @@ import {
   setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
-import { writeToClipboard } from "../../../utils/clipboard";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import {
   Alert as AlertDeleteArchive,
@@ -55,14 +51,18 @@ import {
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 import { getNextRoute } from "../../../routes/nextRoute";
+import { CredCardTemplate } from "../../components/CredCardTemplate";
 import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences";
+import { ConnectionDetails } from "../Connections/Connections.types";
 import {
-  addFavouriteIdentityCache,
-  removeFavouriteIdentityCache,
-} from "../../../store/reducers/identitiesCache";
+  CardDetailsAttributes,
+  CardDetailsBlock,
+  CardDetailsItem,
+} from "../../components/CardDetailsElements";
+import "./CredCardDetails.scss";
 
 const CredCardDetails = () => {
   const history = useHistory();
@@ -78,6 +78,8 @@ const CredCardDetails = () => {
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<CredentialDetails>();
+  const [connectionDetails, setConnectionDetails] =
+    useState<ConnectionDetails>();
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
@@ -94,6 +96,15 @@ const CredCardDetails = () => {
     const cardDetails =
       await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
     setCardData(cardDetails);
+
+    const connectionDetails =
+      cardDetails.connectionId &&
+      (await AriesAgent.agent.connections?.getConnectionById(
+        cardDetails.connectionId
+      ));
+    if (connectionDetails) {
+      setConnectionDetails(connectionDetails);
+    }
   };
 
   const handleDone = () => {
@@ -185,6 +196,7 @@ const CredCardDetails = () => {
           });
       }
     };
+
     return (
       <>
         <IonButton
@@ -225,16 +237,8 @@ const CredCardDetails = () => {
       </>
     );
   };
-  const formatDateTime = (date: string) => {
-    return (
-      <>
-        {formatShortDate(date)}
-        {" - "}
-        {formatTimeToSec(date)}
-      </>
-    );
-  };
-  if (!cardData)
+
+  if (!cardData) {
     return (
       <div
         className="spinner-container"
@@ -243,291 +247,199 @@ const CredCardDetails = () => {
         <IonSpinner name="circular" />
       </div>
     );
+  } else {
+    const credentialSubject = cardData.credentialSubject;
+    // @TODO - sdisalvo: Prevent app crashing when credentialSubject is an array
+    // Keeping this as a safety net as we may want to show a message in the future.
+    if (Array.isArray(credentialSubject)) {
+      return null;
+    }
 
-  const credentialSubject = cardData.credentialSubject;
-  // @TODO: handle when credentialSubject is an array
-  if (Array.isArray(credentialSubject)) {
-    return null;
-  }
-  return (
-    <IonPage className="tab-layout card-details">
-      <TabLayout
-        header={true}
-        title={`${i18n.t("creds.card.details.done")}`}
-        titleSize="h3"
-        titleAction={handleDone}
-        menuButton={false}
-        additionalButtons={!isArchived && <AdditionalButtons />}
-        actionButton={isArchived}
-        actionButtonAction={() => setAlertRestoreIsOpen(true)}
-        actionButtonLabel={`${i18n.t("creds.card.details.restore")}`}
-      >
-        <CredCard
-          cardData={cardData}
-          isActive={false}
-        />
-        <div className="card-details-content">
-          <div className="card-details-info-block">
-            <h3>{i18n.t("creds.card.details.types")}</h3>
-            <div className="card-details-info-block-inner">
-              {cardData.type.map((type: string, index: number) => (
-                <span
-                  className="card-details-info-block-line"
-                  key={index}
-                >
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={informationCircleOutline}
-                      color="primary"
-                    />
-                  </span>
-                  <span className="card-details-info-block-data">
-                    {cardData.type[index]}
-                  </span>
-                </span>
-              ))}
-            </div>
+    return (
+      <IonPage className="tab-layout card-details">
+        <TabLayout
+          header={true}
+          title={`${i18n.t("creds.card.details.done")}`}
+          titleSize="h3"
+          titleAction={handleDone}
+          menuButton={false}
+          additionalButtons={!isArchived && <AdditionalButtons />}
+          actionButton={isArchived}
+          actionButtonAction={() => setAlertRestoreIsOpen(true)}
+          actionButtonLabel={`${i18n.t("creds.card.details.restore")}`}
+        >
+          <CredCardTemplate
+            shortData={cardData}
+            isActive={false}
+          />
+          <div className="card-details-content">
+            <CardDetailsBlock title="creds.card.details.type">
+              <CardDetailsItem
+                info={cardData.credentialType
+                  .replace(/([A-Z][a-z])/g, " $1")
+                  .replace(/(\d)/g, " $1")}
+                icon={informationCircleOutline}
+                testId="card-details-credential-type"
+              />
+            </CardDetailsBlock>
+            {credentialSubject && (
+              <CardDetailsBlock title="creds.card.details.attributes">
+                <CardDetailsAttributes data={credentialSubject} />
+              </CardDetailsBlock>
+            )}
+            {connectionDetails?.label && (
+              <CardDetailsBlock title="creds.card.details.connection">
+                <CardDetailsItem
+                  info={connectionDetails.label}
+                  icon={pricetagOutline}
+                  testId="card-details-connection-label"
+                />
+                <CardDetailsItem
+                  info={connectionDetails.id}
+                  copyButton={true}
+                  icon={keyOutline}
+                  testId="card-details-connection-id"
+                />
+              </CardDetailsBlock>
+            )}
+            <CardDetailsBlock title="creds.card.details.issuancedate">
+              <CardDetailsItem
+                info={
+                  cardData.issuanceDate
+                    ? formatShortDate(cardData.issuanceDate) +
+                      " - " +
+                      formatTimeToSec(cardData.issuanceDate)
+                    : i18n.t("creds.card.details.notavailable")
+                }
+                icon={calendarNumberOutline}
+                testId="card-details-issuance-date"
+              />
+            </CardDetailsBlock>
+            <CardDetailsBlock title="creds.card.details.expirationdate">
+              <CardDetailsItem
+                info={
+                  cardData.expirationDate
+                    ? formatShortDate(cardData.expirationDate) +
+                      " - " +
+                      formatTimeToSec(cardData.expirationDate)
+                    : i18n.t("creds.card.details.notavailable")
+                }
+                icon={calendarNumberOutline}
+                testId="card-details-expiration-date"
+              />
+            </CardDetailsBlock>
+            <CardDetailsBlock title="creds.card.details.prooftypes">
+              <CardDetailsItem
+                info={cardData.proofType}
+                icon={informationCircleOutline}
+                testId="card-details-proof-type"
+              />
+              {cardData.proofValue && (
+                <CardDetailsItem
+                  info={cardData.proofValue}
+                  copyButton={true}
+                  icon={keyOutline}
+                  testId="card-details-proof-value"
+                />
+              )}
+            </CardDetailsBlock>
+            <IonButton
+              shape="round"
+              expand="block"
+              color="danger"
+              data-testid="card-details-delete-archive-button"
+              className="delete-button"
+              onClick={() => {
+                setAlertDeleteArchiveIsOpen(true);
+                dispatch(
+                  setCurrentOperation(
+                    isArchived
+                      ? operationState.deleteCredential
+                      : operationState.archiveCredential
+                  )
+                );
+              }}
+            >
+              <IonIcon
+                slot="icon-only"
+                size="small"
+                icon={isArchived ? trashOutline : archiveOutline}
+                color="primary"
+              />
+              {isArchived
+                ? i18n.t("creds.card.details.button.delete")
+                : i18n.t("creds.card.details.button.archive")}
+            </IonButton>
           </div>
-
-          {/*@TODO: handle attributes, credentialSubject, it can come in many formats*/}
-          <div className="card-details-info-block">
-            <h3>{i18n.t("creds.card.details.attributes")}</h3>
-            <div className="card-details-info-block-inner">
-              <span className="card-details-info-block-line">
-                <span>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={informationCircleOutline}
-                    color="primary"
-                  />
-                </span>
-                <span className="card-details-info-block-data">
-                  {(credentialSubject.degree as JsonObject)?.type as string}
-                </span>
-              </span>
-              <span className="card-details-info-block-line">
-                <span>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={informationCircleOutline}
-                    color="primary"
-                  />
-                </span>
-                <span className="card-details-info-block-data">
-                  {(credentialSubject.degree as JsonObject)?.name as string}
-                </span>
-              </span>
-            </div>
-          </div>
-
-          {cardData.connectionId && (
-            <div className="card-details-info-block">
-              <h3>{i18n.t("creds.card.details.connection")}</h3>
-              <div className="card-details-info-block-inner">
-                <span className="card-details-info-block-line">
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={personCircleOutline}
-                      color="primary"
-                    />
-                  </span>
-
-                  <span className="card-details-info-block-data">
-                    {cardData.connectionId}
-                  </span>
-                </span>
-              </div>
-            </div>
-          )}
-
-          <div className="card-details-info-block">
-            <h3>{i18n.t("creds.card.details.issuancedate")}</h3>
-            <div className="card-details-info-block-inner">
-              <span className="card-details-info-block-line">
-                <span>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={calendarNumberOutline}
-                    color="primary"
-                  />
-                </span>
-                <span className="card-details-info-block-data">
-                  {formatDateTime(cardData.issuanceDate)}
-                </span>
-              </span>
-            </div>
-          </div>
-
-          {cardData.expirationDate && (
-            <div className="card-details-info-block">
-              <h3>{i18n.t("creds.card.details.expirationdate")}</h3>
-              <div className="card-details-info-block-inner">
-                <span className="card-details-info-block-line">
-                  <span>
-                    <IonIcon
-                      slot="icon-only"
-                      icon={calendarNumberOutline}
-                      color="primary"
-                    />
-                  </span>
-                  <span className="card-details-info-block-data">
-                    {formatDateTime(cardData.expirationDate)}
-                  </span>
-                </span>
-              </div>
-            </div>
-          )}
-
-          <div className="card-details-info-block">
-            <h3>{i18n.t("creds.card.details.prooftypes")}</h3>
-            <div className="card-details-info-block-inner">
-              <span className="card-details-info-block-line">
-                <span>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={informationCircleOutline}
-                    color="primary"
-                  />
-                </span>
-                <span className="card-details-info-block-data">
-                  {cardData.proofType}
-                </span>
-              </span>
-              <span
-                className="card-details-info-block-line"
-                data-testid="copy-button-proof-value"
-                onClick={() => {
-                  if (cardData.proofValue) {
-                    writeToClipboard(cardData.proofValue);
-                    dispatch(setCurrentOperation(toastState.copiedToClipboard));
-                  }
-                }}
-              >
-                <span>
-                  <IonIcon
-                    slot="icon-only"
-                    icon={keyOutline}
-                    color="primary"
-                  />
-                </span>
-                <span className="card-details-info-block-data">
-                  {cardData.proofValue &&
-                    cardData.proofValue?.substring(0, 13) +
-                      "..." +
-                      cardData.proofValue?.slice(-5)}
-                </span>
-                <span>
-                  <IonButton
-                    shape="round"
-                    className="copy-button"
-                  >
-                    <IonIcon
-                      slot="icon-only"
-                      icon={copyOutline}
-                    />
-                  </IonButton>
-                </span>
-              </span>
-            </div>
-          </div>
-          <IonButton
-            shape="round"
-            expand="block"
-            color="danger"
-            data-testid="card-details-delete-archive-button"
-            className="delete-button"
-            onClick={() => {
-              setAlertDeleteArchiveIsOpen(true);
-              dispatch(
-                setCurrentOperation(
-                  isArchived
-                    ? operationState.deleteCredential
-                    : operationState.archiveCredential
-                )
-              );
-            }}
-          >
-            <IonIcon
-              slot="icon-only"
-              size="small"
-              icon={isArchived ? trashOutline : archiveOutline}
-              color="primary"
-            />
-            {isArchived
-              ? i18n.t("creds.card.details.button.delete")
-              : i18n.t("creds.card.details.button.archive")}
-          </IonButton>
-        </div>
-        <CredsOptions
-          optionsIsOpen={optionsIsOpen}
-          setOptionsIsOpen={setOptionsIsOpen}
-          id={params.id}
-          credsOptionAction={
-            isArchived ? handleDeleteCredential : handleArchiveCredential
-          }
-        />
-        <AlertDeleteArchive
-          isOpen={alertDeleteArchiveIsOpen}
-          setIsOpen={setAlertDeleteArchiveIsOpen}
-          dataTestId="alert-delete-archive"
-          headerText={i18n.t(
-            isArchived
-              ? "creds.card.details.alert.delete.title"
-              : "creds.card.details.alert.archive.title"
-          )}
-          confirmButtonText={`${i18n.t(
-            isArchived
-              ? "creds.card.details.alert.delete.confirm"
-              : "creds.card.details.alert.archive.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            isArchived
-              ? "creds.card.details.alert.delete.cancel"
-              : "creds.card.details.alert.archive.cancel"
-          )}`}
-          actionConfirm={() => {
-            if (
-              !stateCache?.authentication.passwordIsSkipped &&
-              stateCache?.authentication.passwordIsSet
-            ) {
-              setVerifyPasswordIsOpen(true);
-            } else {
-              setVerifyPasscodeIsOpen(true);
+          <CredsOptions
+            optionsIsOpen={optionsIsOpen}
+            setOptionsIsOpen={setOptionsIsOpen}
+            cardData={cardData}
+            credsOptionAction={
+              isArchived ? handleDeleteCredential : handleArchiveCredential
             }
-          }}
-          actionCancel={() => dispatch(setCurrentOperation(""))}
-          actionDismiss={() => dispatch(setCurrentOperation(""))}
-        />
-        <AlertRestore
-          isOpen={alertRestoreIsOpen}
-          setIsOpen={setAlertRestoreIsOpen}
-          dataTestId="alert-restore"
-          headerText={i18n.t("creds.card.details.alert.restore.title")}
-          confirmButtonText={`${i18n.t(
-            "creds.card.details.alert.restore.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            "creds.card.details.alert.restore.cancel"
-          )}`}
-          actionConfirm={() => handleRestoreCredential()}
-          actionCancel={() => dispatch(setCurrentOperation(""))}
-          actionDismiss={() => dispatch(setCurrentOperation(""))}
-        />
-        <VerifyPassword
-          isOpen={verifyPasswordIsOpen}
-          setIsOpen={setVerifyPasswordIsOpen}
-          onVerify={onVerify}
-        />
-        <VerifyPasscode
-          isOpen={verifyPasscodeIsOpen}
-          setIsOpen={setVerifyPasscodeIsOpen}
-          onVerify={onVerify}
-        />
-      </TabLayout>
-    </IonPage>
-  );
+          />
+          <AlertDeleteArchive
+            isOpen={alertDeleteArchiveIsOpen}
+            setIsOpen={setAlertDeleteArchiveIsOpen}
+            dataTestId="alert-delete-archive"
+            headerText={i18n.t(
+              isArchived
+                ? "creds.card.details.alert.delete.title"
+                : "creds.card.details.alert.archive.title"
+            )}
+            confirmButtonText={`${i18n.t(
+              isArchived
+                ? "creds.card.details.alert.delete.confirm"
+                : "creds.card.details.alert.archive.confirm"
+            )}`}
+            cancelButtonText={`${i18n.t(
+              isArchived
+                ? "creds.card.details.alert.delete.cancel"
+                : "creds.card.details.alert.archive.cancel"
+            )}`}
+            actionConfirm={() => {
+              if (
+                !stateCache?.authentication.passwordIsSkipped &&
+                stateCache?.authentication.passwordIsSet
+              ) {
+                setVerifyPasswordIsOpen(true);
+              } else {
+                setVerifyPasscodeIsOpen(true);
+              }
+            }}
+            actionCancel={() => dispatch(setCurrentOperation(""))}
+            actionDismiss={() => dispatch(setCurrentOperation(""))}
+          />
+          <AlertRestore
+            isOpen={alertRestoreIsOpen}
+            setIsOpen={setAlertRestoreIsOpen}
+            dataTestId="alert-restore"
+            headerText={i18n.t("creds.card.details.alert.restore.title")}
+            confirmButtonText={`${i18n.t(
+              "creds.card.details.alert.restore.confirm"
+            )}`}
+            cancelButtonText={`${i18n.t(
+              "creds.card.details.alert.restore.cancel"
+            )}`}
+            actionConfirm={() => handleRestoreCredential()}
+            actionCancel={() => dispatch(setCurrentOperation(""))}
+            actionDismiss={() => dispatch(setCurrentOperation(""))}
+          />
+          <VerifyPassword
+            isOpen={verifyPasswordIsOpen}
+            setIsOpen={setVerifyPasswordIsOpen}
+            onVerify={onVerify}
+          />
+          <VerifyPasscode
+            isOpen={verifyPasscodeIsOpen}
+            setIsOpen={setVerifyPasscodeIsOpen}
+            onVerify={onVerify}
+          />
+        </TabLayout>
+      </IonPage>
+    );
+  }
 };
 
 export { CredCardDetails };
