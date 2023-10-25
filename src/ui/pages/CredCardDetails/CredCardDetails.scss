@@ -1,3 +1,10 @@
+.tab-layout.card-details ion-button.in-toolbar,
+.tab-layout.card-details ion-button.in-toolbar.md {
+  &.action-button-label {
+    background: var(--ion-color-light-grey);
+  }
+}
+
 .card-details-content {
   .card-details-json-column {
     display: flex;
