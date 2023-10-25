@@ -4,7 +4,9 @@ import { CardDetailsItem } from "./CardDetailsItem";
 const nestedObject = (item: any) => {
   return (
     <>
-      {typeof item === ("string" || "number") && <span>{item}</span>}
+      {typeof item === ("string" || "number") && (
+        <span>{item.replace(/([a-z])([A-Z])/g, "$1 $2")}</span>
+      )}
       {typeof item === "object" && item !== null && (
         <div className="card-details-json-column">
           {Object.entries(item).map((sub: any, i: number) => {
@@ -16,7 +18,9 @@ const nestedObject = (item: any) => {
                 key={i}
               >
                 <span className="card-details-json-row">
-                  <strong>{sub[0] + ":"}</strong>
+                  <strong>
+                    {sub[0].replace(/([a-z])([A-Z])/g, "$1 $2") + ":"}
+                  </strong>
                   {nestedObject(sub[1])}
                 </span>
               </div>
@@ -59,7 +63,9 @@ const CardDetailsAttributes = ({ data }: CardDetailsAttributesProps) => {
                     : "card-details-json-row"
                 }
               >
-                <strong>{item[0] + ":"}</strong>
+                <strong>
+                  {item[0].replace(/([a-z])([A-Z])/g, "$1 $2") + ":"}
+                </strong>
                 {nestedObject(item[1])}
               </span>
             )}

@@ -37,7 +37,6 @@ const CredCardTemplate = ({
     const cardDetails =
       await AriesAgent.agent.credentials.getCredentialDetailsById(shortData.id);
     setCardData(cardDetails);
-    console.log(cardDetails);
   };
 
   useEffect(() => {
