@@ -11,6 +11,7 @@ import CardBodyPending from "./CardBodyPending";
 import CardBodyUniversity from "./CardBodyUniversity";
 import { CredentialDetails } from "../../../core/agent/agent.types";
 import { AriesAgent } from "../../../core/agent/agent";
+import { CredentialType } from "../../constants/dictionary";
 
 const CredCardTemplate = ({
   name,
@@ -23,14 +24,14 @@ const CredCardTemplate = ({
   const [cardData, setCardData] = useState<CredentialDetails>();
   const isW3CTemplate =
     shortData.credentialType ===
-    ("UniversityDegreeCredential" ||
-      !"AccessPassCredential" ||
-      !"PermanentResidentCard");
+    (CredentialType.UNIVERSITY_DEGREE_CREDENTIAL ||
+      !CredentialType.ACCESS_PASS_CREDENTIAL ||
+      !CredentialType.PERMANENT_RESIDENT_CARD);
   const isKnownTemplate =
     shortData.credentialType ===
-    ("UniversityDegreeCredential" ||
-      "AccessPassCredential" ||
-      "PermanentResidentCard");
+    (CredentialType.UNIVERSITY_DEGREE_CREDENTIAL ||
+      CredentialType.ACCESS_PASS_CREDENTIAL ||
+      CredentialType.PERMANENT_RESIDENT_CARD);
 
   const getCredDetails = async () => {
     const cardDetails =
