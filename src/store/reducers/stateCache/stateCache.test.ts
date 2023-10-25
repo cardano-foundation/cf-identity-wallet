@@ -9,12 +9,12 @@ import {
   getStateCache,
   initialState,
   setAuthentication,
-  setBatchConnectionCredentialRequest,
+  enqueueConnectionCredentialRequest,
   setCurrentOperation,
   setCurrentRoute,
   setPauseQueueConnectionCredentialRequest,
   setQueueConnectionCredentialRequest,
-  setResolveConnectionCredentialRequest,
+  dequeueCredentialCredentialRequest,
   StateCacheProps,
   stateCacheSlice,
 } from "./stateCache";
@@ -117,7 +117,7 @@ describe("State Cache", () => {
           type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
         },
       ];
-    const action = setBatchConnectionCredentialRequest(
+    const action = enqueueConnectionCredentialRequest(
       batchConnectionCredentialRequestProps
     );
     const nextState = stateCacheSlice.reducer(initialStateMock, action);
@@ -127,7 +127,7 @@ describe("State Cache", () => {
     ]);
   });
 
-  test("should set resolve connection credential request", () => {
+  test("should set dequeue connection credential request", () => {
     const initialStateMock: StateCacheProps = JSON.parse(
       JSON.stringify(initialState)
     );
@@ -136,12 +136,16 @@ describe("State Cache", () => {
         id: "123",
         type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
       },
+      {
+        id: "456",
+        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+      },
     ];
-    const action = setResolveConnectionCredentialRequest();
+    const action = dequeueCredentialCredentialRequest();
     const nextState = stateCacheSlice.reducer(initialStateMock, action);
-    expect(nextState.queueConnectionCredentialRequest.queues).toEqual([]);
+    expect(nextState.queueConnectionCredentialRequest.queues.length).toEqual(1);
     expect(nextState.queueConnectionCredentialRequest.isProcessing).toEqual(
-      false
+      true
     );
   });
 
@@ -170,7 +174,7 @@ describe("State Cache", () => {
     );
   });
 
-  test("isProcessing should be true after setResolveConnectionCredentialRequest and queue still has elements", () => {
+  test("isProcessing should be true after dequeueCredentialCredentialRequest and queue still has elements", () => {
     const initialStateMock: StateCacheProps = JSON.parse(
       JSON.stringify(initialState)
     );
@@ -184,7 +188,7 @@ describe("State Cache", () => {
         type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
       },
     ];
-    const action = setResolveConnectionCredentialRequest();
+    const action = dequeueCredentialCredentialRequest();
     const nextState = stateCacheSlice.reducer(initialStateMock, action);
     expect(nextState.queueConnectionCredentialRequest.queues.length).toEqual(1);
     expect(nextState.queueConnectionCredentialRequest.isProcessing).toEqual(

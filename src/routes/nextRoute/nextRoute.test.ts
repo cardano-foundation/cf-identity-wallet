@@ -37,6 +37,7 @@ describe("NextRoute", () => {
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
+          isPaused: false,
         },
       },
       seedPhraseCache: {
@@ -160,6 +161,7 @@ describe("getNextRoute", () => {
       queueConnectionCredentialRequest: {
         isProcessing: false,
         queues: [],
+        isPaused: false,
       },
     },
     seedPhraseCache: {

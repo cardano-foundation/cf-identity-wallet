@@ -11,7 +11,7 @@ import { i18n } from "../../../i18n";
 import "./ConnectionRequest.scss";
 import {
   getQueueConnectionCredentialRequest,
-  setResolveConnectionCredentialRequest,
+  dequeueCredentialCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -78,7 +78,7 @@ const ConnectionCredentialRequest = () => {
     setShowRequest(false);
     setInitiateAnimation(false);
     setTimeout(() => {
-      dispatch(setResolveConnectionCredentialRequest());
+      dispatch(dequeueCredentialCredentialRequest());
     }, 0.5 * 1000);
   };
 
