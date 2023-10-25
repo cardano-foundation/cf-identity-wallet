@@ -18,7 +18,6 @@ import {
   pricetagOutline,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { JsonObject } from "@aries-framework/core";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
@@ -59,6 +58,7 @@ import {
 } from "../../../core/storage/preferences";
 import { ConnectionDetails } from "../Connections/Connections.types";
 import {
+  CardDetailsAttributes,
   CardDetailsBlock,
   CardDetailsItem,
 } from "../../components/CardDetailsElements";
@@ -249,81 +249,11 @@ const CredCardDetails = () => {
     );
   } else {
     const credentialSubject = cardData.credentialSubject;
-    // @TODO: handle when credentialSubject is an array
+    // @TODO - sdisalvo: Prevent app crashing when credentialSubject is an array
+    // Keeping this as a safety net as we may want to show a message in the future.
     if (Array.isArray(credentialSubject)) {
       return null;
     }
-
-    const nestedObject = (item: any) => {
-      return (
-        <>
-          {typeof item === ("string" || "number") && <span>{item}</span>}
-          {typeof item === "object" && item !== null && (
-            <div className="card-details-json-column">
-              {Object.entries(item).map((sub: any, i: number) => {
-                return (
-                  <div
-                    className={`card-details-json-${
-                      typeof sub[1] !== ("string" || "number")
-                        ? "column"
-                        : "nested"
-                    }`}
-                    key={i}
-                  >
-                    <span className="card-details-json-row">
-                      <strong>{sub[0] + ":"}</strong>
-                      {nestedObject(sub[1])}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </>
-      );
-    };
-
-    const PrintJson = () => {
-      const object = Object.entries(cardData.credentialSubject);
-      return (
-        <>
-          {object.map((item, index) => {
-            return (
-              <div
-                className={
-                  typeof item[1] !== ("string" || "number")
-                    ? "card-details-json-column"
-                    : "card-details-json-row"
-                }
-                key={index}
-              >
-                {item[0] === "id" ? (
-                  <span className="card-details-json-row card-details-attributes-id">
-                    <strong>{item[0] + ":"}</strong>
-                    <CardDetailsItem
-                      info={item[1] as string}
-                      copyButton={true}
-                      testId="card-details-attributes-id"
-                    />
-                  </span>
-                ) : (
-                  <span
-                    className={
-                      typeof item[1] !== ("string" || "number")
-                        ? "card-details-json-column"
-                        : "card-details-json-row"
-                    }
-                  >
-                    <strong>{item[0] + ":"}</strong>
-                    {nestedObject(item[1])}
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </>
-      );
-    };
 
     return (
       <IonPage className="tab-layout card-details">
@@ -352,9 +282,11 @@ const CredCardDetails = () => {
                 testId="card-details-credential-type"
               />
             </CardDetailsBlock>
-            <CardDetailsBlock title="creds.card.details.attributes">
-              <PrintJson />
-            </CardDetailsBlock>
+            {credentialSubject && (
+              <CardDetailsBlock title="creds.card.details.attributes">
+                <CardDetailsAttributes data={credentialSubject} />
+              </CardDetailsBlock>
+            )}
             {connectionDetails?.label && (
               <CardDetailsBlock title="creds.card.details.connection">
                 <CardDetailsItem

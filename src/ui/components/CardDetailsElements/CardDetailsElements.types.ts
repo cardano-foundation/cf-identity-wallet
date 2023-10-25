@@ -1,3 +1,4 @@
+import { JsonObject } from "@aries-framework/core";
 import { ReactNode } from "react";
 
 interface CardDetailsItemProps {
@@ -13,4 +14,12 @@ interface CardDetailsBlockProps {
   children?: ReactNode;
 }
 
-export type { CardDetailsItemProps, CardDetailsBlockProps };
+interface CardDetailsAttributesProps {
+  data: JsonObject;
+}
+
+export type {
+  CardDetailsItemProps,
+  CardDetailsBlockProps,
+  CardDetailsAttributesProps,
+};

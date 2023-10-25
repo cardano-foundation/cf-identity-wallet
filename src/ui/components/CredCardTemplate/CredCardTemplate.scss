@@ -34,7 +34,8 @@
     }
   }
 
-  &.university-degree-credential {
+  &.university-degree-credential,
+  &.generic-w3c-template {
     position: relative;
     background: var(--ion-color-gradient-university-card);
 

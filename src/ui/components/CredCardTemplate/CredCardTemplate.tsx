@@ -21,15 +21,16 @@ const CredCardTemplate = ({
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [cardData, setCardData] = useState<CredentialDetails>();
-  const isCardTemplate =
+  const isW3CTemplate =
+    shortData.credentialType ===
+    ("UniversityDegreeCredential" ||
+      !"AccessPassCredential" ||
+      !"PermanentResidentCard");
+  const isKnownTemplate =
     shortData.credentialType ===
     ("UniversityDegreeCredential" ||
       "AccessPassCredential" ||
       "PermanentResidentCard");
-  const colorBasedBackground = {
-    background: `linear-gradient(91.86deg, ${shortData.colors[0]} 28.76%, ${shortData.colors[1]} 119.14%)`,
-    zIndex: index,
-  };
 
   const getCredDetails = async () => {
     const cardDetails =
@@ -39,7 +40,7 @@ const CredCardTemplate = ({
 
   useEffect(() => {
     getCredDetails();
-  }, [shortData.id]);
+  }, [shortData]);
 
   return (
     <>
@@ -49,11 +50,11 @@ const CredCardTemplate = ({
           index !== undefined ? `${name}-index-${index}` : ""
         }`}
         className={`cred-card-template ${isActive ? "active" : ""} ${
-          isCardTemplate
+          isKnownTemplate
             ? shortData.credentialType
               .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
               .toLowerCase()
-            : "color-based-background"
+            : "generic-w3c-template"
         }`}
         onClick={() => {
           if (shortData.status === CredentialMetadataRecordStatus.PENDING) {
@@ -62,9 +63,9 @@ const CredCardTemplate = ({
             onHandleShowCardDetails(index);
           }
         }}
-        style={isCardTemplate ? { zIndex: index } : colorBasedBackground}
+        style={{ zIndex: index }}
       >
-        {shortData.credentialType === "UniversityDegreeCredential" && (
+        {isW3CTemplate && (
           <img
             src={W3CLogo}
             alt="w3c-card-background"
@@ -95,8 +96,7 @@ const CredCardTemplate = ({
           {shortData.status === CredentialMetadataRecordStatus.PENDING && (
             <CardBodyPending />
           )}
-          {shortData.credentialType === "UniversityDegreeCredential" &&
-            cardData !== undefined && (
+          {isW3CTemplate && cardData !== undefined && (
             <CardBodyUniversity cardData={cardData} />
           )}
         </div>
