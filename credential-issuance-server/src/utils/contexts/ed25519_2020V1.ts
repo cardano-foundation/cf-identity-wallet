@@ -1,95 +1,95 @@
 const Ed25519_2020V1 = {
   "@context": {
-    "id": "@id",
-    "type": "@type",
+    id: "@id",
+    type: "@type",
     "@protected": true,
-    "proof": {
+    proof: {
       "@id": "https://w3id.org/security#proof",
       "@type": "@id",
-      "@container": "@graph"
+      "@container": "@graph",
     },
-    "Ed25519VerificationKey2020": {
+    Ed25519VerificationKey2020: {
       "@id": "https://w3id.org/security#Ed25519VerificationKey2020",
       "@context": {
         "@protected": true,
-        "id": "@id",
-        "type": "@type",
-        "controller": {
+        id: "@id",
+        type: "@type",
+        controller: {
           "@id": "https://w3id.org/security#controller",
-          "@type": "@id"
+          "@type": "@id",
         },
-        "revoked": {
+        revoked: {
           "@id": "https://w3id.org/security#revoked",
-          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+          "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
         },
-        "publicKeyMultibase": {
+        publicKeyMultibase: {
           "@id": "https://w3id.org/security#publicKeyMultibase",
-          "@type": "https://w3id.org/security#multibase"
-        }
-      }
+          "@type": "https://w3id.org/security#multibase",
+        },
+      },
     },
-    "Ed25519Signature2020": {
+    Ed25519Signature2020: {
       "@id": "https://w3id.org/security#Ed25519Signature2020",
       "@context": {
         "@protected": true,
-        "id": "@id",
-        "type": "@type",
-        "challenge": "https://w3id.org/security#challenge",
-        "created": {
+        id: "@id",
+        type: "@type",
+        challenge: "https://w3id.org/security#challenge",
+        created: {
           "@id": "http://purl.org/dc/terms/created",
-          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+          "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
         },
-        "domain": "https://w3id.org/security#domain",
-        "expires": {
+        domain: "https://w3id.org/security#domain",
+        expires: {
           "@id": "https://w3id.org/security#expiration",
-          "@type": "http://www.w3.org/2001/XMLSchema#dateTime"
+          "@type": "http://www.w3.org/2001/XMLSchema#dateTime",
         },
-        "nonce": "https://w3id.org/security#nonce",
-        "proofPurpose": {
+        nonce: "https://w3id.org/security#nonce",
+        proofPurpose: {
           "@id": "https://w3id.org/security#proofPurpose",
           "@type": "@vocab",
           "@context": {
             "@protected": true,
-            "id": "@id",
-            "type": "@type",
-            "assertionMethod": {
+            id: "@id",
+            type: "@type",
+            assertionMethod: {
               "@id": "https://w3id.org/security#assertionMethod",
               "@type": "@id",
-              "@container": "@set"
+              "@container": "@set",
             },
-            "authentication": {
+            authentication: {
               "@id": "https://w3id.org/security#authenticationMethod",
               "@type": "@id",
-              "@container": "@set"
+              "@container": "@set",
             },
-            "capabilityInvocation": {
+            capabilityInvocation: {
               "@id": "https://w3id.org/security#capabilityInvocationMethod",
               "@type": "@id",
-              "@container": "@set"
+              "@container": "@set",
             },
-            "capabilityDelegation": {
+            capabilityDelegation: {
               "@id": "https://w3id.org/security#capabilityDelegationMethod",
               "@type": "@id",
-              "@container": "@set"
+              "@container": "@set",
             },
-            "keyAgreement": {
+            keyAgreement: {
               "@id": "https://w3id.org/security#keyAgreementMethod",
               "@type": "@id",
-              "@container": "@set"
-            }
-          }
+              "@container": "@set",
+            },
+          },
         },
-        "proofValue": {
+        proofValue: {
           "@id": "https://w3id.org/security#proofValue",
-          "@type": "https://w3id.org/security#multibase"
+          "@type": "https://w3id.org/security#multibase",
         },
-        "verificationMethod": {
+        verificationMethod: {
           "@id": "https://w3id.org/security#verificationMethod",
-          "@type": "@id"
-        }
-      }
-    }
-  }
-}
+          "@type": "@id",
+        },
+      },
+    },
+  },
+};
 
-export { Ed25519_2020V1 }
+export { Ed25519_2020V1 };

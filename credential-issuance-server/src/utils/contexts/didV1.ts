@@ -1,60 +1,60 @@
 const DID_V1 = {
   "@context": {
     "@protected": true,
-    "id": "@id",
-    "type": "@type",
+    id: "@id",
+    type: "@type",
 
-    "alsoKnownAs": {
+    alsoKnownAs: {
       "@id": "https://www.w3.org/ns/activitystreams#alsoKnownAs",
-      "@type": "@id"
+      "@type": "@id",
     },
-    "assertionMethod": {
+    assertionMethod: {
       "@id": "https://w3id.org/security#assertionMethod",
       "@type": "@id",
-      "@container": "@set"
+      "@container": "@set",
     },
-    "authentication": {
+    authentication: {
       "@id": "https://w3id.org/security#authenticationMethod",
       "@type": "@id",
-      "@container": "@set"
+      "@container": "@set",
     },
-    "capabilityDelegation": {
+    capabilityDelegation: {
       "@id": "https://w3id.org/security#capabilityDelegationMethod",
       "@type": "@id",
-      "@container": "@set"
+      "@container": "@set",
     },
-    "capabilityInvocation": {
+    capabilityInvocation: {
       "@id": "https://w3id.org/security#capabilityInvocationMethod",
       "@type": "@id",
-      "@container": "@set"
+      "@container": "@set",
     },
-    "controller": {
+    controller: {
       "@id": "https://w3id.org/security#controller",
-      "@type": "@id"
+      "@type": "@id",
     },
-    "keyAgreement": {
+    keyAgreement: {
       "@id": "https://w3id.org/security#keyAgreementMethod",
       "@type": "@id",
-      "@container": "@set"
+      "@container": "@set",
     },
-    "service": {
+    service: {
       "@id": "https://www.w3.org/ns/did#service",
       "@type": "@id",
       "@context": {
         "@protected": true,
-        "id": "@id",
-        "type": "@type",
-        "serviceEndpoint": {
+        id: "@id",
+        type: "@type",
+        serviceEndpoint: {
           "@id": "https://www.w3.org/ns/did#serviceEndpoint",
-          "@type": "@id"
-        }
-      }
+          "@type": "@id",
+        },
+      },
     },
-    "verificationMethod": {
+    verificationMethod: {
       "@id": "https://w3id.org/security#verificationMethod",
-      "@type": "@id"
-    }
-  }
-}
+      "@type": "@id",
+    },
+  },
+};
 
-export { DID_V1 }
+export { DID_V1 };
