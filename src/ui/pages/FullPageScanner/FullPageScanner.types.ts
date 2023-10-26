@@ -2,4 +2,8 @@ interface FullPageScannerProps {
   setShowScan: (value: boolean) => void;
 }
 
-export type { FullPageScannerProps };
+interface ScannerRefComponent {
+  stopScan: () => void;
+}
+
+export type { FullPageScannerProps, ScannerRefComponent };
