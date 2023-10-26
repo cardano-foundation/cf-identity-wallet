@@ -44,6 +44,7 @@ const CardDetailsAttributes = ({ data }: CardDetailsAttributesProps) => {
       {attributes.map((item, index) => {
         return item[0] === "id" ? (
           <CardDetailsItem
+            key={index}
             info={item[1] as string}
             copyButton={true}
             testId="card-details-attributes-id"

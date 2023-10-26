@@ -92,7 +92,11 @@ const CredCardTemplate = ({
           <div className="card-header">
             <span className="card-logo">
               <img
-                src={(isW3CTemplate && W3CLogo) || (isResidency && uscisLogo)}
+                src={
+                  (isW3CTemplate && W3CLogo) ||
+                  (isResidency && uscisLogo) ||
+                  (isAccessPass && summitLogo)
+                }
                 alt="card-logo"
               />
             </span>
