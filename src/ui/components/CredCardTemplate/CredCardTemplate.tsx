@@ -22,6 +22,7 @@ const CredCardTemplate = ({
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [cardData, setCardData] = useState<CredentialDetails>();
+  console.log("shortData", shortData);
   const isW3CTemplate =
     shortData.credentialType ===
     (CredentialType.UNIVERSITY_DEGREE_CREDENTIAL ||
@@ -53,8 +54,8 @@ const CredCardTemplate = ({
         className={`cred-card-template ${isActive ? "active" : ""} ${
           isKnownTemplate
             ? shortData.credentialType
-              .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
-              .toLowerCase()
+                .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
+                .toLowerCase()
             : "generic-w3c-template"
         }`}
         onClick={() => {

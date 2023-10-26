@@ -13,6 +13,7 @@ interface CredentialMetadataRecordProps {
   credentialRecordId: string;
   status: CredentialMetadataRecordStatus;
   connectionId?: string;
+  degreeType?: string;
 }
 
 export { CredentialMetadataRecordStatus };
