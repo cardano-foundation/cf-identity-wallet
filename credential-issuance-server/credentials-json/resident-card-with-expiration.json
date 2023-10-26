@@ -18,7 +18,7 @@
     "givenName": "John",
     "familyName": "Smith",
     "gender": "Male",
-    "image": "static/johnsmith_photo.jpg",
+    "image": "http://127.0.0.1:3001/static/ResIdImg.jpg",
     "residentSince": "2022-10-10T10:12:12Z",
     "lprCategory": "C09",
     "lprNumber": "999-999-999"
