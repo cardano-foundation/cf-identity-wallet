@@ -9,8 +9,6 @@ import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import "./CredCardTemplate.scss";
 import CardBodyPending from "./CardBodyPending";
 import CardBodyUniversity from "./CardBodyUniversity";
-import { CredentialDetails } from "../../../core/agent/agent.types";
-import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialType } from "../../constants/dictionary";
 
 const CredCardTemplate = ({
@@ -21,8 +19,6 @@ const CredCardTemplate = ({
   onHandleShowCardDetails,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const [cardData, setCardData] = useState<CredentialDetails>();
-  console.log("shortData", shortData);
   const isW3CTemplate =
     shortData.credentialType ===
     (CredentialType.UNIVERSITY_DEGREE_CREDENTIAL ||
@@ -34,16 +30,6 @@ const CredCardTemplate = ({
       CredentialType.ACCESS_PASS_CREDENTIAL ||
       CredentialType.PERMANENT_RESIDENT_CARD);
 
-  const getCredDetails = async () => {
-    const cardDetails =
-      await AriesAgent.agent.credentials.getCredentialDetailsById(shortData.id);
-    setCardData(cardDetails);
-  };
-
-  useEffect(() => {
-    getCredDetails();
-  }, [shortData]);
-
   return (
     <>
       <div
@@ -54,8 +40,8 @@ const CredCardTemplate = ({
         className={`cred-card-template ${isActive ? "active" : ""} ${
           isKnownTemplate
             ? shortData.credentialType
-                .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
-                .toLowerCase()
+              .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
+              .toLowerCase()
             : "generic-w3c-template"
         }`}
         onClick={() => {
@@ -98,8 +84,8 @@ const CredCardTemplate = ({
           {shortData.status === CredentialMetadataRecordStatus.PENDING && (
             <CardBodyPending />
           )}
-          {isW3CTemplate && cardData !== undefined && (
-            <CardBodyUniversity cardData={cardData} />
+          {isW3CTemplate && shortData !== undefined && (
+            <CardBodyUniversity cardData={shortData} />
           )}
         </div>
       </div>

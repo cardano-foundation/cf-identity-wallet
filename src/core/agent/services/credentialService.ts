@@ -88,13 +88,14 @@ class CredentialService extends AgentService {
       await this.agent.modules.generalStorage.getAllCredentialMetadata(
         isGetArchive
       );
-    console.log("listMetadatas", listMetadatas);
     return listMetadatas.map((element: CredentialMetadataRecord) =>
       this.getCredentialShortDetails(element)
     );
   }
 
-  getCredentialShortDetails(metadata: any): any {
+  getCredentialShortDetails(
+    metadata: CredentialMetadataRecord
+  ): CredentialShortDetails {
     return {
       id: metadata.id,
       colors: metadata.colors,
@@ -102,7 +103,7 @@ class CredentialService extends AgentService {
       issuerLogo: metadata.issuerLogo,
       credentialType: metadata.credentialType,
       status: metadata.status,
-      degreeType: metadata.degreeType,
+      credentialSubjectType: metadata.credentialSubjectType,
     };
   }
 
@@ -175,11 +176,6 @@ class CredentialService extends AgentService {
       await this.agent.w3cCredentials.getCredentialRecordById(
         credentialRecord.credentials[0].credentialRecordId
       );
-    const credentialSubject = w3cCredential.credential
-      .credentialSubject as any as JsonCredential["credentialSubject"];
-    if (Array.isArray(credentialSubject)) {
-      return null;
-    }
 
     const connection = await this.agent.connections.findById(
       credentialRecord?.connectionId ?? ""
@@ -189,11 +185,16 @@ class CredentialService extends AgentService {
         CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
       );
     }
+    const credentialSubject = w3cCredential.credential
+      .credentialSubject as any as JsonCredential["credentialSubject"];
     const data = {
       credentialType: w3cCredential.credential.type?.find(
         (t) => t !== "VerifiableCredential"
       ),
       status: CredentialMetadataRecordStatus.CONFIRMED,
+      credentialSubjectType: Array.isArray(credentialSubject)
+        ? undefined
+        : ((credentialSubject.degree as JsonObject)?.type as string) || "",
     };
     await this.agent.modules.generalStorage.updateCredentialMetadata(
       metadata?.id,
@@ -207,7 +208,7 @@ class CredentialService extends AgentService {
       issuanceDate: metadata.issuanceDate,
       issuerLogo: connection?.imageUrl ?? undefined,
       status: data.status,
-      degreeType: (credentialSubject.degree as JsonObject)?.type as string,
+      credentialSubjectType: data.credentialSubjectType || "",
     };
   }
 

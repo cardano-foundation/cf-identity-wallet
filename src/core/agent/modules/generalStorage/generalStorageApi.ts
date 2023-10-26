@@ -62,7 +62,7 @@ export class GeneralStorageApi {
 
   async getAllAvailableIdentifierMetadata(): Promise<
     IdentifierMetadataRecord[]
-  > {
+    > {
     return this.identifierMetadataRepository.findByQuery(this.agentContext, {
       isArchived: false,
     });
@@ -70,7 +70,7 @@ export class GeneralStorageApi {
 
   async getAllArchivedIdentifierMetadata(): Promise<
     IdentifierMetadataRecord[]
-  > {
+    > {
     return this.identifierMetadataRepository.findByQuery(this.agentContext, {
       isArchived: true,
     });
@@ -176,7 +176,8 @@ export class GeneralStorageApi {
       if (data.status) record.status = data.status;
       if (data.credentialType) record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
-      if (data.degreeType !== undefined) record.degreeType = data.degreeType;
+      if (data.credentialSubjectType)
+        record.credentialSubjectType = data.credentialSubjectType;
       await this.credentialMetadataRepository.update(this.agentContext, record);
     }
   }
