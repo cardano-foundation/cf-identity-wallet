@@ -45,7 +45,8 @@
                     ["parent", "sibling", "index"]
                 ]
             }
-        ]
+        ],
+        "react/display-name": "off"
     },
     "settings": {
         "react": {
