@@ -31,8 +31,8 @@ const connectionStatus = {
 };
 
 const connectionType = {
-  connection: "connection",
-  credential: "credential",
+  connection: "Connection",
+  credential: "Credential",
 };
 
 const operationState = {
