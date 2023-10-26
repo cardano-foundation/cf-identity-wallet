@@ -374,7 +374,7 @@ const IdentityOptions = ({
       <IonModal
         isOpen={viewIsOpen}
         initialBreakpoint={1}
-        breakpoints={[1]}
+        breakpoints={[0, 1]}
         className="page-layout"
         data-testid="view-identity-modal"
         onDidDismiss={() => setViewIsOpen(false)}
