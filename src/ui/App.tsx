@@ -27,20 +27,12 @@ const App = () => {
     setShowToast(Object.values(toastState).indexOf(currentOperation) > -1);
   }, [currentOperation]);
 
-  const handleShowScanner = (showScanner: boolean) => {
-    setShowScan(showScanner);
-  };
-
   return (
     <IonApp>
       <AppWrapper>
         <StrictMode>
           {showScan ? (
-            <FullPageScanner
-              setShowScan={(showScanner: boolean) =>
-                handleShowScanner(showScanner)
-              }
-            />
+            <FullPageScanner setShowScan={setShowScan} />
           ) : (
             <Routes />
           )}
