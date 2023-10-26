@@ -196,7 +196,10 @@
           &.left-column {
             width: 30%;
             z-index: 1;
-            border-radius: 0.6rem;
+
+            img {
+              border-radius: 0.5rem;
+            }
           }
 
           &.center-column {
