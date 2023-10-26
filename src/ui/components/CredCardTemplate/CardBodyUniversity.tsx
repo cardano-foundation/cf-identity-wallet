@@ -17,7 +17,7 @@ const CardBodyUniversity = ({ cardData }: any) => {
             {i18n.t("creds.card.layout.type")}
           </span>
           <span className="card-footer-column-value">
-            {cardData.credentialSubject.degree.type
+            {cardData.credentialSubject.degree?.type
               .replace(/([A-Z][a-z])/g, " $1")
               .replace(/(\d)/g, " $1")}
           </span>

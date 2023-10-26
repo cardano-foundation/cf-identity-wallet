@@ -317,7 +317,7 @@
           }
         },
         "view": {
-          "cancel": "Cancel",
+          "cancel": "Done",
           "title": "Identity JSON",
           "copy": "Copy JSON",
           "save": "Save to device"
@@ -335,9 +335,14 @@
     },
     "card": {
       "layout": {
-        "type": "TYPE",
-        "validity": "VALID FROM - TO",
-        "issued": "ISSUED"
+        "type": "Type",
+        "validity": "Valid from - to",
+        "issued": "Issued",
+        "name": "Name",
+        "countryofbirth": "Country of birth",
+        "expirationdate": "Expiration date",
+        "category": "Category",
+        "residentsince": "Resident since"
       },
       "details": {
         "done": "Done",
@@ -355,7 +360,7 @@
           "archive": "Archive credential"
         },
         "view": {
-          "cancel": "Cancel",
+          "cancel": "Done",
           "title": "Credential JSON",
           "copy": "Copy JSON",
           "save": "Save to device"
