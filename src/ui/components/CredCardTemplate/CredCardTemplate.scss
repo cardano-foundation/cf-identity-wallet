@@ -105,18 +105,60 @@
 
     > img {
       position: absolute;
-      top: -25%;
-      left: 0%;
-      width: 285%;
-      max-width: 315%;
+      top: -12%;
+      left: -115%;
+      width: 330%;
+      max-width: 330%;
       opacity: 0.04;
     }
 
     .cred-card-template-inner {
       color: var(--ion-color-primary);
 
-      &.pending .card-footer-column-label {
-        color: var(--ion-color-secondary);
+      .card-body {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+
+        > div {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          font-style: normal;
+          line-height: normal;
+
+          &.left-column {
+            width: 65%;
+          }
+
+          &.right-column {
+            width: 35%;
+          }
+
+          .card-body-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+
+            &:not(:first-of-type) {
+              margin-top: 0.75rem;
+            }
+
+            .card-body-info-label {
+              font-size: 0.625rem;
+              font-weight: 700;
+              color: var(--ion-color-secondary);
+              text-transform: uppercase;
+            }
+
+            .card-body-info-value {
+              font-size: 0.875rem;
+              font-weight: 700;
+              color: var(--ion-color-primary);
+              margin-top: 0.31rem;
+            }
+          }
+        }
       }
     }
   }
@@ -137,10 +179,6 @@
 
     .cred-card-template-inner {
       color: var(--ion-color-primary);
-
-      &.pending .card-footer-column-label {
-        color: var(--ion-color-secondary);
-      }
 
       .card-body {
         display: flex;
