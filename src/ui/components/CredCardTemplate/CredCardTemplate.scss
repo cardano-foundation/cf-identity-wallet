@@ -99,6 +99,19 @@
   }
 
   &.access-pass-credential {
+    position: relative;
+    background: var(--ion-color-gradient-summit-card);
+    text-shadow: 0px 2px 4px rgba(24, 148, 215, 0.2);
+
+    > img {
+      position: absolute;
+      top: -25%;
+      left: 0%;
+      width: 285%;
+      max-width: 315%;
+      opacity: 0.04;
+    }
+
     .cred-card-template-inner {
       color: var(--ion-color-primary);
 
