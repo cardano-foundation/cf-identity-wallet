@@ -31,6 +31,7 @@ describe("getBackRoute", () => {
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {
+        initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
@@ -48,8 +49,8 @@ describe("getBackRoute", () => {
           isPaused: false,
         },
       },
-      identitiesCache: { identities: [] },
-      credsCache: { creds: [] },
+      identitiesCache: { identities: [], favourites: [] },
+      credsCache: { creds: [], favourites: [] },
       cryptoAccountsCache: {
         cryptoAccounts: [],
         defaultCryptoAccount: "",
@@ -116,6 +117,7 @@ describe("getBackRoute", () => {
   test("should update store correctly after /passcodelogin route", () => {
     storeMock = {
       stateCache: {
+        initialized: true,
         routes: [],
         authentication: {
           loggedIn: false,
@@ -138,8 +140,8 @@ describe("getBackRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      identitiesCache: { identities: [] },
-      credsCache: { creds: [] },
+      identitiesCache: { identities: [], favourites: [] },
+      credsCache: { creds: [], favourites: [] },
       cryptoAccountsCache: {
         cryptoAccounts: [],
         defaultCryptoAccount: "",
@@ -196,6 +198,7 @@ describe("getPreviousRoute", () => {
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {
+        initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
@@ -213,8 +216,8 @@ describe("getPreviousRoute", () => {
           isPaused: false,
         },
       },
-      identitiesCache: { identities: [] },
-      credsCache: { creds: [] },
+      identitiesCache: { identities: [], favourites: [] },
+      credsCache: { creds: [], favourites: [] },
       cryptoAccountsCache: {
         cryptoAccounts: [],
         defaultCryptoAccount: "",

@@ -26,17 +26,15 @@ const PasscodeLogin = () => {
   const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
-  const seedPhrase = localStorage.getItem("seedPhrase");
+  const seedPhrase = authentication.seedPhraseIsSet;
   const [isOpen, setIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
-  const headerText =
-    seedPhrase !== null
-      ? i18n.t("passcodelogin.alert.text.verify")
-      : i18n.t("passcodelogin.alert.text.restart");
-  const confirmButtonText =
-    seedPhrase !== null
-      ? i18n.t("passcodelogin.alert.button.verify")
-      : i18n.t("passcodelogin.alert.button.restart");
+  const headerText = seedPhrase
+    ? i18n.t("passcodelogin.alert.text.verify")
+    : i18n.t("passcodelogin.alert.text.restart");
+  const confirmButtonText = seedPhrase
+    ? i18n.t("passcodelogin.alert.button.verify")
+    : i18n.t("passcodelogin.alert.button.restart");
   const cancelButtonText = i18n.t("passcodelogin.alert.button.cancel");
 
   const handleClearState = () => {

@@ -14,6 +14,7 @@ import { RoutePath, TabsRoutePath } from "../paths";
 import { onboardingRoute, toastState } from "../../ui/constants/dictionary";
 
 const getNextRootRoute = (store: StoreState) => {
+  const isInitialized = store.stateCache.initialized;
   const authentication = store.stateCache.authentication;
   const routes = store.stateCache.routes;
   const initialRoute =
@@ -22,6 +23,8 @@ const getNextRootRoute = (store: StoreState) => {
   let path;
   if (authentication.passcodeIsSet && !authentication.loggedIn) {
     path = RoutePath.PASSCODE_LOGIN;
+  } else if (routes.length === 1 && !isInitialized) {
+    path = RoutePath.ONBOARDING;
   } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
     if (
       store.stateCache.currentOperation ===

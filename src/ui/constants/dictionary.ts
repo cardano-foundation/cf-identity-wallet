@@ -5,11 +5,25 @@ import {
 } from "../../core/agent/agent.types";
 import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
 import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import BackgroundDidKey0 from "../assets/images/did-key-0.png";
+import BackgroundDidKey1 from "../assets/images/did-key-1.png";
+import BackgroundDidKey2 from "../assets/images/did-key-2.png";
+import BackgroundDidKey3 from "../assets/images/did-key-3.png";
+import BackgroundKERI0 from "../assets/images/keri-0.png";
+import BackgroundKERI1 from "../assets/images/keri-1.png";
 
-const cardTypes = {
-  creds: "creds",
-  dids: "dids",
-};
+const MAX_FAVOURITES = 5;
+
+enum CardTypes {
+  CREDS = "creds",
+  DIDS = "dids",
+}
+
+enum CredentialType {
+  UNIVERSITY_DEGREE_CREDENTIAL = "UniversityDegreeCredential",
+  ACCESS_PASS_CREDENTIAL = "AccessPassCredential",
+  PERMANENT_RESIDENT_CARD = "PermanentResidentCard",
+}
 
 const connectionStatus = {
   pending: ConnectionStatus.PENDING,
@@ -29,7 +43,7 @@ const operationState = {
   renameWallet: "renameWallet",
   restoreWallet: "restoreWallet",
   deleteWallet: "deleteWallet",
-  renameIdentity: "renameIdentity",
+  updateIdentity: "updateIdentity",
   deleteIdentity: "deleteIdentity",
   deleteConnection: "deleteConnection",
   archiveCredential: "archiveCredential",
@@ -45,7 +59,7 @@ const toastState = {
   walletRestored: "walletRestored",
   walletDeleted: "walletDeleted",
   identityCreated: "identityCreated",
-  identityRenamed: "identityRenamed",
+  identityUpdated: "identityUpdated",
   identityDeleted: "identityDeleted",
   credentialDeleted: "credentialDeleted",
   credentialRestored: "credentialRestored",
@@ -62,6 +76,7 @@ const toastState = {
   newCredentialAdded: "newCredentialAdded",
   notesUpdated: "notesUpdated",
   noteRemoved: "noteRemoved",
+  maxFavouritesReached: "maxFavouritesReached",
 };
 
 const defaultCredentialsCardData: CredentialDetails = {
@@ -124,8 +139,19 @@ const onboardingRoute = {
   restoreRoute: "?route=onboardingrestore",
 };
 
+const MAPPING_THEME_BACKGROUND: Record<number, unknown> = {
+  0: BackgroundDidKey0,
+  1: BackgroundDidKey1,
+  2: BackgroundDidKey2,
+  3: BackgroundDidKey3,
+  4: BackgroundKERI0,
+  5: BackgroundKERI1,
+};
+
 export {
-  cardTypes,
+  MAX_FAVOURITES,
+  CardTypes,
+  CredentialType,
   connectionStatus,
   operationState,
   toastState,
@@ -135,4 +161,5 @@ export {
   blurredCryptoData,
   onboardingRoute,
   connectionType,
+  MAPPING_THEME_BACKGROUND,
 };

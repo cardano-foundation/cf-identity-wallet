@@ -23,6 +23,7 @@ describe("NextRoute", () => {
     localStorageMock = {};
     storeMock = {
       stateCache: {
+        initialized: true,
         routes: [],
         authentication: {
           loggedIn: false,
@@ -45,8 +46,8 @@ describe("NextRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      identitiesCache: { identities: [] },
-      credsCache: { creds: [] },
+      identitiesCache: { identities: [], favourites: [] },
+      credsCache: { creds: [], favourites: [] },
       cryptoAccountsCache: {
         cryptoAccounts: [],
         defaultCryptoAccount: "",
@@ -147,6 +148,7 @@ describe("NextRoute", () => {
 describe("getNextRoute", () => {
   const storeMock: RootState = {
     stateCache: {
+      initialized: true,
       routes: [],
       authentication: {
         loggedIn: false,
@@ -169,8 +171,8 @@ describe("getNextRoute", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
-    identitiesCache: { identities: [] },
-    credsCache: { creds: [] },
+    identitiesCache: { identities: [], favourites: [] },
+    credsCache: { creds: [], favourites: [] },
     cryptoAccountsCache: {
       cryptoAccounts: [],
       defaultCryptoAccount: "",

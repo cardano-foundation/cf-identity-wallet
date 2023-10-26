@@ -61,6 +61,7 @@ const PageLayout = ({
         const { backPath, updateRedux } = getBackRoute(currentPath, {
           store: { stateCache },
         });
+
         updateReduxState(
           backPath.pathname,
           { store: { stateCache } },

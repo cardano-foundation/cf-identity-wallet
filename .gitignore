@@ -26,3 +26,5 @@ yarn-debug.log*
 yarn-error.log*
 
 /.idea
+resources/android
+resources/ios

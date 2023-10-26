@@ -135,7 +135,7 @@ const ConnectionCredentialRequest = () => {
         primaryButtonText={
           requestType === connectionType.connection
             ? `${i18n.t("request.button.connect")}`
-            : `${i18n.t("request.button.accept-offer")}`
+            : `${i18n.t("request.button.acceptoffer")}`
         }
         primaryButtonAction={() => setAlertIsOpen(true)}
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
@@ -143,9 +143,9 @@ const ConnectionCredentialRequest = () => {
         secondaryButtonAction={() => handleCancel()}
       >
         {requestType === connectionType.connection ? (
-          <h2>{i18n.t("request.connection-title")}</h2>
+          <h2>{i18n.t("request.connection.title")}</h2>
         ) : (
-          <h2>{i18n.t("request.credential-title")}</h2>
+          <h2>{i18n.t("request.credential.title")}</h2>
         )}
         <IonGrid className="request-content">
           <IonRow className="request-icons-row">
@@ -176,10 +176,12 @@ const ConnectionCredentialRequest = () => {
             <IonCol size="12">
               {requestType === connectionType.connection ? (
                 <span>
-                  {requestType + i18n.t("request.request-connection")}
+                  {requestType + i18n.t("request.connection.requestconnection")}
                 </span>
               ) : (
-                <span>{requestType + i18n.t("request.offer-credential")}</span>
+                <span>
+                  {requestType + i18n.t("request.credential.offercredential")}
+                </span>
               )}
               <strong>{requestData?.label}</strong>
             </IonCol>
@@ -205,19 +207,23 @@ const ConnectionCredentialRequest = () => {
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
-        dataTestId="alert-confirm"
+        dataTestId={
+          requestType === connectionType.connection
+            ? "alert-confirm-connection"
+            : "alert-confirm-credential"
+        }
         headerText={i18next.t(
           requestType === connectionType.connection
-            ? "request.alert.title-confirm-connection"
-            : "request.alert.title-confirm-credential",
+            ? "request.connection.alert.titleconfirm"
+            : "request.credential.alert.titleconfirm",
           {
             initiator: requestData?.label,
           }
         )}
         confirmButtonText={
           requestType === connectionType.connection
-            ? `${i18n.t("request.alert.confirm-connection")}`
-            : `${i18n.t("request.alert.confirm-credential")}`
+            ? `${i18n.t("request.connection.alert.confirm")}`
+            : `${i18n.t("request.credential.alert.confirm")}`
         }
         cancelButtonText={`${i18n.t("request.alert.cancel")}`}
         actionConfirm={handleAccept}

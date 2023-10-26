@@ -6,12 +6,17 @@ import {
   IonSpinner,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { shareOutline, ellipsisVertical, trashOutline } from "ionicons/icons";
+import {
+  shareOutline,
+  ellipsisVertical,
+  trashOutline,
+  heartOutline,
+  heart,
+} from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
-import { DidCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -24,7 +29,10 @@ import { ShareIdentity } from "../../components/ShareIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import {
+  addFavouriteIdentityCache,
+  getFavouritesIdentitiesCache,
   getIdentitiesCache,
+  removeFavouriteIdentityCache,
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -36,14 +44,26 @@ import {
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { IdentityCardInfoKey } from "../../components/IdentityCardInfoKey";
 import { IdentityCardInfoKeri } from "../../components/IdentityCardInfoKeri";
-import { operationState } from "../../constants/dictionary";
+import {
+  MAX_FAVOURITES,
+  operationState,
+  toastState,
+} from "../../constants/dictionary";
 import { IdentityOptions } from "../../components/IdentityOptions";
+import { IdentityCardTemplate } from "../../components/IdentityCardTemplate";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences";
+import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
+import "./DidCardDetails.scss";
 
 const DidCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const identitiesData = useAppSelector(getIdentitiesCache);
+  const favouritesIdentitiesData = useAppSelector(getFavouritesIdentitiesCache);
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [identityOptionsIsOpen, setIdentityOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -53,6 +73,10 @@ const DidCardDetails = () => {
     DIDDetails | KERIDetails | undefined
   >();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+
+  const isFavourite = favouritesIdentitiesData?.some(
+    (fav) => fav.id === params.id
+  );
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -85,7 +109,7 @@ const DidCardDetails = () => {
     history.push(backPath.pathname);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
     // Remember to update identity.card.details.options file too.
@@ -93,14 +117,65 @@ const DidCardDetails = () => {
       const updatedIdentities = identitiesData.filter(
         (item) => item.id !== cardData.id
       );
+      await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
+      await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
       dispatch(setIdentitiesCache(updatedIdentities));
     }
     handleDone();
   };
 
   const AdditionalButtons = () => {
+    const handleSetFavourite = (id: string) => {
+      if (isFavourite) {
+        PreferencesStorage.set(PreferencesKeys.APP_DIDS_FAVOURITES, {
+          favourites: favouritesIdentitiesData.filter((fav) => fav.id !== id),
+        })
+          .then(() => {
+            dispatch(removeFavouriteIdentityCache(id));
+          })
+          .catch((error) => {
+            /*TODO: handle error*/
+          });
+      } else {
+        if (favouritesIdentitiesData.length >= MAX_FAVOURITES) {
+          dispatch(setCurrentOperation(toastState.maxFavouritesReached));
+          return;
+        }
+
+        PreferencesStorage.set(PreferencesKeys.APP_DIDS_FAVOURITES, {
+          favourites: [{ id, time: Date.now() }, ...favouritesIdentitiesData],
+        })
+          .then(() => {
+            dispatch(addFavouriteIdentityCache({ id, time: Date.now() }));
+          })
+          .catch((error) => {
+            /*TODO: handle error*/
+          });
+      }
+    };
     return (
       <>
+        <IonButton
+          shape="round"
+          className={`heart-button-${
+            isFavourite ? "favourite" : "no-favourite"
+          }`}
+          data-testid="heart-button"
+          onClick={() => {
+            handleSetFavourite(params.id);
+          }}
+        >
+          <IonIcon
+            slot="icon-only"
+            icon={isFavourite ? heart : heartOutline}
+            className={`heart-icon-${
+              isFavourite ? "favourite" : "no-favourite"
+            }`}
+            data-testid={`heart-icon-${
+              isFavourite ? "favourite" : "no-favourite"
+            }`}
+          />
+        </IonButton>
         <IonButton
           shape="round"
           className="share-button"
@@ -148,11 +223,11 @@ const DidCardDetails = () => {
             className="spinner-container"
             data-testid="spinner-container"
           >
-            <IonSpinner name="dots" />
+            <IonSpinner name="circular" />
           </div>
         ) : (
           <>
-            <DidCard
+            <IdentityCardTemplate
               cardData={cardData}
               isActive={false}
             />
@@ -194,8 +269,8 @@ const DidCardDetails = () => {
         )}
         {cardData && (
           <IdentityOptions
-            isOpen={identityOptionsIsOpen}
-            setIsOpen={setIdentityOptionsIsOpen}
+            optionsIsOpen={identityOptionsIsOpen}
+            setOptionsIsOpen={setIdentityOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
           />

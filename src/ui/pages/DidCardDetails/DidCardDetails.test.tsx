@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { waitForIonicReact } from "@ionic/react-test-utils";
+import { Preferences, SetOptions } from "@capacitor/preferences";
 import { didFix, identityFix } from "../../__fixtures__/identityFix";
 import { DidCardDetails } from "./DidCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
@@ -14,6 +15,10 @@ import {
   filteredDidFix,
   filteredKeriFix,
 } from "../../__fixtures__/filteredIdentityFix";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences";
 
 const path = TabsRoutePath.DIDS + "/" + identityFix[0].id;
 
@@ -57,6 +62,7 @@ const initialStateDidKey = {
   },
   identitiesCache: {
     identities: filteredDidFix,
+    favourites: [],
   },
 };
 const initialStateKeri = {
@@ -77,6 +83,7 @@ const initialStateKeri = {
   },
   identitiesCache: {
     identities: filteredKeriFix,
+    favourites: [],
   },
 };
 
@@ -300,6 +307,36 @@ describe("Cards Details page", () => {
       expect(
         getByText(EN_TRANSLATIONS.identity.card.details.delete.alert.title)
       ).toBeVisible();
+    });
+  });
+
+  test.skip("It changes to favourite icon on click disabled favourite button", async () => {
+    PreferencesStorage.set = jest
+      .fn()
+      .mockImplementation(async (data: SetOptions): Promise<void> => {
+        expect(data.key).toBe(PreferencesKeys.APP_DIDS_FAVOURITES);
+        expect(data.value).toBe(filteredDidFix[0]);
+      });
+
+    const { getByTestId, getByText, container } = render(
+      <Provider store={storeMockedDidKey}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={DidCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("heart-button"));
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getByTestId("heart-icon-favourite")).toBeVisible();
     });
   });
 

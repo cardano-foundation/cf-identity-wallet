@@ -14,9 +14,13 @@ import {
   setQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
+import {
+  setFavouritesIdentitiesCache,
+  setIdentitiesCache,
+} from "../../../store/reducers/identitiesCache";
 import {
   setCredsCache,
+  setFavouritesCredsCache,
   updateOrAddCredsCache,
 } from "../../../store/reducers/credsCache";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -38,6 +42,7 @@ import { toastState } from "../../constants/dictionary";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
+import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -167,6 +172,18 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
   const initApp = async () => {
+    try {
+      const isInitialized = await PreferencesStorage.get(
+        PreferencesKeys.APP_ALREADY_INIT
+      );
+      dispatch(setInitialized(isInitialized?.initialized as boolean));
+    } catch (e) {
+      // TODO
+      await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, "");
+      await SecureStorage.set(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY, "");
+      await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
+    }
+
     await AriesAgent.agent.start();
     dispatch(setPauseQueueConnectionCredentialRequest(true));
     const connectionsDetails =
@@ -189,6 +206,28 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(setHideCryptoBalances(!!hideCryptoBalances.hidden));
     } catch (e) {
       // @TODO - sdisalvo: handle error
+    }
+
+    try {
+      const didsFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_DIDS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesIdentitiesCache(
+          didsFavourites.favourites as FavouriteIdentity[]
+        )
+      );
+
+      const credsFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_CREDS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesCredsCache(
+          credsFavourites.favourites as FavouriteIdentity[]
+        )
+      );
+    } catch (e) {
+      // @TODO: handle error
     }
 
     dispatch(

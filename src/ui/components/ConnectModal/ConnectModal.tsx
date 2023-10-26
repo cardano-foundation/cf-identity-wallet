@@ -19,8 +19,10 @@ const ConnectModal = ({
   type,
   connectModalIsOpen,
   setConnectModalIsOpen,
+  handleProvideQr,
 }: ConnectModalProps) => {
   const dispatch = useAppDispatch();
+
   return (
     <IonModal
       isOpen={connectModalIsOpen}
@@ -66,6 +68,7 @@ const ConnectModal = ({
                 <span
                   className="add-connection-modal-option"
                   data-testid="add-connection-modal-provide-qr-code"
+                  onClick={handleProvideQr}
                 >
                   <span>
                     <IonButton shape="round">

@@ -3,23 +3,23 @@
     "slides": [
       {
         "title": "Welcome to your Cardano Foundation Identity Wallet",
-        "description": "A secure and easy-to-use tool that allows you to manage your digital identity and control your personal data"
+        "description": "An opensource mobile digital wallet that enables you to securely manage your own identity in a privacy-preserving and self-sovereign manner."
       },
       {
-        "title": "Securerly manage your digital identity",
-        "description": "Securely manage your digital identity and share your personal data with confidence"
+        "title": "Empowerment with Self-Sovereign Identity (SSI)",
+        "description": "Embrace SSI principles, store private keys locally in your mobile device's Hardware Security Module, and control your identity."
       },
       {
-        "title": "Take control of your personal data",
-        "description": "Say goodbye to the days of handing over your personal data to third-party companies"
+        "title": "Privacy & Security: Your Top Priorities",
+        "description": "Prioritize privacy and security with Decentralized Identifiers and Verifiable Credentials. Control your data, what you share, with whom, and for how long."
       },
       {
-        "title": "Verify your identity with ease",
-        "description": "Verify your identity for various online services, without sharing unnecessary personal information"
+        "title": "Embrace Interoperability for a Wider Reach",
+        "description": "Supporting new and existing standards, ecosystems, and frameworks is crucial to achieving widespread adoption and seamless interoperability."
       },
       {
-        "title": "Experience the power of decentralized identity",
-        "description": "As a decentralized identity platform, you take control of your digital identity and your personal data"
+        "title": "Decentralize Your Digital Identity",
+        "description": "Traditional identity systems offer minimal control over your digital identifiers. Decentralized technology transfers ownership and control to you."
       }
     ],
     "getstarted": {
@@ -243,7 +243,8 @@
   "identity": {
     "tab": {
       "title": "Identities",
-      "create": "Create an identity"
+      "create": "Create an identity",
+      "alldids": "All identities"
     },
     "card": {
       "layout": {
@@ -310,6 +311,7 @@
           "delete": "Delete identity",
           "inner": {
             "label": "Display name",
+            "theme": "Edit theme",
             "confirm": "Confirm changes",
             "error": "Must be less than 32 characters long"
           }
@@ -327,22 +329,26 @@
     "tab": {
       "title": "Credentials",
       "create": "Add a credential",
-      "viewarchived": "View archived credentials"
+      "viewarchived": "View archived credentials",
+      "favourites": "Favourites",
+      "allcreds": "All Credentials"
     },
     "card": {
       "layout": {
-        "name": "NAME",
+        "type": "TYPE",
+        "validity": "VALID FROM - TO",
         "issued": "ISSUED"
       },
       "details": {
         "done": "Done",
         "restore": "Restore",
-        "types": "Types",
+        "type": "Type",
         "attributes": "Attributes",
         "connection": "Connection",
         "issuancedate": "Issuance Date",
         "expirationdate": "Expiration date",
         "prooftypes": "Proof Types",
+        "notavailable": "N/A",
         "options": {
           "title": "Credential options",
           "view": "View JSON",
@@ -466,6 +472,7 @@
   "connectmodal": {
     "title": "Add a ",
     "scan": "Scan a QR code",
+    "connect": "Scan to connect",
     "provide": "Provide a QR code"
   },
   "verifypassword": {
@@ -519,13 +526,18 @@
     "more": "More share options"
   },
   "createidentity": {
-    "title": "Create new identity",
+    "title": "Add an identity",
     "displayname": {
       "title": "Display name",
       "placeholder": "Create a name for this identity"
     },
     "identitytype": {
-      "title": "Identity type"
+      "title": "Identity type",
+      "didkey": "did:key",
+      "keri": "KERI AID"
+    },
+    "theme": {
+      "title": "Choose a theme"
     },
     "confirmbutton": "Create identity",
     "error": {
@@ -591,6 +603,10 @@
       "more": "More share options"
     }
   },
+  "shareqr": {
+    "divider": "or",
+    "more": "More share options"
+  },
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
     "walletcreated": "Seed phrase verified",
@@ -598,7 +614,7 @@
     "walletrestored": "Seed phrase verified",
     "walletdeleted": "Account deleted successfully",
     "identitycreated": "New identity created successfully",
-    "identityrenamed": "Identity successfully renamed",
+    "identityupdated": "Identity successfully updated",
     "identitydeleted": "Identity successfully deleted",
     "credentialdeleted": "Credential deleted successfully",
     "credentialsdeleted": "Credentials deleted successfully",
@@ -614,7 +630,8 @@
     "credentialrequestpending": "Credential request pending",
     "newcredentialadded": "New credential added",
     "notesupdated": "Notes updated successfully",
-    "noteremoved": "Note removed successfully"
+    "noteremoved": "Note removed successfully",
+    "maxfavouritesreached": "Maximum of 5 favourites reached"
   },
   "scan": {
     "tab": {
@@ -625,20 +642,28 @@
     }
   },
   "request": {
-    "connection-title": "Connect",
-    "credential-title": "Credential offer",
-    "request-connection": " request from",
-    "offer-credential": " offer from",
+    "connection": {
+      "title": "Connect",
+      "requestconnection": " request from",
+      "alert": {
+        "titleconfirm": "Are you sure about proceeding with your connection to {{initiator}}?",
+        "confirm": "Yes, connect"
+      }
+    },
+    "credential": {
+      "title": "Credential offer",
+      "offercredential": " offer from",
+      "alert": {
+        "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
+        "confirm": "Yes, accept credential"
+      }
+    },
     "button": {
       "connect": "Connect",
-      "accept-offer": "Accept credential",
+      "acceptoffer": "Accept credential",
       "cancel": "Cancel"
     },
     "alert": {
-      "title-confirm-connection": "Are you sure about proceeding with your connection to {{initiator}}?",
-      "title-confirm-credential": "Are you sure you want to continue with {{initiator}}?",
-      "confirm-connection": "Yes, connect",
-      "confirm-credential": "Yes, accept credential",
       "cancel": "Cancel"
     },
     "pending": "{{action}} pending",

@@ -23,6 +23,9 @@ jest.mock("../../../core/agent/agent", () => ({
           status: "pending",
         }),
       },
+      credentials: {
+        getCredentialDetailsById: jest.fn(),
+      },
     },
   },
 }));
