@@ -32,6 +32,7 @@ const agent = jest.mocked({
     getAll: jest.fn(),
     getById: jest.fn(),
     findAllByQuery: jest.fn(),
+    deleteById: jest.fn(),
   },
   modules: {
     generalStorage: {
@@ -553,5 +554,11 @@ describe("Connection service of agent", () => {
       state: DidExchangeState.RequestReceived,
       role: DidExchangeRole.Responder,
     });
+  });
+
+  test("can delete conenction by id", async () => {
+    const connectionId = "connectionId";
+    await connectionService.deleteConnectionById(connectionId);
+    expect(agent.connections.deleteById).toBeCalledWith(connectionId);
   });
 });

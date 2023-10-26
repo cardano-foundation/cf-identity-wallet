@@ -90,6 +90,15 @@ const ConnectionCredentialRequest = () => {
       await AriesAgent.agent.credentials.declineCredentialOffer(
         connectionCredentialRequest.id
       );
+    } else if (
+      connectionCredentialRequest.type ===
+        ConnectionCredentialRequestType.CONNECTION_INCOMING ||
+      connectionCredentialRequest.type ===
+        ConnectionCredentialRequestType.CONNECTION_RESPONSE
+    ) {
+      await AriesAgent.agent.connections.deleteConnectionById(
+        connectionCredentialRequest.id
+      );
     }
     handleReset();
   };

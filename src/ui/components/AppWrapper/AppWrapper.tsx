@@ -176,7 +176,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
       const isInitialized = await PreferencesStorage.get(
         PreferencesKeys.APP_ALREADY_INIT
       );
-      dispatch(setInitialized(isInitialized?.initialized as boolean));
+      dispatch(
+        setPauseQueueConnectionCredentialRequest(
+          isInitialized?.initialized as boolean
+        )
+      );
     } catch (e) {
       // TODO
       await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, "");

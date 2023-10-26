@@ -195,6 +195,10 @@ class ConnectionService extends AgentService {
     return this.getConnectionDetails(connection, outOfBandRecord);
   }
 
+  async deleteConnectionById(id: string): Promise<void> {
+    return this.agent.connections.deleteById(id);
+  }
+
   async getConnectionShortDetailById(
     id: string
   ): Promise<ConnectionShortDetails> {
