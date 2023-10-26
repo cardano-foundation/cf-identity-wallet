@@ -183,18 +183,34 @@
       .card-body {
         display: flex;
         flex-direction: row;
+        justify-content: space-between;
         height: 100%;
 
         > div {
           display: flex;
           flex-direction: column;
           justify-content: flex-end;
-          width: 33%;
           font-style: normal;
           line-height: normal;
 
-          &.right-column .card-body-info {
-            text-align: right;
+          &.left-column {
+            width: 30%;
+            z-index: 1;
+            border-radius: 0.6rem;
+          }
+
+          &.center-column {
+            width: 37%;
+            margin-left: 0.5rem;
+          }
+
+          &.right-column {
+            width: 26%;
+            margin-left: 0.5rem;
+
+            .card-body-info {
+              text-align: right;
+            }
           }
 
           .card-body-info {

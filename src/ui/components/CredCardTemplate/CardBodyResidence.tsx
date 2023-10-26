@@ -9,11 +9,10 @@ const CardBodyResidency = ({ cardData }: any) => {
     <>
       <div className="card-body">
         <div className="left-column">
-          {/* // @TODO - sdisalvo: waiting on other PR to be merged before we can pull the actual image */}
-          {/* <img
+          <img
             src={credentialSubject.image}
-            alt="us-immigration-background"
-          /> */}
+            alt="user-picture"
+          />
         </div>
         <div className="center-column">
           <div className="card-body-info">
