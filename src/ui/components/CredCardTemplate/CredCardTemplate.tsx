@@ -7,6 +7,7 @@ import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/gene
 import { i18n } from "../../../i18n";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import uscisLogo from "../../../ui/assets/images/uscis-logo.svg";
+import summitLogo from "../../../ui/assets/images/summit-logo.svg";
 import "./CredCardTemplate.scss";
 import CardBodyPending from "./CardBodyPending";
 import CardBodyUniversity from "./CardBodyUniversity";
@@ -14,6 +15,7 @@ import { CredentialDetails } from "../../../core/agent/agent.types";
 import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialType } from "../../constants/dictionary";
 import CardBodyResidency from "./CardBodyResidence";
+import CardBodySummit from "./CardBodySummit";
 
 const CredCardTemplate = ({
   name,
@@ -29,8 +31,8 @@ const CredCardTemplate = ({
   const isResidency =
     shortData.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
   const isAccessPass =
-    shortData.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
-  const isW3CTemplate = isUniversity || !isResidency || !isAccessPass;
+    shortData.credentialType === CredentialType.ACCESS_PASS_CREDENTIAL;
+  const isW3CTemplate = isUniversity || (!isResidency && !isAccessPass);
   const isKnownTemplate = isUniversity || isResidency || isAccessPass;
 
   const getCredDetails = async () => {
@@ -40,7 +42,9 @@ const CredCardTemplate = ({
   };
 
   useEffect(() => {
-    getCredDetails();
+    if (shortData.status === CredentialMetadataRecordStatus.CONFIRMED) {
+      getCredDetails();
+    }
   }, [shortData]);
 
   return (
@@ -53,8 +57,8 @@ const CredCardTemplate = ({
         className={`cred-card-template ${isActive ? "active" : ""} ${
           isKnownTemplate
             ? shortData.credentialType
-                .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
-                .toLowerCase()
+              .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
+              .toLowerCase()
             : "generic-w3c-template"
         }`}
         onClick={() => {
@@ -78,11 +82,21 @@ const CredCardTemplate = ({
             alt="us-immigration-background"
           />
         )}
+        {isAccessPass && (
+          <img
+            src={summitLogo}
+            alt="summit-background"
+          />
+        )}
         <div className={`cred-card-template-inner ${shortData.status}`}>
           <div className="card-header">
             <span className="card-logo">
               <img
-                src={(isW3CTemplate && W3CLogo) || (isResidency && uscisLogo)}
+                src={
+                  (isW3CTemplate && W3CLogo) ||
+                  (isResidency && uscisLogo) ||
+                  (isAccessPass && summitLogo)
+                }
                 alt="card-logo"
               />
             </span>
@@ -103,12 +117,15 @@ const CredCardTemplate = ({
           {shortData.status === CredentialMetadataRecordStatus.PENDING && (
             <CardBodyPending />
           )}
-          {isW3CTemplate && cardData !== undefined && (
+          {(isUniversity || isW3CTemplate) && cardData !== undefined && (
             <CardBodyUniversity cardData={cardData} />
           )}
-          {shortData.credentialType ===
-            CredentialType.PERMANENT_RESIDENT_CARD &&
-            cardData !== undefined && <CardBodyResidency cardData={cardData} />}
+          {isResidency && cardData !== undefined && (
+            <CardBodyResidency cardData={cardData} />
+          )}
+          {isAccessPass && cardData !== undefined && (
+            <CardBodySummit cardData={cardData} />
+          )}
         </div>
       </div>
       <Alert
