@@ -6,10 +6,14 @@ import { CredCardTemplateProps } from "./CredCardTemplate.types";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { i18n } from "../../../i18n";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
+import uscisLogo from "../../../ui/assets/images/uscis-logo.svg";
 import "./CredCardTemplate.scss";
 import CardBodyPending from "./CardBodyPending";
 import CardBodyUniversity from "./CardBodyUniversity";
+import { CredentialDetails } from "../../../core/agent/agent.types";
+import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialType } from "../../constants/dictionary";
+import CardBodyResidency from "./CardBodyResidence";
 
 const CredCardTemplate = ({
   name,
@@ -19,16 +23,25 @@ const CredCardTemplate = ({
   onHandleShowCardDetails,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const isW3CTemplate =
-    shortData.credentialType ===
-    (CredentialType.UNIVERSITY_DEGREE_CREDENTIAL ||
-      !CredentialType.ACCESS_PASS_CREDENTIAL ||
-      !CredentialType.PERMANENT_RESIDENT_CARD);
-  const isKnownTemplate =
-    shortData.credentialType ===
-    (CredentialType.UNIVERSITY_DEGREE_CREDENTIAL ||
-      CredentialType.ACCESS_PASS_CREDENTIAL ||
-      CredentialType.PERMANENT_RESIDENT_CARD);
+  const [cardData, setCardData] = useState<CredentialDetails>();
+  const isUniversity =
+    shortData.credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL;
+  const isResidency =
+    shortData.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
+  const isAccessPass =
+    shortData.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
+  const isW3CTemplate = isUniversity || !isResidency || !isAccessPass;
+  const isKnownTemplate = isUniversity || isResidency || isAccessPass;
+
+  const getCredDetails = async () => {
+    const cardDetails =
+      await AriesAgent.agent.credentials.getCredentialDetailsById(shortData.id);
+    setCardData(cardDetails);
+  };
+
+  useEffect(() => {
+    getCredDetails();
+  }, [shortData]);
 
   return (
     <>
@@ -59,11 +72,17 @@ const CredCardTemplate = ({
             alt="w3c-card-background"
           />
         )}
+        {isResidency && (
+          <img
+            src={uscisLogo}
+            alt="us-immigration-background"
+          />
+        )}
         <div className={`cred-card-template-inner ${shortData.status}`}>
           <div className="card-header">
             <span className="card-logo">
               <img
-                src={shortData.issuerLogo ?? W3CLogo}
+                src={(isW3CTemplate && W3CLogo) || (isResidency && uscisLogo)}
                 alt="card-logo"
               />
             </span>
@@ -84,9 +103,12 @@ const CredCardTemplate = ({
           {shortData.status === CredentialMetadataRecordStatus.PENDING && (
             <CardBodyPending />
           )}
-          {isW3CTemplate && shortData !== undefined && (
+          {isW3CTemplate && cardData !== undefined && (
             <CardBodyUniversity cardData={shortData} />
           )}
+          {shortData.credentialType ===
+            CredentialType.PERMANENT_RESIDENT_CARD &&
+            cardData !== undefined && <CardBodyResidency cardData={cardData} />}
         </div>
       </div>
       <Alert
