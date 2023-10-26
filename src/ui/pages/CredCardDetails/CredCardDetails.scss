@@ -9,16 +9,13 @@
   .card-details-json-column {
     display: flex;
     flex-direction: column;
-    &:not(div) {
-      margin-top: 1rem;
-    }
   }
 
-  .card-details-json-row {
-    display: flex;
-    flex-direction: row;
-    &:not(:first-of-type) {
-      margin-top: 1rem;
+  .card-details-info-block-inner > * {
+    &:not(:last-child) {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 1rem;
     }
   }
 
@@ -35,10 +32,6 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-    }
-
-    .card-details-info-block-data {
-      width: 50% !important;
     }
   }
 

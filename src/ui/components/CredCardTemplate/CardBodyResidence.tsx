@@ -5,11 +5,11 @@ import { formatShortDate } from "../../../utils";
 // @TODO - sdisalvo: cardData should be of type CredentialDetails
 const CardBodyResidency = ({ cardData }: any) => {
   const credentialSubject = cardData.credentialSubject;
-  console.log(credentialSubject);
   return (
     <>
       <div className="card-body">
         <div className="left-column">
+          {/* // @TODO - sdisalvo: waiting on other PR to be merged before we can pull the actual image */}
           <img
             src={credentialSubject.image}
             alt="us-immigration-background"

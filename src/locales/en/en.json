@@ -317,7 +317,7 @@
           }
         },
         "view": {
-          "cancel": "Cancel",
+          "cancel": "Done",
           "title": "Identity JSON",
           "copy": "Copy JSON",
           "save": "Save to device"
@@ -360,7 +360,7 @@
           "archive": "Archive credential"
         },
         "view": {
-          "cancel": "Cancel",
+          "cancel": "Done",
           "title": "Credential JSON",
           "copy": "Copy JSON",
           "save": "Save to device"
