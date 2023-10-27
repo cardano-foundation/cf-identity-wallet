@@ -36,7 +36,7 @@
   "setpasscode": {
     "enterpasscode": {
       "title": "Create your Passcode",
-      "description": "Create a passcode to secure access to you wallet and to continue the onboarding process",
+      "description": "Create a passcode to secure access to your wallet and to continue the onboarding process",
       "error": "Passcode does not match"
     },
     "reenterpasscode": {
@@ -50,8 +50,8 @@
     "onboarding": {
       "title": "Generate your Seed Phrase",
       "paragraph": {
-        "top": "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase.  You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
-        "bottom": "This phrase is essentially a representation of your Identity Wallet profile private key.  This means that anyone with access to it can control your identity.  We strongly recommend not using screenshots or storing this phrase without encryption."
+        "top": "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
+        "bottom": "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption."
       },
       "button": {
         "continue": "Continue"
@@ -60,8 +60,8 @@
     "newcryptoaccount": {
       "title": "Generate your Seed Phrase",
       "paragraph": {
-        "top": "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase.  You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
-        "bottom": "This phrase is essentially a representation of your Identity Wallet profile private key.  This means that anyone with access to it can control your identity.  We strongly recommend not using screenshots or storing this phrase without encryption."
+        "top": "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
+        "bottom": "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption."
       },
       "button": {
         "continue": "Continue"
@@ -81,7 +81,7 @@
     "segment": "{{length}} words",
     "privacy": {
       "overlay": {
-        "text": "Select the 'View Seed Phrase' when you are ready.  Remember to ensure that other people cannot also view your screen.",
+        "text": "Select the 'View Seed Phrase' when you are ready. Remember to ensure that other people cannot also view your screen.",
         "button": "View Seed Phrase"
       }
     },
@@ -160,7 +160,7 @@
       }
     },
     "paragraph": {
-      "top": "Please select every word from your seed phrase in the correct order.  If you select a word in the wrong order, select it again to move it back down to the list of available words."
+      "top": "Please select every word from your seed phrase in the correct order. If you select a word in the wrong order, select it again to move it back down to the list of available words."
     },
     "alert": {
       "fail": {
@@ -193,7 +193,7 @@
   },
   "createpassword": {
     "title": "Create your Password",
-    "description": "You can choose to set an optional password for your Identity Wallet.  This password will be required to complete protected operations within the wallet.  If you choose to skip and not set a password, you will be asked to provide your passcode to complete protected operations.",
+    "description": "You can choose to set an optional password for your Identity Wallet. This password will be required to complete protected operations within the wallet. If you choose to skip and not set a password, you will be asked to provide your passcode to complete protected operations.",
     "input": {
       "first": {
         "title": "Create password",
