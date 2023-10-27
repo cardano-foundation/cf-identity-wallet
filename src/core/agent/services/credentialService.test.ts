@@ -70,7 +70,7 @@ const credentialMetadataProps = {
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
   credentialRecordId: credentialRecordId1,
-  credentialSubjectType: "credSubjectType",
+  credentialSubject: {},
 };
 const credentialExchangeProps = {
   id: credentialRecordId1,
@@ -236,7 +236,7 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataProps.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
-        credentialSubjectType: credentialMetadataRecordA.credentialSubjectType,
+        credentialSubject: credentialMetadataRecordA.credentialSubject,
       },
       {
         id: id2,
@@ -245,7 +245,7 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataRecordB.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
-        credentialSubjectType: credentialMetadataRecordA.credentialSubjectType,
+        credentialSubject: credentialMetadataRecordA.credentialSubject,
       },
     ]);
   });
@@ -397,7 +397,6 @@ describe("Credential service of agent", () => {
         "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       type: ["VerifiableCredential", "UniversityDegreeCredential"],
-      credentialSubjectType: "credSubjectType",
     });
   });
 
@@ -428,7 +427,6 @@ describe("Credential service of agent", () => {
         "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw,eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       type: ["VerifiableCredential", "UniversityDegreeCredential"],
-      credentialSubjectType: "credSubjectType",
     });
   });
 
@@ -468,9 +466,7 @@ describe("Credential service of agent", () => {
       issuanceDate: w3cCredentialRecord.credential.issuanceDate,
       issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      credentialSubjectType: (
-        w3cCredentialRecord.credential.credentialSubject as any
-      ).degree.type,
+      credentialSubject: w3cCredentialRecord.credential.credentialSubject,
     });
   });
 

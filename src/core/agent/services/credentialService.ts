@@ -103,7 +103,7 @@ class CredentialService extends AgentService {
       issuerLogo: metadata.issuerLogo,
       credentialType: metadata.credentialType,
       status: metadata.status,
-      credentialSubjectType: metadata.credentialSubjectType,
+      credentialSubject: metadata.credentialSubject,
     };
   }
 
@@ -192,9 +192,7 @@ class CredentialService extends AgentService {
         (t) => t !== "VerifiableCredential"
       ),
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      credentialSubjectType: Array.isArray(credentialSubject)
-        ? undefined
-        : ((credentialSubject.degree as JsonObject)?.type as string) || "",
+      credentialSubject: credentialSubject,
     };
     await this.agent.modules.generalStorage.updateCredentialMetadata(
       metadata?.id,
@@ -208,7 +206,7 @@ class CredentialService extends AgentService {
       issuanceDate: metadata.issuanceDate,
       issuerLogo: connection?.imageUrl ?? undefined,
       status: data.status,
-      credentialSubjectType: data.credentialSubjectType || "",
+      credentialSubject: data.credentialSubject,
     };
   }
 

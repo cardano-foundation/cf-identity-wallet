@@ -176,8 +176,8 @@ export class GeneralStorageApi {
       if (data.status) record.status = data.status;
       if (data.credentialType) record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
-      if (data.credentialSubjectType)
-        record.credentialSubjectType = data.credentialSubjectType;
+      if (data.credentialSubject)
+        record.credentialSubject = data.credentialSubject;
       await this.credentialMetadataRepository.update(this.agentContext, record);
     }
   }

@@ -260,7 +260,7 @@ describe("Credential state changed handler", () => {
           credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
         status: CredentialMetadataRecordStatus.PENDING,
         connectionId: "cid2",
-        credentialSubjectType: "",
+        credentialSubject: {},
       })
     );
   });
@@ -271,7 +271,7 @@ describe("Credential state changed handler", () => {
       isArchived: false,
       colors: ["#000000", "#000000"],
       credentialType: "",
-      credentialSubjectType: "",
+      credentialSubject: {},
       issuanceDate:
         credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
       status: CredentialMetadataRecordStatus.CONFIRMED,

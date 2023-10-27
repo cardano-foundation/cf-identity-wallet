@@ -13,6 +13,7 @@ const mockData: CredentialMetadataRecordProps = {
   credentialType: "test",
   status: CredentialMetadataRecordStatus.CONFIRMED,
   credentialRecordId: "1",
+  credentialSubject: {},
 };
 
 describe("Credential metadata record", () => {
@@ -45,6 +46,7 @@ describe("Credential metadata record", () => {
       credentialType: "test",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       credentialRecordId: "1",
+      credentialSubject: {},
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
       createdAt.getTime()
@@ -62,6 +64,7 @@ describe("Credential metadata record", () => {
       credentialType: "test",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       credentialRecordId: "1",
+      credentialSubject: {},
     });
     expect(settingsRecord.isArchived).toBe(false);
   });

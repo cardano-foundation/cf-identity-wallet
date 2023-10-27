@@ -23,7 +23,7 @@ const CredCardTemplate = ({
   onHandleShowCardDetails,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const [cardData, setCardData] = useState<CredentialDetails>();
+  // const [cardData, setCardData] = useState<CredentialDetails>();
   const isUniversity =
     shortData.credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL;
   const isResidency =
@@ -32,16 +32,6 @@ const CredCardTemplate = ({
     shortData.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
   const isW3CTemplate = isUniversity || !isResidency || !isAccessPass;
   const isKnownTemplate = isUniversity || isResidency || isAccessPass;
-
-  const getCredDetails = async () => {
-    const cardDetails =
-      await AriesAgent.agent.credentials.getCredentialDetailsById(shortData.id);
-    setCardData(cardDetails);
-  };
-
-  useEffect(() => {
-    getCredDetails();
-  }, [shortData]);
 
   return (
     <>
@@ -103,12 +93,14 @@ const CredCardTemplate = ({
           {shortData.status === CredentialMetadataRecordStatus.PENDING && (
             <CardBodyPending />
           )}
-          {isW3CTemplate && cardData !== undefined && (
+          {isW3CTemplate && shortData !== undefined && (
             <CardBodyUniversity cardData={shortData} />
           )}
           {shortData.credentialType ===
             CredentialType.PERMANENT_RESIDENT_CARD &&
-            cardData !== undefined && <CardBodyResidency cardData={cardData} />}
+            shortData !== undefined && (
+            <CardBodyResidency cardData={shortData} />
+          )}
         </div>
       </div>
       <Alert

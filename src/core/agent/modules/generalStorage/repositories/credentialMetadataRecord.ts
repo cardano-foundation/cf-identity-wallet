@@ -1,4 +1,4 @@
-import { BaseRecord } from "@aries-framework/core";
+import { BaseRecord, JsonCredential } from "@aries-framework/core";
 import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
@@ -16,7 +16,7 @@ class CredentialMetadataRecord
   status!: CredentialMetadataRecordStatus;
   credentialRecordId!: string;
   connectionId?: string;
-  credentialSubjectType?: string;
+  credentialSubject!: JsonCredential["credentialSubject"];
 
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;
@@ -35,7 +35,7 @@ class CredentialMetadataRecord
       this.credentialType = props.credentialType;
       this.status = props.status;
       this.connectionId = props.connectionId;
-      this.credentialSubjectType = props.credentialSubjectType;
+      this.credentialSubject = props.credentialSubject;
     }
   }
 

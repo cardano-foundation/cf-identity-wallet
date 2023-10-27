@@ -1,3 +1,5 @@
+import { JsonCredential } from "@aries-framework/core";
+
 enum CredentialMetadataRecordStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
@@ -13,7 +15,7 @@ interface CredentialMetadataRecordProps {
   credentialRecordId: string;
   status: CredentialMetadataRecordStatus;
   connectionId?: string;
-  credentialSubjectType?: string;
+  credentialSubject: JsonCredential["credentialSubject"];
 }
 
 export { CredentialMetadataRecordStatus };
