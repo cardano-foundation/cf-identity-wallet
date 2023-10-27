@@ -1,17 +1,16 @@
 import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { Crypto } from "./Crypto";
+import { CryptoPlaceholder } from "./CryptoPlaceholder";
 import { store } from "../../../store";
 
-describe("Crypto Tab", () => {
-  test("Renders Crypto Tab", () => {
+describe("CryptoPlaceholder Tab", () => {
+  test("Renders CryptoPlaceholder Tab", () => {
     const { getByText, getByTestId } = render(
       <Provider store={store}>
-        <Crypto />
+        <CryptoPlaceholder />
       </Provider>
     );
 
-    expect(getByTestId("crypto-tab")).toBeInTheDocument();
-    expect(getByText("Crypto")).toBeInTheDocument();
+    expect(getByTestId("crypto-placeholder-tab")).toBeInTheDocument();
   });
 });

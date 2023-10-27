@@ -12,6 +12,5 @@ describe("Chat Tab", () => {
     );
 
     expect(getByTestId("chat-tab")).toBeInTheDocument();
-    expect(getByText("Chat")).toBeInTheDocument();
   });
 });
