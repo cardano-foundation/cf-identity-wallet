@@ -6,6 +6,8 @@
 }
 
 .card-details-content {
+  color: var(--ion-color-secondary);
+
   .card-details-json-column {
     display: flex;
     flex-direction: column;
@@ -19,8 +21,21 @@
     }
   }
 
-  .card-details-json-column,
-  .card-details-json-row {
+  div.card-details-json-column,
+  div.card-details-json-row {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    --mask: linear-gradient(
+      to right,
+      rgba(var(--ion-color-secondary-rgb)) 0,
+      rgba(var(--ion-color-secondary-rgb)) 85%,
+      rgba(0, 0, 0, 0.5) 90%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    -webkit-mask: var(--mask);
+    mask: var(--mask);
+
     strong {
       text-transform: capitalize;
       margin-right: 0.35rem;

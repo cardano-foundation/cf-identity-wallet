@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IonChip, IonIcon } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
 import { Alert } from "../Alert";
@@ -7,13 +7,13 @@ import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/gene
 import { i18n } from "../../../i18n";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import uscisLogo from "../../../ui/assets/images/uscis-logo.svg";
+import summitLogo from "../../../ui/assets/images/summit-logo.svg";
 import "./CredCardTemplate.scss";
 import CardBodyPending from "./CardBodyPending";
 import CardBodyUniversity from "./CardBodyUniversity";
-import { CredentialDetails } from "../../../core/agent/agent.types";
-import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialType } from "../../constants/dictionary";
 import CardBodyResidency from "./CardBodyResidence";
+import CardBodySummit from "./CardBodySummit";
 
 const CredCardTemplate = ({
   name,
@@ -23,14 +23,13 @@ const CredCardTemplate = ({
   onHandleShowCardDetails,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  // const [cardData, setCardData] = useState<CredentialDetails>();
   const isUniversity =
     shortData.credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL;
   const isResidency =
     shortData.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
   const isAccessPass =
-    shortData.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
-  const isW3CTemplate = isUniversity || !isResidency || !isAccessPass;
+    shortData.credentialType === CredentialType.ACCESS_PASS_CREDENTIAL;
+  const isW3CTemplate = isUniversity || (!isResidency && !isAccessPass);
   const isKnownTemplate = isUniversity || isResidency || isAccessPass;
 
   return (
@@ -68,11 +67,21 @@ const CredCardTemplate = ({
             alt="us-immigration-background"
           />
         )}
+        {isAccessPass && (
+          <img
+            src={summitLogo}
+            alt="summit-background"
+          />
+        )}
         <div className={`cred-card-template-inner ${shortData.status}`}>
           <div className="card-header">
             <span className="card-logo">
               <img
-                src={(isW3CTemplate && W3CLogo) || (isResidency && uscisLogo)}
+                src={
+                  (isW3CTemplate && W3CLogo) ||
+                  (isResidency && uscisLogo) ||
+                  (isAccessPass && summitLogo)
+                }
                 alt="card-logo"
               />
             </span>
@@ -93,13 +102,14 @@ const CredCardTemplate = ({
           {shortData.status === CredentialMetadataRecordStatus.PENDING && (
             <CardBodyPending />
           )}
-          {isW3CTemplate && shortData !== undefined && (
+          {(isUniversity || isW3CTemplate) && shortData !== undefined && (
             <CardBodyUniversity cardData={shortData} />
           )}
-          {shortData.credentialType ===
-            CredentialType.PERMANENT_RESIDENT_CARD &&
-            shortData !== undefined && (
+          {isResidency && shortData !== undefined && (
             <CardBodyResidency cardData={shortData} />
+          )}
+          {isAccessPass && shortData !== undefined && (
+            <CardBodySummit cardData={shortData} />
           )}
         </div>
       </div>

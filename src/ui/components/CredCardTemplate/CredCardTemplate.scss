@@ -99,11 +99,66 @@
   }
 
   &.access-pass-credential {
+    position: relative;
+    background: var(--ion-color-gradient-summit-card);
+    text-shadow: 0px 2px 4px rgba(24, 148, 215, 0.2);
+
+    > img {
+      position: absolute;
+      top: -12%;
+      left: -115%;
+      width: 330%;
+      max-width: 330%;
+      opacity: 0.04;
+    }
+
     .cred-card-template-inner {
       color: var(--ion-color-primary);
 
-      &.pending .card-footer-column-label {
-        color: var(--ion-color-secondary);
+      .card-body {
+        display: flex;
+        flex-direction: row;
+        height: 100%;
+
+        > div {
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-end;
+          font-style: normal;
+          line-height: normal;
+
+          &.left-column {
+            width: 65%;
+          }
+
+          &.right-column {
+            width: 35%;
+          }
+
+          .card-body-info {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+
+            &:not(:first-of-type) {
+              margin-top: 0.75rem;
+            }
+
+            .card-body-info-label {
+              font-size: 0.625rem;
+              font-weight: 700;
+              color: var(--ion-color-secondary);
+              text-transform: uppercase;
+            }
+
+            .card-body-info-value {
+              font-size: 0.875rem;
+              font-weight: 700;
+              color: var(--ion-color-primary);
+              margin-top: 0.31rem;
+            }
+          }
+        }
       }
     }
   }
@@ -125,25 +180,40 @@
     .cred-card-template-inner {
       color: var(--ion-color-primary);
 
-      &.pending .card-footer-column-label {
-        color: var(--ion-color-secondary);
-      }
-
       .card-body {
         display: flex;
         flex-direction: row;
+        justify-content: space-between;
         height: 100%;
 
         > div {
           display: flex;
           flex-direction: column;
           justify-content: flex-end;
-          width: 33%;
           font-style: normal;
           line-height: normal;
 
-          &.right-column .card-body-info {
-            text-align: right;
+          &.left-column {
+            width: 30%;
+            z-index: 1;
+
+            img {
+              border-radius: 0.5rem;
+            }
+          }
+
+          &.center-column {
+            width: 37%;
+            margin-left: 0.5rem;
+          }
+
+          &.right-column {
+            width: 26%;
+            margin-left: 0.5rem;
+
+            .card-body-info {
+              text-align: right;
+            }
           }
 
           .card-body-info {
