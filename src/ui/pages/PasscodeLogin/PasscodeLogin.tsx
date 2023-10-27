@@ -67,7 +67,7 @@ const PasscodeLogin = () => {
               handleClearState();
               setTimeout(() => {
                 dispatch(setPauseQueueConnectionCredentialRequest(false));
-              }, 1000);
+              }, 500);
             } else {
               setPasscodeIncorrect(true);
             }

@@ -10,6 +10,7 @@ import {
   getAuthentication,
   setAuthentication,
   setCurrentOperation,
+  setInitialized,
   setPauseQueueConnectionCredentialRequest,
   setQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
@@ -176,11 +177,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       const isInitialized = await PreferencesStorage.get(
         PreferencesKeys.APP_ALREADY_INIT
       );
-      dispatch(
-        setPauseQueueConnectionCredentialRequest(
-          isInitialized?.initialized as boolean
-        )
-      );
+      dispatch(setInitialized(isInitialized?.initialized as boolean));
     } catch (e) {
       // TODO
       await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, "");
