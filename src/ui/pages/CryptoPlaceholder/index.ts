@@ -1,1 +1,1 @@
-export * from "./Crypto";
+export * from "./CryptoPlaceholder";
