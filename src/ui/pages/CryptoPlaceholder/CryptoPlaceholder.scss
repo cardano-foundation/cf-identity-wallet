@@ -1,0 +1,21 @@
+.crypto-placeholder-tab-content {
+  margin-top: 35vh;
+  text-align: center;
+  width: 100%;
+  color: var(--ion-color-secondary);
+
+  h2,
+  a {
+    color: var(--ion-color-primary);
+  }
+}
+
+.crypto-placeholder-modal-body {
+  ol {
+    padding-left: 2rem;
+  }
+
+  li {
+    line-height: 2rem;
+  }
+}
