@@ -569,6 +569,26 @@
       ]
     }
   },
+  "chat": {
+    "tab": {
+      "header": "Under review",
+      "action": {
+        "text": "See a list of intended <0>{{clickableText}}</0>.",
+        "link": "P2P chat features"
+      }
+    },
+    "modal": {
+      "title": "P2P chat features",
+      "done": "Done",
+      "features": [
+        "Feature list number one",
+        "Feature list number two",
+        "Feature list number three",
+        "Feature list number four",
+        "Feature list number five"
+      ]
+    }
+  },
   "crypto": {
     "tab": {
       "create": "Add a crypto account",
