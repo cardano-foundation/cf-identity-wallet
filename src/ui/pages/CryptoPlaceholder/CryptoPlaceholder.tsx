@@ -12,27 +12,27 @@ import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
-import "./Chat.scss";
+import "./CryptoPlaceholder.scss";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 
-const Chat = () => {
+const CryptoPlaceholder = () => {
   const dispatch = useAppDispatch();
   const [featuresModalIsOpen, setFeaturesModalIsOpen] = useState(false);
 
   useIonViewWillEnter(() =>
-    dispatch(setCurrentRoute({ path: TabsRoutePath.CHAT }))
+    dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO_PLACEHOLDER }))
   );
 
   const HandleFeatures = () => {
     return (
       <a onClick={() => setFeaturesModalIsOpen(true)}>
-        <u>{i18n.t("chat.tab.action.link")}</u>
+        <u>{i18n.t("cryptoplaceholder.tab.action.link")}</u>
       </a>
     );
   };
 
-  const features: string[] = i18n.t("chat.modal.features", {
+  const features: string[] = i18n.t("cryptoplaceholder.modal.features", {
     returnObjects: true,
   });
 
@@ -40,16 +40,16 @@ const Chat = () => {
     <>
       <IonPage
         className="tab-layout"
-        data-testid="chat-tab"
+        data-testid="crypto-placeholder-tab"
       >
         <TabLayout
           header={true}
           menuButton={true}
         >
-          <div className="chat-tab-content">
-            <h2>{i18n.t("chat.tab.header")}</h2>
+          <div className="crypto-placeholder-tab-content">
+            <h2>{i18n.t("cryptoplaceholder.tab.header")}</h2>
             <Trans
-              i18nKey={i18n.t("chat.tab.action.text")}
+              i18nKey={i18n.t("cryptoplaceholder.tab.action.text")}
               components={[<HandleFeatures key="" />]}
             />
           </div>
@@ -60,22 +60,22 @@ const Chat = () => {
         initialBreakpoint={1}
         breakpoints={[0, 1]}
         className="page-layout"
-        data-testid="chat-modal"
+        data-testid="crypto-placeholder-modal"
         onDidDismiss={() => setFeaturesModalIsOpen(false)}
       >
-        <div className="chat-modal modal">
+        <div className="crypto-placeholder-modal modal">
           <PageLayout
             header={true}
             closeButton={true}
-            closeButtonLabel={`${i18n.t("chat.modal.done")}`}
+            closeButtonLabel={`${i18n.t("cryptoplaceholder.modal.done")}`}
             closeButtonAction={() => setFeaturesModalIsOpen(false)}
-            title={`${i18n.t("chat.modal.title")}`}
+            title={`${i18n.t("cryptoplaceholder.modal.title")}`}
           >
             <IonGrid>
               <IonRow>
                 <IonCol
                   size="12"
-                  className="chat-modal-body"
+                  className="crypto-placeholder-modal-body"
                 >
                   <ol>
                     {features.map((feature: string, index: number) => (
@@ -92,4 +92,4 @@ const Chat = () => {
   );
 };
 
-export { Chat };
+export { CryptoPlaceholder };
