@@ -13,6 +13,7 @@ import {
   getStateCache,
   setAuthentication,
   setCurrentRoute,
+  setPauseQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
@@ -64,6 +65,9 @@ const PasscodeLogin = () => {
               );
               history.push(backPath.pathname);
               handleClearState();
+              setTimeout(() => {
+                dispatch(setPauseQueueConnectionCredentialRequest(false));
+              }, 500);
             } else {
               setPasscodeIncorrect(true);
             }
