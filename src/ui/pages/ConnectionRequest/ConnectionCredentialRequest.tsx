@@ -206,6 +206,7 @@ const ConnectionCredentialRequest = () => {
       </PageLayout>
       <Alert
         isOpen={alertIsOpen}
+        backdropDismiss={false}
         setIsOpen={setAlertIsOpen}
         dataTestId={
           requestType === connectionType.connection
