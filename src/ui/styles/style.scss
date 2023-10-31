@@ -144,6 +144,16 @@ ion-modal {
     height: 4rem;
   }
 
+  ion-content {
+    &.ios {
+      height: calc(100vh - (6rem + env(safe-area-inset-top)));
+    }
+
+    &.md {
+      height: calc(100vh - 6rem);
+    }
+  }
+
   ion-title {
     position: absolute;
     width: 100%;
