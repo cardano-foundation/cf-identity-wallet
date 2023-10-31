@@ -270,7 +270,6 @@ describe("Credential state changed handler", () => {
       isArchived: false,
       colors: ["#000000", "#000000"],
       credentialType: "",
-      credentialSubject: {},
       issuanceDate:
         credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
       status: CredentialMetadataRecordStatus.CONFIRMED,

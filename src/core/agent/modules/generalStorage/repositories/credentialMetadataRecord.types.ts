@@ -1,5 +1,3 @@
-import { JsonCredential } from "@aries-framework/core";
-
 enum CredentialMetadataRecordStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",

@@ -15,14 +15,14 @@ const credsCacheSlice = createSlice({
   initialState,
   reducers: {
     setCredsCache: (state, action: PayloadAction<CredentialShortDetails[]>) => {
-      state.creds = JSON.parse(JSON.stringify(action.payload));
+      state.creds = action.payload;
     },
     updateOrAddCredsCache: (
       state,
       action: PayloadAction<CredentialShortDetails>
     ) => {
       const creds = state.creds.filter((cred) => cred.id !== action.payload.id);
-      state.creds = [...creds, JSON.parse(JSON.stringify(action.payload))];
+      state.creds = [...creds, action.payload];
     },
     setFavouritesCredsCache: (
       state,
