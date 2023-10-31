@@ -71,7 +71,6 @@ const credentialMetadataProps = {
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
   credentialRecordId: credentialRecordId1,
-  credentialSubject: {},
 };
 const credentialExchangeProps = {
   id: credentialRecordId1,

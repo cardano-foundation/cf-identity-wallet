@@ -1,4 +1,4 @@
-import { BaseRecord, JsonCredential } from "@aries-framework/core";
+import { BaseRecord } from "@aries-framework/core";
 import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
