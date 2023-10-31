@@ -6,6 +6,7 @@ import {
   CredentialExchangeRecord,
   CredentialState,
   CredentialStateChangedEvent,
+  JsonObject,
   V2OfferCredentialMessage,
   W3cCredentialRecord,
   W3cJsonLdVerifiableCredential,
@@ -236,7 +237,6 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataProps.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
-        credentialSubject: credentialMetadataRecordA.credentialSubject,
       },
       {
         id: id2,
@@ -245,7 +245,6 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataRecordB.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
-        credentialSubject: credentialMetadataRecordA.credentialSubject,
       },
     ]);
   });
@@ -466,7 +465,14 @@ describe("Credential service of agent", () => {
       issuanceDate: w3cCredentialRecord.credential.issuanceDate,
       issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      credentialSubject: w3cCredentialRecord.credential.credentialSubject,
+      degreeType: Array.isArray(
+        w3cCredentialRecord.credential.credentialSubject
+      )
+        ? undefined
+        : (
+            (w3cCredentialRecord.credential.credentialSubject as any)
+              .degree as JsonObject
+        ).type,
     });
   });
 

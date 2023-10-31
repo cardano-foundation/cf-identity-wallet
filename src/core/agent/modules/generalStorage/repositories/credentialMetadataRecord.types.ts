@@ -15,7 +15,6 @@ interface CredentialMetadataRecordProps {
   credentialRecordId: string;
   status: CredentialMetadataRecordStatus;
   connectionId?: string;
-  credentialSubject: JsonCredential["credentialSubject"];
 }
 
 export { CredentialMetadataRecordStatus };

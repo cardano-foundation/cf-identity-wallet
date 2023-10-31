@@ -16,12 +16,22 @@ class CredentialMetadataRecord
   status!: CredentialMetadataRecordStatus;
   credentialRecordId!: string;
   connectionId?: string;
-  credentialSubject!: JsonCredential["credentialSubject"];
+  degreeType!: string;
+  image!: string;
+  givenName!: string;
+  familyName!: string;
+  birthCountry!: string;
+  lprCategory!: string;
+  residentSince!: string;
+  summitType!: string;
+  startDate!: string;
+  endDate!: string;
+  passId!: string;
 
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;
 
-  constructor(props: CredentialMetadataRecordProps) {
+  constructor(props: any) {
     super();
 
     if (props) {
@@ -35,7 +45,17 @@ class CredentialMetadataRecord
       this.credentialType = props.credentialType;
       this.status = props.status;
       this.connectionId = props.connectionId;
-      this.credentialSubject = props.credentialSubject;
+      this.degreeType = props.degreeType;
+      this.image = props.image;
+      this.givenName = props.givenName;
+      this.familyName = props.familyName;
+      this.birthCountry = props.birthCountry;
+      this.lprCategory = props.lprCategory;
+      this.residentSince = props.residentSince;
+      this.summitType = props.summitType;
+      this.startDate = props.startDate;
+      this.endDate = props.endDate;
+      this.passId = props.passId;
     }
   }
 

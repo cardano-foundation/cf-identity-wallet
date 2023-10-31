@@ -34,7 +34,6 @@ describe("credsCacheSlice", () => {
         issuerLogo: "https://placehold.co/120x22",
         colors: ["#FFBC60", "#FFA21F"],
         status: CredentialMetadataRecordStatus.CONFIRMED,
-        credentialSubject: {},
       },
     ];
     const newState = credsCacheSlice.reducer(
@@ -52,7 +51,6 @@ describe("credsCacheSlice", () => {
       issuerLogo: "https://placehold.co/120x22",
       colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      credentialSubject: {},
     };
     const newState = credsCacheSlice.reducer(
       initialState,
@@ -71,7 +69,6 @@ describe("credsCacheSlice", () => {
       issuerLogo: "https://placehold.co/120x22",
       colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.PENDING,
-      credentialSubject: {},
     };
     const cred2: CredentialShortDetails = {
       id: credId2,
@@ -80,7 +77,6 @@ describe("credsCacheSlice", () => {
       issuerLogo: "https://placehold.co/120x22",
       colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.PENDING,
-      credentialSubject: {},
     };
     const updateCred: CredentialShortDetails = {
       ...cred1,

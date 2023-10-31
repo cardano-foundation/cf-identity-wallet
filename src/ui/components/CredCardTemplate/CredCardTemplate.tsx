@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IonChip, IonIcon } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
 import { Alert } from "../Alert";
@@ -11,6 +11,8 @@ import summitLogo from "../../../ui/assets/images/summit-logo.svg";
 import "./CredCardTemplate.scss";
 import CardBodyPending from "./CardBodyPending";
 import CardBodyUniversity from "./CardBodyUniversity";
+import { CredentialDetails } from "../../../core/agent/agent.types";
+import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialType } from "../../constants/dictionary";
 import CardBodyResidency from "./CardBodyResidence";
 import CardBodySummit from "./CardBodySummit";
@@ -23,6 +25,7 @@ const CredCardTemplate = ({
   onHandleShowCardDetails,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
+  const [cardData, setCardData] = useState<CredentialDetails>();
   const isUniversity =
     shortData.credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL;
   const isResidency =
@@ -31,6 +34,18 @@ const CredCardTemplate = ({
     shortData.credentialType === CredentialType.ACCESS_PASS_CREDENTIAL;
   const isW3CTemplate = isUniversity || (!isResidency && !isAccessPass);
   const isKnownTemplate = isUniversity || isResidency || isAccessPass;
+
+  const getCredDetails = async () => {
+    const cardDetails =
+      await AriesAgent.agent.credentials.getCredentialDetailsById(shortData.id);
+    setCardData(cardDetails);
+  };
+
+  useEffect(() => {
+    if (shortData.status === CredentialMetadataRecordStatus.CONFIRMED) {
+      getCredDetails();
+    }
+  }, [shortData]);
 
   return (
     <>
@@ -102,14 +117,14 @@ const CredCardTemplate = ({
           {shortData.status === CredentialMetadataRecordStatus.PENDING && (
             <CardBodyPending />
           )}
-          {(isUniversity || isW3CTemplate) && shortData !== undefined && (
-            <CardBodyUniversity cardData={shortData} />
+          {(isUniversity || isW3CTemplate) && cardData !== undefined && (
+            <CardBodyUniversity cardData={cardData} />
           )}
-          {isResidency && shortData !== undefined && (
-            <CardBodyResidency cardData={shortData} />
+          {isResidency && cardData !== undefined && (
+            <CardBodyResidency cardData={cardData} />
           )}
-          {isAccessPass && shortData !== undefined && (
-            <CardBodySummit cardData={shortData} />
+          {isAccessPass && cardData !== undefined && (
+            <CardBodySummit cardData={cardData} />
           )}
         </div>
       </div>
