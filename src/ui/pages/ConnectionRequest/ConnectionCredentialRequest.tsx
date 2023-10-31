@@ -146,7 +146,7 @@ const ConnectionCredentialRequest = () => {
             ? `${i18n.t("request.button.connect")}`
             : `${i18n.t("request.button.acceptoffer")}`
         }
-        primaryButtonAction={() => setAlertIsOpen(true)}
+        primaryButtonAction={() => handleAccept()}
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
         // add dismiss action if needed
         secondaryButtonAction={() => handleCancel()}
@@ -213,32 +213,6 @@ const ConnectionCredentialRequest = () => {
           </IonRow>
         </IonGrid>
       </PageLayout>
-      <Alert
-        isOpen={alertIsOpen}
-        setIsOpen={setAlertIsOpen}
-        dataTestId={
-          requestType === connectionType.connection
-            ? "alert-confirm-connection"
-            : "alert-confirm-credential"
-        }
-        headerText={i18next.t(
-          requestType === connectionType.connection
-            ? "request.connection.alert.titleconfirm"
-            : "request.credential.alert.titleconfirm",
-          {
-            initiator: requestData?.label,
-          }
-        )}
-        confirmButtonText={
-          requestType === connectionType.connection
-            ? `${i18n.t("request.connection.alert.confirm")}`
-            : `${i18n.t("request.credential.alert.confirm")}`
-        }
-        cancelButtonText={`${i18n.t("request.alert.cancel")}`}
-        actionConfirm={handleAccept}
-        actionCancel={handleCancel}
-        actionDismiss={handleReset}
-      />
     </IonPage>
   );
 };
