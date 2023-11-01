@@ -5,14 +5,12 @@ import imagePlaceholder from "../../assets/images/user-image-placeholder.svg";
 
 // @TODO - sdisalvo: cardData should be of type CredentialDetails
 const CardBodyResidency = ({ cardData }: any) => {
-  const credentialSubject = cardData.credentialSubject;
-
   return (
     <>
       <div className="card-body">
         <div className="left-column">
           <img
-            src={credentialSubject.image}
+            src={cardData.image}
             onError={({ currentTarget }) => {
               currentTarget.onerror = null; // @TODO - sdisalvo: Handle error
               currentTarget.src = imagePlaceholder;
@@ -26,7 +24,7 @@ const CardBodyResidency = ({ cardData }: any) => {
               {i18n.t("creds.card.layout.name")}
             </span>
             <span className="card-body-info-value">
-              {credentialSubject.givenName + " " + credentialSubject.familyName}
+              {cardData.givenName + " " + cardData.familyName}
             </span>
           </div>
           <div className="card-body-info">
@@ -34,7 +32,7 @@ const CardBodyResidency = ({ cardData }: any) => {
               {i18n.t("creds.card.layout.countryofbirth")}
             </span>
             <span className="card-body-info-value">
-              {credentialSubject.birthCountry}
+              {cardData.birthCountry}
             </span>
           </div>
           <div className="card-body-info">
@@ -51,16 +49,14 @@ const CardBodyResidency = ({ cardData }: any) => {
             <span className="card-body-info-label">
               {i18n.t("creds.card.layout.category")}
             </span>
-            <span className="card-body-info-value">
-              {credentialSubject.lprCategory}
-            </span>
+            <span className="card-body-info-value">{cardData.lprCategory}</span>
           </div>
           <div className="card-body-info">
             <span className="card-body-info-label">
               {i18n.t("creds.card.layout.residentsince")}
             </span>
             <span className="card-body-info-value">
-              {formatShortDate(credentialSubject.residentSince)}
+              {formatShortDate(cardData.residentSince)}
             </span>
           </div>
         </div>

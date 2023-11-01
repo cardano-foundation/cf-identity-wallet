@@ -15,5 +15,24 @@ interface CredentialMetadataRecordProps {
   connectionId?: string;
 }
 
+interface CredentialMetadataRecordExtraProps
+  extends CredentialMetadataRecordProps {
+  degreeType?: string;
+  expirationDate?: string;
+  image?: string;
+  givenName?: string;
+  familyName?: string;
+  birthCountry?: string;
+  lprCategory?: string;
+  residentSince?: string;
+  summitType?: string;
+  startDate?: string;
+  endDate?: string;
+  passId?: string;
+}
+
 export { CredentialMetadataRecordStatus };
-export type { CredentialMetadataRecordProps };
+export type {
+  CredentialMetadataRecordProps,
+  CredentialMetadataRecordExtraProps,
+};

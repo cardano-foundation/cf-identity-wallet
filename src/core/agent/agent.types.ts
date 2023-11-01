@@ -66,6 +66,7 @@ interface ResidencyCredShortDetails extends CredentialShortDetails {
   birthCountry: string;
   lprCategory: string;
   residentSince: string;
+  expirationDate: string;
 }
 
 interface SummitCredShortDetails extends CredentialShortDetails {

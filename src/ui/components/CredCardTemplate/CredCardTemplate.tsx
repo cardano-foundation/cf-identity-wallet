@@ -25,7 +25,6 @@ const CredCardTemplate = ({
   onHandleShowCardDetails,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const [cardData, setCardData] = useState<CredentialDetails>();
   const isUniversity =
     shortData.credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL;
   const isResidency =
@@ -34,18 +33,6 @@ const CredCardTemplate = ({
     shortData.credentialType === CredentialType.ACCESS_PASS_CREDENTIAL;
   const isW3CTemplate = isUniversity || (!isResidency && !isAccessPass);
   const isKnownTemplate = isUniversity || isResidency || isAccessPass;
-
-  const getCredDetails = async () => {
-    const cardDetails =
-      await AriesAgent.agent.credentials.getCredentialDetailsById(shortData.id);
-    setCardData(cardDetails);
-  };
-
-  useEffect(() => {
-    if (shortData.status === CredentialMetadataRecordStatus.CONFIRMED) {
-      getCredDetails();
-    }
-  }, [shortData]);
 
   return (
     <>
@@ -117,14 +104,17 @@ const CredCardTemplate = ({
           {shortData.status === CredentialMetadataRecordStatus.PENDING && (
             <CardBodyPending />
           )}
-          {(isUniversity || isW3CTemplate) && cardData !== undefined && (
-            <CardBodyUniversity cardData={cardData} />
+          {(isUniversity || isW3CTemplate) &&
+            shortData.status === CredentialMetadataRecordStatus.CONFIRMED && (
+            <CardBodyUniversity cardData={shortData} />
           )}
-          {isResidency && cardData !== undefined && (
-            <CardBodyResidency cardData={cardData} />
+          {isResidency &&
+            shortData.status === CredentialMetadataRecordStatus.CONFIRMED && (
+            <CardBodyResidency cardData={shortData} />
           )}
-          {isAccessPass && cardData !== undefined && (
-            <CardBodySummit cardData={cardData} />
+          {isAccessPass &&
+            shortData.status === CredentialMetadataRecordStatus.CONFIRMED && (
+            <CardBodySummit cardData={shortData} />
           )}
         </div>
       </div>

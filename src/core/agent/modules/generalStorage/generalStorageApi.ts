@@ -177,6 +177,7 @@ export class GeneralStorageApi {
       if (data.credentialType) record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
       if (data.degreeType) record.degreeType = data.degreeType;
+      if (data.expirationDate) record.expirationDate = data.expirationDate;
       if (data.image) record.image = data.image;
       if (data.givenName) record.givenName = data.givenName;
       if (data.familyName) record.familyName = data.familyName;

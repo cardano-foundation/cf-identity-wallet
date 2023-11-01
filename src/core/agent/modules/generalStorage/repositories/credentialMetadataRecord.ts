@@ -1,5 +1,6 @@
 import { BaseRecord } from "@aries-framework/core";
 import {
+  CredentialMetadataRecordExtraProps,
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "./credentialMetadataRecord.types";
@@ -16,22 +17,23 @@ class CredentialMetadataRecord
   status!: CredentialMetadataRecordStatus;
   credentialRecordId!: string;
   connectionId?: string;
-  degreeType!: string;
-  image!: string;
-  givenName!: string;
-  familyName!: string;
-  birthCountry!: string;
-  lprCategory!: string;
-  residentSince!: string;
-  summitType!: string;
-  startDate!: string;
-  endDate!: string;
-  passId!: string;
+  degreeType?: string;
+  expirationDate?: string;
+  image?: string;
+  givenName?: string;
+  familyName?: string;
+  birthCountry?: string;
+  lprCategory?: string;
+  residentSince?: string;
+  summitType?: string;
+  startDate?: string;
+  endDate?: string;
+  passId?: string;
 
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;
 
-  constructor(props: any) {
+  constructor(props: CredentialMetadataRecordExtraProps) {
     super();
 
     if (props) {
@@ -46,6 +48,7 @@ class CredentialMetadataRecord
       this.status = props.status;
       this.connectionId = props.connectionId;
       this.degreeType = props.degreeType;
+      this.expirationDate = props.expirationDate;
       this.image = props.image;
       this.givenName = props.givenName;
       this.familyName = props.familyName;
