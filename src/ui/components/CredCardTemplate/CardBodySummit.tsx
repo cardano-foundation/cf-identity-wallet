@@ -15,12 +15,7 @@ const CardBodySummit = ({ cardData }: any) => {
               {i18n.t("creds.card.layout.type")}
             </span>
             <span className="card-body-info-value">
-              {credentialSubject.type
-                ? `${credentialSubject.type}`.replace(
-                  /([a-z])([A-Z])/g,
-                  "$1 $2"
-                )
-                : ""}
+              {credentialSubject.type.replace(/([a-z])([A-Z])/g, "$1 $2")}
             </span>
           </div>
           <div className="card-body-info">
