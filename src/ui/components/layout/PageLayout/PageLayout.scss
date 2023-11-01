@@ -2,8 +2,11 @@
   padding-inline: 1.25rem;
   background: var(--ion-color-light);
 
-  &.modal-sheet {
-    background: transparent;
+  .page-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 100%;
   }
 
   ion-toolbar,
@@ -73,8 +76,6 @@
   }
 
   ion-footer {
-    bottom: 1rem;
-
     .page-footer {
       padding-top: 0.5rem;
 

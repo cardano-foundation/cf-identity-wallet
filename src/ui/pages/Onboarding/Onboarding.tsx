@@ -79,7 +79,7 @@ const Onboarding = () => {
   };
 
   return (
-    <IonPage className="page-layout onboarding safe-area">
+    <div className="page-layout onboarding safe-area">
       <PageLayout
         currentPath={RoutePath.ONBOARDING}
         footer={true}
@@ -92,7 +92,7 @@ const Onboarding = () => {
       >
         <Slides items={items} />
       </PageLayout>
-    </IonPage>
+    </div>
   );
 };
 

@@ -186,38 +186,39 @@ const PageLayout = ({
         </IonHeader>
       )}
 
-      <IonContent className="page-content">{children}</IonContent>
-
-      {footer && (
-        <IonFooter
-          collapse="fade"
-          className="ion-no-border"
-        >
-          <IonToolbar
-            color="light"
-            className="page-footer"
+      <div className="page-content">
+        {children}
+        {footer && (
+          <IonFooter
+            collapse="fade"
+            className="ion-no-border"
           >
-            <IonButton
-              shape="round"
-              expand="block"
-              className="ion-primary-button"
-              data-testid={`continue-button${id ? `-${id}` : ""}`}
-              onClick={primaryButtonAction}
-              disabled={primaryButtonDisabled}
+            <IonToolbar
+              color="light"
+              className="page-footer"
             >
-              {primaryButtonText}
-            </IonButton>
-            {secondaryButtonText && secondaryButtonAction ? (
-              <div
-                className="secondary-button"
-                onClick={secondaryButtonAction}
+              <IonButton
+                shape="round"
+                expand="block"
+                className="ion-primary-button"
+                data-testid={`continue-button${id ? `-${id}` : ""}`}
+                onClick={primaryButtonAction}
+                disabled={primaryButtonDisabled}
               >
-                {secondaryButtonText}
-              </div>
-            ) : null}
-          </IonToolbar>
-        </IonFooter>
-      )}
+                {primaryButtonText}
+              </IonButton>
+              {secondaryButtonText && secondaryButtonAction ? (
+                <div
+                  className="secondary-button"
+                  onClick={secondaryButtonAction}
+                >
+                  {secondaryButtonText}
+                </div>
+              ) : null}
+            </IonToolbar>
+          </IonFooter>
+        )}
+      </div>
     </>
   );
 };
