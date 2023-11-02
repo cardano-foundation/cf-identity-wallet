@@ -33,8 +33,17 @@ ion-content {
   --offset-bottom: auto !important;
   --overflow: hidden;
   overflow: auto;
+
   &::-webkit-scrollbar {
     display: none;
+  }
+
+  &.ios {
+    height: calc(100vh - (6rem + env(safe-area-inset-top)));
+  }
+
+  &.md {
+    height: calc(100vh - 6rem);
   }
 }
 
@@ -142,16 +151,6 @@ ion-modal {
   ion-toolbar {
     padding: 0.5rem 0 0 !important;
     height: 4rem;
-  }
-
-  ion-content {
-    &.ios {
-      height: calc(100vh - (6rem + env(safe-area-inset-top)));
-    }
-
-    &.md {
-      height: calc(100vh - 6rem);
-    }
   }
 
   ion-title {

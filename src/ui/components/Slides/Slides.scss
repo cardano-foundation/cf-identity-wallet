@@ -2,28 +2,33 @@
 @import "swiper/css/autoplay";
 @import "@ionic/react/css/ionic-swiper.css";
 
-.slides {
+.slides-container {
   height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 
-  .swiper-slide {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+  .slides {
+    .swiper-slide {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
 
-    h2 {
-      margin-bottom: 0.5rem;
-      text-align: center;
-    }
+      h2 {
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
 
-    p {
-      text-align: center;
-      color: var(--ion-color-secondary);
-    }
+      p {
+        text-align: center;
+        color: var(--ion-color-secondary);
+      }
 
-    img,
-    svg {
-      height: auto !important;
-      width: 62vw !important;
+      img,
+      svg {
+        height: auto !important;
+        width: 62vw !important;
+      }
     }
   }
 
