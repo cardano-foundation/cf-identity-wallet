@@ -22,6 +22,7 @@ const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
           closeButton={true}
           closeButtonAction={() => setIsOpen(false)}
           title={`${i18n.t("termsandconditions.title")}`}
+          scrollable={true}
         >
           <IonGrid>
             <IonRow>

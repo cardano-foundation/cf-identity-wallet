@@ -1,16 +1,16 @@
 .passcode-module {
   .title {
-    font-size: 24px;
+    font-size: 1.5rem;
     text-align: center;
     font-weight: 700;
     font-style: normal;
-    line-height: 28px;
+    line-height: 1.75rem;
   }
 
   .description {
     font-weight: 500;
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 1rem;
+    line-height: 1.375rem;
     text-align: center;
   }
 
@@ -22,11 +22,13 @@
   }
 
   .circle {
-    width: 25px;
-    height: 25px;
+    width: 6.4vw;
+    height: 6.4vw;
+    max-width: 1.563rem;
+    max-height: 1.563rem;
     border-radius: 50%;
     border: 1px solid var(--ion-color-secondary);
-    margin: 0 8px;
+    margin: 0 0.5rem;
   }
 
   .circle-fill {
@@ -36,7 +38,7 @@
   .pin-error {
     text-align: center;
     margin-bottom: 1.5rem;
-    height: 16px;
+    height: 1rem;
   }
 
   .numbers-row ion-col {
@@ -52,7 +54,7 @@
     border: none;
     text-align: center;
     cursor: pointer;
-    font-size: 44px;
+    font-size: 2.75rem;
     color: var(--ion-color-primary);
   }
 
@@ -64,30 +66,32 @@
   }
 
   .number-labels span {
-    font-size: 12px;
+    font-size: 0.75rem;
     text-transform: uppercase;
     margin-right: 2px;
   }
 
   .board-button {
-    width: 88px;
-    height: 88px;
-    --border-radius: 50px;
     --background: var(--ion-color-medium-grey);
-    --background-activated: var(--ion-color-dark-grey);
   }
 
   .backspace-button {
-    width: 88px;
-    height: 88px;
-    --border-radius: 50px;
     --background: var(--ion-color-primary);
-    --background-activated: var(--ion-color-dark-grey);
     --color: var(--ion-color-light);
   }
 
+  .board-button,
+  .backspace-button {
+    width: 22.54vw;
+    height: 22.54vw;
+    max-width: 5.5rem;
+    max-height: 5.5rem;
+    --border-radius: 3.125rem;
+    --background-activated: var(--ion-color-dark-grey);
+  }
+
   .backspace-icon {
-    width: 50px;
-    height: 50px;
+    width: 3.125rem;
+    height: 3.125rem;
   }
 }

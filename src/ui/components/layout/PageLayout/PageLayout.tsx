@@ -40,6 +40,7 @@ const PageLayout = ({
   title,
   menuButton,
   footer,
+  scrollable,
   primaryButtonText,
   primaryButtonAction,
   primaryButtonDisabled,
@@ -73,6 +74,54 @@ const PageLayout = ({
         history.push(backPath.pathname);
       }
     }
+  };
+
+  const PageContent = () => {
+    return (
+      <>
+        {children}
+        {footer && (
+          <IonToolbar
+            color="light"
+            className="page-footer"
+          >
+            {primaryButtonText && primaryButtonAction && (
+              <IonButton
+                shape="round"
+                expand="block"
+                className="primary-button"
+                data-testid={`continue-button${id ? `-${id}` : ""}`}
+                onClick={primaryButtonAction}
+                disabled={primaryButtonDisabled}
+              >
+                {primaryButtonText}
+              </IonButton>
+            )}
+            {secondaryButtonText && secondaryButtonAction && (
+              <IonButton
+                shape="round"
+                expand="block"
+                fill="outline"
+                className="secondary-button"
+                onClick={secondaryButtonAction}
+              >
+                {secondaryButtonText}
+              </IonButton>
+            )}
+            {tertiaryButtonText && tertiaryButtonAction && (
+              <IonButton
+                shape="round"
+                expand="block"
+                className="tertiary-button"
+                onClick={tertiaryButtonAction}
+              >
+                {tertiaryButtonText}
+              </IonButton>
+            )}
+          </IonToolbar>
+        )}
+      </>
+    );
   };
 
   return (
@@ -188,52 +237,13 @@ const PageLayout = ({
         </IonHeader>
       )}
 
-      <div className="page-content">
-        {children}
-        {footer && (
-          <IonFooter
-            collapse="fade"
-            className="ion-no-border"
-          >
-            <IonToolbar
-              color="light"
-              className="page-footer"
-            >
-              {primaryButtonText && primaryButtonAction && (
-                <IonButton
-                  shape="round"
-                  expand="block"
-                  className="primary-button"
-                  data-testid={`continue-button${id ? `-${id}` : ""}`}
-                  onClick={primaryButtonAction}
-                  disabled={primaryButtonDisabled}
-                >
-                  {primaryButtonText}
-                </IonButton>
-              )}
-              {secondaryButtonText && secondaryButtonAction && (
-                <IonButton
-                  shape="round"
-                  expand="block"
-                  fill="outline"
-                  className="secondary-button"
-                  onClick={secondaryButtonAction}
-                >
-                  {secondaryButtonText}
-                </IonButton>
-              )}
-              {tertiaryButtonText && tertiaryButtonAction && (
-                <IonButton
-                  shape="round"
-                  expand="block"
-                  className="tertiary-button"
-                  onClick={tertiaryButtonAction}
-                >
-                  {tertiaryButtonText}
-                </IonButton>
-              )}
-            </IonToolbar>
-          </IonFooter>
+      <div className={`page-content ${header ? "has-header" : ""}`}>
+        {scrollable ? (
+          <IonContent>
+            <PageContent />
+          </IonContent>
+        ) : (
+          <PageContent />
         )}
       </div>
     </>

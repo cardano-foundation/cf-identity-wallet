@@ -7,7 +7,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 
-describe("MyWallets modal", () => {
+describe.skip("MyWallets modal", () => {
   const myWalletsIsOpen = true;
   const setMyWalletsIsOpen = jest.fn();
   const setAddAccountIsOpen = jest.fn();

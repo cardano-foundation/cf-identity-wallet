@@ -67,7 +67,7 @@ const SetPasscode = () => {
   }, [originalPassCode, passcode]);
 
   return (
-    <IonPage className="page-layout">
+    <div className="page-layout set-passcode safe-area">
       <PageLayout
         header={true}
         backButton={true}
@@ -76,6 +76,14 @@ const SetPasscode = () => {
         progressBar={true}
         progressBarValue={0.33}
         progressBarBuffer={1}
+        footer={originalPassCode !== ""}
+        scrollable={true}
+        secondaryButtonText={
+          originalPassCode !== ""
+            ? `${i18n.t("setpasscode.startover.label")}`
+            : undefined
+        }
+        secondaryButtonAction={() => handleClearState()}
       >
         <PasscodeModule
           title={
@@ -98,25 +106,8 @@ const SetPasscode = () => {
           handlePinChange={handlePinChange}
           handleRemove={handleRemove}
         />
-        <IonGrid>
-          <IonRow>
-            <IonCol className="continue-col">
-              {originalPassCode !== "" && (
-                <IonButton
-                  onClick={() => handleClearState()}
-                  shape="round"
-                  expand="block"
-                  fill="outline"
-                  className="secondary-button"
-                >
-                  {i18n.t("setpasscode.startover.label")}
-                </IonButton>
-              )}
-            </IonCol>
-          </IonRow>
-        </IonGrid>
       </PageLayout>
-    </IonPage>
+    </div>
   );
 };
 

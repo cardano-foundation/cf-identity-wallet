@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { IonButton, IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
+import { IonPage } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
@@ -16,7 +16,6 @@ import {
   setPauseQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import "./PasscodeLogin.scss";
 import { getBackRoute } from "../../../routes/backRoute";
 import { RoutePath } from "../../../routes";
 
@@ -115,7 +114,12 @@ const PasscodeLogin = () => {
 
   return (
     <IonPage className="page-layout passcode-login safe-area">
-      <PageLayout currentPath={RoutePath.PASSCODE_LOGIN}>
+      <PageLayout
+        currentPath={RoutePath.PASSCODE_LOGIN}
+        footer={true}
+        secondaryButtonText={`${i18n.t("passcodelogin.forgotten.button")}`}
+        secondaryButtonAction={() => setIsOpen(true)}
+      >
         <PasscodeModule
           title={i18n.t("passcodelogin.title")}
           description={i18n.t("passcodelogin.description")}
@@ -132,21 +136,6 @@ const PasscodeLogin = () => {
           handlePinChange={handlePinChange}
           handleRemove={handleRemove}
         />
-        <IonGrid>
-          <IonRow>
-            <IonCol className="continue-col">
-              <IonButton
-                shape="round"
-                expand="block"
-                fill="outline"
-                className="secondary-button"
-                onClick={() => setIsOpen(true)}
-              >
-                {i18n.t("passcodelogin.forgotten.button")}
-              </IonButton>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
         <Alert
           isOpen={isOpen}
           setIsOpen={setIsOpen}

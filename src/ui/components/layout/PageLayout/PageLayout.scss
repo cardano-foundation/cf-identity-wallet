@@ -7,6 +7,15 @@
     flex-direction: column;
     justify-content: space-evenly;
     height: 100%;
+
+    &.has-header {
+      height: calc(100% - 3.5rem);
+    }
+
+    > * {
+      flex: 0 1 auto;
+      margin: 0;
+    }
   }
 
   ion-toolbar,
@@ -18,44 +27,48 @@
     --padding-end: 0;
   }
 
-  ion-header ion-toolbar {
-    margin-top: 0.625rem;
+  ion-header {
+    height: 2.875rem;
 
-    .back-button,
-    .close-button,
-    .action-button {
-      width: 2.5rem;
-      height: 2.5rem;
-      border-radius: 1.5rem;
-      background: var(--ion-color-light-grey);
-    }
+    ion-toolbar {
+      margin-top: 0.625rem;
 
-    ion-button[disabled="true"] {
-      color: var(--ion-color-dark-grey);
-    }
-
-    ion-icon {
-      font-size: 1.85em !important;
-    }
-
-    .close-button-label,
-    .action-button-label {
-      font-size: 1rem;
-      font-weight: 700;
-
-      &.md {
-        font-size: 0.8rem;
+      .back-button,
+      .close-button,
+      .action-button {
+        width: 2.5rem;
+        height: 2.5rem;
+        border-radius: 1.5rem;
+        background: var(--ion-color-light-grey);
       }
-    }
 
-    .close-button-label {
-      --padding-start: 0px;
-    }
+      ion-button[disabled="true"] {
+        color: var(--ion-color-dark-grey);
+      }
 
-    .action-button-label {
-      --padding-end: 0px;
-      &[disabled="false"] {
-        color: var(--ion-color-blue);
+      ion-icon {
+        font-size: 1.85em !important;
+      }
+
+      .close-button-label,
+      .action-button-label {
+        font-size: 1rem;
+        font-weight: 700;
+
+        &.md {
+          font-size: 0.8rem;
+        }
+      }
+
+      .close-button-label {
+        --padding-start: 0px;
+      }
+
+      .action-button-label {
+        --padding-end: 0px;
+        &[disabled="false"] {
+          color: var(--ion-color-blue);
+        }
       }
     }
   }

@@ -1,4 +1,18 @@
 .create-identity-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  --height: auto;
+
+  &::part(content) {
+    position: relative;
+    border-radius: 16px 16px 0 0;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+  }
+
   .spinner-container {
     z-index: 1;
     display: flex;

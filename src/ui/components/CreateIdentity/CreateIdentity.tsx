@@ -124,7 +124,7 @@ const CreateIdentity = ({
       isOpen={modalIsOpen}
       initialBreakpoint={0.85}
       breakpoints={[0, 0.85]}
-      className={`page-layout create-identity-modal ${blur ? "blur" : ""}`}
+      className={`create-identity-modal ${blur ? "blur" : ""}`}
       data-testid="create-identity-modal"
       onDidDismiss={() => resetModal()}
     >

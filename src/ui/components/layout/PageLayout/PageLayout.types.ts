@@ -22,6 +22,7 @@ interface PageLayoutProps {
   title?: string;
   menuButton?: boolean;
   footer?: boolean;
+  scrollable?: boolean;
   primaryButtonText?: string;
   primaryButtonAction?: () => void;
   primaryButtonDisabled?: boolean;

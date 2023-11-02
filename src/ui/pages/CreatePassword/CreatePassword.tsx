@@ -230,11 +230,12 @@ const CreatePassword = () => {
         closeButtonAction={() => handleClose()}
         title={`${i18n.t("createpassword.title")}`}
         footer={true}
+        scrollable={true}
         primaryButtonText={`${i18n.t("createpassword.button.continue")}`}
         primaryButtonAction={() => handleContinue(false)}
         primaryButtonDisabled={!validated}
-        secondaryButtonText={`${i18n.t("createpassword.button.skip")}`}
-        secondaryButtonAction={() => setAlertIsOpen(true)}
+        tertiaryButtonText={`${i18n.t("createpassword.button.skip")}`}
+        tertiaryButtonAction={() => setAlertIsOpen(true)}
       >
         <IonGrid>
           <IonRow>

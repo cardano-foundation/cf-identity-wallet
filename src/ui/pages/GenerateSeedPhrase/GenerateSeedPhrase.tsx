@@ -66,9 +66,9 @@ const GenerateSeedPhrase = () => {
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
     ? operationState.onboarding
     : (
-        (history?.location?.state as GenerateSeedPhraseProps)?.type ||
+      (history?.location?.state as GenerateSeedPhraseProps)?.type ||
         currentOperation
-      ).toLowerCase();
+    ).toLowerCase();
   const stateOnboarding = seedPhraseType === operationState.onboarding;
   const stateRestore = currentOperation === operationState.restoreCryptoAccount;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
@@ -228,11 +228,11 @@ const GenerateSeedPhrase = () => {
     const filteredSuggestions =
       isTyping && query.length
         ? bip39Seeds
-            .filter(
-              (suggestion: string) =>
-                suggestion.toLowerCase().indexOf(query) > -1
-            )
-            .splice(0, SEED_PHRASE_SUGGESTIONS)
+          .filter(
+            (suggestion: string) =>
+              suggestion.toLowerCase().indexOf(query) > -1
+          )
+          .splice(0, SEED_PHRASE_SUGGESTIONS)
         : [];
     setSuggestions(filteredSuggestions);
   };
@@ -264,6 +264,7 @@ const GenerateSeedPhrase = () => {
           progressBarValue={0.66}
           progressBarBuffer={1}
           footer={true}
+          scrollable={true}
           primaryButtonText={`${i18n.t(
             "generateseedphrase." + seedPhraseType + ".button.continue"
           )}`}
