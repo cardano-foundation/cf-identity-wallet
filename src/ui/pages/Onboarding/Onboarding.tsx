@@ -85,10 +85,10 @@ const Onboarding = () => {
         footer={true}
         primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}
         primaryButtonAction={() => handleNavigation(onboardingRoute.create)}
-        secondaryButtonText={`${i18n.t(
+        tertiaryButtonText={`${i18n.t(
           "onboarding.alreadywallet.button.label"
         )}`}
-        secondaryButtonAction={() => handleNavigation(onboardingRoute.restore)}
+        tertiaryButtonAction={() => handleNavigation(onboardingRoute.restore)}
       >
         <Slides items={items} />
       </PageLayout>

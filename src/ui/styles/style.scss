@@ -79,25 +79,32 @@ p {
   color: var(--ion-color-secondary);
 }
 
-.ion-primary-button {
-  font-size: 1rem;
-  color: var(--ion-color-primary);
+.primary-button {
   --background: var(--ion-color-primary-gradient);
   --background-activated: var(--ion-color-medium-grey);
+}
+
+.secondary-button {
+  --background: var(--ion-color-light);
+  --background-activated: var(--ion-color-medium-grey);
+  --border-color: var(--ion-color-dark-grey);
+}
+
+.tertiary-button {
+  --background: var(--ion-color-light);
+  --background-activated: var(--ion-color-medium-grey);
+}
+
+.primary-button,
+.secondary-button,
+.tertiary-button {
+  font-size: 1rem;
+  height: 3.25rem;
+  color: var(--ion-color-primary);
 
   &.button-disabled {
     --background: var(--ion-color-dark-grey);
   }
-}
-
-.secondary-button {
-  --border-color: var(--ion-color-dark-grey);
-  --background-activated: var(--ion-color-dark-grey);
-}
-
-.ion-primary-button,
-.secondary-button {
-  height: 3.25rem;
 }
 
 .page-paragraph {

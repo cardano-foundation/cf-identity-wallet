@@ -4,9 +4,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { playCircleOutline, pauseCircleOutline } from "ionicons/icons";
 import { Autoplay } from "swiper";
 import { Swiper as SwiperClass } from "swiper/types";
+import Lottie from "lottie-react";
 import { SlideProps } from "./Slides.types";
 import "./Slides.scss";
-import Lottie from "lottie-react";
 
 const Slides = ({ items }: SlideProps) => {
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);

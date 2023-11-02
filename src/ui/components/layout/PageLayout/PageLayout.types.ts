@@ -27,6 +27,8 @@ interface PageLayoutProps {
   primaryButtonDisabled?: boolean;
   secondaryButtonText?: string;
   secondaryButtonAction?: () => void;
+  tertiaryButtonText?: string;
+  tertiaryButtonAction?: () => void;
 }
 
 export type { PageLayoutProps };

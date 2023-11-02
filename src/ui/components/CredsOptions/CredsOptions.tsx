@@ -203,7 +203,7 @@ const CredsOptions = ({
                     <IonButton
                       shape="round"
                       expand="block"
-                      className="ion-primary-button"
+                      className="primary-button"
                       onClick={() => {
                         // @TODO - sdisalvo: Save to device
                         return;

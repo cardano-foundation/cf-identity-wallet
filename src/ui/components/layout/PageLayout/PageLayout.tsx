@@ -45,6 +45,8 @@ const PageLayout = ({
   primaryButtonDisabled,
   secondaryButtonText,
   secondaryButtonAction,
+  tertiaryButtonText,
+  tertiaryButtonAction,
 }: PageLayoutProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -197,24 +199,39 @@ const PageLayout = ({
               color="light"
               className="page-footer"
             >
-              <IonButton
-                shape="round"
-                expand="block"
-                className="ion-primary-button"
-                data-testid={`continue-button${id ? `-${id}` : ""}`}
-                onClick={primaryButtonAction}
-                disabled={primaryButtonDisabled}
-              >
-                {primaryButtonText}
-              </IonButton>
-              {secondaryButtonText && secondaryButtonAction ? (
-                <div
+              {primaryButtonText && primaryButtonAction && (
+                <IonButton
+                  shape="round"
+                  expand="block"
+                  className="primary-button"
+                  data-testid={`continue-button${id ? `-${id}` : ""}`}
+                  onClick={primaryButtonAction}
+                  disabled={primaryButtonDisabled}
+                >
+                  {primaryButtonText}
+                </IonButton>
+              )}
+              {secondaryButtonText && secondaryButtonAction && (
+                <IonButton
+                  shape="round"
+                  expand="block"
+                  fill="outline"
                   className="secondary-button"
                   onClick={secondaryButtonAction}
                 >
                   {secondaryButtonText}
-                </div>
-              ) : null}
+                </IonButton>
+              )}
+              {tertiaryButtonText && tertiaryButtonAction && (
+                <IonButton
+                  shape="round"
+                  expand="block"
+                  className="tertiary-button"
+                  onClick={tertiaryButtonAction}
+                >
+                  {tertiaryButtonText}
+                </IonButton>
+              )}
             </IonToolbar>
           </IonFooter>
         )}
