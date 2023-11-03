@@ -189,7 +189,7 @@ const PageLayout = ({
               </div>
             )}
 
-            {!progressBar && (
+            {!progressBar && actionButton && (
               <IonButtons slot="end">
                 {menuButton && (
                   <IonButton
@@ -237,15 +237,15 @@ const PageLayout = ({
         </IonHeader>
       )}
 
-      <div className={`page-content ${header ? "has-header" : ""}`}>
-        {scrollable ? (
-          <IonContent>
-            <PageContent />
-          </IonContent>
-        ) : (
+      {scrollable ? (
+        <IonContent className={`page-content ${header ? "has-header" : ""}`}>
           <PageContent />
-        )}
-      </div>
+        </IonContent>
+      ) : (
+        <div className={`page-content ${header ? "has-header" : ""}`}>
+          <PageContent />
+        </div>
+      )}
     </>
   );
 };

@@ -143,31 +143,36 @@ p {
 
 ion-modal {
   --background: transparent;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  --height: auto;
+
+  &::part(content) {
+    position: relative;
+    border-radius: 1rem 1rem 0 0;
+    height: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+  }
 }
 
 .modal {
   padding-inline: 1.25rem;
   background-color: var(--ion-color-light);
-  border-radius: 1rem 1rem 0px 0px;
-  width: 100%;
-  height: 100%;
 
   ion-toolbar {
     padding: 0.5rem 0 0 !important;
     height: 4rem;
-  }
 
-  ion-title {
-    position: absolute;
-    width: 100%;
-    height: 3rem;
-    top: 0;
-    left: 0;
-  }
+    ion-title {
+      padding: 0;
 
-  h2 {
-    margin: 0 auto;
-    font-size: 1.5rem;
+      h2 {
+        margin: 0 auto;
+      }
+    }
   }
 
   .action-button-label,

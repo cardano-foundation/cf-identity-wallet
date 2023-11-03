@@ -198,6 +198,7 @@ const VerifySeedPhrase = () => {
         progressBarValue={1}
         progressBarBuffer={1}
         footer={true}
+        scrollable={true}
         primaryButtonText={`${i18n.t(
           "verifyseedphrase." + seedPhraseType + ".button.continue"
         )}`}

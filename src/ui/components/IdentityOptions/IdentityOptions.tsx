@@ -165,28 +165,15 @@ const IdentityOptions = ({
     <>
       <IonModal
         isOpen={optionsIsOpen}
-        initialBreakpoint={0.4}
-        breakpoints={[0, 0.4]}
-        className="page-layout"
         data-testid="identity-options-modal"
         onDidDismiss={() => setOptionsIsOpen(false)}
       >
         <div className="identity-options modal menu">
-          <IonHeader
-            translucent={true}
-            className="ion-no-border"
+          <PageLayout
+            header={true}
+            title={`${i18n.t("identity.card.details.options.title")}`}
           >
-            <IonToolbar color="light">
-              <IonTitle data-testid="identity-options-title">
-                <h2>{i18n.t("identity.card.details.options.title")}</h2>
-              </IonTitle>
-            </IonToolbar>
-          </IonHeader>
-          <IonContent
-            className="identity-options-body"
-            color="light"
-          >
-            <IonGrid className="identity-options-main">
+            <IonGrid>
               <IonRow>
                 <IonCol size="12">
                   <span
@@ -280,7 +267,7 @@ const IdentityOptions = ({
                 </IonCol>
               </IonRow>
             </IonGrid>
-          </IonContent>
+          </PageLayout>
         </div>
       </IonModal>
       <IonModal

@@ -15,19 +15,7 @@
     }
   }
 
-  h2 {
-    text-align: left;
-  }
-
-  &.editor h2 {
-    text-align: center;
-  }
-
   &.modal.viewer {
-    ion-title h2 {
-      text-align: center;
-    }
-
     .identity-options-inner {
       overflow: scroll;
       height: calc(92vh - (11.5rem + env(safe-area-inset-bottom)));
@@ -46,8 +34,13 @@
     }
   }
 
-  .identity-options-main {
+  .page-content {
     margin-top: 0.5rem;
+
+    ion-grid,
+    ion-col {
+      padding: 0;
+    }
 
     ion-col {
       display: flex;
