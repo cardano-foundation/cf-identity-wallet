@@ -144,7 +144,7 @@ const PasscodeLogin = () => {
             )
           }
           passcode={passcode}
-          handlePinChange={(number: number) => handlePinChange(number)}
+          handlePinChange={handlePinChange}
           handleRemove={handleRemove}
         />
         <IonGrid>
