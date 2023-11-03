@@ -63,8 +63,6 @@ const PasscodeLogin = () => {
       verifyPasscode(updatedPasscode)
         .then((verified) => {
           if (verified) {
-            setPasscodeIncorrect(false);
-            setPasscode("");
             const { backPath, updateRedux } = getBackRoute(
               RoutePath.PASSCODE_LOGIN,
               {
