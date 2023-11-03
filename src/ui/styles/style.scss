@@ -37,14 +37,6 @@ ion-content {
   &::-webkit-scrollbar {
     display: none;
   }
-
-  // &.ios {
-  //   height: calc(100vh - (6rem + env(safe-area-inset-top)));
-  // }
-
-  // &.md {
-  //   height: calc(100vh - 6rem);
-  // }
 }
 
 code {

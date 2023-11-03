@@ -1,4 +1,6 @@
 .page-layout {
+  display: flex;
+  flex-direction: column;
   padding-inline: 1.25rem;
   // background: var(--ion-color-light);
 
@@ -9,8 +11,16 @@
     height: 100%;
 
     &.has-header {
-      height: calc(100% - 3.5rem);
+      margin-top: 3.5rem;
     }
+
+    // &.ios {
+    //   height: calc(100vh - (6rem + env(safe-area-inset-top)));
+    // }
+
+    // &.md {
+    //   height: calc(100vh - 6rem);
+    // }
 
     > * {
       flex: 0 1 auto;
