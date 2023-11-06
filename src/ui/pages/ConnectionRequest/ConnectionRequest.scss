@@ -23,6 +23,12 @@
     transition-property: right;
     transition-property: left;
     transition-duration: 0.5s;
+
+    h2,
+    .request-content,
+    ion-footer {
+      display: none;
+    }
   }
 
   h2 {
@@ -115,7 +121,7 @@
   }
 
   .request-content {
-    height: 80rem;
+    height: 80vh;
   }
 
   .request-icons-row {

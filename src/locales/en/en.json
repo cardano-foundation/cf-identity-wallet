@@ -712,6 +712,6 @@
       "cancel": "Cancel"
     },
     "pending": "{{action}} pending",
-    "success": "{{action}} successfully"
+    "success": "{{action}} successful"
   }
 }
