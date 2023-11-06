@@ -16,7 +16,6 @@ import {
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { connectionType } from "../../constants/dictionary";
-import { Alert } from "../../components/Alert";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
@@ -32,7 +31,6 @@ const ConnectionCredentialRequest = () => {
       : queueConnectionCredentialRequest.queues[0] ?? { id: "" };
   const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [requestData, setRequestData] = useState<{
     label: string;
     logo?: string;
@@ -140,7 +138,7 @@ const ConnectionCredentialRequest = () => {
       data-testid="request"
     >
       <PageLayout
-        footer={true}
+        footer={!initiateAnimation}
         primaryButtonText={
           requestType === connectionType.connection
             ? `${i18n.t("request.button.connect")}`
