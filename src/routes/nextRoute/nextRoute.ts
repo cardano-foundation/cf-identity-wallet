@@ -24,11 +24,7 @@ const getNextRootRoute = (store: StoreState) => {
   if (authentication.passcodeIsSet && !authentication.loggedIn) {
     path = RoutePath.PASSCODE_LOGIN;
   } else if (routes.length === 1 && !isInitialized) {
-    if (authentication.passcodeIsSet) {
-      path = RoutePath.GENERATE_SEED_PHRASE;
-    } else {
-      path = RoutePath.ONBOARDING;
-    }
+    path = RoutePath.ONBOARDING;
   } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
     if (
       store.stateCache.currentOperation ===
