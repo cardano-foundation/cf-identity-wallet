@@ -9,26 +9,21 @@ services:
     ports:
       - "51986:51986"
     restart: always
-  keria:
-    container_name: idw-keria
+  keripy:
+    container_name: idw-keripy
     restart: unless-stopped
     build:
-      context: github.com/WebOfTrust/keria#d70e2a8e1d5dd5e76c900b7a2af27d83a5785496
-      dockerfile: ./images/keria.dockerfile
-    environment:
-      - KERI_AGENT_CORS=true
+      context: github.com/WebOfTrust/keripy#f7df7fb0b86a002e640bc60e82b26accb57d6678
+      dockerfile: ./images/keripy.dockerfile
     volumes:
-      - ./cloud-services/keria-config/cf-backer-oobis.json:/keria/scripts/keri/cf/backer-oobis.json
-      - keria-data:/usr/local/var/keri
-    entrypoint: keria start --config-file backer-oobis --config-dir ./scripts
-    ports:
-      - 3901:3901
-      - 3902:3902
-      - 3903:3903
+      - keripy-data:/usr/local/var/keri
+    entrypoint: kli agent start
+    ports:  
+      - 5623:5623
   issuer-server:
     container_name: issuer-server
     depends_on:
-      keria:
+      keripy:
         condition: service_started
     build:
       context: ./credential-issuance-server
@@ -41,5 +36,5 @@ services:
     restart: always
 
 volumes:
-  keria-data:
+  keripy-data:
   issuer-server-data:
