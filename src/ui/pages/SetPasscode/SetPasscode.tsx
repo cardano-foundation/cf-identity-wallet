@@ -108,6 +108,7 @@ const SetPasscode = () => {
                   expand="block"
                   fill="outline"
                   className="secondary-button"
+                  data-testid="forgot-your-passcode-button"
                 >
                   {i18n.t("setpasscode.startover.label")}
                 </IonButton>

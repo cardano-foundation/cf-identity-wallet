@@ -210,6 +210,7 @@ const PageLayout = ({
             {secondaryButtonText && secondaryButtonAction ? (
               <div
                 className="secondary-button"
+                data-testid="secondary-button"
                 onClick={secondaryButtonAction}
               >
                 {secondaryButtonText}
