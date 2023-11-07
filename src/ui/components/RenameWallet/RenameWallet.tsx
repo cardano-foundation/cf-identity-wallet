@@ -130,7 +130,7 @@ const RenameWallet = ({
                 shape="round"
                 expand="block"
                 className="primary-button"
-                data-testid="primary-button"
+                data-testid="continue-button"
                 onClick={handleSubmit}
                 disabled={!verifyDisplayName}
               >

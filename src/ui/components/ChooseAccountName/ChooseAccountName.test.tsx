@@ -122,7 +122,7 @@ describe("Choose Crypto Account name", () => {
       </Provider>
     );
 
-    const continueButton = getByTestId("primary-button");
+    const continueButton = getByTestId("continue-button");
     expect(continueButton).toBeDisabled();
 
     fireEvent.change(getByTestId("edit-display-name"), {

@@ -199,13 +199,13 @@ const CreateIdentity = ({
                   setSelectedTheme={setSelectedTheme}
                 />
 
-                <IonRow className="primary-button-container">
+                <IonRow className="continue-button-container">
                   <IonCol>
                     <IonButton
                       shape="round"
                       expand="block"
                       className="primary-button"
-                      data-testid="primary-button"
+                      data-testid="continue-button"
                       onClick={() => {
                         setBlur(true);
                         setTimeout(() => {

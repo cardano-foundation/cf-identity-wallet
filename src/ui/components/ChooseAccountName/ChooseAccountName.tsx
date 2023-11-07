@@ -134,7 +134,7 @@ const ChooseAccountName = ({
               shape="round"
               expand="block"
               className="primary-button"
-              data-testid="primary-button"
+              data-testid="continue-button"
               onClick={() => handleCreateWallet(accountName)}
               disabled={!accountName.length}
             >
