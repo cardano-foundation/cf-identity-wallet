@@ -360,8 +360,8 @@ const IdentityOptions = ({
               <IonButton
                 shape="round"
                 expand="block"
-                className="ion-primary-button"
-                data-testid="continue-button"
+                className="primary-button"
+                data-testid="primary-button"
                 onClick={handleSubmit}
                 disabled={!verifyDisplayName}
               >
@@ -418,7 +418,7 @@ const IdentityOptions = ({
                     <IonButton
                       shape="round"
                       expand="block"
-                      className="ion-primary-button"
+                      className="primary-button"
                       onClick={() => {
                         // @TODO - sdisalvo: Save to device
                         return;

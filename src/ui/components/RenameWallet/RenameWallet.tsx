@@ -129,8 +129,8 @@ const RenameWallet = ({
               <IonButton
                 shape="round"
                 expand="block"
-                className="ion-primary-button"
-                data-testid="continue-button"
+                className="primary-button"
+                data-testid="primary-button"
                 onClick={handleSubmit}
                 disabled={!verifyDisplayName}
               >
