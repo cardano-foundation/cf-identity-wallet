@@ -194,7 +194,7 @@
           line-height: normal;
 
           &.left-column {
-            width: 30%;
+            width: 33%;
             z-index: 1;
 
             img {
@@ -203,13 +203,13 @@
           }
 
           &.center-column {
-            width: 37%;
+            width: 36%;
             margin-left: 0.5rem;
           }
 
           &.right-column {
-            width: 26%;
-            margin-left: 0.5rem;
+            width: 25%;
+            margin-left: 0.25rem;
 
             .card-body-info {
               text-align: right;

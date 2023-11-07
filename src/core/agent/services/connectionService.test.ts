@@ -31,6 +31,8 @@ const agent = jest.mocked({
     acceptResponse: jest.fn(),
     getAll: jest.fn(),
     getById: jest.fn(),
+    findAllByQuery: jest.fn(),
+    deleteById: jest.fn(),
   },
   modules: {
     generalStorage: {
@@ -534,5 +536,29 @@ describe("Connection service of agent", () => {
     expect(
       agent.modules.generalStorage.getCredentialMetadataByConnectionId
     ).toBeCalledWith(connectionIdTest);
+  });
+
+  test("can get unhandled connections to re-processing", async () => {
+    agent.connections.findAllByQuery = jest
+      .fn()
+      .mockResolvedValue([connectionAcceptedRecordAutoAccept]);
+    expect(await connectionService.getUnhandledConnections()).toEqual([
+      connectionAcceptedRecordAutoAccept,
+      connectionAcceptedRecordAutoAccept,
+    ]);
+    expect(agent.connections.findAllByQuery).toBeCalledWith({
+      state: DidExchangeState.ResponseReceived,
+      role: DidExchangeRole.Requester,
+    });
+    expect(agent.connections.findAllByQuery).toBeCalledWith({
+      state: DidExchangeState.RequestReceived,
+      role: DidExchangeRole.Responder,
+    });
+  });
+
+  test("can delete conenction by id", async () => {
+    const connectionId = "connectionId";
+    await connectionService.deleteConnectionById(connectionId);
+    expect(agent.connections.deleteById).toBeCalledWith(connectionId);
   });
 });

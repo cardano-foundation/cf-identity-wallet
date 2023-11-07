@@ -44,21 +44,28 @@ npm run wdio:android:s23ultra
 
 ### Generate icons
 
-Install cordova resources tool:
+Install capacitor [assets tool](https://capacitorjs.com/docs/guides/splash-screens-and-icons):
 ```
-npm install -g cordova-res
+npm install @capacitor/assets --save-dev
 ```
 
-Create a `resources` folder in the root directory with:
-- icon.png (1024x1024)
-- splash.png (2732x2732)
+Create a `assets` folder in the root directory with:
+```
+assets/
+├── icon-only.png
+├── icon-foreground.png
+├── icon-background.png
+├── splash.png
+└── splash-dark.png
+```
 
 For iOS: 
 ```
-cordova-res ios --skip-config --copy
+npx @capacitor/assets generate --ios
 ```
 For Android: 
 ```
-cordova-res Android --skip-config --copy
+npx @capacitor/assets generate --android
 ```
+
 Known [issue](https://github.com/ionic-team/capacitor-assets/issues/137) from Capacitor requires to set icons manually in Android Studio.

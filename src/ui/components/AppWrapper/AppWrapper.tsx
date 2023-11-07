@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import {
   BasicMessageStateChangedEvent,
+  ConnectionRecord,
   ConnectionStateChangedEvent,
   CredentialStateChangedEvent,
 } from "@aries-framework/core";
@@ -10,6 +11,7 @@ import {
   setAuthentication,
   setCurrentOperation,
   setInitialized,
+  setPauseQueueConnectionCredentialRequest,
   setQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
@@ -184,6 +186,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     await AriesAgent.agent.start();
+    dispatch(setPauseQueueConnectionCredentialRequest(true));
     const connectionsDetails =
       await AriesAgent.agent.connections.getConnections();
     const credentials = await AriesAgent.agent.credentials.getCredentials();
@@ -254,6 +257,34 @@ const AppWrapper = (props: { children: ReactNode }) => {
     // pickup messages
     AriesAgent.agent.messages.pickupMessagesFromMediator();
     setInitialised(true);
+
+    const oldMessages = (
+      await Promise.all([
+        AriesAgent.agent.connections.getUnhandledConnections(),
+        AriesAgent.agent.credentials.getUnhandledCredentials(),
+      ])
+    )
+      .flat()
+      .sort(function (messageA, messageB) {
+        return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
+      });
+    oldMessages.forEach(async (message) => {
+      if (message instanceof ConnectionRecord) {
+        await connectionStateChangedHandler(
+          {
+            payload: { connectionRecord: message },
+          } as unknown as ConnectionStateChangedEvent,
+          dispatch
+        );
+      } else {
+        await credentialStateChangedHandler(
+          {
+            payload: { credentialRecord: message },
+          } as unknown as CredentialStateChangedEvent,
+          dispatch
+        );
+      }
+    });
   };
 
   return initialised ? <>{props.children}</> : <></>;

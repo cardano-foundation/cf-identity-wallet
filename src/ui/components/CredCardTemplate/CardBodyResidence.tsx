@@ -1,16 +1,22 @@
 import { CredentialDetails } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../../utils";
+import imagePlaceholder from "../../assets/images/user-image-placeholder.svg";
 
 // @TODO - sdisalvo: cardData should be of type CredentialDetails
 const CardBodyResidency = ({ cardData }: any) => {
   const credentialSubject = cardData.credentialSubject;
+
   return (
     <>
       <div className="card-body">
         <div className="left-column">
           <img
             src={credentialSubject.image}
+            onError={({ currentTarget }) => {
+              currentTarget.onerror = null; // @TODO - sdisalvo: Handle error
+              currentTarget.src = imagePlaceholder;
+            }}
             alt="user-picture"
           />
         </div>
