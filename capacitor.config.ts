@@ -5,6 +5,12 @@ const config: CapacitorConfig = {
   appName: "ID Wallet",
   webDir: "build",
   bundledWebRuntime: false,
+  android: {
+    webContentsDebuggingEnabled: true,
+  },
+  ios: {
+    webContentsDebuggingEnabled: true,
+  },
   plugins: {
     CapacitorSQLite: {
       "iosDatabaseLocation": "Library/IDWalletDatabase"
