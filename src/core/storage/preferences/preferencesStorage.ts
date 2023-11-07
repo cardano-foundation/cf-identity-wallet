@@ -6,10 +6,13 @@ import {
 import { PreferencesStorageItem } from "./preferencesStorage.type";
 
 enum PreferencesKeys {
+  APP_ALREADY_INIT = "app-already-init",
   APP_STATE_FLAGS = "app-state-flags",
   APP_LANGUAGE = "app-language",
   APP_DEFAULT_CRYPTO_ACCOUNT = "app-default-crypto-account",
   APP_HIDE_CRYPTO_BALANCES = "app-hide-crypto-balances",
+  APP_DIDS_FAVOURITES = "app-dids-favourites",
+  APP_CREDS_FAVOURITES = "app-creds-favourites",
 }
 
 class PreferencesStorage {

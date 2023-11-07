@@ -5,13 +5,14 @@ import {
   IonItem,
   IonModal,
   IonRow,
+  IonSpinner,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../layout/PageLayout";
-import { CreateIdentityProps } from "./CreateIdentity.types";
+import { CreateIdentityProps, TypeItemProps } from "./CreateIdentity.types";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import "./CreateIdentity.scss";
@@ -28,6 +29,7 @@ import { ColorGenerator } from "../../utils/ColorGenerator";
 import { AriesAgent } from "../../../core/agent/agent";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { toastState } from "../../constants/dictionary";
+import { IdentityThemeSelector } from "../IdentityThemeSelector";
 
 const CreateIdentity = ({
   modalIsOpen,
@@ -36,11 +38,11 @@ const CreateIdentity = ({
   const dispatch = useAppDispatch();
   const identityData = useAppSelector(getIdentitiesCache);
   const [displayNameValue, setDisplayNameValue] = useState("");
-  const [selectedType, setSelectedType] = useState<number | undefined>(
-    undefined
-  );
+  const [selectedType, setSelectedType] = useState(0);
+  const [selectedTheme, setSelectedTheme] = useState(0);
+  const [blur, setBlur] = useState(false);
+  const CREATE_IDENTITY_BLUR_TIMEOUT = 250;
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
-
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
   const typeIsSelectedIsValid = selectedType !== undefined;
@@ -56,21 +58,29 @@ const CreateIdentity = ({
     }
   }, []);
 
+  useEffect(() => {
+    blur
+      ? document?.querySelector("ion-router-outlet")?.classList.add("blur")
+      : document?.querySelector("ion-router-outlet")?.classList.remove("blur");
+  }, [blur]);
+
   const resetModal = () => {
     setModalIsOpen(false);
+    setBlur(false);
     setDisplayNameValue("");
-    setSelectedType(undefined);
+    setSelectedType(0);
+    setSelectedTheme(0);
   };
 
   const handleCreateIdentity = async () => {
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
     const type = selectedType === 0 ? IdentifierType.KEY : IdentifierType.KERI;
-    // @TODO: for test, should set colors
     const identifier = await AriesAgent.agent.identifiers.createIdentifier({
       displayName: displayNameValue,
       method: type,
       colors: [newColor[1], newColor[0]],
+      theme: selectedTheme,
     });
     if (identifier) {
       const newIdentity: IdentifierShortDetails = {
@@ -79,6 +89,7 @@ const CreateIdentity = ({
         displayName: displayNameValue,
         createdAtUTC: new Date().toISOString(),
         colors: [newColor[1], newColor[0]],
+        theme: selectedTheme,
       };
       dispatch(setIdentitiesCache([...identityData, newIdentity]));
       dispatch(setCurrentOperation(toastState.identityCreated));
@@ -86,25 +97,52 @@ const CreateIdentity = ({
     }
   };
 
+  const TypeItem = ({ index, text }: TypeItemProps) => {
+    return (
+      <IonCol>
+        <IonItem
+          onClick={() => {
+            if (selectedType !== index) {
+              setSelectedTheme(index === 0 ? 0 : 4);
+            }
+            setSelectedType(index);
+          }}
+          className={`type-input ${
+            selectedType === index ? "selected-type" : ""
+          }`}
+        >
+          <div className="centered-text">
+            <span>{text}</span>
+          </div>
+        </IonItem>
+      </IonCol>
+    );
+  };
+
   return (
     <IonModal
       isOpen={modalIsOpen}
-      initialBreakpoint={0.45}
-      breakpoints={[0, 0.45]}
-      className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
+      initialBreakpoint={0.85}
+      breakpoints={[0, 0.85]}
+      className={`page-layout create-identity-modal ${blur ? "blur" : ""}`}
       data-testid="create-identity-modal"
       onDidDismiss={() => resetModal()}
     >
+      {blur ? (
+        <div
+          className="spinner-container"
+          data-testid="spinner-container"
+        >
+          <IonSpinner name="circular" />
+        </div>
+      ) : null}
       <div className="create-identity modal">
         <PageLayout
           header={true}
-          closeButton={true}
-          closeButtonLabel={`${i18n.t("verifypassword.cancel")}`}
-          closeButtonAction={() => setModalIsOpen(false)}
           title={`${i18n.t("createidentity.title")}`}
         >
           <IonGrid>
-            <IonRow>
+            <IonRow className="identity-name-input">
               <IonCol>
                 <CustomInput
                   dataTestId="display-name-input"
@@ -118,6 +156,7 @@ const CreateIdentity = ({
                 />
               </IonCol>
             </IonRow>
+
             <IonRow className="error-message-container">
               {displayNameValue.length !== 0 && !displayNameValueIsValid ? (
                 <ErrorMessage
@@ -126,51 +165,63 @@ const CreateIdentity = ({
                 />
               ) : null}
             </IonRow>
-            <IonRow>
-              <span className="type-input-title">{`${i18n.t(
-                "createidentity.identitytype.title"
-              )}`}</span>
-            </IonRow>
-            <IonRow>
-              <IonCol className="col-left">
-                <IonItem
-                  onClick={() => setSelectedType(0)}
-                  className={`type-input ${
-                    selectedType === 0 ? "selectedType" : ""
-                  }`}
+
+            {!keyboardIsOpen ? (
+              <>
+                <IonRow>
+                  <span className="type-input-title">{`${i18n.t(
+                    "createidentity.identitytype.title"
+                  )}`}</span>
+                </IonRow>
+
+                <IonRow
+                  className="identity-type-selector"
+                  data-testid="identity-type-selector"
                 >
-                  <div className="centered-text">
-                    <span>{"DID:KEY"}</span>
-                  </div>
-                </IonItem>
-              </IonCol>
-              <IonCol className="col-right">
-                <IonItem
-                  onClick={() => setSelectedType(1)}
-                  className={`type-input ${
-                    selectedType === 1 ? "selectedType" : ""
-                  }`}
-                >
-                  <div className="centered-text">
-                    <span>{"KERI"}</span>
-                  </div>
-                </IonItem>
-              </IonCol>
-            </IonRow>
-            <IonRow className="continue-button-container">
-              <IonCol>
-                <IonButton
-                  shape="round"
-                  expand="block"
-                  className="ion-primary-button"
-                  data-testid="continue-button"
-                  onClick={handleCreateIdentity}
-                  disabled={!(displayNameValueIsValid && typeIsSelectedIsValid)}
-                >
-                  {`${i18n.t("createidentity.confirmbutton")}`}
-                </IonButton>
-              </IonCol>
-            </IonRow>
+                  <TypeItem
+                    index={0}
+                    text={i18n.t("createidentity.identitytype.didkey")}
+                  />
+                  <TypeItem
+                    index={1}
+                    text={i18n.t("createidentity.identitytype.keri")}
+                  />
+                </IonRow>
+
+                <IonRow>
+                  <span className="type-input-title">{`${i18n.t(
+                    "createidentity.theme.title"
+                  )}`}</span>
+                </IonRow>
+                <IdentityThemeSelector
+                  identityType={selectedType}
+                  selectedTheme={selectedTheme}
+                  setSelectedTheme={setSelectedTheme}
+                />
+
+                <IonRow className="continue-button-container">
+                  <IonCol>
+                    <IonButton
+                      shape="round"
+                      expand="block"
+                      className="ion-primary-button"
+                      data-testid="continue-button"
+                      onClick={() => {
+                        setBlur(true);
+                        setTimeout(() => {
+                          handleCreateIdentity();
+                        }, CREATE_IDENTITY_BLUR_TIMEOUT);
+                      }}
+                      disabled={
+                        !(displayNameValueIsValid && typeIsSelectedIsValid)
+                      }
+                    >
+                      {`${i18n.t("createidentity.confirmbutton")}`}
+                    </IonButton>
+                  </IonCol>
+                </IonRow>
+              </>
+            ) : null}
           </IonGrid>
         </PageLayout>
       </div>

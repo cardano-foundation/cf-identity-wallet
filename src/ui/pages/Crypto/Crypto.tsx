@@ -47,7 +47,8 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences";
-import { CryptoReceiveAddress } from "../../components/CryptoReceiveAddress";
+import { ShareQR } from "../../components/ShareQR/ShareQR";
+import { MoreOptions } from "../../components/ShareQR/MoreOptions";
 
 const Crypto = () => {
   const dispatch = useAppDispatch();
@@ -284,10 +285,36 @@ const Crypto = () => {
                   </IonModal>
                 )}
               </div>
-              <CryptoReceiveAddress
+              <ShareQR
                 isOpen={receiveIsOpen}
                 setIsOpen={setReceiveIsOpen}
-                accountData={defaultAccountData}
+                header={{
+                  title: i18n.t("crypto.receivemodal.title"),
+                  titlePosition: "center",
+                }}
+                content={{
+                  QRData: defaultAccountData.address,
+                  copyBlock: [
+                    {
+                      content: `${defaultAccountData.address.substring(
+                        0,
+                        22
+                      )}...`,
+                    },
+                    {
+                      title: i18n.t(
+                        "crypto.receivemodal.derivationpath"
+                      ) as string,
+                      content: defaultAccountData.derivationPath,
+                    },
+                  ],
+                }}
+                moreComponent={
+                  <MoreOptions
+                    text={defaultAccountData.address}
+                    onClick={() => setReceiveIsOpen(false)}
+                  />
+                }
               />
             </>
           ) : (

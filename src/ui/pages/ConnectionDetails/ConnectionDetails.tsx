@@ -95,13 +95,19 @@ const ConnectionDetails = () => {
   };
 
   const verifyAction = () => {
-    const updatedConnections = connectionsData.filter(
-      (item) => item.id !== connectionDetails?.id
-    );
-    dispatch(setConnectionsCache(updatedConnections));
-    handleDone();
-    setVerifyPasswordIsOpen(false);
-    setVerifyPasscodeIsOpen(false);
+    async function deleteConnection() {
+      await AriesAgent.agent.connections.deleteConnectionById(
+        connectionShortDetails.id
+      );
+      const updatedConnections = connectionsData.filter(
+        (item) => item.id !== connectionDetails?.id
+      );
+      dispatch(setConnectionsCache(updatedConnections));
+      handleDone();
+      setVerifyPasswordIsOpen(false);
+      setVerifyPasscodeIsOpen(false);
+    }
+    deleteConnection();
   };
 
   const ConnectionDetailsHeader = () => {

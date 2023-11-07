@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IonButton, IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
-import { ErrorMessage } from "../../components/ErrorMessage";
+import {
+  ErrorMessage,
+  MESSAGE_MILLISECONDS,
+} from "../../components/ErrorMessage";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import { Alert } from "../../components/Alert";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
@@ -13,6 +16,7 @@ import {
   getStateCache,
   setAuthentication,
   setCurrentRoute,
+  setPauseQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
@@ -25,53 +29,66 @@ const PasscodeLogin = () => {
   const stateCache = useAppSelector(getStateCache);
   const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
-  const seedPhrase = localStorage.getItem("seedPhrase");
+  const seedPhrase = authentication.seedPhraseIsSet;
   const [isOpen, setIsOpen] = useState(false);
   const [passcodeIncorrect, setPasscodeIncorrect] = useState(false);
-  const headerText =
-    seedPhrase !== null
-      ? i18n.t("passcodelogin.alert.text.verify")
-      : i18n.t("passcodelogin.alert.text.restart");
-  const confirmButtonText =
-    seedPhrase !== null
-      ? i18n.t("passcodelogin.alert.button.verify")
-      : i18n.t("passcodelogin.alert.button.restart");
+  const headerText = seedPhrase
+    ? i18n.t("passcodelogin.alert.text.verify")
+    : i18n.t("passcodelogin.alert.text.restart");
+  const confirmButtonText = seedPhrase
+    ? i18n.t("passcodelogin.alert.button.verify")
+    : i18n.t("passcodelogin.alert.button.restart");
   const cancelButtonText = i18n.t("passcodelogin.alert.button.cancel");
 
   const handleClearState = () => {
-    setPasscode("");
     setIsOpen(false);
     setPasscodeIncorrect(false);
+    setPasscode("");
   };
 
-  const handlePinChange = (digit: number) => {
-    if (passcode.length < 6) {
-      setPasscode(passcode + digit);
-      if (passcode.length === 5) {
-        verifyPasscode(passcode + digit)
-          .then((verified) => {
-            if (verified) {
-              const { backPath, updateRedux } = getBackRoute(
-                RoutePath.PASSCODE_LOGIN,
-                {
-                  store: { stateCache },
-                }
-              );
+  useEffect(() => {
+    if (passcodeIncorrect) {
+      setTimeout(() => {
+        setPasscodeIncorrect(false);
+      }, MESSAGE_MILLISECONDS);
+    }
+  }, [passcodeIncorrect]);
 
-              updateReduxState(
-                backPath.pathname,
-                { store: { stateCache } },
-                dispatch,
-                updateRedux
-              );
-              history.push(backPath.pathname);
-              handleClearState();
-            } else {
-              setPasscodeIncorrect(true);
-            }
-          })
-          .catch((e) => e.code === -35 && setPasscodeIncorrect(true));
-      }
+  const handlePinChange = (digit: number) => {
+    const updatedPasscode = `${passcode}${digit}`;
+
+    if (updatedPasscode.length <= 6) setPasscode(updatedPasscode);
+
+    if (updatedPasscode.length === 6) {
+      verifyPasscode(updatedPasscode)
+        .then((verified) => {
+          if (verified) {
+            const { backPath, updateRedux } = getBackRoute(
+              RoutePath.PASSCODE_LOGIN,
+              {
+                store: { stateCache },
+              }
+            );
+            updateReduxState(
+              backPath.pathname,
+              { store: { stateCache } },
+              dispatch,
+              updateRedux
+            );
+
+            history.push(backPath.pathname);
+            handleClearState();
+
+            setTimeout(() => {
+              dispatch(setPauseQueueConnectionCredentialRequest(false));
+            }, 500);
+          } else {
+            setPasscodeIncorrect(true);
+          }
+        })
+        .catch((e) => {
+          e.code === -35 && setPasscodeIncorrect(true);
+        });
     }
   };
 

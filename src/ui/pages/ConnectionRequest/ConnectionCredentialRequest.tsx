@@ -10,25 +10,27 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import { i18n } from "../../../i18n";
 import "./ConnectionRequest.scss";
 import {
-  getConnectionCredentialRequest,
-  setConnectionCredentialRequest,
+  getQueueConnectionCredentialRequest,
+  dequeueCredentialCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { connectionType } from "../../constants/dictionary";
-import { Alert } from "../../components/Alert";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
 const ConnectionCredentialRequest = () => {
   const dispatch = useAppDispatch();
-  const connectionCredentialRequest = useAppSelector(
-    getConnectionCredentialRequest
+  const queueConnectionCredentialRequest = useAppSelector(
+    getQueueConnectionCredentialRequest
   );
+  const connectionCredentialRequest =
+    !queueConnectionCredentialRequest.isProcessing
+      ? { id: "" }
+      : queueConnectionCredentialRequest.queues[0] ?? { id: "" };
   const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [requestData, setRequestData] = useState<{
     label: string;
     logo?: string;
@@ -71,9 +73,11 @@ const ConnectionCredentialRequest = () => {
   }, [connectionCredentialRequest.id]);
 
   const handleReset = () => {
-    dispatch(setConnectionCredentialRequest({ id: "" }));
     setShowRequest(false);
     setInitiateAnimation(false);
+    setTimeout(() => {
+      dispatch(dequeueCredentialCredentialRequest());
+    }, 0.5 * 1000);
   };
 
   const handleCancel = async () => {
@@ -82,6 +86,15 @@ const ConnectionCredentialRequest = () => {
       ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
       await AriesAgent.agent.credentials.declineCredentialOffer(
+        connectionCredentialRequest.id
+      );
+    } else if (
+      connectionCredentialRequest.type ===
+        ConnectionCredentialRequestType.CONNECTION_INCOMING ||
+      connectionCredentialRequest.type ===
+        ConnectionCredentialRequestType.CONNECTION_RESPONSE
+    ) {
+      await AriesAgent.agent.connections.deleteConnectionById(
         connectionCredentialRequest.id
       );
     }
@@ -125,21 +138,21 @@ const ConnectionCredentialRequest = () => {
       data-testid="request"
     >
       <PageLayout
-        footer={true}
+        footer={!initiateAnimation}
         primaryButtonText={
           requestType === connectionType.connection
             ? `${i18n.t("request.button.connect")}`
-            : `${i18n.t("request.button.accept-offer")}`
+            : `${i18n.t("request.button.acceptoffer")}`
         }
-        primaryButtonAction={() => setAlertIsOpen(true)}
+        primaryButtonAction={() => handleAccept()}
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
         // add dismiss action if needed
         secondaryButtonAction={() => handleCancel()}
       >
         {requestType === connectionType.connection ? (
-          <h2>{i18n.t("request.connection-title")}</h2>
+          <h2>{i18n.t("request.connection.title")}</h2>
         ) : (
-          <h2>{i18n.t("request.credential-title")}</h2>
+          <h2>{i18n.t("request.credential.title")}</h2>
         )}
         <IonGrid className="request-content">
           <IonRow className="request-icons-row">
@@ -170,10 +183,12 @@ const ConnectionCredentialRequest = () => {
             <IonCol size="12">
               {requestType === connectionType.connection ? (
                 <span>
-                  {requestType + i18n.t("request.request-connection")}
+                  {requestType + i18n.t("request.connection.requestconnection")}
                 </span>
               ) : (
-                <span>{requestType + i18n.t("request.offer-credential")}</span>
+                <span>
+                  {requestType + i18n.t("request.credential.offercredential")}
+                </span>
               )}
               <strong>{requestData?.label}</strong>
             </IonCol>
@@ -196,28 +211,6 @@ const ConnectionCredentialRequest = () => {
           </IonRow>
         </IonGrid>
       </PageLayout>
-      <Alert
-        isOpen={alertIsOpen}
-        setIsOpen={setAlertIsOpen}
-        dataTestId="alert-confirm"
-        headerText={i18next.t(
-          requestType === connectionType.connection
-            ? "request.alert.title-confirm-connection"
-            : "request.alert.title-confirm-credential",
-          {
-            initiator: requestData?.label,
-          }
-        )}
-        confirmButtonText={
-          requestType === connectionType.connection
-            ? `${i18n.t("request.alert.confirm-connection")}`
-            : `${i18n.t("request.alert.confirm-credential")}`
-        }
-        cancelButtonText={`${i18n.t("request.alert.cancel")}`}
-        actionConfirm={handleAccept}
-        actionCancel={handleCancel}
-        actionDismiss={handleReset}
-      />
     </IonPage>
   );
 };

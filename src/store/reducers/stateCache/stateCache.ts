@@ -9,6 +9,7 @@ import {
 import { RoutePath } from "../../../routes";
 
 const initialState: StateCacheProps = {
+  initialized: false,
   routes: [],
   authentication: {
     loggedIn: false,
@@ -19,14 +20,21 @@ const initialState: StateCacheProps = {
     passwordIsSkipped: true,
   },
   currentOperation: "",
-  connectionCredentialRequest: { id: "" },
   defaultCryptoAccount: "",
+  queueConnectionCredentialRequest: {
+    isProcessing: false,
+    queues: [],
+    isPaused: false,
+  },
 };
 
 const stateCacheSlice = createSlice({
   name: "stateCache",
   initialState,
   reducers: {
+    setInitialized: (state, action: PayloadAction<boolean>) => {
+      state.initialized = action.payload;
+    },
     setCurrentRoute: (state, action: PayloadAction<CurrentRouteCacheProps>) => {
       const filteredRoutes = state.routes.filter(
         (route) => action.payload.path !== route.path
@@ -55,34 +63,77 @@ const stateCacheSlice = createSlice({
     setCurrentOperation: (state, action: PayloadAction<string>) => {
       state.currentOperation = action.payload;
     },
-    setConnectionCredentialRequest: (
+    setPauseQueueConnectionCredentialRequest: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.queueConnectionCredentialRequest = {
+        ...state.queueConnectionCredentialRequest,
+        isPaused: action.payload,
+        isProcessing: !action.payload,
+      };
+    },
+    setQueueConnectionCredentialRequest: (
       state,
       action: PayloadAction<ConnectionCredentialRequestProps>
     ) => {
-      state.connectionCredentialRequest = action.payload;
+      const isPaused = state.queueConnectionCredentialRequest.isPaused;
+      if (!isPaused && !state.queueConnectionCredentialRequest.isProcessing) {
+        state.queueConnectionCredentialRequest.isProcessing = true;
+      }
+      state.queueConnectionCredentialRequest.queues.push(action.payload);
+    },
+    dequeueCredentialCredentialRequest: (state) => {
+      if (state.queueConnectionCredentialRequest.queues.length > 0) {
+        state.queueConnectionCredentialRequest.queues.shift();
+        const isPaused = state.queueConnectionCredentialRequest.isPaused;
+        state.queueConnectionCredentialRequest.isProcessing = isPaused
+          ? false
+          : state.queueConnectionCredentialRequest.queues.length > 0;
+      }
+    },
+    enqueueConnectionCredentialRequest: (
+      state,
+      action: PayloadAction<ConnectionCredentialRequestProps[]>
+    ) => {
+      const isPaused = state.queueConnectionCredentialRequest.isPaused;
+      if (
+        isPaused &&
+        !state.queueConnectionCredentialRequest.isProcessing &&
+        action.payload.length > 0
+      ) {
+        state.queueConnectionCredentialRequest.isProcessing = true;
+      }
+      state.queueConnectionCredentialRequest.queues =
+        state.queueConnectionCredentialRequest.queues.concat(action.payload);
     },
   },
 });
 
 const {
+  setInitialized,
   setCurrentRoute,
   removeCurrentRoute,
   removeSetPasscodeRoute,
   removeRoute,
   setAuthentication,
   setCurrentOperation,
-  setConnectionCredentialRequest,
+  dequeueCredentialCredentialRequest,
+  setQueueConnectionCredentialRequest,
+  setPauseQueueConnectionCredentialRequest,
+  enqueueConnectionCredentialRequest,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
+const getIsInitialized = (state: RootState) => state.stateCache.initialized;
 const getRoutes = (state: RootState) => state.stateCache.routes;
 const getCurrentRoute = (state: RootState) =>
   state.stateCache.routes.length ? state.stateCache.routes[0] : undefined;
 const getAuthentication = (state: RootState) => state.stateCache.authentication;
 const getCurrentOperation = (state: RootState) =>
   state.stateCache.currentOperation;
-const getConnectionCredentialRequest = (state: RootState) =>
-  state.stateCache.connectionCredentialRequest;
+const getQueueConnectionCredentialRequest = (state: RootState) =>
+  state.stateCache.queueConnectionCredentialRequest;
 
 export type {
   CurrentRouteCacheProps,
@@ -92,6 +143,8 @@ export type {
 
 export {
   initialState,
+  setInitialized,
+  getIsInitialized,
   getStateCache,
   stateCacheSlice,
   getRoutes,
@@ -104,6 +157,9 @@ export {
   setAuthentication,
   getCurrentOperation,
   setCurrentOperation,
-  setConnectionCredentialRequest,
-  getConnectionCredentialRequest,
+  getQueueConnectionCredentialRequest,
+  setPauseQueueConnectionCredentialRequest,
+  setQueueConnectionCredentialRequest,
+  dequeueCredentialCredentialRequest,
+  enqueueConnectionCredentialRequest,
 };

@@ -1,5 +1,6 @@
 interface AlertProps {
   isOpen: boolean;
+  backdropDismiss?: boolean;
   setIsOpen: (value: boolean) => void;
   dataTestId: string;
   headerText: string;

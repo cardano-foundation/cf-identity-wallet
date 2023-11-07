@@ -25,6 +25,11 @@ import {
 // import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
 import { AgentService } from "./agentService";
 
+const SERVER_GET_SHORTEN_URL =
+  // eslint-disable-next-line no-undef
+  process.env.REACT_APP_SERVER_GET_SHORTEN_URL ??
+  "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org";
+
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
   //   "No domain found in config";
@@ -106,13 +111,26 @@ class ConnectionService extends AgentService {
     }
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
-      url = response.url;
+      url = await response.text();
     }
     await this.agent.oob.receiveInvitationFromUrl(url, {
-      autoAcceptConnection: true,
+      autoAcceptConnection: false,
       autoAcceptInvitation: true,
       reuseConnection: true,
     });
+  }
+
+  // @TODO: this is a temporary feature, an api should be added in the mediator to get the shorten url
+  async getShortenUrl(invitationUrl: string): Promise<string> {
+    const getUrl = await fetch(`${SERVER_GET_SHORTEN_URL}/shorten`, {
+      method: "POST",
+      body: JSON.stringify({ url: invitationUrl }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    const response = await getUrl.text();
+    return JsonEncoder.fromString(response).data;
   }
 
   async acceptRequestConnection(connectionId: string) {
@@ -180,6 +198,10 @@ class ConnectionService extends AgentService {
     return this.getConnectionDetails(connection, outOfBandRecord);
   }
 
+  async deleteConnectionById(id: string): Promise<void> {
+    return this.agent.connections.deleteById(id);
+  }
+
   async getConnectionShortDetailById(
     id: string
   ): Promise<ConnectionShortDetails> {
@@ -202,11 +224,11 @@ class ConnectionService extends AgentService {
   }
 
   async updateConnectionNoteById(
-    connetionNoteId: string,
+    connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
     const noteRecord = await this.agent.genericRecords.findById(
-      connetionNoteId
+      connectionNoteId
     );
     if (!noteRecord) {
       throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
@@ -215,8 +237,8 @@ class ConnectionService extends AgentService {
     await this.agent.genericRecords.update(noteRecord);
   }
 
-  async deleteConnectionNoteById(connetionNoteId: string) {
-    return this.agent.genericRecords.deleteById(connetionNoteId);
+  async deleteConnectionNoteById(connectionNoteId: string) {
+    return this.agent.genericRecords.deleteById(connectionNoteId);
   }
 
   async getConnectionHistoryById(
@@ -236,6 +258,20 @@ class ConnectionService extends AgentService {
       })
     );
     return histories;
+  }
+
+  async getUnhandledConnections(): Promise<ConnectionRecord[]> {
+    const results = await Promise.all([
+      this.agent.connections.findAllByQuery({
+        state: DidExchangeState.ResponseReceived,
+        role: DidExchangeRole.Requester,
+      }),
+      this.agent.connections.findAllByQuery({
+        state: DidExchangeState.RequestReceived,
+        role: DidExchangeRole.Responder,
+      }),
+    ]);
+    return results.flat();
   }
 
   private async getConnectNotesByConnectionId(

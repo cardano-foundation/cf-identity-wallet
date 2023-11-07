@@ -2,7 +2,6 @@ import {
   InitConfig,
   Agent,
   AgentDependencies,
-  RecordNotFoundError,
   DidsModule,
   KeyDidResolver,
   MediationRecipientModule,

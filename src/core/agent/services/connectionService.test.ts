@@ -31,6 +31,8 @@ const agent = jest.mocked({
     acceptResponse: jest.fn(),
     getAll: jest.fn(),
     getById: jest.fn(),
+    findAllByQuery: jest.fn(),
+    deleteById: jest.fn(),
   },
   modules: {
     generalStorage: {
@@ -387,12 +389,30 @@ describe("Connection service of agent", () => {
     const shortUrl = "http://localhost:3000/shorten/abc123";
     const fullUrl = "http://localhost?oob=3423";
     // eslint-disable-next-line no-undef
-    global.fetch = jest.fn().mockResolvedValue({ url: fullUrl });
+    global.fetch = jest.fn().mockResolvedValue({
+      text: async function () {
+        return fullUrl;
+      },
+    });
     await connectionService.receiveInvitationFromUrl(shortUrl);
     expect(agent.oob.receiveInvitationFromUrl).toBeCalledWith(
       fullUrl,
       expect.any(Object)
     );
+  });
+
+  test("get shorten url success", async () => {
+    const shortUrlMock = "http://localhost:3000/shorten/abc123";
+    const fullUrl =
+      "http://localhost?oob=12312312312312312312312312312312312312312312";
+    // eslint-disable-next-line no-undef
+    global.fetch = jest.fn().mockResolvedValue({
+      text: async function () {
+        return `{"data": "${shortUrlMock}"}`;
+      },
+    });
+    const shortUrl = await connectionService.getShortenUrl(fullUrl);
+    expect(shortUrl).toEqual(shortUrlMock);
   });
 
   test("can get connection (short detail view) by id", async () => {
@@ -516,5 +536,29 @@ describe("Connection service of agent", () => {
     expect(
       agent.modules.generalStorage.getCredentialMetadataByConnectionId
     ).toBeCalledWith(connectionIdTest);
+  });
+
+  test("can get unhandled connections to re-processing", async () => {
+    agent.connections.findAllByQuery = jest
+      .fn()
+      .mockResolvedValue([connectionAcceptedRecordAutoAccept]);
+    expect(await connectionService.getUnhandledConnections()).toEqual([
+      connectionAcceptedRecordAutoAccept,
+      connectionAcceptedRecordAutoAccept,
+    ]);
+    expect(agent.connections.findAllByQuery).toBeCalledWith({
+      state: DidExchangeState.ResponseReceived,
+      role: DidExchangeRole.Requester,
+    });
+    expect(agent.connections.findAllByQuery).toBeCalledWith({
+      state: DidExchangeState.RequestReceived,
+      role: DidExchangeRole.Responder,
+    });
+  });
+
+  test("can delete conenction by id", async () => {
+    const connectionId = "connectionId";
+    await connectionService.deleteConnectionById(connectionId);
+    expect(agent.connections.deleteById).toBeCalledWith(connectionId);
   });
 });

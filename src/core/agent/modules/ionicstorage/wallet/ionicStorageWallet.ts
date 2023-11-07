@@ -465,10 +465,12 @@ class IonicStorageWallet implements Wallet {
 
   // These intentionally do nothing - right now we don't support proper safe migration via backups.
   // IndexedDB is not our target storage so this is a temp solution.
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async export(_exportConfig: WalletExportImportConfig): Promise<void> {}
   async import(
     _walletConfig: WalletConfig,
     _importConfig: WalletExportImportConfig
+    // eslint-disable-next-line @typescript-eslint/no-empty-function
   ): Promise<void> {}
 }
 

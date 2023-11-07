@@ -13,8 +13,8 @@ import { store } from "../../../store";
 import { AriesAgent } from "../../../core/agent/agent";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import {
-  setConnectionCredentialRequest,
   setCurrentOperation,
+  setQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { toastState } from "../../constants/dictionary";
 import {
@@ -42,6 +42,7 @@ jest.mock("../../../core/agent/agent", () => ({
         isConnectionResponseSent: jest.fn(),
         isConnectionConnected: jest.fn(),
         getConnectionShortDetailById: jest.fn(),
+        getUnhandledConnections: jest.fn(),
       },
       credentials: {
         getCredentials: jest.fn().mockResolvedValue([]),
@@ -51,6 +52,7 @@ jest.mock("../../../core/agent/agent", () => ({
         createMetadata: jest.fn(),
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
+        getUnhandledCredentials: jest.fn(),
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),
@@ -61,6 +63,7 @@ jest.mock("../../../core/agent/agent", () => ({
 }));
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
+    set: jest.fn(),
     get: jest.fn(),
   },
 }));
@@ -131,7 +134,7 @@ describe("Connection state changed handler", () => {
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: "id",
         type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
         logo: "png",
@@ -157,7 +160,7 @@ describe("Connection state changed handler", () => {
       setCurrentOperation(toastState.connectionRequestIncoming)
     );
     expect(dispatch).toBeCalledWith(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: "id",
         type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
         logo: "png",
@@ -226,7 +229,7 @@ describe("Credential state changed handler", () => {
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: credentialStateChangedEventMock.payload.credentialRecord.id,
         type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
         label: connectionShortDetailsMock.label,

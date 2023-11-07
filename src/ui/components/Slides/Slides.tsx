@@ -6,6 +6,7 @@ import { Autoplay } from "swiper";
 import { Swiper as SwiperClass } from "swiper/types";
 import { SlideProps } from "./Slides.types";
 import "./Slides.scss";
+import Lottie from "lottie-react";
 
 const Slides = ({ items }: SlideProps) => {
   const [swiper, setSwiper] = useState<SwiperClass | undefined>(undefined);
@@ -42,11 +43,19 @@ const Slides = ({ items }: SlideProps) => {
       >
         {items.map((slide, index) => (
           <SwiperSlide key={index}>
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className={activeIndex === index ? "text-fadein-down" : ""}
-            />
+            {slide.lottie ? (
+              <Lottie
+                className={activeIndex === index ? "text-fadein-down" : ""}
+                animationData={slide.lottie}
+                loop={false}
+              />
+            ) : (
+              <img
+                src={slide.image}
+                alt={slide.title}
+                className={activeIndex === index ? "text-fadein-down" : ""}
+              />
+            )}
             <h2 className={activeIndex === index ? "text-fadein" : ""}>
               {slide.title}
             </h2>

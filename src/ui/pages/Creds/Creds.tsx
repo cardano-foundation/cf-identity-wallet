@@ -19,15 +19,16 @@ import {
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { Connections } from "../Connections";
-import { cardTypes, connectionType } from "../../constants/dictionary";
+import { CardTypes, connectionType } from "../../constants/dictionary";
 import { ConnectModal } from "../../components/ConnectModal";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { AriesAgent } from "../../../core/agent/agent";
-import { CredentialShortDetails } from "../../components/CardsStack/CardsStack.types";
 import {
   getCredsCache,
+  getFavouritesCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
+import { CredentialShortDetails } from "../../../core/agent/agent.types";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -71,6 +72,7 @@ const AdditionalButtons = ({
 const Creds = () => {
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
+  const favCredsCache = useAppSelector(getFavouritesCredsCache);
   const currentOperation = useAppSelector(getCurrentOperation);
   const [currentCreds, setCurrentCreds] = useState<CredentialShortDetails[]>([
     ...credsCache,
@@ -117,6 +119,30 @@ const Creds = () => {
     fetchArchivedCreds();
   });
 
+  const findTimeById = (id: string) => {
+    const found = favCredsCache.find((item) => item.id === id);
+    return found ? found.time : null;
+  };
+
+  const favDids = credsCache.filter((did) =>
+    favCredsCache?.some((fav) => fav.id === did.id)
+  );
+
+  const sortedFavDids = favDids.sort((a, b) => {
+    const timeA = findTimeById(a.id);
+    const timeB = findTimeById(b.id);
+
+    if (timeA === null && timeB === null) return 0;
+    if (timeA === null) return 1;
+    if (timeB === null) return -1;
+
+    return timeA - timeB;
+  });
+
+  const allDids = credsCache.filter(
+    (did) => !favCredsCache?.some((fav) => fav.id === did.id)
+  );
+
   return (
     <>
       <IonPage
@@ -143,10 +169,36 @@ const Creds = () => {
           }
         >
           {currentCreds.length ? (
-            <CardsStack
-              cardsType={cardTypes.creds}
-              cardsData={currentCreds}
-            />
+            <>
+              {favDids.length ? (
+                <>
+                  {allDids.length ? (
+                    <div className="cards-title">
+                      {i18n.t("creds.tab.favourites")}
+                    </div>
+                  ) : null}
+                  <CardsStack
+                    name="favs"
+                    cardsType={CardTypes.CREDS}
+                    cardsData={sortedFavDids}
+                  />
+                </>
+              ) : null}
+              {allDids.length ? (
+                <>
+                  {favDids.length ? (
+                    <div className="cards-title cards-title-all">
+                      {i18n.t("creds.tab.allcreds")}
+                    </div>
+                  ) : null}
+                  <CardsStack
+                    name="allcreds"
+                    cardsType={CardTypes.CREDS}
+                    cardsData={allDids}
+                  />
+                </>
+              ) : null}
+            </>
           ) : (
             <CardsPlaceholder
               buttonLabel={i18n.t("creds.tab.create")}
@@ -171,6 +223,9 @@ const Creds = () => {
             type={connectionType.credential}
             connectModalIsOpen={addCredentialIsOpen}
             setConnectModalIsOpen={setAddCredentialIsOpen}
+            handleProvideQr={() => {
+              // @TODO: add credential sharing function
+            }}
           />
           {archivedCreds.length ? (
             <ArchivedCredentials

@@ -39,6 +39,24 @@
     #92ffc0 28.76%,
     #47ff94 119.14%
   );
+
+  --ion-color-gradient-university-card: linear-gradient(
+    108deg,
+    #1572a1 0%,
+    #0c405a 100%
+  );
+
+  --ion-color-gradient-residency-card: linear-gradient(
+    108deg,
+    #f6f6f6 0%,
+    #bbb 100%
+  );
+
+  --ion-color-gradient-summit-card: linear-gradient(
+    108deg,
+    #fc8a3f 0%,
+    #1894d7 100%
+  );
 }
 
 .ion-color-light-grey {

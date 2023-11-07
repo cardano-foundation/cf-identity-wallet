@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import {
   BasicMessageStateChangedEvent,
+  ConnectionRecord,
   ConnectionStateChangedEvent,
   CredentialStateChangedEvent,
 } from "@aries-framework/core";
@@ -8,13 +9,19 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
   setAuthentication,
-  setConnectionCredentialRequest,
   setCurrentOperation,
+  setInitialized,
+  setPauseQueueConnectionCredentialRequest,
+  setQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
-import { setIdentitiesCache } from "../../../store/reducers/identitiesCache";
+import {
+  setFavouritesIdentitiesCache,
+  setIdentitiesCache,
+} from "../../../store/reducers/identitiesCache";
 import {
   setCredsCache,
+  setFavouritesCredsCache,
   updateOrAddCredsCache,
 } from "../../../store/reducers/credsCache";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -36,6 +43,7 @@ import { toastState } from "../../constants/dictionary";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
+import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -53,7 +61,7 @@ const connectionStateChangedHandler = async (
     const connectionDetails =
       AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
     dispatch(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: connectionRecord.id,
         type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
         logo: connectionDetails.logo,
@@ -68,7 +76,7 @@ const connectionStateChangedHandler = async (
     dispatch(updateOrAddConnectionCache(connectionDetails));
     dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
     dispatch(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: connectionRecord.id,
         type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
         logo: connectionDetails.logo,
@@ -105,7 +113,7 @@ const credentialStateChangedHandler = async (
         );
     }
     dispatch(
-      setConnectionCredentialRequest({
+      setQueueConnectionCredentialRequest({
         id: credentialRecord.id,
         type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
         logo: connection?.logo,
@@ -165,7 +173,20 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
   };
   const initApp = async () => {
+    try {
+      const isInitialized = await PreferencesStorage.get(
+        PreferencesKeys.APP_ALREADY_INIT
+      );
+      dispatch(setInitialized(isInitialized?.initialized as boolean));
+    } catch (e) {
+      // TODO
+      await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, "");
+      await SecureStorage.set(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY, "");
+      await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
+    }
+
     await AriesAgent.agent.start();
+    dispatch(setPauseQueueConnectionCredentialRequest(true));
     const connectionsDetails =
       await AriesAgent.agent.connections.getConnections();
     const credentials = await AriesAgent.agent.credentials.getCredentials();
@@ -186,6 +207,28 @@ const AppWrapper = (props: { children: ReactNode }) => {
       dispatch(setHideCryptoBalances(!!hideCryptoBalances.hidden));
     } catch (e) {
       // @TODO - sdisalvo: handle error
+    }
+
+    try {
+      const didsFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_DIDS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesIdentitiesCache(
+          didsFavourites.favourites as FavouriteIdentity[]
+        )
+      );
+
+      const credsFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_CREDS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesCredsCache(
+          credsFavourites.favourites as FavouriteIdentity[]
+        )
+      );
+    } catch (e) {
+      // @TODO: handle error
     }
 
     dispatch(
@@ -214,6 +257,34 @@ const AppWrapper = (props: { children: ReactNode }) => {
     // pickup messages
     AriesAgent.agent.messages.pickupMessagesFromMediator();
     setInitialised(true);
+
+    const oldMessages = (
+      await Promise.all([
+        AriesAgent.agent.connections.getUnhandledConnections(),
+        AriesAgent.agent.credentials.getUnhandledCredentials(),
+      ])
+    )
+      .flat()
+      .sort(function (messageA, messageB) {
+        return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
+      });
+    oldMessages.forEach(async (message) => {
+      if (message instanceof ConnectionRecord) {
+        await connectionStateChangedHandler(
+          {
+            payload: { connectionRecord: message },
+          } as unknown as ConnectionStateChangedEvent,
+          dispatch
+        );
+      } else {
+        await credentialStateChangedHandler(
+          {
+            payload: { credentialRecord: message },
+          } as unknown as CredentialStateChangedEvent,
+          dispatch
+        );
+      }
+    });
   };
 
   return initialised ? <>{props.children}</> : <></>;

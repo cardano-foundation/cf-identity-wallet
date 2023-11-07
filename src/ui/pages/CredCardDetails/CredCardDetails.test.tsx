@@ -11,12 +11,20 @@ import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { AnyAction, Store } from "@reduxjs/toolkit";
+import { SetOptions } from "@capacitor/preferences";
+import { waitForIonicReact } from "@ionic/react-test-utils";
 import { CredCardDetails } from "./CredCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { AriesAgent } from "../../../core/agent/agent";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences";
+import { filteredDidFix } from "../../__fixtures__/filteredIdentityFix";
+import { DidCardDetails } from "../DidCardDetails";
 
 const path = TabsRoutePath.CREDS + "/" + credsFix[0].id;
 
@@ -37,7 +45,34 @@ jest.mock("react-router-dom", () => ({
   }),
   useRouteMatch: () => ({ url: path }),
 }));
+const initialStateCreds = {
+  stateCache: {
+    routes: [TabsRoutePath.CREDS],
+    authentication: {
+      loggedIn: true,
+      time: Date.now(),
+      passcodeIsSet: true,
+      passwordIsSet: true,
+    },
+  },
+  seedPhraseCache: {
+    seedPhrase160:
+      "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+    seedPhrase256: "",
+    selected: FIFTEEN_WORDS_BIT_LENGTH,
+  },
+  identitiesCache: {
+    identities: credsFix,
+    favourites: [],
+  },
+};
+const mockStore = configureStore();
+const dispatchMock = jest.fn();
 
+const storeMockedCreds = {
+  ...mockStore(initialStateCreds),
+  dispatch: dispatchMock,
+};
 const initialStateNoPasswordCurrent = {
   stateCache: {
     routes: [TabsRoutePath.CREDS],
@@ -95,7 +130,7 @@ describe("Cards Details page - current not archived credential", () => {
   });
 
   test("It renders Card Details", async () => {
-    const { getByText, getByTestId, getAllByTestId } = render(
+    const { getAllByText, getByTestId, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -106,7 +141,7 @@ describe("Cards Details page - current not archived credential", () => {
       </Provider>
     );
     await waitFor(() => {
-      expect(getByText(credsFix[0].credentialType)).toBeInTheDocument();
+      expect(getAllByText(credsFix[0].credentialType)[0]).toBeInTheDocument();
       expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
         "false"
       );
@@ -135,7 +170,7 @@ describe("Cards Details page - current not archived credential", () => {
         </MemoryRouter>
       </Provider>
     );
-    const copyButton = await findByTestId("copy-button-proof-value");
+    const copyButton = await findByTestId("card-details-proof-value");
     fireEvent.click(copyButton);
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
@@ -228,6 +263,36 @@ describe("Cards Details page - current not archived credential", () => {
       expect(
         queryByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)
       ).toBeVisible();
+    });
+  });
+
+  test.skip("It changes to favourite icon on click disabled favourite button", async () => {
+    PreferencesStorage.set = jest
+      .fn()
+      .mockImplementation(async (data: SetOptions): Promise<void> => {
+        expect(data.key).toBe(PreferencesKeys.APP_CREDS_FAVOURITES);
+        expect(data.value).toBe(credsFix[0]);
+      });
+
+    const { getByTestId } = render(
+      <Provider store={storeMockedCreds}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={DidCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("heart-button"));
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getByTestId("heart-icon-favourite")).toBeVisible();
     });
   });
 });

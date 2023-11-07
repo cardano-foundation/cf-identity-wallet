@@ -19,10 +19,11 @@ import { ariesAskar } from "@hyperledger/aries-askar-nodejs";
 import { HttpInboundTransport, agentDependencies } from "@aries-framework/node";
 import { config } from "./config";
 import { SignifyModule } from "./modules/signify";
+import { documentLoader } from "./utils/documentLoader";
 
 const agentConfig: InitConfig = {
   endpoints: config.endpoints,
-  label: "idw-server",
+  label: "Credential Issuance Service",
   walletConfig: {
     id: "idw-server",
     key: "idw-server",
@@ -62,7 +63,9 @@ class AriesAgent {
           ],
           autoAcceptCredentials: AutoAcceptCredential.Always,
         }),
-        w3cCredentials: new W3cCredentialsModule(),
+        w3cCredentials: new W3cCredentialsModule({
+          documentLoader: documentLoader,
+        }),
         signify: new SignifyModule(),
       },
     });
@@ -122,7 +125,10 @@ class AriesAgent {
     }
   }
 
-  getCredentialExample(did: string): JsonLdCredentialDetailFormat {
+  getCredentialExample(
+    did: string,
+    holderDid?: string
+  ): JsonLdCredentialDetailFormat {
     return {
       credential: {
         "@context": [
@@ -134,7 +140,7 @@ class AriesAgent {
         issuanceDate: "2022-10-22T12:23:48Z",
         credentialSubject: {
           // @TODO: handle later, it should be did of holder
-          id: "did:example:abcdef1234567",
+          id: holderDid || "did:example:abcdef1234567",
           type: "BachelorDegree",
           name: "Bachelor of Science and Arts",
         },
@@ -163,12 +169,14 @@ class AriesAgent {
   }
 
   async offerCredential(connectionId: string) {
+    const connection = await this.agent.connections.getById(connectionId);
     return this.agent.credentials.offerCredential({
       protocolVersion: "v2",
       connectionId: connectionId,
       credentialFormats: {
         jsonld: this.getCredentialExample(
-          this.masterDid.didState.did as string
+          this.masterDid.didState.did as string,
+          connection?.theirDid
         ),
       },
       autoAcceptCredential: AutoAcceptCredential.Always,

@@ -1,7 +1,7 @@
 .request {
   background: var(--ion-color-light);
   margin-top: 0;
-  z-index: 102 !important;
+  z-index: 20015 !important;
   overflow: initial !important;
   margin-top: constant(safe-area-inset-top);
   margin-top: env(safe-area-inset-top);
@@ -23,6 +23,12 @@
     transition-property: right;
     transition-property: left;
     transition-duration: 0.5s;
+
+    h2,
+    .request-content,
+    ion-footer {
+      display: none;
+    }
   }
 
   h2 {
@@ -115,7 +121,7 @@
   }
 
   .request-content {
-    height: 80rem;
+    height: 80vh;
   }
 
   .request-icons-row {

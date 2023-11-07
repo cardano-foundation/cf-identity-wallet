@@ -3,23 +3,23 @@
     "slides": [
       {
         "title": "Welcome to your Cardano Foundation Identity Wallet",
-        "description": "A secure and easy-to-use tool that allows you to manage your digital identity and control your personal data"
+        "description": "An opensource mobile digital wallet that enables you to securely manage your own identity in a privacy-preserving and self-sovereign manner."
       },
       {
-        "title": "Securerly manage your digital identity",
-        "description": "Securely manage your digital identity and share your personal data with confidence"
+        "title": "Empowerment with Self-Sovereign Identity (SSI)",
+        "description": "Embrace SSI principles, store private keys locally in your mobile device's Hardware Security Module, and control your identity."
       },
       {
-        "title": "Take control of your personal data",
-        "description": "Say goodbye to the days of handing over your personal data to third-party companies"
+        "title": "Privacy & Security: Your Top Priorities",
+        "description": "Prioritize privacy and security with Decentralized Identifiers and Verifiable Credentials. Control your data, what you share, with whom, and for how long."
       },
       {
-        "title": "Verify your identity with ease",
-        "description": "Verify your identity for various online services, without sharing unnecessary personal information"
+        "title": "Embrace Interoperability for a Wider Reach",
+        "description": "Supporting new and existing standards, ecosystems, and frameworks is crucial to achieving widespread adoption and seamless interoperability."
       },
       {
-        "title": "Experience the power of decentralized identity",
-        "description": "As a decentralized identity platform, you take control of your digital identity and your personal data"
+        "title": "Decentralize Your Digital Identity",
+        "description": "Traditional identity systems offer minimal control over your digital identifiers. Decentralized technology transfers ownership and control to you."
       }
     ],
     "getstarted": {
@@ -35,62 +35,62 @@
   },
   "setpasscode": {
     "enterpasscode": {
-      "title": "Create a passcode",
-      "description": "Create a passcode to secure your wallet and to continue setting up your seed phrase",
-      "error": "Passcode didn't match"
+      "title": "Create your Passcode",
+      "description": "Create a passcode to secure access to your wallet and to continue the onboarding process",
+      "error": "Passcode does not match"
     },
     "reenterpasscode": {
-      "title": "Re-enter your passcode"
+      "title": "Re-enter your Passcode"
     },
     "startover": {
-      "label": "I cant remember, can I start over?"
+      "label": "Forgot your passcode?"
     }
   },
   "generateseedphrase": {
     "onboarding": {
-      "title": "Generate seed phrase",
+      "title": "Generate your Seed Phrase",
       "paragraph": {
-        "top": "Think of your secret recovery phrase as a safety net for your identity. If you ever lose your phone or switch to a new wallet, this phrase will help you recover your identity.",
-        "bottom": "It's important to keep these words safe and sound! Store them in a secure location, like a password manager, and remember to never share them with anyone."
+        "top": "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
+        "bottom": "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption."
       },
       "button": {
         "continue": "Continue"
       }
     },
     "newcryptoaccount": {
-      "title": "Generate seed phrase",
+      "title": "Generate your Seed Phrase",
       "paragraph": {
-        "top": "Think of your secret recovery phrase as a safety net for your identity. If you ever lose your phone or switch to a new wallet, this phrase will help you recover your identity.",
-        "bottom": "It's important to keep these words safe and sound! Store them in a secure location, like a password manager, and remember to never share them with anyone."
+        "top": "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
+        "bottom": "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption."
       },
       "button": {
-        "continue": "Generate seed phrase"
+        "continue": "Continue"
       }
     },
     "restorecryptoaccount": {
-      "title": "Enter seed phrase",
+      "title": "Enter Seed Phrase",
       "suggestions": "Suggestions",
       "paragraph": {
         "top": "Restore a crypto account based on an existing seed phrase.",
         "bottom": ""
       },
       "button": {
-        "continue": "Verify seed phrase"
+        "continue": "Verify Seed Phrase"
       }
     },
     "segment": "{{length}} words",
     "privacy": {
       "overlay": {
-        "text": "Press the 'view' button when you're ready to see your seed phrase. Remember to make sure nobody is looking!",
-        "button": "View seed phrase"
+        "text": "Select the 'View Seed Phrase' when you are ready. Remember to ensure that other people cannot also view your screen.",
+        "button": "View Seed Phrase"
       }
     },
     "alert": {
       "confirm": {
-        "text": "Have you double-checked you've copied your seed phrase correctly?",
+        "text": "Take a moment now to confirm you have stored your seed phrase accurately and in the correct order.",
         "button": {
-          "confirm": "Yes, I've copied these correctly!",
-          "cancel": "I'll take another look"
+          "confirm": "My seed phrase is stored correctly",
+          "cancel": "I need to review my seed phrase"
         }
       },
       "exit": {
@@ -117,7 +117,7 @@
     },
     "termsandconditions": {
       "text": "I have read and agree to the <0>{{clickableText}}</0>.",
-      "link": "terms and conditions"
+      "link": "Terms and Conditions and Privacy Policy"
     }
   },
   "termsandconditions": {
@@ -140,7 +140,7 @@
         "restart": "You currently haven't generated a seed phrase, would you like to start your onboarding again?"
       },
       "button": {
-        "verify": "Verify your seed phrase",
+        "verify": "Verify your Seed Phrase",
         "restart": "Start again",
         "cancel": "Cancel"
       }
@@ -148,19 +148,19 @@
   },
   "verifyseedphrase": {
     "onboarding": {
-      "title": "Verify your seed phrase",
+      "title": "Verify your Seed Phrase",
       "button": {
         "continue": "Continue"
       }
     },
     "newcryptoaccount": {
-      "title": "Verify seed phrase",
+      "title": "Verify your Seed Phrase",
       "button": {
-        "continue": "Verify seed phrase"
+        "continue": "Verify your Seed Phrase"
       }
     },
     "paragraph": {
-      "top": "Please select each word in the order it was presented to you."
+      "top": "Please select every word from your seed phrase in the correct order. If you select a word in the wrong order, select it again to move it back down to the list of available words."
     },
     "alert": {
       "fail": {
@@ -192,8 +192,8 @@
     "optional": "(optional)"
   },
   "createpassword": {
-    "title": "Create password",
-    "description": "Set your operations password so you can access additional wallet features.",
+    "title": "Create your Password",
+    "description": "You can choose to set an optional password for your Identity Wallet. This password will be required to complete protected operations within the wallet. If you choose to skip and not set a password, you will be asked to provide your passcode to complete protected operations.",
     "input": {
       "first": {
         "title": "Create password",
@@ -209,14 +209,14 @@
       }
     },
     "button": {
-      "continue": "Create password",
-      "skip": "Skip"
+      "continue": "Create Password",
+      "skip": "Continue without setting a password"
     },
     "alert": {
-      "text": "If you go back you will lose your current progress. Are you sure you want to do this?",
+      "text": "You have chosen to skip creating a password. If you change your mind later, you will still be able to create a password.",
       "button": {
-        "confirm": "Yes, skip",
-        "cancel": "Cancel"
+        "confirm": "Continue without a password",
+        "cancel": "Go back and create a password"
       }
     },
     "error": {
@@ -242,8 +242,9 @@
   },
   "identity": {
     "tab": {
-      "title": "Identities",
-      "create": "Create an identity"
+      "title": "Identity",
+      "create": "Create New Identity",
+      "alldids": "All identities"
     },
     "card": {
       "layout": {
@@ -294,7 +295,7 @@
           "title": "Backer Address"
         },
         "delete": {
-          "button": "Delete identity",
+          "button": "Delete Identity",
           "alert": {
             "title": "Are you sure you want to delete this identity?",
             "confirm": "Yes, I'm sure",
@@ -305,20 +306,21 @@
           "title": "Identity options",
           "cancel": "Cancel",
           "view": "View JSON",
-          "edit": "Edit identity",
+          "edit": "Edit Identity",
           "share": "Share identity",
-          "delete": "Delete identity",
+          "delete": "Delete Identity",
           "inner": {
-            "label": "Display name",
-            "confirm": "Confirm changes",
+            "label": "Display Name",
+            "theme": "Edit Theme",
+            "confirm": "Confirm Changes",
             "error": "Must be less than 32 characters long"
           }
         },
         "view": {
-          "cancel": "Cancel",
+          "cancel": "Done",
           "title": "Identity JSON",
           "copy": "Copy JSON",
-          "save": "Save to device"
+          "save": "Save to Device"
         }
       }
     }
@@ -326,33 +328,42 @@
   "creds": {
     "tab": {
       "title": "Credentials",
-      "create": "Add a credential",
-      "viewarchived": "View archived credentials"
+      "create": "Add Credential",
+      "viewarchived": "View archived credentials",
+      "favourites": "Favourites",
+      "allcreds": "All Credentials"
     },
     "card": {
       "layout": {
-        "name": "NAME",
-        "issued": "ISSUED"
+        "type": "Type",
+        "validity": "Valid from - to",
+        "issued": "Issued",
+        "name": "Name",
+        "countryofbirth": "Country of birth",
+        "expirationdate": "Expiration date",
+        "category": "Category",
+        "residentsince": "Resident since"
       },
       "details": {
         "done": "Done",
         "restore": "Restore",
-        "types": "Types",
+        "type": "Type",
         "attributes": "Attributes",
         "connection": "Connection",
         "issuancedate": "Issuance Date",
         "expirationdate": "Expiration date",
         "prooftypes": "Proof Types",
+        "notavailable": "N/A",
         "options": {
           "title": "Credential options",
           "view": "View JSON",
           "archive": "Archive credential"
         },
         "view": {
-          "cancel": "Cancel",
+          "cancel": "Done",
           "title": "Credential JSON",
           "copy": "Copy JSON",
-          "save": "Save to device"
+          "save": "Save to Device"
         },
         "button": {
           "delete": "Delete credential",
@@ -423,7 +434,7 @@
   "connections": {
     "tab": {
       "title": "Connections",
-      "create": "Add a connection",
+      "create": "Add Connection",
       "searchconnections": "Search connections"
     },
     "details": {
@@ -464,9 +475,10 @@
     }
   },
   "connectmodal": {
-    "title": "Add a ",
-    "scan": "Scan a QR code",
-    "provide": "Provide a QR code"
+    "title": "Add ",
+    "scan": "Scan QR Code",
+    "connect": "Scan to connect",
+    "provide": "Provide QR Code"
   },
   "verifypassword": {
     "title": "Enter password",
@@ -506,7 +518,7 @@
         "restart": "You currently haven't generated a seed phrase, would you like to start your onboarding again?"
       },
       "button": {
-        "verify": "Verify your seed phrase",
+        "verify": "Verify your Seed Phrase",
         "restart": "Start again",
         "cancel": "Cancel"
       }
@@ -515,21 +527,66 @@
   "shareidentity": {
     "title": "Share identity",
     "divider": "or",
-    "copykey": "Copy identity key",
+    "copykey": "Copy Identifier",
     "more": "More share options"
   },
   "createidentity": {
-    "title": "Create new identity",
+    "title": "Add Identity",
     "displayname": {
-      "title": "Display name",
+      "title": "Display Name",
       "placeholder": "Create a name for this identity"
     },
     "identitytype": {
-      "title": "Identity type"
+      "title": "Identity Type",
+      "didkey": "did:key",
+      "keri": "KERI AID"
+    },
+    "theme": {
+      "title": "Choose Theme"
     },
     "confirmbutton": "Create identity",
     "error": {
       "maxlength": "Must be less than 32 characters long"
+    }
+  },
+  "cryptoplaceholder": {
+    "tab": {
+      "header": "Under review",
+      "action": {
+        "text": "See a list of intended <0>{{clickableText}}</0>.",
+        "link": "Crypto features"
+      }
+    },
+    "modal": {
+      "title": "Crypto features",
+      "done": "Done",
+      "features": [
+        "Feature list number one",
+        "Feature list number two",
+        "Feature list number three",
+        "Feature list number four",
+        "Feature list number five"
+      ]
+    }
+  },
+  "chat": {
+    "tab": {
+      "header": "Under review",
+      "action": {
+        "text": "See a list of intended <0>{{clickableText}}</0>.",
+        "link": "P2P chat features"
+      }
+    },
+    "modal": {
+      "title": "P2P chat features",
+      "done": "Done",
+      "features": [
+        "Feature list number one",
+        "Feature list number two",
+        "Feature list number three",
+        "Feature list number four",
+        "Feature list number five"
+      ]
     }
   },
   "crypto": {
@@ -591,6 +648,10 @@
       "more": "More share options"
     }
   },
+  "shareqr": {
+    "divider": "or",
+    "more": "More share options"
+  },
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
     "walletcreated": "Seed phrase verified",
@@ -598,7 +659,7 @@
     "walletrestored": "Seed phrase verified",
     "walletdeleted": "Account deleted successfully",
     "identitycreated": "New identity created successfully",
-    "identityrenamed": "Identity successfully renamed",
+    "identityupdated": "Identity successfully updated",
     "identitydeleted": "Identity successfully deleted",
     "credentialdeleted": "Credential deleted successfully",
     "credentialsdeleted": "Credentials deleted successfully",
@@ -614,7 +675,8 @@
     "credentialrequestpending": "Credential request pending",
     "newcredentialadded": "New credential added",
     "notesupdated": "Notes updated successfully",
-    "noteremoved": "Note removed successfully"
+    "noteremoved": "Note removed successfully",
+    "maxfavouritesreached": "Maximum of 5 favourites reached"
   },
   "scan": {
     "tab": {
@@ -625,23 +687,31 @@
     }
   },
   "request": {
-    "connection-title": "Connect",
-    "credential-title": "Credential offer",
-    "request-connection": " request from",
-    "offer-credential": " offer from",
+    "connection": {
+      "title": "Connect",
+      "requestconnection": " request from",
+      "alert": {
+        "titleconfirm": "Are you sure about proceeding with your connection to {{initiator}}?",
+        "confirm": "Yes, connect"
+      }
+    },
+    "credential": {
+      "title": "Credential offer",
+      "offercredential": " offer from",
+      "alert": {
+        "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
+        "confirm": "Yes, accept credential"
+      }
+    },
     "button": {
       "connect": "Connect",
-      "accept-offer": "Accept credential",
+      "acceptoffer": "Accept credential",
       "cancel": "Cancel"
     },
     "alert": {
-      "title-confirm-connection": "Are you sure about proceeding with your connection to {{initiator}}?",
-      "title-confirm-credential": "Are you sure you want to continue with {{initiator}}?",
-      "confirm-connection": "Yes, connect",
-      "confirm-credential": "Yes, accept credential",
       "cancel": "Cancel"
     },
     "pending": "{{action}} pending",
-    "success": "{{action}} successfully"
+    "success": "{{action}} successful"
   }
 }

@@ -8,7 +8,13 @@ const config: CapacitorConfig = {
   plugins: {
     CapacitorSQLite: {
       "iosDatabaseLocation": "Library/IDWalletDatabase"
-    }
+    },
+    SplashScreen: {
+      launchShowDuration: 3000,
+      launchAutoHide: true,
+      launchFadeOutDuration: 1000,
+      splashFullScreen: true,
+    },
   }
 };
 
