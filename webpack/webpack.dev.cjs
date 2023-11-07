@@ -1,6 +1,6 @@
 let { merge } = require("webpack-merge");
 
-module.exports = merge(require("./webpack.common.js"), {
+module.exports = merge(require("./webpack.common.cjs"), {
    mode: 'development',
    module: {
       rules: [
