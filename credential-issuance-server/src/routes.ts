@@ -1,7 +1,7 @@
 import express from "express";
 import { config } from "./config";
 import { ping } from "./apis/ping.api";
-import { invitationApi } from "./apis/invitation.api";
+import { invitationApi, keriOobiApi } from "./apis/invitation.api";
 import {
   invitationWithCredential,
   invitationWithCredentialConnectionless,
@@ -23,5 +23,6 @@ router.post(
 );
 router.get(config.path.shorten, getFullUrl);
 router.get(config.path.credentials.summit, summitAccessPass);
+router.get(config.path.keriOobi, keriOobiApi);
 
 export default router;

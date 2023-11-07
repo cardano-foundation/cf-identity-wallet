@@ -13,4 +13,15 @@ async function invitationApi(_: Request, res: Response) {
   httpResponse(res, response);
 }
 
-export { invitationApi };
+async function keriOobiApi(_: Request, res: Response) {
+  const invitationPrefix = "keri";
+  const url = await AriesAgent.agent.createKeriOobi();
+  const response: ResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: invitationPrefix + "|" + generableQRcodeWithUrl(url.oobis[0]),
+  };
+  httpResponse(res, response);
+}
+
+export { invitationApi, keriOobiApi };

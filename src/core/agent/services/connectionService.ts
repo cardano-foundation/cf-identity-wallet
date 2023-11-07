@@ -101,6 +101,9 @@ class ConnectionService extends AgentService {
   }
 
   async receiveInvitationFromUrl(url: string): Promise<void> {
+    if (url.includes("keri")) {
+      return this.agent.modules.signify.resolveOobi(url.split("|")[1]);
+    }
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
       url = response.url;

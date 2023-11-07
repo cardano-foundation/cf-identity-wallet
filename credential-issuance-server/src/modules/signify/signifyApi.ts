@@ -1,6 +1,4 @@
-import { utils } from "@aries-framework/core";
 import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
-import { ICreateIdentifierResult } from "./signifyApi.types";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
@@ -24,7 +22,6 @@ export class SignifyApi {
     nsith: "1",
     data: [{ ca: SignifyApi.BACKER_ADDRESS }],
   };
-  static readonly ISSUER_AID_NAME = "issuer";
 
   private signifyClient!: SignifyClient;
   private opTimeout: number;
@@ -54,8 +51,7 @@ export class SignifyApi {
     }
   }
 
-  async createIdentifier(): Promise<ICreateIdentifierResult> {
-    const signifyName = utils.uuid();
+  async createIdentifier(signifyName: string): Promise<any> {
     const op = await this.signifyClient
       .identifiers()
       .create(signifyName, SignifyApi.BACKER_CONFIG);
@@ -64,31 +60,17 @@ export class SignifyApi {
     ) {
       throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
     }
-    return {
-      signifyName,
-      identifier: op.name.replace("witness.", ""),
-    };
+    const aid1 = await this.getIdentifierByName(signifyName);
+    return aid1;
   }
 
   async getIdentifierByName(name: string): Promise<any> {
     return this.signifyClient.identifiers().get(name);
   }
 
-  async resolveOobi(url: string): Promise<void> {
-    const op = await this.signifyClient
-      .oobis()
-      .resolve(url, SignifyApi.ISSUER_AID_NAME);
-    if (
-      !(await this.waitUntilOpDone(op, this.opTimeout, this.opRetryInterval))
-    ) {
-      throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
-    }
+  async createOobi(signifyName: string): Promise<any> {
+    return this.signifyClient.oobis().get(signifyName);
   }
-
-  async getOobis(): Promise<any> {
-    return this.signifyClient.contacts().list();
-  }
-
   /**
    * Note - op must be of type any here until Signify cleans up its typing.
    */
