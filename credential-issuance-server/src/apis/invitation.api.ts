@@ -19,7 +19,7 @@ async function keriOobiApi(_: Request, res: Response) {
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
-    data: invitationPrefix + "|" + generableQRcodeWithUrl(url.oobis[0]),
+    data: invitationPrefix + "|" + generableQRcodeWithUrl(url),
   };
   httpResponse(res, response);
 }

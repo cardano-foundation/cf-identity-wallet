@@ -69,7 +69,8 @@ export class SignifyApi {
   }
 
   async createOobi(signifyName: string): Promise<any> {
-    return this.signifyClient.oobis().get(signifyName);
+    const result = await this.signifyClient.oobis().get(signifyName);
+    return result.oobis[0];
   }
   /**
    * Note - op must be of type any here until Signify cleans up its typing.

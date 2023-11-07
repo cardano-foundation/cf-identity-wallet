@@ -74,6 +74,11 @@ export class SignifyApi {
     return this.signifyClient.identifiers().get(name);
   }
 
+  async createOobi(name: string): Promise<string> {
+    const result = await this.signifyClient.oobis().get(name);
+    return result.oobis[0];
+  }
+
   async resolveOobi(url: string): Promise<void> {
     const op = await this.signifyClient
       .oobis()
@@ -83,10 +88,6 @@ export class SignifyApi {
     ) {
       throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
     }
-  }
-
-  async getOobis(): Promise<any> {
-    return this.signifyClient.contacts().list();
   }
 
   /**
