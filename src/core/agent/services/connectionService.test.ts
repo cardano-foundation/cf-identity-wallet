@@ -574,10 +574,5 @@ describe("Connection service of agent", () => {
     await connectionService.receiveInvitationFromUrl(oobi);
     // We aren't too concerned with testing the config passed
     expect(agent.modules.signify.resolveOobi).toBeCalledWith(oobi);
-    expect(agent.genericRecords.save).toBeCalledWith({
-      id: oobi,
-      content: {},
-      tags: { type: GenericRecordType.KERI_CONNECTION },
-    });
   });
 });

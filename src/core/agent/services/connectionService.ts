@@ -108,9 +108,7 @@ class ConnectionService extends AgentService {
 
   async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/oobi")) {
-      const result = await this.agent.modules.signify.resolveOobi(url);
-      await this.createConnectionKeri(result);
-      return;
+      return this.agent.modules.signify.resolveOobi(url);
     }
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
@@ -275,16 +273,6 @@ class ConnectionService extends AgentService {
       }),
     ]);
     return results.flat();
-  }
-
-  private async createConnectionKeri(data: IResolveOOBIResult) {
-    return this.agent.genericRecords.save({
-      id: data.name,
-      content: {},
-      tags: {
-        type: GenericRecordType.KERI_CONNECTION,
-      },
-    });
   }
 
   private async getConnectNotesByConnectionId(
