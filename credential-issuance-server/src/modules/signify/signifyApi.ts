@@ -68,7 +68,7 @@ export class SignifyApi {
     return this.signifyClient.identifiers().get(name);
   }
 
-  async createOobi(signifyName: string): Promise<any> {
+  async getOobi(signifyName: string): Promise<any> {
     const result = await this.signifyClient.oobis().get(signifyName);
     return result.oobis[0];
   }

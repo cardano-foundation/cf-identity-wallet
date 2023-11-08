@@ -24,7 +24,6 @@ import {
 // import { LibP2p } from "../transports/libp2p/libP2p";
 // import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
 import { AgentService } from "./agentService";
-import { IResolveOOBIResult } from "../modules/signify/signifyApi.types";
 
 const SERVER_GET_SHORTEN_URL =
   // eslint-disable-next-line no-undef

@@ -230,7 +230,7 @@ class AriesAgent {
   }
 
   async createKeriOobi() {
-    return this.agent.modules.signify.createOobi(ISSUER_AID_NAME);
+    return this.agent.modules.signify.getOobi(ISSUER_AID_NAME);
   }
 }
 

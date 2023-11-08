@@ -1,9 +1,6 @@
 import { utils } from "@aries-framework/core";
 import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
-import {
-  ICreateIdentifierResult,
-  IResolveOOBIResult,
-} from "./signifyApi.types";
+import { ICreateIdentifierResult } from "./signifyApi.types";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
@@ -84,7 +81,7 @@ export class SignifyApi {
     return result.oobis[0];
   }
 
-  async resolveOobi(url: string): Promise<IResolveOOBIResult> {
+  async resolveOobi(url: string): Promise<void> {
     const op = await this.signifyClient
       .oobis()
       .resolve(url, SignifyApi.ISSUER_AID_NAME);
@@ -93,9 +90,6 @@ export class SignifyApi {
     ) {
       throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
     }
-    return {
-      name: op.name,
-    };
   }
 
   /**
