@@ -91,7 +91,7 @@ export class SignifyApi {
     return result.oobis[0];
   }
 
-  async getContacts(): Promise<string> {
+  async getContacts(): Promise<any[]> {
     return this.signifyClient.contacts().list();
   }
 
