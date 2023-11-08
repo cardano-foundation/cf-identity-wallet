@@ -73,7 +73,7 @@ const Scanner = forwardRef((props, ref) => {
           await AriesAgent.agent.connections.receiveInvitationFromUrl(
             result.content
           );
-          if (result.content.includes("keri")) {
+          if (result.content.includes("/oobi")) {
             // TODO: handle with better way
             history.push(TabsRoutePath.CREDS);
             setTimeout(() => {

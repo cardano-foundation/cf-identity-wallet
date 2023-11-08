@@ -22,6 +22,7 @@ export class SignifyApi {
     nsith: "1",
     data: [{ ca: SignifyApi.BACKER_ADDRESS }],
   };
+  static readonly DEFAULT_ROLE = "agent";
 
   private signifyClient!: SignifyClient;
   private opTimeout: number;
@@ -61,6 +62,13 @@ export class SignifyApi {
       throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
     }
     const aid1 = await this.getIdentifierByName(signifyName);
+    await this.signifyClient
+      .identifiers()
+      .addEndRole(
+        signifyName,
+        SignifyApi.DEFAULT_ROLE,
+        this.signifyClient.agent!.pre
+      );
     return aid1;
   }
 
@@ -69,7 +77,9 @@ export class SignifyApi {
   }
 
   async getOobi(signifyName: string): Promise<any> {
-    const result = await this.signifyClient.oobis().get(signifyName);
+    const result = await this.signifyClient
+      .oobis()
+      .get(signifyName, SignifyApi.DEFAULT_ROLE);
     return result.oobis[0];
   }
   /**

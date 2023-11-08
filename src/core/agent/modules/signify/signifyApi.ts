@@ -25,6 +25,7 @@ export class SignifyApi {
     data: [{ ca: SignifyApi.BACKER_ADDRESS }],
   };
   static readonly ISSUER_AID_NAME = "issuer";
+  static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
 
@@ -66,6 +67,13 @@ export class SignifyApi {
     ) {
       throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
     }
+    await this.signifyClient
+      .identifiers()
+      .addEndRole(
+        signifyName,
+        SignifyApi.DEFAULT_ROLE,
+        this.signifyClient.agent!.pre
+      );
     return {
       signifyName,
       identifier: op.name.replace("witness.", ""),
@@ -77,8 +85,14 @@ export class SignifyApi {
   }
 
   async getOobi(name: string): Promise<string> {
-    const result = await this.signifyClient.oobis().get(name);
+    const result = await this.signifyClient
+      .oobis()
+      .get(name, SignifyApi.DEFAULT_ROLE);
     return result.oobis[0];
+  }
+
+  async getContacts(): Promise<string> {
+    return this.signifyClient.contacts().list();
   }
 
   async resolveOobi(url: string): Promise<void> {
