@@ -13,6 +13,8 @@ export class SignifyApi {
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly BACKER_ADDRESS =
     "addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm";
+  static readonly LEI = "5493001KJTIIGC8Y1R17";
+  static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
   static readonly BACKER_CONFIG = {
     toad: 1,
     wits: [SignifyApi.BACKER_AID],
@@ -71,6 +73,33 @@ export class SignifyApi {
   async createOobi(signifyName: string): Promise<any> {
     const result = await this.signifyClient.oobis().get(signifyName);
     return result.oobis[0];
+  }
+
+  async createRegistry(
+    signifyName: string,
+    registryName: string
+  ): Promise<any> {
+    return this.signifyClient.registries().create(signifyName, registryName);
+  }
+
+  async listRegistries(signifyName: string): Promise<any> {
+    return this.signifyClient.registries().list(signifyName);
+  }
+
+  async issueCredential(
+    signifyName: string,
+    registries: string,
+    aidPrefix: string
+  ): Promise<any> {
+    return this.signifyClient
+      .credentials()
+      .issue(
+        signifyName,
+        registries,
+        SignifyApi.SCHEMA_SAID,
+        aidPrefix,
+        SignifyApi.LEI
+      );
   }
   /**
    * Note - op must be of type any here until Signify cleans up its typing.

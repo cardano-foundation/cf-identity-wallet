@@ -11,6 +11,7 @@
         "cli:offer-credential": "npx ts-node src/cli/invitationWithCredential.ts",
         "cli:offer-credential-connection-less": "npx ts-node src/cli/invitationWithCredentialConnectionless.ts",
         "cli:keri-oobi": "npx ts-node ./src/cli/keriOobi.ts",
+        "cli:keri-aid":"npx ts-node ./src/cli/keriCredential.ts",
         "build": "rimraf ./build && tsc"
     },
     "author": "",

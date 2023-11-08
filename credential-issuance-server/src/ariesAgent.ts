@@ -32,7 +32,8 @@ const agentConfig: InitConfig = {
 };
 
 const ISSUER_AID_NAME = "issuer";
-
+const IDENTIFIER_NAME = "recipient";
+const REGISTRY_NAME = "vLEI";
 class AriesAgent {
   private static instance: AriesAgent;
   private readonly agent: Agent<{
@@ -88,8 +89,10 @@ class AriesAgent {
       method: "key",
       options: { keyType: KeyType.Ed25519 },
     });
-    await this.agent.modules.signify.createIdentifier(
-      ISSUER_AID_NAME
+    await this.agent.modules.signify.createIdentifier(ISSUER_AID_NAME);
+    await this.agent.modules.signify.createRegistry(
+      ISSUER_AID_NAME,
+      REGISTRY_NAME
     );
   }
 
@@ -231,6 +234,19 @@ class AriesAgent {
 
   async createKeriOobi() {
     return this.agent.modules.signify.createOobi(ISSUER_AID_NAME);
+  }
+  async createCredentialWithKeriAid() {
+    const listRegistries = await this.agent.modules.signify.listRegistries(
+      ISSUER_AID_NAME
+    );
+    const aid = await this.agent.modules.signify.getIdentifierByName(
+      IDENTIFIER_NAME
+    );
+    return this.agent.modules.signify.issueCredential(
+      ISSUER_AID_NAME,
+      listRegistries[0].regk,
+      aid.prefix
+    );
   }
 }
 

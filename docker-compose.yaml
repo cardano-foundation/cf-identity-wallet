@@ -9,8 +9,33 @@ services:
     ports:
       - "51986:51986"
     restart: always
+  keripy:
+    container_name: idw-keripy
+    restart: unless-stopped
+    build:
+      context: github.com/WebOfTrust/keripy#f7df7fb0b86a002e640bc60e82b26accb57d6678
+      dockerfile: ./images/keripy.dockerfile
+    volumes:
+      - keripy-data:/usr/local/var/keri
+    entrypoint: kli agent start
+    ports:  
+      - 5623:5623
+  vlei:
+    container_name: vlei-server
+    restart: unless-stopped
+    build:
+      context: github.com/WebOfTrust/vLEI#ed982313dab86bfada3825857601a10d71ce9631
+      dockerfile: ./container/Dockerfile
+    entrypoint: kli agent start
+    ports:
+      - 7723:7723
   issuer-server:
     container_name: issuer-server
+    depends_on:
+      keripy:
+        condition: service_started
+      vlei:
+        condition: service_started
     build:
       context: ./credential-issuance-server
       dockerfile: Dockerfile
@@ -22,4 +47,5 @@ services:
     restart: always
 
 volumes:
+  keripy-data:
   issuer-server-data:

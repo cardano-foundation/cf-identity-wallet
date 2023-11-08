@@ -73,8 +73,20 @@ async function invitationWithCredentialConnectionless(
   httpResponse(res, response);
 }
 
+async function keriCredentialApi(req: Request, res: Response): Promise<void> {
+  const url = await AriesAgent.agent.createCredentialWithKeriAid();
+  const invitationPrefix = "keri";
+  const response: ResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: invitationPrefix + "|" + generableQRcodeWithUrl(url),
+  };
+  httpResponse(res, response);
+}
+
 export {
   offerCredentialOverConnection,
   invitationWithCredential,
   invitationWithCredentialConnectionless,
+  keriCredentialApi,
 };
