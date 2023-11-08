@@ -133,7 +133,7 @@ const ChooseAccountName = ({
             <IonButton
               shape="round"
               expand="block"
-              className="ion-primary-button"
+              className="primary-button"
               data-testid="continue-button"
               onClick={() => handleCreateWallet(accountName)}
               disabled={!accountName.length}
