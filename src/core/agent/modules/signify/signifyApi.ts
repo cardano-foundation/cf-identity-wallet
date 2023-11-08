@@ -1,6 +1,6 @@
 import { utils } from "@aries-framework/core";
 import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
-import { ICreateIdentifierResult } from "./signifyApi.types";
+import { IContact, ICreateIdentifierResult } from "./signifyApi.types";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
@@ -91,7 +91,10 @@ export class SignifyApi {
     return result.oobis[0];
   }
 
-  async getContacts(): Promise<string> {
+  async getContacts(id?: string): Promise<IContact[]> {
+    if (id) {
+      return this.signifyClient.contacts().list(undefined, "id", id);
+    }
     return this.signifyClient.contacts().list();
   }
 

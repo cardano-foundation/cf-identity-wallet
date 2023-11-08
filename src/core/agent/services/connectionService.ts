@@ -18,6 +18,7 @@ import {
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
+  ConnectionShowType,
   ConnectionStatus,
   GenericRecordType,
 } from "../agent.types";
@@ -171,6 +172,16 @@ class ConnectionService extends AgentService {
       }
       connectionsDetails.push(this.getConnectionShortDetails(connection));
     });
+    const connectionKeris = await this.agent.modules.signify.getContacts();
+    connectionKeris.forEach((connection) => {
+      connectionsDetails.push({
+        id: connection.id,
+        label: connection.alias ?? "",
+        connectionDate: new Date().toISOString(), // TODO: must define how to get it
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionShowType.KERI,
+      });
+    });
     return connectionsDetails;
   }
 
@@ -186,10 +197,17 @@ class ConnectionService extends AgentService {
         connection.state === DidExchangeState.Completed
           ? ConnectionStatus.CONFIRMED
           : ConnectionStatus.PENDING,
+      type: ConnectionShowType.ARIES,
     };
   }
 
-  async getConnectionById(id: string): Promise<ConnectionDetails> {
+  async getConnectionById(
+    id: string,
+    type?: ConnectionShowType
+  ): Promise<ConnectionDetails> {
+    if (type === ConnectionShowType.KERI) {
+      return this.getKeriConnectionDetails(id);
+    }
     const connection = await this.agent.connections.getById(id);
     let outOfBandRecord: OutOfBandRecord | undefined;
     if (connection.outOfBandId) {
@@ -316,6 +334,20 @@ class ConnectionService extends AgentService {
         .map(
           (service) => (service as OutOfBandDidCommService)?.serviceEndpoint
         ),
+      notes: await this.getConnectNotesByConnectionId(connection.id),
+    };
+  }
+
+  private async getKeriConnectionDetails(
+    id: string
+  ): Promise<ConnectionDetails> {
+    const connection = (await this.agent.modules.signify.getContacts(id))[0];
+    return {
+      label: connection?.alias,
+      id: connection.id,
+      status: ConnectionStatus.CONFIRMED,
+      connectionDate: new Date().toISOString(), //TODO: must define
+      serviceEndpoints: [connection.oobi],
       notes: await this.getConnectNotesByConnectionId(connection.id),
     };
   }

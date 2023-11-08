@@ -24,6 +24,11 @@ enum ConnectionHistoryType {
   CREDENTIAL_ACCEPTED,
 }
 
+enum ConnectionShowType {
+  ARIES,
+  KERI,
+}
+
 interface ConnectionHistoryItem {
   type: ConnectionHistoryType;
   timestamp: string;
@@ -61,6 +66,7 @@ interface ConnectionShortDetails {
   connectionDate: string;
   logo?: string;
   status: ConnectionStatus;
+  type?: ConnectionShowType;
 }
 
 interface DIDDetails extends IdentifierShortDetails {
@@ -122,6 +128,7 @@ export {
   GenericRecordType,
   ConnectionHistoryType,
   MiscRecordId,
+  ConnectionShowType,
 };
 export type {
   CryptoAccountRecordShortDetails,
