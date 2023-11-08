@@ -24,6 +24,7 @@ import {
 // import { LibP2p } from "../transports/libp2p/libP2p";
 // import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
 import { AgentService } from "./agentService";
+import { IResolveOOBIResult } from "../modules/signify/signifyApi.types";
 
 const SERVER_GET_SHORTEN_URL =
   // eslint-disable-next-line no-undef
@@ -106,8 +107,10 @@ class ConnectionService extends AgentService {
   }
 
   async receiveInvitationFromUrl(url: string): Promise<void> {
-    if (url.includes("keri")) {
-      return this.agent.modules.signify.resolveOobi(url.split("|")[1]);
+    if (url.includes("/oobi")) {
+      const result = await this.agent.modules.signify.resolveOobi(url);
+      await this.createConnectionKeri(result);
+      return;
     }
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
@@ -272,6 +275,16 @@ class ConnectionService extends AgentService {
       }),
     ]);
     return results.flat();
+  }
+
+  private async createConnectionKeri(data: IResolveOOBIResult) {
+    return this.agent.genericRecords.save({
+      id: data.name,
+      content: {},
+      tags: {
+        type: GenericRecordType.KERI_CONNECTION,
+      },
+    });
   }
 
   private async getConnectNotesByConnectionId(

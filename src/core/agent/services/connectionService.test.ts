@@ -38,6 +38,9 @@ const agent = jest.mocked({
     generalStorage: {
       getCredentialMetadataByConnectionId: jest.fn(),
     },
+    signify: {
+      resolveOobi: jest.fn(),
+    },
   },
   receiveMessage: jest.fn(),
   events: {
@@ -560,5 +563,21 @@ describe("Connection service of agent", () => {
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(connectionId);
     expect(agent.connections.deleteById).toBeCalledWith(connectionId);
+  });
+
+  test("can receive keri oobi", async () => {
+    agent.modules.signify.resolveOobi.mockImplementation((url) => {
+      return { name: url };
+    });
+    const oobi =
+      "http://127.0.0.1:3902/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
+    await connectionService.receiveInvitationFromUrl(oobi);
+    // We aren't too concerned with testing the config passed
+    expect(agent.modules.signify.resolveOobi).toBeCalledWith(oobi);
+    expect(agent.genericRecords.save).toBeCalledWith({
+      id: oobi,
+      content: {},
+      tags: { type: GenericRecordType.KERI_CONNECTION },
+    });
   });
 });

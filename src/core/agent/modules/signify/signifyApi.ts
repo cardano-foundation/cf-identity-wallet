@@ -1,6 +1,9 @@
 import { utils } from "@aries-framework/core";
 import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
-import { ICreateIdentifierResult } from "./signifyApi.types";
+import {
+  ICreateIdentifierResult,
+  IResolveOOBIResult,
+} from "./signifyApi.types";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
@@ -25,6 +28,8 @@ export class SignifyApi {
     data: [{ ca: SignifyApi.BACKER_ADDRESS }],
   };
   static readonly ISSUER_AID_NAME = "issuer";
+  static readonly FAILED_TO_RESOLVE_OOBI =
+    "Failed to resolve OOBI, operation not completing...";
 
   private signifyClient!: SignifyClient;
   private opTimeout: number;
@@ -74,20 +79,23 @@ export class SignifyApi {
     return this.signifyClient.identifiers().get(name);
   }
 
-  async createOobi(name: string): Promise<string> {
+  async getOobi(name: string): Promise<string> {
     const result = await this.signifyClient.oobis().get(name);
     return result.oobis[0];
   }
 
-  async resolveOobi(url: string): Promise<void> {
+  async resolveOobi(url: string): Promise<IResolveOOBIResult> {
     const op = await this.signifyClient
       .oobis()
       .resolve(url, SignifyApi.ISSUER_AID_NAME);
     if (
       !(await this.waitUntilOpDone(op, this.opTimeout, this.opRetryInterval))
     ) {
-      throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
+      throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
     }
+    return {
+      name: op.name,
+    };
   }
 
   /**

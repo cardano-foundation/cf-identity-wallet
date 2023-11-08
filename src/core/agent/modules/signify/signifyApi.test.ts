@@ -1,12 +1,13 @@
 import { ready } from "signify-ts";
-import { SignifyApi } from "./signifyApi";
 import { utils } from "@aries-framework/core";
+import { SignifyApi } from "./signifyApi";
 
 const firstAid = "aid1";
 const secondAid = "aid2";
 const aidPrefix = "keri-";
 const witnessPrefix = "witness.";
 const uuidToThrow = "throwMe";
+const oobiPrefix = "oobi.";
 
 let connectMock = jest.fn();
 const bootMock = jest.fn();
@@ -29,10 +30,23 @@ jest.mock("signify-ts", () => ({
       }),
       operations: jest.fn().mockReturnValue({
         get: jest.fn().mockImplementation((name: string) => {
-          if (name === `${witnessPrefix}${uuidToThrow}`) {
+          if (
+            name === `${witnessPrefix}${uuidToThrow}` ||
+            name === `${oobiPrefix}${uuidToThrow}`
+          ) {
             return { done: false, name };
           }
           return { done: true, name };
+        }),
+      }),
+      oobis: jest.fn().mockReturnValue({
+        get: jest.fn().mockImplementation((name: string) => {
+          return {
+            oobis: [`${oobiPrefix}${name}`],
+          };
+        }),
+        resolve: jest.fn().mockImplementation((name, _config) => {
+          return { done: false, name, response: {} };
         }),
       }),
     };
@@ -78,6 +92,27 @@ describe("Signify API", () => {
     jest.spyOn(utils, "uuid").mockReturnValue(uuidToThrow);
     await expect(api.createIdentifier()).rejects.toThrowError(
       SignifyApi.FAILED_TO_CREATE_IDENTIFIER
+    );
+  });
+
+  test("can get oobi by name", async () => {
+    const mockName = "keriuuid";
+    expect(await api.getOobi(mockName)).toEqual(oobiPrefix + mockName);
+  });
+
+  test("can resolve oobi", async () => {
+    const aid = "keriuuid";
+    const url = oobiPrefix + aid;
+    const op = await api.resolveOobi(url);
+    expect(op).toEqual({
+      name: url,
+    });
+  });
+
+  test("should timeout if oobi resolving is not completing", async () => {
+    const url = oobiPrefix + uuidToThrow;
+    await expect(api.resolveOobi(url)).rejects.toThrowError(
+      SignifyApi.FAILED_TO_RESOLVE_OOBI
     );
   });
 });
