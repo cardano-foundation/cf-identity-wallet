@@ -86,7 +86,6 @@ const Scanner = forwardRef((props, ref) => {
     ) {
       initScan();
     } else {
-      console.log("stop");
       stopScan();
     }
   }, [currentOperation, currentRoute]);

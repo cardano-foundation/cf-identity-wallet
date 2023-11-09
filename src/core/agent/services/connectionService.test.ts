@@ -312,6 +312,14 @@ describe("Connection service of agent", () => {
   });
 
   test("can get all connections", async () => {
+    agent.genericRecords.findAllByQuery.mockImplementation(() => {
+      return [
+        {
+          id: keriContacts[0].id,
+          createdAt: now,
+        },
+      ];
+    });
     agent.connections.getAll = jest
       .fn()
       .mockResolvedValue([
