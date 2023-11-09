@@ -351,7 +351,7 @@ const GenerateSeedPhrase = () => {
                     <IonCardHeader>
                       <IonIcon icon={eyeOffOutline} />
                     </IonCardHeader>
-                    <IonCardContent data-testid="seed-phrase-privacy-overlay">
+                    <IonCardContent data-testid="seed-phrase-privacy-overlay-text">
                       {i18n.t("generateseedphrase.privacy.overlay.text")}
                     </IonCardContent>
                     <IonButton

@@ -1,5 +1,4 @@
 import { expect } from "expect-webdriverio"
-const delay = (ms: number) => new Promise( resolve => setTimeout(resolve, ms));
 
 export class GenerateSeedPhraseScreen {
   get continueButton () { return $("[data-testid=\"primary-button\"]") }
@@ -10,9 +9,7 @@ export class GenerateSeedPhraseScreen {
   get screenTitle() { return $("[data-testid=\"screen-title\"]") }
   get termsAndConditionsCheckbox () { return $("[data-testid=\"termsandconditions-checkbox\"]") }
   get viewSeedPhraseButton () { return $("[data-testid=\"reveal-seed-phrase-button\"]") }
-  get viewSeedPhraseText () { return $("[data-testid=\"seed-phrase-privacy-overlay\"]") }
-  //get word1Text() { return $("[data-testid=\"continue-button\"]") }
-
+  get viewSeedPhraseText () { return $("[data-testid=\"seed-phrase-privacy-overlay-text\"]") }
 
 
   async screenLoads() {
