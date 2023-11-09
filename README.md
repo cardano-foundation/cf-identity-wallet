@@ -40,6 +40,7 @@ npm run wdio:ios:15promax
 or
 ```
 npm run wdio:android:s23ultra
+```
 
 ### Generate icons
 
