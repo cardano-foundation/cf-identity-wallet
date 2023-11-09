@@ -15,6 +15,8 @@ import {
   ConnectionDetails,
   ConnectionHistoryItem,
   ConnectionHistoryType,
+  ConnectionKeriEventTypes,
+  ConnectionKeriStateChangedEvent,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
@@ -47,6 +49,17 @@ class ConnectionService extends AgentService {
     this.agent.events.on(
       ConnectionEventTypes.ConnectionStateChanged,
       async (event: ConnectionStateChangedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onConnectionKeriStateChanged(
+    callback: (event: ConnectionKeriStateChangedEvent) => void
+  ) {
+    this.agent.events.on(
+      ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+      async (event: ConnectionKeriStateChangedEvent) => {
         callback(event);
       }
     );
@@ -108,7 +121,27 @@ class ConnectionService extends AgentService {
 
   async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/oobi")) {
-      return this.agent.modules.signify.resolveOobi(url);
+      this.agent.events.emit<ConnectionKeriStateChangedEvent>(
+        this.agent.context,
+        {
+          type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+          payload: {
+            connectionId: undefined,
+            status: ConnectionStatus.PENDING,
+          },
+        }
+      );
+      const operation = await this.agent.modules.signify.resolveOobi(url);
+      return this.agent.events.emit<ConnectionKeriStateChangedEvent>(
+        this.agent.context,
+        {
+          type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+          payload: {
+            connectionId: operation.response.i,
+            status: ConnectionStatus.CONFIRMED,
+          },
+        }
+      );
     }
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
@@ -225,6 +258,19 @@ class ConnectionService extends AgentService {
   ): Promise<ConnectionShortDetails> {
     const connection = await this.agent.connections.getById(id);
     return this.getConnectionShortDetails(connection);
+  }
+
+  async getConnectionKeriShortDetailById(
+    id: string
+  ): Promise<ConnectionShortDetails> {
+    const connection = (await this.agent.modules.signify.getContacts(id))[0];
+    return {
+      id: connection.id,
+      label: connection.alias ?? "",
+      connectionDate: new Date().toISOString(), // TODO: must define how to get it
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionShowType.KERI,
+    };
   }
 
   async createConnectionNote(
