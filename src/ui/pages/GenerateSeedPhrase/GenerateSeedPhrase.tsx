@@ -66,9 +66,9 @@ const GenerateSeedPhrase = () => {
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
     ? operationState.onboarding
     : (
-        (history?.location?.state as GenerateSeedPhraseProps)?.type ||
+      (history?.location?.state as GenerateSeedPhraseProps)?.type ||
         currentOperation
-      ).toLowerCase();
+    ).toLowerCase();
   const stateOnboarding = seedPhraseType === operationState.onboarding;
   const stateRestore = currentOperation === operationState.restoreCryptoAccount;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
@@ -228,11 +228,11 @@ const GenerateSeedPhrase = () => {
     const filteredSuggestions =
       isTyping && query.length
         ? bip39Seeds
-            .filter(
-              (suggestion: string) =>
-                suggestion.toLowerCase().indexOf(query) > -1
-            )
-            .splice(0, SEED_PHRASE_SUGGESTIONS)
+          .filter(
+            (suggestion: string) =>
+              suggestion.toLowerCase().indexOf(query) > -1
+          )
+          .splice(0, SEED_PHRASE_SUGGESTIONS)
         : [];
     setSuggestions(filteredSuggestions);
   };
@@ -286,11 +286,14 @@ const GenerateSeedPhrase = () => {
             <IonRow>
               <IonCol size="12">
                 {stateOnboarding && (
-                  <h2>
+                  <h2 data-testid="screen-title">
                     {i18n.t("generateseedphrase." + seedPhraseType + ".title")}
                   </h2>
                 )}
-                <p className="page-paragraph">
+                <p
+                  className="page-paragraph"
+                  data-testid="page-paragraph-top"
+                >
                   {i18n.t(
                     "generateseedphrase." + seedPhraseType + ".paragraph.top"
                   )}
@@ -313,14 +316,20 @@ const GenerateSeedPhrase = () => {
                     toggleSeedPhrase(Number(event.detail.value));
                   }}
                 >
-                  <IonSegmentButton value={`${FIFTEEN_WORDS_BIT_LENGTH}`}>
+                  <IonSegmentButton
+                    value={`${FIFTEEN_WORDS_BIT_LENGTH}`}
+                    data-testid="15-words-segment-button"
+                  >
                     <IonLabel>
                       {i18n.t("generateseedphrase.segment", {
                         length: MNEMONIC_FIFTEEN_WORDS,
                       })}
                     </IonLabel>
                   </IonSegmentButton>
-                  <IonSegmentButton value={`${TWENTYFOUR_WORDS_BIT_LENGTH}`}>
+                  <IonSegmentButton
+                    value={`${TWENTYFOUR_WORDS_BIT_LENGTH}`}
+                    data-testid="24-words-segment-button"
+                  >
                     <IonLabel>
                       {i18n.t("generateseedphrase.segment", {
                         length: MNEMONIC_TWENTYFOUR_WORDS,
@@ -342,7 +351,7 @@ const GenerateSeedPhrase = () => {
                     <IonCardHeader>
                       <IonIcon icon={eyeOffOutline} />
                     </IonCardHeader>
-                    <IonCardContent>
+                    <IonCardContent data-testid="seed-phrase-privacy-overlay-text">
                       {i18n.t("generateseedphrase.privacy.overlay.text")}
                     </IonCardContent>
                     <IonButton
@@ -389,7 +398,7 @@ const GenerateSeedPhrase = () => {
                       ) : (
                         <IonChip key={index}>
                           <span className="index">{index + 1}.</span>
-                          <span data-testid={`word-index-${index}`}>
+                          <span data-testid={`word-index-${index + 1}`}>
                             {word}
                           </span>
                         </IonChip>
@@ -403,7 +412,10 @@ const GenerateSeedPhrase = () => {
           <IonGrid>
             <IonRow>
               <IonCol size="12">
-                <p className="page-paragraph">
+                <p
+                  className="page-paragraph"
+                  data-testid="page-paragraph-bottom"
+                >
                   {i18n.t(
                     "generateseedphrase." + seedPhraseType + ".paragraph.bottom"
                   )}
