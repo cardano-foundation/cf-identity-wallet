@@ -4,7 +4,7 @@ const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 let { merge } = require("webpack-merge");
 
-module.exports = merge(require("./webpack.common.js"), {
+module.exports = merge(require("./webpack.common.cjs"), {
    mode: "production",
    output: {
       path: path.resolve(__dirname, "..", "build"),

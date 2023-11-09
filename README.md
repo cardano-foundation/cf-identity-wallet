@@ -11,22 +11,35 @@ docker compose up -d
 TODO
 
 ## End to end testing
-### `npm run start-appium`
+### Pre-installed on local:
 
-When you run the appium command, it starts the Appium server, which listens for incoming connections on a specified port. In this case, the --port 4003 option is used to specify that the Appium server should listen on port 4003.
+- npm and node js
+- android emulator for samsung galaxy s23 ultra is configured or ios simulator for iphone 15 pro / 15 pro max
+- add .env to root folder with APP_PATH property with path to app build for chosen platform e.g.
 
-### `npm run e2e:web`
+```
+# Android
+# APP_PATH=<LOCAL_PATH/app-release-unsigned.apk>
 
-Runs the WebdriverIO test runner with the provided TypeScript configuration file in watch mode, continuously executing the tests and monitoring for changes in the test files or configuration. The SERVE_PORT and TS_NODE_PROJECT environment variables are set to specify the server port and TypeScript configuration, respectively.
+# iOS
+APP_PATH=<LOCAL_PATH/App.app>
+```
+### Test run in local:
 
-#### How to run the end2ends in local
+1. Install all packages locally
 
-1. Start Appium server in terminal A:
-   `npm run start-appium`
-2.  Run the web server in terminal B:
-    `npm run dev`
-3. Run the test in terminal C:
-    `npm run e2e:web`
+```
+npm install
+```
+
+2. Run tests for chosen platform and phone e.g.
+
+```
+npm run wdio:ios:15promax
+```
+or
+```
+npm run wdio:android:s23ultra
 
 ### Generate icons
 
