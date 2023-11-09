@@ -43,6 +43,7 @@ jest.mock("../../../core/agent/agent", () => ({
         isConnectionConnected: jest.fn(),
         getConnectionShortDetailById: jest.fn(),
         getUnhandledConnections: jest.fn(),
+        onConnectionKeriStateChanged: jest.fn(),
       },
       credentials: {
         getCredentials: jest.fn().mockResolvedValue([]),
