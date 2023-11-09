@@ -16,7 +16,7 @@ TODO
 - npm and node js
 - android emulator for samsung galaxy s23 ultra is configured or ios simulator for iphone 15 pro / 15 pro max
 - add .env to root folder with APP_PATH property with path to app build for chosen platform e.g.
-
+- appium installed locally(in case if @wdio/appium-service will not work as expected)
 ```
 # Android
 # APP_PATH=<LOCAL_PATH/app-release-unsigned.apk>
@@ -41,7 +41,8 @@ or
 ```
 npm run wdio:android:s23ultra
 ```
-
+- IF there are issues with appium service run by WDIO, please start appium in terminal separately
+- in case WDIO tests will not exit on its own kill the process yourself e.g. ``` pkill -9 -f wdio  ```
 ### Generate icons
 
 Install capacitor [assets tool](https://capacitorjs.com/docs/guides/splash-screens-and-icons):
