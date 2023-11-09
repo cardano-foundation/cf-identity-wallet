@@ -6,7 +6,6 @@ import {
 } from "@capacitor-community/barcode-scanner";
 import { scanOutline } from "ionicons/icons";
 import "./Scanner.scss";
-import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -20,7 +19,6 @@ import { AriesAgent } from "../../../core/agent/agent";
 
 const Scanner = forwardRef((props, ref) => {
   const dispatch = useAppDispatch();
-  const history = useHistory();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentRoute = useAppSelector(getCurrentRoute);
 
@@ -73,13 +71,6 @@ const Scanner = forwardRef((props, ref) => {
           await AriesAgent.agent.connections.receiveInvitationFromUrl(
             result.content
           );
-          if (result.content.includes("keri")) {
-            // TODO: handle with better way
-            history.push(TabsRoutePath.CREDS);
-            setTimeout(() => {
-              dispatch(setCurrentOperation(toastState.newConnectionAdded));
-            }, 1000);
-          }
           dispatch(setCurrentOperation(""));
         }
       }
@@ -95,6 +86,7 @@ const Scanner = forwardRef((props, ref) => {
     ) {
       initScan();
     } else {
+      console.log("stop");
       stopScan();
     }
   }, [currentOperation, currentRoute]);
