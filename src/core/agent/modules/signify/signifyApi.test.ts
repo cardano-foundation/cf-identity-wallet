@@ -27,6 +27,7 @@ jest.mock("signify-ts", () => ({
         create: jest.fn().mockImplementation((name, _config) => {
           return { done: false, name: `${witnessPrefix}${name}` };
         }),
+        addEndRole : jest.fn()
       }),
       operations: jest.fn().mockReturnValue({
         get: jest.fn().mockImplementation((name: string) => {
@@ -49,6 +50,9 @@ jest.mock("signify-ts", () => ({
           return { done: false, name, response: {} };
         }),
       }),
+      agent: {
+        pre: "pre",
+      },
     };
   }),
   Tier: { low: "low" },
@@ -106,6 +110,7 @@ describe("Signify API", () => {
     const op = await api.resolveOobi(url);
     expect(op).toEqual({
       name: url,
+      done: true,
     });
   });
 

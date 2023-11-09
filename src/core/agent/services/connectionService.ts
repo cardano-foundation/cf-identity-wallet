@@ -15,9 +15,12 @@ import {
   ConnectionDetails,
   ConnectionHistoryItem,
   ConnectionHistoryType,
+  ConnectionKeriEventTypes,
+  ConnectionKeriStateChangedEvent,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
+  ConnectionShowType,
   ConnectionStatus,
   GenericRecordType,
 } from "../agent.types";
@@ -46,6 +49,17 @@ class ConnectionService extends AgentService {
     this.agent.events.on(
       ConnectionEventTypes.ConnectionStateChanged,
       async (event: ConnectionStateChangedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onConnectionKeriStateChanged(
+    callback: (event: ConnectionKeriStateChangedEvent) => void
+  ) {
+    this.agent.events.on(
+      ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+      async (event: ConnectionKeriStateChangedEvent) => {
         callback(event);
       }
     );
@@ -107,7 +121,27 @@ class ConnectionService extends AgentService {
 
   async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/oobi")) {
-      return this.agent.modules.signify.resolveOobi(url);
+      this.agent.events.emit<ConnectionKeriStateChangedEvent>(
+        this.agent.context,
+        {
+          type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+          payload: {
+            connectionId: undefined,
+            status: ConnectionStatus.PENDING,
+          },
+        }
+      );
+      const operation = await this.agent.modules.signify.resolveOobi(url);
+      return this.agent.events.emit<ConnectionKeriStateChangedEvent>(
+        this.agent.context,
+        {
+          type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+          payload: {
+            connectionId: operation.response.i,
+            status: ConnectionStatus.CONFIRMED,
+          },
+        }
+      );
     }
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
@@ -171,6 +205,16 @@ class ConnectionService extends AgentService {
       }
       connectionsDetails.push(this.getConnectionShortDetails(connection));
     });
+    const connectionKeris = await this.agent.modules.signify.getContacts();
+    connectionKeris.forEach((connection) => {
+      connectionsDetails.push({
+        id: connection.id,
+        label: connection.alias ?? "",
+        connectionDate: new Date().toISOString(), // TODO: must define how to get it
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionShowType.KERI,
+      });
+    });
     return connectionsDetails;
   }
 
@@ -186,10 +230,17 @@ class ConnectionService extends AgentService {
         connection.state === DidExchangeState.Completed
           ? ConnectionStatus.CONFIRMED
           : ConnectionStatus.PENDING,
+      type: ConnectionShowType.ARIES,
     };
   }
 
-  async getConnectionById(id: string): Promise<ConnectionDetails> {
+  async getConnectionById(
+    id: string,
+    type?: ConnectionShowType
+  ): Promise<ConnectionDetails> {
+    if (type === ConnectionShowType.KERI) {
+      return this.getKeriConnectionDetails(id);
+    }
     const connection = await this.agent.connections.getById(id);
     let outOfBandRecord: OutOfBandRecord | undefined;
     if (connection.outOfBandId) {
@@ -207,6 +258,19 @@ class ConnectionService extends AgentService {
   ): Promise<ConnectionShortDetails> {
     const connection = await this.agent.connections.getById(id);
     return this.getConnectionShortDetails(connection);
+  }
+
+  async getConnectionKeriShortDetailById(
+    id: string
+  ): Promise<ConnectionShortDetails> {
+    const connection = (await this.agent.modules.signify.getContacts(id))[0];
+    return {
+      id: connection.id,
+      label: connection.alias ?? "",
+      connectionDate: new Date().toISOString(), // TODO: must define how to get it
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionShowType.KERI,
+    };
   }
 
   async createConnectionNote(
@@ -316,6 +380,20 @@ class ConnectionService extends AgentService {
         .map(
           (service) => (service as OutOfBandDidCommService)?.serviceEndpoint
         ),
+      notes: await this.getConnectNotesByConnectionId(connection.id),
+    };
+  }
+
+  private async getKeriConnectionDetails(
+    id: string
+  ): Promise<ConnectionDetails> {
+    const connection = (await this.agent.modules.signify.getContacts(id))[0];
+    return {
+      label: connection?.alias,
+      id: connection.id,
+      status: ConnectionStatus.CONFIRMED,
+      connectionDate: new Date().toISOString(), //TODO: must define
+      serviceEndpoints: [connection.oobi],
       notes: await this.getConnectNotesByConnectionId(connection.id),
     };
   }
