@@ -2,7 +2,7 @@ import { expect } from "expect-webdriverio"
 const delay = (ms: number) => new Promise( resolve => setTimeout(resolve, ms));
 
 export class GenerateSeedPhraseScreen {
-  get continueButton () { return $("[data-testid=\"continue-button\"]") }
+  get continueButton () { return $("[data-testid=\"primary-button\"]") }
   get pageParagraphBottom () { return $("[data-testid=\"page-paragraph-bottom\"]") }
   get pageParagraphTop() { return $("[data-testid=\"page-paragraph-top\"]") }
   get phrase15WordsButton  () { return $("[data-testid=\"15-words-segment-button\"]") }
