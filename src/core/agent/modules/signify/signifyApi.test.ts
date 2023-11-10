@@ -11,6 +11,12 @@ const oobiPrefix = "oobi.";
 
 let connectMock = jest.fn();
 const bootMock = jest.fn();
+const contacts = [
+  {
+    id: "id",
+    alias: "alias",
+  },
+];
 jest.mock("signify-ts", () => ({
   ready: jest.fn(),
   SignifyClient: jest.fn().mockImplementation(() => {
@@ -27,7 +33,7 @@ jest.mock("signify-ts", () => ({
         create: jest.fn().mockImplementation((name, _config) => {
           return { done: false, name: `${witnessPrefix}${name}` };
         }),
-        addEndRole : jest.fn()
+        addEndRole: jest.fn(),
       }),
       operations: jest.fn().mockReturnValue({
         get: jest.fn().mockImplementation((name: string) => {
@@ -49,6 +55,19 @@ jest.mock("signify-ts", () => ({
         resolve: jest.fn().mockImplementation((name, _config) => {
           return { done: false, name, response: {} };
         }),
+      }),
+      contacts: jest.fn().mockReturnValue({
+        list: jest
+          .fn()
+          .mockImplementation(
+            (
+              group?: string | undefined,
+              filterField?: string | undefined,
+              filterValue?: string | undefined
+            ) => {
+              return contacts;
+            }
+          ),
       }),
       agent: {
         pre: "pre",
@@ -119,5 +138,9 @@ describe("Signify API", () => {
     await expect(api.resolveOobi(url)).rejects.toThrowError(
       SignifyApi.FAILED_TO_RESOLVE_OOBI
     );
+  });
+
+  test("should get contacts successfully", async () => {
+    expect(await api.getContacts()).toEqual(contacts);
   });
 });
