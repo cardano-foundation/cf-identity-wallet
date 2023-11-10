@@ -18,6 +18,7 @@ enum ConnectionStatus {
 
 enum GenericRecordType {
   CONNECTION_NOTE = "connection-note",
+  CONNECTION_KERI_METADATA = "connection-keri-metadata",
 }
 
 enum ConnectionHistoryType {

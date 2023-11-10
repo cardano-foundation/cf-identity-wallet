@@ -138,9 +138,22 @@ export class SignifyApi {
     try {
       bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
     } catch (error) {
-      bran = utils.uuid();
+      bran = this.generateRandomKey();
       await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
     }
     return bran as string;
+  }
+
+  private generateRandomKey() {
+    const characters =
+      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    const length = 21;
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      result += characters.charAt(
+        Math.floor(Math.random() * characters.length)
+      );
+    }
+    return result;
   }
 }
