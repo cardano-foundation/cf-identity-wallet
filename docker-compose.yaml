@@ -26,7 +26,7 @@ services:
     build:
       context: github.com/WebOfTrust/vLEI#ed982313dab86bfada3825857601a10d71ce9631
       dockerfile: ./container/Dockerfile
-    entrypoint: kli agent start
+    entrypoint: vLEI-server -s ./schema/acdc -c ./samples/acdc/ -o ./samples/oobis/
     ports:
       - 7723:7723
   issuer-server:

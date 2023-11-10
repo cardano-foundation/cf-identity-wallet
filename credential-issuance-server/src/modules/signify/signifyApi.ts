@@ -15,6 +15,7 @@ export class SignifyApi {
     "addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm";
   static readonly LEI = "5493001KJTIIGC8Y1R17";
   static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static readonly SCHEMA_OOBI = "http://127.0.0.1:7723/oobi/";
   static readonly BACKER_CONFIG = {
     toad: 1,
     wits: [SignifyApi.BACKER_AID],
@@ -94,6 +95,18 @@ export class SignifyApi {
 
   async listRegistries(signifyName: string): Promise<any> {
     return this.signifyClient.registries().list(signifyName);
+  }
+
+  async resolveCredential(oobi: string, signifyName: string): Promise<any> {
+    const schemaOobi = SignifyApi.SCHEMA_OOBI + SignifyApi.SCHEMA_SAID;
+    let op1 = await this.signifyClient.oobis().resolve(oobi, signifyName);
+    if (
+      !(await this.waitUntilOpDone(op1, this.opTimeout, this.opRetryInterval))
+    ) {
+      throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
+    }
+    op1 = await this.signifyClient.oobis().resolve(schemaOobi, "schema");
+    return op1;
   }
 
   async issueCredential(

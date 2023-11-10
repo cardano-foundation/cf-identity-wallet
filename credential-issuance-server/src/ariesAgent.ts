@@ -90,10 +90,6 @@ class AriesAgent {
       options: { keyType: KeyType.Ed25519 },
     });
     await this.agent.modules.signify.createIdentifier(ISSUER_AID_NAME);
-    await this.agent.modules.signify.createRegistry(
-      ISSUER_AID_NAME,
-      REGISTRY_NAME
-    );
   }
 
   async createInvitation() {
@@ -236,6 +232,12 @@ class AriesAgent {
     return this.agent.modules.signify.getOobi(ISSUER_AID_NAME);
   }
   async createCredentialWithKeriAid() {
+    const oobi = await this.agent.modules.signify.getOobi(ISSUER_AID_NAME);
+    await this.agent.modules.signify.resolveCredential(oobi, ISSUER_AID_NAME);
+    await this.agent.modules.signify.createRegistry(
+      ISSUER_AID_NAME,
+      REGISTRY_NAME
+    );
     const listRegistries = await this.agent.modules.signify.listRegistries(
       ISSUER_AID_NAME
     );
