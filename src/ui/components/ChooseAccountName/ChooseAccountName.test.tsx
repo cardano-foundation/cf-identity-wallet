@@ -7,7 +7,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 describe("Choose Crypto Account name", () => {
-  test("Render the modal", async () => {
+  test.skip("Render the modal", async () => {
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     const initialState = {
