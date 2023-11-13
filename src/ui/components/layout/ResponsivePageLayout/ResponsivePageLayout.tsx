@@ -7,7 +7,10 @@ const ResponsivePageLayout = ({
   children,
 }: ResponsivePageLayoutProps) => {
   return (
-    <IonPage className={`responsive-page-layout safe-area ${title}`}>
+    <IonPage
+      className={`responsive-page-layout safe-area ${title}`}
+      data-testid={title}
+    >
       <div className="responsive-page-content">{children}</div>
     </IonPage>
   );
