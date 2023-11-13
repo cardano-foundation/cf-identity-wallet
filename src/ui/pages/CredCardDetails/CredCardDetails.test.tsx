@@ -238,7 +238,7 @@ describe("Cards Details page - current not archived credential", () => {
   });
 
   test("It shows the warning when I click on the big archive button", async () => {
-    const { findByTestId, queryByText, queryByTestId } = render(
+    const { findByTestId, getAllByText, queryByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -261,7 +261,7 @@ describe("Cards Details page - current not archived credential", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)
+        getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
       ).toBeVisible();
     });
   });
