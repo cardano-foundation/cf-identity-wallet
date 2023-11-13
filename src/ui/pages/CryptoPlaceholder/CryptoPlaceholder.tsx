@@ -20,9 +20,9 @@ const CryptoPlaceholder = () => {
   const dispatch = useAppDispatch();
   const [featuresModalIsOpen, setFeaturesModalIsOpen] = useState(false);
 
-  useIonViewWillEnter(() =>
-    dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO_PLACEHOLDER }))
-  );
+  useIonViewWillEnter(() => {
+    dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO_PLACEHOLDER }));
+  });
 
   const HandleFeatures = () => {
     return (
