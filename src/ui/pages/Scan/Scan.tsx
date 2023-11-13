@@ -21,9 +21,9 @@ const Scan = () => {
   const stateCache = useAppSelector(getStateCache);
   const currentOperation = useAppSelector(getCurrentOperation);
 
-  useIonViewWillEnter(() =>
-    dispatch(setCurrentRoute({ path: TabsRoutePath.SCAN }))
-  );
+  useIonViewWillEnter(() => {
+    dispatch(setCurrentRoute({ path: TabsRoutePath.SCAN }));
+  });
 
   useEffect(() => {
     if (currentOperation.length) {

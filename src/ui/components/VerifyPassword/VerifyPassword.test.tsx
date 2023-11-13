@@ -92,7 +92,7 @@ describe("Verify Password on Cards Details page", () => {
       ...mockStore(initialStateWithPassword),
       dispatch: dispatchMock,
     };
-    const { findByTestId, getByText, getAllByTestId, queryByText } = render(
+    const { findByTestId, getAllByText, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -113,7 +113,7 @@ describe("Verify Password on Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)
+        getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
       ).toBeVisible();
     });
 
@@ -126,7 +126,9 @@ describe("Verify Password on Cards Details page", () => {
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.creds.card.details.alert.archive.confirm)
+        getAllByText(
+          EN_TRANSLATIONS.creds.card.details.alert.archive.confirm
+        )[0]
       );
     });
 

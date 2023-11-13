@@ -20,9 +20,9 @@ const Chat = () => {
   const dispatch = useAppDispatch();
   const [featuresModalIsOpen, setFeaturesModalIsOpen] = useState(false);
 
-  useIonViewWillEnter(() =>
-    dispatch(setCurrentRoute({ path: TabsRoutePath.CHAT }))
-  );
+  useIonViewWillEnter(() => {
+    dispatch(setCurrentRoute({ path: TabsRoutePath.CHAT }));
+  });
 
   const HandleFeatures = () => {
     return (

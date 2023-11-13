@@ -66,7 +66,7 @@ describe("Verify Passcode on Cards Details page", () => {
     jest
       .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
       .mockResolvedValue(credsFix[0]);
-    const { findByTestId, getByText, getAllByTestId } = render(
+    const { findByTestId, getAllByText, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -86,7 +86,7 @@ describe("Verify Passcode on Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)
+        getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
       ).toBeVisible();
     });
 
@@ -99,7 +99,9 @@ describe("Verify Passcode on Cards Details page", () => {
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.creds.card.details.alert.archive.confirm)
+        getAllByText(
+          EN_TRANSLATIONS.creds.card.details.alert.archive.confirm
+        )[0]
       );
     });
 
