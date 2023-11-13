@@ -2,40 +2,41 @@
 @import "swiper/css/autoplay";
 @import "@ionic/react/css/ionic-swiper.css";
 
-.slides {
-  padding-inline: 30px;
-  padding-bottom: 5px;
+.slides-container {
+  max-height: 70%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
 
-  .swiper-slide {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  .slides {
+    .swiper-slide {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
 
-    h2 {
-      margin-bottom: 1vh;
-      margin-top: 1vh;
-      text-align: center;
-    }
+      h2 {
+        margin-bottom: 0.5rem;
+        text-align: center;
+      }
 
-    p {
-      text-align: center;
-      color: var(--ion-color-secondary);
-    }
+      p {
+        text-align: center;
+        color: var(--ion-color-secondary);
+      }
 
-    img {
-      height: auto;
-      margin-bottom: 2vh;
-      border-radius: 16px;
+      img,
+      svg {
+        height: auto !important;
+        width: 62vw !important;
+      }
     }
   }
 
-  // Style the pagination
   .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 4vh;
+    padding-inline: 1rem;
   }
 
   .page-indicator,
@@ -43,13 +44,13 @@
     margin: 0 0.25rem;
     background: var(--ion-color-dark-grey);
     opacity: 0.5;
-    width: 15px;
-    height: 15px;
-    border-radius: 8px;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.5rem;
   }
   .play-container {
     position: absolute;
-    right: 0;
+    right: 1.26rem;
   }
   .play-indicator {
     color: var(--ion-color-dark-grey);

@@ -1,0 +1,26 @@
+.responsive-page-layout {
+  display: flex;
+  flex-direction: column;
+  padding-inline: 1.25rem;
+  background: var(--ion-color-light);
+
+  .responsive-page-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-evenly;
+    height: 100%;
+
+    > * {
+      flex: 0 1 auto;
+      margin: 0;
+    }
+  }
+
+  .page-footer {
+    padding-top: 0.5rem;
+
+    ion-button {
+      margin: 0 auto 1rem;
+    }
+  }
+}
