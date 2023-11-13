@@ -143,6 +143,12 @@ class AriesAgent {
     if (!AriesAgent.ready) {
       await this.agent.initialize();
       await this.agent.modules.signify.start();
+      const VLEI_HOST = "http://vlei-server:7723/oobi/";
+      const SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+      await this.agent.modules.signify.resolveOobi(
+        VLEI_HOST + SCHEMA_SAID,
+        "schema"
+      );
       AriesAgent.ready = true;
     }
   }

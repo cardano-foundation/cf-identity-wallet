@@ -102,10 +102,10 @@ export class SignifyApi {
     return this.signifyClient.contacts().list();
   }
 
-  async resolveOobi(url: string): Promise<any> {
+  async resolveOobi(url: string, alias?: string): Promise<any> {
     let operation = await this.signifyClient
       .oobis()
-      .resolve(url, SignifyApi.ISSUER_AID_NAME);
+      .resolve(url, alias || utils.uuid());
     operation = await this.waitAndGetOp(
       operation,
       this.opTimeout,
@@ -115,6 +115,10 @@ export class SignifyApi {
       throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
     }
     return operation;
+  }
+
+  async getNotifications() {
+    return this.signifyClient.notifications().list();
   }
 
   /**

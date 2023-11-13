@@ -1,11 +1,10 @@
+import { utils } from "@aries-framework/core";
 import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT =
-    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3901";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3903";
-  static readonly SIGNIFY_BRAN = "0123456789abcdefghikk"; // @TODO - foconnor: Shouldn't be hard-coded.
+  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
+  static readonly SIGNIFY_BRAN = "0123456789abcdefgsokk"; // @TODO - foconnor: Shouldn't be hard-coded.
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
@@ -20,9 +19,11 @@ export class SignifyApi {
     ncount: 1,
     isith: "1",
     nsith: "1",
-    data: [{ ca: SignifyApi.BACKER_ADDRESS }],
+    // data: [{ ca: SignifyApi.BACKER_ADDRESS }], // TODO: must verify why can't create registry by aid with this config
   };
   static readonly DEFAULT_ROLE = "agent";
+  static readonly FAILED_TO_RESOLVE_OOBI =
+    "Failed to resolve OOBI, operation not completing...";
 
   private signifyClient!: SignifyClient;
   private opTimeout: number;
@@ -56,11 +57,7 @@ export class SignifyApi {
     const op = await this.signifyClient
       .identifiers()
       .create(signifyName, SignifyApi.BACKER_CONFIG);
-    if (
-      !(await this.waitUntilOpDone(op, this.opTimeout, this.opRetryInterval))
-    ) {
-      throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
-    }
+    await op.op();
     const aid1 = await this.getIdentifierByName(signifyName);
     await this.signifyClient
       .identifiers()
@@ -82,19 +79,71 @@ export class SignifyApi {
       .get(signifyName, SignifyApi.DEFAULT_ROLE);
     return result.oobis[0];
   }
+
+  async resolveOobi(url: string): Promise<any> {
+    const alias = utils.uuid();
+    let operation = await this.signifyClient.oobis().resolve(url, alias);
+    operation = await this.waitAndGetOp(
+      operation,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    if (!operation.done) {
+      throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
+    }
+    return operation;
+  }
+
+  async createRegistry(name: string): Promise<void> {
+    const result = await this.signifyClient
+      .registries()
+      .create({ name, registryName: "vLEI" });
+    await result.op();
+    const registries = await this.signifyClient.registries().list(name);
+    return registries[0].regk
+  }
+
+  async issueCredential(
+    issuer: string,
+    regk: string,
+    schemaSAID: string,
+    holder: string
+  ) {
+    const vcdata = {
+      LEI: "5493001KJTIIGC8Y1R17",
+    };
+    const result = await this.signifyClient
+      .credentials()
+      .issue(issuer, regk, schemaSAID, holder, vcdata);
+    await result.op();
+  }
+
   /**
    * Note - op must be of type any here until Signify cleans up its typing.
    */
-  private async waitUntilOpDone(
+  private async waitAndGetOp(
     op: any,
     timeout: number,
     interval: number
-  ): Promise<boolean> {
+  ): Promise<any> {
     const startTime = new Date().getTime();
     while (!op.done && new Date().getTime() < startTime + timeout) {
       op = await this.signifyClient.operations().get(op.name);
       await new Promise((resolve) => setTimeout(resolve, interval));
     }
-    return op.done;
+    return op;
   }
+
+  // private generateRandomKey() {
+  //   const characters =
+  //     "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  //   const length = 21;
+  //   let result = "";
+  //   for (let i = 0; i < length; i++) {
+  //     result += characters.charAt(
+  //       Math.floor(Math.random() * characters.length)
+  //     );
+  //   }
+  //   return result;
+  // }
 }

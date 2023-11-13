@@ -32,6 +32,8 @@ const agentConfig: InitConfig = {
 };
 
 const ISSUER_AID_NAME = "issuer";
+const VLEI_HOST = "http://vlei-server:7723/oobi/";
+const SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
 
 class AriesAgent {
   private static instance: AriesAgent;
@@ -45,6 +47,7 @@ class AriesAgent {
   }>;
 
   private masterDid;
+  private keriRegistryRegk;
 
   private constructor() {
     this.agent = new Agent({
@@ -88,7 +91,9 @@ class AriesAgent {
       method: "key",
       options: { keyType: KeyType.Ed25519 },
     });
-    await this.agent.modules.signify.createIdentifier(
+    await this.agent.modules.signify.createIdentifier(ISSUER_AID_NAME);
+    await this.agent.modules.signify.resolveOobi(VLEI_HOST + SCHEMA_SAID);
+    this.keriRegistryRegk = await this.agent.modules.signify.createRegistry(
       ISSUER_AID_NAME
     );
   }
@@ -231,6 +236,16 @@ class AriesAgent {
 
   async createKeriOobi() {
     return this.agent.modules.signify.getOobi(ISSUER_AID_NAME);
+  }
+
+  async issueAcdcCredentialByOobi(url: string) {
+    const aid = await this.agent.modules.signify.resolveOobi(url);
+    return this.agent.modules.signify.issueCredential(
+      ISSUER_AID_NAME,
+      this.keriRegistryRegk,
+      SCHEMA_SAID,
+      aid?.response.i
+    );
   }
 }
 
