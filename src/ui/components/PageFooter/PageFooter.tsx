@@ -47,6 +47,7 @@ const PageFooter = ({
         <IonButton
           shape="round"
           expand="block"
+          fill="clear"
           className="tertiary-button"
           data-testid={`tertiary-button${pageId ? `-${pageId}` : ""}`}
           onClick={tertiaryButtonAction}
