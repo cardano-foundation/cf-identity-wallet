@@ -5,7 +5,7 @@ services:
     container_name: idw-keria
     restart: unless-stopped
     build:
-      context: github.com/WebOfTrust/keria#d70e2a8e1d5dd5e76c900b7a2af27d83a5785496
+      context: github.com/WebOfTrust/keria#56c20c779cd1a93bb33fd25271e58ae802618653
       dockerfile: ./images/keria.dockerfile
     environment:
       - KERI_AGENT_CORS=true
@@ -17,6 +17,15 @@ services:
       - 3901:3901
       - 3902:3902
       - 3903:3903
+  vlei:
+    container_name: vlei-server
+    restart: unless-stopped
+    build:
+      context: github.com/WebOfTrust/vLEI#ed982313dab86bfada3825857601a10d71ce9631
+      dockerfile: ./container/Dockerfile
+    entrypoint: vLEI-server -s ./schema/acdc -c ./samples/acdc/ -o ./samples/oobis/
+    ports:
+      - 7723:7723
 
   caddy:
     container_name: caddy
