@@ -3,7 +3,7 @@ export interface ICreateIdentifierResult {
   identifier: string;
 }
 
-export interface IContact {
+export interface KeriContact {
   alias: string;
   id: string;
   oobi: string;

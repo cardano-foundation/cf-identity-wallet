@@ -28,7 +28,7 @@ import {
 // import { LibP2p } from "../transports/libp2p/libP2p";
 // import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
 import { AgentService } from "./agentService";
-import { IContact } from "../modules/signify/signifyApi.types";
+import { KeriContact } from "../modules/signify/signifyApi.types";
 
 const SERVER_GET_SHORTEN_URL =
   // eslint-disable-next-line no-undef
@@ -248,14 +248,14 @@ class ConnectionService extends AgentService {
     };
   }
 
-  getConnectionKeriShortDetails(
-    connection: IContact,
+  private getConnectionKeriShortDetails(
+    connection: KeriContact,
     createdAt: Date
   ): ConnectionShortDetails {
     return {
       id: connection.id,
       label: connection.alias ?? "",
-      connectionDate: createdAt.toISOString(), // TODO: must define how to get it
+      connectionDate: createdAt.toISOString(),
       status: ConnectionStatus.CONFIRMED,
       type: ConnectionShowType.KERI,
     };

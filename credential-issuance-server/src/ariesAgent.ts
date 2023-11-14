@@ -31,9 +31,9 @@ const agentConfig: InitConfig = {
   // logger: new ConsoleLogger(LogLevel.info), // Uncomment it to view logs from aries agent
 };
 
-const ISSUER_AID_NAME = "issuer";
-
 class AriesAgent {
+  static readonly ISSUER_AID_NAME = "issuer";
+
   private static instance: AriesAgent;
   private readonly agent: Agent<{
     credentials: CredentialsModule<
@@ -89,7 +89,7 @@ class AriesAgent {
       options: { keyType: KeyType.Ed25519 },
     });
     await this.agent.modules.signify.createIdentifier(
-      ISSUER_AID_NAME
+      AriesAgent.ISSUER_AID_NAME
     );
   }
 
@@ -230,7 +230,7 @@ class AriesAgent {
   }
 
   async createKeriOobi() {
-    return this.agent.modules.signify.getOobi(ISSUER_AID_NAME);
+    return this.agent.modules.signify.getOobi(AriesAgent.ISSUER_AID_NAME);
   }
 }
 
