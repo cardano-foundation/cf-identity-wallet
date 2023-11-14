@@ -187,7 +187,7 @@ const PageLayout = ({
         </IonHeader>
       )}
 
-      <IonContent className="page-content">{children}</IonContent>
+      <IonContent>{children}</IonContent>
 
       {footer && (
         <IonFooter

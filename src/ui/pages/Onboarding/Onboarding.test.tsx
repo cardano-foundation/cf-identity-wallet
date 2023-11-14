@@ -48,15 +48,8 @@ describe("Onboarding Page", () => {
     const { getByText, queryByText } = render(
       <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
         <Provider store={store}>
-          <Route
-            path={RoutePath.ONBOARDING}
-            component={Onboarding}
-          />
-
-          <Route
-            path={RoutePath.SET_PASSCODE}
-            component={SetPasscode}
-          />
+          <Onboarding />
+          <SetPasscode />
         </Provider>
       </MemoryRouter>
     );
@@ -117,10 +110,10 @@ describe("Onboarding Page", () => {
 
     fireEvent.click(buttonContinue);
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(
         queryByText(EN_TRANSLATIONS.generateseedphrase.onboarding.title)
-      ).toBeVisible()
-    );
+      ).toBeVisible();
+    });
   });
 });
