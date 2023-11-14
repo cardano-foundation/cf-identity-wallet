@@ -1,50 +1,57 @@
-.passcode-module {
-  .title {
-    font-size: 24px;
+.passcode-module-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .passcode-module-title {
+    font-size: 1.5rem;
     text-align: center;
     font-weight: 700;
     font-style: normal;
-    line-height: 28px;
+    line-height: 1.75rem;
   }
 
-  .description {
+  .passcode-module-description {
     font-weight: 500;
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 1rem;
+    line-height: 1.375rem;
     text-align: center;
   }
 
-  .circle-row {
+  .passcode-module-circle-row {
     display: flex;
     justify-content: center;
     align-items: center;
     margin: 1.5rem 1rem 0.8rem;
   }
 
-  .circle {
-    width: 25px;
-    height: 25px;
+  .passcode-module-circle {
+    width: 6.4vw;
+    height: 6.4vw;
+    max-width: 1.563rem;
+    max-height: 1.563rem;
     border-radius: 50%;
     border: 1px solid var(--ion-color-secondary);
-    margin: 0 8px;
+    margin: 0 0.5rem;
   }
 
-  .circle-fill {
+  .passcode-module-circle-fill {
     background: var(--ion-color-secondary);
   }
 
-  .pin-error {
+  .passcode-module-pin-error {
     text-align: center;
     margin-bottom: 1.5rem;
-    height: 16px;
+    height: 1rem;
   }
 
-  .numbers-row ion-col {
+  .passcode-module-numbers-row ion-col {
     display: flex;
     justify-content: center;
+    padding: 0;
   }
 
-  .number-button {
+  .passcode-module-number-button {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -52,42 +59,43 @@
     border: none;
     text-align: center;
     cursor: pointer;
-    font-size: 44px;
+    font-size: 11.28vw;
     color: var(--ion-color-primary);
   }
 
-  .number-labels {
+  .passcode-module-number-labels {
     display: flex;
     margin-top: 3px;
     margin-left: 2px;
     text-align: center;
+
+    span {
+      font-size: 3.59vw;
+      text-transform: uppercase;
+      margin-right: 2px;
+    }
   }
 
-  .number-labels span {
-    font-size: 12px;
-    text-transform: uppercase;
-    margin-right: 2px;
-  }
-
-  .board-button {
-    width: 88px;
-    height: 88px;
-    --border-radius: 50px;
+  .passcode-module-board-button {
     --background: var(--ion-color-medium-grey);
-    --background-activated: var(--ion-color-dark-grey);
+    margin: 0;
   }
 
-  .backspace-button {
-    width: 88px;
-    height: 88px;
-    --border-radius: 50px;
+  .passcode-module-backspace-button {
     --background: var(--ion-color-primary);
-    --background-activated: var(--ion-color-dark-grey);
     --color: var(--ion-color-light);
   }
 
-  .backspace-icon {
-    width: 50px;
-    height: 50px;
+  .passcode-module-board-button,
+  .passcode-module-backspace-button {
+    width: 22.57vw;
+    height: 22.57vw;
+    --border-radius: 3.125rem;
+    --background-activated: var(--ion-color-dark-grey);
+  }
+
+  .passcode-module-backspace-icon {
+    width: 3.125rem;
+    height: 3.125rem;
   }
 }
