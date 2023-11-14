@@ -31,6 +31,7 @@ const agent = jest.mocked({
     getById: jest.fn(),
     findOfferMessage: jest.fn(),
     negotiateOffer: jest.fn(),
+    findAllByQuery: jest.fn(),
   },
   connections: {
     findById: jest.fn(),
@@ -665,6 +666,17 @@ describe("Credential service of agent", () => {
           },
         },
       },
+    });
+  });
+  test("can get unhandled credentials to re-processing", async () => {
+    agent.credentials.findAllByQuery = jest
+      .fn()
+      .mockResolvedValueOnce([credentialOfferReceivedRecordAutoAccept]);
+    expect(await credentialService.getUnhandledCredentials()).toEqual([
+      credentialOfferReceivedRecordAutoAccept,
+    ]);
+    expect(agent.credentials.findAllByQuery).toBeCalledWith({
+      state: CredentialState.OfferReceived,
     });
   });
 });

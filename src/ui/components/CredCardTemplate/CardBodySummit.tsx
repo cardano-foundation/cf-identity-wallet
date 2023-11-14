@@ -5,6 +5,7 @@ import { formatShortDate } from "../../../utils";
 
 // @TODO - sdisalvo: cardData should be of type CredentialDetails
 const CardBodySummit = ({ cardData }: any) => {
+  const credentialSubject = cardData.credentialSubject;
   return (
     <>
       <div className="card-body">
@@ -14,9 +15,7 @@ const CardBodySummit = ({ cardData }: any) => {
               {i18n.t("creds.card.layout.type")}
             </span>
             <span className="card-body-info-value">
-              {cardData.type
-                ? `${cardData.type}`.replace(/([a-z])([A-Z])/g, "$1 $2")
-                : ""}
+              {credentialSubject.type.replace(/([a-z])([A-Z])/g, "$1 $2")}
             </span>
           </div>
           <div className="card-body-info">

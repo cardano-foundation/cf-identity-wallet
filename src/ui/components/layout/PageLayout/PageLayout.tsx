@@ -17,6 +17,7 @@ import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { getStateCache } from "../../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../../store/utils";
 import { getBackRoute } from "../../../../routes/backRoute";
+import PageFooter from "../../PageFooter/PageFooter";
 
 const PageLayout = ({
   id,
@@ -193,29 +194,14 @@ const PageLayout = ({
           collapse="fade"
           className="ion-no-border"
         >
-          <IonToolbar
-            color="light"
-            className="page-footer"
-          >
-            <IonButton
-              shape="round"
-              expand="block"
-              className="ion-primary-button"
-              data-testid={`continue-button${id ? `-${id}` : ""}`}
-              onClick={primaryButtonAction}
-              disabled={primaryButtonDisabled}
-            >
-              {primaryButtonText}
-            </IonButton>
-            {secondaryButtonText && secondaryButtonAction ? (
-              <div
-                className="secondary-button"
-                onClick={secondaryButtonAction}
-              >
-                {secondaryButtonText}
-              </div>
-            ) : null}
-          </IonToolbar>
+          <PageFooter
+            pageId={id}
+            primaryButtonText={primaryButtonText}
+            primaryButtonAction={primaryButtonAction}
+            primaryButtonDisabled={primaryButtonDisabled}
+            secondaryButtonText={secondaryButtonText}
+            secondaryButtonAction={secondaryButtonAction}
+          />
         </IonFooter>
       )}
     </>

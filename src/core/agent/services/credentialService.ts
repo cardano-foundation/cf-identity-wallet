@@ -379,6 +379,12 @@ class CredentialService extends AgentService {
     });
   }
 
+  async getUnhandledCredentials(): Promise<CredentialExchangeRecord[]> {
+    return this.agent.credentials.findAllByQuery({
+      state: CredentialState.OfferReceived,
+    });
+  }
+
   private validArchivedCredential(metadata: CredentialMetadataRecord): void {
     if (!metadata.isArchived) {
       throw new Error(

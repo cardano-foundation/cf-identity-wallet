@@ -16,7 +16,6 @@ import {
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { connectionType } from "../../constants/dictionary";
-import { Alert } from "../../components/Alert";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
@@ -32,7 +31,6 @@ const ConnectionCredentialRequest = () => {
       : queueConnectionCredentialRequest.queues[0] ?? { id: "" };
   const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
-  const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [requestData, setRequestData] = useState<{
     label: string;
     logo?: string;
@@ -90,6 +88,15 @@ const ConnectionCredentialRequest = () => {
       await AriesAgent.agent.credentials.declineCredentialOffer(
         connectionCredentialRequest.id
       );
+    } else if (
+      connectionCredentialRequest.type ===
+        ConnectionCredentialRequestType.CONNECTION_INCOMING ||
+      connectionCredentialRequest.type ===
+        ConnectionCredentialRequestType.CONNECTION_RESPONSE
+    ) {
+      await AriesAgent.agent.connections.deleteConnectionById(
+        connectionCredentialRequest.id
+      );
     }
     handleReset();
   };
@@ -131,13 +138,13 @@ const ConnectionCredentialRequest = () => {
       data-testid="request"
     >
       <PageLayout
-        footer={true}
+        footer={!initiateAnimation}
         primaryButtonText={
           requestType === connectionType.connection
             ? `${i18n.t("request.button.connect")}`
             : `${i18n.t("request.button.acceptoffer")}`
         }
-        primaryButtonAction={() => setAlertIsOpen(true)}
+        primaryButtonAction={() => handleAccept()}
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
         // add dismiss action if needed
         secondaryButtonAction={() => handleCancel()}
@@ -204,32 +211,6 @@ const ConnectionCredentialRequest = () => {
           </IonRow>
         </IonGrid>
       </PageLayout>
-      <Alert
-        isOpen={alertIsOpen}
-        setIsOpen={setAlertIsOpen}
-        dataTestId={
-          requestType === connectionType.connection
-            ? "alert-confirm-connection"
-            : "alert-confirm-credential"
-        }
-        headerText={i18next.t(
-          requestType === connectionType.connection
-            ? "request.connection.alert.titleconfirm"
-            : "request.credential.alert.titleconfirm",
-          {
-            initiator: requestData?.label,
-          }
-        )}
-        confirmButtonText={
-          requestType === connectionType.connection
-            ? `${i18n.t("request.connection.alert.confirm")}`
-            : `${i18n.t("request.credential.alert.confirm")}`
-        }
-        cancelButtonText={`${i18n.t("request.alert.cancel")}`}
-        actionConfirm={handleAccept}
-        actionCancel={handleCancel}
-        actionDismiss={handleReset}
-      />
     </IonPage>
   );
 };

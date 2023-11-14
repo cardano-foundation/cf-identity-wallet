@@ -107,10 +107,6 @@ const VerifySeedPhrase = () => {
       );
       await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, entropy);
 
-      await PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
-        initialized: true,
-      });
-      dispatch(setInitialized(true));
       handleNavigate();
     } catch (e) {
       // TODO: handle error

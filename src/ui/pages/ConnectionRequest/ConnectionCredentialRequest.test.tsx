@@ -82,40 +82,17 @@ describe("Connection request", () => {
       "acceptRequestConnection"
     );
 
-    const { container, findByTestId, findByText } = render(
+    const { findByTestId } = render(
       <Provider store={store}>
         <ConnectionCredentialRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("continue-button");
-    const alertElement = await findByTestId("alert-confirm-connection");
-    act(() => {
-      fireEvent.click(continueButton);
-    });
+    const continueButton = await findByTestId("primary-button");
 
-    await waitFor(
-      () => {
-        expect(alertElement.className).toEqual("alert-visible");
-      },
-      { container: container }
-    );
-    const confirmText = await findByText(
-      i18next
-        .t("request.connection.alert.titleconfirm", {
-          initiator: connectionMock.label,
-        })
-        .toString(),
-      { exact: false }
-    );
-    expect(confirmText).toBeInTheDocument();
-
-    const btnConfirm = await findByText(
-      i18n.t("request.connection.alert.confirm").toString()
-    );
-    expect(btnConfirm).toBeInTheDocument();
+    expect(continueButton).toBeInTheDocument();
 
     act(() => {
-      btnConfirm.click();
+      continueButton.click();
     });
 
     await waitFor(() => {
@@ -143,17 +120,9 @@ describe("Connection request", () => {
         <ConnectionCredentialRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("continue-button");
+    const continueButton = await findByTestId("primary-button");
     act(() => {
       fireEvent.click(continueButton);
-    });
-
-    const btnConfirm = await findByText(
-      i18n.t("request.connection.alert.confirm").toString()
-    );
-
-    act(() => {
-      btnConfirm.click();
     });
 
     expect(acceptResponseConnectionSpy).toBeCalledWith(id);
@@ -185,16 +154,9 @@ describe("Credential request", () => {
         <ConnectionCredentialRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("continue-button");
+    const continueButton = await findByTestId("primary-button");
     act(() => {
       fireEvent.click(continueButton);
-    });
-
-    const btnConfirm = await findByText(
-      i18n.t("request.credential.alert.confirm").toString()
-    );
-    act(() => {
-      btnConfirm.click();
     });
 
     expect(acceptCredentialOfferSpy).toBeCalledWith(id);
