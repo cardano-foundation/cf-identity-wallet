@@ -21,6 +21,19 @@
       p {
         text-align: center;
         color: var(--ion-color-secondary);
+        padding-inline: 1.88rem;
+      }
+
+      @media screen and (min-height: 300px) and (max-height: 600px) {
+        h2 {
+          margin-bottom: 0;
+        }
+
+        p {
+          margin: 0.5rem 0;
+          line-height: 1rem;
+          padding-inline: 0;
+        }
       }
 
       img,
@@ -98,19 +111,6 @@
     100% {
       opacity: 1;
       transform: translateY(0);
-    }
-  }
-}
-
-@media screen and (min-height: 320px) and (max-height: 700px) {
-  .slides-container .slides {
-    h2 {
-      margin-bottom: 0;
-    }
-
-    p {
-      margin: 0.5rem 0;
-      line-height: 1rem;
     }
   }
 }

@@ -70,7 +70,7 @@ p {
   color: var(--ion-color-secondary);
 }
 
-@media screen and (min-height: 320px) and (max-height: 700px) {
+@media screen and (min-height: 300px) and (max-height: 600px) {
   h2,
   h3 {
     font-size: 1.25rem;
@@ -107,7 +107,7 @@ p {
   }
 }
 
-@media screen and (min-height: 320px) and (max-height: 700px) {
+@media screen and (min-height: 300px) and (max-height: 600px) {
   .primary-button,
   .secondary-button,
   .tertiary-button {
