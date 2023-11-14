@@ -317,6 +317,9 @@ describe("Connection service of agent", () => {
         {
           id: keriContacts[0].id,
           createdAt: now,
+          content: {
+            alias: "keri",
+          },
         },
       ];
     });
@@ -336,7 +339,7 @@ describe("Connection service of agent", () => {
         label,
         logo: logoUrl,
         status: ConnectionStatus.PENDING,
-        type: ConnectionShowType.ARIES,
+        type: ConnectionShowType.DIDCOMM,
       },
       {
         id: id2,
@@ -344,7 +347,7 @@ describe("Connection service of agent", () => {
         label,
         logo: logoUrl,
         status: ConnectionStatus.CONFIRMED,
-        type: ConnectionShowType.ARIES,
+        type: ConnectionShowType.DIDCOMM,
       },
       {
         id: keriContacts[0].id,
@@ -359,7 +362,7 @@ describe("Connection service of agent", () => {
 
   test("can get all connections if there are none", async () => {
     agent.connections.getAll = jest.fn().mockResolvedValue([]);
-    agent.modules.signify.getContacts = jest.fn().mockResolvedValue([]);
+    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
     expect(await connectionService.getConnections()).toStrictEqual([]);
     expect(agent.connections.getAll).toBeCalled();
   });
@@ -465,7 +468,7 @@ describe("Connection service of agent", () => {
       label,
       logo: logoUrl,
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionShowType.ARIES,
+      type: ConnectionShowType.DIDCOMM,
     });
     expect(agent.connections.getById).toBeCalledWith(
       completedConnectionRecord.id
@@ -608,5 +611,27 @@ describe("Connection service of agent", () => {
     await connectionService.receiveInvitationFromUrl(oobi);
     // We aren't too concerned with testing the config passed
     expect(agent.modules.signify.resolveOobi).toBeCalledWith(oobi);
+  });
+
+  test("can get connection keri (short detail view) by id", async () => {
+    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+      id: keriContacts[0].id,
+      createdAt: now,
+      content: {
+        alias: "keri",
+      },
+    });
+    expect(
+      await connectionService.getConnectionKeriShortDetailById(
+        keriContacts[0].id
+      )
+    ).toMatchObject({
+      id: keriContacts[0].id,
+      connectionDate: nowISO,
+      label: "keri",
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionShowType.KERI,
+    });
+    expect(agent.genericRecords.findById).toBeCalledWith(keriContacts[0].id);
   });
 });

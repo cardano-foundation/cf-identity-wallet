@@ -24,7 +24,6 @@ export class SignifyApi {
     nsith: "1",
     data: [{ ca: SignifyApi.BACKER_ADDRESS }],
   };
-  static readonly ISSUER_AID_NAME = "issuer";
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
@@ -103,9 +102,8 @@ export class SignifyApi {
   }
 
   async resolveOobi(url: string): Promise<any> {
-    let operation = await this.signifyClient
-      .oobis()
-      .resolve(url, SignifyApi.ISSUER_AID_NAME);
+    const alias = utils.uuid();
+    let operation = await this.signifyClient.oobis().resolve(url, alias);
     operation = await this.waitAndGetOp(
       operation,
       this.opTimeout,
@@ -114,7 +112,7 @@ export class SignifyApi {
     if (!operation.done) {
       throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
     }
-    return operation;
+    return { ...operation, alias };
   }
 
   /**

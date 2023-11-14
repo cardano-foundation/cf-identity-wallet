@@ -137,7 +137,9 @@ class ConnectionService extends AgentService {
       );
       const operation = await this.agent.modules.signify.resolveOobi(url);
       const connectionId = operation.response.i;
-      await this.createConnectionKeriMetadata(connectionId);
+      await this.createConnectionKeriMetadata(connectionId, {
+        alias: operation.alias,
+      });
       return this.agent.events.emit<ConnectionKeriStateChangedEvent>(
         this.agent.context,
         {
@@ -211,23 +213,9 @@ class ConnectionService extends AgentService {
       }
       connectionsDetails.push(this.getConnectionShortDetails(connection));
     });
-    const connectionKeris = await this.agent.modules.signify.getContacts();
     const connectionKeriMetadatas = await this.getAllConnectionKeriMetadata();
-    connectionKeris.forEach(async (connection) => {
-      const connectionMetadata = connectionKeriMetadatas.find(
-        (connectionMetadata) => connection.id === connectionMetadata.id
-      );
-      if (!connectionMetadata) {
-        throw new Error(
-          ConnectionService.CONNECTION_KERI_METADATA_RECORD_NOT_FOUND
-        );
-      }
-      connectionsDetails.push(
-        this.getConnectionKeriShortDetails(
-          connection,
-          connectionMetadata.createdAt
-        )
-      );
+    connectionKeriMetadatas.forEach(async (connection) => {
+      connectionsDetails.push(this.getConnectionKeriShortDetails(connection));
     });
     return connectionsDetails;
   }
@@ -244,18 +232,17 @@ class ConnectionService extends AgentService {
         connection.state === DidExchangeState.Completed
           ? ConnectionStatus.CONFIRMED
           : ConnectionStatus.PENDING,
-      type: ConnectionShowType.ARIES,
+      type: ConnectionShowType.DIDCOMM,
     };
   }
 
   private getConnectionKeriShortDetails(
-    connection: KeriContact,
-    createdAt: Date
+    record: GenericRecord
   ): ConnectionShortDetails {
     return {
-      id: connection.id,
-      label: connection.alias ?? "",
-      connectionDate: createdAt.toISOString(),
+      id: record.id,
+      label: record.content?.alias as string,
+      connectionDate: record.createdAt.toISOString(),
       status: ConnectionStatus.CONFIRMED,
       type: ConnectionShowType.KERI,
     };
@@ -290,9 +277,8 @@ class ConnectionService extends AgentService {
   async getConnectionKeriShortDetailById(
     id: string
   ): Promise<ConnectionShortDetails> {
-    const connection = (await this.agent.modules.signify.getContacts(id))[0];
     const metadata = await this.getConnectionKeriMetadataById(id);
-    return this.getConnectionKeriShortDetails(connection, metadata.createdAt);
+    return this.getConnectionKeriShortDetails(metadata);
   }
 
   async createConnectionNote(

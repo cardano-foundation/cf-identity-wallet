@@ -26,7 +26,7 @@ enum ConnectionHistoryType {
 }
 
 enum ConnectionShowType {
-  ARIES,
+  DIDCOMM,
   KERI,
 }
 
