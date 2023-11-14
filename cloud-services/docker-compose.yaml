@@ -17,6 +17,19 @@ services:
       - 3901:3901
       - 3902:3902
       - 3903:3903
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keria.rule=Host(`${KERIA_HOST:-keria}`)"
+      - "traefik.http.routers.keria.entrypoints=websecure"
+      - "traefik.http.routers.keria.tls.certresolver=myresolver"
+      - "traefik.http.routers.keria.service=keria"
+      - "traefik.http.services.keria.loadbalancer.server.port=3901"
+      
+      - "traefik.http.routers.keria-boot.rule=Host(`${KERIA_BOOT_HOST:-keria-boot}`)"
+      - "traefik.http.routers.keria-boot.entrypoints=websecure"
+      - "traefik.http.routers.keria-boot.tls.certresolver=myresolver"
+      - "traefik.http.routers.keria-boot.service=keria-boot" 
+      - "traefik.http.services.keria-boot.loadbalancer.server.port=3903"
 
   caddy:
     container_name: caddy

@@ -4,9 +4,9 @@ import { ICreateIdentifierResult } from "./signifyApi.types";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
-    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3901";
+    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3903";
+    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly SIGNIFY_BRAN = "0123456789abcdefghijk"; // @TODO - foconnor: Shouldn't be hard-coded.
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
