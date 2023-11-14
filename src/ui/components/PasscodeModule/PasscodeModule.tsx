@@ -4,31 +4,25 @@ import { PasscodeModuleProps } from "./PasscodeModule.types";
 import "./PasscodeModule.scss";
 
 const PasscodeModule = ({
-  title,
-  description,
   error,
   passcode,
   handlePinChange,
   handleRemove,
 }: PasscodeModuleProps) => {
+  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+  const labels = [
+    [],
+    ["A", "B", "C"],
+    ["D", "E", "F"],
+    ["G", "H", "I"],
+    ["J", "K", "L"],
+    ["M", "N", "O"],
+    ["P", "Q", "R", "S"],
+    ["T", "U", "V"],
+    ["W", "X", "Y", "Z"],
+  ];
   return (
     <IonGrid className="passcode-module-container">
-      <IonRow>
-        <IonCol
-          className="passcode-module-title"
-          data-testid="screen-title"
-        >
-          {title}
-        </IonCol>
-      </IonRow>
-      <IonRow>
-        <IonCol
-          className="passcode-module-description"
-          data-testid="screen-description"
-        >
-          {description}
-        </IonCol>
-      </IonRow>
       <IonRow className="passcode-module-circle-row">
         {Array.from({ length: 6 }, (_, index) => {
           return (

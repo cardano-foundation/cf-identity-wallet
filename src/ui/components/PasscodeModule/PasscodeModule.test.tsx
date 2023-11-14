@@ -8,8 +8,6 @@ describe("Passcode Module", () => {
   test("User can read title and description", () => {
     const { getByText } = render(
       <PasscodeModule
-        title="Title"
-        description="Description"
         error={errorFunction()}
         passcode="passcode"
         handlePinChange={handlePinChange}
@@ -23,8 +21,6 @@ describe("Passcode Module", () => {
   test("Clicking on a number button returns a digit", () => {
     const { getByText } = render(
       <PasscodeModule
-        title="Title"
-        description="Description"
         error={errorFunction()}
         passcode="passcode"
         handlePinChange={handlePinChange}

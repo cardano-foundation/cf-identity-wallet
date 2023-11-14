@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { IonButton, IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
+import { IonButton, IonCol, IonGrid, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
-import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
 import { PasscodeModule } from "../../components/PasscodeModule";
@@ -21,6 +20,7 @@ import {
 } from "../../../core/storage/preferences";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { PageHeader } from "../../components/PageHeader";
+import "./SetPasscode.scss";
 
 const SetPasscode = () => {
   const history = useHistory();
@@ -93,13 +93,27 @@ const SetPasscode = () => {
         />
       }
     >
+      <IonGrid>
+        <IonRow>
+          <IonCol
+            className="set-passcode-title"
+            data-testid="set-passcode-title"
+          >
+            {originalPassCode !== ""
+              ? i18n.t("setpasscode.reenterpasscode.title")
+              : i18n.t("setpasscode.enterpasscode.title")}
+          </IonCol>
+        </IonRow>
+        <IonRow>
+          <IonCol
+            className="set-passcode-description"
+            data-testid="set-passcode-description"
+          >
+            {i18n.t("setpasscode.enterpasscode.description")}
+          </IonCol>
+        </IonRow>
+      </IonGrid>
       <PasscodeModule
-        title={
-          originalPassCode !== ""
-            ? i18n.t("setpasscode.reenterpasscode.title")
-            : i18n.t("setpasscode.enterpasscode.title")
-        }
-        description={i18n.t("setpasscode.enterpasscode.description")}
         error={
           originalPassCode !== "" &&
           passcode.length === 6 &&
