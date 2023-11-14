@@ -1,6 +1,5 @@
 .page-header {
   ion-toolbar,
-  .toolbar-container,
   ion-grid,
   ion-col {
     padding-inline: 0;
@@ -9,7 +8,10 @@
   }
 
   ion-toolbar {
-    //margin-top: 0.625rem;
+    ion-icon {
+      font-size: 1.85em !important;
+    }
+
     .progress-bar-container {
       margin-inline: 0.3rem;
 
@@ -19,6 +21,9 @@
         border-radius: 6px;
       }
     }
+
+    // @TODO sdisalvo: The following code is from the legacy layout.
+    // It will need to be tested and re-enabled.
 
     //   .back-button,
     //   .close-button,
@@ -31,10 +36,6 @@
 
     //   ion-button[disabled="true"] {
     //     color: var(--ion-color-dark-grey);
-    //   }
-
-    //   ion-icon {
-    //     font-size: 1.85em !important;
     //   }
 
     //   .close-button-label,
