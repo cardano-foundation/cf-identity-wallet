@@ -9,18 +9,69 @@ const PasscodeModule = ({
   handlePinChange,
   handleRemove,
 }: PasscodeModuleProps) => {
-  const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
-  const labels = [
-    [],
-    ["A", "B", "C"],
-    ["D", "E", "F"],
-    ["G", "H", "I"],
-    ["J", "K", "L"],
-    ["M", "N", "O"],
-    ["P", "Q", "R", "S"],
-    ["T", "U", "V"],
-    ["W", "X", "Y", "Z"],
-  ];
+  const RenderButtons = () => {
+    const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    const labels = [
+      [""],
+      ["A B C"],
+      ["D E F"],
+      ["G H I"],
+      ["J K L"],
+      ["M N O"],
+      ["P Q R S"],
+      ["T U V"],
+      ["W X Y Z"],
+    ];
+    const rows = [];
+    let currentRow: number[] = [];
+
+    numbers.forEach((number, index) => {
+      if (index % 3 === 0) {
+        rows.push(currentRow);
+        currentRow = [];
+      }
+
+      currentRow.push(number);
+    });
+
+    rows.push(currentRow);
+
+    return (
+      <>
+        {rows.map((row, rowIndex) => (
+          <IonRow
+            className="passcode-module-numbers-row"
+            key={rowIndex}
+          >
+            {row.map((number, colIndex) => (
+              <IonCol key={colIndex}>
+                <IonButton
+                  data-testid={`passcode-button-${number}`}
+                  className="passcode-module-board-button"
+                  onClick={() => handlePinChange(number)}
+                >
+                  <div className="passcode-module-number-button">
+                    {number}
+                    {labels[number - 1]?.map((label, labelIndex) => (
+                      <div
+                        className="passcode-module-number-labels"
+                        key={labelIndex}
+                      >
+                        {label.split("").map((char, charIndex) => (
+                          <span key={charIndex}>{char}</span>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                </IonButton>
+              </IonCol>
+            ))}
+          </IonRow>
+        ))}
+      </>
+    );
+  };
+
   return (
     <IonGrid className="passcode-module-container">
       <IonRow className="passcode-module-circle-row">
@@ -39,151 +90,7 @@ const PasscodeModule = ({
       <IonRow>
         <IonCol className="passcode-module-pin-error">{error}</IonCol>
       </IonRow>
-      <IonRow className="passcode-module-numbers-row">
-        <IonCol>
-          <IonButton
-            data-testid="passcode-button-1"
-            className="passcode-module-board-button"
-            onClick={() => handlePinChange(1)}
-          >
-            <div className="passcode-module-number-button">1</div>
-          </IonButton>
-        </IonCol>
-        <IonCol>
-          <IonButton
-            data-testid="passcode-button-2"
-            className="passcode-module-board-button"
-            onClick={() => handlePinChange(2)}
-          >
-            <div className="passcode-module-number-button">
-              2
-              <div className="passcode-module-number-labels">
-                <span>A</span>
-                <span>B</span>
-                <span>C</span>
-              </div>
-            </div>
-          </IonButton>
-        </IonCol>
-        <IonCol>
-          <IonButton
-            data-testid="passcode-button-3"
-            className="passcode-module-board-button"
-            onClick={() => handlePinChange(3)}
-          >
-            <div className="passcode-module-number-button">
-              3
-              <div className="passcode-module-number-labels">
-                <span>D</span>
-                <span>E</span>
-                <span>F</span>
-              </div>
-            </div>
-          </IonButton>
-        </IonCol>
-      </IonRow>
-      <IonRow className="passcode-module-numbers-row">
-        <IonCol>
-          <IonButton
-            data-testid="passcode-button-4"
-            className="passcode-module-board-button"
-            onClick={() => handlePinChange(4)}
-          >
-            <div className="passcode-module-number-button">
-              4
-              <div className="passcode-module-number-labels">
-                <span>G</span>
-                <span>H</span>
-                <span>I</span>
-              </div>
-            </div>
-          </IonButton>
-        </IonCol>
-        <IonCol>
-          <IonButton
-            data-testid="passcode-button-5"
-            className="passcode-module-board-button"
-            onClick={() => handlePinChange(5)}
-          >
-            <div className="passcode-module-number-button">
-              5
-              <div className="passcode-module-number-labels">
-                <span>J</span>
-                <span>K</span>
-                <span>L</span>
-              </div>
-            </div>
-          </IonButton>
-        </IonCol>
-        <IonCol>
-          <IonButton
-            data-testid="passcode-button-6"
-            className="passcode-module-board-button"
-            onClick={() => handlePinChange(6)}
-          >
-            <div className="passcode-module-number-button">
-              6
-              <div className="passcode-module-number-labels">
-                <span>M</span>
-                <span>N</span>
-                <span>O</span>
-              </div>
-            </div>
-          </IonButton>
-        </IonCol>
-      </IonRow>
-      <IonRow className="passcode-module-numbers-row">
-        <IonCol>
-          <IonButton
-            data-testid="passcode-button-7"
-            className="passcode-module-board-button"
-            onClick={() => handlePinChange(7)}
-          >
-            <div className="passcode-module-number-button">
-              7
-              <div className="passcode-module-number-labels">
-                <span>P</span>
-                <span>Q</span>
-                <span>R</span>
-                <span>S</span>
-              </div>
-            </div>
-          </IonButton>
-        </IonCol>
-        <IonCol>
-          <IonButton
-            data-testid="passcode-button-8"
-            className="passcode-module-board-button"
-            onClick={() => handlePinChange(8)}
-          >
-            <div className="passcode-module-number-button">
-              8
-              <div className="passcode-module-number-labels">
-                <span>T</span>
-                <span>U</span>
-                <span>V</span>
-              </div>
-            </div>
-          </IonButton>
-        </IonCol>
-        <IonCol>
-          <IonButton
-            data-testid="passcode-button-9"
-            className="passcode-module-board-button"
-            onClick={() => handlePinChange(9)}
-          >
-            <div className="passcode-module-number-button">
-              9
-              <div className="passcode-module-number-labels">
-                <span>W</span>
-                <span>X</span>
-                <span>Y</span>
-                <span>Z</span>
-              </div>
-            </div>
-          </IonButton>
-        </IonCol>
-      </IonRow>
+      <RenderButtons />
       <IonRow className="passcode-module-numbers-row">
         <IonCol />
         <IonCol>
