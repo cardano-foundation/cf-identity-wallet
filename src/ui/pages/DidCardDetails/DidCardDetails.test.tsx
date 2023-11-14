@@ -263,13 +263,17 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.identity.card.details.delete.alert.title)
+        getAllByText(
+          EN_TRANSLATIONS.identity.card.details.delete.alert.title
+        )[1]
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.identity.card.details.delete.alert.confirm)
+        getAllByText(
+          EN_TRANSLATIONS.identity.card.details.delete.alert.confirm
+        )[0]
       );
     });
 

@@ -23,6 +23,7 @@ describe("NextRoute", () => {
     localStorageMock = {};
     storeMock = {
       stateCache: {
+        initialized: true,
         routes: [],
         authentication: {
           loggedIn: false,
@@ -33,8 +34,12 @@ describe("NextRoute", () => {
           passwordIsSkipped: true,
         },
         currentOperation: "",
-        connectionCredentialRequest: { id: "" },
         defaultCryptoAccount: "",
+        queueConnectionCredentialRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -143,6 +148,7 @@ describe("NextRoute", () => {
 describe("getNextRoute", () => {
   const storeMock: RootState = {
     stateCache: {
+      initialized: true,
       routes: [],
       authentication: {
         loggedIn: false,
@@ -153,8 +159,12 @@ describe("getNextRoute", () => {
         passwordIsSkipped: true,
       },
       currentOperation: "",
-      connectionCredentialRequest: { id: "" },
       defaultCryptoAccount: "",
+      queueConnectionCredentialRequest: {
+        isProcessing: false,
+        queues: [],
+        isPaused: false,
+      },
     },
     seedPhraseCache: {
       seedPhrase160: "",

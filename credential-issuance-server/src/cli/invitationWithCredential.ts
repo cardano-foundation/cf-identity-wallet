@@ -9,7 +9,7 @@ const main = async () => {
   const body = process.argv[2];
   let credentialJsonData: unknown;
   if (body) {
-    credentialJsonData  = getCredentialJsonData(body);
+    credentialJsonData = JSON.parse(JSON.stringify(getCredentialJsonData(body)).replace("http://127.0.0.1:3001", config.endpoint));
     log("Credential: ", credentialJsonData);
   }
   await postRequestAndGenQR(`${config.endpoint}${API}`, credentialJsonData);

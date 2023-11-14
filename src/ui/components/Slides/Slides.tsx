@@ -4,6 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { playCircleOutline, pauseCircleOutline } from "ionicons/icons";
 import { Autoplay } from "swiper";
 import { Swiper as SwiperClass } from "swiper/types";
+import Lottie from "lottie-react";
 import { SlideProps } from "./Slides.types";
 import "./Slides.scss";
 
@@ -27,35 +28,47 @@ const Slides = ({ items }: SlideProps) => {
   };
 
   return (
-    <div className="slides">
-      <Swiper
-        className="swiper-container"
-        onSwiper={(swiper) => setSwiper(swiper)}
-        onSlideChange={() => (swiper ? setActiveIndex(swiper.realIndex) : null)}
-        slidesPerView={1}
-        autoplay={{
-          delay: 3000,
-          disableOnInteraction: false,
-        }}
-        loop={true}
-        modules={[Autoplay]}
-      >
-        {items.map((slide, index) => (
-          <SwiperSlide key={index}>
-            <img
-              src={slide.image}
-              alt={slide.title}
-              className={activeIndex === index ? "text-fadein-down" : ""}
-            />
-            <h2 className={activeIndex === index ? "text-fadein" : ""}>
-              {slide.title}
-            </h2>
-            <p className={activeIndex === index ? "text-fadein" : ""}>
-              {slide.description}
-            </p>
-          </SwiperSlide>
-        ))}
-      </Swiper>
+    <div className="slides-container">
+      <div className="slides">
+        <Swiper
+          className="swiper-container"
+          onSwiper={(swiper) => setSwiper(swiper)}
+          onSlideChange={() =>
+            swiper ? setActiveIndex(swiper.realIndex) : null
+          }
+          slidesPerView={1}
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
+          loop={true}
+          modules={[Autoplay]}
+        >
+          {items.map((slide, index) => (
+            <SwiperSlide key={index}>
+              {slide.lottie ? (
+                <Lottie
+                  className={activeIndex === index ? "text-fadein-down" : ""}
+                  animationData={slide.lottie}
+                  loop={false}
+                />
+              ) : (
+                <img
+                  src={slide.image}
+                  alt={slide.title}
+                  className={activeIndex === index ? "text-fadein-down" : ""}
+                />
+              )}
+              <h2 className={activeIndex === index ? "text-fadein" : ""}>
+                {slide.title}
+              </h2>
+              <p className={activeIndex === index ? "text-fadein" : ""}>
+                {slide.description}
+              </p>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
       <div className="pagination">
         {items.map((_, index) => (
           <div

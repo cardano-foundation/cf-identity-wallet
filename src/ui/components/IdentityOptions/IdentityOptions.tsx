@@ -360,7 +360,7 @@ const IdentityOptions = ({
               <IonButton
                 shape="round"
                 expand="block"
-                className="ion-primary-button"
+                className="primary-button"
                 data-testid="continue-button"
                 onClick={handleSubmit}
                 disabled={!verifyDisplayName}
@@ -374,7 +374,7 @@ const IdentityOptions = ({
       <IonModal
         isOpen={viewIsOpen}
         initialBreakpoint={1}
-        breakpoints={[1]}
+        breakpoints={[0, 1]}
         className="page-layout"
         data-testid="view-identity-modal"
         onDidDismiss={() => setViewIsOpen(false)}
@@ -418,7 +418,7 @@ const IdentityOptions = ({
                     <IonButton
                       shape="round"
                       expand="block"
-                      className="ion-primary-button"
+                      className="primary-button"
                       onClick={() => {
                         // @TODO - sdisalvo: Save to device
                         return;

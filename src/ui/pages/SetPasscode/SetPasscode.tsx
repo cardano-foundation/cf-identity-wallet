@@ -6,12 +6,19 @@ import { PageLayout } from "../../components/layout/PageLayout";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
 import { PasscodeModule } from "../../components/PasscodeModule";
-import { getStateCache } from "../../../store/reducers/stateCache";
+import {
+  getStateCache,
+  setInitialized,
+} from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { RoutePath } from "../../../routes";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences";
 
 const SetPasscode = () => {
   const history = useHistory();
@@ -36,6 +43,10 @@ const SetPasscode = () => {
               updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
               history.push(nextPath.pathname);
               handleClearState();
+
+              PreferencesStorage.set(PreferencesKeys.APP_ALREADY_INIT, {
+                initialized: true,
+              }).then(() => dispatch(setInitialized(true)));
             }
           );
         }
@@ -108,6 +119,7 @@ const SetPasscode = () => {
                   expand="block"
                   fill="outline"
                   className="secondary-button"
+                  data-testid="forgot-your-passcode-button"
                 >
                   {i18n.t("setpasscode.startover.label")}
                 </IonButton>

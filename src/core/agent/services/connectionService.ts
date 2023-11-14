@@ -111,7 +111,7 @@ class ConnectionService extends AgentService {
       url = await response.text();
     }
     await this.agent.oob.receiveInvitationFromUrl(url, {
-      autoAcceptConnection: true,
+      autoAcceptConnection: false,
       autoAcceptInvitation: true,
       reuseConnection: true,
     });
@@ -195,6 +195,10 @@ class ConnectionService extends AgentService {
     return this.getConnectionDetails(connection, outOfBandRecord);
   }
 
+  async deleteConnectionById(id: string): Promise<void> {
+    return this.agent.connections.deleteById(id);
+  }
+
   async getConnectionShortDetailById(
     id: string
   ): Promise<ConnectionShortDetails> {
@@ -251,6 +255,20 @@ class ConnectionService extends AgentService {
       })
     );
     return histories;
+  }
+
+  async getUnhandledConnections(): Promise<ConnectionRecord[]> {
+    const results = await Promise.all([
+      this.agent.connections.findAllByQuery({
+        state: DidExchangeState.ResponseReceived,
+        role: DidExchangeRole.Requester,
+      }),
+      this.agent.connections.findAllByQuery({
+        state: DidExchangeState.RequestReceived,
+        role: DidExchangeRole.Responder,
+      }),
+    ]);
+    return results.flat();
   }
 
   private async getConnectNotesByConnectionId(

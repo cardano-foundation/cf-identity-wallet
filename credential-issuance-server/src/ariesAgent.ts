@@ -18,6 +18,7 @@ import { AskarModule } from "@aries-framework/askar";
 import { ariesAskar } from "@hyperledger/aries-askar-nodejs";
 import { HttpInboundTransport, agentDependencies } from "@aries-framework/node";
 import { config } from "./config";
+import { documentLoader } from "./utils/documentLoader";
 
 const agentConfig: InitConfig = {
   endpoints: config.endpoints,
@@ -41,8 +42,6 @@ class AriesAgent {
 
   private masterDid;
 
-
-
   private constructor() {
     this.agent = new Agent({
       config: agentConfig,
@@ -60,7 +59,9 @@ class AriesAgent {
           ],
           autoAcceptCredentials: AutoAcceptCredential.Always,
         }),
-        w3cCredentials: new W3cCredentialsModule(),
+        w3cCredentials: new W3cCredentialsModule({
+          documentLoader: documentLoader,
+        }),
       },
     });
     const httpOutboundTransport = new HttpOutboundTransport();
@@ -115,7 +116,10 @@ class AriesAgent {
     }
   }
 
-  getCredentialExample(did: string): JsonLdCredentialDetailFormat {
+  getCredentialExample(
+    did: string,
+    holderDid?: string
+  ): JsonLdCredentialDetailFormat {
     return {
       credential: {
         "@context": [
@@ -127,11 +131,11 @@ class AriesAgent {
         issuanceDate: "2022-10-22T12:23:48Z",
         credentialSubject: {
           // @TODO: handle later, it should be did of holder
-          id: "did:example:abcdef1234567",
+          id: holderDid || "did:example:abcdef1234567",
           type: "BachelorDegree",
-          name: "Bachelor of Science and Arts"
+          name: "Bachelor of Science and Arts",
         },
-        expirationDate: "2100-10-22T12:23:48Z"
+        expirationDate: "2100-10-22T12:23:48Z",
       },
       options: {
         proofType: "Ed25519Signature2018",
@@ -139,7 +143,9 @@ class AriesAgent {
       },
     };
   }
-  getCredential(credential: JsonLdCredentialDetailFormat["credential"]): JsonLdCredentialDetailFormat {
+  getCredential(
+    credential: JsonLdCredentialDetailFormat["credential"]
+  ): JsonLdCredentialDetailFormat {
     return {
       credential: {
         ...credential,
@@ -154,23 +160,30 @@ class AriesAgent {
   }
 
   async offerCredential(connectionId: string) {
-
+    const connection = await this.agent.connections.getById(connectionId);
     return this.agent.credentials.offerCredential({
       protocolVersion: "v2",
       connectionId: connectionId,
       credentialFormats: {
-        jsonld: this.getCredentialExample(this.masterDid.didState.did as string),
+        jsonld: this.getCredentialExample(
+          this.masterDid.didState.did as string,
+          connection?.theirDid
+        ),
       },
       autoAcceptCredential: AutoAcceptCredential.Always,
     });
   }
 
-  async createInvitationWithCredential(credential?: JsonLdCredentialDetailFormat["credential"]) {
+  async createInvitationWithCredential(
+    credential?: JsonLdCredentialDetailFormat["credential"]
+  ) {
     const { message } = await this.agent.credentials.createOffer({
       comment: "V2 Out of Band offer (W3C)",
       autoAcceptCredential: AutoAcceptCredential.Always,
       credentialFormats: {
-        jsonld: credential ? this.getCredential(credential) : this.getCredentialExample(this.masterDid.didState.did as string),
+        jsonld: credential
+          ? this.getCredential(credential)
+          : this.getCredentialExample(this.masterDid.didState.did as string),
       },
       protocolVersion: "v2",
     });
@@ -182,13 +195,17 @@ class AriesAgent {
     return outOfBandInvitation.toUrl({ domain: config.endpoint });
   }
 
-  async createInvitationWithCredentialConnectionless(credential?: JsonLdCredentialDetailFormat["credential"]) {
+  async createInvitationWithCredentialConnectionless(
+    credential?: JsonLdCredentialDetailFormat["credential"]
+  ) {
     const { message, credentialRecord } =
       await this.agent.credentials.createOffer({
         comment: "V2 Out of Band offer (W3C)",
         autoAcceptCredential: AutoAcceptCredential.Always,
         credentialFormats: {
-          jsonld: credential ? this.getCredential(credential) : this.getCredentialExample(this.masterDid.didState.did as string),
+          jsonld: credential
+            ? this.getCredential(credential)
+            : this.getCredentialExample(this.masterDid.didState.did as string),
         },
         protocolVersion: "v2",
       });

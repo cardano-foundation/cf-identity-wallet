@@ -9,6 +9,15 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { formatShortDate } from "../../../utils";
 
+jest.mock("../../../core/agent/agent", () => ({
+  AriesAgent: {
+    agent: {
+      credentials: {
+        getCredentialDetailsById: jest.fn(),
+      },
+    },
+  },
+}));
 const initialStateEmpty = {
   stateCache: {
     routes: [TabsRoutePath.CREDS],
@@ -122,7 +131,7 @@ describe("Creds Tab", () => {
       </Provider>
     );
 
-    expect(getByTestId("cred-card-stack-favs-index-0")).toBeInTheDocument();
+    expect(getByTestId("cred-card-template-favs-index-0")).toBeInTheDocument();
   });
 
   test("Toggle Connections view", async () => {

@@ -23,12 +23,12 @@ import { CardTypes, connectionType } from "../../constants/dictionary";
 import { ConnectModal } from "../../components/ConnectModal";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { AriesAgent } from "../../../core/agent/agent";
-import { CredentialShortDetails } from "../../components/CardsStack/CardsStack.types";
 import {
   getCredsCache,
   getFavouritesCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
+import { CredentialShortDetails } from "../../../core/agent/agent.types";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;

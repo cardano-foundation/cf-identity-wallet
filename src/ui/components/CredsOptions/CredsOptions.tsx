@@ -31,14 +31,13 @@ import {
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import { credsFix } from "../../__fixtures__/credsFix";
 import { VerifyPasscode } from "../VerifyPasscode";
 import { operationState, toastState } from "../../constants/dictionary";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../../utils/clipboard";
 
 const CredsOptions = ({
-  id,
+  cardData,
   optionsIsOpen,
   setOptionsIsOpen,
   credsOptionAction,
@@ -77,13 +76,9 @@ const CredsOptions = ({
   const verifyAction = () => {
     handleCloseView();
     handleCloseOptions();
-    // @TODO - sdisalvo: Update Database.
-    // Remember to update CredCardDetails file too.
     credsOptionAction();
     handleDone();
   };
-
-  const cred = credsFix.find((item) => item.id === id);
 
   return (
     <>
@@ -171,7 +166,7 @@ const CredsOptions = ({
         onDidDismiss={handleCloseView}
       >
         <div className="creds-options modal viewer">
-          {!cred ? null : (
+          {cardData && (
             <PageLayout
               header={true}
               closeButton={true}
@@ -180,7 +175,7 @@ const CredsOptions = ({
               title={`${i18n.t("creds.card.details.view.title")}`}
             >
               <IonGrid className="creds-options-inner">
-                <pre>{JSON.stringify(cred, null, 2)}</pre>
+                <pre>{JSON.stringify(cardData, null, 2)}</pre>
               </IonGrid>
               <IonGrid>
                 <IonRow>
@@ -191,7 +186,7 @@ const CredsOptions = ({
                       fill="outline"
                       className="secondary-button"
                       onClick={() => {
-                        writeToClipboard(JSON.stringify(cred, null, 2));
+                        writeToClipboard(JSON.stringify(cardData, null, 2));
                         dispatch(
                           setCurrentOperation(toastState.copiedToClipboard)
                         );
@@ -208,7 +203,7 @@ const CredsOptions = ({
                     <IonButton
                       shape="round"
                       expand="block"
-                      className="ion-primary-button"
+                      className="primary-button"
                       onClick={() => {
                         // @TODO - sdisalvo: Save to device
                         return;

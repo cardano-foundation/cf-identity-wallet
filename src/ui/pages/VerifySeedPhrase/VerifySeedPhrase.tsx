@@ -21,6 +21,7 @@ import { updateReduxState } from "../../../store/utils";
 import {
   getStateCache,
   setCurrentOperation,
+  setInitialized,
 } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { operationState, toastState } from "../../constants/dictionary";
@@ -29,6 +30,10 @@ import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 import { Addresses } from "../../../core/cardano";
+import {
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage/preferences";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
@@ -91,16 +96,21 @@ const VerifySeedPhrase = () => {
   };
 
   const storeIdentitySeedPhrase = async () => {
-    const seedPhraseString = originalSeedPhrase.join(" ");
-    const entropy = Addresses.convertToEntropy(seedPhraseString);
-    await SecureStorage.set(
-      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-      Addresses.bech32ToHexBip32Private(
-        Addresses.entropyToBip32NoPasscode(entropy)
-      )
-    );
-    await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, entropy);
-    handleNavigate();
+    try {
+      const seedPhraseString = originalSeedPhrase.join(" ");
+      const entropy = Addresses.convertToEntropy(seedPhraseString);
+      await SecureStorage.set(
+        KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+        Addresses.bech32ToHexBip32Private(
+          Addresses.entropyToBip32NoPasscode(entropy)
+        )
+      );
+      await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, entropy);
+
+      handleNavigate();
+    } catch (e) {
+      // TODO: handle error
+    }
   };
 
   const handleContinue = async () => {
@@ -174,9 +184,9 @@ const VerifySeedPhrase = () => {
         onBack={
           seedPhraseType === operationState.onboarding
             ? () => {
-                handleClearState();
-                handleExit();
-              }
+              handleClearState();
+              handleExit();
+            }
             : () => setAlertExitIsOpen(true)
         }
         currentPath={RoutePath.VERIFY_SEED_PHRASE}

@@ -19,14 +19,20 @@ enum CardTypes {
   DIDS = "dids",
 }
 
+enum CredentialType {
+  UNIVERSITY_DEGREE_CREDENTIAL = "UniversityDegreeCredential",
+  ACCESS_PASS_CREDENTIAL = "AccessPassCredential",
+  PERMANENT_RESIDENT_CARD = "PermanentResidentCard",
+}
+
 const connectionStatus = {
   pending: ConnectionStatus.PENDING,
   confirmed: ConnectionStatus.CONFIRMED,
 };
 
 const connectionType = {
-  connection: "connection",
-  credential: "credential",
+  connection: "Connection",
+  credential: "Credential",
 };
 
 const operationState = {
@@ -145,6 +151,7 @@ const MAPPING_THEME_BACKGROUND: Record<number, unknown> = {
 export {
   MAX_FAVOURITES,
   CardTypes,
+  CredentialType,
   connectionStatus,
   operationState,
   toastState,

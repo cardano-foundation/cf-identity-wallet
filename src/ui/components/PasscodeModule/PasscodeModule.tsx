@@ -14,10 +14,20 @@ const PasscodeModule = ({
   return (
     <IonGrid className="passcode-module">
       <IonRow>
-        <IonCol className="title">{title}</IonCol>
+        <IonCol
+          className="title"
+          data-testid="screen-title"
+        >
+          {title}
+        </IonCol>
       </IonRow>
       <IonRow>
-        <IonCol className="description">{description}</IonCol>
+        <IonCol
+          className="description"
+          data-testid="screen-description"
+        >
+          {description}
+        </IonCol>
       </IonRow>
       <IonRow className="circle-row">
         {Array.from({ length: 6 }, (_, index) => {
@@ -131,7 +141,7 @@ const PasscodeModule = ({
       <IonRow className="numbers-row">
         <IonCol>
           <IonButton
-            data-testid="passcode-button-6"
+            data-testid="passcode-button-7"
             className="board-button"
             onClick={() => handlePinChange(7)}
           >

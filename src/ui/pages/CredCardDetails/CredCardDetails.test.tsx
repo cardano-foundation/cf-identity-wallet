@@ -130,7 +130,7 @@ describe("Cards Details page - current not archived credential", () => {
   });
 
   test("It renders Card Details", async () => {
-    const { getByText, getByTestId, getAllByTestId } = render(
+    const { getAllByText, getByTestId, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -141,7 +141,7 @@ describe("Cards Details page - current not archived credential", () => {
       </Provider>
     );
     await waitFor(() => {
-      expect(getByText(credsFix[0].credentialType)).toBeInTheDocument();
+      expect(getAllByText(credsFix[0].credentialType)[0]).toBeInTheDocument();
       expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
         "false"
       );
@@ -170,7 +170,7 @@ describe("Cards Details page - current not archived credential", () => {
         </MemoryRouter>
       </Provider>
     );
-    const copyButton = await findByTestId("copy-button-proof-value");
+    const copyButton = await findByTestId("card-details-proof-value");
     fireEvent.click(copyButton);
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
@@ -238,7 +238,7 @@ describe("Cards Details page - current not archived credential", () => {
   });
 
   test("It shows the warning when I click on the big archive button", async () => {
-    const { findByTestId, queryByText, queryByTestId } = render(
+    const { findByTestId, getAllByText, queryByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -261,7 +261,7 @@ describe("Cards Details page - current not archived credential", () => {
 
     await waitFor(() => {
       expect(
-        queryByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)
+        getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
       ).toBeVisible();
     });
   });

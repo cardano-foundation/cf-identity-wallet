@@ -122,11 +122,9 @@ const CreateIdentity = ({
   return (
     <IonModal
       isOpen={modalIsOpen}
-      initialBreakpoint={0.8}
-      breakpoints={[0, 0.8]}
-      className={`page-layout create-identity-modal ${
-        keyboardIsOpen ? "extended-modal" : ""
-      } ${blur ? "blur" : ""}`}
+      initialBreakpoint={0.85}
+      breakpoints={[0, 0.85]}
+      className={`page-layout create-identity-modal ${blur ? "blur" : ""}`}
       data-testid="create-identity-modal"
       onDidDismiss={() => resetModal()}
     >
@@ -168,56 +166,62 @@ const CreateIdentity = ({
               ) : null}
             </IonRow>
 
-            <IonRow>
-              <span className="type-input-title">{`${i18n.t(
-                "createidentity.identitytype.title"
-              )}`}</span>
-            </IonRow>
+            {!keyboardIsOpen ? (
+              <>
+                <IonRow>
+                  <span className="type-input-title">{`${i18n.t(
+                    "createidentity.identitytype.title"
+                  )}`}</span>
+                </IonRow>
 
-            <IonRow
-              className="identity-type-selector"
-              data-testid="identity-type-selector"
-            >
-              <TypeItem
-                index={0}
-                text={i18n.t("createidentity.identitytype.didkey")}
-              />
-              <TypeItem
-                index={1}
-                text={i18n.t("createidentity.identitytype.keri")}
-              />
-            </IonRow>
-
-            <IonRow>
-              <span className="type-input-title">{`${i18n.t(
-                "createidentity.theme.title"
-              )}`}</span>
-            </IonRow>
-            <IdentityThemeSelector
-              identityType={selectedType}
-              selectedTheme={selectedTheme}
-              setSelectedTheme={setSelectedTheme}
-            />
-
-            <IonRow className="continue-button-container">
-              <IonCol>
-                <IonButton
-                  shape="round"
-                  expand="block"
-                  className="ion-primary-button"
-                  data-testid="continue-button"
-                  onClick={() => {
-                    setBlur(true);
-                    setTimeout(() => {
-                      handleCreateIdentity();
-                    }, CREATE_IDENTITY_BLUR_TIMEOUT);
-                  }}
-                  disabled={!(displayNameValueIsValid && typeIsSelectedIsValid)}
+                <IonRow
+                  className="identity-type-selector"
+                  data-testid="identity-type-selector"
                 >
-                  {`${i18n.t("createidentity.confirmbutton")}`}
-                </IonButton>
-              </IonCol>
-            </IonRow>
+                  <TypeItem
+                    index={0}
+                    text={i18n.t("createidentity.identitytype.didkey")}
+                  />
+                  <TypeItem
+                    index={1}
+                    text={i18n.t("createidentity.identitytype.keri")}
+                  />
+                </IonRow>
+
+                <IonRow>
+                  <span className="type-input-title">{`${i18n.t(
+                    "createidentity.theme.title"
+                  )}`}</span>
+                </IonRow>
+                <IdentityThemeSelector
+                  identityType={selectedType}
+                  selectedTheme={selectedTheme}
+                  setSelectedTheme={setSelectedTheme}
+                />
+
+                <IonRow className="continue-button-container">
+                  <IonCol>
+                    <IonButton
+                      shape="round"
+                      expand="block"
+                      className="primary-button"
+                      data-testid="continue-button"
+                      onClick={() => {
+                        setBlur(true);
+                        setTimeout(() => {
+                          handleCreateIdentity();
+                        }, CREATE_IDENTITY_BLUR_TIMEOUT);
+                      }}
+                      disabled={
+                        !(displayNameValueIsValid && typeIsSelectedIsValid)
+                      }
+                    >
+                      {`${i18n.t("createidentity.confirmbutton")}`}
+                    </IonButton>
+                  </IonCol>
+                </IonRow>
+              </>
+            ) : null}
           </IonGrid>
         </PageLayout>
       </div>

@@ -9,9 +9,9 @@ import {
   setFavouritesCredsCache,
   updateOrAddCredsCache,
 } from "./credsCache";
-import { CredentialShortDetails } from "../../../ui/components/CardsStack/CardsStack.types";
 import { RootState } from "../../index";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialShortDetails } from "../../../core/agent/agent.types";
 import { FavouriteIdentity } from "../identitiesCache/identitiesCache.types";
 
 describe("credsCacheSlice", () => {

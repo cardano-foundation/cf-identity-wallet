@@ -6,6 +6,7 @@ import {
 import { PreferencesStorageItem } from "./preferencesStorage.type";
 
 enum PreferencesKeys {
+  APP_ALREADY_INIT = "app-already-init",
   APP_STATE_FLAGS = "app-state-flags",
   APP_LANGUAGE = "app-language",
   APP_DEFAULT_CRYPTO_ACCOUNT = "app-default-crypto-account",

@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { IonCol, IonGrid, IonIcon, IonRow, isPlatform } from "@ionic/react";
 import {
   BarcodeScanner,
@@ -17,7 +17,7 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import { operationState, toastState } from "../../constants/dictionary";
 import { AriesAgent } from "../../../core/agent/agent";
 
-const Scanner = () => {
+const Scanner = forwardRef((props, ref) => {
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentRoute = useAppSelector(getCurrentRoute);
@@ -53,6 +53,10 @@ const Scanner = () => {
     await BarcodeScanner.showBackground();
     document?.querySelector("body")?.classList.remove("scanner-active");
   };
+
+  useImperativeHandle(ref, () => ({
+    stopScan,
+  }));
 
   const initScan = async () => {
     if (isPlatform("ios") || isPlatform("android")) {
@@ -109,6 +113,6 @@ const Scanner = () => {
       </IonGrid>
     </>
   );
-};
+});
 
 export { Scanner };
