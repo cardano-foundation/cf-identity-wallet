@@ -3,7 +3,7 @@ import {
   ConnectionEventTypes,
   ConnectionRecord,
   ConnectionStateChangedEvent,
-  ConnectionType,
+  ConnectionType as AriesConnectionType,
   DidExchangeRole,
   DidExchangeState,
   JsonEncoder,
@@ -21,7 +21,7 @@ import {
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
-  ConnectionShowType,
+  ConnectionType,
   ConnectionStatus,
   GenericRecordType,
 } from "../agent.types";
@@ -201,7 +201,7 @@ class ConnectionService extends AgentService {
   }
 
   private isMediatorConnection(connection: ConnectionRecord) {
-    return connection.connectionTypes.includes(ConnectionType.Mediator);
+    return connection.connectionTypes.includes(AriesConnectionType.Mediator);
   }
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
@@ -232,7 +232,7 @@ class ConnectionService extends AgentService {
         connection.state === DidExchangeState.Completed
           ? ConnectionStatus.CONFIRMED
           : ConnectionStatus.PENDING,
-      type: ConnectionShowType.DIDCOMM,
+      type: ConnectionType.DIDCOMM,
     };
   }
 
@@ -244,15 +244,15 @@ class ConnectionService extends AgentService {
       label: record.content?.alias as string,
       connectionDate: record.createdAt.toISOString(),
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionShowType.KERI,
+      type: ConnectionType.KERI,
     };
   }
 
   async getConnectionById(
     id: string,
-    type?: ConnectionShowType
+    type?: ConnectionType
   ): Promise<ConnectionDetails> {
-    if (type === ConnectionShowType.KERI) {
+    if (type === ConnectionType.KERI) {
       return this.getKeriConnectionDetails(id);
     }
     const connection = await this.agent.connections.getById(id);

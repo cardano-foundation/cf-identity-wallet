@@ -1,6 +1,11 @@
 import { utils } from "@aries-framework/core";
-import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
-import { KeriContact, ICreateIdentifierResult } from "./signifyApi.types";
+import {
+  SignifyClient,
+  ready as signifyReady,
+  Tier,
+  randomPasscode,
+} from "signify-ts";
+import { KeriContact, CreateIdentifierResult } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 
 export class SignifyApi {
@@ -57,7 +62,7 @@ export class SignifyApi {
     }
   }
 
-  async createIdentifier(): Promise<ICreateIdentifierResult> {
+  async createIdentifier(): Promise<CreateIdentifierResult> {
     const signifyName = utils.uuid();
     let operation = await this.signifyClient
       .identifiers()
@@ -136,22 +141,9 @@ export class SignifyApi {
     try {
       bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
     } catch (error) {
-      bran = this.generateRandomKey();
+      bran = randomPasscode();
       await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
     }
     return bran as string;
-  }
-
-  private generateRandomKey() {
-    const characters =
-      "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    const length = 21;
-    let result = "";
-    for (let i = 0; i < length; i++) {
-      result += characters.charAt(
-        Math.floor(Math.random() * characters.length)
-      );
-    }
-    return result;
   }
 }

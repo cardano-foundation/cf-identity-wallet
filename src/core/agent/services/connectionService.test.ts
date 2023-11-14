@@ -13,7 +13,7 @@ import {
 import { EventEmitter } from "events";
 import {
   ConnectionHistoryType,
-  ConnectionShowType,
+  ConnectionType,
   ConnectionStatus,
   GenericRecordType,
 } from "../agent.types";
@@ -339,7 +339,7 @@ describe("Connection service of agent", () => {
         label,
         logo: logoUrl,
         status: ConnectionStatus.PENDING,
-        type: ConnectionShowType.DIDCOMM,
+        type: ConnectionType.DIDCOMM,
       },
       {
         id: id2,
@@ -347,13 +347,13 @@ describe("Connection service of agent", () => {
         label,
         logo: logoUrl,
         status: ConnectionStatus.CONFIRMED,
-        type: ConnectionShowType.DIDCOMM,
+        type: ConnectionType.DIDCOMM,
       },
       {
         id: keriContacts[0].id,
         label: keriContacts[0].alias,
         status: ConnectionStatus.CONFIRMED,
-        type: ConnectionShowType.KERI,
+        type: ConnectionType.KERI,
         connectionDate: expect.any(String),
       },
     ]);
@@ -468,7 +468,7 @@ describe("Connection service of agent", () => {
       label,
       logo: logoUrl,
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionShowType.DIDCOMM,
+      type: ConnectionType.DIDCOMM,
     });
     expect(agent.connections.getById).toBeCalledWith(
       completedConnectionRecord.id
@@ -630,7 +630,7 @@ describe("Connection service of agent", () => {
       connectionDate: nowISO,
       label: "keri",
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionShowType.KERI,
+      type: ConnectionType.KERI,
     });
     expect(agent.genericRecords.findById).toBeCalledWith(keriContacts[0].id);
   });

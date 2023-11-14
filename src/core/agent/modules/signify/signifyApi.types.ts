@@ -1,4 +1,4 @@
-export interface ICreateIdentifierResult {
+export interface CreateIdentifierResult {
   signifyName: string;
   identifier: string;
 }

@@ -25,7 +25,7 @@ enum ConnectionHistoryType {
   CREDENTIAL_ACCEPTED,
 }
 
-enum ConnectionShowType {
+enum ConnectionType {
   DIDCOMM,
   KERI,
 }
@@ -67,7 +67,7 @@ interface ConnectionShortDetails {
   connectionDate: string;
   logo?: string;
   status: ConnectionStatus;
-  type?: ConnectionShowType;
+  type?: ConnectionType;
 }
 
 interface DIDDetails extends IdentifierShortDetails {
@@ -140,7 +140,7 @@ export {
   GenericRecordType,
   ConnectionHistoryType,
   MiscRecordId,
-  ConnectionShowType,
+  ConnectionType,
   ConnectionKeriEventTypes,
 };
 export type {

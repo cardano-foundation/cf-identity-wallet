@@ -75,6 +75,9 @@ jest.mock("signify-ts", () => ({
     };
   }),
   Tier: { low: "low" },
+  randomPasscode: jest.fn().mockImplementation(() => {
+    return "passcode";
+  }),
 }));
 
 // Set low timeout - fake timers would be better but having issues advancing timer at exact right time
@@ -129,6 +132,7 @@ describe("Signify API", () => {
     const op = await api.resolveOobi(url);
     expect(op).toEqual({
       name: url,
+      alias: expect.any(String),
       done: true,
     });
   });
