@@ -3,6 +3,7 @@ import { PageFooterProps } from "./PageFooter.types";
 
 const PageFooter = ({
   pageId,
+  dataTestId,
   primaryButtonText,
   primaryButtonAction,
   primaryButtonDisabled,
@@ -23,7 +24,9 @@ const PageFooter = ({
           shape="round"
           expand="block"
           className="primary-button"
-          data-testid={`primary-button${pageId ? `-${pageId}` : ""}`}
+          data-testid={
+            dataTestId || `primary-button${pageId ? `-${pageId}` : ""}`
+          }
           onClick={primaryButtonAction}
           disabled={primaryButtonDisabled}
         >

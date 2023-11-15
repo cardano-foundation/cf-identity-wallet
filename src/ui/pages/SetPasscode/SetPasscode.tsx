@@ -21,6 +21,7 @@ import {
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 import "./SetPasscode.scss";
+import PageFooter from "../../components/PageFooter/PageFooter";
 
 const SetPasscode = () => {
   const history = useHistory();
@@ -93,26 +94,20 @@ const SetPasscode = () => {
         />
       }
     >
-      <IonGrid>
-        <IonRow>
-          <IonCol
-            className="set-passcode-title"
-            data-testid="set-passcode-title"
-          >
-            {originalPassCode !== ""
-              ? i18n.t("setpasscode.reenterpasscode.title")
-              : i18n.t("setpasscode.enterpasscode.title")}
-          </IonCol>
-        </IonRow>
-        <IonRow>
-          <IonCol
-            className="set-passcode-description"
-            data-testid="set-passcode-description"
-          >
-            {i18n.t("setpasscode.enterpasscode.description")}
-          </IonCol>
-        </IonRow>
-      </IonGrid>
+      <h2
+        className="set-passcode-title"
+        data-testid="set-passcode-title"
+      >
+        {originalPassCode !== ""
+          ? i18n.t("setpasscode.reenterpasscode.title")
+          : i18n.t("setpasscode.enterpasscode.title")}
+      </h2>
+      <p
+        className="set-passcode-description small-hide"
+        data-testid="set-passcode-description"
+      >
+        {i18n.t("setpasscode.enterpasscode.description")}
+      </p>
       <PasscodeModule
         error={
           originalPassCode !== "" &&
@@ -128,24 +123,16 @@ const SetPasscode = () => {
         handlePinChange={handlePinChange}
         handleRemove={handleRemove}
       />
-      <IonGrid>
-        <IonRow>
-          <IonCol className="continue-col">
-            {originalPassCode !== "" && (
-              <IonButton
-                onClick={() => handleClearState()}
-                shape="round"
-                expand="block"
-                fill="outline"
-                className="secondary-button"
-                data-testid="forgot-your-passcode-button"
-              >
-                {i18n.t("setpasscode.startover.label")}
-              </IonButton>
-            )}
-          </IonCol>
-        </IonRow>
-      </IonGrid>
+      {originalPassCode !== "" ? (
+        <PageFooter
+          pageId={"set-passcode"}
+          data-testid="forgot-your-passcode-button"
+          secondaryButtonText={`${i18n.t("setpasscode.startover.label")}`}
+          secondaryButtonAction={() => handleClearState()}
+        />
+      ) : (
+        <IonGrid classNamedata-testid="forgot-your-passcode-placeholder" />
+      )}
     </ResponsivePageLayout>
   );
 };

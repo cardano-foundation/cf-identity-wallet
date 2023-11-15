@@ -25,74 +25,73 @@ const PasscodeModule = ({
   rows.push(currentRow);
 
   return (
-    <IonGrid className="passcode-module-container">
-      <IonRow className="passcode-module-circle-row">
-        {Array.from({ length: 6 }, (_, index) => {
-          return (
-            <div
-              key={index}
-              data-testid={`circle-${index}`}
-              className={`passcode-module-circle ${
-                passcode.length <= index ? "" : "passcode-module-circle-fill"
-              }`}
-            />
-          );
-        })}
-      </IonRow>
-      <IonRow>
-        <IonCol className="passcode-module-pin-error">{error}</IonCol>
-      </IonRow>
-      {rows.map((row, rowIndex) => (
-        <IonRow
-          className="passcode-module-numbers-row"
-          key={rowIndex}
-        >
-          {row.map((number, colIndex) => (
-            <>
-              {number === numbers[9] && <IonCol />}
-              <IonCol key={colIndex}>
-                <IonButton
-                  data-testid={`passcode-button-${number}`}
-                  className="passcode-module-board-button"
-                  onClick={() => handlePinChange(number)}
-                >
-                  <div className="passcode-module-number-button">
-                    {number}
-                    {labels[number - 1]?.map((label, labelIndex) => (
-                      <div
-                        className="passcode-module-number-labels"
-                        key={labelIndex}
-                      >
-                        {label.split("").map((char, charIndex) => (
-                          <span key={charIndex}>{char}</span>
+    <div className="passcode-module">
+      <div className="passcode-module-circle-row">
+        {Array.from({ length: 6 }, (_, index) => (
+          <div
+            key={index}
+            data-testid={`circle-${index}`}
+            className={`passcode-module-circle ${
+              passcode.length <= index ? "" : "passcode-module-circle-fill"
+            }`}
+          />
+        ))}
+      </div>
+      {error || <div className="passcode-module-pin-error-placeholder" />}
+      <IonGrid className="passcode-module-container">
+        {rows.map(
+          (row, rowIndex) =>
+            rowIndex !== 0 && (
+              <IonRow
+                className={`passcode-module-numbers-row ${rowIndex}`}
+                key={rowIndex}
+              >
+                {rowIndex === rows.length - 1 && <IonCol />}
+                {row.map((number, colIndex) => (
+                  <IonCol key={colIndex}>
+                    <IonButton
+                      data-testid={`passcode-button-${number}`}
+                      className="passcode-module-number-button"
+                      onClick={() => handlePinChange(number)}
+                    >
+                      <div className="passcode-module-number-button-inner">
+                        {number}
+                        {labels[number - 1]?.map((label, labelIndex) => (
+                          <div
+                            className="passcode-module-number-labels"
+                            key={labelIndex}
+                          >
+                            {label.split("").map((char, charIndex) => (
+                              <span key={charIndex}>{char}</span>
+                            ))}
+                          </div>
                         ))}
                       </div>
-                    ))}
-                  </div>
-                </IonButton>
-              </IonCol>
-              {number === numbers[9] && (
-                <IonCol>
-                  {passcode !== "" && (
-                    <IonButton
-                      className="passcode-module-backspace-button"
-                      data-testid="setpasscode-backspace-button"
-                      onClick={() => handleRemove()}
-                    >
-                      <IonIcon
-                        slot="icon-only"
-                        className="passcode-module-backspace-icon"
-                        icon={backspaceSharp}
-                      />
                     </IonButton>
-                  )}
-                </IonCol>
-              )}
-            </>
-          ))}
-        </IonRow>
-      ))}
-    </IonGrid>
+                  </IonCol>
+                ))}
+                {rowIndex === rows.length - 1 && (
+                  <IonCol>
+                    {passcode !== "" && (
+                      <IonButton
+                        className="passcode-module-backspace-button"
+                        data-testid="setpasscode-backspace-button"
+                        onClick={() => handleRemove()}
+                      >
+                        <IonIcon
+                          slot="icon-only"
+                          className="passcode-module-backspace-icon"
+                          icon={backspaceSharp}
+                        />
+                      </IonButton>
+                    )}
+                  </IonCol>
+                )}
+              </IonRow>
+            )
+        )}
+      </IonGrid>
+    </div>
   );
 };
 

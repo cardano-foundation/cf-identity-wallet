@@ -1,19 +1,9 @@
 .set-passcode {
   .responsive-page-content {
-    justify-content: space-between;
+    justify-content: space-evenly;
 
-    .set-passcode-title {
-      font-size: 1.5rem;
-      text-align: center;
-      font-weight: 700;
-      font-style: normal;
-      line-height: 1.75rem;
-    }
-
+    .set-passcode-title,
     .set-passcode-description {
-      font-weight: 500;
-      font-size: 1rem;
-      line-height: 1.375rem;
       text-align: center;
     }
   }
