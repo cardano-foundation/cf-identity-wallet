@@ -20,6 +20,8 @@ import introImg1 from "../../assets/images/intro-1.png";
 import introImg2 from "../../assets/images/intro-2.png";
 import introImg3 from "../../assets/images/intro-3.png";
 import introImg4 from "../../assets/images/intro-4.png";
+import PageFooter from "../../components/PageFooter/PageFooter";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 
 export type IntroImg0Type = typeof introImg0;
 
@@ -79,20 +81,18 @@ const Onboarding = () => {
   };
 
   return (
-    <IonPage className="page-layout onboarding safe-area">
-      <PageLayout
-        currentPath={RoutePath.ONBOARDING}
-        footer={true}
+    <ResponsivePageLayout title={"onboarding"}>
+      <Slides items={items} />
+      <PageFooter
+        pageId={"onboarding"}
         primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}
         primaryButtonAction={() => handleNavigation(onboardingRoute.create)}
-        secondaryButtonText={`${i18n.t(
+        tertiaryButtonText={`${i18n.t(
           "onboarding.alreadywallet.button.label"
         )}`}
-        secondaryButtonAction={() => handleNavigation(onboardingRoute.restore)}
-      >
-        <Slides items={items} />
-      </PageLayout>
-    </IonPage>
+        tertiaryButtonAction={() => handleNavigation(onboardingRoute.restore)}
+      />
+    </ResponsivePageLayout>
   );
 };
 
