@@ -18,6 +18,7 @@ import { AskarModule } from "@aries-framework/askar";
 import { ariesAskar } from "@hyperledger/aries-askar-nodejs";
 import { HttpInboundTransport, agentDependencies } from "@aries-framework/node";
 import { config } from "./config";
+import { SignifyModule } from "./modules/signify";
 import { documentLoader } from "./utils/documentLoader";
 
 const agentConfig: InitConfig = {
@@ -31,6 +32,8 @@ const agentConfig: InitConfig = {
 };
 
 class AriesAgent {
+  static readonly ISSUER_AID_NAME = "issuer";
+
   private static instance: AriesAgent;
   private readonly agent: Agent<{
     credentials: CredentialsModule<
@@ -38,6 +41,7 @@ class AriesAgent {
     >;
     askar: AskarModule;
     w3cCredentials: W3cCredentialsModule;
+    signify: SignifyModule;
   }>;
 
   private masterDid;
@@ -62,6 +66,7 @@ class AriesAgent {
         w3cCredentials: new W3cCredentialsModule({
           documentLoader: documentLoader,
         }),
+        signify: new SignifyModule(),
       },
     });
     const httpOutboundTransport = new HttpOutboundTransport();
@@ -78,10 +83,14 @@ class AriesAgent {
   async start(httpInboundTransport: HttpInboundTransport): Promise<void> {
     this.agent.registerInboundTransport(httpInboundTransport);
     await this.agent.initialize();
+    await this.agent.modules.signify.start();
     this.masterDid = await this.agent.dids.create({
       method: "key",
       options: { keyType: KeyType.Ed25519 },
     });
+    await this.agent.modules.signify.createIdentifier(
+      AriesAgent.ISSUER_AID_NAME
+    );
   }
 
   async createInvitation() {
@@ -218,6 +227,10 @@ class AriesAgent {
         domain: config.endpoint,
       });
     return invitationUrl;
+  }
+
+  async createKeriOobi() {
+    return this.agent.modules.signify.getOobi(AriesAgent.ISSUER_AID_NAME);
   }
 }
 
