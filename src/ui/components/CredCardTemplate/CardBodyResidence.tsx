@@ -10,7 +10,7 @@ const CardBodyResidency = ({ cardData }: any) => {
       <div className="card-body">
         <div className="left-column">
           <img
-            src={cardData.image}
+            src={cardData.cachedDetails.image}
             onError={({ currentTarget }) => {
               currentTarget.onerror = null; // @TODO - sdisalvo: Handle error
               currentTarget.src = imagePlaceholder;
@@ -24,7 +24,9 @@ const CardBodyResidency = ({ cardData }: any) => {
               {i18n.t("creds.card.layout.name")}
             </span>
             <span className="card-body-info-value">
-              {cardData.givenName + " " + cardData.familyName}
+              {cardData.cachedDetails.givenName +
+                " " +
+                cardData.cachedDetails.familyName}
             </span>
           </div>
           <div className="card-body-info">
@@ -32,7 +34,7 @@ const CardBodyResidency = ({ cardData }: any) => {
               {i18n.t("creds.card.layout.countryofbirth")}
             </span>
             <span className="card-body-info-value">
-              {cardData.birthCountry}
+              {cardData.cachedDetails.birthCountry}
             </span>
           </div>
           <div className="card-body-info">
@@ -40,7 +42,7 @@ const CardBodyResidency = ({ cardData }: any) => {
               {i18n.t("creds.card.layout.expirationdate")}
             </span>
             <span className="card-body-info-value">
-              {formatShortDate(cardData.expirationDate)}
+              {formatShortDate(cardData.cachedDetails.expirationDate)}
             </span>
           </div>
         </div>
@@ -49,14 +51,16 @@ const CardBodyResidency = ({ cardData }: any) => {
             <span className="card-body-info-label">
               {i18n.t("creds.card.layout.category")}
             </span>
-            <span className="card-body-info-value">{cardData.lprCategory}</span>
+            <span className="card-body-info-value">
+              {cardData.cachedDetails.lprCategory}
+            </span>
           </div>
           <div className="card-body-info">
             <span className="card-body-info-label">
               {i18n.t("creds.card.layout.residentsince")}
             </span>
             <span className="card-body-info-value">
-              {formatShortDate(cardData.residentSince)}
+              {formatShortDate(cardData.cachedDetails.residentSince)}
             </span>
           </div>
         </div>

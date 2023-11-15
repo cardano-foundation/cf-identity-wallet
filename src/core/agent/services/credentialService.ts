@@ -12,13 +12,7 @@ import {
   W3cJsonLdVerifiableCredential,
   JsonObject,
 } from "@aries-framework/core";
-import {
-  CredentialDetails,
-  CredentialShortDetails,
-  ResidencyCredShortDetails,
-  SummitCredShortDetails,
-  UniversityCredShortDetails,
-} from "../agent.types";
+import { CredentialDetails, CredentialShortDetails } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
 import {
@@ -102,52 +96,16 @@ class CredentialService extends AgentService {
 
   getCredentialShortDetails(
     metadata: CredentialMetadataRecord
-  ):
-    | UniversityCredShortDetails
-    | ResidencyCredShortDetails
-    | SummitCredShortDetails
-    | CredentialShortDetails {
-    const data = {
+  ): CredentialShortDetails {
+    return {
       id: metadata.id,
       colors: metadata.colors,
       issuanceDate: metadata.issuanceDate,
       issuerLogo: metadata.issuerLogo,
       credentialType: metadata.credentialType,
       status: metadata.status,
+      cachedDetails: metadata.cachedDetails,
     };
-    if (
-      metadata.credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL
-    ) {
-      return {
-        ...data,
-        degreeType: metadata.degreeType,
-      };
-    } else if (
-      metadata.credentialType === CredentialType.PERMANENT_RESIDENT_CARD
-    ) {
-      return {
-        ...data,
-        expirationDate: metadata.expirationDate,
-        image: metadata.image,
-        givenName: metadata.givenName,
-        familyName: metadata.familyName,
-        birthCountry: metadata.birthCountry,
-        lprCategory: metadata.lprCategory,
-        residentSince: metadata.residentSince,
-      };
-    } else if (
-      metadata.credentialType === CredentialType.ACCESS_PASS_CREDENTIAL
-    ) {
-      return {
-        ...data,
-        summitType: metadata.summitType,
-        startDate: metadata.startDate,
-        endDate: metadata.endDate,
-        passId: metadata.passId,
-      };
-    } else {
-      return data;
-    }
   }
 
   async getCredentialRecordById(id: string): Promise<CredentialExchangeRecord> {
@@ -210,12 +168,7 @@ class CredentialService extends AgentService {
 
   async updateMetadataCompleted(
     credentialRecord: CredentialExchangeRecord
-  ): Promise<
-    | UniversityCredShortDetails
-    | ResidencyCredShortDetails
-    | SummitCredShortDetails
-    | CredentialShortDetails
-  > {
+  ): Promise<CredentialShortDetails> {
     const metadata =
       await this.agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId(
         credentialRecord.id
@@ -262,7 +215,9 @@ class CredentialService extends AgentService {
     if (credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL) {
       const credentialMetadataRecord = {
         ...data,
-        degreeType: universityDegreeCredSubject,
+        cachedDetails: {
+          degreeType: universityDegreeCredSubject || "",
+        },
       };
       await this.agent.modules.generalStorage.updateCredentialMetadata(
         metadata?.id,
@@ -270,19 +225,21 @@ class CredentialService extends AgentService {
       );
       return {
         ...response,
-        degreeType: credentialMetadataRecord.degreeType || "",
+        cachedDetails: credentialMetadataRecord.cachedDetails,
       };
     } else if (credentialType === CredentialType.PERMANENT_RESIDENT_CARD) {
       const expirationDate = w3cCredential.credential.expirationDate;
       const credentialMetadataRecord = {
         ...data,
-        expirationDate: expirationDate,
-        image: checkedCredentialSubject?.image as string,
-        givenName: checkedCredentialSubject?.givenName as string,
-        familyName: checkedCredentialSubject?.familyName as string,
-        birthCountry: checkedCredentialSubject?.birthCountry as string,
-        lprCategory: checkedCredentialSubject?.lprCategory as string,
-        residentSince: checkedCredentialSubject?.residentSince as string,
+        cachedDetails: {
+          expirationDate: expirationDate || "",
+          image: checkedCredentialSubject?.image as string,
+          givenName: checkedCredentialSubject?.givenName as string,
+          familyName: checkedCredentialSubject?.familyName as string,
+          birthCountry: checkedCredentialSubject?.birthCountry as string,
+          lprCategory: checkedCredentialSubject?.lprCategory as string,
+          residentSince: checkedCredentialSubject?.residentSince as string,
+        },
       };
       await this.agent.modules.generalStorage.updateCredentialMetadata(
         metadata?.id,
@@ -290,21 +247,17 @@ class CredentialService extends AgentService {
       );
       return {
         ...response,
-        expirationDate: credentialMetadataRecord.expirationDate,
-        image: credentialMetadataRecord.image as string,
-        givenName: credentialMetadataRecord.givenName as string,
-        familyName: credentialMetadataRecord.familyName as string,
-        birthCountry: credentialMetadataRecord.birthCountry as string,
-        lprCategory: credentialMetadataRecord.lprCategory as string,
-        residentSince: credentialMetadataRecord.residentSince as string,
+        cachedDetails: credentialMetadataRecord.cachedDetails,
       };
     } else if (credentialType === CredentialType.ACCESS_PASS_CREDENTIAL) {
       const credentialMetadataRecord = {
         ...data,
-        summitType: checkedCredentialSubject?.type as string,
-        startDate: checkedCredentialSubject?.startDate as string,
-        endDate: checkedCredentialSubject?.endDate as string,
-        passId: checkedCredentialSubject?.passId as string,
+        cachedDetails: {
+          summitType: checkedCredentialSubject?.type as string,
+          startDate: checkedCredentialSubject?.startDate as string,
+          endDate: checkedCredentialSubject?.endDate as string,
+          passId: checkedCredentialSubject?.passId as string,
+        },
       };
       await this.agent.modules.generalStorage.updateCredentialMetadata(
         metadata?.id,
@@ -312,10 +265,7 @@ class CredentialService extends AgentService {
       );
       return {
         ...response,
-        summitType: credentialMetadataRecord.summitType as string,
-        startDate: credentialMetadataRecord.startDate as string,
-        endDate: credentialMetadataRecord.endDate as string,
-        passId: credentialMetadataRecord.passId as string,
+        cachedDetails: credentialMetadataRecord.cachedDetails,
       };
     } else {
       await this.agent.modules.generalStorage.updateCredentialMetadata(

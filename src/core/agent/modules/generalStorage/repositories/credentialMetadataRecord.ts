@@ -1,8 +1,10 @@
 import { BaseRecord } from "@aries-framework/core";
 import {
-  CredentialMetadataRecordExtraProps,
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
+  ResidencyCredCachedDetails,
+  SummitCredCachedDetails,
+  UniversityCredCachedDetails,
 } from "./credentialMetadataRecord.types";
 
 class CredentialMetadataRecord
@@ -17,23 +19,15 @@ class CredentialMetadataRecord
   status!: CredentialMetadataRecordStatus;
   credentialRecordId!: string;
   connectionId?: string;
-  degreeType?: string;
-  expirationDate?: string;
-  image?: string;
-  givenName?: string;
-  familyName?: string;
-  birthCountry?: string;
-  lprCategory?: string;
-  residentSince?: string;
-  summitType?: string;
-  startDate?: string;
-  endDate?: string;
-  passId?: string;
+  cachedDetails?:
+    | UniversityCredCachedDetails
+    | ResidencyCredCachedDetails
+    | SummitCredCachedDetails;
 
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;
 
-  constructor(props: CredentialMetadataRecordExtraProps) {
+  constructor(props: CredentialMetadataRecordProps) {
     super();
 
     if (props) {
@@ -47,18 +41,7 @@ class CredentialMetadataRecord
       this.credentialType = props.credentialType;
       this.status = props.status;
       this.connectionId = props.connectionId;
-      this.degreeType = props.degreeType;
-      this.expirationDate = props.expirationDate;
-      this.image = props.image;
-      this.givenName = props.givenName;
-      this.familyName = props.familyName;
-      this.birthCountry = props.birthCountry;
-      this.lprCategory = props.lprCategory;
-      this.residentSince = props.residentSince;
-      this.summitType = props.summitType;
-      this.startDate = props.startDate;
-      this.endDate = props.endDate;
-      this.passId = props.passId;
+      this.cachedDetails = props.cachedDetails;
     }
   }
 

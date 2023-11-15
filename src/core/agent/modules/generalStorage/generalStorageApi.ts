@@ -176,18 +176,7 @@ export class GeneralStorageApi {
       if (data.status) record.status = data.status;
       if (data.credentialType) record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
-      if (data.degreeType) record.degreeType = data.degreeType;
-      if (data.expirationDate) record.expirationDate = data.expirationDate;
-      if (data.image) record.image = data.image;
-      if (data.givenName) record.givenName = data.givenName;
-      if (data.familyName) record.familyName = data.familyName;
-      if (data.birthCountry) record.birthCountry = data.birthCountry;
-      if (data.lprCategory) record.lprCategory = data.lprCategory;
-      if (data.residentSince) record.residentSince = data.residentSince;
-      if (data.summitType) record.summitType = data.summitType;
-      if (data.startDate) record.startDate = data.startDate;
-      if (data.endDate) record.endDate = data.endDate;
-      if (data.passId) record.passId = data.passId;
+      if (data.cachedDetails) record.cachedDetails = data.cachedDetails;
       await this.credentialMetadataRepository.update(this.agentContext, record);
     }
   }

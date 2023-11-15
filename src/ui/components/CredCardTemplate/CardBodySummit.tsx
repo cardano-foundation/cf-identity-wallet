@@ -5,7 +5,6 @@ import { formatShortDate } from "../../../utils";
 
 // @TODO - sdisalvo: cardData should be of type CredentialDetails
 const CardBodySummit = ({ cardData }: any) => {
-  const credentialSubject = cardData.credentialSubject;
   return (
     <>
       <div className="card-body">
@@ -15,7 +14,10 @@ const CardBodySummit = ({ cardData }: any) => {
               {i18n.t("creds.card.layout.type")}
             </span>
             <span className="card-body-info-value">
-              {credentialSubject.type.replace(/([a-z])([A-Z])/g, "$1 $2")}
+              {cardData.cachedDetails.summitType.replace(
+                /([a-z])([A-Z])/g,
+                "$1 $2"
+              )}
             </span>
           </div>
           <div className="card-body-info">
@@ -23,15 +25,15 @@ const CardBodySummit = ({ cardData }: any) => {
               {i18n.t("creds.card.layout.validity")}
             </span>
             <span className="card-body-info-value">
-              {formatShortDate(cardData.startDate) +
+              {formatShortDate(cardData.cachedDetails.startDate) +
                 " - " +
-                formatShortDate(cardData.endDate)}
+                formatShortDate(cardData.cachedDetails.endDate)}
             </span>
           </div>
         </div>
         <div className="right-column">
           <QRCode
-            value={cardData.passId}
+            value={cardData.cachedDetails.passId}
             size={100}
             fgColor={"black"}
             bgColor={"transparent"}

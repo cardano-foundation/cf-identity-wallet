@@ -14,12 +14,10 @@ import {
 import { EventEmitter } from "events";
 import { CredentialMetadataRecord } from "../modules";
 import { CredentialService } from "./credentialService";
-import { CredentialMetadataRecordStatus } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
 import {
-  ResidencyCredShortDetails,
-  SummitCredShortDetails,
-  UniversityCredShortDetails,
-} from "../agent.types";
+  CredentialMetadataRecordProps,
+  CredentialMetadataRecordStatus,
+} from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 const eventEmitter = new EventEmitter();
 
@@ -224,29 +222,35 @@ const w3cCredentialRecordArrayProof = {
   },
 };
 
-const universityCredMetadataProps: UniversityCredShortDetails = {
+const universityCredMetadataProps: CredentialMetadataRecordProps = {
   ...credentialMetadataProps,
   credentialType: "UniversityDegreeCredential",
-  degreeType: "Bachelor Degree",
+  cachedDetails: {
+    degreeType: "Bachelor Degree",
+  },
 };
-const residencyCredMetadataProps: ResidencyCredShortDetails = {
+const residencyCredMetadataProps: CredentialMetadataRecordProps = {
   ...credentialMetadataProps,
   credentialType: "PermanentResidentCard",
-  image: "http://127.0.0.1:3001/static/ResIdImg.jpg",
-  givenName: "John",
-  familyName: "Smith",
-  birthCountry: "The Bahamas",
-  lprCategory: "C09",
-  residentSince: "2022-10-10T10:12:12Z",
-  expirationDate: "2025-12-12T12:12:12Z",
+  cachedDetails: {
+    image: "http://127.0.0.1:3001/static/ResIdImg.jpg",
+    givenName: "John",
+    familyName: "Smith",
+    birthCountry: "The Bahamas",
+    lprCategory: "C09",
+    residentSince: "2022-10-10T10:12:12Z",
+    expirationDate: "2025-12-12T12:12:12Z",
+  },
 };
-const summitCredMetadataProps: SummitCredShortDetails = {
+const summitCredMetadataProps: CredentialMetadataRecordProps = {
   ...credentialMetadataProps,
   credentialType: "AccessPassCredential",
-  summitType: "AccessPass",
-  startDate: "November 2, 2023",
-  endDate: "November 2, 2023",
-  passId: "4c44c251-eaa3-4c77-be07-d378b7b98497",
+  cachedDetails: {
+    summitType: "AccessPass",
+    startDate: "November 2, 2023",
+    endDate: "November 2, 2023",
+    passId: "4c44c251-eaa3-4c77-be07-d378b7b98497",
+  },
 };
 const offerAttachment = new Attachment({
   id: "attachId",
@@ -545,7 +549,7 @@ describe("Credential service of agent", () => {
       issuanceDate: w3cCredentialRecord.credential.issuanceDate,
       issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      degreeType: universityCredMetadataProps.degreeType,
+      cachedDetails: universityCredMetadataProps.cachedDetails,
     });
   });
 
@@ -566,13 +570,7 @@ describe("Credential service of agent", () => {
       issuanceDate: w3cCredentialRecord.credential.issuanceDate,
       issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      image: residencyCredMetadataProps.image,
-      givenName: residencyCredMetadataProps.givenName,
-      familyName: residencyCredMetadataProps.familyName,
-      birthCountry: residencyCredMetadataProps.birthCountry,
-      lprCategory: residencyCredMetadataProps.lprCategory,
-      residentSince: residencyCredMetadataProps.residentSince,
-      expirationDate: residencyCredMetadataProps.expirationDate,
+      cachedDetails: residencyCredMetadataProps.cachedDetails,
     });
   });
 
@@ -593,10 +591,7 @@ describe("Credential service of agent", () => {
       issuanceDate: w3cCredentialRecord.credential.issuanceDate,
       issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
-      summitType: summitCredMetadataProps.summitType,
-      startDate: summitCredMetadataProps.startDate,
-      endDate: summitCredMetadataProps.endDate,
-      passId: summitCredMetadataProps.passId,
+      cachedDetails: summitCredMetadataProps.cachedDetails,
     });
   });
 

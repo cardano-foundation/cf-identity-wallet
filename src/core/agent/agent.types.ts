@@ -55,26 +55,6 @@ type CredentialShortDetails = Omit<
   "credentialRecordId"
 >;
 
-interface UniversityCredShortDetails extends CredentialShortDetails {
-  degreeType: string;
-}
-
-interface ResidencyCredShortDetails extends CredentialShortDetails {
-  image: string;
-  givenName: string;
-  familyName: string;
-  birthCountry: string;
-  lprCategory: string;
-  residentSince: string;
-  expirationDate: string;
-}
-
-interface SummitCredShortDetails extends CredentialShortDetails {
-  summitType: string;
-  startDate: string;
-  endDate: string;
-  passId: string;
-}
 interface ConnectionShortDetails {
   id: string;
   label: string;
@@ -150,9 +130,6 @@ export type {
   KERIDetails,
   GetIdentifierResult,
   CredentialShortDetails,
-  UniversityCredShortDetails,
-  ResidencyCredShortDetails,
-  SummitCredShortDetails,
   CredentialDetails,
   ConnectionShortDetails,
   ConnectionDetails,

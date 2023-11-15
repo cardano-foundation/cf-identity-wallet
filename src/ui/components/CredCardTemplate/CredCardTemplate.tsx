@@ -26,11 +26,11 @@ const CredCardTemplate = ({
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const isUniversity =
-    cardData?.credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL;
+    shortData?.credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL;
   const isResidency =
-    cardData?.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
+    shortData?.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
   const isAccessPass =
-    cardData?.credentialType === CredentialType.ACCESS_PASS_CREDENTIAL;
+    shortData?.credentialType === CredentialType.ACCESS_PASS_CREDENTIAL;
   const isW3CTemplate = isUniversity || (!isResidency && !isAccessPass);
   const isKnownTemplate = isUniversity || isResidency || isAccessPass;
 
