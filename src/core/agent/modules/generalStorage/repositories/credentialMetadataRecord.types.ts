@@ -13,7 +13,54 @@ interface CredentialMetadataRecordProps {
   credentialRecordId: string;
   status: CredentialMetadataRecordStatus;
   connectionId?: string;
+  cachedDetails?:
+    | UniversityCredCachedDetails
+    | ResidencyCredCachedDetails
+    | SummitCredCachedDetails;
+}
+
+interface CredentialMetadataRecordExtraProps
+  extends CredentialMetadataRecordProps {
+  degreeType?: string;
+  expirationDate?: string;
+  image?: string;
+  givenName?: string;
+  familyName?: string;
+  birthCountry?: string;
+  lprCategory?: string;
+  residentSince?: string;
+  summitType?: string;
+  startDate?: string;
+  endDate?: string;
+  passId?: string;
+}
+
+interface UniversityCredCachedDetails {
+  degreeType: string;
+}
+
+interface ResidencyCredCachedDetails {
+  expirationDate: string;
+  image: string;
+  givenName: string;
+  familyName: string;
+  birthCountry: string;
+  lprCategory: string;
+  residentSince: string;
+}
+
+interface SummitCredCachedDetails {
+  summitType: string;
+  startDate: string;
+  endDate: string;
+  passId: string;
 }
 
 export { CredentialMetadataRecordStatus };
-export type { CredentialMetadataRecordProps };
+export type {
+  CredentialMetadataRecordProps,
+  CredentialMetadataRecordExtraProps,
+  UniversityCredCachedDetails,
+  ResidencyCredCachedDetails,
+  SummitCredCachedDetails,
+};

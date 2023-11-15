@@ -2,6 +2,9 @@ import { BaseRecord } from "@aries-framework/core";
 import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
+  ResidencyCredCachedDetails,
+  SummitCredCachedDetails,
+  UniversityCredCachedDetails,
 } from "./credentialMetadataRecord.types";
 
 class CredentialMetadataRecord
@@ -16,6 +19,10 @@ class CredentialMetadataRecord
   status!: CredentialMetadataRecordStatus;
   credentialRecordId!: string;
   connectionId?: string;
+  cachedDetails?:
+    | UniversityCredCachedDetails
+    | ResidencyCredCachedDetails
+    | SummitCredCachedDetails;
 
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;
@@ -34,6 +41,7 @@ class CredentialMetadataRecord
       this.credentialType = props.credentialType;
       this.status = props.status;
       this.connectionId = props.connectionId;
+      this.cachedDetails = props.cachedDetails;
     }
   }
 

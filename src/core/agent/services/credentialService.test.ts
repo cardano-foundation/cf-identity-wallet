@@ -6,6 +6,7 @@ import {
   CredentialExchangeRecord,
   CredentialState,
   CredentialStateChangedEvent,
+  JsonObject,
   V2OfferCredentialMessage,
   W3cCredentialRecord,
   W3cJsonLdVerifiableCredential,
@@ -13,7 +14,10 @@ import {
 import { EventEmitter } from "events";
 import { CredentialMetadataRecord } from "../modules";
 import { CredentialService } from "./credentialService";
-import { CredentialMetadataRecordStatus } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
+import {
+  CredentialMetadataRecordProps,
+  CredentialMetadataRecordStatus,
+} from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 const eventEmitter = new EventEmitter();
 
@@ -150,6 +154,57 @@ const w3cCredentialRecord = new W3cCredentialRecord({
   } as any as W3cCredentialRecord["credential"],
 });
 
+const w3cResidencyCredentialRecord = {
+  ...w3cCredentialRecord,
+  credential: {
+    context: [
+      "https://www.w3.org/2018/credentials/v1",
+      "https://w3id.org/security/suites/ed25519-2020/v1",
+      "https://w3id.org/citizenship/v1",
+    ],
+    id: "https://www.uscis.gov/green-card/credential/875970870",
+    type: ["VerifiableCredential", "PermanentResidentCard"],
+    issuer: "did:key:z6MktNjjqFdTksu46nngQ1xhisB1J426DcjLSA1rKwYHzM4A",
+    identifier: "did:key:z6MktNjjqFdTksu46nngQ1xhisB1J426DcjLSA1rKwYHzM4H",
+    name: "Permanent Resident Card",
+    description: "United States of America",
+    expirationDate: "2025-12-12T12:12:12Z",
+    credentialSubject: {
+      id: "did:key:z6MktNjjqFdTksu46nngQ1xhisB1J426DcjLSA1rKwYHzM4B",
+      type: ["PermanentResident", "Person"],
+      birthCountry: "The Bahamas",
+      givenName: "John",
+      familyName: "Smith",
+      gender: "Male",
+      image: "http://127.0.0.1:3001/static/ResIdImg.jpg",
+      residentSince: "2022-10-10T10:12:12Z",
+      lprCategory: "C09",
+      lprNumber: "999-999-999",
+    },
+  } as any as W3cCredentialRecord["credential"],
+};
+
+const w3cSummitCredentialRecord = {
+  ...w3cCredentialRecord,
+  credential: {
+    context: [
+      "https://www.w3.org/2018/credentials/v1",
+      "http://127.0.0.1:3001/credentials/schemas/summit/v1",
+    ],
+    type: ["VerifiableCredential", "AccessPassCredential"],
+    credentialSubject: {
+      id: "did:key:z6Mkvdhigk2EwyFy1ZYNvVrwRZYGujePLha9zLkB9JNGshRg",
+      type: "AccessPass",
+      eventName: "Cardano Summit 2023",
+      passId: "4c44c251-eaa3-4c77-be07-d378b7b98497",
+      name: "John Smith",
+      startDate: "November 2, 2023",
+      endDate: "November 2, 2023",
+      location: "Dubai, UAE",
+    },
+  } as any as W3cCredentialRecord["credential"],
+};
+
 const w3cCredentialRecordArrayProof = {
   ...w3cCredentialRecord,
   credential: {
@@ -167,6 +222,36 @@ const w3cCredentialRecordArrayProof = {
   },
 };
 
+const universityCredMetadataProps: CredentialMetadataRecordProps = {
+  ...credentialMetadataProps,
+  credentialType: "UniversityDegreeCredential",
+  cachedDetails: {
+    degreeType: "Bachelor Degree",
+  },
+};
+const residencyCredMetadataProps: CredentialMetadataRecordProps = {
+  ...credentialMetadataProps,
+  credentialType: "PermanentResidentCard",
+  cachedDetails: {
+    image: "http://127.0.0.1:3001/static/ResIdImg.jpg",
+    givenName: "John",
+    familyName: "Smith",
+    birthCountry: "The Bahamas",
+    lprCategory: "C09",
+    residentSince: "2022-10-10T10:12:12Z",
+    expirationDate: "2025-12-12T12:12:12Z",
+  },
+};
+const summitCredMetadataProps: CredentialMetadataRecordProps = {
+  ...credentialMetadataProps,
+  credentialType: "AccessPassCredential",
+  cachedDetails: {
+    summitType: "AccessPass",
+    startDate: "November 2, 2023",
+    endDate: "November 2, 2023",
+    passId: "4c44c251-eaa3-4c77-be07-d378b7b98497",
+  },
+};
 const offerAttachment = new Attachment({
   id: "attachId",
   mimeType: "application/json",
@@ -236,6 +321,7 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataProps.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
+        cachedDetails: undefined,
       },
       {
         id: id2,
@@ -244,6 +330,7 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataRecordB.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
+        cachedDetails: undefined,
       },
     ]);
   });
@@ -395,6 +482,7 @@ describe("Credential service of agent", () => {
         "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       type: ["VerifiableCredential", "UniversityDegreeCredential"],
+      cachedDetails: undefined,
     });
   });
 
@@ -425,6 +513,7 @@ describe("Credential service of agent", () => {
         "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw,eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       type: ["VerifiableCredential", "UniversityDegreeCredential"],
+      cachedDetails: undefined,
     });
   });
 
@@ -447,9 +536,9 @@ describe("Credential service of agent", () => {
     ).toBeCalled();
   });
 
-  test("update metadata completed without connection successfully when credential is done", async () => {
+  test("update university credential metadata completed without connection successfully when credential is done", async () => {
     agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
-      jest.fn().mockResolvedValue(credentialMetadataRecordA);
+      jest.fn().mockResolvedValue(universityCredMetadataProps);
     agent.w3cCredentials.getCredentialRecordById = jest
       .fn()
       .mockResolvedValue(w3cCredentialRecord);
@@ -457,13 +546,56 @@ describe("Credential service of agent", () => {
       credentialDoneExchangeRecord
     );
     expect(dataAfterUpdate).toStrictEqual({
-      colors: credentialMetadataRecordA.colors,
+      colors: universityCredMetadataProps.colors,
       credentialType: w3cCredentialRecord.credential.type[1],
       id: id1,
       isArchived: false,
       issuanceDate: w3cCredentialRecord.credential.issuanceDate,
       issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
+      cachedDetails: universityCredMetadataProps.cachedDetails,
+    });
+  });
+
+  test("update residency credential metadata completed without connection successfully when credential is done", async () => {
+    agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
+      jest.fn().mockResolvedValue(residencyCredMetadataProps);
+    agent.w3cCredentials.getCredentialRecordById = jest
+      .fn()
+      .mockResolvedValue(w3cResidencyCredentialRecord);
+    const dataAfterUpdate = await credentialService.updateMetadataCompleted(
+      credentialDoneExchangeRecord
+    );
+    expect(dataAfterUpdate).toStrictEqual({
+      colors: residencyCredMetadataProps.colors,
+      credentialType: residencyCredMetadataProps.credentialType,
+      id: id1,
+      isArchived: false,
+      issuanceDate: w3cCredentialRecord.credential.issuanceDate,
+      issuerLogo: undefined,
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+      cachedDetails: residencyCredMetadataProps.cachedDetails,
+    });
+  });
+
+  test("update summit credential metadata completed without connection successfully when credential is done", async () => {
+    agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
+      jest.fn().mockResolvedValue(summitCredMetadataProps);
+    agent.w3cCredentials.getCredentialRecordById = jest
+      .fn()
+      .mockResolvedValue(w3cSummitCredentialRecord);
+    const dataAfterUpdate = await credentialService.updateMetadataCompleted(
+      credentialDoneExchangeRecord
+    );
+    expect(dataAfterUpdate).toStrictEqual({
+      colors: summitCredMetadataProps.colors,
+      credentialType: summitCredMetadataProps.credentialType,
+      id: id1,
+      isArchived: false,
+      issuanceDate: w3cCredentialRecord.credential.issuanceDate,
+      issuerLogo: undefined,
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+      cachedDetails: summitCredMetadataProps.cachedDetails,
     });
   });
 
