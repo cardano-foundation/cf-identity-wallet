@@ -13,8 +13,6 @@ import {
   JsonLdCredentialFormatService,
   AutoAcceptCredential,
   W3cCredentialsModule,
-  LogLevel,
-  ConsoleLogger,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
@@ -39,7 +37,6 @@ const config: InitConfig = {
     key: "idw", // Right now, this key isn't used as we don't have encryption.
   },
   autoUpdateStorageOnStartup: true,
-  logger: new ConsoleLogger(LogLevel.debug),
 };
 
 const agentDependencies: AgentDependencies = {
