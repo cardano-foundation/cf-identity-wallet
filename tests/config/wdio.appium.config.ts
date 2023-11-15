@@ -18,7 +18,7 @@ export const config = {
             // and to automatically download the latest version of ChromeDriver
             relaxedSecurity: true,
             allowInsecure: ["chromedriver_autodownload"],
-            log: "./.appium/appium.log",
+            log: "./tests/.appium/appium.log",
             logLevel: "info",
           },
           command: "appium",
