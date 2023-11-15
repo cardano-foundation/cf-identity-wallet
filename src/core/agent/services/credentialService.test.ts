@@ -321,6 +321,7 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataProps.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
+        cachedDetails: undefined,
       },
       {
         id: id2,
@@ -329,6 +330,7 @@ describe("Credential service of agent", () => {
         issuanceDate: nowISO,
         issuerLogo: credentialMetadataRecordB.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
+        cachedDetails: undefined,
       },
     ]);
   });
@@ -480,6 +482,7 @@ describe("Credential service of agent", () => {
         "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       type: ["VerifiableCredential", "UniversityDegreeCredential"],
+      cachedDetails: undefined,
     });
   });
 
@@ -510,6 +513,7 @@ describe("Credential service of agent", () => {
         "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw,eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       type: ["VerifiableCredential", "UniversityDegreeCredential"],
+      cachedDetails: undefined,
     });
   });
 

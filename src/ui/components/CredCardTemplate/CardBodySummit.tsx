@@ -14,7 +14,7 @@ const CardBodySummit = ({ cardData }: any) => {
               {i18n.t("creds.card.layout.type")}
             </span>
             <span className="card-body-info-value">
-              {cardData.cachedDetails.summitType.replace(
+              {cardData.cachedDetails?.summitType.replace(
                 /([a-z])([A-Z])/g,
                 "$1 $2"
               )}
@@ -25,15 +25,15 @@ const CardBodySummit = ({ cardData }: any) => {
               {i18n.t("creds.card.layout.validity")}
             </span>
             <span className="card-body-info-value">
-              {formatShortDate(cardData.cachedDetails.startDate) +
+              {formatShortDate(cardData.cachedDetails?.startDate) +
                 " - " +
-                formatShortDate(cardData.cachedDetails.endDate)}
+                formatShortDate(cardData.cachedDetails?.endDate)}
             </span>
           </div>
         </div>
         <div className="right-column">
           <QRCode
-            value={cardData.cachedDetails.passId}
+            value={cardData.cachedDetails?.passId}
             size={100}
             fgColor={"black"}
             bgColor={"transparent"}
