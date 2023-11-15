@@ -43,8 +43,10 @@ import { toastState } from "../../constants/dictionary";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import {
-  ConnectionShortDetails,
+  ConnectionKeriStateChangedEvent,
+  ConnectionStatus,
   CredentialShortDetails,
+  ConnectionShortDetails,
   IdentifierShortDetails,
 } from "../../../core/agent/agent.types";
 import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
@@ -159,6 +161,23 @@ const messageStateChangedHandler = async (
   const messageRecord = event.payload.basicMessageRecord;
 };
 
+const connectionKeriStateChangedHandler = async (
+  event: ConnectionKeriStateChangedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  if (event.payload.status === ConnectionStatus.PENDING) {
+    dispatch(setCurrentOperation(toastState.connectionRequestPending));
+  } else {
+    const connectionRecordId = event.payload.connectionId!;
+    const connectionDetails =
+      await AriesAgent.agent.connections.getConnectionKeriShortDetailById(
+        connectionRecordId
+      );
+    dispatch(updateOrAddConnectionCache(connectionDetails));
+    dispatch(setCurrentOperation(toastState.newConnectionAdded));
+  }
+};
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -257,6 +276,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     // });
     // AriesAgent.agent.messages.onBasicMessageStateChanged((event) => {
     //   return messageStateChangedHandler(event, dispatch);
+    // });
+    // AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
+    //   return connectionKeriStateChangedHandler(event, dispatch);
     // });
     // pickup messages
     // AriesAgent.agent.messages.pickupMessagesFromMediator();

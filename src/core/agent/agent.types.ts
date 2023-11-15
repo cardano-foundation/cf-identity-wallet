@@ -1,4 +1,4 @@
-import { JsonCredential } from "@aries-framework/core";
+import { BaseEvent, JsonCredential } from "@aries-framework/core";
 import { IdentifierMetadataRecordProps } from "./modules";
 import { CredentialMetadataRecordProps } from "./modules/generalStorage/repositories/credentialMetadataRecord.types";
 
@@ -18,10 +18,16 @@ enum ConnectionStatus {
 
 enum GenericRecordType {
   CONNECTION_NOTE = "connection-note",
+  CONNECTION_KERI_METADATA = "connection-keri-metadata",
 }
 
 enum ConnectionHistoryType {
   CREDENTIAL_ACCEPTED,
+}
+
+enum ConnectionType {
+  DIDCOMM,
+  KERI,
 }
 
 interface ConnectionHistoryItem {
@@ -61,6 +67,7 @@ interface ConnectionShortDetails {
   connectionDate: string;
   logo?: string;
   status: ConnectionStatus;
+  type?: ConnectionType;
 }
 
 interface DIDDetails extends IdentifierShortDetails {
@@ -115,6 +122,17 @@ type UpdateIdentityMetadata = Omit<
   "id" | "isArchived" | "name" | "method" | "createdAt"
 >;
 
+enum ConnectionKeriEventTypes {
+  ConnectionKeriStateChanged = "ConnectionKeriStateChanged",
+}
+interface ConnectionKeriStateChangedEvent extends BaseEvent {
+  type: typeof ConnectionKeriEventTypes.ConnectionKeriStateChanged;
+  payload: {
+    connectionId?: string;
+    status: ConnectionStatus;
+  };
+}
+
 export {
   IdentifierType,
   Blockchain,
@@ -122,6 +140,8 @@ export {
   GenericRecordType,
   ConnectionHistoryType,
   MiscRecordId,
+  ConnectionType,
+  ConnectionKeriEventTypes,
 };
 export type {
   CryptoAccountRecordShortDetails,
@@ -136,4 +156,5 @@ export type {
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionHistoryItem,
+  ConnectionKeriStateChangedEvent,
 };
