@@ -36,6 +36,7 @@ class HttpOutboundTransport implements OutboundTransport {
     this.agent = agent;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async stop(): Promise<void> {}
 
   async sendMessage(outboundPackage: OutboundPackage) {
