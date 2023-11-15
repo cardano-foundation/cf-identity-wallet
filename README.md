@@ -13,6 +13,7 @@ TODO
 ## End to end testing
 ### Pre-installed on local:
 
+- [allure commandline](https://docs.qameta.io/allure-report/#_installing_a_commandline)
 - npm and node js
 - android emulator for samsung galaxy s23 ultra is configured or ios simulator for iphone 15 pro / 15 pro max
 - add .env to root folder with APP_PATH property with path to app build for chosen platform e.g.
@@ -43,6 +44,21 @@ npm run wdio:android:s23ultra
 ```
 - IF there are issues with appium service run by WDIO, please start appium in terminal separately
 - in case WDIO tests will not exit on its own kill the process yourself e.g. ``` pkill -9 -f wdio  ```
+
+3. Set ALLURE_RESULTS_DIR on your local
+```angular2html
+ALLURE_RESULTS_DIR=tests/.reports/allure-results
+```
+4. Generate allure report
+```
+allure generate tests/.reports/allure-results -o tests/.reports/allure-report --clean
+```
+
+4. Open allure report
+```
+allure open tests/.reports/allure-report
+```
+
 ### Generate icons
 
 Install capacitor [assets tool](https://capacitorjs.com/docs/guides/splash-screens-and-icons):
