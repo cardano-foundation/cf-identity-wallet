@@ -34,6 +34,10 @@
     display: flex;
     justify-content: center;
     padding: 0;
+
+    ion-button {
+      margin: 0;
+    }
   }
 
   .passcode-module-number-button {
@@ -63,7 +67,6 @@
 
   .passcode-module-board-button {
     --background: var(--ion-color-medium-grey);
-    margin: 0;
   }
 
   .passcode-module-backspace-button {
