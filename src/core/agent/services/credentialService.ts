@@ -11,13 +11,14 @@ import {
   JsonLdCredentialDetailFormat,
   W3cJsonLdVerifiableCredential,
 } from "@aries-framework/core";
-import { CredentialDetails, CredentialShortDetails } from "../agent.types";
+import { AcdcMetadataRecord, CredentialDetails, CredentialShortDetails, GenericRecordType } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
 import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { GenericRecord } from "@aries-framework/core/build/modules/generic-records/repository/GenericRecord";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -26,6 +27,8 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_FOR_NEGOTIATE =
     "Credential missing for negotiation";
   static readonly CREATED_DID_NOT_FOUND = "Referenced public did not found";
+  static readonly ACDC_METADATA_NOT_FOUND = "ACDC metadata record not found";
+
 
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
@@ -36,6 +39,25 @@ class CredentialService extends AgentService {
         callback(event);
       }
     );
+  }
+
+  async onCredentialKeriStateChanged(
+    callback: (event: AcdcMetadataRecord) => void
+  ) {
+    while (true) {
+      const notifications = await this.agent.modules.signify.getNotifications();
+      for (let notif of notifications.notes) {
+        if (notif.a.r == "/exn/ipex/grant") {
+          callback(notif);
+        }
+        await this.agent.modules.signify.markNotification(notif.i);
+      }
+      await new Promise((rs) => {
+        setTimeout(() => {
+          rs(true);
+        }, 2000);
+      });
+    }
   }
 
   /**
@@ -256,10 +278,16 @@ class CredentialService extends AgentService {
     });
   }
 
-  async getUnhandledCredentials(): Promise<CredentialExchangeRecord[]> {
-    return this.agent.credentials.findAllByQuery({
-      state: CredentialState.OfferReceived,
-    });
+  async getUnhandledCredentials(): Promise<
+    (CredentialExchangeRecord | AcdcMetadataRecord)[]
+  > {
+    const results = await Promise.all([
+      this.agent.credentials.findAllByQuery({
+        state: CredentialState.OfferReceived,
+      }),
+      this.getAcdcMetadataRecords(CredentialMetadataRecordStatus.PENDING),
+    ]);
+    return results.flat();
   }
 
   private validArchivedCredential(metadata: CredentialMetadataRecord): void {
@@ -277,6 +305,57 @@ class CredentialService extends AgentService {
       throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
     }
     return metadata;
+  }
+
+  async createAcdcMetadataRecord(event: any): Promise<GenericRecord> {
+    return this.agent.genericRecords.save({
+      id: event.i,
+      content: event.a,
+      tags: {
+        type: GenericRecordType.ACDC_KERI,
+        status: CredentialMetadataRecordStatus.PENDING,
+      },
+    });
+  }
+
+  async getAcdcMetadataRecords(
+    status?: CredentialMetadataRecordStatus
+  ): Promise<AcdcMetadataRecord[]> {
+    const results = await this.agent.genericRecords.findAllByQuery({
+      status,
+      type: GenericRecordType.ACDC_KERI,
+    });
+    return results.map((result) => {
+      return {
+        id: result.id,
+        createdAt: result.createdAt,
+        a: result.content,
+      };
+    });
+  }
+
+  async getAcdcMetadataRecordById(id: string): Promise<AcdcMetadataRecord> {
+    const result = await this.agent.genericRecords.findById(id);
+    if (!result) {
+      throw new Error(`${CredentialService.ACDC_METADATA_NOT_FOUND} ${id}`);
+    }
+    return {
+      id: result.id,
+      createdAt: result.createdAt,
+      a: result.content,
+    };
+  }
+
+  async acceptKeriAcdc(id: string): Promise<void> {
+    const acdcMetadataRecord = await this.getAcdcMetadataRecordById(id);
+    const holder = (
+      await this.agent.modules.generalStorage.getAllAvailableIdentifierMetadata()
+    )[0];
+
+    await this.agent.modules.signify.admitIpex(
+      acdcMetadataRecord.a.d as string,
+      holder.signifyName!
+    );
   }
 }
 

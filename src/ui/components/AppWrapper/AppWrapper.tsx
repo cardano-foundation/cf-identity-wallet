@@ -3,6 +3,7 @@ import {
   BasicMessageStateChangedEvent,
   ConnectionRecord,
   ConnectionStateChangedEvent,
+  CredentialExchangeRecord,
   CredentialStateChangedEvent,
 } from "@aries-framework/core";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -38,11 +39,15 @@ import {
   setConnectionsCache,
   updateOrAddConnectionCache,
 } from "../../../store/reducers/connectionsCache";
-import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import {
+  ConnectionCredentialRequestSource,
+  ConnectionCredentialRequestType,
+} from "../../../store/reducers/stateCache/stateCache.types";
 import { toastState } from "../../constants/dictionary";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import {
+  AcdcMetadataRecord,
   ConnectionKeriStateChangedEvent,
   ConnectionStatus,
   CredentialShortDetails,
@@ -176,6 +181,23 @@ const connectionKeriStateChangedHandler = async (
   }
 };
 
+const keriNotificationsChangeHandler = async (
+  event: AcdcMetadataRecord,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  dispatch(
+    setQueueConnectionCredentialRequest({
+      id: event.id,
+      type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+      logo: "", // TODO: must define Keri logo
+      label: "Credential Issuance Server", // TODO: must define it
+      source: ConnectionCredentialRequestSource.KERI,
+    })
+  );
+
+  // await AriesAgent.agent.credentials.acceptKeriAcdc(event.a.d)
+};
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -278,6 +300,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
     });
+    AriesAgent.agent.credentials.onCredentialKeriStateChanged((event) => {
+      return keriNotificationsChangeHandler(event, dispatch);
+    });
     // pickup messages
     AriesAgent.agent.messages.pickupMessagesFromMediator();
     setInitialised(true);
@@ -300,13 +325,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
           } as unknown as ConnectionStateChangedEvent,
           dispatch
         );
-      } else {
+      } else if (message instanceof CredentialExchangeRecord) {
         await credentialStateChangedHandler(
           {
             payload: { credentialRecord: message },
           } as unknown as CredentialStateChangedEvent,
           dispatch
         );
+      } else {
+        await keriNotificationsChangeHandler(message, dispatch);
       }
     });
   };

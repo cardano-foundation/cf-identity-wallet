@@ -73,8 +73,23 @@ async function invitationWithCredentialConnectionless(
   httpResponse(res, response);
 }
 
+async function issueCredentialWithKeriOobi(
+  req: Request,
+  res: Response
+): Promise<void> {
+  const { oobi } = req.body;
+  await AriesAgent.agent.issueAcdcCredentialByOobi(oobi);
+  const response: ResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: "Credential offered",
+  };
+  httpResponse(res, response);
+}
+
 export {
   offerCredentialOverConnection,
   invitationWithCredential,
   invitationWithCredentialConnectionless,
+  issueCredentialWithKeriOobi
 };

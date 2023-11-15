@@ -29,7 +29,7 @@
         "qrcode-terminal": "^0.12.0",
         "uuid": "^9.0.1",
         "ws": "^8.13.0",
-        "signify-ts": "github:WebOfTrust/signify-ts#002bb6410d944a190cc247893c1396792438743f"
+        "signify-ts": "github:WebOfTrust/signify-ts#031fde644980604c8b18da0e825257af32b0a6da"
     },
     "devDependencies": {
         "nodemon": "^3.0.1",

@@ -64,17 +64,11 @@ export class SignifyApi {
 
   async createIdentifier(): Promise<CreateIdentifierResult> {
     const signifyName = utils.uuid();
+    console.log("🚀 ~ file: signifyApi.ts:63 ~ SignifyApi ~ createIdentifier ~ signifyName:", signifyName)
     let operation = await this.signifyClient
       .identifiers()
       .create(signifyName, SignifyApi.BACKER_CONFIG);
-    operation = await this.waitAndGetOp(
-      operation,
-      this.opTimeout,
-      this.opRetryInterval
-    );
-    if (!operation.done) {
-      throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
-    }
+    await operation.op();
     await this.signifyClient
       .identifiers()
       .addEndRole(
@@ -84,7 +78,7 @@ export class SignifyApi {
       );
     return {
       signifyName,
-      identifier: operation.name.replace("witness.", ""),
+      identifier: operation.serder.ked.i,
     };
   }
 
@@ -118,6 +112,29 @@ export class SignifyApi {
       throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
     }
     return { ...operation, alias };
+  }
+
+  async getNotifications(){
+    return this.signifyClient.notifications().list();
+  }
+
+  async markNotification(id : string){
+    return this.signifyClient.notifications().mark(id)
+  }
+
+  async admitIpex(notificationD : string, holderAidName : string){
+    const contact = (await this.getContacts())[0]; // TODO: must define how to get it
+
+    const issuerAID = contact.id;
+    const dt = new Date().toISOString().replace('Z', '000+00:00');
+    const [admit, sigs, aend] = await this.signifyClient.ipex()
+      .admit(
+        holderAidName,
+        '',
+        notificationD,
+        dt);
+    await this.signifyClient.ipex()
+      .submitAdmit(holderAidName, admit, sigs, aend, [issuerAID]);
   }
 
   /**

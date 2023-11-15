@@ -25,6 +25,7 @@ interface ConnectionCredentialRequestProps {
   type?: ConnectionCredentialRequestType;
   logo?: string;
   label?: string;
+  source?: ConnectionCredentialRequestSource
 }
 
 interface QueueProps<T> {
@@ -42,7 +43,12 @@ interface StateCacheProps {
   queueConnectionCredentialRequest: QueueProps<ConnectionCredentialRequestProps>;
 }
 
-export { ConnectionCredentialRequestType };
+enum ConnectionCredentialRequestSource {
+  ARIES,
+  KERI
+}
+
+export { ConnectionCredentialRequestType, ConnectionCredentialRequestSource };
 
 export type {
   PayloadData,

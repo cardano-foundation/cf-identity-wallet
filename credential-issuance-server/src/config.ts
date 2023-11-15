@@ -20,6 +20,7 @@ const config = {
       summit: "/credentials/schemas/summit/v1",
     },
     keriOobi: "/keri-oobi",
+    issueAcdcCredentialWithOobi : "/issueAcdcCredentialWithOobi"
   },
 };
 
