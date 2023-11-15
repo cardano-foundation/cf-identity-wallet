@@ -46,7 +46,7 @@ npm run wdio:android:s23ultra
 - in case WDIO tests will not exit on its own kill the process yourself e.g. ``` pkill -9 -f wdio  ```
 
 3. Set ALLURE_RESULTS_DIR on your local
-```angular2html
+```
 ALLURE_RESULTS_DIR=tests/.reports/allure-results
 ```
 4. Generate allure report
