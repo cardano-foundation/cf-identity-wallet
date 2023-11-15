@@ -21,7 +21,15 @@ export const config: Options.Testrunner = {
   connectionRetryCount: 3,
   services: [],
   framework: "cucumber",
-  reporters: ["spec"],
+  reporters: [
+    "spec", 
+    ["allure", {
+      outputDir: "./tests/.reports/allure-results",
+      addConsoleLogs: true,
+      disableWebdriverStepsReporting: true,
+      disableWebdriverScreenshotsReporting: true,
+      useCucumberStepReporter: true,
+    }]],
   cucumberOpts: {
     backtrace: false,
     requireModule: [],
@@ -116,12 +124,8 @@ export const config: Options.Testrunner = {
    * @param {ITestCaseHookParameter} world    world object containing information on pickle and test step
    * @param {Object}                 context  Cucumber World object
    */
-  beforeScenario: async function (world, context) {
-    // if((await driver.queryAppState("cf.identity.wallet") == 1))
-    // {
-    //   await driver.activateApp("cf.identity.wallet");
-    // }
-  },
+  // beforeScenario: async function (scenario) {
+  // },
   /**
    *
    * Runs before a Cucumber Step.
@@ -155,11 +159,7 @@ export const config: Options.Testrunner = {
    * @param {Object}                 context          Cucumber World object
    */
   afterScenario:  async function (world, result, context) {
-    // if(driver.isAndroid) await driver.execute("mobile: terminateApp", {appId:"cf.identity.wallet"})
-    // else await driver.execute("mobile: terminateApp", {bundleId:"cf.identity.wallet"})
-    //await driver.removeApp("cf.identity.wallet")
     await driver.reloadSession()
-    //await driver.installApp("/Users/obstar/Library/Developer/Xcode/DerivedData/App-esrlkqtpdfzbqkbqaaupeomqnuii/Build/Products/Debug-iphonesimulator/App.app")
   },
   /**
    *
