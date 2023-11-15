@@ -24,11 +24,17 @@ services:
       - "traefik.http.routers.keria.tls.certresolver=myresolver"
       - "traefik.http.routers.keria.service=keria"
       - "traefik.http.services.keria.loadbalancer.server.port=3901"
+
+      - "traefik.http.routers.keria-ext.rule=Host(`${KERIA_EXT_HOST:-keria-ext}`)"
+      - "traefik.http.routers.keria-ext.entrypoints=websecure"
+      - "traefik.http.routers.keria-ext.tls.certresolver=myresolver"
+      - "traefik.http.routers.keria-ext.service=keria-ext"
+      - "traefik.http.services.keria-ext.loadbalancer.server.port=3902"
       
       - "traefik.http.routers.keria-boot.rule=Host(`${KERIA_BOOT_HOST:-keria-boot}`)"
       - "traefik.http.routers.keria-boot.entrypoints=websecure"
       - "traefik.http.routers.keria-boot.tls.certresolver=myresolver"
-      - "traefik.http.routers.keria-boot.service=keria-boot" 
+      - "traefik.http.routers.keria-boot.service=keria-boot"
       - "traefik.http.services.keria-boot.loadbalancer.server.port=3903"
   
   vlei:

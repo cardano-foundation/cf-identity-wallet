@@ -46,8 +46,6 @@ import {
   ConnectionKeriStateChangedEvent,
   ConnectionStatus,
   CredentialShortDetails,
-  ConnectionShortDetails,
-  IdentifierShortDetails,
 } from "../../../core/agent/agent.types";
 import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
 
@@ -210,16 +208,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     await AriesAgent.agent.start();
     dispatch(setPauseQueueConnectionCredentialRequest(true));
-    const connectionsDetails: ConnectionShortDetails[] = []; // =
-    // await AriesAgent.agent.connections.getConnections();
-    const credentials: CredentialShortDetails[] = []; //await AriesAgent.agent.credentials.getCredentials();
+    const connectionsDetails =
+      await AriesAgent.agent.connections.getConnections();
+    const credentials = await AriesAgent.agent.credentials.getCredentials();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const storedIdentities: IdentifierShortDetails[] = [];
-    // await AriesAgent.agent.identifiers.getIdentifiers();
+    const storedIdentities =
+      await AriesAgent.agent.identifiers.getIdentifiers();
     // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
     const storedCryptoAccounts: CryptoAccountProps[] = [];
 
@@ -268,20 +266,20 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setCryptoAccountsCache(storedCryptoAccounts));
     dispatch(setConnectionsCache(connectionsDetails));
 
-    // AriesAgent.agent.connections.onConnectionStateChanged((event) => {
-    //   return connectionStateChangedHandler(event, dispatch);
-    // });
-    // AriesAgent.agent.credentials.onCredentialStateChanged((event) => {
-    //   return credentialStateChangedHandler(event, dispatch);
-    // });
-    // AriesAgent.agent.messages.onBasicMessageStateChanged((event) => {
-    //   return messageStateChangedHandler(event, dispatch);
-    // });
-    // AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
-    //   return connectionKeriStateChangedHandler(event, dispatch);
-    // });
+    AriesAgent.agent.connections.onConnectionStateChanged((event) => {
+      return connectionStateChangedHandler(event, dispatch);
+    });
+    AriesAgent.agent.credentials.onCredentialStateChanged((event) => {
+      return credentialStateChangedHandler(event, dispatch);
+    });
+    AriesAgent.agent.messages.onBasicMessageStateChanged((event) => {
+      return messageStateChangedHandler(event, dispatch);
+    });
+    AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
+      return connectionKeriStateChangedHandler(event, dispatch);
+    });
     // pickup messages
-    // AriesAgent.agent.messages.pickupMessagesFromMediator();
+    AriesAgent.agent.messages.pickupMessagesFromMediator();
     setInitialised(true);
 
     const oldMessages = (

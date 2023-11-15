@@ -36,6 +36,7 @@ class HttpOutboundTransport implements OutboundTransport {
     this.agent = agent;
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
   async stop(): Promise<void> {}
 
   async sendMessage(outboundPackage: OutboundPackage) {
@@ -61,14 +62,12 @@ class HttpOutboundTransport implements OutboundTransport {
       let responseMessage: string | undefined;
       try {
         // @TODO - foconnor: This should use this.agent.config.agentDependencies but we just use fetch and it makes life easier for now.
-        console.log(`SENDING to ${outboundPackage.endpoint}: ${JSON.stringify(outboundPackage.payload, null, 2)}`);
         response = await fetch(outboundPackage.endpoint, {
           method: "POST",
           body: JSON.stringify(outboundPackage.payload),
           headers: { "Content-type": this.agent.config.didCommMimeType },
           signal: abortController.signal,
         });
-        console.log(`RESPONSE from ${outboundPackage.endpoint} was ${response}`);
         clearTimeout(id);
         responseMessage = await response.text();
       } catch (error: any) {
