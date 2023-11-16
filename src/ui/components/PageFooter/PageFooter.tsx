@@ -4,7 +4,6 @@ import "./PageFooter.scss";
 
 const PageFooter = ({
   pageId,
-  dataTestId,
   primaryButtonText,
   primaryButtonAction,
   primaryButtonDisabled,
@@ -19,7 +18,6 @@ const PageFooter = ({
     <IonToolbar
       color="light"
       className="page-footer"
-      data-testid={dataTestId}
     >
       {primaryButtonText && primaryButtonAction && (
         <IonButton

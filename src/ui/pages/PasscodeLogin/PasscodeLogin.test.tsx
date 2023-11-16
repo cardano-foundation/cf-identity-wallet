@@ -1,15 +1,95 @@
-import { MemoryRouter, Route } from "react-router-dom";
+import { MemoryRouter, Route, Router } from "react-router-dom";
 import { fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
+import configureStore from "redux-mock-store";
+import { createMemoryHistory } from "history";
 import { PasscodeLogin } from "./PasscodeLogin";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
-
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { RoutePath } from "../../../routes";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+
+interface StoreMocked {
+  stateCache: {
+    routes: RoutePath[];
+    authentication: {
+      loggedIn: boolean;
+      time: number;
+      passcodeIsSet: boolean;
+      seedPhraseIsSet?: boolean;
+    };
+    currentOperation: string;
+  };
+  seedPhraseCache: {
+    seedPhrase160: string;
+    seedPhrase256: string;
+    selected: number;
+  };
+  cryptoAccountsCache: {
+    cryptoAccounts: never[];
+  };
+}
+
+const mockStore = configureStore();
+const dispatchMock = jest.fn();
+const history = createMemoryHistory();
+const storeMocked = (initialState: StoreMocked) => {
+  return {
+    ...mockStore(initialState),
+    dispatch: dispatchMock,
+  };
+};
 
 describe("Passcode Login Page", () => {
+  beforeAll(() => {
+    history.push(RoutePath.PASSCODE_LOGIN);
+  });
+
+  const initialStateWithSeedPhrase = {
+    stateCache: {
+      routes: [RoutePath.PASSCODE_LOGIN],
+      authentication: {
+        loggedIn: false,
+        time: Date.now(),
+        passcodeIsSet: true,
+        seedPhraseIsSet: true,
+      },
+      currentOperation: "",
+    },
+    seedPhraseCache: {
+      seedPhrase160:
+        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+      seedPhrase256: "",
+      selected: FIFTEEN_WORDS_BIT_LENGTH,
+    },
+    cryptoAccountsCache: {
+      cryptoAccounts: [],
+    },
+  };
+
+  const initialStateWithoutSeedPhrase = {
+    stateCache: {
+      routes: [RoutePath.PASSCODE_LOGIN],
+      authentication: {
+        loggedIn: false,
+        time: Date.now(),
+        passcodeIsSet: true,
+        seedPhraseIsSet: false,
+      },
+      currentOperation: "",
+    },
+    seedPhraseCache: {
+      seedPhrase160: "",
+      seedPhrase256: "",
+      selected: FIFTEEN_WORDS_BIT_LENGTH,
+    },
+    cryptoAccountsCache: {
+      cryptoAccounts: [],
+    },
+  };
+
   test("Renders Passcode Login page with title and description", () => {
     const { getByText } = render(
       <Provider store={store}>
@@ -40,7 +120,7 @@ describe("Passcode Login Page", () => {
 
   test("If no seed phrase was stored and I click on I forgot my passcode, I can start over", async () => {
     const { getByText, findByText } = render(
-      <Provider store={store}>
+      <Provider store={storeMocked(initialStateWithoutSeedPhrase)}>
         <MemoryRouter initialEntries={[RoutePath.PASSCODE_LOGIN]}>
           <Route
             path={RoutePath.PASSCODE_LOGIN}
@@ -66,6 +146,40 @@ describe("Passcode Login Page", () => {
     ).toBeVisible();
     fireEvent.click(
       getByText(EN_TRANSLATIONS.passcodelogin.alert.button.restart)
+    );
+    expect(
+      await findByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)
+    ).toBeVisible();
+  });
+
+  test("If a seed phrase was stored and I click on I forgot my passcode, I can start over", async () => {
+    const { getByText, findByText } = render(
+      <Provider store={storeMocked(initialStateWithSeedPhrase)}>
+        <MemoryRouter initialEntries={[RoutePath.PASSCODE_LOGIN]}>
+          <Route
+            path={RoutePath.PASSCODE_LOGIN}
+            component={PasscodeLogin}
+          />
+          <Route
+            path={RoutePath.SET_PASSCODE}
+            component={SetPasscode}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+    fireEvent.click(getByText(/1/));
+    fireEvent.click(getByText(/2/));
+    fireEvent.click(getByText(/3/));
+    fireEvent.click(getByText(/4/));
+    fireEvent.click(getByText(/5/));
+    fireEvent.click(getByText(/6/));
+    expect(await findByText(EN_TRANSLATIONS.passcodelogin.error)).toBeVisible();
+    fireEvent.click(getByText(EN_TRANSLATIONS.passcodelogin.forgotten.button));
+    expect(
+      await findByText(EN_TRANSLATIONS.passcodelogin.alert.text.verify)
+    ).toBeVisible();
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.passcodelogin.alert.button.verify)
     );
     expect(
       await findByText(EN_TRANSLATIONS.setpasscode.enterpasscode.title)

@@ -1,6 +1,5 @@
 interface PageFooterProps {
   pageId?: string;
-  dataTestId?: string;
   primaryButtonText?: string;
   primaryButtonAction?: () => void;
   primaryButtonDisabled?: boolean;
