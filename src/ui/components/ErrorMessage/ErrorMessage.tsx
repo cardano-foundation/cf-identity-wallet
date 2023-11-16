@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./ErrorMessage.scss";
 import { ErrorMessageProps } from "./ErrorMessage.types";
 
-const MESSAGE_MILLISECONDS = 5000;
+const MESSAGE_MILLISECONDS = 2500;
 
 const ErrorMessage = ({ message, timeout }: ErrorMessageProps) => {
   const [visible, setVisible] = useState(true);

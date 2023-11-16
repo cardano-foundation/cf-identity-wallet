@@ -1,7 +1,7 @@
 .error-message {
   text-align: center;
   opacity: 0;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 2s ease-in-out;
 
   &.visible {
     opacity: 1;
