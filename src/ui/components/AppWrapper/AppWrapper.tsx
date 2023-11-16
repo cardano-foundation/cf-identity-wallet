@@ -26,10 +26,6 @@ import {
 } from "../../../store/reducers/credsCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import {
-  setCryptoAccountsCache,
-  setHideCryptoBalances,
-} from "../../../store/reducers/cryptoAccountsCache";
-import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences";
@@ -222,15 +218,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const storedCryptoAccounts: CryptoAccountProps[] = [];
 
     try {
-      const hideCryptoBalances = await PreferencesStorage.get(
-        PreferencesKeys.APP_HIDE_CRYPTO_BALANCES
-      );
-      dispatch(setHideCryptoBalances(!!hideCryptoBalances.hidden));
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
-
-    try {
       const didsFavourites = await PreferencesStorage.get(
         PreferencesKeys.APP_DIDS_FAVOURITES
       );
@@ -263,7 +250,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     dispatch(setIdentitiesCache(storedIdentities));
     dispatch(setCredsCache(credentials));
-    dispatch(setCryptoAccountsCache(storedCryptoAccounts));
     dispatch(setConnectionsCache(connectionsDetails));
 
     AriesAgent.agent.connections.onConnectionStateChanged((event) => {

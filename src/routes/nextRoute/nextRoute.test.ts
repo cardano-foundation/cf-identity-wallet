@@ -48,11 +48,6 @@ describe("NextRoute", () => {
       },
       identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
       connectionsCache: {
         connections: [],
       },
@@ -173,11 +168,6 @@ describe("getNextRoute", () => {
     },
     identitiesCache: { identities: [], favourites: [] },
     credsCache: { creds: [], favourites: [] },
-    cryptoAccountsCache: {
-      cryptoAccounts: [],
-      defaultCryptoAccount: "",
-      hideCryptoBalances: false,
-    },
     connectionsCache: {
       connections: [],
     },

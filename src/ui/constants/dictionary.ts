@@ -1,9 +1,7 @@
 import {
-  ConnectionShortDetails,
   ConnectionStatus,
   CredentialDetails,
 } from "../../core/agent/agent.types";
-import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
 import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import BackgroundDidKey0 from "../assets/images/did-key-0.png";
 import BackgroundDidKey1 from "../assets/images/did-key-1.png";
@@ -100,36 +98,6 @@ const defaultCredentialsCardData: CredentialDetails = {
   status: CredentialMetadataRecordStatus.PENDING,
 };
 
-const defaultCryptoAccountData: CryptoAccountProps = {
-  address: "",
-  derivationPath: "",
-  name: "",
-  blockchain: "",
-  currency: "",
-  logo: "",
-  balance: {
-    main: {
-      nativeBalance: 0,
-      usdBalance: 0,
-    },
-    reward: {
-      nativeBalance: 0,
-      usdBalance: 0,
-    },
-  },
-  usesIdentitySeedPhrase: false,
-  assets: [],
-  transactions: [],
-};
-
-const defaultConnectionData: ConnectionShortDetails = {
-  id: "",
-  label: "",
-  connectionDate: "",
-  logo: "",
-  status: ConnectionStatus.PENDING,
-};
-
 const blurredCryptoData = "••••••••••••••••••";
 
 const onboardingRoute = {
@@ -156,8 +124,6 @@ export {
   operationState,
   toastState,
   defaultCredentialsCardData,
-  defaultCryptoAccountData,
-  defaultConnectionData,
   blurredCryptoData,
   onboardingRoute,
   connectionType,

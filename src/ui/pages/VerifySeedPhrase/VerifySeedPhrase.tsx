@@ -21,19 +21,14 @@ import { updateReduxState } from "../../../store/utils";
 import {
   getStateCache,
   setCurrentOperation,
-  setInitialized,
 } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { operationState, toastState } from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
-import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 import { Addresses } from "../../../core/cardano";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
+import { ChooseAccountName } from "../../components/ChooseAccountName";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();

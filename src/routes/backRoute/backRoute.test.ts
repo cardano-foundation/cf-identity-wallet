@@ -51,11 +51,6 @@ describe("getBackRoute", () => {
       },
       identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
       connectionsCache: {
         connections: [],
       },
@@ -142,11 +137,6 @@ describe("getBackRoute", () => {
       },
       identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
       connectionsCache: {
         connections: [],
       },
@@ -218,11 +208,6 @@ describe("getPreviousRoute", () => {
       },
       identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
       connectionsCache: {
         connections: [],
       },

@@ -7,11 +7,6 @@ import { i18n } from "../../../i18n";
 import { CustomInput } from "../CustomInput";
 import { PageLayout } from "../layout/PageLayout";
 import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
-import {
-  getCryptoAccountsCache,
-  setCryptoAccountsCache,
-} from "../../../store/reducers/cryptoAccountsCache";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { ChooseAccountNameProps } from "./ChooseAccountName.types";
 import "./ChooseAccountName.scss";
 import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
@@ -24,11 +19,8 @@ const ChooseAccountName = ({
   usesIdentitySeedPhrase,
   onDone,
 }: ChooseAccountNameProps) => {
-  const dispatch = useAppDispatch();
   const seedPhraseStorageService = useRef(new SeedPhraseStorageService());
-  const cryptoAccountsData: CryptoAccountProps[] = useAppSelector(
-    getCryptoAccountsCache
-  );
+
   const [accountName, setAccountName] = useState("");
   const [keyboardIsOpen, setkeyboardIsOpen] = useState(false);
 
@@ -89,7 +81,6 @@ const ChooseAccountName = ({
       );
     }
 
-    dispatch(setCryptoAccountsCache([...cryptoAccountsData, newWallet]));
     setChooseAccountNameIsOpen(false);
     if (onDone) {
       onDone();
