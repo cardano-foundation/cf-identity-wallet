@@ -20,7 +20,7 @@ const CardsPlaceholder = ({
       <IonButton
         shape="round"
         expand="block"
-        className="ion-primary-button"
+        className="primary-button"
         onClick={buttonAction}
       >
         <IonIcon

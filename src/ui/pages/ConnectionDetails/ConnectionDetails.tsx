@@ -440,7 +440,7 @@ const ConnectionDetails = () => {
                 <div className="connection-details-add-note">
                   <IonButton
                     shape="round"
-                    className="ion-primary-button"
+                    className="primary-button"
                     onClick={() => {
                       setNotes([
                         ...notes,

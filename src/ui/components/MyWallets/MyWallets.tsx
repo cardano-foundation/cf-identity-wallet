@@ -268,7 +268,7 @@ const MyWallets = ({
             <IonButton
               shape="round"
               expand="block"
-              className="ion-primary-button"
+              className="primary-button"
               onClick={() => {
                 setMyWalletsIsOpen(false);
                 setAddAccountIsOpen(true);

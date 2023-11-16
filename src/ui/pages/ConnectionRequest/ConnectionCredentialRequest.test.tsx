@@ -87,7 +87,7 @@ describe("Connection request", () => {
         <ConnectionCredentialRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("continue-button");
+    const continueButton = await findByTestId("primary-button");
 
     expect(continueButton).toBeInTheDocument();
 
@@ -120,7 +120,7 @@ describe("Connection request", () => {
         <ConnectionCredentialRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("continue-button");
+    const continueButton = await findByTestId("primary-button");
     act(() => {
       fireEvent.click(continueButton);
     });
@@ -154,7 +154,7 @@ describe("Credential request", () => {
         <ConnectionCredentialRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("continue-button");
+    const continueButton = await findByTestId("primary-button");
     act(() => {
       fireEvent.click(continueButton);
     });
