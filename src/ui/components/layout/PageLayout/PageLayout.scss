@@ -5,4 +5,70 @@
   &.modal-sheet {
     background: transparent;
   }
+
+  ion-toolbar,
+  .toolbar-container,
+  ion-grid,
+  ion-col {
+    padding-inline: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+
+  ion-header ion-toolbar {
+    margin-top: 0.625rem;
+
+    .back-button,
+    .close-button,
+    .action-button {
+      width: 2.5rem;
+      height: 2.5rem;
+      border-radius: 1.5rem;
+      background: var(--ion-color-light-grey);
+    }
+
+    ion-button[disabled="true"] {
+      color: var(--ion-color-dark-grey);
+    }
+
+    ion-icon {
+      font-size: 1.85em !important;
+    }
+
+    .close-button-label,
+    .action-button-label {
+      font-size: 1rem;
+      font-weight: 700;
+
+      &.md {
+        font-size: 0.8rem;
+      }
+    }
+
+    .close-button-label {
+      --padding-start: 0px;
+    }
+
+    .action-button-label {
+      --padding-end: 0px;
+      &[disabled="false"] {
+        color: var(--ion-color-blue);
+      }
+    }
+  }
+
+  .progress-bar-container {
+    margin-inline: 0.3rem;
+  }
+
+  ion-title {
+    padding: 0;
+    text-align: center;
+  }
+
+  ion-progress-bar,
+  ion-progress-bar::part(progress) {
+    height: 6px;
+    border-radius: 6px;
+  }
 }
