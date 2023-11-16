@@ -73,6 +73,8 @@ h3 {
 
 p {
   font-size: 1rem;
+  margin: 0.5rem 0;
+  padding-inline: 0;
   line-height: 1.375rem;
   color: var(--ion-color-secondary);
 }
@@ -85,10 +87,9 @@ p {
   }
 
   p {
-    margin: 0.5rem 0;
-    line-height: 1rem;
-    padding-inline: 0;
     font-size: 0.8rem;
+    margin: 0.35rem 0;
+    line-height: 1rem;
   }
 
   .small-hide {

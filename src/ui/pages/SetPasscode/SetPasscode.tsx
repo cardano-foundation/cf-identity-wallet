@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { IonButton, IonCol, IonGrid, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { ErrorMessage } from "../../components/ErrorMessage";
@@ -110,14 +109,16 @@ const SetPasscode = () => {
       </p>
       <PasscodeModule
         error={
-          originalPassCode !== "" &&
-          passcode.length === 6 &&
-          originalPassCode !== passcode && (
-            <ErrorMessage
-              message={`${i18n.t("setpasscode.enterpasscode.error")}`}
-              timeout={true}
-            />
-          )
+          <ErrorMessage
+            message={
+              originalPassCode !== "" &&
+              passcode.length === 6 &&
+              originalPassCode !== passcode
+                ? `${i18n.t("setpasscode.enterpasscode.error")}`
+                : undefined
+            }
+            timeout={true}
+          />
         }
         passcode={passcode}
         handlePinChange={handlePinChange}
@@ -131,7 +132,10 @@ const SetPasscode = () => {
           secondaryButtonAction={() => handleClearState()}
         />
       ) : (
-        <IonGrid classNamedata-testid="forgot-your-passcode-placeholder" />
+        <div
+          className="forgot-your-passcode-placeholder"
+          data-testid="forgot-your-passcode-placeholder"
+        />
       )}
     </ResponsivePageLayout>
   );

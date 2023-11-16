@@ -1,7 +1,11 @@
 .page-footer {
-  padding-top: 0.5rem;
+  padding: 0.5rem 0;
 
   ion-button {
     margin: 0 auto 1rem;
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
   }
 }

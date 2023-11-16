@@ -25,7 +25,7 @@ const PasscodeModule = ({
   rows.push(currentRow);
 
   return (
-    <div className="passcode-module">
+    <>
       <div className="passcode-module-circle-row">
         {Array.from({ length: 6 }, (_, index) => (
           <div
@@ -37,7 +37,7 @@ const PasscodeModule = ({
           />
         ))}
       </div>
-      {error || <div className="passcode-module-pin-error-placeholder" />}
+      {error}
       <IonGrid className="passcode-module-container">
         {rows.map(
           (row, rowIndex) =>
@@ -91,7 +91,7 @@ const PasscodeModule = ({
             )
         )}
       </IonGrid>
-    </div>
+    </>
   );
 };
 

@@ -29,6 +29,14 @@
         height: auto !important;
         width: 62vw !important;
       }
+
+      @media screen and (min-height: 300px) and (max-height: 600px) {
+        img,
+        svg {
+          height: auto !important;
+          width: 55vw !important;
+        }
+      }
     }
   }
 
@@ -37,6 +45,7 @@
     justify-content: center;
     align-items: center;
     padding-inline: 1rem;
+    margin: 0.25rem 0;
   }
 
   .page-indicator,
