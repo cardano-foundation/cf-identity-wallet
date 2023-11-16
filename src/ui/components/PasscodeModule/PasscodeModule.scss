@@ -20,8 +20,6 @@
 
 .passcode-module-container {
   padding: 0;
-  height: 100%;
-  max-height: 49vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -87,15 +85,13 @@
   }
 }
 
-@media screen and (min-height: 300px) and (max-height: 600px) {
+@media screen and (min-height: 300px) and (max-height: 715px) {
   .passcode-module-circle {
     width: 5vw;
     height: 5vw;
   }
 
   .passcode-module-container {
-    max-height: 55vh;
-
     .passcode-module-numbers-row {
       ion-button {
         height: 12vh;

@@ -19,15 +19,14 @@ const PageFooter = ({
     <IonToolbar
       color="light"
       className="page-footer"
+      data-testid={dataTestId}
     >
       {primaryButtonText && primaryButtonAction && (
         <IonButton
           shape="round"
           expand="block"
           className="primary-button"
-          data-testid={
-            dataTestId || `primary-button${pageId ? `-${pageId}` : ""}`
-          }
+          data-testid={`primary-button${pageId ? `-${pageId}` : ""}`}
           onClick={primaryButtonAction}
           disabled={primaryButtonDisabled}
         >
