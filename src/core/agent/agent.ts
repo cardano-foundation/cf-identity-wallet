@@ -142,8 +142,7 @@ class AriesAgent {
   async start(): Promise<void> {
     if (!AriesAgent.ready) {
       await this.agent.initialize();
-      // Temporary fix for signify - TO DO: Remove this
-      // await this.agent.modules.signify.start();
+      await this.agent.modules.signify.start();
       AriesAgent.ready = true;
     }
   }

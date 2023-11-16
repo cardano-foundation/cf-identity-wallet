@@ -169,13 +169,14 @@ const VerifyPasscode = ({
         </IonGrid>
         <PasscodeModule
           error={
-            passcode.length === 6 &&
-            passcodeIncorrect && (
-              <ErrorMessage
-                message={`${i18n.t("verifypasscode.error")}`}
-                timeout={true}
-              />
-            )
+            <ErrorMessage
+              message={
+                passcode.length === 6 && passcodeIncorrect
+                  ? `${i18n.t("verifypasscode.error")}`
+                  : undefined
+              }
+              timeout={true}
+            />
           }
           passcode={passcode}
           handlePinChange={handlePinChange}
