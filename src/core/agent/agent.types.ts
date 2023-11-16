@@ -16,6 +16,11 @@ enum ConnectionStatus {
   PENDING = "pending",
 }
 
+enum CredentialStatus {
+  CONFIRMED = "confirmed",
+  PENDING = "pending",
+}
+
 enum GenericRecordType {
   CONNECTION_NOTE = "connection-note",
   CONNECTION_KERI_METADATA = "connection-keri-metadata",
@@ -127,11 +132,22 @@ type UpdateIdentityMetadata = Omit<
 enum ConnectionKeriEventTypes {
   ConnectionKeriStateChanged = "ConnectionKeriStateChanged",
 }
+enum AcdcKeriEventTypes {
+  AcdcKeriStateChanged = "AcdcKeriStateChanged",
+}
 interface ConnectionKeriStateChangedEvent extends BaseEvent {
   type: typeof ConnectionKeriEventTypes.ConnectionKeriStateChanged;
   payload: {
     connectionId?: string;
     status: ConnectionStatus;
+  };
+}
+
+interface AcdcKeriStateChangedEvent extends BaseEvent {
+  type: typeof AcdcKeriEventTypes.AcdcKeriStateChanged;
+  payload: {
+    credentialId?: string;
+    status: CredentialStatus;
   };
 }
 
@@ -157,6 +173,8 @@ export {
   MiscRecordId,
   ConnectionType,
   ConnectionKeriEventTypes,
+  AcdcKeriEventTypes,
+  CredentialStatus
 };
 export type {
   CryptoAccountRecordShortDetails,
@@ -173,5 +191,6 @@ export type {
   ConnectionHistoryItem,
   ConnectionKeriStateChangedEvent,
   KeriNotification,
-  AcdcMetadataRecord
+  AcdcMetadataRecord,
+  AcdcKeriStateChangedEvent,
 };

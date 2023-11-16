@@ -17,7 +17,10 @@ import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { connectionType } from "../../constants/dictionary";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
-import { ConnectionCredentialRequestSource, ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import {
+  ConnectionCredentialRequestSource,
+  ConnectionCredentialRequestType,
+} from "../../../store/reducers/stateCache/stateCache.types";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
 const ConnectionCredentialRequest = () => {
@@ -89,7 +92,9 @@ const ConnectionCredentialRequest = () => {
         connectionCredentialRequest.source ===
         ConnectionCredentialRequestSource.KERI
       ) {
-        // TODO: must remove AcdcMetadataRecord
+        await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
+          connectionCredentialRequest.id
+        );
       } else {
         await AriesAgent.agent.credentials.declineCredentialOffer(
           connectionCredentialRequest.id
@@ -132,7 +137,9 @@ const ConnectionCredentialRequest = () => {
         connectionCredentialRequest.source ===
         ConnectionCredentialRequestSource.KERI
       ) {
-        AriesAgent.agent.credentials.acceptKeriAcdc(connectionCredentialRequest.id);
+        AriesAgent.agent.credentials.acceptKeriAcdc(
+          connectionCredentialRequest.id
+        );
       } else {
         AriesAgent.agent.credentials.acceptCredentialOffer(
           connectionCredentialRequest.id
@@ -215,11 +222,11 @@ const ConnectionCredentialRequest = () => {
                 connectionCredentialRequest.type ===
                   ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
                   ? i18next.t("request.pending", {
-                    action: requestType,
-                  })
+                      action: requestType,
+                    })
                   : i18next.t("request.success", {
-                    action: requestType,
-                  })}
+                      action: requestType,
+                    })}
               </strong>
             </IonCol>
           </IonRow>

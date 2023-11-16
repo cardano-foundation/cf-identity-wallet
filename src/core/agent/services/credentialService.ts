@@ -17,6 +17,9 @@ import {
   CredentialShortDetails,
   GenericRecordType,
   AcdcMetadataRecord,
+  AcdcKeriStateChangedEvent,
+  AcdcKeriEventTypes,
+  CredentialStatus,
 } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
@@ -24,7 +27,6 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { GenericRecord } from "@aries-framework/core/build/modules/generic-records/repository/GenericRecord";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -42,6 +44,15 @@ class CredentialService extends AgentService {
     this.agent.events.on(
       CredentialEventTypes.CredentialStateChanged,
       async (event: CredentialStateChangedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onAcdcKeriStateChanged(callback: (event: AcdcKeriStateChangedEvent) => void) {
+    this.agent.events.on(
+      AcdcKeriEventTypes.AcdcKeriStateChanged,
+      async (event: AcdcKeriStateChangedEvent) => {
         callback(event);
       }
     );
@@ -344,9 +355,10 @@ class CredentialService extends AgentService {
     });
   }
 
-  async createAcdcMetadataRecord(event: any): Promise<GenericRecord> {
-    return this.agent.genericRecords.save({
-      id: event.sad.d,
+  async createAcdcMetadataRecord(event: any): Promise<void> {
+    const credentialId = event.sad.d;
+    await this.agent.genericRecords.save({
+      id: credentialId,
       content: {
         sad: event.sad,
         schema: event.schema,
@@ -354,6 +366,13 @@ class CredentialService extends AgentService {
       tags: {
         type: GenericRecordType.ACDC_KERI,
         status: CredentialMetadataRecordStatus.CONFIRMED,
+      },
+    });
+    this.agent.events.emit<AcdcKeriStateChangedEvent>(this.agent.context, {
+      type: AcdcKeriEventTypes.AcdcKeriStateChanged,
+      payload: {
+        credentialId,
+        status: CredentialStatus.PENDING,
       },
     });
   }
@@ -389,12 +408,18 @@ class CredentialService extends AgentService {
     };
   }
 
-  private async deleteKeriNotificationRecordById(id: string): Promise<void> {
+  async deleteKeriNotificationRecordById(id: string): Promise<void> {
     await this.agent.genericRecords.deleteById(id);
   }
 
   async acceptKeriAcdc(id: string): Promise<void> {
     const keriNoti = await this.getKeriNotificationRecordById(id);
+    this.agent.events.emit<AcdcKeriStateChangedEvent>(this.agent.context, {
+      type: AcdcKeriEventTypes.AcdcKeriStateChanged,
+      payload: {
+        status: CredentialStatus.PENDING,
+      },
+    });
     const holder = (
       await this.agent.modules.generalStorage.getAllAvailableIdentifierMetadata()
     )[0]; // TODO: must define the default AID
