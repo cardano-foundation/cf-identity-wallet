@@ -1,0 +1,89 @@
+.page-header {
+  ion-toolbar,
+  ion-grid,
+  ion-col {
+    padding-inline: 0;
+    --padding-start: 0;
+    --padding-end: 0;
+  }
+
+  ion-toolbar {
+    ion-icon {
+      font-size: 1.85em !important;
+    }
+
+    .progress-bar-container {
+      margin-left: 1.25rem;
+
+      ion-progress-bar,
+      ion-progress-bar::part(progress) {
+        height: 0.5rem;
+        border-radius: 0.5rem;
+      }
+    }
+
+    .back-button,
+    .close-button,
+    .action-button {
+      width: 2.81rem;
+      height: 2.81rem;
+      border-radius: 1.5rem;
+      background: var(--ion-color-light-grey);
+    }
+
+    ion-button[disabled="true"] {
+      color: var(--ion-color-dark-grey);
+    }
+
+    .close-button-label,
+    .action-button-label {
+      font-size: 1rem;
+      font-weight: 700;
+
+      &.md {
+        font-size: 0.8rem;
+      }
+    }
+
+    .close-button-label {
+      --padding-start: 0px;
+    }
+
+    .action-button-label {
+      --padding-end: 0px;
+      &[disabled="false"] {
+        color: var(--ion-color-blue);
+      }
+    }
+  }
+
+  ion-title {
+    padding: 0;
+    text-align: center;
+  }
+
+  @media screen and (min-height: 300px) and (max-height: 600px) {
+    ion-toolbar {
+      .back-button,
+      .close-button,
+      .action-button {
+        width: 2rem;
+        height: 2rem;
+
+        &::part(native) {
+          padding: 0.35rem;
+        }
+      }
+
+      .progress-bar-container {
+        margin-left: 0.75rem;
+
+        ion-progress-bar,
+        ion-progress-bar::part(progress) {
+          height: 0.35rem;
+          border-radius: 0.35rem;
+        }
+      }
+    }
+  }
+}

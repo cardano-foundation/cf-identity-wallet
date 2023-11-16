@@ -30,10 +30,12 @@ describe("Passcode Login Page", () => {
     );
     fireEvent.click(getByText(/1/));
     const circleElement = getByTestId("circle-0");
-    expect(circleElement.classList).toContain("circle-fill");
+    expect(circleElement.classList).toContain("passcode-module-circle-fill");
     const backspaceButton = getByTestId("setpasscode-backspace-button");
     fireEvent.click(backspaceButton);
-    expect(circleElement.classList).not.toContain("circle-fill");
+    expect(circleElement.classList).not.toContain(
+      "passcode-module-circle-fill"
+    );
   });
 
   test("If no seed phrase was stored and I click on I forgot my passcode, I can start over", async () => {

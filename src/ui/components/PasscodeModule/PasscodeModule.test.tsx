@@ -5,26 +5,10 @@ describe("Passcode Module", () => {
   const errorFunction = jest.fn();
   let handlePinChange = jest.fn(() => 0);
   const handleRemove = jest.fn();
-  test("User can read title and description", () => {
-    const { getByText } = render(
-      <PasscodeModule
-        title="Title"
-        description="Description"
-        error={errorFunction()}
-        passcode="passcode"
-        handlePinChange={handlePinChange}
-        handleRemove={handleRemove()}
-      />
-    );
-    expect(getByText("Title")).toBeInTheDocument();
-    expect(getByText("Description")).toBeInTheDocument();
-  });
 
   test("Clicking on a number button returns a digit", () => {
     const { getByText } = render(
       <PasscodeModule
-        title="Title"
-        description="Description"
         error={errorFunction()}
         passcode="passcode"
         handlePinChange={handlePinChange}
