@@ -33,7 +33,7 @@ const agentConfig: InitConfig = {
 
 class AriesAgent {
   static readonly ISSUER_AID_NAME = "issuer";
-  static readonly VLEI_HOST = "http://vlei-server:7723/oobi/";
+  static readonly VLEI_HOST = "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
 
   private static instance: AriesAgent;

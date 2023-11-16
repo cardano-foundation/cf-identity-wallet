@@ -3,10 +3,10 @@ import { d, messagize, Serder, Siger, SignifyClient, ready as signifyReady, Tier
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
-    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3901";
+    "http://127.0.0.1:3901";
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3903";
-  static readonly SIGNIFY_BRAN = "0123456a89abcdefghlkk"; // @TODO - foconnor: Shouldn't be hard-coded.
+    "http://127.0.0.1:3903";
+  static readonly SIGNIFY_BRAN = "0123456a89aacxeaCaxkk"; // @TODO - foconnor: Shouldn't be hard-coded.
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
@@ -21,7 +21,7 @@ export class SignifyApi {
     ncount: 1,
     isith: "1",
     nsith: "1",
-    data: [{ ca: SignifyApi.BACKER_ADDRESS }],
+    // data: [{ ca: SignifyApi.BACKER_ADDRESS }],
   };
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
@@ -61,6 +61,7 @@ export class SignifyApi {
       .create(signifyName, SignifyApi.BACKER_CONFIG);
     await op.op();
     const aid1 = await this.getIdentifierByName(signifyName);
+    console.log("🚀 ~ file: signifyApi.ts:64 ~ SignifyApi ~ createIdentifier ~ aid1:", aid1)
     await this.signifyClient
       .identifiers()
       .addEndRole(

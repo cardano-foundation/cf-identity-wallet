@@ -11,7 +11,13 @@ import {
   JsonLdCredentialDetailFormat,
   W3cJsonLdVerifiableCredential,
 } from "@aries-framework/core";
-import { AcdcMetadataRecord, CredentialDetails, CredentialShortDetails, GenericRecordType } from "../agent.types";
+import {
+  KeriNotification,
+  CredentialDetails,
+  CredentialShortDetails,
+  GenericRecordType,
+  AcdcMetadataRecord,
+} from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
 import {
@@ -27,8 +33,8 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_FOR_NEGOTIATE =
     "Credential missing for negotiation";
   static readonly CREATED_DID_NOT_FOUND = "Referenced public did not found";
-  static readonly ACDC_METADATA_NOT_FOUND = "ACDC metadata record not found";
-
+  static readonly KERI_NOTIFICATION_NOT_FOUND =
+    "Keri notification record not found";
 
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
@@ -42,15 +48,18 @@ class CredentialService extends AgentService {
   }
 
   async onCredentialKeriStateChanged(
-    callback: (event: AcdcMetadataRecord) => void
+    callback: (event: KeriNotification) => void
   ) {
     while (true) {
       const notifications = await this.agent.modules.signify.getNotifications();
       for (let notif of notifications.notes) {
-        if (notif.a.r == "/exn/ipex/grant") {
-          callback(notif);
+        if (notif.a.r == "/exn/ipex/grant" && notif.r === false) {
+          const keriNoti = await this.createKeriNotificationRecord(notif);
+          callback(keriNoti);
         }
-        await this.agent.modules.signify.markNotification(notif.i);
+        if (notif.r === false) {
+          await this.agent.modules.signify.markNotification(notif.i);
+        }
       }
       await new Promise((rs) => {
         setTimeout(() => {
@@ -279,13 +288,13 @@ class CredentialService extends AgentService {
   }
 
   async getUnhandledCredentials(): Promise<
-    (CredentialExchangeRecord | AcdcMetadataRecord)[]
+    (CredentialExchangeRecord | KeriNotification)[]
   > {
     const results = await Promise.all([
       this.agent.credentials.findAllByQuery({
         state: CredentialState.OfferReceived,
       }),
-      this.getAcdcMetadataRecords(CredentialMetadataRecordStatus.PENDING),
+      this.getKeriNotifications(),
     ]);
     return results.flat();
   }
@@ -307,23 +316,24 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  async createAcdcMetadataRecord(event: any): Promise<GenericRecord> {
-    return this.agent.genericRecords.save({
+  async createKeriNotificationRecord(event: any): Promise<KeriNotification> {
+    const result = await this.agent.genericRecords.save({
       id: event.i,
       content: event.a,
       tags: {
-        type: GenericRecordType.ACDC_KERI,
-        status: CredentialMetadataRecordStatus.PENDING,
+        type: GenericRecordType.NOTIFICATION_KERI,
       },
     });
+    return {
+      id: result.id,
+      createdAt: result.createdAt,
+      a: result.content,
+    };
   }
 
-  async getAcdcMetadataRecords(
-    status?: CredentialMetadataRecordStatus
-  ): Promise<AcdcMetadataRecord[]> {
+  async getKeriNotifications(): Promise<KeriNotification[]> {
     const results = await this.agent.genericRecords.findAllByQuery({
-      status,
-      type: GenericRecordType.ACDC_KERI,
+      type: GenericRecordType.NOTIFICATION_KERI,
     });
     return results.map((result) => {
       return {
@@ -334,10 +344,43 @@ class CredentialService extends AgentService {
     });
   }
 
-  async getAcdcMetadataRecordById(id: string): Promise<AcdcMetadataRecord> {
+  async createAcdcMetadataRecord(event: any): Promise<GenericRecord> {
+    return this.agent.genericRecords.save({
+      id: event.sad.d,
+      content: {
+        sad: event.sad,
+        schema: event.schema,
+      },
+      tags: {
+        type: GenericRecordType.ACDC_KERI,
+        status: CredentialMetadataRecordStatus.CONFIRMED,
+      },
+    });
+  }
+
+  async getAcdcMetadataRecords(): Promise<AcdcMetadataRecord[]> {
+    const results = await this.agent.genericRecords.findAllByQuery({
+      type: GenericRecordType.ACDC_KERI,
+    });
+    return results.map((result) => {
+      return {
+        id: result.id,
+        createdAt: result.createdAt,
+        sad: result.content?.sad as Record<string, unknown>,
+        schema: result.content?.schema as Record<string, unknown>,
+      };
+    });
+  }
+
+  private async checkGenericRecordExist(id: string): Promise<boolean> {
+    const record = await this.agent.genericRecords.findById(id);
+    return !!record;
+  }
+
+  async getKeriNotificationRecordById(id: string): Promise<KeriNotification> {
     const result = await this.agent.genericRecords.findById(id);
     if (!result) {
-      throw new Error(`${CredentialService.ACDC_METADATA_NOT_FOUND} ${id}`);
+      throw new Error(`${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`);
     }
     return {
       id: result.id,
@@ -346,16 +389,42 @@ class CredentialService extends AgentService {
     };
   }
 
+  private async deleteKeriNotificationRecordById(id: string): Promise<void> {
+    await this.agent.genericRecords.deleteById(id);
+  }
+
   async acceptKeriAcdc(id: string): Promise<void> {
-    const acdcMetadataRecord = await this.getAcdcMetadataRecordById(id);
+    const keriNoti = await this.getKeriNotificationRecordById(id);
     const holder = (
       await this.agent.modules.generalStorage.getAllAvailableIdentifierMetadata()
-    )[0];
+    )[0]; // TODO: must define the default AID
 
     await this.agent.modules.signify.admitIpex(
-      acdcMetadataRecord.a.d as string,
+      keriNoti.a.d as string,
       holder.signifyName!
     );
+    const newCreds = await this.getNewKeriCredentials();
+    for (const cred of newCreds) {
+      await this.createAcdcMetadataRecord(cred);
+    }
+    await this.deleteKeriNotificationRecordById(id);
+  }
+
+  private async getNewKeriCredentials(): Promise<any> {
+    let newCredentials = [];
+    let holderCreds = await this.agent.modules.signify.getCredentials();
+
+    while (newCredentials.length < 1) {
+      for (const cred of holderCreds) {
+        const recordExisted = await this.checkGenericRecordExist(cred.i);
+        if (!recordExisted) {
+          newCredentials.push(cred);
+        }
+      }
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      holderCreds = await this.agent.modules.signify.getCredentials();
+    }
+    return newCredentials;
   }
 }
 

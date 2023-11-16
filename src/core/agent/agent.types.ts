@@ -19,7 +19,8 @@ enum ConnectionStatus {
 enum GenericRecordType {
   CONNECTION_NOTE = "connection-note",
   CONNECTION_KERI_METADATA = "connection-keri-metadata",
-  ACDC_KERI = "acdc-keri"
+  ACDC_KERI = "acdc-keri",
+  NOTIFICATION_KERI = "notification-keri",
 }
 
 enum ConnectionHistoryType {
@@ -134,11 +135,18 @@ interface ConnectionKeriStateChangedEvent extends BaseEvent {
   };
 }
 
+interface KeriNotification {
+  id: string;
+  createdAt: Date;
+  a: Record<string, unknown>;
+}
+
 interface AcdcMetadataRecord {
-  id : string,
-  createdAt : Date,
-  a : Record<string, unknown>
-} 
+  id: string;
+  createdAt: Date;
+  schema: Record<string, unknown>;
+  sad: Record<string, unknown>;
+}
 
 export {
   IdentifierType,
@@ -149,7 +157,6 @@ export {
   MiscRecordId,
   ConnectionType,
   ConnectionKeriEventTypes,
-  
 };
 export type {
   CryptoAccountRecordShortDetails,
@@ -165,5 +172,6 @@ export type {
   ConnectionNoteProps,
   ConnectionHistoryItem,
   ConnectionKeriStateChangedEvent,
+  KeriNotification,
   AcdcMetadataRecord
 };

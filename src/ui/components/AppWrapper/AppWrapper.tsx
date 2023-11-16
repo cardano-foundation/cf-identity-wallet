@@ -47,7 +47,7 @@ import { toastState } from "../../constants/dictionary";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import {
-  AcdcMetadataRecord,
+  KeriNotification,
   ConnectionKeriStateChangedEvent,
   ConnectionStatus,
   CredentialShortDetails,
@@ -182,7 +182,7 @@ const connectionKeriStateChangedHandler = async (
 };
 
 const keriNotificationsChangeHandler = async (
-  event: AcdcMetadataRecord,
+  event: KeriNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   dispatch(
