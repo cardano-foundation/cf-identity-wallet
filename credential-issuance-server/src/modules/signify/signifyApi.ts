@@ -1,18 +1,11 @@
-import { utils } from "@aries-framework/core";
-import {
-  SignifyClient,
-  ready as signifyReady,
-  Tier,
-  randomPasscode,
-} from "signify-ts";
-import { KeriContact, CreateIdentifierResult } from "./signifyApi.types";
-import { KeyStoreKeys, SecureStorage } from "../../../storage";
+import { SignifyClient, ready as signifyReady, Tier } from "signify-ts";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
-    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
+    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3901";
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
+    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3903";
+  static readonly SIGNIFY_BRAN = "0123456789abcdefghqkk"; // @TODO - foconnor: Shouldn't be hard-coded.
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
@@ -30,8 +23,6 @@ export class SignifyApi {
     data: [{ ca: SignifyApi.BACKER_ADDRESS }],
   };
   static readonly DEFAULT_ROLE = "agent";
-  static readonly FAILED_TO_RESOLVE_OOBI =
-    "Failed to resolve OOBI, operation not completing...";
 
   private signifyClient!: SignifyClient;
   private opTimeout: number;
@@ -47,10 +38,9 @@ export class SignifyApi {
    */
   async start(): Promise<void> {
     await signifyReady();
-    const bran = await this.getBran();
     this.signifyClient = new SignifyClient(
       SignifyApi.LOCAL_KERIA_ENDPOINT,
-      bran,
+      SignifyApi.SIGNIFY_BRAN,
       Tier.low,
       SignifyApi.LOCAL_KERIA_BOOT_ENDPOINT
     );
@@ -62,19 +52,16 @@ export class SignifyApi {
     }
   }
 
-  async createIdentifier(): Promise<CreateIdentifierResult> {
-    const signifyName = utils.uuid();
-    let operation = await this.signifyClient
+  async createIdentifier(signifyName: string): Promise<any> {
+    const op = await this.signifyClient
       .identifiers()
       .create(signifyName, SignifyApi.BACKER_CONFIG);
-    operation = await this.waitAndGetOp(
-      operation,
-      this.opTimeout,
-      this.opRetryInterval
-    );
-    if (!operation.done) {
+    if (
+      !(await this.waitUntilOpDone(op, this.opTimeout, this.opRetryInterval))
+    ) {
       throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
     }
+    const aid1 = await this.getIdentifierByName(signifyName);
     await this.signifyClient
       .identifiers()
       .addEndRole(
@@ -82,68 +69,32 @@ export class SignifyApi {
         SignifyApi.DEFAULT_ROLE,
         this.signifyClient.agent!.pre
       );
-    return {
-      signifyName,
-      identifier: operation.name.replace("witness.", ""),
-    };
+    return aid1;
   }
 
   async getIdentifierByName(name: string): Promise<any> {
     return this.signifyClient.identifiers().get(name);
   }
 
-  async getOobi(name: string): Promise<string> {
+  async getOobi(signifyName: string): Promise<any> {
     const result = await this.signifyClient
       .oobis()
-      .get(name, SignifyApi.DEFAULT_ROLE);
+      .get(signifyName, SignifyApi.DEFAULT_ROLE);
     return result.oobis[0];
   }
-
-  async getContacts(id?: string): Promise<KeriContact[]> {
-    if (id) {
-      return this.signifyClient.contacts().list(undefined, "id", id);
-    }
-    return this.signifyClient.contacts().list();
-  }
-
-  async resolveOobi(url: string): Promise<any> {
-    const alias = utils.uuid();
-    let operation = await this.signifyClient.oobis().resolve(url, alias);
-    operation = await this.waitAndGetOp(
-      operation,
-      this.opTimeout,
-      this.opRetryInterval
-    );
-    if (!operation.done) {
-      throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
-    }
-    return { ...operation, alias };
-  }
-
   /**
    * Note - op must be of type any here until Signify cleans up its typing.
    */
-  private async waitAndGetOp(
+  private async waitUntilOpDone(
     op: any,
     timeout: number,
     interval: number
-  ): Promise<any> {
+  ): Promise<boolean> {
     const startTime = new Date().getTime();
     while (!op.done && new Date().getTime() < startTime + timeout) {
       op = await this.signifyClient.operations().get(op.name);
       await new Promise((resolve) => setTimeout(resolve, interval));
     }
-    return op;
-  }
-
-  private async getBran(): Promise<string> {
-    let bran;
-    try {
-      bran = await SecureStorage.get(KeyStoreKeys.SIGNIFY_BRAN);
-    } catch (error) {
-      bran = randomPasscode();
-      await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
-    }
-    return bran as string;
+    return op.done;
   }
 }

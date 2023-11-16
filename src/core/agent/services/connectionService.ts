@@ -3,7 +3,7 @@ import {
   ConnectionEventTypes,
   ConnectionRecord,
   ConnectionStateChangedEvent,
-  ConnectionType,
+  ConnectionType as AriesConnectionType,
   DidExchangeRole,
   DidExchangeState,
   JsonEncoder,
@@ -11,19 +11,24 @@ import {
   OutOfBandRecord,
   utils,
 } from "@aries-framework/core";
+import { GenericRecord } from "@aries-framework/core/build/modules/generic-records/repository/GenericRecord";
 import {
   ConnectionDetails,
   ConnectionHistoryItem,
   ConnectionHistoryType,
+  ConnectionKeriEventTypes,
+  ConnectionKeriStateChangedEvent,
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
+  ConnectionType,
   ConnectionStatus,
   GenericRecordType,
 } from "../agent.types";
 // import { LibP2p } from "../transports/libp2p/libP2p";
 // import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
 import { AgentService } from "./agentService";
+import { KeriContact } from "../modules/signify/signifyApi.types";
 
 const SERVER_GET_SHORTEN_URL =
   // eslint-disable-next-line no-undef
@@ -39,6 +44,8 @@ class ConnectionService extends AgentService {
     "Invalid connectionless OOBI - does not contain d_m parameter";
   static readonly CONNECTION_NOTE_RECORD_NOT_FOUND =
     "Connection note record not found";
+  static readonly CONNECTION_KERI_METADATA_RECORD_NOT_FOUND =
+    "Connection keri metadata record not found";
 
   onConnectionStateChanged(
     callback: (event: ConnectionStateChangedEvent) => void
@@ -46,6 +53,17 @@ class ConnectionService extends AgentService {
     this.agent.events.on(
       ConnectionEventTypes.ConnectionStateChanged,
       async (event: ConnectionStateChangedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  onConnectionKeriStateChanged(
+    callback: (event: ConnectionKeriStateChangedEvent) => void
+  ) {
+    this.agent.events.on(
+      ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+      async (event: ConnectionKeriStateChangedEvent) => {
         callback(event);
       }
     );
@@ -106,6 +124,33 @@ class ConnectionService extends AgentService {
   }
 
   async receiveInvitationFromUrl(url: string): Promise<void> {
+    if (url.includes("/oobi")) {
+      this.agent.events.emit<ConnectionKeriStateChangedEvent>(
+        this.agent.context,
+        {
+          type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+          payload: {
+            connectionId: undefined,
+            status: ConnectionStatus.PENDING,
+          },
+        }
+      );
+      const operation = await this.agent.modules.signify.resolveOobi(url);
+      const connectionId = operation.response.i;
+      await this.createConnectionKeriMetadata(connectionId, {
+        alias: operation.alias,
+      });
+      return this.agent.events.emit<ConnectionKeriStateChangedEvent>(
+        this.agent.context,
+        {
+          type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+          payload: {
+            connectionId: operation.response.i,
+            status: ConnectionStatus.CONFIRMED,
+          },
+        }
+      );
+    }
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
       url = await response.text();
@@ -156,7 +201,7 @@ class ConnectionService extends AgentService {
   }
 
   private isMediatorConnection(connection: ConnectionRecord) {
-    return connection.connectionTypes.includes(ConnectionType.Mediator);
+    return connection.connectionTypes.includes(AriesConnectionType.Mediator);
   }
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
@@ -167,6 +212,10 @@ class ConnectionService extends AgentService {
         return;
       }
       connectionsDetails.push(this.getConnectionShortDetails(connection));
+    });
+    const connectionKeriMetadatas = await this.getAllConnectionKeriMetadata();
+    connectionKeriMetadatas.forEach(async (connection) => {
+      connectionsDetails.push(this.getConnectionKeriShortDetails(connection));
     });
     return connectionsDetails;
   }
@@ -183,10 +232,29 @@ class ConnectionService extends AgentService {
         connection.state === DidExchangeState.Completed
           ? ConnectionStatus.CONFIRMED
           : ConnectionStatus.PENDING,
+      type: ConnectionType.DIDCOMM,
     };
   }
 
-  async getConnectionById(id: string): Promise<ConnectionDetails> {
+  private getConnectionKeriShortDetails(
+    record: GenericRecord
+  ): ConnectionShortDetails {
+    return {
+      id: record.id,
+      label: record.content?.alias as string,
+      connectionDate: record.createdAt.toISOString(),
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionType.KERI,
+    };
+  }
+
+  async getConnectionById(
+    id: string,
+    type?: ConnectionType
+  ): Promise<ConnectionDetails> {
+    if (type === ConnectionType.KERI) {
+      return this.getKeriConnectionDetails(id);
+    }
     const connection = await this.agent.connections.getById(id);
     let outOfBandRecord: OutOfBandRecord | undefined;
     if (connection.outOfBandId) {
@@ -204,6 +272,13 @@ class ConnectionService extends AgentService {
   ): Promise<ConnectionShortDetails> {
     const connection = await this.agent.connections.getById(id);
     return this.getConnectionShortDetails(connection);
+  }
+
+  async getConnectionKeriShortDetailById(
+    id: string
+  ): Promise<ConnectionShortDetails> {
+    const metadata = await this.getConnectionKeriMetadataById(id);
+    return this.getConnectionKeriShortDetails(metadata);
   }
 
   async createConnectionNote(
@@ -236,6 +311,40 @@ class ConnectionService extends AgentService {
 
   async deleteConnectionNoteById(connectionNoteId: string) {
     return this.agent.genericRecords.deleteById(connectionNoteId);
+  }
+
+  private async createConnectionKeriMetadata(
+    connectionId: string,
+    metadata?: Record<string, unknown>
+  ): Promise<void> {
+    await this.agent.genericRecords.save({
+      id: connectionId,
+      content: metadata || {},
+      tags: {
+        type: GenericRecordType.CONNECTION_KERI_METADATA,
+      },
+    });
+  }
+
+  private async getConnectionKeriMetadataById(
+    connectionId: string
+  ): Promise<GenericRecord> {
+    const connectionKeri = await this.agent.genericRecords.findById(
+      connectionId
+    );
+    if (!connectionKeri) {
+      throw new Error(
+        ConnectionService.CONNECTION_KERI_METADATA_RECORD_NOT_FOUND
+      );
+    }
+    return connectionKeri;
+  }
+
+  private async getAllConnectionKeriMetadata(): Promise<GenericRecord[]> {
+    const connectionKeris = await this.agent.genericRecords.findAllByQuery({
+      type: GenericRecordType.CONNECTION_KERI_METADATA,
+    });
+    return connectionKeris;
   }
 
   async getConnectionHistoryById(
@@ -313,6 +422,22 @@ class ConnectionService extends AgentService {
         .map(
           (service) => (service as OutOfBandDidCommService)?.serviceEndpoint
         ),
+      notes: await this.getConnectNotesByConnectionId(connection.id),
+    };
+  }
+
+  private async getKeriConnectionDetails(
+    id: string
+  ): Promise<ConnectionDetails> {
+    const connection = (await this.agent.modules.signify.getContacts(id))[0];
+    return {
+      label: connection?.alias,
+      id: connection.id,
+      status: ConnectionStatus.CONFIRMED,
+      connectionDate: (
+        await this.getConnectionKeriMetadataById(connection.id)
+      ).createdAt.toISOString(),
+      serviceEndpoints: [connection.oobi],
       notes: await this.getConnectNotesByConnectionId(connection.id),
     };
   }

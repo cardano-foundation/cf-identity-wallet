@@ -66,7 +66,8 @@ const ConnectionDetails = () => {
     async function getDetails() {
       const connectionDetails =
         await AriesAgent.agent.connections.getConnectionById(
-          connectionShortDetails.id
+          connectionShortDetails.id,
+          connectionShortDetails.type
         );
       setConnectionDetails(connectionDetails);
       if (connectionDetails.notes) {

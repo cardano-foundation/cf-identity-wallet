@@ -10,6 +10,7 @@
         "cli:invitation": "npx ts-node ./src/cli/invitation.ts",
         "cli:offer-credential": "npx ts-node src/cli/invitationWithCredential.ts",
         "cli:offer-credential-connection-less": "npx ts-node src/cli/invitationWithCredentialConnectionless.ts",
+        "cli:keri-oobi": "npx ts-node ./src/cli/keriOobi.ts",
         "build": "rimraf ./build && tsc"
     },
     "author": "",
@@ -27,7 +28,8 @@
         "node-cache": "^5.1.2",
         "qrcode-terminal": "^0.12.0",
         "uuid": "^9.0.1",
-        "ws": "^8.13.0"
+        "ws": "^8.13.0",
+        "signify-ts": "github:WebOfTrust/signify-ts#002bb6410d944a190cc247893c1396792438743f"
     },
     "devDependencies": {
         "nodemon": "^3.0.1",

@@ -2,6 +2,7 @@
 At the moment, our wallet depends on a number of cloud services:
 - KERIA (KERI Cloud Agent),
 - AFJ Mediator
+- Credential issuance server (from this repo)
 
 This directory is incomplete for now - missing:
 - Full Traefik config,

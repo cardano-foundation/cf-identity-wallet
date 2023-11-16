@@ -10,6 +10,7 @@ import {
   JsonCredential,
   JsonLdCredentialDetailFormat,
   W3cJsonLdVerifiableCredential,
+  JsonObject,
 } from "@aries-framework/core";
 import { CredentialDetails, CredentialShortDetails } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
@@ -18,6 +19,7 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialType } from "../../../ui/constants/dictionary";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -102,6 +104,7 @@ class CredentialService extends AgentService {
       issuerLogo: metadata.issuerLogo,
       credentialType: metadata.credentialType,
       status: metadata.status,
+      cachedDetails: metadata.cachedDetails,
     };
   }
 
@@ -174,6 +177,7 @@ class CredentialService extends AgentService {
       await this.agent.w3cCredentials.getCredentialRecordById(
         credentialRecord.credentials[0].credentialRecordId
       );
+
     const connection = await this.agent.connections.findById(
       credentialRecord?.connectionId ?? ""
     );
@@ -182,17 +186,23 @@ class CredentialService extends AgentService {
         CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
       );
     }
+    const credentialType = w3cCredential.credential.type?.find(
+      (t) => t !== "VerifiableCredential"
+    );
     const data = {
-      credentialType: w3cCredential.credential.type?.find(
-        (t) => t !== "VerifiableCredential"
-      ),
+      credentialType: credentialType,
       status: CredentialMetadataRecordStatus.CONFIRMED,
     };
-    await this.agent.modules.generalStorage.updateCredentialMetadata(
-      metadata?.id,
-      data
-    );
-    return {
+
+    const credentialSubject = w3cCredential.credential
+      .credentialSubject as any as JsonCredential["credentialSubject"];
+    const universityDegreeCredSubject = Array.isArray(credentialSubject)
+      ? undefined
+      : ((credentialSubject.degree as JsonObject)?.type as string);
+    const checkedCredentialSubject = Array.isArray(credentialSubject)
+      ? undefined
+      : credentialSubject;
+    const response = {
       colors: metadata.colors,
       credentialType: data.credentialType || "",
       id: metadata.id,
@@ -201,6 +211,69 @@ class CredentialService extends AgentService {
       issuerLogo: connection?.imageUrl ?? undefined,
       status: data.status,
     };
+
+    if (credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL) {
+      const credentialMetadataRecord = {
+        ...data,
+        cachedDetails: {
+          degreeType: universityDegreeCredSubject || "",
+        },
+      };
+      await this.agent.modules.generalStorage.updateCredentialMetadata(
+        metadata?.id,
+        credentialMetadataRecord
+      );
+      return {
+        ...response,
+        cachedDetails: credentialMetadataRecord.cachedDetails,
+      };
+    } else if (credentialType === CredentialType.PERMANENT_RESIDENT_CARD) {
+      const expirationDate = w3cCredential.credential.expirationDate;
+      const credentialMetadataRecord = {
+        ...data,
+        cachedDetails: {
+          expirationDate: expirationDate || "",
+          image: checkedCredentialSubject?.image as string,
+          givenName: checkedCredentialSubject?.givenName as string,
+          familyName: checkedCredentialSubject?.familyName as string,
+          birthCountry: checkedCredentialSubject?.birthCountry as string,
+          lprCategory: checkedCredentialSubject?.lprCategory as string,
+          residentSince: checkedCredentialSubject?.residentSince as string,
+        },
+      };
+      await this.agent.modules.generalStorage.updateCredentialMetadata(
+        metadata?.id,
+        credentialMetadataRecord
+      );
+      return {
+        ...response,
+        cachedDetails: credentialMetadataRecord.cachedDetails,
+      };
+    } else if (credentialType === CredentialType.ACCESS_PASS_CREDENTIAL) {
+      const credentialMetadataRecord = {
+        ...data,
+        cachedDetails: {
+          summitType: checkedCredentialSubject?.type as string,
+          startDate: checkedCredentialSubject?.startDate as string,
+          endDate: checkedCredentialSubject?.endDate as string,
+          passId: checkedCredentialSubject?.passId as string,
+        },
+      };
+      await this.agent.modules.generalStorage.updateCredentialMetadata(
+        metadata?.id,
+        credentialMetadataRecord
+      );
+      return {
+        ...response,
+        cachedDetails: credentialMetadataRecord.cachedDetails,
+      };
+    } else {
+      await this.agent.modules.generalStorage.updateCredentialMetadata(
+        metadata?.id,
+        data
+      );
+      return response;
+    }
   }
 
   async archiveCredential(id: string): Promise<void> {
