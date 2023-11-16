@@ -6,10 +6,8 @@ import { Keyboard } from "@capacitor/keyboard";
 import { i18n } from "../../../i18n";
 import { CustomInput } from "../CustomInput";
 import { PageLayout } from "../layout/PageLayout";
-import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 import { ChooseAccountNameProps } from "./ChooseAccountName.types";
 import "./ChooseAccountName.scss";
-import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
 import { SeedPhraseStorageService } from "../../../core/storage/services";
 
 const ChooseAccountName = ({
@@ -40,31 +38,6 @@ const ChooseAccountName = ({
     const name =
       displayName ??
       `${i18n.t("crypto.chooseaccountnamemodal.placeholder")} #${randomizer}`;
-
-    const newWallet: CryptoAccountProps = {
-      name,
-      usesIdentitySeedPhrase: usesIdentitySeedPhrase,
-      // @TODO - sdisalvo: remember to remove hardcoded values below this point
-      address:
-        "stake1ux3d3808s26u3ep7ps24sxyxe7qlt5xh783tc7a304yq0wg" + randomizer,
-      derivationPath: "m/1852'/1815'/0'/1/32",
-      blockchain: "Cardano",
-      currency: "ADA",
-      logo: CardanoLogo,
-      balance: {
-        main: {
-          nativeBalance: 273.85,
-          usdBalance: 75.2,
-        },
-        reward: {
-          nativeBalance: 0,
-          usdBalance: 0,
-        },
-      },
-      assets: [],
-      transactions: [],
-      // End of hardcoded values
-    };
 
     if (usesIdentitySeedPhrase) {
       await seedPhraseStorageService.current.createCryptoAccountFromIdentitySeedPhrase(

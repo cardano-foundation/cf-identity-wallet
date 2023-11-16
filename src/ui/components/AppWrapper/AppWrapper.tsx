@@ -29,7 +29,6 @@ import {
   PreferencesKeys,
   PreferencesStorage,
 } from "../../../core/storage/preferences";
-import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 import {
   setConnectionsCache,
   updateOrAddConnectionCache,
@@ -215,7 +214,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const storedIdentities =
       await AriesAgent.agent.identifiers.getIdentifiers();
     // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
-    const storedCryptoAccounts: CryptoAccountProps[] = [];
 
     try {
       const didsFavourites = await PreferencesStorage.get(
