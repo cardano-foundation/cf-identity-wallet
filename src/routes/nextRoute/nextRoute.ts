@@ -46,20 +46,18 @@ const getNextRootRoute = (store: StoreState) => {
 };
 
 const getNextOnboardingRoute = (data: DataProps) => {
-  const route = data?.state?.currentOperation;
-  let query;
-  if (route === OperationType.CREATE_SEED_PHRASE) {
-    query = RoutePath.CREATE_NEW_SEED_PHRASE;
-  } else if (route === OperationType.RESTORE_SEED_PHRASE) {
-    query = RoutePath.RESTORE_SEED_PHRASE;
-  }
-  let path;
   if (!data.store.stateCache.authentication.passcodeIsSet) {
-    path = RoutePath.SET_PASSCODE;
-  } else {
-    path = RoutePath.GENERATE_SEED_PHRASE + query;
+    return { pathname: RoutePath.SET_PASSCODE };
   }
 
+  let path;
+  const route = data?.state?.currentOperation;
+  if (route === OperationType.CREATE_SEED_PHRASE) {
+    path = `${RoutePath.GENERATE_SEED_PHRASE}${RoutePath.CREATE_NEW_SEED_PHRASE}`;
+  } else if (route === OperationType.RESTORE_SEED_PHRASE) {
+    path = `${RoutePath.GENERATE_SEED_PHRASE}${RoutePath.RESTORE_SEED_PHRASE}`;
+  }
+  path = RoutePath.GENERATE_SEED_PHRASE;
   return { pathname: path };
 };
 
