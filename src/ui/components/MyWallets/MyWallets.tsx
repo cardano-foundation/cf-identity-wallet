@@ -28,16 +28,13 @@ import {
 import { formatCurrencyUSD } from "../../../utils";
 import { VerifyPassword } from "../VerifyPassword";
 import { RenameWallet } from "../RenameWallet";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
+import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { VerifyPasscode } from "../VerifyPasscode";
 import {
   getStateCache,
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
-import { operationState } from "../../constants/dictionary";
+import { OperationType } from "../../globals/types";
 
 const MyWallets = ({
   myWalletsIsOpen,
@@ -178,7 +175,7 @@ const MyWallets = ({
             color="dark-grey"
             onClick={(event) => {
               event.stopPropagation();
-              dispatch(setCurrentOperation(operationState.renameWallet));
+              dispatch(setCurrentOperation(OperationType.RENAME_WALLET));
               setSelectedAccount({
                 name: account.name,
                 address: account.address,
@@ -194,7 +191,7 @@ const MyWallets = ({
             className="delete-button"
             onClick={(event) => {
               event.stopPropagation();
-              dispatch(setCurrentOperation(operationState.deleteWallet));
+              dispatch(setCurrentOperation(OperationType.DELETE_WALLET));
               setSelectedAccount({
                 name: account.name,
                 address: account.address,
@@ -227,7 +224,7 @@ const MyWallets = ({
         data-testid="my-wallets"
         onDidDismiss={() => {
           setMyWalletsIsOpen(false);
-          dispatch(setCurrentOperation(""));
+          dispatch(setCurrentOperation(OperationType.IDLE));
         }}
       >
         <div className="my-wallets modal">

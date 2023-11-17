@@ -25,7 +25,7 @@ import {
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
-import { operationState } from "../../constants/dictionary";
+import { OperationType } from "../../globals/types";
 
 const AddCryptoAccount = ({
   addAccountIsOpen,
@@ -37,7 +37,7 @@ const AddCryptoAccount = ({
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
 
-  const handleNewAccount = (type: string) => {
+  const handleNewAccount = (type: OperationType) => {
     setAddAccountIsOpen(false);
     dispatch(setCurrentOperation(type));
     const data: DataProps = {
@@ -102,9 +102,9 @@ const AddCryptoAccount = ({
                   onClick={() => {
                     setAddAccountIsOpen(false);
                     dispatch(
-                      setCurrentOperation(operationState.newCryptoAccount)
+                      setCurrentOperation(OperationType.NEW_CRYPTO_ACCOUNT)
                     );
-                    handleNewAccount(operationState.newCryptoAccount);
+                    handleNewAccount(OperationType.NEW_CRYPTO_ACCOUNT);
                   }}
                 >
                   <span>
@@ -125,9 +125,9 @@ const AddCryptoAccount = ({
                   onClick={() => {
                     setAddAccountIsOpen(false);
                     dispatch(
-                      setCurrentOperation(operationState.restoreCryptoAccount)
+                      setCurrentOperation(OperationType.RESTORE_CRYPTO_ACCOUNT)
                     );
-                    handleNewAccount(operationState.restoreCryptoAccount);
+                    handleNewAccount(OperationType.RESTORE_CRYPTO_ACCOUNT);
                   }}
                 >
                   <span>

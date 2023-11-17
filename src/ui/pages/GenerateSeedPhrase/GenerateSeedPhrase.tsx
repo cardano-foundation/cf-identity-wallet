@@ -29,12 +29,8 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
   SEED_PHRASE_SUGGESTIONS,
-} from "../../../constants/appConstants";
-import {
-  operationState,
-  onboardingRoute,
-  toastState,
-} from "../../constants/dictionary";
+} from "../../globals/constants";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
   Alert as AlertConfirm,
@@ -45,6 +41,7 @@ import {
   getCurrentOperation,
   getStateCache,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
@@ -55,7 +52,7 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { GenerateSeedPhraseProps } from "./GenerateSeedPhrase.types";
-import { bip39Seeds } from "../../constants/bip39Seeds";
+import { bip39Seeds } from "../../globals/bip39Seeds";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 
 const GenerateSeedPhrase = () => {
@@ -64,13 +61,14 @@ const GenerateSeedPhrase = () => {
   const stateCache = useAppSelector(getStateCache);
   const currentOperation = useAppSelector(getCurrentOperation);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
-    ? operationState.onboarding
+    ? OperationType.ONBOARDING
     : (
       (history?.location?.state as GenerateSeedPhraseProps)?.type ||
         currentOperation
     ).toLowerCase();
-  const stateOnboarding = seedPhraseType === operationState.onboarding;
-  const stateRestore = currentOperation === operationState.restoreCryptoAccount;
+  const stateOnboarding = seedPhraseType === OperationType.ONBOARDING;
+  const stateRestore =
+    currentOperation === OperationType.RESTORE_CRYPTO_ACCOUNT;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
@@ -135,7 +133,7 @@ const GenerateSeedPhrase = () => {
   useEffect(() => {
     if (
       history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE ||
-      RoutePath.GENERATE_SEED_PHRASE + onboardingRoute.createRoute
+      RoutePath.GENERATE_SEED_PHRASE + RoutePath.CREATE_NEW_SEED_PHRASE
     ) {
       initializeSeedPhrase();
     }
@@ -196,7 +194,7 @@ const GenerateSeedPhrase = () => {
 
   const handleExit = () => {
     handleClearState();
-    dispatch(setCurrentOperation(""));
+    dispatch(setCurrentOperation(OperationType.IDLE));
     history.push(TabsRoutePath.CRYPTO);
   };
 
@@ -499,8 +497,12 @@ const GenerateSeedPhrase = () => {
               "generateseedphrase.alert.exit.button.cancel"
             )}`}
             actionConfirm={handleExit}
-            actionCancel={() => dispatch(setCurrentOperation(""))}
-            actionDismiss={() => dispatch(setCurrentOperation(""))}
+            actionCancel={() =>
+              dispatch(setCurrentOperation(OperationType.IDLE))
+            }
+            actionDismiss={() =>
+              dispatch(setCurrentOperation(OperationType.IDLE))
+            }
           />
           <ChooseAccountName
             chooseAccountNameIsOpen={chooseAccountNameIsOpen}
@@ -509,7 +511,7 @@ const GenerateSeedPhrase = () => {
             seedPhrase={seedPhrase.join(" ")}
             onDone={() => {
               handleClearState();
-              dispatch(setCurrentOperation(toastState.walletRestored));
+              dispatch(setToastMsg(ToastMsgType.WALLET_RESTORED));
               history.push({
                 pathname: TabsRoutePath.CRYPTO,
               });

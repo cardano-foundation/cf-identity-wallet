@@ -3,8 +3,8 @@ import { copyOutline } from "ionicons/icons";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { CardDetailsItemProps } from "./CardDetailsElements.types";
 import { useAppDispatch } from "../../../store/hooks";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { toastState } from "../../constants/dictionary";
+import { setToastMsg } from "../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../globals/types";
 import { i18n } from "../../../i18n";
 
 const CardDetailsItem = ({
@@ -22,7 +22,7 @@ const CardDetailsItem = ({
       onClick={() => {
         if (copyButton) {
           writeToClipboard(info);
-          dispatch(setCurrentOperation(toastState.copiedToClipboard));
+          dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
         }
       }}
     >

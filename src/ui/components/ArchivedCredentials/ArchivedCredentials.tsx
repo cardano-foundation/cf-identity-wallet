@@ -29,11 +29,12 @@ import {
 import {
   getStateCache,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
 import { ArchivedCredentialsProps } from "./ArchivedCredentials.types";
-import { toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import {
   getCredsCache,
   setCredsCache,
@@ -293,8 +294,8 @@ const ArchivedCredentials = ({
             setVerifyPasscodeIsOpen(true);
           }
         }}
-        actionCancel={() => dispatch(setCurrentOperation(""))}
-        actionDismiss={() => dispatch(setCurrentOperation(""))}
+        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
       />
       <AlertRestore
         isOpen={alertRestoreIsOpen}
@@ -310,16 +311,16 @@ const ArchivedCredentials = ({
         actionConfirm={() => {
           selectedCredentials.forEach((id) => handleRestoreCredential(id));
           dispatch(
-            setCurrentOperation(
+            setToastMsg(
               selectedCredentials.length === 1
-                ? toastState.credentialRestored
-                : toastState.credentialsRestored
+                ? ToastMsgType.CREDENTIAL_RESTORED
+                : ToastMsgType.CREDENTIALS_RESTORED
             )
           );
           resetList();
         }}
-        actionCancel={() => dispatch(setCurrentOperation(""))}
-        actionDismiss={() => dispatch(setCurrentOperation(""))}
+        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
@@ -327,10 +328,10 @@ const ArchivedCredentials = ({
         onVerify={() => {
           selectedCredentials.forEach((id) => handleDeleteCredential(id));
           dispatch(
-            setCurrentOperation(
+            setToastMsg(
               selectedCredentials.length === 1
-                ? toastState.credentialDeleted
-                : toastState.credentialsDeleted
+                ? ToastMsgType.CREDENTIAL_DELETED
+                : ToastMsgType.CREDENTIALS_DELETED
             )
           );
           resetList();
@@ -342,10 +343,10 @@ const ArchivedCredentials = ({
         onVerify={() => {
           selectedCredentials.forEach((id) => handleDeleteCredential(id));
           dispatch(
-            setCurrentOperation(
+            setToastMsg(
               selectedCredentials.length === 1
-                ? toastState.credentialDeleted
-                : toastState.credentialsDeleted
+                ? ToastMsgType.CREDENTIAL_DELETED
+                : ToastMsgType.CREDENTIALS_DELETED
             )
           );
           resetList();

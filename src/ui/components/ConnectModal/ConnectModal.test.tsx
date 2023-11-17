@@ -3,11 +3,10 @@ mockIonicReact();
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { OutOfBandInvitation, OutOfBandRecord } from "@aries-framework/core";
 import { store } from "../../../store";
 import { i18n } from "../../../i18n";
 import { ConnectModal } from "./ConnectModal";
-import { connectionType, operationState } from "../../constants/dictionary";
+import { DIDCommRequestType, OperationType } from "../../globals/types";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 
 describe("Connection modal", () => {
@@ -15,7 +14,7 @@ describe("Connection modal", () => {
     const { getByText } = render(
       <Provider store={store}>
         <ConnectModal
-          type={connectionType.connection}
+          type={DIDCommRequestType.CONNECTION}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}
           handleProvideQr={jest.fn()}
@@ -23,7 +22,7 @@ describe("Connection modal", () => {
       </Provider>
     );
     const title = getByText(
-      `${i18n.t("connectmodal.title") + connectionType.connection}`
+      `${i18n.t("connectmodal.title") + DIDCommRequestType.CONNECTION}`
     );
     expect(title).toBeInTheDocument();
   });
@@ -38,7 +37,7 @@ describe("Connection modal", () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
         <ConnectModal
-          type={connectionType.connection}
+          type={DIDCommRequestType.CONNECTION}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}
           handleProvideQr={jest.fn()}
@@ -50,7 +49,7 @@ describe("Connection modal", () => {
       fireEvent.click(btn);
     });
     expect(dispatchMock).toBeCalledWith(
-      setCurrentOperation(operationState.scanConnection)
+      setCurrentOperation(OperationType.SCAN_CONNECTION)
     );
   });
 
@@ -59,7 +58,7 @@ describe("Connection modal", () => {
     const { getByTestId } = render(
       <Provider store={store}>
         <ConnectModal
-          type={connectionType.connection}
+          type={DIDCommRequestType.CONNECTION}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}
           handleProvideQr={handleProvideQr}

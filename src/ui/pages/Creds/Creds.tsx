@@ -19,7 +19,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { Connections } from "../Connections";
-import { CardTypes, connectionType } from "../../constants/dictionary";
+import { CardType, DIDCommRequestType } from "../../globals/types";
 import { ConnectModal } from "../../components/ConnectModal";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -179,7 +179,7 @@ const Creds = () => {
                   ) : null}
                   <CardsStack
                     name="favs"
-                    cardsType={CardTypes.CREDS}
+                    cardsType={CardType.CREDS}
                     cardsData={sortedFavDids}
                   />
                 </>
@@ -193,7 +193,7 @@ const Creds = () => {
                   ) : null}
                   <CardsStack
                     name="allcreds"
-                    cardsType={CardTypes.CREDS}
+                    cardsType={CardType.CREDS}
                     cardsData={allDids}
                   />
                 </>
@@ -220,7 +220,7 @@ const Creds = () => {
             </div>
           ) : null}
           <ConnectModal
-            type={connectionType.credential}
+            type={DIDCommRequestType.CREDENTIAL}
             connectModalIsOpen={addCredentialIsOpen}
             setConnectModalIsOpen={setAddCredentialIsOpen}
             handleProvideQr={() => {

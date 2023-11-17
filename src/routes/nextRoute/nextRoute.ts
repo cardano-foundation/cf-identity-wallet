@@ -11,7 +11,7 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { onboardingRoute, toastState } from "../../ui/constants/dictionary";
+import { OperationType, ToastMsgType } from "../../ui/globals/types";
 
 const getNextRootRoute = (store: StoreState) => {
   const isInitialized = store.stateCache.initialized;
@@ -28,7 +28,7 @@ const getNextRootRoute = (store: StoreState) => {
   } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
     if (
       store.stateCache.currentOperation ===
-      (onboardingRoute.create || onboardingRoute.restore)
+      (OperationType.CREATE_SEED_PHRASE || OperationType.RESTORE_SEED_PHRASE)
     ) {
       path = RoutePath.CREATE_PASSWORD;
     } else {
@@ -47,11 +47,11 @@ const getNextRootRoute = (store: StoreState) => {
 
 const getNextOnboardingRoute = (data: DataProps) => {
   const route = data?.state?.currentOperation;
-  let query = "";
-  if (route === onboardingRoute.create) {
-    query = onboardingRoute.createRoute;
-  } else if (route === onboardingRoute.restore) {
-    query = onboardingRoute.restoreRoute;
+  let query;
+  if (route === OperationType.CREATE_SEED_PHRASE) {
+    query = RoutePath.CREATE_NEW_SEED_PHRASE;
+  } else if (route === OperationType.RESTORE_SEED_PHRASE) {
+    query = RoutePath.RESTORE_SEED_PHRASE;
   }
   let path;
   if (!data.store.stateCache.authentication.passcodeIsSet) {
@@ -115,7 +115,7 @@ const getNextGenerateSeedPhraseRoute = () => {
 const getNextVerifySeedPhraseRoute = (data: DataProps) => {
   const route = data?.state?.currentOperation;
   const nextPath: string =
-    route === onboardingRoute.create
+    route === OperationType.CREATE_SEED_PHRASE
       ? RoutePath.CREATE_PASSWORD
       : TabsRoutePath.CRYPTO;
 
@@ -146,11 +146,11 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
 };
 
 const getNextScanRoute = (data: DataProps) => {
-  const currentOperation = data?.state?.currentOperation;
+  const currentToastMsg = data?.state?.toastMsg;
   let path;
   if (
-    currentOperation === toastState.connectionRequestPending ||
-    currentOperation === toastState.credentialRequestPending
+    currentToastMsg === ToastMsgType.CONNECTION_REQUEST_PENDING ||
+    currentToastMsg === ToastMsgType.CREDENTIAL_REQUEST_PENDING
   ) {
     path = TabsRoutePath.CREDS;
   }

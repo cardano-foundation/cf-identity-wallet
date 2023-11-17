@@ -12,16 +12,15 @@ import {
   getAuthentication,
   getCurrentOperation,
   getCurrentRoute,
-  getStateCache,
   setAuthentication,
-  setCurrentOperation,
   setCurrentRoute,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { RoutePath } from "../../../routes";
 import { VerifyPasscodeProps } from "./VerifyPasscode.types";
 import "./VerifyPasscode.scss";
 import { TabsRoutePath } from "../../../routes/paths";
-import { operationState, toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
 
 const VerifyPasscode = ({
   isOpen,
@@ -32,7 +31,7 @@ const VerifyPasscode = ({
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentRoute = useAppSelector(getCurrentRoute);
-  const [currentAction, setCurrentAction] = useState("");
+  const [currentAction, setCurrentAction] = useState<ToastMsgType>();
   const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
@@ -49,27 +48,27 @@ const VerifyPasscode = ({
   const cancelButtonText = i18n.t("verifypasscode.alert.button.cancel");
 
   useEffect(() => {
-    let operation = "";
+    let operation;
     if (
       currentRoute?.path?.includes(TabsRoutePath.DIDS) &&
-      currentOperation === operationState.deleteIdentity
+      currentOperation === OperationType.DELETE_IDENTIFIER
     ) {
-      operation = toastState.identityDeleted;
+      operation = ToastMsgType.IDENTIFIER_DELETED;
     } else if (
       currentRoute?.path?.includes(TabsRoutePath.CREDS) &&
-      currentOperation === operationState.deleteCredential
+      currentOperation === OperationType.DELETE_CREDENTIAL
     ) {
-      operation = toastState.credentialDeleted;
+      operation = ToastMsgType.CREDENTIAL_DELETED;
     } else if (
       currentRoute?.path?.includes(TabsRoutePath.CRYPTO) &&
-      currentOperation === operationState.deleteWallet
+      currentOperation === OperationType.DELETE_WALLET
     ) {
-      operation = toastState.walletDeleted;
+      operation = ToastMsgType.WALLET_DELETED;
     } else if (
       currentRoute?.path?.includes(RoutePath.CONNECTION_DETAILS) &&
-      currentOperation === operationState.deleteConnection
+      currentOperation === OperationType.DELETE_CONNECTION
     ) {
-      operation = toastState.connectionDeleted;
+      operation = ToastMsgType.CONNECTION_DELETED;
     }
     setCurrentAction(operation);
   }, [currentRoute?.path, currentOperation]);
@@ -88,7 +87,7 @@ const VerifyPasscode = ({
         verifyPasscode(passcode + digit)
           .then((verified) => {
             if (verified) {
-              dispatch(setCurrentOperation(currentAction));
+              dispatch(setToastMsg(currentAction));
               onVerify();
               handleClearState();
             } else {

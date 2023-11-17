@@ -13,8 +13,8 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   FIFTEEN_WORDS_BIT_LENGTH,
   MNEMONIC_FIFTEEN_WORDS,
-} from "../../../constants/appConstants";
-import { operationState } from "../../constants/dictionary";
+} from "../../globals/constants";
+import { OperationType } from "../../globals/types";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { Addresses } from "../../../core/cardano";
 
@@ -162,7 +162,7 @@ describe("Verify Seed Phrase Page", () => {
 
   test("The user can Verify the Seed Phrase when Onboarding", async () => {
     const history = createMemoryHistory();
-    history.push(RoutePath.VERIFY_SEED_PHRASE, operationState.onboarding);
+    history.push(RoutePath.VERIFY_SEED_PHRASE, OperationType.ONBOARDING);
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <Router history={history}>
@@ -226,7 +226,10 @@ describe("Verify Seed Phrase Page", () => {
 
   test.skip("The user can Verify the Seed Phrase when generating a new seed phrase", async () => {
     const history = createMemoryHistory();
-    history.push(RoutePath.VERIFY_SEED_PHRASE, operationState.newCryptoAccount);
+    history.push(
+      RoutePath.VERIFY_SEED_PHRASE,
+      OperationType.NEW_CRYPTO_ACCOUNT
+    );
     const { getByTestId, getByText, queryByTestId } = render(
       <Provider store={storeMocked}>
         <Router history={history}>

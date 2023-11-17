@@ -8,7 +8,7 @@ import {
   setSeedPhraseCache,
 } from "./seedPhraseCache";
 import { RootState } from "../../index";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../ui/globals/constants";
 
 describe("SeedPhraseCache", () => {
   test("should return the initial state on first run", () => {

@@ -1,10 +1,8 @@
 import { useHistory } from "react-router-dom";
-import { IonPage } from "@ionic/react";
 import { i18n } from "../../../i18n";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
-import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -14,7 +12,7 @@ import {
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { onboardingRoute } from "../../constants/dictionary";
+import { OperationType } from "../../globals/types";
 import introImg0 from "../../assets/lottie/wallet.json";
 import introImg1 from "../../assets/images/intro-1.png";
 import introImg2 from "../../assets/images/intro-2.png";
@@ -58,15 +56,15 @@ const Onboarding = () => {
     },
   ];
 
-  const handleNavigation = (route: string) => {
-    if (route === onboardingRoute.restore) {
+  const handleNavigation = (op: OperationType) => {
+    if (op === OperationType.RESTORE_SEED_PHRASE) {
       // @TODO - sdisalvo: Remove this condition and default to dispatch when the restore route is ready
       return;
     } else {
-      dispatch(setCurrentOperation(route));
+      dispatch(setCurrentOperation(op));
       const data: DataProps = {
         store: { stateCache },
-        state: { currentOperation: route },
+        state: { currentOperation: op },
       };
       const { nextPath, updateRedux } = getNextRoute(
         RoutePath.ONBOARDING,
@@ -86,11 +84,15 @@ const Onboarding = () => {
       <PageFooter
         pageId={"onboarding"}
         primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}
-        primaryButtonAction={() => handleNavigation(onboardingRoute.create)}
+        primaryButtonAction={() =>
+          handleNavigation(OperationType.CREATE_SEED_PHRASE)
+        }
         tertiaryButtonText={`${i18n.t(
           "onboarding.alreadywallet.button.label"
         )}`}
-        tertiaryButtonAction={() => handleNavigation(onboardingRoute.restore)}
+        tertiaryButtonAction={() =>
+          handleNavigation(OperationType.RESTORE_SEED_PHRASE)
+        }
       />
     </ResponsivePageLayout>
   );

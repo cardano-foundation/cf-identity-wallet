@@ -13,10 +13,10 @@ import { store } from "../../../store";
 import { AriesAgent } from "../../../core/agent/agent";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import {
-  setCurrentOperation,
   setQueueConnectionCredentialRequest,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { toastState } from "../../constants/dictionary";
+import { ToastMsgType } from "../../globals/types";
 import {
   ConnectionShortDetails,
   CredentialShortDetails,
@@ -120,7 +120,7 @@ describe("Connection state changed handler", () => {
       updateOrAddConnectionCache(connectionShortDetailsMock)
     );
     expect(dispatch).toBeCalledWith(
-      setCurrentOperation(toastState.connectionRequestPending)
+      setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
     );
   });
 
@@ -158,7 +158,7 @@ describe("Connection state changed handler", () => {
       updateOrAddConnectionCache(connectionShortDetailsMock)
     );
     expect(dispatch).toBeCalledWith(
-      setCurrentOperation(toastState.connectionRequestIncoming)
+      setToastMsg(ToastMsgType.CONNECTION_REQUEST_INCOMING)
     );
     expect(dispatch).toBeCalledWith(
       setQueueConnectionCredentialRequest({
@@ -181,7 +181,7 @@ describe("Connection state changed handler", () => {
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      setCurrentOperation(toastState.connectionRequestPending)
+      setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING)
     );
   });
 
@@ -199,7 +199,7 @@ describe("Connection state changed handler", () => {
       updateOrAddConnectionCache(connectionShortDetailsMock)
     );
     expect(dispatch).toBeCalledWith(
-      setCurrentOperation(toastState.newConnectionAdded)
+      setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED)
     );
   });
 });
@@ -251,7 +251,7 @@ describe("Credential state changed handler", () => {
     );
 
     expect(dispatch).toBeCalledWith(
-      setCurrentOperation(toastState.credentialRequestPending)
+      setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING)
     );
     expect(dispatch).toBeCalledWith(
       updateOrAddCredsCache({
@@ -292,7 +292,7 @@ describe("Credential state changed handler", () => {
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      setCurrentOperation(toastState.newCredentialAdded)
+      setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED)
     );
     expect(dispatch).toBeCalledWith(
       updateOrAddCredsCache(credentialShortDetail)

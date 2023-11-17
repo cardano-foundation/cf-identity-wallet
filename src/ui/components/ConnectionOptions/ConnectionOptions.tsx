@@ -15,7 +15,7 @@ import { i18n } from "../../../i18n";
 import { ConnectionOptionsProps } from "./ConnectionOptions.types";
 import "./ConnectionOptions.scss";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { operationState } from "../../constants/dictionary";
+import { OperationType } from "../../globals/types";
 import { useAppDispatch } from "../../../store/hooks";
 
 const ConnectionOptions = ({
@@ -80,7 +80,7 @@ const ConnectionOptions = ({
                     onClick={() => {
                       handleDelete();
                       dispatch(
-                        setCurrentOperation(operationState.deleteConnection)
+                        setCurrentOperation(OperationType.DELETE_CONNECTION)
                       );
                     }}
                   >

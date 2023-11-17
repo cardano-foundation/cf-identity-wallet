@@ -9,9 +9,9 @@ import {
 import { RootState } from "../../store";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
 import { DataProps } from "./nextRoute.types";
-import { onboardingRoute } from "../../ui/constants/dictionary";
+import { OperationType } from "../../ui/globals/types";
 import { TabsRoutePath } from "../paths";
 
 describe("NextRoute", () => {
@@ -33,7 +33,7 @@ describe("NextRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
-        currentOperation: "",
+        currentOperation: OperationType.IDLE,
         defaultCryptoAccount: "",
         queueConnectionCredentialRequest: {
           isProcessing: false,
@@ -122,7 +122,7 @@ describe("NextRoute", () => {
     let data = {
       store: storeMock,
       state: {
-        currentOperation: onboardingRoute.create,
+        currentOperation: OperationType.CREATE_SEED_PHRASE,
       },
     };
     let result = getNextVerifySeedPhraseRoute(data);
@@ -134,7 +134,7 @@ describe("NextRoute", () => {
     data = {
       store: storeMock,
       state: {
-        currentOperation: "",
+        currentOperation: OperationType.IDLE,
       },
     };
     result = getNextVerifySeedPhraseRoute(data);
@@ -158,7 +158,7 @@ describe("getNextRoute", () => {
         passwordIsSet: false,
         passwordIsSkipped: true,
       },
-      currentOperation: "",
+      currentOperation: OperationType.IDLE,
       defaultCryptoAccount: "",
       queueConnectionCredentialRequest: {
         isProcessing: false,

@@ -14,8 +14,8 @@ import {
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-} from "../../../constants/appConstants";
-import { operationState, onboardingRoute } from "../../constants/dictionary";
+} from "../../globals/constants";
+import { OperationType } from "../../globals/types";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
@@ -29,7 +29,7 @@ interface StoreMocked {
       passcodeIsSet: boolean;
       seedPhraseIsSet?: boolean;
     };
-    currentOperation: string;
+    currentOperation: OperationType;
   };
   seedPhraseCache: {
     seedPhrase160: string;
@@ -53,7 +53,7 @@ const storeMocked = (initialState: StoreMocked) => {
 
 describe("Generate Seed Phrase screen from Onboarding", () => {
   beforeAll(() => {
-    history.push(RoutePath.GENERATE_SEED_PHRASE, operationState.onboarding);
+    history.push(RoutePath.GENERATE_SEED_PHRASE, OperationType.ONBOARDING);
   });
 
   test("User can see Title and Security Overlay", () => {
@@ -103,7 +103,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: onboardingRoute.createRoute,
+        currentOperation: OperationType.CREATE_SEED_PHRASE,
       },
       seedPhraseCache: {
         seedPhrase160:
@@ -163,7 +163,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: onboardingRoute.createRoute,
+        currentOperation: OperationType.CREATE_SEED_PHRASE,
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -345,7 +345,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: onboardingRoute.createRoute,
+        currentOperation: OperationType.CREATE_SEED_PHRASE,
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -388,7 +388,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
   beforeAll(() => {
     history.push(
       RoutePath.GENERATE_SEED_PHRASE,
-      operationState.newCryptoAccount
+      OperationType.NEW_CRYPTO_ACCOUNT
     );
   });
 
@@ -401,7 +401,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
         passcodeIsSet: true,
         seedPhraseIsSet: true,
       },
-      currentOperation: "",
+      currentOperation: OperationType.IDLE,
     },
     seedPhraseCache: {
       seedPhrase160:
@@ -477,7 +477,7 @@ describe.skip("Restore account from existing seed phrase", () => {
   beforeAll(() => {
     history.push(
       RoutePath.GENERATE_SEED_PHRASE,
-      operationState.restoreCryptoAccount
+      OperationType.RESTORE_CRYPTO_ACCOUNT
     );
   });
 
@@ -490,7 +490,7 @@ describe.skip("Restore account from existing seed phrase", () => {
         passcodeIsSet: true,
         seedPhraseIsSet: true,
       },
-      currentOperation: "",
+      currentOperation: OperationType.IDLE,
     },
     seedPhraseCache: {
       seedPhrase160:
@@ -505,7 +505,7 @@ describe.skip("Restore account from existing seed phrase", () => {
 
   test("User can enter a seed phrase", async () => {
     window.history.pushState(
-      { type: operationState.restoreCryptoAccount },
+      { type: OperationType.RESTORE_CRYPTO_ACCOUNT },
       "",
       RoutePath.GENERATE_SEED_PHRASE
     );

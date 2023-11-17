@@ -26,7 +26,7 @@ const Scan = () => {
   });
 
   useEffect(() => {
-    if (currentOperation.length) {
+    if (currentOperation) {
       const data: DataProps = {
         store: { stateCache },
         state: { currentOperation: currentOperation },

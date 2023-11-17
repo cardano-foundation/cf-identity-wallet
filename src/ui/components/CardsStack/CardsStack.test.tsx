@@ -10,7 +10,7 @@ import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { AriesAgent } from "../../../core/agent/agent";
-import { CardTypes } from "../../constants/dictionary";
+import { CardType } from "../../globals/types";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -45,7 +45,7 @@ describe("Cards Stack Component", () => {
       <Provider store={store}>
         <CardsStack
           name="example"
-          cardsType={CardTypes.DIDS}
+          cardsType={CardType.DIDS}
           cardsData={identityFix}
         />
       </Provider>
@@ -61,7 +61,7 @@ describe("Cards Stack Component", () => {
       <Provider store={store}>
         <CardsStack
           name="example"
-          cardsType={CardTypes.CREDS}
+          cardsType={CardType.CREDS}
           cardsData={[
             { ...credsFix[0], status: CredentialMetadataRecordStatus.PENDING },
           ]}
@@ -79,7 +79,7 @@ describe("Cards Stack Component", () => {
         <Provider store={store}>
           <CardsStack
             name="example"
-            cardsType={CardTypes.DIDS}
+            cardsType={CardType.DIDS}
             cardsData={identityFix}
           />
           <Route
@@ -121,7 +121,7 @@ describe("Cards Stack Component", () => {
         <Provider store={store}>
           <CardsStack
             name="example"
-            cardsType={CardTypes.CREDS}
+            cardsType={CardType.CREDS}
             cardsData={credsFix}
           />
           <Route

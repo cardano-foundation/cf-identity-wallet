@@ -1,7 +1,7 @@
 import { IdentifierType } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../../utils";
-import { themeBackgroundMapping } from "../../constants/dictionary";
+import { IDENTIFIER_BG_MAPPING } from "../../globals/types";
 import { IdentityCardTemplateProps } from "./IdentityCardTemplate.types";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import KERILogo from "../../../ui/assets/images/keri-logo.svg";
@@ -15,7 +15,7 @@ const IdentityCardTemplate = ({
   onHandleShowCardDetails,
 }: IdentityCardTemplateProps) => {
   const divStyle = {
-    backgroundImage: `url(${themeBackgroundMapping[cardData.theme]})`,
+    backgroundImage: `url(${IDENTIFIER_BG_MAPPING[cardData.theme]})`,
     backgroundSize: "cover",
     zIndex: index,
   };

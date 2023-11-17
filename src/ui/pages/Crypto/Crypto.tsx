@@ -19,7 +19,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   setCurrentRoute,
   getCurrentRoute,
-  setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
@@ -39,14 +39,9 @@ import { CryptoBalance } from "../../components/CryptoBalance";
 import { CryptoBalanceItem } from "../../components/CryptoBalance/CryptoBalance.types";
 import { formatCurrencyUSD } from "../../../utils";
 import { AssetsTransactions } from "../../components/AssetsTransactions";
-import {
-  defaultCryptoAccountData,
-  toastState,
-} from "../../constants/dictionary";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
+import { ToastMsgType } from "../../globals/types";
+import { DEFAULT_CRYPTO_ACCOUNT_DATA } from "../../globals/defaults";
+import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { ShareQR } from "../../components/ShareQR/ShareQR";
 import { MoreOptions } from "../../components/ShareQR/MoreOptions";
 
@@ -68,7 +63,7 @@ const Crypto = () => {
     useAppSelector(getDefaultCryptoAccountCache)
   );
   const [defaultAccountData, setDefaultAccountData] = useState(
-    defaultCryptoAccountData
+    DEFAULT_CRYPTO_ACCOUNT_DATA
   );
   const accountAvailable = cryptoAccountsData?.length && defaultAccountData;
   const items: CryptoBalanceItem[] = [
@@ -346,7 +341,7 @@ const Crypto = () => {
         setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
         usesIdentitySeedPhrase={true}
         onDone={() => {
-          dispatch(setCurrentOperation(toastState.walletCreated));
+          dispatch(setToastMsg(ToastMsgType.WALLET_CREATED));
         }}
       />
     </>

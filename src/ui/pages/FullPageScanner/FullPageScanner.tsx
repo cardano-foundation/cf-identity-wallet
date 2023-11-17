@@ -15,6 +15,7 @@ import {
   FullPageScannerProps,
   ScannerRefComponent,
 } from "./FullPageScanner.types";
+import { OperationType } from "../../globals/types";
 
 const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
   const dispatch = useAppDispatch();
@@ -22,7 +23,7 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
 
   const handleBackButton = () => {
     setShowScan(false);
-    dispatch(setCurrentOperation(""));
+    dispatch(setCurrentOperation(OperationType.IDLE));
     scannerRef.current?.stopScan();
     document
       ?.querySelector("body.scanner-active > div:last-child")

@@ -13,7 +13,7 @@ import { ConnectModalProps } from "./ConnectModal.types";
 import "./ConnectModal.scss";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { operationState } from "../../constants/dictionary";
+import { OperationType } from "../../globals/types";
 
 const ConnectModal = ({
   type,
@@ -49,7 +49,7 @@ const ConnectModal = ({
                   data-testid="add-connection-modal-scan-qr-code"
                   onClick={() => {
                     dispatch(
-                      setCurrentOperation(operationState.scanConnection)
+                      setCurrentOperation(OperationType.SCAN_CONNECTION)
                     );
                   }}
                 >

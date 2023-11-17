@@ -14,10 +14,10 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCurrentOperation,
   getCurrentRoute,
-  setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { operationState, toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { RoutePath } from "../../../routes";
 
 const VerifyPassword = ({
@@ -28,7 +28,9 @@ const VerifyPassword = ({
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentRoute = useAppSelector(getCurrentRoute);
-  const [currentAction, setCurrentAction] = useState("");
+  const [currentAction, setCurrentAction] = useState<
+    ToastMsgType | undefined
+  >();
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
   const [attempts, setAttempts] = useState(6);
   const [alertChoiceIsOpen, setAlertChoiceIsOpen] = useState(false);
@@ -53,27 +55,27 @@ const VerifyPassword = ({
   }, [isOpen]);
 
   useEffect(() => {
-    let operation = "";
+    let operation;
     if (
       currentRoute?.path?.includes(TabsRoutePath.DIDS) &&
-      currentOperation === operationState.deleteIdentity
+      currentOperation === OperationType.DELETE_IDENTIFIER
     ) {
-      operation = toastState.identityDeleted;
+      operation = ToastMsgType.IDENTIFIER_DELETED;
     } else if (
       currentRoute?.path?.includes(TabsRoutePath.CREDS) &&
-      currentOperation === operationState.deleteCredential
+      currentOperation === OperationType.DELETE_CREDENTIAL
     ) {
-      operation = toastState.credentialDeleted;
+      operation = ToastMsgType.CREDENTIAL_DELETED;
     } else if (
       currentRoute?.path?.includes(TabsRoutePath.CRYPTO) &&
-      currentOperation === operationState.deleteWallet
+      currentOperation === OperationType.DELETE_WALLET
     ) {
-      operation = toastState.walletDeleted;
+      operation = ToastMsgType.WALLET_DELETED;
     } else if (
       currentRoute?.path?.includes(RoutePath.CONNECTION_DETAILS) &&
-      currentOperation === operationState.deleteConnection
+      currentOperation === OperationType.DELETE_CONNECTION
     ) {
-      operation = toastState.connectionDeleted;
+      operation = ToastMsgType.CONNECTION_DELETED;
     }
     setCurrentAction(operation);
   }, [currentRoute?.path, currentOperation]);
@@ -132,7 +134,7 @@ const VerifyPassword = ({
       verifyPasswordValue === storedPassword
     ) {
       resetModal();
-      dispatch(setCurrentOperation(currentAction));
+      dispatch(setToastMsg(currentAction));
       onVerify();
     }
   }, [attempts]);

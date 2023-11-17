@@ -14,7 +14,7 @@ import {
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentity } from "../../components/CreateIdentity";
-import { CardTypes } from "../../constants/dictionary";
+import { CardType } from "../../globals/types";
 
 interface AdditionalButtonsProps {
   handleCreateDid: () => void;
@@ -108,7 +108,7 @@ const Dids = () => {
                 ) : null}
                 <CardsStack
                   name="favs"
-                  cardsType={CardTypes.DIDS}
+                  cardsType={CardType.DIDS}
                   cardsData={sortedFavDids}
                 />
               </>
@@ -122,7 +122,7 @@ const Dids = () => {
                 ) : null}
                 <CardsStack
                   name="alldids"
-                  cardsType={CardTypes.DIDS}
+                  cardsType={CardType.DIDS}
                   cardsData={allDids}
                 />
               </>

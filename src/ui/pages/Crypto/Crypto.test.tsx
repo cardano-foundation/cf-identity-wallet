@@ -7,7 +7,7 @@ import { store } from "../../../store";
 import { TabsRoutePath } from "../../../routes/paths";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 
 describe("Crypto Tab", () => {
   test("Renders Crypto Tab", () => {

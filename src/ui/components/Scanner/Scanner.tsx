@@ -11,15 +11,17 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCurrentOperation,
   getCurrentRoute,
+  getToastMsg,
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { operationState, toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
 
 const Scanner = forwardRef((props, ref) => {
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
+  const currentToastMsg = useAppSelector(getToastMsg);
   const currentRoute = useAppSelector(getCurrentRoute);
 
   const checkPermission = async () => {
@@ -71,7 +73,7 @@ const Scanner = forwardRef((props, ref) => {
           await AriesAgent.agent.connections.receiveInvitationFromUrl(
             result.content
           );
-          dispatch(setCurrentOperation(""));
+          dispatch(setCurrentOperation(OperationType.IDLE));
         }
       }
     }
@@ -80,9 +82,9 @@ const Scanner = forwardRef((props, ref) => {
   useEffect(() => {
     if (
       (currentRoute?.path === TabsRoutePath.SCAN ||
-        currentOperation === operationState.scanConnection) &&
-      currentOperation !== toastState.connectionRequestPending &&
-      currentOperation !== toastState.credentialRequestPending
+        currentOperation === OperationType.SCAN_CONNECTION) &&
+      currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
+      currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING
     ) {
       initScan();
     } else {

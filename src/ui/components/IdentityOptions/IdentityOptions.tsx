@@ -41,11 +41,12 @@ import { TabsRoutePath } from "../../../routes/paths";
 import {
   getStateCache,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
+import { DISPLAY_NAME_LENGTH } from "../../globals/constants";
 import { VerifyPasscode } from "../VerifyPasscode";
-import { operationState, toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -130,7 +131,7 @@ const IdentityOptions = ({
       theme: newSelectedTheme,
     });
     dispatch(setIdentitiesCache(updatedIdentities));
-    dispatch(setCurrentOperation(toastState.identityUpdated));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     handleDone();
   };
 
@@ -214,7 +215,7 @@ const IdentityOptions = ({
                     data-testid="identity-options-identity-options-button"
                     onClick={() => {
                       dispatch(
-                        setCurrentOperation(operationState.updateIdentity)
+                        setCurrentOperation(OperationType.UPDATE_IDENTIFIER)
                       );
                       setNewDisplayName(cardData.displayName);
                       setOptionsIsOpen(false);
@@ -261,7 +262,7 @@ const IdentityOptions = ({
                       setOptionsIsOpen(false);
                       handleDelete();
                       dispatch(
-                        setCurrentOperation(operationState.deleteIdentity)
+                        setCurrentOperation(OperationType.DELETE_IDENTIFIER)
                       );
                     }}
                   >
@@ -306,7 +307,7 @@ const IdentityOptions = ({
                   className="close-button-label"
                   onClick={() => {
                     handleClose();
-                    dispatch(setCurrentOperation(""));
+                    dispatch(setCurrentOperation(OperationType.IDLE));
                   }}
                   data-testid="close-button"
                 >
@@ -403,9 +404,7 @@ const IdentityOptions = ({
                       className="secondary-button"
                       onClick={() => {
                         writeToClipboard(JSON.stringify(cardData, null, 2));
-                        dispatch(
-                          setCurrentOperation(toastState.copiedToClipboard)
-                        );
+                        dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
                       }}
                     >
                       <IonIcon
@@ -459,8 +458,8 @@ const IdentityOptions = ({
             setVerifyPasscodeIsOpen(true);
           }
         }}
-        actionCancel={() => dispatch(setCurrentOperation(""))}
-        actionDismiss={() => dispatch(setCurrentOperation(""))}
+        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}

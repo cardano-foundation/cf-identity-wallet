@@ -12,10 +12,7 @@ import "./CryptoBalance.scss";
 import { i18n } from "../../../i18n";
 import { useAppDispatch } from "../../../store/hooks";
 import { setHideCryptoBalances } from "../../../store/reducers/cryptoAccountsCache";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences/preferencesStorage";
+import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 
 const CryptoBalance = ({
   items,

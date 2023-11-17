@@ -8,7 +8,8 @@ import {
 } from "./backRoute";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
+import { OperationType } from "../../ui/globals/types";
 
 jest.mock("../../store/reducers/stateCache", () => ({
   removeCurrentRoute: jest.fn(),
@@ -41,7 +42,7 @@ describe("getBackRoute", () => {
           loggedIn: false,
           time: 0,
         },
-        currentOperation: "",
+        currentOperation: OperationType.IDLE,
         defaultCryptoAccount: "",
         queueConnectionCredentialRequest: {
           isProcessing: false,
@@ -127,7 +128,7 @@ describe("getBackRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
-        currentOperation: "",
+        currentOperation: OperationType.IDLE,
         defaultCryptoAccount: "",
         queueConnectionCredentialRequest: {
           isProcessing: false,
@@ -208,7 +209,7 @@ describe("getPreviousRoute", () => {
           loggedIn: false,
           time: 0,
         },
-        currentOperation: "",
+        currentOperation: OperationType.IDLE,
         defaultCryptoAccount: "",
         queueConnectionCredentialRequest: {
           isProcessing: false,

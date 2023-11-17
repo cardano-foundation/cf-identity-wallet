@@ -18,29 +18,21 @@ import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import {
-  getStateCache,
-  setCurrentOperation,
-  setInitialized,
-} from "../../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { operationState, toastState } from "../../constants/dictionary";
+import { getStateCache, setToastMsg } from "../../../store/reducers/stateCache";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { getBackRoute } from "../../../routes/backRoute";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 import { Addresses } from "../../../core/cardano";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
-    ? operationState.onboarding
+    ? OperationType.ONBOARDING
     : (history?.location?.state as GenerateSeedPhraseProps)?.type ||
       stateCache?.currentOperation;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
@@ -118,7 +110,7 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      if (seedPhraseType === operationState.onboarding) {
+      if (seedPhraseType === OperationType.ONBOARDING) {
         storeIdentitySeedPhrase();
       } else {
         setChooseAccountNameIsOpen(true);
@@ -133,8 +125,8 @@ const VerifySeedPhrase = () => {
       store: { stateCache },
       state: {
         type:
-          seedPhraseType !== operationState.onboarding
-            ? toastState.walletCreated
+          seedPhraseType !== OperationType.ONBOARDING
+            ? ToastMsgType.WALLET_CREATED
             : "",
         currentOperation: stateCache.currentOperation,
       },
@@ -176,13 +168,13 @@ const VerifySeedPhrase = () => {
         id="verify-seedphrase"
         header={true}
         title={
-          seedPhraseType !== operationState.onboarding
+          seedPhraseType !== OperationType.ONBOARDING
             ? `${i18n.t("verifyseedphrase." + seedPhraseType + ".title")}`
             : undefined
         }
         backButton={true}
         onBack={
-          seedPhraseType === operationState.onboarding
+          seedPhraseType === OperationType.ONBOARDING
             ? () => {
               handleClearState();
               handleExit();
@@ -190,7 +182,7 @@ const VerifySeedPhrase = () => {
             : () => setAlertExitIsOpen(true)
         }
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
-        progressBar={seedPhraseType === operationState.onboarding}
+        progressBar={seedPhraseType === OperationType.ONBOARDING}
         progressBarValue={1}
         progressBarBuffer={1}
         footer={true}
@@ -205,7 +197,7 @@ const VerifySeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              {seedPhraseType === operationState.onboarding && (
+              {seedPhraseType === OperationType.ONBOARDING && (
                 <h2>
                   {i18n.t("verifyseedphrase." + seedPhraseType + ".title")}
                 </h2>
@@ -306,7 +298,7 @@ const VerifySeedPhrase = () => {
           usesIdentitySeedPhrase={false}
           seedPhrase={originalSeedPhrase.join(" ")}
           onDone={() => {
-            dispatch(setCurrentOperation(toastState.walletCreated));
+            dispatch(setToastMsg(ToastMsgType.WALLET_CREATED));
             handleNavigate();
           }}
         />

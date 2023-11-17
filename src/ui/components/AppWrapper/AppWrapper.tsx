@@ -9,12 +9,12 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getAuthentication,
   setAuthentication,
-  setCurrentOperation,
   setInitialized,
   setPauseQueueConnectionCredentialRequest,
   setQueueConnectionCredentialRequest,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import { KeyStoreKeys, SecureStorage , PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import {
   setFavouritesIdentitiesCache,
   setIdentitiesCache,
@@ -29,17 +29,13 @@ import {
   setCryptoAccountsCache,
   setHideCryptoBalances,
 } from "../../../store/reducers/cryptoAccountsCache";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
 import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
 import {
   setConnectionsCache,
   updateOrAddConnectionCache,
 } from "../../../store/reducers/connectionsCache";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
-import { toastState } from "../../constants/dictionary";
+import { ToastMsgType } from "../../globals/types";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
 import {
@@ -58,7 +54,7 @@ const connectionStateChangedHandler = async (
     const connectionDetails =
       AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
     dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setCurrentOperation(toastState.connectionRequestPending));
+    dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else if (
     AriesAgent.agent.connections.isConnectionResponseReceived(connectionRecord)
   ) {
@@ -78,7 +74,7 @@ const connectionStateChangedHandler = async (
     const connectionDetails =
       AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
     dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
+    dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_INCOMING));
     dispatch(
       setQueueConnectionCredentialRequest({
         id: connectionRecord.id,
@@ -90,14 +86,14 @@ const connectionStateChangedHandler = async (
   } else if (
     AriesAgent.agent.connections.isConnectionResponseSent(connectionRecord)
   ) {
-    dispatch(setCurrentOperation(toastState.connectionRequestPending));
+    dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else if (
     AriesAgent.agent.connections.isConnectionConnected(connectionRecord)
   ) {
     const connectionDetails =
       AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
     dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setCurrentOperation(toastState.newConnectionAdded));
+    dispatch(setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED));
   }
 };
 
@@ -140,14 +136,14 @@ const credentialStateChangedHandler = async (
       ...credentialDetails,
       credentialRecordId: credentialRecord.id,
     });
-    dispatch(setCurrentOperation(toastState.credentialRequestPending));
+    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));
     dispatch(updateOrAddCredsCache(credentialDetails));
   } else if (AriesAgent.agent.credentials.isCredentialDone(credentialRecord)) {
     const credentialShortDetails =
       await AriesAgent.agent.credentials.updateMetadataCompleted(
         credentialRecord
       );
-    dispatch(setCurrentOperation(toastState.newCredentialAdded));
+    dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));
     dispatch(updateOrAddCredsCache(credentialShortDetails));
   }
 };
@@ -164,7 +160,7 @@ const connectionKeriStateChangedHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === ConnectionStatus.PENDING) {
-    dispatch(setCurrentOperation(toastState.connectionRequestPending));
+    dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
     const connectionRecordId = event.payload.connectionId!;
     const connectionDetails =
@@ -172,7 +168,7 @@ const connectionKeriStateChangedHandler = async (
         connectionRecordId
       );
     dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setCurrentOperation(toastState.newConnectionAdded));
+    dispatch(setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED));
   }
 };
 

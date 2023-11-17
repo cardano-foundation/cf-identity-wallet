@@ -29,10 +29,11 @@ import { TabsRoutePath } from "../../../routes/paths";
 import {
   getStateCache,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
 import { VerifyPasscode } from "../VerifyPasscode";
-import { operationState, toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../../utils/clipboard";
 
@@ -135,7 +136,7 @@ const CredsOptions = ({
                     onClick={() => {
                       handleDelete();
                       dispatch(
-                        setCurrentOperation(operationState.archiveCredential)
+                        setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL)
                       );
                     }}
                   >
@@ -187,9 +188,7 @@ const CredsOptions = ({
                       className="secondary-button"
                       onClick={() => {
                         writeToClipboard(JSON.stringify(cardData, null, 2));
-                        dispatch(
-                          setCurrentOperation(toastState.copiedToClipboard)
-                        );
+                        dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
                       }}
                     >
                       <IonIcon
@@ -245,8 +244,8 @@ const CredsOptions = ({
             setVerifyPasscodeIsOpen(true);
           }
         }}
-        actionCancel={() => dispatch(setCurrentOperation(""))}
-        actionDismiss={() => dispatch(setCurrentOperation(""))}
+        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}

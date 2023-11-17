@@ -1,3 +1,4 @@
+// @TODO - foconnor: Some of these could live closer to the component and some could come from the env.
 const MNEMONIC_FIFTEEN_WORDS = 15;
 const MNEMONIC_TWENTYFOUR_WORDS = 24;
 const FIFTEEN_WORDS_BIT_LENGTH = 160;
@@ -5,6 +6,7 @@ const TWENTYFOUR_WORDS_BIT_LENGTH = 256;
 const DISPLAY_NAME_LENGTH = 32;
 const SEED_PHRASE_SUGGESTIONS = 3;
 const TOAST_MESSAGE_DELAY = 4000;
+const MAX_FAVOURITES = 5;
 
 export {
   MNEMONIC_FIFTEEN_WORDS,
@@ -14,4 +16,5 @@ export {
   DISPLAY_NAME_LENGTH,
   SEED_PHRASE_SUGGESTIONS,
   TOAST_MESSAGE_DELAY,
+  MAX_FAVOURITES,
 };
