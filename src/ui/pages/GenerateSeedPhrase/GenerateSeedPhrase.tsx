@@ -30,11 +30,7 @@ import {
   TWENTYFOUR_WORDS_BIT_LENGTH,
   SEED_PHRASE_SUGGESTIONS,
 } from "../../../constants/appConstants";
-import {
-  operationState,
-  onboardingRoute,
-  toastState,
-} from "../../constants/dictionary";
+import { operationState, onboardingRoute } from "../../constants/dictionary";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
   Alert as AlertConfirm,
