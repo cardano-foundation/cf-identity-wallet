@@ -56,7 +56,6 @@ import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { GenerateSeedPhraseProps } from "./GenerateSeedPhrase.types";
 import { bip39Seeds } from "../../constants/bip39Seeds";
-import { ChooseAccountName } from "../../components/ChooseAccountName";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -87,7 +86,6 @@ const GenerateSeedPhrase = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
-  const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
 
   useEffect(() => {
     setSeedPhrase(seedPhrase);
@@ -269,11 +267,7 @@ const GenerateSeedPhrase = () => {
           )}`}
           primaryButtonAction={() => {
             if (stateRestore) {
-              if (validateSeedPhrase) {
-                setChooseAccountNameIsOpen(true);
-              } else {
-                setAlertVerifyIsOpen(true);
-              }
+              setAlertVerifyIsOpen(true);
             } else {
               setAlertConfirmIsOpen(true);
             }
@@ -501,19 +495,6 @@ const GenerateSeedPhrase = () => {
             actionConfirm={handleExit}
             actionCancel={() => dispatch(setCurrentOperation(""))}
             actionDismiss={() => dispatch(setCurrentOperation(""))}
-          />
-          <ChooseAccountName
-            chooseAccountNameIsOpen={chooseAccountNameIsOpen}
-            setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
-            usesIdentitySeedPhrase={false}
-            seedPhrase={seedPhrase.join(" ")}
-            onDone={() => {
-              handleClearState();
-              dispatch(setCurrentOperation(toastState.walletRestored));
-              history.push({
-                pathname: TabsRoutePath.CRYPTO,
-              });
-            }}
           />
         </PageLayout>
       </IonPage>

@@ -18,17 +18,13 @@ import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import {
-  getStateCache,
-  setCurrentOperation,
-} from "../../../store/reducers/stateCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
 import { operationState, toastState } from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 import { Addresses } from "../../../core/cardano";
-import { ChooseAccountName } from "../../components/ChooseAccountName";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
@@ -47,7 +43,6 @@ const VerifySeedPhrase = () => {
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
-  const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
@@ -113,11 +108,7 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      if (seedPhraseType === operationState.onboarding) {
-        storeIdentitySeedPhrase();
-      } else {
-        setChooseAccountNameIsOpen(true);
-      }
+      storeIdentitySeedPhrase();
     } else {
       setAlertIsOpen(true);
     }
@@ -294,16 +285,6 @@ const VerifySeedPhrase = () => {
             "verifyseedphrase.alert.exit.button.cancel"
           )}`}
           actionConfirm={handleExit}
-        />
-        <ChooseAccountName
-          chooseAccountNameIsOpen={chooseAccountNameIsOpen}
-          setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
-          usesIdentitySeedPhrase={false}
-          seedPhrase={originalSeedPhrase.join(" ")}
-          onDone={() => {
-            dispatch(setCurrentOperation(toastState.walletCreated));
-            handleNavigate();
-          }}
         />
       </PageLayout>
     </IonPage>
