@@ -12,14 +12,17 @@ import {
   W3cJsonLdVerifiableCredential,
   JsonObject,
 } from "@aries-framework/core";
-import { CredentialDetails, CredentialShortDetails } from "../agent.types";
+import {
+  CredentialDetails,
+  CredentialShortDetails,
+  CredentialType,
+} from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
 import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { CredentialType } from "../../../ui/constants/dictionary";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
