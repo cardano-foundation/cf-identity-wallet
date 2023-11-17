@@ -374,7 +374,7 @@ class CredentialService extends AgentService {
 
   async getUnhandledCredentials(): Promise<
     (CredentialExchangeRecord | KeriNotification)[]
-    > {
+  > {
     const results = await Promise.all([
       this.agent.credentials.findAllByQuery({
         state: CredentialState.OfferReceived,
@@ -446,7 +446,7 @@ class CredentialService extends AgentService {
       type: AcdcKeriEventTypes.AcdcKeriStateChanged,
       payload: {
         credentialId,
-        status: CredentialStatus.PENDING,
+        status: CredentialStatus.CONFIRMED,
       },
     });
   }
@@ -494,13 +494,18 @@ class CredentialService extends AgentService {
         status: CredentialStatus.PENDING,
       },
     });
-    const holder = (
-      await this.agent.modules.generalStorage.getAllAvailableIdentifierMetadata()
-    )[0]; // TODO: must define the default AID
+    const keriExchange = await this.agent.modules.signify.getKeriExchange(
+      keriNoti.a.d as string
+    );
 
+    const holder =
+      await this.agent.modules.generalStorage.getIdentifierMetadata(
+        keriExchange.exn.a.i
+      );
     await this.agent.modules.signify.admitIpex(
       keriNoti.a.d as string,
-      holder.signifyName!
+      holder!.signifyName as string,
+      keriExchange.exn.i
     );
     const newCreds = await this.getNewKeriCredentials();
     for (const cred of newCreds) {
@@ -515,7 +520,7 @@ class CredentialService extends AgentService {
 
     while (newCredentials.length < 1) {
       for (const cred of holderCreds) {
-        const recordExisted = await this.checkGenericRecordExist(cred.i);
+        const recordExisted = await this.checkGenericRecordExist(cred.sad.d);
         if (!recordExisted) {
           newCredentials.push(cred);
         }

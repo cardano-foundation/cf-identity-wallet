@@ -65,10 +65,6 @@ export class SignifyApi {
 
   async createIdentifier(): Promise<CreateIdentifierResult> {
     const signifyName = utils.uuid();
-    console.log(
-      "🚀 ~ file: signifyApi.ts:63 ~ SignifyApi ~ createIdentifier ~ signifyName:",
-      signifyName
-    );
     let operation = await this.signifyClient
       .identifiers()
       .create(signifyName, SignifyApi.BACKER_CONFIG);
@@ -126,22 +122,24 @@ export class SignifyApi {
     return this.signifyClient.notifications().mark(id);
   }
 
-  async admitIpex(notificationD: string, holderAidName: string) {
+  async admitIpex(notificationD: string, holderAidName: string, issuerAid : string) : Promise<void> {
     await this.resolveOobi(SignifyApi.VLEI_HOST + SignifyApi.SCHEMA_SAID);
-    const contact = (await this.getContacts())[0]; // TODO: must define how to get it
-
-    const issuerAID = contact.id;
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.signifyClient
       .ipex()
       .admit(holderAidName, "", notificationD, dt);
     await this.signifyClient
       .ipex()
-      .submitAdmit(holderAidName, admit, sigs, aend, [issuerAID]);
+      .submitAdmit(holderAidName, admit, sigs, aend, [issuerAid]);
   }
 
   async getCredentials(): Promise<any> {
     return this.signifyClient.credentials().list();
+  }
+
+  async getKeriExchange(notificationD : string) : Promise<any>{
+    const name = "1bd4cebd-9539-47b8-ab07-0d13cffd1624" // TODO: hard code for now, will remove when signify-ts updated
+    return this.signifyClient.exchanges().get(name,notificationD);
   }
 
   /**
