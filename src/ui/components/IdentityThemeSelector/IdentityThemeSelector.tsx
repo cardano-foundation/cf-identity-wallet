@@ -5,7 +5,7 @@ import {
   ThemeItemProps,
 } from "./IdentityThemeSelector.types";
 import "./IdentityThemeSelector.scss";
-import { MAPPING_THEME_BACKGROUND } from "../../constants/dictionary";
+import { themeBackgroundMapping } from "../../constants/dictionary";
 
 const IdentityThemeSelector = ({
   identityType,
@@ -36,7 +36,7 @@ const IdentityThemeSelector = ({
           data-testid={`identity-theme-selector-item-${index}`}
           className="theme-input"
           style={{
-            backgroundImage: `url(${MAPPING_THEME_BACKGROUND[index]})`,
+            backgroundImage: `url(${themeBackgroundMapping[index]})`,
             backgroundSize: "cover",
           }}
         >

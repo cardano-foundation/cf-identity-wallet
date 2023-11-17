@@ -131,17 +131,34 @@ const PasscodeLogin = () => {
   return (
     <IonPage className="page-layout passcode-login safe-area">
       <PageLayout currentPath={RoutePath.PASSCODE_LOGIN}>
+        <IonGrid>
+          <IonRow>
+            <IonCol
+              className="passcode-login-title"
+              data-testid="passcode-login-title"
+            >
+              {i18n.t("passcodelogin.title")}
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol
+              className="passcode-login-description"
+              data-testid="passcode-login-description"
+            >
+              {i18n.t("passcodelogin.description")}
+            </IonCol>
+          </IonRow>
+        </IonGrid>
         <PasscodeModule
-          title={i18n.t("passcodelogin.title")}
-          description={i18n.t("passcodelogin.description")}
           error={
-            passcode.length === 6 &&
-            passcodeIncorrect && (
-              <ErrorMessage
-                message={`${i18n.t("passcodelogin.error")}`}
-                timeout={true}
-              />
-            )
+            <ErrorMessage
+              message={
+                passcode.length === 6 && passcodeIncorrect
+                  ? `${i18n.t("passcodelogin.error")}`
+                  : undefined
+              }
+              timeout={true}
+            />
           }
           passcode={passcode}
           handlePinChange={handlePinChange}

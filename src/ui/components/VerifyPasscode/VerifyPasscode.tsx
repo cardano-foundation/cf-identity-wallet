@@ -149,17 +149,34 @@ const VerifyPasscode = ({
         closeButtonLabel={`${i18n.t("verifypasscode.cancel")}`}
         closeButtonAction={() => handleClearState()}
       >
+        <IonGrid>
+          <IonRow>
+            <IonCol
+              className="verify-passcode-title"
+              data-testid="verify-passcode-title"
+            >
+              {i18n.t("verifypasscode.title")}
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol
+              className="verify-passcode-description"
+              data-testid="verify-passcode-description"
+            >
+              {i18n.t("verifypasscode.description")}
+            </IonCol>
+          </IonRow>
+        </IonGrid>
         <PasscodeModule
-          title={i18n.t("verifypasscode.title")}
-          description={i18n.t("verifypasscode.description")}
           error={
-            passcode.length === 6 &&
-            passcodeIncorrect && (
-              <ErrorMessage
-                message={`${i18n.t("verifypasscode.error")}`}
-                timeout={true}
-              />
-            )
+            <ErrorMessage
+              message={
+                passcode.length === 6 && passcodeIncorrect
+                  ? `${i18n.t("verifypasscode.error")}`
+                  : undefined
+              }
+              timeout={true}
+            />
           }
           passcode={passcode}
           handlePinChange={handlePinChange}

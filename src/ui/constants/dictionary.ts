@@ -107,7 +107,7 @@ const onboardingRoute = {
   restoreRoute: "?route=onboardingrestore",
 };
 
-const MAPPING_THEME_BACKGROUND: Record<number, unknown> = {
+const themeBackgroundMapping: Record<number, unknown> = {
   0: BackgroundDidKey0,
   1: BackgroundDidKey1,
   2: BackgroundDidKey2,
@@ -116,6 +116,21 @@ const MAPPING_THEME_BACKGROUND: Record<number, unknown> = {
   5: BackgroundKERI1,
 };
 
+const passcodeMapping = {
+  numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0],
+  labels: [
+    [""],
+    ["A B C"],
+    ["D E F"],
+    ["G H I"],
+    ["J K L"],
+    ["M N O"],
+    ["P Q R S"],
+    ["T U V"],
+    ["W X Y Z"],
+    [""],
+  ],
+};
 export {
   MAX_FAVOURITES,
   CardTypes,
@@ -127,5 +142,6 @@ export {
   blurredCryptoData,
   onboardingRoute,
   connectionType,
-  MAPPING_THEME_BACKGROUND,
+  themeBackgroundMapping,
+  passcodeMapping,
 };
