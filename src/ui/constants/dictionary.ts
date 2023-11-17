@@ -77,27 +77,6 @@ const toastState = {
   maxFavouritesReached: "maxFavouritesReached",
 };
 
-const defaultCredentialsCardData: CredentialDetails = {
-  id: "",
-  type: [""],
-  connectionId: "",
-  issuanceDate: "",
-  expirationDate: "",
-  credentialType: "",
-  issuerLogo: "",
-  credentialSubject: {
-    degree: {
-      education: "",
-      type: "",
-      name: "",
-    },
-  },
-  proofType: "",
-  proofValue: "",
-  colors: ["", ""],
-  status: CredentialMetadataRecordStatus.PENDING,
-};
-
 const blurredCryptoData = "••••••••••••••••••";
 
 const onboardingRoute = {
@@ -138,7 +117,6 @@ export {
   connectionStatus,
   operationState,
   toastState,
-  defaultCredentialsCardData,
   blurredCryptoData,
   onboardingRoute,
   connectionType,
