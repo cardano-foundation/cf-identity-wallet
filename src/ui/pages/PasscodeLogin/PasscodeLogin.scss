@@ -1,5 +1,10 @@
 .passcode-login {
-  .passcode-module {
-    padding-top: 2.5rem;
+  .responsive-page-content {
+    justify-content: space-evenly;
+
+    .passcode-login-title,
+    .passcode-login-description {
+      text-align: center;
+    }
   }
 }

@@ -127,7 +127,6 @@ const SetPasscode = () => {
       {originalPassCode !== "" ? (
         <PageFooter
           pageId={"set-passcode"}
-          data-testid="forgot-your-passcode-button"
           secondaryButtonText={`${i18n.t("setpasscode.startover.label")}`}
           secondaryButtonAction={() => handleClearState()}
         />
