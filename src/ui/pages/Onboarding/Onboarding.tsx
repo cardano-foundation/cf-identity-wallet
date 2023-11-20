@@ -1,10 +1,8 @@
 import { useHistory } from "react-router-dom";
-import { IonPage } from "@ionic/react";
 import { i18n } from "../../../i18n";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
-import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {

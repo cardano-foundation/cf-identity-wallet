@@ -50,7 +50,6 @@ import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { TabsRoutePath } from "../../../routes/paths";
-import { GenerateSeedPhraseProps } from "./GenerateSeedPhrase.types";
 import { bip39Seeds } from "../../constants/bip39Seeds";
 
 const GenerateSeedPhrase = () => {
@@ -58,15 +57,10 @@ const GenerateSeedPhrase = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const currentOperation = useAppSelector(getCurrentOperation);
-  const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
-    ? operationState.onboarding
-    : (
-      (history?.location?.state as GenerateSeedPhraseProps)?.type ||
-        currentOperation
-    ).toLowerCase();
-  const stateOnboarding = seedPhraseType === operationState.onboarding;
+
   const stateRestore = currentOperation === operationState.restoreCryptoAccount;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
+
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
@@ -78,7 +72,6 @@ const GenerateSeedPhrase = () => {
   const [checked, setChecked] = useState(false);
   const [reloadSeedPhrase, setReloadSeedPhrase] = useState(false);
   const [verifySeedPhrase, setVerifySeedPhrase] = useState(true);
-  const [validateSeedPhrase, setValidateSeedPhrase] = useState(false);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isTyping, setIsTyping] = useState(false);
@@ -95,7 +88,6 @@ const GenerateSeedPhrase = () => {
       return verify;
     };
     setVerifySeedPhrase(isVerifiable);
-    setValidateSeedPhrase(validateMnemonic(seedPhrase.join(" ")));
   }, [reloadSeedPhrase, isTyping]);
 
   const initializeSeedPhrase = () => {
@@ -182,9 +174,6 @@ const GenerateSeedPhrase = () => {
     handleClearState();
     history.push({
       pathname: nextPath.pathname,
-      state: {
-        type: seedPhraseType,
-      },
     });
   };
 
@@ -198,7 +187,7 @@ const GenerateSeedPhrase = () => {
     return (
       <div className="generate-seedphrase-suggestions">
         <span className="generate-seedphrase-suggestions-title">
-          {i18n.t("generateseedphrase." + seedPhraseType + ".suggestions")}
+          {i18n.t("generateseedphrase.onboarding.suggestions")}
         </span>
         <div className="seed-phrase-container">
           {suggestions.map((suggestion, index) => (
@@ -244,22 +233,18 @@ const GenerateSeedPhrase = () => {
       <IonPage className="page-layout generate-seedphrase">
         <PageLayout
           header={true}
-          title={
-            !stateOnboarding
-              ? `${i18n.t("generateseedphrase." + seedPhraseType + ".title")}`
-              : undefined
-          }
-          backButton={stateOnboarding}
+          title={`${i18n.t("generateseedphrase.onboarding.title")}`}
+          backButton={true}
           beforeBack={handleClearState}
-          closeButton={!stateOnboarding}
+          closeButton={false}
           closeButtonAction={() => setAlertExitIsOpen(true)}
           currentPath={RoutePath.GENERATE_SEED_PHRASE}
-          progressBar={stateOnboarding}
+          progressBar={true}
           progressBarValue={0.66}
           progressBarBuffer={1}
           footer={true}
           primaryButtonText={`${i18n.t(
-            "generateseedphrase." + seedPhraseType + ".button.continue"
+            "generateseedphrase.onboarding.button.continue"
           )}`}
           primaryButtonAction={() => {
             if (stateRestore) {
@@ -275,18 +260,14 @@ const GenerateSeedPhrase = () => {
           <IonGrid>
             <IonRow>
               <IonCol size="12">
-                {stateOnboarding && (
-                  <h2 data-testid="screen-title">
-                    {i18n.t("generateseedphrase." + seedPhraseType + ".title")}
-                  </h2>
-                )}
+                <h2 data-testid="screen-title">
+                  {i18n.t("generateseedphrase.onboarding.title")}
+                </h2>
                 <p
                   className="page-paragraph"
                   data-testid="page-paragraph-top"
                 >
-                  {i18n.t(
-                    "generateseedphrase." + seedPhraseType + ".paragraph.top"
-                  )}
+                  {i18n.t("generateseedphrase.onboarding.paragraph.top")}
                 </p>
               </IonCol>
             </IonRow>
@@ -355,7 +336,7 @@ const GenerateSeedPhrase = () => {
                   </div>
                   <div
                     data-testid="seed-phrase-container"
-                    className={`seed-phrase-container ${seedPhraseType} ${
+                    className={`seed-phrase-container onboarding ${
                       showSeedPhrase
                         ? "seed-phrase-visible"
                         : "seed-phrase-blurred"
@@ -406,9 +387,7 @@ const GenerateSeedPhrase = () => {
                   className="page-paragraph"
                   data-testid="page-paragraph-bottom"
                 >
-                  {i18n.t(
-                    "generateseedphrase." + seedPhraseType + ".paragraph.bottom"
-                  )}
+                  {i18n.t("generateseedphrase.onboarding.paragraph.bottom")}
                 </p>
               </IonCol>
             </IonRow>

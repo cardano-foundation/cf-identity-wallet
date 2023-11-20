@@ -57,16 +57,6 @@
         "continue": "Continue"
       }
     },
-    "newcryptoaccount": {
-      "title": "Generate your Seed Phrase",
-      "paragraph": {
-        "top": "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
-        "bottom": "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption."
-      },
-      "button": {
-        "continue": "Continue"
-      }
-    },
     "restorecryptoaccount": {
       "title": "Enter Seed Phrase",
       "suggestions": "Suggestions",
