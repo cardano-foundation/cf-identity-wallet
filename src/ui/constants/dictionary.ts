@@ -35,7 +35,6 @@ const connectionType = {
 
 const operationState = {
   onboarding: "onboarding",
-  restoreCryptoAccount: "restoreCryptoAccount",
   updateIdentity: "updateIdentity",
   deleteIdentity: "deleteIdentity",
   deleteConnection: "deleteConnection",
