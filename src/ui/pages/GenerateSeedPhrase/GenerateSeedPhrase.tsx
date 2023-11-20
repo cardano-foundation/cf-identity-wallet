@@ -58,7 +58,7 @@ const GenerateSeedPhrase = () => {
   const stateCache = useAppSelector(getStateCache);
   const currentOperation = useAppSelector(getCurrentOperation);
 
-  const stateRestore = currentOperation === operationState.restoreCryptoAccount;
+  // const stateRestore = currentOperation === operationState.restoreCryptoAccount;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
 
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
@@ -95,13 +95,7 @@ const GenerateSeedPhrase = () => {
       seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
     let seed160;
     let seed256;
-    if (stateRestore) {
-      setShowSeedPhrase(true);
-      seed160 = new Array(MNEMONIC_FIFTEEN_WORDS).fill("");
-      setSeedPhrase160(seed160);
-      seed256 = new Array(MNEMONIC_TWENTYFOUR_WORDS).fill("");
-      setSeedPhrase256(seed256);
-    } else if (
+    if (
       seedPhraseStore.seedPhrase160.length > 0 &&
       seedPhraseStore.seedPhrase256.length > 0
     ) {
@@ -246,11 +240,7 @@ const GenerateSeedPhrase = () => {
             "generateseedphrase.onboarding.button.continue"
           )}`}
           primaryButtonAction={() => {
-            if (stateRestore) {
-              setAlertVerifyIsOpen(true);
-            } else {
-              setAlertConfirmIsOpen(true);
-            }
+            setAlertConfirmIsOpen(true);
           }}
           primaryButtonDisabled={
             !(showSeedPhrase && checked && verifySeedPhrase)
@@ -282,7 +272,6 @@ const GenerateSeedPhrase = () => {
                       : FIFTEEN_WORDS_BIT_LENGTH
                   }`}
                   onIonChange={(event) => {
-                    setShowSeedPhrase(stateRestore);
                     toggleSeedPhrase(Number(event.detail.value));
                   }}
                 >
@@ -343,29 +332,7 @@ const GenerateSeedPhrase = () => {
                 }`}
                   >
                     {seedPhrase.map((word, index) => {
-                      return stateRestore ? (
-                        <IonChip
-                          key={index}
-                          className={word.length ? "full" : "empty"}
-                        >
-                          <span className="index">{index + 1}.</span>
-                          <IonInput
-                            onIonFocus={() => {
-                              updateSeedPhrase(index, "");
-                              setIsTyping(true);
-                            }}
-                            onIonChange={(event) => {
-                              handleSuggestions(index, `${event.target.value}`);
-                              updateSeedPhrase(index, `${event.target.value}`);
-                            }}
-                            onIonBlur={() => {
-                              setIsTyping(false);
-                              setSuggestions([]);
-                            }}
-                            value={word}
-                          />
-                        </IonChip>
-                      ) : (
+                      return (
                         <IonChip key={index}>
                           <span className="index">{index + 1}.</span>
                           <span data-testid={`word-index-${index + 1}`}>
