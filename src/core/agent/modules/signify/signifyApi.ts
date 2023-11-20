@@ -9,8 +9,10 @@ import { KeriContact, CreateIdentifierResult } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
+  static readonly LOCAL_KERIA_ENDPOINT =
+    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
+    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
@@ -152,12 +154,8 @@ export class SignifyApi {
 
   async getKeriExchange(notificationD: string): Promise<any> {
     const { aids } = await this.signifyClient.identifiers().list();
-    return Promise.race(
-      aids.map(
-        (aid: any) =>
-          this.signifyClient.exchanges().get(aid.name, notificationD) //TODO: hard code for now, will remove when signify-ts updated
-      )
-    );
+    const aid = aids[0];
+    return this.signifyClient.exchanges().get(aid.name, notificationD); // TODO: hard code for now, will remove when signify-ts updated
   }
 
   /**

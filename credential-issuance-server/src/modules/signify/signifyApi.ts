@@ -1,11 +1,19 @@
 import { utils } from "@aries-framework/core";
-import { d, messagize, Serder, Siger, SignifyClient, ready as signifyReady, Tier } from "signify-ts";
+import {
+  d,
+  messagize,
+  Serder,
+  Siger,
+  SignifyClient,
+  ready as signifyReady,
+  Tier,
+} from "signify-ts";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
-    "http://127.0.0.1:3901";
+    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "http://127.0.0.1:3903";
+    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly SIGNIFY_BRAN = "0123456a89aacxeaCaxkk"; // @TODO - foconnor: Shouldn't be hard-coded.
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
@@ -25,7 +33,7 @@ export class SignifyApi {
   };
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
-  "Failed to resolve OOBI, operation not completing...";
+    "Failed to resolve OOBI, operation not completing...";
 
   private signifyClient!: SignifyClient;
   private opTimeout: number;
@@ -61,7 +69,6 @@ export class SignifyApi {
       .create(signifyName, SignifyApi.BACKER_CONFIG);
     await op.op();
     const aid1 = await this.getIdentifierByName(signifyName);
-    console.log("🚀 ~ file: signifyApi.ts:64 ~ SignifyApi ~ createIdentifier ~ aid1:", aid1)
     await this.signifyClient
       .identifiers()
       .addEndRole(
@@ -103,7 +110,7 @@ export class SignifyApi {
       .create({ name, registryName: "vLEI" });
     await result.op();
     const registries = await this.signifyClient.registries().list(name);
-    return registries[0].regk
+    return registries[0].regk;
   }
 
   async issueCredential(
@@ -127,34 +134,32 @@ export class SignifyApi {
     const ims = d(messagize(ianc, sigers));
 
     const atc = ims.substring(result.anc.size);
-    let dt = new Date().toISOString().replace('Z', '000+00:00');
-    
+    let dt = new Date().toISOString().replace("Z", "000+00:00");
+
     const [grant, gsigs, gend] = await this.signifyClient
-        .ipex()
-        .grant(
-            issuer,
-            holder,
-            '',
-            acdc,
-            result.acdcSaider,
-            iss,
-            result.issExnSaider,
-            result.anc,
-            atc,
-            undefined,
-            dt
-        );
+      .ipex()
+      .grant(
+        issuer,
+        holder,
+        "",
+        acdc,
+        result.acdcSaider,
+        iss,
+        result.issExnSaider,
+        result.anc,
+        atc,
+        undefined,
+        dt
+      );
     await this.signifyClient
-        .exchanges()
-        .sendFromEvents(issuer, 'credential', grant, gsigs, gend, [
-            holder,
-        ]);
+      .exchanges()
+      .sendFromEvents(issuer, "credential", grant, gsigs, gend, [holder]);
   }
 
   /**
    * Note - op must be of type any here until Signify cleans up its typing.
    */
-   private async waitAndGetOp(
+  private async waitAndGetOp(
     op: any,
     timeout: number,
     interval: number
