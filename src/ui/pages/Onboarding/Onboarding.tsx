@@ -64,7 +64,6 @@ const Onboarding = () => {
       dispatch(setCurrentOperation(route));
       const data: DataProps = {
         store: { stateCache },
-        state: { currentOperation: route },
       };
       const { nextPath, updateRedux } = getNextRoute(
         RoutePath.ONBOARDING,
