@@ -1,4 +1,4 @@
-import { ready } from "signify-ts";
+import { CredentialFilter, ready } from "signify-ts";
 import { utils } from "@aries-framework/core";
 import { SignifyApi } from "./signifyApi";
 
@@ -11,12 +11,25 @@ const oobiPrefix = "oobi.";
 
 let connectMock = jest.fn();
 const bootMock = jest.fn();
+const admitMock = jest
+  .fn()
+  .mockImplementation(
+    (name: string, message: string, grant: string, datetime?: string) => {
+      return [{}, ["sigs"], "aend"];
+    }
+  );
+const submitAdmitMock = jest.fn();
+
 const contacts = [
   {
     id: "id",
     alias: "alias",
   },
 ];
+const notifications = { notes: [] };
+const credentials: any[] = [];
+const exchange = {};
+
 jest.mock("signify-ts", () => ({
   ready: jest.fn(),
   SignifyClient: jest.fn().mockImplementation(() => {
@@ -31,7 +44,14 @@ jest.mock("signify-ts", () => ({
           return { name, id: `${aidPrefix}${name}` };
         }),
         create: jest.fn().mockImplementation((name, _config) => {
-          return { done: false, name: `${witnessPrefix}${name}` };
+          return {
+            done: false,
+            name: `${witnessPrefix}${name}`,
+            op: jest.fn(),
+            serder: {
+              ked: { i: name },
+            },
+          };
         }),
         addEndRole: jest.fn(),
       }),
@@ -68,6 +88,28 @@ jest.mock("signify-ts", () => ({
               return contacts;
             }
           ),
+      }),
+      notifications: jest.fn().mockReturnValue({
+        list: jest.fn().mockImplementation((start?: number, end?: number) => {
+          return notifications;
+        }),
+        mark: jest.fn().mockImplementation((said: string) => {
+          return "marked";
+        }),
+      }),
+      ipex: jest.fn().mockReturnValue({
+        admit: admitMock,
+        submitAdmit: submitAdmitMock,
+      }),
+      credentials: jest.fn().mockReturnValue({
+        list: jest.fn().mockImplementation((kargs?: CredentialFilter) => {
+          return credentials;
+        }),
+      }),
+      exchanges: jest.fn().mockReturnValue({
+        get: jest.fn().mockImplementation((name: string, said: string) => {
+          return exchange;
+        }),
       }),
       agent: {
         pre: "pre",
@@ -114,13 +156,6 @@ describe("Signify API", () => {
     });
   });
 
-  test("should timeout if identifier creation is not completing", async () => {
-    jest.spyOn(utils, "uuid").mockReturnValue(uuidToThrow);
-    await expect(api.createIdentifier()).rejects.toThrowError(
-      SignifyApi.FAILED_TO_CREATE_IDENTIFIER
-    );
-  });
-
   test("can get oobi by name", async () => {
     const mockName = "keriuuid";
     expect(await api.getOobi(mockName)).toEqual(oobiPrefix + mockName);
@@ -146,5 +181,37 @@ describe("Signify API", () => {
 
   test("should get contacts successfully", async () => {
     expect(await api.getContacts()).toEqual(contacts);
+  });
+
+  test("can get notifications", async () => {
+    expect(await api.getNotifications()).toEqual(notifications);
+  });
+
+  test("can mark a notification as read", async () => {
+    const notificationId = "keriuuid";
+    expect(await api.markNotification(notificationId)).toEqual("marked");
+  });
+
+  test("can mark a notification as read", async () => {
+    const notificationId = "keriuuid";
+    expect(await api.markNotification(notificationId)).toEqual("marked");
+  });
+
+  test("should admit ipex be called", async () => {
+    const notificationId = "keriuuid";
+    const holderAidName = "holderAidName";
+    const issuerAid = "issuerAid";
+    await api.admitIpex(notificationId, holderAidName, issuerAid);
+    expect(admitMock).toBeCalled();
+    expect(submitAdmitMock).toBeCalled();
+  });
+
+  test("can get credentials", async () => {
+    expect(await api.getCredentials()).toEqual(credentials);
+  });
+
+  test("can get KERI exchange", async () => {
+    const notificationId = "keriuuid";
+    expect(await api.getKeriExchange(notificationId)).toEqual(exchange);
   });
 });

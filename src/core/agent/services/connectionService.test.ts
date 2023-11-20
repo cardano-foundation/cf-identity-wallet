@@ -42,6 +42,7 @@ const agent = jest.mocked({
     signify: {
       resolveOobi: jest.fn(),
       getContacts: jest.fn(),
+      getOobi: jest.fn(),
     },
   },
   receiveMessage: jest.fn(),
@@ -140,6 +141,7 @@ const keriContacts = [
     wellKnowns: [],
   },
 ];
+const oobiPrefix = "oobi.";
 
 // Callbacks need to be tested at an integration/e2e test level
 describe("Connection service of agent - ConnectionRecord helpers", () => {
@@ -633,5 +635,16 @@ describe("Connection service of agent", () => {
       type: ConnectionType.KERI,
     });
     expect(agent.genericRecords.findById).toBeCalledWith(keriContacts[0].id);
+  });
+
+  test("can get KERI OOBI", async () => {
+    agent.modules.signify.getOobi = jest
+      .fn()
+      .mockImplementation((name: string) => {
+        return `${oobiPrefix}${name}`;
+      });
+    const signifyName = "keriuuid";
+    const KeriOobi = await connectionService.getKeriOobi(signifyName);
+    expect(KeriOobi).toEqual(oobiPrefix + signifyName);
   });
 });

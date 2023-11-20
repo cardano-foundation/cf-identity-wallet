@@ -18,6 +18,11 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
+import {
+  AcdcKeriEventTypes,
+  AcdcKeriStateChangedEvent,
+  CredentialStatus,
+} from "../agent.types";
 
 const eventEmitter = new EventEmitter();
 
@@ -36,6 +41,7 @@ const agent = jest.mocked({
   },
   events: {
     on: eventEmitter.on.bind(eventEmitter),
+    emit: jest.fn(),
   },
   eventEmitter: {
     emit: eventEmitter.emit.bind(eventEmitter),
@@ -48,6 +54,14 @@ const agent = jest.mocked({
       getCredentialMetadata: jest.fn(),
       saveCredentialMetadataRecord: jest.fn(),
       getCredentialMetadataByCredentialRecordId: jest.fn(),
+      getIdentifierMetadata: jest.fn(),
+    },
+    signify: {
+      admitIpex: jest.fn(),
+      getNotifications: jest.fn(),
+      markNotification: jest.fn(),
+      getKeriExchange: jest.fn(),
+      getCredentials: jest.fn(),
     },
   },
   w3cCredentials: {
@@ -55,6 +69,12 @@ const agent = jest.mocked({
   },
   dids: {
     getCreatedDids: jest.fn(),
+  },
+  genericRecords: {
+    save: jest.fn(),
+    findAllByQuery: jest.fn(),
+    findById: jest.fn(),
+    deleteById: jest.fn(),
   },
 });
 const credentialService = new CredentialService(agent as any as Agent);
@@ -279,6 +299,20 @@ const credentialMetadataRecordB = new CredentialMetadataRecord({
 const archivedMetadataRecord = new CredentialMetadataRecord({
   ...credentialMetadataProps,
   isArchived: true,
+});
+const genericRecords = [
+  {
+    id: "uuid",
+    content: "mockContent",
+    createdAt: new Date(),
+  },
+];
+const keriNotifications = genericRecords.map((result) => {
+  return {
+    id: result.id,
+    createdAt: result.createdAt,
+    a: result.content as any,
+  };
 });
 
 // Callbacks need to be tested at an integration/e2e test level
@@ -671,9 +705,22 @@ describe("Credential service of agent", () => {
     agent.credentials.findAllByQuery = jest
       .fn()
       .mockResolvedValueOnce([credentialOfferReceivedRecordAutoAccept]);
-    expect(await credentialService.getUnhandledCredentials()).toEqual([
-      credentialOfferReceivedRecordAutoAccept,
-    ]);
+    agent.genericRecords.findAllByQuery = jest
+      .fn()
+      .mockResolvedValue(genericRecords);
+
+    expect(await credentialService.getUnhandledCredentials()).toEqual(
+      [
+        [credentialOfferReceivedRecordAutoAccept],
+        genericRecords.map((result) => {
+          return {
+            id: result.id,
+            createdAt: result.createdAt,
+            a: result.content,
+          };
+        }),
+      ].flat()
+    );
     expect(agent.credentials.findAllByQuery).toBeCalledWith({
       state: CredentialState.OfferReceived,
     });
@@ -726,5 +773,160 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     expect(
       credentialService.isCredentialDone(credentialDoneExchangeRecord)
     ).toBe(true);
+  });
+
+  test("callback will run when have a event listener of ACDC KERI state changed", async () => {
+    const callback = jest.fn();
+    credentialService.onAcdcKeriStateChanged(callback);
+    const event: AcdcKeriStateChangedEvent = {
+      type: AcdcKeriEventTypes.AcdcKeriStateChanged,
+      payload: {
+        credentialId: "keriuuid",
+        status: CredentialStatus.CONFIRMED,
+      },
+      metadata: {
+        contextCorrelationId: id1,
+      },
+    };
+    agent.eventEmitter.emit(AcdcKeriEventTypes.AcdcKeriStateChanged, event);
+    expect(callback).toBeCalledWith(event);
+  });
+
+  test("Return KERI notification record after being created", async () => {
+    const event = {
+      i: "uuid",
+      a: "content",
+    };
+    const savedRecord = {
+      id: "uuid",
+      content: "content",
+      createdAt: new Date("2023-01-01"),
+    };
+    agent.genericRecords.save = jest.fn().mockResolvedValue(savedRecord);
+    expect(await credentialService.createKeriNotificationRecord(event)).toEqual(
+      {
+        id: savedRecord.id,
+        createdAt: savedRecord.createdAt,
+        a: savedRecord.content,
+      }
+    );
+  });
+
+  test("Can get KERI Notifications", async () => {
+    agent.genericRecords.findAllByQuery = jest
+      .fn()
+      .mockReturnValue(genericRecords);
+    expect(await credentialService.getKeriNotifications()).toEqual(
+      genericRecords.map((result) => {
+        return {
+          id: result.id,
+          createdAt: result.createdAt,
+          a: result.content,
+        };
+      })
+    );
+  });
+
+  test("Should emit event when creating ACDC metadata record", async () => {
+    const event = {
+      sad: {
+        d: "SAD",
+      },
+      schema: {},
+    };
+    await credentialService.createAcdcMetadataRecord(event);
+    agent.genericRecords.findAllByQuery = jest
+      .fn()
+      .mockReturnValue(genericRecords);
+    expect(agent.events.emit).toBeCalled();
+  });
+
+  test("Can get ACDC metadata records", async () => {
+    const genericAcdcRecords = [
+      {
+        id: "uuid",
+        content: {
+          sad: "SAD",
+          schema: {},
+        },
+        createdAt: new Date(),
+      },
+    ];
+    agent.genericRecords.findAllByQuery = jest
+      .fn()
+      .mockReturnValue(genericAcdcRecords);
+    expect(await credentialService.getAcdcMetadataRecords()).toEqual(
+      genericAcdcRecords.map((result) => {
+        return {
+          id: result.id,
+          createdAt: result.createdAt,
+          sad: result.content?.sad,
+          schema: result.content?.schema as Record<string, unknown>,
+        };
+      })
+    );
+  });
+
+  test("Can get Keri notification recordById", async () => {
+    const id = "uuid";
+    const date = new Date();
+    agent.genericRecords.findById = jest.fn().mockImplementation((id) => {
+      return {
+        id,
+        createdAt: date,
+        content: {},
+      };
+    });
+    expect(await credentialService.getKeriNotificationRecordById(id)).toEqual({
+      id,
+      createdAt: date,
+      a: {},
+    });
+  });
+
+  test("deleteById should be called", async () => {
+    const id = "uuid";
+    await credentialService.deleteKeriNotificationRecordById(id);
+    expect(agent.genericRecords.deleteById).toBeCalled();
+  });
+
+  test("accept KERI ACDC", async () => {
+    const id = "uuid";
+    const date = new Date();
+    agent.genericRecords.findById = jest.fn().mockImplementation((id) => {
+      if (id == "uuid") {
+        return {
+          id,
+          createdAt: date,
+          content: {
+            d: "keri",
+          },
+        };
+      }
+      return;
+    });
+    agent.modules.signify.getKeriExchange = jest.fn().mockResolvedValue({
+      exn: {
+        a: {
+          i: "uuid",
+        },
+        i: "i",
+      },
+    });
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue({
+        signifyName: "holder",
+      });
+    agent.modules.signify.getCredentials = jest.fn().mockResolvedValue([
+      {
+        sad: {
+          d: "d",
+        },
+      },
+    ]);
+    await credentialService.acceptKeriAcdc(id);
+    expect(agent.events.emit).toBeCalled();
+    expect(agent.genericRecords.deleteById).toBeCalled();
   });
 });
