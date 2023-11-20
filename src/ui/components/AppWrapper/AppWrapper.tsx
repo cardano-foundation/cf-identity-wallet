@@ -51,6 +51,8 @@ import {
   ConnectionKeriStateChangedEvent,
   ConnectionStatus,
   CredentialShortDetails,
+  AcdcKeriStateChangedEvent,
+  CredentialStatus,
 } from "../../../core/agent/agent.types";
 import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
 
@@ -194,10 +196,18 @@ const keriNotificationsChangeHandler = async (
       source: ConnectionCredentialRequestSource.KERI,
     })
   );
-
-  // await AriesAgent.agent.credentials.acceptKeriAcdc(event.a.d)
 };
 
+const keriAcdcChangeHandler = async (
+  event: AcdcKeriStateChangedEvent,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  if (event.payload.status === CredentialStatus.PENDING) {
+    dispatch(setCurrentOperation(toastState.credentialRequestPending));
+  } else {
+    dispatch(setCurrentOperation(toastState.newCredentialAdded));
+  }
+};
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
@@ -300,8 +310,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
     });
-    AriesAgent.agent.credentials.onCredentialKeriStateChanged((event) => {
+    AriesAgent.agent.credentials.onNotificationKeriStateChanged((event) => {
       return keriNotificationsChangeHandler(event, dispatch);
+    });
+    AriesAgent.agent.credentials.onAcdcKeriStateChanged((event) => {
+      return keriAcdcChangeHandler(event, dispatch);
     });
     // pickup messages
     AriesAgent.agent.messages.pickupMessagesFromMediator();

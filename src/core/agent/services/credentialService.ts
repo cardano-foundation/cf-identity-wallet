@@ -60,7 +60,7 @@ class CredentialService extends AgentService {
     );
   }
 
-  async onCredentialKeriStateChanged(
+  async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
   ) {
     // eslint-disable-next-line no-constant-condition
@@ -374,7 +374,7 @@ class CredentialService extends AgentService {
 
   async getUnhandledCredentials(): Promise<
     (CredentialExchangeRecord | KeriNotification)[]
-  > {
+    > {
     const results = await Promise.all([
       this.agent.credentials.findAllByQuery({
         state: CredentialState.OfferReceived,

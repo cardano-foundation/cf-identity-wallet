@@ -65,7 +65,7 @@ export class SignifyApi {
 
   async createIdentifier(): Promise<CreateIdentifierResult> {
     const signifyName = utils.uuid();
-    let operation = await this.signifyClient
+    const operation = await this.signifyClient
       .identifiers()
       .create(signifyName, SignifyApi.BACKER_CONFIG);
     await operation.op();
@@ -122,7 +122,11 @@ export class SignifyApi {
     return this.signifyClient.notifications().mark(id);
   }
 
-  async admitIpex(notificationD: string, holderAidName: string, issuerAid : string) : Promise<void> {
+  async admitIpex(
+    notificationD: string,
+    holderAidName: string,
+    issuerAid: string
+  ): Promise<void> {
     await this.resolveOobi(SignifyApi.VLEI_HOST + SignifyApi.SCHEMA_SAID);
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.signifyClient
@@ -137,9 +141,14 @@ export class SignifyApi {
     return this.signifyClient.credentials().list();
   }
 
-  async getKeriExchange(notificationD : string) : Promise<any>{
-    const name = "1bd4cebd-9539-47b8-ab07-0d13cffd1624" // TODO: hard code for now, will remove when signify-ts updated
-    return this.signifyClient.exchanges().get(name,notificationD);
+  async getKeriExchange(notificationD: string): Promise<any> {
+    const { aids } = await this.signifyClient.identifiers().list();
+    return Promise.race(
+      aids.map(
+        (aid: any) =>
+          this.signifyClient.exchanges().get(aid.name, notificationD) //TODO: hard code for now, will remove when signify-ts updated
+      )
+    );
   }
 
   /**
