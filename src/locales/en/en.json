@@ -57,17 +57,6 @@
         "continue": "Continue"
       }
     },
-    "restorecryptoaccount": {
-      "title": "Enter Seed Phrase",
-      "suggestions": "Suggestions",
-      "paragraph": {
-        "top": "Restore a crypto account based on an existing seed phrase.",
-        "bottom": ""
-      },
-      "button": {
-        "continue": "Verify Seed Phrase"
-      }
-    },
     "segment": "{{length}} words",
     "privacy": {
       "overlay": {
@@ -577,65 +566,6 @@
         "Feature list number four",
         "Feature list number five"
       ]
-    }
-  },
-  "crypto": {
-    "tab": {
-      "create": "Add a crypto account",
-      "network": {
-        "mainnet": "Mainnet"
-      },
-      "slider": {
-        "title": {
-          "mainbalance": "Main balance",
-          "rewardbalance": "Reward balance"
-        }
-      },
-      "actionbuttons": {
-        "send": "Send",
-        "receive": "Receive",
-        "nfts": "NFTs",
-        "staking": "Staking"
-      },
-      "assetstransactions": {
-        "swipeupmessage": "Swipe up to see assets & transactions",
-        "assets": "Assets",
-        "nfts": "NFTs",
-        "metadata": "Metadata",
-        "transactions": "Transactions",
-        "searchtransactions": "Search transactions"
-      }
-    },
-    "mywalletsmodal": {
-      "title": "My wallets",
-      "empty": "No wallets available",
-      "create": "Add a crypto account"
-    },
-    "addcryptoaccountmodal": {
-      "title": "Add a new crypto account",
-      "reuse": "Use existing identity seed phrase",
-      "generate": "Generate a new seed phrase",
-      "restore": "Restore using an existing seed phrase"
-    },
-    "chooseaccountnamemodal": {
-      "title": "Wallet name",
-      "skip": "Skip",
-      "label": "Display name",
-      "placeholder": "My wallet",
-      "confirm": "Create wallet"
-    },
-    "renamewallet": {
-      "title": "Rename wallet",
-      "cancel": "Cancel",
-      "label": "Display name",
-      "placeholder": "Wallet name",
-      "confirm": "Confirm changes"
-    },
-    "receivemodal": {
-      "title": "Receive",
-      "derivationpath": "Derivation path",
-      "divider": "or",
-      "more": "More share options"
     }
   },
   "shareqr": {
