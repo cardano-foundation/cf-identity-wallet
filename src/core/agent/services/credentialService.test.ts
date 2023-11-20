@@ -347,6 +347,8 @@ describe("Credential service of agent", () => {
         credentialMetadataRecordA,
         credentialMetadataRecordB,
       ]);
+    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
+
     expect(await credentialService.getCredentials()).toStrictEqual([
       {
         id: id1,
@@ -373,6 +375,8 @@ describe("Credential service of agent", () => {
     agent.modules.generalStorage.getAllCredentialMetadata = jest
       .fn()
       .mockResolvedValue([]);
+    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
+
     expect(await credentialService.getCredentials()).toStrictEqual([]);
   });
 
@@ -827,46 +831,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     );
   });
 
-  test("Should emit event when creating ACDC metadata record", async () => {
-    const event = {
-      sad: {
-        d: "SAD",
-      },
-      schema: {},
-    };
-    await credentialService.createAcdcMetadataRecord(event);
-    agent.genericRecords.findAllByQuery = jest
-      .fn()
-      .mockReturnValue(genericRecords);
-    expect(agent.events.emit).toBeCalled();
-  });
-
-  test("Can get ACDC metadata records", async () => {
-    const genericAcdcRecords = [
-      {
-        id: "uuid",
-        content: {
-          sad: "SAD",
-          schema: {},
-        },
-        createdAt: new Date(),
-      },
-    ];
-    agent.genericRecords.findAllByQuery = jest
-      .fn()
-      .mockReturnValue(genericAcdcRecords);
-    expect(await credentialService.getAcdcMetadataRecords()).toEqual(
-      genericAcdcRecords.map((result) => {
-        return {
-          id: result.id,
-          createdAt: result.createdAt,
-          sad: result.content?.sad,
-          schema: result.content?.schema as Record<string, unknown>,
-        };
-      })
-    );
-  });
-
   test("Can get Keri notification recordById", async () => {
     const id = "uuid";
     const date = new Date();
@@ -911,6 +875,11 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
           i: "uuid",
         },
         i: "i",
+        e: {
+          acdc: {
+            d: "id",
+          },
+        },
       },
     });
     agent.modules.generalStorage.getIdentifierMetadata = jest

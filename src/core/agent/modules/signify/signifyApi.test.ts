@@ -37,9 +37,9 @@ jest.mock("signify-ts", () => ({
       connect: connectMock,
       boot: bootMock,
       identifiers: jest.fn().mockReturnValue({
-        list: jest
-          .fn()
-          .mockResolvedValue([{ name: firstAid }, { name: secondAid }]),
+        list: jest.fn().mockResolvedValue({
+          aids: [{ name: firstAid }, { name: secondAid }],
+        }),
         get: jest.fn().mockImplementation((name: string) => {
           return { name, id: `${aidPrefix}${name}` };
         }),

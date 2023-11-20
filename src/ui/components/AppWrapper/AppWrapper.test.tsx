@@ -54,6 +54,8 @@ jest.mock("../../../core/agent/agent", () => ({
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
         getUnhandledCredentials: jest.fn(),
+        onNotificationKeriStateChanged: jest.fn(),
+        onAcdcKeriStateChanged: jest.fn(),
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),

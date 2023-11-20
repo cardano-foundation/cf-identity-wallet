@@ -189,7 +189,7 @@ const keriNotificationsChangeHandler = async (
 ) => {
   dispatch(
     setQueueConnectionCredentialRequest({
-      id: event.id,
+      id: event?.id,
       type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
       logo: "", // TODO: must define Keri logo
       label: "Credential Issuance Server", // TODO: must define it

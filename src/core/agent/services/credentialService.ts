@@ -449,7 +449,7 @@ class CredentialService extends AgentService {
     });
   }
 
-  async createAcdcMetadataRecord(event: any): Promise<void> {
+  private async createAcdcMetadataRecord(event: any): Promise<void> {
     const credentialId = event.e.acdc.d;
     await this.agent.genericRecords.save({
       id: credentialId,
