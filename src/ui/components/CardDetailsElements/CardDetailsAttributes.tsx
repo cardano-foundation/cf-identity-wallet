@@ -1,4 +1,4 @@
-import { formatShortDate } from "../../../utils";
+import { formatShortDate } from "../../utils/formatters";
 import { CardDetailsAttributesProps } from "./CardDetailsElements.types";
 import { CardDetailsItem } from "./CardDetailsItem";
 

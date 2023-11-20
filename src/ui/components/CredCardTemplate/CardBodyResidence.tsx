@@ -1,6 +1,6 @@
 import { CredentialDetails } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
-import { formatShortDate } from "../../../utils";
+import { formatShortDate } from "../../utils/formatters";
 import imagePlaceholder from "../../assets/images/user-image-placeholder.svg";
 
 // @TODO - sdisalvo: cardData should be of type CredentialDetails

@@ -1,7 +1,7 @@
 import { QRCode } from "react-qrcode-logo";
 import { CredentialDetails } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
-import { formatShortDate } from "../../../utils";
+import { formatShortDate } from "../../utils/formatters";
 
 // @TODO - sdisalvo: cardData should be of type CredentialDetails
 const CardBodySummit = ({ cardData }: any) => {

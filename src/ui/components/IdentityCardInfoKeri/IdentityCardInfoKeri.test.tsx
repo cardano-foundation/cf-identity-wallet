@@ -9,7 +9,7 @@ import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { filteredKeriFix } from "../../__fixtures__/filteredIdentityFix";
 import { DidCardDetails } from "../../pages/DidCardDetails";
 import { AriesAgent } from "../../../core/agent/agent";
-import { formatShortDate, formatTimeToSec } from "../../../utils";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 
 const path = TabsRoutePath.DIDS + "/" + identityFix[1].id;
 

@@ -1,6 +1,6 @@
 import { IdentifierType } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
-import { formatShortDate } from "../../../utils";
+import { formatShortDate } from "../../utils/formatters";
 import { IDENTIFIER_BG_MAPPING } from "../../globals/types";
 import { IdentityCardTemplateProps } from "./IdentityCardTemplate.types";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";

@@ -1,4 +1,4 @@
-import { ColorGenerator } from "./ColorGenerator";
+import { ColorGenerator } from "./colorGenerator";
 
 describe("ColorGenerator", () => {
   let colorGenerator: ColorGenerator;

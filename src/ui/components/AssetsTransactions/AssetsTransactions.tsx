@@ -26,7 +26,7 @@ import {
   CryptoTransactionsProps,
 } from "../../pages/Crypto/Crypto.types";
 import "./AssetsTransactions.scss";
-import { formatLongDate, formatShortTime } from "../../../utils";
+import { formatLongDate, formatShortTime } from "../../utils/formatters";
 import { AssetsTransactionsProps } from "./AssetsTransactions.types";
 
 interface AssetTransactionItemProps {
@@ -108,17 +108,17 @@ const TransactionItem = ({ transaction }: AssetTransactionItemProps) => {
               {transaction?.type.map((type: string, index) => {
                 let icon;
                 switch (type) {
-                  case "assets":
-                    icon = cashOutline;
-                    break;
-                  case "nfts":
-                    icon = imageOutline;
-                    break;
-                  case "metadata":
-                    icon = codeSlashOutline;
-                    break;
-                  default:
-                    break;
+                case "assets":
+                  icon = cashOutline;
+                  break;
+                case "nfts":
+                  icon = imageOutline;
+                  break;
+                case "metadata":
+                  icon = codeSlashOutline;
+                  break;
+                default:
+                  break;
                 }
                 return (
                   <IonIcon

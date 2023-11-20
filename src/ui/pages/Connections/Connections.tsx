@@ -25,7 +25,7 @@ import {
   MappedConnections,
 } from "./Connections.types";
 import "./Connections.scss";
-import { formatShortDate } from "../../../utils";
+import { formatShortDate } from "../../utils/formatters";
 import { ConnectModal } from "../../components/ConnectModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { DIDCommRequestType } from "../../globals/types";

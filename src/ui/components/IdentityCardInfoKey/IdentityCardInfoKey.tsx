@@ -4,7 +4,7 @@ import {
   pricetagOutline,
   personCircleOutline,
 } from "ionicons/icons";
-import { formatShortDate } from "../../../utils";
+import { formatShortDate } from "../../utils/formatters";
 import { IdentityCardInfoKeyProps } from "./IdentityCardInfoKey.types";
 import { CardDetailsBlock, CardDetailsItem } from "../CardDetailsElements";
 

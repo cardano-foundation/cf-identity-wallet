@@ -35,7 +35,7 @@ import { updateReduxState } from "../../../store/utils";
 import { VerifyPasscode } from "../VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
-import { writeToClipboard } from "../../../utils/clipboard";
+import { writeToClipboard } from "../../utils/clipboard";
 
 const CredsOptions = ({
   cardData,

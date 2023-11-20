@@ -48,7 +48,7 @@ import { DISPLAY_NAME_LENGTH } from "../../globals/constants";
 import { VerifyPasscode } from "../VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
-import { writeToClipboard } from "../../../utils/clipboard";
+import { writeToClipboard } from "../../utils/clipboard";
 import { AriesAgent } from "../../../core/agent/agent";
 import { IdentityThemeSelector } from "../IdentityThemeSelector";
 import { IdentifierType } from "../../../core/agent/agent.types";

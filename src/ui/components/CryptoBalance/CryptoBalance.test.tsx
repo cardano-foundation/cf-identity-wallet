@@ -5,7 +5,7 @@ import { CryptoBalance } from "./index";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { cryptoAccountsFix } from "../../__fixtures__/cryptoAccountsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { formatCurrencyUSD } from "../../../utils";
+import { formatCurrencyUSD } from "../../utils/formatters";
 import { CryptoBalanceItem } from "./CryptoBalance.types";
 
 const items: CryptoBalanceItem[] = [

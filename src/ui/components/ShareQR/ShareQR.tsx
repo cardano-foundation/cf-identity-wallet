@@ -16,7 +16,7 @@ import { QRCode } from "react-qrcode-logo";
 import { copyOutline, refreshOutline, qrCodeOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { ShareQRProps } from "./ShareQR.types";
-import { writeToClipboard } from "../../../utils/clipboard";
+import { writeToClipboard } from "../../utils/clipboard";
 import "./ShareQR.scss";
 import { ToastMsgType } from "../../globals/types";
 import { useAppDispatch } from "../../../store/hooks";

@@ -34,7 +34,7 @@ import {
   Alert as AlertDeleteArchive,
   Alert as AlertRestore,
 } from "../../components/Alert";
-import { formatShortDate, formatTimeToSec } from "../../../utils";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { CredsOptions } from "../../components/CredsOptions";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";

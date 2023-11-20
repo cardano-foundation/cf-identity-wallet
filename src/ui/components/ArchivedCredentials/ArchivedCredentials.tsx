@@ -19,7 +19,7 @@ import { PageLayout } from "../layout/PageLayout";
 import { i18n } from "../../../i18n";
 import "./ArchivedCredentials.scss";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { formatShortDate } from "../../../utils";
+import { formatShortDate } from "../../utils/formatters";
 import { VerifyPassword } from "../VerifyPassword";
 import { VerifyPasscode } from "../VerifyPasscode";
 import {

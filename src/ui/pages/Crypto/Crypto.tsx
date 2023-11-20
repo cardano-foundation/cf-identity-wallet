@@ -37,7 +37,7 @@ import { AddCryptoAccount } from "../../components/AddCryptoAccount";
 import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { CryptoBalance } from "../../components/CryptoBalance";
 import { CryptoBalanceItem } from "../../components/CryptoBalance/CryptoBalance.types";
-import { formatCurrencyUSD } from "../../../utils";
+import { formatCurrencyUSD } from "../../utils/formatters";
 import { AssetsTransactions } from "../../components/AssetsTransactions";
 import { ToastMsgType } from "../../globals/types";
 import { DEFAULT_CRYPTO_ACCOUNT_DATA } from "../../globals/defaults";

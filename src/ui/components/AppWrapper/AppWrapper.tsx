@@ -14,7 +14,12 @@ import {
   setQueueConnectionCredentialRequest,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { KeyStoreKeys, SecureStorage , PreferencesKeys, PreferencesStorage } from "../../../core/storage";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage";
 import {
   setFavouritesIdentitiesCache,
   setIdentitiesCache,
@@ -37,7 +42,7 @@ import {
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { ToastMsgType } from "../../globals/types";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { ColorGenerator } from "../../utils/ColorGenerator";
+import { ColorGenerator } from "../../utils/colorGenerator";
 import {
   ConnectionKeriStateChangedEvent,
   ConnectionStatus,

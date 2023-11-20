@@ -25,7 +25,7 @@ import {
   setCryptoAccountsCache,
   setDefaultCryptoAccountCache,
 } from "../../../store/reducers/cryptoAccountsCache";
-import { formatCurrencyUSD } from "../../../utils";
+import { formatCurrencyUSD } from "../../utils/formatters";
 import { VerifyPassword } from "../VerifyPassword";
 import { RenameWallet } from "../RenameWallet";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";

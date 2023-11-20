@@ -1,6 +1,6 @@
 import { IonButton, IonIcon } from "@ionic/react";
 import { copyOutline } from "ionicons/icons";
-import { writeToClipboard } from "../../../utils/clipboard";
+import { writeToClipboard } from "../../utils/clipboard";
 import { CardDetailsItemProps } from "./CardDetailsElements.types";
 import { useAppDispatch } from "../../../store/hooks";
 import { setToastMsg } from "../../../store/reducers/stateCache";

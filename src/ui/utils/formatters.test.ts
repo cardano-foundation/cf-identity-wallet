@@ -1,4 +1,4 @@
-import { formatCurrencyUSD } from ".";
+import { formatCurrencyUSD } from "./formatters";
 
 describe("Utils", () => {
   test("formatCurrencyUSD", () => {
