@@ -36,9 +36,6 @@ interface StoreMocked {
     seedPhrase256: string;
     selected: number;
   };
-  cryptoAccountsCache: {
-    cryptoAccounts: never[];
-  };
 }
 
 const mockStore = configureStore();
@@ -406,9 +403,6 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
-    cryptoAccountsCache: {
-      cryptoAccounts: [],
-    },
   };
 
   test("User can generate a new seed phrase", async () => {
@@ -496,9 +490,6 @@ describe.skip("Restore account from existing seed phrase", () => {
         "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
-    },
-    cryptoAccountsCache: {
-      cryptoAccounts: [],
     },
   };
 
