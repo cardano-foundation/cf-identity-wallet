@@ -7,6 +7,7 @@ import {
   invitationWithCredentialConnectionless,
   issueCredentialWithKeriOobi,
   offerCredentialOverConnection,
+  createAID,
 } from "./apis/credential.api";
 import { getConnectionByDid } from "./apis/connection.api";
 import { createShortenUrl, getFullUrl } from "./apis/shorten.api";
@@ -26,6 +27,7 @@ router.get(config.path.shorten, getFullUrl);
 router.post(config.path.createShorten, createShortenUrl);
 router.get(config.path.credentials.summit, summitAccessPass);
 router.get(config.path.keriOobi, keriOobiApi);
-router.post(config.path.issueAcdcCredentialWithOobi, issueCredentialWithKeriOobi)
+router.post(config.path.issueAcdcCredentialWithOobi, issueCredentialWithKeriOobi);
+router.post(config.path.createAID, createAID);
 
 export default router;

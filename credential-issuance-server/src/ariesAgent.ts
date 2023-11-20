@@ -91,13 +91,6 @@ class AriesAgent {
       method: "key",
       options: { keyType: KeyType.Ed25519 },
     });
-    await this.agent.modules.signify.createIdentifier(
-      AriesAgent.ISSUER_AID_NAME
-    );
-    await this.agent.modules.signify.resolveOobi(AriesAgent.VLEI_HOST + AriesAgent.SCHEMA_SAID);
-    this.keriRegistryRegk = await this.agent.modules.signify.createRegistry(
-      AriesAgent.ISSUER_AID_NAME
-    );
   }
 
   async createInvitation() {
@@ -248,6 +241,14 @@ class AriesAgent {
       AriesAgent.SCHEMA_SAID,
       aid?.response.i
     );
+  }
+  async createAID(schema?: string, issuerName?: string) {
+    const SAIDSchema = schema ? schema : AriesAgent.SCHEMA_SAID;
+    const AIDIssuerName = issuerName ? issuerName : AriesAgent.ISSUER_AID_NAME;
+    const identifier = await this.agent.modules.signify.createIdentifier(AIDIssuerName);
+    await this.agent.modules.signify.resolveOobi(AriesAgent.VLEI_HOST + SAIDSchema);
+    this.keriRegistryRegk = await this.agent.modules.signify.createRegistry(AIDIssuerName);
+    return identifier;
   }
 }
 
