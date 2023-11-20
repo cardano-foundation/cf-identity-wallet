@@ -574,10 +574,6 @@
   },
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
-    "walletcreated": "Seed phrase verified",
-    "walletrenamed": "Account renamed successfully",
-    "walletrestored": "Seed phrase verified",
-    "walletdeleted": "Account deleted successfully",
     "identitycreated": "New identity created successfully",
     "identityupdated": "Identity successfully updated",
     "identitydeleted": "Identity successfully deleted",
