@@ -242,7 +242,7 @@ class AriesAgent {
       aid?.response.i
     );
   }
-  async createAID(schema?: string, issuerName?: string) {
+  async initKERI(schema?: string, issuerName?: string) {
     const SAIDSchema = schema ? schema : AriesAgent.SCHEMA_SAID;
     const AIDIssuerName = issuerName ? issuerName : AriesAgent.ISSUER_AID_NAME;
     const identifier = await this.agent.modules.signify.createIdentifier(AIDIssuerName);

@@ -87,9 +87,9 @@ async function issueCredentialWithKeriOobi(
   httpResponse(res, response);
 }
 
-async function createAID(req: Request, res: Response) {
+async function initKERI(req: Request, res: Response) {
   const { schema, issuerName } = req.body;
-  const identifier = await AriesAgent.agent.createAID(schema, issuerName);
+  const identifier = await AriesAgent.agent.initKERI(schema, issuerName);
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
@@ -103,5 +103,5 @@ export {
   invitationWithCredential,
   invitationWithCredentialConnectionless,
   issueCredentialWithKeriOobi,
-  createAID,
+  initKERI,
 };
