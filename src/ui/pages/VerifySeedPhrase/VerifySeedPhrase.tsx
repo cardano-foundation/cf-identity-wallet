@@ -30,10 +30,7 @@ const VerifySeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
-    ? operationState.onboarding
-    : (history?.location?.state as GenerateSeedPhraseProps)?.type ||
-      stateCache?.currentOperation;
+
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
     seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
@@ -118,10 +115,7 @@ const VerifySeedPhrase = () => {
     const data: DataProps = {
       store: { stateCache },
       state: {
-        type:
-          seedPhraseType !== operationState.onboarding
-            ? toastState.walletCreated
-            : "",
+        type: toastState.walletCreated,
         currentOperation: stateCache.currentOperation,
       },
     };
@@ -150,9 +144,6 @@ const VerifySeedPhrase = () => {
     );
     history.push({
       pathname: backPath.pathname,
-      state: {
-        type: seedPhraseType,
-      },
     });
   };
 
@@ -161,27 +152,19 @@ const VerifySeedPhrase = () => {
       <PageLayout
         id="verify-seedphrase"
         header={true}
-        title={
-          seedPhraseType !== operationState.onboarding
-            ? `${i18n.t("verifyseedphrase." + seedPhraseType + ".title")}`
-            : undefined
-        }
+        title={undefined}
         backButton={true}
-        onBack={
-          seedPhraseType === operationState.onboarding
-            ? () => {
-              handleClearState();
-              handleExit();
-            }
-            : () => setAlertExitIsOpen(true)
-        }
+        onBack={() => {
+          handleClearState();
+          handleExit();
+        }}
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
-        progressBar={seedPhraseType === operationState.onboarding}
+        progressBar={true}
         progressBarValue={1}
         progressBarBuffer={1}
         footer={true}
         primaryButtonText={`${i18n.t(
-          "verifyseedphrase." + seedPhraseType + ".button.continue"
+          "verifyseedphrase.onboarding.button.continue"
         )}`}
         primaryButtonAction={() => handleContinue()}
         primaryButtonDisabled={
@@ -191,11 +174,7 @@ const VerifySeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              {seedPhraseType === operationState.onboarding && (
-                <h2>
-                  {i18n.t("verifyseedphrase." + seedPhraseType + ".title")}
-                </h2>
-              )}
+              <h2>{i18n.t("verifyseedphrase.onboarding.title")}</h2>
               <p className="page-paragraph">
                 {i18n.t("verifyseedphrase.paragraph.top")}
               </p>

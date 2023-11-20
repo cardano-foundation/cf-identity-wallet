@@ -67,7 +67,7 @@ describe("Onboarding Page", () => {
     );
   });
 
-  test("If the user has already set a passcode but they haven't created a profile, they will be asked to generate a seed phrase", async () => {
+  test("If the user has already set a passcode but they haven't created a seed phrase, they will be asked to generate a seed phrase", async () => {
     const mockStore = configureStore();
     const initialState = {
       stateCache: {
@@ -83,9 +83,6 @@ describe("Onboarding Page", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-      },
     };
     const storeMocked = mockStore(initialState);
 
@@ -97,7 +94,7 @@ describe("Onboarding Page", () => {
             component={Onboarding}
           />
           <Route
-            path={RoutePath.GENERATE_SEED_PHRASE + onboardingRoute.createRoute}
+            path={RoutePath.GENERATE_SEED_PHRASE}
             component={GenerateSeedPhrase}
           />
         </Provider>

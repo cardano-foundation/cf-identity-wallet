@@ -233,7 +233,6 @@ const GenerateSeedPhrase = () => {
       <IonPage className="page-layout generate-seedphrase">
         <PageLayout
           header={true}
-          title={`${i18n.t("generateseedphrase.onboarding.title")}`}
           backButton={true}
           beforeBack={handleClearState}
           closeButton={false}
