@@ -20,7 +20,7 @@ import {
 import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
 import { eyeOffOutline } from "ionicons/icons";
-import { generateMnemonic, validateMnemonic } from "bip39";
+import { generateMnemonic } from "bip39";
 import { Trans } from "react-i18next";
 import { i18n } from "../../../i18n";
 import {
