@@ -47,7 +47,6 @@ describe("Verify Seed Phrase Page", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
-    cryptoAccountsCache: [],
   };
 
   const storeMocked = {
@@ -297,7 +296,6 @@ describe("Verify Seed Phrase Page", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      cryptoAccountsCache: [],
     };
 
     const storeMocked = {
