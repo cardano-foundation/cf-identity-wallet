@@ -3,7 +3,7 @@ services:
   issuer-server:
     container_name: issuer-server
     build:
-      context: ./credential-issuance-server
+      context: ./services/credential-issuance-server
       dockerfile: Dockerfile
     tty: true
     ports:
