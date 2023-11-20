@@ -1,14 +1,5 @@
 version: "3.9"
 services:
-  webrtc-relay:
-    container_name: webrtc-relay
-    build:
-      context: ./webrtc-relay
-      dockerfile: Dockerfile
-    tty: true
-    ports:
-      - "51986:51986"
-    restart: always
   issuer-server:
     container_name: issuer-server
     build:

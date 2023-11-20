@@ -1,5 +1,5 @@
 ## Cloud services
-At the moment, our wallet depends on a number of cloud services:
+At the moment, our wallet depends on a number of services which will generally run in the cloud:
 - KERIA (KERI Cloud Agent),
 - AFJ Mediator
 - Credential issuance server (from this repo)
