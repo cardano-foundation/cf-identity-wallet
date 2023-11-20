@@ -204,7 +204,7 @@ describe("Connection state changed handler", () => {
   });
 });
 
-jest.mock("../../utils/ColorGenerator", () => ({
+jest.mock("../../utils/colorGenerator", () => ({
   ColorGenerator: jest.fn(() => ({
     generateNextColor: jest.fn().mockReturnValue(["#000000", "#000000"]),
   })),
