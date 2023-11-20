@@ -141,6 +141,15 @@ export class SignifyApi {
     return this.signifyClient.credentials().list();
   }
 
+  async getCredentialBySaid(sad: string): Promise<any> {
+    const results = await this.signifyClient.credentials().list({
+      filter: {
+        "-d": { $eq: sad },
+      },
+    });
+    return results[0];
+  }
+
   async getKeriExchange(notificationD: string): Promise<any> {
     const { aids } = await this.signifyClient.identifiers().list();
     return Promise.race(

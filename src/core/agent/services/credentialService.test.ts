@@ -62,6 +62,7 @@ const agent = jest.mocked({
       markNotification: jest.fn(),
       getKeriExchange: jest.fn(),
       getCredentials: jest.fn(),
+      getCredentialBySaid: jest.fn(),
     },
   },
   w3cCredentials: {
@@ -878,6 +879,9 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
         e: {
           acdc: {
             d: "id",
+            a: {
+              dt: nowISO,
+            },
           },
         },
       },
@@ -887,13 +891,15 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       .mockResolvedValue({
         signifyName: "holder",
       });
-    agent.modules.signify.getCredentials = jest.fn().mockResolvedValue([
-      {
-        sad: {
-          d: "d",
-        },
+    agent.modules.signify.getCredentialBySaid = jest.fn().mockResolvedValue({
+      sad: {
+        d: "id",
       },
-    ]);
+    });
+    agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
+      jest.fn().mockResolvedValue({
+        id: "id",
+      });
     await credentialService.acceptKeriAcdc(id);
     expect(agent.events.emit).toBeCalled();
     expect(agent.genericRecords.deleteById).toBeCalled();

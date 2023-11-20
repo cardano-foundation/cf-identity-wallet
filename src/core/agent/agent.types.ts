@@ -160,15 +160,6 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
-interface AcdcMetadataRecord {
-  id: string;
-  createdAt: Date;
-  colors: [string, string];
-  schema: Record<string, unknown>;
-  sad: Record<string, unknown>;
-  status: CredentialMetadataRecordStatus;
-}
-
 export {
   IdentifierType,
   Blockchain,
@@ -196,6 +187,5 @@ export type {
   ConnectionHistoryItem,
   ConnectionKeriStateChangedEvent,
   KeriNotification,
-  AcdcMetadataRecord,
   AcdcKeriStateChangedEvent,
 };
