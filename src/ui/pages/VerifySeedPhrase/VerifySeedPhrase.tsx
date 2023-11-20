@@ -20,10 +20,9 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { operationState, toastState } from "../../constants/dictionary";
+import { toastState } from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 import { Addresses } from "../../../core/cardano";
 
 const VerifySeedPhrase = () => {
