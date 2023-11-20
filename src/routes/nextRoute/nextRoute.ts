@@ -51,13 +51,14 @@ const getNextOnboardingRoute = (data: DataProps) => {
   }
 
   let path;
-  const route = data?.state?.currentOperation;
-  if (route === OperationType.CREATE_SEED_PHRASE) {
+  const op = data?.state?.currentOperation;
+  if (op === OperationType.CREATE_SEED_PHRASE) {
     path = `${RoutePath.GENERATE_SEED_PHRASE}${RoutePath.CREATE_NEW_SEED_PHRASE}`;
-  } else if (route === OperationType.RESTORE_SEED_PHRASE) {
+  } else if (op == OperationType.RESTORE_SEED_PHRASE) {
     path = `${RoutePath.GENERATE_SEED_PHRASE}${RoutePath.RESTORE_SEED_PHRASE}`;
+  } else {
+    path = RoutePath.GENERATE_SEED_PHRASE;
   }
-  path = RoutePath.GENERATE_SEED_PHRASE;
   return { pathname: path };
 };
 
