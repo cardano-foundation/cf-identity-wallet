@@ -61,11 +61,6 @@ const VerifyPasscode = ({
     ) {
       operation = toastState.credentialDeleted;
     } else if (
-      currentRoute?.path?.includes(TabsRoutePath.CRYPTO) &&
-      currentOperation === operationState.deleteWallet
-    ) {
-      operation = toastState.walletDeleted;
-    } else if (
       currentRoute?.path?.includes(RoutePath.CONNECTION_DETAILS) &&
       currentOperation === operationState.deleteConnection
     ) {

@@ -35,12 +35,7 @@ const connectionType = {
 
 const operationState = {
   onboarding: "onboarding",
-  newCryptoAccount: "newCryptoAccount",
   restoreCryptoAccount: "restoreCryptoAccount",
-  createWallet: "createWallet",
-  renameWallet: "renameWallet",
-  restoreWallet: "restoreWallet",
-  deleteWallet: "deleteWallet",
   updateIdentity: "updateIdentity",
   deleteIdentity: "deleteIdentity",
   deleteConnection: "deleteConnection",

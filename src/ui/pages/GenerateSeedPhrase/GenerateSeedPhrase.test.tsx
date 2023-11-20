@@ -386,10 +386,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
 describe("Generate Seed Phrase screen from Crypto/Generate", () => {
   beforeAll(() => {
-    history.push(
-      RoutePath.GENERATE_SEED_PHRASE,
-      operationState.newCryptoAccount
-    );
+    history.push(RoutePath.GENERATE_SEED_PHRASE, {});
   });
 
   const initialState = {
@@ -480,10 +477,7 @@ describe("Generate Seed Phrase screen from Crypto/Generate", () => {
 
 describe.skip("Restore account from existing seed phrase", () => {
   beforeAll(() => {
-    history.push(
-      RoutePath.GENERATE_SEED_PHRASE,
-      operationState.restoreCryptoAccount
-    );
+    history.push(RoutePath.GENERATE_SEED_PHRASE, {});
   });
 
   const initialState = {
@@ -509,11 +503,7 @@ describe.skip("Restore account from existing seed phrase", () => {
   };
 
   test("User can enter a seed phrase", async () => {
-    window.history.pushState(
-      { type: operationState.restoreCryptoAccount },
-      "",
-      RoutePath.GENERATE_SEED_PHRASE
-    );
+    window.history.pushState({}, "", RoutePath.GENERATE_SEED_PHRASE);
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked(initialState)}>
         <Router history={history}>

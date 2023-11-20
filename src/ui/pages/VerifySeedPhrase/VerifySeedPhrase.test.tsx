@@ -226,7 +226,7 @@ describe("Verify Seed Phrase Page", () => {
 
   test.skip("The user can Verify the Seed Phrase when generating a new seed phrase", async () => {
     const history = createMemoryHistory();
-    history.push(RoutePath.VERIFY_SEED_PHRASE, operationState.newCryptoAccount);
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
     const { getByTestId, getByText, queryByTestId } = render(
       <Provider store={storeMocked}>
         <Router history={history}>
