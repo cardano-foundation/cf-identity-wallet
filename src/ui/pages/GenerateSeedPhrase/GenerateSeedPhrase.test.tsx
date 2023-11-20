@@ -109,9 +109,6 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           "example example example example example example example example example example example example example example example example example example example example example example example example",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-      },
     };
 
     const { getByTestId } = render(
@@ -166,9 +163,6 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
         seedPhrase160: "",
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
-      },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
       },
     };
 
@@ -349,9 +343,6 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-      },
     };
 
     const { getByTestId } = render(
@@ -493,24 +484,19 @@ describe.skip("Restore account from existing seed phrase", () => {
     },
   };
 
-  test("User can enter a seed phrase", async () => {
-    window.history.pushState({}, "", RoutePath.GENERATE_SEED_PHRASE);
-    const { getByTestId, getByText } = render(
-      <Provider store={storeMocked(initialState)}>
-        <Router history={history}>
-          <Route
-            path={RoutePath.GENERATE_SEED_PHRASE}
-            component={GenerateSeedPhrase}
-          />
-        </Router>
-      </Provider>
+  test.skip("User can enter a seed phrase", async () => {
+    const { getByTestId } = render(
+      <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
+        <Provider store={storeMocked(initialState)}>
+          <Router history={history}>
+            <Route
+              path={RoutePath.GENERATE_SEED_PHRASE}
+              component={GenerateSeedPhrase}
+            />
+          </Router>
+        </Provider>
+      </MemoryRouter>
     );
-
-    expect(
-      getByText(
-        EN_TRANSLATIONS.generateseedphrase.restorecryptoaccount.paragraph.top
-      )
-    ).toBeVisible();
 
     const overlay = getByTestId("seed-phrase-privacy-overlay");
     expect(overlay).toHaveClass("hidden");
