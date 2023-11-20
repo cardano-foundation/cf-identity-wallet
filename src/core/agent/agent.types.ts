@@ -1,6 +1,9 @@
 import { BaseEvent, JsonCredential } from "@aries-framework/core";
 import { IdentifierMetadataRecordProps } from "./modules";
-import { CredentialMetadataRecordProps } from "./modules/generalStorage/repositories/credentialMetadataRecord.types";
+import {
+  CredentialMetadataRecordProps,
+  CredentialMetadataRecordStatus,
+} from "./modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 enum IdentifierType {
   KEY = "key",
@@ -160,8 +163,10 @@ interface KeriNotification {
 interface AcdcMetadataRecord {
   id: string;
   createdAt: Date;
+  colors: [string, string];
   schema: Record<string, unknown>;
   sad: Record<string, unknown>;
+  status: CredentialMetadataRecordStatus;
 }
 
 export {
@@ -174,7 +179,7 @@ export {
   ConnectionType,
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
-  CredentialStatus
+  CredentialStatus,
 };
 export type {
   CryptoAccountRecordShortDetails,
