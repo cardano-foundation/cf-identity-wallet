@@ -20,7 +20,6 @@ import {
 } from "./stateCache";
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
-import { onboardingRoute } from "../../../ui/constants/dictionary";
 import {
   ConnectionCredentialRequestProps,
   ConnectionCredentialRequestType,
@@ -70,7 +69,7 @@ describe("State Cache", () => {
   });
 
   test("should set the onboarding route cache", () => {
-    const route = onboardingRoute.create;
+    const route = "onboarding";
     const action = setCurrentOperation(route);
     const nextState = stateCacheSlice.reducer(initialState, action);
 

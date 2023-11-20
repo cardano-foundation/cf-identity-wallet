@@ -11,7 +11,6 @@ import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
 import { DataProps } from "./nextRoute.types";
-import { onboardingRoute } from "../../ui/constants/dictionary";
 import { TabsRoutePath } from "../paths";
 
 describe("NextRoute", () => {
@@ -114,28 +113,16 @@ describe("NextRoute", () => {
   });
 
   test("should return correct route for /verifyseedphrase", () => {
-    let data = {
-      store: storeMock,
-      state: {
-        currentOperation: onboardingRoute.create,
-      },
-    };
-    let result = getNextVerifySeedPhraseRoute(data);
-
-    expect(result).toEqual({
-      pathname: RoutePath.CREATE_PASSWORD,
-    });
-
-    data = {
+    const data = {
       store: storeMock,
       state: {
         currentOperation: "",
       },
     };
-    result = getNextVerifySeedPhraseRoute(data);
+    const result = getNextVerifySeedPhraseRoute(data);
 
     expect(result).toEqual({
-      pathname: TabsRoutePath.CRYPTO,
+      pathname: RoutePath.CREATE_PASSWORD,
     });
   });
 });

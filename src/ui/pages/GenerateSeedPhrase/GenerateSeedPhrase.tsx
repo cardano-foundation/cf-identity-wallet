@@ -30,7 +30,6 @@ import {
   TWENTYFOUR_WORDS_BIT_LENGTH,
   SEED_PHRASE_SUGGESTIONS,
 } from "../../../constants/appConstants";
-import { operationState, onboardingRoute } from "../../constants/dictionary";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
   Alert as AlertConfirm,
@@ -113,10 +112,7 @@ const GenerateSeedPhrase = () => {
   };
 
   useEffect(() => {
-    if (
-      history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE ||
-      RoutePath.GENERATE_SEED_PHRASE + onboardingRoute.createRoute
-    ) {
+    if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
       initializeSeedPhrase();
     }
   }, [history?.location.pathname]);

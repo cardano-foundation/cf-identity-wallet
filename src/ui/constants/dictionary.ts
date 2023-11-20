@@ -74,13 +74,6 @@ const toastState = {
 
 const blurredCryptoData = "••••••••••••••••••";
 
-const onboardingRoute = {
-  create: "onboardingcreate",
-  createRoute: "?route=onboardingcreate",
-  restore: "onboardingrestore",
-  restoreRoute: "?route=onboardingrestore",
-};
-
 const themeBackgroundMapping: Record<number, unknown> = {
   0: BackgroundDidKey0,
   1: BackgroundDidKey1,
@@ -113,7 +106,6 @@ export {
   operationState,
   toastState,
   blurredCryptoData,
-  onboardingRoute,
   connectionType,
   themeBackgroundMapping,
   passcodeMapping,

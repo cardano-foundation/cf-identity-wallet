@@ -12,7 +12,6 @@ import {
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { onboardingRoute } from "../../constants/dictionary";
 import introImg0 from "../../assets/lottie/wallet.json";
 import introImg1 from "../../assets/images/intro-1.png";
 import introImg2 from "../../assets/images/intro-2.png";
@@ -56,25 +55,16 @@ const Onboarding = () => {
     },
   ];
 
-  const handleNavigation = (route: string) => {
-    if (route === onboardingRoute.restore) {
-      // @TODO - sdisalvo: Remove this condition and default to dispatch when the restore route is ready
-      return;
-    } else {
-      dispatch(setCurrentOperation(route));
-      const data: DataProps = {
-        store: { stateCache },
-      };
-      const { nextPath, updateRedux } = getNextRoute(
-        RoutePath.ONBOARDING,
-        data
-      );
-      updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-      history.push({
-        pathname: nextPath.pathname,
-        state: data.state,
-      });
-    }
+  const handleNavigation = () => {
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    history.push({
+      pathname: nextPath.pathname,
+      state: data.state,
+    });
   };
 
   return (
@@ -83,11 +73,11 @@ const Onboarding = () => {
       <PageFooter
         pageId={"onboarding"}
         primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}
-        primaryButtonAction={() => handleNavigation(onboardingRoute.create)}
+        primaryButtonAction={() => handleNavigation()}
         tertiaryButtonText={`${i18n.t(
           "onboarding.alreadywallet.button.label"
         )}`}
-        tertiaryButtonAction={() => handleNavigation(onboardingRoute.restore)}
+        tertiaryButtonAction={() => handleNavigation()}
       />
     </ResponsivePageLayout>
   );

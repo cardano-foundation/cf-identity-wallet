@@ -15,7 +15,7 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
-import { operationState, onboardingRoute } from "../../constants/dictionary";
+import { operationState } from "../../constants/dictionary";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
@@ -100,7 +100,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: onboardingRoute.createRoute,
+        currentOperation: "",
       },
       seedPhraseCache: {
         seedPhrase160:
@@ -160,7 +160,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: onboardingRoute.createRoute,
+        currentOperation: "",
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -342,7 +342,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: onboardingRoute.createRoute,
+        currentOperation: "",
       },
       seedPhraseCache: {
         seedPhrase160: "",

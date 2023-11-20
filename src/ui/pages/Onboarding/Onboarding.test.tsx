@@ -9,7 +9,6 @@ import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { onboardingRoute } from "../../constants/dictionary";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
