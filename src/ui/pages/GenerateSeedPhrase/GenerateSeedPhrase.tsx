@@ -55,9 +55,7 @@ const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const currentOperation = useAppSelector(getCurrentOperation);
 
-  // const stateRestore = currentOperation === operationState.restoreCryptoAccount;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
 
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
