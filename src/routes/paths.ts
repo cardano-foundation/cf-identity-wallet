@@ -4,8 +4,6 @@ enum RoutePath {
   SET_PASSCODE = "/setpasscode",
   PASSCODE_LOGIN = "/passcodelogin",
   GENERATE_SEED_PHRASE = "/generateseedphrase",
-  CREATE_NEW_SEED_PHRASE = "?route=onboardingcreate",
-  RESTORE_SEED_PHRASE = "?route=onboardingrestore",
   VERIFY_SEED_PHRASE = "/verifyseedphrase",
   TABS_MENU = "/tabs",
   CREATE_PASSWORD = "/createpassword",
