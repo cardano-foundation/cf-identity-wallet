@@ -386,23 +386,6 @@ const GenerateSeedPhrase = () => {
               </IonCol>
             </IonRow>
           </IonGrid>
-          <AlertVerify
-            isOpen={alertVerifyIsOpen}
-            setIsOpen={setAlertVerifyIsOpen}
-            dataTestId="alert-verify"
-            headerText={i18n.t("generateseedphrase.alert.verify.text")}
-            confirmButtonText={`${i18n.t(
-              "generateseedphrase.alert.verify.button.confirm"
-            )}`}
-            cancelButtonText={`${i18n.t(
-              "generateseedphrase.alert.verify.button.cancel"
-            )}`}
-            actionConfirm={() => setAlertVerifyIsOpen(false)}
-            actionCancel={() => {
-              setAlertVerifyIsOpen(false);
-              handleExit();
-            }}
-          />
           <AlertConfirm
             isOpen={alertConfirmIsOpen}
             setIsOpen={setAlertConfirmIsOpen}
