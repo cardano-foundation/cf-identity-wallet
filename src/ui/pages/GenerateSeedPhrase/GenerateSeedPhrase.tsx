@@ -1,21 +1,14 @@
 import { useEffect, useState } from "react";
 import {
-  IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
   IonCheckbox,
-  IonChip,
   IonCol,
   IonGrid,
-  IonIcon,
   IonItem,
   IonLabel,
   IonRow,
 } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
-import { eyeOffOutline } from "ionicons/icons";
 import { generateMnemonic } from "bip39";
 import { Trans } from "react-i18next";
 import { i18n } from "../../../i18n";
@@ -37,6 +30,7 @@ import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayo
 import { PageHeader } from "../../components/PageHeader";
 import PageFooter from "../../components/PageFooter/PageFooter";
 import { MnemonicLengthSegment } from "../../components/MnemonicLengthSegment";
+import { SeedPhraseModule } from "../../components/SeedPhraseModule";
 
 const GenerateSeedPhrase = () => {
   const pageId = "generate-seed-phrase";
@@ -143,118 +137,56 @@ const GenerateSeedPhrase = () => {
         />
       }
     >
-      <IonGrid>
-        <IonRow>
-          <IonCol size="12">
-            <h2 data-testid="screen-title">
-              {i18n.t("generateseedphrase.onboarding.title")}
-            </h2>
-            <p
-              className="page-paragraph"
-              data-testid="page-paragraph-top"
-            >
-              {i18n.t("generateseedphrase.onboarding.paragraph.top")}
-            </p>
-          </IonCol>
-        </IonRow>
-      </IonGrid>
-      <IonGrid>
-        <IonRow>
-          <IonCol size="12">
-            <MnemonicLengthSegment
-              seedPhrase={seedPhrase}
-              toggleSeedPhrase={toggleSeedPhrase}
-            />
-          </IonCol>
-        </IonRow>
-        <IonRow>
-          <IonCol size="12">
-            <IonCard>
-              <div
-                data-testid="seed-phrase-privacy-overlay"
-                className={`overlay ${showSeedPhrase ? "hidden" : "visible"}`}
-              >
-                <IonCardHeader>
-                  <IonIcon icon={eyeOffOutline} />
-                </IonCardHeader>
-                <IonCardContent data-testid="seed-phrase-privacy-overlay-text">
-                  <p>{i18n.t("generateseedphrase.privacy.overlay.text")}</p>
-                </IonCardContent>
-                <IonButton
-                  shape="round"
-                  fill="outline"
-                  data-testid="reveal-seed-phrase-button"
-                  onClick={() => setShowSeedPhrase(true)}
-                >
-                  {i18n.t("generateseedphrase.privacy.overlay.button")}
-                </IonButton>
-              </div>
-              <div
-                data-testid="seed-phrase-container"
-                className={`seed-phrase-container onboarding ${
-                  showSeedPhrase ? "seed-phrase-visible" : "seed-phrase-blurred"
-                }
-                }`}
-              >
-                {seedPhrase.map((word, index) => {
-                  return (
-                    <IonChip key={index}>
-                      <span className="index">{index + 1}.</span>
-                      <span data-testid={`word-index-${index + 1}`}>
-                        {word}
-                      </span>
-                    </IonChip>
-                  );
-                })}
-              </div>
-            </IonCard>
-          </IonCol>
-        </IonRow>
-      </IonGrid>
-      <IonGrid>
-        <IonRow>
-          <IonCol size="12">
-            <p
-              className="page-paragraph"
-              data-testid="page-paragraph-bottom"
-            >
-              {i18n.t("generateseedphrase.onboarding.paragraph.bottom")}
-            </p>
-          </IonCol>
-        </IonRow>
-      </IonGrid>
-      <IonGrid>
-        <IonRow>
-          <IonCol size="12">
-            <IonItem
-              color="light"
-              lines="none"
-            >
-              <IonCheckbox
-                slot="start"
-                checked={checked}
-                data-testid="termsandconditions-checkbox"
-                onIonChange={(event) => setChecked(event.detail.checked)}
-              />
-              <IonLabel
-                slot="end"
-                className="ion-text-wrap termsandconditions-label"
-                color="primary"
-                data-testid="termsandconditions-label"
-              >
-                <Trans
-                  i18nKey={i18n.t("generateseedphrase.termsandconditions.text")}
-                  components={[<HandleTerms key="" />]}
-                />
-              </IonLabel>
-            </IonItem>
-            <TermsAndConditions
-              isOpen={termsModalIsOpen}
-              setIsOpen={setTermsModalIsOpen}
-            />
-          </IonCol>
-        </IonRow>
-      </IonGrid>
+      <h2 data-testid="screen-title">
+        {i18n.t("generateseedphrase.onboarding.title")}
+      </h2>
+      <p
+        className="page-paragraph"
+        data-testid="page-paragraph-top"
+      >
+        {i18n.t("generateseedphrase.onboarding.paragraph.top")}
+      </p>
+      <MnemonicLengthSegment
+        seedPhrase={seedPhrase}
+        toggleSeedPhrase={toggleSeedPhrase}
+      />
+      <SeedPhraseModule
+        seedPhrase={seedPhrase}
+        showSeedPhrase={showSeedPhrase}
+        setShowSeedPhrase={setShowSeedPhrase}
+      />
+      <p
+        className="page-paragraph"
+        data-testid="page-paragraph-bottom"
+      >
+        {i18n.t("generateseedphrase.onboarding.paragraph.bottom")}
+      </p>
+      <IonItem
+        color="light"
+        lines="none"
+      >
+        <IonCheckbox
+          slot="start"
+          checked={checked}
+          data-testid="termsandconditions-checkbox"
+          onIonChange={(event) => setChecked(event.detail.checked)}
+        />
+        <IonLabel
+          slot="end"
+          className="ion-text-wrap termsandconditions-label"
+          color="primary"
+          data-testid="termsandconditions-label"
+        >
+          <Trans
+            i18nKey={i18n.t("generateseedphrase.termsandconditions.text")}
+            components={[<HandleTerms key="" />]}
+          />
+        </IonLabel>
+      </IonItem>
+      <TermsAndConditions
+        isOpen={termsModalIsOpen}
+        setIsOpen={setTermsModalIsOpen}
+      />
       <PageFooter
         pageId={pageId}
         primaryButtonText={`${i18n.t(

@@ -4,6 +4,10 @@
   padding-inline: 1.25rem;
   background: var(--ion-color-light);
 
+  @media screen and (min-height: 300px) and (max-height: 600px) {
+    padding-inline: 0.9rem;
+  }
+
   .responsive-page-content {
     display: flex;
     flex-direction: column;
