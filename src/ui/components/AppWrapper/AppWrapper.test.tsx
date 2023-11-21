@@ -19,6 +19,7 @@ import {
 import { toastState } from "../../constants/dictionary";
 import {
   ConnectionShortDetails,
+  ConnectionType,
   CredentialShortDetails,
 } from "../../../core/agent/agent.types";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
@@ -265,6 +266,7 @@ describe("Credential state changed handler", () => {
           credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
         status: CredentialMetadataRecordStatus.PENDING,
         connectionId: "cid2",
+        connectionType: ConnectionType.DIDCOMM,
       })
     );
   });

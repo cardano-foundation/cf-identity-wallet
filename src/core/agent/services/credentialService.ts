@@ -20,6 +20,7 @@ import {
   AcdcKeriStateChangedEvent,
   AcdcKeriEventTypes,
   CredentialStatus,
+  ConnectionType,
 } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
@@ -148,6 +149,7 @@ class CredentialService extends AgentService {
       credentialType: metadata.credentialType,
       status: metadata.status,
       cachedDetails: metadata.cachedDetails,
+      connectionType: metadata.connectionType,
     };
   }
 
@@ -157,6 +159,17 @@ class CredentialService extends AgentService {
 
   async getCredentialDetailsById(id: string): Promise<CredentialDetails> {
     const metadata = await this.getMetadataById(id);
+    if (metadata.connectionType === ConnectionType.KERI) {
+      const acdc = await this.agent.modules.signify.getCredentialBySaid(
+        metadata.credentialRecordId
+      );
+      return {
+        ...this.getCredentialShortDetails(metadata),
+        type: acdc.schema.credentialType,
+        credentialSubject: acdc.sad.a,
+        proofType: "keri", // TODO: must define
+      };
+    }
     const credentialRecord = await this.getCredentialRecordById(
       metadata.credentialRecordId
     );
@@ -253,6 +266,7 @@ class CredentialService extends AgentService {
       issuanceDate: metadata.issuanceDate,
       issuerLogo: connection?.imageUrl ?? undefined,
       status: data.status,
+      connectionType: metadata.connectionType,
     };
 
     if (credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL) {
@@ -438,6 +452,7 @@ class CredentialService extends AgentService {
       credentialType: "",
       issuanceDate: event.e.acdc.a.dt,
       status: CredentialMetadataRecordStatus.PENDING,
+      connectionType: ConnectionType.KERI,
     };
     await this.createMetadata({
       ...credentialDetails,
