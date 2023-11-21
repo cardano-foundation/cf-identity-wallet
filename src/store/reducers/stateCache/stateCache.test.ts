@@ -68,8 +68,8 @@ describe("State Cache", () => {
     expect(getStateCache(rootState)).toEqual(nextState);
   });
 
-  test("should set the onboarding route cache", () => {
-    const op = OperationType.ONBOARDING;
+  test("should set the currentOperation cache", () => {
+    const op = OperationType.SCAN_CONNECTION;
     const action = setCurrentOperation(op);
     const nextState = stateCacheSlice.reducer(initialState, action);
 

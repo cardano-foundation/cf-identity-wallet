@@ -161,7 +161,7 @@ describe("Verify Seed Phrase Page", () => {
 
   test("The user can Verify the Seed Phrase when Onboarding", async () => {
     const history = createMemoryHistory();
-    history.push(RoutePath.VERIFY_SEED_PHRASE, OperationType.ONBOARDING);
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <Router history={history}>

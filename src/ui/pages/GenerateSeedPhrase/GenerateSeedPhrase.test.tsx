@@ -50,7 +50,7 @@ const storeMocked = (initialState: StoreMocked) => {
 
 describe("Generate Seed Phrase screen from Onboarding", () => {
   beforeAll(() => {
-    history.push(RoutePath.GENERATE_SEED_PHRASE, OperationType.ONBOARDING);
+    history.push(RoutePath.GENERATE_SEED_PHRASE);
   });
 
   test("User can see Title and Security Overlay", () => {
