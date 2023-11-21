@@ -55,15 +55,15 @@ const Onboarding = () => {
     },
   ];
 
-  const handleNavigation = () => {
+  const handleNavigation = (route?: string) => {
     const data: DataProps = {
       store: { stateCache },
     };
     const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push({
-      pathname: nextPath.pathname,
-      state: data.state,
+      pathname: route || nextPath.pathname,
+      state: route ? {} : data.state,
     });
   };
 
@@ -77,7 +77,8 @@ const Onboarding = () => {
         tertiaryButtonText={`${i18n.t(
           "onboarding.alreadywallet.button.label"
         )}`}
-        tertiaryButtonAction={() => handleNavigation()}
+        // TODO: set restore route when available
+        tertiaryButtonAction={() => handleNavigation("#")}
       />
     </ResponsivePageLayout>
   );
