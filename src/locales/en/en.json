@@ -132,12 +132,6 @@
         "continue": "Continue"
       }
     },
-    "newcryptoaccount": {
-      "title": "Verify your Seed Phrase",
-      "button": {
-        "continue": "Verify your Seed Phrase"
-      }
-    },
     "paragraph": {
       "top": "Please select every word from your seed phrase in the correct order. If you select a word in the wrong order, select it again to move it back down to the list of available words."
     },
