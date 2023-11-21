@@ -41,7 +41,6 @@ interface StateCacheProps {
   authentication: AuthenticationCacheProps;
   currentOperation: OperationType;
   toastMsg?: ToastMsgType;
-  defaultCryptoAccount: string;
   queueConnectionCredentialRequest: QueueProps<ConnectionCredentialRequestProps>;
 }
 

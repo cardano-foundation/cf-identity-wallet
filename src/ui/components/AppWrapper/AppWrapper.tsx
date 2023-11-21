@@ -31,11 +31,6 @@ import {
 } from "../../../store/reducers/credsCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import {
-  setCryptoAccountsCache,
-  setHideCryptoBalances,
-} from "../../../store/reducers/cryptoAccountsCache";
-import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
-import {
   setConnectionsCache,
   updateOrAddConnectionCache,
 } from "../../../store/reducers/connectionsCache";
@@ -220,16 +215,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const storedIdentities =
       await AriesAgent.agent.identifiers.getIdentifiers();
     // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
-    const storedCryptoAccounts: CryptoAccountProps[] = [];
-
-    try {
-      const hideCryptoBalances = await PreferencesStorage.get(
-        PreferencesKeys.APP_HIDE_CRYPTO_BALANCES
-      );
-      dispatch(setHideCryptoBalances(!!hideCryptoBalances.hidden));
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
 
     try {
       const didsFavourites = await PreferencesStorage.get(
@@ -264,7 +249,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     dispatch(setIdentitiesCache(storedIdentities));
     dispatch(setCredsCache(credentials));
-    dispatch(setCryptoAccountsCache(storedCryptoAccounts));
     dispatch(setConnectionsCache(connectionsDetails));
 
     AriesAgent.agent.connections.onConnectionStateChanged((event) => {

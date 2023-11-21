@@ -9,7 +9,6 @@ import {
   IonCol,
   IonGrid,
   IonIcon,
-  IonInput,
   IonItem,
   IonLabel,
   IonPage,
@@ -20,7 +19,7 @@ import {
 import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
 import { eyeOffOutline } from "ionicons/icons";
-import { generateMnemonic, validateMnemonic } from "bip39";
+import { generateMnemonic } from "bip39";
 import { Trans } from "react-i18next";
 import { i18n } from "../../../i18n";
 import {
@@ -28,20 +27,13 @@ import {
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-  SEED_PHRASE_SUGGESTIONS,
 } from "../../globals/constants";
-import { OperationType, ToastMsgType } from "../../globals/types";
+import { OperationType } from "../../globals/types";
 import { PageLayout } from "../../components/layout/PageLayout";
+import { Alert as AlertConfirm } from "../../components/Alert";
 import {
-  Alert as AlertConfirm,
-  Alert as AlertExit,
-  Alert as AlertVerify,
-} from "../../components/Alert";
-import {
-  getCurrentOperation,
   getStateCache,
   setCurrentOperation,
-  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TermsAndConditions } from "../../components/TermsAndConditions";
@@ -50,70 +42,28 @@ import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
-import { TabsRoutePath } from "../../../routes/paths";
-import { GenerateSeedPhraseProps } from "./GenerateSeedPhrase.types";
-import { bip39Seeds } from "../../globals/bip39Seeds";
-import { ChooseAccountName } from "../../components/ChooseAccountName";
+import { getBackRoute } from "../../../routes/backRoute";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const currentOperation = useAppSelector(getCurrentOperation);
-  const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
-    ? OperationType.ONBOARDING
-    : (
-      (history?.location?.state as GenerateSeedPhraseProps)?.type ||
-        currentOperation
-    ).toLowerCase();
-  const stateOnboarding = seedPhraseType === OperationType.ONBOARDING;
-  const stateRestore =
-    currentOperation === OperationType.RESTORE_CRYPTO_ACCOUNT;
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
+
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
-  const [alertVerifyIsOpen, setAlertVerifyIsOpen] = useState(false);
   const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
-  const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
   const [termsModalIsOpen, setTermsModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
-  const [reloadSeedPhrase, setReloadSeedPhrase] = useState(false);
-  const [verifySeedPhrase, setVerifySeedPhrase] = useState(true);
-  const [validateSeedPhrase, setValidateSeedPhrase] = useState(false);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTyping, setIsTyping] = useState(false);
-  const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
-
-  useEffect(() => {
-    setSeedPhrase(seedPhrase);
-    const isVerifiable = () => {
-      let verify = true;
-      for (let index = 0; index < seedPhrase.length; index++) {
-        if (seedPhrase[index] === "") {
-          verify = false;
-        }
-      }
-      return verify;
-    };
-    setVerifySeedPhrase(isVerifiable);
-    setValidateSeedPhrase(validateMnemonic(seedPhrase.join(" ")));
-  }, [reloadSeedPhrase, isTyping]);
 
   const initializeSeedPhrase = () => {
     const isFifteenWordsSelected =
       seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
     let seed160;
     let seed256;
-    if (stateRestore) {
-      setShowSeedPhrase(true);
-      seed160 = new Array(MNEMONIC_FIFTEEN_WORDS).fill("");
-      setSeedPhrase160(seed160);
-      seed256 = new Array(MNEMONIC_TWENTYFOUR_WORDS).fill("");
-      setSeedPhrase256(seed256);
-    } else if (
+    if (
       seedPhraseStore.seedPhrase160.length > 0 &&
       seedPhraseStore.seedPhrase256.length > 0
     ) {
@@ -131,10 +81,7 @@ const GenerateSeedPhrase = () => {
   };
 
   useEffect(() => {
-    if (
-      history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE ||
-      RoutePath.GENERATE_SEED_PHRASE + RoutePath.CREATE_NEW_SEED_PHRASE
-    ) {
+    if (history?.location.pathname === RoutePath.GENERATE_SEED_PHRASE) {
       initializeSeedPhrase();
     }
   }, [history?.location.pathname]);
@@ -145,7 +92,6 @@ const GenerateSeedPhrase = () => {
     initializeSeedPhrase();
     setShowSeedPhrase(false);
     setAlertConfirmIsOpen(false);
-    setAlertExitIsOpen(false);
     setChecked(false);
   };
 
@@ -186,115 +132,62 @@ const GenerateSeedPhrase = () => {
     handleClearState();
     history.push({
       pathname: nextPath.pathname,
-      state: {
-        type: seedPhraseType,
-      },
     });
   };
 
-  const handleExit = () => {
+  const handleBack = () => {
     handleClearState();
     dispatch(setCurrentOperation(OperationType.IDLE));
-    history.push(TabsRoutePath.CRYPTO);
-  };
 
-  const Suggestions = () => {
-    return (
-      <div className="generate-seedphrase-suggestions">
-        <span className="generate-seedphrase-suggestions-title">
-          {i18n.t("generateseedphrase." + seedPhraseType + ".suggestions")}
-        </span>
-        <div className="seed-phrase-container">
-          {suggestions.map((suggestion, index) => (
-            <IonChip
-              key={index}
-              onClick={() => {
-                updateSeedPhrase(currentIndex, suggestion);
-              }}
-            >
-              <span>{suggestion}</span>
-            </IonChip>
-          ))}
-        </div>
-      </div>
+    const { backPath, updateRedux } = getBackRoute(
+      RoutePath.GENERATE_SEED_PHRASE,
+      {
+        store: { stateCache },
+      }
     );
-  };
 
-  const handleSuggestions = (index: number, word: string) => {
-    setCurrentIndex(index);
-    const query = word.toLowerCase();
-    const filteredSuggestions =
-      isTyping && query.length
-        ? bip39Seeds
-          .filter(
-            (suggestion: string) =>
-              suggestion.toLowerCase().indexOf(query) > -1
-          )
-          .splice(0, SEED_PHRASE_SUGGESTIONS)
-        : [];
-    setSuggestions(filteredSuggestions);
-  };
-
-  const updateSeedPhrase = (index: number, word: string) => {
-    const newSeedPhrase = seedPhrase;
-    newSeedPhrase[index] = word;
-    setSeedPhrase(newSeedPhrase);
-    setReloadSeedPhrase(!reloadSeedPhrase);
+    updateReduxState(
+      backPath.pathname,
+      { store: { stateCache } },
+      dispatch,
+      updateRedux
+    );
+    history.push(backPath.pathname);
   };
 
   return (
     <>
-      {isTyping && suggestions.length ? <Suggestions /> : null}
       <IonPage className="page-layout generate-seedphrase">
         <PageLayout
           header={true}
-          title={
-            !stateOnboarding
-              ? `${i18n.t("generateseedphrase." + seedPhraseType + ".title")}`
-              : undefined
-          }
-          backButton={stateOnboarding}
+          backButton={true}
           beforeBack={handleClearState}
-          closeButton={!stateOnboarding}
-          closeButtonAction={() => setAlertExitIsOpen(true)}
+          closeButton={false}
+          closeButtonAction={() => handleBack()}
           currentPath={RoutePath.GENERATE_SEED_PHRASE}
-          progressBar={stateOnboarding}
+          progressBar={true}
           progressBarValue={0.66}
           progressBarBuffer={1}
           footer={true}
           primaryButtonText={`${i18n.t(
-            "generateseedphrase." + seedPhraseType + ".button.continue"
+            "generateseedphrase.onboarding.button.continue"
           )}`}
           primaryButtonAction={() => {
-            if (stateRestore) {
-              if (validateSeedPhrase) {
-                setChooseAccountNameIsOpen(true);
-              } else {
-                setAlertVerifyIsOpen(true);
-              }
-            } else {
-              setAlertConfirmIsOpen(true);
-            }
+            setAlertConfirmIsOpen(true);
           }}
-          primaryButtonDisabled={
-            !(showSeedPhrase && checked && verifySeedPhrase)
-          }
+          primaryButtonDisabled={!(showSeedPhrase && checked)}
         >
           <IonGrid>
             <IonRow>
               <IonCol size="12">
-                {stateOnboarding && (
-                  <h2 data-testid="screen-title">
-                    {i18n.t("generateseedphrase." + seedPhraseType + ".title")}
-                  </h2>
-                )}
+                <h2 data-testid="screen-title">
+                  {i18n.t("generateseedphrase.onboarding.title")}
+                </h2>
                 <p
                   className="page-paragraph"
                   data-testid="page-paragraph-top"
                 >
-                  {i18n.t(
-                    "generateseedphrase." + seedPhraseType + ".paragraph.top"
-                  )}
+                  {i18n.t("generateseedphrase.onboarding.paragraph.top")}
                 </p>
               </IonCol>
             </IonRow>
@@ -310,7 +203,6 @@ const GenerateSeedPhrase = () => {
                       : FIFTEEN_WORDS_BIT_LENGTH
                   }`}
                   onIonChange={(event) => {
-                    setShowSeedPhrase(stateRestore);
                     toggleSeedPhrase(Number(event.detail.value));
                   }}
                 >
@@ -363,7 +255,7 @@ const GenerateSeedPhrase = () => {
                   </div>
                   <div
                     data-testid="seed-phrase-container"
-                    className={`seed-phrase-container ${seedPhraseType} ${
+                    className={`seed-phrase-container onboarding ${
                       showSeedPhrase
                         ? "seed-phrase-visible"
                         : "seed-phrase-blurred"
@@ -371,29 +263,7 @@ const GenerateSeedPhrase = () => {
                 }`}
                   >
                     {seedPhrase.map((word, index) => {
-                      return stateRestore ? (
-                        <IonChip
-                          key={index}
-                          className={word.length ? "full" : "empty"}
-                        >
-                          <span className="index">{index + 1}.</span>
-                          <IonInput
-                            onIonFocus={() => {
-                              updateSeedPhrase(index, "");
-                              setIsTyping(true);
-                            }}
-                            onIonChange={(event) => {
-                              handleSuggestions(index, `${event.target.value}`);
-                              updateSeedPhrase(index, `${event.target.value}`);
-                            }}
-                            onIonBlur={() => {
-                              setIsTyping(false);
-                              setSuggestions([]);
-                            }}
-                            value={word}
-                          />
-                        </IonChip>
-                      ) : (
+                      return (
                         <IonChip key={index}>
                           <span className="index">{index + 1}.</span>
                           <span data-testid={`word-index-${index + 1}`}>
@@ -414,9 +284,7 @@ const GenerateSeedPhrase = () => {
                   className="page-paragraph"
                   data-testid="page-paragraph-bottom"
                 >
-                  {i18n.t(
-                    "generateseedphrase." + seedPhraseType + ".paragraph.bottom"
-                  )}
+                  {i18n.t("generateseedphrase.onboarding.paragraph.bottom")}
                 </p>
               </IonCol>
             </IonRow>
@@ -455,23 +323,6 @@ const GenerateSeedPhrase = () => {
               </IonCol>
             </IonRow>
           </IonGrid>
-          <AlertVerify
-            isOpen={alertVerifyIsOpen}
-            setIsOpen={setAlertVerifyIsOpen}
-            dataTestId="alert-verify"
-            headerText={i18n.t("generateseedphrase.alert.verify.text")}
-            confirmButtonText={`${i18n.t(
-              "generateseedphrase.alert.verify.button.confirm"
-            )}`}
-            cancelButtonText={`${i18n.t(
-              "generateseedphrase.alert.verify.button.cancel"
-            )}`}
-            actionConfirm={() => setAlertVerifyIsOpen(false)}
-            actionCancel={() => {
-              setAlertVerifyIsOpen(false);
-              handleExit();
-            }}
-          />
           <AlertConfirm
             isOpen={alertConfirmIsOpen}
             setIsOpen={setAlertConfirmIsOpen}
@@ -484,38 +335,6 @@ const GenerateSeedPhrase = () => {
               "generateseedphrase.alert.confirm.button.cancel"
             )}`}
             actionConfirm={handleContinue}
-          />
-          <AlertExit
-            isOpen={alertExitIsOpen}
-            setIsOpen={setAlertExitIsOpen}
-            dataTestId="alert-exit"
-            headerText={i18n.t("generateseedphrase.alert.exit.text")}
-            confirmButtonText={`${i18n.t(
-              "generateseedphrase.alert.exit.button.confirm"
-            )}`}
-            cancelButtonText={`${i18n.t(
-              "generateseedphrase.alert.exit.button.cancel"
-            )}`}
-            actionConfirm={handleExit}
-            actionCancel={() =>
-              dispatch(setCurrentOperation(OperationType.IDLE))
-            }
-            actionDismiss={() =>
-              dispatch(setCurrentOperation(OperationType.IDLE))
-            }
-          />
-          <ChooseAccountName
-            chooseAccountNameIsOpen={chooseAccountNameIsOpen}
-            setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
-            usesIdentitySeedPhrase={false}
-            seedPhrase={seedPhrase.join(" ")}
-            onDone={() => {
-              handleClearState();
-              dispatch(setToastMsg(ToastMsgType.WALLET_RESTORED));
-              history.push({
-                pathname: TabsRoutePath.CRYPTO,
-              });
-            }}
           />
         </PageLayout>
       </IonPage>

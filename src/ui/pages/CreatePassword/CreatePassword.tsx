@@ -145,9 +145,6 @@ const PasswordRegex = ({ password }: PasswordRegexProps) => {
 
 const CreatePassword = () => {
   const stateCache = useAppSelector(getStateCache);
-  const onboarding =
-    stateCache?.currentOperation === OperationType.CREATE_SEED_PHRASE ||
-    OperationType.RESTORE_SEED_PHRASE;
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [createPasswordValue, setCreatePasswordValue] = useState("");
@@ -226,7 +223,7 @@ const CreatePassword = () => {
       <PageLayout
         header={true}
         currentPath={RoutePath.CREATE_PASSWORD}
-        closeButton={!onboarding}
+        closeButton={false}
         closeButtonAction={() => handleClose()}
         title={`${i18n.t("createpassword.title")}`}
         footer={true}

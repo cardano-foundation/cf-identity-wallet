@@ -5,14 +5,10 @@ import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
 import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getStateCache,
-  setCurrentOperation,
-} from "../../../store/reducers/stateCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { OperationType } from "../../globals/types";
 import introImg0 from "../../assets/lottie/wallet.json";
 import introImg1 from "../../assets/images/intro-1.png";
 import introImg2 from "../../assets/images/intro-2.png";
@@ -56,26 +52,21 @@ const Onboarding = () => {
     },
   ];
 
-  const handleNavigation = (op: OperationType) => {
-    if (op === OperationType.RESTORE_SEED_PHRASE) {
+  // @TODO - foconnor: This should be op: OperationType when available (non optional)
+  const handleNavigation = (op?: string) => {
+    if (op) {
       // @TODO - sdisalvo: Remove this condition and default to dispatch when the restore route is ready
       return;
-    } else {
-      dispatch(setCurrentOperation(op));
-      const data: DataProps = {
-        store: { stateCache },
-        state: { currentOperation: op },
-      };
-      const { nextPath, updateRedux } = getNextRoute(
-        RoutePath.ONBOARDING,
-        data
-      );
-      updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-      history.push({
-        pathname: nextPath.pathname,
-        state: data.state,
-      });
     }
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    history.push({
+      pathname: nextPath.pathname,
+      state: data.state,
+    });
   };
 
   return (
@@ -84,15 +75,12 @@ const Onboarding = () => {
       <PageFooter
         pageId={"onboarding"}
         primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}
-        primaryButtonAction={() =>
-          handleNavigation(OperationType.CREATE_SEED_PHRASE)
-        }
+        primaryButtonAction={() => handleNavigation()}
         tertiaryButtonText={`${i18n.t(
           "onboarding.alreadywallet.button.label"
         )}`}
-        tertiaryButtonAction={() =>
-          handleNavigation(OperationType.RESTORE_SEED_PHRASE)
-        }
+        // TODO: set restore route when available
+        tertiaryButtonAction={() => handleNavigation("#")}
       />
     </ResponsivePageLayout>
   );

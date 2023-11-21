@@ -21,7 +21,6 @@ const initialState: StateCacheProps = {
     passwordIsSkipped: true,
   },
   currentOperation: OperationType.IDLE,
-  defaultCryptoAccount: "",
   queueConnectionCredentialRequest: {
     isProcessing: false,
     queues: [],
