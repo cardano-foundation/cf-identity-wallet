@@ -1,6 +1,7 @@
 import {
   ConnectionShortDetails,
   ConnectionStatus,
+  ConnectionType,
   CredentialDetails,
 } from "../../core/agent/agent.types";
 import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
@@ -98,6 +99,7 @@ const defaultCredentialsCardData: CredentialDetails = {
   proofValue: "",
   colors: ["", ""],
   status: CredentialMetadataRecordStatus.PENDING,
+  connectionType: ConnectionType.DIDCOMM,
 };
 
 const defaultCryptoAccountData: CryptoAccountProps = {

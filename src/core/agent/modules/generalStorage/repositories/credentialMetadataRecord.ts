@@ -6,6 +6,7 @@ import {
   SummitCredCachedDetails,
   UniversityCredCachedDetails,
 } from "./credentialMetadataRecord.types";
+import { ConnectionType } from "../../../agent.types";
 
 class CredentialMetadataRecord
   extends BaseRecord
@@ -23,6 +24,7 @@ class CredentialMetadataRecord
     | UniversityCredCachedDetails
     | ResidencyCredCachedDetails
     | SummitCredCachedDetails;
+  connectionType!: ConnectionType;
 
   static readonly type = "CredentialMetadataRecord";
   readonly type = CredentialMetadataRecord.type;
@@ -42,6 +44,7 @@ class CredentialMetadataRecord
       this.status = props.status;
       this.connectionId = props.connectionId;
       this.cachedDetails = props.cachedDetails;
+      this.connectionType = props.connectionType;
     }
   }
 

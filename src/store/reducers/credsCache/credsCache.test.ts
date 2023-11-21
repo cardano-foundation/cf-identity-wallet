@@ -11,7 +11,10 @@ import {
 } from "./credsCache";
 import { RootState } from "../../index";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { CredentialShortDetails } from "../../../core/agent/agent.types";
+import {
+  ConnectionType,
+  CredentialShortDetails,
+} from "../../../core/agent/agent.types";
 import { FavouriteIdentity } from "../identitiesCache/identitiesCache.types";
 
 describe("credsCacheSlice", () => {
@@ -34,6 +37,7 @@ describe("credsCacheSlice", () => {
         issuerLogo: "https://placehold.co/120x22",
         colors: ["#FFBC60", "#FFA21F"],
         status: CredentialMetadataRecordStatus.CONFIRMED,
+        connectionType: ConnectionType.DIDCOMM,
       },
     ];
     const newState = credsCacheSlice.reducer(
@@ -51,6 +55,7 @@ describe("credsCacheSlice", () => {
       issuerLogo: "https://placehold.co/120x22",
       colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.CONFIRMED,
+      connectionType: ConnectionType.DIDCOMM,
     };
     const newState = credsCacheSlice.reducer(
       initialState,
@@ -69,6 +74,7 @@ describe("credsCacheSlice", () => {
       issuerLogo: "https://placehold.co/120x22",
       colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.PENDING,
+      connectionType: ConnectionType.DIDCOMM,
     };
     const cred2: CredentialShortDetails = {
       id: credId2,
@@ -77,6 +83,7 @@ describe("credsCacheSlice", () => {
       issuerLogo: "https://placehold.co/120x22",
       colors: ["#FFBC60", "#FFA21F"],
       status: CredentialMetadataRecordStatus.PENDING,
+      connectionType: ConnectionType.DIDCOMM,
     };
     const updateCred: CredentialShortDetails = {
       ...cred1,
