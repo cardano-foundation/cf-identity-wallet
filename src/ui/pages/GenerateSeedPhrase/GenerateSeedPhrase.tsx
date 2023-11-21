@@ -9,7 +9,6 @@ import {
   IonCol,
   IonGrid,
   IonIcon,
-  IonInput,
   IonItem,
   IonLabel,
   IonPage,
@@ -28,16 +27,13 @@ import {
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-  SEED_PHRASE_SUGGESTIONS,
 } from "../../../constants/appConstants";
 import { PageLayout } from "../../components/layout/PageLayout";
 import {
   Alert as AlertConfirm,
   Alert as AlertExit,
-  Alert as AlertVerify,
 } from "../../components/Alert";
 import {
-  getCurrentOperation,
   getStateCache,
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
@@ -48,8 +44,7 @@ import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
-import { TabsRoutePath } from "../../../routes/paths";
-import { bip39Seeds } from "../../constants/bip39Seeds";
+import { getBackRoute } from "../../../routes/backRoute";
 
 const GenerateSeedPhrase = () => {
   const history = useHistory();
@@ -62,30 +57,15 @@ const GenerateSeedPhrase = () => {
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
-  const [alertVerifyIsOpen, setAlertVerifyIsOpen] = useState(false);
   const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
   const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
   const [termsModalIsOpen, setTermsModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
   const [reloadSeedPhrase, setReloadSeedPhrase] = useState(false);
-  const [verifySeedPhrase, setVerifySeedPhrase] = useState(true);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [isTyping, setIsTyping] = useState(false);
 
   useEffect(() => {
     setSeedPhrase(seedPhrase);
-    const isVerifiable = () => {
-      let verify = true;
-      for (let index = 0; index < seedPhrase.length; index++) {
-        if (seedPhrase[index] === "") {
-          verify = false;
-        }
-      }
-      return verify;
-    };
-    setVerifySeedPhrase(isVerifiable);
-  }, [reloadSeedPhrase, isTyping]);
+  }, [reloadSeedPhrase]);
 
   const initializeSeedPhrase = () => {
     const isFifteenWordsSelected =
@@ -165,59 +145,28 @@ const GenerateSeedPhrase = () => {
     });
   };
 
-  const handleExit = () => {
+  const handleBack = () => {
     handleClearState();
     dispatch(setCurrentOperation(""));
-    history.push(TabsRoutePath.CRYPTO);
-  };
 
-  const Suggestions = () => {
-    return (
-      <div className="generate-seedphrase-suggestions">
-        <span className="generate-seedphrase-suggestions-title">
-          {i18n.t("generateseedphrase.onboarding.suggestions")}
-        </span>
-        <div className="seed-phrase-container">
-          {suggestions.map((suggestion, index) => (
-            <IonChip
-              key={index}
-              onClick={() => {
-                updateSeedPhrase(currentIndex, suggestion);
-              }}
-            >
-              <span>{suggestion}</span>
-            </IonChip>
-          ))}
-        </div>
-      </div>
+    const { backPath, updateRedux } = getBackRoute(
+      RoutePath.GENERATE_SEED_PHRASE,
+      {
+        store: { stateCache },
+      }
     );
-  };
 
-  const handleSuggestions = (index: number, word: string) => {
-    setCurrentIndex(index);
-    const query = word.toLowerCase();
-    const filteredSuggestions =
-      isTyping && query.length
-        ? bip39Seeds
-          .filter(
-            (suggestion: string) =>
-              suggestion.toLowerCase().indexOf(query) > -1
-          )
-          .splice(0, SEED_PHRASE_SUGGESTIONS)
-        : [];
-    setSuggestions(filteredSuggestions);
-  };
-
-  const updateSeedPhrase = (index: number, word: string) => {
-    const newSeedPhrase = seedPhrase;
-    newSeedPhrase[index] = word;
-    setSeedPhrase(newSeedPhrase);
-    setReloadSeedPhrase(!reloadSeedPhrase);
+    updateReduxState(
+      backPath.pathname,
+      { store: { stateCache } },
+      dispatch,
+      updateRedux
+    );
+    history.push(backPath.pathname);
   };
 
   return (
     <>
-      {isTyping && suggestions.length ? <Suggestions /> : null}
       <IonPage className="page-layout generate-seedphrase">
         <PageLayout
           header={true}
@@ -236,9 +185,7 @@ const GenerateSeedPhrase = () => {
           primaryButtonAction={() => {
             setAlertConfirmIsOpen(true);
           }}
-          primaryButtonDisabled={
-            !(showSeedPhrase && checked && verifySeedPhrase)
-          }
+          primaryButtonDisabled={!(showSeedPhrase && checked)}
         >
           <IonGrid>
             <IonRow>
@@ -410,7 +357,7 @@ const GenerateSeedPhrase = () => {
             cancelButtonText={`${i18n.t(
               "generateseedphrase.alert.exit.button.cancel"
             )}`}
-            actionConfirm={handleExit}
+            actionConfirm={handleBack}
             actionCancel={() => dispatch(setCurrentOperation(""))}
             actionDismiss={() => dispatch(setCurrentOperation(""))}
           />

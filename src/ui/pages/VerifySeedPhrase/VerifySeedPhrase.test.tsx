@@ -234,12 +234,6 @@ describe("Verify Seed Phrase Page", () => {
       </Provider>
     );
 
-    await waitFor(() =>
-      expect(
-        getByText(EN_TRANSLATIONS.verifyseedphrase.newcryptoaccount.title)
-      ).toBeVisible()
-    );
-
     const continueButton = getByTestId("primary-button-verify-seedphrase");
     const originalSeedPhraseContainer = getByTestId(
       "original-seed-phrase-container"
