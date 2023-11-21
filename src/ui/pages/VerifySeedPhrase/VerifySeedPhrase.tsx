@@ -20,7 +20,6 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { toastState } from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { Addresses } from "../../../core/cardano";
@@ -114,7 +113,6 @@ const VerifySeedPhrase = () => {
     const data: DataProps = {
       store: { stateCache },
       state: {
-        type: toastState.walletCreated,
         currentOperation: stateCache.currentOperation,
       },
     };
