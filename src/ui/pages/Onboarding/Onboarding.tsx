@@ -56,14 +56,18 @@ const Onboarding = () => {
   ];
 
   const handleNavigation = (route?: string) => {
+    if (route) {
+      // @TODO - sdisalvo: Remove this condition and default to dispatch when the restore route is ready
+      return;
+    }
     const data: DataProps = {
       store: { stateCache },
     };
     const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
     updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
     history.push({
-      pathname: route || nextPath.pathname,
-      state: route ? {} : data.state,
+      pathname: nextPath.pathname,
+      state: data.state,
     });
   };
 
