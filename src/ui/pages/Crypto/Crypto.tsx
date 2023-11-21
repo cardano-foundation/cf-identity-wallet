@@ -12,16 +12,16 @@ import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
-import "./CryptoPlaceholder.scss";
+import "./Crypto.scss";
 import { i18n } from "../../../i18n";
 import { PageLayout } from "../../components/layout/PageLayout";
 
-const CryptoPlaceholder = () => {
+const Crypto = () => {
   const dispatch = useAppDispatch();
   const [featuresModalIsOpen, setFeaturesModalIsOpen] = useState(false);
 
   useIonViewWillEnter(() => {
-    dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO_PLACEHOLDER }));
+    dispatch(setCurrentRoute({ path: TabsRoutePath.CRYPTO }));
   });
 
   const HandleFeatures = () => {
@@ -92,4 +92,4 @@ const CryptoPlaceholder = () => {
   );
 };
 
-export { CryptoPlaceholder };
+export { Crypto };
