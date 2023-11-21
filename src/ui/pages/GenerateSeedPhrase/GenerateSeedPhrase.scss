@@ -1,8 +1,4 @@
-.generate-seedphrase {
-  ion-title h2 {
-    margin: 0 auto;
-  }
-
+.generate-seed-phrase {
   ion-segment {
     --background: var(--ion-color-dark-grey);
 
@@ -19,6 +15,10 @@
     border-radius: 1rem;
     --background: var(--ion-color-light-grey);
     box-shadow: none;
+
+    ion-card-header {
+      margin: 0 auto;
+    }
   }
 
   .overlay {
