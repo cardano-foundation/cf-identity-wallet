@@ -46,10 +46,6 @@ const operationState = {
 
 const toastState = {
   copiedToClipboard: "copiedToClipboard",
-  walletCreated: "walletCreated",
-  walletRenamed: "walletRenamed",
-  walletRestored: "walletRestored",
-  walletDeleted: "walletDeleted",
   identityCreated: "identityCreated",
   identityUpdated: "identityUpdated",
   identityDeleted: "identityDeleted",
