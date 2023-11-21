@@ -151,7 +151,6 @@ const VerifySeedPhrase = () => {
       <PageLayout
         id="verify-seedphrase"
         header={true}
-        title={undefined}
         backButton={true}
         onBack={() => {
           handleClearState();
