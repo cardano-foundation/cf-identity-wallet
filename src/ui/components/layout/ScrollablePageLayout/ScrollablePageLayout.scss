@@ -1,0 +1,17 @@
+.scrollable-page-layout {
+  display: flex;
+  flex-direction: column;
+  padding-inline: 1.25rem;
+  background: var(--ion-color-light);
+
+  .scrollable-page-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    > * {
+      flex: 0 1 auto;
+      margin: 0;
+    }
+  }
+}

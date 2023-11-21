@@ -11,10 +11,7 @@ import {
   IonIcon,
   IonItem,
   IonLabel,
-  IonPage,
   IonRow,
-  IonSegment,
-  IonSegmentButton,
 } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
@@ -24,7 +21,6 @@ import { Trans } from "react-i18next";
 import { i18n } from "../../../i18n";
 import {
   MNEMONIC_FIFTEEN_WORDS,
-  MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
@@ -37,9 +33,10 @@ import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
-import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 import PageFooter from "../../components/PageFooter/PageFooter";
+import { MnemonicLengthSegment } from "../../components/MnemonicLengthSegment";
 
 const GenerateSeedPhrase = () => {
   const pageId = "generate-seed-phrase";
@@ -133,7 +130,7 @@ const GenerateSeedPhrase = () => {
   };
 
   return (
-    <ResponsivePageLayout
+    <ScrollablePageLayout
       pageId={pageId}
       header={
         <PageHeader
@@ -164,38 +161,10 @@ const GenerateSeedPhrase = () => {
       <IonGrid>
         <IonRow>
           <IonCol size="12">
-            <IonSegment
-              data-testid="mnemonic-length-segment"
-              value={`${
-                seedPhrase.length === MNEMONIC_TWENTYFOUR_WORDS
-                  ? TWENTYFOUR_WORDS_BIT_LENGTH
-                  : FIFTEEN_WORDS_BIT_LENGTH
-              }`}
-              onIonChange={(event) => {
-                toggleSeedPhrase(Number(event.detail.value));
-              }}
-            >
-              <IonSegmentButton
-                value={`${FIFTEEN_WORDS_BIT_LENGTH}`}
-                data-testid="15-words-segment-button"
-              >
-                <IonLabel>
-                  {i18n.t("generateseedphrase.segment", {
-                    length: MNEMONIC_FIFTEEN_WORDS,
-                  })}
-                </IonLabel>
-              </IonSegmentButton>
-              <IonSegmentButton
-                value={`${TWENTYFOUR_WORDS_BIT_LENGTH}`}
-                data-testid="24-words-segment-button"
-              >
-                <IonLabel>
-                  {i18n.t("generateseedphrase.segment", {
-                    length: MNEMONIC_TWENTYFOUR_WORDS,
-                  })}
-                </IonLabel>
-              </IonSegmentButton>
-            </IonSegment>
+            <MnemonicLengthSegment
+              seedPhrase={seedPhrase}
+              toggleSeedPhrase={toggleSeedPhrase}
+            />
           </IonCol>
         </IonRow>
         <IonRow>
@@ -209,7 +178,7 @@ const GenerateSeedPhrase = () => {
                   <IonIcon icon={eyeOffOutline} />
                 </IonCardHeader>
                 <IonCardContent data-testid="seed-phrase-privacy-overlay-text">
-                  {i18n.t("generateseedphrase.privacy.overlay.text")}
+                  <p>{i18n.t("generateseedphrase.privacy.overlay.text")}</p>
                 </IonCardContent>
                 <IonButton
                   shape="round"
@@ -309,7 +278,7 @@ const GenerateSeedPhrase = () => {
         )}`}
         actionConfirm={handleContinue}
       />
-    </ResponsivePageLayout>
+    </ScrollablePageLayout>
   );
 };
 
