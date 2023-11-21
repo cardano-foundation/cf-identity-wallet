@@ -29,10 +29,7 @@ import {
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
 import { PageLayout } from "../../components/layout/PageLayout";
-import {
-  Alert as AlertConfirm,
-  Alert as AlertExit,
-} from "../../components/Alert";
+import { Alert as AlertConfirm } from "../../components/Alert";
 import {
   getStateCache,
   setCurrentOperation,
@@ -58,14 +55,8 @@ const GenerateSeedPhrase = () => {
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
   const [showSeedPhrase, setShowSeedPhrase] = useState(false);
   const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
-  const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
   const [termsModalIsOpen, setTermsModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
-  const [reloadSeedPhrase, setReloadSeedPhrase] = useState(false);
-
-  useEffect(() => {
-    setSeedPhrase(seedPhrase);
-  }, [reloadSeedPhrase]);
 
   const initializeSeedPhrase = () => {
     const isFifteenWordsSelected =
@@ -101,7 +92,6 @@ const GenerateSeedPhrase = () => {
     initializeSeedPhrase();
     setShowSeedPhrase(false);
     setAlertConfirmIsOpen(false);
-    setAlertExitIsOpen(false);
     setChecked(false);
   };
 
@@ -173,7 +163,7 @@ const GenerateSeedPhrase = () => {
           backButton={true}
           beforeBack={handleClearState}
           closeButton={false}
-          closeButtonAction={() => setAlertExitIsOpen(true)}
+          closeButtonAction={() => handleBack()}
           currentPath={RoutePath.GENERATE_SEED_PHRASE}
           progressBar={true}
           progressBarValue={0.66}
