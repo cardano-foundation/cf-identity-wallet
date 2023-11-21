@@ -1,9 +1,7 @@
 import {
-  ConnectionShortDetails,
   ConnectionStatus,
   CredentialDetails,
 } from "../../core/agent/agent.types";
-import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
 import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import BackgroundDidKey0 from "../assets/images/did-key-0.png";
 import BackgroundDidKey1 from "../assets/images/did-key-1.png";
@@ -37,12 +35,6 @@ const connectionType = {
 
 const operationState = {
   onboarding: "onboarding",
-  newCryptoAccount: "newCryptoAccount",
-  restoreCryptoAccount: "restoreCryptoAccount",
-  createWallet: "createWallet",
-  renameWallet: "renameWallet",
-  restoreWallet: "restoreWallet",
-  deleteWallet: "deleteWallet",
   updateIdentity: "updateIdentity",
   deleteIdentity: "deleteIdentity",
   deleteConnection: "deleteConnection",
@@ -54,10 +46,6 @@ const operationState = {
 
 const toastState = {
   copiedToClipboard: "copiedToClipboard",
-  walletCreated: "walletCreated",
-  walletRenamed: "walletRenamed",
-  walletRestored: "walletRestored",
-  walletDeleted: "walletDeleted",
   identityCreated: "identityCreated",
   identityUpdated: "identityUpdated",
   identityDeleted: "identityDeleted",
@@ -79,36 +67,7 @@ const toastState = {
   maxFavouritesReached: "maxFavouritesReached",
 };
 
-const defaultCryptoAccountData: CryptoAccountProps = {
-  address: "",
-  derivationPath: "",
-  name: "",
-  blockchain: "",
-  currency: "",
-  logo: "",
-  balance: {
-    main: {
-      nativeBalance: 0,
-      usdBalance: 0,
-    },
-    reward: {
-      nativeBalance: 0,
-      usdBalance: 0,
-    },
-  },
-  usesIdentitySeedPhrase: false,
-  assets: [],
-  transactions: [],
-};
-
 const blurredCryptoData = "••••••••••••••••••";
-
-const onboardingRoute = {
-  create: "onboardingcreate",
-  createRoute: "?route=onboardingcreate",
-  restore: "onboardingrestore",
-  restoreRoute: "?route=onboardingrestore",
-};
 
 const themeBackgroundMapping: Record<number, unknown> = {
   0: BackgroundDidKey0,
@@ -141,9 +100,7 @@ export {
   connectionStatus,
   operationState,
   toastState,
-  defaultCryptoAccountData,
   blurredCryptoData,
-  onboardingRoute,
   connectionType,
   themeBackgroundMapping,
   passcodeMapping,

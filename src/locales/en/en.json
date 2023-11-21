@@ -57,27 +57,6 @@
         "continue": "Continue"
       }
     },
-    "newcryptoaccount": {
-      "title": "Generate your Seed Phrase",
-      "paragraph": {
-        "top": "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
-        "bottom": "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption."
-      },
-      "button": {
-        "continue": "Continue"
-      }
-    },
-    "restorecryptoaccount": {
-      "title": "Enter Seed Phrase",
-      "suggestions": "Suggestions",
-      "paragraph": {
-        "top": "Restore a crypto account based on an existing seed phrase.",
-        "bottom": ""
-      },
-      "button": {
-        "continue": "Verify Seed Phrase"
-      }
-    },
     "segment": "{{length}} words",
     "privacy": {
       "overlay": {
@@ -151,12 +130,6 @@
       "title": "Verify your Seed Phrase",
       "button": {
         "continue": "Continue"
-      }
-    },
-    "newcryptoaccount": {
-      "title": "Verify your Seed Phrase",
-      "button": {
-        "continue": "Verify your Seed Phrase"
       }
     },
     "paragraph": {
@@ -589,75 +562,12 @@
       ]
     }
   },
-  "crypto": {
-    "tab": {
-      "create": "Add a crypto account",
-      "network": {
-        "mainnet": "Mainnet"
-      },
-      "slider": {
-        "title": {
-          "mainbalance": "Main balance",
-          "rewardbalance": "Reward balance"
-        }
-      },
-      "actionbuttons": {
-        "send": "Send",
-        "receive": "Receive",
-        "nfts": "NFTs",
-        "staking": "Staking"
-      },
-      "assetstransactions": {
-        "swipeupmessage": "Swipe up to see assets & transactions",
-        "assets": "Assets",
-        "nfts": "NFTs",
-        "metadata": "Metadata",
-        "transactions": "Transactions",
-        "searchtransactions": "Search transactions"
-      }
-    },
-    "mywalletsmodal": {
-      "title": "My wallets",
-      "empty": "No wallets available",
-      "create": "Add a crypto account"
-    },
-    "addcryptoaccountmodal": {
-      "title": "Add a new crypto account",
-      "reuse": "Use existing identity seed phrase",
-      "generate": "Generate a new seed phrase",
-      "restore": "Restore using an existing seed phrase"
-    },
-    "chooseaccountnamemodal": {
-      "title": "Wallet name",
-      "skip": "Skip",
-      "label": "Display name",
-      "placeholder": "My wallet",
-      "confirm": "Create wallet"
-    },
-    "renamewallet": {
-      "title": "Rename wallet",
-      "cancel": "Cancel",
-      "label": "Display name",
-      "placeholder": "Wallet name",
-      "confirm": "Confirm changes"
-    },
-    "receivemodal": {
-      "title": "Receive",
-      "derivationpath": "Derivation path",
-      "divider": "or",
-      "more": "More share options"
-    }
-  },
   "shareqr": {
     "divider": "or",
     "more": "More share options"
   },
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
-    "walletcreated": "Seed phrase verified",
-    "walletrenamed": "Account renamed successfully",
-    "walletrestored": "Seed phrase verified",
-    "walletdeleted": "Account deleted successfully",
     "identitycreated": "New identity created successfully",
     "identityupdated": "Identity successfully updated",
     "identitydeleted": "Identity successfully deleted",

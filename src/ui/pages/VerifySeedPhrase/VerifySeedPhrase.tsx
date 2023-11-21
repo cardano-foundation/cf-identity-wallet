@@ -18,31 +18,17 @@ import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import {
-  getStateCache,
-  setCurrentOperation,
-  setInitialized,
-} from "../../../store/reducers/stateCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { operationState, toastState } from "../../constants/dictionary";
 import { getBackRoute } from "../../../routes/backRoute";
-import { ChooseAccountName } from "../../components/ChooseAccountName";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { GenerateSeedPhraseProps } from "../GenerateSeedPhrase/GenerateSeedPhrase.types";
 import { Addresses } from "../../../core/cardano";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
 
 const VerifySeedPhrase = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const seedPhraseType = !stateCache.authentication.seedPhraseIsSet
-    ? operationState.onboarding
-    : (history?.location?.state as GenerateSeedPhraseProps)?.type ||
-      stateCache?.currentOperation;
+
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
   const originalSeedPhrase =
     seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH
@@ -52,7 +38,6 @@ const VerifySeedPhrase = () => {
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
-  const [chooseAccountNameIsOpen, setChooseAccountNameIsOpen] = useState(false);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
@@ -118,11 +103,7 @@ const VerifySeedPhrase = () => {
       originalSeedPhrase.length === seedPhraseSelected.length &&
       originalSeedPhrase.every((v, i) => v === seedPhraseSelected[i])
     ) {
-      if (seedPhraseType === operationState.onboarding) {
-        storeIdentitySeedPhrase();
-      } else {
-        setChooseAccountNameIsOpen(true);
-      }
+      storeIdentitySeedPhrase();
     } else {
       setAlertIsOpen(true);
     }
@@ -132,10 +113,6 @@ const VerifySeedPhrase = () => {
     const data: DataProps = {
       store: { stateCache },
       state: {
-        type:
-          seedPhraseType !== operationState.onboarding
-            ? toastState.walletCreated
-            : "",
         currentOperation: stateCache.currentOperation,
       },
     };
@@ -164,9 +141,6 @@ const VerifySeedPhrase = () => {
     );
     history.push({
       pathname: backPath.pathname,
-      state: {
-        type: seedPhraseType,
-      },
     });
   };
 
@@ -175,27 +149,18 @@ const VerifySeedPhrase = () => {
       <PageLayout
         id="verify-seedphrase"
         header={true}
-        title={
-          seedPhraseType !== operationState.onboarding
-            ? `${i18n.t("verifyseedphrase." + seedPhraseType + ".title")}`
-            : undefined
-        }
         backButton={true}
-        onBack={
-          seedPhraseType === operationState.onboarding
-            ? () => {
-              handleClearState();
-              handleExit();
-            }
-            : () => setAlertExitIsOpen(true)
-        }
+        onBack={() => {
+          handleClearState();
+          handleExit();
+        }}
         currentPath={RoutePath.VERIFY_SEED_PHRASE}
-        progressBar={seedPhraseType === operationState.onboarding}
+        progressBar={true}
         progressBarValue={1}
         progressBarBuffer={1}
         footer={true}
         primaryButtonText={`${i18n.t(
-          "verifyseedphrase." + seedPhraseType + ".button.continue"
+          "verifyseedphrase.onboarding.button.continue"
         )}`}
         primaryButtonAction={() => handleContinue()}
         primaryButtonDisabled={
@@ -205,11 +170,7 @@ const VerifySeedPhrase = () => {
         <IonGrid>
           <IonRow>
             <IonCol size="12">
-              {seedPhraseType === operationState.onboarding && (
-                <h2>
-                  {i18n.t("verifyseedphrase." + seedPhraseType + ".title")}
-                </h2>
-              )}
+              <h2>{i18n.t("verifyseedphrase.onboarding.title")}</h2>
               <p className="page-paragraph">
                 {i18n.t("verifyseedphrase.paragraph.top")}
               </p>
@@ -299,16 +260,6 @@ const VerifySeedPhrase = () => {
             "verifyseedphrase.alert.exit.button.cancel"
           )}`}
           actionConfirm={handleExit}
-        />
-        <ChooseAccountName
-          chooseAccountNameIsOpen={chooseAccountNameIsOpen}
-          setChooseAccountNameIsOpen={setChooseAccountNameIsOpen}
-          usesIdentitySeedPhrase={false}
-          seedPhrase={originalSeedPhrase.join(" ")}
-          onDone={() => {
-            dispatch(setCurrentOperation(toastState.walletCreated));
-            handleNavigate();
-          }}
         />
       </PageLayout>
     </IonPage>

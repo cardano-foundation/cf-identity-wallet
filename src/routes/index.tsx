@@ -22,7 +22,6 @@ import { DidCardDetails } from "../ui/pages/DidCardDetails";
 import { CredCardDetails } from "../ui/pages/CredCardDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
 import { AuthenticatedRouteProps } from "./routes.types";
-import { onboardingRoute } from "../ui/constants/dictionary";
 
 const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
@@ -86,16 +85,6 @@ const Routes = () => {
         {/* Private Routes */}
         <AuthenticatedRoute
           path={RoutePath.GENERATE_SEED_PHRASE}
-          component={GenerateSeedPhrase}
-          nextPathname={nextPath.pathname}
-        />
-        <AuthenticatedRoute
-          path={RoutePath.GENERATE_SEED_PHRASE + onboardingRoute.createRoute}
-          component={GenerateSeedPhrase}
-          nextPathname={nextPath.pathname}
-        />
-        <AuthenticatedRoute
-          path={RoutePath.GENERATE_SEED_PHRASE + onboardingRoute.restoreRoute}
           component={GenerateSeedPhrase}
           nextPathname={nextPath.pathname}
         />

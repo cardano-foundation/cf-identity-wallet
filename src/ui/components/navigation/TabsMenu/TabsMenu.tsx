@@ -28,7 +28,7 @@ import { Dids } from "../../../pages/Dids";
 import { Creds } from "../../../pages/Creds";
 import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
-import { CryptoPlaceholder } from "../../../pages/CryptoPlaceholder/CryptoPlaceholder";
+import { Crypto } from "../../../pages/Crypto";
 
 const tabsRoutes = [
   {
@@ -51,8 +51,8 @@ const tabsRoutes = [
   },
   {
     label: i18n.t("tabsmenu.label.crypto"),
-    path: TabsRoutePath.CRYPTO_PLACEHOLDER,
-    component: CryptoPlaceholder,
+    path: TabsRoutePath.CRYPTO,
+    component: Crypto,
     icon: [wallet, walletOutline],
   },
   {

@@ -42,7 +42,6 @@ describe("getBackRoute", () => {
           time: 0,
         },
         currentOperation: "",
-        defaultCryptoAccount: "",
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
@@ -51,11 +50,6 @@ describe("getBackRoute", () => {
       },
       identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
       connectionsCache: {
         connections: [],
       },
@@ -128,7 +122,6 @@ describe("getBackRoute", () => {
           passwordIsSkipped: true,
         },
         currentOperation: "",
-        defaultCryptoAccount: "",
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
@@ -142,11 +135,6 @@ describe("getBackRoute", () => {
       },
       identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
       connectionsCache: {
         connections: [],
       },
@@ -209,7 +197,6 @@ describe("getPreviousRoute", () => {
           time: 0,
         },
         currentOperation: "",
-        defaultCryptoAccount: "",
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
@@ -218,11 +205,6 @@ describe("getPreviousRoute", () => {
       },
       identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
       connectionsCache: {
         connections: [],
       },
