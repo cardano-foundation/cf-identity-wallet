@@ -42,7 +42,6 @@ describe("getBackRoute", () => {
           time: 0,
         },
         currentOperation: "",
-        defaultCryptoAccount: "",
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
@@ -123,7 +122,6 @@ describe("getBackRoute", () => {
           passwordIsSkipped: true,
         },
         currentOperation: "",
-        defaultCryptoAccount: "",
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
@@ -199,7 +197,6 @@ describe("getPreviousRoute", () => {
           time: 0,
         },
         currentOperation: "",
-        defaultCryptoAccount: "",
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],

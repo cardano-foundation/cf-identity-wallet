@@ -38,7 +38,6 @@ interface StateCacheProps {
   routes: CurrentRouteCacheProps[];
   authentication: AuthenticationCacheProps;
   currentOperation: string;
-  defaultCryptoAccount: string;
   queueConnectionCredentialRequest: QueueProps<ConnectionCredentialRequestProps>;
 }
 

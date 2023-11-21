@@ -33,7 +33,6 @@ describe("NextRoute", () => {
           passwordIsSkipped: true,
         },
         currentOperation: "",
-        defaultCryptoAccount: "",
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
@@ -141,7 +140,6 @@ describe("getNextRoute", () => {
         passwordIsSkipped: true,
       },
       currentOperation: "",
-      defaultCryptoAccount: "",
       queueConnectionCredentialRequest: {
         isProcessing: false,
         queues: [],
