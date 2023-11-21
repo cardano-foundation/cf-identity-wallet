@@ -346,21 +346,6 @@ const GenerateSeedPhrase = () => {
             )}`}
             actionConfirm={handleContinue}
           />
-          <AlertExit
-            isOpen={alertExitIsOpen}
-            setIsOpen={setAlertExitIsOpen}
-            dataTestId="alert-exit"
-            headerText={i18n.t("generateseedphrase.alert.exit.text")}
-            confirmButtonText={`${i18n.t(
-              "generateseedphrase.alert.exit.button.confirm"
-            )}`}
-            cancelButtonText={`${i18n.t(
-              "generateseedphrase.alert.exit.button.cancel"
-            )}`}
-            actionConfirm={handleBack}
-            actionCancel={() => dispatch(setCurrentOperation(""))}
-            actionDismiss={() => dispatch(setCurrentOperation(""))}
-          />
         </PageLayout>
       </IonPage>
     </>
