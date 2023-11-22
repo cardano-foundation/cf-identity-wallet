@@ -17,8 +17,12 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { AcdcKeriEventTypes, AcdcKeriStateChangedEvent } from "../agent.types";
 import { CredentialStatus } from "./credentialService.types";
+import {
+  AcdcKeriEventTypes,
+  AcdcKeriStateChangedEvent,
+  ConnectionType,
+} from "../agent.types";
 
 const eventEmitter = new EventEmitter();
 
@@ -92,6 +96,7 @@ const credentialMetadataProps = {
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
   credentialRecordId: credentialRecordId1,
+  connectionType: ConnectionType.DIDCOMM,
 };
 const credentialExchangeProps = {
   id: credentialRecordId1,
@@ -355,6 +360,7 @@ describe("Credential service of agent", () => {
         issuerLogo: credentialMetadataProps.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
         cachedDetails: undefined,
+        connectionType: ConnectionType.DIDCOMM,
       },
       {
         id: id2,
@@ -364,6 +370,7 @@ describe("Credential service of agent", () => {
         issuerLogo: credentialMetadataRecordB.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
         cachedDetails: undefined,
+        connectionType: ConnectionType.DIDCOMM,
       },
     ]);
   });
@@ -518,6 +525,7 @@ describe("Credential service of agent", () => {
       status: CredentialMetadataRecordStatus.CONFIRMED,
       type: ["VerifiableCredential", "UniversityDegreeCredential"],
       cachedDetails: undefined,
+      connectionType: ConnectionType.DIDCOMM,
     });
   });
 
@@ -549,6 +557,7 @@ describe("Credential service of agent", () => {
       status: CredentialMetadataRecordStatus.CONFIRMED,
       type: ["VerifiableCredential", "UniversityDegreeCredential"],
       cachedDetails: undefined,
+      connectionType: ConnectionType.DIDCOMM,
     });
   });
 
@@ -589,6 +598,7 @@ describe("Credential service of agent", () => {
       issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
       cachedDetails: universityCredMetadataProps.cachedDetails,
+      connectionType: ConnectionType.DIDCOMM,
     });
   });
 
@@ -610,6 +620,7 @@ describe("Credential service of agent", () => {
       issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
       cachedDetails: residencyCredMetadataProps.cachedDetails,
+      connectionType: ConnectionType.DIDCOMM,
     });
   });
 
@@ -631,6 +642,7 @@ describe("Credential service of agent", () => {
       issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
       cachedDetails: summitCredMetadataProps.cachedDetails,
+      connectionType: ConnectionType.DIDCOMM,
     });
   });
 
@@ -724,6 +736,47 @@ describe("Credential service of agent", () => {
     );
     expect(agent.credentials.findAllByQuery).toBeCalledWith({
       state: CredentialState.OfferReceived,
+    });
+  });
+  test("get acdc credential details successfully record by id", async () => {
+    const acdcMetadataRecord = {
+      ...credentialMetadataRecordA,
+      connectionType: ConnectionType.KERI,
+    };
+    agent.modules.generalStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(acdcMetadataRecord);
+    const acdc = {
+      sad: {
+        a: { LEI: "5493001KJTIIGC8Y1R17" },
+        d: "EBEWfIUOn789yJiNRnvKqpbWE3-m6fSDxtu6wggybbli",
+        i: "EIpeOFh268oRJTM4vNNoQvMWw-NBUPDv1NqYbx6Lc1Mk",
+        ri: "EOIj7V-rqu_Q9aGSmPfviBceEtRk1UZBN5H2P_L-Hhx5",
+        s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+        v: "ACDC10JSON000197_",
+      },
+      schema: {
+        credentialType: "QualifiedvLEIIssuervLEICredential",
+      },
+    };
+    agent.modules.signify.getCredentialBySaid = jest
+      .fn()
+      .mockResolvedValue(acdc);
+
+    await expect(
+      credentialService.getCredentialDetailsById(acdcMetadataRecord.id)
+    ).resolves.toStrictEqual({
+      id: credentialMetadataRecordA.id,
+      colors: credentialMetadataRecordA.colors,
+      issuerLogo: acdcMetadataRecord.issuerLogo,
+      credentialSubject: acdc.sad.a,
+      credentialType: acdcMetadataRecord.credentialType,
+      issuanceDate: nowISO,
+      proofType: expect.any(String),
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+      type: acdc.schema.credentialType,
+      cachedDetails: undefined,
+      connectionType: ConnectionType.KERI,
     });
   });
 });

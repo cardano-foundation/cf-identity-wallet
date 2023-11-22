@@ -17,7 +17,7 @@ import {
   setQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { toastState } from "../../constants/dictionary";
-import { ConnectionShortDetails } from "../../../core/agent/agent.types";
+import { ConnectionShortDetails , ConnectionType } from "../../../core/agent/agent.types";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
@@ -263,6 +263,7 @@ describe("Credential state changed handler", () => {
           credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
         status: CredentialMetadataRecordStatus.PENDING,
         connectionId: "cid2",
+        connectionType: ConnectionType.DIDCOMM,
       })
     );
   });

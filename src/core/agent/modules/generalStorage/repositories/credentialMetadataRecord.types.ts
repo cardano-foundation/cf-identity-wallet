@@ -1,3 +1,5 @@
+import { ConnectionType } from "../../../agent.types";
+
 enum CredentialMetadataRecordStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
@@ -17,6 +19,7 @@ interface CredentialMetadataRecordProps {
     | UniversityCredCachedDetails
     | ResidencyCredCachedDetails
     | SummitCredCachedDetails;
+  connectionType: ConnectionType;
 }
 
 interface CredentialMetadataRecordExtraProps
