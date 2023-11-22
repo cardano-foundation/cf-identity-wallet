@@ -209,4 +209,11 @@ describe("Signify API", () => {
     const notificationId = "keriuuid";
     expect(await api.getKeriExchange(notificationId)).toEqual(exchange);
   });
+
+  test("Must throw an error when there's no credential", async () => {
+    const said = "not-found-said";
+    await expect(api.getCredentialBySaid(said)).rejects.toThrowError(
+      SignifyApi.CREDENTIAL_NOT_FOUND
+    );
+  });
 });

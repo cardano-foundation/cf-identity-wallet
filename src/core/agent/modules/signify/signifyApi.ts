@@ -16,6 +16,7 @@ export class SignifyApi {
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
+  static readonly CREDENTIAL_NOT_FOUND = "Credential not found";
 
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly BACKER_ADDRESS =
@@ -153,6 +154,8 @@ export class SignifyApi {
         "-d": { $eq: sad },
       },
     });
+    if (!results || !results.length)
+      throw new Error(SignifyApi.CREDENTIAL_NOT_FOUND);
     return results[0];
   }
 

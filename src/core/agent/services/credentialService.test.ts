@@ -902,7 +902,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     expect(agent.genericRecords.deleteById).toBeCalled();
   });
 
-  test("Must throw error when there's no KERI notification", async () => {
+  test("Must throw an error when there's no KERI notification", async () => {
     const id = "not-found-id";
     agent.genericRecords.findById = jest.fn();
     await expect(credentialService.acceptKeriAcdc(id)).rejects.toThrowError(
