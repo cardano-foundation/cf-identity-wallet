@@ -218,7 +218,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
     const alertWrapper = getByTestId("alert-confirm");
-    const termsCheckbox = getByTestId("termsandconditions-checkbox");
+    const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
 
     expect(alertWrapper).toHaveClass("alert-invisible");
     expect(continueButton).toBeDisabled;
@@ -319,7 +319,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
         </Router>
       </Provider>
     );
-    const termsCheckbox = getByTestId("termsandconditions-checkbox");
+    const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
     expect(termsCheckbox.hasAttribute("[checked=\"false"));
     fireEvent.click(termsCheckbox);
     expect(termsCheckbox.hasAttribute("[checked=\"true"));

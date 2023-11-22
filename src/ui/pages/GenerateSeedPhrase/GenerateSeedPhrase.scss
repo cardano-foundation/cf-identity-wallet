@@ -6,24 +6,30 @@
     .mnemonic-length-segment {
       margin-bottom: 0.94rem;
     }
-  }
 
-  ion-item::part(native) {
-    padding: 0;
-  }
+    .terms-and-conditions {
+      display: flex;
+      flex-direction: row;
 
-  ion-checkbox {
-    --size: 32px;
-    --background-checked: transparent;
-    --checkmark-color: var(--ion-color-primary);
-    --border-radius: 4px;
-  }
+      ion-checkbox {
+        display: flex;
+        --size: 2rem;
+        --checkbox-background-checked: transparent;
+        --checkmark-color: var(--ion-color-primary);
+        --border-radius: 0.25rem;
+        margin-right: 1.06rem;
 
-  .termsandconditions-label {
-    font-size: 1rem !important;
-    color: var(--ion-color-secondary);
-    margin: 0 !important;
-    position: absolute;
-    z-index: 2;
+        @media screen and (min-height: 300px) and (max-height: 600px) {
+          --size: 1.75rem;
+          margin-right: 0.8rem;
+        }
+      }
+
+      p,
+      u {
+        color: var(--ion-color-secondary);
+        text-wrap: wrap;
+      }
+    }
   }
 }

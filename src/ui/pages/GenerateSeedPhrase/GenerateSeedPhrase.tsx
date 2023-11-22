@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  IonCheckbox,
-  IonCol,
-  IonGrid,
-  IonItem,
-  IonLabel,
-  IonRow,
-} from "@ionic/react";
+import { IonCheckbox } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
 import { generateMnemonic } from "bip39";
@@ -20,7 +13,7 @@ import {
 import { Alert as AlertConfirm } from "../../components/Alert";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
-import { TermsAndConditions } from "../../components/TermsAndConditions";
+import { TermsAndConditions as TermsAndConditionsModal } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
@@ -140,10 +133,7 @@ const GenerateSeedPhrase = () => {
       <h2 data-testid="screen-title">
         {i18n.t("generateseedphrase.onboarding.title")}
       </h2>
-      <p
-        className="page-paragraph"
-        data-testid="page-paragraph-top"
-      >
+      <p data-testid="page-paragraph-top">
         {i18n.t("generateseedphrase.onboarding.paragraph.top")}
       </p>
       <MnemonicLengthSegment
@@ -155,35 +145,24 @@ const GenerateSeedPhrase = () => {
         showSeedPhrase={showSeedPhrase}
         setShowSeedPhrase={setShowSeedPhrase}
       />
-      <p
-        className="page-paragraph"
-        data-testid="page-paragraph-bottom"
-      >
+      <p data-testid="page-paragraph-bottom">
         {i18n.t("generateseedphrase.onboarding.paragraph.bottom")}
       </p>
-      <IonItem
-        color="light"
-        lines="none"
-      >
+      <div className="terms-and-conditions">
         <IonCheckbox
-          slot="start"
+          labelPlacement="end"
+          data-testid="terms-and-conditions-checkbox"
           checked={checked}
-          data-testid="termsandconditions-checkbox"
           onIonChange={(event) => setChecked(event.detail.checked)}
         />
-        <IonLabel
-          slot="end"
-          className="ion-text-wrap termsandconditions-label"
-          color="primary"
-          data-testid="termsandconditions-label"
-        >
+        <p>
           <Trans
             i18nKey={i18n.t("generateseedphrase.termsandconditions.text")}
             components={[<HandleTerms key="" />]}
           />
-        </IonLabel>
-      </IonItem>
-      <TermsAndConditions
+        </p>
+      </div>
+      <TermsAndConditionsModal
         isOpen={termsModalIsOpen}
         setIsOpen={setTermsModalIsOpen}
       />

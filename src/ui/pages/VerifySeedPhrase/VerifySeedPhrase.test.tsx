@@ -71,7 +71,7 @@ describe("Verify Seed Phrase Page", () => {
     );
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-    const termsCheckbox = getByTestId("termsandconditions-checkbox");
+    const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
     const generateContinueButton = getByText(
       EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
