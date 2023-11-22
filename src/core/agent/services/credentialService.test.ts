@@ -901,4 +901,12 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     expect(agent.events.emit).toBeCalled();
     expect(agent.genericRecords.deleteById).toBeCalled();
   });
+
+  test("Must throw error when there's no KERI notification", async () => {
+    const id = "not-found-id";
+    agent.genericRecords.findById = jest.fn();
+    await expect(credentialService.acceptKeriAcdc(id)).rejects.toThrowError(
+      `${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`
+    );
+  });
 });
