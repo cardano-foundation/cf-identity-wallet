@@ -85,11 +85,7 @@ const GenerateSeedPhrase = () => {
   };
 
   const HandleTerms = () => {
-    return (
-      <a onClick={() => setTermsModalIsOpen(true)}>
-        <u>{i18n.t("generateseedphrase.termsandconditions.link")}</u>
-      </a>
-    );
+    return <u>{i18n.t("generateseedphrase.termsandconditions.link")}</u>;
   };
 
   const handleContinue = () => {
@@ -155,7 +151,10 @@ const GenerateSeedPhrase = () => {
           checked={checked}
           onIonChange={(event) => setChecked(event.detail.checked)}
         />
-        <p>
+        <p
+          data-testid="terms-and-conditions-modal-handler"
+          onClick={() => setTermsModalIsOpen(true)}
+        >
           <Trans
             i18nKey={i18n.t("generateseedphrase.termsandconditions.text")}
             components={[<HandleTerms key="" />]}

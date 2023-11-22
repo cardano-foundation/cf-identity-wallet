@@ -1,9 +1,12 @@
 import { MemoryRouter, Route, Router } from "react-router-dom";
 import { createMemoryHistory } from "history";
 import { Provider } from "react-redux";
-import { fireEvent, render, waitFor } from "@testing-library/react";
+import { render, waitFor } from "@testing-library/react";
+import {
+  ionFireEvent as fireEvent,
+  waitForIonicReact,
+} from "@ionic/react-test-utils";
 import { act } from "react-dom/test-utils";
-import { waitForIonicReact } from "@ionic/react-test-utils";
 import configureStore from "redux-mock-store";
 import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { VerifySeedPhrase } from "../VerifySeedPhrase";
@@ -13,6 +16,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   FIFTEEN_WORDS_BIT_LENGTH,
   MNEMONIC_FIFTEEN_WORDS,
+  TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
 import { operationState } from "../../constants/dictionary";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
@@ -53,8 +57,8 @@ describe("Verify Seed Phrase Page", () => {
     ...mockStore(initialState),
     dispatch: dispatchMock,
   };
-  test("The user can navigate from Generate to Verify Seed Phrase page", async () => {
-    const seedPhrase = [];
+  test("The user can navigate from Generate to Verify Seed Phrase page with a default 15 words seed phrase", async () => {
+    const seedPhrase: string[] = [];
     const { getByTestId, queryByText, getByText } = render(
       <Provider store={store}>
         <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
@@ -72,8 +76,8 @@ describe("Verify Seed Phrase Page", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
-    const generateContinueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
+    const generateContinueButton = getByTestId(
+      "primary-button-generate-seed-phrase"
     );
 
     act(() => {
@@ -86,7 +90,7 @@ describe("Verify Seed Phrase Page", () => {
     const seedPhraseContainer = getByTestId("seed-phrase-container");
     for (let i = 0, len = seedPhraseContainer.childNodes.length; i < len; i++) {
       seedPhrase.push(
-        seedPhraseContainer.childNodes[i].childNodes[1].textContent
+        seedPhraseContainer.childNodes[i].childNodes[1].textContent || ""
       );
     }
 
@@ -103,6 +107,68 @@ describe("Verify Seed Phrase Page", () => {
         queryByText(EN_TRANSLATIONS.verifyseedphrase.onboarding.title)
       ).toBeVisible()
     );
+
+    for (let i = 0, len = seedPhrase.length; i < len; i++) {
+      await waitFor(() => expect(queryByText(seedPhrase[i])).toBeVisible());
+    }
+  });
+
+  test("The user can navigate from Generate to Verify Seed Phrase page selecting a 24 words seed phrase", async () => {
+    const seedPhrase: string[] = [];
+    const { getByTestId, queryByText, getByText } = render(
+      <Provider store={store}>
+        <MemoryRouter initialEntries={[RoutePath.GENERATE_SEED_PHRASE]}>
+          <Route
+            path={RoutePath.GENERATE_SEED_PHRASE}
+            component={GenerateSeedPhrase}
+          />
+          <Route
+            path={RoutePath.VERIFY_SEED_PHRASE}
+            component={VerifySeedPhrase}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    const segment = getByTestId("mnemonic-length-segment");
+    const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
+    const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
+    const generateContinueButton = getByTestId(
+      "primary-button-generate-seed-phrase"
+    );
+
+    act(() => {
+      fireEvent.ionChange(segment, `${TWENTYFOUR_WORDS_BIT_LENGTH}`);
+      fireEvent.click(revealSeedPhraseButton);
+      fireEvent.click(termsCheckbox);
+      fireEvent.click(generateContinueButton);
+    });
+    await waitForIonicReact();
+
+    const seedPhraseContainer = getByTestId("seed-phrase-container");
+    for (let i = 0, len = seedPhraseContainer.childNodes.length; i < len; i++) {
+      seedPhrase.push(
+        seedPhraseContainer.childNodes[i].childNodes[1].textContent || ""
+      );
+    }
+
+    const generateConfirmButton = getByText(
+      EN_TRANSLATIONS.generateseedphrase.alert.confirm.button.confirm
+    );
+
+    act(() => {
+      fireEvent.click(generateConfirmButton);
+    });
+
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.verifyseedphrase.onboarding.title)
+      ).toBeVisible()
+    );
+
+    for (let i = 0, len = seedPhrase.length; i < len; i++) {
+      await waitFor(() => expect(queryByText(seedPhrase[i])).toBeVisible());
+    }
   });
 
   test("The user can't Verify the Seed Phrase", async () => {
