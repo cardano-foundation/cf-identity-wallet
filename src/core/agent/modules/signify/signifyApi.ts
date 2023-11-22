@@ -9,8 +9,10 @@ import { KeriContact, CreateIdentifierResult } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
+  static readonly LOCAL_KERIA_ENDPOINT =
+    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
+    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
@@ -64,22 +66,26 @@ export class SignifyApi {
   }
 
   async createIdentifier(): Promise<CreateIdentifierResult> {
-    const signifyName = utils.uuid();
-    const operation = await this.signifyClient
-      .identifiers()
-      .create(signifyName, SignifyApi.BACKER_CONFIG);
-    await operation.op();
-    await this.signifyClient
-      .identifiers()
-      .addEndRole(
+    try {
+      const signifyName = utils.uuid();
+      const operation = await this.signifyClient
+        .identifiers()
+        .create(signifyName, SignifyApi.BACKER_CONFIG);
+      await operation.op();
+      await this.signifyClient
+        .identifiers()
+        .addEndRole(
+          signifyName,
+          SignifyApi.DEFAULT_ROLE,
+          this.signifyClient.agent!.pre
+        );
+      return {
         signifyName,
-        SignifyApi.DEFAULT_ROLE,
-        this.signifyClient.agent!.pre
-      );
-    return {
-      signifyName,
-      identifier: operation.serder.ked.i,
-    };
+        identifier: operation.serder.ked.i,
+      };
+    } catch {
+      throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
+    }
   }
 
   async getIdentifierByName(name: string): Promise<any> {
@@ -103,7 +109,7 @@ export class SignifyApi {
   async resolveOobi(url: string): Promise<any> {
     const alias = utils.uuid();
     let operation = await this.signifyClient.oobis().resolve(url, alias);
-    operation = await this.waitAndGetOp(
+    operation = await this.waitAndGetDoneOp(
       operation,
       this.opTimeout,
       this.opRetryInterval
@@ -152,18 +158,14 @@ export class SignifyApi {
 
   async getKeriExchange(notificationD: string): Promise<any> {
     const { aids } = await this.signifyClient.identifiers().list();
-    return Promise.race(
-      aids.map(
-        (aid: any) =>
-          this.signifyClient.exchanges().get(aid.name, notificationD) //TODO: hard code for now, will remove when signify-ts updated
-      )
-    );
+    const aid = aids[0];
+    return this.signifyClient.exchanges().get(aid.name, notificationD); // TODO: hard code for now, will remove when signify-ts updated
   }
 
   /**
    * Note - op must be of type any here until Signify cleans up its typing.
    */
-  private async waitAndGetOp(
+  private async waitAndGetDoneOp(
     op: any,
     timeout: number,
     interval: number

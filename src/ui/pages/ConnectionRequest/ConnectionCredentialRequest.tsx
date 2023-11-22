@@ -17,11 +17,9 @@ import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { connectionType } from "../../constants/dictionary";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
-import {
-  ConnectionCredentialRequestSource,
-  ConnectionCredentialRequestType,
-} from "../../../store/reducers/stateCache/stateCache.types";
+import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
+import { ConnectionType } from "../../../core/agent/agent.types";
 
 const ConnectionCredentialRequest = () => {
   const dispatch = useAppDispatch();
@@ -88,10 +86,7 @@ const ConnectionCredentialRequest = () => {
       connectionCredentialRequest.type ===
       ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
-      if (
-        connectionCredentialRequest.source ===
-        ConnectionCredentialRequestSource.KERI
-      ) {
+      if (connectionCredentialRequest.source === ConnectionType.KERI) {
         await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
           connectionCredentialRequest.id
         );
@@ -133,10 +128,7 @@ const ConnectionCredentialRequest = () => {
       connectionCredentialRequest.type ===
       ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
-      if (
-        connectionCredentialRequest.source ===
-        ConnectionCredentialRequestSource.KERI
-      ) {
+      if (connectionCredentialRequest.source === ConnectionType.KERI) {
         AriesAgent.agent.credentials.acceptKeriAcdc(
           connectionCredentialRequest.id
         );
@@ -222,11 +214,11 @@ const ConnectionCredentialRequest = () => {
                 connectionCredentialRequest.type ===
                   ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
                   ? i18next.t("request.pending", {
-                      action: requestType,
-                    })
+                    action: requestType,
+                  })
                   : i18next.t("request.success", {
-                      action: requestType,
-                    })}
+                    action: requestType,
+                  })}
               </strong>
             </IonCol>
           </IonRow>

@@ -41,7 +41,6 @@ import {
   toastState,
 } from "../../constants/dictionary";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { CredentialDetails } from "../../../core/agent/agent.types";
 import { AriesAgent } from "../../../core/agent/agent";
 import {
   addFavouritesCredsCache,
@@ -63,6 +62,7 @@ import {
   CardDetailsItem,
 } from "../../components/CardDetailsElements";
 import "./CredCardDetails.scss";
+import { CredentialDetails } from "../../../core/agent/services/credentialService.types";
 
 const CredCardDetails = () => {
   const history = useHistory();

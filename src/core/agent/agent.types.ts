@@ -1,14 +1,6 @@
-import { BaseEvent, JsonCredential } from "@aries-framework/core";
+import { BaseEvent } from "@aries-framework/core";
 import { IdentifierMetadataRecordProps } from "./modules";
-import {
-  CredentialMetadataRecordProps,
-  CredentialMetadataRecordStatus,
-} from "./modules/generalStorage/repositories/credentialMetadataRecord.types";
-
-enum IdentifierType {
-  KEY = "key",
-  KERI = "keri",
-}
+import { CredentialStatus } from "./services/credentialService.types";
 
 enum Blockchain {
   CARDANO = "Cardano",
@@ -19,15 +11,9 @@ enum ConnectionStatus {
   PENDING = "pending",
 }
 
-enum CredentialStatus {
-  CONFIRMED = "confirmed",
-  PENDING = "pending",
-}
-
 enum GenericRecordType {
   CONNECTION_NOTE = "connection-note",
   CONNECTION_KERI_METADATA = "connection-keri-metadata",
-  ACDC_KERI = "acdc-keri",
   NOTIFICATION_KERI = "notification-keri",
 }
 
@@ -57,20 +43,6 @@ interface CryptoAccountRecordShortDetails {
   usesIdentitySeedPhrase: boolean;
 }
 
-interface IdentifierShortDetails {
-  id: string;
-  method: IdentifierType;
-  displayName: string;
-  createdAtUTC: string;
-  colors: [string, string];
-  theme: number;
-}
-
-type CredentialShortDetails = Omit<
-  CredentialMetadataRecordProps,
-  "credentialRecordId"
->;
-
 interface ConnectionShortDetails {
   id: string;
   label: string;
@@ -78,24 +50,6 @@ interface ConnectionShortDetails {
   logo?: string;
   status: ConnectionStatus;
   type?: ConnectionType;
-}
-
-interface DIDDetails extends IdentifierShortDetails {
-  keyType: string;
-  controller: string;
-  publicKeyBase58: string;
-}
-
-interface KERIDetails extends IdentifierShortDetails {
-  s: number;
-  dt: string;
-  kt: number;
-  k: string[];
-  nt: number;
-  n: string[];
-  bt: number;
-  b: string[];
-  di: string;
 }
 
 type ConnectionNoteDetails = {
@@ -113,19 +67,6 @@ interface ConnectionDetails extends ConnectionShortDetails {
   serviceEndpoints?: string[];
   notes?: ConnectionNoteDetails[];
 }
-
-interface CredentialDetails extends CredentialShortDetails {
-  type: string[];
-  connectionId?: string;
-  expirationDate?: string;
-  credentialSubject: JsonCredential["credentialSubject"];
-  proofType: string;
-  proofValue?: string;
-}
-
-type GetIdentifierResult =
-  | { type: IdentifierType.KERI; result: KERIDetails }
-  | { type: IdentifierType.KEY; result: DIDDetails };
 
 type UpdateIdentityMetadata = Omit<
   Partial<IdentifierMetadataRecordProps>,
@@ -149,7 +90,7 @@ interface ConnectionKeriStateChangedEvent extends BaseEvent {
 interface AcdcKeriStateChangedEvent extends BaseEvent {
   type: typeof AcdcKeriEventTypes.AcdcKeriStateChanged;
   payload: {
-    credentialId?: string;
+    credentialId: string;
     status: CredentialStatus;
   };
 }
@@ -161,7 +102,6 @@ interface KeriNotification {
 }
 
 export {
-  IdentifierType,
   Blockchain,
   ConnectionStatus,
   GenericRecordType,
@@ -170,16 +110,9 @@ export {
   ConnectionType,
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
-  CredentialStatus,
 };
 export type {
   CryptoAccountRecordShortDetails,
-  IdentifierShortDetails,
-  DIDDetails,
-  KERIDetails,
-  GetIdentifierResult,
-  CredentialShortDetails,
-  CredentialDetails,
   ConnectionShortDetails,
   ConnectionDetails,
   ConnectionNoteDetails,

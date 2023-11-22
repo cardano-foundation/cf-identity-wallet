@@ -1,4 +1,4 @@
-import { CredentialShortDetails } from "../../../core/agent/agent.types";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
 interface CredCardTemplateProps {
   name?: string;

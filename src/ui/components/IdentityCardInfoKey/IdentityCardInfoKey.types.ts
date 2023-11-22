@@ -1,4 +1,4 @@
-import { DIDDetails } from "../../../core/agent/agent.types";
+import { DIDDetails } from "../../../core/agent/services/identifierService.types";
 
 interface IdentityCardInfoKeyProps {
   cardData: DIDDetails;

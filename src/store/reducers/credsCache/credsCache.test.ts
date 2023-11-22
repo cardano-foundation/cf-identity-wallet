@@ -11,8 +11,8 @@ import {
 } from "./credsCache";
 import { RootState } from "../../index";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { CredentialShortDetails } from "../../../core/agent/agent.types";
 import { FavouriteIdentity } from "../identitiesCache/identitiesCache.types";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
 describe("credsCacheSlice", () => {
   const initialState = {

@@ -6,7 +6,6 @@ import {
   CredentialExchangeRecord,
   CredentialState,
   CredentialStateChangedEvent,
-  JsonObject,
   V2OfferCredentialMessage,
   W3cCredentialRecord,
   W3cJsonLdVerifiableCredential,
@@ -18,11 +17,8 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
-import {
-  AcdcKeriEventTypes,
-  AcdcKeriStateChangedEvent,
-  CredentialStatus,
-} from "../agent.types";
+import { AcdcKeriEventTypes, AcdcKeriStateChangedEvent } from "../agent.types";
+import { CredentialStatus } from "./credentialService.types";
 
 const eventEmitter = new EventEmitter();
 
@@ -797,59 +793,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     expect(callback).toBeCalledWith(event);
   });
 
-  test("Return KERI notification record after being created", async () => {
-    const event = {
-      i: "uuid",
-      a: "content",
-    };
-    const savedRecord = {
-      id: "uuid",
-      content: "content",
-      createdAt: new Date("2023-01-01"),
-    };
-    agent.genericRecords.save = jest.fn().mockResolvedValue(savedRecord);
-    expect(await credentialService.createKeriNotificationRecord(event)).toEqual(
-      {
-        id: savedRecord.id,
-        createdAt: savedRecord.createdAt,
-        a: savedRecord.content,
-      }
-    );
-  });
-
-  test("Can get KERI Notifications", async () => {
-    agent.genericRecords.findAllByQuery = jest
-      .fn()
-      .mockReturnValue(genericRecords);
-    expect(await credentialService.getKeriNotifications()).toEqual(
-      genericRecords.map((result) => {
-        return {
-          id: result.id,
-          createdAt: result.createdAt,
-          a: result.content,
-        };
-      })
-    );
-  });
-
-  test("Can get Keri notification recordById", async () => {
-    const id = "uuid";
-    const date = new Date();
-    agent.genericRecords.findById = jest.fn().mockImplementation((id) => {
-      return {
-        id,
-        createdAt: date,
-        content: {},
-      };
-    });
-    expect(await credentialService.getKeriNotificationRecordById(id)).toEqual({
-      id,
-      createdAt: date,
-      a: {},
-    });
-  });
-
-  test("deleteById should be called", async () => {
+  test("can delete keri notification by ID", async () => {
     const id = "uuid";
     await credentialService.deleteKeriNotificationRecordById(id);
     expect(agent.genericRecords.deleteById).toBeCalled();

@@ -2,14 +2,14 @@ import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
 import {
-  CredentialShortDetails,
   DIDDetails,
   IdentifierShortDetails,
-} from "../../../core/agent/agent.types";
+} from "../../../core/agent/services/identifierService.types";
 import { CardTypes } from "../../constants/dictionary";
 
 import { IdentityCardTemplate } from "../IdentityCardTemplate";
 import { CredCardTemplate } from "../CredCardTemplate";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;

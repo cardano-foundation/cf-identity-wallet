@@ -1,7 +1,6 @@
 import {
   ConnectionShortDetails,
   ConnectionStatus,
-  CredentialDetails,
 } from "../../core/agent/agent.types";
 import { CryptoAccountProps } from "../pages/Crypto/Crypto.types";
 import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
@@ -11,6 +10,7 @@ import BackgroundDidKey2 from "../assets/images/did-key-2.png";
 import BackgroundDidKey3 from "../assets/images/did-key-3.png";
 import BackgroundKERI0 from "../assets/images/keri-0.png";
 import BackgroundKERI1 from "../assets/images/keri-1.png";
+import { CredentialDetails } from "../../core/agent/services/credentialService.types";
 
 const MAX_FAVOURITES = 5;
 

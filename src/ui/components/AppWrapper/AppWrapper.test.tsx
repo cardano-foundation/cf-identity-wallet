@@ -17,13 +17,11 @@ import {
   setQueueConnectionCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { toastState } from "../../constants/dictionary";
-import {
-  ConnectionShortDetails,
-  CredentialShortDetails,
-} from "../../../core/agent/agent.types";
+import { ConnectionShortDetails } from "../../../core/agent/agent.types";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {

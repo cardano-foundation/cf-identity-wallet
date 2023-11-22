@@ -1,4 +1,7 @@
-import { DIDDetails, KERIDetails } from "../../../core/agent/agent.types";
+import {
+  DIDDetails,
+  KERIDetails,
+} from "../../../core/agent/services/identifierService.types";
 
 interface IdentityOptionsProps {
   optionsIsOpen: boolean;

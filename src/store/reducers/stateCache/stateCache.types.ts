@@ -1,3 +1,5 @@
+import { ConnectionType } from "../../../core/agent/agent.types";
+
 interface PayloadData<T = any> {
   [key: string]: T;
 }
@@ -25,7 +27,7 @@ interface ConnectionCredentialRequestProps {
   type?: ConnectionCredentialRequestType;
   logo?: string;
   label?: string;
-  source?: ConnectionCredentialRequestSource
+  source?: ConnectionType;
 }
 
 interface QueueProps<T> {
@@ -43,12 +45,7 @@ interface StateCacheProps {
   queueConnectionCredentialRequest: QueueProps<ConnectionCredentialRequestProps>;
 }
 
-enum ConnectionCredentialRequestSource {
-  ARIES,
-  KERI
-}
-
-export { ConnectionCredentialRequestType, ConnectionCredentialRequestSource };
+export { ConnectionCredentialRequestType };
 
 export type {
   PayloadData,

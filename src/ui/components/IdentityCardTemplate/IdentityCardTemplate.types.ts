@@ -1,4 +1,4 @@
-import { IdentifierShortDetails } from "../../../core/agent/agent.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
 
 interface IdentityCardTemplateProps {
   name?: string;

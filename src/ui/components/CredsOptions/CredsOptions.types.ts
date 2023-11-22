@@ -1,4 +1,4 @@
-import { CredentialDetails } from "../../../core/agent/agent.types";
+import { CredentialDetails } from "../../../core/agent/services/credentialService.types";
 
 interface CredsOptionsProps {
   cardData: CredentialDetails;

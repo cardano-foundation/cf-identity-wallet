@@ -192,12 +192,7 @@ describe("Signify API", () => {
     expect(await api.markNotification(notificationId)).toEqual("marked");
   });
 
-  test("can mark a notification as read", async () => {
-    const notificationId = "keriuuid";
-    expect(await api.markNotification(notificationId)).toEqual("marked");
-  });
-
-  test("should admit ipex be called", async () => {
+  test("can submit admit to ipex", async () => {
     const notificationId = "keriuuid";
     const holderAidName = "holderAidName";
     const issuerAid = "issuerAid";

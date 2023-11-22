@@ -4,7 +4,7 @@ import {
   GetIdentifierResult,
   IdentifierShortDetails,
   IdentifierType,
-} from "../agent.types";
+} from "./identifierService.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -87,6 +87,10 @@ class IdentifierService extends AgentService {
       if (!aid) {
         return undefined;
       }
+      const oobi = await this.agent.modules.signify.getOobi(
+        metadata.signifyName as string
+      );
+
       return {
         type: IdentifierType.KERI,
         result: {

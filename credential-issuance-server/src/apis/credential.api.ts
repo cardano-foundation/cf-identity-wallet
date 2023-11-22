@@ -89,7 +89,7 @@ async function issueCredentialWithKeriOobi(
 
 async function initKERI(req: Request, res: Response) {
   const { schema, issuerName } = req.body;
-  const identifier = await AriesAgent.agent.initKERI(schema, issuerName);
+  const identifier = await AriesAgent.agent.initKeri(schema, issuerName);
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,

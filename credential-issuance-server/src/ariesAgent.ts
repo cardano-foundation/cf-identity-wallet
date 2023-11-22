@@ -242,9 +242,11 @@ class AriesAgent {
       aid?.response.i
     );
   }
-  async initKERI(schema?: string, issuerName?: string) {
+  async initKeri(schema?: string, issuerName?: string) {
     const SAIDSchema = schema ? schema : AriesAgent.SCHEMA_SAID;
     const AIDIssuerName = issuerName ? issuerName : AriesAgent.ISSUER_AID_NAME;
+    const existedIndentifier = await this.agent.modules.signify.getIdentifierByName(AIDIssuerName);
+    if (existedIndentifier) return existedIndentifier;
     const identifier = await this.agent.modules.signify.createIdentifier(AIDIssuerName);
     await this.agent.modules.signify.resolveOobi(AriesAgent.VLEI_HOST + SAIDSchema);
     this.keriRegistryRegk = await this.agent.modules.signify.createRegistry(AIDIssuerName);

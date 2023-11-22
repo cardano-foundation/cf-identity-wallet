@@ -50,7 +50,7 @@ import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../../utils/clipboard";
 import { AriesAgent } from "../../../core/agent/agent";
 import { IdentityThemeSelector } from "../IdentityThemeSelector";
-import { IdentifierType } from "../../../core/agent/agent.types";
+import { IdentifierType } from "../../../core/agent/services/identifierService.types";
 
 const IdentityOptions = ({
   optionsIsOpen,

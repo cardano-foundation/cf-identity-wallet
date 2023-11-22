@@ -1,7 +1,7 @@
 import {
   IdentifierShortDetails,
   IdentifierType,
-} from "../../core/agent/agent.types";
+} from "../../core/agent/services/identifierService.types";
 
 const filteredDidFix: IdentifierShortDetails[] = [
   {

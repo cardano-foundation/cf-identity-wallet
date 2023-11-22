@@ -1,8 +1,8 @@
+import { IdentifierType } from "../../../services/identifierService.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "./identifierMetadataRecord";
-import { IdentifierType } from "../../../agent.types";
 
 const mockData: IdentifierMetadataRecordProps = {
   id: "did:key:z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",

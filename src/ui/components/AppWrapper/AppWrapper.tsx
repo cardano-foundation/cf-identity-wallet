@@ -39,10 +39,7 @@ import {
   setConnectionsCache,
   updateOrAddConnectionCache,
 } from "../../../store/reducers/connectionsCache";
-import {
-  ConnectionCredentialRequestSource,
-  ConnectionCredentialRequestType,
-} from "../../../store/reducers/stateCache/stateCache.types";
+import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { toastState } from "../../constants/dictionary";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/ColorGenerator";
@@ -50,11 +47,14 @@ import {
   KeriNotification,
   ConnectionKeriStateChangedEvent,
   ConnectionStatus,
-  CredentialShortDetails,
   AcdcKeriStateChangedEvent,
-  CredentialStatus,
+  ConnectionType,
 } from "../../../core/agent/agent.types";
 import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
+import {
+  CredentialShortDetails,
+  CredentialStatus,
+} from "../../../core/agent/services/credentialService.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -193,7 +193,7 @@ const keriNotificationsChangeHandler = async (
       type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
       logo: "", // TODO: must define Keri logo
       label: "Credential Issuance Server", // TODO: must define it
-      source: ConnectionCredentialRequestSource.KERI,
+      source: ConnectionType.KERI,
     })
   );
 };

@@ -11,8 +11,6 @@ import summitLogo from "../../../ui/assets/images/summit-logo.svg";
 import "./CredCardTemplate.scss";
 import CardBodyPending from "./CardBodyPending";
 import CardBodyUniversity from "./CardBodyUniversity";
-import { CredentialDetails } from "../../../core/agent/agent.types";
-import { AriesAgent } from "../../../core/agent/agent";
 import { CredentialType } from "../../constants/dictionary";
 import CardBodyResidency from "./CardBodyResidence";
 import CardBodySummit from "./CardBodySummit";

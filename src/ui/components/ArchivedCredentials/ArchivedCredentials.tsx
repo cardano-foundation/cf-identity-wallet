@@ -31,13 +31,13 @@ import {
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
-import { CredentialShortDetails } from "../../../core/agent/agent.types";
 import { ArchivedCredentialsProps } from "./ArchivedCredentials.types";
 import { toastState } from "../../constants/dictionary";
 import {
   getCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
 const ArchivedCredentials = ({
   archivedCredentialsIsOpen,

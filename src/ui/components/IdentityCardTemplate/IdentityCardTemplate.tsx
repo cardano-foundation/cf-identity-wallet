@@ -1,4 +1,3 @@
-import { IdentifierType } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../../utils";
 import { MAPPING_THEME_BACKGROUND } from "../../constants/dictionary";
@@ -6,6 +5,7 @@ import { IdentityCardTemplateProps } from "./IdentityCardTemplate.types";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import KERILogo from "../../../ui/assets/images/keri-logo.svg";
 import "./IdentityCardTemplate.scss";
+import { IdentifierType } from "../../../core/agent/services/identifierService.types";
 
 const IdentityCardTemplate = ({
   name = "default",

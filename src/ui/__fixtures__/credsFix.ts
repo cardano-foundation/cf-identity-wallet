@@ -1,5 +1,5 @@
-import { CredentialDetails } from "../../core/agent/agent.types";
 import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialDetails } from "../../core/agent/services/credentialService.types";
 
 const credsFix: CredentialDetails[] = [
   {
