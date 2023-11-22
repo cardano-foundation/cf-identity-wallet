@@ -109,6 +109,9 @@ export class SignifyApi {
 
   async resolveOobi(url: string): Promise<any> {
     const alias = utils.uuid();
+    const storageKey = `${KeyStoreKeys.KERI_OOBI}_${SignifyApi.SCHEMA_SAID}`;
+    const resolvedOobi = await SecureStorage.get(storageKey).catch(() => null);
+    if (resolvedOobi) return resolvedOobi;
     let operation = await this.signifyClient.oobis().resolve(url, alias);
     operation = await this.waitAndGetDoneOp(
       operation,
@@ -118,7 +121,9 @@ export class SignifyApi {
     if (!operation.done) {
       throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
     }
-    return { ...operation, alias };
+    const Oobi = { ...operation, alias };
+    await SecureStorage.set(storageKey, JSON.stringify(Oobi));
+    return Oobi;
   }
 
   async getNotifications() {
