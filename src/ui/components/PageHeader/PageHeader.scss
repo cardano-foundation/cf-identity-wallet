@@ -7,6 +7,12 @@
     --padding-end: 0;
   }
 
+  ion-toolbar,
+  ion-buttons,
+  ion-button {
+    margin: 0;
+  }
+
   ion-toolbar {
     ion-icon {
       font-size: 1.85em !important;
