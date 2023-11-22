@@ -31,7 +31,7 @@ const VerifyPasscode = ({
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentRoute = useAppSelector(getCurrentRoute);
-  const [currentAction, setCurrentAction] = useState<ToastMsgType>();
+  const [toastMsgToDispatch, setToastMsgToDispatch] = useState<ToastMsgType>();
   const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
@@ -48,24 +48,24 @@ const VerifyPasscode = ({
   const cancelButtonText = i18n.t("verifypasscode.alert.button.cancel");
 
   useEffect(() => {
-    let operation;
+    let toastMsg;
     if (
       currentRoute?.path?.includes(TabsRoutePath.DIDS) &&
       currentOperation === OperationType.DELETE_IDENTIFIER
     ) {
-      operation = ToastMsgType.IDENTIFIER_DELETED;
+      toastMsg = ToastMsgType.IDENTIFIER_DELETED;
     } else if (
       currentRoute?.path?.includes(TabsRoutePath.CREDS) &&
       currentOperation === OperationType.DELETE_CREDENTIAL
     ) {
-      operation = ToastMsgType.CREDENTIAL_DELETED;
+      toastMsg = ToastMsgType.CREDENTIAL_DELETED;
     } else if (
       currentRoute?.path?.includes(RoutePath.CONNECTION_DETAILS) &&
       currentOperation === OperationType.DELETE_CONNECTION
     ) {
-      operation = ToastMsgType.CONNECTION_DELETED;
+      toastMsg = ToastMsgType.CONNECTION_DELETED;
     }
-    setCurrentAction(operation);
+    setToastMsgToDispatch(toastMsg);
   }, [currentRoute?.path, currentOperation]);
 
   const handleClearState = () => {
@@ -82,7 +82,7 @@ const VerifyPasscode = ({
         verifyPasscode(passcode + digit)
           .then((verified) => {
             if (verified) {
-              dispatch(setToastMsg(currentAction));
+              dispatch(setToastMsg(toastMsgToDispatch));
               onVerify();
               handleClearState();
             } else {
