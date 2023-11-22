@@ -40,7 +40,6 @@ enum MiscRecordId {
 
 interface CryptoAccountRecordShortDetails {
   id: string;
-  displayName: string;
   blockchain: Blockchain;
   totalADAinUSD: number;
   usesIdentitySeedPhrase: boolean;

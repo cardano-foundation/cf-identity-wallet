@@ -4,7 +4,6 @@ import { NetworkType } from "../../../../cardano/addresses.types";
 const recordId = "EXAMPLE_RECORD";
 const address = "cryptoAccount-item-address";
 const rewardAddr = "cryptoAccount-item-reward-addr";
-const displayName = "cryptoAccount1";
 
 const addresses = new Map<number, string[]>();
 addresses.set(0, [address]);
@@ -25,7 +24,6 @@ describe("CryptoAccount Record", () => {
       id: recordId,
       addresses: addressesAllNetworks,
       rewardAddresses: rewardAddrs,
-      displayName,
       usesIdentitySeedPhrase: true,
     });
 
@@ -42,11 +40,9 @@ describe("CryptoAccount Record", () => {
     expect(record.rewardAddresses.get(NetworkType.TESTNET)).toEqual([
       rewardAddr,
     ]);
-    expect(record.displayName).toBe(displayName);
     expect(record.usesIdentitySeedPhrase).toBe(true);
     expect(record.getTags()).toMatchObject({
       usesIdentitySeedPhrase: true,
-      displayName,
     });
   });
 
@@ -55,7 +51,6 @@ describe("CryptoAccount Record", () => {
       id: recordId,
       addresses: addressesAllNetworks,
       rewardAddresses: rewardAddrs,
-      displayName,
     });
 
     expect(record.type).toBe(CryptoAccountRecord.type);
@@ -71,11 +66,9 @@ describe("CryptoAccount Record", () => {
     expect(record.rewardAddresses.get(NetworkType.TESTNET)).toEqual([
       rewardAddr,
     ]);
-    expect(record.displayName).toBe(displayName);
     expect(record.usesIdentitySeedPhrase).toBe(false);
     expect(record.getTags()).toMatchObject({
       usesIdentitySeedPhrase: false,
-      displayName,
     });
   });
 });

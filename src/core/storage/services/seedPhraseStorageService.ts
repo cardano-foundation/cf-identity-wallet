@@ -11,10 +11,7 @@ class SeedPhraseStorageService {
   static readonly IDENTITY_ROOT_XPRV_MISSING_OR_MALFORMED =
     "Identity root extended private key does not exist in the secure storage, or was in an unexpected format";
 
-  async createCryptoAccountFromSeedPhrase(
-    displayName: string,
-    seedPhrase: string
-  ): Promise<void> {
+  async createCryptoAccountFromSeedPhrase(seedPhrase: string): Promise<void> {
     if (!AriesAgent.ready) {
       throw new Error(SeedPhraseStorageService.AGENT_NOT_READY);
     }
@@ -30,8 +27,7 @@ class SeedPhraseStorageService {
     await AriesAgent.agent.crypto.storeCryptoAccountRecord(
       id,
       addresses.addresses,
-      addresses.rewardAddresses,
-      displayName
+      addresses.rewardAddresses
     );
 
     try {
@@ -50,9 +46,7 @@ class SeedPhraseStorageService {
     }
   }
 
-  async createCryptoAccountFromIdentitySeedPhrase(
-    displayName: string
-  ): Promise<void> {
+  async createCryptoAccountFromIdentitySeedPhrase(): Promise<void> {
     if (!AriesAgent.ready) {
       throw new Error(SeedPhraseStorageService.AGENT_NOT_READY);
     }
@@ -80,7 +74,6 @@ class SeedPhraseStorageService {
       id,
       addresses.addresses,
       addresses.rewardAddresses,
-      displayName,
       true
     );
   }

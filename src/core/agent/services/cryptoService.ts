@@ -8,7 +8,6 @@ class CryptoService extends AgentService {
     id: string,
     addresses: Map<NetworkType, Map<number, Map<number, string[]>>>,
     rewardAddresses: Map<NetworkType, string[]>,
-    displayName: string,
     usesIdentitySeedPhrase = false
   ): Promise<void> {
     await this.agent.modules.generalStorage.saveCryptoRecord(
@@ -16,7 +15,6 @@ class CryptoService extends AgentService {
         id,
         addresses,
         rewardAddresses,
-        displayName,
         usesIdentitySeedPhrase,
       })
     );
@@ -24,7 +22,7 @@ class CryptoService extends AgentService {
 
   async getAllCryptoAccountRecord(): Promise<
     CryptoAccountRecordShortDetails[]
-  > {
+    > {
     const cryptoAccountRecordsShortDetails: CryptoAccountRecordShortDetails[] =
       [];
     const listRecords =
@@ -34,7 +32,6 @@ class CryptoService extends AgentService {
       const record = listRecords[i];
       cryptoAccountRecordsShortDetails.push({
         id: record.id,
-        displayName: record.displayName,
         usesIdentitySeedPhrase: record.usesIdentitySeedPhrase,
         blockchain: Blockchain.CARDANO,
         totalADAinUSD: 0,

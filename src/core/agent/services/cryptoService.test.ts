@@ -36,7 +36,6 @@ const rewardAddresses = new Map([
 
 const cryptoAccountNormalProps = {
   id: "cryptoAccountNormal",
-  displayName: "Crypto Account Normal Seed Phrase",
   addresses,
   rewardAddresses,
 };
@@ -44,7 +43,6 @@ const cryptoAccountNormal = new CryptoAccountRecord(cryptoAccountNormalProps);
 
 const cryptoAccountIdentitySPProps = {
   id: "cryptoAccountIdentity",
-  displayName: "Crypto Account Identity Seed Phrase",
   addresses,
   rewardAddresses,
   usesIdentitySeedPhrase: true,
@@ -62,8 +60,7 @@ describe("Crypto service of agent (handles storage)", () => {
     await cryptoService.storeCryptoAccountRecord(
       cryptoAccountNormalProps.id,
       addresses,
-      rewardAddresses,
-      cryptoAccountNormalProps.displayName
+      rewardAddresses
     );
     expect(agent.modules.generalStorage.saveCryptoRecord).toBeCalledWith(
       expect.any(CryptoAccountRecord)
@@ -71,7 +68,6 @@ describe("Crypto service of agent (handles storage)", () => {
     const newRecord: CryptoAccountRecord =
       agent.modules.generalStorage.saveCryptoRecord.mock.calls[0][0];
     expect(newRecord.id).toEqual(cryptoAccountNormalProps.id);
-    expect(newRecord.displayName).toEqual(cryptoAccountNormalProps.displayName);
     expect(newRecord.addresses).toEqual(addresses);
     expect(newRecord.rewardAddresses).toEqual(rewardAddresses);
     expect(newRecord.usesIdentitySeedPhrase).toEqual(false);
@@ -82,7 +78,6 @@ describe("Crypto service of agent (handles storage)", () => {
       cryptoAccountIdentitySPProps.id,
       addresses,
       rewardAddresses,
-      cryptoAccountIdentitySPProps.displayName,
       true
     );
     expect(agent.modules.generalStorage.saveCryptoRecord).toBeCalledWith(
@@ -91,9 +86,7 @@ describe("Crypto service of agent (handles storage)", () => {
     const newRecord: CryptoAccountRecord =
       agent.modules.generalStorage.saveCryptoRecord.mock.calls[0][0];
     expect(newRecord.id).toEqual(cryptoAccountIdentitySPProps.id);
-    expect(newRecord.displayName).toEqual(
-      cryptoAccountIdentitySPProps.displayName
-    );
+
     expect(newRecord.addresses).toEqual(addresses);
     expect(newRecord.rewardAddresses).toEqual(rewardAddresses);
     expect(newRecord.usesIdentitySeedPhrase).toEqual(true);
@@ -106,14 +99,12 @@ describe("Crypto service of agent (handles storage)", () => {
     expect(await cryptoService.getAllCryptoAccountRecord()).toStrictEqual([
       {
         blockchain: Blockchain.CARDANO,
-        displayName: cryptoAccountNormalProps.displayName,
         id: cryptoAccountNormalProps.id,
         totalADAinUSD: 0,
         usesIdentitySeedPhrase: false,
       },
       {
         blockchain: Blockchain.CARDANO,
-        displayName: cryptoAccountIdentitySPProps.displayName,
         id: cryptoAccountIdentitySPProps.id,
         totalADAinUSD: 0,
         usesIdentitySeedPhrase: true,

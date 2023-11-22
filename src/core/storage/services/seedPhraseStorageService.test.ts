@@ -5,7 +5,6 @@ import { Addresses } from "../../cardano/addresses";
 import { NetworkType } from "../../cardano/addresses.types";
 
 let seedPhraseSecureStorage: SeedPhraseStorageService;
-const displayName = "displayName";
 const seedPhrase = "seedPhrase";
 const rootExtendedPrivateKey = "rootExtendedPrivateKey";
 const rootExtendedPublicKey = "rootExtendedPublicKey";
@@ -78,9 +77,7 @@ describe("Seed phrase storage service", () => {
       .fn()
       .mockReturnValue(false);
     SecureStorage.get = jest.fn().mockResolvedValue(rootExtendedPrivateKey);
-    await seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase(
-      displayName
-    );
+    await seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase();
     expect(
       AriesAgent.agent.crypto.cryptoAccountIdentitySeedPhraseExists
     ).toBeCalled();
@@ -91,7 +88,6 @@ describe("Seed phrase storage service", () => {
       rootExtendedPublicKey,
       addressesMap,
       rewardAddressesMap,
-      displayName,
       true
     );
   });
@@ -99,9 +95,7 @@ describe("Seed phrase storage service", () => {
   test("should not attempt to create crypto account from identity seed phrase if the agent is not ready", async () => {
     AriesAgent.ready = false;
     await expect(
-      seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase(
-        displayName
-      )
+      seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase()
     ).rejects.toThrowError(SeedPhraseStorageService.AGENT_NOT_READY);
     expect(SecureStorage.get).not.toBeCalled();
     expect(AriesAgent.agent.crypto.storeCryptoAccountRecord).not.toBeCalled();
@@ -112,9 +106,7 @@ describe("Seed phrase storage service", () => {
       .fn()
       .mockReturnValue(true);
     await expect(
-      seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase(
-        displayName
-      )
+      seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase()
     ).rejects.toThrowError(
       SeedPhraseStorageService.IDENTITY_SEED_PHRASE_IN_USE
     );
@@ -131,9 +123,7 @@ describe("Seed phrase storage service", () => {
       .mockReturnValue(false);
     SecureStorage.get = jest.fn().mockResolvedValue(null);
     await expect(
-      seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase(
-        displayName
-      )
+      seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase()
     ).rejects.toThrowError(
       SeedPhraseStorageService.IDENTITY_ROOT_XPRV_MISSING_OR_MALFORMED
     );
@@ -149,9 +139,7 @@ describe("Seed phrase storage service", () => {
       .mockReturnValue(false);
     SecureStorage.get = jest.fn().mockResolvedValue(15);
     await expect(
-      seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase(
-        displayName
-      )
+      seedPhraseSecureStorage.createCryptoAccountFromIdentitySeedPhrase()
     ).rejects.toThrowError(
       SeedPhraseStorageService.IDENTITY_ROOT_XPRV_MISSING_OR_MALFORMED
     );
@@ -163,15 +151,11 @@ describe("Seed phrase storage service", () => {
 
   // New seed phrase
   test("can create a crypto account from a new seed phrase", async () => {
-    await seedPhraseSecureStorage.createCryptoAccountFromSeedPhrase(
-      displayName,
-      seedPhrase
-    );
+    await seedPhraseSecureStorage.createCryptoAccountFromSeedPhrase(seedPhrase);
     expect(AriesAgent.agent.crypto.storeCryptoAccountRecord).toBeCalledWith(
       rootExtendedPublicKey,
       addressesMap,
-      rewardAddressesMap,
-      displayName
+      rewardAddressesMap
     );
     expect(SecureStorage.set).toBeCalledWith(
       `${KeyStoreKeys.CRYPTO_ENTROPY_PREFIX}${rootExtendedPublicKey}`,
@@ -186,10 +170,7 @@ describe("Seed phrase storage service", () => {
   test("should not attempt to create crypto account from new seed phrase if the agent is not ready", async () => {
     AriesAgent.ready = false;
     await expect(
-      seedPhraseSecureStorage.createCryptoAccountFromSeedPhrase(
-        displayName,
-        seedPhrase
-      )
+      seedPhraseSecureStorage.createCryptoAccountFromSeedPhrase(seedPhrase)
     ).rejects.toThrowError(SeedPhraseStorageService.AGENT_NOT_READY);
     expect(SecureStorage.get).not.toBeCalled();
     expect(AriesAgent.agent.crypto.storeCryptoAccountRecord).not.toBeCalled();
@@ -201,16 +182,12 @@ describe("Seed phrase storage service", () => {
       throw new Error(errorMsg);
     });
     await expect(
-      seedPhraseSecureStorage.createCryptoAccountFromSeedPhrase(
-        displayName,
-        seedPhrase
-      )
+      seedPhraseSecureStorage.createCryptoAccountFromSeedPhrase(seedPhrase)
     ).rejects.toThrowError(errorMsg);
     expect(AriesAgent.agent.crypto.storeCryptoAccountRecord).toBeCalledWith(
       rootExtendedPublicKey,
       addressesMap,
-      rewardAddressesMap,
-      displayName
+      rewardAddressesMap
     );
     expect(SecureStorage.set).toBeCalledWith(
       `${KeyStoreKeys.CRYPTO_ENTROPY_PREFIX}${rootExtendedPublicKey}`,

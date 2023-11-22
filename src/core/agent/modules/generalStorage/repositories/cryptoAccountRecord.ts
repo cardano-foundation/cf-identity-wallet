@@ -6,7 +6,6 @@ class CryptoAccountRecord extends BaseRecord {
   // Network Type -> Purpose -> Coin Type -> Array of addresses [index]
   addresses: Map<NetworkType, Map<number, Map<number, string[]>>> = new Map();
   rewardAddresses: Map<NetworkType, string[]> = new Map();
-  displayName = "";
   usesIdentitySeedPhrase = false;
 
   static readonly type = "CryptoAccountRecord";
@@ -16,7 +15,6 @@ class CryptoAccountRecord extends BaseRecord {
     id: string;
     addresses: Map<NetworkType, Map<number, Map<number, string[]>>>;
     rewardAddresses: Map<NetworkType, string[]>;
-    displayName: string;
     usesIdentitySeedPhrase?: boolean;
     createdAt?: Date;
   }) {
@@ -26,7 +24,6 @@ class CryptoAccountRecord extends BaseRecord {
       this.id = props.id;
       this.addresses = props.addresses;
       this.rewardAddresses = props.rewardAddresses;
-      this.displayName = props.displayName;
       this.usesIdentitySeedPhrase = !!props.usesIdentitySeedPhrase;
       this.createdAt = props.createdAt ?? new Date();
     }
@@ -36,7 +33,6 @@ class CryptoAccountRecord extends BaseRecord {
     return {
       ...this._tags,
       usesIdentitySeedPhrase: !!this.usesIdentitySeedPhrase,
-      displayName: this.displayName,
     };
   }
 }
