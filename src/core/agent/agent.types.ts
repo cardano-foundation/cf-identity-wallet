@@ -38,13 +38,6 @@ enum MiscRecordId {
   OP_PASS_HINT = "app-op-password-hint",
 }
 
-interface CryptoAccountRecordShortDetails {
-  id: string;
-  blockchain: Blockchain;
-  totalADAinUSD: number;
-  usesIdentitySeedPhrase: boolean;
-}
-
 interface IdentifierShortDetails {
   id: string;
   method: IdentifierType;
@@ -144,7 +137,6 @@ export {
   ConnectionKeriEventTypes,
 };
 export type {
-  CryptoAccountRecordShortDetails,
   IdentifierShortDetails,
   DIDDetails,
   KERIDetails,
