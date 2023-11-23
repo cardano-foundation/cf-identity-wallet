@@ -4,7 +4,7 @@ import {
   IdentifierThemeSelectorProps,
   ThemeItemProps,
 } from "./IdentifierThemeSelector.types";
-import "./identifierThemeSelector.scss";
+import "./IdentifierThemeSelector.scss";
 import { IDENTIFIER_BG_MAPPING } from "../../globals/types";
 
 const IdentifierThemeSelector = ({
