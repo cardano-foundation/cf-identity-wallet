@@ -1,21 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCheckbox,
-  IonChip,
-  IonCol,
-  IonGrid,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonPage,
-  IonRow,
-  IonSegment,
-  IonSegmentButton,
-} from "@ionic/react";
+import { IonCheckbox } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
 import { generateMnemonic } from "bip39";
@@ -26,8 +10,6 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../globals/constants";
-import { OperationType } from "../../globals/types";
-import { PageLayout } from "../../components/layout/PageLayout";
 import { Alert as AlertConfirm } from "../../components/Alert";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -100,6 +82,7 @@ const GenerateSeedPhrase = () => {
     } else {
       setSeedPhrase(seedPhrase256);
     }
+    setShowSeedPhrase(false);
   };
 
   const HandleTerms = () => {
