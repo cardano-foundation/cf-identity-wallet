@@ -1,27 +1,15 @@
-.verify-seedphrase {
-  ion-title h2 {
-    margin: 0 auto;
+.verify-seed-phrase {
+  --background: var(--ion-color-light);
+
+  .responsive-page-content {
+    justify-content: space-between;
   }
 
-  ion-card {
-    margin: 0;
-    position: relative;
-    border-radius: 1rem;
-    box-shadow: none;
+  .seed-phrase-module:nth-of-type(1) {
+    background: var(--ion-color-light-grey);
+  }
 
-    &.container-top {
-      border: 1px solid var(--ion-color-dark-grey);
-      --background: var(--ion-color-light-grey);
-    }
-
-    &.container-bottom {
-      --background: transparent;
-      box-shadow: none;
-    }
-
-    .empty-word {
-      border: 1px dashed var(--ion-color-dark-grey);
-      background-color: transparent;
-    }
+  .seed-phrase-module:nth-of-type(2) {
+    border: none;
   }
 }
