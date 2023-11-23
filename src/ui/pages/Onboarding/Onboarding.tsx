@@ -20,6 +20,7 @@ import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayo
 export type IntroImg0Type = typeof introImg0;
 
 const Onboarding = () => {
+  const pageId = "onboarding";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -70,7 +71,7 @@ const Onboarding = () => {
   };
 
   return (
-    <ResponsivePageLayout title={"onboarding"}>
+    <ResponsivePageLayout pageId={pageId}>
       <Slides items={items} />
       <PageFooter
         pageId={"onboarding"}

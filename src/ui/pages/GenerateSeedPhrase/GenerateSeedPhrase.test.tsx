@@ -218,7 +218,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
     const alertWrapper = getByTestId("alert-confirm");
-    const termsCheckbox = getByTestId("termsandconditions-checkbox");
+    const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
 
     expect(alertWrapper).toHaveClass("alert-invisible");
     expect(continueButton).toBeDisabled;
@@ -311,7 +311,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     });
   });
 
-  test("User can toggle the checkbox", async () => {
+  test("User can toggle the checkbox and modal", async () => {
     const { getByTestId } = render(
       <Provider store={store}>
         <Router history={history}>
@@ -319,12 +319,18 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
         </Router>
       </Provider>
     );
-    const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    expect(termsCheckbox.hasAttribute("[checked=\"false"));
-    fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"true"));
-    fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"false"));
+    const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
+    expect(termsCheckbox.hasAttribute("[checked=\"false\""));
+    fireEvent.ionChange(termsCheckbox, "[checked=\"true\"");
+    expect(termsCheckbox.hasAttribute("[checked=\"true\""));
+    fireEvent.ionChange(termsCheckbox, "[checked=\"false\"");
+    expect(termsCheckbox.hasAttribute("[checked=\"false\""));
+
+    const termsModalHandler = getByTestId("terms-and-conditions-modal-handler");
+    const termsModal = getByTestId("terms-and-conditions-modal");
+    fireEvent.click(termsModalHandler);
+    expect(termsCheckbox.hasAttribute("[checked=\"true\""));
+    expect(termsModal.getAttribute("is-open")).toBe("true");
   });
 
   test("calls handleOnBack when back button is clicked", async () => {

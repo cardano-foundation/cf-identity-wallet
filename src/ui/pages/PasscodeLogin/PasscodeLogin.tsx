@@ -25,6 +25,7 @@ import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayo
 import { PageHeader } from "../../components/PageHeader";
 
 const PasscodeLogin = () => {
+  const pageId = "passcode-login";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -131,7 +132,7 @@ const PasscodeLogin = () => {
 
   return (
     <ResponsivePageLayout
-      title={"passcode-login"}
+      pageId={pageId}
       header={<PageHeader currentPath={RoutePath.PASSCODE_LOGIN} />}
     >
       <h2
@@ -162,7 +163,7 @@ const PasscodeLogin = () => {
         handleRemove={handleRemove}
       />
       <PageFooter
-        pageId={"passcode-login"}
+        pageId={pageId}
         secondaryButtonText={`${i18n.t("passcodelogin.forgotten.button")}`}
         secondaryButtonAction={() => setIsOpen(true)}
       />
