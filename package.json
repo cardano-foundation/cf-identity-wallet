@@ -9,7 +9,6 @@
     "prettier": "npx prettier --write 'src/**/*.{ts,tsx,scss}' 'credential-issuance-server/src/**/*.{ts,tsx,scss}'",
     "eslint": "eslint 'src/**/*.{ts,tsx}'",
     "test": "jest",
-    "test:cardano": "jest --config jest.config.cardano.ts",
     "wdio:android:s23ultra": "npx wdio tests/config/wdio.emu.android.galaxyS23Ultra.config.ts --watch",
     "wdio:ios:15pro": "npx wdio tests/config/wdio.sim.ios.iphone15Pro.config.ts --watch",
     "wdio:ios:15promax": "npx wdio tests/config/wdio.sim.ios.iphone15ProMax.config.ts --watch",
