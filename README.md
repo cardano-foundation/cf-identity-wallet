@@ -211,10 +211,15 @@ TODO
 ### Pre-installed on local:
 
 - [allure commandline](https://docs.qameta.io/allure-report/#_installing_a_commandline)
-- Node.js and npm 
-- Android Emulator for Samsung Galaxy S23 Ultra is configured or iOS Simulator for iPhone 15 Pro / 15 Pro Max
-- Add .env file ?? to root folder with APP_PATH property with path to app build for chosen platform e.g.
-- Appium installed locally(in case if @wdio/appium-service will not work as expected)
+- Node.js and npm
+- Appium installed locally (in case if @wdio/appium-service will not work as expected)
+  - install appium e.g. ``` brew install appium ```
+  - install driver for ios ``` appium driver install xcuitest ```
+  - install driver for android ``` appium driver install uiautomator2 ```
+  - install driver for chrome ``` appium driver install chromium ```
+  - install driver for safari ``` appium driver install safari ```
+- Android Emulator for [Samsung Galaxy S23 Ultra](https://developer.samsung.com/galaxy-emulator-skin/guide.html) is configured or iOS Simulator for [iPhone 15 Pro / 15 Pro Max](https://developer.apple.com/documentation/xcode/installing-additional-simulator-runtimes)
+- Create .env file in your local root project folder with APP_PATH property with path to app build for chosen platform
 ```
 # Android
 # APP_PATH=<LOCAL_PATH/app-release-unsigned.apk>
@@ -248,10 +253,9 @@ ALLURE_RESULTS_DIR=tests/.reports/allure-results
 ```
 4. Generate allure report
 ```
-allure generate tests/.reports/allure-results -o tests/.reports/allure-report --clean
+allure generate $ALLURE_RESULTS_DIR -o tests/.reports/allure-report --clean
 ```
-
-4. Open allure report
+5. Open allure report
 ```
 allure open tests/.reports/allure-report
 ```
