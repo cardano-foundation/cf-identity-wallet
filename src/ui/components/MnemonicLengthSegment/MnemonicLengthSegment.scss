@@ -9,7 +9,7 @@
     }
   }
 
-  @media screen and (min-height: 300px) and (max-height: 550px) {
+  @media screen and (min-width: 250px) and (max-width: 425px) {
     ion-label {
       font-size: 0.8rem;
       height: 1rem;
@@ -17,7 +17,7 @@
       margin: 0 auto;
     }
 
-    ion-segment-button {
+    ion-segment-button.md {
       height: 2.4rem;
       min-height: 2.4rem;
     }

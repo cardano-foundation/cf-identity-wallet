@@ -1,5 +1,4 @@
 .seed-phrase-module {
-  margin: 0;
   position: relative;
   border: 1px solid var(--ion-color-dark-grey);
   border-radius: 1rem;
@@ -7,10 +6,13 @@
   box-shadow: none;
 
   .overlay {
+    border-radius: 1rem;
+    padding-inline: 1rem;
+
     &.visible {
       display: flex;
       flex-direction: column;
-      justify-content: center;
+      justify-content: space-evenly;
       position: absolute;
       top: 0;
       z-index: 2;
@@ -23,31 +25,30 @@
       display: none;
     }
 
-    ion-card-header {
-      margin: 0 auto;
-      padding: 0 0 0.7rem;
-
-      ion-icon {
-        height: 1.4rem;
-        width: 1.4rem;
-      }
+    p,
+    ion-icon {
+      color: var(--ion-color-light);
+      margin: 0;
     }
 
-    ion-card-content {
-      padding-inline: 1rem;
+    ion-icon {
+      height: 1.4rem;
+      width: 1.4rem;
+      align-self: center;
     }
 
     ion-button {
+      font-size: 1rem;
+      height: 3.25rem;
+      margin: 0 auto;
       color: var(--ion-color-light);
       --border-color: var(--ion-color-light);
-      margin: 0 auto;
     }
 
-    @media screen and (min-height: 300px) and (max-height: 600px) {
+    @media screen and (min-width: 250px) and (max-width: 425px) {
       ion-button {
         font-size: 0.8rem;
         height: 2.5rem;
-        margin: 0 auto;
       }
     }
   }
@@ -63,6 +64,7 @@
       width: 92%;
       margin: 0.3rem auto;
       padding-inline: 0.475rem;
+      font-size: 1rem;
 
       .index {
         margin-right: 0.25rem;
@@ -77,7 +79,7 @@
       filter: blur(5px);
     }
 
-    @media screen and (min-height: 300px) and (max-height: 600px) {
+    @media screen and (min-width: 250px) and (max-width: 425px) {
       padding: 0.25rem;
 
       ion-chip {
@@ -93,11 +95,5 @@
         }
       }
     }
-  }
-
-  p,
-  ion-icon {
-    color: var(--ion-color-light);
-    margin: 0;
   }
 }

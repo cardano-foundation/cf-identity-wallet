@@ -1,6 +1,6 @@
 .alert-wrapper {
   max-width: 90% !important;
-  padding: 25px 20px !important;
+  padding: 1.56rem 1.25rem;
   border-radius: 1rem !important;
 
   .alert-title.sc-ion-alert-md {
@@ -19,7 +19,7 @@
       line-height: normal;
     }
 
-    @media screen and (min-height: 300px) and (max-height: 580px) {
+    @media screen and (min-width: 250px) and (max-width: 370px) {
       h2 {
         font-size: 0.9rem;
         line-height: 1.2rem;
@@ -68,7 +68,7 @@ button.alert-button {
   }
 }
 
-@media screen and (min-height: 300px) and (max-height: 580px) {
+@media screen and (min-width: 250px) and (max-width: 370px) {
   button.alert-button {
     &.sc-ion-alert-ios,
     &.sc-ion-alert-md {
