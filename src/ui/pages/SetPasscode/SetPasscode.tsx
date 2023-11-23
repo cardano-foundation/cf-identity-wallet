@@ -23,6 +23,7 @@ import "./SetPasscode.scss";
 import PageFooter from "../../components/PageFooter/PageFooter";
 
 const SetPasscode = () => {
+  const pageId = "set-passcode";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -81,7 +82,7 @@ const SetPasscode = () => {
 
   return (
     <ResponsivePageLayout
-      title={"set-passcode"}
+      pageId={pageId}
       header={
         <PageHeader
           backButton={true}
@@ -126,7 +127,7 @@ const SetPasscode = () => {
       />
       {originalPassCode !== "" ? (
         <PageFooter
-          pageId={"set-passcode"}
+          pageId={pageId}
           secondaryButtonText={`${i18n.t("setpasscode.startover.label")}`}
           secondaryButtonAction={() => handleClearState()}
         />

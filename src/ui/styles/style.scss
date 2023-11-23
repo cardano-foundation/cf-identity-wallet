@@ -135,34 +135,12 @@ p {
   }
 }
 
-.page-paragraph {
-  margin: 0;
-}
-
 .safe-area {
   margin-top: constant(safe-area-inset-top);
   margin-top: env(safe-area-inset-top);
   --safe-area-inset-top: env(safe-area-inset-top);
   --safe-area-inset-bottom: env(safe-area-inset-bottom);
   height: calc(100% - var(--safe-area-inset-bottom));
-}
-
-.seed-phrase-container {
-  padding: 0.5rem;
-  display: grid;
-  grid-template-columns: 33.3% 33.3% 33.3%;
-
-  ion-chip {
-    border-radius: 0.5rem;
-    font-weight: 400;
-    width: 92%;
-    margin: 0.3rem auto;
-    padding-inline: 0.475rem;
-
-    .index {
-      margin-right: 4px;
-    }
-  }
 }
 
 ion-modal {

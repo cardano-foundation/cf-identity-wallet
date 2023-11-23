@@ -1,55 +1,36 @@
 import { useEffect, useState } from "react";
-import {
-  IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonCheckbox,
-  IonChip,
-  IonCol,
-  IonGrid,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonPage,
-  IonRow,
-  IonSegment,
-  IonSegmentButton,
-} from "@ionic/react";
+import { IonCheckbox } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import "./GenerateSeedPhrase.scss";
-import { eyeOffOutline } from "ionicons/icons";
 import { generateMnemonic } from "bip39";
 import { Trans } from "react-i18next";
 import { i18n } from "../../../i18n";
 import {
   MNEMONIC_FIFTEEN_WORDS,
-  MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../../constants/appConstants";
-import { PageLayout } from "../../components/layout/PageLayout";
 import { Alert as AlertConfirm } from "../../components/Alert";
-import {
-  getStateCache,
-  setCurrentOperation,
-} from "../../../store/reducers/stateCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
-import { TermsAndConditions } from "../../components/TermsAndConditions";
+import { TermsAndConditions as TermsAndConditionsModal } from "../../components/TermsAndConditions";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
-import { getBackRoute } from "../../../routes/backRoute";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import { PageHeader } from "../../components/PageHeader";
+import PageFooter from "../../components/PageFooter/PageFooter";
+import { MnemonicLengthSegment } from "../../components/MnemonicLengthSegment";
+import { SeedPhraseModule } from "../../components/SeedPhraseModule";
 
 const GenerateSeedPhrase = () => {
+  const pageId = "generate-seed-phrase";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-
   const seedPhraseStore = useAppSelector(getSeedPhraseCache);
-
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
@@ -104,11 +85,7 @@ const GenerateSeedPhrase = () => {
   };
 
   const HandleTerms = () => {
-    return (
-      <a onClick={() => setTermsModalIsOpen(true)}>
-        <u>{i18n.t("generateseedphrase.termsandconditions.link")}</u>
-      </a>
-    );
+    return <u>{i18n.t("generateseedphrase.termsandconditions.link")}</u>;
   };
 
   const handleContinue = () => {
@@ -135,210 +112,83 @@ const GenerateSeedPhrase = () => {
     });
   };
 
-  const handleBack = () => {
-    handleClearState();
-    dispatch(setCurrentOperation(""));
-
-    const { backPath, updateRedux } = getBackRoute(
-      RoutePath.GENERATE_SEED_PHRASE,
-      {
-        store: { stateCache },
-      }
-    );
-
-    updateReduxState(
-      backPath.pathname,
-      { store: { stateCache } },
-      dispatch,
-      updateRedux
-    );
-    history.push(backPath.pathname);
-  };
-
   return (
-    <>
-      <IonPage className="page-layout generate-seedphrase">
-        <PageLayout
-          header={true}
+    <ScrollablePageLayout
+      pageId={pageId}
+      header={
+        <PageHeader
           backButton={true}
           beforeBack={handleClearState}
-          closeButton={false}
-          closeButtonAction={() => handleBack()}
           currentPath={RoutePath.GENERATE_SEED_PHRASE}
           progressBar={true}
           progressBarValue={0.66}
           progressBarBuffer={1}
-          footer={true}
-          primaryButtonText={`${i18n.t(
-            "generateseedphrase.onboarding.button.continue"
-          )}`}
-          primaryButtonAction={() => {
-            setAlertConfirmIsOpen(true);
-          }}
-          primaryButtonDisabled={!(showSeedPhrase && checked)}
+        />
+      }
+    >
+      <h2 data-testid="screen-title">
+        {i18n.t("generateseedphrase.onboarding.title")}
+      </h2>
+      <p data-testid="page-paragraph-top">
+        {i18n.t("generateseedphrase.onboarding.paragraph.top")}
+      </p>
+      <MnemonicLengthSegment
+        seedPhrase={seedPhrase}
+        toggleSeedPhrase={toggleSeedPhrase}
+      />
+      <SeedPhraseModule
+        seedPhrase={seedPhrase}
+        showSeedPhrase={showSeedPhrase}
+        setShowSeedPhrase={setShowSeedPhrase}
+      />
+      <p data-testid="page-paragraph-bottom">
+        {i18n.t("generateseedphrase.onboarding.paragraph.bottom")}
+      </p>
+      <div className="terms-and-conditions">
+        <IonCheckbox
+          labelPlacement="end"
+          data-testid="terms-and-conditions-checkbox"
+          checked={checked}
+          onIonChange={(event) => setChecked(event.detail.checked)}
+        />
+        <p
+          data-testid="terms-and-conditions-modal-handler"
+          onClick={() => setTermsModalIsOpen(true)}
         >
-          <IonGrid>
-            <IonRow>
-              <IonCol size="12">
-                <h2 data-testid="screen-title">
-                  {i18n.t("generateseedphrase.onboarding.title")}
-                </h2>
-                <p
-                  className="page-paragraph"
-                  data-testid="page-paragraph-top"
-                >
-                  {i18n.t("generateseedphrase.onboarding.paragraph.top")}
-                </p>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-          <IonGrid>
-            <IonRow>
-              <IonCol size="12">
-                <IonSegment
-                  data-testid="mnemonic-length-segment"
-                  value={`${
-                    seedPhrase.length === MNEMONIC_TWENTYFOUR_WORDS
-                      ? TWENTYFOUR_WORDS_BIT_LENGTH
-                      : FIFTEEN_WORDS_BIT_LENGTH
-                  }`}
-                  onIonChange={(event) => {
-                    toggleSeedPhrase(Number(event.detail.value));
-                  }}
-                >
-                  <IonSegmentButton
-                    value={`${FIFTEEN_WORDS_BIT_LENGTH}`}
-                    data-testid="15-words-segment-button"
-                  >
-                    <IonLabel>
-                      {i18n.t("generateseedphrase.segment", {
-                        length: MNEMONIC_FIFTEEN_WORDS,
-                      })}
-                    </IonLabel>
-                  </IonSegmentButton>
-                  <IonSegmentButton
-                    value={`${TWENTYFOUR_WORDS_BIT_LENGTH}`}
-                    data-testid="24-words-segment-button"
-                  >
-                    <IonLabel>
-                      {i18n.t("generateseedphrase.segment", {
-                        length: MNEMONIC_TWENTYFOUR_WORDS,
-                      })}
-                    </IonLabel>
-                  </IonSegmentButton>
-                </IonSegment>
-              </IonCol>
-            </IonRow>
-            <IonRow>
-              <IonCol size="12">
-                <IonCard>
-                  <div
-                    data-testid="seed-phrase-privacy-overlay"
-                    className={`overlay ${
-                      showSeedPhrase ? "hidden" : "visible"
-                    }`}
-                  >
-                    <IonCardHeader>
-                      <IonIcon icon={eyeOffOutline} />
-                    </IonCardHeader>
-                    <IonCardContent data-testid="seed-phrase-privacy-overlay-text">
-                      {i18n.t("generateseedphrase.privacy.overlay.text")}
-                    </IonCardContent>
-                    <IonButton
-                      shape="round"
-                      fill="outline"
-                      data-testid="reveal-seed-phrase-button"
-                      onClick={() => setShowSeedPhrase(true)}
-                    >
-                      {i18n.t("generateseedphrase.privacy.overlay.button")}
-                    </IonButton>
-                  </div>
-                  <div
-                    data-testid="seed-phrase-container"
-                    className={`seed-phrase-container onboarding ${
-                      showSeedPhrase
-                        ? "seed-phrase-visible"
-                        : "seed-phrase-blurred"
-                    }
-                }`}
-                  >
-                    {seedPhrase.map((word, index) => {
-                      return (
-                        <IonChip key={index}>
-                          <span className="index">{index + 1}.</span>
-                          <span data-testid={`word-index-${index + 1}`}>
-                            {word}
-                          </span>
-                        </IonChip>
-                      );
-                    })}
-                  </div>
-                </IonCard>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-          <IonGrid>
-            <IonRow>
-              <IonCol size="12">
-                <p
-                  className="page-paragraph"
-                  data-testid="page-paragraph-bottom"
-                >
-                  {i18n.t("generateseedphrase.onboarding.paragraph.bottom")}
-                </p>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-          <IonGrid>
-            <IonRow>
-              <IonCol size="12">
-                <IonItem
-                  color="light"
-                  lines="none"
-                >
-                  <IonCheckbox
-                    slot="start"
-                    checked={checked}
-                    data-testid="termsandconditions-checkbox"
-                    onIonChange={(event) => setChecked(event.detail.checked)}
-                  />
-                  <IonLabel
-                    slot="end"
-                    className="ion-text-wrap termsandconditions-label"
-                    color="primary"
-                    data-testid="termsandconditions-label"
-                  >
-                    <Trans
-                      i18nKey={i18n.t(
-                        "generateseedphrase.termsandconditions.text"
-                      )}
-                      components={[<HandleTerms key="" />]}
-                    />
-                  </IonLabel>
-                </IonItem>
-                <TermsAndConditions
-                  isOpen={termsModalIsOpen}
-                  setIsOpen={setTermsModalIsOpen}
-                />
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-          <AlertConfirm
-            isOpen={alertConfirmIsOpen}
-            setIsOpen={setAlertConfirmIsOpen}
-            dataTestId="alert-confirm"
-            headerText={i18n.t("generateseedphrase.alert.confirm.text")}
-            confirmButtonText={`${i18n.t(
-              "generateseedphrase.alert.confirm.button.confirm"
-            )}`}
-            cancelButtonText={`${i18n.t(
-              "generateseedphrase.alert.confirm.button.cancel"
-            )}`}
-            actionConfirm={handleContinue}
+          <Trans
+            i18nKey={i18n.t("generateseedphrase.termsandconditions.text")}
+            components={[<HandleTerms key="" />]}
           />
-        </PageLayout>
-      </IonPage>
-    </>
+        </p>
+      </div>
+      <TermsAndConditionsModal
+        isOpen={termsModalIsOpen}
+        setIsOpen={setTermsModalIsOpen}
+      />
+      <PageFooter
+        pageId={pageId}
+        primaryButtonText={`${i18n.t(
+          "generateseedphrase.onboarding.button.continue"
+        )}`}
+        primaryButtonAction={() => {
+          setAlertConfirmIsOpen(true);
+        }}
+        primaryButtonDisabled={!(showSeedPhrase && checked)}
+      />
+      <AlertConfirm
+        isOpen={alertConfirmIsOpen}
+        setIsOpen={setAlertConfirmIsOpen}
+        dataTestId="alert-confirm"
+        headerText={i18n.t("generateseedphrase.alert.confirm.text")}
+        confirmButtonText={`${i18n.t(
+          "generateseedphrase.alert.confirm.button.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "generateseedphrase.alert.confirm.button.cancel"
+        )}`}
+        actionConfirm={handleContinue}
+      />
+    </ScrollablePageLayout>
   );
 };
 

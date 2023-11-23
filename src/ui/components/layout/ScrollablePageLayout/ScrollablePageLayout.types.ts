@@ -1,9 +1,9 @@
 import { ReactNode } from "react";
 
-interface ResponsivePageLayoutProps {
+interface ScrollablePageLayoutProps {
   header?: ReactNode;
   pageId?: string;
   children?: ReactNode;
 }
 
-export type { ResponsivePageLayoutProps };
+export type { ScrollablePageLayoutProps };
