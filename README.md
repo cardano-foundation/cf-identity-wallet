@@ -248,23 +248,28 @@ APP_PATH=<LOCAL_PATH/App.app>
 ### Test run in local:
 
 1. Install all packages locally
-
 ```
 npm install
 ```
-
-2. Run tests for chosen platform and phone e.g.
-
-```
-npm run wdio:ios:15promax
-```
-or
+2. Run for chosen platform and phone e.g.:
+- for all tests
 ```
 npm run wdio:android:s23ultra
 ```
+or
+```
+npm run wdio:ios:15promax
+```
+- for specific feature
+```
+npm run wdio:ios:15promax -- --spec ./tests/features/passcode.feature
+```
+- for specific scenario in feature you want to run it put a line number at which there is scenario title
+```
+npm run wdio:ios:15promax -- --spec ./tests/features/passcode.feature:18
+```
 - If there are issues with appium service run by WDIO, please start appium in terminal separately
 - In case WDIO tests will not exit on its own kill the process yourself e.g. ``` pkill -9 -f wdio ```
-
 3. Set ALLURE_RESULTS_DIR on your local
 ```
 ALLURE_RESULTS_DIR=tests/.reports/allure-results
