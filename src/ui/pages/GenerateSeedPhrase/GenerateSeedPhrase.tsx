@@ -82,6 +82,7 @@ const GenerateSeedPhrase = () => {
     } else {
       setSeedPhrase(seedPhrase256);
     }
+    setShowSeedPhrase(false);
   };
 
   const HandleTerms = () => {

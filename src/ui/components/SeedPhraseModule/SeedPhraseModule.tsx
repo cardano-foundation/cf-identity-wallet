@@ -1,11 +1,4 @@
-import {
-  IonButton,
-  IonCard,
-  IonCardContent,
-  IonCardHeader,
-  IonChip,
-  IonIcon,
-} from "@ionic/react";
+import { IonButton, IonChip, IonIcon } from "@ionic/react";
 import { eyeOffOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import "./SeedPhraseModule.scss";
@@ -17,17 +10,15 @@ const SeedPhraseModule = ({
   setShowSeedPhrase,
 }: SeedPhraseModuleProps) => {
   return (
-    <IonCard className="seed-phrase-module">
+    <div className="seed-phrase-module">
       <div
         data-testid="seed-phrase-privacy-overlay"
         className={`overlay ${showSeedPhrase ? "hidden" : "visible"}`}
       >
-        <IonCardHeader>
-          <IonIcon icon={eyeOffOutline} />
-        </IonCardHeader>
-        <IonCardContent data-testid="seed-phrase-privacy-overlay-text">
-          <p>{i18n.t("generateseedphrase.privacy.overlay.text")}</p>
-        </IonCardContent>
+        <IonIcon icon={eyeOffOutline} />
+        <p data-testid="seed-phrase-privacy-overlay-text">
+          {i18n.t("generateseedphrase.privacy.overlay.text")}
+        </p>
         <IonButton
           shape="round"
           fill="outline"
@@ -53,7 +44,7 @@ const SeedPhraseModule = ({
           );
         })}
       </div>
-    </IonCard>
+    </div>
   );
 };
 
