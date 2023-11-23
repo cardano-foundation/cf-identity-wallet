@@ -30,7 +30,6 @@ export default {
   moduleNameMapper: {
     // Jest cannot import the browser version so we can map in the NodeJS version instead.
     "@dcspark/cardano-multiplatform-lib-browser": "@dcspark/cardano-multiplatform-lib-nodejs",
-    "lucid-cardano": "@jpg-store/lucid-cardano",
   },
   testEnvironment: "node",
   testMatch: ["**/src/core/cardano/**/?(*.)+(test).[tj]s?(x)"],
