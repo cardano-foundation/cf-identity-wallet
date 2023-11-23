@@ -1,13 +1,13 @@
 # Workflow to build and deploy site to Vercel using static files
 # Name of Workflow
-name: vercel-deploy-develop-branch (main vercel URL)
+name: vercel-deploy-main-branch (main vercel URL)
 
 # Controls when the action will run. Triggers the workflow on push
 # events but only for specified branches
 on:
   push:
     branches:
-      - develop
+      - main
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
