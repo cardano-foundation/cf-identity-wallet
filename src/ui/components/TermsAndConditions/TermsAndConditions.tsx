@@ -13,7 +13,7 @@ const TermsAndConditions = ({ isOpen, setIsOpen }: TermsAndConditionsProps) => {
       initialBreakpoint={1}
       breakpoints={[0, 0.25, 0.5, 0.75, 1]}
       className="page-layout"
-      data-testid="terms-and-conditions"
+      data-testid="terms-and-conditions-modal"
       onDidDismiss={() => setIsOpen(false)}
     >
       <div className="terms-and-conditions modal">

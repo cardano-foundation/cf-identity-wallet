@@ -27,7 +27,7 @@ const App = () => {
   useEffect(() => {
     setShowScan(currentOperation === OperationType.SCAN_CONNECTION);
     setShowToast(toastMsg !== undefined);
-  }, [currentOperation]);
+  }, [currentOperation, toastMsg]);
 
   return (
     <IonApp>

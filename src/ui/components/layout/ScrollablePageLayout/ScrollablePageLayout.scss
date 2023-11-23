@@ -1,0 +1,31 @@
+.scrollable-page-layout {
+  display: flex;
+  flex-direction: column;
+  padding-inline: 1.25rem;
+  background: var(--ion-color-light);
+
+  .scrollable-page-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    > * {
+      flex: 0 1 auto;
+      margin: 0 auto 1.56rem;
+    }
+
+    > h2 {
+      margin: 1rem 0 0.94rem;
+    }
+  }
+
+  @media screen and (min-height: 300px) and (max-height: 600px) {
+    padding-inline: 0.9rem;
+
+    .scrollable-page-content {
+      > h2 {
+        margin: 0.5rem 0 0.94rem;
+      }
+    }
+  }
+}

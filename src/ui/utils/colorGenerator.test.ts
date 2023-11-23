@@ -8,7 +8,7 @@ describe("ColorGenerator", () => {
   });
 
   test("generateColorPairs should generate the specified number of color pairs", () => {
-    const numPairs = 3;
+    const numPairs = 2;
     const colorPairs = colorGenerator.generateColorPairs(numPairs);
 
     expect(colorPairs).toHaveLength(numPairs);

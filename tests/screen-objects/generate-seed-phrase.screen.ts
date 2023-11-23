@@ -1,19 +1,36 @@
-import { expect } from "expect-webdriverio"
+import { expect } from "expect-webdriverio";
 
 export class GenerateSeedPhraseScreen {
-  get continueButton () { return $("[data-testid=\"primary-button\"]") }
-  get pageParagraphBottom () { return $("[data-testid=\"page-paragraph-bottom\"]") }
-  get pageParagraphTop() { return $("[data-testid=\"page-paragraph-top\"]") }
-  get phrase15WordsButton  () { return $("[data-testid=\"15-words-segment-button\"]") }
-  get phrase24WordsButton  () { return $("[data-testid=\"24-words-segment-button\"]") }
-  get screenTitle() { return $("[data-testid=\"screen-title\"]") }
-  get termsAndConditionsCheckbox () { return $("[data-testid=\"termsandconditions-checkbox\"]") }
-  get viewSeedPhraseButton () { return $("[data-testid=\"reveal-seed-phrase-button\"]") }
-  get viewSeedPhraseText () { return $("[data-testid=\"seed-phrase-privacy-overlay-text\"]") }
-
+  get continueButton() {
+    return $('[data-testid="primary-button"]');
+  }
+  get pageParagraphBottom() {
+    return $('[data-testid="page-paragraph-bottom"]');
+  }
+  get pageParagraphTop() {
+    return $('[data-testid="page-paragraph-top"]');
+  }
+  get phrase15WordsButton() {
+    return $('[data-testid="15-words-segment-button"]');
+  }
+  get phrase24WordsButton() {
+    return $('[data-testid="24-words-segment-button"]');
+  }
+  get screenTitle() {
+    return $('[data-testid="screen-title"]');
+  }
+  get termsAndConditionsCheckbox() {
+    return $('[data-testid="terms-and-conditions-checkbox"]');
+  }
+  get viewSeedPhraseButton() {
+    return $('[data-testid="reveal-seed-phrase-button"]');
+  }
+  get viewSeedPhraseText() {
+    return $('[data-testid="seed-phrase-privacy-overlay-text"]');
+  }
 
   async screenLoads() {
-    await expect(this.screenTitle).toBeExisting()
+    await expect(this.screenTitle).toBeExisting();
     await expect(this.pageParagraphTop).toBeDisplayed();
     await expect(this.phrase15WordsButton).toBeDisplayed();
     await expect(this.phrase24WordsButton).toBeDisplayed();

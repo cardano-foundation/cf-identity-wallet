@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { SecureStorage, KeyStoreKeys , PreferencesKeys, PreferencesStorage } from "../../../core/storage";
+import {
+  SecureStorage,
+  KeyStoreKeys,
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import {
   getStateCache,
@@ -19,6 +24,7 @@ import "./SetPasscode.scss";
 import PageFooter from "../../components/PageFooter/PageFooter";
 
 const SetPasscode = () => {
+  const pageId = "set-passcode";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -77,7 +83,7 @@ const SetPasscode = () => {
 
   return (
     <ResponsivePageLayout
-      title={"set-passcode"}
+      pageId={pageId}
       header={
         <PageHeader
           backButton={true}
@@ -122,7 +128,7 @@ const SetPasscode = () => {
       />
       {originalPassCode !== "" ? (
         <PageFooter
-          pageId={"set-passcode"}
+          pageId={pageId}
           secondaryButtonText={`${i18n.t("setpasscode.startover.label")}`}
           secondaryButtonAction={() => handleClearState()}
         />
