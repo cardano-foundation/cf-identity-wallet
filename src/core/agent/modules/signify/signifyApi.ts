@@ -16,26 +16,21 @@ export class SignifyApi {
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
-  static readonly CREDENTIAL_NOT_FOUND = "Credential not found";
+  static readonly CREDENTIAL_NOT_FOUND =
+    "Credential with given SAID not found on KERIA";
 
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly BACKER_ADDRESS =
     "addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm";
-  static readonly BACKER_CONFIG = {
-    toad: 1,
-    wits: [SignifyApi.BACKER_AID],
-    count: 1,
-    ncount: 1,
-    isith: "1",
-    nsith: "1",
-    data: [{ ca: SignifyApi.BACKER_ADDRESS }],
-  };
+
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
   static readonly VLEI_HOST =
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static resolvedOobi: string;
+  static AID: any;
 
   private signifyClient!: SignifyClient;
   private opTimeout: number;
@@ -71,7 +66,7 @@ export class SignifyApi {
       const signifyName = utils.uuid();
       const operation = await this.signifyClient
         .identifiers()
-        .create(signifyName, SignifyApi.BACKER_CONFIG);
+        .create(signifyName);
       await operation.op();
       await this.signifyClient
         .identifiers()
@@ -109,9 +104,9 @@ export class SignifyApi {
 
   async resolveOobi(url: string): Promise<any> {
     const alias = utils.uuid();
-    const storageKey = `${KeyStoreKeys.KERI_OOBI}_${SignifyApi.SCHEMA_SAID}`;
-    const resolvedOobi = await SecureStorage.get(storageKey).catch(() => null);
-    if (resolvedOobi) return resolvedOobi;
+    if (SignifyApi.resolvedOobi) {
+      return SignifyApi.resolvedOobi;
+    }
     let operation = await this.signifyClient.oobis().resolve(url, alias);
     operation = await this.waitAndGetDoneOp(
       operation,
@@ -122,7 +117,7 @@ export class SignifyApi {
       throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
     }
     const Oobi = { ...operation, alias };
-    await SecureStorage.set(storageKey, JSON.stringify(Oobi));
+    SignifyApi.resolvedOobi = Oobi;
     return Oobi;
   }
 
@@ -159,15 +154,18 @@ export class SignifyApi {
         "-d": { $eq: sad },
       },
     });
-    if (!results || !results.length)
+    if (!results || !results.length) {
       throw new Error(SignifyApi.CREDENTIAL_NOT_FOUND);
+    }
     return results[0];
   }
 
   async getKeriExchange(notificationD: string): Promise<any> {
-    const { aids } = await this.signifyClient.identifiers().list();
-    const aid = aids[0];
-    return this.signifyClient.exchanges().get(aid.name, notificationD); // TODO: hard code for now, will remove when signify-ts updated
+    if (!SignifyApi.AID) {
+      const { aids } = await this.signifyClient.identifiers().list();
+      SignifyApi.AID = aids[0];
+    }
+    return this.signifyClient.exchanges().get(notificationD);
   }
 
   /**

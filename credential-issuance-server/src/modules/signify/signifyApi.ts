@@ -15,7 +15,7 @@ export class SignifyApi {
     "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly SIGNIFY_BRAN = "o123456a89aacxeaCaxkk"; // @TODO - foconnor: Shouldn't be hard-coded.
+  static readonly SIGNIFY_BRAN = "o123456a89aacxeaCaxkj"; // @TODO - foconnor: Shouldn't be hard-coded.
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
@@ -23,15 +23,7 @@ export class SignifyApi {
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly BACKER_ADDRESS =
     "addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm";
-  static readonly BACKER_CONFIG = {
-    toad: 1,
-    wits: [SignifyApi.BACKER_AID],
-    count: 1,
-    ncount: 1,
-    isith: "1",
-    nsith: "1",
-    // data: [{ ca: SignifyApi.BACKER_ADDRESS }],
-  };
+
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
@@ -63,14 +55,14 @@ export class SignifyApi {
       await this.signifyClient.boot();
       await this.signifyClient.connect();
     }
-    AriesAgent.agent.initKeri();
+    await AriesAgent.agent.initKeri();
   }
 
   async createIdentifier(signifyName: string): Promise<any> {
     try {
       const op = await this.signifyClient
         .identifiers()
-        .create(signifyName, SignifyApi.BACKER_CONFIG);
+        .create(signifyName);
       await op.op();
       const aid1 = await this.getIdentifierByName(signifyName);
       await this.signifyClient

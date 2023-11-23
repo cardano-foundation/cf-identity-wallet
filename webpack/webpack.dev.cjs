@@ -20,6 +20,16 @@ module.exports = merge(require("./webpack.common.cjs"), {
                },
             ],
          },
+         {
+            test: /\.(js)$/,
+            exclude: /node_modules/,
+            use: {
+              loader: 'babel-loader'
+            },
+            resolve: {
+              fullySpecified: false,
+            },
+         },
       ],
    },
    devtool: 'eval-source-map',

@@ -21,7 +21,6 @@ const config = {
     },
     keriOobi: "/keriOobi",
     issueAcdcCredentialWithOobi : "/issueAcdcCredentialWithOobi",
-    initKERI: "/init-keri",
   },
 };
 

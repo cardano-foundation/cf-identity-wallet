@@ -87,21 +87,9 @@ async function issueCredentialWithKeriOobi(
   httpResponse(res, response);
 }
 
-async function initKERI(req: Request, res: Response) {
-  const { schema, issuerName } = req.body;
-  const identifier = await AriesAgent.agent.initKeri(schema, issuerName);
-  const response: ResponseData<string> = {
-    statusCode: 200,
-    success: true,
-    data: identifier,
-  };
-  httpResponse(res, response);
-}
-
 export {
   offerCredentialOverConnection,
   invitationWithCredential,
   invitationWithCredentialConnectionless,
   issueCredentialWithKeriOobi,
-  initKERI,
 };

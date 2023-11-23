@@ -43,6 +43,7 @@ class CredentialService extends AgentService {
   static readonly CREATED_DID_NOT_FOUND = "Referenced public did not found";
   static readonly KERI_NOTIFICATION_NOT_FOUND =
     "Keri notification record not found";
+  static readonly HOLDER_NOT_FOUND = "Holder not found";
 
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
@@ -64,6 +65,20 @@ class CredentialService extends AgentService {
     );
   }
 
+  async processNotification(
+    notif: Notification,
+    callback: (event: KeriNotification) => void
+  ) {
+    if (notif.a.r === "/exn/ipex/grant" && notif.r === false) {
+      const keriNoti = await this.createKeriNotificationRecord(notif);
+      callback(keriNoti);
+    }
+    /**Disable this for now cause we may have messages we don't know how to process yet  */
+    // if (notif.r === false) {
+    //   await this.agent.modules.signify.markNotification(notif.i);
+    // }
+  }
+
   async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
   ) {
@@ -71,13 +86,7 @@ class CredentialService extends AgentService {
     while (true) {
       const notifications = await this.agent.modules.signify.getNotifications();
       for (const notif of notifications.notes) {
-        if (notif.a.r == "/exn/ipex/grant" && notif.r === false) {
-          const keriNoti = await this.createKeriNotificationRecord(notif);
-          callback(keriNoti);
-        }
-        if (notif.r === false) {
-          await this.agent.modules.signify.markNotification(notif.i);
-        }
+        await this.processNotification(notif, callback);
       }
       await new Promise((rs) => {
         setTimeout(() => {
@@ -525,12 +534,15 @@ class CredentialService extends AgentService {
       await this.agent.modules.generalStorage.getIdentifierMetadata(
         keriExchange.exn.a.i
       );
+    if (!holder) {
+      throw new Error(CredentialService.HOLDER_NOT_FOUND);
+    }
     await this.agent.modules.signify.admitIpex(
       keriNoti.a.d as string,
-      holder?.signifyName as string,
+      holder.signifyName as string,
       keriExchange.exn.i
     );
-    const cred = await this.getNewKeriCredentials(credentialId);
+    const cred = await this.waitForCredentialToAppear(credentialId);
     await this.updateAcdcMetadataRecordCompleted(credentialId, cred);
     await this.deleteKeriNotificationRecordById(id);
     this.agent.events.emit<AcdcKeriStateChangedEvent>(this.agent.context, {
@@ -542,14 +554,15 @@ class CredentialService extends AgentService {
     });
   }
 
-  private async getNewKeriCredentials(credentialId: string): Promise<any> {
+  private async waitForCredentialToAppear(credentialId: string): Promise<any> {
     let cred = await this.agent.modules.signify.getCredentialBySaid(
       credentialId
     );
     let retryTimes = 0;
     while (!cred) {
-      if (retryTimes > 5)
+      if (retryTimes > 15) {
         throw new Error(CredentialService.CREDENTIAL_NOT_ARCHIVED);
+      }
       await new Promise((resolve) => setTimeout(resolve, 250));
       cred = await this.agent.modules.signify.getCredentialBySaid(credentialId);
       retryTimes++;

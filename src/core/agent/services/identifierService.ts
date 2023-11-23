@@ -87,9 +87,6 @@ class IdentifierService extends AgentService {
       if (!aid) {
         return undefined;
       }
-      const oobi = await this.agent.modules.signify.getOobi(
-        metadata.signifyName as string
-      );
 
       return {
         type: IdentifierType.KERI,
