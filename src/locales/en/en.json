@@ -215,9 +215,9 @@
   },
   "identifiers": {
     "tab": {
-      "title": "Identifier",
-      "create": "Create New Identifier",
-      "allidentifiers": "All identities"
+      "title": "Identifiers",
+      "create": "Create new identifier",
+      "allidentifiers": "All identifiers"
     },
     "card": {
       "layout": {
@@ -268,7 +268,7 @@
           "title": "Backer Address"
         },
         "delete": {
-          "button": "Delete Identifier",
+          "button": "Delete identifier",
           "alert": {
             "title": "Are you sure you want to delete this identifier?",
             "confirm": "Yes, I'm sure",
@@ -279,13 +279,13 @@
           "title": "Identifier options",
           "cancel": "Cancel",
           "view": "View JSON",
-          "edit": "Edit Identifier",
+          "edit": "Edit identifier",
           "share": "Share identifier",
-          "delete": "Delete Identifier",
+          "delete": "Delete identifier",
           "inner": {
-            "label": "Display Name",
-            "theme": "Edit Theme",
-            "confirm": "Confirm Changes",
+            "label": "Display name",
+            "theme": "Edit theme",
+            "confirm": "Confirm changes",
             "error": "Must be less than 32 characters long"
           }
         },
@@ -504,13 +504,13 @@
     "more": "More share options"
   },
   "createidentifier": {
-    "title": "Add Identifier",
+    "title": "Add an identifier",
     "displayname": {
-      "title": "Display Name",
+      "title": "Display name",
       "placeholder": "Create a name for this identifier"
     },
     "identifiertype": {
-      "title": "Identifier Type",
+      "title": "Identifier type",
       "didkey": "did:key",
       "keri": "KERI AID"
     },
