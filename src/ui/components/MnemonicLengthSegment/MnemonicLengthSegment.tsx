@@ -5,7 +5,7 @@ import {
   MNEMONIC_FIFTEEN_WORDS,
   MNEMONIC_TWENTYFOUR_WORDS,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-} from "../../../constants/appConstants";
+} from "../../globals/constants";
 import { MnemonicLengthSegmentProps } from "./MnemonicLengthSegment.types";
 import "./MnemonicLengthSegment.scss";
 
