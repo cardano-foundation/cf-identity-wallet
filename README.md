@@ -126,18 +126,36 @@ Access the latest version of the Identity Wallet application [here](https://cf-i
 To experience this app like it was designed for smarthpones, you can follow this structions:
 1. Open the developer options by pressing the ``` F12 ``` key on your keyboard or by right-clicking anywhere on the page, then choose ``` Inspect ``` from the context menu.
 2. To Switch to a mobile view:
-    - Chrome: 
-        - Click on the icon in the top right corner, as shown in the image below.
-        ![Chrome Mobile View 1](<docs/images/readme/Chrome-Mobile-View-1.png>)
-        - Click on ``` Dimensions ``` and select ``` iPhone 14 Pro Max ```.
-        ![Chrome Mobile View 2](<docs/images/readme/Chrome-Mobile-View-2.png>)
-    - Firefox: 
-        - Click on the icon in the upper right corner, as shown in the image below, then close the panel.
-        ![Firefox Mobile View 1](<docs/images/readme/Firefox-Mobile-View-1.png>)
-        - Click on ``` Dimensions ``` and select ``` Galaxy Note 20 Android 11 ```.
-        ![Firefox Mobile View 2](<docs/images/readme/Firefox-Mobile-View-2.png>)
+    - Chrome:
+        <details>
+          <summary>Click on the icon in the top right corner, as shown in the image below.</summary>
+          <img src="docs/images/readme/Chrome-Mobile-View-1.png" alt="Chrome Mobile View 1"/>
+        </details>
+        <details>
+          <summary>Click on <b>Dimensions</b> and select <b>iPhone 14 Pro Max</b>.</summary>
+          <img src="docs/images/readme/Chrome-Mobile-View-2.png" alt="Chrome Mobile View 2"/>
+        </details>
+    - Firefox:
+        <details>
+          <summary>Click on the icon in the upper right corner, as shown in the image below, then close the panel.</summary>
+          <img src="docs/images/readme/Firefox-Mobile-View-1.png" alt="Firefox Mobile View 1"/>
+        </details>
+        <details>
+          <summary>Click on <b>Dimensions</b> and select <b>Galaxy Note 20</b>.</summary>
+          <img src="docs/images/readme/Firefox-Mobile-View-2.png" alt="Firefox Mobile View 2"/>
+        </details>
 
 # User Flow
+
+In this section, you'll find detailed PDF documents outlining the various user flows within our application. These user flows serve as comprehensive guides, illustrating the step-by-step journeys users take while interacting with our app. Feel free to explore and gain insights into the following user flows:
+  - [Intro Screens]()
+  - [Onboarding]()
+  - [Onboarded]()
+  - [Identity]()
+  - [Connections]()
+  - [Credentials]()
+  - [Verify Options]()
+  - [Scan]()
 
 
 # Getting Started
