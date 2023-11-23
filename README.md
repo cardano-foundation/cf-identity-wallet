@@ -166,6 +166,7 @@ In this section, you'll find detailed PDF documents outlining the various user f
 - Android Studio: For Android emulation (latest version recommended).
 - Capacitor: Version 4.8.1 (refer to package.json). For detailed environment setup, refer to the [Capacitor Environment Setup Guide](https://capacitorjs.com/docs/getting-started/environment-setup).
 - Mobile Device: iOS or Android for running the app on physical devices.
+- Docker (only required for running locally deployed WebRTC relay).
 
 Ensure that your system meets these requirements to successfully use and develop the Identity Wallet application.
 
@@ -175,30 +176,31 @@ Ensure that your system meets these requirements to successfully use and develop
 git clone https://github.com/cardano-foundation/cf-identity-wallet.git
 cd cf-identity-wallet
 ```
-
+## Deployment before Building the App
+Our DIDComm over LibP2P implementation currently depends on a locally deployed WebRTC relay.
+```
+cd cf-identity-wallet
+docker compose up -d
+```
 ## Preparing the App
-Before running the App, ensure that all dependencies are installed and the app is built properly. In the project root directory, run the following commands:
-1. Install Dependencies:
+Before running the App, ensure that all dependencies are installed and the app is built properly. 
+In the project root directory, run the following commands:
 ```bash
 npm install
 ```
-2. Build the App:
-```bash
-npm run build
-```
-3. Prepare Capacitor:
-
-This command will sync all changes to iOS and Android.
-```bash
-npm run build:cap
-```
-
 ## Running in the Browser
 ```bash
 npm run dev
 ```
-
 ## Running in an Emulator
+### Building the App
+```bash
+npm run build
+```
+### Prepare Capacitor: This command will sync all changes to iOS and Android.
+```bash
+npm run build:cap
+```
 ### Running on Xcode Emulator
 - Install Xcode: Ensure you have the latest version of Xcode installed on your Mac.
 - Open the iOS Simulator: Open Xcode, navigate to `Xcode > Open Developer Tool > Simulator`.
@@ -212,17 +214,7 @@ As alternative, you can open the file `App.xcworkspace` directly in Xcode from `
 - Run the Application: Navigate to your project directory and run `npx cap open android`. This will open your project in Android Studio. Build and run the application on your chosen emulator.
 As alternative, you can open the folder `android` directly in Android Studio.
 
-In addition to emulator options, you can also run the wallet directly on a real mobile device, providing a more authentic user experience and testing environment.
-
-## Deployment steps before building
-Our DIDComm over LibP2P implementation currently depends on a locally deployed WebRTC relay.
-```
-cd cf-identity-wallet
-docker compose up -d
-```
-
-## Building the app
-TODO
+In addition to using the emulators, you can also run the identity wallet directly on a real mobile device, providing a more authentic user experience and testing environment.  This approach requires the device to be tethered via cable to your computer running Xcode and/or Android Studio and the developer options must be enabled.  For further instructions: [Xcode](https://developer.apple.com/documentation/xcode/running-your-app-in-simulator-or-on-a-device) and [Android Studio](https://developer.android.com/studio/run/device).
 
 ## End-to-End (E2E) Testing
 ### Pre-installed on local:
@@ -280,32 +272,6 @@ allure generate $ALLURE_RESULTS_DIR -o tests/.reports/allure-report --clean
 5. Open allure report
 ```
 allure open tests/.reports/allure-report
-```
-
-## Generate icons
-
-Install Capacitor [assets tool](https://capacitorjs.com/docs/guides/splash-screens-and-icons):
-```
-npm install @capacitor/assets --save-dev
-```
-
-Create a `assets` folder in the root directory with:
-```
-assets/
-├── icon-only.png
-├── icon-foreground.png
-├── icon-background.png
-├── splash.png
-└── splash-dark.png
-```
-
-For iOS: 
-```
-npx @capacitor/assets generate --ios
-```
-For Android: 
-```
-npx @capacitor/assets generate --android
 ```
 
 # Contributing
