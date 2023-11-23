@@ -28,6 +28,7 @@ import {
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { Alert } from "../../components/Alert";
+import { OperationType } from "../../globals/types";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const errorMessages = {
@@ -212,7 +213,7 @@ const CreatePassword = () => {
       dispatch,
       updateRedux
     );
-    dispatch(setCurrentOperation(""));
+    dispatch(setCurrentOperation(OperationType.IDLE));
     history.push(nextPath.pathname);
     handleClearState();
   };

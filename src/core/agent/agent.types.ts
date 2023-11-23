@@ -1,5 +1,4 @@
 import { BaseEvent, JsonCredential } from "@aries-framework/core";
-import { IdentifierMetadataRecordProps } from "./modules";
 import { CredentialMetadataRecordProps } from "./modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 enum IdentifierType {
@@ -113,14 +112,15 @@ interface CredentialDetails extends CredentialShortDetails {
   proofValue?: string;
 }
 
+enum CredentialType {
+  UNIVERSITY_DEGREE_CREDENTIAL = "UniversityDegreeCredential",
+  ACCESS_PASS_CREDENTIAL = "AccessPassCredential",
+  PERMANENT_RESIDENT_CARD = "PermanentResidentCard",
+}
+
 type GetIdentifierResult =
   | { type: IdentifierType.KERI; result: KERIDetails }
   | { type: IdentifierType.KEY; result: DIDDetails };
-
-type UpdateIdentityMetadata = Omit<
-  Partial<IdentifierMetadataRecordProps>,
-  "id" | "isArchived" | "name" | "method" | "createdAt"
->;
 
 enum ConnectionKeriEventTypes {
   ConnectionKeriStateChanged = "ConnectionKeriStateChanged",
@@ -141,6 +141,7 @@ export {
   ConnectionHistoryType,
   MiscRecordId,
   ConnectionType,
+  CredentialType,
   ConnectionKeriEventTypes,
 };
 export type {

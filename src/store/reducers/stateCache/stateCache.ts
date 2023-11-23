@@ -7,6 +7,7 @@ import {
   ConnectionCredentialRequestProps,
 } from "./stateCache.types";
 import { RoutePath } from "../../../routes";
+import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 
 const initialState: StateCacheProps = {
   initialized: false,
@@ -19,7 +20,7 @@ const initialState: StateCacheProps = {
     passwordIsSet: false,
     passwordIsSkipped: true,
   },
-  currentOperation: "",
+  currentOperation: OperationType.IDLE,
   queueConnectionCredentialRequest: {
     isProcessing: false,
     queues: [],
@@ -59,8 +60,11 @@ const stateCacheSlice = createSlice({
     ) => {
       state.authentication = action.payload;
     },
-    setCurrentOperation: (state, action: PayloadAction<string>) => {
+    setCurrentOperation: (state, action: PayloadAction<OperationType>) => {
       state.currentOperation = action.payload;
+    },
+    setToastMsg: (state, action: PayloadAction<ToastMsgType | undefined>) => {
+      state.toastMsg = action.payload;
     },
     setPauseQueueConnectionCredentialRequest: (
       state,
@@ -117,6 +121,7 @@ const {
   removeRoute,
   setAuthentication,
   setCurrentOperation,
+  setToastMsg,
   dequeueCredentialCredentialRequest,
   setQueueConnectionCredentialRequest,
   setPauseQueueConnectionCredentialRequest,
@@ -131,6 +136,7 @@ const getCurrentRoute = (state: RootState) =>
 const getAuthentication = (state: RootState) => state.stateCache.authentication;
 const getCurrentOperation = (state: RootState) =>
   state.stateCache.currentOperation;
+const getToastMsg = (state: RootState) => state.stateCache.toastMsg;
 const getQueueConnectionCredentialRequest = (state: RootState) =>
   state.stateCache.queueConnectionCredentialRequest;
 
@@ -156,6 +162,8 @@ export {
   setAuthentication,
   getCurrentOperation,
   setCurrentOperation,
+  getToastMsg,
+  setToastMsg,
   getQueueConnectionCredentialRequest,
   setPauseQueueConnectionCredentialRequest,
   setQueueConnectionCredentialRequest,

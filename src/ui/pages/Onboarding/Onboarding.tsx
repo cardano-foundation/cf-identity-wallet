@@ -53,8 +53,9 @@ const Onboarding = () => {
     },
   ];
 
-  const handleNavigation = (route?: string) => {
-    if (route) {
+  // @TODO - foconnor: This should be op: OperationType when available (non optional)
+  const handleNavigation = (op?: string) => {
+    if (op) {
       // @TODO - sdisalvo: Remove this condition and default to dispatch when the restore route is ready
       return;
     }

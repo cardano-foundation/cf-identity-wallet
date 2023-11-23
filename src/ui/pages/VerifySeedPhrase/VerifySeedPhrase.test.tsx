@@ -17,8 +17,7 @@ import {
   FIFTEEN_WORDS_BIT_LENGTH,
   MNEMONIC_FIFTEEN_WORDS,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-} from "../../../constants/appConstants";
-import { operationState } from "../../constants/dictionary";
+} from "../../globals/constants";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { Addresses } from "../../../core/cardano";
 
@@ -227,7 +226,7 @@ describe("Verify Seed Phrase Page", () => {
 
   test("The user can Verify the Seed Phrase when Onboarding", async () => {
     const history = createMemoryHistory();
-    history.push(RoutePath.VERIFY_SEED_PHRASE, operationState.onboarding);
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
     const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <Router history={history}>

@@ -15,7 +15,7 @@ import { QRCode } from "react-qrcode-logo";
 import { copyOutline, openOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { ShareIdentityProps } from "./ShareIdentity.types";
-import { writeToClipboard } from "../../../utils/clipboard";
+import { writeToClipboard } from "../../utils/clipboard";
 import "./ShareIdentity.scss";
 
 const ShareIdentity = ({ isOpen, setIsOpen, id, name }: ShareIdentityProps) => {

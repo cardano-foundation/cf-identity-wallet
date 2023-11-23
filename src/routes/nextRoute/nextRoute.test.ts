@@ -9,9 +9,9 @@ import {
 import { RootState } from "../../store";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
 import { DataProps } from "./nextRoute.types";
-import { TabsRoutePath } from "../paths";
+import { OperationType } from "../../ui/globals/types";
 
 describe("NextRoute", () => {
   let localStorageMock: any;
@@ -32,7 +32,7 @@ describe("NextRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
-        currentOperation: "",
+        currentOperation: OperationType.IDLE,
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
@@ -112,13 +112,7 @@ describe("NextRoute", () => {
   });
 
   test("should return correct route for /verifyseedphrase", () => {
-    const data = {
-      store: storeMock,
-      state: {
-        currentOperation: "",
-      },
-    };
-    const result = getNextVerifySeedPhraseRoute(data);
+    const result = getNextVerifySeedPhraseRoute();
 
     expect(result).toEqual({
       pathname: RoutePath.CREATE_PASSWORD,
@@ -139,7 +133,7 @@ describe("getNextRoute", () => {
         passwordIsSet: false,
         passwordIsSkipped: true,
       },
-      currentOperation: "",
+      currentOperation: OperationType.IDLE,
       queueConnectionCredentialRequest: {
         isProcessing: false,
         queues: [],

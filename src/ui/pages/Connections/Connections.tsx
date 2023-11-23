@@ -25,10 +25,10 @@ import {
   MappedConnections,
 } from "./Connections.types";
 import "./Connections.scss";
-import { formatShortDate } from "../../../utils";
+import { formatShortDate } from "../../utils/formatters";
 import { ConnectModal } from "../../components/ConnectModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { connectionStatus, connectionType } from "../../constants/dictionary";
+import { DIDCommRequestType } from "../../globals/types";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -39,6 +39,7 @@ import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 import { ShareQR } from "../../components/ShareQR/ShareQR";
 import { MoreOptions } from "../../components/ShareQR/MoreOptions";
 import { AriesAgent } from "../../../core/agent/agent";
+import { ConnectionStatus } from "../../../core/agent/agent.types";
 
 const ConnectionItem = ({
   item,
@@ -70,7 +71,7 @@ const ConnectionItem = ({
             size="3.5"
             className="item-status"
           >
-            {item.status === connectionStatus.pending ? (
+            {item.status === ConnectionStatus.PENDING ? (
               <IonChip>
                 <IonIcon
                   icon={hourglassOutline}
@@ -252,7 +253,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
         />
       )}
       <ConnectModal
-        type={connectionType.connection}
+        type={DIDCommRequestType.CONNECTION}
         connectModalIsOpen={connectModalIsOpen}
         setConnectModalIsOpen={setConnectModalIsOpen}
         handleProvideQr={handleProvideQr}

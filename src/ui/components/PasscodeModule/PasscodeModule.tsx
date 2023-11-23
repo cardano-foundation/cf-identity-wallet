@@ -2,7 +2,7 @@ import { IonButton, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { backspaceSharp } from "ionicons/icons";
 import { PasscodeModuleProps } from "./PasscodeModule.types";
 import "./PasscodeModule.scss";
-import { passcodeMapping } from "../../constants/dictionary";
+import { PASSCODE_MAPPING } from "../../globals/types";
 
 const PasscodeModule = ({
   error,
@@ -10,8 +10,8 @@ const PasscodeModule = ({
   handlePinChange,
   handleRemove,
 }: PasscodeModuleProps) => {
-  const numbers = passcodeMapping.numbers;
-  const labels = passcodeMapping.labels;
+  const numbers = PASSCODE_MAPPING.numbers;
+  const labels = PASSCODE_MAPPING.labels;
   const rows = [];
   let currentRow: number[] = [];
 

@@ -24,6 +24,7 @@ import {
   getStateCache,
   setCurrentOperation,
   setCurrentRoute,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { ShareIdentity } from "../../components/ShareIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
@@ -44,18 +45,11 @@ import {
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { IdentityCardInfoKey } from "../../components/IdentityCardInfoKey";
 import { IdentityCardInfoKeri } from "../../components/IdentityCardInfoKeri";
-import {
-  MAX_FAVOURITES,
-  operationState,
-  toastState,
-} from "../../constants/dictionary";
+import { MAX_FAVOURITES } from "../../globals/constants";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { IdentityOptions } from "../../components/IdentityOptions";
 import { IdentityCardTemplate } from "../../components/IdentityCardTemplate";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
-import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
+import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import "./DidCardDetails.scss";
 
 const DidCardDetails = () => {
@@ -138,7 +132,7 @@ const DidCardDetails = () => {
           });
       } else {
         if (favouritesIdentitiesData.length >= MAX_FAVOURITES) {
-          dispatch(setCurrentOperation(toastState.maxFavouritesReached));
+          dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
           return;
         }
 
@@ -245,7 +239,9 @@ const DidCardDetails = () => {
                 className="delete-button"
                 onClick={() => {
                   setAlertIsOpen(true);
-                  dispatch(setCurrentOperation(operationState.deleteIdentity));
+                  dispatch(
+                    setCurrentOperation(OperationType.DELETE_IDENTIFIER)
+                  );
                 }}
               >
                 <IonIcon
@@ -296,8 +292,10 @@ const DidCardDetails = () => {
               setVerifyPasscodeIsOpen(true);
             }
           }}
-          actionCancel={() => dispatch(setCurrentOperation(""))}
-          actionDismiss={() => dispatch(setCurrentOperation(""))}
+          actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+          actionDismiss={() =>
+            dispatch(setCurrentOperation(OperationType.IDLE))
+          }
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}

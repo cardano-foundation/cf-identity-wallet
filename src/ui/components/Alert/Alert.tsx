@@ -58,7 +58,9 @@ const Alert = ({
         header={headerText}
         subHeader={subheaderText}
         buttons={buttons}
-        onDidDismiss={handleDismiss}
+        onDidDismiss={({ detail }) =>
+          detail.role === "backdrop" && handleDismiss
+        }
       />
     </div>
   );

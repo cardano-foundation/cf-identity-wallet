@@ -6,11 +6,12 @@ import "./styles/style.scss";
 import { AppWrapper } from "./components/AppWrapper";
 import {
   getCurrentOperation,
-  setCurrentOperation,
+  getToastMsg,
+  setToastMsg,
 } from "../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { FullPageScanner } from "./pages/FullPageScanner";
-import { operationState, toastState } from "./constants/dictionary";
+import { OperationType } from "./globals/types";
 import { i18n } from "../i18n";
 import { ConnectionCredentialRequest } from "./pages/ConnectionRequest";
 
@@ -19,13 +20,14 @@ setupIonicReact();
 const App = () => {
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
+  const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
   useEffect(() => {
-    setShowScan(currentOperation === operationState.scanConnection);
-    setShowToast(Object.values(toastState).indexOf(currentOperation) > -1);
-  }, [currentOperation]);
+    setShowScan(currentOperation === OperationType.SCAN_CONNECTION);
+    setShowToast(toastMsg !== undefined);
+  }, [currentOperation, toastMsg]);
 
   return (
     <IonApp>
@@ -41,9 +43,11 @@ const App = () => {
             isOpen={showToast}
             onDidDismiss={() => {
               setShowToast(false);
-              dispatch(setCurrentOperation(""));
+              dispatch(setToastMsg());
             }}
-            message={`${i18n.t("toast." + currentOperation.toLowerCase())}`}
+            message={
+              toastMsg ? `${i18n.t("toast." + toastMsg.toLowerCase())}` : ""
+            }
             color="secondary"
             position="top"
             cssClass="confirmation-toast"

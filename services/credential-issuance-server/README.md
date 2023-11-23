@@ -1,6 +1,8 @@
 # ID Wallet Issuer Server
-#### How to run
+This server runs an Aries and Signify agent to act as an issuance server for both W3C credentials and ACDCs (KERI eco-system).
+Right now, this is only used for testing purposes for the wallet - it is not meant as a full blown issuance server - hence there are no tests in this module.
 
+### How to run (development)
 1. Install dependencies (nodejs >= v18):
    `npm install`
 2. Run development server:
@@ -18,3 +20,5 @@
    - `npm run cli:offer-credential-connection-less degree-credential-with-expiration.json`
    - `npm run cli:offer-credential resident-card-with-expiration.json`
    - `npm run cli:offer-credential summit-access-pass.json`
+
+The CLI may also be used locally to point at a remotely deployed server by setting the `ENDPOINT` environment variable. (default is `http://1237.0.0.1:3001`)

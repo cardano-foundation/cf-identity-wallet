@@ -33,6 +33,7 @@ const DOCUMENTS: { [key: string]: any } = {
   "https://w3id.org/did/v1": DID_V1,
 };
 
+// Caches documents locally in the build in case the W3C sites are down
 function documentLoader(agentContext: AgentContext): DocumentLoader {
   const didResolver =
     agentContext.dependencyManager.resolve(DidResolverService);

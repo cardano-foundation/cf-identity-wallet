@@ -2,7 +2,12 @@ import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { ErrorMessage } from "../../components/ErrorMessage";
-import { SecureStorage, KeyStoreKeys } from "../../../core/storage";
+import {
+  SecureStorage,
+  KeyStoreKeys,
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage";
 import { PasscodeModule } from "../../components/PasscodeModule";
 import {
   getStateCache,
@@ -13,10 +18,6 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { RoutePath } from "../../../routes";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 import "./SetPasscode.scss";

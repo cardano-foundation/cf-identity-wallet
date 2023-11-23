@@ -9,7 +9,8 @@ import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { RoutePath } from "../../../routes";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
+import { OperationType } from "../../globals/types";
 
 interface StoreMocked {
   stateCache: {
@@ -20,7 +21,7 @@ interface StoreMocked {
       passcodeIsSet: boolean;
       seedPhraseIsSet?: boolean;
     };
-    currentOperation: string;
+    currentOperation: OperationType;
   };
   seedPhraseCache: {
     seedPhrase160: string;
@@ -56,7 +57,7 @@ describe("Passcode Login Page", () => {
         passcodeIsSet: true,
         seedPhraseIsSet: true,
       },
-      currentOperation: "",
+      currentOperation: OperationType.IDLE,
     },
     seedPhraseCache: {
       seedPhrase160:
@@ -78,7 +79,7 @@ describe("Passcode Login Page", () => {
         passcodeIsSet: true,
         seedPhraseIsSet: false,
       },
-      currentOperation: "",
+      currentOperation: OperationType.IDLE,
     },
     seedPhraseCache: {
       seedPhrase160: "",

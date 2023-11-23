@@ -113,7 +113,7 @@ Install capacitor [assets tool](https://capacitorjs.com/docs/guides/splash-scree
 npm install @capacitor/assets --save-dev
 ```
 
-Create a `assets` folder in the root directory with:
+Create a `assets` folder in the `src` directory with:
 ```
 assets/
 ├── icon-only.png
@@ -125,9 +125,9 @@ assets/
 
 For iOS: 
 ```
-npx @capacitor/assets generate --ios
+npx @capacitor/assets --assetPath ./src/assets generate --ios
 ```
 For Android: 
 ```
-npx @capacitor/assets generate --android
+npx @capacitor/assets --assetPath ./src/assets generate --android
 ```

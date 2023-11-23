@@ -10,7 +10,7 @@ import { ellipsisVertical, trashOutline, createOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
-import { formatShortDate } from "../../../utils";
+import { formatShortDate } from "../../utils/formatters";
 import "./ConnectionDetails.scss";
 import {
   ConnectionDetails as ConnectionData,
@@ -23,6 +23,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getStateCache,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
@@ -37,7 +38,7 @@ import {
   setConnectionsCache,
 } from "../../../store/reducers/connectionsCache";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { operationState, toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 import { InfoBlockProps, NotesProps } from "./ConnectionDetails.types";
@@ -292,7 +293,7 @@ const ConnectionDetails = () => {
             className="delete-button"
             onClick={() => {
               setAlertDeleteConnectionIsOpen(true);
-              dispatch(setCurrentOperation(operationState.deleteConnection));
+              dispatch(setCurrentOperation(OperationType.DELETE_CONNECTION));
             }}
           >
             <IonIcon
@@ -333,8 +334,10 @@ const ConnectionDetails = () => {
               setVerifyPasscodeIsOpen(true);
             }
           }}
-          actionCancel={() => dispatch(setCurrentOperation(""))}
-          actionDismiss={() => dispatch(setCurrentOperation(""))}
+          actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+          actionDismiss={() =>
+            dispatch(setCurrentOperation(OperationType.IDLE))
+          }
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
@@ -408,7 +411,7 @@ const ConnectionDetails = () => {
                     }
                   });
                   if (update) {
-                    dispatch(setCurrentOperation(toastState.notesUpdated));
+                    dispatch(setToastMsg(ToastMsgType.NOTES_UPDATED));
                     update = false;
                   }
                 }
@@ -484,7 +487,7 @@ const ConnectionDetails = () => {
             .indexOf(currentNoteId.current);
           newNotes.splice(noteIndex, 1);
           setNotes(newNotes);
-          dispatch(setCurrentOperation(toastState.noteRemoved));
+          dispatch(setToastMsg(ToastMsgType.NOTE_REMOVED));
         }}
         actionCancel={() => {
           setAlertDeleteNoteIsOpen(false);

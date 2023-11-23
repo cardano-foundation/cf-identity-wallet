@@ -9,7 +9,7 @@ import {
   MNEMONIC_FIFTEEN_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-} from "../../../constants/appConstants";
+} from "../../globals/constants";
 import { Alert as AlertConfirm } from "../../components/Alert";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";

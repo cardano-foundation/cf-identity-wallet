@@ -1,5 +1,4 @@
 import { PayloadAction } from "@reduxjs/toolkit";
-
 import {
   AuthenticationCacheProps,
   CurrentRouteCacheProps,
@@ -20,6 +19,7 @@ import {
 } from "./stateCache";
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
+import { OperationType } from "../../../ui/globals/types";
 import {
   ConnectionCredentialRequestProps,
   ConnectionCredentialRequestType,
@@ -68,12 +68,12 @@ describe("State Cache", () => {
     expect(getStateCache(rootState)).toEqual(nextState);
   });
 
-  test("should set the onboarding route cache", () => {
-    const route = "onboarding";
-    const action = setCurrentOperation(route);
+  test("should set the currentOperation cache", () => {
+    const op = OperationType.SCAN_CONNECTION;
+    const action = setCurrentOperation(op);
     const nextState = stateCacheSlice.reducer(initialState, action);
 
-    expect(nextState.currentOperation).toEqual(route);
+    expect(nextState.currentOperation).toEqual(op);
     expect(nextState).not.toBe(initialState);
 
     const rootState = { stateCache: nextState } as RootState;

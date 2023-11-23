@@ -11,7 +11,7 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { toastState } from "../../ui/constants/dictionary";
+import { ToastMsgType } from "../../ui/globals/types";
 
 const getNextRootRoute = (store: StoreState) => {
   const isInitialized = store.stateCache.initialized;
@@ -40,10 +40,10 @@ const getNextRootRoute = (store: StoreState) => {
 
 const getNextOnboardingRoute = (data: DataProps) => {
   let path;
-  if (!data.store.stateCache.authentication.passcodeIsSet) {
-    path = RoutePath.SET_PASSCODE;
-  } else {
+  if (data.store.stateCache.authentication.passcodeIsSet) {
     path = RoutePath.GENERATE_SEED_PHRASE;
+  } else {
+    path = RoutePath.SET_PASSCODE;
   }
 
   return { pathname: path };
@@ -98,9 +98,8 @@ const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
 
-const getNextVerifySeedPhraseRoute = (data: DataProps) => {
-  const nextPath: string = RoutePath.CREATE_PASSWORD;
-
+const getNextVerifySeedPhraseRoute = () => {
+  const nextPath = RoutePath.CREATE_PASSWORD;
   return { pathname: nextPath };
 };
 
@@ -128,11 +127,11 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
 };
 
 const getNextScanRoute = (data: DataProps) => {
-  const currentOperation = data?.state?.currentOperation;
+  const currentToastMsg = data?.state?.toastMsg;
   let path;
   if (
-    currentOperation === toastState.connectionRequestPending ||
-    currentOperation === toastState.credentialRequestPending
+    currentToastMsg === ToastMsgType.CONNECTION_REQUEST_PENDING ||
+    currentToastMsg === ToastMsgType.CREDENTIAL_REQUEST_PENDING
   ) {
     path = TabsRoutePath.CREDS;
   }
@@ -174,7 +173,7 @@ const nextRoute: Record<string, any> = {
     updateRedux: [updateStoreSetSeedPhrase],
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
-    nextPath: (data: DataProps) => getNextVerifySeedPhraseRoute(data),
+    nextPath: (data: DataProps) => getNextVerifySeedPhraseRoute(),
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
   [RoutePath.CREATE_PASSWORD]: {

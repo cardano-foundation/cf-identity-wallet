@@ -6,8 +6,8 @@ import configureStore from "redux-mock-store";
 import { store } from "../../../store";
 import { ShareQR } from "./ShareQR";
 import { ShareQRProps } from "./ShareQR.types";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { toastState } from "../../constants/dictionary";
+import { setToastMsg } from "../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../globals/types";
 
 const setIsOpen = jest.fn();
 const onRefresh = jest.fn();
@@ -110,7 +110,7 @@ describe("Share QR component", () => {
       copyBtns[0].click();
     });
     expect(dispatchMock).toBeCalledWith(
-      setCurrentOperation(toastState.copiedToClipboard)
+      setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD)
     );
   });
 });

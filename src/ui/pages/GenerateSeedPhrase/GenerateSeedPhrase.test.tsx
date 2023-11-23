@@ -14,8 +14,8 @@ import {
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-} from "../../../constants/appConstants";
-import { operationState } from "../../constants/dictionary";
+} from "../../globals/constants";
+import { OperationType } from "../../globals/types";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
@@ -29,7 +29,7 @@ interface StoreMocked {
       passcodeIsSet: boolean;
       seedPhraseIsSet?: boolean;
     };
-    currentOperation: string;
+    currentOperation: OperationType;
   };
   seedPhraseCache: {
     seedPhrase160: string;
@@ -50,7 +50,7 @@ const storeMocked = (initialState: StoreMocked) => {
 
 describe("Generate Seed Phrase screen from Onboarding", () => {
   beforeAll(() => {
-    history.push(RoutePath.GENERATE_SEED_PHRASE, operationState.onboarding);
+    history.push(RoutePath.GENERATE_SEED_PHRASE);
   });
 
   test("User can see Title and Security Overlay", () => {
@@ -100,7 +100,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: "",
+        currentOperation: OperationType.IDLE,
       },
       seedPhraseCache: {
         seedPhrase160:
@@ -157,7 +157,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: "",
+        currentOperation: OperationType.IDLE,
       },
       seedPhraseCache: {
         seedPhrase160: "",
@@ -342,7 +342,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: "",
+        currentOperation: OperationType.IDLE,
       },
       seedPhraseCache: {
         seedPhrase160: "",
