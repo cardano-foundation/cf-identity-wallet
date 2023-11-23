@@ -57,7 +57,7 @@ const VerifyPassword = ({
   useEffect(() => {
     let operation;
     if (
-      currentRoute?.path?.includes(TabsRoutePath.DIDS) &&
+      currentRoute?.path?.includes(TabsRoutePath.IDENTIFIERS) &&
       currentOperation === OperationType.DELETE_IDENTIFIER
     ) {
       operation = ToastMsgType.IDENTIFIER_DELETED;

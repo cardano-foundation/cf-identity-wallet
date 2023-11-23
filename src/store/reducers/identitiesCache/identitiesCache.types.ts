@@ -1,6 +1,6 @@
-interface FavouriteIdentity {
+interface FavouriteIdentifier {
   id: string;
   time: number;
 }
 
-export type { FavouriteIdentity };
+export type { FavouriteIdentifier };

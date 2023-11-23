@@ -2,9 +2,9 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
 import { CLEAR_STATE_DELAY, CardsStack, NAVIGATION_DELAY } from "./CardsStack";
-import { identityFix } from "../../__fixtures__/identityFix";
+import { identifierFix } from "../../__fixtures__/identifierFix";
 import { store } from "../../../store";
-import { DidCardDetails } from "../../pages/DidCardDetails";
+import { IdentifierCardDetails } from "../../pages/IdentifierCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
@@ -45,13 +45,15 @@ describe("Cards Stack Component", () => {
       <Provider store={store}>
         <CardsStack
           name="example"
-          cardsType={CardType.DIDS}
-          cardsData={identityFix}
+          cardsType={CardType.IDENTIFIERS}
+          cardsData={identifierFix}
         />
       </Provider>
     );
     const firstCardId = getByText(
-      identityFix[0].id.substring(8, 13) + "..." + identityFix[0].id.slice(-5)
+      identifierFix[0].id.substring(8, 13) +
+        "..." +
+        identifierFix[0].id.slice(-5)
     );
     expect(firstCardId).toBeInTheDocument();
   });
@@ -72,26 +74,26 @@ describe("Cards Stack Component", () => {
     expect(labelPending).toBeInTheDocument();
   });
 
-  test("It navigates to Did Card Details and back", async () => {
+  test("It navigates to Identifier Card Details and back", async () => {
     jest.useFakeTimers();
     const { findByTestId } = render(
       <MemoryRouter>
         <Provider store={store}>
           <CardsStack
             name="example"
-            cardsType={CardType.DIDS}
-            cardsData={identityFix}
+            cardsType={CardType.IDENTIFIERS}
+            cardsData={identifierFix}
           />
           <Route
-            path={TabsRoutePath.DID_DETAILS}
-            component={DidCardDetails}
+            path={TabsRoutePath.IDENTIFIER_DETAILS}
+            component={IdentifierCardDetails}
           />
         </Provider>
       </MemoryRouter>
     );
 
     const firstCard = await findByTestId(
-      "identity-card-template-example-index-0"
+      "identifier-card-template-example-index-0"
     );
     await waitFor(() => expect(firstCard).not.toHaveClass("active"));
 

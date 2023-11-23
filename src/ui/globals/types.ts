@@ -7,7 +7,7 @@ import BackgroundKERI1 from "../assets/images/keri-1.png";
 
 enum CardType {
   CREDS = "creds",
-  DIDS = "dids",
+  IDENTIFIERS = "identifiers",
 }
 
 enum DIDCommRequestType {
@@ -18,8 +18,8 @@ enum DIDCommRequestType {
 // String enums as some of these map to i18n values (if relevant)
 enum OperationType {
   IDLE = "idle",
-  UPDATE_IDENTIFIER = "updateIdentity",
-  DELETE_IDENTIFIER = "deleteIdentity",
+  UPDATE_IDENTIFIER = "updateIdentifier",
+  DELETE_IDENTIFIER = "deleteIdentifier",
   DELETE_CONNECTION = "deleteConnection",
   ARCHIVE_CREDENTIAL = "archiveCredential",
   DELETE_CREDENTIAL = "deleteCredential",
@@ -28,9 +28,9 @@ enum OperationType {
 
 enum ToastMsgType {
   COPIED_TO_CLIPBOARD = "copiedToClipboard",
-  IDENTIFIER_CREATED = "identityCreated",
-  IDENTIFIER_UPDATED = "identityUpdated",
-  IDENTIFIER_DELETED = "identityDeleted",
+  IDENTIFIER_CREATED = "identifierCreated",
+  IDENTIFIER_UPDATED = "identifierUpdated",
+  IDENTIFIER_DELETED = "identifierDeleted",
   CREDENTIAL_DELETED = "credentialDeleted",
   CREDENTIAL_RESTORED = "credentialRestored",
   CREDENTIALS_DELETED = "credentialsDeleted",

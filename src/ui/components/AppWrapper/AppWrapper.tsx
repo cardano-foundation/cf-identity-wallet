@@ -43,7 +43,7 @@ import {
   ConnectionStatus,
   CredentialShortDetails,
 } from "../../../core/agent/agent.types";
-import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
+import { FavouriteIdentifier } from "../../../store/reducers/identitiesCache/identitiesCache.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -217,12 +217,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
     // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
 
     try {
-      const didsFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_DIDS_FAVOURITES
+      const identifiersFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
       );
       dispatch(
         setFavouritesIdentitiesCache(
-          didsFavourites.favourites as FavouriteIdentity[]
+          identifiersFavourites.favourites as FavouriteIdentifier[]
         )
       );
 
@@ -231,7 +231,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       );
       dispatch(
         setFavouritesCredsCache(
-          credsFavourites.favourites as FavouriteIdentity[]
+          credsFavourites.favourites as FavouriteIdentifier[]
         )
       );
     } catch (e) {

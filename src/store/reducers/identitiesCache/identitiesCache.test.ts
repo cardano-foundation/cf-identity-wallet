@@ -4,8 +4,8 @@ import {
   getIdentitiesCache,
   setIdentitiesCache,
   setFavouritesIdentitiesCache,
-  addFavouriteIdentityCache,
-  removeFavouriteIdentityCache,
+  addFavouriteIdentifierCache,
+  removeFavouriteIdentifierCache,
   getFavouritesIdentitiesCache,
 } from "./identitiesCache";
 import { RootState } from "../../index";
@@ -13,7 +13,7 @@ import {
   IdentifierShortDetails,
   IdentifierType,
 } from "../../../core/agent/agent.types";
-import { FavouriteIdentity } from "./identitiesCache.types";
+import { FavouriteIdentifier } from "./identitiesCache.types";
 
 describe("identitiesCacheSlice", () => {
   const initialState = {
@@ -44,7 +44,7 @@ describe("identitiesCacheSlice", () => {
     expect(newState.identities).toEqual(identities);
   });
   it("should handle setFavouritesIdentitiesCache", () => {
-    const favourites: FavouriteIdentity[] = [
+    const favourites: FavouriteIdentifier[] = [
       {
         id: "abcd",
         time: 1,
@@ -56,18 +56,18 @@ describe("identitiesCacheSlice", () => {
     );
     expect(newState.favourites).toEqual(favourites);
   });
-  it("should handle addFavouriteIdentityCache", () => {
-    const favourite: FavouriteIdentity = {
+  it("should handle addFavouriteIdentifierCache", () => {
+    const favourite: FavouriteIdentifier = {
       id: "abcd",
       time: 1,
     };
     const newState = identitiesCacheSlice.reducer(
       initialState,
-      addFavouriteIdentityCache(favourite)
+      addFavouriteIdentifierCache(favourite)
     );
     expect(newState.favourites).toEqual([favourite]);
   });
-  it("should handle removeFavouriteIdentityCache", () => {
+  it("should handle removeFavouriteIdentifierCache", () => {
     const initialState = {
       identities: [],
       favourites: [
@@ -79,13 +79,13 @@ describe("identitiesCacheSlice", () => {
     };
     const newState = identitiesCacheSlice.reducer(
       initialState,
-      removeFavouriteIdentityCache("abcd")
+      removeFavouriteIdentifierCache("abcd")
     );
     expect(newState.favourites).toEqual([]);
   });
 });
 
-describe("get identity Cache", () => {
+describe("get identifier Cache", () => {
   it("should return the identities cache from RootState", () => {
     const state = {
       identitiesCache: {

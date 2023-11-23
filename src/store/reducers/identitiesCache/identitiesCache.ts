@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IdentifierShortDetails } from "../../../core/agent/agent.types";
 import { RootState } from "../../index";
-import { FavouriteIdentity } from "./identitiesCache.types";
+import { FavouriteIdentifier } from "./identitiesCache.types";
 
 const initialState: {
   identities: IdentifierShortDetails[];
-  favourites: FavouriteIdentity[];
+  favourites: FavouriteIdentifier[];
 } = {
   identities: [],
   favourites: [],
@@ -22,18 +22,18 @@ const identitiesCacheSlice = createSlice({
     },
     setFavouritesIdentitiesCache: (
       state,
-      action: PayloadAction<FavouriteIdentity[]>
+      action: PayloadAction<FavouriteIdentifier[]>
     ) => {
       state.favourites = action.payload;
     },
-    addFavouriteIdentityCache: (
+    addFavouriteIdentifierCache: (
       state,
-      action: PayloadAction<FavouriteIdentity>
+      action: PayloadAction<FavouriteIdentifier>
     ) => {
       if (state.favourites.some((fav) => fav.id === action.payload.id)) return;
       state.favourites = [action.payload, ...state.favourites];
     },
-    removeFavouriteIdentityCache: (state, action: PayloadAction<string>) => {
+    removeFavouriteIdentifierCache: (state, action: PayloadAction<string>) => {
       state.favourites = state.favourites.filter(
         (fav) => fav.id !== action.payload
       );
@@ -46,8 +46,8 @@ export { initialState, identitiesCacheSlice };
 export const {
   setIdentitiesCache,
   setFavouritesIdentitiesCache,
-  addFavouriteIdentityCache,
-  removeFavouriteIdentityCache,
+  addFavouriteIdentifierCache,
+  removeFavouriteIdentifierCache,
 } = identitiesCacheSlice.actions;
 
 const getIdentitiesCache = (state: RootState) =>

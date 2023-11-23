@@ -158,7 +158,7 @@ class IdentifierService extends AgentService {
     );
   }
 
-  async restoreIdentity(identifier: string): Promise<void> {
+  async restoreIdentifier(identifier: string): Promise<void> {
     const metadata = await this.getMetadataById(identifier);
     this.validArchivedIdentifier(metadata);
     return this.agent.modules.generalStorage.updateIdentifierMetadata(
