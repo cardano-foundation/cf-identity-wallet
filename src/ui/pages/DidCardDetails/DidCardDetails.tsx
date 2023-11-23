@@ -6,12 +6,17 @@ import {
   IonSpinner,
   useIonViewWillEnter,
 } from "@ionic/react";
-import { shareOutline, ellipsisVertical, trashOutline } from "ionicons/icons";
+import {
+  shareOutline,
+  ellipsisVertical,
+  trashOutline,
+  heartOutline,
+  heart,
+} from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
-import { DidCard } from "../../components/CardsStack";
 import { getBackRoute } from "../../../routes/backRoute";
 import { updateReduxState } from "../../../store/utils";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -19,31 +24,40 @@ import {
   getStateCache,
   setCurrentOperation,
   setCurrentRoute,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { ShareIdentity } from "../../components/ShareIdentity";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import {
+  addFavouriteIdentityCache,
+  getFavouritesIdentitiesCache,
   getIdentitiesCache,
+  removeFavouriteIdentityCache,
   setIdentitiesCache,
 } from "../../../store/reducers/identitiesCache";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { AriesAgent } from "../../../core/agent/agent";
 import {
   DIDDetails,
-  IdentityType,
+  IdentifierType,
   KERIDetails,
-} from "../../../core/aries/ariesAgent.types";
+} from "../../../core/agent/agent.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { IdentityCardInfoKey } from "../../components/IdentityCardInfoKey";
 import { IdentityCardInfoKeri } from "../../components/IdentityCardInfoKeri";
-import { operationState } from "../../constants/dictionary";
+import { MAX_FAVOURITES } from "../../globals/constants";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { IdentityOptions } from "../../components/IdentityOptions";
+import { IdentityCardTemplate } from "../../components/IdentityCardTemplate";
+import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
+import "./DidCardDetails.scss";
 
 const DidCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const identitiesData = useAppSelector(getIdentitiesCache);
+  const favouritesIdentitiesData = useAppSelector(getFavouritesIdentitiesCache);
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [identityOptionsIsOpen, setIdentityOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -54,9 +68,14 @@ const DidCardDetails = () => {
   >();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
+  const isFavourite = favouritesIdentitiesData?.some(
+    (fav) => fav.id === params.id
+  );
+
   useEffect(() => {
     const fetchDetails = async () => {
-      const cardDetailsResult = await AriesAgent.agent.getIdentity(params.id);
+      const cardDetailsResult =
+        await AriesAgent.agent.identifiers.getIdentifier(params.id);
       if (cardDetailsResult) {
         setCardData(cardDetailsResult.result);
       } else {
@@ -84,7 +103,7 @@ const DidCardDetails = () => {
     history.push(backPath.pathname);
   };
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setVerifyPasswordIsOpen(false);
     // @TODO - sdisalvo: Update Database.
     // Remember to update identity.card.details.options file too.
@@ -92,14 +111,65 @@ const DidCardDetails = () => {
       const updatedIdentities = identitiesData.filter(
         (item) => item.id !== cardData.id
       );
+      await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
+      await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
       dispatch(setIdentitiesCache(updatedIdentities));
     }
     handleDone();
   };
 
   const AdditionalButtons = () => {
+    const handleSetFavourite = (id: string) => {
+      if (isFavourite) {
+        PreferencesStorage.set(PreferencesKeys.APP_DIDS_FAVOURITES, {
+          favourites: favouritesIdentitiesData.filter((fav) => fav.id !== id),
+        })
+          .then(() => {
+            dispatch(removeFavouriteIdentityCache(id));
+          })
+          .catch((error) => {
+            /*TODO: handle error*/
+          });
+      } else {
+        if (favouritesIdentitiesData.length >= MAX_FAVOURITES) {
+          dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
+          return;
+        }
+
+        PreferencesStorage.set(PreferencesKeys.APP_DIDS_FAVOURITES, {
+          favourites: [{ id, time: Date.now() }, ...favouritesIdentitiesData],
+        })
+          .then(() => {
+            dispatch(addFavouriteIdentityCache({ id, time: Date.now() }));
+          })
+          .catch((error) => {
+            /*TODO: handle error*/
+          });
+      }
+    };
     return (
       <>
+        <IonButton
+          shape="round"
+          className={`heart-button-${
+            isFavourite ? "favourite" : "no-favourite"
+          }`}
+          data-testid="heart-button"
+          onClick={() => {
+            handleSetFavourite(params.id);
+          }}
+        >
+          <IonIcon
+            slot="icon-only"
+            icon={isFavourite ? heart : heartOutline}
+            className={`heart-icon-${
+              isFavourite ? "favourite" : "no-favourite"
+            }`}
+            data-testid={`heart-icon-${
+              isFavourite ? "favourite" : "no-favourite"
+            }`}
+          />
+        </IonButton>
         <IonButton
           shape="round"
           className="share-button"
@@ -147,16 +217,16 @@ const DidCardDetails = () => {
             className="spinner-container"
             data-testid="spinner-container"
           >
-            <IonSpinner name="dots" />
+            <IonSpinner name="circular" />
           </div>
         ) : (
           <>
-            <DidCard
+            <IdentityCardTemplate
               cardData={cardData}
               isActive={false}
             />
             <div className="card-details-content">
-              {cardData.method === IdentityType.KEY ? (
+              {cardData.method === IdentifierType.KEY ? (
                 <IdentityCardInfoKey cardData={cardData as DIDDetails} />
               ) : (
                 <IdentityCardInfoKeri cardData={cardData as KERIDetails} />
@@ -169,7 +239,9 @@ const DidCardDetails = () => {
                 className="delete-button"
                 onClick={() => {
                   setAlertIsOpen(true);
-                  dispatch(setCurrentOperation(operationState.deleteIdentity));
+                  dispatch(
+                    setCurrentOperation(OperationType.DELETE_IDENTIFIER)
+                  );
                 }}
               >
                 <IonIcon
@@ -193,8 +265,8 @@ const DidCardDetails = () => {
         )}
         {cardData && (
           <IdentityOptions
-            isOpen={identityOptionsIsOpen}
-            setIsOpen={setIdentityOptionsIsOpen}
+            optionsIsOpen={identityOptionsIsOpen}
+            setOptionsIsOpen={setIdentityOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
           />
@@ -220,8 +292,10 @@ const DidCardDetails = () => {
               setVerifyPasscodeIsOpen(true);
             }
           }}
-          actionCancel={() => dispatch(setCurrentOperation(""))}
-          actionDismiss={() => dispatch(setCurrentOperation(""))}
+          actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+          actionDismiss={() =>
+            dispatch(setCurrentOperation(OperationType.IDLE))
+          }
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}

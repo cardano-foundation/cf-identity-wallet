@@ -4,6 +4,7 @@ import "./Alert.scss";
 
 const Alert = ({
   isOpen,
+  backdropDismiss = true,
   setIsOpen,
   dataTestId,
   headerText,
@@ -40,7 +41,7 @@ const Alert = ({
 
   const handleDismiss = () => {
     if (actionDismiss) {
-      actionDismiss;
+      actionDismiss();
     }
     setIsOpen(false);
   };
@@ -52,11 +53,14 @@ const Alert = ({
     >
       <IonAlert
         isOpen={isOpen}
+        backdropDismiss={backdropDismiss}
         cssClass="custom-alert"
         header={headerText}
         subHeader={subheaderText}
         buttons={buttons}
-        onDidDismiss={handleDismiss}
+        onDidDismiss={({ detail }) =>
+          detail.role === "backdrop" && handleDismiss
+        }
       />
     </div>
   );

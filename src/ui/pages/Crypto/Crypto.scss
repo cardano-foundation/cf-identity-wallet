@@ -1,85 +1,21 @@
-.crypto-tab {
-  &.wallet-details {
-    background: var(--ion-color-primary-gradient);
+.crypto-placeholder-tab-content {
+  margin-top: 35vh;
+  text-align: center;
+  width: 100%;
+  color: var(--ion-color-secondary);
 
-    ion-toolbar,
-    ion-content main {
-      --background: transparent;
-    }
-
-    .identicon {
-      width: 2.8125rem;
-      height: 2.8125rem;
-      border-radius: 1.5rem;
-    }
-
-    .crypto-tab-content {
-      margin-top: 8vh;
-    }
-
-    ion-title {
-      margin-left: 3.4375rem;
-      max-width: 11.25rem;
-
-      &.md {
-        margin-left: 0.63rem;
-      }
-
-      h2 {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-    }
-
-    .crypto-tab-action-buttons {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-around;
-      margin-top: 3.62rem;
-
-      ion-button {
-        width: 3.8125rem;
-        height: 5.1875rem;
-        --border-radius: 0.5rem;
-
-        .button-inner {
-          display: flex;
-          flex-direction: column !important;
-
-          ion-icon {
-            width: 1.9375rem;
-            height: 1.9375rem;
-            margin: 0 auto;
-          }
-
-          span {
-            margin-top: 0.62rem;
-            font-size: 0.75rem;
-            font-weight: 400;
-
-            &.button-label-dark {
-              color: var(--ion-color-primary);
-            }
-
-            &.button-label-light {
-              color: var(--ion-color-light);
-            }
-          }
-        }
-      }
-    }
+  h2,
+  a {
+    color: var(--ion-color-primary);
   }
 }
 
-.crypto-assets-transactions {
-  bottom: calc(8vh + 1px + var(--ion-safe-area-bottom));
-
-  &.md {
-    bottom: calc(8vh + 0.75rem + 1px);
+.crypto-placeholder-modal-body {
+  ol {
+    padding-left: 2rem;
   }
 
-  .modal {
-    background-color: var(--ion-color-light-grey);
+  li {
+    line-height: 2rem;
   }
 }

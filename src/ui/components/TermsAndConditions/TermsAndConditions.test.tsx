@@ -14,7 +14,7 @@ describe("Terms and conditions screen", () => {
     );
 
     await waitFor(() => {
-      expect(getByTestId("terms-and-conditions")).toBeVisible();
+      expect(getByTestId("terms-and-conditions-modal")).toBeVisible();
     });
 
     const backdrop = document.querySelector("ion-backdrop");

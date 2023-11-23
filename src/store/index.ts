@@ -3,7 +3,6 @@ import { seedPhraseCacheSlice } from "./reducers/seedPhraseCache";
 import { stateCacheSlice } from "./reducers/stateCache";
 import { identitiesCacheSlice } from "./reducers/identitiesCache";
 import { credsCacheSlice } from "./reducers/credsCache";
-import { cryptoAccountsCacheSlice } from "./reducers/cryptoAccountsCache";
 import { connectionsCacheSlice } from "./reducers/connectionsCache";
 
 const store = configureStore({
@@ -12,7 +11,6 @@ const store = configureStore({
     seedPhraseCache: seedPhraseCacheSlice.reducer,
     identitiesCache: identitiesCacheSlice.reducer,
     credsCache: credsCacheSlice.reducer,
-    cryptoAccountsCache: cryptoAccountsCacheSlice.reducer,
     connectionsCache: connectionsCacheSlice.reducer,
   },
 });

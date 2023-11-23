@@ -7,14 +7,28 @@ import {
   IonIcon,
   IonHeader,
 } from "@ionic/react";
+import { useRef } from "react";
 import { Scanner } from "../../components/Scanner";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { useAppDispatch } from "../../../store/hooks";
-import { FullPageScannerProps } from "./FullPageScanner.types";
+import {
+  FullPageScannerProps,
+  ScannerRefComponent,
+} from "./FullPageScanner.types";
+import { OperationType } from "../../globals/types";
 
 const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
   const dispatch = useAppDispatch();
+  const scannerRef = useRef<ScannerRefComponent>(null);
 
+  const handleBackButton = () => {
+    setShowScan(false);
+    dispatch(setCurrentOperation(OperationType.IDLE));
+    scannerRef.current?.stopScan();
+    document
+      ?.querySelector("body.scanner-active > div:last-child")
+      ?.classList.add("hide");
+  };
   return (
     <IonPage
       className="qr-code-scanner-full-page"
@@ -29,13 +43,7 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
             <IonButton
               slot="icon-only"
               fill="clear"
-              onClick={() => {
-                setShowScan(false);
-                dispatch(setCurrentOperation(""));
-                document
-                  ?.querySelector("body.scanner-active > div:last-child")
-                  ?.classList.add("hide");
-              }}
+              onClick={() => handleBackButton()}
               className="back-button"
               data-testid="back-button"
             >
@@ -47,7 +55,7 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
           </IonButtons>
         </IonToolbar>
       </IonHeader>
-      <Scanner />
+      <Scanner ref={scannerRef} />
     </IonPage>
   );
 };

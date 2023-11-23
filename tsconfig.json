@@ -19,9 +19,15 @@
     "isolatedModules": true,
     "jsx": "react-jsx",
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "emitDecoratorMetadata": true,
+    "types": [
+      "node",
+      "@wdio/globals/types",
+      "@wdio/cucumber-framework",
+    ]
   },
   "include": [
-    "src"
+    "src",
+    "tests"
   ]
 }

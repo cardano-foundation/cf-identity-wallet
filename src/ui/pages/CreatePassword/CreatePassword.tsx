@@ -18,8 +18,7 @@ import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
 import { RoutePath } from "../../../routes";
 import { PasswordRegexProps, RegexItemProps } from "./CreatePassword.types";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
-import { MiscRecordId } from "../../../core/aries/modules";
+import { AriesAgent } from "../../../core/agent/agent";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -29,7 +28,8 @@ import {
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { Alert } from "../../components/Alert";
-import { onboardingRoute } from "../../constants/dictionary";
+import { OperationType } from "../../globals/types";
+import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const errorMessages = {
   hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
@@ -145,9 +145,6 @@ const PasswordRegex = ({ password }: PasswordRegexProps) => {
 
 const CreatePassword = () => {
   const stateCache = useAppSelector(getStateCache);
-  const onboarding =
-    stateCache?.currentOperation === onboardingRoute.create ||
-    onboardingRoute.restore;
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [createPasswordValue, setCreatePasswordValue] = useState("");
@@ -191,10 +188,10 @@ const CreatePassword = () => {
         createPasswordValue
       );
       if (createHintValue) {
-        await AriesAgent.agent.storeMiscRecord(
-          MiscRecordId.OP_PASS_HINT,
-          createHintValue
-        );
+        await AriesAgent.agent.genericRecords.save({
+          id: MiscRecordId.OP_PASS_HINT,
+          content: { value: createHintValue },
+        });
       }
     }
 
@@ -216,7 +213,7 @@ const CreatePassword = () => {
       dispatch,
       updateRedux
     );
-    dispatch(setCurrentOperation(""));
+    dispatch(setCurrentOperation(OperationType.IDLE));
     history.push(nextPath.pathname);
     handleClearState();
   };
@@ -226,14 +223,14 @@ const CreatePassword = () => {
       <PageLayout
         header={true}
         currentPath={RoutePath.CREATE_PASSWORD}
-        closeButton={!onboarding}
+        closeButton={false}
         closeButtonAction={() => handleClose()}
         title={`${i18n.t("createpassword.title")}`}
         footer={true}
-        primaryButtonText={`${i18n.t("createpassword.buttons.continue")}`}
+        primaryButtonText={`${i18n.t("createpassword.button.continue")}`}
         primaryButtonAction={() => handleContinue(false)}
         primaryButtonDisabled={!validated}
-        secondaryButtonText={`${i18n.t("createpassword.buttons.skip")}`}
+        secondaryButtonText={`${i18n.t("createpassword.button.skip")}`}
         secondaryButtonAction={() => setAlertIsOpen(true)}
       >
         <IonGrid>
@@ -266,15 +263,15 @@ const CreatePassword = () => {
           {(createPasswordValue !== "" &&
             !PasswordValidator.validatePassword(createPasswordValue)) ||
           !PasswordValidator.isValidCharacters(createPasswordValue) ? (
-            <ErrorMessage
-              message={
-                createPasswordValue.length
-                  ? PasswordValidator.getErrorByPriority(createPasswordValue)
-                  : undefined
-              }
-              timeout={false}
-            />
-          ) : null}
+              <ErrorMessage
+                message={
+                  createPasswordValue.length
+                    ? PasswordValidator.getErrorByPriority(createPasswordValue)
+                    : undefined
+                }
+                timeout={false}
+              />
+            ) : null}
           {createPasswordValue && (
             <IonRow>
               <IonCol size="12">

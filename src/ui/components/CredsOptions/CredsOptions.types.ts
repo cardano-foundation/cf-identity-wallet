@@ -1,7 +1,10 @@
+import { CredentialDetails } from "../../../core/agent/agent.types";
+
 interface CredsOptionsProps {
+  cardData: CredentialDetails;
   optionsIsOpen: boolean;
   setOptionsIsOpen: (value: boolean) => void;
-  id: string;
+  credsOptionAction: () => void;
 }
 
 export type { CredsOptionsProps };

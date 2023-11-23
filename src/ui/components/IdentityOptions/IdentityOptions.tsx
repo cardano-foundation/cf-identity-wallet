@@ -41,17 +41,21 @@ import { TabsRoutePath } from "../../../routes/paths";
 import {
   getStateCache,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import { DISPLAY_NAME_LENGTH } from "../../../constants/appConstants";
+import { DISPLAY_NAME_LENGTH } from "../../globals/constants";
 import { VerifyPasscode } from "../VerifyPasscode";
-import { operationState, toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
-import { writeToClipboard } from "../../../utils/clipboard";
+import { writeToClipboard } from "../../utils/clipboard";
+import { AriesAgent } from "../../../core/agent/agent";
+import { IdentityThemeSelector } from "../IdentityThemeSelector";
+import { IdentifierType } from "../../../core/agent/agent.types";
 
 const IdentityOptions = ({
-  isOpen,
-  setIsOpen,
+  optionsIsOpen,
+  setOptionsIsOpen,
   cardData,
   setCardData,
 }: IdentityOptionsProps) => {
@@ -61,6 +65,7 @@ const IdentityOptions = ({
   const history = useHistory();
   const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
   const [newDisplayName, setNewDisplayName] = useState(cardData.displayName);
+  const [newSelectedTheme, setNewSelectedTheme] = useState(cardData.theme);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [viewIsOpen, setViewIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
@@ -70,7 +75,8 @@ const IdentityOptions = ({
   const verifyDisplayName =
     newDisplayName.length > 0 &&
     newDisplayName.length <= DISPLAY_NAME_LENGTH &&
-    newDisplayName !== cardData.displayName;
+    (newDisplayName !== cardData.displayName ||
+      newSelectedTheme !== cardData.theme);
 
   useEffect(() => {
     setNewDisplayName(cardData.displayName);
@@ -87,26 +93,25 @@ const IdentityOptions = ({
     }
   }, []);
 
-  const handleDismiss = () => {
-    setEditorIsOpen(false);
-    setIsOpen(false);
-  };
+  useEffect(() => {
+    setNewSelectedTheme(cardData.theme);
+  }, [editorOptionsIsOpen]);
 
   const handleClose = () => {
     setEditorIsOpen(false);
-    setIsOpen(true);
+    setOptionsIsOpen(false);
   };
 
   const handleDelete = () => {
     setActionType("delete");
-    setIsOpen(false);
+    setOptionsIsOpen(false);
     setAlertIsOpen(true);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     setActionType("edit");
     setEditorIsOpen(false);
-    setIsOpen(false);
+    setOptionsIsOpen(false);
     const updatedIdentities = [...identitiesData];
     const index = updatedIdentities.findIndex(
       (identity) => identity.id === cardData.id
@@ -114,14 +119,24 @@ const IdentityOptions = ({
     updatedIdentities[index] = {
       ...updatedIdentities[index],
       displayName: newDisplayName,
+      theme: newSelectedTheme,
     };
-    setCardData({ ...cardData, displayName: newDisplayName });
+    await AriesAgent.agent.identifiers.updateIdentifier(cardData.id, {
+      displayName: newDisplayName,
+      theme: newSelectedTheme,
+    });
+    setCardData({
+      ...cardData,
+      displayName: newDisplayName,
+      theme: newSelectedTheme,
+    });
     dispatch(setIdentitiesCache(updatedIdentities));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     handleDone();
   };
 
   const verifyAction = () => {
-    handleDismiss();
+    handleClose();
     const updatedIdentities = identitiesData.filter(
       (item) => item.id !== cardData.id
     );
@@ -129,7 +144,7 @@ const IdentityOptions = ({
     handleDone();
   };
 
-  const handleDone = () => {
+  const handleDone = async () => {
     const { backPath, updateRedux } = getBackRoute(TabsRoutePath.DID_DETAILS, {
       store: { stateCache },
     });
@@ -141,6 +156,8 @@ const IdentityOptions = ({
       updateRedux
     );
     if (actionType === "delete") {
+      await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
+      await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
       history.push(TabsRoutePath.DIDS);
     }
   };
@@ -148,69 +165,180 @@ const IdentityOptions = ({
   return (
     <>
       <IonModal
-        isOpen={isOpen}
-        initialBreakpoint={0.35}
-        breakpoints={[0, 0.35]}
-        className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
+        isOpen={optionsIsOpen}
+        initialBreakpoint={0.4}
+        breakpoints={[0, 0.4]}
+        className="page-layout"
         data-testid="identity-options-modal"
-        onDidDismiss={handleDismiss}
+        onDidDismiss={() => setOptionsIsOpen(false)}
       >
-        <div
-          className={`identity-options modal ${
-            editorOptionsIsOpen ? "editor" : "menu"
-          }`}
-        >
+        <div className="identity-options modal menu">
           <IonHeader
             translucent={true}
             className="ion-no-border"
           >
             <IonToolbar color="light">
-              {editorOptionsIsOpen && (
-                <IonButtons slot="start">
-                  <IonButton
-                    className="close-button-label"
-                    onClick={() => {
-                      handleClose();
-                      dispatch(setCurrentOperation(""));
-                    }}
-                    data-testid="close-button"
-                  >
-                    {i18n.t("identity.card.details.options.cancel")}
-                  </IonButton>
-                </IonButtons>
-              )}
               <IonTitle data-testid="identity-options-title">
-                <h2>
-                  {i18n.t(
-                    editorOptionsIsOpen
-                      ? "identity.card.details.options.edit"
-                      : "identity.card.details.options.title"
-                  )}
-                </h2>
+                <h2>{i18n.t("identity.card.details.options.title")}</h2>
               </IonTitle>
             </IonToolbar>
           </IonHeader>
-
           <IonContent
             className="identity-options-body"
             color="light"
           >
-            {editorOptionsIsOpen ? (
-              <IonGrid className="identity-options-inner">
-                <IonRow>
-                  <IonCol size="12">
-                    <CustomInput
-                      dataTestId="edit-display-name"
-                      title={`${i18n.t(
-                        "identity.card.details.options.inner.label"
-                      )}`}
-                      hiddenInput={false}
-                      autofocus={true}
-                      onChangeInput={setNewDisplayName}
-                      value={newDisplayName}
-                    />
-                  </IonCol>
-                </IonRow>
+            <IonGrid className="identity-options-main">
+              <IonRow>
+                <IonCol size="12">
+                  <span
+                    className="identity-options-option"
+                    data-testid="identity-options-view-button"
+                    onClick={() => {
+                      setOptionsIsOpen(false);
+                      setViewIsOpen(true);
+                    }}
+                  >
+                    <span>
+                      <IonButton shape="round">
+                        <IonIcon
+                          slot="icon-only"
+                          icon={codeSlashOutline}
+                        />
+                      </IonButton>
+                    </span>
+                    <span className="identity-options-label">
+                      {i18n.t("identity.card.details.options.view")}
+                    </span>
+                  </span>
+                  <span
+                    className="identity-options-option"
+                    data-testid="identity-options-identity-options-button"
+                    onClick={() => {
+                      dispatch(
+                        setCurrentOperation(OperationType.UPDATE_IDENTIFIER)
+                      );
+                      setNewDisplayName(cardData.displayName);
+                      setOptionsIsOpen(false);
+                      setEditorIsOpen(true);
+                    }}
+                  >
+                    <span>
+                      <IonButton shape="round">
+                        <IonIcon
+                          slot="icon-only"
+                          icon={pencilOutline}
+                        />
+                      </IonButton>
+                    </span>
+                    <span className="identity-options-label">
+                      {i18n.t("identity.card.details.options.edit")}
+                    </span>
+                  </span>
+                  <span
+                    className="identity-options-option"
+                    data-testid="identity-options-share-button"
+                    onClick={async () => {
+                      await Share.share({
+                        text: cardData.displayName + " " + cardData.id,
+                      });
+                    }}
+                  >
+                    <span>
+                      <IonButton shape="round">
+                        <IonIcon
+                          slot="icon-only"
+                          icon={shareOutline}
+                        />
+                      </IonButton>
+                    </span>
+                    <span className="identity-options-info-block-data">
+                      {i18n.t("identity.card.details.options.share")}
+                    </span>
+                  </span>
+                  <span
+                    className="identity-options-option"
+                    data-testid="identity-options-delete-button"
+                    onClick={() => {
+                      setOptionsIsOpen(false);
+                      handleDelete();
+                      dispatch(
+                        setCurrentOperation(OperationType.DELETE_IDENTIFIER)
+                      );
+                    }}
+                  >
+                    <span>
+                      <IonButton shape="round">
+                        <IonIcon
+                          slot="icon-only"
+                          icon={trashOutline}
+                        />
+                      </IonButton>
+                    </span>
+                    <span className="identity-options-label">
+                      {i18n.t("identity.card.details.options.delete")}
+                    </span>
+                  </span>
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          </IonContent>
+        </div>
+      </IonModal>
+      <IonModal
+        isOpen={editorOptionsIsOpen}
+        initialBreakpoint={0.65}
+        breakpoints={[0, 0.65]}
+        className={`page-layout ${keyboardIsOpen ? "extended-modal" : ""}`}
+        data-testid="edit-identity-modal"
+        onDidDismiss={() => {
+          setEditorIsOpen(false);
+          setNewDisplayName(cardData.displayName);
+          setNewSelectedTheme(cardData.theme);
+        }}
+      >
+        <div className="identity-options modal editor">
+          <IonHeader
+            translucent={true}
+            className="ion-no-border"
+          >
+            <IonToolbar color="light">
+              <IonButtons slot="start">
+                <IonButton
+                  className="close-button-label"
+                  onClick={() => {
+                    handleClose();
+                    dispatch(setCurrentOperation(OperationType.IDLE));
+                  }}
+                  data-testid="close-button"
+                >
+                  {i18n.t("identity.card.details.options.cancel")}
+                </IonButton>
+              </IonButtons>
+              <IonTitle data-testid="identity-options-title">
+                <h2>{i18n.t("identity.card.details.options.edit")}</h2>
+              </IonTitle>
+            </IonToolbar>
+          </IonHeader>
+          <IonContent
+            className="identity-options-body"
+            color="light"
+          >
+            <IonGrid className="identity-options-inner">
+              <IonRow>
+                <IonCol size="12">
+                  <CustomInput
+                    dataTestId="edit-display-name"
+                    title={`${i18n.t(
+                      "identity.card.details.options.inner.label"
+                    )}`}
+                    hiddenInput={false}
+                    autofocus={true}
+                    onChangeInput={setNewDisplayName}
+                    value={newDisplayName}
+                  />
+                </IonCol>
+              </IonRow>
+              <IonRow className="error-message-container">
                 {newDisplayName.length > DISPLAY_NAME_LENGTH ? (
                   <ErrorMessage
                     message={`${i18n.t(
@@ -218,122 +346,36 @@ const IdentityOptions = ({
                     )}`}
                     timeout={false}
                   />
-                ) : (
-                  <div className="error-placeholder" />
-                )}
-                <IonButton
-                  shape="round"
-                  expand="block"
-                  className="ion-primary-button"
-                  data-testid="continue-button"
-                  onClick={handleSubmit}
-                  disabled={!verifyDisplayName}
-                >
-                  {i18n.t("identity.card.details.options.inner.confirm")}
-                </IonButton>
-              </IonGrid>
-            ) : (
-              <IonGrid className="identity-options-main">
-                <IonRow>
-                  <IonCol size="12">
-                    <span
-                      className="identity-options-option"
-                      data-testid="identity-options-view-button"
-                      onClick={() => {
-                        setIsOpen(false);
-                        setViewIsOpen(true);
-                      }}
-                    >
-                      <span>
-                        <IonButton shape="round">
-                          <IonIcon
-                            slot="icon-only"
-                            icon={codeSlashOutline}
-                          />
-                        </IonButton>
-                      </span>
-                      <span className="identity-options-label">
-                        {i18n.t("identity.card.details.options.view")}
-                      </span>
-                    </span>
-                    <span
-                      className="identity-options-option"
-                      data-testid="identity-options-identity-options-button"
-                      onClick={() => {
-                        dispatch(
-                          setCurrentOperation(operationState.renameIdentity)
-                        );
-                        setNewDisplayName(cardData.displayName);
-                        setEditorIsOpen(true);
-                      }}
-                    >
-                      <span>
-                        <IonButton shape="round">
-                          <IonIcon
-                            slot="icon-only"
-                            icon={pencilOutline}
-                          />
-                        </IonButton>
-                      </span>
-                      <span className="identity-options-label">
-                        {i18n.t("identity.card.details.options.edit")}
-                      </span>
-                    </span>
-                    <span
-                      className="identity-options-option"
-                      data-testid="identity-options-share-button"
-                      onClick={async () => {
-                        await Share.share({
-                          text: cardData.displayName + " " + cardData.id,
-                        });
-                      }}
-                    >
-                      <span>
-                        <IonButton shape="round">
-                          <IonIcon
-                            slot="icon-only"
-                            icon={shareOutline}
-                          />
-                        </IonButton>
-                      </span>
-                      <span className="identity-options-info-block-data">
-                        {i18n.t("identity.card.details.options.share")}
-                      </span>
-                    </span>
-                    <span
-                      className="identity-options-option"
-                      data-testid="identity-options-delete-button"
-                      onClick={() => {
-                        setIsOpen(false);
-                        handleDelete();
-                        dispatch(
-                          setCurrentOperation(operationState.deleteIdentity)
-                        );
-                      }}
-                    >
-                      <span>
-                        <IonButton shape="round">
-                          <IonIcon
-                            slot="icon-only"
-                            icon={trashOutline}
-                          />
-                        </IonButton>
-                      </span>
-                      <span className="identity-options-label">
-                        {i18n.t("identity.card.details.options.delete")}
-                      </span>
-                    </span>
-                  </IonCol>
-                </IonRow>
-              </IonGrid>
-            )}
+                ) : null}
+              </IonRow>
+              <IonRow>
+                <span className="theme-input-title">{`${i18n.t(
+                  "identity.card.details.options.inner.theme"
+                )}`}</span>
+              </IonRow>
+              <IdentityThemeSelector
+                identityType={cardData.method === IdentifierType.KEY ? 0 : 1}
+                selectedTheme={newSelectedTheme}
+                setSelectedTheme={setNewSelectedTheme}
+              />
+              <IonButton
+                shape="round"
+                expand="block"
+                className="primary-button"
+                data-testid="continue-button"
+                onClick={handleSubmit}
+                disabled={!verifyDisplayName}
+              >
+                {i18n.t("identity.card.details.options.inner.confirm")}
+              </IonButton>
+            </IonGrid>
           </IonContent>
         </div>
       </IonModal>
       <IonModal
         isOpen={viewIsOpen}
         initialBreakpoint={1}
-        breakpoints={[1]}
+        breakpoints={[0, 1]}
         className="page-layout"
         data-testid="view-identity-modal"
         onDidDismiss={() => setViewIsOpen(false)}
@@ -362,9 +404,7 @@ const IdentityOptions = ({
                       className="secondary-button"
                       onClick={() => {
                         writeToClipboard(JSON.stringify(cardData, null, 2));
-                        dispatch(
-                          setCurrentOperation(toastState.copiedToClipboard)
-                        );
+                        dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
                       }}
                     >
                       <IonIcon
@@ -377,7 +417,7 @@ const IdentityOptions = ({
                     <IonButton
                       shape="round"
                       expand="block"
-                      className="ion-primary-button"
+                      className="primary-button"
                       onClick={() => {
                         // @TODO - sdisalvo: Save to device
                         return;
@@ -418,8 +458,8 @@ const IdentityOptions = ({
             setVerifyPasscodeIsOpen(true);
           }
         }}
-        actionCancel={() => dispatch(setCurrentOperation(""))}
-        actionDismiss={() => dispatch(setCurrentOperation(""))}
+        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}

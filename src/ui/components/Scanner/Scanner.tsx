@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { forwardRef, useEffect, useImperativeHandle } from "react";
 import { IonCol, IonGrid, IonIcon, IonRow, isPlatform } from "@ionic/react";
 import {
   BarcodeScanner,
@@ -11,14 +11,17 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCurrentOperation,
   getCurrentRoute,
+  getToastMsg,
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
+import { AriesAgent } from "../../../core/agent/agent";
 
-const Scanner = () => {
+const Scanner = forwardRef((props, ref) => {
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
+  const currentToastMsg = useAppSelector(getToastMsg);
   const currentRoute = useAppSelector(getCurrentRoute);
 
   const checkPermission = async () => {
@@ -53,6 +56,10 @@ const Scanner = () => {
     document?.querySelector("body")?.classList.remove("scanner-active");
   };
 
+  useImperativeHandle(ref, () => ({
+    stopScan,
+  }));
+
   const initScan = async () => {
     if (isPlatform("ios") || isPlatform("android")) {
       const allowed = await checkPermission();
@@ -61,7 +68,12 @@ const Scanner = () => {
         BarcodeScanner.hideBackground();
         const result = await startScan();
         if (result.hasContent) {
-          dispatch(setCurrentOperation(toastState.qrSuccess));
+          stopScan();
+          // @TODO: try catch and handle invalid QR code
+          await AriesAgent.agent.connections.receiveInvitationFromUrl(
+            result.content
+          );
+          dispatch(setCurrentOperation(OperationType.IDLE));
         }
       }
     }
@@ -69,8 +81,10 @@ const Scanner = () => {
 
   useEffect(() => {
     if (
-      currentRoute?.path === TabsRoutePath.SCAN ||
-      currentOperation === "scan"
+      (currentRoute?.path === TabsRoutePath.SCAN ||
+        currentOperation === OperationType.SCAN_CONNECTION) &&
+      currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
+      currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING
     ) {
       initScan();
     } else {
@@ -101,6 +115,6 @@ const Scanner = () => {
       </IonGrid>
     </>
   );
-};
+});
 
 export { Scanner };

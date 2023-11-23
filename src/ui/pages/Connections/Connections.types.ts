@@ -1,19 +1,12 @@
-interface ConnectionsProps {
-  id: string;
-  issuer: string;
-  issuanceDate: string;
-  issuerLogo: string;
-  status: string;
-  goalCodes?: string;
-  handshakeProtocol?: string;
-  requestAttachments?: string;
-  serviceEndpoints?: string;
-}
+import {
+  ConnectionDetails,
+  ConnectionShortDetails,
+} from "../../../core/agent/agent.types";
 
 interface ConnectionItemProps {
   key: number;
-  item: ConnectionsProps;
-  handleShowConnectionDetails: (value: ConnectionsProps) => void;
+  item: ConnectionShortDetails;
+  handleShowConnectionDetails: (value: ConnectionShortDetails) => void;
 }
 
 interface ConnectionsComponentProps {
@@ -22,12 +15,33 @@ interface ConnectionsComponentProps {
 
 interface MappedConnections {
   key: string;
-  value: ConnectionsProps[];
+  value: ConnectionShortDetails[];
+}
+
+interface ConnectionRequestData {
+  label: string;
+  goal_code: string;
+  goal: string;
+  handshake_protocols: string[];
+  requestattach: any[];
+  service: {
+    id: string;
+    type: string;
+    recipientKeys: string[];
+    routingKeys: string[];
+    serviceEndpoint: string;
+  }[];
+  profileUrl: string;
+  public_did: string;
+  type: string;
+  id: string;
 }
 
 export type {
-  ConnectionsProps,
+  ConnectionShortDetails,
+  ConnectionDetails,
   ConnectionItemProps,
   ConnectionsComponentProps,
   MappedConnections,
+  ConnectionRequestData,
 };

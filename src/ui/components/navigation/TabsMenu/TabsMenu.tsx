@@ -27,8 +27,8 @@ import { TabsRoutePath } from "../../../../routes/paths";
 import { Dids } from "../../../pages/Dids";
 import { Creds } from "../../../pages/Creds";
 import { Scan } from "../../../pages/Scan";
-import { Crypto } from "../../../pages/Crypto";
 import { Chat } from "../../../pages/Chat";
+import { Crypto } from "../../../pages/Crypto";
 
 const tabsRoutes = [
   {

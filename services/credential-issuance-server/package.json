@@ -1,0 +1,39 @@
+{
+    "name": "credential-issuance-server",
+    "version": "0.0.1",
+    "description": "",
+    "main": "server.ts",
+    "scripts": {
+        "test": "test",
+        "start": "node build/server.js",
+        "start:dev": "npx nodemon",
+        "cli:invitation": "npx ts-node ./src/cli/invitation.ts",
+        "cli:offer-credential": "npx ts-node src/cli/invitationWithCredential.ts",
+        "cli:offer-credential-connection-less": "npx ts-node src/cli/invitationWithCredentialConnectionless.ts",
+        "cli:keri-oobi": "npx ts-node ./src/cli/keriOobi.ts",
+        "build": "rimraf ./build && tsc"
+    },
+    "author": "",
+    "license": "ISC",
+    "dependencies": {
+        "@aries-framework/askar": "0.4.0-alpha.122",
+        "@aries-framework/core": "0.4.0-alpha.122",
+        "@aries-framework/node": "0.4.0-alpha.122",
+        "@hyperledger/aries-askar-nodejs": "^0.1.1",
+        "axios": "^1.5.0",
+        "body-parser": "^1.20.2",
+        "cors": "^2.8.5",
+        "express": "^4.18.2",
+        "net": "^1.0.2",
+        "node-cache": "^5.1.2",
+        "qrcode-terminal": "^0.12.0",
+        "uuid": "^9.0.1",
+        "ws": "^8.13.0",
+        "signify-ts": "github:WebOfTrust/signify-ts#002bb6410d944a190cc247893c1396792438743f"
+    },
+    "devDependencies": {
+        "nodemon": "^3.0.1",
+        "rimraf": "^5.0.1",
+        "ts-node": "^10.9.1"
+    }
+}

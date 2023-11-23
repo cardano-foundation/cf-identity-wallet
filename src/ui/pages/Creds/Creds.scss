@@ -1,5 +1,29 @@
 .creds-tab {
-  .cards-stack-container {
-    height: 90vh;
+  .cards-title {
+    color: var(--ion-color-primary);
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 700;
+    line-height: normal;
+    margin-top: 40px;
+  }
+  ion-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    .archived-credentials-button-container {
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+
+      ion-button {
+        margin: 0 auto;
+
+        &::part(native) {
+          padding: 0.625rem 1rem;
+        }
+      }
+    }
   }
 }

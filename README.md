@@ -204,6 +204,9 @@ cd cf-identity-wallet
 docker compose up -d
 ```
 
+## Building the app
+TODO
+
 ## End-to-End (E2E) Testing
 ### Pre-installed on local:
 

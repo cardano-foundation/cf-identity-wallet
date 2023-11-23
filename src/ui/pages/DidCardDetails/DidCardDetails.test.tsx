@@ -2,18 +2,18 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
-import { Clipboard } from "@capacitor/clipboard";
 import { waitForIonicReact } from "@ionic/react-test-utils";
-import { didFix, identityFix } from "../../__fixtures__/identityFix";
+import { SetOptions } from "@capacitor/preferences";
+import { identityFix } from "../../__fixtures__/identityFix";
 import { DidCardDetails } from "./DidCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import {
   filteredDidFix,
   filteredKeriFix,
 } from "../../__fixtures__/filteredIdentityFix";
+import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 
 const path = TabsRoutePath.DIDS + "/" + identityFix[0].id;
 
@@ -25,12 +25,14 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-jest.mock("../../../core/aries/ariesAgent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest
-        .fn()
-        .mockResolvedValue({ type: "key", result: identityFix[0] }),
+      identifiers: {
+        getIdentifier: jest
+          .fn()
+          .mockResolvedValue({ type: "key", result: identityFix[0] }),
+      },
     },
   },
 }));
@@ -55,6 +57,7 @@ const initialStateDidKey = {
   },
   identitiesCache: {
     identities: filteredDidFix,
+    favourites: [],
   },
 };
 const initialStateKeri = {
@@ -75,6 +78,7 @@ const initialStateKeri = {
   },
   identitiesCache: {
     identities: filteredKeriFix,
+    favourites: [],
   },
 };
 
@@ -126,7 +130,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("identity-options-button"));
@@ -150,7 +160,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("identity-options-button"));
@@ -176,7 +192,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("identity-options-button"));
@@ -212,7 +234,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("identity-options-button"));
@@ -230,13 +258,17 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.identity.card.details.delete.alert.title)
+        getAllByText(
+          EN_TRANSLATIONS.identity.card.details.delete.alert.title
+        )[1]
       ).toBeVisible();
     });
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.identity.card.details.delete.alert.confirm)
+        getAllByText(
+          EN_TRANSLATIONS.identity.card.details.delete.alert.confirm
+        )[0]
       );
     });
 
@@ -258,7 +290,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));
@@ -268,6 +306,36 @@ describe("Cards Details page", () => {
       expect(
         getByText(EN_TRANSLATIONS.identity.card.details.delete.alert.title)
       ).toBeVisible();
+    });
+  });
+
+  test.skip("It changes to favourite icon on click disabled favourite button", async () => {
+    PreferencesStorage.set = jest
+      .fn()
+      .mockImplementation(async (data: SetOptions): Promise<void> => {
+        expect(data.key).toBe(PreferencesKeys.APP_DIDS_FAVOURITES);
+        expect(data.value).toBe(filteredDidFix[0]);
+      });
+
+    const { getByTestId, getByText, container } = render(
+      <Provider store={storeMockedDidKey}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={DidCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("heart-button"));
+    });
+
+    await waitForIonicReact();
+
+    await waitFor(() => {
+      expect(getByTestId("heart-icon-favourite")).toBeVisible();
     });
   });
 
@@ -284,7 +352,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     act(() => {
       fireEvent.click(getByTestId("card-details-delete-button"));

@@ -8,8 +8,8 @@ import { GenerateSeedPhrase } from "../GenerateSeedPhrase";
 import { SetPasscode } from "../SetPasscode";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { onboardingRoute } from "../../constants/dictionary";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
+import { OperationType } from "../../globals/types";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
@@ -48,15 +48,8 @@ describe("Onboarding Page", () => {
     const { getByText, queryByText } = render(
       <MemoryRouter initialEntries={[RoutePath.ONBOARDING]}>
         <Provider store={store}>
-          <Route
-            path={RoutePath.ONBOARDING}
-            component={Onboarding}
-          />
-
-          <Route
-            path={RoutePath.SET_PASSCODE}
-            component={SetPasscode}
-          />
+          <Onboarding />
+          <SetPasscode />
         </Provider>
       </MemoryRouter>
     );
@@ -74,7 +67,7 @@ describe("Onboarding Page", () => {
     );
   });
 
-  test("If the user has already set a passcode but they haven't created a profile, they will be asked to generate a seed phrase", async () => {
+  test("If the user has already set a passcode but they haven't created a seed phrase, they will be asked to generate a seed phrase", async () => {
     const mockStore = configureStore();
     const initialState = {
       stateCache: {
@@ -83,15 +76,12 @@ describe("Onboarding Page", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: "",
+        currentOperation: OperationType.IDLE,
       },
       seedPhraseCache: {
         seedPhrase160: "",
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
-      },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
       },
     };
     const storeMocked = mockStore(initialState);
@@ -104,7 +94,7 @@ describe("Onboarding Page", () => {
             component={Onboarding}
           />
           <Route
-            path={RoutePath.GENERATE_SEED_PHRASE + onboardingRoute.createRoute}
+            path={RoutePath.GENERATE_SEED_PHRASE}
             component={GenerateSeedPhrase}
           />
         </Provider>
@@ -117,10 +107,10 @@ describe("Onboarding Page", () => {
 
     fireEvent.click(buttonContinue);
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(
         queryByText(EN_TRANSLATIONS.generateseedphrase.onboarding.title)
-      ).toBeVisible()
-    );
+      ).toBeVisible();
+    });
   });
 });

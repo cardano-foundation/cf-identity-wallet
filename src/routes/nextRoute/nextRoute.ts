@@ -11,9 +11,10 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { onboardingRoute } from "../../ui/constants/dictionary";
+import { ToastMsgType } from "../../ui/globals/types";
 
 const getNextRootRoute = (store: StoreState) => {
+  const isInitialized = store.stateCache.initialized;
   const authentication = store.stateCache.authentication;
   const routes = store.stateCache.routes;
   const initialRoute =
@@ -22,15 +23,10 @@ const getNextRootRoute = (store: StoreState) => {
   let path;
   if (authentication.passcodeIsSet && !authentication.loggedIn) {
     path = RoutePath.PASSCODE_LOGIN;
+  } else if (routes.length === 1 && !isInitialized) {
+    path = RoutePath.ONBOARDING;
   } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
-    if (
-      store.stateCache.currentOperation ===
-      (onboardingRoute.create || onboardingRoute.restore)
-    ) {
-      path = RoutePath.CREATE_PASSWORD;
-    } else {
-      path = RoutePath.TABS_MENU;
-    }
+    path = RoutePath.TABS_MENU;
   } else {
     if (initialRoute) {
       path = RoutePath.ONBOARDING;
@@ -43,18 +39,11 @@ const getNextRootRoute = (store: StoreState) => {
 };
 
 const getNextOnboardingRoute = (data: DataProps) => {
-  const route = data?.state?.currentOperation;
-  let query = "";
-  if (route === onboardingRoute.create) {
-    query = onboardingRoute.createRoute;
-  } else if (route === onboardingRoute.restore) {
-    query = onboardingRoute.restoreRoute;
-  }
   let path;
-  if (!data.store.stateCache.authentication.passcodeIsSet) {
-    path = RoutePath.SET_PASSCODE;
+  if (data.store.stateCache.authentication.passcodeIsSet) {
+    path = RoutePath.GENERATE_SEED_PHRASE;
   } else {
-    path = RoutePath.GENERATE_SEED_PHRASE + query;
+    path = RoutePath.SET_PASSCODE;
   }
 
   return { pathname: path };
@@ -72,6 +61,11 @@ const getNextCreateCryptoAccountRoute = () => {
 
 const getNextCredentialsRoute = () => {
   const path = RoutePath.CONNECTION_DETAILS;
+  return { pathname: path };
+};
+
+const getNextCredentialDetailsRoute = () => {
+  const path = TabsRoutePath.CREDS;
   return { pathname: path };
 };
 
@@ -104,13 +98,8 @@ const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
 
-const getNextVerifySeedPhraseRoute = (data: DataProps) => {
-  const route = data?.state?.currentOperation;
-  const nextPath: string =
-    route === onboardingRoute.create
-      ? RoutePath.CREATE_PASSWORD
-      : TabsRoutePath.CRYPTO;
-
+const getNextVerifySeedPhraseRoute = () => {
+  const nextPath = RoutePath.CREATE_PASSWORD;
   return { pathname: nextPath };
 };
 
@@ -135,6 +124,18 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
     passwordIsSet: !skipped,
     passwordIsSkipped: skipped,
   });
+};
+
+const getNextScanRoute = (data: DataProps) => {
+  const currentToastMsg = data?.state?.toastMsg;
+  let path;
+  if (
+    currentToastMsg === ToastMsgType.CONNECTION_REQUEST_PENDING ||
+    currentToastMsg === ToastMsgType.CREDENTIAL_REQUEST_PENDING
+  ) {
+    path = TabsRoutePath.CREDS;
+  }
+  return { pathname: path };
 };
 
 const getNextRoute = (
@@ -172,7 +173,7 @@ const nextRoute: Record<string, any> = {
     updateRedux: [updateStoreSetSeedPhrase],
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
-    nextPath: (data: DataProps) => getNextVerifySeedPhraseRoute(data),
+    nextPath: (data: DataProps) => getNextVerifySeedPhraseRoute(),
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
   [RoutePath.CREATE_PASSWORD]: {
@@ -189,6 +190,14 @@ const nextRoute: Record<string, any> = {
   },
   [TabsRoutePath.CREDS]: {
     nextPath: () => getNextCredentialsRoute(),
+    updateRedux: [],
+  },
+  [TabsRoutePath.SCAN]: {
+    nextPath: (data: DataProps) => getNextScanRoute(data),
+    updateRedux: [],
+  },
+  [TabsRoutePath.CRED_DETAILS]: {
+    nextPath: () => getNextCredentialDetailsRoute(),
     updateRedux: [],
   },
 };

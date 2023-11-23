@@ -21,20 +21,25 @@ import { i18n } from "../../../i18n";
 import {
   ConnectionItemProps,
   ConnectionsComponentProps,
-  ConnectionsProps,
+  ConnectionShortDetails,
   MappedConnections,
 } from "./Connections.types";
 import "./Connections.scss";
-import { formatShortDate } from "../../../utils";
-import { AddConnection } from "../../components/AddConnection";
+import { formatShortDate } from "../../utils/formatters";
+import { ConnectModal } from "../../components/ConnectModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { connectionStatus } from "../../constants/dictionary";
+import { DIDCommRequestType } from "../../globals/types";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
+import { ShareQR } from "../../components/ShareQR/ShareQR";
+import { MoreOptions } from "../../components/ShareQR/MoreOptions";
+import { AriesAgent } from "../../../core/agent/agent";
+import { ConnectionStatus } from "../../../core/agent/agent.types";
 
 const ConnectionItem = ({
   item,
@@ -49,7 +54,7 @@ const ConnectionItem = ({
             className="connection-logo"
           >
             <img
-              src={item?.issuerLogo}
+              src={item?.logo ?? CardanoLogo}
               alt="connection-logo"
             />
           </IonCol>
@@ -57,16 +62,16 @@ const ConnectionItem = ({
             size="6.25"
             className="connection-info"
           >
-            <IonLabel className="connection-name">{item?.issuer}</IonLabel>
+            <IonLabel className="connection-name">{item?.label}</IonLabel>
             <IonLabel className="connection-date">
-              {formatShortDate(`${item?.issuanceDate}`)}
+              {formatShortDate(`${item?.connectionDate}`)}
             </IonLabel>
           </IonCol>
           <IonCol
             size="3.5"
             className="item-status"
           >
-            {item.status === connectionStatus.pending ? (
+            {item.status === ConnectionStatus.PENDING ? (
               <IonChip>
                 <IonIcon
                   icon={hourglassOutline}
@@ -86,18 +91,28 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const connectionsData: ConnectionsProps[] =
-    useAppSelector(getConnectionsCache);
+  const connectionsCache = useAppSelector(getConnectionsCache);
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
-  const [addConnectionIsOpen, setAddConnectionIsOpen] = useState(false);
+  const [connectModalIsOpen, setConnectModalIsOpen] = useState(false);
+  const [invitationLink, setInvitationLink] = useState<string>();
 
-  const handleAddConnection = () => {
-    setAddConnectionIsOpen(true);
+  async function handleProvideQr() {
+    const invitation =
+      await AriesAgent.agent.connections.createMediatorInvitation();
+    const shortUrl = await AriesAgent.agent.connections.getShortenUrl(
+      invitation.invitationUrl
+    );
+    setInvitationLink(shortUrl);
+    setConnectModalIsOpen(false);
+  }
+
+  const handleConnectModal = () => {
+    setConnectModalIsOpen(true);
   };
 
-  const handleShowConnectionDetails = (item: ConnectionsProps) => {
+  const handleShowConnectionDetails = async (item: ConnectionShortDetails) => {
     const data: DataProps = {
       store: { stateCache },
     };
@@ -115,7 +130,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
         shape="round"
         className="add-button"
         data-testid="add-connection-button"
-        onClick={handleAddConnection}
+        onClick={handleConnectModal}
       >
         <IonIcon
           slot="icon-only"
@@ -127,17 +142,17 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   };
 
   useEffect(() => {
-    if (connectionsData.length) {
-      const sortedConnections = [...connectionsData].sort(function (a, b) {
-        const textA = a.issuer.toUpperCase();
-        const textB = b.issuer.toUpperCase();
+    if (connectionsCache.length) {
+      const sortedConnections = [...connectionsCache].sort(function (a, b) {
+        const textA = a.label.toUpperCase();
+        const textB = b.label.toUpperCase();
         return textA < textB ? -1 : textA > textB ? 1 : 0;
       });
 
       const mapConnections = ((m, a) => (
         a.forEach((s) => {
-          const a = m.get(s.issuer[0]) || [];
-          m.set(s.issuer[0], (a.push(s), a));
+          const a = m.get(s.label[0]) || [];
+          m.set(s.label[0], (a.push(s), a));
         }),
         m
       ))(new Map(), sortedConnections);
@@ -148,9 +163,9 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
       }));
       setMappedConnections(mapToArray);
     }
-  }, [connectionsData]);
+  }, [connectionsCache]);
 
-  const AlphabeticList = ({ items }: { items: ConnectionsProps[] }) => {
+  const AlphabeticList = ({ items }: { items: ConnectionShortDetails[] }) => {
     return (
       <>
         {items.map((connection, index) => {
@@ -187,7 +202,7 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
       menuButton={true}
       additionalButtons={<AdditionalButtons />}
     >
-      {connectionsData.length ? (
+      {connectionsCache.length ? (
         <>
           <IonSearchbar
             placeholder={`${i18n.t("connections.tab.searchconnections")}`}
@@ -229,16 +244,42 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
               </IonRow>
             </IonGrid>
           </IonContent>
-          <AddConnection
-            addConnectionIsOpen={addConnectionIsOpen}
-            setAddConnectionIsOpen={setAddConnectionIsOpen}
-          />
         </>
       ) : (
         <CardsPlaceholder
           buttonLabel={i18n.t("connections.tab.create")}
-          buttonAction={handleAddConnection}
+          buttonAction={handleConnectModal}
           testId="connections-cards-placeholder"
+        />
+      )}
+      <ConnectModal
+        type={DIDCommRequestType.CONNECTION}
+        connectModalIsOpen={connectModalIsOpen}
+        setConnectModalIsOpen={setConnectModalIsOpen}
+        handleProvideQr={handleProvideQr}
+      />
+      {invitationLink && (
+        <ShareQR
+          isOpen={!!invitationLink}
+          setIsOpen={() => setInvitationLink(undefined)}
+          header={{
+            title: i18n.t("connectmodal.connect"),
+            titlePosition: "center",
+          }}
+          content={{
+            QRData: invitationLink,
+            copyBlock: [{ content: invitationLink }],
+          }}
+          moreComponent={
+            <MoreOptions
+              onClick={() => setInvitationLink(undefined)}
+              text={invitationLink}
+            />
+          }
+          modalOptions={{
+            initialBreakpoint: 0.75,
+            breakpoints: [0, 0.75],
+          }}
         />
       )}
     </TabLayout>

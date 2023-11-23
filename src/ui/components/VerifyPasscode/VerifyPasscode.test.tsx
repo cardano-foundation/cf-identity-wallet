@@ -6,9 +6,10 @@ import { waitForIonicReact } from "@ionic/react-test-utils";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const path = TabsRoutePath.CREDS + "/" + credsFix[0].id;
 
@@ -18,6 +19,16 @@ jest.mock("react-router-dom", () => ({
     id: credsFix[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
+}));
+
+jest.mock("../../../core/agent/agent", () => ({
+  AriesAgent: {
+    agent: {
+      credentials: {
+        getCredentialDetailsById: jest.fn(),
+      },
+    },
+  },
 }));
 
 const initialStateNoPassword = {
@@ -37,6 +48,7 @@ const initialStateNoPassword = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
+  credsCache: { creds: credsFix },
 };
 
 describe("Verify Passcode on Cards Details page", () => {
@@ -51,7 +63,10 @@ describe("Verify Passcode on Cards Details page", () => {
   });
 
   test("It renders verify passcode when clicking on the big button", async () => {
-    const { getByTestId, getByText, getAllByTestId } = render(
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFix[0]);
+    const { findByTestId, getAllByText, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -62,13 +77,16 @@ describe("Verify Passcode on Cards Details page", () => {
       </Provider>
     );
 
+    const archiveButton = await findByTestId(
+      "card-details-delete-archive-button"
+    );
     act(() => {
-      fireEvent.click(getByTestId("card-details-delete-button"));
+      fireEvent.click(archiveButton);
     });
 
     await waitFor(() => {
       expect(
-        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.title)
+        getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
       ).toBeVisible();
     });
 
@@ -81,7 +99,9 @@ describe("Verify Passcode on Cards Details page", () => {
 
     act(() => {
       fireEvent.click(
-        getByText(EN_TRANSLATIONS.creds.card.details.delete.alert.confirm)
+        getAllByText(
+          EN_TRANSLATIONS.creds.card.details.alert.archive.confirm
+        )[0]
       );
     });
 
@@ -122,11 +142,11 @@ describe("Verify Passcode on Cards Details page", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("creds-options-delete-button")).toBeInTheDocument();
+      expect(getByTestId("creds-options-archive-button")).toBeInTheDocument();
     });
 
     act(() => {
-      fireEvent.click(getByTestId("creds-options-delete-button"));
+      fireEvent.click(getByTestId("creds-options-archive-button"));
     });
 
     await waitForIonicReact();

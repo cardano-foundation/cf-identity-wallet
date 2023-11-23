@@ -14,7 +14,7 @@ import {
 } from "@ionic/react";
 import {
   codeSlashOutline,
-  trashOutline,
+  archiveOutline,
   copyOutline,
   downloadOutline,
 } from "ionicons/icons";
@@ -29,19 +29,19 @@ import { TabsRoutePath } from "../../../routes/paths";
 import {
   getStateCache,
   setCurrentOperation,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { updateReduxState } from "../../../store/utils";
-import { credsFix } from "../../__fixtures__/credsFix";
-import { setCredsCache } from "../../../store/reducers/credsCache";
 import { VerifyPasscode } from "../VerifyPasscode";
-import { operationState, toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
-import { writeToClipboard } from "../../../utils/clipboard";
+import { writeToClipboard } from "../../utils/clipboard";
 
 const CredsOptions = ({
+  cardData,
   optionsIsOpen,
   setOptionsIsOpen,
-  id,
+  credsOptionAction,
 }: CredsOptionsProps) => {
   const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
@@ -77,14 +77,9 @@ const CredsOptions = ({
   const verifyAction = () => {
     handleCloseView();
     handleCloseOptions();
-    // @TODO - sdisalvo: Update Database.
-    // Remember to update CredCardDetails file too.
-    const updatedCreds = credsFix.filter((item) => item.id !== id);
-    dispatch(setCredsCache(updatedCreds));
+    credsOptionAction();
     handleDone();
   };
-
-  const cred = credsFix.find((item) => item.id === id);
 
   return (
     <>
@@ -137,11 +132,11 @@ const CredsOptions = ({
                   </span>
                   <span
                     className="creds-option"
-                    data-testid="creds-options-delete-button"
+                    data-testid="creds-options-archive-button"
                     onClick={() => {
                       handleDelete();
                       dispatch(
-                        setCurrentOperation(operationState.deleteCredential)
+                        setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL)
                       );
                     }}
                   >
@@ -149,12 +144,12 @@ const CredsOptions = ({
                       <IonButton shape="round">
                         <IonIcon
                           slot="icon-only"
-                          icon={trashOutline}
+                          icon={archiveOutline}
                         />
                       </IonButton>
                     </span>
                     <span className="creds-options-label">
-                      {i18n.t("creds.card.details.options.delete")}
+                      {i18n.t("creds.card.details.options.archive")}
                     </span>
                   </span>
                 </IonCol>
@@ -172,7 +167,7 @@ const CredsOptions = ({
         onDidDismiss={handleCloseView}
       >
         <div className="creds-options modal viewer">
-          {!cred ? null : (
+          {cardData && (
             <PageLayout
               header={true}
               closeButton={true}
@@ -181,7 +176,7 @@ const CredsOptions = ({
               title={`${i18n.t("creds.card.details.view.title")}`}
             >
               <IonGrid className="creds-options-inner">
-                <pre>{JSON.stringify(cred, null, 2)}</pre>
+                <pre>{JSON.stringify(cardData, null, 2)}</pre>
               </IonGrid>
               <IonGrid>
                 <IonRow>
@@ -192,10 +187,8 @@ const CredsOptions = ({
                       fill="outline"
                       className="secondary-button"
                       onClick={() => {
-                        writeToClipboard(JSON.stringify(cred, null, 2));
-                        dispatch(
-                          setCurrentOperation(toastState.copiedToClipboard)
-                        );
+                        writeToClipboard(JSON.stringify(cardData, null, 2));
+                        dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
                       }}
                     >
                       <IonIcon
@@ -209,7 +202,7 @@ const CredsOptions = ({
                     <IonButton
                       shape="round"
                       expand="block"
-                      className="ion-primary-button"
+                      className="primary-button"
                       onClick={() => {
                         // @TODO - sdisalvo: Save to device
                         return;
@@ -234,11 +227,13 @@ const CredsOptions = ({
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
         dataTestId="alert-confirm"
-        headerText={i18n.t("creds.card.details.delete.alert.title")}
+        headerText={i18n.t("creds.card.details.alert.archive.title")}
         confirmButtonText={`${i18n.t(
-          "creds.card.details.delete.alert.confirm"
+          "creds.card.details.alert.archive.confirm"
         )}`}
-        cancelButtonText={`${i18n.t("creds.card.details.delete.alert.cancel")}`}
+        cancelButtonText={`${i18n.t(
+          "creds.card.details.alert.archive.cancel"
+        )}`}
         actionConfirm={() => {
           if (
             !stateCache?.authentication.passwordIsSkipped &&
@@ -249,8 +244,8 @@ const CredsOptions = ({
             setVerifyPasscodeIsOpen(true);
           }
         }}
-        actionCancel={() => dispatch(setCurrentOperation(""))}
-        actionDismiss={() => dispatch(setCurrentOperation(""))}
+        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}

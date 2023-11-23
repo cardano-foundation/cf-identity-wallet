@@ -12,7 +12,18 @@
     padding: 0 !important;
 
     h2 {
-      margin: 0;
+      margin: 0 auto 0.5rem;
+      font-size: 1.125rem;
+      font-style: normal;
+      font-weight: 500;
+      line-height: normal;
+    }
+
+    @media screen and (min-height: 300px) and (max-height: 580px) {
+      h2 {
+        font-size: 0.9rem;
+        line-height: 1.2rem;
+      }
     }
   }
 }
@@ -37,23 +48,37 @@
   }
 }
 
-.alert-button {
-  font-weight: 500 !important;
-  text-transform: none !important;
-  border: solid var(--ion-color-medium-grey) 2px !important;
-  border-radius: 20px !important;
-  margin: 0;
+button.alert-button {
+  &.sc-ion-alert-ios,
+  &.sc-ion-alert-md {
+    margin: 0;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500 !important;
+    line-height: 1.375rem;
+    text-transform: none !important;
+    border: solid var(--ion-color-medium-grey) 2px !important;
+    border-radius: 20px !important;
 
-  &:first-child {
-    border: none !important;
-    background: var(--ion-color-primary-gradient) !important;
-    margin-bottom: 0.5rem;
+    &:first-child {
+      border: none !important;
+      background: var(--ion-color-primary-gradient) !important;
+      margin-bottom: 0.5rem;
+    }
+  }
+}
+
+@media screen and (min-height: 300px) and (max-height: 580px) {
+  button.alert-button {
+    &.sc-ion-alert-ios,
+    &.sc-ion-alert-md {
+      font-size: 0.9rem;
+      height: 2.5rem;
+    }
   }
 }
 
 .custom-alert {
-  --min-width: calc(100vw - 40px) !important;
-
   &.md {
     .alert-sub-title {
       text-align: center;

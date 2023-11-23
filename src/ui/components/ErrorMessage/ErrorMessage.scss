@@ -1,12 +1,23 @@
 .error-message {
-  font-style: normal;
-  font-weight: 500;
-  font-size: 16px;
-  line-height: 22px;
+  text-align: center;
   opacity: 0;
-  transition: opacity 0.5s ease-in-out;
+  transition: opacity 2s ease-in-out;
+
+  &.visible {
+    opacity: 1;
+  }
+
+  p {
+    color: var(--ion-color-danger);
+  }
 }
 
-.error-message.visible {
-  opacity: 1;
+.error-message-placeholder {
+  height: 2.375rem;
+}
+
+@media screen and (min-height: 300px) and (max-height: 600px) {
+  .error-message-placeholder {
+    height: 1.7rem;
+  }
 }

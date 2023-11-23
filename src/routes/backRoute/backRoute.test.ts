@@ -8,7 +8,8 @@ import {
 } from "./backRoute";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
+import { OperationType } from "../../ui/globals/types";
 
 jest.mock("../../store/reducers/stateCache", () => ({
   removeCurrentRoute: jest.fn(),
@@ -31,6 +32,7 @@ describe("getBackRoute", () => {
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {
+        initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
@@ -40,16 +42,15 @@ describe("getBackRoute", () => {
           loggedIn: false,
           time: 0,
         },
-        currentOperation: "",
-        defaultCryptoAccount: "",
+        currentOperation: OperationType.IDLE,
+        queueConnectionCredentialRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
       },
-      identitiesCache: { identities: [] },
-      credsCache: { creds: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
+      identitiesCache: { identities: [], favourites: [] },
+      credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
       },
@@ -111,6 +112,7 @@ describe("getBackRoute", () => {
   test("should update store correctly after /passcodelogin route", () => {
     storeMock = {
       stateCache: {
+        initialized: true,
         routes: [],
         authentication: {
           loggedIn: false,
@@ -120,21 +122,20 @@ describe("getBackRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
-        currentOperation: "",
-        defaultCryptoAccount: "",
+        currentOperation: OperationType.IDLE,
+        queueConnectionCredentialRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
       },
       seedPhraseCache: {
         seedPhrase160: "",
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      identitiesCache: { identities: [] },
-      credsCache: { creds: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
+      identitiesCache: { identities: [], favourites: [] },
+      credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
       },
@@ -186,6 +187,7 @@ describe("getPreviousRoute", () => {
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
       stateCache: {
+        initialized: true,
         routes: [{ path: "/route1" }, { path: "/route2" }, { path: "/route3" }],
         authentication: {
           passcodeIsSet: true,
@@ -195,16 +197,15 @@ describe("getPreviousRoute", () => {
           loggedIn: false,
           time: 0,
         },
-        currentOperation: "",
-        defaultCryptoAccount: "",
+        currentOperation: OperationType.IDLE,
+        queueConnectionCredentialRequest: {
+          isProcessing: false,
+          queues: [],
+          isPaused: false,
+        },
       },
-      identitiesCache: { identities: [] },
-      credsCache: { creds: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
+      identitiesCache: { identities: [], favourites: [] },
+      credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
       },

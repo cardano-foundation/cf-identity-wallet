@@ -7,15 +7,15 @@ import {
 } from "@ionic/react-test-utils";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { Route, Router } from "react-router-dom";
+import { Router } from "react-router-dom";
 import { GenerateSeedPhrase } from "./GenerateSeedPhrase";
 import {
   MNEMONIC_FIFTEEN_WORDS,
   MNEMONIC_TWENTYFOUR_WORDS,
   FIFTEEN_WORDS_BIT_LENGTH,
   TWENTYFOUR_WORDS_BIT_LENGTH,
-} from "../../../constants/appConstants";
-import { operationState, onboardingRoute } from "../../constants/dictionary";
+} from "../../globals/constants";
+import { OperationType } from "../../globals/types";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
@@ -29,15 +29,12 @@ interface StoreMocked {
       passcodeIsSet: boolean;
       seedPhraseIsSet?: boolean;
     };
-    currentOperation: string;
+    currentOperation: OperationType;
   };
   seedPhraseCache: {
     seedPhrase160: string;
     seedPhrase256: string;
     selected: number;
-  };
-  cryptoAccountsCache: {
-    cryptoAccounts: never[];
   };
 }
 
@@ -53,7 +50,7 @@ const storeMocked = (initialState: StoreMocked) => {
 
 describe("Generate Seed Phrase screen from Onboarding", () => {
   beforeAll(() => {
-    history.push(RoutePath.GENERATE_SEED_PHRASE, operationState.onboarding);
+    history.push(RoutePath.GENERATE_SEED_PHRASE);
   });
 
   test("User can see Title and Security Overlay", () => {
@@ -103,7 +100,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: onboardingRoute.createRoute,
+        currentOperation: OperationType.IDLE,
       },
       seedPhraseCache: {
         seedPhrase160:
@@ -111,9 +108,6 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
         seedPhrase256:
           "example example example example example example example example example example example example example example example example example example example example example example example example",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
-      },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
       },
     };
 
@@ -163,15 +157,12 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: onboardingRoute.createRoute,
+        currentOperation: OperationType.IDLE,
       },
       seedPhraseCache: {
         seedPhrase160: "",
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
-      },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
       },
     };
 
@@ -224,10 +215,10 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
+      EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
     const alertWrapper = getByTestId("alert-confirm");
-    const termsCheckbox = getByTestId("termsandconditions-checkbox");
+    const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
 
     expect(alertWrapper).toHaveClass("alert-invisible");
     expect(continueButton).toBeDisabled;
@@ -265,7 +256,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
+      EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
     const alertWrapper = getByTestId("alert-confirm");
 
@@ -297,7 +288,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
 
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
     const continueButton = getByText(
-      EN_TRANSLATIONS.generateseedphrase.onboarding.continue.button
+      EN_TRANSLATIONS.generateseedphrase.onboarding.button.continue
     );
 
     act(() => {
@@ -320,7 +311,7 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     });
   });
 
-  test("User can toggle the checkbox", async () => {
+  test("User can toggle the checkbox and modal", async () => {
     const { getByTestId } = render(
       <Provider store={store}>
         <Router history={history}>
@@ -328,12 +319,18 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
         </Router>
       </Provider>
     );
-    const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    expect(termsCheckbox.hasAttribute("[checked=\"false"));
-    fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"true"));
-    fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"false"));
+    const termsCheckbox = getByTestId("terms-and-conditions-checkbox");
+    expect(termsCheckbox.hasAttribute("[checked=\"false\""));
+    fireEvent.ionChange(termsCheckbox, "[checked=\"true\"");
+    expect(termsCheckbox.hasAttribute("[checked=\"true\""));
+    fireEvent.ionChange(termsCheckbox, "[checked=\"false\"");
+    expect(termsCheckbox.hasAttribute("[checked=\"false\""));
+
+    const termsModalHandler = getByTestId("terms-and-conditions-modal-handler");
+    const termsModal = getByTestId("terms-and-conditions-modal");
+    fireEvent.click(termsModalHandler);
+    expect(termsCheckbox.hasAttribute("[checked=\"true\""));
+    expect(termsModal.getAttribute("is-open")).toBe("true");
   });
 
   test("calls handleOnBack when back button is clicked", async () => {
@@ -345,15 +342,12 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
           time: Date.now(),
           passcodeIsSet: true,
         },
-        currentOperation: onboardingRoute.createRoute,
+        currentOperation: OperationType.IDLE,
       },
       seedPhraseCache: {
         seedPhrase160: "",
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
-      },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
       },
     };
 
@@ -381,155 +375,5 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     });
 
     await waitFor(() => expect(overlay).toHaveClass("visible"));
-  });
-});
-
-describe("Generate Seed Phrase screen from Crypto/Generate", () => {
-  beforeAll(() => {
-    history.push(
-      RoutePath.GENERATE_SEED_PHRASE,
-      operationState.newCryptoAccount
-    );
-  });
-
-  const initialState = {
-    stateCache: {
-      routes: [RoutePath.GENERATE_SEED_PHRASE],
-      authentication: {
-        loggedIn: true,
-        time: Date.now(),
-        passcodeIsSet: true,
-        seedPhraseIsSet: true,
-      },
-      currentOperation: "",
-    },
-    seedPhraseCache: {
-      seedPhrase160:
-        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-      seedPhrase256: "",
-      selected: FIFTEEN_WORDS_BIT_LENGTH,
-    },
-    cryptoAccountsCache: {
-      cryptoAccounts: [],
-    },
-  };
-
-  test("User can generate a new seed phrase", async () => {
-    const { getByTestId } = render(
-      <Provider store={storeMocked(initialState)}>
-        <Router history={history}>
-          <GenerateSeedPhrase />
-        </Router>
-      </Provider>
-    );
-
-    expect(getByTestId("close-button")).toBeInTheDocument();
-    const overlay = getByTestId("seed-phrase-privacy-overlay");
-    const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-
-    expect(overlay).toHaveClass("visible");
-
-    act(() => {
-      fireEvent.click(revealSeedPhraseButton);
-    });
-    await waitFor(() => expect(overlay).toHaveClass("hidden"));
-
-    const termsCheckbox = getByTestId("termsandconditions-checkbox");
-    expect(termsCheckbox.hasAttribute("[checked=\"false"));
-    fireEvent.click(termsCheckbox);
-    expect(termsCheckbox.hasAttribute("[checked=\"true"));
-
-    const continueButton = getByTestId("continue-button");
-
-    await waitFor(() => expect(continueButton).not.toBeDisabled);
-
-    act(() => {
-      fireEvent.click(continueButton);
-    });
-
-    await waitForIonicReact();
-
-    await waitFor(() => expect(getByTestId("alert-confirm")).toBeVisible());
-  });
-
-  test("Shows an alert when close button is clicked", async () => {
-    const { getByTestId, queryByText } = render(
-      <Provider store={storeMocked(initialState)}>
-        <Router history={history}>
-          <GenerateSeedPhrase />
-        </Router>
-      </Provider>
-    );
-
-    act(() => {
-      fireEvent.click(getByTestId("close-button"));
-    });
-
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.generateseedphrase.alert.exit.text)
-      ).toBeVisible()
-    );
-  });
-});
-
-describe.skip("Restore account from existing seed phrase", () => {
-  beforeAll(() => {
-    history.push(
-      RoutePath.GENERATE_SEED_PHRASE,
-      operationState.restoreCryptoAccount
-    );
-  });
-
-  const initialState = {
-    stateCache: {
-      routes: [RoutePath.GENERATE_SEED_PHRASE],
-      authentication: {
-        loggedIn: true,
-        time: Date.now(),
-        passcodeIsSet: true,
-        seedPhraseIsSet: true,
-      },
-      currentOperation: "",
-    },
-    seedPhraseCache: {
-      seedPhrase160:
-        "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
-      seedPhrase256: "",
-      selected: FIFTEEN_WORDS_BIT_LENGTH,
-    },
-    cryptoAccountsCache: {
-      cryptoAccounts: [],
-    },
-  };
-
-  test("User can enter a seed phrase", async () => {
-    window.history.pushState(
-      { type: operationState.restoreCryptoAccount },
-      "",
-      RoutePath.GENERATE_SEED_PHRASE
-    );
-    const { getByTestId, getByText } = render(
-      <Provider store={storeMocked(initialState)}>
-        <Router history={history}>
-          <Route
-            path={RoutePath.GENERATE_SEED_PHRASE}
-            component={GenerateSeedPhrase}
-          />
-        </Router>
-      </Provider>
-    );
-
-    expect(
-      getByText(
-        EN_TRANSLATIONS.generateseedphrase.restorecryptoaccount.paragraph.top
-      )
-    ).toBeVisible();
-
-    const overlay = getByTestId("seed-phrase-privacy-overlay");
-    expect(overlay).toHaveClass("hidden");
-
-    const continueButton = getByTestId("continue-button");
-    expect(continueButton).toBeDisabled;
   });
 });

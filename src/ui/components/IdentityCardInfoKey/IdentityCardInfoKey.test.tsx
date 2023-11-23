@@ -5,10 +5,10 @@ import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { didFix, identityFix } from "../../__fixtures__/identityFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { filteredDidFix } from "../../__fixtures__/filteredIdentityFix";
 import { DidCardDetails } from "../../pages/DidCardDetails";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const path = TabsRoutePath.DIDS + "/" + identityFix[0].id;
 
@@ -20,12 +20,14 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-jest.mock("../../../core/aries/ariesAgent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest
-        .fn()
-        .mockResolvedValue({ type: "key", result: identityFix[0] }),
+      identifiers: {
+        getIdentifier: jest
+          .fn()
+          .mockResolvedValue({ type: "key", result: identityFix[0] }),
+      },
     },
   },
 }));
@@ -77,7 +79,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredDidFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
       "false"
@@ -88,7 +96,9 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
-    expect(AriesAgent.agent.getIdentity).toBeCalledWith(filteredDidFix[0].id);
+    expect(AriesAgent.agent.identifiers.getIdentifier).toBeCalledWith(
+      filteredDidFix[0].id
+    );
   });
   test("It copies id to clipboard", async () => {
     Clipboard.write = jest.fn();
@@ -104,13 +114,19 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(identityFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredDidFix[0].id.substring(8, 13) +
+            "..." +
+            filteredDidFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     fireEvent.click(getByTestId("copy-button-id"));
 
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: identityFix[0].id,
+        string: filteredDidFix[0].id,
       });
     });
   });
@@ -128,7 +144,13 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        getByText(
+          didFix[0].id.substring(8, 13) + "..." + didFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
+    );
     fireEvent.click(getByTestId("copy-button-type"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
@@ -150,7 +172,13 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        getByText(
+          didFix[0].id.substring(8, 13) + "..." + didFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
+    );
     fireEvent.click(getByTestId("copy-button-controller"));
 
     await waitFor(() => {
@@ -173,7 +201,13 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(didFix[0].id)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        getByText(
+          didFix[0].id.substring(8, 13) + "..." + didFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
+    );
     fireEvent.click(getByTestId("copy-button-publicKeyBase58"));
 
     await waitFor(() => {

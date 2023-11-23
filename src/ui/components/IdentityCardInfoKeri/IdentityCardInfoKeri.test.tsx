@@ -5,11 +5,11 @@ import { MemoryRouter, Route } from "react-router-dom";
 import { Clipboard } from "@capacitor/clipboard";
 import { keriFix, identityFix } from "../../__fixtures__/identityFix";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { filteredKeriFix } from "../../__fixtures__/filteredIdentityFix";
 import { DidCardDetails } from "../../pages/DidCardDetails";
-import { AriesAgent } from "../../../core/aries/ariesAgent";
-import { formatShortDate, formatTimeToSec } from "../../../utils";
+import { AriesAgent } from "../../../core/agent/agent";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 
 const path = TabsRoutePath.DIDS + "/" + identityFix[1].id;
 
@@ -21,12 +21,14 @@ jest.mock("react-router-dom", () => ({
   useRouteMatch: () => ({ url: path }),
 }));
 
-jest.mock("../../../core/aries/ariesAgent", () => ({
+jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
-      getIdentity: jest
-        .fn()
-        .mockResolvedValue({ type: "keri", result: identityFix[1] }),
+      identifiers: {
+        getIdentifier: jest
+          .fn()
+          .mockResolvedValue({ type: "keri", result: identityFix[1] }),
+      },
     },
   },
 }));
@@ -78,7 +80,13 @@ describe("Cards Details page", () => {
     );
 
     await waitFor(() =>
-      expect(getByText(filteredKeriFix[0].id)).toBeInTheDocument()
+      expect(
+        getByText(
+          filteredKeriFix[0].id.substring(0, 5) +
+            "..." +
+            filteredKeriFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
     );
     expect(getByText(filteredKeriFix[0].displayName)).toBeInTheDocument();
     expect(getByTestId("share-identity-modal").getAttribute("is-open")).toBe(
@@ -90,7 +98,9 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
-    expect(AriesAgent.agent.getIdentity).toBeCalledWith(filteredKeriFix[0].id);
+    expect(AriesAgent.agent.identifiers.getIdentifier).toBeCalledWith(
+      filteredKeriFix[0].id
+    );
   });
 
   test("It copies delegator identifier, signing key, next key digest, backer address to clipboard", async () => {
@@ -145,7 +155,13 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() => expect(getByText(keriFix[0].id)).toBeInTheDocument());
+    await waitFor(() =>
+      expect(
+        getByText(
+          keriFix[0].id.substring(0, 5) + "..." + keriFix[0].id.slice(-5)
+        )
+      ).toBeInTheDocument()
+    );
     await waitFor(() => expect(getByText(keriFix[0].kt)).toBeInTheDocument());
     await waitFor(() => expect(getByText(keriFix[0].nt)).toBeInTheDocument());
     await waitFor(() =>

@@ -1,0 +1,69 @@
+.tab-layout.card-details ion-button.in-toolbar,
+.tab-layout.card-details ion-button.in-toolbar.md {
+  &.action-button-label {
+    background: var(--ion-color-light-grey);
+  }
+}
+
+.card-details-content {
+  color: var(--ion-color-secondary);
+
+  .card-details-json-column {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-details-info-block-inner > * {
+    &:not(:last-child) {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 1rem;
+    }
+  }
+
+  div.card-details-json-column,
+  div.card-details-json-row {
+    width: 100%;
+    overflow: hidden;
+    white-space: nowrap;
+    --mask: linear-gradient(
+      to right,
+      rgba(var(--ion-color-secondary-rgb)) 0,
+      rgba(var(--ion-color-secondary-rgb)) 85%,
+      rgba(0, 0, 0, 0.5) 90%,
+      rgba(0, 0, 0, 0) 100%
+    );
+    -webkit-mask: var(--mask);
+    mask: var(--mask);
+
+    strong {
+      text-transform: capitalize;
+      margin-right: 0.35rem;
+    }
+  }
+
+  .card-details-json-column,
+  .card-details-json-row {
+    width: 100%;
+    font-size: 1rem !important;
+    overflow: hidden;
+  }
+
+  .card-details-attributes-id {
+    strong {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+  }
+
+  .card-details-json-nested {
+    margin-top: 1rem;
+
+    strong {
+      border-left: 2px solid grey;
+      padding-left: 0.35rem;
+      margin-left: 1rem;
+    }
+  }
+}

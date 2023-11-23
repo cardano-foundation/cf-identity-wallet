@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import { IonLabel } from "@ionic/react";
 import "./ErrorMessage.scss";
 import { ErrorMessageProps } from "./ErrorMessage.types";
 
-const MESSAGE_MILLISECONDS = 2000;
+const MESSAGE_MILLISECONDS = 2500;
 
 const ErrorMessage = ({ message, timeout }: ErrorMessageProps) => {
   const [visible, setVisible] = useState(true);
@@ -27,14 +26,16 @@ const ErrorMessage = ({ message, timeout }: ErrorMessageProps) => {
           data-testid="error-message"
           className={`error-message ${visible ? "visible" : ""}`}
         >
-          <IonLabel
+          <p
             className="text-fadein"
-            color="danger"
+            data-testid="error-message-text"
           >
             {message}
-          </IonLabel>
+          </p>
         </div>
-      ) : null}
+      ) : (
+        <div className="error-message-placeholder" />
+      )}
     </>
   );
 };

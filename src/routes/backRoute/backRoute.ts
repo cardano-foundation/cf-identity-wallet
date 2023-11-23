@@ -41,13 +41,21 @@ const getPreviousRoute = (data: DataProps): { pathname: string } => {
 
   const prevPath = calcPreviousRoute(routes);
   let path;
+
   if (routes.length === 0) {
     path = RoutePath.ROOT;
+  } else if (
+    routes.length === 2 &&
+    routes[0].path === RoutePath.SET_PASSCODE &&
+    routes[1].path === RoutePath.PASSCODE_LOGIN
+  ) {
+    path = RoutePath.PASSCODE_LOGIN;
   } else if (prevPath) {
     path = prevPath.path;
   } else {
     path = routes[0].path;
   }
+
   return { pathname: path };
 };
 

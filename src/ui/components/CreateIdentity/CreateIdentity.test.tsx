@@ -5,13 +5,7 @@ import { Store, AnyAction } from "@reduxjs/toolkit";
 import { CreateIdentity } from "./CreateIdentity";
 import { filteredIdentityFix } from "../../__fixtures__/filteredIdentityFix";
 
-jest.mock("../../../core/aries/ariesAgent", () => ({
-  AriesAgent: {
-    agent: {
-      getIdentity: jest.fn().mockResolvedValue({}),
-    },
-  },
-}));
+jest.mock("../../../core/agent/agent");
 describe("Create Identity modal", () => {
   const mockOnClose = jest.fn();
 
@@ -44,5 +38,18 @@ describe("Create Identity modal", () => {
       </Provider>
     );
     expect(getByTestId("create-identity-modal")).toBeInTheDocument();
+  });
+
+  test.skip("should display the elements inside the modal", () => {
+    const { getByTestId } = render(
+      <Provider store={mockedStore}>
+        <CreateIdentity
+          modalIsOpen={true}
+          setModalIsOpen={mockOnClose}
+        />
+      </Provider>
+    );
+    expect(getByTestId("identity-type-selector")).toBeInTheDocument();
+    expect(getByTestId("identity-theme-selector")).toBeInTheDocument();
   });
 });

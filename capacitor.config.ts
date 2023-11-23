@@ -5,10 +5,22 @@ const config: CapacitorConfig = {
   appName: "ID Wallet",
   webDir: "build",
   bundledWebRuntime: false,
+  android: {
+    webContentsDebuggingEnabled: true,
+  },
+  ios: {
+    webContentsDebuggingEnabled: true,
+  },
   plugins: {
     CapacitorSQLite: {
       "iosDatabaseLocation": "Library/IDWalletDatabase"
-    }
+    },
+    SplashScreen: {
+      launchShowDuration: 3000,
+      launchAutoHide: true,
+      launchFadeOutDuration: 1000,
+      backgroundColor: "#92FFC0"
+    },
   }
 };
 
