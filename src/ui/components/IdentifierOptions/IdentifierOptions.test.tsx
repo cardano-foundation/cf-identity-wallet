@@ -28,9 +28,6 @@ describe("Identifier Options modal", () => {
       identifiersCache: {
         identifiers: filteredIdentifierFix,
       },
-      identitiesCache: {
-        identities: [identifierFix[0]],
-      },
     };
     mockedStore = {
       ...mockStore(initialState),

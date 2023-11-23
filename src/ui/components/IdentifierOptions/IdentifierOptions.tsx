@@ -33,9 +33,9 @@ import { VerifyPassword } from "../VerifyPassword";
 import { Alert } from "../Alert";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getIdentitiesCache,
-  setIdentitiesCache,
-} from "../../../store/reducers/identitiesCache";
+  getIdentifiersCache,
+  setIdentifiersCache,
+} from "../../../store/reducers/identifiersCache";
 import { getBackRoute } from "../../../routes/backRoute";
 import { TabsRoutePath } from "../../../routes/paths";
 import {
@@ -60,7 +60,7 @@ const IdentifierOptions = ({
   setCardData,
 }: IdentifierOptionsProps) => {
   const dispatch = useAppDispatch();
-  const identitiesData = useAppSelector(getIdentitiesCache);
+  const identifierData = useAppSelector(getIdentifiersCache);
   const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const [editorOptionsIsOpen, setEditorIsOpen] = useState(false);
@@ -112,12 +112,12 @@ const IdentifierOptions = ({
     setActionType("edit");
     setEditorIsOpen(false);
     setOptionsIsOpen(false);
-    const updatedIdentities = [...identitiesData];
-    const index = updatedIdentities.findIndex(
+    const updatedIdentifiers = [...identifierData];
+    const index = updatedIdentifiers.findIndex(
       (identifier) => identifier.id === cardData.id
     );
-    updatedIdentities[index] = {
-      ...updatedIdentities[index],
+    updatedIdentifiers[index] = {
+      ...updatedIdentifiers[index],
       displayName: newDisplayName,
       theme: newSelectedTheme,
     };
@@ -130,17 +130,17 @@ const IdentifierOptions = ({
       displayName: newDisplayName,
       theme: newSelectedTheme,
     });
-    dispatch(setIdentitiesCache(updatedIdentities));
+    dispatch(setIdentifiersCache(updatedIdentifiers));
     dispatch(setToastMsg(ToastMsgType.IDENTIFIER_UPDATED));
     handleDone();
   };
 
   const verifyAction = () => {
     handleClose();
-    const updatedIdentities = identitiesData.filter(
+    const updatedIdentifiers = identifierData.filter(
       (item) => item.id !== cardData.id
     );
-    dispatch(setIdentitiesCache(updatedIdentities));
+    dispatch(setIdentifiersCache(updatedIdentifiers));
     handleDone();
   };
 

@@ -31,11 +31,11 @@ import { VerifyPassword } from "../../components/VerifyPassword";
 import { Alert } from "../../components/Alert";
 import {
   addFavouriteIdentifierCache,
-  getFavouritesIdentitiesCache,
-  getIdentitiesCache,
+  getFavouritesIdentifiersCache,
+  getIdentifiersCache,
   removeFavouriteIdentifierCache,
-  setIdentitiesCache,
-} from "../../../store/reducers/identitiesCache";
+  setIdentifiersCache,
+} from "../../../store/reducers/identifiersCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import {
   DIDDetails,
@@ -56,8 +56,10 @@ const IdentifierCardDetails = () => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
-  const identitiesData = useAppSelector(getIdentitiesCache);
-  const favouritesIdentitiesData = useAppSelector(getFavouritesIdentitiesCache);
+  const identifierData = useAppSelector(getIdentifiersCache);
+  const favouritesIdentifiersData = useAppSelector(
+    getFavouritesIdentifiersCache
+  );
   const [shareIsOpen, setShareIsOpen] = useState(false);
   const [identifierOptionsIsOpen, setIdentifierOptionsIsOpen] = useState(false);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
@@ -68,7 +70,7 @@ const IdentifierCardDetails = () => {
   >();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
 
-  const isFavourite = favouritesIdentitiesData?.some(
+  const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id
   );
 
@@ -111,12 +113,12 @@ const IdentifierCardDetails = () => {
     // @TODO - sdisalvo: Update Database.
     // Remember to update identifiers.card.details.options file too.
     if (cardData) {
-      const updatedIdentities = identitiesData.filter(
+      const updatedIdentifiers = identifierData.filter(
         (item) => item.id !== cardData.id
       );
       await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
       await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
-      dispatch(setIdentitiesCache(updatedIdentities));
+      dispatch(setIdentifiersCache(updatedIdentifiers));
     }
     handleDone();
   };
@@ -125,7 +127,7 @@ const IdentifierCardDetails = () => {
     const handleSetFavourite = (id: string) => {
       if (isFavourite) {
         PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
-          favourites: favouritesIdentitiesData.filter((fav) => fav.id !== id),
+          favourites: favouritesIdentifiersData.filter((fav) => fav.id !== id),
         })
           .then(() => {
             dispatch(removeFavouriteIdentifierCache(id));
@@ -134,13 +136,13 @@ const IdentifierCardDetails = () => {
             /*TODO: handle error*/
           });
       } else {
-        if (favouritesIdentitiesData.length >= MAX_FAVOURITES) {
+        if (favouritesIdentifiersData.length >= MAX_FAVOURITES) {
           dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
           return;
         }
 
         PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
-          favourites: [{ id, time: Date.now() }, ...favouritesIdentitiesData],
+          favourites: [{ id, time: Date.now() }, ...favouritesIdentifiersData],
         })
           .then(() => {
             dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));

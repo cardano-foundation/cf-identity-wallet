@@ -8,9 +8,9 @@ import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getFavouritesIdentitiesCache,
-  getIdentitiesCache,
-} from "../../../store/reducers/identitiesCache";
+  getFavouritesIdentifiersCache,
+  getIdentifiersCache,
+} from "../../../store/reducers/identifiersCache";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
@@ -54,8 +54,8 @@ const AdditionalButtons = ({
 
 const Identifiers = () => {
   const dispatch = useAppDispatch();
-  const identifiersData = useAppSelector(getIdentitiesCache);
-  const favouritesIdentifiers = useAppSelector(getFavouritesIdentitiesCache);
+  const identifiersData = useAppSelector(getIdentifiersCache);
+  const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const [modalIsOpen, setModalIsOpen] = useState(false);
 
   useIonViewWillEnter(() => {

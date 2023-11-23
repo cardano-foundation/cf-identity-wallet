@@ -100,7 +100,7 @@ describe("Identifier service of agent", () => {
     jest.resetAllMocks();
   });
 
-  test("can get all non-archived identities", async () => {
+  test("can get all non-archived identifiers", async () => {
     agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([didMetadataRecord, keriMetadataRecord]);
@@ -124,7 +124,7 @@ describe("Identifier service of agent", () => {
     ]);
   });
 
-  test("can get all archived identities", async () => {
+  test("can get all archived identifiers", async () => {
     agent.modules.generalStorage.getAllArchivedIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([didMetadataRecord, keriMetadataRecord]);

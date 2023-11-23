@@ -1,26 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { IdentifierShortDetails } from "../../../core/agent/agent.types";
 import { RootState } from "../../index";
-import { FavouriteIdentifier } from "./identitiesCache.types";
+import { FavouriteIdentifier } from "./identifiersCache.types";
 
 const initialState: {
-  identities: IdentifierShortDetails[];
+  identifiers: IdentifierShortDetails[];
   favourites: FavouriteIdentifier[];
 } = {
-  identities: [],
+  identifiers: [],
   favourites: [],
 };
-const identitiesCacheSlice = createSlice({
-  name: "identitiesCache",
+const identifiersCacheSlice = createSlice({
+  name: "identifiersCache",
   initialState,
   reducers: {
-    setIdentitiesCache: (
+    setIdentifiersCache: (
       state,
       action: PayloadAction<IdentifierShortDetails[]>
     ) => {
-      state.identities = action.payload;
+      state.identifiers = action.payload;
     },
-    setFavouritesIdentitiesCache: (
+    setFavouritesIdentifiersCache: (
       state,
       action: PayloadAction<FavouriteIdentifier[]>
     ) => {
@@ -41,19 +41,19 @@ const identitiesCacheSlice = createSlice({
   },
 });
 
-export { initialState, identitiesCacheSlice };
+export { initialState, identifiersCacheSlice };
 
 export const {
-  setIdentitiesCache,
-  setFavouritesIdentitiesCache,
+  setIdentifiersCache,
+  setFavouritesIdentifiersCache,
   addFavouriteIdentifierCache,
   removeFavouriteIdentifierCache,
-} = identitiesCacheSlice.actions;
+} = identifiersCacheSlice.actions;
 
-const getIdentitiesCache = (state: RootState) =>
-  state.identitiesCache.identities;
+const getIdentifiersCache = (state: RootState) =>
+  state.identifiersCache.identifiers;
 
-const getFavouritesIdentitiesCache = (state: RootState) =>
-  state.identitiesCache.favourites;
+const getFavouritesIdentifiersCache = (state: RootState) =>
+  state.identifiersCache.favourites;
 
-export { getIdentitiesCache, getFavouritesIdentitiesCache };
+export { getIdentifiersCache, getFavouritesIdentifiersCache };

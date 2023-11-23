@@ -51,7 +51,7 @@ const IdentifierCardTemplate = ({
         <div className="card-footer">
           <span className="card-footer-column">
             <span className="card-footer-column-label">
-              {i18n.t("identifier.card.layout.created")}
+              {i18n.t("identifiers.card.layout.created")}
             </span>
             <span className="card-footer-column-info">
               {formatShortDate(cardData.createdAtUTC)}

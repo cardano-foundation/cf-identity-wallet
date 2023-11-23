@@ -50,8 +50,8 @@ const initialState = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  identitiesCache: {
-    identities: filteredDidFix,
+  identifiersCache: {
+    identifiers: filteredDidFix,
   },
 };
 

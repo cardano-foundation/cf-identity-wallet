@@ -44,7 +44,7 @@ describe("NextRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      identitiesCache: { identities: [], favourites: [] },
+      identifiersCache: { identifiers: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
@@ -145,7 +145,7 @@ describe("getNextRoute", () => {
       seedPhrase256: "",
       selected: FIFTEEN_WORDS_BIT_LENGTH,
     },
-    identitiesCache: { identities: [], favourites: [] },
+    identifiersCache: { identifiers: [], favourites: [] },
     credsCache: { creds: [], favourites: [] },
     connectionsCache: {
       connections: [],

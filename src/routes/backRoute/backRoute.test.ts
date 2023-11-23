@@ -49,7 +49,7 @@ describe("getBackRoute", () => {
           isPaused: false,
         },
       },
-      identitiesCache: { identities: [], favourites: [] },
+      identifiersCache: { identifiers: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
@@ -134,7 +134,7 @@ describe("getBackRoute", () => {
         seedPhrase256: "",
         selected: FIFTEEN_WORDS_BIT_LENGTH,
       },
-      identitiesCache: { identities: [], favourites: [] },
+      identifiersCache: { identifiers: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],
@@ -204,7 +204,7 @@ describe("getPreviousRoute", () => {
           isPaused: false,
         },
       },
-      identitiesCache: { identities: [], favourites: [] },
+      identifiersCache: { identifiers: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
       connectionsCache: {
         connections: [],

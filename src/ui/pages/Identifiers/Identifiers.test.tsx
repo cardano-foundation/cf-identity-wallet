@@ -41,8 +41,8 @@ const initialState = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  identitiesCache: {
-    identities: filteredIdentifierFix,
+  identifiersCache: {
+    identifiers: filteredIdentifierFix,
     favourites: [
       {
         id: filteredIdentifierFix[0].id,
@@ -108,8 +108,8 @@ describe("Identifiers Tab", () => {
         },
       },
       seedPhraseCache: {},
-      identitiesCache: {
-        identities: filteredIdentifierFix,
+      identifiersCache: {
+        identifiers: filteredIdentifierFix,
       },
     };
 

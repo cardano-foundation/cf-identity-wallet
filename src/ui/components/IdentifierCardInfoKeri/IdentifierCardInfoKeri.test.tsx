@@ -51,8 +51,8 @@ const initialState = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  identitiesCache: {
-    identities: filteredKeriFix,
+  identifiersCache: {
+    identifiers: filteredKeriFix,
   },
 };
 

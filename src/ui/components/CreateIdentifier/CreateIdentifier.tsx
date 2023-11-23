@@ -18,9 +18,9 @@ import { ErrorMessage } from "../ErrorMessage";
 import "./CreateIdentifier.scss";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getIdentitiesCache,
-  setIdentitiesCache,
-} from "../../../store/reducers/identitiesCache";
+  getIdentifiersCache,
+  setIdentifiersCache,
+} from "../../../store/reducers/identifiersCache";
 import {
   IdentifierShortDetails,
   IdentifierType,
@@ -36,7 +36,7 @@ const CreateIdentifier = ({
   setModalIsOpen,
 }: CreateIdentifierProps) => {
   const dispatch = useAppDispatch();
-  const identifierData = useAppSelector(getIdentitiesCache);
+  const identifierData = useAppSelector(getIdentifiersCache);
   const [displayNameValue, setDisplayNameValue] = useState("");
   const [selectedType, setSelectedType] = useState(0);
   const [selectedTheme, setSelectedTheme] = useState(0);
@@ -91,7 +91,7 @@ const CreateIdentifier = ({
         colors: [newColor[1], newColor[0]],
         theme: selectedTheme,
       };
-      dispatch(setIdentitiesCache([...identifierData, newIdentifier]));
+      dispatch(setIdentifiersCache([...identifierData, newIdentifier]));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
       resetModal();
     }

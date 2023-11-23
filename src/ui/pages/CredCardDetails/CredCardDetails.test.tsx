@@ -50,8 +50,8 @@ const initialStateCreds = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  identitiesCache: {
-    identities: credsFix,
+  identifiersCache: {
+    identifiers: credsFix,
     favourites: [],
   },
 };

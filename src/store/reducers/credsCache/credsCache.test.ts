@@ -12,7 +12,7 @@ import {
 import { RootState } from "../../index";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
-import { FavouriteIdentifier } from "../identitiesCache/identitiesCache.types";
+import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";
 
 describe("credsCacheSlice", () => {
   const initialState = {

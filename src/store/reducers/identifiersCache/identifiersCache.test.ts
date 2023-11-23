@@ -1,33 +1,33 @@
 import { PayloadAction } from "@reduxjs/toolkit";
 import {
-  identitiesCacheSlice,
-  getIdentitiesCache,
-  setIdentitiesCache,
-  setFavouritesIdentitiesCache,
+  identifiersCacheSlice,
+  getIdentifiersCache,
+  setIdentifiersCache,
+  setFavouritesIdentifiersCache,
   addFavouriteIdentifierCache,
   removeFavouriteIdentifierCache,
-  getFavouritesIdentitiesCache,
-} from "./identitiesCache";
+  getFavouritesIdentifiersCache,
+} from "./identifiersCache";
 import { RootState } from "../../index";
 import {
   IdentifierShortDetails,
   IdentifierType,
 } from "../../../core/agent/agent.types";
-import { FavouriteIdentifier } from "./identitiesCache.types";
+import { FavouriteIdentifier } from "./identifiersCache.types";
 
-describe("identitiesCacheSlice", () => {
+describe("identifiersCacheSlice", () => {
   const initialState = {
-    identities: [],
+    identifiers: [],
     favourites: [],
   };
   it("should return the initial state", () => {
     expect(
-      identitiesCacheSlice.reducer(undefined, {} as PayloadAction)
+      identifiersCacheSlice.reducer(undefined, {} as PayloadAction)
     ).toEqual(initialState);
   });
 
-  it("should handle setIdentitiesCache", () => {
-    const identities: IdentifierShortDetails[] = [
+  it("should handle setIdentifiersCache", () => {
+    const identifiers: IdentifierShortDetails[] = [
       {
         id: "id-1",
         method: IdentifierType.KEY,
@@ -37,22 +37,22 @@ describe("identitiesCacheSlice", () => {
         theme: 0,
       },
     ];
-    const newState = identitiesCacheSlice.reducer(
+    const newState = identifiersCacheSlice.reducer(
       initialState,
-      setIdentitiesCache(identities)
+      setIdentifiersCache(identifiers)
     );
-    expect(newState.identities).toEqual(identities);
+    expect(newState.identifiers).toEqual(identifiers);
   });
-  it("should handle setFavouritesIdentitiesCache", () => {
+  it("should handle setFavouritesIdentifiersCache", () => {
     const favourites: FavouriteIdentifier[] = [
       {
         id: "abcd",
         time: 1,
       },
     ];
-    const newState = identitiesCacheSlice.reducer(
+    const newState = identifiersCacheSlice.reducer(
       initialState,
-      setFavouritesIdentitiesCache(favourites)
+      setFavouritesIdentifiersCache(favourites)
     );
     expect(newState.favourites).toEqual(favourites);
   });
@@ -61,7 +61,7 @@ describe("identitiesCacheSlice", () => {
       id: "abcd",
       time: 1,
     };
-    const newState = identitiesCacheSlice.reducer(
+    const newState = identifiersCacheSlice.reducer(
       initialState,
       addFavouriteIdentifierCache(favourite)
     );
@@ -69,7 +69,7 @@ describe("identitiesCacheSlice", () => {
   });
   it("should handle removeFavouriteIdentifierCache", () => {
     const initialState = {
-      identities: [],
+      identifiers: [],
       favourites: [
         {
           id: "abcd",
@@ -77,7 +77,7 @@ describe("identitiesCacheSlice", () => {
         },
       ],
     };
-    const newState = identitiesCacheSlice.reducer(
+    const newState = identifiersCacheSlice.reducer(
       initialState,
       removeFavouriteIdentifierCache("abcd")
     );
@@ -86,10 +86,10 @@ describe("identitiesCacheSlice", () => {
 });
 
 describe("get identifier Cache", () => {
-  it("should return the identities cache from RootState", () => {
+  it("should return the identifiers cache from RootState", () => {
     const state = {
-      identitiesCache: {
-        identities: [
+      identifiersCache: {
+        identifiers: [
           {
             id: "id-1",
             method: IdentifierType.KEY,
@@ -107,12 +107,12 @@ describe("get identifier Cache", () => {
         ],
       },
     } as RootState;
-    const identitiesCache = getIdentitiesCache(state);
-    expect(identitiesCache).toEqual(state.identitiesCache.identities);
+    const identifiersCache = getIdentifiersCache(state);
+    expect(identifiersCache).toEqual(state.identifiersCache.identifiers);
   });
   it("should return the favourites cache from RootState", () => {
     const state = {
-      identitiesCache: {
+      identifiersCache: {
         favourites: [
           {
             id: "id-1",
@@ -125,7 +125,7 @@ describe("get identifier Cache", () => {
         ],
       },
     } as RootState;
-    const favouriteCache = getFavouritesIdentitiesCache(state);
-    expect(favouriteCache).toEqual(state.identitiesCache.favourites);
+    const favouriteCache = getFavouritesIdentifiersCache(state);
+    expect(favouriteCache).toEqual(state.identifiersCache.favourites);
   });
 });
