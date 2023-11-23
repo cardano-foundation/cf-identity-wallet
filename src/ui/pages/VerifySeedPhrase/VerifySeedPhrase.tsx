@@ -3,7 +3,7 @@ import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { Alert as AlertExit, Alert as AlertFail } from "../../components/Alert";
+import { Alert as AlertFail } from "../../components/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
@@ -117,7 +117,7 @@ const VerifySeedPhrase = () => {
     history.push(nextPath.pathname);
   };
 
-  const handleExit = () => {
+  const handleBack = () => {
     handleClearState();
     const { backPath, updateRedux } = getBackRoute(
       RoutePath.VERIFY_SEED_PHRASE,
@@ -144,7 +144,7 @@ const VerifySeedPhrase = () => {
           backButton={true}
           onBack={() => {
             handleClearState();
-            handleExit();
+            handleBack();
           }}
           currentPath={RoutePath.VERIFY_SEED_PHRASE}
           progressBar={true}
@@ -191,7 +191,7 @@ const VerifySeedPhrase = () => {
         cancelButtonText={`${i18n.t(
           "verifyseedphrase.alert.fail.button.cancel"
         )}`}
-        actionConfirm={handleExit}
+        actionConfirm={handleBack}
       />
     </ResponsivePageLayout>
   );
