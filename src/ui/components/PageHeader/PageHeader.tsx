@@ -130,6 +130,7 @@ const PageHeader = ({
             <IonProgressBar
               value={progressBarValue}
               buffer={progressBarBuffer}
+              data-testid="progress-bar"
             />
           </div>
         )}

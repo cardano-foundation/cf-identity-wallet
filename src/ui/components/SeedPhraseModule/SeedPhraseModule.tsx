@@ -15,6 +15,7 @@ const SeedPhraseModule = ({
 }: SeedPhraseModuleProps) => {
   return (
     <div
+      data-testid="seed-phrase-module"
       className={`seed-phrase-module ${
         hideSeedPhrase ? "seed-phrase-hidden" : "seed-phrase-visible"
       }`}
