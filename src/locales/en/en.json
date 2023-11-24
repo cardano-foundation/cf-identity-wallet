@@ -154,7 +154,7 @@
   },
   "tabsmenu": {
     "label": {
-      "identifiers": "Identifiers",
+      "identifiers": "Identity",
       "creds": "Credentials",
       "scan": "Scan",
       "crypto": "Crypto",
@@ -215,8 +215,8 @@
   },
   "identifiers": {
     "tab": {
-      "title": "Identifiers",
-      "create": "Create new identifier",
+      "title": "Identity",
+      "create": "Add an identifier",
       "allidentifiers": "All identifiers"
     },
     "card": {
