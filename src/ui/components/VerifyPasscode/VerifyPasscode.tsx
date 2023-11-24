@@ -12,16 +12,15 @@ import {
   getAuthentication,
   getCurrentOperation,
   getCurrentRoute,
-  getStateCache,
   setAuthentication,
-  setCurrentOperation,
   setCurrentRoute,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { RoutePath } from "../../../routes";
 import { VerifyPasscodeProps } from "./VerifyPasscode.types";
 import "./VerifyPasscode.scss";
 import { TabsRoutePath } from "../../../routes/paths";
-import { operationState, toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
 
 const VerifyPasscode = ({
   isOpen,
@@ -32,7 +31,7 @@ const VerifyPasscode = ({
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentRoute = useAppSelector(getCurrentRoute);
-  const [currentAction, setCurrentAction] = useState("");
+  const [toastMsgToDispatch, setToastMsgToDispatch] = useState<ToastMsgType>();
   const authentication = useAppSelector(getAuthentication);
   const [passcode, setPasscode] = useState("");
   const seedPhrase = localStorage.getItem("seedPhrase");
@@ -49,29 +48,24 @@ const VerifyPasscode = ({
   const cancelButtonText = i18n.t("verifypasscode.alert.button.cancel");
 
   useEffect(() => {
-    let operation = "";
+    let toastMsg;
     if (
       currentRoute?.path?.includes(TabsRoutePath.DIDS) &&
-      currentOperation === operationState.deleteIdentity
+      currentOperation === OperationType.DELETE_IDENTIFIER
     ) {
-      operation = toastState.identityDeleted;
+      toastMsg = ToastMsgType.IDENTIFIER_DELETED;
     } else if (
       currentRoute?.path?.includes(TabsRoutePath.CREDS) &&
-      currentOperation === operationState.deleteCredential
+      currentOperation === OperationType.DELETE_CREDENTIAL
     ) {
-      operation = toastState.credentialDeleted;
-    } else if (
-      currentRoute?.path?.includes(TabsRoutePath.CRYPTO) &&
-      currentOperation === operationState.deleteWallet
-    ) {
-      operation = toastState.walletDeleted;
+      toastMsg = ToastMsgType.CREDENTIAL_DELETED;
     } else if (
       currentRoute?.path?.includes(RoutePath.CONNECTION_DETAILS) &&
-      currentOperation === operationState.deleteConnection
+      currentOperation === OperationType.DELETE_CONNECTION
     ) {
-      operation = toastState.connectionDeleted;
+      toastMsg = ToastMsgType.CONNECTION_DELETED;
     }
-    setCurrentAction(operation);
+    setToastMsgToDispatch(toastMsg);
   }, [currentRoute?.path, currentOperation]);
 
   const handleClearState = () => {
@@ -88,7 +82,7 @@ const VerifyPasscode = ({
         verifyPasscode(passcode + digit)
           .then((verified) => {
             if (verified) {
-              dispatch(setCurrentOperation(currentAction));
+              dispatch(setToastMsg(toastMsgToDispatch));
               onVerify();
               handleClearState();
             } else {
@@ -149,17 +143,34 @@ const VerifyPasscode = ({
         closeButtonLabel={`${i18n.t("verifypasscode.cancel")}`}
         closeButtonAction={() => handleClearState()}
       >
+        <IonGrid>
+          <IonRow>
+            <IonCol
+              className="verify-passcode-title"
+              data-testid="verify-passcode-title"
+            >
+              {i18n.t("verifypasscode.title")}
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonCol
+              className="verify-passcode-description"
+              data-testid="verify-passcode-description"
+            >
+              {i18n.t("verifypasscode.description")}
+            </IonCol>
+          </IonRow>
+        </IonGrid>
         <PasscodeModule
-          title={i18n.t("verifypasscode.title")}
-          description={i18n.t("verifypasscode.description")}
           error={
-            passcode.length === 6 &&
-            passcodeIncorrect && (
-              <ErrorMessage
-                message={`${i18n.t("verifypasscode.error")}`}
-                timeout={true}
-              />
-            )
+            <ErrorMessage
+              message={
+                passcode.length === 6 && passcodeIncorrect
+                  ? `${i18n.t("verifypasscode.error")}`
+                  : undefined
+              }
+              timeout={true}
+            />
           }
           passcode={passcode}
           handlePinChange={handlePinChange}

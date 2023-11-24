@@ -14,6 +14,7 @@ import "./Scan.scss";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
+import { OperationType } from "../../globals/types";
 
 const Scan = () => {
   const history = useHistory();
@@ -26,7 +27,7 @@ const Scan = () => {
   });
 
   useEffect(() => {
-    if (currentOperation.length) {
+    if (currentOperation !== OperationType.IDLE) {
       const data: DataProps = {
         store: { stateCache },
         state: { currentOperation: currentOperation },

@@ -2,23 +2,18 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
-import { Clipboard } from "@capacitor/clipboard";
 import { waitForIonicReact } from "@ionic/react-test-utils";
-import { Preferences, SetOptions } from "@capacitor/preferences";
-import { didFix, identityFix } from "../../__fixtures__/identityFix";
+import { SetOptions } from "@capacitor/preferences";
+import { identityFix } from "../../__fixtures__/identityFix";
 import { DidCardDetails } from "./DidCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
-import { AriesAgent } from "../../../core/agent/agent";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import {
   filteredDidFix,
   filteredKeriFix,
 } from "../../__fixtures__/filteredIdentityFix";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
+import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 
 const path = TabsRoutePath.DIDS + "/" + identityFix[0].id;
 

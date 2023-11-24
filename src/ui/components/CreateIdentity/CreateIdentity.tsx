@@ -25,10 +25,10 @@ import {
   IdentifierShortDetails,
   IdentifierType,
 } from "../../../core/agent/services/identifierService.types";
-import { ColorGenerator } from "../../utils/ColorGenerator";
+import { ColorGenerator } from "../../utils/colorGenerator";
 import { AriesAgent } from "../../../core/agent/agent";
-import { setCurrentOperation } from "../../../store/reducers/stateCache";
-import { toastState } from "../../constants/dictionary";
+import { setToastMsg } from "../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../globals/types";
 import { IdentityThemeSelector } from "../IdentityThemeSelector";
 
 const CreateIdentity = ({
@@ -92,7 +92,7 @@ const CreateIdentity = ({
         theme: selectedTheme,
       };
       dispatch(setIdentitiesCache([...identityData, newIdentity]));
-      dispatch(setCurrentOperation(toastState.identityCreated));
+      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
       resetModal();
     }
   };

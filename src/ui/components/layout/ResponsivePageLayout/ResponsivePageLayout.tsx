@@ -3,14 +3,16 @@ import { ResponsivePageLayoutProps } from "./ResponsivePageLayout.types";
 import "./ResponsivePageLayout.scss";
 
 const ResponsivePageLayout = ({
-  title,
+  header,
+  pageId,
   children,
 }: ResponsivePageLayoutProps) => {
   return (
     <IonPage
-      className={`responsive-page-layout safe-area ${title}`}
-      data-testid={title}
+      className={`responsive-page-layout ${pageId}`}
+      data-testid={pageId}
     >
+      {header}
       <div className="responsive-page-content">{children}</div>
     </IonPage>
   );

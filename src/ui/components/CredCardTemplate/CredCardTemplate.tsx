@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { IonChip, IonIcon } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
 import { Alert } from "../Alert";
@@ -11,7 +11,7 @@ import summitLogo from "../../../ui/assets/images/summit-logo.svg";
 import "./CredCardTemplate.scss";
 import CardBodyPending from "./CardBodyPending";
 import CardBodyUniversity from "./CardBodyUniversity";
-import { CredentialType } from "../../constants/dictionary";
+import { CredentialType } from "../../../core/agent/agent.types";
 import CardBodyResidency from "./CardBodyResidence";
 import CardBodySummit from "./CardBodySummit";
 

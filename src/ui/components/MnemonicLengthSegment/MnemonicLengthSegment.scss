@@ -1,0 +1,25 @@
+.mnemonic-length-segment {
+  --background: var(--ion-color-dark-grey);
+
+  ion-segment-button {
+    &.segment-button-checked {
+      &::part(indicator-background) {
+        background: var(--ion-color-primary-gradient);
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 425px) {
+    ion-label {
+      font-size: 0.8rem;
+      height: 1rem;
+      line-height: normal;
+      margin: 0 auto;
+    }
+
+    ion-segment-button.md {
+      height: 2.4rem;
+      min-height: 2.4rem;
+    }
+  }
+}

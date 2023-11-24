@@ -73,6 +73,12 @@ type UpdateIdentityMetadata = Omit<
   "id" | "isArchived" | "name" | "method" | "createdAt"
 >;
 
+enum CredentialType {
+  UNIVERSITY_DEGREE_CREDENTIAL = "UniversityDegreeCredential",
+  ACCESS_PASS_CREDENTIAL = "AccessPassCredential",
+  PERMANENT_RESIDENT_CARD = "PermanentResidentCard",
+}
+
 enum ConnectionKeriEventTypes {
   ConnectionKeriStateChanged = "ConnectionKeriStateChanged",
 }
@@ -108,6 +114,7 @@ export {
   ConnectionHistoryType,
   MiscRecordId,
   ConnectionType,
+  CredentialType,
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
 };

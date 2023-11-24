@@ -7,7 +7,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { formatShortDate } from "../../../utils";
+import { formatShortDate } from "../../utils/formatters";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {

@@ -5,7 +5,7 @@ import { MemoryRouter } from "react-router-dom";
 import { PageLayout } from "./PageLayout";
 import { store } from "../../../../store";
 import { RoutePath } from "../../../../routes";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../globals/constants";
 
 describe("Page Layout", () => {
   test("Renders Page Layout", () => {

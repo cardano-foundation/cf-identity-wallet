@@ -1,4 +1,5 @@
 import { ConnectionType } from "../../../core/agent/agent.types";
+import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 
 interface PayloadData<T = any> {
   [key: string]: T;
@@ -40,8 +41,8 @@ interface StateCacheProps {
   initialized: boolean;
   routes: CurrentRouteCacheProps[];
   authentication: AuthenticationCacheProps;
-  currentOperation: string;
-  defaultCryptoAccount: string;
+  currentOperation: OperationType;
+  toastMsg?: ToastMsgType;
   queueConnectionCredentialRequest: QueueProps<ConnectionCredentialRequestProps>;
 }
 

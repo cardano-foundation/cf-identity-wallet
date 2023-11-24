@@ -9,10 +9,9 @@ import {
 import { RootState } from "../../store";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
 import { DataProps } from "./nextRoute.types";
-import { onboardingRoute } from "../../ui/constants/dictionary";
-import { TabsRoutePath } from "../paths";
+import { OperationType } from "../../ui/globals/types";
 
 describe("NextRoute", () => {
   let localStorageMock: any;
@@ -33,8 +32,7 @@ describe("NextRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
-        currentOperation: "",
-        defaultCryptoAccount: "",
+        currentOperation: OperationType.IDLE,
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
@@ -48,11 +46,6 @@ describe("NextRoute", () => {
       },
       identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
       connectionsCache: {
         connections: [],
       },
@@ -119,28 +112,10 @@ describe("NextRoute", () => {
   });
 
   test("should return correct route for /verifyseedphrase", () => {
-    let data = {
-      store: storeMock,
-      state: {
-        currentOperation: onboardingRoute.create,
-      },
-    };
-    let result = getNextVerifySeedPhraseRoute(data);
+    const result = getNextVerifySeedPhraseRoute();
 
     expect(result).toEqual({
       pathname: RoutePath.CREATE_PASSWORD,
-    });
-
-    data = {
-      store: storeMock,
-      state: {
-        currentOperation: "",
-      },
-    };
-    result = getNextVerifySeedPhraseRoute(data);
-
-    expect(result).toEqual({
-      pathname: TabsRoutePath.CRYPTO,
     });
   });
 });
@@ -158,8 +133,7 @@ describe("getNextRoute", () => {
         passwordIsSet: false,
         passwordIsSkipped: true,
       },
-      currentOperation: "",
-      defaultCryptoAccount: "",
+      currentOperation: OperationType.IDLE,
       queueConnectionCredentialRequest: {
         isProcessing: false,
         queues: [],
@@ -173,11 +147,6 @@ describe("getNextRoute", () => {
     },
     identitiesCache: { identities: [], favourites: [] },
     credsCache: { creds: [], favourites: [] },
-    cryptoAccountsCache: {
-      cryptoAccounts: [],
-      defaultCryptoAccount: "",
-      hideCryptoBalances: false,
-    },
     connectionsCache: {
       connections: [],
     },

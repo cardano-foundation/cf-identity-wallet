@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 
 interface ResponsivePageLayoutProps {
-  title?: string;
+  header?: ReactNode;
+  pageId?: string;
   children?: ReactNode;
 }
 

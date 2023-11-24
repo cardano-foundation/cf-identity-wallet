@@ -11,7 +11,7 @@ import {
 } from "../../store/reducers/seedPhraseCache";
 import { DataProps, StoreState } from "./nextRoute.types";
 import { RoutePath, TabsRoutePath } from "../paths";
-import { onboardingRoute, toastState } from "../../ui/constants/dictionary";
+import { ToastMsgType } from "../../ui/globals/types";
 
 const getNextRootRoute = (store: StoreState) => {
   const isInitialized = store.stateCache.initialized;
@@ -26,14 +26,7 @@ const getNextRootRoute = (store: StoreState) => {
   } else if (routes.length === 1 && !isInitialized) {
     path = RoutePath.ONBOARDING;
   } else if (authentication.passcodeIsSet && authentication.seedPhraseIsSet) {
-    if (
-      store.stateCache.currentOperation ===
-      (onboardingRoute.create || onboardingRoute.restore)
-    ) {
-      path = RoutePath.CREATE_PASSWORD;
-    } else {
-      path = RoutePath.TABS_MENU;
-    }
+    path = RoutePath.TABS_MENU;
   } else {
     if (initialRoute) {
       path = RoutePath.ONBOARDING;
@@ -46,18 +39,11 @@ const getNextRootRoute = (store: StoreState) => {
 };
 
 const getNextOnboardingRoute = (data: DataProps) => {
-  const route = data?.state?.currentOperation;
-  let query = "";
-  if (route === onboardingRoute.create) {
-    query = onboardingRoute.createRoute;
-  } else if (route === onboardingRoute.restore) {
-    query = onboardingRoute.restoreRoute;
-  }
   let path;
-  if (!data.store.stateCache.authentication.passcodeIsSet) {
-    path = RoutePath.SET_PASSCODE;
+  if (data.store.stateCache.authentication.passcodeIsSet) {
+    path = RoutePath.GENERATE_SEED_PHRASE;
   } else {
-    path = RoutePath.GENERATE_SEED_PHRASE + query;
+    path = RoutePath.SET_PASSCODE;
   }
 
   return { pathname: path };
@@ -112,13 +98,8 @@ const getNextGenerateSeedPhraseRoute = () => {
   return { pathname: RoutePath.VERIFY_SEED_PHRASE };
 };
 
-const getNextVerifySeedPhraseRoute = (data: DataProps) => {
-  const route = data?.state?.currentOperation;
-  const nextPath: string =
-    route === onboardingRoute.create
-      ? RoutePath.CREATE_PASSWORD
-      : TabsRoutePath.CRYPTO;
-
+const getNextVerifySeedPhraseRoute = () => {
+  const nextPath = RoutePath.CREATE_PASSWORD;
   return { pathname: nextPath };
 };
 
@@ -146,11 +127,11 @@ const updateStoreAfterCreatePassword = (data: DataProps) => {
 };
 
 const getNextScanRoute = (data: DataProps) => {
-  const currentOperation = data?.state?.currentOperation;
+  const currentToastMsg = data?.state?.toastMsg;
   let path;
   if (
-    currentOperation === toastState.connectionRequestPending ||
-    currentOperation === toastState.credentialRequestPending
+    currentToastMsg === ToastMsgType.CONNECTION_REQUEST_PENDING ||
+    currentToastMsg === ToastMsgType.CREDENTIAL_REQUEST_PENDING
   ) {
     path = TabsRoutePath.CREDS;
   }
@@ -192,7 +173,7 @@ const nextRoute: Record<string, any> = {
     updateRedux: [updateStoreSetSeedPhrase],
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
-    nextPath: (data: DataProps) => getNextVerifySeedPhraseRoute(data),
+    nextPath: (data: DataProps) => getNextVerifySeedPhraseRoute(),
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
   [RoutePath.CREATE_PASSWORD]: {

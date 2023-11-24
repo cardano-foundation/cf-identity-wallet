@@ -13,7 +13,7 @@ import {
 } from "../../components/CardsStack";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { filteredIdentityFix } from "../../__fixtures__/filteredIdentityFix";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {

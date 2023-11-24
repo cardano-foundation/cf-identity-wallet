@@ -15,8 +15,8 @@ import {
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { connectionType } from "../../constants/dictionary";
-import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
+import { DIDCommRequestType } from "../../globals/types";
+import { TOAST_MESSAGE_DELAY } from "../../globals/constants";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 import { ConnectionType } from "../../../core/agent/agent.types";
@@ -36,7 +36,7 @@ const ConnectionCredentialRequest = () => {
     label: string;
     logo?: string;
   }>();
-  const [requestType, setRequestType] = useState("");
+  const [requestType, setRequestType] = useState<DIDCommRequestType>();
 
   useEffect(() => {
     async function handle() {
@@ -51,7 +51,7 @@ const ConnectionCredentialRequest = () => {
             label: connectionCredentialRequest.label as string,
             logo: connectionCredentialRequest.logo as string,
           });
-          setRequestType(connectionType.connection);
+          setRequestType(DIDCommRequestType.CONNECTION);
         } else if (
           connectionCredentialRequest.type ===
           ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
@@ -65,7 +65,7 @@ const ConnectionCredentialRequest = () => {
             // @TODO: handle case when connectionId is not present
             setRequestData({ label: "W3C" });
           }
-          setRequestType(connectionType.credential);
+          setRequestType(DIDCommRequestType.CREDENTIAL);
         }
         setShowRequest(true);
       }
@@ -153,7 +153,7 @@ const ConnectionCredentialRequest = () => {
       <PageLayout
         footer={!initiateAnimation}
         primaryButtonText={
-          requestType === connectionType.connection
+          requestType === DIDCommRequestType.CONNECTION
             ? `${i18n.t("request.button.connect")}`
             : `${i18n.t("request.button.acceptoffer")}`
         }
@@ -162,7 +162,7 @@ const ConnectionCredentialRequest = () => {
         // add dismiss action if needed
         secondaryButtonAction={() => handleCancel()}
       >
-        {requestType === connectionType.connection ? (
+        {requestType === DIDCommRequestType.CONNECTION ? (
           <h2>{i18n.t("request.connection.title")}</h2>
         ) : (
           <h2>{i18n.t("request.credential.title")}</h2>
@@ -194,7 +194,7 @@ const ConnectionCredentialRequest = () => {
           </IonRow>
           <IonRow className="request-info-row">
             <IonCol size="12">
-              {requestType === connectionType.connection ? (
+              {requestType === DIDCommRequestType.CONNECTION ? (
                 <span>
                   {requestType + i18n.t("request.connection.requestconnection")}
                 </span>

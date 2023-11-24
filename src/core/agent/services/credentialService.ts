@@ -18,6 +18,7 @@ import {
   AcdcKeriStateChangedEvent,
   AcdcKeriEventTypes,
   ConnectionType,
+  CredentialType,
 } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
@@ -25,8 +26,7 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { CredentialType } from "../../../ui/constants/dictionary";
-import { ColorGenerator } from "../../../ui/utils/ColorGenerator";
+import { ColorGenerator } from "../../../ui/utils/colorGenerator";
 import {
   CredentialDetails,
   CredentialShortDetails,

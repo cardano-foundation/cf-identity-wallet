@@ -1,20 +1,14 @@
 import { useHistory } from "react-router-dom";
-import { IonPage } from "@ionic/react";
 import { i18n } from "../../../i18n";
 import "./Onboarding.scss";
 import { Slides } from "../../components/Slides";
 import { SlideItem } from "../../components/Slides/Slides.types";
-import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getStateCache,
-  setCurrentOperation,
-} from "../../../store/reducers/stateCache";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
-import { onboardingRoute } from "../../constants/dictionary";
 import introImg0 from "../../assets/lottie/wallet.json";
 import introImg1 from "../../assets/images/intro-1.png";
 import introImg2 from "../../assets/images/intro-2.png";
@@ -26,6 +20,7 @@ import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayo
 export type IntroImg0Type = typeof introImg0;
 
 const Onboarding = () => {
+  const pageId = "onboarding";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -58,39 +53,35 @@ const Onboarding = () => {
     },
   ];
 
-  const handleNavigation = (route: string) => {
-    if (route === onboardingRoute.restore) {
+  // @TODO - foconnor: This should be op: OperationType when available (non optional)
+  const handleNavigation = (op?: string) => {
+    if (op) {
       // @TODO - sdisalvo: Remove this condition and default to dispatch when the restore route is ready
       return;
-    } else {
-      dispatch(setCurrentOperation(route));
-      const data: DataProps = {
-        store: { stateCache },
-        state: { currentOperation: route },
-      };
-      const { nextPath, updateRedux } = getNextRoute(
-        RoutePath.ONBOARDING,
-        data
-      );
-      updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
-      history.push({
-        pathname: nextPath.pathname,
-        state: data.state,
-      });
     }
+    const data: DataProps = {
+      store: { stateCache },
+    };
+    const { nextPath, updateRedux } = getNextRoute(RoutePath.ONBOARDING, data);
+    updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
+    history.push({
+      pathname: nextPath.pathname,
+      state: data.state,
+    });
   };
 
   return (
-    <ResponsivePageLayout title={"onboarding"}>
+    <ResponsivePageLayout pageId={pageId}>
       <Slides items={items} />
       <PageFooter
         pageId={"onboarding"}
         primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}
-        primaryButtonAction={() => handleNavigation(onboardingRoute.create)}
+        primaryButtonAction={() => handleNavigation()}
         tertiaryButtonText={`${i18n.t(
           "onboarding.alreadywallet.button.label"
         )}`}
-        tertiaryButtonAction={() => handleNavigation(onboardingRoute.restore)}
+        // TODO: set restore route when available
+        tertiaryButtonAction={() => handleNavigation("#")}
       />
     </ResponsivePageLayout>
   );

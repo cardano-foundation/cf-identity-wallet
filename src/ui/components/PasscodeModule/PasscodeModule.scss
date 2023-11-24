@@ -1,93 +1,111 @@
-.passcode-module {
-  .title {
-    font-size: 24px;
-    text-align: center;
-    font-weight: 700;
-    font-style: normal;
-    line-height: 28px;
-  }
+.passcode-module-circle-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  .description {
-    font-weight: 500;
-    font-size: 16px;
-    line-height: 22px;
-    text-align: center;
-  }
+.passcode-module-circle {
+  width: 6.4vw;
+  height: 6.4vw;
+  max-width: 1.563rem;
+  max-height: 1.563rem;
+  border-radius: 50%;
+  border: 1px solid var(--ion-color-secondary);
+  margin: 0 0.5rem;
+}
 
-  .circle-row {
+.passcode-module-circle-fill {
+  background: var(--ion-color-secondary);
+}
+
+.passcode-module-container {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+
+  .passcode-module-numbers-row {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 1.5rem 1rem 0.8rem;
+    flex-direction: row;
+    justify-content: space-around;
+
+    ion-col {
+      display: flex;
+      justify-content: center;
+      padding: 0.25rem 0;
+    }
+
+    ion-button {
+      margin: 0;
+      width: 22.57vw;
+      height: 22.57vw;
+      --border-radius: 22.57vw;
+      --background-activated: var(--ion-color-dark-grey);
+    }
   }
 
-  .circle {
-    width: 25px;
-    height: 25px;
-    border-radius: 50%;
-    border: 1px solid var(--ion-color-secondary);
-    margin: 0 8px;
-  }
-
-  .circle-fill {
-    background: var(--ion-color-secondary);
-  }
-
-  .pin-error {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    height: 16px;
-  }
-
-  .numbers-row ion-col {
-    display: flex;
-    justify-content: center;
-  }
-
-  .number-button {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border: none;
-    text-align: center;
-    cursor: pointer;
-    font-size: 44px;
-    color: var(--ion-color-primary);
-  }
-
-  .number-labels {
-    display: flex;
-    margin-top: 3px;
-    margin-left: 2px;
-    text-align: center;
-  }
-
-  .number-labels span {
-    font-size: 12px;
-    text-transform: uppercase;
-    margin-right: 2px;
-  }
-
-  .board-button {
-    width: 88px;
-    height: 88px;
-    --border-radius: 50px;
+  .passcode-module-number-button {
     --background: var(--ion-color-medium-grey);
-    --background-activated: var(--ion-color-dark-grey);
+
+    .passcode-module-number-button-inner {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      text-align: center;
+      cursor: pointer;
+      font-size: 11.28vw;
+      font-weight: 500;
+      color: var(--ion-color-primary);
+
+      .passcode-module-number-labels {
+        display: flex;
+        margin-top: 3px;
+        margin-left: 2px;
+        text-align: center;
+
+        span {
+          font-size: 3.59vw;
+          text-transform: uppercase;
+          margin-right: 2px;
+        }
+      }
+    }
   }
 
-  .backspace-button {
-    width: 88px;
-    height: 88px;
-    --border-radius: 50px;
+  .passcode-module-backspace-button {
     --background: var(--ion-color-primary);
-    --background-activated: var(--ion-color-dark-grey);
     --color: var(--ion-color-light);
+
+    .passcode-module-backspace-icon {
+      width: 3.125rem;
+      height: 3.125rem;
+    }
+  }
+}
+
+@media screen and (min-height: 300px) and (max-height: 715px) {
+  .passcode-module-circle {
+    width: 5vw;
+    height: 5vw;
   }
 
-  .backspace-icon {
-    width: 50px;
-    height: 50px;
+  .passcode-module-container {
+    .passcode-module-numbers-row {
+      ion-button {
+        height: 12vh;
+        width: 12vh;
+        --border-radius: 12vh;
+      }
+
+      .passcode-module-number-button-inner {
+        font-size: 6vh;
+
+        .passcode-module-number-labels span {
+          font-size: 1.65vh;
+        }
+      }
+    }
   }
 }

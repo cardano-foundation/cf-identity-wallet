@@ -1,11 +1,4 @@
-import {
-  act,
-  fireEvent,
-  render,
-  waitFor,
-  screen,
-  getByTestId,
-} from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
@@ -16,14 +9,10 @@ import { waitForIonicReact } from "@ionic/react-test-utils";
 import { CredCardDetails } from "./CredCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { AriesAgent } from "../../../core/agent/agent";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
-import { filteredDidFix } from "../../__fixtures__/filteredIdentityFix";
+import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { DidCardDetails } from "../DidCardDetails";
 
 const path = TabsRoutePath.CREDS + "/" + credsFix[0].id;

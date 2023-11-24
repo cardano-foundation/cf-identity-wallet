@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
-import { IonButton, IonCol, IonGrid, IonPage, IonRow } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
-import { PageLayout } from "../../components/layout/PageLayout";
 import {
   ErrorMessage,
   MESSAGE_MILLISECONDS,
@@ -22,8 +20,12 @@ import { updateReduxState } from "../../../store/utils";
 import "./PasscodeLogin.scss";
 import { getBackRoute } from "../../../routes/backRoute";
 import { RoutePath } from "../../../routes";
+import PageFooter from "../../components/PageFooter/PageFooter";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
+import { PageHeader } from "../../components/PageHeader";
 
 const PasscodeLogin = () => {
+  const pageId = "passcode-login";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -129,50 +131,52 @@ const PasscodeLogin = () => {
   };
 
   return (
-    <IonPage className="page-layout passcode-login safe-area">
-      <PageLayout currentPath={RoutePath.PASSCODE_LOGIN}>
-        <PasscodeModule
-          title={i18n.t("passcodelogin.title")}
-          description={i18n.t("passcodelogin.description")}
-          error={
-            passcode.length === 6 &&
-            passcodeIncorrect && (
-              <ErrorMessage
-                message={`${i18n.t("passcodelogin.error")}`}
-                timeout={true}
-              />
-            )
-          }
-          passcode={passcode}
-          handlePinChange={handlePinChange}
-          handleRemove={handleRemove}
-        />
-        <IonGrid>
-          <IonRow>
-            <IonCol className="continue-col">
-              <IonButton
-                shape="round"
-                expand="block"
-                fill="outline"
-                className="secondary-button"
-                onClick={() => setIsOpen(true)}
-              >
-                {i18n.t("passcodelogin.forgotten.button")}
-              </IonButton>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-        <Alert
-          isOpen={isOpen}
-          setIsOpen={setIsOpen}
-          dataTestId="alert-forgotten"
-          headerText={headerText}
-          confirmButtonText={confirmButtonText}
-          cancelButtonText={cancelButtonText}
-          actionConfirm={resetPasscode}
-        />
-      </PageLayout>
-    </IonPage>
+    <ResponsivePageLayout
+      pageId={pageId}
+      header={<PageHeader currentPath={RoutePath.PASSCODE_LOGIN} />}
+    >
+      <h2
+        className="passcode-login-title"
+        data-testid="passcode-login-title"
+      >
+        {i18n.t("passcodelogin.title")}
+      </h2>
+      <p
+        className="passcode-login-description small-hide"
+        data-testid="passcode-login-description"
+      >
+        {i18n.t("passcodelogin.description")}
+      </p>
+      <PasscodeModule
+        error={
+          <ErrorMessage
+            message={
+              passcode.length === 6 && passcodeIncorrect
+                ? `${i18n.t("passcodelogin.error")}`
+                : undefined
+            }
+            timeout={true}
+          />
+        }
+        passcode={passcode}
+        handlePinChange={handlePinChange}
+        handleRemove={handleRemove}
+      />
+      <PageFooter
+        pageId={pageId}
+        secondaryButtonText={`${i18n.t("passcodelogin.forgotten.button")}`}
+        secondaryButtonAction={() => setIsOpen(true)}
+      />
+      <Alert
+        isOpen={isOpen}
+        setIsOpen={setIsOpen}
+        dataTestId="alert-forgotten"
+        headerText={headerText}
+        confirmButtonText={confirmButtonText}
+        cancelButtonText={cancelButtonText}
+        actionConfirm={resetPasscode}
+      />
+    </ResponsivePageLayout>
   );
 };
 

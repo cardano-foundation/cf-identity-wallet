@@ -1,5 +1,5 @@
 import { calendarNumberOutline, personCircleOutline } from "ionicons/icons";
-import { formatShortDate, formatTimeToSec } from "../../../utils";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { IdentityCardInfoKeriProps } from "./IdentityCardInfoKeri.types";
 import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
 import { CardDetailsBlock, CardDetailsItem } from "../CardDetailsElements";

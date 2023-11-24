@@ -14,8 +14,14 @@ import {
   setInitialized,
   setPauseQueueConnectionCredentialRequest,
   setQueueConnectionCredentialRequest,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
+import {
+  KeyStoreKeys,
+  SecureStorage,
+  PreferencesKeys,
+  PreferencesStorage,
+} from "../../../core/storage";
 import {
   setFavouritesIdentitiesCache,
   setIdentitiesCache,
@@ -27,22 +33,13 @@ import {
 } from "../../../store/reducers/credsCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import {
-  setCryptoAccountsCache,
-  setHideCryptoBalances,
-} from "../../../store/reducers/cryptoAccountsCache";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
-import { CryptoAccountProps } from "../../pages/Crypto/Crypto.types";
-import {
   setConnectionsCache,
   updateOrAddConnectionCache,
 } from "../../../store/reducers/connectionsCache";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
-import { toastState } from "../../constants/dictionary";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { ColorGenerator } from "../../utils/ColorGenerator";
+import { ColorGenerator } from "../../utils/colorGenerator";
 import {
   KeriNotification,
   ConnectionKeriStateChangedEvent,
@@ -65,7 +62,7 @@ const connectionStateChangedHandler = async (
     const connectionDetails =
       AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
     dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setCurrentOperation(toastState.connectionRequestPending));
+    dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else if (
     AriesAgent.agent.connections.isConnectionResponseReceived(connectionRecord)
   ) {
@@ -85,7 +82,7 @@ const connectionStateChangedHandler = async (
     const connectionDetails =
       AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
     dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setCurrentOperation(toastState.connectionRequestIncoming));
+    dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_INCOMING));
     dispatch(
       setQueueConnectionCredentialRequest({
         id: connectionRecord.id,
@@ -97,14 +94,14 @@ const connectionStateChangedHandler = async (
   } else if (
     AriesAgent.agent.connections.isConnectionResponseSent(connectionRecord)
   ) {
-    dispatch(setCurrentOperation(toastState.connectionRequestPending));
+    dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else if (
     AriesAgent.agent.connections.isConnectionConnected(connectionRecord)
   ) {
     const connectionDetails =
       AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
     dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setCurrentOperation(toastState.newConnectionAdded));
+    dispatch(setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED));
   }
 };
 
@@ -148,14 +145,14 @@ const credentialStateChangedHandler = async (
       ...credentialDetails,
       credentialRecordId: credentialRecord.id,
     });
-    dispatch(setCurrentOperation(toastState.credentialRequestPending));
+    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));
     dispatch(updateOrAddCredsCache(credentialDetails));
   } else if (AriesAgent.agent.credentials.isCredentialDone(credentialRecord)) {
     const credentialShortDetails =
       await AriesAgent.agent.credentials.updateMetadataCompleted(
         credentialRecord
       );
-    dispatch(setCurrentOperation(toastState.newCredentialAdded));
+    dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));
     dispatch(updateOrAddCredsCache(credentialShortDetails));
   }
 };
@@ -172,7 +169,7 @@ const connectionKeriStateChangedHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === ConnectionStatus.PENDING) {
-    dispatch(setCurrentOperation(toastState.connectionRequestPending));
+    dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
     const connectionRecordId = event.payload.connectionId!;
     const connectionDetails =
@@ -180,7 +177,7 @@ const connectionKeriStateChangedHandler = async (
         connectionRecordId
       );
     dispatch(updateOrAddConnectionCache(connectionDetails));
-    dispatch(setCurrentOperation(toastState.newConnectionAdded));
+    dispatch(setToastMsg(ToastMsgType.NEW_CONNECTION_ADDED));
   }
 };
 
@@ -204,9 +201,9 @@ const keriAcdcChangeHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === CredentialStatus.PENDING) {
-    dispatch(setCurrentOperation(toastState.credentialRequestPending));
+    dispatch(setCurrentOperation(OperationType.IDLE));
   } else {
-    dispatch(setCurrentOperation(toastState.newCredentialAdded));
+    dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
   }
 };
 const AppWrapper = (props: { children: ReactNode }) => {
@@ -252,16 +249,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const storedIdentities =
       await AriesAgent.agent.identifiers.getIdentifiers();
     // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
-    const storedCryptoAccounts: CryptoAccountProps[] = [];
-
-    try {
-      const hideCryptoBalances = await PreferencesStorage.get(
-        PreferencesKeys.APP_HIDE_CRYPTO_BALANCES
-      );
-      dispatch(setHideCryptoBalances(!!hideCryptoBalances.hidden));
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
 
     try {
       const didsFavourites = await PreferencesStorage.get(
@@ -296,7 +283,6 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     dispatch(setIdentitiesCache(storedIdentities));
     dispatch(setCredsCache(credentials));
-    dispatch(setCryptoAccountsCache(storedCryptoAccounts));
     dispatch(setConnectionsCache(connectionsDetails));
 
     AriesAgent.agent.connections.onConnectionStateChanged((event) => {

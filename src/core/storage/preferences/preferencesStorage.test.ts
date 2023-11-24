@@ -6,9 +6,9 @@ import {
 import { PreferencesStorage } from "./preferencesStorage";
 import { PreferencesStorageItem } from "./preferencesStorage.type";
 
-const EXISTING_KEY = "keythatexists";
-const NON_EXISTING_KEY = "keythatdoesnotexist";
-const EXISTING_VALUE: PreferencesStorageItem = { data: "test" };
+const existingKey = "keythatexists";
+const nonExistingKey = "keythatdoesnotexist";
+const existingValue: PreferencesStorageItem = { data: "test" };
 
 describe("Preferences Storage", () => {
   afterEach(jest.clearAllMocks);
@@ -17,16 +17,16 @@ describe("Preferences Storage", () => {
       .fn()
       .mockImplementation(
         async (data: SetOptions): Promise<GetResult | null> => {
-          if (data.key === EXISTING_KEY) {
-            return { value: JSON.stringify(EXISTING_VALUE) };
+          if (data.key === existingKey) {
+            return { value: JSON.stringify(existingValue) };
           }
           return null;
         }
       );
-    expect(await PreferencesStorage.get(EXISTING_KEY)).toEqual(EXISTING_VALUE);
-    expect(Preferences.get).toHaveBeenCalledWith({ key: EXISTING_KEY });
-    await expect(PreferencesStorage.get(NON_EXISTING_KEY)).rejects.toThrow(
-      `${PreferencesStorage.KEY_NOT_FOUND} ${NON_EXISTING_KEY}`
+    expect(await PreferencesStorage.get(existingKey)).toEqual(existingValue);
+    expect(Preferences.get).toHaveBeenCalledWith({ key: existingKey });
+    await expect(PreferencesStorage.get(nonExistingKey)).rejects.toThrow(
+      `${PreferencesStorage.KEY_NOT_FOUND} ${nonExistingKey}`
     );
   });
 
@@ -34,15 +34,15 @@ describe("Preferences Storage", () => {
     Preferences.set = jest
       .fn()
       .mockImplementation(async (data: SetOptions): Promise<void> => {
-        expect(data.key).toBe(EXISTING_KEY);
-        expect(data.value).toBe(JSON.stringify(EXISTING_VALUE));
+        expect(data.key).toBe(existingKey);
+        expect(data.value).toBe(JSON.stringify(existingValue));
       });
 
-    await PreferencesStorage.set(EXISTING_KEY, EXISTING_VALUE);
+    await PreferencesStorage.set(existingKey, existingValue);
 
     expect(Preferences.set).toHaveBeenCalledWith({
-      key: EXISTING_KEY,
-      value: JSON.stringify(EXISTING_VALUE),
+      key: existingKey,
+      value: JSON.stringify(existingValue),
     });
   });
 
@@ -50,11 +50,11 @@ describe("Preferences Storage", () => {
     Preferences.remove = jest
       .fn()
       .mockImplementation(async (data: RemoveOptions) => {
-        expect(data.key).toBe(EXISTING_KEY);
+        expect(data.key).toBe(existingKey);
       });
 
-    await PreferencesStorage.remove(EXISTING_KEY);
+    await PreferencesStorage.remove(existingKey);
 
-    expect(Preferences.remove).toHaveBeenCalledWith({ key: EXISTING_KEY });
+    expect(Preferences.remove).toHaveBeenCalledWith({ key: existingKey });
   });
 });

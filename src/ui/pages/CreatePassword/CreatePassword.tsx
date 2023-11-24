@@ -28,7 +28,7 @@ import {
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
 import { Alert } from "../../components/Alert";
-import { onboardingRoute } from "../../constants/dictionary";
+import { OperationType } from "../../globals/types";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 
 const errorMessages = {
@@ -145,9 +145,6 @@ const PasswordRegex = ({ password }: PasswordRegexProps) => {
 
 const CreatePassword = () => {
   const stateCache = useAppSelector(getStateCache);
-  const onboarding =
-    stateCache?.currentOperation === onboardingRoute.create ||
-    onboardingRoute.restore;
   const history = useHistory();
   const dispatch = useAppDispatch();
   const [createPasswordValue, setCreatePasswordValue] = useState("");
@@ -216,7 +213,7 @@ const CreatePassword = () => {
       dispatch,
       updateRedux
     );
-    dispatch(setCurrentOperation(""));
+    dispatch(setCurrentOperation(OperationType.IDLE));
     history.push(nextPath.pathname);
     handleClearState();
   };
@@ -226,7 +223,7 @@ const CreatePassword = () => {
       <PageLayout
         header={true}
         currentPath={RoutePath.CREATE_PASSWORD}
-        closeButton={!onboarding}
+        closeButton={false}
         closeButtonAction={() => handleClose()}
         title={`${i18n.t("createpassword.title")}`}
         footer={true}

@@ -27,19 +27,17 @@ import {
   getStateCache,
   setCurrentOperation,
   setCurrentRoute,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { VerifyPassword } from "../../components/VerifyPassword";
 import {
   Alert as AlertDeleteArchive,
   Alert as AlertRestore,
 } from "../../components/Alert";
-import { formatShortDate, formatTimeToSec } from "../../../utils";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { CredsOptions } from "../../components/CredsOptions";
-import {
-  MAX_FAVOURITES,
-  operationState,
-  toastState,
-} from "../../constants/dictionary";
+import { MAX_FAVOURITES } from "../../globals/constants";
+import { OperationType, ToastMsgType } from "../../globals/types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { AriesAgent } from "../../../core/agent/agent";
 import {
@@ -51,10 +49,7 @@ import {
 } from "../../../store/reducers/credsCache";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { CredCardTemplate } from "../../components/CredCardTemplate";
-import {
-  PreferencesKeys,
-  PreferencesStorage,
-} from "../../../core/storage/preferences";
+import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { ConnectionDetails } from "../Connections/Connections.types";
 import {
   CardDetailsAttributes,
@@ -127,14 +122,14 @@ const CredCardDetails = () => {
     await AriesAgent.agent.credentials.archiveCredential(params.id);
     const creds = credsCache.filter((item) => item.id !== params.id);
     dispatch(setCredsCache(creds));
-    dispatch(setCurrentOperation(toastState.credentialArchived));
+    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
     handleDone();
   };
 
   const handleDeleteCredential = async () => {
     try {
       await AriesAgent.agent.credentials.deleteCredential(params.id);
-      dispatch(setCurrentOperation(toastState.credentialDeleted));
+      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
     } catch (e) {
       // @TODO - sdisalvo: handle error
     }
@@ -152,7 +147,7 @@ const CredCardDetails = () => {
     } catch (e) {
       // @TODO - sdisalvo: handle error
     }
-    dispatch(setCurrentOperation(toastState.credentialRestored));
+    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
     handleDone();
   };
 
@@ -181,7 +176,7 @@ const CredCardDetails = () => {
           });
       } else {
         if (favouritesCredsCache.length >= MAX_FAVOURITES) {
-          dispatch(setCurrentOperation(toastState.maxFavouritesReached));
+          dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
           return;
         }
 
@@ -354,8 +349,8 @@ const CredCardDetails = () => {
                 dispatch(
                   setCurrentOperation(
                     isArchived
-                      ? operationState.deleteCredential
-                      : operationState.archiveCredential
+                      ? OperationType.DELETE_CREDENTIAL
+                      : OperationType.ARCHIVE_CREDENTIAL
                   )
                 );
               }}
@@ -408,8 +403,12 @@ const CredCardDetails = () => {
                 setVerifyPasscodeIsOpen(true);
               }
             }}
-            actionCancel={() => dispatch(setCurrentOperation(""))}
-            actionDismiss={() => dispatch(setCurrentOperation(""))}
+            actionCancel={() =>
+              dispatch(setCurrentOperation(OperationType.IDLE))
+            }
+            actionDismiss={() =>
+              dispatch(setCurrentOperation(OperationType.IDLE))
+            }
           />
           <AlertRestore
             isOpen={alertRestoreIsOpen}
@@ -423,8 +422,12 @@ const CredCardDetails = () => {
               "creds.card.details.alert.restore.cancel"
             )}`}
             actionConfirm={() => handleRestoreCredential()}
-            actionCancel={() => dispatch(setCurrentOperation(""))}
-            actionDismiss={() => dispatch(setCurrentOperation(""))}
+            actionCancel={() =>
+              dispatch(setCurrentOperation(OperationType.IDLE))
+            }
+            actionDismiss={() =>
+              dispatch(setCurrentOperation(OperationType.IDLE))
+            }
           />
           <VerifyPassword
             isOpen={verifyPasswordIsOpen}

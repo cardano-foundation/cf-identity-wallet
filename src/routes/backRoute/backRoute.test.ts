@@ -8,7 +8,8 @@ import {
 } from "./backRoute";
 import { RoutePath } from "../index";
 import { setAuthentication } from "../../store/reducers/stateCache";
-import { FIFTEEN_WORDS_BIT_LENGTH } from "../../constants/appConstants";
+import { FIFTEEN_WORDS_BIT_LENGTH } from "../../ui/globals/constants";
+import { OperationType } from "../../ui/globals/types";
 
 jest.mock("../../store/reducers/stateCache", () => ({
   removeCurrentRoute: jest.fn(),
@@ -41,8 +42,7 @@ describe("getBackRoute", () => {
           loggedIn: false,
           time: 0,
         },
-        currentOperation: "",
-        defaultCryptoAccount: "",
+        currentOperation: OperationType.IDLE,
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
@@ -51,11 +51,6 @@ describe("getBackRoute", () => {
       },
       identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
       connectionsCache: {
         connections: [],
       },
@@ -127,8 +122,7 @@ describe("getBackRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
         },
-        currentOperation: "",
-        defaultCryptoAccount: "",
+        currentOperation: OperationType.IDLE,
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
@@ -142,11 +136,6 @@ describe("getBackRoute", () => {
       },
       identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
       connectionsCache: {
         connections: [],
       },
@@ -208,8 +197,7 @@ describe("getPreviousRoute", () => {
           loggedIn: false,
           time: 0,
         },
-        currentOperation: "",
-        defaultCryptoAccount: "",
+        currentOperation: OperationType.IDLE,
         queueConnectionCredentialRequest: {
           isProcessing: false,
           queues: [],
@@ -218,11 +206,6 @@ describe("getPreviousRoute", () => {
       },
       identitiesCache: { identities: [], favourites: [] },
       credsCache: { creds: [], favourites: [] },
-      cryptoAccountsCache: {
-        cryptoAccounts: [],
-        defaultCryptoAccount: "",
-        hideCryptoBalances: false,
-      },
       connectionsCache: {
         connections: [],
       },

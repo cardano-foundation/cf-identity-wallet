@@ -1,5 +1,6 @@
 import { IonButton, IonToolbar } from "@ionic/react";
 import { PageFooterProps } from "./PageFooter.types";
+import "./PageFooter.scss";
 
 const PageFooter = ({
   pageId,
