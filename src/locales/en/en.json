@@ -154,7 +154,7 @@
   },
   "tabsmenu": {
     "label": {
-      "dids": "Identity",
+      "identifiers": "Identity",
       "creds": "Credentials",
       "scan": "Scan",
       "crypto": "Crypto",
@@ -213,11 +213,11 @@
       "symbol": "Contains a symbol !@#$%^&*()"
     }
   },
-  "identity": {
+  "identifiers": {
     "tab": {
       "title": "Identity",
-      "create": "Create New Identity",
-      "alldids": "All identities"
+      "create": "Add an identifier",
+      "allidentifiers": "All identifiers"
     },
     "card": {
       "layout": {
@@ -268,30 +268,30 @@
           "title": "Backer Address"
         },
         "delete": {
-          "button": "Delete Identity",
+          "button": "Delete identifier",
           "alert": {
-            "title": "Are you sure you want to delete this identity?",
+            "title": "Are you sure you want to delete this identifier?",
             "confirm": "Yes, I'm sure",
             "cancel": "Cancel"
           }
         },
         "options": {
-          "title": "Identity options",
+          "title": "Identifier options",
           "cancel": "Cancel",
           "view": "View JSON",
-          "edit": "Edit Identity",
-          "share": "Share identity",
-          "delete": "Delete Identity",
+          "edit": "Edit identifier",
+          "share": "Share identifier",
+          "delete": "Delete identifier",
           "inner": {
-            "label": "Display Name",
-            "theme": "Edit Theme",
-            "confirm": "Confirm Changes",
+            "label": "Display name",
+            "theme": "Edit theme",
+            "confirm": "Confirm changes",
             "error": "Must be less than 32 characters long"
           }
         },
         "view": {
           "cancel": "Done",
-          "title": "Identity JSON",
+          "title": "Identifier JSON",
           "copy": "Copy JSON",
           "save": "Save to Device"
         }
@@ -497,27 +497,27 @@
       }
     }
   },
-  "shareidentity": {
-    "title": "Share identity",
+  "shareidentifier": {
+    "title": "Share identifier",
     "divider": "or",
     "copykey": "Copy Identifier",
     "more": "More share options"
   },
-  "createidentity": {
-    "title": "Add Identity",
+  "createidentifier": {
+    "title": "Add an identifier",
     "displayname": {
-      "title": "Display Name",
-      "placeholder": "Create a name for this identity"
+      "title": "Display name",
+      "placeholder": "Create a name for this identifier"
     },
-    "identitytype": {
-      "title": "Identity Type",
+    "identifiertype": {
+      "title": "Identifier type",
       "didkey": "did:key",
       "keri": "KERI AID"
     },
     "theme": {
       "title": "Choose Theme"
     },
-    "confirmbutton": "Create identity",
+    "confirmbutton": "Create identifier",
     "error": {
       "maxlength": "Must be less than 32 characters long"
     }
@@ -568,9 +568,9 @@
   },
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
-    "identitycreated": "New identity created successfully",
-    "identityupdated": "Identity successfully updated",
-    "identitydeleted": "Identity successfully deleted",
+    "identifiercreated": "New identifier created successfully",
+    "identifierupdated": "Identifier successfully updated",
+    "identifierdeleted": "Identifier successfully deleted",
     "credentialdeleted": "Credential deleted successfully",
     "credentialsdeleted": "Credentials deleted successfully",
     "credentialarchived": "Credential archived successfully",

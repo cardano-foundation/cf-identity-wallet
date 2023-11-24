@@ -12,12 +12,12 @@ enum RoutePath {
 
 enum TabsRoutePath {
   ROOT = "/tabs",
-  DIDS = "/tabs/dids",
+  IDENTIFIERS = "/tabs/identifiers",
   CREDS = "/tabs/creds",
   SCAN = "/tabs/scan",
   CRYPTO = "/tabs/crypto",
   CHAT = "/tabs/chat",
-  DID_DETAILS = "/tabs/dids/:id?",
+  IDENTIFIER_DETAILS = "/tabs/identifiers/:id?",
   CRED_DETAILS = "/tabs/creds/:id?",
 }
 

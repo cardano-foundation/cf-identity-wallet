@@ -12,7 +12,7 @@ import {
 import { RootState } from "../../index";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { CredentialShortDetails } from "../../../core/agent/agent.types";
-import { FavouriteIdentity } from "../identitiesCache/identitiesCache.types";
+import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";
 
 describe("credsCacheSlice", () => {
   const initialState = {
@@ -90,7 +90,7 @@ describe("credsCacheSlice", () => {
   });
 
   it("should handle setFavouritesCredsCache", () => {
-    const favs: FavouriteIdentity[] = [
+    const favs: FavouriteIdentifier[] = [
       {
         id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
         time: 1,
@@ -104,7 +104,7 @@ describe("credsCacheSlice", () => {
   });
 
   it("should handle addFavouritesCredsCache", () => {
-    const fav: FavouriteIdentity = {
+    const fav: FavouriteIdentifier = {
       id: "abcd",
       time: 1,
     };
