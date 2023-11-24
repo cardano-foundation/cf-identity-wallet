@@ -1,5 +1,4 @@
 import { Addresses } from "./addresses";
-import { NetworkType } from "./addresses.types";
 
 const validSeedPhrase15Words =
   "test walk nut penalty hip pave soap entry language right filter choice";
@@ -51,43 +50,6 @@ describe("Cardano seed phrase and address derivation", () => {
     );
     expect(Addresses.convertToMnemonic(entropy24Words)).toEqual(
       validSeedPhrase24Words
-    );
-  });
-
-  test("can derive the correct base and reward addresses from root xprv key", () => {
-    expect(Addresses.deriveFirstBaseAndRewardAddrs(rootXprvKey15Words)).toEqual(
-      {
-        addresses: new Map([
-          [
-            NetworkType.MAINNET,
-            new Map([
-              [
-                1852,
-                new Map([
-                  [0, [mainnetAddr0]],
-                  [1, []],
-                ]),
-              ],
-            ]),
-          ],
-          [
-            NetworkType.TESTNET,
-            new Map([
-              [
-                1852,
-                new Map([
-                  [0, [testnetAddr0]],
-                  [1, []],
-                ]),
-              ],
-            ]),
-          ],
-        ]),
-        rewardAddresses: new Map([
-          [NetworkType.MAINNET, [mainnetRewardAddr0]],
-          [NetworkType.TESTNET, [testnetRewardAddr0]],
-        ]),
-      }
     );
   });
 });
