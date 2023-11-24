@@ -20,7 +20,7 @@
 # Overview
 
 <div style="text-align: justify">
-The Identity Wallet is an open source application developed by the Cardano Foundation.  It provides a digital solution for users to securely store, manage, and share their identifiers and verifiable credentials using a mobile device.  This project is the result of on-going research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The release of Identity Wallet version 0.1.0 provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano.
+The Identity Wallet is an open source application developed by the Cardano Foundation.  It provides a digital solution for users to securely store, manage, and share their identifiers and verifiable credentials using a mobile device.  This project is the result of on-going research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The first release of Identity Wallet provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano.
 </div>
 
 #### Click the image below to watch our overview video
@@ -31,89 +31,38 @@ The Identity Wallet is an open source application developed by the Cardano Found
   </a>
 </p>
 
-# Current Features
+# Features
 
-- **User-Friendly Interface**
-  - Intuitive UI/UX developed following proven design principles
-  - Android and iOS supported
-- **Secure Identity Storage**
-  - Hardware Security Module (HSM) or Secure Enclave (SE) on the user’s mobile device us utilsed to securely store private key material
-  - Hierarchical Deterministic (HD) wallet,  users can leverage a BIP-39 mnemonic seed phrase for their Identity Wallet profile
-- **Interoperability**
-  - Compliant and interoperable with the [Aries RFCs](https://github.com/hyperledger/aries-rfcs)
-  - [W3C](https://www.w3.org/)
-    - [DID Methods](https://www.w3.org/TR/did-spec-registries/)
-    - [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/)
-  - [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) v1 Mediator
-  - [KERI](https://keri.one/) on Cardano
-    - [AID](https://identity.foundation/keri/docs/Glossary.html#autonomic-identifier)
-    - [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force)
-  - [Global Legal Entity Identifier Foundation](https://www.gleif.org/en) (GLIEF)
-    - [LEI](https://www.gleif.org/en/about-lei/introducing-the-legal-entity-identifier-lei) 
-    - [vLEI](https://www.gleif.org/en/vlei/introducing-the-verifiable-lei-vlei)
-- **Identity Standards and Protocols**
-  - Identifiers
-    - W3C Registered DID Methods
-      - [did:key](https://w3c-ccg.github.io/did-method-key/)
-      - [did:peer](https://identity.foundation/peer-did-method-spec/)
-    - KERI 
-      - [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID)
-  - Verifiable Credentials
-    - [W3C](https://www.w3.org/TR/vc-data-model/#ecosystem-overview)
-    - [Autonomous Chained Data Container (ACDC)](https://github.com/trustoverip/tswg-acdc-specification)
-- **Connections and Issuance Services**
-  - [Connections](https://www.w3.org/TR/vc-data-model/#roles) 
-    - Holder-to-Holder
-    - Issuer-to-Holder
-  - Issuance
-    - Credential Issuance Testing Tool [VERCEL_URL]
-      - [W3C](https://www.w3.org/TR/vc-data-model/)
-      - [ACDC](https://github.com/trustoverip/tswg-acdc-specification)
-- **SSI Agents**
-  - Hyperledger Aries Framework
-    - [Aries Framework JavaScript](https://github.com/hyperledger/aries-framework-javascript) (written in TypeScript)
-  - KERI on Cardano
-    - [Signify](https://github.com/cardano-foundation/signify-ts)
-    - [KERIA](https://github.com/cardano-foundation/keria)
-    - [Cardano Backer](https://github.com/cardano-foundation/cardano-backer)
+**User-Friendly Interface**
 
-# Potential Future Development
-**App Features**
-- Bluetooth
-- Biometrics
-- NFC
+:white_check_mark: Intuitive UI/UX developed following proven design principles with Android and iOS support
 
-**Identity**
-- Recovery
-  - Shamir Secret Sharing
-  - On-chain Recovery
-  - Local Encrypted
-  - Cloud-based
-- Identifiers
-  - [did:webs](https://labs.hyperledger.org/labs/didwebs.html#:~:text=did%3Awebs%20extends%20the%20web,%2C%20X509%2C%20and%20certificate%20authorities.)
-  - [did:keri](https://identity.foundation/keri/did_methods/)
-- Verifiable Credentials
-  - [OID4vc](https://openid.net/sg/openid4vc/specifications/)
-  - On-chain Schemas
 
- **Communications**
-- Connections
-  - Secure Messaging
-  - Social Recovery
-- DIDComm
-  - Mediator v2
+**Secure Storage**
+
+ :white_check_mark: Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material
  
-**Peer-to-Peer (P2P)**
-- [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support
-- D’App Identity Wallet Integration
+ :white_check_mark: Hierarchical Deterministic (HD) wallet, leverage BIP-39 mnemonic seed phrase for user profiles
+ 
 
-**Development Workstreams**
-- Identity Wallet Browser Extension
-- Cryptocurrency
-  - Deep Links into existing wallets
-  - Provide open source reference implementations
-    - Bundle Transactions
-    - Multi-sig
+|**Interoperability**          |  **Standards and Protocols**               |     **[Connections](https://www.w3.org/TR/vc-data-model/#roles) and Credential Issuance**            |     **SSI Agents**            |           
+|----------------|---------------|---------------|----------------|
+| :white_check_mark: [Aries RFCs](https://github.com/hyperledger/aries-rfcs) | :white_check_mark: [did:key](https://w3c-ccg.github.io/did-method-key/) | :white_check_mark: Holder-to-Holder (Wallet <-> Wallet) | :white_check_mark: [Aries Framework](https://github.com/hyperledger/aries-framework-javascript)| 
+|:white_check_mark: [W3C](https://www.w3.org/) | :white_check_mark: [did:peer](https://identity.foundation/peer-did-method-spec/)  | :white_check_mark: Issuer-to-Holder | :white_check_mark: [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | 
+|:white_check_mark: [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) | :white_check_mark: [KERI](https://keri.one/) on Cardano | :white_check_mark: Credential Issuance Testing Tool [VERCEL_URL]  | | 
+|:white_check_mark: [KERI](https://keri.one/) | :white_check_mark: [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID) |  |  |
+|  | :white_check_mark: [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) |  |  |
+|  | :white_check_mark: [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  |  |
+
+
+# Potential Future Developments
+
+|**App Features**            |  **Identity Recovery**               |     **Identifiers**           |     **Verifiable Credentials**  |    **Communications** |   **Peer-to-Peer (P2P)** |  
+|----------------|---------------|---------------|----------------|----------------|----------------|
+| Bluetooth |  Shamir Secret Sharing|  [did:webs](https://labs.hyperledger.org/labs/didwebs.html#:~:text=did%3Awebs%20extends%20the%20web,%2C%20X509%2C%20and%20certificate%20authorities.) |  [OID4vc](https://openid.net/sg/openid4vc/specifications/)| Messaging | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support  | 
+| Biometrics | On-chain Recovery | [did:keri](https://identity.foundation/keri/did_methods/)  | On-Chain Schemas | Social Recovery |  App Integration |
+| NFC|  Local Encrypted|  | AnonCreds | DIDComm Mediator v2 | | 
+| | Cloud-based |  | Cheqd | |  |
 
 
 # Preview in your browser
