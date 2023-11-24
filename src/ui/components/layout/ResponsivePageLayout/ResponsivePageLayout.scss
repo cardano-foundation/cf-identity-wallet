@@ -1,7 +1,7 @@
 .responsive-page-layout {
   display: flex;
   flex-direction: column;
-  padding-inline: 1.25rem;
+  padding: 1.25rem;
   background: var(--ion-color-light);
 
   .responsive-page-content {
@@ -11,21 +11,11 @@
 
     > * {
       flex: 0 1 auto;
-      margin: 0;
-    }
-
-    > h2 {
-      margin: 1rem 0 0.5rem;
+      margin: 0.5rem 0;
     }
   }
 
   @media screen and (min-width: 250px) and (max-width: 425px) {
-    padding-inline: 0.9rem;
-
-    .responsive-page-content {
-      > h2 {
-        margin: 0.5rem 0 0.5rem;
-      }
-    }
+    padding: 0.9rem;
   }
 }
