@@ -31,14 +31,6 @@ class Addresses {
     return Buffer.from(privateKeyBytes).toString("hex");
   }
 
-  static hexToBech32Bip32Private(HexXPrv: string): string {
-    return Bip32PrivateKey.from_bytes(Buffer.from(HexXPrv, "hex")).to_bech32();
-  }
-
-  static bip32PrivateToPublic(Bech32XPrv: string): string {
-    return Bip32PrivateKey.from_bech32(Bech32XPrv).to_public().to_bech32();
-  }
-
   static deriveFirstBaseAndRewardAddrs(rootXPrvBech32: string) {
     const rootKey = Bip32PrivateKey.from_bech32(rootXPrvBech32);
     const accountKey = rootKey
