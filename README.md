@@ -12,11 +12,15 @@
 # Disclaimer
 
 <div style="text-align: justify">
-<b>Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions.</b>
+<b>  Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions.</b>
 </div>
 <br>
 <div style="text-align: justify">  
- <b>The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis. While we strive for high functionality and user satisfaction and endeavour to maintain reliability and accuracy, unforeseen issues may arise due to the experimental nature of this product. For detailed information on the terms and conditions that govern your use of the Open-Source Identity Wallet, we encourage you to read our Terms of Use. </b>
+ <b> :warning: :warning: :warning: The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis. :warning: :warning: :warning: 
+</div>
+<br>
+<div style="text-align: justify">     
+While we strive for high functionality and user satisfaction and endeavour to maintain reliability and accuracy, unforeseen issues may arise due to the experimental nature of this product. For detailed information on the terms and conditions that govern your use of the Open-Source Identity Wallet, we encourage you to read our Terms of Use. </b>
 </div>
 
 <br>
@@ -29,6 +33,7 @@ The Identity Wallet is an open source application developed by the Cardano Found
 
 #### Click the image below to watch our overview video
 
+<br>
 <p align="center">
   <a href="https://drive.google.com/file/d/1So8bW7dgprOFgKs8PQKQ7c8Sm1Kd8aWW/view?usp=sharing">
     <img src="docs/images/readme/Introduction-Video-Thumbnail.jpg" alt="Identity Wallet Introduction Video Thumbnail">
@@ -230,20 +235,21 @@ All contributions are welcome. Feel free to open a new thread on the issue track
 # Resources
 
 ## W3C
-- resource
-- res
-- res
-- res
+- https://www.w3.org/
+- https://www.w3.org/TR/did-core/
+- https://www.w3.org/TR/did-spec-registries/
+- https://www.w3.org/TR/vc-data-model/
+- https://www.w3.org/TR/vc-data-model-2.0/
 
 ## KERI
-- resource
-- res
-- res
-- res
+- https://keri.one/
+- https://keri.one/keri-resources/
+- https://github.com/WebOfTrust
+- https://github.com/WebOfTrust/keri
 
 ## SSI
-- resource
-- res
-- res
-- res
+- https://github.com/hyperledger/aries-framework-javascript)https://github.com/hyperledger/aries-framework-javascript
+- https://hackmd.io/dbB7E1bPSPGZ_Ow5S_9pmg
+- https://hub.ebsi.eu/
+- https://www.gleif.org/en
   
