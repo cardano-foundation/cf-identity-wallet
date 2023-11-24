@@ -38,6 +38,13 @@ const PageHeader = ({
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
+  const hasContent =
+    !!backButton ||
+    !!closeButton ||
+    !!actionButton ||
+    !!progressBar ||
+    !!title ||
+    !!menuButton;
 
   const handleOnBack = () => {
     if (onBack) {
@@ -65,7 +72,9 @@ const PageHeader = ({
   return (
     <IonHeader
       translucent={true}
-      className="ion-no-border page-header"
+      className={`ion-no-border page-header ${
+        hasContent ? "show-header" : "hide-header"
+      }`}
     >
       <IonToolbar color="light">
         <IonButtons slot="start">
