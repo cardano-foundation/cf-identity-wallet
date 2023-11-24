@@ -1,4 +1,8 @@
-import type { BaseRecord, BaseRecordConstructor } from "@aries-framework/core";
+import type {
+  BaseRecord,
+  BaseRecordConstructor,
+  Query,
+} from "@aries-framework/core";
 import {
   JsonTransformer,
   Wallet,
@@ -33,4 +37,46 @@ function deserializeRecord<T extends BaseRecord>(
   return instance;
 }
 
-export { assertIonicStorageWallet, deserializeRecord };
+function checkRecordIsValidWithQuery<T extends BaseRecord>(
+  record: any,
+  query: Query<T>
+): boolean {
+  for (const [queryKey, queryVal] of Object.entries(query)) {
+    if (queryKey === "$or") {
+      if (
+        !queryVal.some((query: Query<T>) =>
+          checkRecordIsValidWithQuery(record, query)
+        )
+      ) {
+        return false;
+      }
+    } else if (queryKey === "$not") {
+      if (checkRecordIsValidWithQuery(record, queryVal)) {
+        return false;
+      }
+    } else {
+      if (Array.isArray(queryVal) && queryVal.length > 0) {
+        // compare them item by item
+        const check = queryVal.every((element) =>
+          record.tags?.[queryKey]?.includes(element)
+        );
+        if (!check) {
+          return false;
+        }
+      } else if (record.tags[queryKey] !== queryVal && queryVal !== undefined) {
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function isObject(value: any): boolean {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+export {
+  assertIonicStorageWallet,
+  deserializeRecord,
+  checkRecordIsValidWithQuery,
+};

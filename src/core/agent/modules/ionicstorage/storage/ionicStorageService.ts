@@ -8,7 +8,11 @@ import {
   JsonTransformer,
   RecordDuplicateError,
 } from "@aries-framework/core";
-import { assertIonicStorageWallet, deserializeRecord } from "./utils";
+import {
+  assertIonicStorageWallet,
+  checkRecordIsValidWithQuery,
+  deserializeRecord,
+} from "./utils";
 
 class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
   static readonly RECORD_ALREADY_EXISTS_ERROR_MSG =
@@ -146,26 +150,15 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
     // Right now we just support SimpleQuery and not AdvancedQuery as it's not something we need right now.
     // This is also really inefficient but OK for now.
     await session.forEach((record) => {
-      if (record.category && record.category === recordClass.type) {
-        for (const [queryKey, queryVal] of Object.entries(query)) {
-          // @TODO: That is temporary. Need to look at the whole and handle this function appropriately
-          if (Array.isArray(queryVal) && queryVal.length > 0) {
-            // compare them item by item
-            const check = queryVal.every((element) =>
-              record.tags?.[queryKey]?.includes(element)
-            );
-            if (!check) {
-              return;
-            }
-            continue;
-          }
-          if (record.tags[queryKey] !== queryVal && queryVal !== undefined) {
-            return;
-          }
-        }
+      if (
+        record.category &&
+        record.category === recordClass.type &&
+        checkRecordIsValidWithQuery(record, query)
+      ) {
         instances.push(deserializeRecord(record, recordClass));
       }
     });
+
     return instances;
   }
 }
