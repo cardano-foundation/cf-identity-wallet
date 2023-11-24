@@ -396,7 +396,7 @@ describe("Verify Seed Phrase Page", () => {
   });
 
   test("The user can remove words from the Seed Phrase", async () => {
-    const { getByTestId, queryByText } = render(
+    const { getByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
           <Route

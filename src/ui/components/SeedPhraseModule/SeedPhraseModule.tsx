@@ -22,7 +22,7 @@ const SeedPhraseModule = ({
     >
       <div
         data-testid="seed-phrase-privacy-overlay"
-        className={"overlay"}
+        className="overlay"
       >
         <IonIcon icon={eyeOffOutline} />
         <p data-testid="seed-phrase-privacy-overlay-text">
@@ -39,7 +39,7 @@ const SeedPhraseModule = ({
       </div>
       <div
         data-testid={testId}
-        className={"seed-phrase-container"}
+        className="seed-phrase-container"
       >
         {seedPhrase.map((word, index) => {
           return (
