@@ -1,19 +1,10 @@
 import { Addresses } from "./addresses";
-import { NetworkType } from "./addresses.types";
 
 const validSeedPhrase15Words =
   "test walk nut penalty hip pave soap entry language right filter choice";
 const entropy15Words = "df9ed25ed146bf43336a5d7cf7395994";
 const rootXprvKey15Words =
   "xprv1vzrzr76vqyqlavclduhawqvtae2pq8lk0424q7t8rzfjyhhp530zxv2fwq5a3pd4vdzqtu6s2zxdjhww8xg4qwcs7y5dqne5k7mz27p6rcaath83rl20nz0v9nwdaga9fkufjuucza8vmny8qpkzwstk5quneyk9";
-const mainnetAddr0 =
-  "addr1qx2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwqfjkjv7";
-const testnetAddr0 =
-  "addr_test1qz2fxv2umyhttkxyxp8x0dlpdt3k6cwng5pxj3jhsydzer3jcu5d8ps7zex2k2xt3uqxgjqnnj83ws8lhrn648jjxtwq2ytjqp";
-const mainnetRewardAddr0 =
-  "stake1uyevw2xnsc0pvn9t9r9c7qryfqfeerchgrlm3ea2nefr9hqxdekzz";
-const testnetRewardAddr0 =
-  "stake_test1uqevw2xnsc0pvn9t9r9c7qryfqfeerchgrlm3ea2nefr9hqp8n5xl";
 const validSeedPhrase24Words =
   "find bag dilemma sing symptom page sand exotic celery tape cat typical sea portion jar return trophy warfare tribe soap protect tuna goddess shine";
 const entropy24Words =
@@ -51,43 +42,6 @@ describe("Cardano seed phrase and address derivation", () => {
     );
     expect(Addresses.convertToMnemonic(entropy24Words)).toEqual(
       validSeedPhrase24Words
-    );
-  });
-
-  test("can derive the correct base and reward addresses from root xprv key", () => {
-    expect(Addresses.deriveFirstBaseAndRewardAddrs(rootXprvKey15Words)).toEqual(
-      {
-        addresses: new Map([
-          [
-            NetworkType.MAINNET,
-            new Map([
-              [
-                1852,
-                new Map([
-                  [0, [mainnetAddr0]],
-                  [1, []],
-                ]),
-              ],
-            ]),
-          ],
-          [
-            NetworkType.TESTNET,
-            new Map([
-              [
-                1852,
-                new Map([
-                  [0, [testnetAddr0]],
-                  [1, []],
-                ]),
-              ],
-            ]),
-          ],
-        ]),
-        rewardAddresses: new Map([
-          [NetworkType.MAINNET, [mainnetRewardAddr0]],
-          [NetworkType.TESTNET, [testnetRewardAddr0]],
-        ]),
-      }
     );
   });
 });

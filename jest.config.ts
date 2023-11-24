@@ -38,7 +38,7 @@ export default {
   },
   testEnvironment: "jsdom",
   testMatch: ["**/src/**/?(*.)+(test).[tj]s?(x)"],
-  testPathIgnorePatterns: ["/node_modules/", "src/core/cardano"],
+  testPathIgnorePatterns: ["/node_modules/"],
   transformIgnorePatterns: [
     "node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons|swiper|ssr-window)/)",
   ],
