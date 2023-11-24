@@ -395,7 +395,7 @@ describe("Verify Seed Phrase Page", () => {
     expect(continueButton.disabled).toBe(true);
   });
 
-  test("The user can remove the Seed Phrase", async () => {
+  test("The user can remove words from the Seed Phrase", async () => {
     const { getByTestId, queryByText } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
@@ -432,17 +432,11 @@ describe("Verify Seed Phrase Page", () => {
       )
     );
 
-    await waitFor(() =>
-      expect(continueButton).toHaveAttribute("disabled", "false")
-    );
+    for (let index = 0; index < MNEMONIC_FIFTEEN_WORDS; index++) {
+      fireEvent.click(matchingSeedPhraseContainer.childNodes[0]);
+    }
 
-    fireEvent.click(continueButton);
-
-    await waitFor(() =>
-      expect(
-        queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.text)
-      ).toBeVisible()
-    );
+    expect(matchingSeedPhraseContainer.childNodes.length).toBe(1);
   });
 
   test("The user can not verify the Seed Phrase when Onboarding", async () => {
