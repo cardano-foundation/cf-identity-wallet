@@ -23,13 +23,13 @@
 The Identity Wallet is an open source application developed by the Cardano Foundation.  It provides a digital solution for users to securely store, manage, and share their identifiers and verifiable credentials using a mobile device.  This project is the result of on-going research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The release of Identity Wallet version 0.1.0 provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano.
 </div>
 
-<br>
+#### Click the image below to watch our overview video
 
-<div style="position: relative; padding-bottom: 56.25%;">
-  <iframe frameborder="0" width="100%" height="100%" allowfullscreen="" allow="autoplay" src="https://drive.google.com/file/d/1PQeVLkRwJj25Nspmtpr03z6X11JoKCz0/preview" style="width: 100%; height: 100%; position: absolute; left: 0px; top: 0px;"></iframe>
-</div>
-
-<br>
+<p align="center">
+  <a href="https://drive.google.com/file/d/1So8bW7dgprOFgKs8PQKQ7c8Sm1Kd8aWW/view?usp=sharing">
+    <img src="docs/images/readme/Introduction-Video-Thumbnail.jpg" alt="Identity Wallet Introduction Video Thumbnail">
+  </a>
+</p>
 
 # Current Features
 
@@ -146,15 +146,21 @@ To experience this app like it was designed for smarthpones, you can follow this
 
 # User Flow
 
+<p align="center">
+  <a href="https://drive.google.com/file/d/1So8bW7dgprOFgKs8PQKQ7c8Sm1Kd8aWW/view?usp=sharing">
+    <img src="docs/images/readme/User-Flow-Preview.jpg" alt="User Flow Preview" width="720"/>
+  </a>
+</p>
+
 In this section, you'll find detailed PDF documents outlining the various user flows within our application. These user flows serve as comprehensive guides, illustrating the step-by-step journeys users take while interacting with our app. Feel free to explore and gain insights into the following user flows:
-  - [Intro Screens]()
-  - [Onboarding]()
-  - [Onboarded]()
-  - [Identity]()
-  - [Connections]()
-  - [Credentials]()
-  - [Verify Options]()
-  - [Scan]()
+  - [Intro Screens](https://drive.google.com/file/d/1L7ZdQytjQq_BOXP1AZzHM0OhLxt1xbNA/view?usp=sharing)
+  - [Onboarding](https://drive.google.com/file/d/1vB9NoWJG2ok9HB89wlbS0fLbPjLavudl/view?usp=sharing)
+  - [Onboarded](https://drive.google.com/file/d/1NCexApVn-njVFmN6wBPiDN1oX0DzcvSn/view?usp=sharing)
+  - [Identity](https://drive.google.com/file/d/1RxkB5zM-xXbh7WcSWu9u1xbBMRDg3q9i/view?usp=sharing)
+  - [Connections](https://drive.google.com/file/d/1bVZPUgKmfPuIOraqDUyMMj_Dz3GGmLG2/view?usp=sharing)
+  - [Credentials](https://drive.google.com/file/d/18TfwGaLXSLxuaHjJlbAmkRnFF-2ktrFT/view?usp=sharing)
+  - [Verify Options](https://drive.google.com/file/d/1akOEf1GRGvVd4vNcWFNF4KOox5iuXOnv/view?usp=sharing)
+  - [Scan](https://drive.google.com/file/d/1BDr2l8ptnsAdL2lAWf8x2-KwN48lqXVz/view?usp=sharing)
 
 
 # Getting Started
