@@ -28,11 +28,9 @@ module.exports = merge(require("./webpack.common.cjs"), {
             ],
          },
          {
-            test: /\.(js)$/,
-            exclude: /node_modules/,
-            use: {
-              loader: 'babel-loader'
-            },
+            test: /\.mjs$/,
+            include: /node_modules/,
+            type: 'javascript/auto',
             resolve: {
               fullySpecified: false,
             },

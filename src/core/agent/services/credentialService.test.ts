@@ -912,22 +912,36 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
 
   test("callback should be called when there are KERI notifications", async () => {
     const callback = jest.fn();
-    const notif = {
-      i: "string",
-      dt: "string",
-      r: false,
-      a: {
-        r: "/exn/ipex/grant",
-        d: "string",
-        m: "",
+    const notes = [
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "random",
+          d: "string",
+          m: "",
+        },
       },
-    };
+      {
+        i: "string",
+        dt: "string",
+        r: false,
+        a: {
+          r: "/exn/ipex/grant",
+          d: "string",
+          m: "",
+        },
+      },
+    ];
     agent.genericRecords.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
     jest.useFakeTimers();
-    const promise = credentialService.processNotification(notif, callback);
-    await promise;
-    expect(callback).toBeCalled();
+    for (const notif of notes) {
+      await credentialService.processNotification(notif, callback);
+    }
+    expect(agent.genericRecords.save).toBeCalledTimes(1);
+    expect(callback).toBeCalledTimes(1);
   });
 });

@@ -25,11 +25,9 @@ const config = {
         use: ["style-loader", "css-loader", "postcss-loader"],
       },
       {
-        test: /\.(js)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader'
-        },
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto',
         resolve: {
           fullySpecified: false,
         },

@@ -23,14 +23,23 @@ export class SignifyApi {
   static readonly BACKER_ADDRESS =
     "addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm";
 
+  static readonly BACKER_CONFIG = {
+    toad: 1,
+    wits: [SignifyApi.BACKER_AID],
+    count: 1,
+    ncount: 1,
+    isith: "1",
+    nsith: "1",
+    data: [{ ca: SignifyApi.BACKER_ADDRESS }],
+  };
+
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
   static readonly VLEI_HOST =
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
-  static resolvedOobi: string;
-  static AID: any;
+  static resolvedOobi: { [key: string]: any } = {};
 
   private signifyClient!: SignifyClient;
   private opTimeout: number;
@@ -66,7 +75,7 @@ export class SignifyApi {
       const signifyName = utils.uuid();
       const operation = await this.signifyClient
         .identifiers()
-        .create(signifyName);
+        .create(signifyName, SignifyApi.BACKER_CONFIG);
       await operation.op();
       await this.signifyClient
         .identifiers()
@@ -104,8 +113,8 @@ export class SignifyApi {
 
   async resolveOobi(url: string): Promise<any> {
     const alias = utils.uuid();
-    if (SignifyApi.resolvedOobi) {
-      return SignifyApi.resolvedOobi;
+    if (SignifyApi.resolvedOobi[url]) {
+      return SignifyApi.resolvedOobi[url];
     }
     let operation = await this.signifyClient.oobis().resolve(url, alias);
     operation = await this.waitAndGetDoneOp(
@@ -117,7 +126,7 @@ export class SignifyApi {
       throw new Error(SignifyApi.FAILED_TO_RESOLVE_OOBI);
     }
     const Oobi = { ...operation, alias };
-    SignifyApi.resolvedOobi = Oobi;
+    SignifyApi.resolvedOobi[url] = Oobi;
     return Oobi;
   }
 
@@ -161,10 +170,6 @@ export class SignifyApi {
   }
 
   async getKeriExchange(notificationD: string): Promise<any> {
-    if (!SignifyApi.AID) {
-      const { aids } = await this.signifyClient.identifiers().list();
-      SignifyApi.AID = aids[0];
-    }
     return this.signifyClient.exchanges().get(notificationD);
   }
 

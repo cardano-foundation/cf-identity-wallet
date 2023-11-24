@@ -6,10 +6,7 @@ import { Connection, Stream } from "@libp2p/interface/src/connection";
 import { Pushable } from "it-pushable";
 import { OutboundPackage } from "@aries-framework/core";
 import { EncryptedMessage } from "@aries-framework/core/build/types";
-import { TextEncoder, TextDecoder } from "util";
 import { LibP2p, LIBP2P_RELAY, schemaPrefix } from "./libP2p";
-// eslint-disable-next-line no-undef
-Object.assign(global, { TextDecoder, TextEncoder });
 // Mock dependencies and methods
 jest.mock("../libP2pInboundTransport", () => ({
   LibP2pInboundTransport: jest.fn(),

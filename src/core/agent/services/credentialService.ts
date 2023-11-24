@@ -43,7 +43,8 @@ class CredentialService extends AgentService {
   static readonly CREATED_DID_NOT_FOUND = "Referenced public did not found";
   static readonly KERI_NOTIFICATION_NOT_FOUND =
     "Keri notification record not found";
-  static readonly HOLDER_NOT_FOUND = "Holder not found";
+  static readonly ISSUEE_NOT_FOUND =
+    "Cannot accept incoming ACDC, issuee AID not controlled by us";
 
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
@@ -73,10 +74,6 @@ class CredentialService extends AgentService {
       const keriNoti = await this.createKeriNotificationRecord(notif);
       callback(keriNoti);
     }
-    /**Disable this for now cause we may have messages we don't know how to process yet  */
-    // if (notif.r === false) {
-    //   await this.agent.modules.signify.markNotification(notif.i);
-    // }
   }
 
   async onNotificationKeriStateChanged(
@@ -535,7 +532,7 @@ class CredentialService extends AgentService {
         keriExchange.exn.a.i
       );
     if (!holder) {
-      throw new Error(CredentialService.HOLDER_NOT_FOUND);
+      throw new Error(CredentialService.ISSUEE_NOT_FOUND);
     }
     await this.agent.modules.signify.admitIpex(
       keriNoti.a.d as string,
