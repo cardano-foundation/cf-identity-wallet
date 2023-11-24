@@ -12,7 +12,11 @@
 # Disclaimer
 
 <div style="text-align: justify">
-<b>Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under development and a security audit has not been conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions. The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis. While we strive for high functionality and user satisfaction and endeavour to maintain reliability and accuracy, unforeseen issues may arise due to the experimental nature of this product. For detailed information on the terms and conditions that govern your use of the Open-Source Identity Wallet, we encourage you to read our Terms of Use. </b>
+<b>Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions.</b>
+</div>
+<br>
+<div style="text-align: justify">  
+ <b>The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis. While we strive for high functionality and user satisfaction and endeavour to maintain reliability and accuracy, unforeseen issues may arise due to the experimental nature of this product. For detailed information on the terms and conditions that govern your use of the Open-Source Identity Wallet, we encourage you to read our Terms of Use. </b>
 </div>
 
 <br>
@@ -20,7 +24,7 @@
 # Overview
 
 <div style="text-align: justify">
-The Identity Wallet is an open source application developed by the Cardano Foundation.  It provides a digital solution for users to securely store, manage, and share their identifiers and verifiable credentials using a mobile device.  This project is the result of on-going research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The first release of Identity Wallet provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano.
+The Identity Wallet is an open source application developed by the Cardano Foundation.  It provides a digital solution for users to securely store, manage, and share their identifiers and verifiable credentials using a mobile device.  This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The first release of Identity Wallet provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano.
 </div>
 
 #### Click the image below to watch our overview video
@@ -33,26 +37,12 @@ The Identity Wallet is an open source application developed by the Cardano Found
 
 # Features
 
-**User-Friendly Interface**
+| **User Interface**    |  **Secure Storage**  |**Interoperability**   |  **Standards and Protocols** | **[Connections](https://www.w3.org/TR/vc-data-model/#roles) and Credential Issuance**  |     **SSI Agents**   |           
+|----------------|---------------|---------------|----------------|---------------|----------------|
+| :white_check_mark: Intuitive User Experience | :white_check_mark: Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material | :white_check_mark: [Aries RFCs](https://github.com/hyperledger/aries-rfcs) | :white_check_mark: [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) | :white_check_mark: Holder-to-Holder (Wallet <-> Wallet) | :white_check_mark: [Aries Framework](https://github.com/hyperledger/aries-framework-javascript)| 
+| :white_check_mark:  Android and iOS support | :white_check_mark: Hierarchical Deterministic (HD) wallet, leverage BIP-39 mnemonic seed phrase for identity profiles|:white_check_mark: [W3C](https://www.w3.org/) | :white_check_mark: [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID)  | :white_check_mark: Issuer-to-Holder | :white_check_mark: [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | 
+|  | |:white_check_mark: [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) | :white_check_mark: [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) | :white_check_mark: Credential Issuance Testing Tool [VERCEL_URL]  | | 
 
-:white_check_mark: Intuitive UI/UX developed following proven design principles with Android and iOS support
-
-
-**Secure Storage**
-
- :white_check_mark: Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material
- 
- :white_check_mark: Hierarchical Deterministic (HD) wallet, leverage BIP-39 mnemonic seed phrase for user profiles
- 
-
-|**Interoperability**          |  **Standards and Protocols**               |     **[Connections](https://www.w3.org/TR/vc-data-model/#roles) and Credential Issuance**            |     **SSI Agents**            |           
-|----------------|---------------|---------------|----------------|
-| :white_check_mark: [Aries RFCs](https://github.com/hyperledger/aries-rfcs) | :white_check_mark: [did:key](https://w3c-ccg.github.io/did-method-key/) | :white_check_mark: Holder-to-Holder (Wallet <-> Wallet) | :white_check_mark: [Aries Framework](https://github.com/hyperledger/aries-framework-javascript)| 
-|:white_check_mark: [W3C](https://www.w3.org/) | :white_check_mark: [did:peer](https://identity.foundation/peer-did-method-spec/)  | :white_check_mark: Issuer-to-Holder | :white_check_mark: [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | 
-|:white_check_mark: [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) | :white_check_mark: [KERI](https://keri.one/) on Cardano | :white_check_mark: Credential Issuance Testing Tool [VERCEL_URL]  | | 
-|:white_check_mark: [KERI](https://keri.one/) | :white_check_mark: [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID) |  |  |
-|  | :white_check_mark: [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) |  |  |
-|  | :white_check_mark: [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  |  |
 
 
 # Potential Future Developments
@@ -65,7 +55,7 @@ The Identity Wallet is an open source application developed by the Cardano Found
 | | Cloud-based |  | Cheqd | |  |
 
 
-# Preview in your browser
+# Preview in your Browser
 
 **Disclaimer: Try it now provides access to a preview version of the identity wallet in your browser. This preview version is <ins>not intended</ins> to be used for any purposes other than previewing the application.**
 
@@ -190,7 +180,7 @@ In addition to using the emulators, you can also run the identity wallet directl
 # iOS
 APP_PATH=<LOCAL_PATH/App.app>
 ```
-### Test run in local:
+### Test run in Local:
 
 1. Install all packages locally
 ```
@@ -238,3 +228,22 @@ All contributions are welcome. Feel free to open a new thread on the issue track
 - [CHANGELOG.md](CHANGELOG.md)
 
 # Resources
+
+## W3C
+- resource
+- res
+- res
+- res
+
+## KERI
+- resource
+- res
+- res
+- res
+
+## SSI
+- resource
+- res
+- res
+- res
+  
