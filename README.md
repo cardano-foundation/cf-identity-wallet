@@ -147,7 +147,6 @@ To experience this app like it was designed for smarthpones, you can follow this
 # User Flow
 
 <p align="center">
-  <a href="https://drive.google.com/file/d/1So8bW7dgprOFgKs8PQKQ7c8Sm1Kd8aWW/view?usp=sharing">
     <img src="docs/images/readme/User-Flow-Preview.jpg" alt="User Flow Preview" width="720"/>
   </a>
 </p>
