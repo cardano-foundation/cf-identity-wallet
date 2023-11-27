@@ -10,6 +10,7 @@ interface CustomInputProps {
   onChangeInput: (text: string) => void;
   onChangeFocus?: Dispatch<SetStateAction<boolean>>;
   optional?: boolean;
+  error?: boolean;
 }
 
 export type { CustomInputProps };

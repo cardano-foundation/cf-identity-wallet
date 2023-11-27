@@ -15,6 +15,7 @@ const CustomInput = ({
   onChangeFocus,
   optional,
   value,
+  error,
 }: CustomInputProps) => {
   const [hidden, setHidden] = useState(hiddenInput);
 
@@ -24,7 +25,7 @@ const CustomInput = ({
     }
   };
   return (
-    <IonItem className="input-item">
+    <IonItem className={`input-item ${error ? "error" : ""}`}>
       <IonLabel position="stacked">
         {title}
         {optional && (
@@ -37,10 +38,12 @@ const CustomInput = ({
         <IonInput
           id={dataTestId}
           data-testid={dataTestId}
+          label={title}
+          labelPlacement="stacked"
           type={hidden ? "password" : "text"}
           autofocus={autofocus}
           placeholder={placeholder}
-          onIonChange={(e) => onChangeInput(`${e.target.value ?? ""}`)}
+          onIonInput={(e) => onChangeInput(e.target.value as string)}
           onIonFocus={() => handleFocus(true)}
           onIonBlur={() => handleFocus(false)}
           value={value}

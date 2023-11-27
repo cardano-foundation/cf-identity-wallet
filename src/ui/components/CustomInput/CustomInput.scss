@@ -13,21 +13,27 @@ ion-item.input-item {
     }
   }
 
+  &.error .input-line {
+    border-color: var(--ion-color-danger);
+  }
+
   .input-line {
     display: flex;
     width: 100%;
     border: 1px solid var(--ion-color-dark-grey);
     border-radius: 8px;
 
-    ion-input {
-      input {
-        --padding-top: 0.875rem;
-        --padding-bottom: 0.875rem;
-        --padding-start: 1.25rem;
-      }
+    &:focus-within {
+      border-color: var(--ion-color-secondary);
+    }
 
-      &.has-focus {
-        border-color: var(--ion-color-secondary);
+    ion-input {
+      --padding-top: 0.875rem;
+      --padding-bottom: 0.875rem;
+      --padding-start: 1.25rem;
+
+      .label-text-wrapper {
+        display: none;
       }
     }
 
@@ -43,6 +49,7 @@ ion-item.input-item {
       &::part(native) {
         padding: 0;
       }
+
       ion-icon {
         font-size: 1.85em !important;
       }
