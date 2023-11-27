@@ -30,11 +30,11 @@ const CreatePassword = () => {
   const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const [passwordValue, setCreatePasswordValue] = useState("");
+  const [passwordValue, setPasswordValue] = useState("");
   const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
   const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
   const [passwordFocus, setPasswordFocus] = useState(false);
-  const [createHintValue, setCreateHintValue] = useState("");
+  const [hintValue, setHintValue] = useState("");
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const passwordValueMatching =
     passwordValue.length > 0 &&
@@ -47,15 +47,15 @@ const CreatePassword = () => {
   const validated =
     passwordStrengthChecker.validatePassword(passwordValue) &&
     passwordValueMatching &&
-    createHintValue !== passwordValue;
+    hintValue !== passwordValue;
 
   const handlePasswordInput = (password: string) => {
-    setCreatePasswordValue(password);
+    setPasswordValue(password);
   };
   const handleClearState = () => {
-    setCreatePasswordValue("");
+    setPasswordValue("");
     setConfirmPasswordValue("");
-    setCreateHintValue("");
+    setHintValue("");
   };
   const handleClose = async () => {
     handleClearState();
@@ -66,10 +66,10 @@ const CreatePassword = () => {
     // @TODO - foconnor: We should handle errors here and display something to the user as feedback to try again.
     if (!skipped) {
       await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, passwordValue);
-      if (createHintValue) {
+      if (hintValue) {
         await AriesAgent.agent.genericRecords.save({
           id: MiscRecordId.OP_PASS_HINT,
-          content: { value: createHintValue },
+          content: { value: hintValue },
         });
       }
     }
@@ -144,24 +144,22 @@ const CreatePassword = () => {
         passwordValueNotMatching && (
         <ErrorMessage
           message={`${i18n.t("createpassword.error.hasNoMatch")}`}
-          timeout={false}
         />
       )}
       <CustomInput
-        dataTestId="createHintValue"
+        dataTestId="hintValue"
         title={`${i18n.t("createpassword.input.third.title")}`}
         placeholder={`${i18n.t("createpassword.input.third.placeholder")}`}
-        hiddenInput={false}
-        onChangeInput={setCreateHintValue}
+        onChangeInput={setHintValue}
         optional={true}
-        value={createHintValue}
+        value={hintValue}
+        error={!!hintValue.length && hintValue === passwordValue}
       />
-      {createHintValue && createHintValue === passwordValue ? (
+      {!!hintValue.length && hintValue === passwordValue && (
         <ErrorMessage
           message={`${i18n.t("createpassword.error.hintSameAsPassword")}`}
-          timeout={false}
         />
-      ) : null}
+      )}
 
       <PageFooter
         pageId={pageId}
