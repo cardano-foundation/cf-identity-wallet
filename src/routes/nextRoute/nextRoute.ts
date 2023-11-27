@@ -41,7 +41,9 @@ const getNextRootRoute = (store: StoreState) => {
 const getNextOnboardingRoute = (data: DataProps) => {
   let path;
   if (data.store.stateCache.authentication.passcodeIsSet) {
-    path = RoutePath.GENERATE_SEED_PHRASE;
+    path = data.store.stateCache.authentication.passwordIsSet
+      ? RoutePath.GENERATE_SEED_PHRASE
+      : RoutePath.CREATE_PASSWORD;
   } else {
     path = RoutePath.SET_PASSCODE;
   }
@@ -74,7 +76,7 @@ const getNextSetPasscodeRoute = (store: StoreState) => {
 
   const nextPath: string = seedPhraseIsSet
     ? RoutePath.TABS_MENU
-    : RoutePath.GENERATE_SEED_PHRASE;
+    : RoutePath.CREATE_PASSWORD;
 
   return { pathname: nextPath };
 };
@@ -99,7 +101,7 @@ const getNextGenerateSeedPhraseRoute = () => {
 };
 
 const getNextVerifySeedPhraseRoute = () => {
-  const nextPath = RoutePath.CREATE_PASSWORD;
+  const nextPath = RoutePath.TABS_MENU;
   return { pathname: nextPath };
 };
 
@@ -115,7 +117,7 @@ const updateStoreCurrentRoute = (data: DataProps) => {
 };
 
 const getNextCreatePasswordRoute = () => {
-  return { pathname: RoutePath.TABS_MENU };
+  return { pathname: RoutePath.GENERATE_SEED_PHRASE };
 };
 const updateStoreAfterCreatePassword = (data: DataProps) => {
   const skipped = data.state?.skipped;
@@ -173,7 +175,7 @@ const nextRoute: Record<string, any> = {
     updateRedux: [updateStoreSetSeedPhrase],
   },
   [RoutePath.VERIFY_SEED_PHRASE]: {
-    nextPath: (data: DataProps) => getNextVerifySeedPhraseRoute(),
+    nextPath: () => getNextVerifySeedPhraseRoute(),
     updateRedux: [updateStoreAfterVerifySeedPhraseRoute, clearSeedPhraseCache],
   },
   [RoutePath.CREATE_PASSWORD]: {

@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   IonCol,
   IonGrid,
-  IonPage,
   IonRow,
   IonIcon,
   IonItem,
@@ -12,7 +11,6 @@ import {
 import { closeOutline, checkmarkOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
-import { PageLayout } from "../../components/layout/PageLayout";
 import "./CreatePassword.scss";
 import { CustomInput } from "../../components/CustomInput";
 import { ErrorMessage } from "../../components/ErrorMessage";
@@ -30,6 +28,9 @@ import { updateReduxState } from "../../../store/utils";
 import { Alert } from "../../components/Alert";
 import { OperationType } from "../../globals/types";
 import { MiscRecordId } from "../../../core/agent/agent.types";
+import { PageHeader } from "../../components/PageHeader";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import PageFooter from "../../components/PageFooter/PageFooter";
 
 const errorMessages = {
   hasSpecialChar: i18n.t("createpassword.error.hasSpecialChar"),
@@ -144,6 +145,7 @@ const PasswordRegex = ({ password }: PasswordRegexProps) => {
 };
 
 const CreatePassword = () => {
+  const pageId = "create-password";
   const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -219,124 +221,124 @@ const CreatePassword = () => {
   };
 
   return (
-    <IonPage className="page-layout create-password">
-      <PageLayout
-        header={true}
-        currentPath={RoutePath.CREATE_PASSWORD}
-        closeButton={false}
-        closeButtonAction={() => handleClose()}
-        title={`${i18n.t("createpassword.title")}`}
-        footer={true}
+    <ScrollablePageLayout
+      pageId={pageId}
+      header={
+        <PageHeader
+          backButton={true}
+          currentPath={RoutePath.CREATE_PASSWORD}
+          progressBar={true}
+          progressBarValue={0.5}
+          progressBarBuffer={1}
+        />
+      }
+    >
+      <h2 data-testid={`${pageId}-title`}>{i18n.t("createpassword.title")}</h2>
+      <p className="page-paragraph">{i18n.t("createpassword.description")}</p>
+
+      <IonGrid>
+        <IonRow>
+          <IonCol size="12">
+            <CustomInput
+              dataTestId="createPasswordValue"
+              title={`${i18n.t("createpassword.input.first.title")}`}
+              placeholder={`${i18n.t(
+                "createpassword.input.first.placeholder"
+              )}`}
+              hiddenInput={true}
+              onChangeInput={(password: string) =>
+                handlePasswordInput(password)
+              }
+              onChangeFocus={setPasswordFocus}
+              value={createPasswordValue}
+            />
+          </IonCol>
+        </IonRow>
+        {(createPasswordValue !== "" &&
+          !PasswordValidator.validatePassword(createPasswordValue)) ||
+        !PasswordValidator.isValidCharacters(createPasswordValue) ? (
+            <ErrorMessage
+              message={
+                createPasswordValue.length
+                  ? PasswordValidator.getErrorByPriority(createPasswordValue)
+                  : undefined
+              }
+              timeout={false}
+            />
+          ) : null}
+        {createPasswordValue && (
+          <IonRow>
+            <IonCol size="12">
+              <PasswordRegex password={createPasswordValue} />
+            </IonCol>
+          </IonRow>
+        )}
+      </IonGrid>
+      <IonGrid>
+        <IonRow>
+          <IonCol size="12">
+            <CustomInput
+              dataTestId="confirm-password-value"
+              title={`${i18n.t("createpassword.input.second.title")}`}
+              placeholder={`${i18n.t(
+                "createpassword.input.second.placeholder"
+              )}`}
+              hiddenInput={true}
+              onChangeInput={setConfirmPasswordValue}
+              onChangeFocus={setConfirmPasswordFocus}
+              value={confirmPasswordValue}
+            />
+          </IonCol>
+        </IonRow>
+        {confirmPasswordFocus && passwordValueNotMatching ? (
+          <ErrorMessage
+            message={errorMessages.hasNoMatch}
+            timeout={false}
+          />
+        ) : null}
+      </IonGrid>
+      <IonGrid>
+        <IonRow>
+          <IonCol size="12">
+            <CustomInput
+              dataTestId="createHintValue"
+              title={`${i18n.t("createpassword.input.third.title")}`}
+              placeholder={`${i18n.t(
+                "createpassword.input.third.placeholder"
+              )}`}
+              hiddenInput={false}
+              onChangeInput={setCreateHintValue}
+              optional={true}
+              value={createHintValue}
+            />
+          </IonCol>
+        </IonRow>
+        {createHintValue && createHintValue === createPasswordValue ? (
+          <ErrorMessage
+            message={errorMessages.hintSameAsPassword}
+            timeout={false}
+          />
+        ) : null}
+      </IonGrid>
+
+      <PageFooter
+        pageId={pageId}
         primaryButtonText={`${i18n.t("createpassword.button.continue")}`}
         primaryButtonAction={() => handleContinue(false)}
         primaryButtonDisabled={!validated}
-        secondaryButtonText={`${i18n.t("createpassword.button.skip")}`}
-        secondaryButtonAction={() => setAlertIsOpen(true)}
-      >
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12">
-              <p className="page-paragraph">
-                {i18n.t("createpassword.description")}
-              </p>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12">
-              <CustomInput
-                dataTestId="createPasswordValue"
-                title={`${i18n.t("createpassword.input.first.title")}`}
-                placeholder={`${i18n.t(
-                  "createpassword.input.first.placeholder"
-                )}`}
-                hiddenInput={true}
-                onChangeInput={(password: string) =>
-                  handlePasswordInput(password)
-                }
-                onChangeFocus={setPasswordFocus}
-                value={createPasswordValue}
-              />
-            </IonCol>
-          </IonRow>
-          {(createPasswordValue !== "" &&
-            !PasswordValidator.validatePassword(createPasswordValue)) ||
-          !PasswordValidator.isValidCharacters(createPasswordValue) ? (
-              <ErrorMessage
-                message={
-                  createPasswordValue.length
-                    ? PasswordValidator.getErrorByPriority(createPasswordValue)
-                    : undefined
-                }
-                timeout={false}
-              />
-            ) : null}
-          {createPasswordValue && (
-            <IonRow>
-              <IonCol size="12">
-                <PasswordRegex password={createPasswordValue} />
-              </IonCol>
-            </IonRow>
-          )}
-        </IonGrid>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12">
-              <CustomInput
-                dataTestId="confirm-password-value"
-                title={`${i18n.t("createpassword.input.second.title")}`}
-                placeholder={`${i18n.t(
-                  "createpassword.input.second.placeholder"
-                )}`}
-                hiddenInput={true}
-                onChangeInput={setConfirmPasswordValue}
-                onChangeFocus={setConfirmPasswordFocus}
-                value={confirmPasswordValue}
-              />
-            </IonCol>
-          </IonRow>
-          {confirmPasswordFocus && passwordValueNotMatching ? (
-            <ErrorMessage
-              message={errorMessages.hasNoMatch}
-              timeout={false}
-            />
-          ) : null}
-        </IonGrid>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12">
-              <CustomInput
-                dataTestId="createHintValue"
-                title={`${i18n.t("createpassword.input.third.title")}`}
-                placeholder={`${i18n.t(
-                  "createpassword.input.third.placeholder"
-                )}`}
-                hiddenInput={false}
-                onChangeInput={setCreateHintValue}
-                optional={true}
-                value={createHintValue}
-              />
-            </IonCol>
-          </IonRow>
-          {createHintValue && createHintValue === createPasswordValue ? (
-            <ErrorMessage
-              message={errorMessages.hintSameAsPassword}
-              timeout={false}
-            />
-          ) : null}
-        </IonGrid>
-        <Alert
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
-          dataTestId="create-password-alert-skip"
-          headerText={`${i18n.t("createpassword.alert.text")}`}
-          confirmButtonText={`${i18n.t("createpassword.alert.button.confirm")}`}
-          cancelButtonText={`${i18n.t("createpassword.alert.button.cancel")}`}
-          actionConfirm={() => handleContinue(true)}
-        />
-      </PageLayout>
-    </IonPage>
+        tertiaryButtonText={`${i18n.t("createpassword.button.skip")}`}
+        tertiaryButtonAction={() => setAlertIsOpen(true)}
+      />
+      <Alert
+        isOpen={alertIsOpen}
+        setIsOpen={setAlertIsOpen}
+        dataTestId="create-password-alert-skip"
+        headerText={`${i18n.t("createpassword.alert.text")}`}
+        confirmButtonText={`${i18n.t("createpassword.alert.button.confirm")}`}
+        cancelButtonText={`${i18n.t("createpassword.alert.button.cancel")}`}
+        actionConfirm={() => handleContinue(true)}
+      />
+    </ScrollablePageLayout>
   );
 };
 

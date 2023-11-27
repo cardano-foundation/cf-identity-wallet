@@ -123,12 +123,12 @@ const GenerateSeedPhrase = () => {
           beforeBack={handleClearState}
           currentPath={RoutePath.GENERATE_SEED_PHRASE}
           progressBar={true}
-          progressBarValue={0.66}
+          progressBarValue={0.75}
           progressBarBuffer={1}
         />
       }
     >
-      <h2 data-testid="screen-title">
+      <h2 data-testid={`${pageId}-title`}>
         {i18n.t("generateseedphrase.onboarding.title")}
       </h2>
       <p data-testid="page-paragraph-top">
