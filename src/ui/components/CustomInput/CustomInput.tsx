@@ -25,11 +25,11 @@ const CustomInput = ({
     }
   };
   return (
-    <IonItem className={`input-item ${error ? "error" : ""}`}>
+    <IonItem className={`custom-input ${error ? "error" : ""}`}>
       <IonLabel position="stacked">
         {title}
         {optional && (
-          <span className="input-item-optional">
+          <span className="custom-input-optional">
             {i18n.t("custominput.optional")}
           </span>
         )}
