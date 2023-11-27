@@ -35,7 +35,7 @@ class IdentifierService extends AgentService {
   static readonly THEME_WAS_NOT_VALID = "Identifier theme was not valid";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
-    const identities: IdentifierShortDetails[] = [];
+    const identifiers: IdentifierShortDetails[] = [];
     let listMetadata: IdentifierMetadataRecord[];
     if (getArchived) {
       listMetadata =
@@ -46,7 +46,7 @@ class IdentifierService extends AgentService {
     }
     for (let i = 0; i < listMetadata.length; i++) {
       const metadata = listMetadata[i];
-      identities.push({
+      identifiers.push({
         method: metadata.method,
         displayName: metadata.displayName,
         id: metadata.id,
@@ -55,7 +55,7 @@ class IdentifierService extends AgentService {
         theme: metadata.theme,
       });
     }
-    return identities;
+    return identifiers;
   }
 
   async getIdentifier(
@@ -159,7 +159,7 @@ class IdentifierService extends AgentService {
     );
   }
 
-  async restoreIdentity(identifier: string): Promise<void> {
+  async restoreIdentifier(identifier: string): Promise<void> {
     const metadata = await this.getMetadataById(identifier);
     this.validArchivedIdentifier(metadata);
     return this.agent.modules.generalStorage.updateIdentifierMetadata(

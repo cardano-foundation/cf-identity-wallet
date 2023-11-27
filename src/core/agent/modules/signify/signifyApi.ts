@@ -112,10 +112,10 @@ export class SignifyApi {
   }
 
   async resolveOobi(url: string): Promise<any> {
-    const alias = utils.uuid();
     if (SignifyApi.resolvedOobi[url]) {
       return SignifyApi.resolvedOobi[url];
     }
+    const alias = utils.uuid();
     let operation = await this.signifyClient.oobis().resolve(url, alias);
     operation = await this.waitAndGetDoneOp(
       operation,

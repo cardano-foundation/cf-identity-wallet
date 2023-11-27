@@ -100,7 +100,7 @@ describe("Identifier service of agent", () => {
     jest.resetAllMocks();
   });
 
-  test("can get all non-archived identities", async () => {
+  test("can get all non-archived identifiers", async () => {
     agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([didMetadataRecord, keriMetadataRecord]);
@@ -124,7 +124,7 @@ describe("Identifier service of agent", () => {
     ]);
   });
 
-  test("can get all archived identities", async () => {
+  test("can get all archived identifiers", async () => {
     agent.modules.generalStorage.getAllArchivedIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([didMetadataRecord, keriMetadataRecord]);
@@ -526,7 +526,7 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(archivedMetadataRecord);
-    await identifierService.restoreIdentity(archivedMetadataRecord.id);
+    await identifierService.restoreIdentifier(archivedMetadataRecord.id);
     expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
       archivedMetadataRecord.id
     );
@@ -540,7 +540,7 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue(didMetadataRecord);
     await expect(
-      identifierService.restoreIdentity(didMetadataRecord.id)
+      identifierService.restoreIdentifier(didMetadataRecord.id)
     ).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
     expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
       didMetadataRecord.id
@@ -555,7 +555,7 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue(null);
     await expect(
-      identifierService.restoreIdentity(didMetadataRecord.id)
+      identifierService.restoreIdentifier(didMetadataRecord.id)
     ).rejects.toThrowError(
       IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING
     );

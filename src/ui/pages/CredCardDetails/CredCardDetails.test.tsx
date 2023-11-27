@@ -13,7 +13,7 @@ import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFix } from "../../__fixtures__/credsFix";
 import { AriesAgent } from "../../../core/agent/agent";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
-import { DidCardDetails } from "../DidCardDetails";
+import { IdentifierCardDetails } from "../IdentifierCardDetails";
 
 const path = TabsRoutePath.CREDS + "/" + credsFix[0].id;
 
@@ -50,8 +50,8 @@ const initialStateCreds = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  identitiesCache: {
-    identities: credsFix,
+  identifiersCache: {
+    identifiers: credsFix,
     favourites: [],
   },
 };
@@ -268,7 +268,7 @@ describe("Cards Details page - current not archived credential", () => {
         <MemoryRouter initialEntries={[path]}>
           <Route
             path={path}
-            component={DidCardDetails}
+            component={IdentifierCardDetails}
           />
         </MemoryRouter>
       </Provider>

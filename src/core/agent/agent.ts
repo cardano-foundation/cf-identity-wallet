@@ -22,7 +22,6 @@ import { HttpOutboundTransport } from "./transports";
 import { SignifyModule } from "./modules/signify";
 import { SqliteStorageModule } from "./modules/sqliteStorage";
 import {
-  CryptoService,
   ConnectionService,
   CredentialService,
   IdentifierService,
@@ -87,7 +86,6 @@ class AriesAgent {
   private connectionService!: ConnectionService;
   private messageService!: MessageService;
   private credentialService!: CredentialService;
-  private cryptoService!: CryptoService;
 
   get identifiers() {
     if (!this.identifierService)
@@ -111,11 +109,6 @@ class AriesAgent {
     if (!this.credentialService)
       this.credentialService = new CredentialService(this.agent);
     return this.credentialService;
-  }
-
-  get crypto() {
-    if (!this.cryptoService) this.cryptoService = new CryptoService(this.agent);
-    return this.cryptoService;
   }
 
   get genericRecords() {

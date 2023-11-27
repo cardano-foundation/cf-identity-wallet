@@ -124,11 +124,11 @@ const Creds = () => {
     return found ? found.time : null;
   };
 
-  const favDids = credsCache.filter((did) =>
-    favCredsCache?.some((fav) => fav.id === did.id)
+  const favCreds = credsCache.filter((cred) =>
+    favCredsCache?.some((fav) => fav.id === cred.id)
   );
 
-  const sortedFavDids = favDids.sort((a, b) => {
+  const sortedFavCreds = favCreds.sort((a, b) => {
     const timeA = findTimeById(a.id);
     const timeB = findTimeById(b.id);
 
@@ -139,8 +139,8 @@ const Creds = () => {
     return timeA - timeB;
   });
 
-  const allDids = credsCache.filter(
-    (did) => !favCredsCache?.some((fav) => fav.id === did.id)
+  const allCreds = credsCache.filter(
+    (cred) => !favCredsCache?.some((fav) => fav.id === cred.id)
   );
 
   return (
@@ -170,9 +170,9 @@ const Creds = () => {
         >
           {currentCreds.length ? (
             <>
-              {favDids.length ? (
+              {favCreds.length ? (
                 <>
-                  {allDids.length ? (
+                  {allCreds.length ? (
                     <div className="cards-title">
                       {i18n.t("creds.tab.favourites")}
                     </div>
@@ -180,13 +180,13 @@ const Creds = () => {
                   <CardsStack
                     name="favs"
                     cardsType={CardType.CREDS}
-                    cardsData={sortedFavDids}
+                    cardsData={sortedFavCreds}
                   />
                 </>
               ) : null}
-              {allDids.length ? (
+              {allCreds.length ? (
                 <>
-                  {favDids.length ? (
+                  {favCreds.length ? (
                     <div className="cards-title cards-title-all">
                       {i18n.t("creds.tab.allcreds")}
                     </div>
@@ -194,7 +194,7 @@ const Creds = () => {
                   <CardsStack
                     name="allcreds"
                     cardsType={CardType.CREDS}
-                    cardsData={allDids}
+                    cardsData={allCreds}
                   />
                 </>
               ) : null}

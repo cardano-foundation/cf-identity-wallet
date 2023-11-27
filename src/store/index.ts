@@ -1,7 +1,7 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { seedPhraseCacheSlice } from "./reducers/seedPhraseCache";
 import { stateCacheSlice } from "./reducers/stateCache";
-import { identitiesCacheSlice } from "./reducers/identitiesCache";
+import { identifiersCacheSlice } from "./reducers/identifiersCache";
 import { credsCacheSlice } from "./reducers/credsCache";
 import { connectionsCacheSlice } from "./reducers/connectionsCache";
 
@@ -9,7 +9,7 @@ const store = configureStore({
   reducer: {
     stateCache: stateCacheSlice.reducer,
     seedPhraseCache: seedPhraseCacheSlice.reducer,
-    identitiesCache: identitiesCacheSlice.reducer,
+    identifiersCache: identifiersCacheSlice.reducer,
     credsCache: credsCacheSlice.reducer,
     connectionsCache: connectionsCacheSlice.reducer,
   },

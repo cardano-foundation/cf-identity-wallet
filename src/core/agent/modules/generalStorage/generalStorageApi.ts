@@ -1,7 +1,5 @@
 import { AgentContext, DidRepository, injectable } from "@aries-framework/core";
 import {
-  CryptoAccountRecord,
-  CryptoAccountRepository,
   IdentifierMetadataRepository,
   IdentifierMetadataRecord,
   CredentialMetadataRecord,
@@ -15,43 +13,18 @@ import { IdentifierType } from "../../services/identifierService.types";
  */
 @injectable()
 export class GeneralStorageApi {
-  private cryptoAccountRepository: CryptoAccountRepository;
   private identifierMetadataRepository: IdentifierMetadataRepository;
   private credentialMetadataRepository: CredentialMetadataRepository;
   private agentContext: AgentContext;
 
   constructor(
-    settingsCryptoAccountRepository: CryptoAccountRepository,
     settingIdentifierMetadataRepository: IdentifierMetadataRepository,
     settingsCredentialMetadataRepository: CredentialMetadataRepository,
     agentContext: AgentContext
   ) {
-    this.cryptoAccountRepository = settingsCryptoAccountRepository;
     this.identifierMetadataRepository = settingIdentifierMetadataRepository;
     this.credentialMetadataRepository = settingsCredentialMetadataRepository;
     this.agentContext = agentContext;
-  }
-
-  async saveCryptoRecord(record: CryptoAccountRecord): Promise<void> {
-    await this.cryptoAccountRepository.save(this.agentContext, record);
-  }
-
-  async getAllCryptoRecord(): Promise<CryptoAccountRecord[]> {
-    return this.cryptoAccountRepository.getAll(this.agentContext);
-  }
-
-  async removeCryptoRecordById(id: string): Promise<void> {
-    await this.cryptoAccountRepository.deleteById(this.agentContext, id);
-  }
-
-  async cryptoAccountIdentitySeedPhraseExists(): Promise<boolean> {
-    return (
-      (
-        await this.cryptoAccountRepository.findByQuery(this.agentContext, {
-          usesIdentitySeedPhrase: true,
-        })
-      ).length > 0
-    );
   }
 
   async saveIdentifierMetadataRecord(

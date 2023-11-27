@@ -23,9 +23,9 @@ import {
   PreferencesStorage,
 } from "../../../core/storage";
 import {
-  setFavouritesIdentitiesCache,
-  setIdentitiesCache,
-} from "../../../store/reducers/identitiesCache";
+  setFavouritesIdentifiersCache,
+  setIdentifiersCache,
+} from "../../../store/reducers/identifiersCache";
 import {
   setCredsCache,
   setFavouritesCredsCache,
@@ -47,11 +47,11 @@ import {
   AcdcKeriStateChangedEvent,
   ConnectionType,
 } from "../../../core/agent/agent.types";
-import { FavouriteIdentity } from "../../../store/reducers/identitiesCache/identitiesCache.types";
 import {
   CredentialShortDetails,
   CredentialStatus,
 } from "../../../core/agent/services/credentialService.types";
+import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -246,17 +246,17 @@ const AppWrapper = (props: { children: ReactNode }) => {
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const storedIdentities =
+    const storedIdentifiers =
       await AriesAgent.agent.identifiers.getIdentifiers();
     // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
 
     try {
-      const didsFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_DIDS_FAVOURITES
+      const identifiersFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
       );
       dispatch(
-        setFavouritesIdentitiesCache(
-          didsFavourites.favourites as FavouriteIdentity[]
+        setFavouritesIdentifiersCache(
+          identifiersFavourites.favourites as FavouriteIdentifier[]
         )
       );
 
@@ -265,7 +265,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       );
       dispatch(
         setFavouritesCredsCache(
-          credsFavourites.favourites as FavouriteIdentity[]
+          credsFavourites.favourites as FavouriteIdentifier[]
         )
       );
     } catch (e) {
@@ -281,7 +281,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       })
     );
 
-    dispatch(setIdentitiesCache(storedIdentities));
+    dispatch(setIdentifiersCache(storedIdentifiers));
     dispatch(setCredsCache(credentials));
     dispatch(setConnectionsCache(connectionsDetails));
 

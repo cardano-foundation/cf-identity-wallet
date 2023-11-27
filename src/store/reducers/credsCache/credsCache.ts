@@ -1,11 +1,11 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
-import { FavouriteIdentity } from "../identitiesCache/identitiesCache.types";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";
 
 const initialState: {
   creds: CredentialShortDetails[];
-  favourites: FavouriteIdentity[];
+  favourites: FavouriteIdentifier[];
 } = {
   creds: [],
   favourites: [],
@@ -26,13 +26,13 @@ const credsCacheSlice = createSlice({
     },
     setFavouritesCredsCache: (
       state,
-      action: PayloadAction<FavouriteIdentity[]>
+      action: PayloadAction<FavouriteIdentifier[]>
     ) => {
       state.favourites = action.payload;
     },
     addFavouritesCredsCache: (
       state,
-      action: PayloadAction<FavouriteIdentity>
+      action: PayloadAction<FavouriteIdentifier>
     ) => {
       if (state.favourites.some((fav) => fav.id === action.payload.id)) return;
       state.favourites = [action.payload, ...state.favourites];

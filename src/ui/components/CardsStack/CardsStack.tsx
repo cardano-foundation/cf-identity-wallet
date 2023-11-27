@@ -7,7 +7,7 @@ import {
 } from "../../../core/agent/services/identifierService.types";
 import { CardType } from "../../globals/types";
 
-import { IdentityCardTemplate } from "../IdentityCardTemplate";
+import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
 import { CredCardTemplate } from "../CredCardTemplate";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
@@ -34,8 +34,8 @@ const CardsStack = ({
         cardData: IdentifierShortDetails | CredentialShortDetails,
         index: number
       ) =>
-        cardsType === CardType.DIDS ? (
-          <IdentityCardTemplate
+        cardsType === CardType.IDENTIFIERS ? (
+          <IdentifierCardTemplate
             name={name}
             key={index}
             index={index}
@@ -60,9 +60,9 @@ const CardsStack = ({
     setIsActive(true);
     let pathname = "";
 
-    if (cardsType === CardType.DIDS) {
+    if (cardsType === CardType.IDENTIFIERS) {
       const data = cardsData[index] as DIDDetails;
-      pathname = `/tabs/dids/${data.id}`;
+      pathname = `/tabs/identifiers/${data.id}`;
     } else {
       const data = cardsData[index] as CredentialShortDetails;
       pathname = `/tabs/creds/${data.id}`;
