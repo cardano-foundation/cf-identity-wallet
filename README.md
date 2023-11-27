@@ -11,24 +11,24 @@
 
 # Disclaimer
 
-<div style="text-align: justify">
+<div align="justify"> 
 <b>  Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions.</b>
 </div>
 <br>
-<div style="text-align: justify">  
- <b> :warning: :warning: :warning: The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis. :warning: :warning: :warning: 
+<div align="center">   
+ <b> :warning: :warning: :warning: The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis. :warning: :warning: :warning: </b>
 </div>
 <br>
-<div style="text-align: justify">     
-While we strive for high functionality and user satisfaction and endeavour to maintain reliability and accuracy, unforeseen issues may arise due to the experimental nature of this product. For detailed information on the terms and conditions that govern your use of the Open-Source Identity Wallet, we encourage you to read our Terms of Use. </b>
+<div align="justify">    
+<b> While we strive for high functionality and user satisfaction and endeavour to maintain reliability and accuracy, unforeseen issues may arise due to the experimental nature of this product. For detailed information on the terms and conditions that govern your use of the Open-Source Identity Wallet, we encourage you to read our Terms of Use. </b>
 </div>
 
 <br>
 
 # Overview
 
-<div style="text-align: justify">
-The Identity Wallet is an open source application developed by the Cardano Foundation.  It provides a digital solution for users to securely store, manage, and share their identifiers and verifiable credentials using a mobile device.  This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The first release of Identity Wallet provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano.
+<div align="justify"> 
+The Identity Wallet is an open source application developed by the Cardano Foundation.  This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The first release of Identity Wallet provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano.
 </div>
 
 #### Click the image below to watch our overview video
@@ -47,9 +47,9 @@ The Identity Wallet is an open source application developed by the Cardano Found
 
 | **User Interface**    |  **Secure Storage**  |**Interoperability**   |  **Standards and Protocols** | **[Connections](https://www.w3.org/TR/vc-data-model/#roles) and Credential Issuance**  |     **SSI Agents**   |           
 |----------------|---------------|---------------|----------------|---------------|----------------|
-| :white_check_mark: Intuitive User Experience | :white_check_mark: Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material | :white_check_mark: [Aries RFCs](https://github.com/hyperledger/aries-rfcs) | :white_check_mark: [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) | :white_check_mark: Holder-to-Holder (Wallet <-> Wallet) | :white_check_mark: [Aries Framework](https://github.com/hyperledger/aries-framework-javascript)| 
+| :white_check_mark: Intuitive User Experience | :white_check_mark: Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material | :white_check_mark: [Aries RFCs](https://github.com/hyperledger/aries-rfcs) | :white_check_mark: [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) | :white_check_mark: Holder-to-Holder | :white_check_mark: [Aries Framework](https://github.com/hyperledger/aries-framework-javascript)| 
 | :white_check_mark:  Android and iOS support | :white_check_mark: Hierarchical Deterministic (HD) wallet, leverage BIP-39 mnemonic seed phrase for identity profiles|:white_check_mark: [W3C](https://www.w3.org/) | :white_check_mark: [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID)  | :white_check_mark: Issuer-to-Holder | :white_check_mark: [KERIA](https://github.com/cardano-foundation/keria) | 
-|  | |:white_check_mark: [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) | :white_check_mark: [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) | :white_check_mark: Credential Issuance Testing Tool [VERCEL_URL]  | :white_check_mark: [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
+|  | |:white_check_mark: [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) | :white_check_mark: [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) | :white_check_mark: [Credential Issuance Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  | :white_check_mark: [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
 |  | |:white_check_mark: [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | |  | |
 
 # Potential Future Developments
@@ -91,6 +91,22 @@ To experience this app like it was designed for smarthpones, you can follow this
         </details>
 
 # User Flow
+In this section, you'll find detailed PDF documents outlining the various user flows within our application. These user flows serve as comprehensive guides, illustrating the application's user journeys step-by-step. Please feel free to explore and gain insight into the following user flows:
+
+<div align="center"> 
+      <table border="0">
+       <tr>
+          <td><b style="font-size:30px" ><a href="https://drive.google.com/file/d/1L7ZdQytjQq_BOXP1AZzHM0OhLxt1xbNA/view?usp=sharing">Introduction</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1vB9NoWJG2ok9HB89wlbS0fLbPjLavudl/view?usp=sharing">Onboarding</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1NCexApVn-njVFmN6wBPiDN1oX0DzcvSn/view?usp=sharing">Login</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1RxkB5zM-xXbh7WcSWu9u1xbBMRDg3q9i/view?usp=sharing">Identity</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1bVZPUgKmfPuIOraqDUyMMj_Dz3GGmLG2/view?usp=sharing">Connections</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/18TfwGaLXSLxuaHjJlbAmkRnFF-2ktrFT/view?usp=sharing">Credentials</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1akOEf1GRGvVd4vNcWFNF4KOox5iuXOnv/view?usp=sharing">Verify Options</a></b></td>
+          <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1BDr2l8ptnsAdL2lAWf8x2-KwN48lqXVz/view?usp=sharing">Scan</a></b></td>
+       </tr>
+      </table>
+</div>
 
 <p align="center">
   <kbd> 
@@ -98,20 +114,6 @@ To experience this app like it was designed for smarthpones, you can follow this
     </a>
   </kbd>
 </p>
-
-In this section, you'll find detailed PDF documents outlining the various user flows within our application. These user flows serve as comprehensive guides, illustrating the application's user journeys step-by-step. Please feel free to explore and gain insight into the following user flows:
-<table border="0">
- <tr>
-    <td><b style="font-size:30px" ><a href="https://drive.google.com/file/d/1L7ZdQytjQq_BOXP1AZzHM0OhLxt1xbNA/view?usp=sharing">Introduction</a></b></td>
-    <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1vB9NoWJG2ok9HB89wlbS0fLbPjLavudl/view?usp=sharing">Onboarding</a></b></td>
-    <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1NCexApVn-njVFmN6wBPiDN1oX0DzcvSn/view?usp=sharing">Login</a></b></td>
-    <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1RxkB5zM-xXbh7WcSWu9u1xbBMRDg3q9i/view?usp=sharing">Identity</a></b></td>
-    <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1bVZPUgKmfPuIOraqDUyMMj_Dz3GGmLG2/view?usp=sharing">Connections</a></b></td>
-    <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/18TfwGaLXSLxuaHjJlbAmkRnFF-2ktrFT/view?usp=sharing">Credentials</a></b></td>
-    <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1akOEf1GRGvVd4vNcWFNF4KOox5iuXOnv/view?usp=sharing">Verify Options</a></b></td>
-    <td><b style="font-size:30px"><a href="https://drive.google.com/file/d/1BDr2l8ptnsAdL2lAWf8x2-KwN48lqXVz/view?usp=sharing">Scan</a></b></td>
- </tr>
-</table>
 
 
 # Getting Started
