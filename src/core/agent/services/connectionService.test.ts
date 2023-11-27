@@ -598,7 +598,15 @@ describe("Connection service of agent", () => {
 
   test("can delete conenction by id", async () => {
     const connectionId = "connectionId";
-    await connectionService.deleteConnectionById(connectionId);
+    await connectionService.deleteConnectionById(
+      connectionId,
+      ConnectionType.KERI
+    );
+    expect(agent.genericRecords.deleteById).toBeCalledWith(connectionId);
+    await connectionService.deleteConnectionById(
+      connectionId,
+      ConnectionType.DIDCOMM
+    );
     expect(agent.connections.deleteById).toBeCalledWith(connectionId);
   });
 

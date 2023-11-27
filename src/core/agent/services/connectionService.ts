@@ -263,7 +263,13 @@ class ConnectionService extends AgentService {
     return this.getConnectionDetails(connection, outOfBandRecord);
   }
 
-  async deleteConnectionById(id: string): Promise<void> {
+  async deleteConnectionById(
+    id: string,
+    connectionType?: ConnectionType
+  ): Promise<void> {
+    if (connectionType === ConnectionType.KERI) {
+      return this.agent.genericRecords.deleteById(id);
+    }
     return this.agent.connections.deleteById(id);
   }
 

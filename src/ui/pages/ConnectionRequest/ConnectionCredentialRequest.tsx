@@ -19,6 +19,7 @@ import { connectionType } from "../../constants/dictionary";
 import { TOAST_MESSAGE_DELAY } from "../../../constants/appConstants";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
+import { ConnectionType } from "../../../core/agent/agent.types";
 
 const ConnectionCredentialRequest = () => {
   const dispatch = useAppDispatch();
@@ -94,8 +95,10 @@ const ConnectionCredentialRequest = () => {
       connectionCredentialRequest.type ===
         ConnectionCredentialRequestType.CONNECTION_RESPONSE
     ) {
+      // TODO: will handle with KERI connection if it is supported
       await AriesAgent.agent.connections.deleteConnectionById(
-        connectionCredentialRequest.id
+        connectionCredentialRequest.id,
+        ConnectionType.DIDCOMM
       );
     }
     handleReset();

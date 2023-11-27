@@ -98,7 +98,8 @@ const ConnectionDetails = () => {
   const verifyAction = () => {
     async function deleteConnection() {
       await AriesAgent.agent.connections.deleteConnectionById(
-        connectionShortDetails.id
+        connectionShortDetails.id,
+        connectionShortDetails.type
       );
       const updatedConnections = connectionsData.filter(
         (item) => item.id !== connectionDetails?.id
