@@ -8,11 +8,7 @@ import {
   JsonTransformer,
   RecordDuplicateError,
 } from "@aries-framework/core";
-import {
-  assertIonicStorageWallet,
-  checkRecordIsValidWithQuery,
-  deserializeRecord,
-} from "./utils";
+import { assertIonicStorageWallet, deserializeRecord } from "./utils";
 
 class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
   static readonly RECORD_ALREADY_EXISTS_ERROR_MSG =
@@ -153,13 +149,50 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
       if (
         record.category &&
         record.category === recordClass.type &&
-        checkRecordIsValidWithQuery(record, query)
+        this.checkRecordIsValidWithQuery(record, query)
       ) {
         instances.push(deserializeRecord(record, recordClass));
       }
     });
 
     return instances;
+  }
+
+  private checkRecordIsValidWithQuery<T extends BaseRecord>(
+    record: any,
+    query: Query<T>
+  ): boolean {
+    for (const [queryKey, queryVal] of Object.entries(query)) {
+      if (queryKey === "$or") {
+        if (
+          !queryVal.some((query: Query<T>) =>
+            this.checkRecordIsValidWithQuery(record, query)
+          )
+        ) {
+          return false;
+        }
+      } else if (queryKey === "$not") {
+        if (this.checkRecordIsValidWithQuery(record, queryVal)) {
+          return false;
+        }
+      } else {
+        if (Array.isArray(queryVal) && queryVal.length > 0) {
+          // compare them item by item
+          const check = queryVal.every((element) =>
+            record.tags?.[queryKey]?.includes(element)
+          );
+          if (!check) {
+            return false;
+          }
+        } else if (
+          record.tags[queryKey] !== queryVal &&
+          queryVal !== undefined
+        ) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }
 

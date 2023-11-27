@@ -584,15 +584,18 @@ describe("Connection service of agent", () => {
       .mockResolvedValue([connectionAcceptedRecordAutoAccept]);
     expect(await connectionService.getUnhandledConnections()).toEqual([
       connectionAcceptedRecordAutoAccept,
-      connectionAcceptedRecordAutoAccept,
     ]);
     expect(agent.connections.findAllByQuery).toBeCalledWith({
-      state: DidExchangeState.ResponseReceived,
-      role: DidExchangeRole.Requester,
-    });
-    expect(agent.connections.findAllByQuery).toBeCalledWith({
-      state: DidExchangeState.RequestReceived,
-      role: DidExchangeRole.Responder,
+      $or: [
+        {
+          state: DidExchangeState.ResponseReceived,
+          role: DidExchangeRole.Requester,
+        },
+        {
+          state: DidExchangeState.RequestReceived,
+          role: DidExchangeRole.Responder,
+        },
+      ],
     });
   });
 

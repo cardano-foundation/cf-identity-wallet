@@ -202,27 +202,15 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     category: string,
     query?: Query<T>
   ): Promise<StorageObject[]> {
-    const values = [category];
-    let scan_query = SqliteStorageService.SCAN_QUERY_SQL;
+    let scanValues = [category];
+    let scanQuery = SqliteStorageService.SCAN_QUERY_SQL;
     if (query) {
       const dbQuery = convertDbQuery(query);
-      for (const [queryKey, queryVal] of Object.entries(dbQuery)) {
-        if (Array.isArray(queryVal)) {
-          const generateValueFinds = Array.from("?".repeat(queryVal.length));
-          scan_query +=
-            " AND " +
-            SqliteStorageService.SCAN_TAGS_SQL_IN +
-            "(" +
-            generateValueFinds.join() +
-            "))";
-          values.push(queryKey, ...queryVal);
-        } else {
-          scan_query += " AND " + SqliteStorageService.SCAN_TAGS_SQL_EQ;
-          values.push(queryKey, queryVal as string);
-        }
-      }
+      const { condition, values } = this.getQueryConditionSql(dbQuery);
+      scanQuery += " AND " + condition;
+      scanValues = scanValues.concat(values);
     }
-    const qValues = await session.query(scan_query, values);
+    const qValues = await session.query(scanQuery, scanValues);
     if (qValues && qValues.values && qValues.values.length > 0) {
       return qValues.values.map((record) => {
         return {
@@ -308,6 +296,46 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
       }
     }
     return statements;
+  }
+
+  getQueryConditionSql<T extends BaseRecord>(
+    query: Query<T>
+  ): { condition: string; values: string[] } {
+    const conditions: string[] = [];
+    let values: string[] = [];
+    const dbQuery = convertDbQuery(query);
+    for (const [queryKey, queryVal] of Object.entries(dbQuery)) {
+      if (queryKey === "$or") {
+        const orQueries = (queryVal as Array<Query<T>>).map((query: Query<T>) =>
+          this.getQueryConditionSql(query)
+        );
+        const orConditions: string[] = [];
+        orQueries.forEach((e) => {
+          orConditions.push(e.condition);
+          values = values.concat(e.values);
+        });
+        conditions.push(
+          orConditions.map((condition) => "(" + condition + ")").join(" OR ")
+        );
+      } else if (queryKey === "$not") {
+        const notQuery = this.getQueryConditionSql(queryVal as Query<T>);
+        conditions.push("NOT (" + notQuery.condition + ")");
+        values = values.concat(notQuery.values);
+      } else if (Array.isArray(queryVal)) {
+        const generateValueFinds = Array.from("?".repeat(queryVal.length));
+        conditions.push(
+          SqliteStorageService.SCAN_TAGS_SQL_IN +
+            "(" +
+            generateValueFinds.join() +
+            "))"
+        );
+        values.push(queryKey, ...queryVal);
+      } else {
+        conditions.push(SqliteStorageService.SCAN_TAGS_SQL_EQ);
+        values.push(queryKey, queryVal as string);
+      }
+    }
+    return { condition: conditions.join(" AND "), values };
   }
 }
 
