@@ -5,7 +5,11 @@ import {
   Tier,
   randomPasscode,
 } from "signify-ts";
-import { KeriContact, CreateIdentifierResult } from "./signifyApi.types";
+import {
+  KeriContact,
+  CreateIdentifierResult,
+  IdentifierResult,
+} from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 
 export class SignifyApi {
@@ -198,5 +202,13 @@ export class SignifyApi {
       await SecureStorage.set(KeyStoreKeys.SIGNIFY_BRAN, bran);
     }
     return bran as string;
+  }
+
+  async getIndentifierById(id: string): Promise<IdentifierResult> {
+    const allIdentifiers = await this.signifyClient.identifiers().list();
+    const identifier = allIdentifiers.aids.find(
+      (identifier: IdentifierResult) => identifier.prefix === id
+    );
+    return identifier;
   }
 }

@@ -526,17 +526,27 @@ class CredentialService extends AgentService {
         status: CredentialStatus.PENDING,
       },
     });
-
+    let holderSignifyName: string;
     const holder =
       await this.agent.modules.generalStorage.getIdentifierMetadata(
         keriExchange.exn.a.i
       );
-    if (!holder) {
+    if (holder && holder.signifyName) {
+      holderSignifyName = holder.signifyName;
+    } else {
+      const identifierHolder =
+        await this.agent.modules.signify.getIndentifierById(
+          keriExchange.exn.a.i
+        );
+      holderSignifyName = identifierHolder.name;
+    }
+    if (!holderSignifyName) {
       throw new Error(CredentialService.ISSUEE_NOT_FOUND);
     }
+
     await this.agent.modules.signify.admitIpex(
       keriNoti.a.d as string,
-      holder.signifyName as string,
+      holderSignifyName,
       keriExchange.exn.i
     );
     const cred = await this.waitForCredentialToAppear(credentialId);

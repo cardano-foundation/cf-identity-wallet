@@ -10,3 +10,9 @@ export interface KeriContact {
   challenges: Array<string>;
   wellKnowns: Array<string>;
 }
+
+export interface IdentifierResult {
+  name: string;
+  prefix: string;
+  salty: any;
+}

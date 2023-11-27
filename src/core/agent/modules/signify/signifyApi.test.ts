@@ -38,7 +38,10 @@ jest.mock("signify-ts", () => ({
       boot: bootMock,
       identifiers: jest.fn().mockReturnValue({
         list: jest.fn().mockResolvedValue({
-          aids: [{ name: firstAid }, { name: secondAid }],
+          aids: [
+            { name: firstAid, prefix: "1" },
+            { name: secondAid, prefix: "2" },
+          ],
         }),
         get: jest.fn().mockImplementation((name: string) => {
           return { name, id: `${aidPrefix}${name}` };
@@ -215,5 +218,13 @@ describe("Signify API", () => {
     await expect(api.getCredentialBySaid(said)).rejects.toThrowError(
       SignifyApi.CREDENTIAL_NOT_FOUND
     );
+  });
+
+  test("can get identifier by id", async () => {
+    const id = "1";
+    expect(await api.getIndentifierById(id)).toEqual({
+      name: firstAid,
+      prefix: id,
+    });
   });
 });

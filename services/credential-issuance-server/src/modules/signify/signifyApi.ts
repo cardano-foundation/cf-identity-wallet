@@ -15,7 +15,7 @@ export class SignifyApi {
     "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly SIGNIFY_BRAN = "o123456a89aacxeaCaxkd"; // @TODO - foconnor: Shouldn't be hard-coded.
+  static readonly SIGNIFY_BRAN = "o123456a89aacxeaCaxkk"; // @TODO - foconnor: Shouldn't be hard-coded.
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";

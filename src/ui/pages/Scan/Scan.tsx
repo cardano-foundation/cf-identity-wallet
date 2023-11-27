@@ -6,6 +6,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getCurrentOperation,
   getStateCache,
+  getToastMsg,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -21,6 +22,7 @@ const Scan = () => {
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const currentOperation = useAppSelector(getCurrentOperation);
+  const currentToastMsg = useAppSelector(getToastMsg);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.SCAN }));
@@ -30,7 +32,10 @@ const Scan = () => {
     if (currentOperation !== OperationType.IDLE) {
       const data: DataProps = {
         store: { stateCache },
-        state: { currentOperation: currentOperation },
+        state: {
+          currentOperation: currentOperation,
+          toastMsg: currentToastMsg,
+        },
       };
       const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.SCAN, data);
       updateReduxState(nextPath.pathname, data, dispatch, updateRedux);
@@ -39,7 +44,7 @@ const Scan = () => {
         state: data.state,
       });
     }
-  }, [currentOperation]);
+  }, [currentToastMsg, currentOperation]);
 
   return (
     <IonPage

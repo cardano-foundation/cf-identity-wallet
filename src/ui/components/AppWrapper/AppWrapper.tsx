@@ -145,6 +145,7 @@ const credentialStateChangedHandler = async (
       ...credentialDetails,
       credentialRecordId: credentialRecord.id,
     });
+    dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));
     dispatch(updateOrAddCredsCache(credentialDetails));
   } else if (AriesAgent.agent.credentials.isCredentialDone(credentialRecord)) {
@@ -169,6 +170,7 @@ const connectionKeriStateChangedHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === ConnectionStatus.PENDING) {
+    dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_PENDING));
   } else {
     const connectionRecordId = event.payload.connectionId!;
@@ -201,9 +203,11 @@ const keriAcdcChangeHandler = async (
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
   if (event.payload.status === CredentialStatus.PENDING) {
-    dispatch(setCurrentOperation(OperationType.IDLE));
-  } else {
     dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
+    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));
+  } else {
+    dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));
+    dispatch(setCurrentOperation(OperationType.IDLE));
   }
 };
 const AppWrapper = (props: { children: ReactNode }) => {
