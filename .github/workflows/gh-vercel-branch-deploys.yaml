@@ -1,18 +1,21 @@
 # Workflow to build and deploy site to Vercel using static files
 # Name of Workflow
-name: vercel-deploy-develop-branch (main vercel URL)
+name: vercel-deploy-branch-deploys
 
 # Controls when the action will run. Triggers the workflow on push
 # events but only for specified branches
 on:
   push:
     branches:
+      - main
       - develop
+
+env:
+  PRODUCTION_BRANCH: main
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "deploy-production"
-  deploy-staging:
+  deploy-branch:
     runs-on: self-hosted
 
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -21,20 +24,21 @@ jobs:
     - name: Make some more metadata available as variables
       id: metadata
       run: |
-        if [ ${{github.event_name }} == "pull_request" ]
+        TRIGGER_BRANCH=${GITHUB_REF##*/}
+        echo "TRIGGER_BRANCH=${TRIGGER_BRANCH}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+        echo "DEPLOY_NAME=BRANCH-${TRIGGER_BRANCH}" | tee -a "$GITHUB_ENV" | tee -a "$GITHUB_OUTPUT"
+        if [ "${TRIGGER_BRANCH}" == "${PRODUCTION_BRANCH}" ]
         then
-          echo "::set-output name=DEPLOY_NAME::PR-$(echo $GITHUB_REF | awk -F/ '{ print $3 }')"
-        else
-          echo "::set-output name=DEPLOY_NAME::BRANCH-${GITHUB_REF##*/}"
+          echo "VERCEL_ARGS=--prod" | tee -a "$GITHUB_ENV" | tee -a "${GITHUB_OUTPUT}"
         fi
 
     # Checks-out your repository under $GITHUB_WORKSPACE
     - name: Checkout
       uses: actions/checkout@v2
       with:
-          submodules: recursive  # Fetch private content
-          fetch-depth: 1         # Fetch all history for .GitInfo and .Lastmod
-          lfs: true
+        submodules: recursive  # Fetch private content
+        fetch-depth: 1         # Fetch all history for .GitInfo and .Lastmod
+        lfs: true
 
     # Initiate GH deployment status
     - name: Start Deployment
@@ -83,7 +87,7 @@ jobs:
         vercel-org-id: ${{ secrets.VERCEL_ORG_ID }}  #Required
         vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }} # Required
         github-comment: false
-        vercel-args: '--prod' #Optional
+        vercel-args: ${{ steps.metadata.outputs.VERCEL_ARGS }}
         working-directory: build
 
     # Update GH deployment status
@@ -96,10 +100,3 @@ jobs:
         status: ${{ job.status }}
         deployment_id: ${{ steps.deployment.outputs.deployment_id }}
         env_url: ${{ steps.vercel-action.outputs.preview-url }}
-
-    - name: Comment PR
-      uses: thollander/actions-comment-pull-request@v1
-      if: ${{ github.event_name == 'pull_request' }}
-      with:
-        message: 'Vercel PR (merge commit) deploy URL: ${{ steps.vercel-action.outputs.preview-url }}'
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
