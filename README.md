@@ -68,7 +68,7 @@ The Identity Wallet is an open source application developed by the Cardano Found
 
 👨‍💻 Access the latest version of the Identity Wallet application [here](https://cf-identity-wallet.vercel.app) 👩‍💻
 
-To experience this app like it was designed for smarthpones, you can follow this structions:
+To experience the mobile application within the browser, follow these instructions for accessing mobile-view:
 1. Open the developer options by pressing the ``` F12 ``` key on your keyboard or by right-clicking anywhere on the page, then choose ``` Inspect ``` from the context menu.
 2. To Switch to a mobile view:
     - Chrome:
