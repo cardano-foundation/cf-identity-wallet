@@ -54,17 +54,17 @@ The Identity Wallet is an open source application developed by the Cardano Found
 
 |**App Features**            |  **Identity Recovery**               |     **Identifiers**           |     **Verifiable Credentials**  |    **Communications** |   **Peer-to-Peer (P2P)** |  
 |----------------|---------------|---------------|----------------|----------------|----------------|
-| Bluetooth |  Shamir Secret Sharing|  [did:webs](https://labs.hyperledger.org/labs/didwebs.html#:~:text=did%3Awebs%20extends%20the%20web,%2C%20X509%2C%20and%20certificate%20authorities.) |  [OID4vc](https://openid.net/sg/openid4vc/specifications/)| Messaging | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support  | 
+| Bluetooth |  [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)|  [did:webs](https://labs.hyperledger.org/labs/didwebs.html#:~:text=did%3Awebs%20extends%20the%20web,%2C%20X509%2C%20and%20certificate%20authorities.) |  [OID4vc](https://openid.net/sg/openid4vc/specifications/)| Messaging | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support  | 
 | Biometrics | On-chain Recovery | [did:keri](https://identity.foundation/keri/did_methods/)  | On-Chain Schemas | Social Recovery |  App Integration |
-| NFC|  Local Encrypted|  | AnonCreds | DIDComm Mediator v2 | | 
-| | Cloud-based |  | Cheqd | |  |
+| NFC|  Local Encrypted|  | [AnonCreds](https://www.hyperledger.org/projects/anoncreds) | [DIDComm v2 Mediator](https://identity.foundation/didcomm-messaging/spec/) | | 
+| | Cloud-based |  | [Cheqd](https://cheqd.io/) | |  |
 
 
 # Preview in your Browser
 
 **Disclaimer: Try it now provides access to a preview version of the identity wallet in your browser. This preview version is <ins>not intended</ins> to be used for any purposes other than previewing the application.**
 
-Access the latest version of the Identity Wallet application [here](https://cf-identity-wallet.vercel.app).
+👨‍💻 Access the latest version of the Identity Wallet application [here](https://cf-identity-wallet.vercel.app) 👩‍💻
 
 To experience this app like it was designed for smarthpones, you can follow this structions:
 1. Open the developer options by pressing the ``` F12 ``` key on your keyboard or by right-clicking anywhere on the page, then choose ``` Inspect ``` from the context menu.
@@ -235,21 +235,22 @@ All contributions are welcome. Feel free to open a new thread on the issue track
 # Resources
 
 ## W3C
-- https://www.w3.org/
-- https://www.w3.org/TR/did-core/
-- https://www.w3.org/TR/did-spec-registries/
-- https://www.w3.org/TR/vc-data-model/
-- https://www.w3.org/TR/vc-data-model-2.0/
+- [W3C](https://www.w3.org/) 
+- [DID Core Specification ](https://www.w3.org/TR/did-core/)
+- [DID Methods Registry](https://www.w3.org/TR/did-spec-registries/) 
+- [Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model/) 
+- [Verifiable Credential V2](https://www.w3.org/TR/vc-data-model-2.0/) 
 
 ## KERI
-- https://keri.one/
-- https://keri.one/keri-resources/
-- https://github.com/WebOfTrust
-- https://github.com/WebOfTrust/keri
+- [Key Event Receipt Infrastructure](https://keri.one/) 
+- [Resources](https://keri.one/keri-resources/) 
+- [Web of Trust KERI Libraries](https://github.com/WebOfTrust/keri)
+- [did:keri](https://weboftrust.github.io/ietf-did-keri/draft-pfeairheller-did-keri.html#name-the-did-document)
+- [did:webS for KERI explained](https://hackmd.io/dbB7E1bPSPGZ_Ow5S_9pmg)
+- [Tutorial KLI: Sign and Verify](https://kentbull.com/2023/01/27/keri-tutorial-series-kli-sign-and-verify-with-heartnet/)
+- [Tutorial ACDC: Issuing and verifying a credential](https://kentbull.com/2023/03/09/keri-tutorial-series-treasure-hunting-in-abydos-issuing-and-verifying-a-credential-acdc/)
 
 ## SSI
-- https://github.com/hyperledger/aries-framework-javascript)https://github.com/hyperledger/aries-framework-javascript
-- https://hackmd.io/dbB7E1bPSPGZ_Ow5S_9pmg
-- https://hub.ebsi.eu/
-- https://www.gleif.org/en
+- [Hyperledger Aries Framework](https://github.com/hyperledger/aries-framework-javascript)
+- [Global Legal Entity Identifier Foundation](https://www.gleif.org/en)
   
