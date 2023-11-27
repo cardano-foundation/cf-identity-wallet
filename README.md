@@ -46,9 +46,8 @@ The Identity Wallet is an open source application developed by the Cardano Found
 |----------------|---------------|---------------|----------------|---------------|----------------|
 | :white_check_mark: Intuitive User Experience | :white_check_mark: Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material | :white_check_mark: [Aries RFCs](https://github.com/hyperledger/aries-rfcs) | :white_check_mark: [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) | :white_check_mark: Holder-to-Holder (Wallet <-> Wallet) | :white_check_mark: [Aries Framework](https://github.com/hyperledger/aries-framework-javascript)| 
 | :white_check_mark:  Android and iOS support | :white_check_mark: Hierarchical Deterministic (HD) wallet, leverage BIP-39 mnemonic seed phrase for identity profiles|:white_check_mark: [W3C](https://www.w3.org/) | :white_check_mark: [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID)  | :white_check_mark: Issuer-to-Holder | :white_check_mark: [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | 
-|  | |:white_check_mark: [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) | :white_check_mark: [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) | :white_check_mark: Credential Issuance Testing Tool [VERCEL_URL]  | | 
-
-
+|  | |:white_check_mark: [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) | :white_check_mark: [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) | :white_check_mark: Credential Issuance Testing Tool [VERCEL_URL]  | :white_check_mark: [KERIA](https://github.com/cardano-foundation/keria) | 
+|  | | | |  | :white_check_mark: [Signify-TS](https://github.com/cardano-foundation/signify-ts)|
 
 # Potential Future Developments
 
@@ -56,8 +55,8 @@ The Identity Wallet is an open source application developed by the Cardano Found
 |----------------|---------------|---------------|----------------|----------------|----------------|
 | Bluetooth |  [Shamir Secret Sharing](https://en.wikipedia.org/wiki/Shamir%27s_secret_sharing)|  [did:webs](https://labs.hyperledger.org/labs/didwebs.html#:~:text=did%3Awebs%20extends%20the%20web,%2C%20X509%2C%20and%20certificate%20authorities.) |  [OID4vc](https://openid.net/sg/openid4vc/specifications/)| Messaging | [CIP-45](https://github.com/cardano-foundation/CIPs/pull/395) Support  | 
 | Biometrics | On-chain Recovery | [did:keri](https://identity.foundation/keri/did_methods/)  | On-Chain Schemas | Social Recovery |  App Integration |
-| NFC|  Local Encrypted|  | [AnonCreds](https://www.hyperledger.org/projects/anoncreds) | [DIDComm v2 Mediator](https://identity.foundation/didcomm-messaging/spec/) | | 
-| | Cloud-based |  | [Cheqd](https://cheqd.io/) | |  |
+| NFC|  Local Encrypted|  | [AnonCreds](https://www.hyperledger.org/projects/anoncreds) | [DIDComm v2](https://identity.foundation/didcomm-messaging/spec/) | | 
+|Aries Askar | Cloud-based |  | [Cheqd](https://cheqd.io/) | |  |
 
 
 # Preview in your Browser
@@ -235,7 +234,6 @@ All contributions are welcome. Feel free to open a new thread on the issue track
 # Resources
 
 ## W3C
-- [W3C](https://www.w3.org/) 
 - [DID Core Specification ](https://www.w3.org/TR/did-core/)
 - [DID Methods Registry](https://www.w3.org/TR/did-spec-registries/) 
 - [Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model/) 
@@ -243,12 +241,11 @@ All contributions are welcome. Feel free to open a new thread on the issue track
 
 ## KERI
 - [Key Event Receipt Infrastructure](https://keri.one/) 
-- [Resources](https://keri.one/keri-resources/) 
-- [Web of Trust KERI Libraries](https://github.com/WebOfTrust/keri)
-- [did:keri](https://weboftrust.github.io/ietf-did-keri/draft-pfeairheller-did-keri.html#name-the-did-document)
-- [did:webS for KERI explained](https://hackmd.io/dbB7E1bPSPGZ_Ow5S_9pmg)
-- [Tutorial KLI: Sign and Verify](https://kentbull.com/2023/01/27/keri-tutorial-series-kli-sign-and-verify-with-heartnet/)
-- [Tutorial ACDC: Issuing and verifying a credential](https://kentbull.com/2023/03/09/keri-tutorial-series-treasure-hunting-in-abydos-issuing-and-verifying-a-credential-acdc/)
+- [Resources](https://keri.one/keri-resources/)
+- KERI Libraries
+  - [KERIA](https://github.com/cardano-foundation/keria)
+  - [Signify-TS](https://github.com/cardano-foundation/signify-ts)
+  - [Cardano Backer](https://github.com/cardano-foundation/cardano-backer)
 
 ## SSI
 - [Hyperledger Aries Framework](https://github.com/hyperledger/aries-framework-javascript)
