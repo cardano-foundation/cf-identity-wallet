@@ -128,10 +128,10 @@ const GenerateSeedPhrase = () => {
         />
       }
     >
-      <h2 data-testid="screen-title">
+      <h2 data-testid={`${pageId}-title`}>
         {i18n.t("generateseedphrase.onboarding.title")}
       </h2>
-      <p data-testid="page-paragraph-top">
+      <p data-testid={`${pageId}-paragraph-top`}>
         {i18n.t("generateseedphrase.onboarding.paragraph.top")}
       </p>
       <MnemonicLengthSegment
@@ -144,7 +144,7 @@ const GenerateSeedPhrase = () => {
         hideSeedPhrase={hideSeedPhrase}
         setHideSeedPhrase={setHideSeedPhrase}
       />
-      <p data-testid="page-paragraph-bottom">
+      <p data-testid={`${pageId}-paragraph-bottom`}>
         {i18n.t("generateseedphrase.onboarding.paragraph.bottom")}
       </p>
       <div className="terms-and-conditions">
