@@ -24,6 +24,14 @@ const config = {
         include: path.resolve(__dirname, "..", "src"),
         use: ["style-loader", "css-loader", "postcss-loader"],
       },
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto',
+        resolve: {
+          fullySpecified: false,
+        },
+      },
     ],
   },
   resolve: {

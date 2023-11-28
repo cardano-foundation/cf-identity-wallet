@@ -1,10 +1,10 @@
-import { IdentifierType } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
 import { IDENTIFIER_BG_MAPPING } from "../../globals/types";
 import { IdentifierCardTemplateProps } from "./IdentifierCardTemplate.types";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
 import KERILogo from "../../../ui/assets/images/keri-logo.svg";
+import { IdentifierType } from "../../../core/agent/services/identifierService.types";
 import "./IdentifierCardTemplate.scss";
 
 const IdentifierCardTemplate = ({

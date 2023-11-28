@@ -32,13 +32,13 @@ import {
   setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
-import { CredentialShortDetails } from "../../../core/agent/agent.types";
 import { ArchivedCredentialsProps } from "./ArchivedCredentials.types";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import {
   getCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
 const ArchivedCredentials = ({
   archivedCredentialsIsOpen,

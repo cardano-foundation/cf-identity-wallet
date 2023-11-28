@@ -24,6 +24,8 @@ enum OperationType {
   ARCHIVE_CREDENTIAL = "archiveCredential",
   DELETE_CREDENTIAL = "deleteCredential",
   SCAN_CONNECTION = "scanConnection",
+  ADD_CREDENTIAL = "addCredential",
+  RECEIVE_CONNECTION = "receiveConnection",
 }
 
 enum ToastMsgType {

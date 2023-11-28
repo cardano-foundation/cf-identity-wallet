@@ -19,11 +19,12 @@ import {
 import { ToastMsgType } from "../../globals/types";
 import {
   ConnectionShortDetails,
-  CredentialShortDetails,
+  ConnectionType,
 } from "../../../core/agent/agent.types";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -54,6 +55,8 @@ jest.mock("../../../core/agent/agent", () => ({
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
         getUnhandledCredentials: jest.fn(),
+        onNotificationKeriStateChanged: jest.fn(),
+        onAcdcKeriStateChanged: jest.fn(),
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),
@@ -263,6 +266,7 @@ describe("Credential state changed handler", () => {
           credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
         status: CredentialMetadataRecordStatus.PENDING,
         connectionId: "cid2",
+        connectionType: ConnectionType.DIDCOMM,
       })
     );
   });

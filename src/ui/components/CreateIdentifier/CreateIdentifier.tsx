@@ -24,7 +24,7 @@ import {
 import {
   IdentifierShortDetails,
   IdentifierType,
-} from "../../../core/agent/agent.types";
+} from "../../../core/agent/services/identifierService.types";
 import { ColorGenerator } from "../../utils/colorGenerator";
 import { AriesAgent } from "../../../core/agent/agent";
 import { setToastMsg } from "../../../store/reducers/stateCache";

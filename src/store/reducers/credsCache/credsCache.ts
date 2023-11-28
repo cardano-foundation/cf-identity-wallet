@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "../../index";
-import { CredentialShortDetails } from "../../../core/agent/agent.types";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";
 
 const initialState: {

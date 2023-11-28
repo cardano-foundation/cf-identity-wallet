@@ -20,6 +20,14 @@ module.exports = merge(require("./webpack.common.cjs"), {
                },
             ],
          },
+         {
+            test: /\.mjs$/,
+            include: /node_modules/,
+            type: 'javascript/auto',
+            resolve: {
+              fullySpecified: false,
+            },
+         },
       ],
    },
    devtool: 'eval-source-map',

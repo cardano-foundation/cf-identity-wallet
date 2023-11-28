@@ -13,8 +13,11 @@ import {
   JsonObject,
 } from "@aries-framework/core";
 import {
-  CredentialDetails,
-  CredentialShortDetails,
+  KeriNotification,
+  GenericRecordType,
+  AcdcKeriStateChangedEvent,
+  AcdcKeriEventTypes,
+  ConnectionType,
   CredentialType,
 } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
@@ -23,6 +26,13 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { ColorGenerator } from "../../../ui/utils/colorGenerator";
+import {
+  CredentialDetails,
+  CredentialShortDetails,
+  CredentialStatus,
+  Notification,
+} from "./credentialService.types";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -31,6 +41,10 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_FOR_NEGOTIATE =
     "Credential missing for negotiation";
   static readonly CREATED_DID_NOT_FOUND = "Referenced public did not found";
+  static readonly KERI_NOTIFICATION_NOT_FOUND =
+    "Keri notification record not found";
+  static readonly ISSUEE_NOT_FOUND =
+    "Cannot accept incoming ACDC, issuee AID not controlled by us";
 
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
@@ -41,6 +55,42 @@ class CredentialService extends AgentService {
         callback(event);
       }
     );
+  }
+
+  onAcdcKeriStateChanged(callback: (event: AcdcKeriStateChangedEvent) => void) {
+    this.agent.events.on(
+      AcdcKeriEventTypes.AcdcKeriStateChanged,
+      async (event: AcdcKeriStateChangedEvent) => {
+        callback(event);
+      }
+    );
+  }
+
+  async processNotification(
+    notif: Notification,
+    callback: (event: KeriNotification) => void
+  ) {
+    if (notif.a.r === "/exn/ipex/grant" && notif.r === false) {
+      const keriNoti = await this.createKeriNotificationRecord(notif);
+      callback(keriNoti);
+    }
+  }
+
+  async onNotificationKeriStateChanged(
+    callback: (event: KeriNotification) => void
+  ) {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const notifications = await this.agent.modules.signify.getNotifications();
+      for (const notif of notifications.notes) {
+        await this.processNotification(notif, callback);
+      }
+      await new Promise((rs) => {
+        setTimeout(() => {
+          rs(true);
+        }, 2000);
+      });
+    }
   }
 
   /**
@@ -108,6 +158,7 @@ class CredentialService extends AgentService {
       credentialType: metadata.credentialType,
       status: metadata.status,
       cachedDetails: metadata.cachedDetails,
+      connectionType: metadata.connectionType,
     };
   }
 
@@ -117,6 +168,17 @@ class CredentialService extends AgentService {
 
   async getCredentialDetailsById(id: string): Promise<CredentialDetails> {
     const metadata = await this.getMetadataById(id);
+    if (metadata.connectionType === ConnectionType.KERI) {
+      const acdc = await this.agent.modules.signify.getCredentialBySaid(
+        metadata.credentialRecordId
+      );
+      return {
+        ...this.getCredentialShortDetails(metadata),
+        type: acdc.schema.credentialType,
+        credentialSubject: acdc.sad.a,
+        proofType: "keri", // TODO: must define
+      };
+    }
     const credentialRecord = await this.getCredentialRecordById(
       metadata.credentialRecordId
     );
@@ -213,6 +275,7 @@ class CredentialService extends AgentService {
       issuanceDate: metadata.issuanceDate,
       issuerLogo: connection?.imageUrl ?? undefined,
       status: data.status,
+      connectionType: metadata.connectionType,
     };
 
     if (credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL) {
@@ -332,10 +395,16 @@ class CredentialService extends AgentService {
     });
   }
 
-  async getUnhandledCredentials(): Promise<CredentialExchangeRecord[]> {
-    return this.agent.credentials.findAllByQuery({
-      state: CredentialState.OfferReceived,
-    });
+  async getUnhandledCredentials(): Promise<
+    (CredentialExchangeRecord | KeriNotification)[]
+    > {
+    const results = await Promise.all([
+      this.agent.credentials.findAllByQuery({
+        state: CredentialState.OfferReceived,
+      }),
+      this.getKeriNotifications(),
+    ]);
+    return results.flat();
   }
 
   private validArchivedCredential(metadata: CredentialMetadataRecord): void {
@@ -353,6 +422,159 @@ class CredentialService extends AgentService {
       throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
     }
     return metadata;
+  }
+
+  private async createKeriNotificationRecord(
+    event: Notification
+  ): Promise<KeriNotification> {
+    const result = await this.agent.genericRecords.save({
+      id: event.i,
+      content: event.a,
+      tags: {
+        type: GenericRecordType.NOTIFICATION_KERI,
+      },
+    });
+    return {
+      id: result.id,
+      createdAt: result.createdAt,
+      a: result.content,
+    };
+  }
+
+  private async getKeriNotifications(): Promise<KeriNotification[]> {
+    const results = await this.agent.genericRecords.findAllByQuery({
+      type: GenericRecordType.NOTIFICATION_KERI,
+    });
+    return results.map((result) => {
+      return {
+        id: result.id,
+        createdAt: result.createdAt,
+        a: result.content,
+      };
+    });
+  }
+
+  private async createAcdcMetadataRecord(event: any): Promise<void> {
+    const credentialId = event.e.acdc.d;
+    const credentialDetails: CredentialShortDetails = {
+      id: `metadata:${credentialId}`,
+      isArchived: false,
+      colors: new ColorGenerator().generateNextColor() as [string, string],
+      credentialType: "",
+      issuanceDate: event.e.acdc.a.dt,
+      status: CredentialMetadataRecordStatus.PENDING,
+      connectionType: ConnectionType.KERI,
+    };
+    await this.createMetadata({
+      ...credentialDetails,
+      credentialRecordId: credentialId,
+    });
+  }
+
+  private async updateAcdcMetadataRecordCompleted(
+    id: string,
+    cred: any
+  ): Promise<void> {
+    const metadata =
+      await this.agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId(
+        id
+      );
+    if (!metadata) {
+      throw new AriesFrameworkError(
+        CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+      );
+    }
+
+    metadata.status = CredentialMetadataRecordStatus.CONFIRMED;
+    metadata.credentialType = cred.schema?.title;
+    await this.agent.modules.generalStorage.updateCredentialMetadata(
+      metadata.id,
+      metadata
+    );
+  }
+
+  private async getKeriNotificationRecordById(
+    id: string
+  ): Promise<KeriNotification> {
+    const result = await this.agent.genericRecords.findById(id);
+    if (!result) {
+      throw new Error(`${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`);
+    }
+    return {
+      id: result.id,
+      createdAt: result.createdAt,
+      a: result.content,
+    };
+  }
+
+  async deleteKeriNotificationRecordById(id: string): Promise<void> {
+    await this.agent.genericRecords.deleteById(id);
+  }
+
+  async acceptKeriAcdc(id: string): Promise<void> {
+    const keriNoti = await this.getKeriNotificationRecordById(id);
+    const keriExchange = await this.agent.modules.signify.getKeriExchange(
+      keriNoti.a.d as string
+    );
+    const credentialId = keriExchange.exn.e.acdc.d;
+    await this.createAcdcMetadataRecord(keriExchange.exn);
+
+    this.agent.events.emit<AcdcKeriStateChangedEvent>(this.agent.context, {
+      type: AcdcKeriEventTypes.AcdcKeriStateChanged,
+      payload: {
+        credentialId,
+        status: CredentialStatus.PENDING,
+      },
+    });
+    let holderSignifyName;
+    const holder =
+      await this.agent.modules.generalStorage.getIdentifierMetadata(
+        keriExchange.exn.a.i
+      );
+    if (holder && holder.signifyName) {
+      holderSignifyName = holder.signifyName;
+    } else {
+      const identifierHolder =
+        await this.agent.modules.signify.getIdentifierById(
+          keriExchange.exn.a.i
+        );
+      holderSignifyName = identifierHolder?.name;
+    }
+    if (!holderSignifyName) {
+      throw new Error(CredentialService.ISSUEE_NOT_FOUND);
+    }
+
+    await this.agent.modules.signify.admitIpex(
+      keriNoti.a.d as string,
+      holderSignifyName,
+      keriExchange.exn.i
+    );
+    const cred = await this.waitForCredentialToAppear(credentialId);
+    await this.updateAcdcMetadataRecordCompleted(credentialId, cred);
+    await this.deleteKeriNotificationRecordById(id);
+    this.agent.events.emit<AcdcKeriStateChangedEvent>(this.agent.context, {
+      type: AcdcKeriEventTypes.AcdcKeriStateChanged,
+      payload: {
+        credentialId,
+        status: CredentialStatus.CONFIRMED,
+      },
+    });
+  }
+
+  private async waitForCredentialToAppear(credentialId: string): Promise<any> {
+    let cred = await this.agent.modules.signify.getCredentialBySaid(
+      credentialId
+    );
+    let retryTimes = 0;
+    while (!cred) {
+      if (retryTimes > 15) {
+        throw new Error(CredentialService.CREDENTIAL_NOT_ARCHIVED);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 250));
+      cred = await this.agent.modules.signify.getCredentialBySaid(credentialId);
+      retryTimes++;
+    }
+    return cred;
   }
 }
 

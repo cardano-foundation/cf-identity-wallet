@@ -1,4 +1,3 @@
-import { CredentialDetails } from "../../../core/agent/agent.types";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
 

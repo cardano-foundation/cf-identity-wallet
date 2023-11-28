@@ -50,8 +50,8 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../utils/clipboard";
 import { AriesAgent } from "../../../core/agent/agent";
+import { IdentifierType } from "../../../core/agent/services/identifierService.types";
 import { IdentifierThemeSelector } from "../IdentifierThemeSelector";
-import { IdentifierType } from "../../../core/agent/agent.types";
 
 const IdentifierOptions = ({
   optionsIsOpen,

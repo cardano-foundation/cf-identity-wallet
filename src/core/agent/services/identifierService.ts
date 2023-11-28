@@ -4,7 +4,7 @@ import {
   GetIdentifierResult,
   IdentifierShortDetails,
   IdentifierType,
-} from "../agent.types";
+} from "./identifierService.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -87,6 +87,7 @@ class IdentifierService extends AgentService {
       if (!aid) {
         return undefined;
       }
+
       return {
         type: IdentifierType.KERI,
         result: {

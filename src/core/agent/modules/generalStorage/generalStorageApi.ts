@@ -5,7 +5,7 @@ import {
   CredentialMetadataRecord,
   CredentialMetadataRepository,
 } from "./repositories";
-import { IdentifierType } from "../../agent.types";
+import { IdentifierType } from "../../services/identifierService.types";
 
 /**
  * This can be used to store any records in the agent that aren't explicitly created

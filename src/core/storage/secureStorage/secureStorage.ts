@@ -12,6 +12,7 @@ enum KeyStoreKeys {
   CRYPTO_ROOT_XPRV_KEY_PREFIX = "crypto-root-xprv-key-",
   LIBP2P_PEER = "libp2p-peer",
   SIGNIFY_BRAN = "signify-bran",
+  KERI_OOBI = "keri-oobi",
 }
 
 class SecureStorage {

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IdentifierShortDetails } from "../../../core/agent/agent.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
 import { RootState } from "../../index";
 import { FavouriteIdentifier } from "./identifiersCache.types";
 

@@ -2,7 +2,7 @@ import {
   DIDDetails,
   IdentifierType,
   KERIDetails,
-} from "../../core/agent/agent.types";
+} from "../../core/agent/services/identifierService.types";
 
 const didFix: DIDDetails[] = [
   {

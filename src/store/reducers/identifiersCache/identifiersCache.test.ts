@@ -12,7 +12,7 @@ import { RootState } from "../../index";
 import {
   IdentifierShortDetails,
   IdentifierType,
-} from "../../../core/agent/agent.types";
+} from "../../../core/agent/services/identifierService.types";
 import { FavouriteIdentifier } from "./identifiersCache.types";
 
 describe("identifiersCacheSlice", () => {

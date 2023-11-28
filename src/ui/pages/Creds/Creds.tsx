@@ -28,7 +28,7 @@ import {
   getFavouritesCredsCache,
   setCredsCache,
 } from "../../../store/reducers/credsCache";
-import { CredentialShortDetails } from "../../../core/agent/agent.types";
+import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;

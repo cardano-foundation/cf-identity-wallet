@@ -41,7 +41,7 @@ import {
   DIDDetails,
   IdentifierType,
   KERIDetails,
-} from "../../../core/agent/agent.types";
+} from "../../../core/agent/services/identifierService.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { IdentifierCardInfoDid } from "../../components/IdentifierCardInfoKey";
 import { IdentifierCardInfoKeri } from "../../components/IdentifierCardInfoKeri";

@@ -1,3 +1,4 @@
+import { ConnectionType } from "../../../core/agent/agent.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 
 interface PayloadData<T = any> {
@@ -27,6 +28,7 @@ interface ConnectionCredentialRequestProps {
   type?: ConnectionCredentialRequestType;
   logo?: string;
   label?: string;
+  source?: ConnectionType;
 }
 
 interface QueueProps<T> {

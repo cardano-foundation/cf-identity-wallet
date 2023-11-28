@@ -86,9 +86,15 @@ const ConnectionCredentialRequest = () => {
       connectionCredentialRequest.type ===
       ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
-      await AriesAgent.agent.credentials.declineCredentialOffer(
-        connectionCredentialRequest.id
-      );
+      if (connectionCredentialRequest.source === ConnectionType.KERI) {
+        await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
+          connectionCredentialRequest.id
+        );
+      } else {
+        await AriesAgent.agent.credentials.declineCredentialOffer(
+          connectionCredentialRequest.id
+        );
+      }
     } else if (
       connectionCredentialRequest.type ===
         ConnectionCredentialRequestType.CONNECTION_INCOMING ||
@@ -124,9 +130,15 @@ const ConnectionCredentialRequest = () => {
       connectionCredentialRequest.type ===
       ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
-      AriesAgent.agent.credentials.acceptCredentialOffer(
-        connectionCredentialRequest.id
-      );
+      if (connectionCredentialRequest.source === ConnectionType.KERI) {
+        AriesAgent.agent.credentials.acceptKeriAcdc(
+          connectionCredentialRequest.id
+        );
+      } else {
+        AriesAgent.agent.credentials.acceptCredentialOffer(
+          connectionCredentialRequest.id
+        );
+      }
     }
     setTimeout(() => {
       handleReset();

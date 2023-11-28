@@ -319,6 +319,10 @@ class ConnectionService extends AgentService {
     return this.agent.genericRecords.deleteById(connectionNoteId);
   }
 
+  async getKeriOobi(signifyName: string): Promise<string> {
+    return this.agent.modules.signify.getOobi(signifyName);
+  }
+
   private async createConnectionKeriMetadata(
     connectionId: string,
     metadata?: Record<string, unknown>

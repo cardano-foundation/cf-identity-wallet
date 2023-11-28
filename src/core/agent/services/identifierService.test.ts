@@ -6,7 +6,7 @@ import {
 } from "@aries-framework/core";
 import { IdentifierService } from "./identifierService";
 import { IdentifierMetadataRecord } from "../modules/generalStorage/repositories/identifierMetadataRecord";
-import { IdentifierType } from "../agent.types";
+import { IdentifierType } from "./identifierService.types";
 
 // We are losing typing here but the Agent class is overly complex to setup for tests.
 const agent = jest.mocked({
