@@ -205,10 +205,15 @@ export class SignifyApi {
   }
 
   async getIdentifierById(id: string): Promise<IdentifierResult | undefined> {
-    const allIdentifiers = await this.signifyClient.identifiers().list();
+    const allIdentifiers = await this.getAllIdentifiers();
     const identifier = allIdentifiers.aids.find(
       (identifier: IdentifierResult) => identifier.prefix === id
     );
     return identifier;
+  }
+
+  async getAllIdentifiers(): Promise<any> {
+    const allIdentifiersResult = await this.signifyClient.identifiers().list();
+    return allIdentifiersResult;
   }
 }

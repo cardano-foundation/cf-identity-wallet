@@ -576,6 +576,11 @@ class CredentialService extends AgentService {
     }
     return cred;
   }
+
+  async getAllACDCs(): Promise<any> {
+    const credentials = await this.agent.modules.signify.getCredentials();
+    return credentials;
+  }
 }
 
 export { CredentialService };

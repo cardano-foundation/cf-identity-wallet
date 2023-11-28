@@ -340,6 +340,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
         await keriNotificationsChangeHandler(message, dispatch);
       }
     });
+    // Fetch and sync the identifiers, contacts and ACDCs from KERIA
+    const [keriaIdentifiers, KeriaContacts, keriACDCs] = await Promise.all([
+      AriesAgent.agent.identifiers.getKeriaIdentifiers(),
+      AriesAgent.agent.connections.getAllKeriContacts(),
+      AriesAgent.agent.credentials.getAllACDCs(),
+    ]);
   };
 
   return initialised ? <>{props.children}</> : <></>;

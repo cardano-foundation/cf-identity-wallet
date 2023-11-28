@@ -180,6 +180,12 @@ class IdentifierService extends AgentService {
     );
   }
 
+  async getKeriaIdentifiers(): Promise<any> {
+    const keriaIdentifiers =
+      await this.agent.modules.signify.getAllIdentifiers();
+    return keriaIdentifiers;
+  }
+
   private async getMetadataById(id: string): Promise<IdentifierMetadataRecord> {
     const metadata =
       await this.agent.modules.generalStorage.getIdentifierMetadata(id);

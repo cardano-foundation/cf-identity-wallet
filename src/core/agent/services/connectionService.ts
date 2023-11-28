@@ -384,6 +384,11 @@ class ConnectionService extends AgentService {
     return results.flat();
   }
 
+  async getAllKeriContacts(): Promise<KeriContact[]> {
+    const contacts = await this.agent.modules.signify.getContacts();
+    return contacts;
+  }
+
   private async getConnectNotesByConnectionId(
     connectionId: string
   ): Promise<ConnectionNoteDetails[]> {
