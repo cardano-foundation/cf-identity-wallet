@@ -360,4 +360,15 @@ describe("Aries - Ionic Storage Module: Storage Service", () => {
       },
     ]);
   });
+
+  test("should find an item with $and query", async () => {
+    const tags = { $and: [{ firstTag: "exists" }, { secondTag: "exists" }] };
+    const result = await storageService.findByQuery(
+      agentContext,
+      TestRecord,
+      tags
+    );
+    expect(forEachMock).toBeCalled();
+    expect(result.length).toEqual(1);
+  });
 });

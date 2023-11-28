@@ -163,7 +163,15 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
     query: Query<T>
   ): boolean {
     for (const [queryKey, queryVal] of Object.entries(query)) {
-      if (queryKey === "$or") {
+      if (queryKey === "$and") {
+        if (
+          !queryVal.every((query: Query<T>) =>
+            this.checkRecordIsValidWithQuery(record, query)
+          )
+        ) {
+          return false;
+        }
+      } else if (queryKey === "$or") {
         if (
           !queryVal.some((query: Query<T>) =>
             this.checkRecordIsValidWithQuery(record, query)
