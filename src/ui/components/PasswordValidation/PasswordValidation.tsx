@@ -3,9 +3,10 @@ import { checkmarkOutline, closeOutline } from "ionicons/icons";
 import { passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
 import { i18n } from "../../../i18n";
 import { ErrorMessage } from "../ErrorMessage";
+import "./PasswordValidation.scss";
 
 const PasswordValidation = ({ password }: { password: string }) => {
-  const RegexItem = ({
+  const ValidationItem = ({
     condition,
     label,
   }: {
@@ -27,7 +28,7 @@ const PasswordValidation = ({ password }: { password: string }) => {
   return (
     <IonList
       lines="none"
-      className="operations-password-regex"
+      className="password-validation"
     >
       {!passwordStrengthChecker.validatePassword(password) ||
         (!passwordStrengthChecker.isValidCharacters(password) && (
@@ -61,7 +62,7 @@ const PasswordValidation = ({ password }: { password: string }) => {
           label: i18n.t("operationspasswordregex.label.symbol"),
         },
       ].map(({ condition, label }) => (
-        <RegexItem
+        <ValidationItem
           key={label}
           condition={condition}
           label={label}
