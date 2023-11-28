@@ -64,9 +64,7 @@ The Identity Wallet is an open source application developed by the Cardano Found
 
 # Preview in your Browser
 
-**Disclaimer: Try it now provides access to a preview version of the identity wallet in your browser. This preview version is <ins>not intended</ins> to be used for any purposes other than previewing the application.**
-
-👨‍💻 Access the latest version of the Identity Wallet application [here](https://cf-identity-wallet.vercel.app) 👩‍💻
+**Disclaimer: Try it now provides access to a preview version of the identity wallet in your browser.  This preview version is <ins>not intended</ins> to be used for any purposes other than previewing the application.**
 
 To experience the mobile application within the browser, follow these instructions for accessing mobile-view:
 1. Open the developer options by pressing the ``` F12 ``` key on your keyboard or by right-clicking anywhere on the page, then choose ``` Inspect ``` from the context menu.
@@ -89,8 +87,13 @@ To experience the mobile application within the browser, follow these instructio
           <summary>Click on <b>Dimensions</b> and select <b>Galaxy Note 20</b>.</summary>
           <img src="docs/images/readme/Firefox-Mobile-View-2.png" alt="Firefox Mobile View 2"/>
         </details>
+<br>
+<div align="center"> 
+      <a href="https://cf-identity-wallet.vercel.app">👨‍💻 Preview the latest version of the Identity Wallet here 👩‍💻
+</div>
 
-# User Flow
+
+# User Flows
 In this section, you'll find detailed PDF documents outlining the various user flows within our application. These user flows serve as comprehensive guides, illustrating the application's user journeys step-by-step. Please feel free to explore and gain insight into the following user flows:
 
 <div align="center"> 
