@@ -90,14 +90,14 @@ const SetPasscode = () => {
           beforeBack={handleBeforeBack}
           currentPath={RoutePath.SET_PASSCODE}
           progressBar={true}
-          progressBarValue={0.33}
+          progressBarValue={0.25}
           progressBarBuffer={1}
         />
       }
     >
       <h2
         className="set-passcode-title"
-        data-testid="set-passcode-title"
+        data-testid={`${pageId}-title`}
       >
         {originalPassCode !== ""
           ? i18n.t("setpasscode.reenterpasscode.title")

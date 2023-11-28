@@ -183,7 +183,7 @@
     },
     "button": {
       "continue": "Create Password",
-      "skip": "Continue without setting a password"
+      "skip": "Skip"
     },
     "alert": {
       "text": "You have chosen to skip creating a password. If you change your mind later, you will still be able to create a password.",

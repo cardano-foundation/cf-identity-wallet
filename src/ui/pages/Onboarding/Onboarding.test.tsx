@@ -10,6 +10,7 @@ import { store } from "../../../store";
 import { RoutePath } from "../../../routes";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { OperationType } from "../../globals/types";
+import { CreatePassword } from "../CreatePassword";
 
 describe("Onboarding Page", () => {
   test("Render slide 1", () => {
@@ -94,8 +95,8 @@ describe("Onboarding Page", () => {
             component={Onboarding}
           />
           <Route
-            path={RoutePath.GENERATE_SEED_PHRASE}
-            component={GenerateSeedPhrase}
+            path={RoutePath.CREATE_PASSWORD}
+            component={CreatePassword}
           />
         </Provider>
       </MemoryRouter>
@@ -108,9 +109,7 @@ describe("Onboarding Page", () => {
     fireEvent.click(buttonContinue);
 
     await waitFor(() => {
-      expect(
-        queryByText(EN_TRANSLATIONS.generateseedphrase.onboarding.title)
-      ).toBeVisible();
+      expect(queryByText(EN_TRANSLATIONS.createpassword.title)).toBeVisible();
     });
   });
 });

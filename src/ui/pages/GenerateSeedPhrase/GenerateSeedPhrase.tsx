@@ -123,7 +123,7 @@ const GenerateSeedPhrase = () => {
           beforeBack={handleClearState}
           currentPath={RoutePath.GENERATE_SEED_PHRASE}
           progressBar={true}
-          progressBarValue={0.66}
+          progressBarValue={0.75}
           progressBarBuffer={1}
         />
       }
