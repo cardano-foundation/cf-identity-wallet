@@ -19,6 +19,7 @@ const Alert = ({
 
   if (confirmButtonText && actionConfirm) {
     buttons.push({
+      id: "confirm-alert-button",
       text: confirmButtonText,
       role: "confirm",
       handler: () => {
@@ -30,6 +31,7 @@ const Alert = ({
 
   if (cancelButtonText) {
     buttons.push({
+      id: "cancel-alert-button",
       text: cancelButtonText,
       role: "cancel",
       handler: () => {
