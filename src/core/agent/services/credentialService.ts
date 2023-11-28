@@ -526,7 +526,7 @@ class CredentialService extends AgentService {
         status: CredentialStatus.PENDING,
       },
     });
-    let holderSignifyName: string;
+    let holderSignifyName;
     const holder =
       await this.agent.modules.generalStorage.getIdentifierMetadata(
         keriExchange.exn.a.i
@@ -535,10 +535,10 @@ class CredentialService extends AgentService {
       holderSignifyName = holder.signifyName;
     } else {
       const identifierHolder =
-        await this.agent.modules.signify.getIndentifierById(
+        await this.agent.modules.signify.getIdentifierById(
           keriExchange.exn.a.i
         );
-      holderSignifyName = identifierHolder.name;
+      holderSignifyName = identifierHolder?.name;
     }
     if (!holderSignifyName) {
       throw new Error(CredentialService.ISSUEE_NOT_FOUND);

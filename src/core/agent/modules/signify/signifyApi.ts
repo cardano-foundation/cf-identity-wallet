@@ -204,7 +204,7 @@ export class SignifyApi {
     return bran as string;
   }
 
-  async getIndentifierById(id: string): Promise<IdentifierResult> {
+  async getIdentifierById(id: string): Promise<IdentifierResult | undefined> {
     const allIdentifiers = await this.signifyClient.identifiers().list();
     const identifier = allIdentifiers.aids.find(
       (identifier: IdentifierResult) => identifier.prefix === id

@@ -222,9 +222,14 @@ describe("Signify API", () => {
 
   test("can get identifier by id", async () => {
     const id = "1";
-    expect(await api.getIndentifierById(id)).toEqual({
+    expect(await api.getIdentifierById(id)).toEqual({
       name: firstAid,
       prefix: id,
     });
+  });
+
+  test("Return undefined when getting the identifier by the ID that does not exist", async () => {
+    const id = "3";
+    expect(await api.getIdentifierById(id)).toEqual(undefined);
   });
 });
