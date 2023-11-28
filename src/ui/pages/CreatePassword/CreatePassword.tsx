@@ -1,6 +1,4 @@
 import { useState } from "react";
-import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/react";
-import { closeOutline, checkmarkOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import "./CreatePassword.scss";
@@ -30,42 +28,41 @@ const CreatePassword = () => {
   const stateCache = useAppSelector(getStateCache);
   const history = useHistory();
   const dispatch = useAppDispatch();
-  const [passwordValue, setPasswordValue] = useState("");
+  const [createPasswordValue, setCreatePasswordValue] = useState("");
   const [confirmPasswordValue, setConfirmPasswordValue] = useState("");
   const [confirmPasswordFocus, setConfirmPasswordFocus] = useState(false);
-  const [passwordFocus, setPasswordFocus] = useState(false);
+  const [createPasswordFocus, setCreatePasswordFocus] = useState(false);
   const [hintValue, setHintValue] = useState("");
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const passwordValueMatching =
-    passwordValue.length > 0 &&
+  const createPasswordValueMatching =
+    createPasswordValue.length > 0 &&
     confirmPasswordValue.length > 0 &&
-    passwordValue === confirmPasswordValue;
-  const passwordValueNotMatching =
-    passwordValue.length > 0 &&
+    createPasswordValue === confirmPasswordValue;
+  const createPasswordValueNotMatching =
+    createPasswordValue.length > 0 &&
     confirmPasswordValue.length > 0 &&
-    passwordValue !== confirmPasswordValue;
+    createPasswordValue !== confirmPasswordValue;
   const validated =
-    passwordStrengthChecker.validatePassword(passwordValue) &&
-    passwordValueMatching &&
-    hintValue !== passwordValue;
+    passwordStrengthChecker.validatePassword(createPasswordValue) &&
+    createPasswordValueMatching &&
+    hintValue !== createPasswordValue;
 
   const handlePasswordInput = (password: string) => {
-    setPasswordValue(password);
+    setCreatePasswordValue(password);
   };
   const handleClearState = () => {
-    setPasswordValue("");
+    setCreatePasswordValue("");
     setConfirmPasswordValue("");
     setHintValue("");
-  };
-  const handleClose = async () => {
-    handleClearState();
-    handleContinue(true);
   };
 
   const handleContinue = async (skipped: boolean) => {
     // @TODO - foconnor: We should handle errors here and display something to the user as feedback to try again.
     if (!skipped) {
-      await SecureStorage.set(KeyStoreKeys.APP_OP_PASSWORD, passwordValue);
+      await SecureStorage.set(
+        KeyStoreKeys.APP_OP_PASSWORD,
+        createPasswordValue
+      );
       if (hintValue) {
         await AriesAgent.agent.genericRecords.save({
           id: MiscRecordId.OP_PASS_HINT,
@@ -110,21 +107,23 @@ const CreatePassword = () => {
       <h2 data-testid={`${pageId}-title`}>{i18n.t("createpassword.title")}</h2>
       <p className="page-paragraph">{i18n.t("createpassword.description")}</p>
       <CustomInput
-        dataTestId="passwordValue"
+        dataTestId="createPasswordValue"
         title={`${i18n.t("createpassword.input.first.title")}`}
         placeholder={`${i18n.t("createpassword.input.first.placeholder")}`}
         hiddenInput={true}
         onChangeInput={(password: string) => handlePasswordInput(password)}
-        onChangeFocus={setPasswordFocus}
-        value={passwordValue}
+        onChangeFocus={setCreatePasswordFocus}
+        value={createPasswordValue}
         error={
-          !passwordFocus &&
-          !!passwordValue.length &&
-          (!passwordStrengthChecker.validatePassword(passwordValue) ||
-            !passwordStrengthChecker.isValidCharacters(passwordValue))
+          !createPasswordFocus &&
+          !!createPasswordValue.length &&
+          (!passwordStrengthChecker.validatePassword(createPasswordValue) ||
+            !passwordStrengthChecker.isValidCharacters(createPasswordValue))
         }
       />
-      {passwordValue && <PasswordValidation password={passwordValue} />}
+      {createPasswordValue && (
+        <PasswordValidation password={createPasswordValue} />
+      )}
       <CustomInput
         dataTestId="confirm-password-value"
         title={`${i18n.t("createpassword.input.second.title")}`}
@@ -136,12 +135,12 @@ const CreatePassword = () => {
         error={
           !confirmPasswordFocus &&
           !!confirmPasswordValue.length &&
-          passwordValueNotMatching
+          createPasswordValueNotMatching
         }
       />
       {!confirmPasswordFocus &&
         !!confirmPasswordValue.length &&
-        passwordValueNotMatching && (
+        createPasswordValueNotMatching && (
         <ErrorMessage
           message={`${i18n.t("createpassword.error.hasNoMatch")}`}
         />
@@ -153,9 +152,9 @@ const CreatePassword = () => {
         onChangeInput={setHintValue}
         optional={true}
         value={hintValue}
-        error={!!hintValue.length && hintValue === passwordValue}
+        error={!!hintValue.length && hintValue === createPasswordValue}
       />
-      {!!hintValue.length && hintValue === passwordValue && (
+      {!!hintValue.length && hintValue === createPasswordValue && (
         <ErrorMessage
           message={`${i18n.t("createpassword.error.hintSameAsPassword")}`}
         />

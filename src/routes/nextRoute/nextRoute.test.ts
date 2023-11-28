@@ -66,7 +66,7 @@ describe("NextRoute", () => {
     const result = getNextOnboardingRoute(data as DataProps);
 
     expect(result).toEqual({
-      pathname: RoutePath.GENERATE_SEED_PHRASE,
+      pathname: RoutePath.CREATE_PASSWORD,
     });
   });
 
@@ -86,7 +86,7 @@ describe("NextRoute", () => {
     const result = getNextSetPasscodeRoute(storeMock);
 
     expect(result).toEqual({
-      pathname: RoutePath.GENERATE_SEED_PHRASE,
+      pathname: RoutePath.CREATE_PASSWORD,
     });
   });
 
@@ -115,7 +115,7 @@ describe("NextRoute", () => {
     const result = getNextVerifySeedPhraseRoute();
 
     expect(result).toEqual({
-      pathname: RoutePath.CREATE_PASSWORD,
+      pathname: RoutePath.TABS_MENU,
     });
   });
 });
@@ -162,7 +162,7 @@ describe("getNextRoute", () => {
     });
 
     expect(result.nextPath).toEqual({
-      pathname: RoutePath.GENERATE_SEED_PHRASE,
+      pathname: RoutePath.CREATE_PASSWORD,
     });
 
     storeMock.stateCache.authentication.passcodeIsSet = false;
@@ -195,7 +195,7 @@ describe("getNextRoute", () => {
 
     const result = getNextSetPasscodeRoute(storeMock);
     expect(result).toEqual({
-      pathname: RoutePath.GENERATE_SEED_PHRASE,
+      pathname: RoutePath.CREATE_PASSWORD,
     });
   });
 });
