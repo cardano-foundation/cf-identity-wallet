@@ -49,6 +49,26 @@ const forEachMock = jest.fn().mockImplementation((fn: () => void) => {
       tags: { firstTag: "exists", secondTag: "exists" },
     },
     {
+      category: TestRecord.type,
+      name: existingRecord.id,
+      value: JSON.stringify({
+        id: "test-0",
+        updatedAt: startTime,
+      }),
+      tags: { firstTag: "exists2", secondTag: "exists2" },
+    },
+
+    {
+      category: TestRecord.type,
+      name: existingRecord.id,
+      value: JSON.stringify({
+        id: "test-0",
+        updatedAt: startTime,
+      }),
+      tags: { firstTag: "exists3", secondTag: "exists3" },
+    },
+
+    {
       category: StorageVersionRecord.name,
       name: storageVersionRecord.id,
       value: JSON.stringify({ id: "storagerecord-0", storageVersion: "0.0.1" }),
@@ -241,7 +261,7 @@ describe("Aries - Ionic Storage Module: Storage Service", () => {
   test("should return all items for a record type but none others", async () => {
     const result = await storageService.getAll(agentContext, TestRecord);
     expect(forEachMock).toBeCalled();
-    expect(result.length).toEqual(1);
+    expect(result.length).toEqual(3);
     expect(result[0].id).toEqual(existingRecord.id);
   });
 
@@ -287,5 +307,68 @@ describe("Aries - Ionic Storage Module: Storage Service", () => {
     );
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(0);
+  });
+
+  test("should find items with $or query", async () => {
+    const query = { $or: [{ firstTag: "exists" }, { firstTag: "exists2" }] };
+    const result = await storageService.findByQuery(
+      agentContext,
+      TestRecord,
+      query
+    );
+    expect(forEachMock).toBeCalled();
+    expect(result).toMatchObject([
+      {
+        _tags: { firstTag: "exists", secondTag: "exists" },
+        type: "TestRecord",
+        metadata: { data: {} },
+        id: "test1",
+        updatedAt: startTime,
+      },
+      {
+        _tags: { firstTag: "exists2", secondTag: "exists2" },
+        type: "TestRecord",
+        metadata: { data: {} },
+        id: "test1",
+        updatedAt: startTime,
+      },
+    ]);
+  });
+
+  test("should find items with $not query", async () => {
+    const query = { $not: { firstTag: "exists" } };
+    const result = await storageService.findByQuery(
+      agentContext,
+      TestRecord,
+      query
+    );
+    expect(forEachMock).toBeCalled();
+    expect(result).toMatchObject([
+      {
+        _tags: { firstTag: "exists2", secondTag: "exists2" },
+        type: "TestRecord",
+        metadata: { data: {} },
+        id: "test1",
+        updatedAt: startTime,
+      },
+      {
+        _tags: { firstTag: "exists3", secondTag: "exists3" },
+        type: "TestRecord",
+        metadata: { data: {} },
+        id: "test1",
+        updatedAt: startTime,
+      },
+    ]);
+  });
+
+  test("should find an item with $and query", async () => {
+    const tags = { $and: [{ firstTag: "exists" }, { secondTag: "exists" }] };
+    const result = await storageService.findByQuery(
+      agentContext,
+      TestRecord,
+      tags
+    );
+    expect(forEachMock).toBeCalled();
+    expect(result.length).toEqual(1);
   });
 });

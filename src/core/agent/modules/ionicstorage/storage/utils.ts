@@ -1,4 +1,8 @@
-import type { BaseRecord, BaseRecordConstructor } from "@aries-framework/core";
+import type {
+  BaseRecord,
+  BaseRecordConstructor,
+  Query,
+} from "@aries-framework/core";
 import {
   JsonTransformer,
   Wallet,

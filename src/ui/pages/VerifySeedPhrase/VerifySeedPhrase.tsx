@@ -1,18 +1,9 @@
 import { useEffect, useState } from "react";
-import {
-  IonCard,
-  IonChip,
-  IonCol,
-  IonGrid,
-  IonPage,
-  IonRow,
-} from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { RoutePath } from "../../../routes";
-import { PageLayout } from "../../components/layout/PageLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { Alert as AlertExit, Alert as AlertFail } from "../../components/Alert";
+import { Alert as AlertFail } from "../../components/Alert";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import "./VerifySeedPhrase.scss";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
@@ -23,8 +14,13 @@ import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { getBackRoute } from "../../../routes/backRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { Addresses } from "../../../core/cardano";
+import { PageHeader } from "../../components/PageHeader";
+import PageFooter from "../../components/PageFooter/PageFooter";
+import { SeedPhraseModule } from "../../components/SeedPhraseModule";
+import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 
 const VerifySeedPhrase = () => {
+  const pageId = "verify-seed-phrase";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -36,7 +32,6 @@ const VerifySeedPhrase = () => {
   const [seedPhraseRemaining, setSeedPhraseRemaining] = useState<string[]>([]);
   const [seedPhraseSelected, setSeedPhraseSelected] = useState<string[]>([]);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const [alertExitIsOpen, setAlertExitIsOpen] = useState(false);
 
   useEffect(() => {
     if (history?.location.pathname === RoutePath.VERIFY_SEED_PHRASE) {
@@ -69,12 +64,10 @@ const VerifySeedPhrase = () => {
     const removingQuantity = seedPhraseSelected.length - index;
     const newMatch = seedPhraseSelected;
     const words = [];
-
     for (let i = 0; i < removingQuantity; i++) {
       words.push(newMatch[newMatch.length - 1]);
       newMatch.pop();
     }
-
     setSeedPhraseRemaining(seedPhraseRemaining.concat(words));
     setSeedPhraseSelected(newMatch);
   };
@@ -93,7 +86,7 @@ const VerifySeedPhrase = () => {
 
       handleNavigate();
     } catch (e) {
-      // TODO: handle error
+      // @TODO - sdisalvo: handle error
     }
   };
 
@@ -124,7 +117,7 @@ const VerifySeedPhrase = () => {
     history.push(nextPath.pathname);
   };
 
-  const handleExit = () => {
+  const handleBack = () => {
     handleClearState();
     const { backPath, updateRedux } = getBackRoute(
       RoutePath.VERIFY_SEED_PHRASE,
@@ -144,20 +137,41 @@ const VerifySeedPhrase = () => {
   };
 
   return (
-    <IonPage className="page-layout verify-seedphrase">
-      <PageLayout
-        id="verify-seedphrase"
-        header={true}
-        backButton={true}
-        onBack={() => {
-          handleClearState();
-          handleExit();
-        }}
-        currentPath={RoutePath.VERIFY_SEED_PHRASE}
-        progressBar={true}
-        progressBarValue={1}
-        progressBarBuffer={1}
-        footer={true}
+    <ResponsivePageLayout
+      pageId={pageId}
+      header={
+        <PageHeader
+          backButton={true}
+          onBack={() => {
+            handleClearState();
+            handleBack();
+          }}
+          currentPath={RoutePath.VERIFY_SEED_PHRASE}
+          progressBar={true}
+          progressBarValue={1}
+          progressBarBuffer={1}
+        />
+      }
+    >
+      <h2 data-testid={`${pageId}-title`}>
+        {i18n.t("verifyseedphrase.onboarding.title")}
+      </h2>
+      <p data-testid={`${pageId}-paragraph-top`}>
+        {i18n.t("verifyseedphrase.paragraph.top")}
+      </p>
+      <SeedPhraseModule
+        testId="matching-seed-phrase-container"
+        seedPhrase={seedPhraseSelected}
+        emptyWord={!!seedPhraseRemaining.length}
+        removeSeedPhraseSelected={removeSeedPhraseSelected}
+      />
+      <SeedPhraseModule
+        testId="original-seed-phrase-container"
+        seedPhrase={seedPhraseRemaining}
+        addSeedPhraseSelected={addSeedPhraseSelected}
+      />
+      <PageFooter
+        pageId={pageId}
         primaryButtonText={`${i18n.t(
           "verifyseedphrase.onboarding.button.continue"
         )}`}
@@ -165,103 +179,21 @@ const VerifySeedPhrase = () => {
         primaryButtonDisabled={
           !(originalSeedPhrase.length == seedPhraseSelected.length)
         }
-      >
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12">
-              <h2>{i18n.t("verifyseedphrase.onboarding.title")}</h2>
-              <p className="page-paragraph">
-                {i18n.t("verifyseedphrase.paragraph.top")}
-              </p>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-        <IonGrid>
-          <IonRow>
-            <IonCol size="12">
-              <IonCard className="container-top">
-                <div
-                  data-testid="matching-seed-phrase-container"
-                  className="seed-phrase-container"
-                >
-                  {seedPhraseSelected.map((word, index) => (
-                    <IonChip
-                      key={index}
-                      onClick={() => {
-                        removeSeedPhraseSelected(index);
-                      }}
-                    >
-                      <span className="index">{index + 1}.</span>
-                      <span>{word}</span>
-                    </IonChip>
-                  ))}
-                  {seedPhraseRemaining.length ? (
-                    <IonChip className="empty-word">
-                      <span className="index">
-                        {seedPhraseSelected.length + 1}.
-                      </span>
-                    </IonChip>
-                  ) : null}
-                </div>
-              </IonCard>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-        {seedPhraseRemaining.length ? (
-          <IonGrid>
-            <IonRow>
-              <IonCol size="12">
-                <IonCard className="container-bottom">
-                  <div
-                    data-testid="original-seed-phrase-container"
-                    className="seed-phrase-container"
-                  >
-                    {seedPhraseRemaining.map((word, index) => (
-                      <IonChip
-                        key={index}
-                        data-testid={`remaining-word-${word}`}
-                        onClick={() => {
-                          addSeedPhraseSelected(word);
-                        }}
-                      >
-                        <span>{word}</span>
-                      </IonChip>
-                    ))}
-                  </div>
-                </IonCard>
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        ) : null}
-
-        <AlertFail
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
-          dataTestId="alert-fail"
-          headerText={i18n.t("verifyseedphrase.alert.fail.text")}
-          confirmButtonText={`${i18n.t(
-            "verifyseedphrase.alert.fail.button.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            "verifyseedphrase.alert.fail.button.cancel"
-          )}`}
-          actionConfirm={handleExit}
-        />
-        <AlertExit
-          isOpen={alertExitIsOpen}
-          setIsOpen={setAlertExitIsOpen}
-          dataTestId="alert-exit"
-          headerText={i18n.t("verifyseedphrase.alert.exit.text")}
-          confirmButtonText={`${i18n.t(
-            "verifyseedphrase.alert.exit.button.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            "verifyseedphrase.alert.exit.button.cancel"
-          )}`}
-          actionConfirm={handleExit}
-        />
-      </PageLayout>
-    </IonPage>
+      />
+      <AlertFail
+        isOpen={alertIsOpen}
+        setIsOpen={setAlertIsOpen}
+        dataTestId="alert-fail"
+        headerText={i18n.t("verifyseedphrase.alert.fail.text")}
+        confirmButtonText={`${i18n.t(
+          "verifyseedphrase.alert.fail.button.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "verifyseedphrase.alert.fail.button.cancel"
+        )}`}
+        actionConfirm={handleBack}
+      />
+    </ResponsivePageLayout>
   );
 };
 

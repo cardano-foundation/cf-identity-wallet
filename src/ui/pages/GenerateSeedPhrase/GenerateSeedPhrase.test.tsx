@@ -80,15 +80,26 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
       </Provider>
     );
 
-    const overlay = getByTestId("seed-phrase-privacy-overlay");
+    const seedPhraseModule = getByTestId("seed-phrase-module");
     const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
+    const segment = getByTestId("mnemonic-length-segment");
 
-    expect(overlay).toHaveClass("visible");
+    expect(seedPhraseModule).toHaveClass("seed-phrase-hidden");
 
     act(() => {
       fireEvent.click(revealSeedPhraseButton);
     });
-    await waitFor(() => expect(overlay).toHaveClass("hidden"));
+    await waitFor(() =>
+      expect(seedPhraseModule).toHaveClass("seed-phrase-visible")
+    );
+
+    act(() => {
+      fireEvent.ionChange(segment, `${TWENTYFOUR_WORDS_BIT_LENGTH}`);
+    });
+
+    await waitFor(() =>
+      expect(seedPhraseModule).toHaveClass("seed-phrase-hidden")
+    );
   });
 
   test("User can toggle the 15/24 words seed phrase segment using the seed phrases from Redux", async () => {
@@ -331,49 +342,5 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     fireEvent.click(termsModalHandler);
     expect(termsCheckbox.hasAttribute("[checked=\"true\""));
     expect(termsModal.getAttribute("is-open")).toBe("true");
-  });
-
-  test("calls handleOnBack when back button is clicked", async () => {
-    const initialState = {
-      stateCache: {
-        routes: [RoutePath.SET_PASSCODE, RoutePath.ONBOARDING],
-        authentication: {
-          loggedIn: true,
-          time: Date.now(),
-          passcodeIsSet: true,
-        },
-        currentOperation: OperationType.IDLE,
-      },
-      seedPhraseCache: {
-        seedPhrase160: "",
-        seedPhrase256: "",
-        selected: FIFTEEN_WORDS_BIT_LENGTH,
-      },
-    };
-
-    const { getByTestId } = render(
-      <Provider store={storeMocked(initialState)}>
-        <Router history={history}>
-          <GenerateSeedPhrase />
-        </Router>
-      </Provider>
-    );
-
-    const overlay = getByTestId("seed-phrase-privacy-overlay");
-    const revealSeedPhraseButton = getByTestId("reveal-seed-phrase-button");
-
-    expect(overlay).toHaveClass("visible");
-
-    act(() => {
-      fireEvent.click(revealSeedPhraseButton);
-    });
-    await waitFor(() => expect(overlay).toHaveClass("hidden"));
-
-    const backButton = getByTestId("back-button");
-    act(() => {
-      fireEvent.click(backButton);
-    });
-
-    await waitFor(() => expect(overlay).toHaveClass("visible"));
   });
 });

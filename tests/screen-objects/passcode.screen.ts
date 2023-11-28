@@ -4,46 +4,46 @@ import { log } from "../helpers/logger.js";
 
 export class PasscodeScreen {
   get backArrowIcon() {
-    return $('[data-testid="back-button"]');
+    return $("[data-testid=\"back-button\"]");
   }
   get digit0Button() {
-    return $('[data-testid="passcode-button-0"]');
+    return $("[data-testid=\"passcode-button-0\"]");
   }
   get digit1Button() {
-    return $('[data-testid="passcode-button-1"]');
+    return $("[data-testid=\"passcode-button-1\"]");
   }
   get digit2Button() {
-    return $('[data-testid="passcode-button-2"]');
+    return $("[data-testid=\"passcode-button-2\"]");
   }
   get digit3Button() {
-    return $('[data-testid="passcode-button-3"]');
+    return $("[data-testid=\"passcode-button-3\"]");
   }
   get digit4Button() {
-    return $('[data-testid="passcode-button-4"]');
+    return $("[data-testid=\"passcode-button-4\"]");
   }
   get digit5Button() {
-    return $('[data-testid="passcode-button-5"]');
+    return $("[data-testid=\"passcode-button-5\"]");
   }
   get digit6Button() {
-    return $('[data-testid="passcode-button-6"]');
+    return $("[data-testid=\"passcode-button-6\"]");
   }
   get digit7Button() {
-    return $('[data-testid="passcode-button-7"]');
+    return $("[data-testid=\"passcode-button-7\"]");
   }
   get digit8Button() {
-    return $('[data-testid="passcode-button-8"]');
+    return $("[data-testid=\"passcode-button-8\"]");
   }
   get digit9Button() {
-    return $('[data-testid="passcode-button-9"]');
+    return $("[data-testid=\"passcode-button-9\"]");
   }
   get forgotYourPasscodeButton() {
-    return $('[data-testid="secondary-button-passcode-login"]');
+    return $("[data-testid=\"secondary-button-set-passcode\"]");
   }
   get screenTitle() {
-    return $('[data-testid="screen-title"]');
+    return $("[data-testid=\"set-passcode-title\"]");
   }
   get screenDescriptionText() {
-    return $('[data-testid="screen-description"]');
+    return $("[data-testid=\"set-passcode-description\"]");
   }
 
   async screenLoads() {

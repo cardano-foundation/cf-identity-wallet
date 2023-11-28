@@ -34,12 +34,13 @@ const GenerateSeedPhrase = () => {
   const [seedPhrase, setSeedPhrase] = useState<string[]>([]);
   const [seedPhrase160, setSeedPhrase160] = useState<string[]>([]);
   const [seedPhrase256, setSeedPhrase256] = useState<string[]>([]);
-  const [showSeedPhrase, setShowSeedPhrase] = useState(false);
+  const [hideSeedPhrase, setHideSeedPhrase] = useState(true);
   const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
   const [termsModalIsOpen, setTermsModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
   const initializeSeedPhrase = () => {
+    setHideSeedPhrase(true);
     const isFifteenWordsSelected =
       seedPhraseStore.selected === FIFTEEN_WORDS_BIT_LENGTH;
     let seed160;
@@ -71,7 +72,7 @@ const GenerateSeedPhrase = () => {
     setSeedPhrase160([]);
     setSeedPhrase256([]);
     initializeSeedPhrase();
-    setShowSeedPhrase(false);
+    setHideSeedPhrase(false);
     setAlertConfirmIsOpen(false);
     setChecked(false);
   };
@@ -82,7 +83,7 @@ const GenerateSeedPhrase = () => {
     } else {
       setSeedPhrase(seedPhrase256);
     }
-    setShowSeedPhrase(false);
+    setHideSeedPhrase(true);
   };
 
   const HandleTerms = () => {
@@ -127,10 +128,10 @@ const GenerateSeedPhrase = () => {
         />
       }
     >
-      <h2 data-testid="screen-title">
+      <h2 data-testid={`${pageId}-title`}>
         {i18n.t("generateseedphrase.onboarding.title")}
       </h2>
-      <p data-testid="page-paragraph-top">
+      <p data-testid={`${pageId}-paragraph-top`}>
         {i18n.t("generateseedphrase.onboarding.paragraph.top")}
       </p>
       <MnemonicLengthSegment
@@ -138,11 +139,12 @@ const GenerateSeedPhrase = () => {
         toggleSeedPhrase={toggleSeedPhrase}
       />
       <SeedPhraseModule
+        testId="seed-phrase-container"
         seedPhrase={seedPhrase}
-        showSeedPhrase={showSeedPhrase}
-        setShowSeedPhrase={setShowSeedPhrase}
+        hideSeedPhrase={hideSeedPhrase}
+        setHideSeedPhrase={setHideSeedPhrase}
       />
-      <p data-testid="page-paragraph-bottom">
+      <p data-testid={`${pageId}-paragraph-bottom`}>
         {i18n.t("generateseedphrase.onboarding.paragraph.bottom")}
       </p>
       <div className="terms-and-conditions">
@@ -174,7 +176,7 @@ const GenerateSeedPhrase = () => {
         primaryButtonAction={() => {
           setAlertConfirmIsOpen(true);
         }}
-        primaryButtonDisabled={!(showSeedPhrase && checked)}
+        primaryButtonDisabled={hideSeedPhrase || !checked}
       />
       <AlertConfirm
         isOpen={alertConfirmIsOpen}

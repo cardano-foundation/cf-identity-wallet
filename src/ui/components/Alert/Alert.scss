@@ -28,6 +28,14 @@
   }
 }
 
+.alert-visible {
+  display: block;
+}
+
+.alert-invisible {
+  display: none;
+}
+
 .alert-button-group {
   flex-direction: column !important;
   padding: 0 !important;

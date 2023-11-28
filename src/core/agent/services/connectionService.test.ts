@@ -586,21 +586,32 @@ describe("Connection service of agent", () => {
       .mockResolvedValue([connectionAcceptedRecordAutoAccept]);
     expect(await connectionService.getUnhandledConnections()).toEqual([
       connectionAcceptedRecordAutoAccept,
-      connectionAcceptedRecordAutoAccept,
     ]);
     expect(agent.connections.findAllByQuery).toBeCalledWith({
-      state: DidExchangeState.ResponseReceived,
-      role: DidExchangeRole.Requester,
-    });
-    expect(agent.connections.findAllByQuery).toBeCalledWith({
-      state: DidExchangeState.RequestReceived,
-      role: DidExchangeRole.Responder,
+      $or: [
+        {
+          state: DidExchangeState.ResponseReceived,
+          role: DidExchangeRole.Requester,
+        },
+        {
+          state: DidExchangeState.RequestReceived,
+          role: DidExchangeRole.Responder,
+        },
+      ],
     });
   });
 
   test("can delete conenction by id", async () => {
     const connectionId = "connectionId";
-    await connectionService.deleteConnectionById(connectionId);
+    await connectionService.deleteConnectionById(
+      connectionId,
+      ConnectionType.KERI
+    );
+    expect(agent.genericRecords.deleteById).toBeCalledWith(connectionId);
+    await connectionService.deleteConnectionById(
+      connectionId,
+      ConnectionType.DIDCOMM
+    );
     expect(agent.connections.deleteById).toBeCalledWith(connectionId);
   });
 
