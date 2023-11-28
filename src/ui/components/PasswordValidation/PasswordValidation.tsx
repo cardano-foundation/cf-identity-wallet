@@ -30,16 +30,16 @@ const PasswordValidation = ({ password }: { password: string }) => {
       lines="none"
       className="password-validation"
     >
-      {!passwordStrengthChecker.validatePassword(password) ||
-        (!passwordStrengthChecker.isValidCharacters(password) && (
-          <ErrorMessage
-            message={`${
-              password.length &&
-              passwordStrengthChecker.getErrorByPriority(password)
-            }`}
-            timeout={false}
-          />
-        ))}
+      {(!passwordStrengthChecker.validatePassword(password) ||
+        !passwordStrengthChecker.isValidCharacters(password)) && (
+        <ErrorMessage
+          message={`${
+            password.length &&
+            passwordStrengthChecker.getErrorByPriority(password)
+          }`}
+          timeout={false}
+        />
+      )}
       {[
         {
           condition: passwordStrengthChecker.isLengthValid(password),
