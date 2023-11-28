@@ -11,6 +11,11 @@ Given(/^user tap Back arrow icon on Passcode screen$/, async function () {
   await PasscodeScreen.backArrowIcon.click();
 });
 
+Given(/^user generate passcode on Passcode screen$/, async function () {
+  passcode = await PasscodeScreen.createAndEnterRandomPasscode();
+  await PasscodeScreen.enterPasscode(passcode);
+});
+
 When(/^user re-enter passcode on Passcode screen$/, async function() {
   await PasscodeScreen.enterPasscode(passcode);
 });

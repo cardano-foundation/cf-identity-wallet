@@ -1,8 +1,8 @@
 import { expect } from "expect-webdriverio"
 
 export class OnboardingScreen {
-  get getStartedButton () { return $("[data-testid=\"primary-button\"]") }
-  get iAlreadyHaveAWalletButton () { return $("[data-testid=\"secondary-button\"]") }
+  get getStartedButton () { return $("[data-testid=\"primary-button-onboarding\"]") }
+  get iAlreadyHaveAWalletButton () { return $("[data-testid=\"tertiary-button-onboarding\"]") }
 
 
   async tapOnGetStartedButton() {
