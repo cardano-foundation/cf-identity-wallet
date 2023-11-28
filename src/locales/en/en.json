@@ -524,22 +524,7 @@
   },
   "cryptoplaceholder": {
     "tab": {
-      "header": "Under review",
-      "action": {
-        "text": "See a list of intended <0>{{clickableText}}</0>.",
-        "link": "Crypto features"
-      }
-    },
-    "modal": {
-      "title": "Crypto features",
-      "done": "Done",
-      "features": [
-        "Feature list number one",
-        "Feature list number two",
-        "Feature list number three",
-        "Feature list number four",
-        "Feature list number five"
-      ]
+      "header": "Under consideration"
     }
   },
   "chat": {
