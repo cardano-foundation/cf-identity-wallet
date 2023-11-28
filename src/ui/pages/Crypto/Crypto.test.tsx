@@ -13,8 +13,6 @@ describe("Crypto Tab", () => {
     );
 
     expect(getByTestId("crypto-tab")).toBeInTheDocument();
-    expect(
-      getByText(EN_TRANSLATIONS.cryptoplaceholder.tab.header)
-    ).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.crypto.tab.header)).toBeInTheDocument();
   });
 });
