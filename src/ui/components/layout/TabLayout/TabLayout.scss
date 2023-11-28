@@ -34,6 +34,18 @@
       &:not(:first-child) {
         margin-left: 0.5rem;
       }
+
+      &::part(native) {
+        padding: 0.5rem;
+      }
+    }
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      ion-button:not(.action-button-label),
+      ion-button.md:not(.action-button-label) {
+        width: 2.25rem;
+        height: 2.25rem;
+      }
     }
 
     .action-button-label {
