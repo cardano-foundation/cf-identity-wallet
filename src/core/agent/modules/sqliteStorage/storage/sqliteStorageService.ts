@@ -305,17 +305,17 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
     let values: string[] = [];
     const dbQuery = convertDbQuery(query);
     for (const [queryKey, queryVal] of Object.entries(dbQuery)) {
-      if (queryKey === "$or") {
-        const orQueries = (queryVal as Array<Query<T>>).map((query: Query<T>) =>
-          this.getQueryConditionSql(query)
-        );
+      if (queryKey === "$or" || queryKey === "$and") {
         const orConditions: string[] = [];
-        orQueries.forEach((e) => {
-          orConditions.push(e.condition);
-          values = values.concat(e.values);
-        });
+        for (const query of queryVal as Array<Query<T>>) {
+          const orQuery = this.getQueryConditionSql(query);
+          orConditions.push(orQuery.condition);
+          values = values.concat(orQuery.values);
+        }
         conditions.push(
-          orConditions.map((condition) => "(" + condition + ")").join(" OR ")
+          orConditions
+            .map((condition) => "(" + condition + ")")
+            .join(queryKey === "$or" ? " OR " : " AND ")
         );
       } else if (queryKey === "$not") {
         const notQuery = this.getQueryConditionSql(queryVal as Query<T>);
