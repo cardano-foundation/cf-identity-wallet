@@ -396,6 +396,23 @@ class ConnectionService extends AgentService {
     return contacts;
   }
 
+  async syncKeriaContacts() {
+    const signifyContacts = await this.getAllKeriContacts();
+    const storageContacts = await this.getAllConnectionKeriMetadata();
+    const unSyncedData = signifyContacts.filter(
+      (contact: KeriContact) =>
+        !storageContacts.find((item) => contact.id === item.id)
+    );
+    if (unSyncedData.length) {
+      //sync the storage with the signify data
+      for (const contact of unSyncedData) {
+        await this.createConnectionKeriMetadata(contact.id, {
+          alias: contact.alias,
+        });
+      }
+    }
+  }
+
   private async getConnectNotesByConnectionId(
     connectionId: string
   ): Promise<ConnectionNoteDetails[]> {

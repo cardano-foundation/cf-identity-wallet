@@ -33,6 +33,12 @@ export class GeneralStorageApi {
     await this.identifierMetadataRepository.save(this.agentContext, record);
   }
 
+  async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
+    return this.identifierMetadataRepository.findByQuery(this.agentContext, {
+      method: "keri",
+    });
+  }
+
   async getAllAvailableIdentifierMetadata(): Promise<
     IdentifierMetadataRecord[]
     > {
@@ -105,11 +111,13 @@ export class GeneralStorageApi {
   }
 
   async getAllCredentialMetadata(
-    isArchived: boolean
+    isArchived?: boolean
   ): Promise<CredentialMetadataRecord[]> {
-    return this.credentialMetadataRepository.findByQuery(this.agentContext, {
-      isArchived,
-    });
+    const query = typeof isArchived === "boolean" ? { isArchived } : {};
+    return this.credentialMetadataRepository.findByQuery(
+      this.agentContext,
+      query
+    );
   }
 
   async getCredentialMetadata(

@@ -658,4 +658,26 @@ describe("Connection service of agent", () => {
     const KeriOobi = await connectionService.getKeriOobi(signifyName);
     expect(KeriOobi).toEqual(oobiPrefix + signifyName);
   });
+
+  test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
+    agent.modules.signify.getContacts = jest.fn().mockReturnValue([
+      {
+        id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
+        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+        oobi: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi/EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR/agent/EP48HXCPvtzGu0c90gG9fkOYiSoi6U5Am-XaqcoNHTBl",
+        challenges: [],
+        wellKnowns: [],
+      },
+      {
+        id: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
+        alias: "e6d37a7b-00e9-4f85-8cf9-2123d15fc094",
+        oobi: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi/ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W/agent/EJMV0RgikXM7jyvXB9oOyKSZzo_AsYrEgP15Ly0dwzEL",
+        challenges: [],
+        wellKnowns: [],
+      },
+    ]);
+    agent.genericRecords.findAllByQuery = jest.fn().mockReturnValue([]);
+    await connectionService.syncKeriaContacts();
+    expect(agent.genericRecords.save).toBeCalledTimes(2);
+  });
 });

@@ -9,6 +9,7 @@ import {
   KeriContact,
   CreateIdentifierResult,
   IdentifierResult,
+  IdentifiersListResult,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 
@@ -212,7 +213,7 @@ export class SignifyApi {
     return identifier;
   }
 
-  async getAllIdentifiers(): Promise<any> {
+  async getAllIdentifiers(): Promise<IdentifiersListResult> {
     const allIdentifiersResult = await this.signifyClient.identifiers().list();
     return allIdentifiersResult;
   }

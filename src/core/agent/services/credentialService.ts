@@ -455,13 +455,19 @@ class CredentialService extends AgentService {
   }
 
   private async createAcdcMetadataRecord(event: any): Promise<void> {
-    const credentialId = event.e.acdc.d;
+    await this.saveAcdcMetadataRecord(event.e.acdc.d, event.e.acdc.a.dt);
+  }
+
+  private async saveAcdcMetadataRecord(
+    credentialId: string,
+    dateTime: string
+  ): Promise<void> {
     const credentialDetails: CredentialShortDetails = {
       id: `metadata:${credentialId}`,
       isArchived: false,
       colors: new ColorGenerator().generateNextColor() as [string, string],
       credentialType: "",
-      issuanceDate: event.e.acdc.a.dt,
+      issuanceDate: dateTime,
       status: CredentialMetadataRecordStatus.PENDING,
       connectionType: ConnectionType.KERI,
     };
@@ -580,6 +586,25 @@ class CredentialService extends AgentService {
   async getAllACDCs(): Promise<any> {
     const credentials = await this.agent.modules.signify.getCredentials();
     return credentials;
+  }
+
+  async syncACDCs() {
+    const signifyCredentials = await this.getAllACDCs();
+    const storageCredentials =
+      await this.agent.modules.generalStorage.getAllCredentialMetadata();
+    const unSyncedData = signifyCredentials.filter(
+      (credential: any) =>
+        !storageCredentials.find((item) => credential.prefix === item.id)
+    );
+    if (unSyncedData.length) {
+      //sync the storage with the signify data
+      for (const credential of unSyncedData) {
+        await this.saveAcdcMetadataRecord(
+          credential.sad.d,
+          credential.sad.a.dt
+        );
+      }
+    }
   }
 }
 
