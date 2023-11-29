@@ -254,6 +254,19 @@ Please read [Contributing](CONTRIBUTING.md) in advance.  Thank you for contribut
 - [Security](SECURITY.md)
 - [Changelog](CHANGELOG.md)
 
+
+# Troubleshooting
+<div align="justify"> 
+Please be aware that from time-to-time the hosted pre-production KERI services require restarting.  When this occurs it causes a white-screen when launching the application.  If you experience the white-screen issue please wait for the services to restart and the application will load as expected.   If you have any questions, there is also a Discord Channel available for the Identity Wallet.   
+</div>
+
+<br>
+
+<div align="center"> 
+      <a href="https://discord.gg/Wh25yBqwpz">👨‍💻 Join our Discord! 👩‍💻
+</div>
+
+
 # Resources
 
 ## W3C
