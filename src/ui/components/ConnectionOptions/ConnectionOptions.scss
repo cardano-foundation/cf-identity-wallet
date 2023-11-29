@@ -1,0 +1,49 @@
+.connection-options {
+  ion-title {
+    text-align: left;
+  }
+
+  .connection-options-main {
+    margin-bottom: 0.5rem;
+
+    ion-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    ion-button,
+    ion-button.md {
+      width: 2.8125rem;
+      height: 2.8125rem;
+      margin: 0;
+      --background: transparent;
+      --box-shadow: none;
+      --color: var(--ion-color-secondary);
+      --background-activated: var(--ion-color-light-grey);
+
+      &::part(native) {
+        padding: 0;
+      }
+    }
+
+    ion-icon {
+      width: 1.475rem;
+      height: 1.475rem;
+      margin: 0;
+    }
+
+    .connection-options-option {
+      display: flex;
+
+      > * {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 0.5rem;
+      }
+    }
+  }
+}

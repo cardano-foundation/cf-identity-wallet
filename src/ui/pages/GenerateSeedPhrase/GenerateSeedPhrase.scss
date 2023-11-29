@@ -1,0 +1,41 @@
+.generate-seed-phrase {
+  --background: var(--ion-color-light);
+
+  .scrollable-page-content {
+    .mnemonic-length-segment {
+      margin-bottom: 0.94rem;
+    }
+
+    .terms-and-conditions {
+      display: flex;
+      flex-direction: row;
+
+      ion-checkbox {
+        display: flex;
+        --size: 2rem;
+        --checkbox-background-checked: transparent;
+        --checkmark-color: var(--ion-color-primary);
+        --border-radius: 0.25rem;
+        margin-right: 1.06rem;
+
+        @media screen and (min-height: 300px) and (max-height: 600px) {
+          --size: 1.75rem;
+          margin-right: 0.8rem;
+        }
+      }
+
+      p,
+      u {
+        color: var(--ion-color-secondary);
+        text-wrap: wrap;
+      }
+    }
+  }
+}
+
+.terms-and-conditions-body {
+  p b {
+    margin-right: 0.35rem;
+    margin-left: 1rem;
+  }
+}

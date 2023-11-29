@@ -1,15 +1,22 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules
 /.pnp
 .pnp.js
 
 # testing
 /coverage
+**/.appium
+**/.logs
+**/.reports
+.env
 
 # production
-/build
+build
+
+# lint-staged
+.eslintcache
 
 # misc
 .DS_Store
@@ -23,3 +30,5 @@ yarn-debug.log*
 yarn-error.log*
 
 /.idea
+resources/android
+resources/ios

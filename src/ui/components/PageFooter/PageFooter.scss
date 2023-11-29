@@ -1,0 +1,9 @@
+.page-footer {
+  ion-button {
+    margin: 0 auto 1rem;
+
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+}

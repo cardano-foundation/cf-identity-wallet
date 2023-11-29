@@ -1,0 +1,27 @@
+.responsive-page-layout {
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem;
+  background: var(--ion-color-light);
+
+  .responsive-page-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    > * {
+      flex: 0 1 auto;
+      margin: 0.5rem 0;
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 425px) {
+    padding: 0.9rem;
+
+    .responsive-page-content {
+      > * {
+        margin: 0.35rem 0;
+      }
+    }
+  }
+}

@@ -1,0 +1,14 @@
+.passcode-login {
+  .responsive-page-content {
+    justify-content: space-evenly;
+
+    .passcode-login-title,
+    .passcode-login-description {
+      text-align: center;
+    }
+
+    .passcode-login-title {
+      margin-top: 1rem;
+    }
+  }
+}

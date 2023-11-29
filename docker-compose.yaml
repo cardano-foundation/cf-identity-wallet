@@ -1,0 +1,16 @@
+version: "3.9"
+services:
+  issuer-server:
+    container_name: issuer-server
+    build:
+      context: ./services/credential-issuance-server
+      dockerfile: Dockerfile
+    tty: true
+    ports:
+      - "3001:3001"
+    volumes:
+      - issuer-server-data:/root/.afj
+    restart: always
+
+volumes:
+  issuer-server-data:

@@ -1,0 +1,591 @@
+{
+  "onboarding": {
+    "slides": [
+      {
+        "title": "Welcome to your Cardano Foundation Identity Wallet",
+        "description": "An opensource mobile digital wallet that enables you to securely manage your own identity in a privacy-preserving and self-sovereign manner."
+      },
+      {
+        "title": "Empowerment with Self-Sovereign Identity (SSI)",
+        "description": "Embrace SSI principles, store private keys locally in your mobile device's Hardware Security Module, and control your identity."
+      },
+      {
+        "title": "Privacy & Security: Your Top Priorities",
+        "description": "Prioritize privacy and security with Decentralized Identifiers and Verifiable Credentials. Control your data, what you share, with whom, and for how long."
+      },
+      {
+        "title": "Embrace Interoperability for a Wider Reach",
+        "description": "Supporting new and existing standards, ecosystems, and frameworks is crucial to achieving widespread adoption and seamless interoperability."
+      },
+      {
+        "title": "Decentralize Your Digital Identity",
+        "description": "Traditional identity systems offer minimal control over your digital identifiers. Decentralized technology transfers ownership and control to you."
+      }
+    ],
+    "getstarted": {
+      "button": {
+        "label": "Get Started"
+      }
+    },
+    "alreadywallet": {
+      "button": {
+        "label": "I already have a wallet"
+      }
+    }
+  },
+  "setpasscode": {
+    "enterpasscode": {
+      "title": "Create your Passcode",
+      "description": "Create a passcode to secure access to your wallet and to continue the onboarding process",
+      "error": "Passcode does not match"
+    },
+    "reenterpasscode": {
+      "title": "Re-enter your Passcode"
+    },
+    "startover": {
+      "label": "Forgot your passcode?"
+    }
+  },
+  "generateseedphrase": {
+    "onboarding": {
+      "title": "Generate your Seed Phrase",
+      "paragraph": {
+        "top": "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
+        "bottom": "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption."
+      },
+      "button": {
+        "continue": "Continue"
+      }
+    },
+    "segment": "{{length}} words",
+    "privacy": {
+      "overlay": {
+        "text": "Select the 'View Seed Phrase' when you are ready. Remember to ensure that other people cannot also view your screen.",
+        "button": "View Seed Phrase"
+      }
+    },
+    "alert": {
+      "confirm": {
+        "text": "Take a moment now to confirm you have stored your seed phrase accurately and in the correct order.",
+        "button": {
+          "confirm": "My seed phrase is stored correctly",
+          "cancel": "I need to review my seed phrase"
+        }
+      },
+      "exit": {
+        "text": "If you go back you will lose your current progress. Are you sure you want to do this?",
+        "button": {
+          "confirm": "Confirm",
+          "cancel": "Cancel"
+        }
+      },
+      "toggle": {
+        "text": "Switching tabs will remove the words you have already entered, are you sire you want to switch?",
+        "button": {
+          "confirm": "Yes, switch tabs",
+          "cancel": "Cancel"
+        }
+      },
+      "verify": {
+        "text": "Your seed phrase couldn’t be verified. Please, try again or choose an alternative method",
+        "button": {
+          "confirm": "Try again",
+          "cancel": "Cancel"
+        }
+      }
+    },
+    "termsandconditions": {
+      "text": "I have read and agree to the <0>{{clickableTerms}}</0> and <1>{{clickablePrivacy}}</1>.",
+      "terms": "Terms and Conditions",
+      "privacy": "Privacy Policy"
+    }
+  },
+  "passcodelogin": {
+    "title": "Welcome back",
+    "description": "Please enter your passcode to login",
+    "error": "Incorrect passcode",
+    "forgotten": {
+      "button": "I've forgotten my passcode"
+    },
+    "alert": {
+      "text": {
+        "verify": "If you've forgotten your passcode, please verify your seed phrase to gain access to your wallet",
+        "restart": "You currently haven't generated a seed phrase, would you like to start your onboarding again?"
+      },
+      "button": {
+        "verify": "Verify your Seed Phrase",
+        "restart": "Start again",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "verifyseedphrase": {
+    "onboarding": {
+      "title": "Verify your Seed Phrase",
+      "button": {
+        "continue": "Continue"
+      }
+    },
+    "paragraph": {
+      "top": "Please select every word from your seed phrase in the correct order. If you select a word in the wrong order, select it again to move it back down to the list of available words."
+    },
+    "alert": {
+      "fail": {
+        "text": "Your seed phrase couldn’t be verified. Please, try again or choose an alternative method",
+        "button": {
+          "confirm": "View my seed phrase",
+          "cancel": "Cancel"
+        }
+      },
+      "exit": {
+        "text": "If you go back you will lose your current progress. Are you sure you want to do this?",
+        "button": {
+          "confirm": "Confirm",
+          "cancel": "Cancel"
+        }
+      }
+    }
+  },
+  "tabsmenu": {
+    "label": {
+      "identifiers": "Identity",
+      "creds": "Credentials",
+      "scan": "Scan",
+      "crypto": "Crypto",
+      "chat": "P2P Chat"
+    }
+  },
+  "custominput": {
+    "optional": "(optional)"
+  },
+  "createpassword": {
+    "title": "Create your Password",
+    "description": "You can choose to set an optional password for your Identity Wallet. This password will be required to complete protected operations within the wallet. If you choose to skip and not set a password, you will be asked to provide your passcode to complete protected operations.",
+    "input": {
+      "first": {
+        "title": "Create password",
+        "placeholder": "Type password"
+      },
+      "second": {
+        "title": "Confirm password",
+        "placeholder": "Retype your password"
+      },
+      "third": {
+        "title": "Create a hint",
+        "placeholder": "Create a password hint"
+      }
+    },
+    "button": {
+      "continue": "Create Password",
+      "skip": "Skip"
+    },
+    "alert": {
+      "text": "You have chosen to skip creating a password. If you change your mind later, you will still be able to create a password.",
+      "button": {
+        "confirm": "Continue without a password",
+        "cancel": "Go back and create a password"
+      }
+    },
+    "error": {
+      "hasSpecialChar": "Please enter a valid character",
+      "isTooShort": "Must be more than 8 characters long",
+      "isTooLong": "Must be less than 64 characters long",
+      "hasNoUppercase": "Must contain an uppercase letter",
+      "hasNoLowercase": "Must contain a lowercase letter",
+      "hasNoNumber": "Must contain a number",
+      "hasNoSymbol": "Must contain a valid symbol",
+      "hasNoMatch": "Passwords do not match",
+      "hintSameAsPassword": "Your hint cannot be your password"
+    }
+  },
+  "operationspasswordregex": {
+    "label": {
+      "length": "8 - 64 characters long",
+      "uppercase": "Contains an uppercase letter",
+      "lowercase": "Contains a lowercase letter",
+      "number": "Contains a number",
+      "symbol": "Contains a symbol !@#$%^&*()"
+    }
+  },
+  "identifiers": {
+    "tab": {
+      "title": "Identity",
+      "create": "Add an identifier",
+      "allidentifiers": "All identifiers"
+    },
+    "card": {
+      "layout": {
+        "created": "CREATED"
+      },
+      "details": {
+        "done": "Done",
+        "information": "Information",
+        "type": "Type",
+        "controller": "Controller",
+        "publickeybase": "Public Key Base 58",
+        "delegator": {
+          "title": "Delegator Identifier Prefix",
+          "icon": "DI"
+        },
+        "signingkeyslist": {
+          "title": "List of Signing Keys",
+          "icon": "K"
+        },
+        "signingkeysthreshold": {
+          "title": "Keys Signing Threshold",
+          "icon": "KT"
+        },
+        "nextkeyslist": {
+          "title": "List of Next Key Digests",
+          "icon": "N"
+        },
+        "nextkeysthreshold": {
+          "title": "Next Keys Signing Threshold",
+          "icon": "NT"
+        },
+        "creationtimestamp": {
+          "title": "Creation Timestamp"
+        },
+        "rotationtimestamp": {
+          "title": "Last Key Rotation Timestamp",
+          "icon": "DT"
+        },
+        "sequencenumber": {
+          "title": "Sequence Number",
+          "icon": "S"
+        },
+        "backerslist": {
+          "title": "List of Backers",
+          "icon": "B"
+        },
+        "backeraddress": {
+          "title": "Backer Address"
+        },
+        "delete": {
+          "button": "Delete identifier",
+          "alert": {
+            "title": "Are you sure you want to delete this identifier?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          }
+        },
+        "options": {
+          "title": "Identifier options",
+          "cancel": "Cancel",
+          "view": "View JSON",
+          "edit": "Edit identifier",
+          "share": "Share identifier",
+          "delete": "Delete identifier",
+          "inner": {
+            "label": "Display name",
+            "theme": "Edit theme",
+            "confirm": "Confirm changes",
+            "error": "Must be less than 32 characters long"
+          }
+        },
+        "view": {
+          "cancel": "Done",
+          "title": "Identifier JSON",
+          "copy": "Copy JSON",
+          "save": "Save to Device"
+        }
+      }
+    }
+  },
+  "creds": {
+    "tab": {
+      "title": "Credentials",
+      "create": "Add Credential",
+      "viewarchived": "View archived credentials",
+      "favourites": "Favourites",
+      "allcreds": "All Credentials"
+    },
+    "card": {
+      "layout": {
+        "type": "Type",
+        "validity": "Valid from - to",
+        "issued": "Issued",
+        "name": "Name",
+        "countryofbirth": "Country of birth",
+        "expirationdate": "Expiration date",
+        "category": "Category",
+        "residentsince": "Resident since"
+      },
+      "details": {
+        "done": "Done",
+        "restore": "Restore",
+        "type": "Type",
+        "attributes": "Attributes",
+        "connection": "Connection",
+        "issuancedate": "Issuance Date",
+        "expirationdate": "Expiration date",
+        "prooftypes": "Proof Types",
+        "notavailable": "N/A",
+        "options": {
+          "title": "Credential options",
+          "view": "View JSON",
+          "archive": "Archive credential"
+        },
+        "view": {
+          "cancel": "Done",
+          "title": "Credential JSON",
+          "copy": "Copy JSON",
+          "save": "Save to Device"
+        },
+        "button": {
+          "delete": "Delete credential",
+          "archive": "Archive credential"
+        },
+        "alert": {
+          "archive": {
+            "title": "Are you sure you want to archive this credential?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          },
+          "delete": {
+            "title": "Are you sure you want to delete this credential?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          },
+          "restore": {
+            "title": "Are you sure you want to view this with your other credentials?",
+            "confirm": "Yes, restore credential",
+            "cancel": "Cancel"
+          }
+        },
+        "toast": {
+          "clipboard": "Copied to clipboard"
+        }
+      }
+    },
+    "create": {
+      "alert": {
+        "title": "Once this credential is visible you'll receive a notification. Until then you won't be able to access more details.",
+        "confirm": "Ok"
+      }
+    },
+    "archived": {
+      "title": "Archived",
+      "done": "Done",
+      "edit": "Edit",
+      "selectall": "Select All",
+      "deselectall": "Deselect all",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "restore": "Restore",
+      "selectedamount": "{{amount}} Credentials Selected",
+      "alert": {
+        "restoresingle": {
+          "title": "Are you sure you want to view this with your other credentials?",
+          "confirm": "Yes, restore credential",
+          "cancel": "Cancel"
+        },
+        "restoremultiple": {
+          "title": "Are you sure you want to view these with your other credentials?",
+          "confirm": "Yes, restore credentials",
+          "cancel": "Cancel"
+        },
+        "deletesingle": {
+          "title": "This will delete the selected credential from your wallet permanently",
+          "confirm": "Delete from wallet",
+          "cancel": "Cancel"
+        },
+        "deletemultiple": {
+          "title": "This will delete the selected credentials from your wallet permanently",
+          "confirm": "Delete from wallet",
+          "cancel": "Cancel"
+        }
+      }
+    }
+  },
+  "connections": {
+    "tab": {
+      "title": "Connections",
+      "create": "Add Connection",
+      "searchconnections": "Search connections"
+    },
+    "details": {
+      "done": "Done",
+      "label": "Label",
+      "date": "Date Created",
+      "goalcodes": "Goal Codes",
+      "handshake": "Handshake Protocol",
+      "attachments": "Request Attachments",
+      "endpoints": "Service Endpoints",
+      "notavailable": "N/A",
+      "notes": "Notes",
+      "nocurrentnotes": "No current notes",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "title": "Title",
+      "message": "Message",
+      "delete": "Delete connection",
+      "options": {
+        "title": "Connection options",
+        "labels": {
+          "manage": "Manage notes",
+          "delete": "Delete connection"
+        },
+        "alert": {
+          "deleteconnection": {
+            "title": "Are you sure you want to delete this connection?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          },
+          "deletenote": {
+            "title": "Are you sure you want to delete this note?",
+            "confirm": "Yes, I'm sure",
+            "cancel": "Cancel"
+          }
+        }
+      }
+    }
+  },
+  "connectmodal": {
+    "title": "Add ",
+    "scan": "Scan QR Code",
+    "connect": "Scan to connect",
+    "provide": "Provide QR Code"
+  },
+  "verifypassword": {
+    "title": "Enter password",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "button": {
+      "forgot": "I've forgotten my password"
+    },
+    "error": {
+      "hasNoMatch": "Password didn't match"
+    },
+    "alert": {
+      "choice": {
+        "title": "Would you like to see your password hint or reset your password?"
+      },
+      "button": {
+        "seepasswordhint": "See my password hint",
+        "resetmypassword": "Reset my password",
+        "tryagain": "Great, I'll try again!"
+      },
+      "hint": {
+        "title": "Your password hint is"
+      }
+    }
+  },
+  "verifypasscode": {
+    "cancel": "Cancel",
+    "title": "Enter passcode",
+    "description": "Please enter your passcode to verify",
+    "error": "Incorrect passcode",
+    "forgotten": {
+      "button": "I've forgotten my passcode"
+    },
+    "alert": {
+      "text": {
+        "verify": "If you've forgotten your passcode, please verify your seed phrase to gain access to your wallet",
+        "restart": "You currently haven't generated a seed phrase, would you like to start your onboarding again?"
+      },
+      "button": {
+        "verify": "Verify your Seed Phrase",
+        "restart": "Start again",
+        "cancel": "Cancel"
+      }
+    }
+  },
+  "shareidentifier": {
+    "title": "Share identifier",
+    "divider": "or",
+    "copykey": "Copy Identifier",
+    "more": "More share options"
+  },
+  "createidentifier": {
+    "title": "Add an identifier",
+    "displayname": {
+      "title": "Display name",
+      "placeholder": "Create a name for this identifier"
+    },
+    "identifiertype": {
+      "title": "Identifier type",
+      "didkey": "did:key",
+      "keri": "KERI AID"
+    },
+    "theme": {
+      "title": "Choose Theme"
+    },
+    "confirmbutton": "Create identifier",
+    "error": {
+      "maxlength": "Must be less than 32 characters long"
+    }
+  },
+  "crypto": {
+    "tab": {
+      "header": "Under consideration"
+    }
+  },
+  "chat": {
+    "tab": {
+      "header": "Under development"
+    }
+  },
+  "shareqr": {
+    "divider": "or",
+    "more": "More share options"
+  },
+  "toast": {
+    "copiedtoclipboard": "Copied to clipboard",
+    "identifiercreated": "New identifier created successfully",
+    "identifierupdated": "Identifier successfully updated",
+    "identifierdeleted": "Identifier successfully deleted",
+    "credentialdeleted": "Credential deleted successfully",
+    "credentialsdeleted": "Credentials deleted successfully",
+    "credentialarchived": "Credential archived successfully",
+    "credentialrestored": "Credential restored successfully",
+    "credentialsrestored": "Credentials restored successfully",
+    "connectiondeleted": "Connection deleted successfully",
+    "qrsuccess": "QR code scanned successfully",
+    "qrerror": "QR code not recognised",
+    "connectionrequestincoming": "New Connection Request",
+    "connectionrequestpending": "Connection request pending",
+    "newconnectionadded": "New connection added",
+    "credentialrequestpending": "Credential request pending",
+    "newcredentialadded": "New credential added",
+    "notesupdated": "Notes updated successfully",
+    "noteremoved": "Note removed successfully",
+    "maxfavouritesreached": "Maximum of 5 favourites reached"
+  },
+  "scan": {
+    "tab": {
+      "title": "Align the QR code within the frame to scan"
+    },
+    "alert": {
+      "title": "Would you like to grant permission for using your camera?"
+    }
+  },
+  "request": {
+    "connection": {
+      "title": "Connect",
+      "requestconnection": " request from",
+      "alert": {
+        "titleconfirm": "Are you sure about proceeding with your connection to {{initiator}}?",
+        "confirm": "Yes, connect"
+      }
+    },
+    "credential": {
+      "title": "Credential offer",
+      "offercredential": " offer from",
+      "alert": {
+        "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
+        "confirm": "Yes, accept credential"
+      }
+    },
+    "button": {
+      "connect": "Connect",
+      "acceptoffer": "Accept credential",
+      "cancel": "Cancel"
+    },
+    "alert": {
+      "cancel": "Cancel"
+    },
+    "pending": "{{action}} pending",
+    "success": "{{action}} successful"
+  }
+}

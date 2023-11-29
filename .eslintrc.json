@@ -4,6 +4,9 @@
         "es2021": true,
         "jest": true
     },
+    "globals": {
+        "__dirname": true
+    },
     "extends": [
         "eslint:recommended",
         "plugin:react/recommended",
@@ -25,10 +28,11 @@
         "jest"
     ],
     "rules": {
+        "@typescript-eslint/no-duplicate-enum-values": "error",
         "react/no-unescaped-entities": 0,
         "react/react-in-jsx-scope": "off",
         "no-console": "error",
-        "no-unused-vars": "error",
+        "no-unused-vars": "off",
         "no-undef": "error",
         "indent": ["warn", 2],
         "quotes": ["warn", "double"],
@@ -41,7 +45,8 @@
                     ["parent", "sibling", "index"]
                 ]
             }
-        ]
+        ],
+        "react/display-name": "off"
     },
     "settings": {
         "react": {
