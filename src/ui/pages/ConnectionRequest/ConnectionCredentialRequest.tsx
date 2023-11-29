@@ -101,8 +101,10 @@ const ConnectionCredentialRequest = () => {
       connectionCredentialRequest.type ===
         ConnectionCredentialRequestType.CONNECTION_RESPONSE
     ) {
+      // TODO: will handle with KERI connection if it is supported
       await AriesAgent.agent.connections.deleteConnectionById(
-        connectionCredentialRequest.id
+        connectionCredentialRequest.id,
+        ConnectionType.DIDCOMM
       );
     }
     handleReset();

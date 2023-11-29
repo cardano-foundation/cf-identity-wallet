@@ -1,4 +1,13 @@
 .page-header {
+  &.show-header {
+    visibility: visible;
+  }
+
+  &.hide-header {
+    visibility: hidden;
+    height: 0;
+  }
+
   ion-toolbar,
   ion-grid,
   ion-col {

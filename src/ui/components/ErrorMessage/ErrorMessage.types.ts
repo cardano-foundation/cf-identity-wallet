@@ -1,6 +1,6 @@
 interface ErrorMessageProps {
   message: string | undefined;
-  timeout: boolean;
+  timeout?: boolean;
 }
 
 export type { ErrorMessageProps };

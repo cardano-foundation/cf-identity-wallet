@@ -263,7 +263,13 @@ class ConnectionService extends AgentService {
     return this.getConnectionDetails(connection, outOfBandRecord);
   }
 
-  async deleteConnectionById(id: string): Promise<void> {
+  async deleteConnectionById(
+    id: string,
+    connectionType?: ConnectionType
+  ): Promise<void> {
+    if (connectionType === ConnectionType.KERI) {
+      return this.agent.genericRecords.deleteById(id);
+    }
     return this.agent.connections.deleteById(id);
   }
 
@@ -371,17 +377,18 @@ class ConnectionService extends AgentService {
   }
 
   async getUnhandledConnections(): Promise<ConnectionRecord[]> {
-    const results = await Promise.all([
-      this.agent.connections.findAllByQuery({
-        state: DidExchangeState.ResponseReceived,
-        role: DidExchangeRole.Requester,
-      }),
-      this.agent.connections.findAllByQuery({
-        state: DidExchangeState.RequestReceived,
-        role: DidExchangeRole.Responder,
-      }),
-    ]);
-    return results.flat();
+    return this.agent.connections.findAllByQuery({
+      $or: [
+        {
+          state: DidExchangeState.ResponseReceived,
+          role: DidExchangeRole.Requester,
+        },
+        {
+          state: DidExchangeState.RequestReceived,
+          role: DidExchangeRole.Responder,
+        },
+      ],
+    });
   }
 
   async getAllKeriContacts(): Promise<KeriContact[]> {

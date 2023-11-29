@@ -21,6 +21,7 @@ const config = {
     },
     keriOobi: "/keriOobi",
     issueAcdcCredentialWithOobi : "/issueAcdcCredentialWithOobi",
+    schemaOobi: "/oobi/:id",
   },
 };
 

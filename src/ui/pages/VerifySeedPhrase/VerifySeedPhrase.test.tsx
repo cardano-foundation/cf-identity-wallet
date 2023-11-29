@@ -182,7 +182,7 @@ describe("Verify Seed Phrase Page", () => {
       </Provider>
     );
 
-    const continueButton = getByTestId("primary-button-verify-seedphrase");
+    const continueButton = getByTestId("primary-button-verify-seed-phrase");
     const originalSeedPhraseContainer = getByTestId(
       "original-seed-phrase-container"
     );
@@ -235,7 +235,7 @@ describe("Verify Seed Phrase Page", () => {
       </Provider>
     );
 
-    const continueButton = getByTestId("primary-button-verify-seedphrase");
+    const continueButton = getByTestId("primary-button-verify-seed-phrase");
     const originalSeedPhraseContainer = getByTestId(
       "original-seed-phrase-container"
     );
@@ -288,10 +288,10 @@ describe("Verify Seed Phrase Page", () => {
     );
   });
 
-  test.skip("The user can Verify the Seed Phrase when generating a new seed phrase", async () => {
+  test("The user can Verify the Seed Phrase when generating a new seed phrase", async () => {
     const history = createMemoryHistory();
     history.push(RoutePath.VERIFY_SEED_PHRASE);
-    const { getByTestId, getByText, queryByTestId } = render(
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <Router history={history}>
           <VerifySeedPhrase />
@@ -299,7 +299,7 @@ describe("Verify Seed Phrase Page", () => {
       </Provider>
     );
 
-    const continueButton = getByTestId("primary-button-verify-seedphrase");
+    const continueButton = getByTestId("primary-button-verify-seed-phrase");
     const originalSeedPhraseContainer = getByTestId(
       "original-seed-phrase-container"
     );
@@ -332,9 +332,12 @@ describe("Verify Seed Phrase Page", () => {
 
     fireEvent.click(continueButton);
 
-    await waitFor(() =>
-      expect(queryByTestId("choose-account-name")).toBeVisible()
-    );
+    const seedPhraseString = initialState.seedPhraseCache.seedPhrase160;
+    const entropy = Addresses.convertToEntropy(seedPhraseString);
+    const Bech32XPrv = Addresses.entropyToBip32NoPasscode(seedPhraseString);
+    expect(Addresses.convertToEntropy).toBeCalledWith(seedPhraseString);
+    expect(Addresses.entropyToBip32NoPasscode).toBeCalledWith(entropy);
+    expect(Addresses.bech32ToHexBip32Private).toBeCalledWith(Bech32XPrv);
   });
 
   test("calls handleOnBack when back button is clicked", async () => {
@@ -379,7 +382,7 @@ describe("Verify Seed Phrase Page", () => {
     fireEvent.click(getByText("example5"));
 
     const continueButton = getByTestId(
-      "primary-button-verify-seedphrase"
+      "primary-button-verify-seed-phrase"
     ) as HTMLButtonElement;
 
     expect(continueButton.disabled).toBe(false);
@@ -390,5 +393,100 @@ describe("Verify Seed Phrase Page", () => {
     });
 
     expect(continueButton.disabled).toBe(true);
+  });
+
+  test("The user can remove words from the Seed Phrase", async () => {
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[RoutePath.VERIFY_SEED_PHRASE]}>
+          <Route
+            path={RoutePath.VERIFY_SEED_PHRASE}
+            component={VerifySeedPhrase}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    const continueButton = getByTestId("primary-button-verify-seed-phrase");
+    const originalSeedPhraseContainer = getByTestId(
+      "original-seed-phrase-container"
+    );
+    const matchingSeedPhraseContainer = getByTestId(
+      "matching-seed-phrase-container"
+    );
+    await waitFor(() =>
+      expect(originalSeedPhraseContainer.childNodes.length).toBe(
+        MNEMONIC_FIFTEEN_WORDS
+      )
+    );
+
+    expect(continueButton).toBeDisabled();
+
+    for (let index = 0; index < MNEMONIC_FIFTEEN_WORDS; index++) {
+      fireEvent.click(originalSeedPhraseContainer.childNodes[0]);
+    }
+
+    await waitFor(() =>
+      expect(matchingSeedPhraseContainer.childNodes.length).toBe(
+        MNEMONIC_FIFTEEN_WORDS
+      )
+    );
+
+    for (let index = 0; index < MNEMONIC_FIFTEEN_WORDS; index++) {
+      fireEvent.click(matchingSeedPhraseContainer.childNodes[0]);
+    }
+
+    expect(matchingSeedPhraseContainer.childNodes.length).toBe(1);
+  });
+
+  test("The user can not verify the Seed Phrase when Onboarding", async () => {
+    const history = createMemoryHistory();
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
+    const { getByTestId, getByText, queryByText } = render(
+      <Provider store={storeMocked}>
+        <Router history={history}>
+          <VerifySeedPhrase />
+        </Router>
+      </Provider>
+    );
+
+    const continueButton = getByTestId("primary-button-verify-seed-phrase");
+    const originalSeedPhraseContainer = getByTestId(
+      "original-seed-phrase-container"
+    );
+    const matchingSeedPhraseContainer = getByTestId(
+      "matching-seed-phrase-container"
+    );
+    await waitFor(() =>
+      expect(originalSeedPhraseContainer.childNodes.length).toBe(
+        MNEMONIC_FIFTEEN_WORDS
+      )
+    );
+
+    expect(continueButton).toBeDisabled();
+
+    initialState.seedPhraseCache.seedPhrase160
+      .split(" ")
+      .forEach(async (word) => {
+        fireEvent.click(getByText(`${word}`));
+      });
+
+    await waitFor(() =>
+      expect(matchingSeedPhraseContainer.childNodes.length).toBe(
+        MNEMONIC_FIFTEEN_WORDS
+      )
+    );
+
+    await waitFor(() =>
+      expect(continueButton).toHaveAttribute("disabled", "false")
+    );
+
+    fireEvent.click(continueButton);
+
+    await waitFor(() =>
+      expect(
+        queryByText(EN_TRANSLATIONS.verifyseedphrase.alert.fail.text)
+      ).toBeVisible()
+    );
   });
 });

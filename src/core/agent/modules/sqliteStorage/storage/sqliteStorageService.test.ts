@@ -316,6 +316,97 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(0);
   });
+  test("should generate exactly sql condition normal", () => {
+    const query = { firstTag: "exists", secondTag: "doesNotExist" };
+    const expectedCondition =
+      "EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?) AND EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)";
+    const expectdValues = ["firstTag", "exists", "secondTag", "doesNotExist"];
+    const { condition, values } = storageService.getQueryConditionSql(query);
+    expect(condition).toEqual(expectedCondition);
+    expect(values).toMatchObject(expectdValues);
+  });
+
+  test("should generate exactly sql condition $and", () => {
+    const query = {
+      $and: [{ firstTag: "exists" }, { firstTag: "doesNotExist" }],
+    };
+    const expectedCondition =
+      "(EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)) AND (EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?))";
+    const expectdValues = ["firstTag", "exists", "firstTag", "doesNotExist"];
+    const { condition, values } = storageService.getQueryConditionSql(query);
+    expect(condition).toEqual(expectedCondition);
+    expect(values).toMatchObject(expectdValues);
+  });
+
+  test("should generate exactly sql condition $OR", () => {
+    const query = {
+      $or: [{ firstTag: "exists" }, { secondTag: "doesNotExist" }],
+    };
+    const expectedCondition =
+      "(EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)) OR (EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?))";
+    const expectdValues = ["firstTag", "exists", "secondTag", "doesNotExist"];
+    const { condition, values } = storageService.getQueryConditionSql(query);
+    expect(condition).toEqual(expectedCondition);
+    expect(values).toMatchObject(expectdValues);
+  });
+
+  test("should generate exactly sql condition $NOT", () => {
+    const query = {
+      $not: { firstTag: "exists", secondTag: "doesNotExist" },
+    };
+    const expectedCondition =
+      "NOT (EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?) AND EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?))";
+    const expectdValues = ["firstTag", "exists", "secondTag", "doesNotExist"];
+    const { condition, values } = storageService.getQueryConditionSql(query);
+    expect(condition).toEqual(expectedCondition);
+    expect(values).toMatchObject(expectdValues);
+  });
+  test("should generate exactly sql condition complex", () => {
+    const query = {
+      $not: { firstTag: "exists" },
+      $or: [{ firstTag: "doesNotExist" }, { secondTag: "doesNotExist" }],
+      thirdTag: "exists",
+    };
+    const expectedCondition =
+      "NOT (EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)) AND (EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)) OR (EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)) AND EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)";
+    const expectdValues = [
+      "firstTag",
+      "exists",
+      "firstTag",
+      "doesNotExist",
+      "secondTag",
+      "doesNotExist",
+      "thirdTag",
+      "exists",
+    ];
+    const { condition, values } = storageService.getQueryConditionSql(query);
+    expect(condition).toEqual(expectedCondition);
+    expect(values).toMatchObject(expectdValues);
+  });
+
+  test("should generate exactly sql condition complex $or in $and", () => {
+    const query = {
+      $and: [
+        { $or: [{ firstTag: "doesNotExist" }, { secondTag: "doesNotExist" }] },
+        { thirdTag: "exists", otherTag: "exists" },
+      ],
+    };
+    const expectedCondition =
+      "((EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?)) OR (EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?))) AND (EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?) AND EXISTS (SELECT 1 FROM items_tags it WHERE i.id = it.item_id AND it.name = ? AND it.value = ?))";
+    const expectdValues = [
+      "firstTag",
+      "doesNotExist",
+      "secondTag",
+      "doesNotExist",
+      "thirdTag",
+      "exists",
+      "otherTag",
+      "exists",
+    ];
+    const { condition, values } = storageService.getQueryConditionSql(query);
+    expect(condition).toEqual(expectedCondition);
+    expect(values).toMatchObject(expectdValues);
+  });
 });
 
 describe("Aries - Sqlite Storage Module: Util", () => {

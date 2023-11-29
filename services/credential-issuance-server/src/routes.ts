@@ -11,6 +11,7 @@ import {
 import { getConnectionByDid } from "./apis/connection.api";
 import { createShortenUrl, getFullUrl } from "./apis/shorten.api";
 import { summitAccessPass } from "./apis/credential-context";
+import { schemaApi } from "./apis/schema.api";
 
 const router = express.Router();
 router.get(config.path.ping, ping);
@@ -27,5 +28,6 @@ router.post(config.path.createShorten, createShortenUrl);
 router.get(config.path.credentials.summit, summitAccessPass);
 router.get(config.path.keriOobi, keriOobiApi);
 router.post(config.path.issueAcdcCredentialWithOobi, issueCredentialWithKeriOobi);
+router.get(config.path.schemaOobi, schemaApi);
 
 export default router;

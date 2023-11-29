@@ -1,4 +1,4 @@
-ion-item.input-item {
+ion-item.custom-input {
   --background: var(--ion-color-light);
   --border-width: 0;
   --inner-border-width: 0;
@@ -7,10 +7,15 @@ ion-item.input-item {
 
   ion-label[position="stacked"] {
     margin-bottom: 0.625rem;
-    .input-item-optional {
+
+    .custom-input-optional {
       margin-left: 0.25rem;
       opacity: 50%;
     }
+  }
+
+  &.error .input-line {
+    border-color: var(--ion-color-danger);
   }
 
   .input-line {
@@ -19,15 +24,21 @@ ion-item.input-item {
     border: 1px solid var(--ion-color-dark-grey);
     border-radius: 8px;
 
-    ion-input {
-      input {
-        --padding-top: 0.875rem;
-        --padding-bottom: 0.875rem;
-        --padding-start: 1.25rem;
-      }
+    &:focus-within {
+      border-color: var(--ion-color-secondary);
+    }
 
-      &.has-focus {
-        border-color: var(--ion-color-secondary);
+    .input-wrapper {
+      justify-content: center;
+    }
+
+    ion-input {
+      --padding-top: 0.875rem;
+      --padding-bottom: 0.875rem;
+      --padding-start: 1.25rem;
+
+      .label-text-wrapper {
+        display: none;
       }
     }
 
@@ -43,8 +54,36 @@ ion-item.input-item {
       &::part(native) {
         padding: 0;
       }
+
       ion-icon {
-        font-size: 1.85em !important;
+        font-size: 1.85em;
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    ion-label[position="stacked"] {
+      font-size: 0.8rem;
+      line-height: 1rem;
+    }
+
+    .input-line {
+      height: 2.725rem;
+
+      ion-input {
+        --padding-top: 0.35rem;
+        --padding-bottom: 0.35rem;
+        --padding-start: 0.8rem;
+        min-height: 100%;
+        font-size: 0.8rem;
+
+        .native-wrapper {
+          flex-grow: 0;
+        }
+      }
+
+      ion-button ion-icon {
+        font-size: 1rem;
       }
     }
   }
