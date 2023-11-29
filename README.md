@@ -96,7 +96,7 @@ To experience the mobile application within the browser, follow these instructio
 # Architecture
 <div align="center"> 
   <p>
-    <a href="docs/images/readme/Architecture-Diagram.svg">
+    <a href="">
     <img src="docs/images/readme/Architecture-Diagram.svg" alt="Identity Wallet Architecture">
     </a>  
   </p>     
