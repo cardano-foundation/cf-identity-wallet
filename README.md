@@ -133,7 +133,7 @@ In this section, you'll find detailed PDF documents outlining the various user f
 # Getting Started
 
 ## Requirements
-- Node.js: Version 18.16.0 or higher.
+- Node.js: Version 18.16.0.
 - npm: Compatible with the Node.js version.
 - Xcode: For iOS emulation (latest version recommended).
 - Android Studio: For Android emulation (latest version recommended).
