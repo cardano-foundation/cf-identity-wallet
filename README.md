@@ -245,7 +245,8 @@ allure open tests/.reports/allure-report
 # Contributing
 
 All contributions are welcome! Please feel free to open a new thread on the issue tracker or submit a new pull request.
-<br>
+
+
 Please read [Contributing](CONTRIBUTING.md) in advance.  Thank you for contributing!
 
 ## Additional Documents
