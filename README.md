@@ -149,12 +149,7 @@ Ensure that your system meets these requirements to successfully use and develop
 git clone https://github.com/cardano-foundation/cf-identity-wallet.git
 cd cf-identity-wallet
 ```
-## Deployment before Building the App
-Our DIDComm over LibP2P implementation currently depends on a locally deployed WebRTC relay.
-```
-cd cf-identity-wallet
-docker compose up -d
-```
+
 ## Preparing the App
 Before running the App, ensure that all dependencies are installed and the app is built properly. 
 In the project root directory, run the following commands:
