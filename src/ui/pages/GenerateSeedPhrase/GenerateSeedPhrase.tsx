@@ -13,7 +13,7 @@ import {
 import { Alert as AlertConfirm } from "../../components/Alert";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
-import { TermsAndConditions as TermsAndConditionsModal } from "../../components/TermsAndConditions";
+import { TermsOfUseModal } from "../../components/TermsOfUse";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
@@ -24,6 +24,7 @@ import { PageHeader } from "../../components/PageHeader";
 import PageFooter from "../../components/PageFooter/PageFooter";
 import { MnemonicLengthSegment } from "../../components/MnemonicLengthSegment";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
+import { PrivacyPolicyModal } from "../../components/PrivacyPolicy";
 
 const GenerateSeedPhrase = () => {
   const pageId = "generate-seed-phrase";
@@ -37,6 +38,7 @@ const GenerateSeedPhrase = () => {
   const [hideSeedPhrase, setHideSeedPhrase] = useState(true);
   const [alertConfirmIsOpen, setAlertConfirmIsOpen] = useState(false);
   const [termsModalIsOpen, setTermsModalIsOpen] = useState(false);
+  const [privacyModalIsOpen, setPrivacyModalIsOpen] = useState(false);
   const [checked, setChecked] = useState(false);
 
   const initializeSeedPhrase = () => {
@@ -87,7 +89,25 @@ const GenerateSeedPhrase = () => {
   };
 
   const HandleTerms = () => {
-    return <u>{i18n.t("generateseedphrase.termsandconditions.link")}</u>;
+    return (
+      <u
+        data-testid="terms-of-use-modal-handler"
+        onClick={() => setTermsModalIsOpen(true)}
+      >
+        {i18n.t("generateseedphrase.termsandconditions.terms")}
+      </u>
+    );
+  };
+
+  const HandlePrivacy = () => {
+    return (
+      <u
+        data-testid="privacy-policy-modal-handler"
+        onClick={() => setPrivacyModalIsOpen(true)}
+      >
+        {i18n.t("generateseedphrase.termsandconditions.privacy")}
+      </u>
+    );
   };
 
   const handleContinue = () => {
@@ -154,19 +174,20 @@ const GenerateSeedPhrase = () => {
           checked={checked}
           onIonChange={(event) => setChecked(event.detail.checked)}
         />
-        <p
-          data-testid="terms-and-conditions-modal-handler"
-          onClick={() => setTermsModalIsOpen(true)}
-        >
+        <p>
           <Trans
             i18nKey={i18n.t("generateseedphrase.termsandconditions.text")}
-            components={[<HandleTerms key="" />]}
+            components={[<HandleTerms key="" />, <HandlePrivacy key="" />]}
           />
         </p>
       </div>
-      <TermsAndConditionsModal
+      <TermsOfUseModal
         isOpen={termsModalIsOpen}
         setIsOpen={setTermsModalIsOpen}
+      />
+      <PrivacyPolicyModal
+        isOpen={privacyModalIsOpen}
+        setIsOpen={setPrivacyModalIsOpen}
       />
       <PageFooter
         pageId={pageId}
