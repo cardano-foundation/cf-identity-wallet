@@ -23,7 +23,7 @@ const Crypto = () => {
         menuButton={true}
       >
         <div className="crypto-tab-content">
-          <h2>{i18n.t("cryptoplaceholder.tab.header")}</h2>
+          <h2>{i18n.t("crypto.tab.header")}</h2>
         </div>
       </TabLayout>
     </IonPage>
