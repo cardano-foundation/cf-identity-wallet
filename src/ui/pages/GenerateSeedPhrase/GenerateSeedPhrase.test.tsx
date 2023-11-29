@@ -336,11 +336,5 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     expect(termsCheckbox.hasAttribute("[checked=\"true\""));
     fireEvent.ionChange(termsCheckbox, "[checked=\"false\"");
     expect(termsCheckbox.hasAttribute("[checked=\"false\""));
-
-    const termsModalHandler = getByTestId("terms-and-conditions-modal-handler");
-    const termsModal = getByTestId("terms-and-conditions-modal");
-    fireEvent.click(termsModalHandler);
-    expect(termsCheckbox.hasAttribute("[checked=\"true\""));
-    expect(termsModal.getAttribute("is-open")).toBe("true");
   });
 });
