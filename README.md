@@ -93,6 +93,18 @@ To experience the mobile application within the browser, follow these instructio
 </div>
 
 
+# Architecture
+<div align="center"> 
+  <p>
+    <a href="docs/images/readme/Architecture-Diagram.svg">
+    <img src="docs/images/readme/Architecture-Diagram.svg" alt="Identity Wallet Architecture">
+    </a>  
+  </p>     
+</div>
+<br>
+
+
+
 # User Flows
 In this section, you'll find detailed PDF documents outlining the various user flows within our application. These user flows serve as comprehensive guides, illustrating the application's user journeys step-by-step. Please feel free to explore and gain insight into the following user flows:
 
@@ -114,7 +126,6 @@ In this section, you'll find detailed PDF documents outlining the various user f
 <p align="center">
   <kbd> 
       <img src="docs/images/readme/User-Flow-Preview.jpg" alt="User Flow Preview" width="720"/>
-    </a>
   </kbd>
 </p>
 
@@ -287,4 +298,28 @@ Please read [Contributing](CONTRIBUTING.md) in advance.  Thank you for contribut
           <td><b style="font-size:30px"><a href="https://ec.europa.eu/digital-building-blocks/wikis/display/EBSI/Home">European Blockchain Services Infrastructure (EBSI)</a></b></td>
        </tr>
       </table>
-</div>                                    
+</div>  
+
+# Resources
+
+## W3C
+- [DID Core Specification](https://www.w3.org/TR/did-core/)
+- [DID Methods Registry](https://www.w3.org/TR/did-spec-registries/)
+- [Verifiable Credentials Data Model](https://www.w3.org/TR/vc-data-model/)
+- [Verifiable Credential V2](https://www.w3.org/TR/vc-data-model-2.0/)
+
+## KERI
+- [Key Event Receipt Infrastructure](https://keri.one/)
+- [Resources](https://keri.one/keri-resources/)
+- [KERIA](https://github.com/cardano-foundation/keria)
+- [Signify-TS](https://github.com/cardano-foundation/signify-ts)
+- [Cardano Backer](https://github.com/cardano-foundation/cardano-backer)
+
+## Standards, Frameworks and Governance
+- [Hyperledger Aries Framework](https://github.com/hyperledger/aries-framework-javascript)
+- [Veramo](https://veramo.io/)
+- [SSI Frameworks Overview](https://europeanblockchainassociation.org/ssi-frameworks-sdks-overview/)
+- [Global Legal Entity Identifier Foundation (GLIEF)](https://www.gleif.org/en)
+- [Decentralized Identity Foundation](https://identity.foundation/)
+- [eIDAS Regulation](https://digital-strategy.ec.europa.eu/en/policies/eidas-regulation)
+- [European Blockchain Services Infrastructure (EBSI)](https://ec.europa.eu/digital-building-blocks/wikis/display/EBSI/Home)
