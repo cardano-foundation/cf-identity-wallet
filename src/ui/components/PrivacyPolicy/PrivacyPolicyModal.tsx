@@ -21,7 +21,7 @@ const PrivacyPolicyModal = ({ isOpen, setIsOpen }: PrivacyPolicyModalProps) => {
       initialBreakpoint={1}
       breakpoints={[0, 0.25, 0.5, 0.75, 1]}
       className="page-layout"
-      data-testid="terms-of-use-modal"
+      data-testid="privacy-policy-modal"
       onDidDismiss={() => setIsOpen(false)}
     >
       <div className="terms-and-conditions modal">
