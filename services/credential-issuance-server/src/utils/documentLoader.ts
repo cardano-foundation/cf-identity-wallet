@@ -7,7 +7,7 @@ import {
   JsonObject,
   vcLibraries,
 } from "@aries-framework/core";
-import { getNativeDocumentLoader } from "@aries-framework/core/build/modules/vc/libraries/nativeDocumentLoader";
+import { getNativeDocumentLoader } from "@aries-framework/core/build/modules/vc/data-integrity/libraries/nativeDocumentLoader";
 import { CREDENTIALS_V1 } from "./contexts/credentialsV1";
 import { CITIZENSHIP_V1 } from "./contexts/citizenshipV1";
 import { CREDENTIALS_EXAMPLES_V1 } from "./contexts/credentialsExamplesV1";
