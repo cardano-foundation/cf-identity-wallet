@@ -1,5 +1,4 @@
-import { IonButton, IonIcon, IonPage } from "@ionic/react";
-import { ellipsisVertical, trashOutline } from "ionicons/icons";
+import { ellipsisVertical } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
@@ -9,7 +8,6 @@ import {
   ConnectionDetails as ConnectionData,
   ConnectionShortDetails,
 } from "../Connections/Connections.types";
-import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -38,6 +36,8 @@ import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";
 import { ConnectionDetailsInfoBlock } from "./components/ConnectionDetailsInfoBlock";
 import PageFooter from "../../components/PageFooter/PageFooter";
+import { PageHeader } from "../../components/PageHeader";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 
 const ConnectionDetails = () => {
   const pageId = "connection-details";
@@ -145,22 +145,22 @@ const ConnectionDetails = () => {
   ];
 
   return (
-    <IonPage
-      className="page-layout connection-details"
-      data-testid="connection-details-page"
-    >
-      <PageLayout
-        header={true}
-        title={""}
-        closeButton={true}
-        closeButtonAction={handleDone}
-        closeButtonLabel={`${i18n.t("connections.details.done")}`}
-        currentPath={RoutePath.CONNECTION_DETAILS}
-        actionButton={true}
-        actionButtonAction={() => {
-          setOptionsIsOpen(true);
-        }}
-        actionButtonIcon={ellipsisVertical}
+    <>
+      <ScrollablePageLayout
+        pageId={pageId}
+        header={
+          <PageHeader
+            closeButton={true}
+            closeButtonAction={handleDone}
+            closeButtonLabel={`${i18n.t("connections.details.done")}`}
+            currentPath={RoutePath.CONNECTION_DETAILS}
+            actionButton={true}
+            actionButtonAction={() => {
+              setOptionsIsOpen(true);
+            }}
+            actionButtonIcon={ellipsisVertical}
+          />
+        }
       >
         <div className="connection-details-content">
           <ConnectionDetailsHeader
@@ -211,34 +211,6 @@ const ConnectionDetails = () => {
           handleEdit={setModalIsOpen}
           handleDelete={handleDelete}
         />
-        <AlertDeleteConnection
-          isOpen={alertDeleteConnectionIsOpen}
-          setIsOpen={setAlertDeleteConnectionIsOpen}
-          dataTestId="alert-confirm-delete-connection"
-          headerText={i18n.t(
-            "connections.details.options.alert.deleteconnection.title"
-          )}
-          confirmButtonText={`${i18n.t(
-            "connections.details.options.alert.deleteconnection.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            "connections.details.options.alert.deleteconnection.cancel"
-          )}`}
-          actionConfirm={() => {
-            if (
-              !stateCache?.authentication.passwordIsSkipped &&
-              stateCache?.authentication.passwordIsSet
-            ) {
-              setVerifyPasswordIsOpen(true);
-            } else {
-              setVerifyPasscodeIsOpen(true);
-            }
-          }}
-          actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-          actionDismiss={() =>
-            dispatch(setCurrentOperation(OperationType.IDLE))
-          }
-        />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
           setIsOpen={setVerifyPasswordIsOpen}
@@ -249,7 +221,7 @@ const ConnectionDetails = () => {
           setIsOpen={setVerifyPasscodeIsOpen}
           onVerify={verifyAction}
         />
-      </PageLayout>
+      </ScrollablePageLayout>
       {connectionDetails && (
         <EditConnectionsModal
           notes={notes}
@@ -262,7 +234,32 @@ const ConnectionDetails = () => {
           setAlertDeleteNoteIsOpen={setAlertDeleteNoteIsOpen}
         />
       )}
-
+      <AlertDeleteConnection
+        isOpen={alertDeleteConnectionIsOpen}
+        setIsOpen={setAlertDeleteConnectionIsOpen}
+        dataTestId="alert-confirm-delete-connection"
+        headerText={i18n.t(
+          "connections.details.options.alert.deleteconnection.title"
+        )}
+        confirmButtonText={`${i18n.t(
+          "connections.details.options.alert.deleteconnection.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "connections.details.options.alert.deleteconnection.cancel"
+        )}`}
+        actionConfirm={() => {
+          if (
+            !stateCache?.authentication.passwordIsSkipped &&
+            stateCache?.authentication.passwordIsSet
+          ) {
+            setVerifyPasswordIsOpen(true);
+          } else {
+            setVerifyPasscodeIsOpen(true);
+          }
+        }}
+        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+      />
       <AlertDeleteNote
         isOpen={alertDeleteNoteIsOpen}
         setIsOpen={setAlertDeleteNoteIsOpen}
@@ -292,7 +289,7 @@ const ConnectionDetails = () => {
           setAlertDeleteNoteIsOpen(false);
         }}
       />
-    </IonPage>
+    </>
   );
 };
 
