@@ -1,6 +1,6 @@
 import { IonButton, IonIcon, IonPage } from "@ionic/react";
 import { ellipsisVertical, trashOutline } from "ionicons/icons";
-import { useEffect, useRef, useState } from "react";
+import { ReactNode, useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
@@ -33,10 +33,10 @@ import {
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
-import { InfoBlockProps } from "./ConnectionDetails.types";
 import { ConnectionNoteDetails } from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";
+import { ConnectionDetailsInfoBlock } from "./components/ConnectionDetailsInfoBlock";
 
 const ConnectionDetails = () => {
   const history = useHistory();
@@ -142,19 +142,6 @@ const ConnectionDetails = () => {
     },
   ];
 
-  const ConnectionDetailsInfoBlock = ({ title, children }: InfoBlockProps) => {
-    return (
-      <div className="connection-details-info-block">
-        <h3>{title}</h3>
-        <div className="connection-details-info-block-inner">
-          <div className="connection-details-info-block-line">
-            <div className="connection-details-info-block-data">{children}</div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   return (
     <IonPage
       className="page-layout connection-details"
@@ -187,7 +174,7 @@ const ConnectionDetails = () => {
               {infoBlock.value}
             </ConnectionDetailsInfoBlock>
           ))}
-          {notes.length > 0 ? (
+          {notes.length > 0 && (
             <div className="connection-details-info-block">
               <h3>{i18n.t("connections.details.notes")}</h3>
               {notes.map((note, index) => (
@@ -206,7 +193,7 @@ const ConnectionDetails = () => {
                 </div>
               ))}
             </div>
-          ) : null}
+          )}
 
           <IonButton
             shape="round"
