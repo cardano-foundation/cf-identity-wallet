@@ -139,10 +139,11 @@ class AriesAgent {
         issuer: did,
         issuanceDate: "2022-10-22T12:23:48Z",
         credentialSubject: {
-          // @TODO: handle later, it should be did of holder
           id: holderDid || "did:example:abcdef1234567",
-          type: "BachelorDegree",
-          name: "Bachelor of Science and Arts",
+          degree: {
+            type: "BachelorDegree",
+            name: "Bachelor of Science and Arts",
+          }
         },
         expirationDate: "2100-10-22T12:23:48Z",
       },

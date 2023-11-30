@@ -22,22 +22,6 @@ interface CredentialMetadataRecordProps {
   connectionType: ConnectionType;
 }
 
-interface CredentialMetadataRecordExtraProps
-  extends CredentialMetadataRecordProps {
-  degreeType?: string;
-  expirationDate?: string;
-  image?: string;
-  givenName?: string;
-  familyName?: string;
-  birthCountry?: string;
-  lprCategory?: string;
-  residentSince?: string;
-  summitType?: string;
-  startDate?: string;
-  endDate?: string;
-  passId?: string;
-}
-
 interface UniversityCredCachedDetails {
   degreeType: string;
 }
@@ -62,7 +46,6 @@ interface SummitCredCachedDetails {
 export { CredentialMetadataRecordStatus };
 export type {
   CredentialMetadataRecordProps,
-  CredentialMetadataRecordExtraProps,
   UniversityCredCachedDetails,
   ResidencyCredCachedDetails,
   SummitCredCachedDetails,

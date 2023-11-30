@@ -261,9 +261,6 @@ class CredentialService extends AgentService {
 
     const credentialSubject = w3cCredential.credential
       .credentialSubject as any as JsonCredential["credentialSubject"];
-    const universityDegreeCredSubject = Array.isArray(credentialSubject)
-      ? undefined
-      : ((credentialSubject.degree as JsonObject)?.type as string);
     const checkedCredentialSubject = Array.isArray(credentialSubject)
       ? undefined
       : credentialSubject;
@@ -279,6 +276,9 @@ class CredentialService extends AgentService {
     };
 
     if (credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL) {
+      const universityDegreeCredSubject = (
+        checkedCredentialSubject?.degree as JsonObject
+      )?.type as string;
       const credentialMetadataRecord = {
         ...data,
         cachedDetails: {
