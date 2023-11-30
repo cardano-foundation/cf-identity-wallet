@@ -1,8 +1,8 @@
 .card-details {
   .heart-button-favourite {
-    background: rgba(212, 22, 48, 0.15) !important;
+    background: rgba(var(--ion-color-danger-rgb), 0.15) !important;
   }
   .heart-icon-favourite {
-    color: #d41630;
+    color: var(--ion-color-danger);
   }
 }

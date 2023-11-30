@@ -100,24 +100,37 @@ p {
 }
 
 .primary-button {
+  color: var(--ion-color-primary);
   --background: var(--ion-color-primary-gradient);
 }
 
 .secondary-button {
+  color: var(--ion-color-primary);
   --background: var(--ion-color-light);
   --border-color: var(--ion-color-dark-grey);
 }
 
 .tertiary-button {
+  color: var(--ion-color-primary);
   --background: transparent;
+}
+
+.delete-button {
+  --color: white;
+  --background: var(--ion-color-danger);
+
+  ion-icon {
+    margin-right: 0.5rem;
+    --ion-color-base: white !important;
+  }
 }
 
 .primary-button,
 .secondary-button,
-.tertiary-button {
+.tertiary-button,
+.delete-button {
   font-size: 1rem;
   height: 3.25rem;
-  color: var(--ion-color-primary);
   --background-activated: var(--ion-color-medium-grey);
 
   &.button-disabled {
@@ -128,7 +141,8 @@ p {
 @media screen and (min-width: 250px) and (max-width: 370px) {
   .primary-button,
   .secondary-button,
-  .tertiary-button {
+  .tertiary-button,
+  .delete-button {
     font-size: 0.8rem;
     height: 2.5rem;
     margin: 0 auto 0.8rem;

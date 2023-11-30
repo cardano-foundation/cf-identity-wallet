@@ -9,6 +9,9 @@ interface PageFooterProps {
   tertiaryButtonText?: string;
   tertiaryButtonAction?: () => void;
   tertiaryButtonDisabled?: boolean;
+  deleteButtonText?: string;
+  deleteButtonAction?: () => void;
+  deleteButtonDisabled?: boolean;
 }
 
 export type { PageFooterProps };

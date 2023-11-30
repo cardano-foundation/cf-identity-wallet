@@ -186,7 +186,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("connection-details-delete-button"));
+      fireEvent.click(getByTestId("delete-button-connection-details"));
     });
 
     await waitFor(() =>
@@ -241,11 +241,11 @@ describe("ConnectionDetails Page", () => {
     });
 
     await waitFor(() =>
-      expect(getByTestId("connection-options-delete-button")).toBeVisible()
+      expect(getByTestId("delete-button-connection-options")).toBeVisible()
     );
 
     act(() => {
-      fireEvent.click(getByTestId("connection-options-delete-button"));
+      fireEvent.click(getByTestId("delete-button-connection-options"));
     });
 
     await waitFor(() =>

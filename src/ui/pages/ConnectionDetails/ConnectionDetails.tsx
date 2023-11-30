@@ -1,6 +1,6 @@
 import { IonButton, IonIcon, IonPage } from "@ionic/react";
 import { ellipsisVertical, trashOutline } from "ionicons/icons";
-import { ReactNode, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
@@ -37,8 +37,10 @@ import { ConnectionNoteDetails } from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";
 import { ConnectionDetailsInfoBlock } from "./components/ConnectionDetailsInfoBlock";
+import PageFooter from "../../components/PageFooter/PageFooter";
 
 const ConnectionDetails = () => {
+  const pageId = "connection-details";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -194,26 +196,14 @@ const ConnectionDetails = () => {
               ))}
             </div>
           )}
-
-          <IonButton
-            shape="round"
-            expand="block"
-            color="danger"
-            data-testid="connection-details-delete-button"
-            className="delete-button"
-            onClick={() => {
+          <PageFooter
+            pageId={pageId}
+            deleteButtonText={`${i18n.t("connections.details.delete")}`}
+            deleteButtonAction={() => {
               setAlertDeleteConnectionIsOpen(true);
               dispatch(setCurrentOperation(OperationType.DELETE_CONNECTION));
             }}
-          >
-            <IonIcon
-              slot="icon-only"
-              size="small"
-              icon={trashOutline}
-              color="primary"
-            />
-            {i18n.t("connections.details.delete")}
-          </IonButton>
+          />
         </div>
         <ConnectionOptions
           optionsIsOpen={optionsIsOpen}
