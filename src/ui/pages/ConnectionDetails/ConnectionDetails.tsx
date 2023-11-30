@@ -1,5 +1,5 @@
-import { IonButton, IonIcon, IonModal, IonPage } from "@ionic/react";
-import { ellipsisVertical, trashOutline, createOutline } from "ionicons/icons";
+import { IonButton, IonIcon, IonPage } from "@ionic/react";
+import { ellipsisVertical, trashOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
@@ -33,11 +33,10 @@ import {
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
-import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 import { InfoBlockProps } from "./ConnectionDetails.types";
-import { ConnectionNote } from "./ConnectionNote";
 import { ConnectionNoteDetails } from "../../../core/agent/agent.types";
-import { ConnectionNoteProps } from "./ConnectionNote.types";
+import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
+import { EditConnectionsModal } from "./components/EditConnectionsModal";
 
 const ConnectionDetails = () => {
   const history = useHistory();
@@ -57,7 +56,6 @@ const ConnectionDetails = () => {
   const [coreNotes, setCoreNotes] = useState<ConnectionNoteDetails[]>([]);
   const [notes, setNotes] = useState<ConnectionNoteDetails[]>([]);
   const currentNoteId = useRef("");
-  const TEMP_ID_PREFIX = "temp";
 
   useEffect(() => {
     async function getDetails() {
@@ -109,24 +107,40 @@ const ConnectionDetails = () => {
     deleteConnection();
   };
 
-  const ConnectionDetailsHeader = () => {
-    return (
-      <div className="connection-details-header">
-        <div className="connection-details-logo">
-          <img
-            src={connectionDetails?.logo ?? CardanoLogo}
-            alt="connection-logo"
-          />
-        </div>
-        <span className="connection-details-issuer">
-          {connectionDetails?.label}
-        </span>
-        <span className="connection-details-date">
-          {formatShortDate(`${connectionDetails?.connectionDate}`)}
-        </span>
-      </div>
-    );
-  };
+  const connectionDetailsData = [
+    {
+      title: i18n.t("connections.details.label"),
+      value: connectionDetails?.label,
+    },
+    {
+      title: i18n.t("connections.details.date"),
+      value: formatShortDate(`${connectionDetails?.connectionDate}`),
+    },
+    {
+      title: i18n.t("connections.details.goalcodes"),
+      value:
+        connectionDetails?.goalCode ||
+        i18n.t("connections.details.notavailable"),
+    },
+    {
+      title: i18n.t("connections.details.handshake"),
+      value:
+        connectionDetails?.handshakeProtocols?.toString() ||
+        i18n.t("connections.details.notavailable"),
+    },
+    {
+      title: i18n.t("connections.details.attachments"),
+      value:
+        connectionDetails?.requestAttachments?.toString() ||
+        i18n.t("connections.details.notavailable"),
+    },
+    {
+      title: i18n.t("connections.details.endpoints"),
+      value:
+        connectionDetails?.serviceEndpoints?.toString() ||
+        i18n.t("connections.details.notavailable"),
+    },
+  ];
 
   const ConnectionDetailsInfoBlock = ({ title, children }: InfoBlockProps) => {
     return (
@@ -160,41 +174,19 @@ const ConnectionDetails = () => {
         actionButtonIcon={ellipsisVertical}
       >
         <div className="connection-details-content">
-          <ConnectionDetailsHeader />
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.label")}
-          >
-            {connectionDetails?.label}
-          </ConnectionDetailsInfoBlock>
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.date")}
-          >
-            {formatShortDate(`${connectionDetails?.connectionDate}`)}
-          </ConnectionDetailsInfoBlock>
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.goalcodes")}
-          >
-            {connectionDetails?.goalCode ||
-              i18n.t("connections.details.notavailable")}
-          </ConnectionDetailsInfoBlock>
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.handshake")}
-          >
-            {connectionDetails?.handshakeProtocols?.toString() ||
-              i18n.t("connections.details.notavailable")}
-          </ConnectionDetailsInfoBlock>
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.attachments")}
-          >
-            {connectionDetails?.requestAttachments?.toString() ||
-              i18n.t("connections.details.notavailable")}
-          </ConnectionDetailsInfoBlock>
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.endpoints")}
-          >
-            {connectionDetails?.serviceEndpoints?.toString() ||
-              i18n.t("connections.details.notavailable")}
-          </ConnectionDetailsInfoBlock>
+          <ConnectionDetailsHeader
+            logo={connectionDetails?.logo}
+            label={connectionDetails?.label}
+            date={connectionDetails?.connectionDate}
+          />
+          {connectionDetailsData.map((infoBlock, index) => (
+            <ConnectionDetailsInfoBlock
+              key={index}
+              title={infoBlock.title}
+            >
+              {infoBlock.value}
+            </ConnectionDetailsInfoBlock>
+          ))}
           {notes.length > 0 ? (
             <div className="connection-details-info-block">
               <h3>{i18n.t("connections.details.notes")}</h3>
@@ -282,123 +274,16 @@ const ConnectionDetails = () => {
         />
       </PageLayout>
       {connectionDetails && (
-        <IonModal
-          isOpen={modalIsOpen}
-          className="edit-connections-modal"
-          data-testid="edit-connections-modal"
-          onDidDismiss={() => {
-            if (modalIsOpen && notes !== coreNotes) {
-              setNotes(coreNotes);
-            }
-            setModalIsOpen(false);
-          }}
-        >
-          <div className="modal">
-            <PageLayout
-              header={true}
-              closeButton={true}
-              closeButtonLabel={`${i18n.t("connections.details.cancel")}`}
-              closeButtonAction={() => {
-                if (notes !== coreNotes) {
-                  setNotes(coreNotes);
-                }
-                setModalIsOpen(false);
-              }}
-              actionButton={true}
-              actionButtonAction={() => {
-                const filteredNotes = notes.filter(
-                  (note) => note.title !== "" && note.message !== ""
-                );
-                if (filteredNotes !== coreNotes) {
-                  setNotes(filteredNotes);
-                  let update = false;
-                  filteredNotes.forEach((note) => {
-                    if (note.id.includes(TEMP_ID_PREFIX)) {
-                      AriesAgent.agent.connections.createConnectionNote(
-                        connectionDetails.id,
-                        note
-                      );
-                      update = true;
-                    }
-                  });
-                  coreNotes.forEach((noteCore) => {
-                    const noteFind = filteredNotes.find(
-                      (noteFilter) => noteCore.id === noteFilter.id
-                    );
-                    if (!noteFind) {
-                      AriesAgent.agent.connections.deleteConnectionNoteById(
-                        noteCore.id
-                      );
-                      update = true;
-                    } else if (
-                      noteCore.title !== noteFind.title ||
-                      noteCore.message !== noteFind.message
-                    ) {
-                      AriesAgent.agent.connections.updateConnectionNoteById(
-                        noteCore.id,
-                        noteFind
-                      );
-                      update = true;
-                    }
-                  });
-                  if (update) {
-                    dispatch(setToastMsg(ToastMsgType.NOTES_UPDATED));
-                    update = false;
-                  }
-                }
-                setModalIsOpen(false);
-              }}
-              actionButtonLabel={`${i18n.t("connections.details.confirm")}`}
-            >
-              <div className="connection-details-content">
-                <ConnectionDetailsHeader />
-                <div className="connection-details-info-block">
-                  {notes.length ? (
-                    <>
-                      <h3>{i18n.t("connections.details.notes")}</h3>
-                      {notes.map((note, index) => (
-                        <ConnectionNote
-                          title={note.title}
-                          message={note.message}
-                          id={note.id}
-                          notes={notes as ConnectionNoteProps[]}
-                          currentNoteId={currentNoteId.current}
-                          setAlertDeleteNoteIsOpen={setAlertDeleteNoteIsOpen}
-                          key={index}
-                        />
-                      ))}
-                    </>
-                  ) : (
-                    <i className="connection-details-info-block-nonotes">
-                      {i18n.t("connections.details.nocurrentnotes")}
-                    </i>
-                  )}
-                </div>
-                <div className="connection-details-add-note">
-                  <IonButton
-                    shape="round"
-                    className="primary-button"
-                    onClick={() => {
-                      setNotes([
-                        ...notes,
-                        {
-                          title: "",
-                          message: "",
-                          id: TEMP_ID_PREFIX + notes.length,
-                        },
-                      ]);
-                    }}
-                  >
-                    <IonIcon
-                      slot="icon-only"
-                      icon={createOutline}
-                    />
-                  </IonButton>
-                </div>
-              </div>
-            </PageLayout>
-          </div>
-        </IonModal>
+        <EditConnectionsModal
+          notes={notes}
+          setNotes={setNotes}
+          coreNotes={coreNotes}
+          modalIsOpen={modalIsOpen}
+          setModalIsOpen={setModalIsOpen}
+          currentNoteId={currentNoteId.current}
+          connectionDetails={connectionDetails}
+          setAlertDeleteNoteIsOpen={setAlertDeleteNoteIsOpen}
+        />
       )}
 
       <AlertDeleteNote

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { trashOutline } from "ionicons/icons";
 import { IonButton, IonIcon, IonInput, IonTextarea } from "@ionic/react";
-import { i18n } from "../../../i18n";
+import { i18n } from "../../../../i18n";
 import { ConnectionNoteProps } from "./ConnectionNote.types";
 
 const ConnectionNote = ({
