@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import "./ConnectionDetailsInfoBlock.scss";
 
 const ConnectionDetailsInfoBlock = ({
   title,
@@ -9,10 +10,10 @@ const ConnectionDetailsInfoBlock = ({
 }) => {
   return (
     <div className="connection-details-info-block">
-      <h3>{title}</h3>
+      <p>{title}</p>
       <div className="connection-details-info-block-inner">
         <div className="connection-details-info-block-line">
-          <div className="connection-details-info-block-data">{children}</div>
+          <p>{children}</p>
         </div>
       </div>
     </div>

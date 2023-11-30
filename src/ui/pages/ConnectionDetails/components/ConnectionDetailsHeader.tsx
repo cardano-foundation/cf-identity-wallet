@@ -1,6 +1,7 @@
 import { formatShortDate } from "../../../utils/formatters";
 import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
 import { ConnectionDetailsHeaderProps } from "./ConnectionDetailsHeader.types";
+import "./ConnectionDetailsHeader.scss";
 
 const ConnectionDetailsHeader = ({
   logo,
@@ -15,10 +16,8 @@ const ConnectionDetailsHeader = ({
           alt="connection-logo"
         />
       </div>
-      <span className="connection-details-issuer">{label}</span>
-      <span className="connection-details-date">
-        {formatShortDate(`${date}`)}
-      </span>
+      <h2>{label}</h2>
+      <p>{formatShortDate(`${date}`)}</p>
     </div>
   );
 };

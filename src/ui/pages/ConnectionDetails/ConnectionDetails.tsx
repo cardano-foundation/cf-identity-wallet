@@ -185,12 +185,12 @@ const ConnectionDetails = () => {
                   key={index}
                 >
                   <div className="connection-details-info-block-line">
-                    <div className="connection-details-info-block-note-title">
+                    <p className="connection-details-info-block-note-title">
                       {note.title}
-                    </div>
-                    <div className="connection-details-info-block-note-message">
+                    </p>
+                    <p className="connection-details-info-block-note-message">
                       {note.message}
-                    </div>
+                    </p>
                   </div>
                 </div>
               ))}

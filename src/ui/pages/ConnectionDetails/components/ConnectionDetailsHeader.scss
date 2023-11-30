@@ -1,0 +1,21 @@
+.connection-details-header {
+  display: flex;
+  flex-direction: column;
+  margin-top: 0.25rem;
+
+  & > * {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+}
+
+.connection-details-logo {
+  margin-bottom: 0.94rem;
+
+  img {
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: 2.75rem;
+  }
+}

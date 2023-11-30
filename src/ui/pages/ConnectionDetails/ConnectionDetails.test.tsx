@@ -92,7 +92,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     await waitFor(() =>
-      expect(queryByTestId("connection-details-page")).toBeVisible()
+      expect(queryByTestId("connection-details")).toBeVisible()
     );
 
     act(() => {

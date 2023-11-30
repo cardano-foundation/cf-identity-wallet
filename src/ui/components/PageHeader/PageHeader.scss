@@ -23,6 +23,9 @@
   }
 
   ion-toolbar {
+    ion-buttons ion-button {
+      color: var(--ion-color-secondary);
+    }
     ion-icon {
       font-size: 1.85em !important;
     }

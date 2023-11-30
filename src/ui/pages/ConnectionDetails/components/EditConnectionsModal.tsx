@@ -10,6 +10,7 @@ import { ToastMsgType } from "../../../globals/types";
 import { ConnectionNoteProps } from "./ConnectionNote.types";
 import { useAppDispatch } from "../../../../store/hooks";
 import { EditConnectionsModalProps } from "./EditConnectionsModal.types";
+import "./EditConnectionsModal.scss";
 
 const EditConnectionsModal = ({
   notes,
