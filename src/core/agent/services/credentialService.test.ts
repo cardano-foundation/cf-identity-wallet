@@ -404,6 +404,17 @@ describe("Credential service of agent", () => {
     expect(
       agent.modules.generalStorage.deleteCredentialMetadata
     ).toBeCalledWith(credId);
+    agent.modules.generalStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue({
+        ...archivedMetadataRecord,
+        connectionType: ConnectionType.KERI,
+      });
+    await credentialService.deleteCredential(credId);
+    expect(agent.modules.generalStorage.getCredentialMetadata).toBeCalledWith(
+      credId
+    );
+    expect(agent.modules.generalStorage.updateCredentialMetadata).toBeCalled();
   });
 
   test("cannot delete a non-archived credential", async () => {

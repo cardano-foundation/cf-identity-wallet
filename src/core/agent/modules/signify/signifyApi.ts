@@ -116,6 +116,14 @@ export class SignifyApi {
     return this.signifyClient.contacts().list();
   }
 
+  async getContactById(id: string): Promise<KeriContact> {
+    return this.signifyClient.contacts().get(id);
+  }
+
+  async deleteContactById(id: string): Promise<KeriContact> {
+    return this.signifyClient.contacts().delete(id);
+  }
+
   async resolveOobi(url: string): Promise<any> {
     if (SignifyApi.resolvedOobi[url]) {
       return SignifyApi.resolvedOobi[url];

@@ -43,6 +43,7 @@ const agent = jest.mocked({
       resolveOobi: jest.fn(),
       getContacts: jest.fn(),
       getOobi: jest.fn(),
+      deleteContactById: jest.fn(),
     },
   },
   receiveMessage: jest.fn(),
@@ -608,6 +609,9 @@ describe("Connection service of agent", () => {
       ConnectionType.KERI
     );
     expect(agent.genericRecords.deleteById).toBeCalledWith(connectionId);
+    expect(agent.modules.signify.deleteContactById).toBeCalledWith(
+      connectionId
+    );
     await connectionService.deleteConnectionById(
       connectionId,
       ConnectionType.DIDCOMM

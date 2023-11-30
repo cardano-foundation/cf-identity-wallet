@@ -10,8 +10,7 @@ import {
   IdentifierMetadataRecordProps,
 } from "../modules/generalStorage/repositories/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { ColorGenerator } from "../../../ui/utils/colorGenerator";
-import { IdentifiersListResult } from "../modules/signify/signifyApi.types";
+import { IdentifierResult } from "../modules/signify/signifyApi.types";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
   [IdentifierType.KEY]: [0, 1, 2, 3],
@@ -156,9 +155,19 @@ class IdentifierService extends AgentService {
   async deleteIdentifier(identifier: string): Promise<void> {
     const metadata = await this.getMetadataById(identifier);
     this.validArchivedIdentifier(metadata);
-    await this.agent.modules.generalStorage.deleteIdentifierMetadata(
-      identifier
-    );
+    if (metadata.method === IdentifierType.KERI) {
+      await this.agent.modules.generalStorage.updateIdentifierMetadata(
+        identifier,
+        {
+          ...metadata,
+          isDeleted: true,
+        }
+      );
+    } else {
+      await this.agent.modules.generalStorage.deleteIdentifierMetadata(
+        identifier
+      );
+    }
   }
 
   async restoreIdentifier(identifier: string): Promise<void> {
@@ -182,30 +191,23 @@ class IdentifierService extends AgentService {
     );
   }
 
-  private async getAllKeriaIdentifiers(): Promise<IdentifiersListResult> {
-    const keriaIdentifiers =
-      await this.agent.modules.signify.getAllIdentifiers();
-    return keriaIdentifiers;
-  }
-
   async syncKeriaIdentifiers() {
-    const { aids: signifyIdentifiers } = await this.getAllKeriaIdentifiers();
+    const { aids: signifyIdentifiers } =
+      await this.agent.modules.signify.getAllIdentifiers();
     const storageIdentifiers =
       await this.agent.modules.generalStorage.getKeriIdentifiersMetadata();
     const unSyncedData = signifyIdentifiers.filter(
-      (identifier: any) =>
+      (identifier: IdentifierResult) =>
         !storageIdentifiers.find((item) => identifier.prefix === item.id)
     );
     if (unSyncedData.length) {
       //sync the storage with the signify data
-      const colorGenerator = new ColorGenerator();
       for (const identifier of unSyncedData) {
-        const newColor = colorGenerator.generateNextColor();
         await this.createIdentifierMetadataRecord({
           id: identifier.prefix,
           displayName: identifier.prefix, //same as the id at the moment
           method: IdentifierType.KERI,
-          colors: [newColor[1], newColor[0]],
+          colors: ["#e0f5bc", "#ccef8f"],
           theme: 4,
           signifyName: identifier.name,
         });

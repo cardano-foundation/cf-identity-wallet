@@ -142,9 +142,12 @@ class CredentialService extends AgentService {
       await this.agent.modules.generalStorage.getAllCredentialMetadata(
         isGetArchive
       );
-    return listMetadatas.map((element: CredentialMetadataRecord) =>
-      this.getCredentialShortDetails(element)
-    );
+    //only get credentials that are not deleted
+    return listMetadatas
+      .filter((item) => !item.isDeleted)
+      .map((element: CredentialMetadataRecord) =>
+        this.getCredentialShortDetails(element)
+      );
   }
 
   getCredentialShortDetails(
@@ -351,7 +354,15 @@ class CredentialService extends AgentService {
   async deleteCredential(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
-    await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
+    //With KERI, we only soft delete
+    if (metadata.connectionType === ConnectionType.KERI) {
+      await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
+        ...metadata,
+        isDeleted: true,
+      });
+    } else {
+      await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
+    }
   }
 
   async restoreCredential(id: string): Promise<void> {
@@ -583,18 +594,16 @@ class CredentialService extends AgentService {
     return cred;
   }
 
-  async getAllACDCs(): Promise<any> {
-    const credentials = await this.agent.modules.signify.getCredentials();
-    return credentials;
-  }
-
   async syncACDCs() {
-    const signifyCredentials = await this.getAllACDCs();
+    const signifyCredentials =
+      await this.agent.modules.signify.getCredentials();
     const storageCredentials =
       await this.agent.modules.generalStorage.getAllCredentialMetadata();
     const unSyncedData = signifyCredentials.filter(
       (credential: any) =>
-        !storageCredentials.find((item) => credential.prefix === item.id)
+        !storageCredentials.find(
+          (item) => credential.sad.d === item.credentialRecordId
+        )
     );
     if (unSyncedData.length) {
       //sync the storage with the signify data

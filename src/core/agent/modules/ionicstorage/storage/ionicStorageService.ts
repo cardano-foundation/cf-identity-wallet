@@ -193,17 +193,6 @@ class IonicStorageService<T extends BaseRecord> implements StorageService<T> {
             return false;
           }
         } else if (
-          !record.tags[queryKey] &&
-          record.value.match(new RegExp(queryKey))
-        ) {
-          //query by key-value
-          try {
-            const parsedValue = JSON.parse(record.value);
-            return parsedValue[queryKey] === queryVal;
-          } catch (error) {
-            return false;
-          }
-        } else if (
           record.tags[queryKey] !== queryVal &&
           queryVal !== undefined
         ) {

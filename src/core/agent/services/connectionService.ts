@@ -268,9 +268,11 @@ class ConnectionService extends AgentService {
     connectionType?: ConnectionType
   ): Promise<void> {
     if (connectionType === ConnectionType.KERI) {
-      return this.agent.genericRecords.deleteById(id);
+      await this.agent.genericRecords.deleteById(id);
+      await this.agent.modules.signify.deleteContactById(id);
+    } else {
+      await this.agent.connections.deleteById(id);
     }
-    return this.agent.connections.deleteById(id);
   }
 
   async getConnectionShortDetailById(
@@ -397,7 +399,7 @@ class ConnectionService extends AgentService {
   }
 
   async syncKeriaContacts() {
-    const signifyContacts = await this.getAllKeriContacts();
+    const signifyContacts = await this.agent.modules.signify.getContacts();
     const storageContacts = await this.getAllConnectionKeriMetadata();
     const unSyncedData = signifyContacts.filter(
       (contact: KeriContact) =>
@@ -462,7 +464,7 @@ class ConnectionService extends AgentService {
   private async getKeriConnectionDetails(
     id: string
   ): Promise<ConnectionDetails> {
-    const connection = (await this.agent.modules.signify.getContacts(id))[0];
+    const connection = await this.agent.modules.signify.getContactById(id);
     return {
       label: connection?.alias,
       id: connection.id,

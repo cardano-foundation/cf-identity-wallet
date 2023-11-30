@@ -35,7 +35,7 @@ export class GeneralStorageApi {
 
   async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
     return this.identifierMetadataRepository.findByQuery(this.agentContext, {
-      method: "keri",
+      method: IdentifierType.KERI,
     });
   }
 
@@ -44,6 +44,7 @@ export class GeneralStorageApi {
     > {
     return this.identifierMetadataRepository.findByQuery(this.agentContext, {
       isArchived: false,
+      isDeleted: false,
     });
   }
 
@@ -96,6 +97,7 @@ export class GeneralStorageApi {
       if (data.displayName) record.displayName = data.displayName;
       if (data.theme) record.theme = data.theme;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
+      if (data.isDeleted !== undefined) record.isDeleted = data.isDeleted;
       return this.identifierMetadataRepository.update(
         this.agentContext,
         record
@@ -157,6 +159,7 @@ export class GeneralStorageApi {
       if (data.status) record.status = data.status;
       if (data.credentialType) record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
+      if (data.isDeleted !== undefined) record.isDeleted = data.isDeleted;
       if (data.cachedDetails) record.cachedDetails = data.cachedDetails;
       await this.credentialMetadataRepository.update(this.agentContext, record);
     }
