@@ -96,7 +96,7 @@ To experience the mobile application within the browser, follow these instructio
 # Architecture
 <div align="center"> 
   <p>
-    <a href="">
+    <a href="https://raw.githubusercontent.com/cardano-foundation/cf-identity-wallet/main/docs/images/readme/Architecture-Diagram.svg">
     <img src="docs/images/readme/Architecture-Diagram.svg" alt="Identity Wallet Architecture">
     </a>  
   </p>     
