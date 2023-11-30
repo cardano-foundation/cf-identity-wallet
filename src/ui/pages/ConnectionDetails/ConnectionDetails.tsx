@@ -1,11 +1,4 @@
-import {
-  IonButton,
-  IonIcon,
-  IonInput,
-  IonModal,
-  IonPage,
-  IonTextarea,
-} from "@ionic/react";
+import { IonButton, IonIcon, IonModal, IonPage } from "@ionic/react";
 import { ellipsisVertical, trashOutline, createOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
@@ -41,7 +34,9 @@ import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
-import { InfoBlockProps, NotesProps } from "./ConnectionDetails.types";
+import { InfoBlockProps } from "./ConnectionDetails.types";
+import { ConnectionNote } from "./ConnectionNote";
+import { ConnectionNoteProps } from "./ConnectionNote.types";
 
 const ConnectionDetails = () => {
   const history = useHistory();
@@ -58,8 +53,8 @@ const ConnectionDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [coreNotes, setCoreNotes] = useState<NotesProps[]>([]);
-  const [notes, setNotes] = useState<NotesProps[]>([]);
+  const [coreNotes, setCoreNotes] = useState<ConnectionNoteProps[]>([]);
+  const [notes, setNotes] = useState<ConnectionNoteProps[]>([]);
   const currentNoteId = useRef("");
   const TEMP_ID_PREFIX = "temp";
 
@@ -140,72 +135,6 @@ const ConnectionDetails = () => {
           <div className="connection-details-info-block-line">
             <div className="connection-details-info-block-data">{children}</div>
           </div>
-        </div>
-      </div>
-    );
-  };
-
-  const Note = ({ title, message, id }: NotesProps) => {
-    const [newTitle, setNewTitle] = useState(title);
-    const [newMessage, setNewMessage] = useState(message);
-    const TITLE_MAX_LENGTH = 64;
-    const MESSAGE_MAX_LENGTH = 576;
-
-    return (
-      <div className="connection-details-info-block-inner">
-        <div className="connection-details-info-block-line">
-          <div className="connection-details-info-block-data">
-            <div className="connection-details-info-block-title">
-              <span>{i18n.t("connections.details.title")}</span>
-              <span>
-                {newTitle.length}/{TITLE_MAX_LENGTH}
-              </span>
-            </div>
-            <IonInput
-              data-testid={`edit-connections-modal-note-title-${id}`}
-              onIonChange={(e) => setNewTitle(`${e.target.value ?? ""}`)}
-              onIonBlur={() => {
-                const newNotes = [...notes];
-                const noteIndex = newNotes.map((el) => el.id).indexOf(id);
-                newNotes[noteIndex].title = newTitle;
-              }}
-              value={newTitle}
-            />
-          </div>
-          <div className="connection-details-info-block-data">
-            <div className="connection-details-info-block-title">
-              <span>{i18n.t("connections.details.message")}</span>
-              <span>
-                {newMessage.length}/{MESSAGE_MAX_LENGTH}
-              </span>
-            </div>
-            <IonTextarea
-              autoGrow={true}
-              data-testid={`edit-connections-modal-note-message-${id}`}
-              onIonChange={(e) => setNewMessage(`${e.target.value ?? ""}`)}
-              onIonBlur={() => {
-                const newNotes = [...notes];
-                const noteIndex = newNotes.map((el) => el.id).indexOf(id);
-                newNotes[noteIndex].message = newMessage;
-              }}
-              value={newMessage}
-            />
-          </div>
-        </div>
-        <div className="connection-details-delete-note">
-          <IonButton
-            shape="round"
-            color={"danger"}
-            onClick={() => {
-              currentNoteId.current = id;
-              setAlertDeleteNoteIsOpen(true);
-            }}
-          >
-            <IonIcon
-              slot="icon-only"
-              icon={trashOutline}
-            />
-          </IonButton>
         </div>
       </div>
     );
@@ -427,10 +356,13 @@ const ConnectionDetails = () => {
                     <>
                       <h3>{i18n.t("connections.details.notes")}</h3>
                       {notes.map((note, index) => (
-                        <Note
+                        <ConnectionNote
                           title={note.title}
                           message={note.message}
                           id={note.id}
+                          notes={notes}
+                          currentNoteId={currentNoteId.current}
+                          setAlertDeleteNoteIsOpen={setAlertDeleteNoteIsOpen}
                           key={index}
                         />
                       ))}
