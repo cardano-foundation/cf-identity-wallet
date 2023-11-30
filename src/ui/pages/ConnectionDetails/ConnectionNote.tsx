@@ -63,7 +63,7 @@ const ConnectionNote = ({
           shape="round"
           color={"danger"}
           onClick={() => {
-            currentNoteId.current = id;
+            currentNoteId = id;
             setAlertDeleteNoteIsOpen(true);
           }}
         >

@@ -36,6 +36,7 @@ import { AriesAgent } from "../../../core/agent/agent";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 import { InfoBlockProps } from "./ConnectionDetails.types";
 import { ConnectionNote } from "./ConnectionNote";
+import { ConnectionNoteDetails } from "../../../core/agent/agent.types";
 import { ConnectionNoteProps } from "./ConnectionNote.types";
 
 const ConnectionDetails = () => {
@@ -53,8 +54,8 @@ const ConnectionDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [coreNotes, setCoreNotes] = useState<ConnectionNoteProps[]>([]);
-  const [notes, setNotes] = useState<ConnectionNoteProps[]>([]);
+  const [coreNotes, setCoreNotes] = useState<ConnectionNoteDetails[]>([]);
+  const [notes, setNotes] = useState<ConnectionNoteDetails[]>([]);
   const currentNoteId = useRef("");
   const TEMP_ID_PREFIX = "temp";
 
@@ -360,7 +361,7 @@ const ConnectionDetails = () => {
                           title={note.title}
                           message={note.message}
                           id={note.id}
-                          notes={notes}
+                          notes={notes as ConnectionNoteProps[]}
                           currentNoteId={currentNoteId.current}
                           setAlertDeleteNoteIsOpen={setAlertDeleteNoteIsOpen}
                           key={index}
