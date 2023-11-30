@@ -137,9 +137,6 @@ class AriesAgent {
       await this.agent.initialize();
       await this.agent.modules.signify.start();
       AriesAgent.ready = true;
-      this.connections.receiveInvitationFromUrl(
-        "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/shorten/23bdc4ff-d7c9-413a-a164-15f34f6d8b31"
-      );
     }
   }
 }
