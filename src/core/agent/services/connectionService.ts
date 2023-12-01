@@ -393,11 +393,6 @@ class ConnectionService extends AgentService {
     });
   }
 
-  async getAllKeriContacts(): Promise<KeriContact[]> {
-    const contacts = await this.agent.modules.signify.getContacts();
-    return contacts;
-  }
-
   async syncKeriaContacts() {
     const signifyContacts = await this.agent.modules.signify.getContacts();
     const storageContacts = await this.getAllConnectionKeriMetadata();

@@ -354,7 +354,7 @@ class CredentialService extends AgentService {
   async deleteCredential(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
-    //With KERI, we only soft delete
+    //With KERI, we only soft delete because we need to sync with KERIA. This will prevent re-sync deleted records.
     if (metadata.connectionType === ConnectionType.KERI) {
       await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
         ...metadata,
