@@ -18,4 +18,14 @@
     height: 5.5rem;
     border-radius: 2.75rem;
   }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    margin-bottom: 0.6rem;
+
+    img {
+      width: 4rem;
+      height: 4rem;
+      border-radius: 2.75rem;
+    }
+  }
 }
