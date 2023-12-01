@@ -45,6 +45,8 @@ class CredentialService extends AgentService {
     "Keri notification record not found";
   static readonly ISSUEE_NOT_FOUND =
     "Cannot accept incoming ACDC, issuee AID not controlled by us";
+  static readonly CREDENTIAL_NOT_FOUND =
+    "Credential with given SAID not found on KERIA";
 
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
@@ -73,6 +75,7 @@ class CredentialService extends AgentService {
     if (notif.a.r === "/exn/ipex/grant" && notif.r === false) {
       const keriNoti = await this.createKeriNotificationRecord(notif);
       callback(keriNoti);
+      await this.agent.modules.signify.markNotification(notif.i);
     }
   }
 
@@ -172,6 +175,9 @@ class CredentialService extends AgentService {
       const acdc = await this.agent.modules.signify.getCredentialBySaid(
         metadata.credentialRecordId
       );
+      if (!acdc) {
+        throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
+      }
       return {
         ...this.getCredentialShortDetails(metadata),
         type: acdc.schema.credentialType,

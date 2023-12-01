@@ -20,8 +20,6 @@ export class SignifyApi {
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
-  static readonly CREDENTIAL_NOT_FOUND =
-    "Credential with given SAID not found on KERIA";
 
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly BACKER_ADDRESS =
@@ -162,15 +160,16 @@ export class SignifyApi {
   }
 
   async getCredentialBySaid(sad: string): Promise<any> {
-    const results = await this.signifyClient.credentials().list({
-      filter: {
-        "-d": { $eq: sad },
-      },
-    });
-    if (!results || !results.length) {
-      throw new Error(SignifyApi.CREDENTIAL_NOT_FOUND);
+    try {
+      const results = await this.signifyClient.credentials().list({
+        filter: {
+          "-d": { $eq: sad },
+        },
+      });
+      return results[0];
+    } catch (error) {
+      return undefined;
     }
-    return results[0];
   }
 
   async getKeriExchange(notificationD: string): Promise<any> {

@@ -944,4 +944,13 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     expect(agent.genericRecords.save).toBeCalledTimes(1);
     expect(callback).toBeCalledTimes(1);
   });
+  test("Must throw an error when there's no KERI credential", async () => {
+    const id = "not-found-id";
+    agent.modules.signify.getCredentialBySaid = jest
+      .fn()
+      .mockResolvedValue(undefined);
+    await expect(
+      credentialService.getCredentialDetailsById(id)
+    ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
+  });
 });
