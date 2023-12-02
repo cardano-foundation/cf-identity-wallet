@@ -1,4 +1,5 @@
-import { IonButton, IonToolbar } from "@ionic/react";
+import { IonButton, IonIcon, IonToolbar } from "@ionic/react";
+import { trashOutline } from "ionicons/icons";
 import { PageFooterProps } from "./PageFooter.types";
 import "./PageFooter.scss";
 
@@ -13,6 +14,9 @@ const PageFooter = ({
   tertiaryButtonText,
   tertiaryButtonAction,
   tertiaryButtonDisabled,
+  deleteButtonText,
+  deleteButtonAction,
+  deleteButtonDisabled,
 }: PageFooterProps) => {
   return (
     <IonToolbar
@@ -55,6 +59,25 @@ const PageFooter = ({
           disabled={tertiaryButtonDisabled}
         >
           {tertiaryButtonText}
+        </IonButton>
+      )}
+      {deleteButtonText && deleteButtonAction && (
+        <IonButton
+          shape="round"
+          expand="block"
+          fill="clear"
+          className="delete-button"
+          data-testid={`delete-button${pageId ? `-${pageId}` : ""}`}
+          onClick={deleteButtonAction}
+          disabled={deleteButtonDisabled}
+        >
+          <IonIcon
+            slot="icon-only"
+            size="small"
+            icon={trashOutline}
+            color="primary"
+          />
+          {deleteButtonText}
         </IonButton>
       )}
     </IonToolbar>

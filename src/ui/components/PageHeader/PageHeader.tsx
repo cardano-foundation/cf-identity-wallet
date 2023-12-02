@@ -114,7 +114,7 @@ const PageHeader = ({
               onClick={closeButtonAction}
               data-testid="close-button"
             >
-              {closeButtonLabel}
+              <p>{closeButtonLabel}</p>
             </IonButton>
           )}
         </IonButtons>
@@ -174,7 +174,7 @@ const PageHeader = ({
                 onClick={actionButtonAction}
                 data-testid="action-button"
               >
-                {actionButtonLabel}
+                <p>{actionButtonLabel}</p>
               </IonButton>
             )}
           </IonButtons>

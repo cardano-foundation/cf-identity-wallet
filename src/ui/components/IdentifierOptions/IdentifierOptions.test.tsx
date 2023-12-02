@@ -70,6 +70,6 @@ describe("Identifier Options modal", () => {
       getByTestId("identifier-options-identifier-options-button")
     ).toBeInTheDocument();
     expect(getByTestId("identifier-options-share-button")).toBeInTheDocument();
-    expect(getByTestId("identifier-options-delete-button")).toBeInTheDocument();
+    expect(getByTestId("delete-button-identifier-options")).toBeInTheDocument();
   });
 });
