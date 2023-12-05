@@ -11,6 +11,7 @@ const ConnectionNote = ({
   notes,
   currentNoteId,
   setAlertDeleteNoteIsOpen,
+  setNotes,
 }: ConnectionNoteProps) => {
   const [newTitle, setNewTitle] = useState(title);
   const [newMessage, setNewMessage] = useState(message);
@@ -30,10 +31,11 @@ const ConnectionNote = ({
           <IonInput
             data-testid={`edit-connections-modal-note-title-${id}`}
             onIonChange={(e) => setNewTitle(`${e.target.value ?? ""}`)}
-            onIonBlur={() => {
+            onIonBlur={(e) => {
               const newNotes = [...notes];
               const noteIndex = newNotes.map((el) => el.id).indexOf(id);
-              newNotes[noteIndex].title = newTitle;
+              newNotes[noteIndex].title = e.target.value?.toString() ?? "";
+              setNotes(newNotes);
             }}
             value={newTitle}
           />
@@ -49,10 +51,11 @@ const ConnectionNote = ({
             autoGrow={true}
             data-testid={`edit-connections-modal-note-message-${id}`}
             onIonChange={(e) => setNewMessage(`${e.target.value ?? ""}`)}
-            onIonBlur={() => {
+            onIonBlur={(e) => {
               const newNotes = [...notes];
               const noteIndex = newNotes.map((el) => el.id).indexOf(id);
-              newNotes[noteIndex].message = newMessage;
+              newNotes[noteIndex].message = e.target.value?.toString() ?? "";
+              setNotes(newNotes);
             }}
             value={newMessage}
           />
