@@ -142,9 +142,12 @@ class CredentialService extends AgentService {
       await this.agent.modules.generalStorage.getAllCredentialMetadata(
         isGetArchive
       );
-    return listMetadatas.map((element: CredentialMetadataRecord) =>
-      this.getCredentialShortDetails(element)
-    );
+    //only get credentials that are not deleted
+    return listMetadatas
+      .filter((item) => !item.isDeleted)
+      .map((element: CredentialMetadataRecord) =>
+        this.getCredentialShortDetails(element)
+      );
   }
 
   getCredentialShortDetails(
@@ -351,7 +354,15 @@ class CredentialService extends AgentService {
   async deleteCredential(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
-    await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
+    //With KERI, we only soft delete because we need to sync with KERIA. This will prevent re-sync deleted records.
+    if (metadata.connectionType === ConnectionType.KERI) {
+      await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
+        ...metadata,
+        isDeleted: true,
+      });
+    } else {
+      await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
+    }
   }
 
   async restoreCredential(id: string): Promise<void> {
@@ -455,13 +466,19 @@ class CredentialService extends AgentService {
   }
 
   private async createAcdcMetadataRecord(event: any): Promise<void> {
-    const credentialId = event.e.acdc.d;
+    await this.saveAcdcMetadataRecord(event.e.acdc.d, event.e.acdc.a.dt);
+  }
+
+  private async saveAcdcMetadataRecord(
+    credentialId: string,
+    dateTime: string
+  ): Promise<void> {
     const credentialDetails: CredentialShortDetails = {
       id: `metadata:${credentialId}`,
       isArchived: false,
       colors: new ColorGenerator().generateNextColor() as [string, string],
       credentialType: "",
-      issuanceDate: event.e.acdc.a.dt,
+      issuanceDate: dateTime,
       status: CredentialMetadataRecordStatus.PENDING,
       connectionType: ConnectionType.KERI,
     };
@@ -575,6 +592,28 @@ class CredentialService extends AgentService {
       retryTimes++;
     }
     return cred;
+  }
+
+  async syncACDCs() {
+    const signifyCredentials =
+      await this.agent.modules.signify.getCredentials();
+    const storageCredentials =
+      await this.agent.modules.generalStorage.getAllCredentialMetadata();
+    const unSyncedData = signifyCredentials.filter(
+      (credential: any) =>
+        !storageCredentials.find(
+          (item) => credential.sad.d === item.credentialRecordId
+        )
+    );
+    if (unSyncedData.length) {
+      //sync the storage with the signify data
+      for (const credential of unSyncedData) {
+        await this.saveAcdcMetadataRecord(
+          credential.sad.d,
+          credential.sad.a.dt
+        );
+      }
+    }
   }
 }
 

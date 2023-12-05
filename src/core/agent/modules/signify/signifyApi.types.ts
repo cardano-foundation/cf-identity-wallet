@@ -16,3 +16,10 @@ export interface IdentifierResult {
   prefix: string;
   salty: any;
 }
+
+export interface IdentifiersListResult {
+  aids: IdentifierResult[];
+  start: 0;
+  end: 0;
+  total: 0;
+}
