@@ -761,7 +761,7 @@ describe("Credential service of agent", () => {
     };
     agent.modules.signify.getCredentialBySaid = jest
       .fn()
-      .mockResolvedValue(acdc);
+      .mockResolvedValue({ credential: acdc, error: undefined });
 
     await expect(
       credentialService.getCredentialDetailsById(acdcMetadataRecord.id)
@@ -889,9 +889,12 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
         signifyName: "holder",
       });
     agent.modules.signify.getCredentialBySaid = jest.fn().mockResolvedValue({
-      sad: {
-        d: "id",
+      credential: {
+        sad: {
+          d: "id",
+        },
       },
+      error: undefined,
     });
     agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
       jest.fn().mockResolvedValue({
@@ -944,13 +947,25 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     expect(agent.genericRecords.save).toBeCalledTimes(1);
     expect(callback).toBeCalledTimes(1);
   });
-  test("Must throw an error when there's no KERI credential", async () => {
+  test("Must throw 'Credential with given SAID not found on KERIA' when there's no KERI credential", async () => {
     const id = "not-found-id";
     agent.modules.signify.getCredentialBySaid = jest
       .fn()
-      .mockResolvedValue(undefined);
+      .mockResolvedValue({ credential: undefined, error: undefined });
     await expect(
       credentialService.getCredentialDetailsById(id)
     ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
+  });
+  test("Must throw an error when there's error from Signigy-ts ", async () => {
+    const id = "not-found-id";
+    agent.modules.signify.getCredentialBySaid = jest
+      .fn()
+      .mockResolvedValue({
+        credential: undefined,
+        error: new Error("Network error"),
+      });
+    await expect(
+      credentialService.getCredentialDetailsById(id)
+    ).rejects.toThrowError();
   });
 });

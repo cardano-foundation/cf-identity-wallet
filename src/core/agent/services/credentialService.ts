@@ -172,9 +172,13 @@ class CredentialService extends AgentService {
   async getCredentialDetailsById(id: string): Promise<CredentialDetails> {
     const metadata = await this.getMetadataById(id);
     if (metadata.connectionType === ConnectionType.KERI) {
-      const acdc = await this.agent.modules.signify.getCredentialBySaid(
-        metadata.credentialRecordId
-      );
+      const { credential: acdc, error } =
+        await this.agent.modules.signify.getCredentialBySaid(
+          metadata.credentialRecordId
+        );
+      if (error) {
+        throw error;
+      }
       if (!acdc) {
         throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
       }
@@ -568,19 +572,21 @@ class CredentialService extends AgentService {
   }
 
   private async waitForCredentialToAppear(credentialId: string): Promise<any> {
-    let cred = await this.agent.modules.signify.getCredentialBySaid(
+    let { credential } = await this.agent.modules.signify.getCredentialBySaid(
       credentialId
     );
     let retryTimes = 0;
-    while (!cred) {
+    while (!credential) {
       if (retryTimes > 15) {
         throw new Error(CredentialService.CREDENTIAL_NOT_ARCHIVED);
       }
       await new Promise((resolve) => setTimeout(resolve, 250));
-      cred = await this.agent.modules.signify.getCredentialBySaid(credentialId);
+      credential = (
+        await this.agent.modules.signify.getCredentialBySaid(credentialId)
+      ).credential;
       retryTimes++;
     }
-    return cred;
+    return credential;
   }
 }
 

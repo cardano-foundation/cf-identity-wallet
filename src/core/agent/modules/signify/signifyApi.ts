@@ -166,9 +166,15 @@ export class SignifyApi {
           "-d": { $eq: sad },
         },
       });
-      return results[0];
+      return {
+        credential: results[0],
+        error: undefined,
+      };
     } catch (error) {
-      return undefined;
+      return {
+        credential: undefined,
+        error,
+      };
     }
   }
 
