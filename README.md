@@ -12,11 +12,11 @@
 # Disclaimer
 
 <div align="justify"> 
-<b>  Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions.</b>
+<b>  Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions.  Furthermore, any seed phrase generated during the onboarding process is currently not being utilised within the wallet. We are in the process of reviewing the ideal key management and social recovery methodologies for development in 2024. </b>
 </div>
 <br>
 <div align="center">   
- <b> :warning: :warning: :warning: The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis. :warning: :warning: :warning: </b>
+ <b>  The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis. </b>
 </div>
 <br>
 <div align="justify">    
@@ -28,10 +28,8 @@
 # Overview
 
 <div align="justify"> 
-The Identity Wallet is an open source application developed by the Cardano Foundation.  This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The first release of Identity Wallet provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano.
+<b> The Identity Wallet is an open source application developed by the Cardano Foundation.  This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The first release of Identity Wallet provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano. </b>
 </div>
-
-#### Click the image below to watch our overview video
 
 <br>
 <p align="center">
@@ -41,7 +39,10 @@ The Identity Wallet is an open source application developed by the Cardano Found
     </a>
   </kbd>
 </p>
-<br>
+
+<div align="center">   
+ <b>  Click the image to watch the overview video </b>
+</div>
 
 # Features
 
