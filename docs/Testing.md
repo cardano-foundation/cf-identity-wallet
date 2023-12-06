@@ -1,5 +1,22 @@
-# End-to-End (E2E) Testing
-## Pre-installed on local:
+# Testing Guide
+
+## Unit tests
+
+This project uses [Jest Testing Framework](https://jestjs.io/) for unit testing.
+
+### Run tests:
+
+1. Install all packages locally
+```
+npm install
+```
+2. Run the test
+```
+npm run test
+```
+
+## End-to-End (E2E) Testing
+### Pre-installed on local:
 
 - [allure commandline](https://docs.qameta.io/allure-report/#_installing_a_commandline)
 - Node.js and npm
@@ -18,7 +35,7 @@
 # iOS
 APP_PATH=<LOCAL_PATH/App.app>
 ```
-## Test run in Local:
+### Test run in Local:
 
 1. Install all packages locally
 ```

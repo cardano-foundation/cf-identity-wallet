@@ -47,7 +47,7 @@ The Identity Wallet is an open source application developed by the Cardano Found
 
 | **User Interface**    |  **Secure Storage**  |**Interoperability**   |  **Standards and Protocols** | **[Connections](https://www.w3.org/TR/vc-data-model/#roles) and Credential Issuance**  |     **SSI Agents**   |           
 |----------------|---------------|---------------|----------------|---------------|----------------|
-| :white_check_mark: Intuitive User Experience | :white_check_mark: Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material | :white_check_mark: [Aries RFCs](https://github.com/hyperledger/aries-rfcs) | :white_check_mark: [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) | :white_check_mark: Holder-to-Holder | :white_check_mark: [Aries Framework](https://github.com/hyperledger/aries-framework-javascript)| 
+| :white_check_mark: Intuitive User Experience | :white_check_mark: Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material | :white_check_mark: [Aries RFCs](https://github.com/hyperledger/aries-rfcs) | :white_check_mark: [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) | :white_check_mark: Holder-to-Holder | :white_check_mark: [Aries Framework JavaScript](https://github.com/openwallet-foundation/agent-framework-javascript)| 
 | :white_check_mark:  Android and iOS support | :white_check_mark: Hierarchical Deterministic (HD) wallet, leverage BIP-39 mnemonic seed phrase for identity profiles|:white_check_mark: [W3C](https://www.w3.org/) | :white_check_mark: [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID)  | :white_check_mark: Issuer-to-Holder | :white_check_mark: [KERIA](https://github.com/cardano-foundation/keria) | 
 |  | |:white_check_mark: [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) | :white_check_mark: [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) | :white_check_mark: [Credential Issuance Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  | :white_check_mark: [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
 |  | |:white_check_mark: [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | |  | |
@@ -151,7 +151,7 @@ cd cf-identity-wallet
 ```
 
 ## Preparing the App
-This project uses a specific node version (check the requirements section above). If necessary, you can use [nvm](https://github.com/nvm-sh/nvm) to manage and switch between different node versions on your computer.
+This project uses a specific node version (check the requirements section above). You can optionally use [nvm](https://github.com/nvm-sh/nvm) to manage and switch between different Node.js versions on your computer.
 
 Before running the App, ensure that all dependencies are installed and the app is built properly. 
 In the project root directory, run the following commands:
@@ -213,7 +213,7 @@ Please be aware that from time-to-time the hosted pre-production KERI services r
 - [Cardano Backer](https://github.com/cardano-foundation/cardano-backer)
 
 ## Standards, Frameworks and Governance
-- [Hyperledger Aries Framework](https://github.com/hyperledger/aries-framework-javascript)
+- [Aries Framework JavaScript](https://github.com/openwallet-foundation/agent-framework-javascript)
 - [Veramo](https://veramo.io/)
 - [SSI Frameworks Overview](https://europeanblockchainassociation.org/ssi-frameworks-sdks-overview/)
 - [Global Legal Entity Identifier Foundation (GLIEF)](https://www.gleif.org/en)
