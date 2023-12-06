@@ -260,7 +260,7 @@ const IdentifierOptions = ({
                   </span>
                   <span
                     className="identifier-options-option"
-                    data-testid="identifier-options-delete-button"
+                    data-testid="delete-button-identifier-options"
                     onClick={() => {
                       setOptionsIsOpen(false);
                       handleDelete();

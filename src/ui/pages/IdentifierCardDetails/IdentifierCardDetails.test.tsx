@@ -245,7 +245,7 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByTestId("identifier-options-delete-button")
+        getByTestId("delete-button-identifier-options")
       ).toBeInTheDocument();
     });
 
@@ -298,7 +298,7 @@ describe("Cards Details page", () => {
       ).toBeInTheDocument()
     );
     act(() => {
-      fireEvent.click(getByTestId("card-details-delete-button"));
+      fireEvent.click(getByTestId("delete-button-identifier-card-details"));
     });
 
     await waitFor(() => {
@@ -360,7 +360,7 @@ describe("Cards Details page", () => {
       ).toBeInTheDocument()
     );
     act(() => {
-      fireEvent.click(getByTestId("card-details-delete-button"));
+      fireEvent.click(getByTestId("delete-button-identifier-card-details"));
     });
 
     await waitFor(() => {

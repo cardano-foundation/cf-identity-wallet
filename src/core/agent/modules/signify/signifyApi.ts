@@ -9,6 +9,7 @@ import {
   KeriContact,
   CreateIdentifierResult,
   IdentifierResult,
+  IdentifiersListResult,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 
@@ -113,6 +114,14 @@ export class SignifyApi {
     return this.signifyClient.contacts().list();
   }
 
+  async getContactById(id: string): Promise<KeriContact> {
+    return this.signifyClient.contacts().get(id);
+  }
+
+  async deleteContactById(id: string): Promise<KeriContact> {
+    return this.signifyClient.contacts().delete(id);
+  }
+
   async resolveOobi(url: string): Promise<any> {
     if (SignifyApi.resolvedOobi[url]) {
       return SignifyApi.resolvedOobi[url];
@@ -210,10 +219,15 @@ export class SignifyApi {
   }
 
   async getIdentifierById(id: string): Promise<IdentifierResult | undefined> {
-    const allIdentifiers = await this.signifyClient.identifiers().list();
+    const allIdentifiers = await this.getAllIdentifiers();
     const identifier = allIdentifiers.aids.find(
       (identifier: IdentifierResult) => identifier.prefix === id
     );
     return identifier;
+  }
+
+  async getAllIdentifiers(): Promise<IdentifiersListResult> {
+    const allIdentifiersResult = await this.signifyClient.identifiers().list();
+    return allIdentifiersResult;
   }
 }

@@ -9,6 +9,7 @@ interface CredentialMetadataRecordProps {
   colors: [string, string];
   createdAt?: Date;
   isArchived?: boolean;
+  isDeleted?: boolean;
   issuanceDate: string;
   issuerLogo?: string;
   credentialType: string;
