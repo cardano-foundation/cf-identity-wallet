@@ -1,9 +1,13 @@
-import { expect } from "expect-webdriverio"
+import { expect } from "expect-webdriverio";
 
 export class OnboardingScreen {
-  get getStartedButton () { return $("[data-testid=\"primary-button-onboarding\"]") }
-  get iAlreadyHaveAWalletButton () { return $("[data-testid=\"tertiary-button-onboarding\"]") }
+  get getStartedButton() {
+    return $("[data-testid=\"primary-button-onboarding\"]");
+  }
 
+  get iAlreadyHaveAWalletButton() {
+    return $("[data-testid=\"tertiary-button-onboarding\"]");
+  }
 
   async tapOnGetStartedButton() {
     await expect(this.getStartedButton).toBeDisplayed();
