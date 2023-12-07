@@ -34,7 +34,7 @@
 <br>
 <p align="center">
   <kbd>
-    <a href="https://drive.google.com/file/d/1So8bW7dgprOFgKs8PQKQ7c8Sm1Kd8aWW/view?usp=sharing">
+    <a href="https://www.youtube.com/watch?v=YmEJHQksFyE">
     <img src="docs/images/readme/Introduction-Video-Thumbnail.jpg" alt="Identity Wallet Introduction Video Thumbnail">
     </a>
   </kbd>
