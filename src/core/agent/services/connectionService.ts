@@ -273,6 +273,10 @@ class ConnectionService extends AgentService {
     } else {
       await this.agent.connections.deleteById(id);
     }
+    const notes = await this.getConnectNotesByConnectionId(id);
+    for (const note of notes) {
+      this.agent.genericRecords.deleteById(note.id);
+    }
   }
 
   async getConnectionShortDetailById(
