@@ -151,12 +151,13 @@ const ArchivedCredentials = ({
     setSelectedCredentials(data);
   };
 
-  const handleDeleteCredential = async (id: string) => {
+  const handleDeleteCredentialBatches = async (ids: string[]) => {
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     try {
-      await AriesAgent.agent.credentials.deleteCredential(id);
-      setArchivedCreds(credsCache.filter((item) => item.id !== id));
+      await Promise.all(
+        ids.map((id) => AriesAgent.agent.credentials.deleteCredential(id))
+      );
     } catch (e) {
       // @TODO - sdisalvo: handle error
     }
@@ -325,8 +326,8 @@ const ArchivedCredentials = ({
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={() => {
-          selectedCredentials.forEach((id) => handleDeleteCredential(id));
+        onVerify={async () => {
+          await handleDeleteCredentialBatches(selectedCredentials);
           dispatch(
             setToastMsg(
               selectedCredentials.length === 1
@@ -340,8 +341,8 @@ const ArchivedCredentials = ({
       <VerifyPasscode
         isOpen={verifyPasscodeIsOpen}
         setIsOpen={setVerifyPasscodeIsOpen}
-        onVerify={() => {
-          selectedCredentials.forEach((id) => handleDeleteCredential(id));
+        onVerify={async () => {
+          await handleDeleteCredentialBatches(selectedCredentials);
           dispatch(
             setToastMsg(
               selectedCredentials.length === 1
