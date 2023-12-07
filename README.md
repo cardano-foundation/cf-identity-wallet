@@ -12,11 +12,11 @@
 # Disclaimer
 
 <div align="justify"> 
-<b>  Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions.  Furthermore, any seed phrase generated during the onboarding process is currently not being utilised within the wallet. We are in the process of reviewing the ideal key management and social recovery methodologies for development in 2024. </b>
+<b>  Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions.  Furthermore, any seed phrase generated during the onboarding process is currently not being utilised. We are in the process of reviewing the ideal key management and social recovery methodologies for development in 2024. </b>
 </div>
 <br>
 <div align="center">   
- <b>  The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis. </b>
+ <b>   :heavy_exclamation_mark:  The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis.  </b>
 </div>
 <br>
 <div align="justify">    
@@ -46,12 +46,12 @@
 
 # Features
 
-| **User Interface**    |  **Secure Storage**  |**Interoperability**   |  **Standards and Protocols** | **[Connections](https://www.w3.org/TR/vc-data-model/#roles) and Credential Issuance**  |     **SSI Agents**   |           
+| **User Interface**    |  **Secure Storage**  |**Interoperability**   |  **Standards & Protocols** | **Connections & Credential Issuance**  |     **SSI Agents**   |           
 |----------------|---------------|---------------|----------------|---------------|----------------|
-| :white_check_mark: Intuitive User Experience | :white_check_mark: Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material | :white_check_mark: [Aries RFCs](https://github.com/hyperledger/aries-rfcs) | :white_check_mark: [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) | :white_check_mark: Holder-to-Holder | :white_check_mark: [Aries Framework JavaScript](https://github.com/openwallet-foundation/agent-framework-javascript)| 
-| :white_check_mark:  Android and iOS support | :white_check_mark: Hierarchical Deterministic (HD) wallet, leverage BIP-39 mnemonic seed phrase for identity profiles|:white_check_mark: [W3C](https://www.w3.org/) | :white_check_mark: [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID)  | :white_check_mark: Issuer-to-Holder | :white_check_mark: [KERIA](https://github.com/cardano-foundation/keria) | 
-|  | |:white_check_mark: [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) | :white_check_mark: [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) | :white_check_mark: [Credential Issuance Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  | :white_check_mark: [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
-|  | |:white_check_mark: [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | |  | |
+|  Intuitive User Experience |  Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material |  [Aries RFCs](https://github.com/hyperledger/aries-rfcs) |  [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) |  Holder-to-Holder |  [Open Wallet Foundation](https://github.com/openwallet-foundation/agent-framework-javascript)| 
+|  Android and iOS support |  Hierarchical Deterministic (HD) Identity Wallet | [W3C](https://www.w3.org/) | [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID)  |  Issuer-to-Holder |  [KERIA](https://github.com/cardano-foundation/keria) | 
+|  | | [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) |  [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  [Credential Issuance Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |  [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
+|  | | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | |  | |
 
 # Potential Future Developments
 
@@ -90,7 +90,7 @@ To experience the mobile application within the browser, follow these instructio
         </details>
 <br>
 <div align="center"> 
-      <a href="https://cf-identity-wallet.vercel.app">👨‍💻 Preview the latest version of the Identity Wallet here 👩‍💻
+      <a href="https://cf-identity-wallet.vercel.app">  🔗  Preview the latest version of the Identity Wallet 🔗 
 </div>
 
 
