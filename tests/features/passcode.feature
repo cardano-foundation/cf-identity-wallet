@@ -3,6 +3,7 @@ Feature: Passcode
   Background:
     Given user tap Get Started button on Onboarding screen
 
+
   Scenario: Passcode - loads correctly
     Then user can see Passcode screen
 
@@ -18,4 +19,4 @@ Feature: Passcode
   Scenario: Passcode - user can set a new passcode
     Given user enter a generated passcode on Passcode screen
     When user re-enter passcode on Passcode screen
-    Then user can see Generate Seed Phrase screen
+    Then user can see Create Password screen
