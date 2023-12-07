@@ -178,7 +178,7 @@ const ConnectionDetails = () => {
           ))}
           {notes.length > 0 && (
             <div className="connection-details-info-block">
-              <h3>{i18n.t("connections.details.notes")}</h3>
+              <p>{i18n.t("connections.details.notes")}</p>
               {notes.map((note, index) => (
                 <div
                   className="connection-details-info-block-inner"
