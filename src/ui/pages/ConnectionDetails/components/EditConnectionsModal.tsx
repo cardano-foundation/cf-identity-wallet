@@ -113,6 +113,7 @@ const EditConnectionsModal = ({
                       currentNoteId={currentNoteId}
                       setAlertDeleteNoteIsOpen={setAlertDeleteNoteIsOpen}
                       key={index}
+                      setNotes={setNotes}
                     />
                   ))}
                 </>
