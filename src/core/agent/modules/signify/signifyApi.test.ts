@@ -220,11 +220,10 @@ describe("Signify API", () => {
     expect(await api.getKeriExchange(notificationId)).toEqual(exchange);
   });
 
-  test("Must throw an error when there's no credential", async () => {
+  test("Should return undefined when there's no credential", async () => {
     const said = "not-found-said";
-    await expect(api.getCredentialBySaid(said)).rejects.toThrowError(
-      SignifyApi.CREDENTIAL_NOT_FOUND
-    );
+    const { credential } = await api.getCredentialBySaid(said);
+    expect(credential).toBeUndefined();
   });
 
   test("can get identifier by id", async () => {
