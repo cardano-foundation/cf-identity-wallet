@@ -248,6 +248,3 @@ const VerifyPassword = ({
 };
 
 export { VerifyPassword };
-function setCurrentAction(operation: string) {
-  throw new Error("Function not implemented.");
-}

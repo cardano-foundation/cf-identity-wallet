@@ -136,6 +136,7 @@ const getNextScanRoute = (data: DataProps) => {
     currentToastMsg === ToastMsgType.CREDENTIAL_REQUEST_PENDING
   ) {
     path = TabsRoutePath.CREDS;
+    // @TODO - foconnor: We need to open the connection list if it is CONNECTION_REQUEST_PENDING.
   }
   return { pathname: path };
 };
