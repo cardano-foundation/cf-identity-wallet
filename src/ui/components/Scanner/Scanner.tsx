@@ -13,6 +13,8 @@ import {
   getCurrentRoute,
   getToastMsg,
   setCurrentOperation,
+  setCurrentRoute,
+  setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OperationType, ToastMsgType } from "../../globals/types";
@@ -69,11 +71,18 @@ const Scanner = forwardRef((props, ref) => {
         const result = await startScan();
         if (result.hasContent) {
           stopScan();
-          // @TODO: try catch and handle invalid QR code
-          await AriesAgent.agent.connections.receiveInvitationFromUrl(
-            result.content
-          );
-          dispatch(setCurrentOperation(OperationType.IDLE));
+          try {
+            await AriesAgent.agent.connections.receiveInvitationFromUrl(
+              result.content
+            );
+            dispatch(setCurrentOperation(OperationType.IDLE));
+          } catch (error) {
+            dispatch(setToastMsg(ToastMsgType.SCAN_ERROR));
+            const redirectRoute = currentRoute
+              ? currentRoute.path
+              : TabsRoutePath.SCAN;
+            dispatch(setCurrentRoute({ path: redirectRoute }));
+          }
         }
       }
     }

@@ -44,6 +44,7 @@ enum ToastMsgType {
   NEW_CONNECTION_ADDED = "newConnectionAdded",
   CREDENTIAL_REQUEST_PENDING = "credentialRequestPending",
   NEW_CREDENTIAL_ADDED = "newCredentialAdded",
+  SCAN_ERROR = "scanError",
   NOTES_UPDATED = "notesUpdated",
   NOTE_REMOVED = "noteRemoved",
   MAX_FAVOURITES_REACHED = "maxFavouritesReached",

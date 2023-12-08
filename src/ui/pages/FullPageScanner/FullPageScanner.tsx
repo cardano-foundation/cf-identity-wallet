@@ -11,6 +11,7 @@ import { useRef } from "react";
 import { Scanner } from "../../components/Scanner";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 import { useAppDispatch } from "../../../store/hooks";
+import "./FullPageScanner.scss";
 import {
   FullPageScannerProps,
   ScannerRefComponent,
@@ -36,7 +37,7 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
     >
       <IonHeader
         translucent={true}
-        className="ion-no-border page-header"
+        className="ion-no-border page-header scanner-back-button"
       >
         <IonToolbar color="transparent">
           <IonButtons slot="start">
