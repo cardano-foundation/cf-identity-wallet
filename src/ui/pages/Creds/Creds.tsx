@@ -74,9 +74,6 @@ const Creds = () => {
   const credsCache = useAppSelector(getCredsCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
   const currentOperation = useAppSelector(getCurrentOperation);
-  const [currentCreds, setCurrentCreds] = useState<CredentialShortDetails[]>([
-    ...credsCache,
-  ]);
   const [archivedCreds, setArchivedCreds] = useState<CredentialShortDetails[]>(
     []
   );
@@ -88,7 +85,6 @@ const Creds = () => {
   const fetchCurrentCreds = async () => {
     try {
       const creds = await AriesAgent.agent.credentials.getCredentials();
-      setCurrentCreds(creds);
       dispatch(setCredsCache(creds));
     } catch (e) {
       // @TODO - sdisalvo: handle error
@@ -168,7 +164,7 @@ const Creds = () => {
             />
           }
         >
-          {currentCreds.length ? (
+          {credsCache.length ? (
             <>
               {favCreds.length ? (
                 <>

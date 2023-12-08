@@ -12,11 +12,11 @@
 # Disclaimer
 
 <div align="justify"> 
-<b>  Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions.</b>
+<b>  Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions.  Furthermore, any seed phrase generated during the onboarding process is currently not being utilised. We are in the process of reviewing the ideal key management and social recovery methodologies for development in 2024. </b>
 </div>
 <br>
 <div align="center">   
- <b> :warning: :warning: :warning: The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis. :warning: :warning: :warning: </b>
+ <b>   :heavy_exclamation_mark:  The Open-Source Identity Wallet is provided to you on an "as is" and "as available" basis.  </b>
 </div>
 <br>
 <div align="justify">    
@@ -28,29 +28,30 @@
 # Overview
 
 <div align="justify"> 
-The Identity Wallet is an open source application developed by the Cardano Foundation.  This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The first release of Identity Wallet provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano.
+<b> The Identity Wallet is an open source application developed by the Cardano Foundation.  This project is the result of ongoing research and development pertaining to the principles of Self-Sovereign Identity (SSI), Decentralized Identifiers (DIDs), Self-Certifying Identifiers (SCIs), Verifiable Credentials, Verifiable Data Registries (VDRs) and the standards, frameworks and implementations available within the Cardano ecosystem and externally.  The first release of Identity Wallet provides an open source reference implementation demonstrating W3C Decentralized Identifiers, Verifiable Credentials, and Key Event Receipt Infrastructure (KERI) on Cardano. </b>
 </div>
-
-#### Click the image below to watch our overview video
 
 <br>
 <p align="center">
   <kbd>
-    <a href="https://drive.google.com/file/d/1So8bW7dgprOFgKs8PQKQ7c8Sm1Kd8aWW/view?usp=sharing">
+    <a href="https://www.youtube.com/watch?v=YmEJHQksFyE">
     <img src="docs/images/readme/Introduction-Video-Thumbnail.jpg" alt="Identity Wallet Introduction Video Thumbnail">
     </a>
   </kbd>
 </p>
-<br>
+
+<div align="center">   
+ <b>  Click the image to watch the overview video </b>
+</div>
 
 # Features
 
-| **User Interface**    |  **Secure Storage**  |**Interoperability**   |  **Standards and Protocols** | **[Connections](https://www.w3.org/TR/vc-data-model/#roles) and Credential Issuance**  |     **SSI Agents**   |           
+| **User Interface**    |  **Secure Storage**  |**Interoperability**   |  **Standards & Protocols** | **Connections & Credential Issuance**  |     **SSI Agents**   |           
 |----------------|---------------|---------------|----------------|---------------|----------------|
-| :white_check_mark: Intuitive User Experience | :white_check_mark: Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material | :white_check_mark: [Aries RFCs](https://github.com/hyperledger/aries-rfcs) | :white_check_mark: [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) | :white_check_mark: Holder-to-Holder | :white_check_mark: [Aries Framework](https://github.com/hyperledger/aries-framework-javascript)| 
-| :white_check_mark:  Android and iOS support | :white_check_mark: Hierarchical Deterministic (HD) wallet, leverage BIP-39 mnemonic seed phrase for identity profiles|:white_check_mark: [W3C](https://www.w3.org/) | :white_check_mark: [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID)  | :white_check_mark: Issuer-to-Holder | :white_check_mark: [KERIA](https://github.com/cardano-foundation/keria) | 
-|  | |:white_check_mark: [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) | :white_check_mark: [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) | :white_check_mark: [Credential Issuance Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  | :white_check_mark: [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
-|  | |:white_check_mark: [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | |  | |
+|  Intuitive User Experience |  Hardware Security Module (HSM) or Secure Enclave (SE) securely stores private key material |  [Aries RFCs](https://github.com/hyperledger/aries-rfcs) |  [Verifiable Credentials](https://www.w3.org/TR/vc-data-model/) |  Holder-to-Holder |  [Open Wallet Foundation](https://github.com/openwallet-foundation/agent-framework-javascript)| 
+|  Android and iOS support |  Hierarchical Deterministic (HD) Identity Wallet | [W3C](https://www.w3.org/) | [Autonomic Identifier](https://weboftrust.github.io/WOT-terms/docs/glossary/autonomic-identifier) (AID)  |  Issuer-to-Holder |  [KERIA](https://github.com/cardano-foundation/keria) | 
+|  | | [DIDComm](https://github.com/decentralized-identity/didcomm-messaging) |  [ACDC](https://wiki.trustoverip.org/display/HOME/ACDC+%28Authentic+Chained+Data+Container%29+Task+Force) |  [Credential Issuance Testing Tool](https://identity-wallet-credential-issuance-web-interface.vercel.app/)  |  [Signify-TS](https://github.com/cardano-foundation/signify-ts) | 
+|  | | [KERI on Cardano](https://github.com/cardano-foundation/cardano-backer) | |  | |
 
 # Potential Future Developments
 
@@ -89,7 +90,7 @@ To experience the mobile application within the browser, follow these instructio
         </details>
 <br>
 <div align="center"> 
-      <a href="https://cf-identity-wallet.vercel.app">👨‍💻 Preview the latest version of the Identity Wallet here 👩‍💻
+      <a href="https://cf-identity-wallet.vercel.app">  🔗  Preview the latest version of the Identity Wallet 🔗 
 </div>
 
 
@@ -151,6 +152,8 @@ cd cf-identity-wallet
 ```
 
 ## Preparing the App
+This project uses a specific node version (check the requirements section above). You can optionally use [nvm](https://github.com/nvm-sh/nvm) to manage and switch between different Node.js versions on your computer.
+
 Before running the App, ensure that all dependencies are installed and the app is built properly. 
 In the project root directory, run the following commands:
 ```bash
@@ -160,87 +163,15 @@ npm install
 ```bash
 npm run dev
 ```
+This command starts the development server and allows you to preview the application on your browser by opening this localhost address:
+
+[http://localhost:3003/](http://localhost:3003/)
+
 ## Running in an Emulator
-### Building the App
-```bash
-npm run build
-```
-### Prepare Capacitor: This command will sync all changes to iOS and Android.
-```bash
-npm run build:cap
-```
-### Running on Xcode Emulator
-- Install Xcode: Ensure you have the latest version of Xcode installed on your Mac.
-- Open the iOS Simulator: Open Xcode, navigate to `Xcode > Open Developer Tool > Simulator`.
-- Select the desired iOS Device: Choose an iOS device model from the simulator list.
-- Run the Application: In your project directory, execute `npx cap open ios`. This will open your project in Xcode. From here, you can build and run the application on the selected simulator. 
-As alternative, you can open the file `App.xcworkspace` directly in Xcode from `ios/App` folder. 
-
-### Running on Android Studio Emulator
-- Install Android Studio: Make sure you have the latest version of Android Studio.
-- Setup Android Emulator: Open Android Studio, go to `Tools > AVD Manager` and create a new Android Virtual Device (AVD) or select an existing one.
-- Run the Application: Navigate to your project directory and run `npx cap open android`. This will open your project in Android Studio. Build and run the application on your chosen emulator.
-As alternative, you can open the folder `android` directly in Android Studio.
-
-In addition to using the emulators, you can also run the identity wallet directly on a real mobile device, providing a more authentic user experience and testing environment.  This approach requires the device to be tethered via cable to your computer running Xcode and/or Android Studio and the developer options must be enabled.  For further instructions: [Xcode](https://developer.apple.com/documentation/xcode/running-your-app-in-simulator-or-on-a-device) and [Android Studio](https://developer.android.com/studio/run/device).
+You can discover how to run the application in an emulator by following this [link](docs/Running-in-an-Emulator.md).
 
 ## End-to-End (E2E) Testing
-### Pre-installed on local:
-
-- [allure commandline](https://docs.qameta.io/allure-report/#_installing_a_commandline)
-- Node.js and npm
-- Appium installed locally (in case if @wdio/appium-service will not work as expected)
-  - install appium e.g. ``` brew install appium ```
-  - install driver for ios ``` appium driver install xcuitest ```
-  - install driver for android ``` appium driver install uiautomator2 ```
-  - install driver for chrome ``` appium driver install chromium ```
-  - install driver for safari ``` appium driver install safari ```
-- Android Emulator for [Samsung Galaxy S23 Ultra](https://developer.samsung.com/galaxy-emulator-skin/guide.html) is configured or iOS Simulator for [iPhone 15 Pro / 15 Pro Max](https://developer.apple.com/documentation/xcode/installing-additional-simulator-runtimes)
-- Create .env file in your local root project folder with APP_PATH property with path to app build for chosen platform
-```
-# Android
-# APP_PATH=<LOCAL_PATH/app-release-unsigned.apk>
-
-# iOS
-APP_PATH=<LOCAL_PATH/App.app>
-```
-### Test run in Local:
-
-1. Install all packages locally
-```
-npm install
-```
-2. Run for chosen platform and phone e.g.:
-- for all tests
-```
-npm run wdio:android:s23ultra
-```
-or
-```
-npm run wdio:ios:15promax
-```
-- for specific feature
-```
-npm run wdio:ios:15promax -- --spec ./tests/features/passcode.feature
-```
-- for specific scenario in feature you want to run it put a line number at which there is scenario title
-```
-npm run wdio:ios:15promax -- --spec ./tests/features/passcode.feature:18
-```
-- If there are issues with appium service run by WDIO, please start appium in terminal separately
-- In case WDIO tests will not exit on its own kill the process yourself e.g. ``` pkill -9 -f wdio ```
-3. Set ALLURE_RESULTS_DIR on your local
-```
-ALLURE_RESULTS_DIR=tests/.reports/allure-results
-```
-4. Generate allure report
-```
-allure generate $ALLURE_RESULTS_DIR -o tests/.reports/allure-report --clean
-```
-5. Open allure report
-```
-allure open tests/.reports/allure-report
-```
+You can gain additional insights into end-to-end testing by visiting the provided [link](docs/End-to-End-Testing.md).
 
 # Contributing
 
@@ -283,7 +214,7 @@ Please be aware that from time-to-time the hosted pre-production KERI services r
 - [Cardano Backer](https://github.com/cardano-foundation/cardano-backer)
 
 ## Standards, Frameworks and Governance
-- [Hyperledger Aries Framework](https://github.com/hyperledger/aries-framework-javascript)
+- [Aries Framework JavaScript](https://github.com/openwallet-foundation/agent-framework-javascript)
 - [Veramo](https://veramo.io/)
 - [SSI Frameworks Overview](https://europeanblockchainassociation.org/ssi-frameworks-sdks-overview/)
 - [Global Legal Entity Identifier Foundation (GLIEF)](https://www.gleif.org/en)

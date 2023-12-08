@@ -603,6 +603,7 @@ describe("Connection service of agent", () => {
   });
 
   test("can delete conenction by id", async () => {
+    agent.genericRecords.findAllByQuery = jest.fn().mockReturnValue([]);
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(
       connectionId,
@@ -617,6 +618,27 @@ describe("Connection service of agent", () => {
       ConnectionType.DIDCOMM
     );
     expect(agent.connections.deleteById).toBeCalledWith(connectionId);
+  });
+
+  test("Should delete connection's notes when deleting that connection", async () => {
+    agent.genericRecords.findAllByQuery = jest.fn().mockReturnValue([
+      {
+        id: "uuid",
+        content: {
+          title: "title",
+        },
+      },
+    ]);
+    const connectionId = "connectionId";
+    await connectionService.deleteConnectionById(
+      connectionId,
+      ConnectionType.KERI
+    );
+    await connectionService.deleteConnectionById(
+      connectionId,
+      ConnectionType.DIDCOMM
+    );
+    expect(agent.genericRecords.deleteById).toBeCalledTimes(3);
   });
 
   test("can receive keri oobi", async () => {

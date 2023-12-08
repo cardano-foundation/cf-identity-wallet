@@ -23,6 +23,7 @@ If you are starting with a very vague idea instead of a concrete feature request
 
 Thank you for contributing your changes by opening a pull requests! To get something merged we usually require:
 
+- The pull request should successfully clear existing tests and introduce new tests if needed. Further details about the project's testing methodology can be found [here](docs/Testing.md).
 - ❗ Description of the changes - please follow the [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/#specification) as we use it to automatically generate our CHANGELOG ❗This repository has a githook to ensure the use of conventional commits. To configure it run this command on the root of the project before creating your first commit:
 
 ```
