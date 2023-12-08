@@ -13,7 +13,7 @@ import { useAppDispatch, useAppSelector } from "../store/hooks";
 import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
 import { i18n } from "../i18n";
-import { ConnectionCredentialRequest } from "./pages/ConnectionRequest";
+import { ConnectionCredentialRequest } from "./pages/ConnectionCredentialRequest";
 
 setupIonicReact();
 
