@@ -139,7 +139,7 @@ const CredCardDetails = () => {
         params.id
       );
       const creds =
-        await AriesAgent.agent.credentials.getCredentialShortDetails(metadata);
+        AriesAgent.agent.credentials.getCredentialShortDetails(metadata);
       dispatch(setCredsCache([...credsCache, creds]));
     } catch (e) {
       // @TODO - sdisalvo: handle error

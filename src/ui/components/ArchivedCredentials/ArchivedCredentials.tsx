@@ -181,7 +181,6 @@ const ArchivedCredentials = ({
   return (
     <IonModal
       isOpen={archivedCredentialsIsOpen}
-      className={""}
       data-testid="archived-credentials"
       onDidDismiss={() => {
         setArchivedCredentialsIsOpen(false);
