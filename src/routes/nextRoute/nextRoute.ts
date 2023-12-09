@@ -67,6 +67,7 @@ const getNextCredentialsRoute = () => {
 };
 
 const getNextCredentialDetailsRoute = () => {
+  // @TODO - foconnor: if we close an archived credential, it should return to the archived view.
   const path = TabsRoutePath.CREDS;
   return { pathname: path };
 };

@@ -252,29 +252,25 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const storedIdentifiers =
       await AriesAgent.agent.identifiers.getIdentifiers();
-    // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
 
-    try {
-      const identifiersFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
-      );
-      dispatch(
-        setFavouritesIdentifiersCache(
-          identifiersFavourites.favourites as FavouriteIdentifier[]
-        )
-      );
+    // @TODO - handle error
+    const identifiersFavourites = await PreferencesStorage.get(
+      PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
+    );
+    dispatch(
+      setFavouritesIdentifiersCache(
+        identifiersFavourites.favourites as FavouriteIdentifier[]
+      )
+    );
 
-      const credsFavourites = await PreferencesStorage.get(
-        PreferencesKeys.APP_CREDS_FAVOURITES
-      );
-      dispatch(
-        setFavouritesCredsCache(
-          credsFavourites.favourites as FavouriteIdentifier[]
-        )
-      );
-    } catch (e) {
-      // @TODO: handle error
-    }
+    const credsFavourites = await PreferencesStorage.get(
+      PreferencesKeys.APP_CREDS_FAVOURITES
+    );
+    dispatch(
+      setFavouritesCredsCache(
+        credsFavourites.favourites as FavouriteIdentifier[]
+      )
+    );
 
     dispatch(
       setAuthentication({

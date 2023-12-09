@@ -80,22 +80,17 @@ const VerifyPassword = ({
   };
 
   const handleFetchStoredValues = async () => {
-    try {
-      const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
-      if (password) {
-        setStoredPassword(`${password}`);
-      }
+    // @TODO - sdisalvo: handle error
+    const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
+    if (password) {
+      setStoredPassword(`${password}`);
+    }
 
-      const hint = (
-        await AriesAgent.agent.genericRecords.findById(
-          MiscRecordId.OP_PASS_HINT
-        )
-      )?.content?.value;
-      if (hint) {
-        setStoredHint(`${hint}`);
-      }
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
+    const hint = (
+      await AriesAgent.agent.genericRecords.findById(MiscRecordId.OP_PASS_HINT)
+    )?.content?.value;
+    if (hint) {
+      setStoredHint(`${hint}`);
     }
   };
 
