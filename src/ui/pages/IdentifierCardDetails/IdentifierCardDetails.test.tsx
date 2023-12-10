@@ -33,6 +33,9 @@ jest.mock("../../../core/agent/agent", () => ({
           .fn()
           .mockResolvedValue({ type: "key", result: identifierFix[0] }),
       },
+      genericRecords: {
+        findById: jest.fn(),
+      },
     },
   },
 }));
