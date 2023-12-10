@@ -80,10 +80,23 @@ const VerifyPassword = ({
   };
 
   const handleFetchStoredValues = async () => {
-    // @TODO - sdisalvo: handle error
-    const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
-    if (password) {
-      setStoredPassword(`${password}`);
+    try {
+      const password = await SecureStorage.get(KeyStoreKeys.APP_OP_PASSWORD);
+      if (password) {
+        setStoredPassword(`${password}`);
+      }
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_OP_PASSWORD}`
+        )
+      ) {
+        // @TODO - sdisalvo: handle error
+        throw e;
+      }
     }
 
     const hint = (
