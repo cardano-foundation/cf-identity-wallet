@@ -15,7 +15,7 @@
   }
 
   &.active:not(:hover) {
-    transform: translateY(100vh);
+    transform: translate3d(0, 100vh, 0);
     transition: 0.7s ease-out;
   }
 

@@ -14,12 +14,12 @@
   }
 
   &.show {
-    transform: translateX(0);
+    transform: translate3d(0, 0, 0);
     transition-duration: 0.5s;
   }
 
   &.hide {
-    transform: translateX(100%);
+    transform: translate3d(100%, 0, 0);
     transition-duration: 0.5s;
   }
 
