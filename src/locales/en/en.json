@@ -442,7 +442,7 @@
     }
   },
   "connectmodal": {
-    "title": "Add ",
+    "title": "Add a ",
     "scan": "Scan QR Code",
     "connect": "Scan to connect",
     "provide": "Provide QR Code"
