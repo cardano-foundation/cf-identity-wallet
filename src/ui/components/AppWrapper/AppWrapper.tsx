@@ -254,23 +254,49 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await AriesAgent.agent.identifiers.getIdentifiers();
 
     // @TODO - handle error
-    const identifiersFavourites = await PreferencesStorage.get(
-      PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
-    );
-    dispatch(
-      setFavouritesIdentifiersCache(
-        identifiersFavourites.favourites as FavouriteIdentifier[]
-      )
-    );
+    try {
+      const identifiersFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesIdentifiersCache(
+          identifiersFavourites.favourites as FavouriteIdentifier[]
+        )
+      );
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_IDENTIFIERS_FAVOURITES}`
+        )
+      ) {
+        throw e;
+      }
+    }
 
-    const credsFavourites = await PreferencesStorage.get(
-      PreferencesKeys.APP_CREDS_FAVOURITES
-    );
-    dispatch(
-      setFavouritesCredsCache(
-        credsFavourites.favourites as FavouriteIdentifier[]
-      )
-    );
+    try {
+      const credsFavourites = await PreferencesStorage.get(
+        PreferencesKeys.APP_CREDS_FAVOURITES
+      );
+      dispatch(
+        setFavouritesCredsCache(
+          credsFavourites.favourites as FavouriteIdentifier[]
+        )
+      );
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_CREDS_FAVOURITES}`
+        )
+      ) {
+        throw e;
+      }
+    }
 
     dispatch(
       setAuthentication({
