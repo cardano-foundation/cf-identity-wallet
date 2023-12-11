@@ -12,7 +12,7 @@
 # Disclaimer
 
 <div align="justify"> 
-<b>Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions.  Furthermore,</b><u><b>any seed phrase generated during the onboarding process is currently not being utilised</b></u><b>. We are in the process of reviewing the ideal key management and social recovery methodologies for development in 2024.</b>
+<b> Please be aware that your access to and use of the Open-Source Identity Wallet, including any content you may encounter, is subject to your own discretion and risk. Currently, the identity wallet is under-development and security audits have yet to be conducted. It is essential to understand, this version of the identity wallet does not currently feature encryption-at-rest, nor does it offer robust recovery or backup solutions. Furthermore, any seed phrase generated during the onboarding process is currently not being utilised. We are in the process of reviewing the ideal key management and social recovery methodologies for development in 2024. </b>
 </div>
 <br>
 <div align="center">   
