@@ -41,6 +41,7 @@ import {
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
 const ArchivedCredentials = ({
+  archivedCreds,
   archivedCredentialsIsOpen,
   setArchivedCredentialsIsOpen,
 }: ArchivedCredentialsProps) => {
@@ -48,9 +49,6 @@ const ArchivedCredentials = ({
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const stateCache = useAppSelector(getStateCache);
-  const [archivedCreds, setArchivedCreds] = useState<CredentialShortDetails[]>(
-    []
-  );
   const [activeList, setActiveList] = useState(false);
   const [selectedCredentials, setSelectedCredentials] = useState<string[]>([]);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
@@ -58,26 +56,9 @@ const ArchivedCredentials = ({
   const [alertDeleteIsOpen, setAlertDeleteIsOpen] = useState(false);
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
 
-  const fetchArchivedCreds = async () => {
-    try {
-      const creds = await AriesAgent.agent.credentials.getCredentials(true);
-      setArchivedCreds(creds);
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
-  };
-
-  useEffect(() => {
-    fetchArchivedCreds();
-  }, [credsCache]);
-
   const resetList = () => {
     setActiveList(false);
     setSelectedCredentials([]);
-    fetchArchivedCreds();
-    if (!archivedCreds) {
-      setArchivedCredentialsIsOpen(false);
-    }
   };
 
   const selectAll = () => {
@@ -154,34 +135,26 @@ const ArchivedCredentials = ({
   const handleDeleteCredentialBatches = async (ids: string[]) => {
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
-    try {
-      await Promise.all(
-        ids.map((id) => AriesAgent.agent.credentials.deleteCredential(id))
-      );
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
+    // @TODO - sdisalvo: handle error
+    await Promise.all(
+      ids.map((id) => AriesAgent.agent.credentials.deleteCredential(id))
+    );
   };
 
   const handleRestoreCredential = async (id: string) => {
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.restoreCredential(id);
-    setArchivedCreds(credsCache.filter((item) => item.id !== id));
-    try {
-      const metadata = await AriesAgent.agent.credentials.getMetadataById(id);
-      const creds =
-        await AriesAgent.agent.credentials.getCredentialShortDetails(metadata);
-      dispatch(setCredsCache([...credsCache, creds]));
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
+    const restoredCred = archivedCreds.find((cred) => cred.id === id);
+    if (restoredCred) {
+      // Should always exist but just in case
+      dispatch(setCredsCache([...credsCache, restoredCred]));
     }
   };
 
   return (
     <IonModal
       isOpen={archivedCredentialsIsOpen}
-      className={""}
       data-testid="archived-credentials"
       onDidDismiss={() => {
         setArchivedCredentialsIsOpen(false);
@@ -309,8 +282,10 @@ const ArchivedCredentials = ({
         cancelButtonText={`${i18n.t(
           "creds.card.details.alert.restore.cancel"
         )}`}
-        actionConfirm={() => {
-          selectedCredentials.forEach((id) => handleRestoreCredential(id));
+        actionConfirm={async () => {
+          await Promise.all(
+            selectedCredentials.map((id) => handleRestoreCredential(id))
+          );
           dispatch(
             setToastMsg(
               selectedCredentials.length === 1

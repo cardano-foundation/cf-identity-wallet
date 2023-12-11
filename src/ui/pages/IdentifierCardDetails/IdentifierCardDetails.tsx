@@ -118,6 +118,7 @@ const IdentifierCardDetails = () => {
       const updatedIdentifiers = identifierData.filter(
         (item) => item.id !== cardData.id
       );
+      // For now there is no archiving in the UI so does both.
       await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
       await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
       dispatch(setIdentifiersCache(updatedIdentifiers));

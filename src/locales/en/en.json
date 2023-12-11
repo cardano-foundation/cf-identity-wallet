@@ -295,10 +295,10 @@
   "creds": {
     "tab": {
       "title": "Credentials",
-      "create": "Add Credential",
+      "create": "Add a credential",
       "viewarchived": "View archived credentials",
       "favourites": "Favourites",
-      "allcreds": "All Credentials"
+      "allcreds": "All credentials"
     },
     "card": {
       "layout": {
@@ -401,7 +401,7 @@
   "connections": {
     "tab": {
       "title": "Connections",
-      "create": "Add Connection",
+      "create": "Add a connection",
       "searchconnections": "Search connections"
     },
     "details": {
@@ -442,7 +442,7 @@
     }
   },
   "connectmodal": {
-    "title": "Add ",
+    "title": "Add a ",
     "scan": "Scan QR Code",
     "connect": "Scan to connect",
     "provide": "Provide QR Code"

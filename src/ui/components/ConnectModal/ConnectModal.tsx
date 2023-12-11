@@ -36,7 +36,7 @@ const ConnectModal = ({
         <PageLayout
           header={true}
           closeButton={false}
-          title={`${i18n.t("connectmodal.title") + type}`}
+          title={`${i18n.t("connectmodal.title") + type.toLowerCase()}`}
         >
           <IonGrid>
             <IonRow>

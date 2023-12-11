@@ -14,20 +14,12 @@
   }
 
   &.show {
-    right: 0;
-    left: 0;
-    width: 100%;
-    transition-property: right;
-    transition-property: left;
+    transform: translate3d(0, 0, 0);
     transition-duration: 0.5s;
   }
 
   &.hide {
-    right: -100%;
-    left: 100%;
-    width: 100%;
-    transition-property: right;
-    transition-property: left;
+    transform: translate3d(100%, 0, 0);
     transition-duration: 0.5s;
   }
 

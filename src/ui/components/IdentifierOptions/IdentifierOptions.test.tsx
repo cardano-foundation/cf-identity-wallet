@@ -7,7 +7,15 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { IdentifierOptions } from "./IdentifierOptions";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 
-jest.mock("../../../core/agent/agent");
+jest.mock("../../../core/agent/agent", () => ({
+  AriesAgent: {
+    agent: {
+      genericRecords: {
+        findById: jest.fn(),
+      },
+    },
+  },
+}));
 
 describe("Identifier Options modal", () => {
   let mockedStore: Store<unknown, AnyAction>;
