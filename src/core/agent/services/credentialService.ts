@@ -45,6 +45,8 @@ class CredentialService extends AgentService {
     "Keri notification record not found";
   static readonly ISSUEE_NOT_FOUND =
     "Cannot accept incoming ACDC, issuee AID not controlled by us";
+  static readonly CREDENTIAL_NOT_FOUND =
+    "Credential with given SAID not found on KERIA";
 
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
@@ -73,6 +75,7 @@ class CredentialService extends AgentService {
     if (notif.a.r === "/exn/ipex/grant" && notif.r === false) {
       const keriNoti = await this.createKeriNotificationRecord(notif);
       callback(keriNoti);
+      await this.agent.modules.signify.markNotification(notif.i);
     }
   }
 
@@ -142,9 +145,12 @@ class CredentialService extends AgentService {
       await this.agent.modules.generalStorage.getAllCredentialMetadata(
         isGetArchive
       );
-    return listMetadatas.map((element: CredentialMetadataRecord) =>
-      this.getCredentialShortDetails(element)
-    );
+    //only get credentials that are not deleted
+    return listMetadatas
+      .filter((item) => !item.isDeleted)
+      .map((element: CredentialMetadataRecord) =>
+        this.getCredentialShortDetails(element)
+      );
   }
 
   getCredentialShortDetails(
@@ -169,9 +175,16 @@ class CredentialService extends AgentService {
   async getCredentialDetailsById(id: string): Promise<CredentialDetails> {
     const metadata = await this.getMetadataById(id);
     if (metadata.connectionType === ConnectionType.KERI) {
-      const acdc = await this.agent.modules.signify.getCredentialBySaid(
-        metadata.credentialRecordId
-      );
+      const { credential: acdc, error } =
+        await this.agent.modules.signify.getCredentialBySaid(
+          metadata.credentialRecordId
+        );
+      if (error) {
+        throw error;
+      }
+      if (!acdc) {
+        throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
+      }
       return {
         ...this.getCredentialShortDetails(metadata),
         type: acdc.schema.credentialType,
@@ -261,9 +274,6 @@ class CredentialService extends AgentService {
 
     const credentialSubject = w3cCredential.credential
       .credentialSubject as any as JsonCredential["credentialSubject"];
-    const universityDegreeCredSubject = Array.isArray(credentialSubject)
-      ? undefined
-      : ((credentialSubject.degree as JsonObject)?.type as string);
     const checkedCredentialSubject = Array.isArray(credentialSubject)
       ? undefined
       : credentialSubject;
@@ -279,6 +289,9 @@ class CredentialService extends AgentService {
     };
 
     if (credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL) {
+      const universityDegreeCredSubject = (
+        checkedCredentialSubject?.degree as JsonObject
+      )?.type as string;
       const credentialMetadataRecord = {
         ...data,
         cachedDetails: {
@@ -351,7 +364,15 @@ class CredentialService extends AgentService {
   async deleteCredential(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
-    await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
+    //With KERI, we only soft delete because we need to sync with KERIA. This will prevent re-sync deleted records.
+    if (metadata.connectionType === ConnectionType.KERI) {
+      await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
+        ...metadata,
+        isDeleted: true,
+      });
+    } else {
+      await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
+    }
   }
 
   async restoreCredential(id: string): Promise<void> {
@@ -455,13 +476,19 @@ class CredentialService extends AgentService {
   }
 
   private async createAcdcMetadataRecord(event: any): Promise<void> {
-    const credentialId = event.e.acdc.d;
+    await this.saveAcdcMetadataRecord(event.e.acdc.d, event.e.acdc.a.dt);
+  }
+
+  private async saveAcdcMetadataRecord(
+    credentialId: string,
+    dateTime: string
+  ): Promise<void> {
     const credentialDetails: CredentialShortDetails = {
       id: `metadata:${credentialId}`,
       isArchived: false,
       colors: new ColorGenerator().generateNextColor() as [string, string],
       credentialType: "",
-      issuanceDate: event.e.acdc.a.dt,
+      issuanceDate: dateTime,
       status: CredentialMetadataRecordStatus.PENDING,
       connectionType: ConnectionType.KERI,
     };
@@ -562,19 +589,43 @@ class CredentialService extends AgentService {
   }
 
   private async waitForCredentialToAppear(credentialId: string): Promise<any> {
-    let cred = await this.agent.modules.signify.getCredentialBySaid(
+    let { credential } = await this.agent.modules.signify.getCredentialBySaid(
       credentialId
     );
     let retryTimes = 0;
-    while (!cred) {
+    while (!credential) {
       if (retryTimes > 15) {
         throw new Error(CredentialService.CREDENTIAL_NOT_ARCHIVED);
       }
       await new Promise((resolve) => setTimeout(resolve, 250));
-      cred = await this.agent.modules.signify.getCredentialBySaid(credentialId);
+      credential = (
+        await this.agent.modules.signify.getCredentialBySaid(credentialId)
+      ).credential;
       retryTimes++;
     }
-    return cred;
+    return credential;
+  }
+
+  async syncACDCs() {
+    const signifyCredentials =
+      await this.agent.modules.signify.getCredentials();
+    const storageCredentials =
+      await this.agent.modules.generalStorage.getAllCredentialMetadata();
+    const unSyncedData = signifyCredentials.filter(
+      (credential: any) =>
+        !storageCredentials.find(
+          (item) => credential.sad.d === item.credentialRecordId
+        )
+    );
+    if (unSyncedData.length) {
+      //sync the storage with the signify data
+      for (const credential of unSyncedData) {
+        await this.saveAcdcMetadataRecord(
+          credential.sad.d,
+          credential.sad.a.dt
+        );
+      }
+    }
   }
 }
 

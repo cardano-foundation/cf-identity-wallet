@@ -8,13 +8,14 @@
   line-height: 1.375rem;
 
   &.active:not(:first-child):hover {
+    // @TODO - foconnor: We should avoid this - animating with top.
     position: absolute;
     top: 11.5rem;
     transition: top 1.5s;
   }
 
   &.active:not(:hover) {
-    transform: translateY(100vh);
+    transform: translate3d(0, 100vh, 0);
     transition: 0.7s ease-out;
   }
 

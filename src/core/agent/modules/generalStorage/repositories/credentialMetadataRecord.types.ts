@@ -9,6 +9,7 @@ interface CredentialMetadataRecordProps {
   colors: [string, string];
   createdAt?: Date;
   isArchived?: boolean;
+  isDeleted?: boolean;
   issuanceDate: string;
   issuerLogo?: string;
   credentialType: string;
@@ -20,22 +21,6 @@ interface CredentialMetadataRecordProps {
     | ResidencyCredCachedDetails
     | SummitCredCachedDetails;
   connectionType: ConnectionType;
-}
-
-interface CredentialMetadataRecordExtraProps
-  extends CredentialMetadataRecordProps {
-  degreeType?: string;
-  expirationDate?: string;
-  image?: string;
-  givenName?: string;
-  familyName?: string;
-  birthCountry?: string;
-  lprCategory?: string;
-  residentSince?: string;
-  summitType?: string;
-  startDate?: string;
-  endDate?: string;
-  passId?: string;
 }
 
 interface UniversityCredCachedDetails {
@@ -62,7 +47,6 @@ interface SummitCredCachedDetails {
 export { CredentialMetadataRecordStatus };
 export type {
   CredentialMetadataRecordProps,
-  CredentialMetadataRecordExtraProps,
   UniversityCredCachedDetails,
   ResidencyCredCachedDetails,
   SummitCredCachedDetails,

@@ -14,19 +14,22 @@ import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getCurrentOperation,
+  getToastMsg,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { Connections } from "../Connections";
-import { CardType, DIDCommRequestType } from "../../globals/types";
+import {
+  CardType,
+  DIDCommRequestType,
+  ToastMsgType,
+} from "../../globals/types";
 import { ConnectModal } from "../../components/ConnectModal";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { AriesAgent } from "../../../core/agent/agent";
 import {
   getCredsCache,
   getFavouritesCredsCache,
-  setCredsCache,
 } from "../../../store/reducers/credsCache";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
@@ -73,10 +76,7 @@ const Creds = () => {
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
-  const currentOperation = useAppSelector(getCurrentOperation);
-  const [currentCreds, setCurrentCreds] = useState<CredentialShortDetails[]>([
-    ...credsCache,
-  ]);
+  const toastMsg = useAppSelector(getToastMsg);
   const [archivedCreds, setArchivedCreds] = useState<CredentialShortDetails[]>(
     []
   );
@@ -85,29 +85,23 @@ const Creds = () => {
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
 
-  const fetchCurrentCreds = async () => {
-    try {
-      const creds = await AriesAgent.agent.credentials.getCredentials();
-      setCurrentCreds(creds);
-      dispatch(setCredsCache(creds));
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
-  };
-
   const fetchArchivedCreds = async () => {
-    try {
-      const creds = await AriesAgent.agent.credentials.getCredentials(true);
-      setArchivedCreds(creds);
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
+    // @TODO - sdisalvo: handle error
+    const creds = await AriesAgent.agent.credentials.getCredentials(true);
+    setArchivedCreds(creds);
   };
 
   useEffect(() => {
-    fetchCurrentCreds();
-    fetchArchivedCreds();
-  }, [archivedCredentialsIsOpen, addCredentialIsOpen, currentOperation]);
+    if (
+      toastMsg === ToastMsgType.CREDENTIAL_ARCHIVED ||
+      toastMsg === ToastMsgType.CREDENTIAL_RESTORED ||
+      toastMsg === ToastMsgType.CREDENTIALS_RESTORED ||
+      toastMsg === ToastMsgType.CREDENTIAL_DELETED ||
+      toastMsg === ToastMsgType.CREDENTIALS_DELETED
+    ) {
+      fetchArchivedCreds();
+    }
+  }, [toastMsg]);
 
   const handleCreateCred = () => {
     setAddCredentialIsOpen(true);
@@ -115,7 +109,6 @@ const Creds = () => {
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }));
-    fetchCurrentCreds();
     fetchArchivedCreds();
   });
 
@@ -168,7 +161,7 @@ const Creds = () => {
             />
           }
         >
-          {currentCreds.length ? (
+          {credsCache.length ? (
             <>
               {favCreds.length ? (
                 <>
@@ -229,6 +222,7 @@ const Creds = () => {
           />
           {archivedCreds.length ? (
             <ArchivedCredentials
+              archivedCreds={archivedCreds}
               archivedCredentialsIsOpen={archivedCredentialsIsOpen}
               setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
             />

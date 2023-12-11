@@ -404,6 +404,17 @@ describe("Credential service of agent", () => {
     expect(
       agent.modules.generalStorage.deleteCredentialMetadata
     ).toBeCalledWith(credId);
+    agent.modules.generalStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue({
+        ...archivedMetadataRecord,
+        connectionType: ConnectionType.KERI,
+      });
+    await credentialService.deleteCredential(credId);
+    expect(agent.modules.generalStorage.getCredentialMetadata).toBeCalledWith(
+      credId
+    );
+    expect(agent.modules.generalStorage.updateCredentialMetadata).toBeCalled();
   });
 
   test("cannot delete a non-archived credential", async () => {
@@ -761,7 +772,7 @@ describe("Credential service of agent", () => {
     };
     agent.modules.signify.getCredentialBySaid = jest
       .fn()
-      .mockResolvedValue(acdc);
+      .mockResolvedValue({ credential: acdc, error: undefined });
 
     await expect(
       credentialService.getCredentialDetailsById(acdcMetadataRecord.id)
@@ -889,9 +900,12 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
         signifyName: "holder",
       });
     agent.modules.signify.getCredentialBySaid = jest.fn().mockResolvedValue({
-      sad: {
-        d: "id",
+      credential: {
+        sad: {
+          d: "id",
+        },
       },
+      error: undefined,
     });
     agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
       jest.fn().mockResolvedValue({
@@ -943,5 +957,66 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     }
     expect(agent.genericRecords.save).toBeCalledTimes(1);
     expect(callback).toBeCalledTimes(1);
+  });
+  test("Must throw 'Credential with given SAID not found on KERIA' when there's no KERI credential", async () => {
+    const id = "not-found-id";
+    agent.modules.signify.getCredentialBySaid = jest
+      .fn()
+      .mockResolvedValue({ credential: undefined, error: undefined });
+    await expect(
+      credentialService.getCredentialDetailsById(id)
+    ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
+  });
+  test("Must throw an error when there's error from Signigy-ts ", async () => {
+    const id = "not-found-id";
+    agent.modules.signify.getCredentialBySaid = jest.fn().mockResolvedValue({
+      credential: undefined,
+      error: new Error("Network error"),
+    });
+    await expect(
+      credentialService.getCredentialDetailsById(id)
+    ).rejects.toThrowError();
+  });
+
+  test("Should call saveCredentialMetadataRecord when there are un-synced KERI credentials", async () => {
+    agent.modules.signify.getCredentials = jest.fn().mockReturnValue([
+      {
+        sad: {
+          v: "ACDC10JSON000197_",
+          d: "EIuZp_JvO5pbNmS8jyG96t3d4XENaFSJpLtbLySxvz-X",
+          i: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
+          ri: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
+          s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+          a: {
+            d: "EDqWl2zEU2LtoVmP1s2jpWx9oFs3bs0zHxH6kdnIgx3-",
+            i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+            dt: "2023-11-29T02:13:34.858000+00:00",
+            LEI: "5493001KJTIIGC8Y1R17",
+          },
+        },
+      },
+      {
+        sad: {
+          v: "ACDC10JSON000197_",
+          d: "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadEPY",
+          i: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
+          ri: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
+          s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+          a: {
+            d: "EC67QqakhZ1bZgKci_HsGMIKQybEdc9mJqykBecOG4rJ",
+            i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+            dt: "2023-11-29T02:12:35.716000+00:00",
+            LEI: "5493001KJTIIGC8Y1R17",
+          },
+        },
+      },
+    ]);
+    agent.modules.generalStorage.getAllCredentialMetadata = jest
+      .fn()
+      .mockReturnValue([]);
+    await credentialService.syncACDCs();
+    expect(
+      agent.modules.generalStorage.saveCredentialMetadataRecord
+    ).toBeCalledTimes(2);
   });
 });

@@ -14,6 +14,7 @@ class CredentialMetadataRecord
 {
   colors!: [string, string];
   isArchived?: boolean;
+  isDeleted?: boolean;
   issuanceDate!: string;
   issuerLogo?: string;
   credentialType!: string;
@@ -37,6 +38,7 @@ class CredentialMetadataRecord
       this.credentialRecordId = props.credentialRecordId;
       this.colors = props.colors;
       this.isArchived = props.isArchived ?? false;
+      this.isDeleted = props.isDeleted ?? false;
       this.createdAt = props.createdAt ?? new Date();
       this.issuanceDate = props.issuanceDate;
       this.issuerLogo = props.issuerLogo;
@@ -52,6 +54,7 @@ class CredentialMetadataRecord
     return {
       ...this._tags,
       isArchived: this.isArchived,
+      isDeleted: this.isDeleted,
       credentialRecordId: this.credentialRecordId,
     };
   }

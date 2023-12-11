@@ -51,8 +51,10 @@ import { IdentifierOptions } from "../../components/IdentifierOptions";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import "./IdentifierCardDetails.scss";
+import PageFooter from "../../components/PageFooter/PageFooter";
 
 const IdentifierCardDetails = () => {
+  const pageId = "identifier-card-details";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -116,6 +118,7 @@ const IdentifierCardDetails = () => {
       const updatedIdentifiers = identifierData.filter(
         (item) => item.id !== cardData.id
       );
+      // For now there is no archiving in the UI so does both.
       await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
       await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
       dispatch(setIdentifiersCache(updatedIdentifiers));
@@ -236,27 +239,18 @@ const IdentifierCardDetails = () => {
               ) : (
                 <IdentifierCardInfoKeri cardData={cardData as KERIDetails} />
               )}
-              <IonButton
-                shape="round"
-                expand="block"
-                color="danger"
-                data-testid="card-details-delete-button"
-                className="delete-button"
-                onClick={() => {
+              <PageFooter
+                pageId={pageId}
+                deleteButtonText={`${i18n.t(
+                  "identifiers.card.details.delete.button"
+                )}`}
+                deleteButtonAction={() => {
                   setAlertIsOpen(true);
                   dispatch(
                     setCurrentOperation(OperationType.DELETE_IDENTIFIER)
                   );
                 }}
-              >
-                <IonIcon
-                  slot="icon-only"
-                  size="small"
-                  icon={trashOutline}
-                  color="primary"
-                />
-                {i18n.t("identifiers.card.details.delete.button")}
-              </IonButton>
+              />
             </div>
           </>
         )}

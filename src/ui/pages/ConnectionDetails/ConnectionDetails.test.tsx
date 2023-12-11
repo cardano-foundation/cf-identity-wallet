@@ -26,6 +26,9 @@ jest.mock("../../../core/agent/agent", () => ({
       credentials: {
         getCredentialDetailsById: jest.fn(),
       },
+      genericRecords: {
+        findById: jest.fn(),
+      },
     },
   },
 }));
@@ -92,7 +95,7 @@ describe("ConnectionDetails Page", () => {
     });
 
     await waitFor(() =>
-      expect(queryByTestId("connection-details-page")).toBeVisible()
+      expect(queryByTestId("connection-details")).toBeVisible()
     );
 
     act(() => {
@@ -104,7 +107,7 @@ describe("ConnectionDetails Page", () => {
     });
   });
 
-  test.skip("Open and Close ConnectionOptions", async () => {
+  test("Open and Close ConnectionOptions", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
@@ -137,31 +140,17 @@ describe("ConnectionDetails Page", () => {
       fireEvent.click(getByTestId("action-button"));
     });
 
-    waitForIonicReact();
-
     await waitFor(() =>
-      expect(
-        getByText(EN_TRANSLATIONS.connections.details.options.title)
-      ).toBeVisible()
+      expect(getByTestId("delete-button-connection-details")).toBeVisible()
     );
-
-    const backdrop = document.querySelector("ion-backdrop");
-
-    act(() => {
-      backdrop && fireEvent.click(backdrop);
-    });
-
-    await waitFor(() => {
-      expect(backdrop).not.toBeInTheDocument();
-    });
   });
 
-  test.skip("Remove connection using red button ConnectionOptions", async () => {
+  test("Delete button in the footer triggers a confirmation alert", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, findByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
         <Provider store={storeMocked}>
           <Route
@@ -185,34 +174,25 @@ describe("ConnectionDetails Page", () => {
       fireEvent.click(getByText(connectionsFix[0].label));
     });
 
-    act(() => {
-      fireEvent.click(getByTestId("connection-details-delete-button"));
-    });
-
-    await waitFor(() =>
-      expect(
-        getByText(
-          EN_TRANSLATIONS.connections.details.options.alert.deleteconnection
-            .title
-        )
-      ).toBeVisible()
+    const alertDeleteConnection = await findByTestId(
+      "alert-confirm-delete-connection"
     );
-
+    expect(alertDeleteConnection).toHaveClass("alert-invisible");
+    const deleteButton = await findByTestId("delete-button-connection-details");
     act(() => {
-      fireEvent.click(getByTestId("alert-confirm"));
+      fireEvent.click(deleteButton);
     });
-
     await waitFor(() =>
-      expect(getByText(EN_TRANSLATIONS.verifypassword.title)).toBeVisible()
+      expect(alertDeleteConnection).toHaveClass("alert-visible")
     );
   });
 
-  test.skip("Remove connection opening ConnectionOptions modal", async () => {
+  test.skip("Delete button in the ConnectionOptions modal triggers a confirmation alert", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, getByText, queryByTestId } = render(
+    const { getByTestId, getByText, findByTestId } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
         <Provider store={storeMocked}>
           <Route
@@ -240,35 +220,16 @@ describe("ConnectionDetails Page", () => {
       fireEvent.click(getByTestId("action-button"));
     });
 
-    await waitFor(() =>
-      expect(getByTestId("connection-options-delete-button")).toBeVisible()
+    const alertDeleteConnection = await findByTestId(
+      "alert-confirm-delete-connection"
     );
-
+    expect(alertDeleteConnection).toHaveClass("alert-invisible");
+    const deleteButton = await findByTestId("delete-button-connection-options");
     act(() => {
-      fireEvent.click(getByTestId("connection-options-delete-button"));
+      fireEvent.click(deleteButton);
     });
-
     await waitFor(() =>
-      expect(getByTestId("alert-confirm-delete-connection")).toBeVisible()
-    );
-
-    await waitFor(() =>
-      expect(getByTestId("alert-confirm-delete-connection")).toHaveClass(
-        "alert-visible"
-      )
-    );
-
-    act(() => {
-      fireEvent.click(
-        getByText(
-          EN_TRANSLATIONS.connections.details.options.alert.deleteconnection
-            .confirm
-        )
-      );
-    });
-
-    await waitFor(() =>
-      expect(queryByTestId("alert-confirm-delete-connection")).toBeNull()
+      expect(alertDeleteConnection).toHaveClass("alert-visible")
     );
   });
 

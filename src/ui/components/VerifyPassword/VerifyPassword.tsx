@@ -85,17 +85,25 @@ const VerifyPassword = ({
       if (password) {
         setStoredPassword(`${password}`);
       }
-
-      const hint = (
-        await AriesAgent.agent.genericRecords.findById(
-          MiscRecordId.OP_PASS_HINT
-        )
-      )?.content?.value;
-      if (hint) {
-        setStoredHint(`${hint}`);
-      }
     } catch (e) {
-      // @TODO - sdisalvo: handle error
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${SecureStorage.KEY_NOT_FOUND} ${KeyStoreKeys.APP_OP_PASSWORD}`
+        )
+      ) {
+        // @TODO - sdisalvo: handle error
+        throw e;
+      }
+    }
+
+    const hint = (
+      await AriesAgent.agent.genericRecords.findById(MiscRecordId.OP_PASS_HINT)
+    )?.content?.value;
+    if (hint) {
+      setStoredHint(`${hint}`);
     }
   };
 
@@ -248,6 +256,3 @@ const VerifyPassword = ({
 };
 
 export { VerifyPassword };
-function setCurrentAction(operation: string) {
-  throw new Error("Function not implemented.");
-}

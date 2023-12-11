@@ -62,35 +62,31 @@ const PasscodeLogin = () => {
     if (updatedPasscode.length <= 6) setPasscode(updatedPasscode);
 
     if (updatedPasscode.length === 6) {
-      verifyPasscode(updatedPasscode)
-        .then((verified) => {
-          if (verified) {
-            const { backPath, updateRedux } = getBackRoute(
-              RoutePath.PASSCODE_LOGIN,
-              {
-                store: { stateCache },
-              }
-            );
-            updateReduxState(
-              backPath.pathname,
-              { store: { stateCache } },
-              dispatch,
-              updateRedux
-            );
+      verifyPasscode(updatedPasscode).then((verified) => {
+        if (verified) {
+          const { backPath, updateRedux } = getBackRoute(
+            RoutePath.PASSCODE_LOGIN,
+            {
+              store: { stateCache },
+            }
+          );
+          updateReduxState(
+            backPath.pathname,
+            { store: { stateCache } },
+            dispatch,
+            updateRedux
+          );
 
-            history.push(backPath.pathname);
-            handleClearState();
+          history.push(backPath.pathname);
+          handleClearState();
 
-            setTimeout(() => {
-              dispatch(setPauseQueueConnectionCredentialRequest(false));
-            }, 500);
-          } else {
-            setPasscodeIncorrect(true);
-          }
-        })
-        .catch((e) => {
-          e.code === -35 && setPasscodeIncorrect(true);
-        });
+          setTimeout(() => {
+            dispatch(setPauseQueueConnectionCredentialRequest(false));
+          }, 500);
+        } else {
+          setPasscodeIncorrect(true);
+        }
+      });
     }
   };
 

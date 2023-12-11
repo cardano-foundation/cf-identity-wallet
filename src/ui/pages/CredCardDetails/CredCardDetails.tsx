@@ -117,45 +117,36 @@ const CredCardDetails = () => {
   };
 
   const handleArchiveCredential = async () => {
-    setVerifyPasswordIsOpen(false);
-    setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.archiveCredential(params.id);
     const creds = credsCache.filter((item) => item.id !== params.id);
     dispatch(setCredsCache(creds));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
-    handleDone();
   };
 
   const handleDeleteCredential = async () => {
-    try {
-      await AriesAgent.agent.credentials.deleteCredential(params.id);
-      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
+    // @TODO - sdisalvo: handle error
+    await AriesAgent.agent.credentials.deleteCredential(params.id);
+    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
   };
 
   const handleRestoreCredential = async () => {
     await AriesAgent.agent.credentials.restoreCredential(params.id);
-    try {
-      const metadata = await AriesAgent.agent.credentials.getMetadataById(
-        params.id
-      );
-      const creds =
-        await AriesAgent.agent.credentials.getCredentialShortDetails(metadata);
-      dispatch(setCredsCache([...credsCache, creds]));
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
+    // @TODO - sdisalvo: handle error
+    const metadata = await AriesAgent.agent.credentials.getMetadataById(
+      params.id
+    );
+    const creds =
+      AriesAgent.agent.credentials.getCredentialShortDetails(metadata);
+    dispatch(setCredsCache([...credsCache, creds]));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
     handleDone();
   };
 
-  const onVerify = () => {
+  const onVerify = async () => {
     if (isArchived) {
-      handleDeleteCredential();
+      await handleDeleteCredential();
     } else {
-      handleArchiveCredential();
+      await handleArchiveCredential();
     }
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);

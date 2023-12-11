@@ -252,8 +252,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const storedIdentifiers =
       await AriesAgent.agent.identifiers.getIdentifiers();
-    // @TODO - sdisalvo: This will need to be updated as soon as we have something to get our stored crypto accounts.
 
+    // @TODO - handle error
     try {
       const identifiersFavourites = await PreferencesStorage.get(
         PreferencesKeys.APP_IDENTIFIERS_FAVOURITES
@@ -263,7 +263,20 @@ const AppWrapper = (props: { children: ReactNode }) => {
           identifiersFavourites.favourites as FavouriteIdentifier[]
         )
       );
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_IDENTIFIERS_FAVOURITES}`
+        )
+      ) {
+        throw e;
+      }
+    }
 
+    try {
       const credsFavourites = await PreferencesStorage.get(
         PreferencesKeys.APP_CREDS_FAVOURITES
       );
@@ -273,7 +286,16 @@ const AppWrapper = (props: { children: ReactNode }) => {
         )
       );
     } catch (e) {
-      // @TODO: handle error
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_CREDS_FAVOURITES}`
+        )
+      ) {
+        throw e;
+      }
     }
 
     dispatch(
@@ -340,6 +362,12 @@ const AppWrapper = (props: { children: ReactNode }) => {
         await keriNotificationsChangeHandler(message, dispatch);
       }
     });
+    // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
+    await Promise.all([
+      AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
+      AriesAgent.agent.connections.syncKeriaContacts(),
+      AriesAgent.agent.credentials.syncACDCs(),
+    ]);
   };
 
   return initialised ? <>{props.children}</> : <></>;

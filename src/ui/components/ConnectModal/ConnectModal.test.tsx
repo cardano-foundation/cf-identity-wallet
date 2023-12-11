@@ -22,7 +22,10 @@ describe("Connection modal", () => {
       </Provider>
     );
     const title = getByText(
-      `${i18n.t("connectmodal.title") + DIDCommRequestType.CONNECTION}`
+      `${
+        i18n.t("connectmodal.title") +
+        DIDCommRequestType.CONNECTION.toLowerCase()
+      }`
     );
     expect(title).toBeInTheDocument();
   });

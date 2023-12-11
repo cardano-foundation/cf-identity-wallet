@@ -43,6 +43,7 @@ const agent = jest.mocked({
       resolveOobi: jest.fn(),
       getContacts: jest.fn(),
       getOobi: jest.fn(),
+      deleteContactById: jest.fn(),
     },
   },
   receiveMessage: jest.fn(),
@@ -602,17 +603,42 @@ describe("Connection service of agent", () => {
   });
 
   test("can delete conenction by id", async () => {
+    agent.genericRecords.findAllByQuery = jest.fn().mockReturnValue([]);
     const connectionId = "connectionId";
     await connectionService.deleteConnectionById(
       connectionId,
       ConnectionType.KERI
     );
     expect(agent.genericRecords.deleteById).toBeCalledWith(connectionId);
+    expect(agent.modules.signify.deleteContactById).toBeCalledWith(
+      connectionId
+    );
     await connectionService.deleteConnectionById(
       connectionId,
       ConnectionType.DIDCOMM
     );
     expect(agent.connections.deleteById).toBeCalledWith(connectionId);
+  });
+
+  test("Should delete connection's notes when deleting that connection", async () => {
+    agent.genericRecords.findAllByQuery = jest.fn().mockReturnValue([
+      {
+        id: "uuid",
+        content: {
+          title: "title",
+        },
+      },
+    ]);
+    const connectionId = "connectionId";
+    await connectionService.deleteConnectionById(
+      connectionId,
+      ConnectionType.KERI
+    );
+    await connectionService.deleteConnectionById(
+      connectionId,
+      ConnectionType.DIDCOMM
+    );
+    expect(agent.genericRecords.deleteById).toBeCalledTimes(3);
   });
 
   test("can receive keri oobi", async () => {
@@ -657,5 +683,27 @@ describe("Connection service of agent", () => {
     const signifyName = "keriuuid";
     const KeriOobi = await connectionService.getKeriOobi(signifyName);
     expect(KeriOobi).toEqual(oobiPrefix + signifyName);
+  });
+
+  test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
+    agent.modules.signify.getContacts = jest.fn().mockReturnValue([
+      {
+        id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
+        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+        oobi: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi/EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR/agent/EP48HXCPvtzGu0c90gG9fkOYiSoi6U5Am-XaqcoNHTBl",
+        challenges: [],
+        wellKnowns: [],
+      },
+      {
+        id: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
+        alias: "e6d37a7b-00e9-4f85-8cf9-2123d15fc094",
+        oobi: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi/ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W/agent/EJMV0RgikXM7jyvXB9oOyKSZzo_AsYrEgP15Ly0dwzEL",
+        challenges: [],
+        wellKnowns: [],
+      },
+    ]);
+    agent.genericRecords.findAllByQuery = jest.fn().mockReturnValue([]);
+    await connectionService.syncKeriaContacts();
+    expect(agent.genericRecords.save).toBeCalledTimes(2);
   });
 });

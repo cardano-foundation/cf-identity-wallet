@@ -34,10 +34,7 @@ const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
       className="qr-code-scanner-full-page"
       data-testid="qr-code-scanner-full-page"
     >
-      <IonHeader
-        translucent={true}
-        className="ion-no-border page-header"
-      >
+      <IonHeader className="ion-no-border page-header">
         <IonToolbar color="transparent">
           <IonButtons slot="start">
             <IonButton
