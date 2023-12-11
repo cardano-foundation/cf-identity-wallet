@@ -121,39 +121,43 @@ const IdentifierCardDetails = () => {
       await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
       await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
       dispatch(setIdentifiersCache(updatedIdentifiers));
+      if (isFavourite) {
+        handleSetFavourite(cardData.id);
+      }
     }
     handleDone();
   };
 
-  const AdditionalButtons = () => {
-    const handleSetFavourite = (id: string) => {
-      if (isFavourite) {
-        PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
-          favourites: favouritesIdentifiersData.filter((fav) => fav.id !== id),
+  const handleSetFavourite = (id: string) => {
+    if (isFavourite) {
+      PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
+        favourites: favouritesIdentifiersData.filter((fav) => fav.id !== id),
+      })
+        .then(() => {
+          dispatch(removeFavouriteIdentifierCache(id));
         })
-          .then(() => {
-            dispatch(removeFavouriteIdentifierCache(id));
-          })
-          .catch((error) => {
-            /*TODO: handle error*/
-          });
-      } else {
-        if (favouritesIdentifiersData.length >= MAX_FAVOURITES) {
-          dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
-          return;
-        }
-
-        PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
-          favourites: [{ id, time: Date.now() }, ...favouritesIdentifiersData],
-        })
-          .then(() => {
-            dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));
-          })
-          .catch((error) => {
-            /*TODO: handle error*/
-          });
+        .catch((error) => {
+          /*TODO: handle error*/
+        });
+    } else {
+      if (favouritesIdentifiersData.length >= MAX_FAVOURITES) {
+        dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
+        return;
       }
-    };
+
+      PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
+        favourites: [{ id, time: Date.now() }, ...favouritesIdentifiersData],
+      })
+        .then(() => {
+          dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));
+        })
+        .catch((error) => {
+          /*TODO: handle error*/
+        });
+    }
+  };
+
+  const AdditionalButtons = () => {
     return (
       <>
         <IonButton

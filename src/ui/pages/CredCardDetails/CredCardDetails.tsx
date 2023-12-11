@@ -154,41 +154,44 @@ const CredCardDetails = () => {
     } else {
       await handleArchiveCredential();
     }
+    if (isFavourite) {
+      handleSetFavourite(params.id);
+    }
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     handleDone();
   };
 
-  const AdditionalButtons = () => {
-    const handleSetFavourite = (id: string) => {
-      if (isFavourite) {
-        PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
-          favourites: favouritesCredsCache.filter((fav) => fav.id !== id),
+  const handleSetFavourite = (id: string) => {
+    if (isFavourite) {
+      PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
+        favourites: favouritesCredsCache.filter((fav) => fav.id !== id),
+      })
+        .then(() => {
+          dispatch(removeFavouritesCredsCache(id));
         })
-          .then(() => {
-            dispatch(removeFavouritesCredsCache(id));
-          })
-          .catch((error) => {
-            /*TODO: handle error*/
-          });
-      } else {
-        if (favouritesCredsCache.length >= MAX_FAVOURITES) {
-          dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
-          return;
-        }
-
-        PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
-          favourites: [{ id, time: Date.now() }, ...favouritesCredsCache],
-        })
-          .then(() => {
-            dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
-          })
-          .catch((error) => {
-            /*TODO: handle error*/
-          });
+        .catch((error) => {
+          /*TODO: handle error*/
+        });
+    } else {
+      if (favouritesCredsCache.length >= MAX_FAVOURITES) {
+        dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
+        return;
       }
-    };
 
+      PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
+        favourites: [{ id, time: Date.now() }, ...favouritesCredsCache],
+      })
+        .then(() => {
+          dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
+        })
+        .catch((error) => {
+          /*TODO: handle error*/
+        });
+    }
+  };
+
+  const AdditionalButtons = () => {
     return (
       <>
         <IonButton
