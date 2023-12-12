@@ -119,6 +119,9 @@ const CredCardDetails = () => {
   const handleArchiveCredential = async () => {
     await AriesAgent.agent.credentials.archiveCredential(params.id);
     const creds = credsCache.filter((item) => item.id !== params.id);
+    if (isFavourite) {
+      handleSetFavourite(params.id);
+    }
     dispatch(setCredsCache(creds));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
   };
@@ -153,9 +156,6 @@ const CredCardDetails = () => {
       await handleDeleteCredential();
     } else {
       await handleArchiveCredential();
-    }
-    if (isFavourite) {
-      handleSetFavourite(params.id);
     }
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);

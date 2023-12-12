@@ -118,14 +118,20 @@ const IdentifierCardDetails = () => {
       const updatedIdentifiers = identifierData.filter(
         (item) => item.id !== cardData.id
       );
+      await deleteIdentifier();
+      dispatch(setIdentifiersCache(updatedIdentifiers));
+    }
+    handleDone();
+  };
+
+  const deleteIdentifier = async () => {
+    if (cardData) {
       await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
       await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
-      dispatch(setIdentifiersCache(updatedIdentifiers));
       if (isFavourite) {
         handleSetFavourite(cardData.id);
       }
     }
-    handleDone();
   };
 
   const handleSetFavourite = (id: string) => {
@@ -271,6 +277,7 @@ const IdentifierCardDetails = () => {
             setOptionsIsOpen={setIdentifierOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
+            handleDeleteIdentifier={deleteIdentifier}
           />
         )}
         <Alert
