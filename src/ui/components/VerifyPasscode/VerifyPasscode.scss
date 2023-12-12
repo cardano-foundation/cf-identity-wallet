@@ -1,6 +1,17 @@
 .verify-passcode {
+  text-align: center;
   --background: var(--ion-color-light);
   &::part(backdrop) {
     background-color: var(--ion-color-light);
+  }
+
+  .verify-passcode-title {
+    font-size: 24px;
+    font-weight: 700;
+  }
+
+  .verify-passcode-description {
+    margin-top: 5px;
+    margin-bottom: 25px;
   }
 }

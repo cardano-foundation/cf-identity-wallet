@@ -8,7 +8,7 @@ import {
 import i18next from "i18next";
 import { PageLayout } from "../../components/layout/PageLayout";
 import { i18n } from "../../../i18n";
-import "./ConnectionRequest.scss";
+import "./ConnectionCredentialRequest.scss";
 import {
   getQueueConnectionCredentialRequest,
   dequeueCredentialCredentialRequest,

@@ -126,6 +126,7 @@ const IdentifierCardDetails = () => {
 
   const deleteIdentifier = async () => {
     if (cardData) {
+      // For now there is no archiving in the UI so does both.
       await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
       await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
       if (isFavourite) {
@@ -277,7 +278,6 @@ const IdentifierCardDetails = () => {
             setOptionsIsOpen={setIdentifierOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
-            handleDeleteIdentifier={deleteIdentifier}
           />
         )}
         <Alert
