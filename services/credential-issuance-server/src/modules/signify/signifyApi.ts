@@ -1,9 +1,5 @@
 import { utils } from "@aries-framework/core";
 import {
-  d,
-  messagize,
-  Serder,
-  Siger,
   SignifyClient,
   ready as signifyReady,
   Tier,
@@ -56,9 +52,7 @@ export class SignifyApi {
 
   async createIdentifier(signifyName: string): Promise<any> {
     try {
-      const op = await this.signifyClient
-        .identifiers()
-        .create(signifyName);
+      const op = await this.signifyClient.identifiers().create(signifyName);
       await op.op();
       const aid1 = await this.getIdentifierByName(signifyName);
       await this.signifyClient
@@ -118,35 +112,28 @@ export class SignifyApi {
       LEI: "5493001KJTIIGC8Y1R17",
     };
     try {
-      const result = await this.signifyClient
-        .credentials()
-        .issue(issuer, regk, schemaSAID, holder, vcdata);
-      await result.op();
-      const acdc = new Serder(result.acdc);
-      const iss = result.iserder;
-      const ianc = result.anc;
-
-      const sigers = result.sigs.map((sig: string) => new Siger({ qb64: sig }));
-      const ims = d(messagize(ianc, sigers));
-
-      const atc = ims.substring(result.anc.size);
+      const result = await this.signifyClient.credentials().issue({
+        issuerName: issuer,
+        registryId: regk,
+        schemaId: schemaSAID,
+        recipient: holder,
+        data: vcdata,
+      });
+      await this.waitAndGetDoneOp(
+        result.op,
+        this.opTimeout,
+        this.opRetryInterval
+      );
       const dateTime = new Date().toISOString().replace("Z", "000+00:00");
 
-      const [grant, gsigs, gend] = await this.signifyClient
-        .ipex()
-        .grant(
-          issuer,
-          holder,
-          "",
-          acdc,
-          result.acdcSaider,
-          iss,
-          result.issExnSaider,
-          result.anc,
-          atc,
-          undefined,
-          dateTime
-        );
+      const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+        senderName: issuer,
+        acdc: result.acdc,
+        anc: result.anc,
+        iss: result.iss,
+        recipient: holder,
+        datetime: dateTime,
+      });
       await this.signifyClient
         .exchanges()
         .sendFromEvents(issuer, "credential", grant, gsigs, gend, [holder]);

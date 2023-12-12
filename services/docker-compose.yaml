@@ -5,12 +5,12 @@ services:
     container_name: idw-keria
     restart: unless-stopped
     build:
-      context: github.com/WebOfTrust/keria#843759f46d9b35306a6dd0c406e4292105ef6f28
+      context: github.com/WebOfTrust/keria#f31296a954d3f207026e33d125b7703a1bd2adbd
       dockerfile: ./images/keria.dockerfile
     environment:
       - KERI_AGENT_CORS=true
     volumes:
-      - ./keria-config/cf-backer-oobis.json:/keria/scripts/keri/cf/backer-oobis.json
+      - ./external/keria-config/cf-backer-oobis.json:/keria/scripts/keri/cf/backer-oobis.json
       - keria-data:/usr/local/var/keri
     entrypoint: keria start --config-file backer-oobis --config-dir ./scripts
     ports:
