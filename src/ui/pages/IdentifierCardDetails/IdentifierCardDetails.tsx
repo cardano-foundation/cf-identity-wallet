@@ -278,6 +278,7 @@ const IdentifierCardDetails = () => {
             setOptionsIsOpen={setIdentifierOptionsIsOpen}
             cardData={cardData}
             setCardData={setCardData}
+            handleDeleteIdentifier={deleteIdentifier}
           />
         )}
         <Alert
