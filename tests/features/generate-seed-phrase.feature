@@ -5,6 +5,11 @@ Feature: GenerateSeedPhrase
     And user generate passcode on Passcode screen
     And skip Create Password screen
 
+
+  Scenario: GenerateSeedPhrase - user can go back to Create Password screen
+    Given user tap Back arrow icon on the screen
+    Then user can see Create Password screen
+
   Scenario: GenerateSeedPhrase - user can review seed phrase again
     Given user choose and save 15 words seed phrase
     And tap agree to the Terms and Conditions checkbox on Generate Seed Phrase screen

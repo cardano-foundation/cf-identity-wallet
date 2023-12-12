@@ -15,7 +15,7 @@ export class OnboardingScreen {
     await this.getStartedButton.click();
   }
 
-  async screenLoads() {
+  async loads() {
     await expect(this.getStartedButton).toBeDisplayed();
     await expect(this.iAlreadyHaveAWalletButton).toBeDisplayed();
   }

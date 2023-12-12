@@ -33,7 +33,7 @@ export class CreatePasswordScreen {
     return $("[data-testid=\"tertiary-button-create-password\"]");
   }
 
-  async screenLoads() {
+  async loads() {
     await expect(this.backArrowIcon).toBeExisting();
     await expect(this.screenTitle).toBeDisplayed();
     await expect(this.pageTopParagraph).toBeDisplayed();

@@ -41,7 +41,7 @@ export class GenerateSeedPhraseScreen {
     return $(`[data-testid="word-index-${wordNumber.toString()}"]`);
   }
 
-  async screenLoads() {
+  async loads() {
     await expect(this.screenTitle).toBeExisting();
     await expect(this.pageParagraphTop).toBeDisplayed();
     await expect(this.phraseWordsButton(15)).toBeDisplayed();

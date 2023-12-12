@@ -3,10 +3,6 @@ import { generateRandomNumbersArray } from "../helpers/generate.js";
 import { log } from "../helpers/logger.js";
 
 export class PasscodeScreen {
-  get backArrowIcon() {
-    return $("[data-testid=\"back-button\"]");
-  }
-
   get digit0Button() {
     return $("[data-testid=\"passcode-button-0\"]");
   }
@@ -59,8 +55,7 @@ export class PasscodeScreen {
     return $("[data-testid=\"set-passcode-description\"]");
   }
 
-  async screenLoads() {
-    await expect(this.backArrowIcon).toBeDisplayed();
+  async loads() {
     await expect(this.screenTitle).toBeDisplayed();
     await expect(this.screenDescriptionText).toBeDisplayed();
     await expect(this.digit1Button).toBeDisplayed();

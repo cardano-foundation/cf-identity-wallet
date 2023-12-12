@@ -1,7 +1,7 @@
 import { Given, Then, When } from "@wdio/cucumber-framework";
 import { expect } from "expect-webdriverio";
 import { seedPhrase } from "../helpers/seed-phrase.js";
-import AlertModal from "../screen-objects/alert.modal.js";
+import AlertModal from "../screen-objects/components/alert.modal.js";
 import GenerateSeedPhraseScreen from "../screen-objects/generate-seed-phrase.screen.js";
 
 export let seedPhraseWords: string[] = [];
@@ -32,19 +32,19 @@ When(
 When(
   /^tap Cancel button on modal on Generate Seed Phrase screen$/,
   async function () {
-    await AlertModal.cancelAlertButton.click();
+    await AlertModal.clickCancelAlertButton();
   }
 );
 
 When(
   /^tap Confirm button on modal on Generate Seed Phrase screen$/,
   async function () {
-    await AlertModal.confirmAlertButton.click();
+    await AlertModal.clickConfirmAlertButton();
   }
 );
 
 Then(/^user can see Generate Seed Phrase screen$/, async function () {
-  await GenerateSeedPhraseScreen.screenLoads();
+  await GenerateSeedPhraseScreen.loads();
 });
 
 Then(
