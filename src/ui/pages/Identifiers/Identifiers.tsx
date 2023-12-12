@@ -1,5 +1,5 @@
 import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
-import { peopleOutline, addOutline } from "ionicons/icons";
+import { addOutline, peopleOutline } from "ionicons/icons";
 import { useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
@@ -27,8 +27,8 @@ const AdditionalButtons = ({
     <>
       <IonButton
         shape="round"
-        className="contacts-button"
-        data-testid="contacts-button"
+        className="connections-button"
+        data-testid="connections-button"
       >
         <IonIcon
           slot="icon-only"

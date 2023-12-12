@@ -1,11 +1,11 @@
 import {
-  IonHeader,
-  IonContent,
-  IonToolbar,
-  IonButtons,
   IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
   IonIcon,
   IonTitle,
+  IonToolbar,
 } from "@ionic/react";
 import { arrowBackOutline, menuOutline } from "ionicons/icons";
 import "./TabLayout.scss";
@@ -37,7 +37,7 @@ const TabLayout = ({
               <IonButtons
                 slot="start"
                 className="back-button"
-                data-testid={`back-button-${title?.toLowerCase()}`}
+                data-testid="back-button"
                 onClick={backButtonAction}
               >
                 <IonIcon
@@ -74,7 +74,7 @@ const TabLayout = ({
                 <IonButton
                   shape="round"
                   className="menu-button"
-                  data-testid={`menu-button-${title?.toLowerCase()}`}
+                  data-testid="menu-button"
                 >
                   <IonIcon
                     slot="icon-only"

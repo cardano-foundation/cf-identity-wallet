@@ -21,6 +21,7 @@ const CardsPlaceholder = ({
         shape="round"
         expand="block"
         className="primary-button"
+        data-testid={`${testId}-button`}
         onClick={buttonAction}
       >
         <IonIcon
