@@ -102,7 +102,7 @@ class CapacitorFileSystem implements FileSystem {
           if (typeof reader.result === "string") {
             resolve(reader.result);
           } else {
-            reject(new Error("Error"));
+            reject(new Error("Error reading the Blob as a string"));
           }
         };
         reader.onerror = () => reject(reader.error);
