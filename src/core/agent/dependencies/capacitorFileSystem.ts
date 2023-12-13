@@ -23,13 +23,13 @@ class CapacitorFileSystem implements FileSystem {
     this.cachePath = options?.baseCachePath
       ? `${options?.baseCachePath}/.afj`
       : `${Directory.Cache}/.afj${
-          Capacitor.getPlatform() === "android" ? "/cache" : ""
-        }`;
+        Capacitor.getPlatform() === "android" ? "/cache" : ""
+      }`;
     this.tempPath = options?.baseTempPath
       ? `${options?.baseTempPath}/.afj`
       : `${Directory.Cache}/.afj${
-          Capacitor.getPlatform() === "android" ? "/temp" : ""
-        }`;
+        Capacitor.getPlatform() === "android" ? "/temp" : ""
+      }`;
   }
 
   async exists(path: string): Promise<boolean> {
@@ -86,13 +86,29 @@ class CapacitorFileSystem implements FileSystem {
   }
 
   async read(path: string): Promise<string> {
-    return (
-      await Filesystem.readFile({
-        path: path,
-        directory: CapacitorFileSystem.dataBasePath,
-        encoding: Encoding.UTF8,
-      })
-    ).data;
+    const readFileResult = await Filesystem.readFile({
+      path: path,
+      directory: CapacitorFileSystem.dataBasePath,
+      encoding: Encoding.UTF8,
+    });
+
+    if (typeof readFileResult.data === "string") {
+      return readFileResult.data;
+    } else {
+      const blobData = readFileResult.data as Blob;
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === "string") {
+            resolve(reader.result);
+          } else {
+            reject(new Error("Error"));
+          }
+        };
+        reader.onerror = () => reject(reader.error);
+        reader.readAsText(blobData);
+      });
+    }
   }
 
   async delete(path: string): Promise<void> {
