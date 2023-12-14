@@ -87,7 +87,11 @@ const ConnectionItem = ({
   );
 };
 
-const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
+const Connections = ({
+  showConnections,
+  setShowConnections,
+}: ConnectionsComponentProps) => {
+  const pageId = "connections-tab";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -195,6 +199,8 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
 
   return (
     <TabLayout
+      pageId={pageId}
+      customClass={showConnections ? "show" : "hide"}
       header={true}
       backButton={true}
       backButtonAction={() => setShowConnections(false)}

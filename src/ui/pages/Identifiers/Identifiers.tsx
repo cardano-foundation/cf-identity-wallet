@@ -1,4 +1,4 @@
-import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
+import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -53,6 +53,7 @@ const AdditionalButtons = ({
 };
 
 const Identifiers = () => {
+  const pageId = "identifiers-tab";
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
@@ -88,65 +89,61 @@ const Identifiers = () => {
   );
 
   return (
-    <IonPage
-      className="tab-layout identifiers-tab"
-      data-testid="identifiers-tab"
-    >
-      <TabLayout
-        header={true}
-        title={`${i18n.t("identifiers.tab.title")}`}
-        menuButton={true}
-        additionalButtons={
-          <AdditionalButtons
-            handleCreateIdentifier={() => setModalIsOpen(true)}
-          />
-        }
-      >
-        {identifiersData.length ? (
-          <>
-            {favIdentifiers.length ? (
-              <>
-                {allIdentifiers.length ? (
-                  <div className="cards-title">
-                    {i18n.t("creds.tab.favourites")}
-                  </div>
-                ) : null}
-                <CardsStack
-                  name="favs"
-                  cardsType={CardType.IDENTIFIERS}
-                  cardsData={sortedFavIdentifiers}
-                />
-              </>
-            ) : null}
-            {allIdentifiers.length ? (
-              <>
-                {favIdentifiers.length ? (
-                  <div className="cards-title cards-title-all">
-                    {i18n.t("identifiers.tab.allidentifiers")}
-                  </div>
-                ) : null}
-                <CardsStack
-                  name="allidentifiers"
-                  cardsType={CardType.IDENTIFIERS}
-                  cardsData={allIdentifiers}
-                />
-              </>
-            ) : null}
-          </>
-        ) : (
-          <CardsPlaceholder
-            buttonLabel={i18n.t("identifiers.tab.create")}
-            buttonAction={() => setModalIsOpen(true)}
-            testId="identifiers-cards-placeholder"
-          />
-        )}
-
-        <CreateIdentifier
-          modalIsOpen={modalIsOpen}
-          setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
+    <TabLayout
+      pageId={pageId}
+      header={true}
+      title={`${i18n.t("identifiers.tab.title")}`}
+      menuButton={true}
+      additionalButtons={
+        <AdditionalButtons
+          handleCreateIdentifier={() => setModalIsOpen(true)}
         />
-      </TabLayout>
-    </IonPage>
+      }
+    >
+      {identifiersData.length ? (
+        <>
+          {favIdentifiers.length ? (
+            <>
+              {allIdentifiers.length ? (
+                <div className="cards-title">
+                  {i18n.t("creds.tab.favourites")}
+                </div>
+              ) : null}
+              <CardsStack
+                name="favs"
+                cardsType={CardType.IDENTIFIERS}
+                cardsData={sortedFavIdentifiers}
+              />
+            </>
+          ) : null}
+          {allIdentifiers.length ? (
+            <>
+              {favIdentifiers.length ? (
+                <div className="cards-title cards-title-all">
+                  {i18n.t("identifiers.tab.allidentifiers")}
+                </div>
+              ) : null}
+              <CardsStack
+                name="allidentifiers"
+                cardsType={CardType.IDENTIFIERS}
+                cardsData={allIdentifiers}
+              />
+            </>
+          ) : null}
+        </>
+      ) : (
+        <CardsPlaceholder
+          buttonLabel={i18n.t("identifiers.tab.create")}
+          buttonAction={() => setModalIsOpen(true)}
+          testId="identifiers-cards-placeholder"
+        />
+      )}
+
+      <CreateIdentifier
+        modalIsOpen={modalIsOpen}
+        setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
+      />
+    </TabLayout>
   );
 };
 

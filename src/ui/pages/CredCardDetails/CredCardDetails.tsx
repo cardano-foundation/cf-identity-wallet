@@ -60,6 +60,7 @@ import "./CredCardDetails.scss";
 import { CredentialDetails } from "../../../core/agent/services/credentialService.types";
 
 const CredCardDetails = () => {
+  const pageId = "credential-card-details";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
@@ -244,6 +245,8 @@ const CredCardDetails = () => {
     return (
       <IonPage className="tab-layout card-details">
         <TabLayout
+          pageId={pageId}
+          customClass="card-details"
           header={true}
           title={`${i18n.t("creds.card.details.done")}`}
           titleSize="h3"

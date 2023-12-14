@@ -2,7 +2,6 @@ import {
   IonButton,
   IonIcon,
   IonLabel,
-  IonPage,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
@@ -73,6 +72,7 @@ const AdditionalButtons = ({
 };
 
 const Creds = () => {
+  const pageId = "creds-tab";
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
@@ -138,97 +138,89 @@ const Creds = () => {
 
   return (
     <>
-      <IonPage
-        className={`tab-layout connections-tab ${
-          showConnections ? "show" : "hide"
-        }`}
-        data-testid="connections-tab"
-      >
-        <Connections setShowConnections={setShowConnections} />
-      </IonPage>
-      <IonPage
-        className="tab-layout creds-tab"
-        data-testid="creds-tab"
-      >
-        <TabLayout
-          header={true}
-          title={`${i18n.t("creds.tab.title")}`}
-          menuButton={true}
-          additionalButtons={
-            <AdditionalButtons
-              handleConnections={() => setShowConnections(true)}
-              handleCreateCred={handleCreateCred}
-            />
-          }
-        >
-          {credsCache.length ? (
-            <>
-              {favCreds.length ? (
-                <>
-                  {allCreds.length ? (
-                    <div className="cards-title">
-                      {i18n.t("creds.tab.favourites")}
-                    </div>
-                  ) : null}
-                  <CardsStack
-                    name="favs"
-                    cardsType={CardType.CREDS}
-                    cardsData={sortedFavCreds}
-                  />
-                </>
-              ) : null}
-              {allCreds.length ? (
-                <>
-                  {favCreds.length ? (
-                    <div className="cards-title cards-title-all">
-                      {i18n.t("creds.tab.allcreds")}
-                    </div>
-                  ) : null}
-                  <CardsStack
-                    name="allcreds"
-                    cardsType={CardType.CREDS}
-                    cardsData={allCreds}
-                  />
-                </>
-              ) : null}
-            </>
-          ) : (
-            <CardsPlaceholder
-              buttonLabel={i18n.t("creds.tab.create")}
-              buttonAction={handleCreateCred}
-              testId="creds-cards-placeholder"
-            />
-          )}
-          {archivedCreds.length ? (
-            <div className="archived-credentials-button-container">
-              <IonButton
-                fill="outline"
-                className="secondary-button"
-                onClick={() => setArchivedCredentialsIsOpen(true)}
-              >
-                <IonLabel color="secondary">
-                  {i18n.t("creds.tab.viewarchived")}
-                </IonLabel>
-              </IonButton>
-            </div>
-          ) : null}
-          <ConnectModal
-            type={DIDCommRequestType.CREDENTIAL}
-            connectModalIsOpen={addCredentialIsOpen}
-            setConnectModalIsOpen={setAddCredentialIsOpen}
-            handleProvideQr={() => {
-              // @TODO: add credential sharing function
-            }}
+      <Connections
+        showConnections={showConnections}
+        setShowConnections={setShowConnections}
+      />
+      <TabLayout
+        pageId={pageId}
+        header={true}
+        title={`${i18n.t("creds.tab.title")}`}
+        menuButton={true}
+        additionalButtons={
+          <AdditionalButtons
+            handleConnections={() => setShowConnections(true)}
+            handleCreateCred={handleCreateCred}
           />
-          {archivedCreds.length ? (
-            <ArchivedCredentials
-              archivedCreds={archivedCreds}
-              archivedCredentialsIsOpen={archivedCredentialsIsOpen}
-              setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
-            />
-          ) : null}
-        </TabLayout>
-      </IonPage>
+        }
+      >
+        {credsCache.length ? (
+          <>
+            {favCreds.length ? (
+              <>
+                {allCreds.length ? (
+                  <div className="cards-title">
+                    {i18n.t("creds.tab.favourites")}
+                  </div>
+                ) : null}
+                <CardsStack
+                  name="favs"
+                  cardsType={CardType.CREDS}
+                  cardsData={sortedFavCreds}
+                />
+              </>
+            ) : null}
+            {allCreds.length ? (
+              <>
+                {favCreds.length ? (
+                  <div className="cards-title cards-title-all">
+                    {i18n.t("creds.tab.allcreds")}
+                  </div>
+                ) : null}
+                <CardsStack
+                  name="allcreds"
+                  cardsType={CardType.CREDS}
+                  cardsData={allCreds}
+                />
+              </>
+            ) : null}
+          </>
+        ) : (
+          <CardsPlaceholder
+            buttonLabel={i18n.t("creds.tab.create")}
+            buttonAction={handleCreateCred}
+            testId="creds-cards-placeholder"
+          />
+        )}
+        {archivedCreds.length ? (
+          <div className="archived-credentials-button-container">
+            <IonButton
+              fill="outline"
+              className="secondary-button"
+              onClick={() => setArchivedCredentialsIsOpen(true)}
+            >
+              <IonLabel color="secondary">
+                {i18n.t("creds.tab.viewarchived")}
+              </IonLabel>
+            </IonButton>
+          </div>
+        ) : null}
+        <ConnectModal
+          type={DIDCommRequestType.CREDENTIAL}
+          connectModalIsOpen={addCredentialIsOpen}
+          setConnectModalIsOpen={setAddCredentialIsOpen}
+          handleProvideQr={() => {
+            // @TODO: add credential sharing function
+          }}
+        />
+        {archivedCreds.length ? (
+          <ArchivedCredentials
+            archivedCreds={archivedCreds}
+            archivedCredentialsIsOpen={archivedCredentialsIsOpen}
+            setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
+          />
+        ) : null}
+      </TabLayout>
     </>
   );
 };

@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 
 interface TabLayoutProps {
+  pageId?: string;
+  customClass?: string;
   header?: boolean;
   avatar?: ReactNode;
   backButton?: boolean;

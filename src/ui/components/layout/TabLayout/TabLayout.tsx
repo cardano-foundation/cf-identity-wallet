@@ -6,12 +6,15 @@ import {
   IonButton,
   IonIcon,
   IonTitle,
+  IonPage,
 } from "@ionic/react";
 import { arrowBackOutline, menuOutline } from "ionicons/icons";
 import "./TabLayout.scss";
 import { TabLayoutProps } from "./TabLayout.types";
 
 const TabLayout = ({
+  pageId,
+  customClass,
   header,
   avatar,
   backButton,
@@ -27,7 +30,10 @@ const TabLayout = ({
   children,
 }: TabLayoutProps) => {
   return (
-    <>
+    <IonPage
+      className={`tab-layout ${pageId} ${customClass ? " " + customClass : ""}`}
+      data-testid={pageId}
+    >
       {header && (
         <IonHeader className="ion-no-border tab-header">
           <IonToolbar color="transparent">
@@ -94,7 +100,7 @@ const TabLayout = ({
       >
         {children}
       </IonContent>
-    </>
+    </IonPage>
   );
 };
 
