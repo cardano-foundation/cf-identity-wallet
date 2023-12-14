@@ -16,4 +16,3 @@ Feature: VerifySeedPhrase
     When user select words from his seed phrase on Verify Seed Phrase screen
     And user tap Continue button on Verify Seed Phrase screen
     Then user can see Identity screen
-
