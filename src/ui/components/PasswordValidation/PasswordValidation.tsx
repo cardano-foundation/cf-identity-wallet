@@ -1,4 +1,4 @@
-import { IonList, IonItem, IonIcon, IonLabel } from "@ionic/react";
+import { IonIcon, IonItem, IonLabel, IonList } from "@ionic/react";
 import { checkmarkOutline, closeOutline } from "ionicons/icons";
 import { passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
 import { i18n } from "../../../i18n";
@@ -9,12 +9,14 @@ const PasswordValidation = ({ password }: { password: string }) => {
   const ValidationItem = ({
     condition,
     label,
+    testId,
   }: {
     condition: boolean;
     label: string;
+    testId: string;
   }) => {
     return (
-      <IonItem>
+      <IonItem data-testid={testId}>
         <IonIcon
           slot="start"
           icon={condition ? checkmarkOutline : closeOutline}
@@ -44,28 +46,34 @@ const PasswordValidation = ({ password }: { password: string }) => {
         {
           condition: passwordStrengthChecker.isLengthValid(password),
           label: i18n.t("operationspasswordregex.label.length"),
+          id: "password-validation-length",
         },
         {
           condition: passwordStrengthChecker.isUppercaseValid(password),
           label: i18n.t("operationspasswordregex.label.uppercase"),
+          id: "password-validation-uppercase",
         },
         {
           condition: passwordStrengthChecker.isLowercaseValid(password),
           label: i18n.t("operationspasswordregex.label.lowercase"),
+          id: "password-validation-lowercase",
         },
         {
           condition: passwordStrengthChecker.isNumberValid(password),
           label: i18n.t("operationspasswordregex.label.number"),
+          id: "password-validation-number",
         },
         {
           condition: passwordStrengthChecker.isSymbolValid(password),
           label: i18n.t("operationspasswordregex.label.symbol"),
+          id: "password-validation-symbol",
         },
-      ].map(({ condition, label }) => (
+      ].map(({ condition, label, id }) => (
         <ValidationItem
           key={label}
           condition={condition}
           label={label}
+          testId={id}
         />
       ))}
     </IonList>
