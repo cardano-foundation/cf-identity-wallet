@@ -6,7 +6,7 @@ export class CreatePasswordScreen {
   }
 
   get confirmPasswordInput() {
-    return $("[data-testid=\"confirm-password-value\"]");
+    return $("#ion-input-1");
   }
 
   get createPasswordButton() {
@@ -14,11 +14,15 @@ export class CreatePasswordScreen {
   }
 
   get createPasswordInput() {
-    return $("[data-testid=\"createPasswordValue\"]");
+    return $("#ion-input-0");
+  }
+
+  get errorMessageText() {
+    return $("[data-testid=\"error-message-text\"]");
   }
 
   get hintInput() {
-    return $("[data-testid=\"hintValue\"]");
+    return $("#ion-input-2");
   }
 
   get pageTopParagraph() {
