@@ -84,12 +84,17 @@ const Creds = () => {
   const [addCredentialIsOpen, setAddCredentialIsOpen] = useState(false);
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
+  const [showPlaceholder, setShowPlaceholder] = useState(true);
 
   const fetchArchivedCreds = async () => {
     // @TODO - sdisalvo: handle error
     const creds = await AriesAgent.agent.credentials.getCredentials(true);
     setArchivedCreds(creds);
   };
+
+  useEffect(() => {
+    setShowPlaceholder(credsCache.length === 0);
+  }, [credsCache]);
 
   useEffect(() => {
     if (
@@ -154,7 +159,7 @@ const Creds = () => {
           />
         }
       >
-        {credsCache.length ? (
+        {!showPlaceholder && (
           <>
             {favCreds.length ? (
               <>
@@ -184,27 +189,21 @@ const Creds = () => {
                 />
               </>
             ) : null}
+            {archivedCreds.length ? (
+              <div className="archived-credentials-button-container">
+                <IonButton
+                  fill="outline"
+                  className="secondary-button"
+                  onClick={() => setArchivedCredentialsIsOpen(true)}
+                >
+                  <IonLabel color="secondary">
+                    {i18n.t("creds.tab.viewarchived")}
+                  </IonLabel>
+                </IonButton>
+              </div>
+            ) : null}
           </>
-        ) : (
-          <CardsPlaceholder
-            buttonLabel={i18n.t("creds.tab.create")}
-            buttonAction={handleCreateCred}
-            testId="creds-cards-placeholder"
-          />
         )}
-        {archivedCreds.length ? (
-          <div className="archived-credentials-button-container">
-            <IonButton
-              fill="outline"
-              className="secondary-button"
-              onClick={() => setArchivedCredentialsIsOpen(true)}
-            >
-              <IonLabel color="secondary">
-                {i18n.t("creds.tab.viewarchived")}
-              </IonLabel>
-            </IonButton>
-          </div>
-        ) : null}
         <ConnectModal
           type={DIDCommRequestType.CREDENTIAL}
           connectModalIsOpen={addCredentialIsOpen}
@@ -221,6 +220,27 @@ const Creds = () => {
           />
         ) : null}
       </TabLayout>
+      {showPlaceholder && (
+        <CardsPlaceholder
+          buttonLabel={i18n.t("creds.tab.create")}
+          buttonAction={handleCreateCred}
+          testId="creds-cards-placeholder"
+        >
+          {archivedCreds.length ? (
+            <div className="archived-credentials-button-container">
+              <IonButton
+                fill="outline"
+                className="secondary-button"
+                onClick={() => setArchivedCredentialsIsOpen(true)}
+              >
+                <IonLabel color="secondary">
+                  {i18n.t("creds.tab.viewarchived")}
+                </IonLabel>
+              </IonButton>
+            </div>
+          ) : null}
+        </CardsPlaceholder>
+      )}
     </>
   );
 };

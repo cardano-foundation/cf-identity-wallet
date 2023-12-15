@@ -1,6 +1,6 @@
 import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Identifiers.scss";
@@ -58,10 +58,15 @@ const Identifiers = () => {
   const identifiersData = useAppSelector(getIdentifiersCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [showPlaceholder, setShowPlaceholder] = useState(true);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
   });
+
+  useEffect(() => {
+    setShowPlaceholder(identifiersData.length === 0);
+  }, [identifiersData]);
 
   const findTimeById = (id: string) => {
     const found = favouritesIdentifiers?.find((item) => item.id === id);
@@ -89,61 +94,64 @@ const Identifiers = () => {
   );
 
   return (
-    <TabLayout
-      pageId={pageId}
-      header={true}
-      title={`${i18n.t("identifiers.tab.title")}`}
-      menuButton={true}
-      additionalButtons={
-        <AdditionalButtons
-          handleCreateIdentifier={() => setModalIsOpen(true)}
+    <>
+      <TabLayout
+        pageId={pageId}
+        header={true}
+        title={`${i18n.t("identifiers.tab.title")}`}
+        menuButton={true}
+        additionalButtons={
+          <AdditionalButtons
+            handleCreateIdentifier={() => setModalIsOpen(true)}
+          />
+        }
+      >
+        {!showPlaceholder && (
+          <>
+            {!!favIdentifiers.length && (
+              <>
+                {allIdentifiers.length ? (
+                  <div className="cards-title">
+                    {i18n.t("creds.tab.favourites")}
+                  </div>
+                ) : null}
+                <CardsStack
+                  name="favs"
+                  cardsType={CardType.IDENTIFIERS}
+                  cardsData={sortedFavIdentifiers}
+                />
+              </>
+            )}
+            {!!allIdentifiers.length && (
+              <>
+                {!!favIdentifiers.length && (
+                  <div className="cards-title cards-title-all">
+                    {i18n.t("identifiers.tab.allidentifiers")}
+                  </div>
+                )}
+                <CardsStack
+                  name="allidentifiers"
+                  cardsType={CardType.IDENTIFIERS}
+                  cardsData={allIdentifiers}
+                />
+              </>
+            )}
+          </>
+        )}
+
+        <CreateIdentifier
+          modalIsOpen={modalIsOpen}
+          setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
         />
-      }
-    >
-      {identifiersData.length ? (
-        <>
-          {favIdentifiers.length ? (
-            <>
-              {allIdentifiers.length ? (
-                <div className="cards-title">
-                  {i18n.t("creds.tab.favourites")}
-                </div>
-              ) : null}
-              <CardsStack
-                name="favs"
-                cardsType={CardType.IDENTIFIERS}
-                cardsData={sortedFavIdentifiers}
-              />
-            </>
-          ) : null}
-          {allIdentifiers.length ? (
-            <>
-              {favIdentifiers.length ? (
-                <div className="cards-title cards-title-all">
-                  {i18n.t("identifiers.tab.allidentifiers")}
-                </div>
-              ) : null}
-              <CardsStack
-                name="allidentifiers"
-                cardsType={CardType.IDENTIFIERS}
-                cardsData={allIdentifiers}
-              />
-            </>
-          ) : null}
-        </>
-      ) : (
+      </TabLayout>
+      {showPlaceholder && (
         <CardsPlaceholder
           buttonLabel={i18n.t("identifiers.tab.create")}
           buttonAction={() => setModalIsOpen(true)}
           testId="identifiers-cards-placeholder"
         />
       )}
-
-      <CreateIdentifier
-        modalIsOpen={modalIsOpen}
-        setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
-      />
-    </TabLayout>
+    </>
   );
 };
 
