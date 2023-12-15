@@ -21,7 +21,7 @@ import { RoutePath } from "../../../routes";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 import "./SetPasscode.scss";
-import PageFooter from "../../components/PageFooter/PageFooter";
+import { PageFooter } from "../../components/PageFooter";
 
 const SetPasscode = () => {
   const pageId = "set-passcode";

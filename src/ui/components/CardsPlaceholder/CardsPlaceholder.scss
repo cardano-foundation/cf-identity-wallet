@@ -1,9 +1,4 @@
 .cards-placeholder-container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 70vh;
-
   .cards-placeholder-cards {
     position: relative;
     height: 38vh;
@@ -35,5 +30,37 @@
 
   ion-icon {
     margin-right: 0.5rem;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .cards-placeholder-cards {
+      margin-bottom: 1.7rem;
+
+      span {
+        width: 7.44rem;
+        height: 13rem;
+        border-radius: 0.85rem;
+
+        &.back-card {
+          left: calc(50% - 5.95rem);
+          top: calc(50% - 5.95rem);
+          box-shadow: 0 0.213rem 0.213rem
+            rgba(var(--ion-color-secondary-rgb), 0.2);
+          transform: rotate(-10deg);
+        }
+
+        &.front-card {
+          left: calc(50% - 1.7rem);
+          top: calc(50% - 7.225rem);
+          box-shadow: 0 0.213rem 0.213rem
+            rgba(var(--ion-color-secondary-rgb), 0.2);
+          transform: rotate(10deg);
+        }
+      }
+    }
+
+    ion-icon {
+      margin-right: 0.425rem;
+    }
   }
 }

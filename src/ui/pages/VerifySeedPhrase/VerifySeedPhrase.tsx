@@ -15,7 +15,7 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { Addresses } from "../../../core/cardano";
 import { PageHeader } from "../../components/PageHeader";
-import PageFooter from "../../components/PageFooter/PageFooter";
+import { PageFooter } from "../../components/PageFooter";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 

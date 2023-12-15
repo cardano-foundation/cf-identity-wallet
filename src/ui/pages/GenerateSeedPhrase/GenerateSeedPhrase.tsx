@@ -21,7 +21,7 @@ import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getSeedPhraseCache } from "../../../store/reducers/seedPhraseCache";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
-import PageFooter from "../../components/PageFooter/PageFooter";
+import { PageFooter } from "../../components/PageFooter";
 import { MnemonicLengthSegment } from "../../components/MnemonicLengthSegment";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
 import { PrivacyPolicyModal } from "../../components/PrivacyPolicy";

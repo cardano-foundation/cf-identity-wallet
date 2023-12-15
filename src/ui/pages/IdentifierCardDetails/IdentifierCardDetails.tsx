@@ -49,7 +49,7 @@ import { IdentifierOptions } from "../../components/IdentifierOptions";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import "./IdentifierCardDetails.scss";
-import PageFooter from "../../components/PageFooter/PageFooter";
+import { PageFooter } from "../../components/PageFooter";
 
 const IdentifierCardDetails = () => {
   const pageId = "identifier-card-details";
