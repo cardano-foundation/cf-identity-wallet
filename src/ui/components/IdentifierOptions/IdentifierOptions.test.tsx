@@ -53,6 +53,11 @@ describe("Identifier Options modal", () => {
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[0]}
           setCardData={setCardData}
+          handleDeleteIdentifier={async () => {
+            {
+              jest.fn();
+            }
+          }}
         />
       </Provider>
     );
@@ -69,6 +74,9 @@ describe("Identifier Options modal", () => {
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[0]}
           setCardData={setCardData}
+          handleDeleteIdentifier={async () => {
+            jest.fn();
+          }}
         />
       </Provider>
     );

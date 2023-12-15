@@ -8,6 +8,7 @@ interface IdentifierOptionsProps {
   setOptionsIsOpen: (value: boolean) => void;
   cardData: KERIDetails | DIDDetails;
   setCardData: (value: KERIDetails | DIDDetails) => void;
+  handleDeleteIdentifier: () => Promise<void>;
 }
 
 export type { IdentifierOptionsProps };

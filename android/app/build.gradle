@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
+    namespace "cf.identity.wallet"
     compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         applicationId "cf.identity.wallet"
