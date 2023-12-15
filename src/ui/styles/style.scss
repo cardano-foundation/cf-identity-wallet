@@ -83,10 +83,14 @@ p {
   h2,
   h3 {
     margin-bottom: 0;
+  }
+
+  h2 {
     font-size: 1.25rem;
   }
 
-  p {
+  p,
+  h3 {
     font-size: 0.8rem;
     margin: 0.35rem 0;
     line-height: 1rem;
@@ -248,86 +252,6 @@ ion-modal {
     }
     to {
       opacity: 1;
-    }
-  }
-
-  .card-details-content > * {
-    margin: 1.56rem 0 1rem;
-  }
-
-  .card-details-info-block {
-    h3 {
-      margin: 0.938rem;
-      font-weight: 500;
-    }
-    .card-details-info-block-inner {
-      display: flex;
-      flex-direction: column;
-      background-color: white;
-      border-radius: 1rem;
-      padding: 1.15rem;
-
-      .card-details-info-block-line {
-        display: flex;
-
-        > * {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-
-        &:not(:last-child) {
-          margin-bottom: 1rem;
-        }
-
-        .card-details-info-block-text-icon {
-          font-size: 1.125rem;
-        }
-
-        .card-details-info-block-icon,
-        .card-details-info-block-text-icon {
-          margin-right: 0.94rem;
-        }
-
-        .card-details-info-block-data {
-          width: 100%;
-          overflow: hidden;
-          white-space: nowrap;
-          --mask: linear-gradient(
-            to right,
-            rgba(var(--ion-color-secondary-rgb)) 0,
-            rgba(var(--ion-color-secondary-rgb)) 85%,
-            rgba(0, 0, 0, 0.5) 90%,
-            rgba(0, 0, 0, 0) 100%
-          );
-          -webkit-mask: var(--mask);
-          mask: var(--mask);
-        }
-      }
-
-      ion-button,
-      ion-button.md {
-        height: 1.7rem;
-        margin: 0;
-        --background: transparent;
-        --box-shadow: none;
-        --color: var(--ion-color-secondary);
-        --background-activated: var(--ion-color-light-grey);
-
-        ion-icon {
-          opacity: 0.5;
-        }
-
-        &::part(native) {
-          padding: 0;
-        }
-      }
-
-      ion-icon {
-        width: 1.475rem;
-        height: 1.475rem;
-        margin: 0;
-      }
     }
   }
 
