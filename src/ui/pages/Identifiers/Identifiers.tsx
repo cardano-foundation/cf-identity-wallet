@@ -3,7 +3,6 @@ import { peopleOutline, addOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
-import "./Identifiers.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -15,20 +14,24 @@ import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
 import { CardType } from "../../globals/types";
+import { Connections } from "../Connections";
 
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
+  handleConnections: () => void;
 }
 
 const AdditionalButtons = ({
+  handleConnections,
   handleCreateIdentifier,
 }: AdditionalButtonsProps) => {
   return (
     <>
       <IonButton
         shape="round"
-        className="contacts-button"
-        data-testid="contacts-button"
+        className="connections-button"
+        data-testid="connections-button"
+        onClick={handleConnections}
       >
         <IonIcon
           slot="icon-only"
@@ -59,6 +62,7 @@ const Identifiers = () => {
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
+  const [showConnections, setShowConnections] = useState(false);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
@@ -95,6 +99,10 @@ const Identifiers = () => {
 
   return (
     <>
+      <Connections
+        showConnections={showConnections}
+        setShowConnections={setShowConnections}
+      />
       <TabLayout
         pageId={pageId}
         header={true}
@@ -102,6 +110,7 @@ const Identifiers = () => {
         menuButton={true}
         additionalButtons={
           <AdditionalButtons
+            handleConnections={() => setShowConnections(true)}
             handleCreateIdentifier={() => setModalIsOpen(true)}
           />
         }
