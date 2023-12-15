@@ -14,6 +14,7 @@ import {
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -52,6 +53,9 @@ const initialState = {
         time: 1,
       },
     ],
+  },
+  connectionsCache: {
+    connections: connectionsFix,
   },
 };
 
@@ -113,6 +117,9 @@ describe("Identifiers Tab", () => {
       seedPhraseCache: {},
       identifiersCache: {
         identifiers: filteredIdentifierFix,
+      },
+      connectionsCache: {
+        connections: connectionsFix,
       },
     };
 
