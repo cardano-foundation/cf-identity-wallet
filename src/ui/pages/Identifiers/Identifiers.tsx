@@ -114,6 +114,15 @@ const Identifiers = () => {
             handleCreateIdentifier={() => setModalIsOpen(true)}
           />
         }
+        placeholder={
+          showPlaceholder && (
+            <CardsPlaceholder
+              buttonLabel={i18n.t("identifiers.tab.create")}
+              buttonAction={() => setModalIsOpen(true)}
+              testId="identifiers-cards-placeholder"
+            />
+          )
+        }
       >
         {!showPlaceholder && (
           <>
@@ -153,13 +162,6 @@ const Identifiers = () => {
           setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
         />
       </TabLayout>
-      {showPlaceholder && (
-        <CardsPlaceholder
-          buttonLabel={i18n.t("identifiers.tab.create")}
-          buttonAction={() => setModalIsOpen(true)}
-          testId="identifiers-cards-placeholder"
-        />
-      )}
     </>
   );
 };

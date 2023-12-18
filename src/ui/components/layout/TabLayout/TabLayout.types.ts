@@ -16,6 +16,7 @@ interface TabLayoutProps {
   actionButtonAction?: () => void;
   actionButtonLabel?: string;
   children?: ReactNode;
+  placeholder?: ReactNode;
 }
 
 export type { TabLayoutProps };

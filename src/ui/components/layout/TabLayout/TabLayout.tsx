@@ -28,6 +28,7 @@ const TabLayout = ({
   actionButtonAction,
   actionButtonLabel,
   children,
+  placeholder,
 }: TabLayoutProps) => {
   return (
     <IonPage
@@ -93,13 +94,14 @@ const TabLayout = ({
           </IonToolbar>
         </IonHeader>
       )}
-
-      <IonContent
-        className="tab-content"
-        color="transparent"
-      >
-        {children}
-      </IonContent>
+      {placeholder || (
+        <IonContent
+          className="tab-content"
+          color="transparent"
+        >
+          {children}
+        </IonContent>
+      )}
     </IonPage>
   );
 };
