@@ -116,43 +116,53 @@ const IdentifierCardDetails = () => {
       const updatedIdentifiers = identifierData.filter(
         (item) => item.id !== cardData.id
       );
-      // For now there is no archiving in the UI so does both.
-      await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
-      await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
+      await deleteIdentifier();
       dispatch(setIdentifiersCache(updatedIdentifiers));
     }
     handleDone();
   };
 
-  const AdditionalButtons = () => {
-    const handleSetFavourite = (id: string) => {
+  const deleteIdentifier = async () => {
+    if (cardData) {
+      // For now there is no archiving in the UI so does both.
+      await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
+      await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
       if (isFavourite) {
-        PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
-          favourites: favouritesIdentifiersData.filter((fav) => fav.id !== id),
-        })
-          .then(() => {
-            dispatch(removeFavouriteIdentifierCache(id));
-          })
-          .catch((error) => {
-            /*TODO: handle error*/
-          });
-      } else {
-        if (favouritesIdentifiersData.length >= MAX_FAVOURITES) {
-          dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
-          return;
-        }
-
-        PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
-          favourites: [{ id, time: Date.now() }, ...favouritesIdentifiersData],
-        })
-          .then(() => {
-            dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));
-          })
-          .catch((error) => {
-            /*TODO: handle error*/
-          });
+        handleSetFavourite(cardData.id);
       }
-    };
+    }
+  };
+
+  const handleSetFavourite = (id: string) => {
+    if (isFavourite) {
+      PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
+        favourites: favouritesIdentifiersData.filter((fav) => fav.id !== id),
+      })
+        .then(() => {
+          dispatch(removeFavouriteIdentifierCache(id));
+        })
+        .catch((error) => {
+          /*TODO: handle error*/
+        });
+    } else {
+      if (favouritesIdentifiersData.length >= MAX_FAVOURITES) {
+        dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
+        return;
+      }
+
+      PreferencesStorage.set(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES, {
+        favourites: [{ id, time: Date.now() }, ...favouritesIdentifiersData],
+      })
+        .then(() => {
+          dispatch(addFavouriteIdentifierCache({ id, time: Date.now() }));
+        })
+        .catch((error) => {
+          /*TODO: handle error*/
+        });
+    }
+  };
+
+  const AdditionalButtons = () => {
     return (
       <>
         <IonButton
@@ -265,6 +275,7 @@ const IdentifierCardDetails = () => {
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={cardData}
           setCardData={setCardData}
+          handleDeleteIdentifier={deleteIdentifier}
         />
       )}
       <Alert
