@@ -58,6 +58,7 @@ const IdentifierOptions = ({
   setOptionsIsOpen,
   cardData,
   setCardData,
+  handleDeleteIdentifier,
 }: IdentifierOptionsProps) => {
   const dispatch = useAppDispatch();
   const identifierData = useAppSelector(getIdentifiersCache);
@@ -159,8 +160,7 @@ const IdentifierOptions = ({
       updateRedux
     );
     if (actionType === "delete") {
-      await AriesAgent.agent.identifiers.archiveIdentifier(cardData.id);
-      await AriesAgent.agent.identifiers.deleteIdentifier(cardData.id);
+      await handleDeleteIdentifier();
       history.push(TabsRoutePath.IDENTIFIERS);
     }
   };
