@@ -156,12 +156,11 @@ const Identifiers = () => {
             )}
           </>
         )}
-
-        <CreateIdentifier
-          modalIsOpen={modalIsOpen}
-          setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
-        />
       </TabLayout>
+      <CreateIdentifier
+        modalIsOpen={modalIsOpen}
+        setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
+      />
     </>
   );
 };

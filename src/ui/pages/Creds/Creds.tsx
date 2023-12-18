@@ -158,6 +158,29 @@ const Creds = () => {
             handleCreateCred={handleCreateCred}
           />
         }
+        placeholder={
+          showPlaceholder && (
+            <CardsPlaceholder
+              buttonLabel={i18n.t("creds.tab.create")}
+              buttonAction={handleCreateCred}
+              testId="creds-cards-placeholder"
+            >
+              {archivedCreds.length ? (
+                <div className="archived-credentials-button-container">
+                  <IonButton
+                    fill="outline"
+                    className="secondary-button"
+                    onClick={() => setArchivedCredentialsIsOpen(true)}
+                  >
+                    <IonLabel color="secondary">
+                      {i18n.t("creds.tab.viewarchived")}
+                    </IonLabel>
+                  </IonButton>
+                </div>
+              ) : null}
+            </CardsPlaceholder>
+          )
+        }
       >
         {!showPlaceholder && (
           <>
@@ -204,14 +227,6 @@ const Creds = () => {
             ) : null}
           </>
         )}
-        <ConnectModal
-          type={DIDCommRequestType.CREDENTIAL}
-          connectModalIsOpen={addCredentialIsOpen}
-          setConnectModalIsOpen={setAddCredentialIsOpen}
-          handleProvideQr={() => {
-            // @TODO: add credential sharing function
-          }}
-        />
         {archivedCreds.length ? (
           <ArchivedCredentials
             archivedCreds={archivedCreds}
@@ -220,27 +235,14 @@ const Creds = () => {
           />
         ) : null}
       </TabLayout>
-      {showPlaceholder && (
-        <CardsPlaceholder
-          buttonLabel={i18n.t("creds.tab.create")}
-          buttonAction={handleCreateCred}
-          testId="creds-cards-placeholder"
-        >
-          {archivedCreds.length ? (
-            <div className="archived-credentials-button-container">
-              <IonButton
-                fill="outline"
-                className="secondary-button"
-                onClick={() => setArchivedCredentialsIsOpen(true)}
-              >
-                <IonLabel color="secondary">
-                  {i18n.t("creds.tab.viewarchived")}
-                </IonLabel>
-              </IonButton>
-            </div>
-          ) : null}
-        </CardsPlaceholder>
-      )}
+      <ConnectModal
+        type={DIDCommRequestType.CREDENTIAL}
+        connectModalIsOpen={addCredentialIsOpen}
+        setConnectModalIsOpen={setAddCredentialIsOpen}
+        handleProvideQr={() => {
+          // @TODO: add credential sharing function
+        }}
+      />
     </>
   );
 };
