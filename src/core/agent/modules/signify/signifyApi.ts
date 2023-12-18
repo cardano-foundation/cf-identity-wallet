@@ -4,12 +4,21 @@ import {
   ready as signifyReady,
   Tier,
   randomPasscode,
+  Algos,
+  Siger,
+  d,
+  messagize,
+  Serder,
+  EventResult,
 } from "signify-ts";
 import {
   KeriContact,
   CreateIdentifierResult,
   IdentifierResult,
   IdentifiersListResult,
+  CreateMultisigExnPayload,
+  Aid,
+  MultiSigIcpNotification,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 
@@ -229,5 +238,128 @@ export class SignifyApi {
   async getAllIdentifiers(): Promise<IdentifiersListResult> {
     const allIdentifiersResult = await this.signifyClient.identifiers().list();
     return allIdentifiersResult;
+  }
+
+  async createMultisig(
+    aid: Aid,
+    otherAids: Pick<Aid, "state">[]
+  ): Promise<{
+    op: any;
+    icpResult: EventResult;
+    name: string;
+  }> {
+    const rstates = [aid["state"], ...otherAids.map((aid) => aid["state"])];
+    const states = rstates;
+    const name = utils.uuid();
+    const isith = otherAids.length + 1;
+    const nsith = otherAids.length + 1;
+    const icp = await this.signifyClient.identifiers().create(name, {
+      algo: Algos.group,
+      mhab: aid,
+      isith: isith,
+      nsith: nsith,
+      toad: aid.state.b.length,
+      wits: aid.state.b,
+      states: states,
+      rstates: rstates,
+    });
+    const op = await icp.op();
+    const serder = icp.serder;
+
+    const sigs = icp.sigs;
+    const sigers = sigs.map((sig: string) => new Siger({ qb64: sig }));
+
+    const ims = d(messagize(serder, sigers));
+    const atc = ims.substring(serder.size);
+    const embeds = {
+      icp: [serder, atc],
+    };
+
+    const smids = states.map((state) => state["i"]);
+    const recp = otherAids
+      .map((aid) => aid["state"])
+      .map((state) => state["i"]);
+    await this.sendCreateMultisigExn(aid["name"], aid, embeds, recp, {
+      gid: serder.pre,
+      smids: smids,
+      rmids: smids,
+      rstates,
+      name,
+    });
+    return {
+      op: op,
+      icpResult: icp,
+      name: name,
+    };
+  }
+
+  async sendCreateMultisigExn(
+    name: string,
+    aid: Aid,
+    embeds: {
+      icp: (string | Serder)[];
+    },
+    recp: any,
+    payload: CreateMultisigExnPayload
+  ): Promise<any> {
+    return this.signifyClient
+      .exchanges()
+      .send(name, "multisig", aid, "/multisig/icp", payload, embeds, recp);
+  }
+
+  async getNotificationsBySaid(
+    said: string
+  ): Promise<MultiSigIcpNotification[]> {
+    return this.signifyClient.groups().getRequest(said);
+  }
+
+  async joinCreateMultisig(
+    exn: MultiSigIcpNotification["exn"],
+    aid: Aid
+  ): Promise<{
+    op: any;
+    icpResult: EventResult;
+    name: string;
+  }> {
+    const icp = exn.e.icp;
+    const rstates = exn.a.rstates;
+    const name = exn.a.name;
+    const icpResult = await this.signifyClient.identifiers().create(name, {
+      algo: Algos.group,
+      mhab: aid,
+      isith: icp.kt,
+      nsith: icp.nt,
+      toad: parseInt(icp.bt),
+      wits: icp.b,
+      states: exn.a.rstates,
+      rstates: exn.a.rstates,
+    });
+    const op = await icpResult.op();
+    const serder = icpResult.serder;
+    const sigs = icpResult.sigs;
+    const sigers = sigs.map((sig: string) => new Siger({ qb64: sig }));
+
+    const ims = d(messagize(serder, sigers));
+    const atc = ims.substring(serder.size);
+    const embeds = {
+      icp: [serder, atc],
+    };
+
+    const smids = exn.a.smids;
+    const recp = rstates
+      .filter((r) => r.i !== aid.state.i)
+      .map((state) => state["i"]);
+    await this.sendCreateMultisigExn(aid["name"], aid, embeds, recp, {
+      gid: serder.pre,
+      smids: smids,
+      rmids: smids,
+      rstates,
+      name,
+    });
+    return {
+      op: op,
+      icpResult: icpResult,
+      name: name,
+    };
   }
 }

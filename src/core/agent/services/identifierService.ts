@@ -10,7 +10,12 @@ import {
   IdentifierMetadataRecordProps,
 } from "../modules/generalStorage/repositories/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { IdentifierResult } from "../modules/signify/signifyApi.types";
+import {
+  Aid,
+  IdentifierResult,
+  KeriContact,
+  MultiSigIcpNotification,
+} from "../modules/signify/signifyApi.types";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
   [IdentifierType.KEY]: [0, 1, 2, 3],
@@ -51,6 +56,7 @@ class IdentifierService extends AgentService {
         method: metadata.method,
         displayName: metadata.displayName,
         id: metadata.id,
+        signifyName: metadata.signifyName,
         createdAtUTC: metadata.createdAt.toISOString(),
         colors: metadata.colors,
         theme: metadata.theme,
@@ -96,6 +102,7 @@ class IdentifierService extends AgentService {
           method: IdentifierType.KERI,
           displayName: metadata.displayName,
           createdAtUTC: metadata.createdAt.toISOString(),
+          signifyName: metadata.signifyName,
           colors: metadata.colors,
           theme: metadata.theme,
           s: aid.state.s,
@@ -301,6 +308,89 @@ class IdentifierService extends AgentService {
       throw new Error(
         `${IdentifierService.THEME_WAS_NOT_VALID} ${metadata.id}`
       );
+    }
+  }
+
+  async createMultisig(
+    identifier: string,
+    contacts: KeriContact[],
+    meta: Pick<
+      IdentifierMetadataRecordProps,
+      "displayName" | "colors" | "theme"
+    >
+  ): Promise<string | undefined> {
+    const metadata = await this.getMetadataById(identifier);
+    this.validIdentifierMetadata(metadata);
+    const aid = (await this.agent.modules.signify.getIdentifierByName(
+      metadata.signifyName as string
+    )) as Aid;
+    const otherAids = [];
+    for (const contact of contacts) {
+      const aid = await this.agent.modules.signify.resolveOobi(contact.oobi);
+      otherAids.push({
+        state: aid.response,
+      } as Pick<Aid, "state">);
+    }
+    const result = await this.agent.modules.signify.createMultisig(
+      aid,
+      otherAids
+    );
+    // TODO: save res.op.name for check status
+    return this.createIdentifier({
+      method: IdentifierType.KERI,
+      displayName: meta.displayName,
+      colors: meta.colors,
+      theme: meta.theme,
+      signifyName: result.name,
+    });
+  }
+  async isJoinedCreateMultisig(msgSaid: string): Promise<boolean> {
+    const notifications: MultiSigIcpNotification[] =
+      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    const exn = notifications[0].exn;
+    const signifyName = exn.a.name;
+    try {
+      const multiSig = await this.agent.modules.signify.getIdentifierByName(
+        signifyName
+      );
+      if (multiSig) {
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+    return false;
+  }
+
+  async joinCreateMultisig(
+    msgSaid: string,
+    meta: Pick<
+      IdentifierMetadataRecordProps,
+      "displayName" | "colors" | "theme"
+    >
+  ): Promise<string | undefined> {
+    const notifications: MultiSigIcpNotification[] =
+      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    const exn = notifications[0].exn;
+    const rstate = exn.a.rstates;
+    const identifiers = await this.getIdentifiers();
+    const identifier = identifiers.find((identifier) => {
+      return rstate.find((item) => identifier.id === item.i);
+    });
+
+    if (identifier && identifier.signifyName) {
+      const aid = await this.agent.modules.signify.getIdentifierByName(
+        identifier?.signifyName
+      );
+      const res = await this.agent.modules.signify.joinCreateMultisig(exn, aid);
+      // TODO: save op for check status
+      return this.createIdentifier({
+        method: IdentifierType.KERI,
+        displayName: meta.displayName,
+        colors: meta.colors,
+        theme: meta.theme,
+        signifyName: res.name,
+      });
     }
   }
 }
