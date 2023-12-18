@@ -37,6 +37,26 @@ export class CreatePasswordScreen {
     return $("[data-testid=\"tertiary-button-create-password\"]");
   }
 
+  get validationLengthIcon() {
+    return $("[data-testid=\"password-validation-length\"] > ion-icon");
+  }
+
+  get validationLowercaseIcon() {
+    return $("[data-testid=\"password-validation-lowercase\"] > ion-icon");
+  }
+
+  get validationNumberIcon() {
+    return $("[data-testid=\"password-validation-number\"] > ion-icon");
+  }
+
+  get validationSymbolIcon() {
+    return $("[data-testid=\"password-validation-symbol\"] > ion-icon");
+  }
+
+  get validationUppercaseIcon() {
+    return $("[data-testid=\"password-validation-uppercase\"] > ion-icon");
+  }
+
   async loads() {
     await expect(this.backArrowIcon).toBeExisting();
     await expect(this.screenTitle).toBeDisplayed();

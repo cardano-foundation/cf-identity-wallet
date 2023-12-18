@@ -49,6 +49,27 @@ Given(
   }
 );
 
+Given(
+  /^all conditions are displayed as passed on Create Password screen$/,
+  async function () {
+    await expect(
+      await CreatePasswordScreen.validationLengthIcon
+    ).toHaveElementClass("pass");
+    await expect(
+      await CreatePasswordScreen.validationLowercaseIcon
+    ).toHaveElementClass("pass");
+    await expect(
+      await CreatePasswordScreen.validationNumberIcon
+    ).toHaveElementClass("pass");
+    await expect(
+      await CreatePasswordScreen.validationSymbolIcon
+    ).toHaveElementClass("pass");
+    await expect(
+      await CreatePasswordScreen.validationUppercaseIcon
+    ).toHaveElementClass("pass");
+  }
+);
+
 When(
   /^user tap Create Password button on Create Password screen$/,
   async function () {
@@ -68,5 +89,35 @@ Then(
     await expect(await CreatePasswordScreen.errorMessageText.getText()).toMatch(
       errorMessage
     );
+  }
+);
+
+Then(
+  /^icon for (.*) is displayed as failed on Create Password screen$/,
+  async function (caseName: string) {
+    const words = caseName.split(/\s+/);
+    for (const word of words) {
+      if (word === "uppercase") {
+        await expect(
+          await CreatePasswordScreen.validationUppercaseIcon
+        ).toHaveElementClass("fails");
+      } else if (word === "lowercase") {
+        await expect(
+          await CreatePasswordScreen.validationLowercaseIcon
+        ).toHaveElementClass("fails");
+      } else if (word === "long" || word === "short") {
+        await expect(
+          await CreatePasswordScreen.validationLengthIcon
+        ).toHaveElementClass("fails");
+      } else if (word === "number") {
+        await expect(
+          await CreatePasswordScreen.validationNumberIcon
+        ).toHaveElementClass("fails");
+      } else if (word === "symbol") {
+        await expect(
+          await CreatePasswordScreen.validationSymbolIcon
+        ).toHaveElementClass("fails");
+      }
+    }
   }
 );
