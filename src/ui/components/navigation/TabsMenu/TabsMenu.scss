@@ -47,7 +47,9 @@ ion-tab-bar {
   }
 
   @media screen and (min-height: 655px) {
-    padding-bottom: 0.75rem;
+    &.ios {
+      padding-bottom: 0.75rem;
+    }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
