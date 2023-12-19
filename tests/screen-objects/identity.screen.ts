@@ -13,7 +13,7 @@ export class IdentityScreen {
 
   async loads() {
     await expect(this.screenTitle).toBeDisplayed();
-    await MenuToolbar.loads();
+    await MenuToolbar.loads("identity");
     await expect(this.addAnIdentifierButton).toBeDisplayed();
     await TabBar.loads();
   }

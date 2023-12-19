@@ -86,7 +86,7 @@ describe("Identifiers Tab", () => {
     expect(
       getByText(EN_TRANSLATIONS.identifiers.tab.title)
     ).toBeInTheDocument();
-    expect(getByTestId("contacts-button")).toBeInTheDocument();
+    expect(getByTestId("connections-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
     expect(
       getByTestId(
