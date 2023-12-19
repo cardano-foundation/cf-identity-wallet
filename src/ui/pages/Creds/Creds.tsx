@@ -163,7 +163,7 @@ const Creds = () => {
             <CardsPlaceholder
               buttonLabel={i18n.t("creds.tab.create")}
               buttonAction={handleCreateCred}
-              testId="creds-cards-placeholder"
+              testId={pageId}
             >
               {archivedCreds.length ? (
                 <div className="archived-credentials-button-container">

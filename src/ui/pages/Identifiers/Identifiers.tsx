@@ -119,7 +119,7 @@ const Identifiers = () => {
             <CardsPlaceholder
               buttonLabel={i18n.t("identifiers.tab.create")}
               buttonAction={() => setModalIsOpen(true)}
-              testId="identifiers-cards-placeholder"
+              testId={pageId}
             />
           )
         }

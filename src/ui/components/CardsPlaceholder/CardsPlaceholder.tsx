@@ -9,18 +9,17 @@ const CardsPlaceholder = ({
   testId,
   children,
 }: CardsPlaceholderProps) => {
-  const pageId = "cards-placeholder";
   return (
     <div
       className="cards-placeholder-container"
-      data-testid={testId}
+      data-testid={`${testId}-cards-placeholder`}
     >
       <div className="cards-placeholder-cards">
         <span className="back-card" />
         <span className="front-card" />
       </div>
       <PageFooter
-        pageId={pageId}
+        pageId={testId}
         primaryButtonIcon={addOutline}
         primaryButtonText={buttonLabel}
         primaryButtonAction={buttonAction}
