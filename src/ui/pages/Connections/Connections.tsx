@@ -40,6 +40,7 @@ import { ShareQR } from "../../components/ShareQR/ShareQR";
 import { MoreOptions } from "../../components/ShareQR/MoreOptions";
 import { AriesAgent } from "../../../core/agent/agent";
 import { ConnectionStatus } from "../../../core/agent/agent.types";
+import { IdentifierType } from "../../../core/agent/services/identifierService.types";
 
 const ConnectionItem = ({
   item,
@@ -99,13 +100,33 @@ const Connections = ({ setShowConnections }: ConnectionsComponentProps) => {
   const [invitationLink, setInvitationLink] = useState<string>();
 
   async function handleProvideQr() {
-    const invitation =
-      await AriesAgent.agent.connections.createMediatorInvitation();
-    const shortUrl = await AriesAgent.agent.connections.getShortenUrl(
-      invitation.invitationUrl
+    // const invitation =
+    //   await AriesAgent.agent.connections.createMediatorInvitation();
+    // TODO: FOR TESTING
+    const dids = await AriesAgent.agent.identifiers.getIdentifiers();
+    const id = dids[0];
+    const idDetail = await AriesAgent.agent.identifiers.getIdentifier(id.id);
+    if (!idDetail) {
+      return;
+    }
+    const contacts = await AriesAgent.agent.connections.getKeriContacts();
+    await AriesAgent.agent.identifiers.createMultisig(
+      idDetail.result.id,
+      contacts,
+      {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      }
     );
-    setInvitationLink(shortUrl);
-    setConnectModalIsOpen(false);
+    if (idDetail.type === IdentifierType.KERI) {
+      // console.log(idDetail);
+      const shortUrl = await AriesAgent.agent.connections.getKeriOobi(
+        idDetail.result.signifyName as string
+      );
+      setInvitationLink(shortUrl);
+      setConnectModalIsOpen(false);
+    }
   }
 
   const handleConnectModal = () => {

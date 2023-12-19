@@ -198,6 +198,15 @@ const keriNotificationsChangeHandler = async (
   );
 };
 
+const signifyNotificationsChangeHandler = async (
+  event: KeriNotification,
+  dispatch: ReturnType<typeof useAppDispatch>
+) => {
+  // console.log("signifyNotificationsChangeHandler", event);
+  // TODO: FOR TESTING, MUST USE DISPATCH
+  // await AriesAgent.agent.identifiers.joinCreateMultisig(event.a.d as any)
+};
+
 const keriAcdcChangeHandler = async (
   event: AcdcKeriStateChangedEvent,
   dispatch: ReturnType<typeof useAppDispatch>
@@ -326,6 +335,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     AriesAgent.agent.credentials.onNotificationKeriStateChanged((event) => {
       return keriNotificationsChangeHandler(event, dispatch);
     });
+    AriesAgent.agent.signifyNotification.onNotificationKeriStateChanged(
+      (event) => {
+        return signifyNotificationsChangeHandler(event, dispatch);
+      }
+    );
     AriesAgent.agent.credentials.onAcdcKeriStateChanged((event) => {
       return keriAcdcChangeHandler(event, dispatch);
     });

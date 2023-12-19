@@ -23,10 +23,9 @@ import {
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT =
-    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
+  // TODO: FOR TESTING
+  static readonly LOCAL_KERIA_ENDPOINT = "http://localhost:3901";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://localhost:3903";
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
