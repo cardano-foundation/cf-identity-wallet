@@ -10,6 +10,7 @@ interface ConnectionItemProps {
 }
 
 interface ConnectionsComponentProps {
+  showConnections: boolean;
   setShowConnections: (value: boolean) => void;
 }
 

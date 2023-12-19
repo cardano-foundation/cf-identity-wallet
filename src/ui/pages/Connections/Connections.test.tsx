@@ -22,7 +22,10 @@ describe("Connections page", () => {
   test("It renders connections page successfully", async () => {
     const { getByTestId } = render(
       <Provider store={store}>
-        <Connections setShowConnections={mockSetShowConnections} />
+        <Connections
+          setShowConnections={mockSetShowConnections}
+          showConnections={true}
+        />
       </Provider>
     );
     const addConnectionBtn = getByTestId("add-connection-button");
@@ -34,7 +37,10 @@ describe("Connections page", () => {
   test("It renders connection modal successfully", async () => {
     const { getByTestId } = render(
       <Provider store={store}>
-        <Connections setShowConnections={mockSetShowConnections} />
+        <Connections
+          setShowConnections={mockSetShowConnections}
+          showConnections={true}
+        />
       </Provider>
     );
     const addConnectionBtn = getByTestId("add-connection-button");
@@ -59,7 +65,10 @@ describe("Connections page", () => {
       .mockResolvedValue("http://example.com/shorten/123");
     const { getByText, getByTestId } = render(
       <Provider store={store}>
-        <Connections setShowConnections={mockSetShowConnections} />
+        <Connections
+          setShowConnections={mockSetShowConnections}
+          showConnections={true}
+        />
       </Provider>
     );
     const addConnectionBtn = getByTestId("add-connection-button");
