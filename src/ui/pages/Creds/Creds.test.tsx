@@ -117,7 +117,7 @@ describe("Creds Tab", () => {
       </Provider>
     );
 
-    expect(getByTestId("creds-cards-placeholder")).toBeInTheDocument();
+    expect(getByTestId("creds-tab-cards-placeholder")).toBeInTheDocument();
   });
 
   test("Renders Creds Card", () => {
@@ -182,7 +182,9 @@ describe("Creds Tab", () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId("connections-cards-placeholder")).toBeInTheDocument();
+      expect(
+        getByTestId("connections-tab-cards-placeholder")
+      ).toBeInTheDocument();
     });
   });
 

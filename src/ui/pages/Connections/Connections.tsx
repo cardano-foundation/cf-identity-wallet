@@ -255,7 +255,7 @@ const Connections = ({
         <CardsPlaceholder
           buttonLabel={i18n.t("connections.tab.create")}
           buttonAction={handleConnectModal}
-          testId="connections-cards-placeholder"
+          testId={pageId}
         />
       )}
       <ConnectModal
