@@ -1,12 +1,12 @@
 import {
-  IonHeader,
-  IonContent,
-  IonToolbar,
-  IonButtons,
   IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
   IonIcon,
-  IonTitle,
   IonPage,
+  IonTitle,
+  IonToolbar,
 } from "@ionic/react";
 import { arrowBackOutline, menuOutline } from "ionicons/icons";
 import "./TabLayout.scss";

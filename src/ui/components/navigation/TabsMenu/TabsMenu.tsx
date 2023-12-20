@@ -1,21 +1,21 @@
 import {
-  IonTabs,
-  IonTabBar,
-  IonTabButton,
   IonIcon,
   IonLabel,
   IonRouterOutlet,
+  IonTabBar,
+  IonTabButton,
+  IonTabs,
 } from "@ionic/react";
-import { Route, Redirect } from "react-router";
+import { Redirect, Route } from "react-router";
 import {
-  idCard,
-  idCardOutline,
-  fingerPrint,
-  fingerPrintOutline,
-  scan,
-  scanOutline,
   chatbubble,
   chatbubbleOutline,
+  fingerPrint,
+  fingerPrintOutline,
+  idCard,
+  idCardOutline,
+  scan,
+  scanOutline,
   wallet,
   walletOutline,
 } from "ionicons/icons";
@@ -95,7 +95,7 @@ const TabsMenu = ({
               key={`${tab.label}-${index}`}
               tab={tab.label}
               href={tab.path}
-              data-testId={
+              data-testid={
                 "tab-button-" + tab.label.toLowerCase().replace(/\s/g, "-")
               }
             >
