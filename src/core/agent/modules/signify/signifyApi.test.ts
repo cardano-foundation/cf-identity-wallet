@@ -91,6 +91,13 @@ jest.mock("signify-ts", () => ({
               return contacts;
             }
           ),
+        get: jest.fn().mockImplementation((id: string) => {
+          return {
+            alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+            oobi: "oobi",
+            id,
+          };
+        }),
       }),
       notifications: jest.fn().mockReturnValue({
         list: jest.fn().mockImplementation((start?: number, end?: number) => {
@@ -213,11 +220,10 @@ describe("Signify API", () => {
     expect(await api.getKeriExchange(notificationId)).toEqual(exchange);
   });
 
-  test("Must throw an error when there's no credential", async () => {
+  test("Should return undefined when there's no credential", async () => {
     const said = "not-found-said";
-    await expect(api.getCredentialBySaid(said)).rejects.toThrowError(
-      SignifyApi.CREDENTIAL_NOT_FOUND
-    );
+    const { credential } = await api.getCredentialBySaid(said);
+    expect(credential).toBeUndefined();
   });
 
   test("can get identifier by id", async () => {
@@ -231,5 +237,14 @@ describe("Signify API", () => {
   test("Return undefined when getting the identifier by the ID that does not exist", async () => {
     const id = "3";
     expect(await api.getIdentifierById(id)).toEqual(undefined);
+  });
+
+  test("can get contact by id", async () => {
+    const id = "1";
+    expect(await api.getContactById(id)).toEqual({
+      alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+      oobi: "oobi",
+      id,
+    });
   });
 });

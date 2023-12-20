@@ -1,12 +1,4 @@
-import {
-  IonButton,
-  IonIcon,
-  IonInput,
-  IonModal,
-  IonPage,
-  IonTextarea,
-} from "@ionic/react";
-import { ellipsisVertical, trashOutline, createOutline } from "ionicons/icons";
+import { ellipsisVertical } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
@@ -16,7 +8,6 @@ import {
   ConnectionDetails as ConnectionData,
   ConnectionShortDetails,
 } from "../Connections/Connections.types";
-import { PageLayout } from "../../components/layout/PageLayout";
 import { RoutePath } from "../../../routes";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -40,10 +31,16 @@ import {
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
-import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
-import { InfoBlockProps, NotesProps } from "./ConnectionDetails.types";
+import { ConnectionNoteDetails } from "../../../core/agent/agent.types";
+import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
+import { EditConnectionsModal } from "./components/EditConnectionsModal";
+import { ConnectionDetailsInfoBlock } from "./components/ConnectionDetailsInfoBlock";
+import { PageFooter } from "../../components/PageFooter";
+import { PageHeader } from "../../components/PageHeader";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 
 const ConnectionDetails = () => {
+  const pageId = "connection-details";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -58,10 +55,9 @@ const ConnectionDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [coreNotes, setCoreNotes] = useState<NotesProps[]>([]);
-  const [notes, setNotes] = useState<NotesProps[]>([]);
+  const [coreNotes, setCoreNotes] = useState<ConnectionNoteDetails[]>([]);
+  const [notes, setNotes] = useState<ConnectionNoteDetails[]>([]);
   const currentNoteId = useRef("");
-  const TEMP_ID_PREFIX = "temp";
 
   useEffect(() => {
     async function getDetails() {
@@ -113,232 +109,107 @@ const ConnectionDetails = () => {
     deleteConnection();
   };
 
-  const ConnectionDetailsHeader = () => {
-    return (
-      <div className="connection-details-header">
-        <div className="connection-details-logo">
-          <img
-            src={connectionDetails?.logo ?? CardanoLogo}
-            alt="connection-logo"
-          />
-        </div>
-        <span className="connection-details-issuer">
-          {connectionDetails?.label}
-        </span>
-        <span className="connection-details-date">
-          {formatShortDate(`${connectionDetails?.connectionDate}`)}
-        </span>
-      </div>
-    );
-  };
-
-  const ConnectionDetailsInfoBlock = ({ title, children }: InfoBlockProps) => {
-    return (
-      <div className="connection-details-info-block">
-        <h3>{title}</h3>
-        <div className="connection-details-info-block-inner">
-          <div className="connection-details-info-block-line">
-            <div className="connection-details-info-block-data">{children}</div>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
-  const Note = ({ title, message, id }: NotesProps) => {
-    const [newTitle, setNewTitle] = useState(title);
-    const [newMessage, setNewMessage] = useState(message);
-    const TITLE_MAX_LENGTH = 64;
-    const MESSAGE_MAX_LENGTH = 576;
-
-    return (
-      <div className="connection-details-info-block-inner">
-        <div className="connection-details-info-block-line">
-          <div className="connection-details-info-block-data">
-            <div className="connection-details-info-block-title">
-              <span>{i18n.t("connections.details.title")}</span>
-              <span>
-                {newTitle.length}/{TITLE_MAX_LENGTH}
-              </span>
-            </div>
-            <IonInput
-              data-testid={`edit-connections-modal-note-title-${id}`}
-              onIonChange={(e) => setNewTitle(`${e.target.value ?? ""}`)}
-              onIonBlur={() => {
-                const newNotes = [...notes];
-                const noteIndex = newNotes.map((el) => el.id).indexOf(id);
-                newNotes[noteIndex].title = newTitle;
-              }}
-              value={newTitle}
-            />
-          </div>
-          <div className="connection-details-info-block-data">
-            <div className="connection-details-info-block-title">
-              <span>{i18n.t("connections.details.message")}</span>
-              <span>
-                {newMessage.length}/{MESSAGE_MAX_LENGTH}
-              </span>
-            </div>
-            <IonTextarea
-              autoGrow={true}
-              data-testid={`edit-connections-modal-note-message-${id}`}
-              onIonChange={(e) => setNewMessage(`${e.target.value ?? ""}`)}
-              onIonBlur={() => {
-                const newNotes = [...notes];
-                const noteIndex = newNotes.map((el) => el.id).indexOf(id);
-                newNotes[noteIndex].message = newMessage;
-              }}
-              value={newMessage}
-            />
-          </div>
-        </div>
-        <div className="connection-details-delete-note">
-          <IonButton
-            shape="round"
-            color={"danger"}
-            onClick={() => {
-              currentNoteId.current = id;
-              setAlertDeleteNoteIsOpen(true);
-            }}
-          >
-            <IonIcon
-              slot="icon-only"
-              icon={trashOutline}
-            />
-          </IonButton>
-        </div>
-      </div>
-    );
-  };
+  const connectionDetailsData = [
+    {
+      title: i18n.t("connections.details.label"),
+      value: connectionDetails?.label,
+    },
+    {
+      title: i18n.t("connections.details.date"),
+      value: formatShortDate(`${connectionDetails?.connectionDate}`),
+    },
+    {
+      title: i18n.t("connections.details.goalcodes"),
+      value:
+        connectionDetails?.goalCode ||
+        i18n.t("connections.details.notavailable"),
+    },
+    {
+      title: i18n.t("connections.details.handshake"),
+      value:
+        connectionDetails?.handshakeProtocols?.toString() ||
+        i18n.t("connections.details.notavailable"),
+    },
+    {
+      title: i18n.t("connections.details.attachments"),
+      value:
+        connectionDetails?.requestAttachments?.toString() ||
+        i18n.t("connections.details.notavailable"),
+    },
+    {
+      title: i18n.t("connections.details.endpoints"),
+      value:
+        connectionDetails?.serviceEndpoints?.toString() ||
+        i18n.t("connections.details.notavailable"),
+    },
+  ];
 
   return (
-    <IonPage
-      className="page-layout connection-details"
-      data-testid="connection-details-page"
-    >
-      <PageLayout
-        header={true}
-        title={""}
-        closeButton={true}
-        closeButtonAction={handleDone}
-        closeButtonLabel={`${i18n.t("connections.details.done")}`}
-        currentPath={RoutePath.CONNECTION_DETAILS}
-        actionButton={true}
-        actionButtonAction={() => {
-          setOptionsIsOpen(true);
-        }}
-        actionButtonIcon={ellipsisVertical}
+    <>
+      <ScrollablePageLayout
+        pageId={pageId}
+        header={
+          <PageHeader
+            closeButton={true}
+            closeButtonAction={handleDone}
+            closeButtonLabel={`${i18n.t("connections.details.done")}`}
+            currentPath={RoutePath.CONNECTION_DETAILS}
+            actionButton={true}
+            actionButtonAction={() => {
+              setOptionsIsOpen(true);
+            }}
+            actionButtonIcon={ellipsisVertical}
+          />
+        }
       >
         <div className="connection-details-content">
-          <ConnectionDetailsHeader />
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.label")}
-          >
-            {connectionDetails?.label}
-          </ConnectionDetailsInfoBlock>
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.date")}
-          >
-            {formatShortDate(`${connectionDetails?.connectionDate}`)}
-          </ConnectionDetailsInfoBlock>
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.goalcodes")}
-          >
-            {connectionDetails?.goalCode ||
-              i18n.t("connections.details.notavailable")}
-          </ConnectionDetailsInfoBlock>
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.handshake")}
-          >
-            {connectionDetails?.handshakeProtocols?.toString() ||
-              i18n.t("connections.details.notavailable")}
-          </ConnectionDetailsInfoBlock>
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.attachments")}
-          >
-            {connectionDetails?.requestAttachments?.toString() ||
-              i18n.t("connections.details.notavailable")}
-          </ConnectionDetailsInfoBlock>
-          <ConnectionDetailsInfoBlock
-            title={i18n.t("connections.details.endpoints")}
-          >
-            {connectionDetails?.serviceEndpoints?.toString() ||
-              i18n.t("connections.details.notavailable")}
-          </ConnectionDetailsInfoBlock>
-          {notes.length > 0 ? (
+          <ConnectionDetailsHeader
+            logo={connectionDetails?.logo}
+            label={connectionDetails?.label}
+            date={connectionDetails?.connectionDate}
+          />
+          {connectionDetailsData.map((infoBlock, index) => (
+            <ConnectionDetailsInfoBlock
+              key={index}
+              title={infoBlock.title}
+            >
+              {infoBlock.value}
+            </ConnectionDetailsInfoBlock>
+          ))}
+          {notes.length > 0 && (
             <div className="connection-details-info-block">
-              <h3>{i18n.t("connections.details.notes")}</h3>
+              <p>{i18n.t("connections.details.notes")}</p>
               {notes.map((note, index) => (
                 <div
                   className="connection-details-info-block-inner"
                   key={index}
                 >
                   <div className="connection-details-info-block-line">
-                    <div className="connection-details-info-block-note-title">
+                    <p className="connection-details-info-block-note-title">
                       {note.title}
-                    </div>
-                    <div className="connection-details-info-block-note-message">
+                    </p>
+                    <p className="connection-details-info-block-note-message">
                       {note.message}
-                    </div>
+                    </p>
                   </div>
                 </div>
               ))}
             </div>
-          ) : null}
-
-          <IonButton
-            shape="round"
-            expand="block"
-            color="danger"
-            data-testid="connection-details-delete-button"
-            className="delete-button"
-            onClick={() => {
+          )}
+          <PageFooter
+            pageId={pageId}
+            deleteButtonText={`${i18n.t("connections.details.delete")}`}
+            deleteButtonAction={() => {
               setAlertDeleteConnectionIsOpen(true);
               dispatch(setCurrentOperation(OperationType.DELETE_CONNECTION));
             }}
-          >
-            <IonIcon
-              slot="icon-only"
-              size="small"
-              icon={trashOutline}
-              color="primary"
-            />
-            {i18n.t("connections.details.delete")}
-          </IonButton>
+          />
         </div>
         <ConnectionOptions
           optionsIsOpen={optionsIsOpen}
           setOptionsIsOpen={setOptionsIsOpen}
           handleEdit={setModalIsOpen}
           handleDelete={handleDelete}
-        />
-        <AlertDeleteConnection
-          isOpen={alertDeleteConnectionIsOpen}
-          setIsOpen={setAlertDeleteConnectionIsOpen}
-          dataTestId="alert-confirm-delete-connection"
-          headerText={i18n.t(
-            "connections.details.options.alert.deleteconnection.title"
-          )}
-          confirmButtonText={`${i18n.t(
-            "connections.details.options.alert.deleteconnection.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            "connections.details.options.alert.deleteconnection.cancel"
-          )}`}
-          actionConfirm={() => {
-            if (
-              !stateCache?.authentication.passwordIsSkipped &&
-              stateCache?.authentication.passwordIsSet
-            ) {
-              setVerifyPasswordIsOpen(true);
-            } else {
-              setVerifyPasscodeIsOpen(true);
-            }
-          }}
-          actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-          actionDismiss={() =>
-            dispatch(setCurrentOperation(OperationType.IDLE))
-          }
         />
         <VerifyPassword
           isOpen={verifyPasswordIsOpen}
@@ -350,124 +221,45 @@ const ConnectionDetails = () => {
           setIsOpen={setVerifyPasscodeIsOpen}
           onVerify={verifyAction}
         />
-      </PageLayout>
+      </ScrollablePageLayout>
       {connectionDetails && (
-        <IonModal
-          isOpen={modalIsOpen}
-          className="edit-connections-modal"
-          data-testid="edit-connections-modal"
-          onDidDismiss={() => {
-            if (modalIsOpen && notes !== coreNotes) {
-              setNotes(coreNotes);
-            }
-            setModalIsOpen(false);
-          }}
-        >
-          <div className="modal">
-            <PageLayout
-              header={true}
-              closeButton={true}
-              closeButtonLabel={`${i18n.t("connections.details.cancel")}`}
-              closeButtonAction={() => {
-                if (notes !== coreNotes) {
-                  setNotes(coreNotes);
-                }
-                setModalIsOpen(false);
-              }}
-              actionButton={true}
-              actionButtonAction={() => {
-                const filteredNotes = notes.filter(
-                  (note) => note.title !== "" && note.message !== ""
-                );
-                if (filteredNotes !== coreNotes) {
-                  setNotes(filteredNotes);
-                  let update = false;
-                  filteredNotes.forEach((note) => {
-                    if (note.id.includes(TEMP_ID_PREFIX)) {
-                      AriesAgent.agent.connections.createConnectionNote(
-                        connectionDetails.id,
-                        note
-                      );
-                      update = true;
-                    }
-                  });
-                  coreNotes.forEach((noteCore) => {
-                    const noteFind = filteredNotes.find(
-                      (noteFilter) => noteCore.id === noteFilter.id
-                    );
-                    if (!noteFind) {
-                      AriesAgent.agent.connections.deleteConnectionNoteById(
-                        noteCore.id
-                      );
-                      update = true;
-                    } else if (
-                      noteCore.title !== noteFind.title ||
-                      noteCore.message !== noteFind.message
-                    ) {
-                      AriesAgent.agent.connections.updateConnectionNoteById(
-                        noteCore.id,
-                        noteFind
-                      );
-                      update = true;
-                    }
-                  });
-                  if (update) {
-                    dispatch(setToastMsg(ToastMsgType.NOTES_UPDATED));
-                    update = false;
-                  }
-                }
-                setModalIsOpen(false);
-              }}
-              actionButtonLabel={`${i18n.t("connections.details.confirm")}`}
-            >
-              <div className="connection-details-content">
-                <ConnectionDetailsHeader />
-                <div className="connection-details-info-block">
-                  {notes.length ? (
-                    <>
-                      <h3>{i18n.t("connections.details.notes")}</h3>
-                      {notes.map((note, index) => (
-                        <Note
-                          title={note.title}
-                          message={note.message}
-                          id={note.id}
-                          key={index}
-                        />
-                      ))}
-                    </>
-                  ) : (
-                    <i className="connection-details-info-block-nonotes">
-                      {i18n.t("connections.details.nocurrentnotes")}
-                    </i>
-                  )}
-                </div>
-                <div className="connection-details-add-note">
-                  <IonButton
-                    shape="round"
-                    className="primary-button"
-                    onClick={() => {
-                      setNotes([
-                        ...notes,
-                        {
-                          title: "",
-                          message: "",
-                          id: TEMP_ID_PREFIX + notes.length,
-                        },
-                      ]);
-                    }}
-                  >
-                    <IonIcon
-                      slot="icon-only"
-                      icon={createOutline}
-                    />
-                  </IonButton>
-                </div>
-              </div>
-            </PageLayout>
-          </div>
-        </IonModal>
+        <EditConnectionsModal
+          notes={notes}
+          setNotes={setNotes}
+          coreNotes={coreNotes}
+          modalIsOpen={modalIsOpen}
+          setModalIsOpen={setModalIsOpen}
+          currentNoteId={currentNoteId.current}
+          connectionDetails={connectionDetails}
+          setAlertDeleteNoteIsOpen={setAlertDeleteNoteIsOpen}
+        />
       )}
-
+      <AlertDeleteConnection
+        isOpen={alertDeleteConnectionIsOpen}
+        setIsOpen={setAlertDeleteConnectionIsOpen}
+        dataTestId="alert-confirm-delete-connection"
+        headerText={i18n.t(
+          "connections.details.options.alert.deleteconnection.title"
+        )}
+        confirmButtonText={`${i18n.t(
+          "connections.details.options.alert.deleteconnection.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "connections.details.options.alert.deleteconnection.cancel"
+        )}`}
+        actionConfirm={() => {
+          if (
+            !stateCache?.authentication.passwordIsSkipped &&
+            stateCache?.authentication.passwordIsSet
+          ) {
+            setVerifyPasswordIsOpen(true);
+          } else {
+            setVerifyPasscodeIsOpen(true);
+          }
+        }}
+        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+      />
       <AlertDeleteNote
         isOpen={alertDeleteNoteIsOpen}
         setIsOpen={setAlertDeleteNoteIsOpen}
@@ -497,7 +289,7 @@ const ConnectionDetails = () => {
           setAlertDeleteNoteIsOpen(false);
         }}
       />
-    </IonPage>
+    </>
   );
 };
 

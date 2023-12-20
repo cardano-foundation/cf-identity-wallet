@@ -2,7 +2,6 @@ import {
   IonButton,
   IonIcon,
   IonLabel,
-  IonPage,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
@@ -14,19 +13,22 @@ import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getCurrentOperation,
+  getToastMsg,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { Connections } from "../Connections";
-import { CardType, DIDCommRequestType } from "../../globals/types";
+import {
+  CardType,
+  DIDCommRequestType,
+  ToastMsgType,
+} from "../../globals/types";
 import { ConnectModal } from "../../components/ConnectModal";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { AriesAgent } from "../../../core/agent/agent";
 import {
   getCredsCache,
   getFavouritesCredsCache,
-  setCredsCache,
 } from "../../../store/reducers/credsCache";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
@@ -70,13 +72,11 @@ const AdditionalButtons = ({
 };
 
 const Creds = () => {
+  const pageId = "creds-tab";
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
   const favCredsCache = useAppSelector(getFavouritesCredsCache);
-  const currentOperation = useAppSelector(getCurrentOperation);
-  const [currentCreds, setCurrentCreds] = useState<CredentialShortDetails[]>([
-    ...credsCache,
-  ]);
+  const toastMsg = useAppSelector(getToastMsg);
   const [archivedCreds, setArchivedCreds] = useState<CredentialShortDetails[]>(
     []
   );
@@ -84,30 +84,29 @@ const Creds = () => {
   const [addCredentialIsOpen, setAddCredentialIsOpen] = useState(false);
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
-
-  const fetchCurrentCreds = async () => {
-    try {
-      const creds = await AriesAgent.agent.credentials.getCredentials();
-      setCurrentCreds(creds);
-      dispatch(setCredsCache(creds));
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
-  };
+  const [showPlaceholder, setShowPlaceholder] = useState(true);
 
   const fetchArchivedCreds = async () => {
-    try {
-      const creds = await AriesAgent.agent.credentials.getCredentials(true);
-      setArchivedCreds(creds);
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
+    // @TODO - sdisalvo: handle error
+    const creds = await AriesAgent.agent.credentials.getCredentials(true);
+    setArchivedCreds(creds);
   };
 
   useEffect(() => {
-    fetchCurrentCreds();
-    fetchArchivedCreds();
-  }, [archivedCredentialsIsOpen, addCredentialIsOpen, currentOperation]);
+    setShowPlaceholder(credsCache.length === 0);
+  }, [credsCache]);
+
+  useEffect(() => {
+    if (
+      toastMsg === ToastMsgType.CREDENTIAL_ARCHIVED ||
+      toastMsg === ToastMsgType.CREDENTIAL_RESTORED ||
+      toastMsg === ToastMsgType.CREDENTIALS_RESTORED ||
+      toastMsg === ToastMsgType.CREDENTIAL_DELETED ||
+      toastMsg === ToastMsgType.CREDENTIALS_DELETED
+    ) {
+      fetchArchivedCreds();
+    }
+  }, [toastMsg]);
 
   const handleCreateCred = () => {
     setAddCredentialIsOpen(true);
@@ -115,7 +114,6 @@ const Creds = () => {
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.CREDS }));
-    fetchCurrentCreds();
     fetchArchivedCreds();
   });
 
@@ -145,96 +143,106 @@ const Creds = () => {
 
   return (
     <>
-      <IonPage
-        className={`tab-layout connections-tab ${
-          showConnections ? "show" : "hide"
-        }`}
-        data-testid="connections-tab"
-      >
-        <Connections setShowConnections={setShowConnections} />
-      </IonPage>
-      <IonPage
-        className="tab-layout creds-tab"
-        data-testid="creds-tab"
-      >
-        <TabLayout
-          header={true}
-          title={`${i18n.t("creds.tab.title")}`}
-          menuButton={true}
-          additionalButtons={
-            <AdditionalButtons
-              handleConnections={() => setShowConnections(true)}
-              handleCreateCred={handleCreateCred}
-            />
-          }
-        >
-          {currentCreds.length ? (
-            <>
-              {favCreds.length ? (
-                <>
-                  {allCreds.length ? (
-                    <div className="cards-title">
-                      {i18n.t("creds.tab.favourites")}
-                    </div>
-                  ) : null}
-                  <CardsStack
-                    name="favs"
-                    cardsType={CardType.CREDS}
-                    cardsData={sortedFavCreds}
-                  />
-                </>
-              ) : null}
-              {allCreds.length ? (
-                <>
-                  {favCreds.length ? (
-                    <div className="cards-title cards-title-all">
-                      {i18n.t("creds.tab.allcreds")}
-                    </div>
-                  ) : null}
-                  <CardsStack
-                    name="allcreds"
-                    cardsType={CardType.CREDS}
-                    cardsData={allCreds}
-                  />
-                </>
-              ) : null}
-            </>
-          ) : (
+      <Connections
+        showConnections={showConnections}
+        setShowConnections={setShowConnections}
+      />
+      <TabLayout
+        pageId={pageId}
+        header={true}
+        title={`${i18n.t("creds.tab.title")}`}
+        menuButton={true}
+        additionalButtons={
+          <AdditionalButtons
+            handleConnections={() => setShowConnections(true)}
+            handleCreateCred={handleCreateCred}
+          />
+        }
+        placeholder={
+          showPlaceholder && (
             <CardsPlaceholder
               buttonLabel={i18n.t("creds.tab.create")}
               buttonAction={handleCreateCred}
-              testId="creds-cards-placeholder"
-            />
-          )}
-          {archivedCreds.length ? (
-            <div className="archived-credentials-button-container">
-              <IonButton
-                fill="outline"
-                className="secondary-button"
-                onClick={() => setArchivedCredentialsIsOpen(true)}
-              >
-                <IonLabel color="secondary">
-                  {i18n.t("creds.tab.viewarchived")}
-                </IonLabel>
-              </IonButton>
-            </div>
-          ) : null}
-          <ConnectModal
-            type={DIDCommRequestType.CREDENTIAL}
-            connectModalIsOpen={addCredentialIsOpen}
-            setConnectModalIsOpen={setAddCredentialIsOpen}
-            handleProvideQr={() => {
-              // @TODO: add credential sharing function
-            }}
+              testId={pageId}
+            >
+              {archivedCreds.length ? (
+                <div className="archived-credentials-button-container">
+                  <IonButton
+                    fill="outline"
+                    className="secondary-button"
+                    onClick={() => setArchivedCredentialsIsOpen(true)}
+                  >
+                    <IonLabel color="secondary">
+                      {i18n.t("creds.tab.viewarchived")}
+                    </IonLabel>
+                  </IonButton>
+                </div>
+              ) : null}
+            </CardsPlaceholder>
+          )
+        }
+      >
+        {!showPlaceholder && (
+          <>
+            {favCreds.length ? (
+              <>
+                {allCreds.length ? (
+                  <div className="cards-title">
+                    {i18n.t("creds.tab.favourites")}
+                  </div>
+                ) : null}
+                <CardsStack
+                  name="favs"
+                  cardsType={CardType.CREDS}
+                  cardsData={sortedFavCreds}
+                />
+              </>
+            ) : null}
+            {allCreds.length ? (
+              <>
+                {favCreds.length ? (
+                  <div className="cards-title cards-title-all">
+                    {i18n.t("creds.tab.allcreds")}
+                  </div>
+                ) : null}
+                <CardsStack
+                  name="allcreds"
+                  cardsType={CardType.CREDS}
+                  cardsData={allCreds}
+                />
+              </>
+            ) : null}
+            {archivedCreds.length ? (
+              <div className="archived-credentials-button-container">
+                <IonButton
+                  fill="outline"
+                  className="secondary-button"
+                  onClick={() => setArchivedCredentialsIsOpen(true)}
+                >
+                  <IonLabel color="secondary">
+                    {i18n.t("creds.tab.viewarchived")}
+                  </IonLabel>
+                </IonButton>
+              </div>
+            ) : null}
+          </>
+        )}
+        {archivedCreds.length ? (
+          <ArchivedCredentials
+            archivedCreds={archivedCreds}
+            archivedCredentialsIsOpen={archivedCredentialsIsOpen}
+            setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
           />
-          {archivedCreds.length ? (
-            <ArchivedCredentials
-              archivedCredentialsIsOpen={archivedCredentialsIsOpen}
-              setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
-            />
-          ) : null}
-        </TabLayout>
-      </IonPage>
+        ) : null}
+      </TabLayout>
+      <ConnectModal
+        type={DIDCommRequestType.CREDENTIAL}
+        connectModalIsOpen={addCredentialIsOpen}
+        setConnectModalIsOpen={setAddCredentialIsOpen}
+        handleProvideQr={() => {
+          // @TODO: add credential sharing function
+        }}
+      />
     </>
   );
 };

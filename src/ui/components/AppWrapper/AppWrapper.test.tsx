@@ -32,6 +32,7 @@ jest.mock("../../../core/agent/agent", () => ({
       start: jest.fn(),
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
+        syncKeriaIdentifiers: jest.fn(),
       },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
@@ -45,6 +46,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getConnectionShortDetailById: jest.fn(),
         getUnhandledConnections: jest.fn(),
         onConnectionKeriStateChanged: jest.fn(),
+        syncKeriaContacts: jest.fn(),
       },
       credentials: {
         getCredentials: jest.fn().mockResolvedValue([]),
@@ -57,6 +59,7 @@ jest.mock("../../../core/agent/agent", () => ({
         getUnhandledCredentials: jest.fn(),
         onNotificationKeriStateChanged: jest.fn(),
         onAcdcKeriStateChanged: jest.fn(),
+        syncACDCs: jest.fn(),
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),

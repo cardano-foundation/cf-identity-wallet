@@ -9,6 +9,7 @@ import {
   KeriContact,
   CreateIdentifierResult,
   IdentifierResult,
+  IdentifiersListResult,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 
@@ -20,8 +21,6 @@ export class SignifyApi {
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
-  static readonly CREDENTIAL_NOT_FOUND =
-    "Credential with given SAID not found on KERIA";
 
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly BACKER_ADDRESS =
@@ -115,6 +114,14 @@ export class SignifyApi {
     return this.signifyClient.contacts().list();
   }
 
+  async getContactById(id: string): Promise<KeriContact> {
+    return this.signifyClient.contacts().get(id);
+  }
+
+  async deleteContactById(id: string): Promise<KeriContact> {
+    return this.signifyClient.contacts().delete(id);
+  }
+
   async resolveOobi(url: string): Promise<any> {
     if (SignifyApi.resolvedOobi[url]) {
       return SignifyApi.resolvedOobi[url];
@@ -162,15 +169,22 @@ export class SignifyApi {
   }
 
   async getCredentialBySaid(sad: string): Promise<any> {
-    const results = await this.signifyClient.credentials().list({
-      filter: {
-        "-d": { $eq: sad },
-      },
-    });
-    if (!results || !results.length) {
-      throw new Error(SignifyApi.CREDENTIAL_NOT_FOUND);
+    try {
+      const results = await this.signifyClient.credentials().list({
+        filter: {
+          "-d": { $eq: sad },
+        },
+      });
+      return {
+        credential: results[0],
+        error: undefined,
+      };
+    } catch (error) {
+      return {
+        credential: undefined,
+        error,
+      };
     }
-    return results[0];
   }
 
   async getKeriExchange(notificationD: string): Promise<any> {
@@ -205,10 +219,15 @@ export class SignifyApi {
   }
 
   async getIdentifierById(id: string): Promise<IdentifierResult | undefined> {
-    const allIdentifiers = await this.signifyClient.identifiers().list();
+    const allIdentifiers = await this.getAllIdentifiers();
     const identifier = allIdentifiers.aids.find(
       (identifier: IdentifierResult) => identifier.prefix === id
     );
     return identifier;
+  }
+
+  async getAllIdentifiers(): Promise<IdentifiersListResult> {
+    const allIdentifiersResult = await this.signifyClient.identifiers().list();
+    return allIdentifiersResult;
   }
 }

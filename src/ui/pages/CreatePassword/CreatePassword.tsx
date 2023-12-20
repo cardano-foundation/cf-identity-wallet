@@ -19,7 +19,7 @@ import { OperationType } from "../../globals/types";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { PageHeader } from "../../components/PageHeader";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import PageFooter from "../../components/PageFooter/PageFooter";
+import { PageFooter } from "../../components/PageFooter";
 import { passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
 import { PasswordValidation } from "../../components/PasswordValidation";
 

@@ -1,9 +1,8 @@
-import { IonButton, IonIcon, IonPage, useIonViewWillEnter } from "@ionic/react";
-import { addOutline, peopleOutline } from "ionicons/icons";
-import { useState } from "react";
+import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
+import { peopleOutline, addOutline } from "ionicons/icons";
+import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
-import "./Identifiers.scss";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -15,12 +14,15 @@ import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
 import { CardType } from "../../globals/types";
+import { Connections } from "../Connections";
 
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
+  handleConnections: () => void;
 }
 
 const AdditionalButtons = ({
+  handleConnections,
   handleCreateIdentifier,
 }: AdditionalButtonsProps) => {
   return (
@@ -29,6 +31,7 @@ const AdditionalButtons = ({
         shape="round"
         className="connections-button"
         data-testid="connections-button"
+        onClick={handleConnections}
       >
         <IonIcon
           slot="icon-only"
@@ -53,14 +56,21 @@ const AdditionalButtons = ({
 };
 
 const Identifiers = () => {
+  const pageId = "identifiers-tab";
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [showPlaceholder, setShowPlaceholder] = useState(true);
+  const [showConnections, setShowConnections] = useState(false);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
   });
+
+  useEffect(() => {
+    setShowPlaceholder(identifiersData.length === 0);
+  }, [identifiersData]);
 
   const findTimeById = (id: string) => {
     const found = favouritesIdentifiers?.find((item) => item.id === id);
@@ -88,23 +98,35 @@ const Identifiers = () => {
   );
 
   return (
-    <IonPage
-      className="tab-layout identifiers-tab"
-      data-testid="identifiers-tab"
-    >
+    <>
+      <Connections
+        showConnections={showConnections}
+        setShowConnections={setShowConnections}
+      />
       <TabLayout
+        pageId={pageId}
         header={true}
         title={`${i18n.t("identifiers.tab.title")}`}
         menuButton={true}
         additionalButtons={
           <AdditionalButtons
+            handleConnections={() => setShowConnections(true)}
             handleCreateIdentifier={() => setModalIsOpen(true)}
           />
         }
+        placeholder={
+          showPlaceholder && (
+            <CardsPlaceholder
+              buttonLabel={i18n.t("identifiers.tab.create")}
+              buttonAction={() => setModalIsOpen(true)}
+              testId={pageId}
+            />
+          )
+        }
       >
-        {identifiersData.length ? (
+        {!showPlaceholder && (
           <>
-            {favIdentifiers.length ? (
+            {!!favIdentifiers.length && (
               <>
                 {allIdentifiers.length ? (
                   <div className="cards-title">
@@ -117,36 +139,29 @@ const Identifiers = () => {
                   cardsData={sortedFavIdentifiers}
                 />
               </>
-            ) : null}
-            {allIdentifiers.length ? (
+            )}
+            {!!allIdentifiers.length && (
               <>
-                {favIdentifiers.length ? (
+                {!!favIdentifiers.length && (
                   <div className="cards-title cards-title-all">
                     {i18n.t("identifiers.tab.allidentifiers")}
                   </div>
-                ) : null}
+                )}
                 <CardsStack
                   name="allidentifiers"
                   cardsType={CardType.IDENTIFIERS}
                   cardsData={allIdentifiers}
                 />
               </>
-            ) : null}
+            )}
           </>
-        ) : (
-          <CardsPlaceholder
-            buttonLabel={i18n.t("identifiers.tab.create")}
-            buttonAction={() => setModalIsOpen(true)}
-            testId="identifiers-cards-placeholder"
-          />
         )}
-
-        <CreateIdentifier
-          modalIsOpen={modalIsOpen}
-          setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
-        />
       </TabLayout>
-    </IonPage>
+      <CreateIdentifier
+        modalIsOpen={modalIsOpen}
+        setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
+      />
+    </>
   );
 };
 

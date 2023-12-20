@@ -7,7 +7,15 @@ import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix"
 import { IdentifierOptions } from "./IdentifierOptions";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 
-jest.mock("../../../core/agent/agent");
+jest.mock("../../../core/agent/agent", () => ({
+  AriesAgent: {
+    agent: {
+      genericRecords: {
+        findById: jest.fn(),
+      },
+    },
+  },
+}));
 
 describe("Identifier Options modal", () => {
   let mockedStore: Store<unknown, AnyAction>;
@@ -45,6 +53,11 @@ describe("Identifier Options modal", () => {
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[0]}
           setCardData={setCardData}
+          handleDeleteIdentifier={async () => {
+            {
+              jest.fn();
+            }
+          }}
         />
       </Provider>
     );
@@ -61,6 +74,9 @@ describe("Identifier Options modal", () => {
           setOptionsIsOpen={setIdentifierOptionsIsOpen}
           cardData={identifierFix[0]}
           setCardData={setCardData}
+          handleDeleteIdentifier={async () => {
+            jest.fn();
+          }}
         />
       </Provider>
     );
@@ -70,6 +86,6 @@ describe("Identifier Options modal", () => {
       getByTestId("identifier-options-identifier-options-button")
     ).toBeInTheDocument();
     expect(getByTestId("identifier-options-share-button")).toBeInTheDocument();
-    expect(getByTestId("identifier-options-delete-button")).toBeInTheDocument();
+    expect(getByTestId("delete-button-identifier-options")).toBeInTheDocument();
   });
 });

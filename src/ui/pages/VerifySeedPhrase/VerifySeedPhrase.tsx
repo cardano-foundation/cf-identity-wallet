@@ -15,7 +15,7 @@ import { getBackRoute } from "../../../routes/backRoute";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { Addresses } from "../../../core/cardano";
 import { PageHeader } from "../../components/PageHeader";
-import PageFooter from "../../components/PageFooter/PageFooter";
+import { PageFooter } from "../../components/PageFooter";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 
@@ -73,21 +73,18 @@ const VerifySeedPhrase = () => {
   };
 
   const storeIdentitySeedPhrase = async () => {
-    try {
-      const seedPhraseString = originalSeedPhrase.join(" ");
-      const entropy = Addresses.convertToEntropy(seedPhraseString);
-      await SecureStorage.set(
-        KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
-        Addresses.bech32ToHexBip32Private(
-          Addresses.entropyToBip32NoPasscode(entropy)
-        )
-      );
-      await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, entropy);
+    // @TODO - sdisalvo: handle error
+    const seedPhraseString = originalSeedPhrase.join(" ");
+    const entropy = Addresses.convertToEntropy(seedPhraseString);
+    await SecureStorage.set(
+      KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY,
+      Addresses.bech32ToHexBip32Private(
+        Addresses.entropyToBip32NoPasscode(entropy)
+      )
+    );
+    await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, entropy);
 
-      handleNavigate();
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
+    handleNavigate();
   };
 
   const handleContinue = async () => {

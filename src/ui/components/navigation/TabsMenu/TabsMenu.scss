@@ -3,7 +3,7 @@ ion-tab-bar {
   --border: transparent;
   border-top: 1px solid var(--ion-color-dark-grey);
   padding-inline: 0.625rem;
-  height: 5rem;
+  height: 4.5rem;
   justify-content: space-around;
 
   ion-tab-button {
@@ -36,7 +36,7 @@ ion-tab-bar {
 
     ion-icon,
     &.md ion-icon {
-      font-size: 2rem;
+      font-size: 1.5rem;
       margin-top: 0.5rem;
     }
 
@@ -46,13 +46,18 @@ ion-tab-bar {
     }
   }
 
+  @media screen and (min-height: 655px) {
+    &.ios {
+      padding-bottom: 0.75rem;
+    }
+  }
+
   @media screen and (min-width: 250px) and (max-width: 370px) {
     height: 3.5rem;
 
     ion-tab-button {
       ion-icon,
       &.md ion-icon {
-        font-size: 1.5rem;
         margin-top: 0.35rem;
       }
 

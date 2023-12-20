@@ -33,6 +33,9 @@ jest.mock("../../../core/agent/agent", () => ({
           .fn()
           .mockResolvedValue({ type: "key", result: identifierFix[0] }),
       },
+      genericRecords: {
+        findById: jest.fn(),
+      },
     },
   },
 }));
@@ -245,7 +248,7 @@ describe("Cards Details page", () => {
 
     await waitFor(() => {
       expect(
-        getByTestId("identifier-options-delete-button")
+        getByTestId("delete-button-identifier-options")
       ).toBeInTheDocument();
     });
 
@@ -298,7 +301,7 @@ describe("Cards Details page", () => {
       ).toBeInTheDocument()
     );
     act(() => {
-      fireEvent.click(getByTestId("card-details-delete-button"));
+      fireEvent.click(getByTestId("delete-button-identifier-card-details"));
     });
 
     await waitFor(() => {
@@ -360,7 +363,7 @@ describe("Cards Details page", () => {
       ).toBeInTheDocument()
     );
     act(() => {
-      fireEvent.click(getByTestId("card-details-delete-button"));
+      fireEvent.click(getByTestId("delete-button-identifier-card-details"));
     });
 
     await waitFor(() => {

@@ -76,7 +76,7 @@ const ConnectionOptions = ({
                   </span>
                   <span
                     className="connection-options-option"
-                    data-testid="connection-options-delete-button"
+                    data-testid="delete-button-connection-options"
                     onClick={() => {
                       handleDelete();
                       dispatch(

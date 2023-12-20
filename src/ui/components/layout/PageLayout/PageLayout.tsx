@@ -1,7 +1,7 @@
 import { IonHeader, IonContent, IonFooter } from "@ionic/react";
 import "./PageLayout.scss";
 import { PageLayoutProps } from "./PageLayout.types";
-import PageFooter from "../../PageFooter/PageFooter";
+import { PageFooter } from "../../PageFooter/PageFooter";
 import { PageHeader } from "../../PageHeader";
 
 const PageLayout = ({

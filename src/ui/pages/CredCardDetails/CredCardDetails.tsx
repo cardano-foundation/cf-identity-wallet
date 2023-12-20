@@ -60,6 +60,7 @@ import "./CredCardDetails.scss";
 import { CredentialDetails } from "../../../core/agent/services/credentialService.types";
 
 const CredCardDetails = () => {
+  const pageId = "credential-card-details";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
@@ -117,81 +118,75 @@ const CredCardDetails = () => {
   };
 
   const handleArchiveCredential = async () => {
-    setVerifyPasswordIsOpen(false);
-    setVerifyPasscodeIsOpen(false);
     await AriesAgent.agent.credentials.archiveCredential(params.id);
     const creds = credsCache.filter((item) => item.id !== params.id);
+    if (isFavourite) {
+      handleSetFavourite(params.id);
+    }
     dispatch(setCredsCache(creds));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_ARCHIVED));
-    handleDone();
   };
 
   const handleDeleteCredential = async () => {
-    try {
-      await AriesAgent.agent.credentials.deleteCredential(params.id);
-      dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
+    // @TODO - sdisalvo: handle error
+    await AriesAgent.agent.credentials.deleteCredential(params.id);
+    dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
   };
 
   const handleRestoreCredential = async () => {
     await AriesAgent.agent.credentials.restoreCredential(params.id);
-    try {
-      const metadata = await AriesAgent.agent.credentials.getMetadataById(
-        params.id
-      );
-      const creds =
-        await AriesAgent.agent.credentials.getCredentialShortDetails(metadata);
-      dispatch(setCredsCache([...credsCache, creds]));
-    } catch (e) {
-      // @TODO - sdisalvo: handle error
-    }
+    // @TODO - sdisalvo: handle error
+    const metadata = await AriesAgent.agent.credentials.getMetadataById(
+      params.id
+    );
+    const creds =
+      AriesAgent.agent.credentials.getCredentialShortDetails(metadata);
+    dispatch(setCredsCache([...credsCache, creds]));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
     handleDone();
   };
 
-  const onVerify = () => {
+  const onVerify = async () => {
     if (isArchived) {
-      handleDeleteCredential();
+      await handleDeleteCredential();
     } else {
-      handleArchiveCredential();
+      await handleArchiveCredential();
     }
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
     handleDone();
   };
 
-  const AdditionalButtons = () => {
-    const handleSetFavourite = (id: string) => {
-      if (isFavourite) {
-        PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
-          favourites: favouritesCredsCache.filter((fav) => fav.id !== id),
+  const handleSetFavourite = (id: string) => {
+    if (isFavourite) {
+      PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
+        favourites: favouritesCredsCache.filter((fav) => fav.id !== id),
+      })
+        .then(() => {
+          dispatch(removeFavouritesCredsCache(id));
         })
-          .then(() => {
-            dispatch(removeFavouritesCredsCache(id));
-          })
-          .catch((error) => {
-            /*TODO: handle error*/
-          });
-      } else {
-        if (favouritesCredsCache.length >= MAX_FAVOURITES) {
-          dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
-          return;
-        }
-
-        PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
-          favourites: [{ id, time: Date.now() }, ...favouritesCredsCache],
-        })
-          .then(() => {
-            dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
-          })
-          .catch((error) => {
-            /*TODO: handle error*/
-          });
+        .catch((error) => {
+          /*TODO: handle error*/
+        });
+    } else {
+      if (favouritesCredsCache.length >= MAX_FAVOURITES) {
+        dispatch(setToastMsg(ToastMsgType.MAX_FAVOURITES_REACHED));
+        return;
       }
-    };
 
+      PreferencesStorage.set(PreferencesKeys.APP_CREDS_FAVOURITES, {
+        favourites: [{ id, time: Date.now() }, ...favouritesCredsCache],
+      })
+        .then(() => {
+          dispatch(addFavouritesCredsCache({ id, time: Date.now() }));
+        })
+        .catch((error) => {
+          /*TODO: handle error*/
+        });
+    }
+  };
+
+  const AdditionalButtons = () => {
     return (
       <>
         <IonButton
@@ -253,6 +248,8 @@ const CredCardDetails = () => {
     return (
       <IonPage className="tab-layout card-details">
         <TabLayout
+          pageId={pageId}
+          customClass="card-details"
           header={true}
           title={`${i18n.t("creds.card.details.done")}`}
           titleSize="h3"

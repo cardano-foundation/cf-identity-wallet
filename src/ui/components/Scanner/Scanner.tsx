@@ -69,11 +69,14 @@ const Scanner = forwardRef((props, ref) => {
         const result = await startScan();
         if (result.hasContent) {
           stopScan();
-          // @TODO: try catch and handle invalid QR code
+          // @TODO - foconnor: instead of setting the optype to idle we should
+          // have a loading screen with "waiting for server..." etc,
+          // and it can update to an error if the QR is invalid with a re-scan btn
+          dispatch(setCurrentOperation(OperationType.IDLE));
+          // @TODO - foconnor: when above loading screen in place, handle invalid QR code
           await AriesAgent.agent.connections.receiveInvitationFromUrl(
             result.content
           );
-          dispatch(setCurrentOperation(OperationType.IDLE));
         }
       }
     }
