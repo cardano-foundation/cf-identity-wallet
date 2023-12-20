@@ -186,16 +186,17 @@ const Creds = () => {
         {!showPlaceholder && (
           <>
             {favCreds.length > 0 && (
-              <div className="cards-title">
-                {i18n.t("creds.tab.favourites")}
-              </div>
+              <>
+                <div className="cards-title">
+                  {i18n.t("creds.tab.favourites")}
+                </div>
+                <CardsStack
+                  name="favs"
+                  cardsType={CardType.CREDS}
+                  cardsData={sortedFavCreds}
+                />
+              </>
             )}
-            <CardsStack
-              name="favs"
-              cardsType={CardType.CREDS}
-              cardsData={sortedFavCreds}
-            />
-
             {allCreds.length > 0 && (
               <>
                 {favCreds.length > 0 && (
