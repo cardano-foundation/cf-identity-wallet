@@ -26,11 +26,10 @@ import {
 } from "./Connections.types";
 import "./Connections.scss";
 import { formatShortDate } from "../../utils/formatters";
+import { ConnectModal } from "../../components/ConnectModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getStateCache,
-  setCurrentOperation,
-} from "../../../store/reducers/stateCache";
+import { DIDCommRequestType } from "../../globals/types";
+import { getStateCache } from "../../../store/reducers/stateCache";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
@@ -39,8 +38,8 @@ import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 import { ShareQR } from "../../components/ShareQR/ShareQR";
 import { MoreOptions } from "../../components/ShareQR/MoreOptions";
+import { AriesAgent } from "../../../core/agent/agent";
 import { ConnectionStatus } from "../../../core/agent/agent.types";
-import { OperationType } from "../../globals/types";
 
 const ConnectionItem = ({
   item,
@@ -100,9 +99,21 @@ const Connections = ({
   const [mappedConnections, setMappedConnections] = useState<
     MappedConnections[]
   >([]);
+  const [connectModalIsOpen, setConnectModalIsOpen] = useState(false);
   const [invitationLink, setInvitationLink] = useState<string>();
-  const handleCreateCred = () => {
-    dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
+
+  async function handleProvideQr() {
+    const invitation =
+      await AriesAgent.agent.connections.createMediatorInvitation();
+    const shortUrl = await AriesAgent.agent.connections.getShortenUrl(
+      invitation.invitationUrl
+    );
+    setInvitationLink(shortUrl);
+    setConnectModalIsOpen(false);
+  }
+
+  const handleConnectModal = () => {
+    setConnectModalIsOpen(true);
   };
 
   const handleShowConnectionDetails = async (item: ConnectionShortDetails) => {
@@ -123,7 +134,7 @@ const Connections = ({
         shape="round"
         className="add-button"
         data-testid="add-connection-button"
-        onClick={handleCreateCred}
+        onClick={handleConnectModal}
       >
         <IonIcon
           slot="icon-only"
@@ -243,10 +254,16 @@ const Connections = ({
       ) : (
         <CardsPlaceholder
           buttonLabel={i18n.t("connections.tab.create")}
-          buttonAction={handleCreateCred}
+          buttonAction={handleConnectModal}
           testId={pageId}
         />
       )}
+      <ConnectModal
+        type={DIDCommRequestType.CONNECTION}
+        connectModalIsOpen={connectModalIsOpen}
+        setConnectModalIsOpen={setConnectModalIsOpen}
+        handleProvideQr={handleProvideQr}
+      />
       {invitationLink && (
         <ShareQR
           isOpen={!!invitationLink}
