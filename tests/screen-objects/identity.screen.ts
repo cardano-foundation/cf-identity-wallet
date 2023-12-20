@@ -4,7 +4,7 @@ import TabBar from "./components/tab.bar.js";
 
 export class IdentityScreen {
   get addAnIdentifierButton() {
-    return $("[data-testid=\"identifiers-cards-placeholder-button\"]");
+    return $("[data-testid=\"primary-button-identifiers-tab\"]");
   }
 
   get screenTitle() {

@@ -95,7 +95,7 @@ const TabsMenu = ({
               key={`${tab.label}-${index}`}
               tab={tab.label}
               href={tab.path}
-              data-testId={
+              data-testid={
                 "tab-button-" + tab.label.toLowerCase().replace(/\s/g, "-")
               }
             >
