@@ -24,6 +24,8 @@ interface DIDDetails extends IdentifierShortDetails {
 }
 
 interface KERIDetails extends IdentifierShortDetails {
+  opName?: string;
+  isPending?: boolean;
   s: number;
   dt: string;
   kt: number;

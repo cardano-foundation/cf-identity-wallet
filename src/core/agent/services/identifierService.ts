@@ -105,6 +105,8 @@ class IdentifierService extends AgentService {
           signifyName: metadata.signifyName,
           colors: metadata.colors,
           theme: metadata.theme,
+          opName: metadata.opName,
+          isPending: metadata.isPending,
           s: aid.state.s,
           dt: aid.state.dt,
           kt: aid.state.kt,
@@ -238,12 +240,7 @@ class IdentifierService extends AgentService {
   ) {
     this.validIdentifierMetadata(data);
     const record = new IdentifierMetadataRecord({
-      id: data.id,
-      displayName: data.displayName,
-      colors: data.colors,
-      method: data.method,
-      signifyName: data.signifyName,
-      theme: data.theme,
+      ...data,
     });
     return this.agent.modules.generalStorage.saveIdentifierMetadataRecord(
       record
@@ -335,13 +332,14 @@ class IdentifierService extends AgentService {
       aid,
       otherAids
     );
-    // TODO: save res.op.name for check status
     return this.createIdentifier({
       method: IdentifierType.KERI,
       displayName: meta.displayName,
       colors: meta.colors,
       theme: meta.theme,
       signifyName: result.name,
+      opName: result.op.name,
+      isPending: result.op.done ? false : true,
     });
   }
   async isJoinedCreateMultisig(msgSaid: string): Promise<boolean> {
@@ -383,13 +381,14 @@ class IdentifierService extends AgentService {
         identifier?.signifyName
       );
       const res = await this.agent.modules.signify.joinCreateMultisig(exn, aid);
-      // TODO: save op for check status
       return this.createIdentifier({
         method: IdentifierType.KERI,
         displayName: meta.displayName,
         colors: meta.colors,
         theme: meta.theme,
         signifyName: res.name,
+        opName: res.op.name,
+        isPending: res.op.done ? false : true,
       });
     }
   }
