@@ -92,13 +92,15 @@ const Creds = () => {
   }, [credsCache]);
 
   useEffect(() => {
-    if (
-      toastMsg === ToastMsgType.CREDENTIAL_ARCHIVED ||
-      toastMsg === ToastMsgType.CREDENTIAL_RESTORED ||
-      toastMsg === ToastMsgType.CREDENTIALS_RESTORED ||
-      toastMsg === ToastMsgType.CREDENTIAL_DELETED ||
-      toastMsg === ToastMsgType.CREDENTIALS_DELETED
-    ) {
+    const validToastMsgTypes = [
+      ToastMsgType.CREDENTIAL_ARCHIVED,
+      ToastMsgType.CREDENTIAL_RESTORED,
+      ToastMsgType.CREDENTIALS_RESTORED,
+      ToastMsgType.CREDENTIAL_DELETED,
+      ToastMsgType.CREDENTIALS_DELETED,
+    ];
+
+    if (toastMsg && validToastMsgTypes.includes(toastMsg)) {
       fetchArchivedCreds();
     }
   }, [toastMsg]);
@@ -136,6 +138,22 @@ const Creds = () => {
     (cred) => !favCredsCache?.some((fav) => fav.id === cred.id)
   );
 
+  const ArchivedCredentialsButton = () => {
+    return (
+      <div className="archived-credentials-button-container">
+        <IonButton
+          fill="outline"
+          className="secondary-button"
+          onClick={() => setArchivedCredentialsIsOpen(true)}
+        >
+          <IonLabel color="secondary">
+            {i18n.t("creds.tab.viewarchived")}
+          </IonLabel>
+        </IonButton>
+      </div>
+    );
+  };
+
   return (
     <>
       <Connections
@@ -160,76 +178,47 @@ const Creds = () => {
               buttonAction={handleCreateCred}
               testId={pageId}
             >
-              {archivedCreds.length ? (
-                <div className="archived-credentials-button-container">
-                  <IonButton
-                    fill="outline"
-                    className="secondary-button"
-                    onClick={() => setArchivedCredentialsIsOpen(true)}
-                  >
-                    <IonLabel color="secondary">
-                      {i18n.t("creds.tab.viewarchived")}
-                    </IonLabel>
-                  </IonButton>
-                </div>
-              ) : null}
+              {archivedCreds.length > 0 && <ArchivedCredentialsButton />}
             </CardsPlaceholder>
           )
         }
       >
         {!showPlaceholder && (
           <>
-            {favCreds.length ? (
+            {favCreds.length > 0 && (
+              <div className="cards-title">
+                {i18n.t("creds.tab.favourites")}
+              </div>
+            )}
+            <CardsStack
+              name="favs"
+              cardsType={CardType.CREDS}
+              cardsData={sortedFavCreds}
+            />
+
+            {allCreds.length > 0 && (
               <>
-                {allCreds.length ? (
-                  <div className="cards-title">
-                    {i18n.t("creds.tab.favourites")}
-                  </div>
-                ) : null}
-                <CardsStack
-                  name="favs"
-                  cardsType={CardType.CREDS}
-                  cardsData={sortedFavCreds}
-                />
-              </>
-            ) : null}
-            {allCreds.length ? (
-              <>
-                {favCreds.length ? (
+                {favCreds.length > 0 && (
                   <div className="cards-title cards-title-all">
                     {i18n.t("creds.tab.allcreds")}
                   </div>
-                ) : null}
+                )}
                 <CardsStack
                   name="allcreds"
                   cardsType={CardType.CREDS}
                   cardsData={allCreds}
                 />
               </>
-            ) : null}
-            {archivedCreds.length ? (
-              <div className="archived-credentials-button-container">
-                <IonButton
-                  fill="outline"
-                  className="secondary-button"
-                  onClick={() => setArchivedCredentialsIsOpen(true)}
-                >
-                  <IonLabel color="secondary">
-                    {i18n.t("creds.tab.viewarchived")}
-                  </IonLabel>
-                </IonButton>
-              </div>
-            ) : null}
+            )}
+            {archivedCreds.length > 0 && <ArchivedCredentialsButton />}
           </>
         )}
-        {archivedCreds.length ? (
-          <ArchivedCredentials
-            archivedCreds={archivedCreds}
-            archivedCredentialsIsOpen={archivedCredentialsIsOpen}
-            setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
-          />
-        ) : null}
       </TabLayout>
+      <ArchivedCredentials
+        archivedCreds={archivedCreds}
+        archivedCredentialsIsOpen={archivedCredentialsIsOpen}
+        setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
+      />
     </>
   );
 };
