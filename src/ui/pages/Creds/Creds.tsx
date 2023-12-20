@@ -14,16 +14,12 @@ import { CardsStack } from "../../components/CardsStack";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getToastMsg,
+  setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { Connections } from "../Connections";
-import {
-  CardType,
-  DIDCommRequestType,
-  ToastMsgType,
-} from "../../globals/types";
-import { ConnectModal } from "../../components/ConnectModal";
+import { CardType, OperationType, ToastMsgType } from "../../globals/types";
 import { ArchivedCredentials } from "../../components/ArchivedCredentials";
 import { AriesAgent } from "../../../core/agent/agent";
 import {
@@ -81,7 +77,6 @@ const Creds = () => {
     []
   );
   const [showConnections, setShowConnections] = useState(false);
-  const [addCredentialIsOpen, setAddCredentialIsOpen] = useState(false);
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
@@ -109,7 +104,7 @@ const Creds = () => {
   }, [toastMsg]);
 
   const handleCreateCred = () => {
-    setAddCredentialIsOpen(true);
+    dispatch(setCurrentOperation(OperationType.SCAN_CONNECTION));
   };
 
   useIonViewWillEnter(() => {
@@ -235,14 +230,6 @@ const Creds = () => {
           />
         ) : null}
       </TabLayout>
-      <ConnectModal
-        type={DIDCommRequestType.CREDENTIAL}
-        connectModalIsOpen={addCredentialIsOpen}
-        setConnectModalIsOpen={setAddCredentialIsOpen}
-        handleProvideQr={() => {
-          // @TODO: add credential sharing function
-        }}
-      />
     </>
   );
 };
