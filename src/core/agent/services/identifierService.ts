@@ -91,6 +91,10 @@ class IdentifierService extends AgentService {
       const aid = await this.agent.modules.signify.getIdentifierByName(
         metadata.signifyName as string
       );
+      //Update multisig's status if it is pending
+      if (metadata.isPending && metadata.opName) {
+        await this.updateMultisigMetadata(metadata);
+      }
       if (!aid) {
         return undefined;
       }
@@ -338,8 +342,8 @@ class IdentifierService extends AgentService {
       colors: meta.colors,
       theme: meta.theme,
       signifyName: result.name,
-      opName: result.op.name,
-      isPending: result.op.done ? false : true,
+      opName: result.op.name, //we save the opName here to sync the multisig's status later
+      isPending: result.op.done ? false : true, //this will be updated once the operation is done
     });
   }
   async isJoinedCreateMultisig(msgSaid: string): Promise<boolean> {
@@ -390,6 +394,21 @@ class IdentifierService extends AgentService {
         opName: res.op.name,
         isPending: res.op.done ? false : true,
       });
+    }
+  }
+
+  async updateMultisigMetadata(metadata: IdentifierMetadataRecord) {
+    if (!metadata.opName || !metadata.isPending) {
+      return;
+    }
+    const pendingOperation = await this.agent.modules.signify.getOpByName(
+      metadata.opName
+    );
+    if (pendingOperation && pendingOperation.done) {
+      await this.agent.modules.generalStorage.updateIdentifierMetadata(
+        metadata.id,
+        { isPending: false }
+      );
     }
   }
 }

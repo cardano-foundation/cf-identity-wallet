@@ -216,6 +216,11 @@ export class SignifyApi {
     return op;
   }
 
+  async getOpByName(name: string): Promise<any> {
+    const op = await this.signifyClient.operations().get(name);
+    return op;
+  }
+
   private async getBran(): Promise<string> {
     let bran;
     try {
