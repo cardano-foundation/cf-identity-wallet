@@ -36,8 +36,8 @@ const CredCardTemplate = ({
     <>
       <div
         key={index}
-        data-testid={`cred-card-template-${
-          index !== undefined ? `${name}-index-${index}` : ""
+        data-testid={`cred-card-template${
+          index !== undefined ? `-${name}-index-${index}` : ""
         }`}
         className={`cred-card-template ${isActive ? "active" : ""} ${
           isKnownTemplate
