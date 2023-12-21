@@ -136,8 +136,8 @@
             width: 35%;
 
             #react-qrcode-logo {
-              height: auto !important;
-              width: auto !important;
+              height: calc((100vw - 4.778rem) * 0.35) !important;
+              width: calc((100vw - 4.778rem) * 0.35) !important;
             }
           }
 
