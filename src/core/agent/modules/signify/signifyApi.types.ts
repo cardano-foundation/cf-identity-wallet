@@ -102,8 +102,7 @@ export interface MultiSigIcpNotification {
   };
 }
 
-enum NotificationRoute {
-  MultiSigIcp = "multisig/icp",
+export enum NotificationRoute {
+  Credential = "/exn/ipex/grant",
+  MultiSigIcp = "/multisig/icp",
 }
-
-export type { NotificationRoute };

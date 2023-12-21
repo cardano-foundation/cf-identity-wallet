@@ -15,7 +15,9 @@ import {
   IdentifierResult,
   KeriContact,
   MultiSigIcpNotification,
+  NotificationRoute,
 } from "../modules/signify/signifyApi.types";
+import { GenericRecordType, KeriNotification } from "../agent.types";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
   [IdentifierType.KEY]: [0, 1, 2, 3],
@@ -346,7 +348,7 @@ class IdentifierService extends AgentService {
       isPending: result.op.done ? false : true, //this will be updated once the operation is done
     });
   }
-  async isJoinedCreateMultisig(msgSaid: string): Promise<boolean> {
+  async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
     const notifications: MultiSigIcpNotification[] =
       await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
     const exn = notifications[0].exn;
@@ -364,13 +366,27 @@ class IdentifierService extends AgentService {
     return false;
   }
 
-  async joinCreateMultisig(
-    msgSaid: string,
+  async joinMultisig(
+    notificationId: string,
     meta: Pick<
       IdentifierMetadataRecordProps,
       "displayName" | "colors" | "theme"
     >
   ): Promise<string | undefined> {
+    const savedMultisigNotification = await this.agent.genericRecords.findById(
+      notificationId
+    );
+    if (!savedMultisigNotification) {
+      return;
+    }
+    const msgSaid = savedMultisigNotification?.content?.d as string;
+    const hasJoined = await this.hasJoinedMultisig(msgSaid); //"EKHJNmH2lyRL1RRNjeG3hzbcuimypSVpEFC8hVDtcr6F"
+    if (hasJoined) {
+      await this.agent.genericRecords.deleteById(
+        savedMultisigNotification?.id as string
+      );
+      return;
+    }
     const notifications: MultiSigIcpNotification[] =
       await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
     const exn = notifications[0].exn;
@@ -384,7 +400,10 @@ class IdentifierService extends AgentService {
       const aid = await this.agent.modules.signify.getIdentifierByName(
         identifier?.signifyName
       );
-      const res = await this.agent.modules.signify.joinCreateMultisig(exn, aid);
+      const res = await this.agent.modules.signify.joinMultisig(exn, aid);
+      await this.agent.genericRecords.deleteById(
+        savedMultisigNotification?.id as string
+      );
       return this.createIdentifier({
         method: IdentifierType.KERI,
         displayName: meta.displayName,
@@ -410,6 +429,20 @@ class IdentifierService extends AgentService {
         { isPending: false }
       );
     }
+  }
+
+  async getUnhandledMultisigIdentifiers(): Promise<KeriNotification[]> {
+    const results = await this.agent.genericRecords.findAllByQuery({
+      type: GenericRecordType.NOTIFICATION_KERI,
+      route: NotificationRoute.MultiSigIcp,
+    });
+    return results.map((result) => {
+      return {
+        id: result.id,
+        createdAt: result.createdAt,
+        a: result.content,
+      };
+    });
   }
 }
 

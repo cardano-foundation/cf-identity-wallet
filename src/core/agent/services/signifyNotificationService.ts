@@ -1,7 +1,7 @@
 import { AgentService } from "./agentService";
 import { GenericRecordType, KeriNotification } from "../agent.types";
 import { Notification } from "./credentialService.types";
-// TODO: DUPLICATE WITH NOTIFICATION IN CRED SERVICE, HANDLE THIS
+import { NotificationRoute } from "../modules/signify/signifyApi.types";
 export class SignifyNotificationService extends AgentService {
   async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
@@ -24,15 +24,15 @@ export class SignifyNotificationService extends AgentService {
     notif: Notification,
     callback: (event: KeriNotification) => void
   ) {
-    const keriNoti = {
-      id: notif.i,
-      a: notif.a,
-      createdAt: new Date(),
-    } as KeriNotification;
-    // todo: save data
-    if (!notif.r) {
-      await this.agent.modules.signify.markNotification(notif.i);
+    // We only process with the credential and the multisig at the moment
+    if (
+      (notif.a.r === NotificationRoute.Credential ||
+        notif.a.r === NotificationRoute.MultiSigIcp) &&
+      !notif.r
+    ) {
+      const keriNoti = await this.createKeriNotificationRecord(notif);
       callback(keriNoti);
+      await this.agent.modules.signify.markNotification(notif.i);
     }
   }
 
@@ -44,6 +44,7 @@ export class SignifyNotificationService extends AgentService {
       content: event.a,
       tags: {
         type: GenericRecordType.NOTIFICATION_KERI,
+        route: event.a.r,
       },
     });
     return {
@@ -53,9 +54,12 @@ export class SignifyNotificationService extends AgentService {
     };
   }
 
-  private async getKeriNotifications(): Promise<KeriNotification[]> {
+  private async getKeriNotifications(
+    route: NotificationRoute
+  ): Promise<KeriNotification[]> {
     const results = await this.agent.genericRecords.findAllByQuery({
       type: GenericRecordType.NOTIFICATION_KERI,
+      route,
     });
     return results.map((result) => {
       return {
