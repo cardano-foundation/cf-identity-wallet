@@ -53,20 +53,4 @@ export class SignifyNotificationService extends AgentService {
       a: result.content,
     };
   }
-
-  private async getKeriNotifications(
-    route: NotificationRoute
-  ): Promise<KeriNotification[]> {
-    const results = await this.agent.genericRecords.findAllByQuery({
-      type: GenericRecordType.NOTIFICATION_KERI,
-      route,
-    });
-    return results.map((result) => {
-      return {
-        id: result.id,
-        createdAt: result.createdAt,
-        a: result.content,
-      };
-    });
-  }
 }

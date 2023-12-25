@@ -284,7 +284,7 @@ export class SignifyApi {
     const recp = otherAids
       .map((aid) => aid["state"])
       .map((state) => state["i"]);
-    await this.sendCreateMultisigExn(aid["name"], aid, embeds, recp, {
+    await this.sendMultisigExn(aid["name"], aid, embeds, recp, {
       gid: serder.pre,
       smids: smids,
       rmids: smids,
@@ -298,7 +298,7 @@ export class SignifyApi {
     };
   }
 
-  async sendCreateMultisigExn(
+  async sendMultisigExn(
     name: string,
     aid: Aid,
     embeds: {
@@ -318,7 +318,7 @@ export class SignifyApi {
     return this.signifyClient.groups().getRequest(said);
   }
 
-  async joinCreateMultisig(
+  async joinMultisig(
     exn: MultiSigIcpNotification["exn"],
     aid: Aid
   ): Promise<{
@@ -354,7 +354,7 @@ export class SignifyApi {
     const recp = rstates
       .filter((r) => r.i !== aid.state.i)
       .map((state) => state["i"]);
-    await this.sendCreateMultisigExn(aid["name"], aid, embeds, recp, {
+    await this.sendMultisigExn(aid["name"], aid, embeds, recp, {
       gid: serder.pre,
       smids: smids,
       rmids: smids,

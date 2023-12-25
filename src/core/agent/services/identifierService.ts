@@ -1,4 +1,4 @@
-import { DidRecord, KeyType } from "@aries-framework/core";
+import { DidRecord, KeyType, utils } from "@aries-framework/core";
 import {
   DIDDetails,
   GetIdentifierResult,
@@ -315,17 +315,17 @@ class IdentifierService extends AgentService {
   }
 
   async createMultisig(
-    identifier: string,
+    creatorIdentifier: string,
     contacts: KeriContact[],
     meta: Pick<
       IdentifierMetadataRecordProps,
       "displayName" | "colors" | "theme"
     >
   ): Promise<string | undefined> {
-    const metadata = await this.getMetadataById(identifier);
-    this.validIdentifierMetadata(metadata);
-    const aid = (await this.agent.modules.signify.getIdentifierByName(
-      metadata.signifyName as string
+    const creatorMetadata = await this.getMetadataById(creatorIdentifier);
+    this.validIdentifierMetadata(creatorMetadata);
+    const creatorAid = (await this.agent.modules.signify.getIdentifierByName(
+      creatorMetadata.signifyName as string
     )) as Aid;
     const otherAids = [];
     for (const contact of contacts) {
@@ -335,22 +335,28 @@ class IdentifierService extends AgentService {
       } as Pick<Aid, "state">);
     }
     const result = await this.agent.modules.signify.createMultisig(
-      aid,
+      creatorAid,
       otherAids
     );
-    return this.createIdentifier({
-      method: IdentifierType.KERI,
+    const multisigId = result.op.name.split(".")[1];
+    await this.createIdentifierMetadataRecord({
+      id: multisigId,
       displayName: meta.displayName,
+      method: IdentifierType.KERI,
       colors: meta.colors,
       theme: meta.theme,
-      signifyName: result.name,
+      signifyName: utils.uuid(),
       opName: result.op.name, //we save the opName here to sync the multisig's status later
       isPending: result.op.done ? false : true, //this will be updated once the operation is done
     });
+    return multisigId;
   }
   async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
     const notifications: MultiSigIcpNotification[] =
       await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    if (!notifications.length) {
+      return false;
+    }
     const exn = notifications[0].exn;
     const signifyName = exn.a.name;
     try {
@@ -389,6 +395,10 @@ class IdentifierService extends AgentService {
     }
     const notifications: MultiSigIcpNotification[] =
       await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+
+    if (!notifications.length) {
+      return;
+    }
     const exn = notifications[0].exn;
     const rstate = exn.a.rstates;
     const identifiers = await this.getIdentifiers();
@@ -404,15 +414,18 @@ class IdentifierService extends AgentService {
       await this.agent.genericRecords.deleteById(
         savedMultisigNotification?.id as string
       );
-      return this.createIdentifier({
-        method: IdentifierType.KERI,
+      const multisigId = res.op.name.split(".")[1];
+      await this.createIdentifierMetadataRecord({
+        id: multisigId,
         displayName: meta.displayName,
+        method: IdentifierType.KERI,
         colors: meta.colors,
         theme: meta.theme,
-        signifyName: res.name,
-        opName: res.op.name,
-        isPending: res.op.done ? false : true,
+        signifyName: utils.uuid(),
+        opName: res.op.name, //we save the opName here to sync the multisig's status later
+        isPending: res.op.done ? false : true, //this will be updated once the operation is done
       });
+      return multisigId;
     }
   }
 

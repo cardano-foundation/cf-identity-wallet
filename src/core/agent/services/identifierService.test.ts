@@ -25,12 +25,20 @@ const agent = jest.mocked({
       getIdentifierByName: jest.fn(),
       createIdentifier: jest.fn(),
       getAllIdentifiers: jest.fn(),
+      resolveOobi: jest.fn(),
+      createMultisig: jest.fn(),
+      getNotificationsBySaid: jest.fn(),
+      joinMultisig: jest.fn(),
     },
   },
   dids: {
     getCreatedDids: jest.fn(),
     resolve: jest.fn(),
     create: jest.fn(),
+  },
+  genericRecords: {
+    findById: jest.fn(),
+    deleteById: jest.fn(),
   },
 });
 const identifierService = new IdentifierService(agent as any as Agent);
@@ -45,6 +53,7 @@ const pkey = "pkey";
 const didMetadataRecordProps = {
   id: did,
   displayName: "Identifier 1",
+  signifyName: "uuid-here-1",
   colors,
   method: IdentifierType.KEY,
   createdAt: now,
@@ -110,6 +119,7 @@ describe("Identifier service of agent", () => {
       {
         id: did,
         displayName: "Identifier 1",
+        signifyName: "uuid-here-1",
         colors,
         method: IdentifierType.KEY,
         createdAtUTC: nowISO,
@@ -118,6 +128,7 @@ describe("Identifier service of agent", () => {
       {
         id: keriMetadataRecord.id,
         displayName: "Identifier 2",
+        signifyName: "uuid-here",
         colors,
         method: IdentifierType.KERI,
         createdAtUTC: nowISO,
@@ -134,6 +145,7 @@ describe("Identifier service of agent", () => {
       {
         id: did,
         displayName: "Identifier 1",
+        signifyName: "uuid-here-1",
         colors,
         method: IdentifierType.KEY,
         createdAtUTC: nowISO,
@@ -142,6 +154,7 @@ describe("Identifier service of agent", () => {
       {
         id: keriMetadataRecord.id,
         displayName: "Identifier 2",
+        signifyName: "uuid-here",
         colors,
         method: IdentifierType.KERI,
         createdAtUTC: nowISO,
@@ -312,6 +325,9 @@ describe("Identifier service of agent", () => {
         colors,
         theme: 0,
         ...aidReturnedBySignify.state,
+        opName: undefined,
+        signifyName: "uuid-here",
+        isPending: false,
       },
     });
   });
@@ -569,7 +585,7 @@ describe("Identifier service of agent", () => {
     ).not.toBeCalled();
   });
 
-  test("Should call createIdentifierMetadataRecord when there are un-synced KERI identifiers", async () => {
+  test("Should call saveIdentifierMetadataRecord when there are un-synced KERI identifiers", async () => {
     agent.modules.signify.getAllIdentifiers = jest.fn().mockReturnValue({
       aids: [
         {
@@ -599,5 +615,132 @@ describe("Identifier service of agent", () => {
     expect(
       agent.modules.generalStorage.saveIdentifierMetadataRecord
     ).toBeCalledTimes(1);
+  });
+
+  test("can create a keri multisig", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    const signifyName = "newUuidHere";
+    agent.modules.signify.getIdentifierByName = jest
+      .fn()
+      .mockResolvedValue(aidReturnedBySignify);
+    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+      identifier: multisigIdentifier,
+      signifyName,
+    });
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    agent.modules.signify.resolveOobi = jest.fn().mockResolvedValue({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {},
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+    agent.modules.signify.createMultisig = jest.fn().mockResolvedValue({
+      op: { name: `group.${multisigIdentifier}`, done: false },
+      icpResult: {},
+      name: "name",
+    });
+    expect(
+      await identifierService.createMultisig(
+        creatorIdentifier,
+        [
+          {
+            id: "testId",
+            alias: "testAlias",
+            oobi: "testOobi",
+            challenges: [],
+            wellKnowns: [],
+          },
+        ],
+        {
+          theme: 4,
+          colors: ["#000000", "#000000"],
+          displayName: "Multisig",
+        }
+      )
+    ).toBe(multisigIdentifier);
+  });
+
+  test("can join the multisig", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    const signifyName = "newUuidHere";
+    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+      content: {
+        d: "d",
+      },
+    });
+    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+          },
+        },
+      },
+    ]);
+
+    agent.modules.signify.joinMultisig = jest.fn().mockResolvedValue({
+      op: { name: `group.${multisigIdentifier}`, done: false },
+      icpResult: {},
+      name: "name",
+    });
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          method: IdentifierType.KERI,
+          displayName: "displayName",
+          id: "id",
+          signifyName: "signifyName",
+          createdAt: new Date(),
+          colors: ["#000000", "#000000"],
+          theme: 4,
+        },
+      ]);
+    expect(
+      await identifierService.joinMultisig(creatorIdentifier, {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      })
+    ).toBe(multisigIdentifier);
+  });
+
+  test("should not join the multisig", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    const signifyName = "newUuidHere";
+    agent.genericRecords.findById = jest.fn().mockResolvedValue(null);
+    expect(
+      await identifierService.joinMultisig(creatorIdentifier, {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      })
+    ).toBe(undefined);
+
+    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+      content: {
+        d: "d",
+      },
+    });
+    agent.modules.signify.getNotificationsBySaid = jest
+      .fn()
+      .mockResolvedValue([]);
+    expect(
+      await identifierService.joinMultisig(creatorIdentifier, {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      })
+    ).toBe(undefined);
   });
 });

@@ -188,6 +188,9 @@ const keriNotificationsChangeHandler = async (
   event: KeriNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
+  if (!event) {
+    return;
+  }
   if (event.a.r === NotificationRoute.Credential) {
     dispatch(
       setQueueConnectionCredentialRequest({
