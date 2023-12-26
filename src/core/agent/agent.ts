@@ -16,6 +16,8 @@ import {
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
+import { AriesAskar } from "capacitor-aries-askar";
+import { AskarModule } from "@aries-framework/askar";
 import { CapacitorFileSystem } from "./dependencies";
 import { IonicStorageModule, GeneralStorageModule } from "./modules";
 import { HttpOutboundTransport } from "./transports";
@@ -55,7 +57,11 @@ const agentModules = {
     resolvers: [new KeyDidResolver()],
   }),
   ...(Capacitor.isNativePlatform()
-    ? { sqliteStorage: new SqliteStorageModule() }
+    ? {
+      askar: new AskarModule({
+        ariesAskar: AriesAskar,
+      }),
+    }
     : { ionicStorage: new IonicStorageModule() }),
   signify: new SignifyModule(),
   mediationRecipient: new MediationRecipientModule({
