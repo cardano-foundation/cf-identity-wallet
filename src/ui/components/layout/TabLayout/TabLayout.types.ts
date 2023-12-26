@@ -1,6 +1,8 @@
 import { ReactNode } from "react";
 
 interface TabLayoutProps {
+  pageId?: string;
+  customClass?: string;
   header?: boolean;
   avatar?: ReactNode;
   backButton?: boolean;
@@ -14,6 +16,7 @@ interface TabLayoutProps {
   actionButtonAction?: () => void;
   actionButtonLabel?: string;
   children?: ReactNode;
+  placeholder?: ReactNode;
 }
 
 export type { TabLayoutProps };

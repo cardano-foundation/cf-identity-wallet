@@ -1,4 +1,4 @@
-import { IonPage, useIonViewWillEnter } from "@ionic/react";
+import { useIonViewWillEnter } from "@ionic/react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
@@ -7,6 +7,7 @@ import "./Chat.scss";
 import { i18n } from "../../../i18n";
 
 const Chat = () => {
+  const pageId = "chat-tab";
   const dispatch = useAppDispatch();
 
   useIonViewWillEnter(() => {
@@ -14,19 +15,15 @@ const Chat = () => {
   });
 
   return (
-    <IonPage
-      className="tab-layout"
-      data-testid="chat-tab"
+    <TabLayout
+      pageId={pageId}
+      header={true}
+      menuButton={true}
     >
-      <TabLayout
-        header={true}
-        menuButton={true}
-      >
-        <div className="chat-tab-content">
-          <h2>{i18n.t("chat.tab.header")}</h2>
-        </div>
-      </TabLayout>
-    </IonPage>
+      <div className="chat-tab-content">
+        <h2>{i18n.t("chat.tab.header")}</h2>
+      </div>
+    </TabLayout>
   );
 };
 

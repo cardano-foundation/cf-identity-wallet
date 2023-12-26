@@ -5,12 +5,15 @@ import "./PageFooter.scss";
 
 const PageFooter = ({
   pageId,
+  primaryButtonIcon,
   primaryButtonText,
   primaryButtonAction,
   primaryButtonDisabled,
+  secondaryButtonIcon,
   secondaryButtonText,
   secondaryButtonAction,
   secondaryButtonDisabled,
+  tertiaryButtonIcon,
   tertiaryButtonText,
   tertiaryButtonAction,
   tertiaryButtonDisabled,
@@ -32,6 +35,14 @@ const PageFooter = ({
           onClick={primaryButtonAction}
           disabled={primaryButtonDisabled}
         >
+          {primaryButtonIcon && (
+            <IonIcon
+              slot="icon-only"
+              size="small"
+              icon={primaryButtonIcon}
+              color="primary"
+            />
+          )}
           {primaryButtonText}
         </IonButton>
       )}
@@ -45,6 +56,14 @@ const PageFooter = ({
           onClick={secondaryButtonAction}
           disabled={secondaryButtonDisabled}
         >
+          {secondaryButtonIcon && (
+            <IonIcon
+              slot="icon-only"
+              size="small"
+              icon={secondaryButtonIcon}
+              color="primary"
+            />
+          )}
           {secondaryButtonText}
         </IonButton>
       )}
@@ -58,6 +77,14 @@ const PageFooter = ({
           onClick={tertiaryButtonAction}
           disabled={tertiaryButtonDisabled}
         >
+          {tertiaryButtonIcon && (
+            <IonIcon
+              slot="icon-only"
+              size="small"
+              icon={tertiaryButtonIcon}
+              color="primary"
+            />
+          )}
           {tertiaryButtonText}
         </IonButton>
       )}
@@ -84,4 +111,4 @@ const PageFooter = ({
   );
 };
 
-export default PageFooter;
+export { PageFooter };

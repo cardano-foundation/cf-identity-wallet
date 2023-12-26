@@ -53,6 +53,7 @@ import {
 } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
+import "./AppWrapper.scss";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -224,10 +225,12 @@ const keriAcdcChangeHandler = async (
     dispatch(setCurrentOperation(OperationType.IDLE));
   }
 };
+
 const AppWrapper = (props: { children: ReactNode }) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const [initialised, setInitialised] = useState(false);
+  const [agentInitErr, setAgentInitErr] = useState(false);
 
   useEffect(() => {
     initApp();
@@ -241,6 +244,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       return false;
     }
   };
+
   const initApp = async () => {
     try {
       const isInitialized = await PreferencesStorage.get(
@@ -254,7 +258,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
     }
 
-    await AriesAgent.agent.start();
+    try {
+      await AriesAgent.agent.start();
+    } catch (e) {
+      // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
+      setAgentInitErr(true);
+      return;
+    }
+
     dispatch(setPauseQueueConnectionCredentialRequest(true));
     const connectionsDetails =
       await AriesAgent.agent.connections.getConnections();
@@ -385,6 +396,25 @@ const AppWrapper = (props: { children: ReactNode }) => {
       AriesAgent.agent.credentials.syncACDCs(),
     ]);
   };
+
+  // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.
+  // Hence this isn't in i18n.
+  if (agentInitErr) {
+    return (
+      <div className="agent-init-error-msg">
+        <p>
+          There’s an issue connecting to the cloud services we depend on right
+          now (DIDComm mediator, KERIA) - please check your internet connection,
+          or if this problem persists, let us know on Discord!
+        </p>
+        <p>
+          We’re working on an offline mode, as well as improving the deployment
+          setup for this pre-production release. Thank you for your
+          understanding!
+        </p>
+      </div>
+    );
+  }
 
   return initialised ? <>{props.children}</> : <></>;
 };

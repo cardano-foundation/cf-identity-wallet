@@ -2,14 +2,12 @@ import { useHistory, useParams } from "react-router-dom";
 import {
   IonButton,
   IonIcon,
-  IonPage,
   IonSpinner,
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
   shareOutline,
   ellipsisVertical,
-  trashOutline,
   heartOutline,
   heart,
 } from "ionicons/icons";
@@ -51,7 +49,7 @@ import { IdentifierOptions } from "../../components/IdentifierOptions";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import "./IdentifierCardDetails.scss";
-import PageFooter from "../../components/PageFooter/PageFooter";
+import { PageFooter } from "../../components/PageFooter";
 
 const IdentifierCardDetails = () => {
   const pageId = "identifier-card-details";
@@ -221,104 +219,100 @@ const IdentifierCardDetails = () => {
   };
 
   return (
-    <IonPage className="tab-layout card-details">
-      <TabLayout
-        header={true}
-        title={`${i18n.t("identifiers.card.details.done")}`}
-        titleSize="h3"
-        titleAction={handleDone}
-        menuButton={false}
-        additionalButtons={<AdditionalButtons />}
-      >
-        {!cardData ? (
-          <div
-            className="spinner-container"
-            data-testid="spinner-container"
-          >
-            <IonSpinner name="circular" />
-          </div>
-        ) : (
-          <>
-            <IdentifierCardTemplate
-              cardData={cardData}
-              isActive={false}
-            />
-            <div className="card-details-content">
-              {cardData.method === IdentifierType.KEY ? (
-                <IdentifierCardInfoDid cardData={cardData as DIDDetails} />
-              ) : (
-                <IdentifierCardInfoKeri cardData={cardData as KERIDetails} />
-              )}
-              <PageFooter
-                pageId={pageId}
-                deleteButtonText={`${i18n.t(
-                  "identifiers.card.details.delete.button"
-                )}`}
-                deleteButtonAction={() => {
-                  setAlertIsOpen(true);
-                  dispatch(
-                    setCurrentOperation(OperationType.DELETE_IDENTIFIER)
-                  );
-                }}
-              />
-            </div>
-          </>
-        )}
-        {cardData && (
-          <ShareIdentifier
-            isOpen={shareIsOpen}
-            setIsOpen={setShareIsOpen}
-            id={cardData.id}
-            name={cardData.displayName}
-          />
-        )}
-        {cardData && (
-          <IdentifierOptions
-            optionsIsOpen={identifierOptionsIsOpen}
-            setOptionsIsOpen={setIdentifierOptionsIsOpen}
+    <TabLayout
+      pageId={pageId}
+      customClass="card-details"
+      header={true}
+      title={`${i18n.t("identifiers.card.details.done")}`}
+      titleSize="h3"
+      titleAction={handleDone}
+      menuButton={false}
+      additionalButtons={<AdditionalButtons />}
+    >
+      {!cardData ? (
+        <div
+          className="spinner-container"
+          data-testid="spinner-container"
+        >
+          <IonSpinner name="circular" />
+        </div>
+      ) : (
+        <>
+          <IdentifierCardTemplate
             cardData={cardData}
-            setCardData={setCardData}
-            handleDeleteIdentifier={deleteIdentifier}
+            isActive={false}
           />
-        )}
-        <Alert
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
-          dataTestId="alert-confirm"
-          headerText={i18n.t("identifiers.card.details.delete.alert.title")}
-          confirmButtonText={`${i18n.t(
-            "identifiers.card.details.delete.alert.confirm"
-          )}`}
-          cancelButtonText={`${i18n.t(
-            "identifiers.card.details.delete.alert.cancel"
-          )}`}
-          actionConfirm={() => {
-            if (
-              !stateCache?.authentication.passwordIsSkipped &&
-              stateCache?.authentication.passwordIsSet
-            ) {
-              setVerifyPasswordIsOpen(true);
-            } else {
-              setVerifyPasscodeIsOpen(true);
-            }
-          }}
-          actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-          actionDismiss={() =>
-            dispatch(setCurrentOperation(OperationType.IDLE))
+          <div className="card-details-content">
+            {cardData.method === IdentifierType.KEY ? (
+              <IdentifierCardInfoDid cardData={cardData as DIDDetails} />
+            ) : (
+              <IdentifierCardInfoKeri cardData={cardData as KERIDetails} />
+            )}
+            <PageFooter
+              pageId={pageId}
+              deleteButtonText={`${i18n.t(
+                "identifiers.card.details.delete.button"
+              )}`}
+              deleteButtonAction={() => {
+                setAlertIsOpen(true);
+                dispatch(setCurrentOperation(OperationType.DELETE_IDENTIFIER));
+              }}
+            />
+          </div>
+        </>
+      )}
+      {cardData && (
+        <ShareIdentifier
+          isOpen={shareIsOpen}
+          setIsOpen={setShareIsOpen}
+          id={cardData.id}
+          name={cardData.displayName}
+        />
+      )}
+      {cardData && (
+        <IdentifierOptions
+          optionsIsOpen={identifierOptionsIsOpen}
+          setOptionsIsOpen={setIdentifierOptionsIsOpen}
+          cardData={cardData}
+          setCardData={setCardData}
+          handleDeleteIdentifier={deleteIdentifier}
+        />
+      )}
+      <Alert
+        isOpen={alertIsOpen}
+        setIsOpen={setAlertIsOpen}
+        dataTestId="alert-confirm"
+        headerText={i18n.t("identifiers.card.details.delete.alert.title")}
+        confirmButtonText={`${i18n.t(
+          "identifiers.card.details.delete.alert.confirm"
+        )}`}
+        cancelButtonText={`${i18n.t(
+          "identifiers.card.details.delete.alert.cancel"
+        )}`}
+        actionConfirm={() => {
+          if (
+            !stateCache?.authentication.passwordIsSkipped &&
+            stateCache?.authentication.passwordIsSet
+          ) {
+            setVerifyPasswordIsOpen(true);
+          } else {
+            setVerifyPasscodeIsOpen(true);
           }
-        />
-        <VerifyPassword
-          isOpen={verifyPasswordIsOpen}
-          setIsOpen={setVerifyPasswordIsOpen}
-          onVerify={handleDelete}
-        />
-        <VerifyPasscode
-          isOpen={verifyPasscodeIsOpen}
-          setIsOpen={setVerifyPasscodeIsOpen}
-          onVerify={handleDelete}
-        />
-      </TabLayout>
-    </IonPage>
+        }}
+        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+      />
+      <VerifyPassword
+        isOpen={verifyPasswordIsOpen}
+        setIsOpen={setVerifyPasswordIsOpen}
+        onVerify={handleDelete}
+      />
+      <VerifyPasscode
+        isOpen={verifyPasscodeIsOpen}
+        setIsOpen={setVerifyPasscodeIsOpen}
+        onVerify={handleDelete}
+      />
+    </TabLayout>
   );
 };
 
