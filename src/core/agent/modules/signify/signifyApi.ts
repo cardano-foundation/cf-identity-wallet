@@ -253,20 +253,17 @@ export class SignifyApi {
     icpResult: EventResult;
     name: string;
   }> {
-    const rstates = [aid["state"], ...otherAids.map((aid) => aid["state"])];
-    const states = rstates;
+    const states = [aid["state"], ...otherAids.map((aid) => aid["state"])];
     const name = utils.uuid();
-    const isith = otherAids.length + 1;
-    const nsith = otherAids.length + 1;
     const icp = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
       mhab: aid,
-      isith: isith,
-      nsith: nsith,
+      isith: otherAids.length + 1,
+      nsith: otherAids.length + 1,
       toad: aid.state.b.length,
       wits: aid.state.b,
       states: states,
-      rstates: rstates,
+      rstates: states,
     });
     const op = await icp.op();
     const serder = icp.serder;
@@ -288,7 +285,7 @@ export class SignifyApi {
       gid: serder.pre,
       smids: smids,
       rmids: smids,
-      rstates,
+      rstates: states,
       name,
     });
     return {
@@ -298,7 +295,7 @@ export class SignifyApi {
     };
   }
 
-  async sendMultisigExn(
+  private async sendMultisigExn(
     name: string,
     aid: Aid,
     embeds: {

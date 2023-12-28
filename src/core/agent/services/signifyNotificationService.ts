@@ -2,7 +2,7 @@ import { AgentService } from "./agentService";
 import { GenericRecordType, KeriNotification } from "../agent.types";
 import { Notification } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
-export class SignifyNotificationService extends AgentService {
+class SignifyNotificationService extends AgentService {
   async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
   ) {
@@ -15,7 +15,7 @@ export class SignifyNotificationService extends AgentService {
       await new Promise((rs) => {
         setTimeout(() => {
           rs(true);
-        }, 20000);
+        }, 2000);
       });
     }
   }
@@ -54,3 +54,5 @@ export class SignifyNotificationService extends AgentService {
     };
   }
 }
+
+export { SignifyNotificationService };

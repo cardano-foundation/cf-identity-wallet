@@ -189,10 +189,7 @@ const keriNotificationsChangeHandler = async (
   event: KeriNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  if (!event) {
-    return;
-  }
-  if (event.a.r === NotificationRoute.Credential) {
+  if (event?.a?.r === NotificationRoute.Credential) {
     dispatch(
       setQueueConnectionCredentialRequest({
         id: event?.id,
@@ -202,14 +199,8 @@ const keriNotificationsChangeHandler = async (
         source: ConnectionType.KERI,
       })
     );
-  } else if (event.a.r === NotificationRoute.MultiSigIcp) {
+  } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
     //TODO: Use dispatch here, handle logic for the multisig notification
-    // const meta = {
-    //   theme: 4,
-    //   colors: ["#000000", "#000000"],
-    //   displayName: `Multisig-${new Date().getTime()}`,
-    // } as any;
-    // await AriesAgent.agent.identifiers.joinMultisig(event.id as string, meta)
   }
 };
 
