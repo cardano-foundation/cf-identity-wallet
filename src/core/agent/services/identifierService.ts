@@ -42,7 +42,7 @@ class IdentifierService extends AgentService {
   static readonly IDENTIFIER_NOT_ARCHIVED = "Identifier was not archived";
   static readonly THEME_WAS_NOT_VALID = "Identifier theme was not valid";
   static readonly SAID_NOTIFICATIONS_NOT_FOUND =
-    "The's no notifications for the given SAID";
+    "There's no notifications for the given SAID";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
