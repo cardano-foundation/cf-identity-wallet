@@ -247,14 +247,14 @@ export class SignifyApi {
 
   async createMultisig(
     aid: Aid,
-    otherAids: Pick<Aid, "state">[]
+    otherAids: Pick<Aid, "state">[],
+    name: string
   ): Promise<{
     op: any;
     icpResult: EventResult;
     name: string;
   }> {
     const states = [aid["state"], ...otherAids.map((aid) => aid["state"])];
-    const name = utils.uuid();
     const icp = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
       mhab: aid,
@@ -317,7 +317,8 @@ export class SignifyApi {
 
   async joinMultisig(
     exn: MultiSigIcpNotification["exn"],
-    aid: Aid
+    aid: Aid,
+    name: string
   ): Promise<{
     op: any;
     icpResult: EventResult;
@@ -325,7 +326,6 @@ export class SignifyApi {
   }> {
     const icp = exn.e.icp;
     const rstates = exn.a.rstates;
-    const name = exn.a.name;
     const icpResult = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
       mhab: aid,

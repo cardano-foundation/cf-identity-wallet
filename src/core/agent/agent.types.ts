@@ -50,6 +50,7 @@ interface ConnectionShortDetails {
   logo?: string;
   status: ConnectionStatus;
   type?: ConnectionType;
+  oobi?: string;
 }
 
 type ConnectionNoteDetails = {

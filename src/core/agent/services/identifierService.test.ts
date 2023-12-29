@@ -4,10 +4,10 @@ import {
   DidRecord,
   KeyType,
 } from "@aries-framework/core";
-import { GenericRecord } from "@aries-framework/core/build/modules/generic-records/repository/GenericRecord";
 import { IdentifierService } from "./identifierService";
 import { IdentifierMetadataRecord } from "../modules/generalStorage/repositories/identifierMetadataRecord";
 import { IdentifierType } from "./identifierService.types";
+import { ConnectionStatus, ConnectionType } from "../agent.types";
 
 // We are losing typing here but the Agent class is overly complex to setup for tests.
 const agent = jest.mocked({
@@ -651,17 +651,14 @@ describe("Identifier service of agent", () => {
       await identifierService.createMultisig(
         creatorIdentifier,
         [
-          new GenericRecord({
-            tags: {
-              type: "connection-keri-metadata",
-            },
+          {
             id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
-            createdAt: new Date(),
-            content: {
-              alias: "f4732f8a-1967-454a-8865-2bbf2377c26e",
-              oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
-            },
-          }),
+            label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+            oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+            status: ConnectionStatus.CONFIRMED,
+            type: ConnectionType.KERI,
+            connectionDate: new Date().toISOString(),
+          },
         ],
         {
           theme: 4,

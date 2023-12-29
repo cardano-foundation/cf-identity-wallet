@@ -246,6 +246,7 @@ class ConnectionService extends AgentService {
       connectionDate: record.createdAt.toISOString(),
       status: ConnectionStatus.CONFIRMED,
       type: ConnectionType.KERI,
+      oobi: record.content?.oobi as string,
     };
   }
 
