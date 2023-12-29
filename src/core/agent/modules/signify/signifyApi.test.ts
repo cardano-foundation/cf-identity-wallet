@@ -318,7 +318,7 @@ describe("Signify API", () => {
         },
       },
     ];
-    const result = await api.createMultisig(aid, otherAids);
+    const result = await api.createMultisig(aid, otherAids, utils.uuid());
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
     expect(result).toHaveProperty("name");
@@ -462,7 +462,7 @@ describe("Signify API", () => {
       },
       windexes: [0],
     };
-    const result = await api.joinMultisig(exn, aid);
+    const result = await api.joinMultisig(exn, aid, utils.uuid());
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
     expect(result).toHaveProperty("name");
