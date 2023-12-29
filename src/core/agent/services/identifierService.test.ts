@@ -5,7 +5,10 @@ import {
   KeyType,
 } from "@aries-framework/core";
 import { IdentifierService } from "./identifierService";
-import { IdentifierMetadataRecord } from "../modules/generalStorage/repositories/identifierMetadataRecord";
+import {
+  IdentifierMetadataRecord,
+  IdentifierMetadataRecordProps,
+} from "../modules/generalStorage/repositories/identifierMetadataRecord";
 import { IdentifierType } from "./identifierService.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
 
@@ -618,7 +621,7 @@ describe("Identifier service of agent", () => {
     ).toBeCalledTimes(1);
   });
 
-  test("can create a keri multisig", async () => {
+  test("Can create a keri multisig with KERI contacts", async () => {
     const creatorIdentifier = "creatorIdentifier";
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
@@ -647,26 +650,45 @@ describe("Identifier service of agent", () => {
       icpResult: {},
       name: "name",
     });
+    const otherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.KERI,
+        connectionDate: new Date().toISOString(),
+      },
+    ];
+    const metadata = {
+      theme: 4,
+      colors: ["#000000", "#000000"],
+      displayName: "Multisig",
+    };
     expect(
       await identifierService.createMultisig(
         creatorIdentifier,
-        [
-          {
-            id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
-            label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
-            oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
-            status: ConnectionStatus.CONFIRMED,
-            type: ConnectionType.KERI,
-            connectionDate: new Date().toISOString(),
-          },
-        ],
-        {
-          theme: 4,
-          colors: ["#000000", "#000000"],
-          displayName: "Multisig",
-        }
+        otherIdentifiers,
+        metadata as IdentifierMetadataRecordProps
       )
     ).toBe(multisigIdentifier);
+
+    const invalidOtherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.DIDCOMM,
+        connectionDate: new Date().toISOString(),
+      },
+    ];
+    await expect(
+      identifierService.createMultisig(
+        creatorIdentifier,
+        invalidOtherIdentifiers,
+        metadata as IdentifierMetadataRecordProps
+      )
+    ).rejects.toThrowError();
   });
 
   test("can join the multisig", async () => {
