@@ -166,6 +166,35 @@ describe("Signify API", () => {
     });
   });
 
+  test("can create a registry", async () => {
+    const mockName = "keriuuid";
+    const mockRegistryName = "keriRegistry";
+    const mockCreateResult = {
+      registryName: mockRegistryName,
+      registryIdentifier: "registryIdentifier",
+    };
+    jest.spyOn(api, "createRegistry").mockResolvedValueOnce(mockCreateResult);
+    const result = await api.createRegistry(mockName);
+    expect(result).toEqual(mockCreateResult);
+  });
+
+  test("can get all registries by name", async () => {
+    const mockName = "keriuuid";
+    const mockRegistryName = "keriRegistry";
+    const mockRegistryData = [
+      {
+        name: mockRegistryName,
+        regk: "registryIdentifier",
+        pre: "pre",
+      },
+    ];
+    jest
+      .spyOn(api, "getAllRegistriesByName")
+      .mockResolvedValueOnce(mockRegistryData);
+    const result = await api.getAllRegistriesByName(mockName);
+    expect(result).toEqual(mockRegistryData);
+  });
+
   test("can get oobi by name", async () => {
     const mockName = "keriuuid";
     expect(await api.getOobi(mockName)).toEqual(oobiPrefix + mockName);

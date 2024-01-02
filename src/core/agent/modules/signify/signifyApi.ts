@@ -10,6 +10,7 @@ import {
   CreateIdentifierResult,
   IdentifierResult,
   IdentifiersListResult,
+  CreateRegistryResult,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 
@@ -21,6 +22,8 @@ export class SignifyApi {
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
+  static readonly FAILED_TO_CREATE_REGISTRY =
+    "Failed to create new registry, operation not completing...";
 
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly BACKER_ADDRESS =
@@ -98,6 +101,26 @@ export class SignifyApi {
 
   async getIdentifierByName(name: string): Promise<any> {
     return this.signifyClient.identifiers().get(name);
+  }
+
+  async createRegistry(name: string): Promise<CreateRegistryResult> {
+    try {
+      const registryName = utils.uuid();
+      const resgistryResult = await this.signifyClient
+        .registries()
+        .create({ name, registryName });
+      await resgistryResult.op();
+      return {
+        registryName: registryName,
+        registryIdentifier: resgistryResult.regser.ked.i,
+      };
+    } catch {
+      throw new Error(SignifyApi.FAILED_TO_CREATE_REGISTRY);
+    }
+  }
+
+  async getAllRegistriesByName(name: string): Promise<any> {
+    return this.signifyClient.registries().list(name);
   }
 
   async getOobi(name: string): Promise<string> {

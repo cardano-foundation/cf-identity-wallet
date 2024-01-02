@@ -3,6 +3,11 @@ export interface CreateIdentifierResult {
   identifier: string;
 }
 
+export interface CreateRegistryResult {
+  registryName: string;
+  registryIdentifier: string;
+}
+
 export interface KeriContact {
   alias: string;
   id: string;
