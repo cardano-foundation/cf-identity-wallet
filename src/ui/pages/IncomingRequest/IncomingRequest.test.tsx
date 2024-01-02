@@ -2,9 +2,8 @@ import { mockIonicReact } from "@ionic/react-test-utils";
 mockIonicReact();
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
-import i18next from "i18next";
 import { store } from "../../../store";
-import { ConnectionCredentialRequest } from "./ConnectionCredentialRequest";
+import { IncomingRequest } from "./IncomingRequest";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { AriesAgent } from "../../../core/agent/agent";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
@@ -51,7 +50,7 @@ describe("Connection request", () => {
     );
     const { container, getByText } = render(
       <Provider store={store}>
-        <ConnectionCredentialRequest />
+        <IncomingRequest />
       </Provider>
     );
     await waitFor(
@@ -84,10 +83,12 @@ describe("Connection request", () => {
 
     const { findByTestId } = render(
       <Provider store={store}>
-        <ConnectionCredentialRequest />
+        <IncomingRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("primary-button");
+    const continueButton = await findByTestId(
+      "primary-button-incoming-request"
+    );
 
     expect(continueButton).toBeInTheDocument();
 
@@ -115,12 +116,14 @@ describe("Connection request", () => {
       "acceptResponseConnection"
     );
 
-    const { findByTestId, findByText } = render(
+    const { findByTestId } = render(
       <Provider store={store}>
-        <ConnectionCredentialRequest />
+        <IncomingRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("primary-button");
+    const continueButton = await findByTestId(
+      "primary-button-incoming-request"
+    );
     act(() => {
       fireEvent.click(continueButton);
     });
@@ -149,12 +152,14 @@ describe("Credential request", () => {
       "acceptCredentialOffer"
     );
 
-    const { findByTestId, findByText } = render(
+    const { findByTestId } = render(
       <Provider store={store}>
-        <ConnectionCredentialRequest />
+        <IncomingRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("primary-button");
+    const continueButton = await findByTestId(
+      "primary-button-incoming-request"
+    );
     act(() => {
       fireEvent.click(continueButton);
     });
@@ -177,7 +182,7 @@ describe("Credential request", () => {
 
     const { findByText } = render(
       <Provider store={store}>
-        <ConnectionCredentialRequest />
+        <IncomingRequest />
       </Provider>
     );
     const btnCancel = await findByText(

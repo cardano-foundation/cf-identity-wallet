@@ -1,12 +1,4 @@
-.request {
-  background: var(--ion-color-light);
-  margin-top: 0;
-  z-index: 20015 !important;
-  overflow: initial !important;
-  margin-top: constant(safe-area-inset-top);
-  margin-top: env(safe-area-inset-top);
-  --safe-area-inset-top: env(safe-area-inset-top);
-
+.incoming-request {
   &.show {
     transform: translate3d(0, 0, 0);
     transition-duration: 0.5s;
@@ -23,10 +15,12 @@
     }
   }
 
+  .responsive-page-content {
+    justify-content: space-evenly;
+  }
+
   h2 {
-    width: 100%;
     text-align: center;
-    position: absolute;
   }
 
   &.animation-on {
@@ -54,12 +48,16 @@
       transform: translate3d(-5rem, 0, 0);
     }
 
-    .request-checkmark-logo span {
-      visibility: visible;
-      opacity: 1;
-      transform: scale(1.8);
-      transition: transform 3s, opacity 2s, visibility 1s;
-      transition-delay: 2s;
+    .request-checkmark-logo {
+      display: block !important;
+
+      span {
+        visibility: visible;
+        opacity: 1;
+        transform: scale(1.8);
+        transition: transform 3s, opacity 2s, visibility 1s;
+        transition-delay: 2s;
+      }
     }
 
     .request-info-row {
@@ -78,7 +76,6 @@
 
   &.animation-off {
     h2 {
-      top: 2rem;
       visibility: visible;
       opacity: 1;
     }
@@ -95,6 +92,7 @@
     }
 
     .request-checkmark-logo {
+      display: none !important;
       opacity: 0;
       visibility: hidden;
       width: 2rem !important;
@@ -106,11 +104,11 @@
     }
   }
 
-  .request-content {
-    height: 80vh;
-  }
-
   .request-icons-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+
     .request-user-logo,
     .request-swap-logo,
     .request-provider-logo,
@@ -119,8 +117,6 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      position: absolute;
-      top: 35vh;
     }
 
     .request-user-logo {
@@ -152,6 +148,7 @@
         flex-direction: column;
         justify-content: center;
         background: var(--ion-color-primary-gradient);
+        margin: 0 auto;
 
         ion-icon {
           width: 1.875rem;
@@ -174,9 +171,6 @@
 
   .request-info-row,
   .request-status {
-    position: absolute;
-    width: 100%;
-
     ion-col {
       display: flex;
       flex-direction: column;
@@ -205,18 +199,5 @@
         }
       }
     }
-  }
-
-  .request-info-row {
-    top: 50vh;
-  }
-
-  .request-status {
-    top: 100vh;
-  }
-
-  .page-footer .secondary-button {
-    border: 1px solid var(--ion-color-dark-grey);
-    border-radius: 1.875rem;
   }
 }
