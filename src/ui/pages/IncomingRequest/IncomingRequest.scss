@@ -7,107 +7,22 @@
   &.hide {
     transform: translate3d(100%, 0, 0);
     transition-duration: 0.5s;
-
-    h2,
-    .request-content,
-    ion-footer {
-      display: none;
-    }
   }
 
   .responsive-page-content {
-    justify-content: space-evenly;
+    justify-content: space-around;
   }
 
   h2 {
     text-align: center;
   }
 
-  &.animation-on {
-    h2 {
-      visibility: hidden;
-      opacity: 0;
-      transform-origin: 0 0;
-      transform: translate3d(0, -5rem, 0);
-      transition: opacity 0.5s, visibility 1s, transform 1s;
-    }
-
-    .request-user-logo,
-    .request-provider-logo {
-      visibility: hidden;
-      transform-origin: 50% 50%;
-      transition: transform 0.7s, visibility 2s;
-      transition-delay: 0.7s;
-    }
-
-    .request-user-logo {
-      transform: translate3d(5rem, 0, 0);
-    }
-
-    .request-provider-logo {
-      transform: translate3d(-5rem, 0, 0);
-    }
-
-    .request-checkmark-logo {
-      display: block !important;
-
-      span {
-        visibility: visible;
-        opacity: 1;
-        transform: scale(1.8);
-        transition: transform 3s, opacity 2s, visibility 1s;
-        transition-delay: 2s;
-      }
-    }
-
-    .request-info-row {
-      transform: translate3d(0, 20vh, 0);
-      opacity: 0;
-      visibility: hidden;
-      transition: opacity 0.5s, visibility 1s, transform 1s;
-    }
-
-    .request-status {
-      transform: translate3d(0, -50vh, 0);
-      transition: transform 0.5s;
-      transition-delay: 2.7s;
-    }
-  }
-
-  &.animation-off {
-    h2 {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    .request-user-logo {
-      left: calc(50% - 7.25rem);
-    }
-
-    .request-user-logo,
-    .request-provider-logo,
-    .request-info-row {
-      visibility: visible;
-      opacity: 1;
-    }
-
-    .request-checkmark-logo {
-      display: none !important;
-      opacity: 0;
-      visibility: hidden;
-      width: 2rem !important;
-      height: 2rem !important;
-    }
-
-    ion-footer {
-      bottom: 1rem;
-    }
-  }
-
   .request-icons-row {
     display: flex;
     flex-direction: row;
     justify-content: center;
+    position: relative;
+    margin-bottom: 2rem;
 
     .request-user-logo,
     .request-swap-logo,
@@ -119,12 +34,45 @@
       justify-content: center;
     }
 
-    .request-user-logo {
+    .request-checkmark-logo {
+      position: absolute;
+    }
+
+    .request-swap-logo,
+    .request-user-logo,
+    .request-checkmark-logo,
+    .request-provider-logo img {
+      width: 5rem;
+      height: 5rem;
+    }
+
+    .request-swap-logo span {
+      width: 2.75rem;
+      height: 2.75rem;
+      border-radius: 2.75rem;
+
+      ion-icon {
+        width: 1.875rem;
+        height: 1.875rem;
+        margin: 0 auto;
+      }
+    }
+
+    .request-checkmark-logo span {
       width: 5rem;
       height: 5rem;
       border-radius: 5rem;
+
+      ion-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        margin: 0 auto;
+      }
+    }
+
+    .request-user-logo {
+      border-radius: 5rem;
       background-color: var(--ion-color-primary);
-      left: calc(50% - 7.5rem);
 
       ion-icon {
         width: 4.875rem;
@@ -135,37 +83,18 @@
 
     .request-swap-logo,
     .request-checkmark-logo {
-      width: 5rem;
-      height: 5rem;
-      left: calc(50% - (2.75rem / 2));
-
       span {
-        width: 2.75rem;
-        height: 2.75rem;
-        border-radius: 2.75rem;
         text-align: center;
         display: flex;
         flex-direction: column;
         justify-content: center;
         background: var(--ion-color-primary-gradient);
         margin: 0 auto;
-
-        ion-icon {
-          width: 1.875rem;
-          height: 1.875rem;
-          margin: 0 auto;
-        }
       }
     }
 
-    .request-provider-logo {
-      img {
-        width: 5rem;
-        height: 5rem;
-        border-radius: 5rem;
-      }
-
-      left: calc(50% + 2.5rem);
+    .request-provider-logo img {
+      border-radius: 5rem;
     }
   }
 
@@ -198,6 +127,134 @@
           text-transform: capitalize;
         }
       }
+    }
+  }
+
+  @keyframes downsizeAnimation {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(0);
+      opacity: 0;
+    }
+  }
+
+  @keyframes translateLeftAnimation {
+    0% {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+    50% {
+      transform: translate3d(-50%, 0, 0);
+      opacity: 1;
+    }
+    100% {
+      transform: translate3d(-100%, 0, 0);
+      opacity: 0;
+    }
+  }
+
+  @keyframes translateRightAnimation {
+    0% {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+    50% {
+      transform: translate3d(50%, 0, 0);
+      opacity: 1;
+    }
+    100% {
+      transform: translate3d(100%, 0, 0);
+      opacity: 0;
+    }
+  }
+
+  @keyframes translateTitleUpAnimation {
+    0% {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+    50% {
+      transform: translate3d(0, -25vh, 0);
+      opacity: 0.5;
+    }
+    100% {
+      transform: translate3d(0, -50vh, 0);
+      opacity: 0;
+    }
+  }
+
+  @keyframes translateFooterDownAnimation {
+    0% {
+      transform: translate3d(0, 0, 0);
+      opacity: 1;
+    }
+    50% {
+      transform: translate3d(0, 25vh, 0);
+      opacity: 0.5;
+    }
+    100% {
+      transform: translate3d(0, 50vh, 0);
+      opacity: 0;
+    }
+  }
+
+  .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .request-icons-row > * {
+    opacity: 1;
+  }
+
+  &.animation-off {
+    .request-checkmark-logo,
+    .request-status {
+      display: none;
+    }
+  }
+
+  &.animation-on {
+    h2 {
+      animation-delay: 1.5s;
+      animation: translateTitleUpAnimation 1.5s forwards;
+    }
+
+    .request-user-logo {
+      animation-delay: 1.5s;
+      animation: translateRightAnimation 1.5s forwards;
+    }
+
+    .request-swap-logo {
+      animation: downsizeAnimation 1s forwards;
+    }
+
+    .request-provider-logo {
+      animation-delay: 1.5s;
+      animation: translateLeftAnimation 1.5s forwards;
+    }
+
+    .request-checkmark-logo {
+      animation: downsizeAnimation 2.5s forwards;
+      animation-direction: reverse;
+    }
+
+    .request-info-row {
+      animation: downsizeAnimation 1s forwards;
+    }
+
+    .request-status {
+      animation: downsizeAnimation 2.5s forwards;
+      animation-direction: reverse;
+    }
+
+    .page-footer {
+      animation-delay: 1.5s;
+      animation: translateFooterDownAnimation 1.5s forwards;
     }
   }
 }

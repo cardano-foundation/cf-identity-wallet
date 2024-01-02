@@ -150,59 +150,61 @@ const IncomingRequest = () => {
       ) : (
         <h2>{i18n.t("request.credential.title")}</h2>
       )}
-      <div className="request-icons-row">
-        <div className="request-user-logo">
-          <IonIcon
-            icon={personCircleOutline}
-            color="light"
-          />
-        </div>
-        <div className="request-swap-logo">
-          <span>
-            <IonIcon icon={swapHorizontalOutline} />
-          </span>
-        </div>
-        <div className="request-checkmark-logo">
-          <span>
-            <IonIcon icon={checkmark} />
-          </span>
-        </div>
-        <div className="request-provider-logo">
-          <img
-            src={requestData?.logo ?? CardanoLogo}
-            alt="request-provider-logo"
-          />
-        </div>
-      </div>
-      <div className="request-info-row">
-        <IonCol size="12">
-          {requestType === DIDCommRequestType.CONNECTION ? (
+      <div>
+        <div className="request-icons-row">
+          <div className="request-user-logo">
+            <IonIcon
+              icon={personCircleOutline}
+              color="light"
+            />
+          </div>
+          <div className="request-swap-logo">
             <span>
-              {requestType + i18n.t("request.connection.requestconnection")}
+              <IonIcon icon={swapHorizontalOutline} />
             </span>
-          ) : (
+          </div>
+          <div className="request-checkmark-logo">
             <span>
-              {requestType + i18n.t("request.credential.offercredential")}
+              <IonIcon icon={checkmark} />
             </span>
-          )}
-          <strong>{requestData?.label}</strong>
-        </IonCol>
-      </div>
-      <div className="request-status">
-        <IonCol size="12">
-          <strong>
-            {incomingRequest.type ===
-              ConnectionCredentialRequestType.CONNECTION_INCOMING ||
-            incomingRequest.type ===
-              ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
-              ? i18next.t("request.pending", {
-                action: requestType,
-              })
-              : i18next.t("request.success", {
-                action: requestType,
-              })}
-          </strong>
-        </IonCol>
+          </div>
+          <div className="request-provider-logo">
+            <img
+              src={requestData?.logo ?? CardanoLogo}
+              alt="request-provider-logo"
+            />
+          </div>
+        </div>
+        <div className="request-info-row">
+          <IonCol size="12">
+            {requestType === DIDCommRequestType.CONNECTION ? (
+              <span>
+                {requestType + i18n.t("request.connection.requestconnection")}
+              </span>
+            ) : (
+              <span>
+                {requestType + i18n.t("request.credential.offercredential")}
+              </span>
+            )}
+            <strong>{requestData?.label}</strong>
+          </IonCol>
+        </div>
+        <div className="request-status">
+          <IonCol size="12">
+            <strong>
+              {incomingRequest.type ===
+                ConnectionCredentialRequestType.CONNECTION_INCOMING ||
+              incomingRequest.type ===
+                ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
+                ? i18next.t("request.pending", {
+                  action: requestType,
+                })
+                : i18next.t("request.success", {
+                  action: requestType,
+                })}
+            </strong>
+          </IonCol>
+        </div>
       </div>
       {!initiateAnimation && (
         <PageFooter
