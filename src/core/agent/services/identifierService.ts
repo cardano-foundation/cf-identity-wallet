@@ -47,7 +47,8 @@ class IdentifierService extends AgentService {
   static readonly THEME_WAS_NOT_VALID = "Identifier theme was not valid";
   static readonly SAID_NOTIFICATIONS_NOT_FOUND =
     "There's no notifications for the given SAID";
-  static readonly ONLY_ALLOW_KERI_CONTACTS = "Only allow KERI contacts";
+  static readonly ONLY_ALLOW_KERI_CONTACTS =
+    "Can only create multi-sig using KERI contacts with specified OOBI URLs";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
