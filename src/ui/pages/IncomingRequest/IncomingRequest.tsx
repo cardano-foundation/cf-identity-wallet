@@ -20,6 +20,7 @@ import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { PageFooter } from "../../components/PageFooter";
+import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
 
 const IncomingRequest = () => {
   const pageId = "incoming-request";
@@ -107,6 +108,9 @@ const IncomingRequest = () => {
         incomingRequest.id,
         ConnectionType.DIDCOMM
       );
+      const updatedConnections =
+        await AriesAgent.agent.connections.getConnections();
+      dispatch(setConnectionsCache([...updatedConnections]));
     }
     handleReset();
   };
