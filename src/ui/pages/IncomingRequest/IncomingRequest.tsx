@@ -15,7 +15,6 @@ import {
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { DIDCommRequestType } from "../../globals/types";
-import { TOAST_MESSAGE_DELAY } from "../../globals/constants";
 import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 import { ConnectionType } from "../../../core/agent/agent.types";
@@ -38,6 +37,7 @@ const IncomingRequest = () => {
     logo?: string;
   }>();
   const [requestType, setRequestType] = useState<DIDCommRequestType>();
+  const RESET_DELAY = 4000;
 
   useEffect(() => {
     async function handle() {
@@ -135,7 +135,7 @@ const IncomingRequest = () => {
     }
     setTimeout(() => {
       handleReset();
-    }, TOAST_MESSAGE_DELAY);
+    }, RESET_DELAY);
   };
 
   return (
@@ -206,19 +206,21 @@ const IncomingRequest = () => {
           </IonCol>
         </div>
       </div>
-      {!initiateAnimation && (
-        <PageFooter
-          pageId={pageId}
-          primaryButtonText={
-            requestType === DIDCommRequestType.CONNECTION
-              ? `${i18n.t("request.button.connect")}`
-              : `${i18n.t("request.button.acceptoffer")}`
-          }
-          primaryButtonAction={() => handleAccept()}
-          secondaryButtonText={`${i18n.t("request.button.cancel")}`}
-          secondaryButtonAction={() => handleCancel()}
-        />
-      )}
+      <div>
+        {!initiateAnimation && (
+          <PageFooter
+            pageId={pageId}
+            primaryButtonText={
+              requestType === DIDCommRequestType.CONNECTION
+                ? `${i18n.t("request.button.connect")}`
+                : `${i18n.t("request.button.acceptoffer")}`
+            }
+            primaryButtonAction={() => handleAccept()}
+            secondaryButtonText={`${i18n.t("request.button.cancel")}`}
+            secondaryButtonAction={() => handleCancel()}
+          />
+        )}
+      </div>
     </ResponsivePageLayout>
   );
 };

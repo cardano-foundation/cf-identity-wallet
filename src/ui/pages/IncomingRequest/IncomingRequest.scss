@@ -7,6 +7,9 @@
   &.hide {
     transform: translate3d(100%, 0, 0);
     transition-duration: 0.5s;
+    .responsive-page-content {
+      visibility: hidden;
+    }
   }
 
   .responsive-page-content {
@@ -239,7 +242,7 @@
     }
 
     .request-checkmark-logo {
-      animation: downsizeAnimation 2.5s forwards;
+      animation: downsizeAnimation 1.5s forwards;
       animation-direction: reverse;
     }
 
@@ -248,7 +251,7 @@
     }
 
     .request-status {
-      animation: downsizeAnimation 2.5s forwards;
+      animation: downsizeAnimation 1.5s forwards;
       animation-direction: reverse;
     }
 
