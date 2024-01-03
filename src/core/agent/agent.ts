@@ -28,6 +28,7 @@ import {
   MessageService,
 } from "./services";
 import { documentLoader } from "./documentLoader";
+import { SignifyNotificationService } from "./services/signifyNotificationService";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -86,6 +87,7 @@ class AriesAgent {
   private connectionService!: ConnectionService;
   private messageService!: MessageService;
   private credentialService!: CredentialService;
+  private signifyNotificationService!: SignifyNotificationService;
 
   get identifiers() {
     if (!this.identifierService)
@@ -113,6 +115,14 @@ class AriesAgent {
 
   get genericRecords() {
     return this.agent.genericRecords;
+  }
+
+  get signifyNotification() {
+    if (!this.signifyNotificationService)
+      this.signifyNotificationService = new SignifyNotificationService(
+        this.agent
+      );
+    return this.signifyNotificationService;
   }
 
   private constructor() {

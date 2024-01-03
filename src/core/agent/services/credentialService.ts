@@ -33,6 +33,7 @@ import {
   CredentialStatus,
   Notification,
 } from "./credentialService.types";
+import { NotificationRoute } from "../modules/signify/signifyApi.types";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -66,34 +67,6 @@ class CredentialService extends AgentService {
         callback(event);
       }
     );
-  }
-
-  async processNotification(
-    notif: Notification,
-    callback: (event: KeriNotification) => void
-  ) {
-    if (notif.a.r === "/exn/ipex/grant" && notif.r === false) {
-      const keriNoti = await this.createKeriNotificationRecord(notif);
-      callback(keriNoti);
-      await this.agent.modules.signify.markNotification(notif.i);
-    }
-  }
-
-  async onNotificationKeriStateChanged(
-    callback: (event: KeriNotification) => void
-  ) {
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      const notifications = await this.agent.modules.signify.getNotifications();
-      for (const notif of notifications.notes) {
-        await this.processNotification(notif, callback);
-      }
-      await new Promise((rs) => {
-        setTimeout(() => {
-          rs(true);
-        }, 2000);
-      });
-    }
   }
 
   /**
@@ -423,7 +396,7 @@ class CredentialService extends AgentService {
       this.agent.credentials.findAllByQuery({
         state: CredentialState.OfferReceived,
       }),
-      this.getKeriNotifications(),
+      this.getKeriCredentialNotifications(),
     ]);
     return results.flat();
   }
@@ -445,26 +418,10 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  private async createKeriNotificationRecord(
-    event: Notification
-  ): Promise<KeriNotification> {
-    const result = await this.agent.genericRecords.save({
-      id: event.i,
-      content: event.a,
-      tags: {
-        type: GenericRecordType.NOTIFICATION_KERI,
-      },
-    });
-    return {
-      id: result.id,
-      createdAt: result.createdAt,
-      a: result.content,
-    };
-  }
-
-  private async getKeriNotifications(): Promise<KeriNotification[]> {
+  private async getKeriCredentialNotifications(): Promise<KeriNotification[]> {
     const results = await this.agent.genericRecords.findAllByQuery({
       type: GenericRecordType.NOTIFICATION_KERI,
+      route: NotificationRoute.Credential,
     });
     return results.map((result) => {
       return {

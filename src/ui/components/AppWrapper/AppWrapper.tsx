@@ -52,6 +52,7 @@ import {
   CredentialStatus,
 } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
+import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 
 const connectionStateChangedHandler = async (
@@ -188,15 +189,19 @@ const keriNotificationsChangeHandler = async (
   event: KeriNotification,
   dispatch: ReturnType<typeof useAppDispatch>
 ) => {
-  dispatch(
-    setQueueConnectionCredentialRequest({
-      id: event?.id,
-      type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
-      logo: "", // TODO: must define Keri logo
-      label: "Credential Issuance Server", // TODO: must define it
-      source: ConnectionType.KERI,
-    })
-  );
+  if (event?.a?.r === NotificationRoute.Credential) {
+    dispatch(
+      setQueueConnectionCredentialRequest({
+        id: event?.id,
+        type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+        logo: "", // TODO: must define Keri logo
+        label: "Credential Issuance Server", // TODO: must define it
+        source: ConnectionType.KERI,
+      })
+    );
+  } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
+    //TODO: Use dispatch here, handle logic for the multisig notification
+  }
 };
 
 const keriAcdcChangeHandler = async (
@@ -334,9 +339,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
     AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
     });
-    AriesAgent.agent.credentials.onNotificationKeriStateChanged((event) => {
-      return keriNotificationsChangeHandler(event, dispatch);
-    });
+    AriesAgent.agent.signifyNotification.onNotificationKeriStateChanged(
+      (event) => {
+        return keriNotificationsChangeHandler(event, dispatch);
+      }
+    );
     AriesAgent.agent.credentials.onAcdcKeriStateChanged((event) => {
       return keriAcdcChangeHandler(event, dispatch);
     });
