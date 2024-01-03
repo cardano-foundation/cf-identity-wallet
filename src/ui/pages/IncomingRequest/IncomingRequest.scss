@@ -84,6 +84,48 @@
       }
     }
 
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      .request-swap-logo,
+      .request-user-logo,
+      .request-checkmark-logo,
+      .request-provider-logo img {
+        width: 4rem;
+        height: 4rem;
+      }
+
+      .request-swap-logo span {
+        width: 2.2rem;
+        height: 2.2rem;
+        border-radius: 2.2rem;
+
+        ion-icon {
+          width: 1.5rem;
+          height: 1.5rem;
+        }
+      }
+
+      .request-checkmark-logo span {
+        width: 4rem;
+        height: 4rem;
+        border-radius: 4rem;
+
+        ion-icon {
+          width: 2rem;
+          height: 2rem;
+        }
+      }
+
+      .request-user-logo {
+        border-radius: 4rem;
+        background-color: var(--ion-color-primary);
+
+        ion-icon {
+          width: 3.9rem;
+          height: 3.9rem;
+        }
+      }
+    }
+
     .request-swap-logo,
     .request-checkmark-logo {
       span {
