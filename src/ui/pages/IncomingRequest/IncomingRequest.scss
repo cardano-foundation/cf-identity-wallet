@@ -179,6 +179,21 @@
     }
   }
 
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .request-info-row,
+    .request-status {
+      ion-col {
+        span {
+          font-size: 0.7rem;
+        }
+
+        strong {
+          font-size: 0.8rem;
+        }
+      }
+    }
+  }
+
   @keyframes downsizeAnimation {
     0% {
       transform: scale(1);

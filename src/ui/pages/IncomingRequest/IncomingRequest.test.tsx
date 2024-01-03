@@ -4,12 +4,12 @@ import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { store } from "../../../store";
 import { IncomingRequest } from "./IncomingRequest";
-import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { AriesAgent } from "../../../core/agent/agent";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { i18n } from "../../../i18n";
 import {
-  setQueueConnectionCredentialRequest,
+  setQueueIncomingRequest,
   dequeueCredentialCredentialRequest,
 } from "../../../store/reducers/stateCache";
 
@@ -41,9 +41,9 @@ describe("Connection request", () => {
   });
   test("It renders connection request incoming", async () => {
     store.dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: "123",
-        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CONNECTION_INCOMING,
         logo: connectionMock.logo,
         label: connectionMock.label,
       })
@@ -69,9 +69,9 @@ describe("Connection request", () => {
   test("It renders connection request incoming and confirm request", async () => {
     const id = "123";
     store.dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: id,
-        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CONNECTION_INCOMING,
         logo: connectionMock.logo,
         label: connectionMock.label,
       })
@@ -104,9 +104,9 @@ describe("Connection request", () => {
   test("It renders connection response and confirm request", async () => {
     const id = "123";
     store.dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: id,
-        type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
+        type: IncomingRequestType.CONNECTION_RESPONSE,
         logo: connectionMock.logo,
         label: connectionMock.label,
       })
@@ -140,9 +140,9 @@ describe("Credential request", () => {
   test("It renders credential request and accept credential", async () => {
     const id = "456";
     store.dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: id,
-        type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
         logo: connectionMock.logo,
         label: connectionMock.label,
       })
@@ -170,9 +170,9 @@ describe("Credential request", () => {
   test("It renders credential request and decline credential", async () => {
     const id = "68";
     store.dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: id,
-        type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
       })
     );
     const declineCredentialOfferSpy = jest.spyOn(

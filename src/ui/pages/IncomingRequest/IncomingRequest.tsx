@@ -9,13 +9,13 @@ import i18next from "i18next";
 import { i18n } from "../../../i18n";
 import "./IncomingRequest.scss";
 import {
-  getQueueConnectionCredentialRequest,
+  getQueueIncomingRequest,
   dequeueCredentialCredentialRequest,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { DIDCommRequestType } from "../../globals/types";
-import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
@@ -25,12 +25,10 @@ import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
 const IncomingRequest = () => {
   const pageId = "incoming-request";
   const dispatch = useAppDispatch();
-  const queueConnectionCredentialRequest = useAppSelector(
-    getQueueConnectionCredentialRequest
-  );
-  const incomingRequest = !queueConnectionCredentialRequest.isProcessing
+  const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
+  const incomingRequest = !queueIncomingRequest.isProcessing
     ? { id: "" }
-    : queueConnectionCredentialRequest.queues[0] ?? { id: "" };
+    : queueIncomingRequest.queues[0] ?? { id: "" };
   const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [requestData, setRequestData] = useState<{
@@ -44,10 +42,8 @@ const IncomingRequest = () => {
     async function handle() {
       if (incomingRequest.id.length > 0) {
         if (
-          incomingRequest.type ===
-            ConnectionCredentialRequestType.CONNECTION_INCOMING ||
-          incomingRequest.type ===
-            ConnectionCredentialRequestType.CONNECTION_RESPONSE
+          incomingRequest.type === IncomingRequestType.CONNECTION_INCOMING ||
+          incomingRequest.type === IncomingRequestType.CONNECTION_RESPONSE
         ) {
           setRequestData({
             label: incomingRequest.label as string,
@@ -55,8 +51,7 @@ const IncomingRequest = () => {
           });
           setRequestType(DIDCommRequestType.CONNECTION);
         } else if (
-          incomingRequest.type ===
-          ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
+          incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
         ) {
           if (incomingRequest.label) {
             setRequestData({
@@ -85,8 +80,7 @@ const IncomingRequest = () => {
 
   const handleCancel = async () => {
     if (
-      incomingRequest.type ===
-      ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
+      incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
       if (incomingRequest.source === ConnectionType.KERI) {
         await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
@@ -98,10 +92,8 @@ const IncomingRequest = () => {
         );
       }
     } else if (
-      incomingRequest.type ===
-        ConnectionCredentialRequestType.CONNECTION_INCOMING ||
-      incomingRequest.type ===
-        ConnectionCredentialRequestType.CONNECTION_RESPONSE
+      incomingRequest.type === IncomingRequestType.CONNECTION_INCOMING ||
+      incomingRequest.type === IncomingRequestType.CONNECTION_RESPONSE
     ) {
       // TODO: will handle with KERI connection if it is supported
       await AriesAgent.agent.connections.deleteConnectionById(
@@ -117,19 +109,14 @@ const IncomingRequest = () => {
 
   const handleAccept = async () => {
     setInitiateAnimation(true);
-    if (
-      incomingRequest.type ===
-      ConnectionCredentialRequestType.CONNECTION_INCOMING
-    ) {
+    if (incomingRequest.type === IncomingRequestType.CONNECTION_INCOMING) {
       AriesAgent.agent.connections.acceptRequestConnection(incomingRequest.id);
     } else if (
-      incomingRequest.type ===
-      ConnectionCredentialRequestType.CONNECTION_RESPONSE
+      incomingRequest.type === IncomingRequestType.CONNECTION_RESPONSE
     ) {
       AriesAgent.agent.connections.acceptResponseConnection(incomingRequest.id);
     } else if (
-      incomingRequest.type ===
-      ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
+      incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
       if (incomingRequest.source === ConnectionType.KERI) {
         AriesAgent.agent.credentials.acceptKeriAcdc(incomingRequest.id);
@@ -197,9 +184,9 @@ const IncomingRequest = () => {
           <IonCol size="12">
             <strong>
               {incomingRequest.type ===
-                ConnectionCredentialRequestType.CONNECTION_INCOMING ||
+                IncomingRequestType.CONNECTION_INCOMING ||
               incomingRequest.type ===
-                ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED
+                IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
                 ? i18next.t("request.pending", {
                   action: requestType,
                 })
