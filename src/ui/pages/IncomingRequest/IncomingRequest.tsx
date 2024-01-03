@@ -150,7 +150,7 @@ const IncomingRequest = () => {
       ) : (
         <h2>{i18n.t("request.credential.title")}</h2>
       )}
-      <div>
+      <div className="request-animation-center">
         <div className="request-icons-row">
           <div className="request-user-logo">
             <IonIcon
@@ -206,21 +206,17 @@ const IncomingRequest = () => {
           </IonCol>
         </div>
       </div>
-      <div>
-        {!initiateAnimation && (
-          <PageFooter
-            pageId={pageId}
-            primaryButtonText={
-              requestType === DIDCommRequestType.CONNECTION
-                ? `${i18n.t("request.button.connect")}`
-                : `${i18n.t("request.button.acceptoffer")}`
-            }
-            primaryButtonAction={() => handleAccept()}
-            secondaryButtonText={`${i18n.t("request.button.cancel")}`}
-            secondaryButtonAction={() => handleCancel()}
-          />
-        )}
-      </div>
+      <PageFooter
+        pageId={pageId}
+        primaryButtonText={
+          requestType === DIDCommRequestType.CONNECTION
+            ? `${i18n.t("request.button.connect")}`
+            : `${i18n.t("request.button.acceptoffer")}`
+        }
+        primaryButtonAction={() => handleAccept()}
+        secondaryButtonText={`${i18n.t("request.button.cancel")}`}
+        secondaryButtonAction={() => handleCancel()}
+      />
     </ResponsivePageLayout>
   );
 };
