@@ -78,7 +78,7 @@
       padding: 0;
 
       > ion-row > ion-col {
-        padding: 0 0 calc(2rem + env(safe-area-inset-bottom));
+        padding: 0 0 2rem;
       }
     }
 
@@ -197,55 +197,20 @@
 
     .connections-container {
       height: 70vh;
-
-      > ion-grid {
-        padding: 0;
-
-        > ion-row > ion-col {
-          padding: 0 0 calc(2rem + env(safe-area-inset-bottom));
-        }
-      }
-
-      ion-item-group {
-        background: var(--ion-color-light);
-      }
     }
 
     .connections-list {
-      padding: 0 1.25rem;
-      background: var(--ion-color-light-grey);
+      padding: 0 1rem;
 
       ion-row {
-        display: flex;
-        justify-content: space-between;
-        padding: 0.3125rem 0;
-
-        ion-col {
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-        }
-      }
-
-      ion-item,
-      ion-item-divider {
-        --inner-padding-end: 0;
-
-        &::part(native) {
-          padding: 0;
-        }
-
-        --background: var(--ion-color-light);
-        border-bottom: 1px solid rgba(var(--ion-color-dark-grey-rgb), 0.5);
+        padding: 0.25rem 0;
       }
 
       ion-item-divider {
-        height: 3.69rem;
-        padding: 0;
+        height: 2.952rem;
 
         ion-label {
-          font-size: 1rem;
-          font-weight: 500;
+          font-size: 0.8rem;
         }
       }
 
@@ -254,38 +219,30 @@
           position: relative;
 
           img {
-            width: 2.75rem;
-            height: 2.75rem;
-            border-radius: 2rem;
+            width: 2.2rem;
+            height: 2.2rem;
           }
         }
 
         &.connection-info {
           .connection-name {
-            font-size: 1rem;
-            margin-bottom: 0.31rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            font-size: 0.8rem;
+            margin-bottom: 0.248rem;
           }
 
           .connection-date {
-            font-size: 0.875rem;
-            color: var(--ion-color-secondary);
+            font-size: 0.7rem;
           }
         }
 
         ion-chip {
-          width: 6.4rem;
-          height: 1.9rem;
-          font-weight: 400;
-          margin: 0.3rem auto;
-          border-radius: 0.5rem;
-          padding-inline: 0.62rem;
+          width: 5.12rem;
+          height: 1.52rem;
+          margin: 0.24rem auto;
+          padding-inline: 0.496rem;
 
           span {
-            text-transform: capitalize;
-            margin-right: 4px;
+            margin-right: 3px;
           }
         }
       }

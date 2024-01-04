@@ -43,7 +43,7 @@ const ConnectionItem = ({
             size="3.5"
             className="item-status"
           >
-            {item.status === ConnectionStatus.PENDING ? (
+            {item.status === ConnectionStatus.PENDING && (
               <IonChip>
                 <IonIcon
                   icon={hourglassOutline}
@@ -51,7 +51,7 @@ const ConnectionItem = ({
                 ></IonIcon>
                 <span>{item.status}</span>
               </IonChip>
-            ) : null}
+            )}
           </IonCol>
         </IonRow>
       </IonGrid>
