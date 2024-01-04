@@ -53,6 +53,7 @@
     ion-button {
       width: 1.2rem;
       height: 100%;
+      min-height: 1rem;
       margin: 0;
       font-size: 0.5rem;
       font-style: normal;
@@ -63,6 +64,10 @@
       --background-activated: transparent;
       --background-focused: transparent;
       --box-shadow: none;
+
+      &::part(native) {
+        padding: 0;
+      }
     }
   }
 
@@ -162,7 +167,7 @@
     }
   }
 
-  @media screen and (min-width: 250px) and (max-width: 370px) {
+  @media screen and (min-width: 250px) and (max-width: 375px) {
     ion-header,
     .cards-placeholder-container {
       padding-inline: 1rem;
@@ -182,13 +187,16 @@
     }
 
     .alphabet-selector {
+      height: 67vh;
+
       ion-button {
-        font-size: 0.5rem;
+        font-size: 0.4rem;
+        min-height: 0.4rem;
       }
     }
 
     .connections-container {
-      height: calc(92vh - (6.813rem + env(safe-area-inset-bottom)));
+      height: 70vh;
 
       > ion-grid {
         padding: 0;
