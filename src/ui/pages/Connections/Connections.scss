@@ -44,22 +44,17 @@
   .alphabet-selector {
     position: absolute;
     z-index: 10;
-    top: calc(50% - 11.81rem);
     right: 0;
-    height: 23.62rem;
+    height: 70vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
-    a {
-      height: 0.625rem;
-    }
 
     ion-button {
       width: 1.2rem;
       height: 100%;
       margin: 0;
-      font-size: 0.625rem;
+      font-size: 0.5rem;
       font-style: normal;
       font-weight: 500;
       line-height: 0.875rem;
@@ -187,32 +182,8 @@
     }
 
     .alphabet-selector {
-      position: absolute;
-      z-index: 10;
-      top: calc(50% - 11.81rem);
-      right: 0;
-      height: 23.62rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-
-      a {
-        height: 0.625rem;
-      }
-
       ion-button {
-        width: 1.2rem;
-        height: 100%;
-        margin: 0;
-        font-size: 0.625rem;
-        font-style: normal;
-        font-weight: 500;
-        line-height: 0.875rem;
-        color: var(--ion-color-action-blue);
-        --background: transparent;
-        --background-activated: transparent;
-        --background-focused: transparent;
-        --box-shadow: none;
+        font-size: 0.5rem;
       }
     }
 
