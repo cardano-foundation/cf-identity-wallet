@@ -17,15 +17,15 @@ interface AuthenticationCacheProps {
   passwordIsSet: boolean;
   passwordIsSkipped: boolean;
 }
-enum ConnectionCredentialRequestType {
+enum IncomingRequestType {
   CONNECTION_RESPONSE = "connection-response",
   CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
   CONNECTION_INCOMING = "connection-incoming",
 }
 
-interface ConnectionCredentialRequestProps {
+interface IncomingRequestProps {
   id: string;
-  type?: ConnectionCredentialRequestType;
+  type?: IncomingRequestType;
   logo?: string;
   label?: string;
   source?: ConnectionType;
@@ -43,16 +43,16 @@ interface StateCacheProps {
   authentication: AuthenticationCacheProps;
   currentOperation: OperationType;
   toastMsg?: ToastMsgType;
-  queueConnectionCredentialRequest: QueueProps<ConnectionCredentialRequestProps>;
+  queueIncomingRequest: QueueProps<IncomingRequestProps>;
 }
 
-export { ConnectionCredentialRequestType };
+export { IncomingRequestType };
 
 export type {
   PayloadData,
   CurrentRouteCacheProps,
   AuthenticationCacheProps,
   StateCacheProps,
-  ConnectionCredentialRequestProps,
+  IncomingRequestProps,
   QueueProps,
 };

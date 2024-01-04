@@ -4,7 +4,7 @@ import {
   StateCacheProps,
   AuthenticationCacheProps,
   CurrentRouteCacheProps,
-  ConnectionCredentialRequestProps,
+  IncomingRequestProps,
 } from "./stateCache.types";
 import { RoutePath } from "../../../routes";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
@@ -21,7 +21,7 @@ const initialState: StateCacheProps = {
     passwordIsSkipped: true,
   },
   currentOperation: OperationType.IDLE,
-  queueConnectionCredentialRequest: {
+  queueIncomingRequest: {
     isProcessing: false,
     queues: [],
     isPaused: false,
@@ -66,49 +66,46 @@ const stateCacheSlice = createSlice({
     setToastMsg: (state, action: PayloadAction<ToastMsgType | undefined>) => {
       state.toastMsg = action.payload;
     },
-    setPauseQueueConnectionCredentialRequest: (
-      state,
-      action: PayloadAction<boolean>
-    ) => {
-      state.queueConnectionCredentialRequest = {
-        ...state.queueConnectionCredentialRequest,
+    setPauseQueueIncomingRequest: (state, action: PayloadAction<boolean>) => {
+      state.queueIncomingRequest = {
+        ...state.queueIncomingRequest,
         isPaused: action.payload,
         isProcessing: !action.payload,
       };
     },
-    setQueueConnectionCredentialRequest: (
+    setQueueIncomingRequest: (
       state,
-      action: PayloadAction<ConnectionCredentialRequestProps>
+      action: PayloadAction<IncomingRequestProps>
     ) => {
-      const isPaused = state.queueConnectionCredentialRequest.isPaused;
-      if (!isPaused && !state.queueConnectionCredentialRequest.isProcessing) {
-        state.queueConnectionCredentialRequest.isProcessing = true;
+      const isPaused = state.queueIncomingRequest.isPaused;
+      if (!isPaused && !state.queueIncomingRequest.isProcessing) {
+        state.queueIncomingRequest.isProcessing = true;
       }
-      state.queueConnectionCredentialRequest.queues.push(action.payload);
+      state.queueIncomingRequest.queues.push(action.payload);
     },
     dequeueCredentialCredentialRequest: (state) => {
-      if (state.queueConnectionCredentialRequest.queues.length > 0) {
-        state.queueConnectionCredentialRequest.queues.shift();
-        const isPaused = state.queueConnectionCredentialRequest.isPaused;
-        state.queueConnectionCredentialRequest.isProcessing = isPaused
+      if (state.queueIncomingRequest.queues.length > 0) {
+        state.queueIncomingRequest.queues.shift();
+        const isPaused = state.queueIncomingRequest.isPaused;
+        state.queueIncomingRequest.isProcessing = isPaused
           ? false
-          : state.queueConnectionCredentialRequest.queues.length > 0;
+          : state.queueIncomingRequest.queues.length > 0;
       }
     },
-    enqueueConnectionCredentialRequest: (
+    enqueueIncomingRequest: (
       state,
-      action: PayloadAction<ConnectionCredentialRequestProps[]>
+      action: PayloadAction<IncomingRequestProps[]>
     ) => {
-      const isPaused = state.queueConnectionCredentialRequest.isPaused;
+      const isPaused = state.queueIncomingRequest.isPaused;
       if (
         isPaused &&
-        !state.queueConnectionCredentialRequest.isProcessing &&
+        !state.queueIncomingRequest.isProcessing &&
         action.payload.length > 0
       ) {
-        state.queueConnectionCredentialRequest.isProcessing = true;
+        state.queueIncomingRequest.isProcessing = true;
       }
-      state.queueConnectionCredentialRequest.queues =
-        state.queueConnectionCredentialRequest.queues.concat(action.payload);
+      state.queueIncomingRequest.queues =
+        state.queueIncomingRequest.queues.concat(action.payload);
     },
   },
 });
@@ -123,9 +120,9 @@ const {
   setCurrentOperation,
   setToastMsg,
   dequeueCredentialCredentialRequest,
-  setQueueConnectionCredentialRequest,
-  setPauseQueueConnectionCredentialRequest,
-  enqueueConnectionCredentialRequest,
+  setQueueIncomingRequest,
+  setPauseQueueIncomingRequest,
+  enqueueIncomingRequest,
 } = stateCacheSlice.actions;
 
 const getStateCache = (state: RootState) => state.stateCache;
@@ -137,8 +134,8 @@ const getAuthentication = (state: RootState) => state.stateCache.authentication;
 const getCurrentOperation = (state: RootState) =>
   state.stateCache.currentOperation;
 const getToastMsg = (state: RootState) => state.stateCache.toastMsg;
-const getQueueConnectionCredentialRequest = (state: RootState) =>
-  state.stateCache.queueConnectionCredentialRequest;
+const getQueueIncomingRequest = (state: RootState) =>
+  state.stateCache.queueIncomingRequest;
 
 export type {
   CurrentRouteCacheProps,
@@ -164,9 +161,9 @@ export {
   setCurrentOperation,
   getToastMsg,
   setToastMsg,
-  getQueueConnectionCredentialRequest,
-  setPauseQueueConnectionCredentialRequest,
-  setQueueConnectionCredentialRequest,
+  getQueueIncomingRequest,
+  setPauseQueueIncomingRequest,
+  setQueueIncomingRequest,
   dequeueCredentialCredentialRequest,
-  enqueueConnectionCredentialRequest,
+  enqueueIncomingRequest,
 };

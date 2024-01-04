@@ -6,10 +6,14 @@ const ResponsivePageLayout = ({
   header,
   pageId,
   children,
+  additionalClassNames,
 }: ResponsivePageLayoutProps) => {
   return (
     <IonPage
-      className={`responsive-page-layout ${pageId}`}
+      className={
+        `responsive-page-layout ${pageId}` +
+        (additionalClassNames ? ` ${additionalClassNames}` : "")
+      }
       data-testid={pageId}
     >
       {header}

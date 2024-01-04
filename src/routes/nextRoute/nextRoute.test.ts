@@ -33,7 +33,7 @@ describe("NextRoute", () => {
           passwordIsSkipped: true,
         },
         currentOperation: OperationType.IDLE,
-        queueConnectionCredentialRequest: {
+        queueIncomingRequest: {
           isProcessing: false,
           queues: [],
           isPaused: false,
@@ -134,7 +134,7 @@ describe("getNextRoute", () => {
         passwordIsSkipped: true,
       },
       currentOperation: OperationType.IDLE,
-      queueConnectionCredentialRequest: {
+      queueIncomingRequest: {
         isProcessing: false,
         queues: [],
         isPaused: false,

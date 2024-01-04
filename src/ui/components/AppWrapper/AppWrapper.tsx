@@ -12,8 +12,8 @@ import {
   setAuthentication,
   setCurrentOperation,
   setInitialized,
-  setPauseQueueConnectionCredentialRequest,
-  setQueueConnectionCredentialRequest,
+  setPauseQueueIncomingRequest,
+  setQueueIncomingRequest,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
 import {
@@ -36,7 +36,7 @@ import {
   setConnectionsCache,
   updateOrAddConnectionCache,
 } from "../../../store/reducers/connectionsCache";
-import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../utils/colorGenerator";
@@ -71,9 +71,9 @@ const connectionStateChangedHandler = async (
     const connectionDetails =
       AriesAgent.agent.connections.getConnectionShortDetails(connectionRecord);
     dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: connectionRecord.id,
-        type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
+        type: IncomingRequestType.CONNECTION_RESPONSE,
         logo: connectionDetails.logo,
         label: connectionDetails.label,
       })
@@ -86,9 +86,9 @@ const connectionStateChangedHandler = async (
     dispatch(updateOrAddConnectionCache(connectionDetails));
     dispatch(setToastMsg(ToastMsgType.CONNECTION_REQUEST_INCOMING));
     dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: connectionRecord.id,
-        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CONNECTION_INCOMING,
         logo: connectionDetails.logo,
         label: connectionDetails.label,
       })
@@ -123,9 +123,9 @@ const credentialStateChangedHandler = async (
         );
     }
     dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: credentialRecord.id,
-        type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
         logo: connection?.logo,
         label: connection?.label,
       })
@@ -191,9 +191,9 @@ const keriNotificationsChangeHandler = async (
 ) => {
   if (event?.a?.r === NotificationRoute.Credential) {
     dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: event?.id,
-        type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
         logo: "", // TODO: must define Keri logo
         label: "Credential Issuance Server", // TODO: must define it
         source: ConnectionType.KERI,
@@ -257,7 +257,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       return;
     }
 
-    dispatch(setPauseQueueConnectionCredentialRequest(true));
+    dispatch(setPauseQueueIncomingRequest(true));
     const connectionsDetails =
       await AriesAgent.agent.connections.getConnections();
     const credentials = await AriesAgent.agent.credentials.getCredentials();

@@ -74,7 +74,7 @@ const Onboarding = () => {
     <ResponsivePageLayout pageId={pageId}>
       <Slides items={items} />
       <PageFooter
-        pageId={"onboarding"}
+        pageId={pageId}
         primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}
         primaryButtonAction={() => handleNavigation()}
         tertiaryButtonText={`${i18n.t(
