@@ -1,4 +1,4 @@
-import { DidRecord, KeyType } from "@aries-framework/core";
+import { DidRecord, KeyType, utils } from "@aries-framework/core";
 import {
   DIDDetails,
   GetIdentifierResult,
@@ -10,7 +10,18 @@ import {
   IdentifierMetadataRecordProps,
 } from "../modules/generalStorage/repositories/identifierMetadataRecord";
 import { AgentService } from "./agentService";
-import { IdentifierResult } from "../modules/signify/signifyApi.types";
+import {
+  Aid,
+  IdentifierResult,
+  MultiSigIcpNotification,
+  NotificationRoute,
+} from "../modules/signify/signifyApi.types";
+import {
+  ConnectionShortDetails,
+  ConnectionType,
+  GenericRecordType,
+  KeriNotification,
+} from "../agent.types";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
   [IdentifierType.KEY]: [0, 1, 2, 3],
@@ -34,6 +45,10 @@ class IdentifierService extends AgentService {
     "DID was successfully created but the DID was not returned in the state returned";
   static readonly IDENTIFIER_NOT_ARCHIVED = "Identifier was not archived";
   static readonly THEME_WAS_NOT_VALID = "Identifier theme was not valid";
+  static readonly SAID_NOTIFICATIONS_NOT_FOUND =
+    "There's no notifications for the given SAID";
+  static readonly ONLY_ALLOW_KERI_CONTACTS =
+    "Can only create multi-sig using KERI contacts with specified OOBI URLs";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -51,6 +66,7 @@ class IdentifierService extends AgentService {
         method: metadata.method,
         displayName: metadata.displayName,
         id: metadata.id,
+        signifyName: metadata.signifyName,
         createdAtUTC: metadata.createdAt.toISOString(),
         colors: metadata.colors,
         theme: metadata.theme,
@@ -85,6 +101,10 @@ class IdentifierService extends AgentService {
       const aid = await this.agent.modules.signify.getIdentifierByName(
         metadata.signifyName as string
       );
+      //Update multisig's status if it is pending
+      if (metadata.isPending && metadata.signifyOpName) {
+        await this.markMultisigCompleteIfReady(metadata);
+      }
       if (!aid) {
         return undefined;
       }
@@ -96,8 +116,11 @@ class IdentifierService extends AgentService {
           method: IdentifierType.KERI,
           displayName: metadata.displayName,
           createdAtUTC: metadata.createdAt.toISOString(),
+          signifyName: metadata.signifyName,
           colors: metadata.colors,
           theme: metadata.theme,
+          signifyOpName: metadata.signifyOpName,
+          isPending: metadata.isPending,
           s: aid.state.s,
           dt: aid.state.dt,
           kt: aid.state.kt,
@@ -231,12 +254,7 @@ class IdentifierService extends AgentService {
   ) {
     this.validIdentifierMetadata(data);
     const record = new IdentifierMetadataRecord({
-      id: data.id,
-      displayName: data.displayName,
-      colors: data.colors,
-      method: data.method,
-      signifyName: data.signifyName,
-      theme: data.theme,
+      ...data,
     });
     return this.agent.modules.generalStorage.saveIdentifierMetadataRecord(
       record
@@ -302,6 +320,157 @@ class IdentifierService extends AgentService {
         `${IdentifierService.THEME_WAS_NOT_VALID} ${metadata.id}`
       );
     }
+  }
+
+  async createMultisig(
+    ourIdentifier: string,
+    otherIdentifierContacts: ConnectionShortDetails[],
+    meta: Pick<
+      IdentifierMetadataRecordProps,
+      "displayName" | "colors" | "theme"
+    >
+  ): Promise<string | undefined> {
+    const ourMetadata = await this.getMetadataById(ourIdentifier);
+    this.validIdentifierMetadata(ourMetadata);
+    const ourAid = (await this.agent.modules.signify.getIdentifierByName(
+      ourMetadata.signifyName as string
+    )) as Aid;
+    //Make sure no non-Keri contacts get passed into this function
+    const nonKeriContact = otherIdentifierContacts.find(
+      (contact) => !contact.oobi || contact.type !== ConnectionType.KERI
+    );
+    if (nonKeriContact) {
+      throw new Error(IdentifierService.ONLY_ALLOW_KERI_CONTACTS);
+    }
+    const otherAids = await Promise.all(
+      otherIdentifierContacts.map(async (contact) => {
+        const aid = await this.agent.modules.signify.resolveOobi(
+          contact.oobi as string
+        );
+        return { state: aid.response };
+      })
+    );
+    const signifyName = utils.uuid();
+    const result = await this.agent.modules.signify.createMultisig(
+      ourAid,
+      otherAids,
+      signifyName
+    );
+    const multisigId = result.op.name.split(".")[1];
+    await this.createIdentifierMetadataRecord({
+      id: multisigId,
+      displayName: meta.displayName,
+      method: IdentifierType.KERI,
+      colors: meta.colors,
+      theme: meta.theme,
+      signifyName,
+      signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
+      isPending: result.op.done ? false : true, //this will be updated once the operation is done
+    });
+    return multisigId;
+  }
+  private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
+    const notifications: MultiSigIcpNotification[] =
+      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    if (!notifications.length) {
+      return false;
+    }
+    const exn = notifications[0].exn;
+    const multisigId = exn.a.gid;
+    try {
+      const multiSig = await this.agent.modules.signify.getIdentifierById(
+        multisigId
+      );
+      if (multiSig) {
+        return true;
+      }
+    } catch (e) {
+      return false;
+    }
+    return false;
+  }
+
+  async joinMultisig(
+    notification: KeriNotification,
+    meta: Pick<
+      IdentifierMetadataRecordProps,
+      "displayName" | "colors" | "theme"
+    >
+  ): Promise<string | undefined> {
+    const msgSaid = notification.a.d as string;
+    const hasJoined = await this.hasJoinedMultisig(msgSaid);
+    if (hasJoined) {
+      await this.agent.genericRecords.deleteById(notification.id as string);
+      return;
+    }
+    const notifications: MultiSigIcpNotification[] =
+      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+
+    if (!notifications.length) {
+      throw new Error(
+        `${IdentifierService.SAID_NOTIFICATIONS_NOT_FOUND} ${msgSaid}`
+      );
+    }
+    const exn = notifications[0].exn;
+    const rstate = exn.a.rstates;
+    const identifiers = await this.getIdentifiers();
+    const identifier = identifiers.find((identifier) => {
+      return rstate.find((item) => identifier.id === item.i);
+    });
+
+    if (identifier && identifier.signifyName) {
+      const aid = await this.agent.modules.signify.getIdentifierByName(
+        identifier?.signifyName
+      );
+      const signifyName = utils.uuid();
+      const res = await this.agent.modules.signify.joinMultisig(
+        exn,
+        aid,
+        signifyName
+      );
+      await this.agent.genericRecords.deleteById(notification.id as string);
+      const multisigId = res.op.name.split(".")[1];
+      await this.createIdentifierMetadataRecord({
+        id: multisigId,
+        displayName: meta.displayName,
+        method: IdentifierType.KERI,
+        colors: meta.colors,
+        theme: meta.theme,
+        signifyName,
+        signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later
+        isPending: res.op.done ? false : true, //this will be updated once the operation is done
+      });
+      return multisigId;
+    }
+  }
+
+  async markMultisigCompleteIfReady(metadata: IdentifierMetadataRecord) {
+    if (!metadata.signifyOpName || !metadata.isPending) {
+      return;
+    }
+    const pendingOperation = await this.agent.modules.signify.getOpByName(
+      metadata.signifyOpName
+    );
+    if (pendingOperation && pendingOperation.done) {
+      await this.agent.modules.generalStorage.updateIdentifierMetadata(
+        metadata.id,
+        { isPending: false }
+      );
+    }
+  }
+
+  async getUnhandledMultisigIdentifiers(): Promise<KeriNotification[]> {
+    const results = await this.agent.genericRecords.findAllByQuery({
+      type: GenericRecordType.NOTIFICATION_KERI,
+      route: NotificationRoute.MultiSigIcp,
+    });
+    return results.map((result) => {
+      return {
+        id: result.id,
+        createdAt: result.createdAt,
+        a: result.content,
+      };
+    });
   }
 }
 

@@ -57,13 +57,15 @@ jest.mock("../../../core/agent/agent", () => ({
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
         getUnhandledCredentials: jest.fn(),
-        onNotificationKeriStateChanged: jest.fn(),
         onAcdcKeriStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),
         pickupMessagesFromMediator: jest.fn(),
+      },
+      signifyNotification: {
+        onNotificationKeriStateChanged: jest.fn(),
       },
     },
   },
