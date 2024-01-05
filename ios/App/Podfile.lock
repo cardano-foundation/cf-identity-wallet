@@ -22,12 +22,12 @@ PODS:
     - Capacitor
   - CapacitorSplashScreen (5.0.6):
     - Capacitor
-  - SQLCipher (4.5.2):
-    - SQLCipher/standard (= 4.5.2)
-  - SQLCipher/common (4.5.2)
-  - SQLCipher/standard (4.5.2):
+  - SQLCipher (4.5.5):
+    - SQLCipher/standard (= 4.5.5)
+  - SQLCipher/common (4.5.5)
+  - SQLCipher/standard (4.5.5):
     - SQLCipher/common
-  - ZIPFoundation (0.9.15)
+  - ZIPFoundation (0.9.16)
 
 DEPENDENCIES:
   - "AparajitaCapacitorSecureStorage (from `../../node_modules/@aparajita/capacitor-secure-storage`)"
@@ -83,9 +83,9 @@ SPEC CHECKSUMS:
   CapacitorPreferences: f03954bcb0ff09c792909e46bff88e3183c16b10
   CapacitorShare: cd41743331cb71d217c029de54b681cbd91e0fcc
   CapacitorSplashScreen: 5fa2ab5e46cf5cc530cf16a51c80c7a986579ccd
-  SQLCipher: f5b4857434158b571a3ed3b10b3b43cd18ef5f67
-  ZIPFoundation: 063163dc828bf699c5be160eb4f58f676322d94f
+  SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
+  ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
 PODFILE CHECKSUM: 12c7c6ec093cad0df115dcc9a34d57cc41e85bfb
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.11.3
