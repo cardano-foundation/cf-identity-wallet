@@ -5,7 +5,6 @@ import { Provider } from "react-redux";
 import { OutOfBandInvitation, OutOfBandRecord } from "@aries-framework/core";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
-import { store } from "../../../store";
 import { AriesAgent } from "../../../core/agent/agent";
 import { Connections } from "./Connections";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -52,9 +51,6 @@ const initialStateFull = {
 let mockedStore: Store<unknown, AnyAction>;
 
 describe("Connections page", () => {
-  const mockStore = configureStore();
-  const dispatchMock = jest.fn();
-
   beforeEach(() => {
     jest.resetAllMocks();
     const mockStore = configureStore();
