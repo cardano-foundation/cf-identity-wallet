@@ -41,18 +41,21 @@
     height: 3rem;
   }
 
+  .connections-tab-center {
+    display: flex;
+    flex-direction: row;
+  }
+
   .alphabet-selector {
-    position: absolute;
-    z-index: 10;
-    right: 0;
-    height: 70vh;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
+    padding-top: 7rem;
+    height: 20rem;
 
     ion-button {
       width: 1.2rem;
-      height: 100%;
+      height: 1rem;
       min-height: 1rem;
       margin: 0;
       font-size: 0.5rem;
@@ -67,6 +70,26 @@
 
       &::part(native) {
         padding: 0;
+      }
+    }
+
+    @media screen and (min-width: 375px) and (max-width: 399px) {
+      padding-top: 5rem;
+
+      ion-button {
+        height: 0.8rem;
+        font-size: 0.45rem;
+        min-height: 0.8rem;
+      }
+    }
+
+    @media screen and (min-width: 250px) and (max-width: 374px) {
+      padding-top: 3rem;
+
+      ion-button {
+        height: 0.65rem;
+        font-size: 0.3rem;
+        min-height: 0.65rem;
       }
     }
   }
@@ -88,7 +111,7 @@
   }
 
   .connections-list {
-    padding: 0 1.25rem;
+    padding: 0 0 0 1.25rem;
     background: var(--ion-color-light-grey);
 
     ion-row {
@@ -179,19 +202,13 @@
 
       .searchbar-input {
         font-size: 0.8rem;
+        height: 2rem;
+        padding: 0.2rem 2.5rem;
       }
 
       .searchbar-search-icon {
-        width: 1rem;
-      }
-    }
-
-    .alphabet-selector {
-      height: 65vh;
-
-      ion-button {
-        font-size: 0.4rem;
-        min-height: 0.4rem;
+        width: 0.8rem;
+        height: 0.8rem;
       }
     }
 
@@ -200,7 +217,7 @@
     }
 
     .connections-list {
-      padding: 0 1rem;
+      padding: 0 0 0 1rem;
 
       ion-row {
         padding: 0.25rem 0;
