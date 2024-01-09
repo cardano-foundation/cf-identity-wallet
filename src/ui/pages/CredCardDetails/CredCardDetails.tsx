@@ -56,8 +56,8 @@ import {
   CardDetailsBlock,
   CardDetailsItem,
 } from "../../components/CardDetailsElements";
-import "./CredCardDetails.scss";
 import { CredentialDetails } from "../../../core/agent/services/credentialService.types";
+import "../../components/CardDetailsElements/CardDetails.scss";
 
 const CredCardDetails = () => {
   const pageId = "credential-card-details";
