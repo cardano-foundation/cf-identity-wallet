@@ -50,7 +50,7 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding-top: 7rem;
+    padding-top: 5.5rem;
     height: 20rem;
 
     ion-button {
@@ -73,13 +73,13 @@
       }
     }
 
-    @media screen and (min-width: 375px) and (max-width: 399px) {
-      padding-top: 5rem;
+    @media screen and (min-width: 375px) and (max-width: 389px) {
+      padding-top: 4rem;
 
       ion-button {
-        height: 0.8rem;
-        font-size: 0.45rem;
-        min-height: 0.8rem;
+        height: 0.725rem;
+        font-size: 0.425rem;
+        min-height: 0.725rem;
       }
     }
 
@@ -88,7 +88,7 @@
 
       ion-button {
         height: 0.65rem;
-        font-size: 0.3rem;
+        font-size: 0.325rem;
         min-height: 0.65rem;
       }
     }
@@ -208,6 +208,11 @@
 
       .searchbar-search-icon {
         width: 0.8rem;
+
+        &.ios {
+          padding-left: 0.3rem;
+        }
+
         &.md {
           height: 0.8rem;
         }
