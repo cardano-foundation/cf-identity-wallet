@@ -1,11 +1,9 @@
 import {
   IonButton,
-  IonChip,
   IonCol,
   IonContent,
   IonGrid,
   IonIcon,
-  IonItem,
   IonItemDivider,
   IonItemGroup,
   IonLabel,
@@ -13,19 +11,17 @@ import {
   IonSearchbar,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
-import { addOutline, hourglassOutline } from "ionicons/icons";
+import { addOutline } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
 import { i18n } from "../../../i18n";
 import {
-  ConnectionItemProps,
   ConnectionsComponentProps,
   ConnectionShortDetails,
   MappedConnections,
 } from "./Connections.types";
 import "./Connections.scss";
-import { formatShortDate } from "../../utils/formatters";
 import { ConnectModal } from "../../components/ConnectModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { DIDCommRequestType } from "../../globals/types";
@@ -35,57 +31,11 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import { updateReduxState } from "../../../store/utils";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
-import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 import { ShareQR } from "../../components/ShareQR/ShareQR";
 import { MoreOptions } from "../../components/ShareQR/MoreOptions";
 import { AriesAgent } from "../../../core/agent/agent";
-import { ConnectionStatus } from "../../../core/agent/agent.types";
-
-const ConnectionItem = ({
-  item,
-  handleShowConnectionDetails,
-}: ConnectionItemProps) => {
-  return (
-    <IonItem onClick={() => handleShowConnectionDetails(item)}>
-      <IonGrid>
-        <IonRow>
-          <IonCol
-            size="1.5"
-            className="connection-logo"
-          >
-            <img
-              src={item?.logo ?? CardanoLogo}
-              alt="connection-logo"
-            />
-          </IonCol>
-          <IonCol
-            size="6.25"
-            className="connection-info"
-          >
-            <IonLabel className="connection-name">{item?.label}</IonLabel>
-            <IonLabel className="connection-date">
-              {formatShortDate(`${item?.connectionDate}`)}
-            </IonLabel>
-          </IonCol>
-          <IonCol
-            size="3.5"
-            className="item-status"
-          >
-            {item.status === ConnectionStatus.PENDING ? (
-              <IonChip>
-                <IonIcon
-                  icon={hourglassOutline}
-                  color="primary"
-                ></IonIcon>
-                <span>{item.status}</span>
-              </IonChip>
-            ) : null}
-          </IonCol>
-        </IonRow>
-      </IonGrid>
-    </IonItem>
-  );
-};
+import { AlphabeticList } from "./components/AlphabeticList";
+import { AlphabetSelector } from "./components/AlphabetSelector";
 
 const Connections = ({
   showConnections,
@@ -101,6 +51,13 @@ const Connections = ({
   >([]);
   const [connectModalIsOpen, setConnectModalIsOpen] = useState(false);
   const [invitationLink, setInvitationLink] = useState<string>();
+  const [showPlaceholder, setShowPlaceholder] = useState(
+    connectionsCache.length === 0
+  );
+
+  useEffect(() => {
+    setShowPlaceholder(connectionsCache.length === 0);
+  }, [connectionsCache]);
 
   async function handleProvideQr() {
     const invitation =
@@ -169,34 +126,6 @@ const Connections = ({
     }
   }, [connectionsCache]);
 
-  const AlphabeticList = ({ items }: { items: ConnectionShortDetails[] }) => {
-    return (
-      <>
-        {items.map((connection, index) => {
-          return (
-            <ConnectionItem
-              key={index}
-              item={connection}
-              handleShowConnectionDetails={handleShowConnectionDetails}
-            />
-          );
-        })}
-      </>
-    );
-  };
-
-  const alphabet = new Array(26)
-    .fill(1)
-    .map((_, i) => String.fromCharCode(65 + i))
-    .concat("#");
-
-  const handleClickScroll = (letter: string) => {
-    const element = document.getElementById(letter);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
-    }
-  };
-
   return (
     <TabLayout
       pageId={pageId}
@@ -207,56 +136,51 @@ const Connections = ({
       title={`${i18n.t("connections.tab.title")}`}
       menuButton={true}
       additionalButtons={<AdditionalButtons />}
+      placeholder={
+        showPlaceholder && (
+          <CardsPlaceholder
+            buttonLabel={i18n.t("connections.tab.create")}
+            buttonAction={handleConnectModal}
+            testId={pageId}
+          />
+        )
+      }
     >
-      {connectionsCache.length ? (
+      {!showPlaceholder && (
         <>
           <IonSearchbar
             placeholder={`${i18n.t("connections.tab.searchconnections")}`}
           />
-          <div className="alphabet-selector">
-            {alphabet.map((letter, index) => {
-              return (
-                <IonButton
-                  slot="fixed"
-                  onClick={() => handleClickScroll(letter)}
-                  key={index}
-                  color="transparent"
-                >
-                  {letter}
-                </IonButton>
-              );
-            })}
+          <div className="connections-tab-center">
+            <IonContent className="connections-container">
+              <IonGrid>
+                <IonRow>
+                  <IonCol size="12">
+                    {mappedConnections.map((alphabeticGroup, index) => {
+                      return (
+                        <IonItemGroup
+                          className="connections-list"
+                          key={index}
+                        >
+                          <IonItemDivider id={alphabeticGroup.key}>
+                            <IonLabel>{alphabeticGroup.key}</IonLabel>
+                          </IonItemDivider>
+                          <AlphabeticList
+                            items={Array.from(alphabeticGroup.value)}
+                            handleShowConnectionDetails={
+                              handleShowConnectionDetails
+                            }
+                          />
+                        </IonItemGroup>
+                      );
+                    })}
+                  </IonCol>
+                </IonRow>
+              </IonGrid>
+            </IonContent>
+            <AlphabetSelector />
           </div>
-          <IonContent className="connections-container">
-            <IonGrid>
-              <IonRow>
-                <IonCol size="12">
-                  {mappedConnections.map((alphabeticGroup, index) => {
-                    return (
-                      <IonItemGroup
-                        className="connections-list"
-                        key={index}
-                      >
-                        <IonItemDivider id={alphabeticGroup.key}>
-                          <IonLabel>{alphabeticGroup.key}</IonLabel>
-                        </IonItemDivider>
-                        <AlphabeticList
-                          items={Array.from(alphabeticGroup.value)}
-                        />
-                      </IonItemGroup>
-                    );
-                  })}
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </IonContent>
         </>
-      ) : (
-        <CardsPlaceholder
-          buttonLabel={i18n.t("connections.tab.create")}
-          buttonAction={handleConnectModal}
-          testId={pageId}
-        />
       )}
       <ConnectModal
         type={DIDCommRequestType.CONNECTION}

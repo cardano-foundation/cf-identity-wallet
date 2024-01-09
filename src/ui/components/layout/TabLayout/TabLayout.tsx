@@ -37,7 +37,10 @@ const TabLayout = ({
     >
       {header && (
         <IonHeader className="ion-no-border tab-header">
-          <IonToolbar color="transparent">
+          <IonToolbar
+            color="transparent"
+            className={`${backButton ? "has-back-button" : ""}`}
+          >
             {avatar && <IonButtons slot="start">{avatar}</IonButtons>}
 
             {backButton && backButtonAction && (

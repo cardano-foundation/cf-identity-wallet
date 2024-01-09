@@ -17,6 +17,12 @@
       margin-inline: 0;
     }
 
+    &.has-back-button {
+      ion-title {
+        margin-left: 1rem;
+      }
+    }
+
     ion-button:not(.action-button-label),
     ion-button.md:not(.action-button-label) {
       width: 2.8125rem;
@@ -53,6 +59,7 @@
 
   ion-title {
     padding: 0;
+    position: initial;
 
     h2,
     h3 {
@@ -204,6 +211,13 @@
     ion-header ion-toolbar {
       margin-top: 0.531rem;
 
+      &.has-back-button {
+        ion-title {
+          margin-left: 0.8rem;
+        }
+      }
+
+      .back-button,
       ion-button:not(.action-button-label),
       ion-button.md:not(.action-button-label) {
         width: 2.25rem;
