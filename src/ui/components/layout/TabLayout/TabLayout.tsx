@@ -20,8 +20,8 @@ const TabLayout = ({
   backButton,
   backButtonAction,
   title,
-  titleSize,
-  titleAction,
+  doneLabel,
+  doneAction,
   menuButton,
   additionalButtons,
   actionButton,
@@ -57,13 +57,18 @@ const TabLayout = ({
               </IonButtons>
             )}
 
-            {title && (
+            {doneLabel && doneAction && (
               <IonTitle
-                onClick={titleAction}
-                data-testid={`tab-title-${title.toLowerCase()}`}
+                onClick={doneAction}
+                data-testid={`tab-done-${doneLabel.toLowerCase()}`}
               >
-                {(titleSize === "h2" || !titleSize) && <h2>{title}</h2>}
-                {titleSize === "h3" && <h3>{title}</h3>}
+                <h3>{doneLabel}</h3>
+              </IonTitle>
+            )}
+
+            {title && (
+              <IonTitle data-testid={`tab-title-${title.toLowerCase()}`}>
+                <h2>{title}</h2>
               </IonTitle>
             )}
 
