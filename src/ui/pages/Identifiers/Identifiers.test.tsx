@@ -165,9 +165,7 @@ describe("Identifiers Tab", () => {
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 
-    const doneButton = getByTestId(
-      `tab-title-${EN_TRANSLATIONS.identifiers.card.details.done.toLowerCase()}`
-    );
+    const doneButton = getByTestId("tab-done-button");
 
     act(() => {
       fireEvent.click(doneButton);

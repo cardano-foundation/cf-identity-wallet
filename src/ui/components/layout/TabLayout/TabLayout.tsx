@@ -47,7 +47,7 @@ const TabLayout = ({
               <IonButtons
                 slot="start"
                 className="back-button"
-                data-testid={`back-button-${title?.toLowerCase()}`}
+                data-testid="tab-back-button"
                 onClick={backButtonAction}
               >
                 <IonIcon
@@ -60,7 +60,7 @@ const TabLayout = ({
             {doneLabel && doneAction && (
               <IonTitle
                 onClick={doneAction}
-                data-testid={`tab-done-${doneLabel.toLowerCase()}`}
+                data-testid="tab-done-button"
               >
                 <h3>{doneLabel}</h3>
               </IonTitle>
