@@ -56,15 +56,6 @@
       width: 100%;
       overflow: hidden;
       white-space: nowrap;
-      --mask: linear-gradient(
-        to right,
-        rgba(var(--ion-color-secondary-rgb)) 0,
-        rgba(var(--ion-color-secondary-rgb)) 85%,
-        rgba(0, 0, 0, 0.5) 90%,
-        rgba(0, 0, 0, 0) 100%
-      );
-      -webkit-mask: var(--mask);
-      mask: var(--mask);
 
       strong {
         text-transform: capitalize;
@@ -72,10 +63,9 @@
       }
     }
 
-    .card-details-json-column,
     .card-details-json-row {
-      width: 100%;
-      overflow: hidden;
+      display: flex;
+      flex-direction: row;
     }
 
     .card-details-attributes-id {
@@ -139,6 +129,33 @@
             width: 100%;
             overflow: hidden;
             white-space: nowrap;
+            --mask: linear-gradient(
+              to right,
+              rgba(var(--ion-color-secondary-rgb)) 0,
+              rgba(var(--ion-color-secondary-rgb)) 85%,
+              rgba(0, 0, 0, 0.5) 90%,
+              rgba(0, 0, 0, 0) 100%
+            );
+            -webkit-mask: var(--mask);
+            mask: var(--mask);
+          }
+        }
+
+        > .card-details-json-row {
+          background-color: var(--ion-color-light-grey);
+          padding: 0.45rem 0.85rem;
+
+          &:first-of-type {
+            padding-top: 0.85rem;
+            border-radius: 0.85rem 0.85rem 0 0;
+          }
+
+          &:last-of-type {
+            padding-bottom: 0.85rem;
+            border-radius: 0 0 0.85rem 0.85rem;
+          }
+
+          > * {
             --mask: linear-gradient(
               to right,
               rgba(var(--ion-color-secondary-rgb)) 0,
