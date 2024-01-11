@@ -8,8 +8,8 @@ interface TabLayoutProps {
   backButton?: boolean;
   backButtonAction?: () => void;
   title?: string;
-  titleSize?: string;
-  titleAction?: () => void;
+  doneLabel?: string;
+  doneAction?: () => void;
   menuButton?: boolean;
   additionalButtons?: ReactNode;
   actionButton?: boolean;

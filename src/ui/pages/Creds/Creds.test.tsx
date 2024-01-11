@@ -158,7 +158,7 @@ describe("Creds Tab", () => {
     });
 
     act(() => {
-      fireEvent.click(getByTestId("back-button-connections"));
+      fireEvent.click(getByTestId("tab-back-button"));
     });
 
     await waitFor(() => {

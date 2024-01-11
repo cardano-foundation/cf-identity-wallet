@@ -227,6 +227,14 @@ ion-toast {
       color: var(--ion-color-light);
     }
   }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    --height: 2.6rem;
+
+    &::part(message) {
+      font-size: 0.8rem;
+    }
+  }
 }
 
 ion-router-outlet.blur {

@@ -48,8 +48,8 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { IdentifierOptions } from "../../components/IdentifierOptions";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
-import "./IdentifierCardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
+import "../../components/CardDetailsElements/CardDetails.scss";
 
 const IdentifierCardDetails = () => {
   const pageId = "identifier-card-details";
@@ -223,10 +223,8 @@ const IdentifierCardDetails = () => {
       pageId={pageId}
       customClass="card-details"
       header={true}
-      title={`${i18n.t("identifiers.card.details.done")}`}
-      titleSize="h3"
-      titleAction={handleDone}
-      menuButton={false}
+      doneLabel={`${i18n.t("identifiers.card.details.done")}`}
+      doneAction={handleDone}
       additionalButtons={<AdditionalButtons />}
     >
       {!cardData ? (
