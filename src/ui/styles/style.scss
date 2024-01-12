@@ -112,6 +112,10 @@ p {
   --color: var(--ion-color-primary);
   --background: var(--ion-color-light);
   --border-color: var(--ion-color-dark-grey);
+
+  &::part(native) {
+    border: 1px solid var(--ion-color-dark-grey);
+  }
 }
 
 .tertiary-button {
