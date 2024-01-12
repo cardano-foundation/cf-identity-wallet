@@ -104,18 +104,18 @@ p {
 }
 
 .primary-button {
-  color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
   --background: var(--ion-color-primary-gradient);
 }
 
 .secondary-button {
-  color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
   --background: var(--ion-color-light);
   --border-color: var(--ion-color-dark-grey);
 }
 
 .tertiary-button {
-  color: var(--ion-color-primary);
+  --color: var(--ion-color-primary);
   --background: transparent;
 }
 
