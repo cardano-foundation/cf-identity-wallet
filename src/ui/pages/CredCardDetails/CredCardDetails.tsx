@@ -58,6 +58,7 @@ import {
 } from "../../components/CardDetailsElements";
 import { CredentialDetails } from "../../../core/agent/services/credentialService.types";
 import "../../components/CardDetailsElements/CardDetails.scss";
+import { PageFooter } from "../../components/PageFooter";
 
 const CredCardDetails = () => {
   const pageId = "credential-card-details";
@@ -334,33 +335,27 @@ const CredCardDetails = () => {
                 />
               )}
             </CardDetailsBlock>
-            <IonButton
-              shape="round"
-              expand="block"
-              color="danger"
-              data-testid="card-details-delete-archive-button"
-              className="delete-button"
-              onClick={() => {
+            <PageFooter
+              pageId={pageId}
+              archiveButtonText={
+                !isArchived
+                  ? `${i18n.t("creds.card.details.button.archive")}`
+                  : ""
+              }
+              archiveButtonAction={() => {
                 setAlertDeleteArchiveIsOpen(true);
-                dispatch(
-                  setCurrentOperation(
-                    isArchived
-                      ? OperationType.DELETE_CREDENTIAL
-                      : OperationType.ARCHIVE_CREDENTIAL
-                  )
-                );
+                dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
               }}
-            >
-              <IonIcon
-                slot="icon-only"
-                size="small"
-                icon={isArchived ? trashOutline : archiveOutline}
-                color="primary"
-              />
-              {isArchived
-                ? i18n.t("creds.card.details.button.delete")
-                : i18n.t("creds.card.details.button.archive")}
-            </IonButton>
+              deleteButtonText={
+                isArchived
+                  ? `${i18n.t("creds.card.details.button.delete")}`
+                  : ""
+              }
+              deleteButtonAction={() => {
+                setAlertDeleteArchiveIsOpen(true);
+                dispatch(setCurrentOperation(OperationType.DELETE_CREDENTIAL));
+              }}
+            />
           </div>
           <CredsOptions
             optionsIsOpen={optionsIsOpen}

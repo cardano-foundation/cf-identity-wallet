@@ -1,5 +1,5 @@
 import { IonButton, IonIcon, IonToolbar } from "@ionic/react";
-import { trashOutline } from "ionicons/icons";
+import { archiveOutline, trashOutline } from "ionicons/icons";
 import { PageFooterProps } from "./PageFooter.types";
 import "./PageFooter.scss";
 
@@ -17,15 +17,15 @@ const PageFooter = ({
   tertiaryButtonText,
   tertiaryButtonAction,
   tertiaryButtonDisabled,
+  archiveButtonText,
+  archiveButtonAction,
+  archiveButtonDisabled,
   deleteButtonText,
   deleteButtonAction,
   deleteButtonDisabled,
 }: PageFooterProps) => {
   return (
-    <IonToolbar
-      color="light"
-      className="page-footer"
-    >
+    <IonToolbar className="page-footer">
       {primaryButtonText && primaryButtonAction && (
         <IonButton
           shape="round"
@@ -86,6 +86,25 @@ const PageFooter = ({
             />
           )}
           {tertiaryButtonText}
+        </IonButton>
+      )}
+      {archiveButtonText && archiveButtonAction && (
+        <IonButton
+          shape="round"
+          expand="block"
+          fill="clear"
+          className="archive-button"
+          data-testid={`archive-button${pageId ? `-${pageId}` : ""}`}
+          onClick={archiveButtonAction}
+          disabled={archiveButtonDisabled}
+        >
+          <IonIcon
+            slot="icon-only"
+            size="small"
+            icon={archiveOutline}
+            color="primary"
+          />
+          {archiveButtonText}
         </IonButton>
       )}
       {deleteButtonText && deleteButtonAction && (

@@ -240,11 +240,11 @@ describe("Cards Details page - current not archived credential", () => {
         </MemoryRouter>
       </Provider>
     );
-    const deleteButton = await findByTestId(
-      "card-details-delete-archive-button"
+    const archiveButton = await findByTestId(
+      "archive-button-credential-card-details"
     );
     act(() => {
-      fireEvent.click(deleteButton);
+      fireEvent.click(archiveButton);
     });
 
     await waitFor(() => {
