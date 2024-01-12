@@ -25,10 +25,7 @@ const PageFooter = ({
   deleteButtonDisabled,
 }: PageFooterProps) => {
   return (
-    <IonToolbar
-      color="light"
-      className="page-footer"
-    >
+    <IonToolbar className="page-footer">
       {primaryButtonText && primaryButtonAction && (
         <IonButton
           shape="round"
