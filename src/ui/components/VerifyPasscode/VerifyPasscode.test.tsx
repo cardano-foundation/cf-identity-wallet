@@ -81,7 +81,7 @@ describe("Verify Passcode on Cards Details page", () => {
     );
 
     const archiveButton = await findByTestId(
-      "card-details-delete-archive-button"
+      "archive-button-credential-card-details"
     );
     act(() => {
       fireEvent.click(archiveButton);
