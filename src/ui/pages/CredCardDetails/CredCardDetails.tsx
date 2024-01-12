@@ -265,15 +265,17 @@ const CredCardDetails = () => {
             isActive={false}
           />
           <div className="card-details-content">
-            <CardDetailsBlock title="creds.card.details.type">
-              <CardDetailsItem
-                info={cardData.credentialType
-                  .replace(/([A-Z][a-z])/g, " $1")
-                  .replace(/(\d)/g, " $1")}
-                icon={informationCircleOutline}
-                testId="card-details-credential-type"
-              />
-            </CardDetailsBlock>
+            {cardData.credentialType && (
+              <CardDetailsBlock title="creds.card.details.type">
+                <CardDetailsItem
+                  info={cardData.credentialType
+                    .replace(/([A-Z][a-z])/g, " $1")
+                    .replace(/(\d)/g, " $1")}
+                  icon={informationCircleOutline}
+                  testId="card-details-credential-type"
+                />
+              </CardDetailsBlock>
+            )}
             {credentialSubject && (
               <CardDetailsBlock title="creds.card.details.attributes">
                 <CardDetailsAttributes data={credentialSubject} />
