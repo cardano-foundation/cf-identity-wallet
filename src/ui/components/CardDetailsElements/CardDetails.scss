@@ -208,6 +208,14 @@
           border-radius: 0.85rem;
           padding: 0.978rem;
 
+          > * {
+            min-height: 1.156rem;
+
+            &:not(:last-child) {
+              margin-bottom: 0.68rem;
+            }
+          }
+
           .card-details-info-block-line {
             .card-details-info-block-text-icon {
               font-size: 0.956rem;
