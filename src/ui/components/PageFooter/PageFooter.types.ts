@@ -12,6 +12,9 @@ interface PageFooterProps {
   tertiaryButtonText?: string;
   tertiaryButtonAction?: () => void;
   tertiaryButtonDisabled?: boolean;
+  archiveButtonText?: string;
+  archiveButtonAction?: () => void;
+  archiveButtonDisabled?: boolean;
   deleteButtonText?: string;
   deleteButtonAction?: () => void;
   deleteButtonDisabled?: boolean;
