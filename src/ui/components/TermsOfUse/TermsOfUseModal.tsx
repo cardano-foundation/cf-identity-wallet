@@ -1,9 +1,21 @@
-import { IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
+import {
+  IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
+  IonModal,
+  IonTitle,
+  IonToolbar,
+} from "@ionic/react";
 import { TermsOfUseModalProps } from "./TermsOfUseModal.types";
-import { PageLayout } from "../layout/PageLayout";
 import { termsOfUseData } from "./TermsOfUseData";
+import "./TermsOfUseModal.scss";
+import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
+import { PageHeader } from "../PageHeader";
+import { i18n } from "../../../i18n";
 
 const TermsOfUseModal = ({ isOpen, setIsOpen }: TermsOfUseModalProps) => {
+  const componentId = "terms-of-use-modal";
   const Section = ({ title, content }: { title: string; content: any }) => (
     <div>
       <h3>{title}</h3>
@@ -18,40 +30,35 @@ const TermsOfUseModal = ({ isOpen, setIsOpen }: TermsOfUseModalProps) => {
   return (
     <IonModal
       isOpen={isOpen}
+      className={componentId}
+      data-testid={componentId}
       initialBreakpoint={1}
-      breakpoints={[0, 0.25, 0.5, 0.75, 1]}
-      className="page-layout"
-      data-testid="terms-of-use-modal"
+      breakpoints={[0, 1]}
       onDidDismiss={() => setIsOpen(false)}
     >
-      <div className="terms-and-conditions modal">
-        <PageLayout
-          header={true}
-          closeButton={true}
-          closeButtonAction={() => setIsOpen(false)}
-          title={termsOfUseData.intro.title}
-        >
-          <IonGrid>
-            <IonRow>
-              <IonCol
-                size="12"
-                className="terms-and-conditions-body"
-              >
-                <p>
-                  <b>{termsOfUseData.intro.text}</b>
-                </p>
-                {termsOfUseData.sections.map((section, index) => (
-                  <Section
-                    key={index}
-                    title={section.title}
-                    content={section.content}
-                  />
-                ))}
-              </IonCol>
-            </IonRow>
-          </IonGrid>
-        </PageLayout>
-      </div>
+      <ScrollablePageLayout
+        pageId={componentId}
+        header={
+          <PageHeader
+            closeButton={true}
+            // closeButtonLabel={i18n.t("termsOfUseData.intro.title")}
+            closeButtonLabel="Done"
+            closeButtonAction={() => setIsOpen(false)}
+            title={termsOfUseData.intro.title}
+          />
+        }
+      >
+        <p>
+          <b>{termsOfUseData.intro.text}</b>
+        </p>
+        {termsOfUseData.sections.map((section, index) => (
+          <Section
+            key={index}
+            title={section.title}
+            content={section.content}
+          />
+        ))}
+      </ScrollablePageLayout>
     </IonModal>
   );
 };

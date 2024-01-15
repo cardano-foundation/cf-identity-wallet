@@ -1,0 +1,22 @@
+ion-modal.terms-of-use-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  --height: auto;
+
+  &::part(content) {
+    height: 95vh;
+  }
+
+  p *:nth-child(2) {
+    margin-left: 0.5rem;
+  }
+
+  ion-toolbar {
+    --min-height: 4rem;
+
+    h2 {
+      margin: 0 auto;
+    }
+  }
+}
