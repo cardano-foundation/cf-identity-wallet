@@ -152,7 +152,8 @@
       "creds": "Credentials",
       "scan": "Scan",
       "crypto": "Crypto",
-      "chat": "P2P Chat"
+      "chat": "P2P Chat",
+      "cip45": "CIP-45"
     }
   },
   "custominput": {
@@ -524,6 +525,11 @@
   "chat": {
     "tab": {
       "header": "Under development"
+    }
+  },
+  "cip45": {
+    "tab": {
+      "title": "CIP-45 Connection"
     }
   },
   "shareqr": {

@@ -29,6 +29,7 @@ import { Creds } from "../../../pages/Creds";
 import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
 import { Crypto } from "../../../pages/Crypto";
+import { CIP45 } from "../../../pages/CIP45";
 
 const tabsRoutes = [
   {
@@ -59,6 +60,12 @@ const tabsRoutes = [
     label: i18n.t("tabsmenu.label.chat"),
     path: TabsRoutePath.CHAT,
     component: Chat,
+    icon: [chatbubble, chatbubbleOutline],
+  },
+  {
+    label: i18n.t("tabsmenu.label.cip45"),
+    path: TabsRoutePath.CIP45,
+    component: CIP45,
     icon: [chatbubble, chatbubbleOutline],
   },
 ];
