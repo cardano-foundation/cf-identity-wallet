@@ -1,7 +1,7 @@
 import { render, waitFor, fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { TermsOfUseModal } from "./TermsOfUseModal";
-import { termsOfUseData } from "./TermsOfUseData";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 describe("Terms and conditions screen", () => {
   test("User can close the modal by clicking on the backdrop", async () => {
@@ -26,7 +26,9 @@ describe("Terms and conditions screen", () => {
       expect(backdrop).not.toBeInTheDocument();
     });
 
-    expect(queryByText(termsOfUseData.intro.title)).not.toBeInTheDocument();
+    expect(
+      queryByText(EN_TRANSLATIONS.termsofusedata.intro.title)
+    ).not.toBeInTheDocument();
   });
 
   test.skip("User can close the modal clicking on the close button", async () => {
@@ -52,6 +54,8 @@ describe("Terms and conditions screen", () => {
       expect(document.querySelector("ion-backdrop")).not.toBeInTheDocument();
     });
 
-    expect(queryByText(termsOfUseData.intro.title)).not.toBeInTheDocument();
+    expect(
+      queryByText(EN_TRANSLATIONS.termsofusedata.intro.title)
+    ).not.toBeInTheDocument();
   });
 });

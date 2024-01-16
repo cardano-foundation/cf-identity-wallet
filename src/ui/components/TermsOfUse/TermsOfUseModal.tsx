@@ -1,22 +1,22 @@
+import { IonModal } from "@ionic/react";
+import i18next from "i18next";
+import { i18n } from "../../../i18n";
 import {
-  IonButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonModal,
-  IonTitle,
-  IonToolbar,
-} from "@ionic/react";
-import { TermsOfUseModalProps } from "./TermsOfUseModal.types";
-import { termsOfUseData } from "./TermsOfUseData";
+  TermsOfUseModalProps,
+  TermsOfUseObject,
+  TermsOfUseSection,
+} from "./TermsOfUseModal.types";
 import "./TermsOfUseModal.scss";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
-import { i18n } from "../../../i18n";
 
 const TermsOfUseModal = ({ isOpen, setIsOpen }: TermsOfUseModalProps) => {
   const componentId = "terms-of-use-modal";
-  const Section = ({ title, content }: { title: string; content: any }) => (
+  const termsOfUseObject: TermsOfUseObject = i18next.t("termsofusedata", {
+    returnObjects: true,
+  });
+  const sections = termsOfUseObject.sections;
+  const Section = ({ title, content }: TermsOfUseSection) => (
     <div>
       <h3>{title}</h3>
       {content.map((item: any, index: number) => (
@@ -41,17 +41,16 @@ const TermsOfUseModal = ({ isOpen, setIsOpen }: TermsOfUseModalProps) => {
         header={
           <PageHeader
             closeButton={true}
-            // closeButtonLabel={i18n.t("termsOfUseData.intro.title")}
-            closeButtonLabel="Done"
+            closeButtonLabel={`${i18n.t("termsofusedata.done")}`}
             closeButtonAction={() => setIsOpen(false)}
-            title={termsOfUseData.intro.title}
+            title={`${i18n.t("termsofusedata.intro.title")}`}
           />
         }
       >
         <p>
-          <b>{termsOfUseData.intro.text}</b>
+          <b>{`${i18n.t("termsofusedata.intro.text")}`}</b>
         </p>
-        {termsOfUseData.sections.map((section, index) => (
+        {sections.map((section: TermsOfUseSection, index: number) => (
           <Section
             key={index}
             title={section.title}
