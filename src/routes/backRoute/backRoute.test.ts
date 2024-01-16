@@ -43,7 +43,7 @@ describe("getBackRoute", () => {
           time: 0,
         },
         currentOperation: OperationType.IDLE,
-        queueConnectionCredentialRequest: {
+        queueIncomingRequest: {
           isProcessing: false,
           queues: [],
           isPaused: false,
@@ -123,7 +123,7 @@ describe("getBackRoute", () => {
           passwordIsSkipped: true,
         },
         currentOperation: OperationType.IDLE,
-        queueConnectionCredentialRequest: {
+        queueIncomingRequest: {
           isProcessing: false,
           queues: [],
           isPaused: false,
@@ -198,7 +198,7 @@ describe("getPreviousRoute", () => {
           time: 0,
         },
         currentOperation: OperationType.IDLE,
-        queueConnectionCredentialRequest: {
+        queueIncomingRequest: {
           isProcessing: false,
           queues: [],
           isPaused: false,

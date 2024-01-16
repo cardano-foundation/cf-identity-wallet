@@ -10,7 +10,9 @@ interface IdentifierMetadataRecordProps {
   createdAt?: Date;
   isArchived?: boolean;
   isDeleted?: boolean;
+  isPending?: boolean;
   theme: number;
+  signifyOpName?: string;
 }
 
 class IdentifierMetadataRecord
@@ -22,6 +24,8 @@ class IdentifierMetadataRecord
   colors!: [string, string];
   isArchived?: boolean;
   isDeleted?: boolean;
+  isPending?: boolean;
+  signifyOpName?: string | undefined;
   signifyName?: string | undefined;
   theme!: number;
 
@@ -39,6 +43,8 @@ class IdentifierMetadataRecord
       this.signifyName = props.signifyName;
       this.isArchived = props.isArchived ?? false;
       this.isDeleted = props.isDeleted ?? false;
+      this.isPending = props.isPending ?? false;
+      this.signifyOpName = props.signifyOpName;
       this.createdAt = props.createdAt ?? new Date();
       this.theme = props.theme;
     }
@@ -49,6 +55,7 @@ class IdentifierMetadataRecord
       ...this._tags,
       isArchived: this.isArchived,
       isDeleted: this.isDeleted,
+      isPending: this.isPending,
       method: this.method,
     };
   }

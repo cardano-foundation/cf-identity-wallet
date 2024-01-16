@@ -1,43 +1,53 @@
 import {
-  IonHeader,
-  IonContent,
-  IonToolbar,
-  IonButtons,
   IonButton,
+  IonButtons,
+  IonContent,
+  IonHeader,
   IonIcon,
+  IonPage,
   IonTitle,
+  IonToolbar,
 } from "@ionic/react";
 import { arrowBackOutline, menuOutline } from "ionicons/icons";
 import "./TabLayout.scss";
 import { TabLayoutProps } from "./TabLayout.types";
 
 const TabLayout = ({
+  pageId,
+  customClass,
   header,
   avatar,
   backButton,
   backButtonAction,
   title,
-  titleSize,
-  titleAction,
+  doneLabel,
+  doneAction,
   menuButton,
   additionalButtons,
   actionButton,
   actionButtonAction,
   actionButtonLabel,
   children,
+  placeholder,
 }: TabLayoutProps) => {
   return (
-    <>
+    <IonPage
+      className={`tab-layout ${pageId} ${customClass ? " " + customClass : ""}`}
+      data-testid={pageId}
+    >
       {header && (
         <IonHeader className="ion-no-border tab-header">
-          <IonToolbar color="transparent">
+          <IonToolbar
+            color="transparent"
+            className={`${backButton ? "has-back-button" : ""}`}
+          >
             {avatar && <IonButtons slot="start">{avatar}</IonButtons>}
 
             {backButton && backButtonAction && (
               <IonButtons
                 slot="start"
                 className="back-button"
-                data-testid={`back-button-${title?.toLowerCase()}`}
+                data-testid="tab-back-button"
                 onClick={backButtonAction}
               >
                 <IonIcon
@@ -47,13 +57,18 @@ const TabLayout = ({
               </IonButtons>
             )}
 
-            {title && (
+            {doneLabel && doneAction && (
               <IonTitle
-                onClick={titleAction}
-                data-testid={`tab-title-${title.toLowerCase()}`}
+                onClick={doneAction}
+                data-testid="tab-done-button"
               >
-                {(titleSize === "h2" || !titleSize) && <h2>{title}</h2>}
-                {titleSize === "h3" && <h3>{title}</h3>}
+                <h3>{doneLabel}</h3>
+              </IonTitle>
+            )}
+
+            {title && (
+              <IonTitle data-testid={`tab-title-${title.toLowerCase()}`}>
+                <h2>{title}</h2>
               </IonTitle>
             )}
 
@@ -87,14 +102,15 @@ const TabLayout = ({
           </IonToolbar>
         </IonHeader>
       )}
-
-      <IonContent
-        className="tab-content"
-        color="transparent"
-      >
-        {children}
-      </IonContent>
-    </>
+      {placeholder || (
+        <IonContent
+          className="tab-content"
+          color="transparent"
+        >
+          {children}
+        </IonContent>
+      )}
+    </IonPage>
   );
 };
 

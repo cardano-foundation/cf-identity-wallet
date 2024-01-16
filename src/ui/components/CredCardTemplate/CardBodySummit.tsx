@@ -33,13 +33,9 @@ const CardBodySummit = ({ cardData }: any) => {
         <div className="right-column">
           <QRCode
             value={cardData.cachedDetails?.passId}
-            size={100}
             fgColor={"black"}
             bgColor={"transparent"}
             qrStyle={"squares"}
-            logoImage={""} // Optional
-            logoWidth={100}
-            logoHeight={100}
             logoOpacity={0}
             quietZone={0}
           />

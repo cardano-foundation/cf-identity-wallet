@@ -8,11 +8,11 @@ import {
   getStateCache,
   initialState,
   setAuthentication,
-  enqueueConnectionCredentialRequest,
+  enqueueIncomingRequest,
   setCurrentOperation,
   setCurrentRoute,
-  setPauseQueueConnectionCredentialRequest,
-  setQueueConnectionCredentialRequest,
+  setPauseQueueIncomingRequest,
+  setQueueIncomingRequest,
   dequeueCredentialCredentialRequest,
   StateCacheProps,
   stateCacheSlice,
@@ -20,10 +20,7 @@ import {
 import { RootState } from "../../index";
 import { RoutePath } from "../../../routes";
 import { OperationType } from "../../../ui/globals/types";
-import {
-  ConnectionCredentialRequestProps,
-  ConnectionCredentialRequestType,
-} from "./stateCache.types";
+import { IncomingRequestProps, IncomingRequestType } from "./stateCache.types";
 
 describe("State Cache", () => {
   test("should return the initial state on first run", () => {
@@ -82,15 +79,13 @@ describe("State Cache", () => {
   });
 
   test("should set queue connection credential request", () => {
-    const connectionCredentialRequestProps: ConnectionCredentialRequestProps = {
+    const connectionCredentialRequestProps: IncomingRequestProps = {
       id: "123",
-      type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+      type: IncomingRequestType.CONNECTION_INCOMING,
     };
-    const action = setQueueConnectionCredentialRequest(
-      connectionCredentialRequestProps
-    );
+    const action = setQueueIncomingRequest(connectionCredentialRequestProps);
     const nextState = stateCacheSlice.reducer(initialState, action);
-    expect(nextState.queueConnectionCredentialRequest.queues[0]).toEqual(
+    expect(nextState.queueIncomingRequest.queues[0]).toEqual(
       connectionCredentialRequestProps
     );
   });
@@ -99,30 +94,27 @@ describe("State Cache", () => {
     const initialStateMock: StateCacheProps = JSON.parse(
       JSON.stringify(initialState)
     );
-    initialStateMock.queueConnectionCredentialRequest.queues = [
+    initialStateMock.queueIncomingRequest.queues = [
       {
         id: "123",
-        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CONNECTION_INCOMING,
       },
     ];
-    const batchConnectionCredentialRequestProps: ConnectionCredentialRequestProps[] =
-      [
-        {
-          id: "456",
-          type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
-        },
-        {
-          id: "789",
-          type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
-        },
-      ];
-    const action = enqueueConnectionCredentialRequest(
-      batchConnectionCredentialRequestProps
-    );
+    const batchIncomingRequestProps: IncomingRequestProps[] = [
+      {
+        id: "456",
+        type: IncomingRequestType.CONNECTION_INCOMING,
+      },
+      {
+        id: "789",
+        type: IncomingRequestType.CONNECTION_INCOMING,
+      },
+    ];
+    const action = enqueueIncomingRequest(batchIncomingRequestProps);
     const nextState = stateCacheSlice.reducer(initialStateMock, action);
-    expect(nextState.queueConnectionCredentialRequest.queues).toEqual([
-      ...initialStateMock.queueConnectionCredentialRequest.queues,
-      ...batchConnectionCredentialRequestProps,
+    expect(nextState.queueIncomingRequest.queues).toEqual([
+      ...initialStateMock.queueIncomingRequest.queues,
+      ...batchIncomingRequestProps,
     ]);
   });
 
@@ -130,45 +122,39 @@ describe("State Cache", () => {
     const initialStateMock: StateCacheProps = JSON.parse(
       JSON.stringify(initialState)
     );
-    initialStateMock.queueConnectionCredentialRequest.queues = [
+    initialStateMock.queueIncomingRequest.queues = [
       {
         id: "123",
-        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CONNECTION_INCOMING,
       },
       {
         id: "456",
-        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CONNECTION_INCOMING,
       },
     ];
     const action = dequeueCredentialCredentialRequest();
     const nextState = stateCacheSlice.reducer(initialStateMock, action);
-    expect(nextState.queueConnectionCredentialRequest.queues.length).toEqual(1);
-    expect(nextState.queueConnectionCredentialRequest.isProcessing).toEqual(
-      true
-    );
+    expect(nextState.queueIncomingRequest.queues.length).toEqual(1);
+    expect(nextState.queueIncomingRequest.isProcessing).toEqual(true);
   });
 
   test("should set pause queue connection credential request", () => {
-    const action = setPauseQueueConnectionCredentialRequest(true);
+    const action = setPauseQueueIncomingRequest(true);
     const nextState = stateCacheSlice.reducer(initialState, action);
-    expect(nextState.queueConnectionCredentialRequest.isPaused).toEqual(true);
+    expect(nextState.queueIncomingRequest.isPaused).toEqual(true);
   });
 
   test("isProcessing should be false when isPause equal true", () => {
-    const action1 = setPauseQueueConnectionCredentialRequest(true);
+    const action1 = setPauseQueueIncomingRequest(true);
     const nextState1 = stateCacheSlice.reducer(initialState, action1);
-    const connectionCredentialRequestProps: ConnectionCredentialRequestProps = {
+    const connectionCredentialRequestProps: IncomingRequestProps = {
       id: "123",
-      type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+      type: IncomingRequestType.CONNECTION_INCOMING,
     };
-    const action2 = setQueueConnectionCredentialRequest(
-      connectionCredentialRequestProps
-    );
+    const action2 = setQueueIncomingRequest(connectionCredentialRequestProps);
     const nextState2 = stateCacheSlice.reducer(nextState1, action2);
-    expect(nextState2.queueConnectionCredentialRequest.isProcessing).toEqual(
-      false
-    );
-    expect(nextState2.queueConnectionCredentialRequest.queues[0]).toEqual(
+    expect(nextState2.queueIncomingRequest.isProcessing).toEqual(false);
+    expect(nextState2.queueIncomingRequest.queues[0]).toEqual(
       connectionCredentialRequestProps
     );
   });
@@ -177,21 +163,19 @@ describe("State Cache", () => {
     const initialStateMock: StateCacheProps = JSON.parse(
       JSON.stringify(initialState)
     );
-    initialStateMock.queueConnectionCredentialRequest.queues = [
+    initialStateMock.queueIncomingRequest.queues = [
       {
         id: "123",
-        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CONNECTION_INCOMING,
       },
       {
         id: "",
-        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CONNECTION_INCOMING,
       },
     ];
     const action = dequeueCredentialCredentialRequest();
     const nextState = stateCacheSlice.reducer(initialStateMock, action);
-    expect(nextState.queueConnectionCredentialRequest.queues.length).toEqual(1);
-    expect(nextState.queueConnectionCredentialRequest.isProcessing).toEqual(
-      true
-    );
+    expect(nextState.queueIncomingRequest.queues.length).toEqual(1);
+    expect(nextState.queueIncomingRequest.isProcessing).toEqual(true);
   });
 });

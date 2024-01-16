@@ -14,7 +14,7 @@ import introImg1 from "../../assets/images/intro-1.png";
 import introImg2 from "../../assets/images/intro-2.png";
 import introImg3 from "../../assets/images/intro-3.png";
 import introImg4 from "../../assets/images/intro-4.png";
-import PageFooter from "../../components/PageFooter/PageFooter";
+import { PageFooter } from "../../components/PageFooter";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 
 export type IntroImg0Type = typeof introImg0;
@@ -74,7 +74,7 @@ const Onboarding = () => {
     <ResponsivePageLayout pageId={pageId}>
       <Slides items={items} />
       <PageFooter
-        pageId={"onboarding"}
+        pageId={pageId}
         primaryButtonText={`${i18n.t("onboarding.getstarted.button.label")}`}
         primaryButtonAction={() => handleNavigation()}
         tertiaryButtonText={`${i18n.t(

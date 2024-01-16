@@ -1,5 +1,5 @@
 import { fireEvent, render } from "@testing-library/react";
-import PageFooter from "./PageFooter";
+import { PageFooter } from "./PageFooter";
 
 describe("Page Footer", () => {
   const pageId = "test-page";

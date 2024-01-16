@@ -14,6 +14,7 @@ import {
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -53,6 +54,9 @@ const initialState = {
       },
     ],
   },
+  connectionsCache: {
+    connections: connectionsFix,
+  },
 };
 
 let mockedStore: Store<unknown, AnyAction>;
@@ -89,7 +93,7 @@ describe("Identifiers Tab", () => {
     expect(
       getByText(EN_TRANSLATIONS.identifiers.tab.title)
     ).toBeInTheDocument();
-    expect(getByTestId("contacts-button")).toBeInTheDocument();
+    expect(getByTestId("connections-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
     expect(
       getByTestId(
@@ -113,6 +117,9 @@ describe("Identifiers Tab", () => {
       seedPhraseCache: {},
       identifiersCache: {
         identifiers: filteredIdentifierFix,
+      },
+      connectionsCache: {
+        connections: connectionsFix,
       },
     };
 
@@ -158,9 +165,7 @@ describe("Identifiers Tab", () => {
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 
-    const doneButton = getByTestId(
-      `tab-title-${EN_TRANSLATIONS.identifiers.card.details.done.toLowerCase()}`
-    );
+    const doneButton = getByTestId("tab-done-button");
 
     act(() => {
       fireEvent.click(doneButton);

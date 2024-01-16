@@ -1,13 +1,6 @@
 .tab-layout {
   padding-inline: 1.25rem;
 
-  &.card-details {
-    ion-button.in-toolbar,
-    ion-button.in-toolbar.md {
-      background: var(--ion-color-light);
-    }
-  }
-
   ion-toolbar,
   .toolbar-container,
   ion-grid,
@@ -24,6 +17,12 @@
       margin-inline: 0;
     }
 
+    &.has-back-button {
+      ion-title {
+        margin-left: 1rem;
+      }
+    }
+
     ion-button:not(.action-button-label),
     ion-button.md:not(.action-button-label) {
       width: 2.8125rem;
@@ -37,14 +36,6 @@
 
       &::part(native) {
         padding: 0.5rem;
-      }
-    }
-
-    @media screen and (min-width: 250px) and (max-width: 370px) {
-      ion-button:not(.action-button-label),
-      ion-button.md:not(.action-button-label) {
-        width: 2.25rem;
-        height: 2.25rem;
       }
     }
 
@@ -68,12 +59,60 @@
 
   ion-title {
     padding: 0;
+    position: initial;
 
     h2,
     h3 {
       margin-bottom: 0;
       text-align: left;
       color: var(--ion-color-secondary);
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    padding-inline: 1.063rem;
+    font-size: 0.8rem;
+
+    ion-header ion-toolbar {
+      margin-top: 0.531rem;
+
+      &.has-back-button {
+        ion-title {
+          margin-left: 0.8rem;
+        }
+      }
+
+      .back-button,
+      ion-button:not(.action-button-label),
+      ion-button.md:not(.action-button-label) {
+        width: 2.25rem;
+        height: 2.25rem;
+        border-radius: 1.275rem;
+
+        &:not(:first-child) {
+          margin-left: 0.425rem;
+        }
+
+        &::part(native) {
+          padding: 0.425rem;
+        }
+      }
+      .action-button-label {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+        --opacity: 1;
+        color: var(--ion-color-action-blue) !important;
+        background: var(--ion-color-light-grey);
+
+        &::part(native) {
+          padding: 0;
+        }
+      }
+
+      ion-icon {
+        font-size: 1.573em !important;
+      }
     }
   }
 }

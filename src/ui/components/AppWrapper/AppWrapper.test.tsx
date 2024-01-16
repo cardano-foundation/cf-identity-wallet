@@ -13,7 +13,7 @@ import { store } from "../../../store";
 import { AriesAgent } from "../../../core/agent/agent";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import {
-  setQueueConnectionCredentialRequest,
+  setQueueIncomingRequest,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
@@ -21,7 +21,7 @@ import {
   ConnectionShortDetails,
   ConnectionType,
 } from "../../../core/agent/agent.types";
-import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
@@ -57,13 +57,15 @@ jest.mock("../../../core/agent/agent", () => ({
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
         getUnhandledCredentials: jest.fn(),
-        onNotificationKeriStateChanged: jest.fn(),
         onAcdcKeriStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),
         pickupMessagesFromMediator: jest.fn(),
+      },
+      signifyNotification: {
+        onNotificationKeriStateChanged: jest.fn(),
       },
     },
   },
@@ -141,9 +143,9 @@ describe("Connection state changed handler", () => {
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: "id",
-        type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
+        type: IncomingRequestType.CONNECTION_RESPONSE,
         logo: "png",
         label: "idw",
       })
@@ -167,9 +169,9 @@ describe("Connection state changed handler", () => {
       setToastMsg(ToastMsgType.CONNECTION_REQUEST_INCOMING)
     );
     expect(dispatch).toBeCalledWith(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: "id",
-        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CONNECTION_INCOMING,
         logo: "png",
         label: "idw",
       })
@@ -236,9 +238,9 @@ describe("Credential state changed handler", () => {
       dispatch
     );
     expect(dispatch).toBeCalledWith(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: credentialStateChangedEventMock.payload.credentialRecord.id,
-        type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
         label: connectionShortDetailsMock.label,
         logo: connectionShortDetailsMock.logo,
       })

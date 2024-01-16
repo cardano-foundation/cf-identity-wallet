@@ -139,6 +139,7 @@ class ConnectionService extends AgentService {
       const connectionId = operation.response.i;
       await this.createConnectionKeriMetadata(connectionId, {
         alias: operation.alias,
+        oobi: url,
       });
       return this.agent.events.emit<ConnectionKeriStateChangedEvent>(
         this.agent.context,
@@ -245,6 +246,7 @@ class ConnectionService extends AgentService {
       connectionDate: record.createdAt.toISOString(),
       status: ConnectionStatus.CONFIRMED,
       type: ConnectionType.KERI,
+      oobi: record.content?.oobi as string,
     };
   }
 
@@ -356,7 +358,7 @@ class ConnectionService extends AgentService {
     return connectionKeri;
   }
 
-  private async getAllConnectionKeriMetadata(): Promise<GenericRecord[]> {
+  async getAllConnectionKeriMetadata(): Promise<GenericRecord[]> {
     const connectionKeris = await this.agent.genericRecords.findAllByQuery({
       type: GenericRecordType.CONNECTION_KERI_METADATA,
     });
@@ -409,6 +411,7 @@ class ConnectionService extends AgentService {
       for (const contact of unSyncedData) {
         await this.createConnectionKeriMetadata(contact.id, {
           alias: contact.alias,
+          oobi: contact.oobi,
         });
       }
     }

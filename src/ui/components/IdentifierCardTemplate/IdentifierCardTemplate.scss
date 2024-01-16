@@ -52,7 +52,6 @@
       .card-logo {
         display: flex;
         flex-direction: row;
-        line-height: normal;
 
         img {
           margin-right: 0.5rem;
@@ -83,7 +82,7 @@
 
     .card-body {
       font-size: 0.625rem;
-      letter-spacing: 0.09375rem;
+      letter-spacing: 0.094rem;
       text-align: center;
     }
 
@@ -115,6 +114,83 @@
           font-size: 0.875rem;
           font-weight: 700;
           color: var(--ion-color-light);
+        }
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    height: 10.7rem;
+    margin-top: 1.275rem;
+    padding: 1.06rem 1.326rem;
+    border-radius: 0.85rem;
+    font-size: 0.75rem;
+    line-height: 1.169rem;
+
+    &.active:not(:first-child):hover {
+      top: 9.775rem;
+    }
+
+    &:not(:first-child) {
+      margin-top: -8.8rem;
+    }
+
+    .identifier-card-template-inner {
+      &.pending {
+        .card-body {
+          margin-inline: 4.25rem;
+        }
+
+        .card-body,
+        .card-footer-column-value {
+          border-radius: 0.2125rem;
+        }
+      }
+
+      .card-header {
+        .card-logo img {
+          margin-right: 0.425rem;
+          max-height: 1.169rem;
+        }
+
+        ion-chip {
+          max-height: 1.38rem;
+          font-weight: 400;
+          font-size: 0.638rem;
+          border-radius: 0.213rem;
+          padding: 0.319rem 0.531rem;
+
+          ion-icon {
+            width: 0.744rem;
+            height: 0.744rem;
+          }
+
+          span {
+            margin-left: 0.264rem;
+          }
+        }
+      }
+
+      .card-body {
+        font-size: 0.532rem;
+        letter-spacing: 0.08rem;
+      }
+
+      .card-footer .card-footer-column {
+        &:first-child .card-footer-column-value {
+          width: 40vw;
+        }
+
+        &:last-child .card-footer-column-value {
+          width: 20vw;
+        }
+
+        .card-footer-column-label {
+          font-size: 0.532rem;
+        }
+
+        .card-footer-column-info {
+          font-size: 0.744rem;
         }
       }
     }
