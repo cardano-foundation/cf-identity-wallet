@@ -1,22 +1,19 @@
 import { IonModal } from "@ionic/react";
 import i18next from "i18next";
 import { i18n } from "../../../i18n";
-import {
-  TermsOfUseModalProps,
-  TermsOfUseObject,
-  TermsOfUseSection,
-} from "./TermsOfUseModal.types";
-import "./TermsOfUseModal.scss";
+import { TermsModalProps, TermsObject, TermsSection } from "./TermsModal.types";
+import "./TermsModal.scss";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
 
-const TermsOfUseModal = ({ isOpen, setIsOpen }: TermsOfUseModalProps) => {
-  const componentId = "terms-of-use-modal";
-  const termsOfUseObject: TermsOfUseObject = i18next.t("termsofusedata", {
+const TermsModal = ({ name, isOpen, setIsOpen }: TermsModalProps) => {
+  const nameNoDash = name.replace(/-/g, "");
+  const componentId = name + "-modal";
+  const termsObject: TermsObject = i18next.t(nameNoDash, {
     returnObjects: true,
   });
-  const sections = termsOfUseObject.sections;
-  const Section = ({ title, content }: TermsOfUseSection) => (
+  const sections = termsObject.sections;
+  const Section = ({ title, content }: TermsSection) => (
     <div>
       <h3>{title}</h3>
       {content.map((item: any, index: number) => (
@@ -30,7 +27,7 @@ const TermsOfUseModal = ({ isOpen, setIsOpen }: TermsOfUseModalProps) => {
   return (
     <IonModal
       isOpen={isOpen}
-      className={componentId}
+      className="terms-modal"
       data-testid={componentId}
       initialBreakpoint={1}
       breakpoints={[0, 1]}
@@ -41,16 +38,16 @@ const TermsOfUseModal = ({ isOpen, setIsOpen }: TermsOfUseModalProps) => {
         header={
           <PageHeader
             closeButton={true}
-            closeButtonLabel={`${i18n.t("termsofusedata.done")}`}
+            closeButtonLabel={`${i18n.t(`${nameNoDash}.done`)}`}
             closeButtonAction={() => setIsOpen(false)}
-            title={`${i18n.t("termsofusedata.intro.title")}`}
+            title={`${i18n.t(`${nameNoDash}.intro.title`)}`}
           />
         }
       >
         <p>
-          <b>{`${i18n.t("termsofusedata.intro.text")}`}</b>
+          <b>{`${i18n.t(`${nameNoDash}.intro.text`)}`}</b>
         </p>
-        {sections.map((section: TermsOfUseSection, index: number) => (
+        {sections.map((section: TermsSection, index: number) => (
           <Section
             key={index}
             title={section.title}
@@ -62,4 +59,4 @@ const TermsOfUseModal = ({ isOpen, setIsOpen }: TermsOfUseModalProps) => {
   );
 };
 
-export { TermsOfUseModal };
+export { TermsModal };

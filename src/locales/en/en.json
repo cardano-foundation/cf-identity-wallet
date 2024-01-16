@@ -96,11 +96,11 @@
     },
     "termsandconditions": {
       "text": "I have read and agree to the <0>{{clickableTerms}}</0> and <1>{{clickablePrivacy}}</1>.",
-      "terms": "Terms and Conditions",
+      "terms": "Terms of Use",
       "privacy": "Privacy Policy"
     }
   },
-  "termsofusedata": {
+  "termsofuse": {
     "done": "Done",
     "intro": {
       "title": "Terms of Use",
@@ -263,7 +263,7 @@
       }
     ]
   },
-  "privacypolicydata": {
+  "privacypolicy": {
     "done": "Done",
     "intro": {
       "title": "Privacy Policy",
@@ -498,43 +498,41 @@
           }
         ]
       },
-      [
-        {
-          "title": "9. Third Party Links",
-          "content": [
-            {
-              "subtitle": "",
-              "text": "Products may contain links to other companies, organizations or websites (collectively, 'Third Party Links'). This Privacy Notice does not apply to such Third Party Links. If you access Third Party Links using the links provided, the operators may collect your personal information."
-            },
-            {
-              "subtitle": "",
-              "text": "The Foundation has no control over and assumes no responsibility for the content, privacy policies or practices of any third-party product or service."
-            }
-          ]
-        },
-        {
-          "title": "10. Changes",
-          "content": [
-            {
-              "subtitle": "",
-              "text": "We may revise or update this Privacy Policy from time to time."
-            },
-            {
-              "subtitle": "",
-              "text": "Any modifications will be reflected on this page. We'll notify you of updates either through email or a notable alert on the Product, while also adjusting the 'effective date' at this Policy's beginning. Regularly reviewing this Policy ensures you stay informed of any alterations, which take effect once displayed on this page."
-            }
-          ]
-        },
-        {
-          "title": "11. Data Privacy Contact",
-          "content": [
-            {
-              "subtitle": "",
-              "text": "For further inquiries or requests in relation to Our handling of your Personal Data or this Privacy Policy please contact Us at gdpr@cardanofoundation.org"
-            }
-          ]
-        }
-      ]
+      {
+        "title": "9. Third Party Links",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "Products may contain links to other companies, organizations or websites (collectively, 'Third Party Links'). This Privacy Notice does not apply to such Third Party Links. If you access Third Party Links using the links provided, the operators may collect your personal information."
+          },
+          {
+            "subtitle": "",
+            "text": "The Foundation has no control over and assumes no responsibility for the content, privacy policies or practices of any third-party product or service."
+          }
+        ]
+      },
+      {
+        "title": "10. Changes",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "We may revise or update this Privacy Policy from time to time."
+          },
+          {
+            "subtitle": "",
+            "text": "Any modifications will be reflected on this page. We'll notify you of updates either through email or a notable alert on the Product, while also adjusting the 'effective date' at this Policy's beginning. Regularly reviewing this Policy ensures you stay informed of any alterations, which take effect once displayed on this page."
+          }
+        ]
+      },
+      {
+        "title": "11. Data Privacy Contact",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "For further inquiries or requests in relation to Our handling of your Personal Data or this Privacy Policy please contact Us at gdpr@cardanofoundation.org"
+          }
+        ]
+      }
     ]
   },
   "passcodelogin": {

@@ -1,9 +1,10 @@
-interface TermsOfUseModalProps {
+interface TermsModalProps {
+  name: string;
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
 }
 
-interface TermsOfUseSection {
+interface TermsSection {
   title: string;
   content: [
     {
@@ -13,13 +14,13 @@ interface TermsOfUseSection {
   ];
 }
 
-interface TermsOfUseObject {
+interface TermsObject {
   done: string;
   intro: {
     title: string;
     text: string;
   };
-  sections: TermsOfUseSection[];
+  sections: TermsSection[];
 }
 
-export type { TermsOfUseModalProps, TermsOfUseSection, TermsOfUseObject };
+export type { TermsModalProps, TermsSection, TermsObject };
