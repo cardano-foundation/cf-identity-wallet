@@ -192,6 +192,56 @@ ion-toast {
   }
 }
 
+/* Legacy styles that we need to keep for now */
+.modal {
+  padding-inline: 1.25rem;
+  background-color: var(--ion-color-light);
+  border-radius: 1rem 1rem 0px 0px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  ion-toolbar {
+    padding: 0.5rem 0 0 !important;
+    height: 4rem;
+  }
+
+  ion-content {
+    &.ios {
+      height: calc(100vh - (6rem + env(safe-area-inset-top)));
+    }
+
+    &.md {
+      height: calc(100vh - 6rem);
+    }
+  }
+
+  ion-title {
+    position: absolute;
+    width: 100%;
+    height: 3rem;
+    top: 0;
+    left: 0;
+  }
+
+  h2 {
+    margin: 0 auto;
+    font-size: 1.5rem;
+  }
+
+  .action-button-label,
+  .close-button-label {
+    color: var(--ion-color-primary);
+  }
+}
+
+.extended-modal::part(content) {
+  height: 50rem;
+}
+/* End of legacy styles */
+
 ion-router-outlet.blur {
   filter: blur(0.1rem);
 }
