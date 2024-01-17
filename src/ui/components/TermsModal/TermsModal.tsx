@@ -29,12 +29,12 @@ const TermsModal = ({ name, isOpen, setIsOpen }: TermsModalProps) => {
       isOpen={isOpen}
       className="terms-modal"
       data-testid={componentId}
-      initialBreakpoint={1}
-      breakpoints={[0, 1]}
+      initialBreakpoint={0.95}
+      breakpoints={[0, 0.95]}
       onDidDismiss={() => setIsOpen(false)}
     >
       <ScrollablePageLayout
-        pageId={componentId}
+        pageId={componentId + "-content"}
         header={
           <PageHeader
             closeButton={true}

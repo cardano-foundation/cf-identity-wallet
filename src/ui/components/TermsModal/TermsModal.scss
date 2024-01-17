@@ -6,6 +6,7 @@ ion-modal.terms-modal {
 
   &::part(content) {
     height: 95vh;
+    border-radius: 1rem 1rem 0rem 0rem;
   }
 
   p *:nth-child(2) {
