@@ -1,7 +1,6 @@
 import { render, waitFor, fireEvent } from "@testing-library/react";
 import { act } from "react-dom/test-utils";
 import { TermsModal } from "./TermsModal";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
 describe("Terms and conditions screen", () => {
   test("User can close the modal by clicking on the backdrop", async () => {
