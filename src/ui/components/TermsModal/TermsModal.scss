@@ -5,8 +5,7 @@ ion-modal.terms-modal {
   --height: auto;
 
   &::part(content) {
-    height: 95vh;
-    border-radius: 1rem 1rem 0rem 0rem;
+    height: 100%;
   }
 
   p *:nth-child(2) {
@@ -18,6 +17,16 @@ ion-modal.terms-modal {
 
     h2 {
       margin: 0 auto;
+    }
+
+    &.md {
+      ion-buttons {
+        min-width: 14vw;
+      }
+
+      ion-title {
+        width: auto;
+      }
     }
   }
 }
