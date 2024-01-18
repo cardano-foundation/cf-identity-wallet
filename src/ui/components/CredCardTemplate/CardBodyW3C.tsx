@@ -2,7 +2,7 @@ import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
 
 // @TODO - sdisalvo: cardData should be of type CredentialDetails
-const CardBodyUniversity = ({ cardData }: any) => {
+const CardBodyW3C = ({ cardData }: any) => {
   return (
     <>
       <div className="card-body">
@@ -38,4 +38,4 @@ const CardBodyUniversity = ({ cardData }: any) => {
   );
 };
 
-export default CardBodyUniversity;
+export default CardBodyW3C;

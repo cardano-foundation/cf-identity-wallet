@@ -10,7 +10,7 @@ import uscisLogo from "../../../ui/assets/images/uscis-logo.svg";
 import summitLogo from "../../../ui/assets/images/summit-logo.svg";
 import "./CredCardTemplate.scss";
 import CardBodyPending from "./CardBodyPending";
-import CardBodyUniversity from "./CardBodyUniversity";
+import CardBodyW3C from "./CardBodyW3C";
 import { CredentialType } from "../../../core/agent/agent.types";
 import CardBodyResidency from "./CardBodyResidence";
 import CardBodySummit from "./CardBodySummit";
@@ -44,7 +44,7 @@ const CredCardTemplate = ({
             ? shortData.credentialType
               .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
               .toLowerCase()
-            : "generic-w3c-template"
+            : "card-body-w3c"
         }`}
         onClick={() => {
           if (shortData.status === CredentialMetadataRecordStatus.PENDING) {
@@ -104,7 +104,7 @@ const CredCardTemplate = ({
           )}
           {(isUniversity || isW3CTemplate) &&
             shortData.status === CredentialMetadataRecordStatus.CONFIRMED && (
-            <CardBodyUniversity cardData={shortData} />
+            <CardBodyW3C cardData={shortData} />
           )}
           {isResidency &&
             shortData.status === CredentialMetadataRecordStatus.CONFIRMED && (

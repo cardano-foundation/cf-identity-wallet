@@ -37,7 +37,7 @@
   }
 
   &.university-degree-credential,
-  &.generic-w3c-template {
+  &.card-body-w3c {
     position: relative;
     background: var(--ion-color-gradient-university-card);
     text-shadow: 0px 2px 4px rgba(12, 64, 90, 0.5);
@@ -353,7 +353,7 @@
     }
 
     &.university-degree-credential,
-    &.generic-w3c-template {
+    &.card-body-w3c {
       .cred-card-template-inner {
         .card-footer {
           .card-footer-column {
