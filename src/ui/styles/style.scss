@@ -168,10 +168,31 @@ p {
   height: calc(100% - var(--safe-area-inset-bottom));
 }
 
-ion-modal {
-  --background: transparent;
+ion-toast {
+  --height: 3.25rem;
+  --border-radius: 0.5rem;
+  --box-shadow: 3px 3px 10px 0 rgba(0, 0, 0, 0.2);
+
+  &::part(message) {
+    text-align: center;
+  }
+
+  &.confirmation-toast {
+    &::part(message) {
+      color: var(--ion-color-light);
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    --height: 2.6rem;
+
+    &::part(message) {
+      font-size: 0.8rem;
+    }
+  }
 }
 
+/* Legacy styles that we need to keep for now */
 .modal {
   padding-inline: 1.25rem;
   background-color: var(--ion-color-light);
@@ -219,30 +240,7 @@ ion-modal {
 .extended-modal::part(content) {
   height: 50rem;
 }
-
-ion-toast {
-  --height: 3.25rem;
-  --border-radius: 0.5rem;
-  --box-shadow: 3px 3px 10px 0 rgba(0, 0, 0, 0.2);
-
-  &::part(message) {
-    text-align: center;
-  }
-
-  &.confirmation-toast {
-    &::part(message) {
-      color: var(--ion-color-light);
-    }
-  }
-
-  @media screen and (min-width: 250px) and (max-width: 370px) {
-    --height: 2.6rem;
-
-    &::part(message) {
-      font-size: 0.8rem;
-    }
-  }
-}
+/* End of legacy styles */
 
 ion-router-outlet.blur {
   filter: blur(0.1rem);
