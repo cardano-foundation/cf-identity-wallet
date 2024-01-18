@@ -5,15 +5,20 @@ import { Alert } from "../Alert";
 import { CredCardTemplateProps } from "./CredCardTemplate.types";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { i18n } from "../../../i18n";
+import {
+  ConnectionType,
+  CredentialType,
+} from "../../../core/agent/agent.types";
+import CardBodyPending from "./CardBodyPending";
+import CardBodyGeneric from "./CardBodyGeneric";
+import CardBodyResidency from "./CardBodyResidence";
+import CardBodySummit from "./CardBodySummit";
 import W3CLogo from "../../../ui/assets/images/w3c-logo.svg";
+import ACDCLogo from "../../../ui/assets/images/keri-acdc.svg";
+import KeriBackground from "../../../ui/assets/images/keri-0.png";
 import uscisLogo from "../../../ui/assets/images/uscis-logo.svg";
 import summitLogo from "../../../ui/assets/images/summit-logo.svg";
 import "./CredCardTemplate.scss";
-import CardBodyPending from "./CardBodyPending";
-import CardBodyW3C from "./CardBodyW3C";
-import { CredentialType } from "../../../core/agent/agent.types";
-import CardBodyResidency from "./CardBodyResidence";
-import CardBodySummit from "./CardBodySummit";
 
 const CredCardTemplate = ({
   name,
@@ -23,14 +28,22 @@ const CredCardTemplate = ({
   onHandleShowCardDetails,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const isUniversity =
-    shortData?.credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL;
   const isResidency =
     shortData?.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
   const isAccessPass =
     shortData?.credentialType === CredentialType.ACCESS_PASS_CREDENTIAL;
-  const isW3CTemplate = isUniversity || (!isResidency && !isAccessPass);
-  const isKnownTemplate = isUniversity || isResidency || isAccessPass;
+  const isCustomTemplate = isResidency || isAccessPass;
+  /* Temporary swapping W3C and ACDC templates until we have a way to get ACDC data */
+  const isW3CTemplate = shortData?.connectionType === ConnectionType.DIDCOMM;
+  const isAcdcTemplate = shortData?.connectionType === ConnectionType.KERI;
+
+  const divStyle = {
+    zIndex: index,
+    ...(isAcdcTemplate && {
+      backgroundImage: `url(${KeriBackground})`,
+      backgroundSize: "cover",
+    }),
+  };
 
   return (
     <>
@@ -40,7 +53,7 @@ const CredCardTemplate = ({
           index !== undefined ? `-${name}-index-${index}` : ""
         }`}
         className={`cred-card-template ${isActive ? "active" : ""} ${
-          isKnownTemplate
+          isCustomTemplate
             ? shortData.credentialType
               .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
               .toLowerCase()
@@ -53,7 +66,7 @@ const CredCardTemplate = ({
             onHandleShowCardDetails(index);
           }
         }}
-        style={{ zIndex: index }}
+        style={divStyle}
       >
         {isW3CTemplate && (
           <img
@@ -78,9 +91,10 @@ const CredCardTemplate = ({
             <span className="card-logo">
               <img
                 src={
-                  (isW3CTemplate && W3CLogo) ||
                   (isResidency && uscisLogo) ||
-                  (isAccessPass && summitLogo)
+                  (isAccessPass && summitLogo) ||
+                  (isW3CTemplate && W3CLogo) ||
+                  (isAcdcTemplate && ACDCLogo)
                 }
                 alt="card-logo"
               />
@@ -90,7 +104,7 @@ const CredCardTemplate = ({
                 <IonIcon
                   icon={hourglassOutline}
                   color="primary"
-                ></IonIcon>
+                />
                 <span>{CredentialMetadataRecordStatus.PENDING}</span>
               </IonChip>
             ) : (
@@ -102,18 +116,15 @@ const CredCardTemplate = ({
           {shortData.status === CredentialMetadataRecordStatus.PENDING && (
             <CardBodyPending />
           )}
-          {(isUniversity || isW3CTemplate) &&
-            shortData.status === CredentialMetadataRecordStatus.CONFIRMED && (
-            <CardBodyW3C cardData={shortData} />
-          )}
-          {isResidency &&
-            shortData.status === CredentialMetadataRecordStatus.CONFIRMED && (
-            <CardBodyResidency cardData={shortData} />
-          )}
-          {isAccessPass &&
-            shortData.status === CredentialMetadataRecordStatus.CONFIRMED && (
-            <CardBodySummit cardData={shortData} />
-          )}
+          {shortData.status === CredentialMetadataRecordStatus.CONFIRMED &&
+            (isCustomTemplate ? (
+              <>
+                {isResidency && <CardBodyResidency cardData={shortData} />}
+                {isAccessPass && <CardBodySummit cardData={shortData} />}
+              </>
+            ) : (
+              <CardBodyGeneric cardData={shortData} />
+            ))}
         </div>
       </div>
       <Alert
