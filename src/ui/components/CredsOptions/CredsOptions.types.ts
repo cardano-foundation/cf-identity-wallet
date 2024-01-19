@@ -1,7 +1,7 @@
-import { CredentialDetails } from "../../../core/agent/services/credentialService.types";
+import { W3CCredentialDetails } from "../../../core/agent/services/credentialService.types";
 
 interface CredsOptionsProps {
-  cardData: CredentialDetails;
+  cardData: W3CCredentialDetails;
   optionsIsOpen: boolean;
   setOptionsIsOpen: (value: boolean) => void;
   credsOptionAction: () => void;

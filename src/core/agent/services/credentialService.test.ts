@@ -846,7 +846,14 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     const event: AcdcKeriStateChangedEvent = {
       type: AcdcKeriEventTypes.AcdcKeriStateChanged,
       payload: {
-        credentialId: "keriuuid",
+        credential: {
+          id: "acdc",
+          colors: ["#fff", "#fff"],
+          issuanceDate: "dt",
+          credentialType: "type",
+          status: CredentialMetadataRecordStatus.CONFIRMED,
+          connectionType: ConnectionType.KERI,
+        },
         status: CredentialStatus.CONFIRMED,
       },
       metadata: {

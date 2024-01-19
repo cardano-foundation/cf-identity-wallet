@@ -212,6 +212,7 @@ const keriAcdcChangeHandler = async (
     dispatch(setCurrentOperation(OperationType.ADD_CREDENTIAL));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));
   } else {
+    dispatch(updateOrAddCredsCache(event.payload.credential));
     dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));
     dispatch(setCurrentOperation(OperationType.IDLE));
   }

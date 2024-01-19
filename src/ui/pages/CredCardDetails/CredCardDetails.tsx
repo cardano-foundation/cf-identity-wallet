@@ -11,8 +11,6 @@ import {
   keyOutline,
   calendarNumberOutline,
   informationCircleOutline,
-  trashOutline,
-  archiveOutline,
   heart,
   heartOutline,
   pricetagOutline,
@@ -56,7 +54,10 @@ import {
   CardDetailsBlock,
   CardDetailsItem,
 } from "../../components/CardDetailsElements";
-import { CredentialDetails } from "../../../core/agent/services/credentialService.types";
+import {
+  ACDCDetails,
+  W3CCredentialDetails,
+} from "../../../core/agent/services/credentialService.types";
 import "../../components/CardDetailsElements/CardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
 
@@ -74,7 +75,8 @@ const CredCardDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<CredentialDetails>();
+  const [cardData, setCardData] = useState<W3CCredentialDetails>();
+  // const [cardData, setCardData] = useState<W3CCredentialDetails | ACDCDetails>();
   const [connectionDetails, setConnectionDetails] =
     useState<ConnectionDetails>();
   const isArchived =
@@ -92,6 +94,8 @@ const CredCardDetails = () => {
   const getCredDetails = async () => {
     const cardDetails =
       await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore -- remove this once support for ACDCDetails working.
     setCardData(cardDetails);
 
     const connectionDetails =
@@ -137,11 +141,10 @@ const CredCardDetails = () => {
   const handleRestoreCredential = async () => {
     await AriesAgent.agent.credentials.restoreCredential(params.id);
     // @TODO - sdisalvo: handle error
-    const metadata = await AriesAgent.agent.credentials.getMetadataById(
-      params.id
-    );
     const creds =
-      AriesAgent.agent.credentials.getCredentialShortDetails(metadata);
+      await AriesAgent.agent.credentials.getCredentialShortDetailsById(
+        params.id
+      );
     dispatch(setCredsCache([...credsCache, creds]));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
     handleDone();

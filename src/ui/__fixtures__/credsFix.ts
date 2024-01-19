@@ -1,8 +1,8 @@
 import { ConnectionType } from "../../core/agent/agent.types";
 import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
-import { CredentialDetails } from "../../core/agent/services/credentialService.types";
+import { W3CCredentialDetails } from "../../core/agent/services/credentialService.types";
 
-const credsFix: CredentialDetails[] = [
+const credsFix: W3CCredentialDetails[] = [
   {
     id: "did:example:ebfeb1ebc6f1c276ef71212ec21",
     type: ["VerifiableCredential", "UniversityDegreeCredential"],
