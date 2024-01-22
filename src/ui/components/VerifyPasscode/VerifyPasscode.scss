@@ -1,17 +1,18 @@
 .verify-passcode {
-  text-align: center;
-  --background: var(--ion-color-light);
-  &::part(backdrop) {
-    background-color: var(--ion-color-light);
-  }
+  .responsive-page-content {
+    justify-content: space-evenly;
 
-  .verify-passcode-title {
-    font-size: 24px;
-    font-weight: 700;
-  }
+    .verify-passcode-title,
+    .verify-passcode-description {
+      text-align: center;
+    }
 
-  .verify-passcode-description {
-    margin-top: 5px;
-    margin-bottom: 25px;
+    .verify-passcode-title {
+      margin-top: 4rem;
+
+      @media screen and (min-height: 300px) and (max-height: 550px) {
+        margin-top: 2rem;
+      }
+    }
   }
 }
