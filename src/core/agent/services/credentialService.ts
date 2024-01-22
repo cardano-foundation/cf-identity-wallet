@@ -178,7 +178,7 @@ class CredentialService extends AgentService {
         },
         lastStatus: {
           s: acdc.status.s,
-          dt: acdc.status.dt,
+          dt: new Date(acdc.status.dt).toISOString(),
         },
       };
     }
@@ -462,7 +462,7 @@ class CredentialService extends AgentService {
       isArchived: false,
       colors: new ColorGenerator().generateNextColor() as [string, string],
       credentialType: "",
-      issuanceDate: dateTime,
+      issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
       connectionType: ConnectionType.KERI,
     };
