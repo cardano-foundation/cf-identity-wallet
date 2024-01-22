@@ -169,6 +169,11 @@ class ConnectionService extends AgentService {
               }
             )
           ).json();
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "Please create a KERI AID first before scanning an OOBI of the deployed server, if you wish to be issued an ACDC automatically."
+          );
         }
       }
 

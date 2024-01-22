@@ -255,6 +255,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     } catch (e) {
       // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
       setAgentInitErr(true);
+      // eslint-disable-next-line no-console
+      console.error(e);
       return;
     }
 
