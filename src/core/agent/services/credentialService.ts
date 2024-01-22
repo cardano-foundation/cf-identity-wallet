@@ -134,7 +134,6 @@ class CredentialService extends AgentService {
       id: metadata.id,
       colors: metadata.colors,
       issuanceDate: metadata.issuanceDate,
-      issuerLogo: metadata.issuerLogo,
       credentialType: metadata.credentialType,
       status: metadata.status,
       cachedDetails: metadata.cachedDetails,
@@ -180,6 +179,7 @@ class CredentialService extends AgentService {
           s: acdc.status.s,
           dt: new Date(acdc.status.dt).toISOString(),
         },
+        connectionType: ConnectionType.KERI,
       };
     }
     const credentialRecord = await this.getCredentialRecordById(
@@ -207,6 +207,7 @@ class CredentialService extends AgentService {
       proofValue: Array.isArray(proof)
         ? proof.map((p) => p.jws).join(",")
         : proof.jws,
+      connectionType: ConnectionType.DIDCOMM,
     };
   }
 
@@ -246,9 +247,6 @@ class CredentialService extends AgentService {
         credentialRecord.credentials[0].credentialRecordId
       );
 
-    const connection = await this.agent.connections.findById(
-      credentialRecord?.connectionId ?? ""
-    );
     if (!metadata) {
       throw new AriesFrameworkError(
         CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
@@ -273,7 +271,6 @@ class CredentialService extends AgentService {
       id: metadata.id,
       isArchived: metadata.isArchived ?? false,
       issuanceDate: metadata.issuanceDate,
-      issuerLogo: connection?.imageUrl ?? undefined,
       status: data.status,
       connectionType: metadata.connectionType,
     };

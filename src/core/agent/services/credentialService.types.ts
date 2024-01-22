@@ -1,4 +1,5 @@
 import { JsonCredential } from "@aries-framework/core";
+import { ConnectionType } from "../agent.types";
 import { CredentialMetadataRecordProps } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
 
 enum CredentialStatus {
@@ -8,10 +9,11 @@ enum CredentialStatus {
 
 type CredentialShortDetails = Omit<
   CredentialMetadataRecordProps,
-  "credentialRecordId"
+  "credentialRecordId" | "connectionId" | "createdAt" | "issuerLogo"
 >;
 
 interface W3CCredentialDetails extends CredentialShortDetails {
+  connectionType: ConnectionType.DIDCOMM;
   type: string[];
   connectionId?: string;
   expirationDate?: string;
@@ -21,6 +23,7 @@ interface W3CCredentialDetails extends CredentialShortDetails {
 }
 
 interface ACDCDetails extends CredentialShortDetails {
+  connectionType: ConnectionType.KERI;
   i: string;
   a: {
     i: string;

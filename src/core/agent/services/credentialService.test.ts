@@ -87,7 +87,7 @@ const colors: [string, string] = ["#fff", "#fff"];
 const id1 = "id1";
 const id2 = "id2";
 const credentialRecordId1 = "cId1";
-const credentialMetadataProps = {
+const credentialMetadataProps: CredentialMetadataRecordProps = {
   id: id1,
   colors,
   createdAt: now,
@@ -357,7 +357,6 @@ describe("Credential service of agent", () => {
         colors,
         credentialType: credentialMetadataRecordA.credentialType,
         issuanceDate: nowISO,
-        issuerLogo: credentialMetadataProps.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
         cachedDetails: undefined,
         connectionType: ConnectionType.DIDCOMM,
@@ -367,7 +366,6 @@ describe("Credential service of agent", () => {
         colors,
         credentialType: credentialMetadataRecordB.credentialType,
         issuanceDate: nowISO,
-        issuerLogo: credentialMetadataRecordB.issuerLogo,
         status: CredentialMetadataRecordStatus.CONFIRMED,
         cachedDetails: undefined,
         connectionType: ConnectionType.DIDCOMM,
@@ -529,7 +527,6 @@ describe("Credential service of agent", () => {
       credentialType: "credType",
       expirationDate: "2100-10-22T12:23:48Z",
       issuanceDate: nowISO,
-      issuerLogo: "issuerLogoHere",
       proofType: "Ed25519Signature2018",
       proofValue:
         "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
@@ -561,7 +558,6 @@ describe("Credential service of agent", () => {
       credentialType: "credType",
       expirationDate: "2100-10-22T12:23:48Z",
       issuanceDate: nowISO,
-      issuerLogo: "issuerLogoHere",
       proofType: "Ed25519Signature2018,Ed25519Signature2018",
       proofValue:
         "eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw,eyJhbGciOiJFZERTQSIsImI2NCI6ZmFsc2UsImNyaXQiOlsiYjY0Il19..mtpv5xBXtbwpFokCVQtLFmdJ0nMm5EtGkiOUn0cRDtA-yfF3TrFBNMm8tCINygMla4YZB3ifb-NB0ZOrNQV8Cw",
@@ -606,7 +602,6 @@ describe("Credential service of agent", () => {
       id: id1,
       isArchived: false,
       issuanceDate: w3cCredentialRecord.credential.issuanceDate,
-      issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
       cachedDetails: universityCredMetadataProps.cachedDetails,
       connectionType: ConnectionType.DIDCOMM,
@@ -628,7 +623,6 @@ describe("Credential service of agent", () => {
       id: id1,
       isArchived: false,
       issuanceDate: w3cCredentialRecord.credential.issuanceDate,
-      issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
       cachedDetails: residencyCredMetadataProps.cachedDetails,
       connectionType: ConnectionType.DIDCOMM,
@@ -650,7 +644,6 @@ describe("Credential service of agent", () => {
       id: id1,
       isArchived: false,
       issuanceDate: w3cCredentialRecord.credential.issuanceDate,
-      issuerLogo: undefined,
       status: CredentialMetadataRecordStatus.CONFIRMED,
       cachedDetails: summitCredMetadataProps.cachedDetails,
       connectionType: ConnectionType.DIDCOMM,
@@ -663,13 +656,15 @@ describe("Credential service of agent", () => {
     agent.w3cCredentials.getCredentialRecordById = jest
       .fn()
       .mockResolvedValue(w3cCredentialRecord);
-    agent.connections.findById = jest
-      .fn()
-      .mockResolvedValue({ imageUrl: "mockUrl" });
     const dataAfterUpdate = await credentialService.updateMetadataCompleted(
       credentialDoneExchangeRecord
     );
-    expect(dataAfterUpdate.issuerLogo).toEqual("mockUrl");
+    expect(dataAfterUpdate.status).toEqual(
+      CredentialMetadataRecordStatus.CONFIRMED
+    );
+    expect(dataAfterUpdate.credentialType).toEqual(
+      w3cCredentialRecord.credential.type[1]
+    );
   });
 
   test("negotiation credential must fail if did haven't found", async () => {
@@ -787,7 +782,6 @@ describe("Credential service of agent", () => {
     ).resolves.toStrictEqual({
       id: credentialMetadataRecordA.id,
       colors: credentialMetadataRecordA.colors,
-      issuerLogo: acdcMetadataRecord.issuerLogo,
       credentialType: acdcMetadataRecord.credentialType,
       issuanceDate: nowISO,
       cachedDetails: undefined,
@@ -1022,7 +1016,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
         connectionType: ConnectionType.KERI,
         issuanceDate: nowISO,
         cachedDetails: undefined,
-        issuerLogo: undefined,
         isDeleted: false,
         connectionId: undefined,
       });
@@ -1036,7 +1029,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       connectionType: ConnectionType.KERI,
       issuanceDate: nowISO,
       cachedDetails: undefined,
-      issuerLogo: undefined,
     });
   });
 

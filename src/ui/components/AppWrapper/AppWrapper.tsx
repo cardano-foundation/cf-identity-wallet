@@ -140,12 +140,12 @@ const credentialStateChangedHandler = async (
       credentialType: "",
       issuanceDate: credentialRecord.createdAt.toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
-      connectionId: credentialRecord.connectionId,
       connectionType: ConnectionType.DIDCOMM,
     };
     await AriesAgent.agent.credentials.createMetadata({
       ...credentialDetails,
       credentialRecordId: credentialRecord.id,
+      connectionId: credentialRecord.connectionId,
     });
     dispatch(setCurrentOperation(OperationType.ADD_CREDENTIAL));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));

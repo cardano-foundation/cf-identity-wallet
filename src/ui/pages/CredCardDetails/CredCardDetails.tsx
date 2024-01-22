@@ -60,6 +60,7 @@ import {
 } from "../../../core/agent/services/credentialService.types";
 import "../../components/CardDetailsElements/CardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
+import { ConnectionType } from "../../../core/agent/agent.types";
 
 const CredCardDetails = () => {
   const pageId = "credential-card-details";
@@ -98,13 +99,15 @@ const CredCardDetails = () => {
     // @ts-ignore -- remove this once support for ACDCDetails working.
     setCardData(cardDetails);
 
-    const connectionDetails =
-      cardDetails.connectionId &&
-      (await AriesAgent.agent.connections?.getConnectionById(
-        cardDetails.connectionId
-      ));
-    if (connectionDetails) {
-      setConnectionDetails(connectionDetails);
+    if (cardDetails.connectionType === ConnectionType.DIDCOMM) {
+      const connectionDetails =
+        cardDetails.connectionId &&
+        (await AriesAgent.agent.connections?.getConnectionById(
+          cardDetails.connectionId
+        ));
+      if (connectionDetails) {
+        setConnectionDetails(connectionDetails);
+      }
     }
   };
 
