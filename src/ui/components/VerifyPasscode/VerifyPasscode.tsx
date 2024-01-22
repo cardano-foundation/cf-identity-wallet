@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { IonButton, IonCol, IonGrid, IonModal, IonRow } from "@ionic/react";
+import { IonModal } from "@ionic/react";
 import { useHistory } from "react-router-dom";
 import { i18n } from "../../../i18n";
-import { PageLayout } from "../layout/PageLayout";
 import { ErrorMessage } from "../ErrorMessage";
 import { PasscodeModule } from "../PasscodeModule";
 import { Alert } from "../Alert";
@@ -21,12 +20,15 @@ import { VerifyPasscodeProps } from "./VerifyPasscode.types";
 import "./VerifyPasscode.scss";
 import { TabsRoutePath } from "../../../routes/paths";
 import { OperationType, ToastMsgType } from "../../globals/types";
+import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
+import { PageFooter } from "../PageFooter";
 
 const VerifyPasscode = ({
   isOpen,
   setIsOpen,
   onVerify,
 }: VerifyPasscodeProps) => {
+  const componentId = "verify-passcode";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
@@ -133,34 +135,23 @@ const VerifyPasscode = ({
   return (
     <IonModal
       isOpen={isOpen}
-      className="page-layout verify-passcode"
-      data-testid="verify-passcode"
+      className={componentId}
+      data-testid={componentId}
       onDidDismiss={() => handleClearState()}
     >
-      <PageLayout
-        header={true}
-        closeButton={true}
-        closeButtonLabel={`${i18n.t("verifypasscode.cancel")}`}
-        closeButtonAction={() => handleClearState()}
-      >
-        <IonGrid>
-          <IonRow>
-            <IonCol
-              className="verify-passcode-title"
-              data-testid="verify-passcode-title"
-            >
-              {i18n.t("verifypasscode.title")}
-            </IonCol>
-          </IonRow>
-          <IonRow>
-            <IonCol
-              className="verify-passcode-description"
-              data-testid="verify-passcode-description"
-            >
-              {i18n.t("verifypasscode.description")}
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+      <ResponsivePageLayout pageId={componentId + "-content"}>
+        <h2
+          className="verify-passcode-title"
+          data-testid="verify-passcode-title"
+        >
+          {i18n.t("verifypasscode.title")}
+        </h2>
+        <p
+          className="verify-passcode-description small-hide"
+          data-testid="verify-passcode-description"
+        >
+          {i18n.t("verifypasscode.description")}
+        </p>
         <PasscodeModule
           error={
             <ErrorMessage
@@ -176,21 +167,11 @@ const VerifyPasscode = ({
           handlePinChange={handlePinChange}
           handleRemove={handleRemove}
         />
-        <IonGrid>
-          <IonRow>
-            <IonCol className="continue-col">
-              <IonButton
-                shape="round"
-                expand="block"
-                fill="outline"
-                className="secondary-button"
-                onClick={() => setAlertIsOpen(true)}
-              >
-                {i18n.t("verifypasscode.forgotten.button")}
-              </IonButton>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
+        <PageFooter
+          pageId={componentId}
+          secondaryButtonText={`${i18n.t("verifypasscode.forgotten.button")}`}
+          secondaryButtonAction={() => setAlertIsOpen(true)}
+        />
         <Alert
           isOpen={alertIsOpen}
           setIsOpen={setAlertIsOpen}
@@ -200,7 +181,7 @@ const VerifyPasscode = ({
           cancelButtonText={cancelButtonText}
           actionConfirm={resetPasscode}
         />
-      </PageLayout>
+      </ResponsivePageLayout>
     </IonModal>
   );
 };
