@@ -139,7 +139,7 @@ const VerifyPasscode = ({
       data-testid={componentId}
       onDidDismiss={() => handleClearState()}
     >
-      <ResponsivePageLayout pageId={componentId + "-content"}>
+      <ResponsivePageLayout pageId={`${componentId}-content`}>
         <h2
           className="verify-passcode-title"
           data-testid="verify-passcode-title"
