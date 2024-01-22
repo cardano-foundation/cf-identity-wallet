@@ -4,6 +4,7 @@ import {
   ready as signifyReady,
   Tier,
   Operation,
+  randomPasscode,
 } from "signify-ts";
 import { AriesAgent } from "../../ariesAgent";
 
@@ -12,9 +13,6 @@ export class SignifyApi {
     "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly SIGNIFY_BRAN = "o123456a89aacxeaCaxkk"; // @TODO - foconnor: Shouldn't be hard-coded.
-  static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
-
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
@@ -34,7 +32,7 @@ export class SignifyApi {
     await signifyReady();
     this.signifyClient = new SignifyClient(
       SignifyApi.LOCAL_KERIA_ENDPOINT,
-      SignifyApi.SIGNIFY_BRAN,
+      randomPasscode(),  // Different on every restart but this is OK for our purposes.
       Tier.low,
       SignifyApi.LOCAL_KERIA_BOOT_ENDPOINT
     );
