@@ -757,6 +757,7 @@ describe("Credential service of agent", () => {
     agent.modules.generalStorage.getCredentialMetadata = jest
       .fn()
       .mockResolvedValue(acdcMetadataRecord);
+
     const acdc = {
       sad: {
         a: { LEI: "5493001KJTIIGC8Y1R17" },
@@ -767,12 +768,19 @@ describe("Credential service of agent", () => {
         v: "ACDC10JSON000197_",
       },
       schema: {
+        title: "Qualified vLEI Issuer Credential",
+        description: "vLEI Issuer Description",
+        version: "1.0.0",
         credentialType: "QualifiedvLEIIssuervLEICredential",
+      },
+      status: {
+        s: "0",
+        dt: nowISO,
       },
     };
     agent.modules.signify.getCredentialBySaid = jest
       .fn()
-      .mockResolvedValue({ credential: acdc, error: undefined });
+      .mockResolvedValue({ acdc });
 
     await expect(
       credentialService.getCredentialDetailsById(acdcMetadataRecord.id)
@@ -780,14 +788,22 @@ describe("Credential service of agent", () => {
       id: credentialMetadataRecordA.id,
       colors: credentialMetadataRecordA.colors,
       issuerLogo: acdcMetadataRecord.issuerLogo,
-      credentialSubject: acdc.sad.a,
       credentialType: acdcMetadataRecord.credentialType,
       issuanceDate: nowISO,
-      proofType: expect.any(String),
-      status: CredentialMetadataRecordStatus.CONFIRMED,
-      type: acdc.schema.credentialType,
       cachedDetails: undefined,
+      status: CredentialMetadataRecordStatus.CONFIRMED,
       connectionType: ConnectionType.KERI,
+      i: acdc.sad.i,
+      a: acdc.sad.a,
+      s: {
+        title: acdc.schema.title,
+        description: acdc.schema.description,
+        version: acdc.schema.version,
+      },
+      lastStatus: {
+        s: acdc.status.s,
+        dt: nowISO,
+      },
     });
   });
 });
@@ -907,7 +923,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
         signifyName: "holder",
       });
     agent.modules.signify.getCredentialBySaid = jest.fn().mockResolvedValue({
-      credential: {
+      acdc: {
         sad: {
           d: "id",
         },
@@ -991,5 +1007,47 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
     expect(
       agent.modules.generalStorage.saveCredentialMetadataRecord
     ).toBeCalledTimes(2);
+  });
+
+  test("can get credential short details by ID", async () => {
+    const id = "testid";
+    const credentialType = "TYPE-001";
+    agent.modules.generalStorage.getCredentialMetadata = jest
+      .fn()
+      .mockReturnValue({
+        id,
+        status: CredentialMetadataRecordStatus.CONFIRMED,
+        colors,
+        credentialType,
+        connectionType: ConnectionType.KERI,
+        issuanceDate: nowISO,
+        cachedDetails: undefined,
+        issuerLogo: undefined,
+        isDeleted: false,
+        connectionId: undefined,
+      });
+    expect(
+      await credentialService.getCredentialShortDetailsById(id)
+    ).toStrictEqual({
+      id,
+      colors,
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+      credentialType,
+      connectionType: ConnectionType.KERI,
+      issuanceDate: nowISO,
+      cachedDetails: undefined,
+      issuerLogo: undefined,
+    });
+  });
+
+  test("cannot get credential short details by ID if the credential does not exist", async () => {
+    agent.modules.generalStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue(null);
+    await expect(
+      credentialService.getCredentialShortDetailsById("randomid")
+    ).rejects.toThrowError(
+      CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+    );
   });
 });
