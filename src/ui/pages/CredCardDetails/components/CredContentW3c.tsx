@@ -17,13 +17,11 @@ import { ConnectionDetails } from "../../Connections/Connections.types";
 
 interface CredContentW3cProps {
   cardData: W3CCredentialDetails;
-  credentialSubject: JsonObject;
   connectionDetails: ConnectionDetails | undefined;
 }
 
 const CredContentW3c = ({
   cardData,
-  credentialSubject,
   connectionDetails,
 }: CredContentW3cProps) => {
   return (
@@ -37,9 +35,11 @@ const CredContentW3c = ({
           testId="card-details-credential-type"
         />
       </CardDetailsBlock>
-      {credentialSubject && (
+      {cardData.credentialSubject && (
         <CardDetailsBlock title={i18n.t("creds.card.details.attributes")}>
-          <CardDetailsAttributes data={credentialSubject} />
+          <CardDetailsAttributes
+            data={cardData.credentialSubject as JsonObject}
+          />
         </CardDetailsBlock>
       )}
       {connectionDetails?.label && (

@@ -1,9 +1,5 @@
-import {
-  keyOutline,
-  calendarNumberOutline,
-  informationCircleOutline,
-  pricetagOutline,
-} from "ionicons/icons";
+import { keyOutline, informationCircleOutline } from "ionicons/icons";
+
 import { JsonObject } from "@aries-framework/core";
 import { i18n } from "../../../../i18n";
 import {
@@ -11,30 +7,18 @@ import {
   CardDetailsItem,
   CardDetailsAttributes,
 } from "../../../components/CardDetailsElements";
-import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { ACDCDetails } from "../../../../core/agent/services/credentialService.types";
-import { ConnectionDetails } from "../../Connections/Connections.types";
 
-interface CredContentAcdcProps {
-  // @TODO - sdisalvo: fix this once support for ACDCDetails is working.
-  // cardData: ACDCDetails;
-  cardData: any;
-  credentialSubject: JsonObject;
-  connectionDetails: ConnectionDetails | undefined;
+interface ACDCContentProps {
+  cardData: ACDCDetails;
 }
 
-const CredContentAcdc = ({
-  cardData,
-  credentialSubject,
-  connectionDetails,
-}: CredContentAcdcProps) => {
+const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
   return (
     <div className="card-details-content">
       <CardDetailsBlock title={i18n.t("creds.card.details.title")}>
         <CardDetailsItem
-          info={cardData.credentialType
-            .replace(/([A-Z][a-z])/g, " $1")
-            .replace(/(\d)/g, " $1")}
+          info={cardData.credentialType}
           icon={informationCircleOutline}
           testId="card-details-credential-type"
         />
@@ -42,66 +26,28 @@ const CredContentAcdc = ({
       <CardDetailsBlock title={i18n.t("creds.card.details.description.label")}>
         {i18n.t("creds.card.details.description.content")}
       </CardDetailsBlock>
-      {credentialSubject && (
-        <CardDetailsBlock title={i18n.t("creds.card.details.attributes")}>
-          <CardDetailsAttributes data={credentialSubject} />
+      {cardData.a && (
+        <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>
+          <CardDetailsAttributes data={cardData.a as JsonObject} />
         </CardDetailsBlock>
       )}
-      {connectionDetails?.label && (
-        <CardDetailsBlock title={i18n.t("creds.card.details.connection")}>
-          <CardDetailsItem
-            info={connectionDetails.label}
-            icon={pricetagOutline}
-            testId="card-details-connection-label"
-          />
-          <CardDetailsItem
-            info={connectionDetails.id}
-            copyButton={true}
-            icon={keyOutline}
-            testId="card-details-connection-id"
-          />
-        </CardDetailsBlock>
-      )}
-      <CardDetailsBlock title={i18n.t("creds.card.details.issuancedate")}>
+      <CardDetailsBlock title={i18n.t("creds.card.details.schemaversion")}>
         <CardDetailsItem
-          info={
-            cardData.issuanceDate
-              ? formatShortDate(cardData.issuanceDate) +
-                " - " +
-                formatTimeToSec(cardData.issuanceDate)
-              : i18n.t("creds.card.details.notavailable")
-          }
-          icon={calendarNumberOutline}
-          testId="card-details-issuance-date"
-        />
-      </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("creds.card.details.expirationdate")}>
-        <CardDetailsItem
-          info={
-            cardData.expirationDate
-              ? formatShortDate(cardData.expirationDate) +
-                " - " +
-                formatTimeToSec(cardData.expirationDate)
-              : i18n.t("creds.card.details.notavailable")
-          }
-          icon={calendarNumberOutline}
-          testId="card-details-expiration-date"
-        />
-      </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("creds.card.details.prooftypes")}>
-        <CardDetailsItem
-          info={cardData.proofType}
+          info={cardData.s.version}
           icon={informationCircleOutline}
-          testId="card-details-proof-type"
+          testId="card-details-schema-version"
         />
-        {cardData.proofValue && (
-          <CardDetailsItem
-            info={cardData.proofValue}
-            copyButton={true}
-            icon={keyOutline}
-            testId="card-details-proof-value"
-          />
-        )}
+      </CardDetailsBlock>
+      <CardDetailsBlock title={i18n.t("creds.card.details.issuer")}>
+        <CardDetailsItem
+          info={cardData.i}
+          copyButton={true}
+          icon={keyOutline}
+          testId="card-details-issuer"
+        />
+      </CardDetailsBlock>
+      <CardDetailsBlock title={i18n.t("creds.card.details.status.label")}>
+        <CardDetailsAttributes data={cardData.lastStatus as JsonObject} />
       </CardDetailsBlock>
     </div>
   );

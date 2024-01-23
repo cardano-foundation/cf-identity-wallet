@@ -64,9 +64,9 @@ const CredCardDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<W3CCredentialDetails>();
-  // const [cardData, setCardData] = useState<W3CCredentialDetails | ACDCDetails>();
-  const [isVlei, setIsVlei] = useState(false);
+  const [cardData, setCardData] = useState<
+    W3CCredentialDetails | ACDCDetails
+  >();
   const [connectionDetails, setConnectionDetails] =
     useState<ConnectionDetails>();
   const isArchived =
@@ -84,10 +84,7 @@ const CredCardDetails = () => {
   const getCredDetails = async () => {
     const cardDetails =
       await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore -- remove this once support for ACDCDetails working.
     setCardData(cardDetails);
-    setIsVlei(cardDetails.credentialType.includes("vLEI"));
 
     if (cardDetails.connectionType === ConnectionType.DIDCOMM) {
       const connectionDetails =
@@ -235,11 +232,12 @@ const CredCardDetails = () => {
       </div>
     );
   } else {
-    const credentialSubject = cardData.credentialSubject;
-    // @TODO - sdisalvo: Prevent app crashing when credentialSubject is an array
-    // Keeping this as a safety net as we may want to show a message in the future.
-    if (Array.isArray(credentialSubject)) {
-      return null;
+    if (cardData.connectionType === ConnectionType.DIDCOMM) {
+      // @TODO - sdisalvo: Prevent app crashing when credentialSubject is an array
+      // Keeping this as a safety net as we may want to show a message in the future.
+      if (Array.isArray(cardData.credentialSubject)) {
+        return null;
+      }
     }
 
     return (
@@ -260,18 +258,13 @@ const CredCardDetails = () => {
             shortData={cardData}
             isActive={false}
           />
-          {isVlei ? (
-            <CredContentAcdc
+          {cardData.connectionType === ConnectionType.DIDCOMM ? (
+            <CredContentW3c
               cardData={cardData}
-              credentialSubject={credentialSubject}
               connectionDetails={connectionDetails}
             />
           ) : (
-            <CredContentW3c
-              cardData={cardData}
-              credentialSubject={credentialSubject}
-              connectionDetails={connectionDetails}
-            />
+            <CredContentAcdc cardData={cardData} />
           )}
           <PageFooter
             pageId={pageId}

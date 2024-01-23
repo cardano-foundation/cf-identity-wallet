@@ -755,7 +755,12 @@
           "label": "Description",
           "content": "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials"
         },
-        "attributes": "Attributes",
+        "attributes": {
+          "label": "Attributes",
+          "issuee": "Issuee",
+          "issuancedate": "Issuance Date",
+          "lei": "LEI"
+        },
         "schemaversion": "Schema Version",
         "issuer": "Issuer",
         "status": {

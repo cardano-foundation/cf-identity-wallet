@@ -1,16 +1,15 @@
-import { formatShortDate } from "../../utils/formatters";
+import { i18n } from "../../../i18n";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { CardDetailsAttributesProps } from "./CardDetailsElements.types";
 import { CardDetailsItem } from "./CardDetailsItem";
 
 const nestedObject = (item: any) => {
   return (
     <>
-      {item.length === 20 && item[19] === "Z" ? (
-        <span>{formatShortDate(item)}</span>
+      {item[10] === "T" ? (
+        <span>{formatShortDate(item) + " - " + formatTimeToSec(item)}</span>
       ) : (
-        typeof item === ("string" || "number") && (
-          <span>{item.replace(/([a-z])([A-Z])/g, "$1 $2")}</span>
-        )
+        typeof item === ("string" || "number") && <span>{item}</span>
       )}
       {typeof item === "object" && item !== null && (
         <div className="card-details-json-column">
@@ -39,39 +38,56 @@ const nestedObject = (item: any) => {
 
 const CardDetailsAttributes = ({ data }: CardDetailsAttributesProps) => {
   const attributes = Object.entries(data);
+  const reservedKeysFilter = (item: string) => {
+    switch (item) {
+    case "i":
+      return i18n.t("creds.card.details.attributes.issuee") + ":";
+    case "dt":
+      return i18n.t("creds.card.details.attributes.issuancedate") + ":";
+    case "LEI":
+      return i18n.t("creds.card.details.attributes.lei") + ":";
+    case "s":
+      return i18n.t("creds.card.details.status.label") + ":";
+    default:
+      return item.replace(/([a-z])([A-Z])/g, "$1 $2") + ":";
+    }
+  };
   return (
     <>
       {attributes.map((item, index) => {
-        return item[0] === "id" ? (
-          <CardDetailsItem
-            key={index}
-            info={item[1] as string}
-            copyButton={true}
-            testId="card-details-attributes-id"
-          />
-        ) : (
-          <div
-            className={
-              typeof item[1] !== ("string" || "number")
-                ? "card-details-json-column"
-                : "card-details-json-row"
-            }
-            key={index}
-          >
-            <span
-              className={
-                typeof item[1] !== ("string" || "number")
-                  ? "card-details-json-column"
-                  : "card-details-json-row"
-              }
+        switch (item[0]) {
+        case "id": {
+          return (
+            <CardDetailsItem
+              key={index}
+              info={item[1] as string}
+              copyButton={true}
+              testId="card-details-attributes-id"
+            />
+          );
+        }
+        case "d": {
+          return;
+        }
+        default: {
+          const isColumn =
+              typeof item[1] !== "string" && typeof item[1] !== "number";
+          const className = isColumn
+            ? "card-details-json-column"
+            : "card-details-json-row";
+          return (
+            <div
+              className={className}
+              key={index}
             >
-              <strong>
-                {item[0].replace(/([a-z])([A-Z])/g, "$1 $2") + ":"}
-              </strong>
-              {nestedObject(item[1])}
-            </span>
-          </div>
-        );
+              <span className={className}>
+                <strong>{reservedKeysFilter(item[0])}</strong>
+                {nestedObject(item[1])}
+              </span>
+            </div>
+          );
+        }
+        }
       })}
     </>
   );
