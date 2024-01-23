@@ -30,7 +30,7 @@ const CredContentAcdc = ({
 }: CredContentAcdcProps) => {
   return (
     <div className="card-details-content">
-      <CardDetailsBlock title="creds.card.details.title">
+      <CardDetailsBlock title={i18n.t("creds.card.details.title")}>
         <CardDetailsItem
           info={cardData.credentialType
             .replace(/([A-Z][a-z])/g, " $1")
@@ -39,13 +39,16 @@ const CredContentAcdc = ({
           testId="card-details-credential-type"
         />
       </CardDetailsBlock>
+      <CardDetailsBlock title={i18n.t("creds.card.details.description.label")}>
+        {i18n.t("creds.card.details.description.content")}
+      </CardDetailsBlock>
       {credentialSubject && (
-        <CardDetailsBlock title="creds.card.details.attributes">
+        <CardDetailsBlock title={i18n.t("creds.card.details.attributes")}>
           <CardDetailsAttributes data={credentialSubject} />
         </CardDetailsBlock>
       )}
       {connectionDetails?.label && (
-        <CardDetailsBlock title="creds.card.details.connection">
+        <CardDetailsBlock title={i18n.t("creds.card.details.connection")}>
           <CardDetailsItem
             info={connectionDetails.label}
             icon={pricetagOutline}
@@ -59,7 +62,7 @@ const CredContentAcdc = ({
           />
         </CardDetailsBlock>
       )}
-      <CardDetailsBlock title="creds.card.details.issuancedate">
+      <CardDetailsBlock title={i18n.t("creds.card.details.issuancedate")}>
         <CardDetailsItem
           info={
             cardData.issuanceDate
@@ -72,7 +75,7 @@ const CredContentAcdc = ({
           testId="card-details-issuance-date"
         />
       </CardDetailsBlock>
-      <CardDetailsBlock title="creds.card.details.expirationdate">
+      <CardDetailsBlock title={i18n.t("creds.card.details.expirationdate")}>
         <CardDetailsItem
           info={
             cardData.expirationDate
@@ -85,7 +88,7 @@ const CredContentAcdc = ({
           testId="card-details-expiration-date"
         />
       </CardDetailsBlock>
-      <CardDetailsBlock title="creds.card.details.prooftypes">
+      <CardDetailsBlock title={i18n.t("creds.card.details.prooftypes")}>
         <CardDetailsItem
           info={cardData.proofType}
           icon={informationCircleOutline}
