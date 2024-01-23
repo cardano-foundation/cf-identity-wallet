@@ -6,15 +6,7 @@ import {
   IonSpinner,
   useIonViewWillEnter,
 } from "@ionic/react";
-import {
-  ellipsisVertical,
-  keyOutline,
-  calendarNumberOutline,
-  informationCircleOutline,
-  heart,
-  heartOutline,
-  pricetagOutline,
-} from "ionicons/icons";
+import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -32,7 +24,6 @@ import {
   Alert as AlertDeleteArchive,
   Alert as AlertRestore,
 } from "../../components/Alert";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { CredsOptions } from "../../components/CredsOptions";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
@@ -50,17 +41,14 @@ import { CredCardTemplate } from "../../components/CredCardTemplate";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { ConnectionDetails } from "../Connections/Connections.types";
 import {
-  CardDetailsAttributes,
-  CardDetailsBlock,
-  CardDetailsItem,
-} from "../../components/CardDetailsElements";
-import {
   ACDCDetails,
   W3CCredentialDetails,
 } from "../../../core/agent/services/credentialService.types";
 import "../../components/CardDetailsElements/CardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
 import { ConnectionType } from "../../../core/agent/agent.types";
+import { CredContentW3c } from "./CredContentW3c";
+import { CredContentAcdc } from "./CredContentAcdc";
 
 const CredCardDetails = () => {
   const pageId = "credential-card-details";
@@ -78,6 +66,7 @@ const CredCardDetails = () => {
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<W3CCredentialDetails>();
   // const [cardData, setCardData] = useState<W3CCredentialDetails | ACDCDetails>();
+  const [isVlei, setIsVlei] = useState(false);
   const [connectionDetails, setConnectionDetails] =
     useState<ConnectionDetails>();
   const isArchived =
@@ -98,6 +87,7 @@ const CredCardDetails = () => {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore -- remove this once support for ACDCDetails working.
     setCardData(cardDetails);
+    setIsVlei(cardDetails.credentialType.includes("vLEI"));
 
     if (cardDetails.connectionType === ConnectionType.DIDCOMM) {
       const connectionDetails =
@@ -270,99 +260,38 @@ const CredCardDetails = () => {
             shortData={cardData}
             isActive={false}
           />
-          <div className="card-details-content">
-            <CardDetailsBlock title="creds.card.details.type">
-              <CardDetailsItem
-                info={cardData.credentialType
-                  .replace(/([A-Z][a-z])/g, " $1")
-                  .replace(/(\d)/g, " $1")}
-                icon={informationCircleOutline}
-                testId="card-details-credential-type"
-              />
-            </CardDetailsBlock>
-            {credentialSubject && (
-              <CardDetailsBlock title="creds.card.details.attributes">
-                <CardDetailsAttributes data={credentialSubject} />
-              </CardDetailsBlock>
-            )}
-            {connectionDetails?.label && (
-              <CardDetailsBlock title="creds.card.details.connection">
-                <CardDetailsItem
-                  info={connectionDetails.label}
-                  icon={pricetagOutline}
-                  testId="card-details-connection-label"
-                />
-                <CardDetailsItem
-                  info={connectionDetails.id}
-                  copyButton={true}
-                  icon={keyOutline}
-                  testId="card-details-connection-id"
-                />
-              </CardDetailsBlock>
-            )}
-            <CardDetailsBlock title="creds.card.details.issuancedate">
-              <CardDetailsItem
-                info={
-                  cardData.issuanceDate
-                    ? formatShortDate(cardData.issuanceDate) +
-                      " - " +
-                      formatTimeToSec(cardData.issuanceDate)
-                    : i18n.t("creds.card.details.notavailable")
-                }
-                icon={calendarNumberOutline}
-                testId="card-details-issuance-date"
-              />
-            </CardDetailsBlock>
-            <CardDetailsBlock title="creds.card.details.expirationdate">
-              <CardDetailsItem
-                info={
-                  cardData.expirationDate
-                    ? formatShortDate(cardData.expirationDate) +
-                      " - " +
-                      formatTimeToSec(cardData.expirationDate)
-                    : i18n.t("creds.card.details.notavailable")
-                }
-                icon={calendarNumberOutline}
-                testId="card-details-expiration-date"
-              />
-            </CardDetailsBlock>
-            <CardDetailsBlock title="creds.card.details.prooftypes">
-              <CardDetailsItem
-                info={cardData.proofType}
-                icon={informationCircleOutline}
-                testId="card-details-proof-type"
-              />
-              {cardData.proofValue && (
-                <CardDetailsItem
-                  info={cardData.proofValue}
-                  copyButton={true}
-                  icon={keyOutline}
-                  testId="card-details-proof-value"
-                />
-              )}
-            </CardDetailsBlock>
-            <PageFooter
-              pageId={pageId}
-              archiveButtonText={
-                !isArchived
-                  ? `${i18n.t("creds.card.details.button.archive")}`
-                  : ""
-              }
-              archiveButtonAction={() => {
-                setAlertDeleteArchiveIsOpen(true);
-                dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
-              }}
-              deleteButtonText={
-                isArchived
-                  ? `${i18n.t("creds.card.details.button.delete")}`
-                  : ""
-              }
-              deleteButtonAction={() => {
-                setAlertDeleteArchiveIsOpen(true);
-                dispatch(setCurrentOperation(OperationType.DELETE_CREDENTIAL));
-              }}
+          {isVlei ? (
+            <CredContentAcdc
+              cardData={cardData}
+              credentialSubject={credentialSubject}
+              connectionDetails={connectionDetails}
             />
-          </div>
+          ) : (
+            <CredContentW3c
+              cardData={cardData}
+              credentialSubject={credentialSubject}
+              connectionDetails={connectionDetails}
+            />
+          )}
+          <PageFooter
+            pageId={pageId}
+            archiveButtonText={
+              !isArchived
+                ? `${i18n.t("creds.card.details.button.archive")}`
+                : ""
+            }
+            archiveButtonAction={() => {
+              setAlertDeleteArchiveIsOpen(true);
+              dispatch(setCurrentOperation(OperationType.ARCHIVE_CREDENTIAL));
+            }}
+            deleteButtonText={
+              isArchived ? `${i18n.t("creds.card.details.button.delete")}` : ""
+            }
+            deleteButtonAction={() => {
+              setAlertDeleteArchiveIsOpen(true);
+              dispatch(setCurrentOperation(OperationType.DELETE_CREDENTIAL));
+            }}
+          />
           <CredsOptions
             optionsIsOpen={optionsIsOpen}
             setOptionsIsOpen={setOptionsIsOpen}
