@@ -1,4 +1,5 @@
 import { DidRecord, KeyType, utils } from "@aries-framework/core";
+import { Signer } from "signify-ts";
 import {
   DIDDetails,
   GetIdentifierResult,
@@ -212,6 +213,16 @@ class IdentifierService extends AgentService {
       identifier,
       { theme: data.theme, displayName: data.displayName }
     );
+  }
+
+  async getSigner(identifier: string): Promise<Signer> {
+    const metadata = await this.getMetadataById(identifier);
+    this.validIdentifierMetadata(metadata);
+    const aid = (await this.agent.modules.signify.getIdentifierByName(
+      metadata.signifyName as string
+    )) as Aid;
+
+    return this.agent.modules.signify.getSigner(aid);
   }
 
   async syncKeriaIdentifiers() {

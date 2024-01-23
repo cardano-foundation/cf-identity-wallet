@@ -10,6 +10,7 @@ import {
   messagize,
   Serder,
   EventResult,
+  Signer,
 } from "signify-ts";
 import {
   KeriContact,
@@ -363,5 +364,11 @@ export class SignifyApi {
       icpResult: icpResult,
       name: name,
     };
+  }
+
+  async getSigner(aid: Aid): Promise<Signer> {
+    const client = this.signifyClient;
+    const signer = await client.manager?.get(aid);
+    return signer;
   }
 }
