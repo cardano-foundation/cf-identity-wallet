@@ -5,15 +5,15 @@ import {
   pricetagOutline,
 } from "ionicons/icons";
 import { JsonObject } from "@aries-framework/core";
-import { i18n } from "../../../i18n";
+import { i18n } from "../../../../i18n";
 import {
   CardDetailsBlock,
   CardDetailsItem,
   CardDetailsAttributes,
-} from "../../components/CardDetailsElements";
-import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
-import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
-import { ConnectionDetails } from "../Connections/Connections.types";
+} from "../../../components/CardDetailsElements";
+import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
+import { ACDCDetails } from "../../../../core/agent/services/credentialService.types";
+import { ConnectionDetails } from "../../Connections/Connections.types";
 
 interface CredContentAcdcProps {
   // @TODO - sdisalvo: fix this once support for ACDCDetails is working.

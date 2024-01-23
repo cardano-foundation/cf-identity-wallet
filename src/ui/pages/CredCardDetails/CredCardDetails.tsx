@@ -47,8 +47,8 @@ import {
 import "../../components/CardDetailsElements/CardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
 import { ConnectionType } from "../../../core/agent/agent.types";
-import { CredContentW3c } from "./CredContentW3c";
-import { CredContentAcdc } from "./CredContentAcdc";
+import { CredContentW3c } from "./components/CredContentW3c";
+import { CredContentAcdc } from "./components/CredContentAcdc";
 
 const CredCardDetails = () => {
   const pageId = "credential-card-details";
