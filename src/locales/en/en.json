@@ -750,7 +750,20 @@
         "done": "Done",
         "restore": "Restore",
         "type": "Type",
+        "title": "Title",
+        "description": {
+          "label": "Description",
+          "content": "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials"
+        },
         "attributes": "Attributes",
+        "schemaversion": "Schema Version",
+        "issuer": "Issuer",
+        "status": {
+          "label": "Status",
+          "issued": "Issued",
+          "revoked": "Revoked",
+          "timestamp": "Timestamp"
+        },
         "connection": "Connection",
         "issuancedate": "Issuance Date",
         "expirationdate": "Expiration date",

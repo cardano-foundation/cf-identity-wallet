@@ -57,7 +57,7 @@ const CredCardTemplate = ({
             ? shortData.credentialType
               .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
               .toLowerCase()
-            : "card-body-w3c"
+            : "card-body-generic"
         }`}
         onClick={() => {
           if (shortData.status === CredentialMetadataRecordStatus.PENDING) {
@@ -109,7 +109,12 @@ const CredCardTemplate = ({
               </IonChip>
             ) : (
               <span className="credential-type">
-                {shortData.credentialType.replace(/([a-z])([A-Z])/g, "$1 $2")}
+                {isAcdcTemplate
+                  ? shortData.credentialType
+                  : shortData.credentialType.replace(
+                    /([a-z])([A-Z])/g,
+                    "$1 $2"
+                  )}
               </span>
             )}
           </div>
