@@ -1,5 +1,4 @@
 import { keyOutline, informationCircleOutline } from "ionicons/icons";
-
 import { JsonObject } from "@aries-framework/core";
 import { i18n } from "../../../../i18n";
 import {
@@ -47,7 +46,10 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
         />
       </CardDetailsBlock>
       <CardDetailsBlock title={i18n.t("creds.card.details.status.label")}>
-        <CardDetailsAttributes data={cardData.lastStatus as JsonObject} />
+        <CardDetailsAttributes
+          data={cardData.lastStatus as JsonObject}
+          customType="status"
+        />
       </CardDetailsBlock>
     </div>
   );

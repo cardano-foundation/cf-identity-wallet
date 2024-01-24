@@ -232,12 +232,13 @@ const CredCardDetails = () => {
       </div>
     );
   } else {
-    if (cardData.connectionType === ConnectionType.DIDCOMM) {
+    if (
+      cardData.connectionType === ConnectionType.DIDCOMM &&
+      Array.isArray(cardData.credentialSubject)
+    ) {
       // @TODO - sdisalvo: Prevent app crashing when credentialSubject is an array
       // Keeping this as a safety net as we may want to show a message in the future.
-      if (Array.isArray(cardData.credentialSubject)) {
-        return null;
-      }
+      return null;
     }
 
     return (
