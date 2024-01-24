@@ -105,6 +105,39 @@ export class SignifyApi {
     }
   }
 
+  async createDelegationIdentifier(delegatorPrefix: string): Promise<string> {
+    const signifyName = utils.uuid();
+    const icpResult2 = await this.signifyClient
+      .identifiers()
+      .create(signifyName, { delpre: delegatorPrefix });
+    const operation = await icpResult2.op();
+    // no need to wait for operation to complete because it needs to be interacted from delegator
+    const delegatePrefix = operation.name.split(".")[1];
+    return delegatePrefix;
+  }
+
+  async interactDelegation(signifyName: string, delegatePrefix: string) {
+    const anchor = {
+      i: delegatePrefix,
+      s: "0",
+      d: delegatePrefix,
+    };
+    return this.signifyClient.identifiers().interact(signifyName, anchor);
+  }
+
+  async checkDelegationSuccess(signifyName: string): Promise<boolean> {
+    const identifier = await this.signifyClient.identifiers().get(signifyName);
+    const operation = await this.signifyClient
+      .keyStates()
+      .query(identifier.state.di, 1);
+    await this.waitAndGetDoneOp(
+      operation,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    return operation.done;
+  }
+
   async getIdentifierByName(name: string): Promise<any> {
     return this.signifyClient.identifiers().get(name);
   }
