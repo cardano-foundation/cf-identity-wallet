@@ -33,7 +33,6 @@ const CredCardTemplate = ({
   const isAccessPass =
     shortData?.credentialType === CredentialType.ACCESS_PASS_CREDENTIAL;
   const isCustomTemplate = isResidency || isAccessPass;
-  /* Temporary swapping W3C and ACDC templates until we have a way to get ACDC data */
   const isW3CTemplate = shortData?.connectionType === ConnectionType.DIDCOMM;
   const isAcdcTemplate = shortData?.connectionType === ConnectionType.KERI;
 
@@ -68,7 +67,7 @@ const CredCardTemplate = ({
         }}
         style={divStyle}
       >
-        {isW3CTemplate && (
+        {isW3CTemplate && !isCustomTemplate && (
           <img
             src={W3CLogo}
             alt="w3c-card-background"
