@@ -14,7 +14,7 @@ const IdentifierCardTemplate = ({
   index = 0,
   onHandleShowCardDetails,
 }: IdentifierCardTemplateProps) => {
-  const divStyle = {
+  const identifierCardTemplateStyles = {
     backgroundImage: `url(${IDENTIFIER_BG_MAPPING[cardData.theme]})`,
     backgroundSize: "cover",
     zIndex: index,
@@ -32,7 +32,7 @@ const IdentifierCardTemplate = ({
           onHandleShowCardDetails(index);
         }
       }}
-      style={divStyle}
+      style={identifierCardTemplateStyles}
     >
       <div className="identifier-card-template-inner">
         <div className="card-header">

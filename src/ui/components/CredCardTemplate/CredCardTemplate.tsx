@@ -36,7 +36,7 @@ const CredCardTemplate = ({
   const isW3CTemplate = shortData?.connectionType === ConnectionType.DIDCOMM;
   const isAcdcTemplate = shortData?.connectionType === ConnectionType.KERI;
 
-  const divStyle = {
+  const credCardTemplateStyles = {
     zIndex: index,
     ...(isAcdcTemplate && {
       backgroundImage: `url(${KeriBackground})`,
@@ -65,7 +65,7 @@ const CredCardTemplate = ({
             onHandleShowCardDetails(index);
           }
         }}
-        style={divStyle}
+        style={credCardTemplateStyles}
       >
         {isW3CTemplate && !isCustomTemplate && (
           <img
