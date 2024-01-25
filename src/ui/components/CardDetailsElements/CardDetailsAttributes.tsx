@@ -104,7 +104,7 @@ const CardDetailsAttributes = ({
                 key={index}
                 keyValue={`${reservedKeysFilter(item[0])}:`}
                 info={item[1] as string}
-                copyButton={true}
+                copyButton={`${item[1]}`.length > 15}
                 testId="card-details-generic-attribute"
               />
             ) : (
