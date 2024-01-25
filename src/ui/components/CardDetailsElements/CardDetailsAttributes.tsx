@@ -105,7 +105,7 @@ const CardDetailsAttributes = ({
                 keyValue={`${reservedKeysFilter(item[0])}:`}
                 info={item[1] as string}
                 copyButton={true}
-                testId="card-details-attributes-id"
+                testId="card-details-generic-attribute"
               />
             ) : (
               <div
