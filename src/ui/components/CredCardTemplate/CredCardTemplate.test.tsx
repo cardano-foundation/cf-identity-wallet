@@ -1,10 +1,26 @@
-import { act, fireEvent, render } from "@testing-library/react";
+import { act, fireEvent, render, screen } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { store } from "../../../store";
 import { CredCardTemplate } from "./CredCardTemplate";
 import { shortCredsFix } from "../../__fixtures__/shortCredsFix";
+import CardBodyResidency from "./CardBodyResidence";
 
 describe("CredCardTemplate", () => {
+  it("should handle image loading error and display fallback image", () => {
+    const cardData = {
+      cachedDetails: {
+        image: "invalid-image-url",
+      },
+    };
+    render(<CardBodyResidency cardData={cardData} />);
+    const imageElement = screen.getByRole("img", {
+      name: /user-picture/i,
+    }) as HTMLImageElement;
+    const errorEvent = new Event("error");
+    imageElement.dispatchEvent(errorEvent);
+    expect(imageElement.src).toContain("http://localhost/undefined");
+  });
+
   it("renders University Degree Credential", async () => {
     const handleShowCardDetails = jest.fn();
     const { getByText, getByTestId, getByAltText } = render(
@@ -30,6 +46,7 @@ describe("CredCardTemplate", () => {
     });
     expect(handleShowCardDetails).toBeCalledTimes(1);
   });
+
   it("renders Access Pass Credential", async () => {
     const handleShowCardDetails = jest.fn();
     const { getByText, getByTestId, getByAltText } = render(
@@ -56,6 +73,7 @@ describe("CredCardTemplate", () => {
     });
     expect(handleShowCardDetails).toBeCalledTimes(1);
   });
+
   it("renders Permanent Resident Card", async () => {
     const handleShowCardDetails = jest.fn();
     const { getByText, getByTestId, getByAltText } = render(
@@ -84,6 +102,7 @@ describe("CredCardTemplate", () => {
     });
     expect(handleShowCardDetails).toBeCalledTimes(1);
   });
+
   it("renders ACDC card", async () => {
     const handleShowCardDetails = jest.fn();
     const { getByText, getByTestId, getByAltText } = render(
