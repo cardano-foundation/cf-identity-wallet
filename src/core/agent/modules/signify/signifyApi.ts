@@ -10,6 +10,7 @@ import {
   messagize,
   Serder,
   EventResult,
+  Operation,
 } from "signify-ts";
 import {
   KeriContact,
@@ -28,8 +29,6 @@ export class SignifyApi {
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
-  static readonly FAILED_TO_CREATE_IDENTIFIER =
-    "Failed to create new managed AID, operation not completing...";
 
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly BACKER_ADDRESS =
@@ -83,26 +82,22 @@ export class SignifyApi {
   }
 
   async createIdentifier(): Promise<CreateIdentifierResult> {
-    try {
-      const signifyName = utils.uuid();
-      const operation = await this.signifyClient
-        .identifiers()
-        .create(signifyName, SignifyApi.BACKER_CONFIG);
-      await operation.op();
-      await this.signifyClient
-        .identifiers()
-        .addEndRole(
-          signifyName,
-          SignifyApi.DEFAULT_ROLE,
-          this.signifyClient.agent!.pre
-        );
-      return {
+    const signifyName = utils.uuid();
+    const operation = await this.signifyClient
+      .identifiers()
+      .create(signifyName, SignifyApi.BACKER_CONFIG);
+    await operation.op();
+    await this.signifyClient
+      .identifiers()
+      .addEndRole(
         signifyName,
-        identifier: operation.serder.ked.i,
-      };
-    } catch {
-      throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
-    }
+        SignifyApi.DEFAULT_ROLE,
+        this.signifyClient.agent!.pre
+      );
+    return {
+      signifyName,
+      identifier: operation.serder.ked.i,
+    };
   }
 
   async getIdentifierByName(name: string): Promise<any> {
@@ -177,7 +172,9 @@ export class SignifyApi {
     return this.signifyClient.credentials().list();
   }
 
-  async getCredentialBySaid(sad: string): Promise<any> {
+  async getCredentialBySaid(
+    sad: string
+  ): Promise<{ acdc?: any; error?: unknown }> {
     try {
       const results = await this.signifyClient.credentials().list({
         filter: {
@@ -185,12 +182,10 @@ export class SignifyApi {
         },
       });
       return {
-        credential: results[0],
-        error: undefined,
+        acdc: results[0],
       };
     } catch (error) {
       return {
-        credential: undefined,
         error,
       };
     }
@@ -207,7 +202,7 @@ export class SignifyApi {
     op: any,
     timeout: number,
     interval: number
-  ): Promise<any> {
+  ): Promise<Operation> {
     const startTime = new Date().getTime();
     while (!op.done && new Date().getTime() < startTime + timeout) {
       op = await this.signifyClient.operations().get(op.name);
@@ -216,9 +211,8 @@ export class SignifyApi {
     return op;
   }
 
-  async getOpByName(name: string): Promise<any> {
-    const op = await this.signifyClient.operations().get(name);
-    return op;
+  async getOpByName(name: string): Promise<Operation> {
+    return this.signifyClient.operations().get(name);
   }
 
   private async getBran(): Promise<string> {

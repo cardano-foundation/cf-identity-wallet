@@ -6,7 +6,7 @@ import { identifierFix } from "../../__fixtures__/identifierFix";
 import { store } from "../../../store";
 import { IdentifierCardDetails } from "../../pages/IdentifierCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { credsFix } from "../../__fixtures__/credsFix";
+import { credsFixW3c } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -68,7 +68,10 @@ describe("Cards Stack Component", () => {
           name="example"
           cardsType={CardType.CREDS}
           cardsData={[
-            { ...credsFix[0], status: CredentialMetadataRecordStatus.PENDING },
+            {
+              ...credsFixW3c[0],
+              status: CredentialMetadataRecordStatus.PENDING,
+            },
           ]}
         />
       </Provider>
@@ -120,14 +123,14 @@ describe("Cards Stack Component", () => {
     jest.useFakeTimers();
     jest
       .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFix[0]);
+      .mockResolvedValue(credsFixW3c[0]);
     const { findByTestId } = render(
       <MemoryRouter>
         <Provider store={store}>
           <CardsStack
             name="example"
             cardsType={CardType.CREDS}
-            cardsData={credsFix}
+            cardsData={credsFixW3c}
           />
           <Route
             path={TabsRoutePath.CRED_DETAILS}

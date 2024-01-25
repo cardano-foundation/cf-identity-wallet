@@ -5,6 +5,7 @@ interface CardDetailsItemProps {
   info: string;
   copyButton?: boolean;
   icon?: string;
+  keyValue?: string;
   textIcon?: string;
   testId?: string;
 }
@@ -16,6 +17,7 @@ interface CardDetailsBlockProps {
 
 interface CardDetailsAttributesProps {
   data: JsonObject;
+  customType?: string;
 }
 
 export type {

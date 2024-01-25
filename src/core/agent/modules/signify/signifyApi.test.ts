@@ -232,8 +232,8 @@ describe("Signify API", () => {
 
   test("Should return undefined when there's no credential", async () => {
     const said = "not-found-said";
-    const { credential } = await api.getCredentialBySaid(said);
-    expect(credential).toBeUndefined();
+    const { acdc } = await api.getCredentialBySaid(said);
+    expect(acdc).toBeUndefined();
   });
 
   test("can get identifier by id", async () => {

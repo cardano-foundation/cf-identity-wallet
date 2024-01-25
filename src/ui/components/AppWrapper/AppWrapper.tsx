@@ -140,12 +140,12 @@ const credentialStateChangedHandler = async (
       credentialType: "",
       issuanceDate: credentialRecord.createdAt.toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
-      connectionId: credentialRecord.connectionId,
       connectionType: ConnectionType.DIDCOMM,
     };
     await AriesAgent.agent.credentials.createMetadata({
       ...credentialDetails,
       credentialRecordId: credentialRecord.id,
+      connectionId: credentialRecord.connectionId,
     });
     dispatch(setCurrentOperation(OperationType.ADD_CREDENTIAL));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));
@@ -212,6 +212,7 @@ const keriAcdcChangeHandler = async (
     dispatch(setCurrentOperation(OperationType.ADD_CREDENTIAL));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_REQUEST_PENDING));
   } else {
+    dispatch(updateOrAddCredsCache(event.payload.credential));
     dispatch(setToastMsg(ToastMsgType.NEW_CREDENTIAL_ADDED));
     dispatch(setCurrentOperation(OperationType.IDLE));
   }
@@ -254,6 +255,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     } catch (e) {
       // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
       setAgentInitErr(true);
+      // eslint-disable-next-line no-console
+      console.error(e);
       return;
     }
 
