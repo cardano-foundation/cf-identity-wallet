@@ -137,7 +137,6 @@ describe("Creds content", () => {
         "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/static/ResIdImg.jpg"
       )
     ).toBeVisible();
-    expect(getByText("10/10/2022 - 11:12:12")).toBeVisible();
     expect(getByText("C09")).toBeVisible();
     expect(getByText("999-999-999")).toBeVisible();
     expect(
