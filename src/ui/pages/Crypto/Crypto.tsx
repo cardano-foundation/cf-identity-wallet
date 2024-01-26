@@ -1,4 +1,4 @@
-import { IonPage, useIonViewWillEnter } from "@ionic/react";
+import { useIonViewWillEnter } from "@ionic/react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
@@ -7,6 +7,7 @@ import "./Crypto.scss";
 import { i18n } from "../../../i18n";
 
 const Crypto = () => {
+  const pageId = "crypto-tab";
   const dispatch = useAppDispatch();
 
   useIonViewWillEnter(() => {
@@ -14,19 +15,15 @@ const Crypto = () => {
   });
 
   return (
-    <IonPage
-      className="tab-layout"
-      data-testid="crypto-tab"
+    <TabLayout
+      pageId={pageId}
+      header={true}
+      menuButton={true}
     >
-      <TabLayout
-        header={true}
-        menuButton={true}
-      >
-        <div className="crypto-tab-content">
-          <h2>{i18n.t("crypto.tab.header")}</h2>
-        </div>
-      </TabLayout>
-    </IonPage>
+      <div className="crypto-tab-content">
+        <h2>{i18n.t("crypto.tab.header")}</h2>
+      </div>
+    </TabLayout>
   );
 };
 

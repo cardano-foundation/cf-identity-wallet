@@ -98,6 +98,7 @@ export class GeneralStorageApi {
       if (data.theme) record.theme = data.theme;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
       if (data.isDeleted !== undefined) record.isDeleted = data.isDeleted;
+      if (data.isPending !== undefined) record.isPending = data.isPending;
       return this.identifierMetadataRepository.update(
         this.agentContext,
         record

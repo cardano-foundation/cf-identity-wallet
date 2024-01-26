@@ -2,7 +2,7 @@ import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
 
 // @TODO - sdisalvo: cardData should be of type CredentialDetails
-const CardBodyUniversity = ({ cardData }: any) => {
+const CardBodyGeneric = ({ cardData }: any) => {
   return (
     <>
       <div className="card-body">
@@ -12,14 +12,18 @@ const CardBodyUniversity = ({ cardData }: any) => {
       </div>
       <div className="card-footer">
         <div className="card-footer-column">
-          <span className="card-footer-column-label">
-            {i18n.t("creds.card.layout.type")}
-          </span>
-          <span className="card-footer-column-value">
-            {cardData.cachedDetails?.degreeType
-              ?.replace(/([A-Z][a-z])/g, " $1")
-              .replace(/(\d)/g, " $1")}
-          </span>
+          {cardData.cachedDetails?.degreeType && (
+            <>
+              <span className="card-footer-column-label">
+                {i18n.t("creds.card.layout.type")}
+              </span>
+              <span className="card-footer-column-value">
+                {cardData.cachedDetails?.degreeType
+                  ?.replace(/([A-Z][a-z])/g, " $1")
+                  .replace(/(\d)/g, " $1")}
+              </span>
+            </>
+          )}
         </div>
         <div className="card-footer-column">
           <span className="card-footer-column-label">
@@ -34,4 +38,4 @@ const CardBodyUniversity = ({ cardData }: any) => {
   );
 };
 
-export default CardBodyUniversity;
+export default CardBodyGeneric;

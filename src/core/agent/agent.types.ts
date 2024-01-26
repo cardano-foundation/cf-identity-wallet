@@ -1,6 +1,9 @@
 import { BaseEvent } from "@aries-framework/core";
 import { IdentifierMetadataRecordProps } from "./modules";
-import { CredentialStatus } from "./services/credentialService.types";
+import {
+  CredentialShortDetails,
+  CredentialStatus,
+} from "./services/credentialService.types";
 
 enum Blockchain {
   CARDANO = "Cardano",
@@ -50,6 +53,7 @@ interface ConnectionShortDetails {
   logo?: string;
   status: ConnectionStatus;
   type?: ConnectionType;
+  oobi?: string;
 }
 
 type ConnectionNoteDetails = {
@@ -67,11 +71,6 @@ interface ConnectionDetails extends ConnectionShortDetails {
   serviceEndpoints?: string[];
   notes?: ConnectionNoteDetails[];
 }
-
-type UpdateIdentityMetadata = Omit<
-  Partial<IdentifierMetadataRecordProps>,
-  "id" | "isArchived" | "name" | "method" | "createdAt"
->;
 
 enum CredentialType {
   UNIVERSITY_DEGREE_CREDENTIAL = "UniversityDegreeCredential",
@@ -95,10 +94,15 @@ interface ConnectionKeriStateChangedEvent extends BaseEvent {
 
 interface AcdcKeriStateChangedEvent extends BaseEvent {
   type: typeof AcdcKeriEventTypes.AcdcKeriStateChanged;
-  payload: {
-    credentialId: string;
-    status: CredentialStatus;
-  };
+  payload:
+    | {
+        status: CredentialStatus.PENDING;
+        credentialId: string;
+      }
+    | {
+        status: CredentialStatus.CONFIRMED;
+        credential: CredentialShortDetails;
+      };
 }
 
 interface KeriNotification {

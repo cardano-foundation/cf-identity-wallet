@@ -30,18 +30,6 @@
     background: var(--ion-color-light-grey);
     flex-direction: row;
     justify-content: center;
-
-    ion-icon {
-      font-size: 1.85em !important;
-    }
-  }
-
-  ion-title {
-    margin-left: 3.2rem;
-
-    &.md {
-      margin-left: 0.94rem;
-    }
   }
 
   > ion-content {
@@ -53,25 +41,24 @@
     height: 3rem;
   }
 
+  .connections-tab-center {
+    display: flex;
+    flex-direction: row;
+  }
+
   .alphabet-selector {
-    position: absolute;
-    z-index: 10;
-    top: calc(50% - 11.81rem);
-    right: 0;
-    height: 23.62rem;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-
-    a {
-      height: 0.625rem;
-    }
+    padding-top: 5.5rem;
+    height: 20rem;
 
     ion-button {
       width: 1.2rem;
-      height: 100%;
+      height: 1rem;
+      min-height: 1rem;
       margin: 0;
-      font-size: 0.625rem;
+      font-size: 0.5rem;
       font-style: normal;
       font-weight: 500;
       line-height: 0.875rem;
@@ -80,12 +67,31 @@
       --background-activated: transparent;
       --background-focused: transparent;
       --box-shadow: none;
-    }
-  }
 
-  .cards-stack-container {
-    height: 90vh;
-    padding-inline: 1.25rem;
+      &::part(native) {
+        padding: 0;
+      }
+    }
+
+    @media screen and (min-width: 375px) and (max-width: 389px) {
+      padding-top: 4rem;
+
+      ion-button {
+        height: 0.725rem;
+        font-size: 0.425rem;
+        min-height: 0.725rem;
+      }
+    }
+
+    @media screen and (min-width: 250px) and (max-width: 374px) {
+      padding-top: 3rem;
+
+      ion-button {
+        height: 0.65rem;
+        font-size: 0.325rem;
+        min-height: 0.65rem;
+      }
+    }
   }
 
   .connections-container {
@@ -95,7 +101,7 @@
       padding: 0;
 
       > ion-row > ion-col {
-        padding: 0 0 calc(2rem + env(safe-area-inset-bottom));
+        padding: 0 0 2rem;
       }
     }
 
@@ -105,7 +111,7 @@
   }
 
   .connections-list {
-    padding: 0 1.25rem;
+    padding: 0 0 0 1.25rem;
     background: var(--ion-color-light-grey);
 
     ion-row {
@@ -179,6 +185,89 @@
         span {
           text-transform: capitalize;
           margin-right: 4px;
+        }
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 375px) {
+    ion-header,
+    .cards-placeholder-container {
+      padding-inline: 1rem;
+    }
+
+    ion-searchbar {
+      padding: 0 1rem;
+      height: 2.4rem;
+
+      .searchbar-input {
+        font-size: 0.8rem;
+        height: 2rem;
+        padding: 0.2rem 2.5rem;
+      }
+
+      .searchbar-search-icon {
+        width: 0.8rem;
+
+        &.ios {
+          padding-left: 0.3rem;
+        }
+
+        &.md {
+          height: 0.8rem;
+        }
+      }
+    }
+
+    .connections-container {
+      height: 70vh;
+    }
+
+    .connections-list {
+      padding: 0 0 0 1rem;
+
+      ion-row {
+        padding: 0.25rem 0;
+      }
+
+      ion-item-divider {
+        height: 2.952rem;
+
+        ion-label {
+          font-size: 0.8rem;
+        }
+      }
+
+      ion-col {
+        &.connection-logo {
+          position: relative;
+
+          img {
+            width: 2.2rem;
+            height: 2.2rem;
+          }
+        }
+
+        &.connection-info {
+          .connection-name {
+            font-size: 0.8rem;
+            margin-bottom: 0.248rem;
+          }
+
+          .connection-date {
+            font-size: 0.7rem;
+          }
+        }
+
+        ion-chip {
+          width: 5.12rem;
+          height: 1.52rem;
+          margin: 0.24rem auto;
+          padding-inline: 0.496rem;
+
+          span {
+            margin-right: 3px;
+          }
         }
       }
     }

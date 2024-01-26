@@ -2,15 +2,14 @@ import { mockIonicReact } from "@ionic/react-test-utils";
 mockIonicReact();
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
-import i18next from "i18next";
 import { store } from "../../../store";
-import { ConnectionCredentialRequest } from "./ConnectionCredentialRequest";
-import { ConnectionCredentialRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import { IncomingRequest } from "./IncomingRequest";
+import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { AriesAgent } from "../../../core/agent/agent";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { i18n } from "../../../i18n";
 import {
-  setQueueConnectionCredentialRequest,
+  setQueueIncomingRequest,
   dequeueCredentialCredentialRequest,
 } from "../../../store/reducers/stateCache";
 
@@ -42,16 +41,16 @@ describe("Connection request", () => {
   });
   test("It renders connection request incoming", async () => {
     store.dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: "123",
-        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CONNECTION_INCOMING,
         logo: connectionMock.logo,
         label: connectionMock.label,
       })
     );
     const { container, getByText } = render(
       <Provider store={store}>
-        <ConnectionCredentialRequest />
+        <IncomingRequest />
       </Provider>
     );
     await waitFor(
@@ -70,9 +69,9 @@ describe("Connection request", () => {
   test("It renders connection request incoming and confirm request", async () => {
     const id = "123";
     store.dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: id,
-        type: ConnectionCredentialRequestType.CONNECTION_INCOMING,
+        type: IncomingRequestType.CONNECTION_INCOMING,
         logo: connectionMock.logo,
         label: connectionMock.label,
       })
@@ -84,10 +83,12 @@ describe("Connection request", () => {
 
     const { findByTestId } = render(
       <Provider store={store}>
-        <ConnectionCredentialRequest />
+        <IncomingRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("primary-button");
+    const continueButton = await findByTestId(
+      "primary-button-incoming-request"
+    );
 
     expect(continueButton).toBeInTheDocument();
 
@@ -103,9 +104,9 @@ describe("Connection request", () => {
   test("It renders connection response and confirm request", async () => {
     const id = "123";
     store.dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: id,
-        type: ConnectionCredentialRequestType.CONNECTION_RESPONSE,
+        type: IncomingRequestType.CONNECTION_RESPONSE,
         logo: connectionMock.logo,
         label: connectionMock.label,
       })
@@ -115,12 +116,14 @@ describe("Connection request", () => {
       "acceptResponseConnection"
     );
 
-    const { findByTestId, findByText } = render(
+    const { findByTestId } = render(
       <Provider store={store}>
-        <ConnectionCredentialRequest />
+        <IncomingRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("primary-button");
+    const continueButton = await findByTestId(
+      "primary-button-incoming-request"
+    );
     act(() => {
       fireEvent.click(continueButton);
     });
@@ -137,9 +140,9 @@ describe("Credential request", () => {
   test("It renders credential request and accept credential", async () => {
     const id = "456";
     store.dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: id,
-        type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
         logo: connectionMock.logo,
         label: connectionMock.label,
       })
@@ -149,12 +152,14 @@ describe("Credential request", () => {
       "acceptCredentialOffer"
     );
 
-    const { findByTestId, findByText } = render(
+    const { findByTestId } = render(
       <Provider store={store}>
-        <ConnectionCredentialRequest />
+        <IncomingRequest />
       </Provider>
     );
-    const continueButton = await findByTestId("primary-button");
+    const continueButton = await findByTestId(
+      "primary-button-incoming-request"
+    );
     act(() => {
       fireEvent.click(continueButton);
     });
@@ -165,9 +170,9 @@ describe("Credential request", () => {
   test("It renders credential request and decline credential", async () => {
     const id = "68";
     store.dispatch(
-      setQueueConnectionCredentialRequest({
+      setQueueIncomingRequest({
         id: id,
-        type: ConnectionCredentialRequestType.CREDENTIAL_OFFER_RECEIVED,
+        type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
       })
     );
     const declineCredentialOfferSpy = jest.spyOn(
@@ -177,7 +182,7 @@ describe("Credential request", () => {
 
     const { findByText } = render(
       <Provider store={store}>
-        <ConnectionCredentialRequest />
+        <IncomingRequest />
       </Provider>
     );
     const btnCancel = await findByText(

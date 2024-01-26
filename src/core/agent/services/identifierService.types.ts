@@ -8,6 +8,7 @@ interface IdentifierShortDetails {
   method: IdentifierType;
   displayName: string;
   createdAtUTC: string;
+  signifyName?: string;
   colors: [string, string];
   theme: number;
 }
@@ -23,6 +24,8 @@ interface DIDDetails extends IdentifierShortDetails {
 }
 
 interface KERIDetails extends IdentifierShortDetails {
+  signifyOpName?: string;
+  isPending?: boolean;
   s: number;
   dt: string;
   kt: number;

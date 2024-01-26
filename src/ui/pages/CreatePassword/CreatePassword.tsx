@@ -19,7 +19,7 @@ import { OperationType } from "../../globals/types";
 import { MiscRecordId } from "../../../core/agent/agent.types";
 import { PageHeader } from "../../components/PageHeader";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import PageFooter from "../../components/PageFooter/PageFooter";
+import { PageFooter } from "../../components/PageFooter";
 import { passwordStrengthChecker } from "../../utils/passwordStrengthChecker";
 import { PasswordValidation } from "../../components/PasswordValidation";
 
@@ -105,7 +105,12 @@ const CreatePassword = () => {
       }
     >
       <h2 data-testid={`${pageId}-title`}>{i18n.t("createpassword.title")}</h2>
-      <p className="page-paragraph">{i18n.t("createpassword.description")}</p>
+      <p
+        className="page-paragraph"
+        data-testid={`${pageId}-top-paragraph`}
+      >
+        {i18n.t("createpassword.description")}
+      </p>
       <CustomInput
         dataTestId="createPasswordValue"
         title={`${i18n.t("createpassword.input.first.title")}`}

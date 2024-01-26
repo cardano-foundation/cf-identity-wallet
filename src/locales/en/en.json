@@ -96,9 +96,444 @@
     },
     "termsandconditions": {
       "text": "I have read and agree to the <0>{{clickableTerms}}</0> and <1>{{clickablePrivacy}}</1>.",
-      "terms": "Terms and Conditions",
+      "terms": "Terms of Use",
       "privacy": "Privacy Policy"
     }
+  },
+  "termsofuse": {
+    "done": "Done",
+    "intro": {
+      "title": "Terms of Use",
+      "text": "Please read these terms of use (\"Terms of Use\" or \"Terms\") carefully before using the services offered by Cardano Foundation (together with our subsidiaries and affiliates, referred to as \"Foundation,\" \"We,\" \"Us\" or \"Our\" in these Terms of Use). These Terms of Use set forth the legally binding terms and conditions for your use of this website and all of the related websites, mobile apps, products and services offered by the Foundation and its affiliated entities including our APK's, API's, plug-ins and browser extensions (collectively, the \"Products\"). By using the Products in any manner, you agree to be bound by these Terms of Use."
+    },
+    "sections": [
+      {
+        "title": "1. USE OF PRODUCTS",
+        "content": [
+          {
+            "subtitle": "a. Eligibility:",
+            "text": "You represent and warrant that you: (a) are of legal age to form a binding contract in your jurisdiction; (b) have not previously been suspended or removed from using the Products; and (c) have full power and authority to enter into these Terms of Use and in doing so will not violate any other agreement to which you are a party. If you are registering to use the Products on behalf of a legal entity, you further represent and warrant that (i) such legal entity is duly organized and validly existing under the applicable laws of the jurisdiction of its organization, and (ii) you are duly authorized by such legal entity to act on its behalf."
+          },
+          {
+            "subtitle": "b. Product Changes:",
+            "text": "We reserve the right to make changes or updates to the Products at any time without notice, for any reason at Our sole discretion. We retain the authority to modify, update, limit, or revoke your access to Our Products, including any related accounts, at any time and without prior notice, for any reason at Our sole discretion."
+          },
+          {
+            "subtitle": "c. Additional Terms:",
+            "text": "In addition, some Products may be subject to additional terms and conditions promulgated by the Foundation from time to time; your use of such Products is subject to those additional terms and conditions, which are incorporated into these Terms of Use by this reference. If there are any inconsistencies between these Terms of Use and the additional terms, the additional terms will take precedence."
+          },
+          {
+            "subtitle": "d. Download and use of Android Package Kit (“APK”) Products:",
+            "text": "The use of APK Products is subject to these Terms of Use, and by downloading and using APK Products, you agree to comply with these terms and any additional terms we may provide you concerning the use of APK Products. You acknowledge that downloading and installing APK Products requires manual installation on your device and that you are solely responsible for the process and any issues that may arise from installation and use. We ensure that the APK Products we provide are secure, but you must take necessary precautions to protect your device. We may offer limited support for APK Products, and you agree to seek support through the channels we designate. APK Products might not receive automatic updates and It is your responsibility to monitor and install any updates we provide."
+          },
+          {
+            "subtitle": "e. Privacy Policy:",
+            "text": "By using the Products in any way, you understand and acknowledge that the terms of the Privacy Policy apply to you."
+          },
+          {
+            "subtitle": "f. Feedback:",
+            "text": "We appreciate any feedback or suggestions you might have regarding Our Products. You can share your thoughts at https://cardanofoundation.org/en/contact-us/. When you provide feedback in any form, you give Us permission to use, share, and build upon your input as We see fit, without owing you anything in return."
+          },
+          {
+            "subtitle": "g. Dispute Resolution:",
+            "text": "If you have a dispute with the Foundation or a claim to raise in relation to the Products, you agree to contact Us using the form at https://cardanofoundation.org/en/contact-us/ to attempt to resolve the issue informally first."
+          }
+        ]
+      },
+      {
+        "title": "2. YOUR CONTENT",
+        "content": [
+          {
+            "subtitle": "a. Definition of 'Your Content':",
+            "text": "For the purposes of these Terms of Use, 'Your Content' refers to all materials you submit or transmit to, through, or in connection with Our Products, including but not limited to photographs, profile pictures, messages, comments, testimonials, and any other text, graphics, videos, or audio content."
+          },
+          {
+            "subtitle": "b. License Grant:",
+            "text": "By submitting, posting, or displaying Your Content on or through Our Products, you grant Us a non-exclusive, worldwide, royalty-free, fully paid-up, sublicensable, and transferable license to use, reproduce, process, distribute, create derivative works of, display, and perform Your Content in connection with Our Products and Our business, including for promoting and redistributing part or all of the Products (and derivative works thereof) in any media formats and through any media channels. This license will exist for the period during which Your Content is posted on Our Products or until We choose to remove it, whichever is shorter."
+          },
+          {
+            "subtitle": "c. Ownership of Your Content:",
+            "text": "You retain ownership rights in Your Content. However, by submitting Your Content to Our Products, you hereby grant Us the non-exclusive rights and license as set out above. Other than the rights and license you grant in these Terms of Use, We acknowledge and agree that We obtain no right, title, or interest from you under these Terms of Use in any of Your Content."
+          },
+          {
+            "subtitle": "d. Representations and Warranties:",
+            "text": "You represent and warrant that:\n\n- You either own Your Content or have the necessary licenses, rights, consents, and permissions to grant the rights and licenses as provided herein;\n- Your Content does not and will not infringe or violate any third party's intellectual property rights, proprietary rights, privacy rights, confidentiality, rights of publicity or otherwise violate these Terms of Use or applicable law; and\n- You have obtained all required permissions from any individual whose personal data is part of Your Content, allowing Us to use and disclose the data as set out in these Terms of Use."
+          },
+          {
+            "subtitle": "e. Your Responsibility:",
+            "text": "You are solely responsible for Your Content and the consequences of posting, publishing, or sharing it. We do not endorse any of Your Content or any opinion, recommendation, or advice expressed therein, and We expressly disclaim any and all liability in connection with Your Content."
+          }
+        ]
+      },
+      {
+        "title": "3. INTELLECTUAL PROPERTY",
+        "content": [
+          {
+            "subtitle": "a. Ownership:",
+            "text": "All intellectual property in or related to the Products, including but not limited to the software, 'Cardano' and 'ADA' marks, logos and the names and logos of the Products ('Our Intellectual Property'), is the property of the Foundation."
+          },
+          {
+            "subtitle": "b. Grant of Licence:",
+            "text": "We provide you a limited, non-exclusive licence to access and utilise Our Intellectual Property as part of your use of the Products, all in accordance with these Terms of Use. We retain the right to revoke this license at any time for any reason. Outside of the permissions explicitly granted in these Terms of Use, all other rights remain with Us."
+          },
+          {
+            "subtitle": "c. Restrictions:",
+            "text": "Except as provided in these Terms of Use, you agree not to copy, rent, lease, sell or distribute, or create derivative works of Our Intellectual Property Rights. Some Products might be governed by open-source licenses; in such instances, the terms of those specific licenses will apply. You should refer to the specific license terms accompanying each Product or component thereof to understand your rights and obligations. Any other use of the Foundation's intellectual property requires Our express written permission."
+          },
+          {
+            "subtitle": "d. Trademarks:",
+            "text": "You are granted no rights or license to use Foundation trademarks unless in strict accordance with the Foundation's trademark policy."
+          }
+        ]
+      },
+      {
+        "title": "4. DISCLAIMERS; LIMITATION OF LIABILITY",
+        "content": [
+          {
+            "subtitle": "a. Disclaimer of Warranties:",
+            "text": "YOU UNDERSTAND AND ACKNOWLEDGE THAT WE ARE PROVIDING THE PRODUCTS, SERVICES, INCLUDING RELATED INFORMATION AND CONTENT, ON AN 'AS IS' AND 'AS AVAILABLE' BASIS, WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED. THIS MAY INCLUDE PRODUCTS OFFERED IN 'BETA' VERSIONS, INTENDED TO PROVIDE THE FOUNDATION WITH FEEDBACK ON THE QUALITY AND USABILITY OF THE PRODUCTS AND APPLICATION PROGRAMMING INTERFACES (APIs). THE FOUNDATION ENTITIES MAKE NO REPRESENTATIONS AND EXPRESSLY DISCLAIM ALL WARRANTIES ABOUT THE SUITABILITY, MERCHANTABILITY, FITNESS FOR PURPOSE, RELIABILITY, AVAILABILITY, TIMELINESS, SECURITY, TITLE AND NON-INFRINGEMENT, ACCURACY OR COMPLETENESS, DATA SYNCHED TO OR MADE AVAILABLE FROM THE PRODUCTS, PRODUCT CONTENT, OR ANY CONSULTING SERVICES WE PROVIDE FOR ANY ASSOCIATED PURPOSE."
+          },
+          {
+            "subtitle": "No Indirect Damages:",
+            "text": "TO THE EXTENT PERMITTED BY LAW, IN NO EVENT WILL FOUNDATION ENTITIES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, PUNITIVE, OR CONSEQUENTIAL DAMAGES, OR LOSS OF PROFITS, REVENUE, DATA OR BUSINESS OPPORTUNITIES ARISING OUT OF OR RELATED TO THESE TERMS OF USE, WHETHER AN ACTION IS IN CONTRACT OR TORT AND REGARDLESS OF THE THEORY OF LIABILITY."
+          },
+          {
+            "subtitle": "b. Third Party Products:",
+            "text": "THE FOUNDATION ENTITIES MAKE NO PROMISES WITH RESPECT TO, AND EXPRESSLY DISCLAIM ALL LIABILITY, TO THE MAXIMUM EXTENT PERMITTED BY LAW, FOR: (i) CONTENT POSTED BY ANY THIRD-PARTY ON THE PRODUCTS, (ii) THE PRODUCT DESCRIPTIONS OR PRODUCTS, (iii) THIRD-PARTY SITES AND ANY THIRD-PARTY PRODUCT OR SERVICE LISTED ON OR ACCESSIBLE TO YOU THROUGH THE PRODUCTS, AND (iv) THE QUALITY OR CONDUCT OF ANY THIRD PARTY YOU ENCOUNTER IN CONNECTION WITH YOUR USE OF ANY PRODUCT OR WEBSITE ('Third Party Products)."
+          },
+          {
+            "subtitle": "c. Limitation of Liability:",
+            "text": "ANY LIABILITY OF THE FOUNDATION ENTITIES IS HEREBY LIMITED TO THE MAXIMUM EXTENT ALLOWED BY APPLICABLE LAW. THE AGGREGATE LIABILITY OF FOUNDATION ENTITIES WILL IN ANY EVENT BE LIMITED TO A SUM EQUAL TO THE TOTAL AMOUNTS PAID OR PAYABLE FOR THE PRODUCTS IN THE TWELVE MONTH PERIOD PRECEDING THE EVENT GIVING RISE TO A CLAIM; PROVIDED HOWEVER, THIS LIMITATION WILL NOT APPLY TO YOU IF NO SUCH FEES ARE PAYABLE, AND IN THIS CASE, IF WE ARE DETERMINED TO HAVE ANY LIABILITY TO YOU OR ANY THIRD PARTY ARISING FROM YOUR USE OF THE PRODUCTS, THEN OUR AGGREGATE LIABILITY WILL BE LIMITED TO ONE HUNDRED U.S. DOLLARS."
+          },
+          {
+            "subtitle": "d. Agreement to Liability Limit:",
+            "text": "YOU UNDERSTAND AND AGREE THAT ABSENT YOUR AGREEMENT TO THIS LIMITATION OF LIABILITY, WE WOULD NOT PROVIDE THE PRODUCTS TO YOU."
+          }
+        ]
+      },
+      {
+        "title": "5. INDEMNIFICATION",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "You agree to fully indemnify, defend and hold the Foundation Entities, including their directors, officers, employees, consultants, and other representatives, harmless from and against any claims, damages, losses, costs (including reasonable legal fees), and other expenses resulting directly or indirectly from: (a) any breach or noncompliance of these Terms of Use by you or your affiliates, inclusive of policies mentioned herein; (b) allegations that materials you provide or convey to the Products violate the intellectual property rights of a third party; (c) your or your affiliates' use of Third-Party Products; and/or (d) any negligent or intentional misconduct by you. You shall not agree to any settlement that (i) obligates Us in any manner; (ii) demands an admission from Us; or (iii) assigns liability beyond these indemnifications or restricts Us, without obtaining Our prior written approval."
+          }
+        ]
+      },
+      {
+        "title": "6. MISCELLANEOUS",
+        "content": [
+          {
+            "subtitle": "a. Amendment:",
+            "text": "We may modify any part or all of these Terms of Use. The revised version will become effective and binding the next business day after it is posted. We will provide you notice of this revision by email, website banner, in-product notification or publishing revised Terms of Use at this page, if applicable. YOU AGREE THAT YOUR CONTINUED USE OF THE PRODUCTS AFTER SUCH CHANGES BECOME EFFECTIVE CONSTITUTES YOUR ACCEPTANCE OF THE CHANGES. If you do not agree with a modification to the Terms of Use, you must notify Us in writing within thirty (30) days after We send notice of the revision. If We can no longer reasonably provide the Product to you under the terms prior to modification, then the Terms of Use and/or your access to the Products will terminate upon Our notice to you and We will promptly refund any prepaid but unused fees, if any, covering use of the Product."
+          },
+          {
+            "subtitle": "b. Application Provider Terms:",
+            "text": "These Terms of Use are between you and the Foundation only, and not with an application service or application platform provider (such as Apple, Inc., or Google Inc.), which may provide you the application subject to its own terms of use."
+          },
+          {
+            "subtitle": "c. Governing Law and Jurisdiction:",
+            "text": "These Terms of Use will be interpreted in accordance with the laws of Switzerland. You agree that any disputes arising out of or in connection with these Terms of Use, not otherwise resolved in accordance with dispute resolution provision set forth in section 1(f) shall be subject to the exclusive jurisdiction of the courts located in Zug, Switzerland."
+          },
+          {
+            "subtitle": "d. Languages:",
+            "text": "The English version of these Terms of Use is the definitive and binding version. All notices, alerts, and procedures communications concerning these Terms of Use will be executed in English, even if translations into other languages are made available. Should there be any discrepancies between the English version and other translations, the English version will take precedence, as permitted by law."
+          },
+          {
+            "subtitle": "e. Assignment:",
+            "text": "You may not assign, transfer, delegate, or sublicense any rights, obligations, or remedies under these Terms of Use without the prior written consent of the Foundation. Any such attempts without this consent will be considered void. We retain the discretion to assign, transfer, or delegate Our rights, obligations, or remedies under these Terms of Use as We see fit."
+          },
+          {
+            "subtitle": "f. Waiver:",
+            "text": "Our failure to assert a right or provision under these Terms of Use will not constitute a waiver of such right or provision."
+          },
+          {
+            "subtitle": "g. Entire Agreement and Severability:",
+            "text": "These Terms of Use supersede all prior terms, agreements, discussions and writings regarding the Products and constitutes the entire agreement between you and Us regarding the Products. If any part of these Terms of Use is determined to be invalid or unenforceable by applicable law, then the invalid or unenforceable provision will be deemed superseded by a valid, enforceable provision that most closely matches the intent of the original provision and the remainder of these Terms of Use will continue in effect."
+          },
+          {
+            "subtitle": "h. Survival:",
+            "text": "The following provisions will survive expiration or termination of these Terms of Use: Section 2 (Your Content), Section 3(a)(Ownership) and (c)(Restrictions), Section 4 (Disclaimers and Limitations of Liability), Section 5 (indemnification), Section 1(f) (Dispute Resolution) and Section 6 (Miscellaneous)."
+          },
+          {
+            "subtitle": "i. Contact:",
+            "text": "Feel free to contact Us with any questions about these Terms of Use. You can also write to Us at:\n\nCardano Foundation,\nDammstrasse 16,\n6300, Zug,\nSwitzerland\nAttn: Legal"
+          }
+        ]
+      }
+    ]
+  },
+  "privacypolicy": {
+    "done": "Done",
+    "intro": {
+      "title": "Privacy Policy",
+      "text": "Cardano Foundation (referred to as \"Foundation\", \"We\", \"Our\", or \"Us\") is committed to innovating in digital identity management while prioritising user privacy and data protection. This Privacy Policy specifically applies to the Identity Wallet developed by the Cardano Foundation (the \"Identity Wallet\") and the website http://identity.cardanofoundation.org (the \"Products\"). The Identity Wallet is a product designed to facilitate the creation and management of digital identities using Key Event Receipt Infrastructure (KERI) and Decentralized Identifiers (DIDs), operating without linking to any real-world names or personal identifiable information (PII). The Identity Wallet does not require users to submit emails, names, phone numbers, or any documents. Instead, it provides a framework for users to manage their own digital identities autonomously. This is achieved by securely storing private key material on the user's device for identification purposes, enabling users to control their own identity information and securely communicate with other users and entities. This policy outlines our practices regarding the collection, use, disclosure, and protection of any data associated with the Identity Wallet. Note that this policy may differ from other privacy policies pertaining to different CF products or services. Please read this Privacy Policy carefully."
+    },
+    "sections": [
+      {
+        "title": "1. Data controller and contact details",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "The controller of the data processing described in this Privacy Policy is Cardano Foundation, unless we inform you otherwise in certain cases. You can notify Us of any data protection-related concerns using the following contact details:\n\nCardano Foundation\nDammstrasse 16\n6300 Zug\n\ngdpr@cardanofoundation.org"
+          }
+        ]
+      },
+      {
+        "title": "2. Types of Data Collected",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "For the Identity Wallet, We collect and manage data differently, aligning with our commitment to user privacy and secure identity management. We do not collect typical personal data like names, addresses, or contact information. When using the Products, the Foundation may ask you to provide certain information that can be used to identify or contact you 'Personal Data'. The types of Personal Data that We collect from you depend on the circumstances of collection, the nature of the Product used or the transaction undertaken. Data We collect may include, but is not limited to:"
+          },
+          {
+            "subtitle": "a. Device/ Network Data:",
+            "text": "Information regarding your interaction with a Product. This includes technical information (e.g., IP Address, MAC Address, SSIDs, etc.), online user ID, device characteristics (such as browser/OS version), web server logs, browser plug-ins, your time zone application logs and language settings, cookie data, usage data. It also includes practical information like any login information, information about how you use Our Products and interact with Us and limited technical information necessary for the operation and security of the wallet, such as device type and operating system version. This is to ensure the proper functioning of the wallet and to provide security features."
+          },
+          {
+            "subtitle": "",
+            "text": "To clarify, We do not collect the following data, which remains stored on the user's device:"
+          },
+          {
+            "subtitle": "- Identity Data:",
+            "text": "This includes any personal details users choose to employ for setting up or supporting their digital identities, like their names, physical addresses, identification documents, or proofs of residency and credentials."
+          },
+          {
+            "subtitle": "- Digital Identity Data:",
+            "text": "Information related to the digital identities created using the wallet, including KERI and DIDs. This does not include real-world names or personal details, unless the user opts to incorporate these details."
+          },
+          {
+            "subtitle": "- Private Key Material:",
+            "text": "This comprises private keys, which are essential for identity management and verification purposes."
+          }
+        ]
+      },
+      {
+        "title": "3. How we collect your Personal Data",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "You may give Us personal information when you use, apply or register for a Foundation product or otherwise submit information to use through the Products or other communications with Us. For example:"
+          },
+          {
+            "subtitle": "a.",
+            "text": "We may collect information when you create a profile on Our Products;"
+          },
+          {
+            "subtitle": "b.",
+            "text": "We may collect Device/Network Data when you access and use Our websites. Some of this data is necessary for Us to run Our website or to respond to your requests, like ticket bookings. Other data is huge help to Us in providing you with better services and maintaining a well-run organisation;"
+          },
+          {
+            "subtitle": "c.",
+            "text": "We may collect information about you from third parties; and other channels including Our support."
+          },
+          {
+            "subtitle": "d.",
+            "text": "We may collect data under any other contractual agreement or arrangement;"
+          }
+        ]
+      },
+      {
+        "title": "4. Use of Personal Data",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "We may use your Personal Data for the following purposes:"
+          },
+          {
+            "subtitle": "a.",
+            "text": "For legitimate business purposes and to provide the Products you request. This includes but is not limited to: fulfilling Our obligations to you and to financial or other institutions, compliance with laws, audits, protect rights, prevent fraud, and for business improvement, including sending relevant information, responding to law enforcement, gathering feedback, and addressing complaints or disputes;"
+          },
+          {
+            "subtitle": "b.",
+            "text": "to protect the safety and the well being of yourself and/or other users;"
+          },
+          {
+            "subtitle": "c.",
+            "text": "for business development purposes such as statistical and marketing analysis, systems testing, maintenance and development, customer surveys or to help Us in any future dealings with you, for example by identifying your requirements and preference; for all other purposes ancillary to any of the purposes stated above (\"Ancillary Purposes\");"
+          },
+          {
+            "subtitle": "d.",
+            "text": "based on your consent: If you have given us consent to process your personal data for certain purposes, we process your personal data within the scope of and based on this consent, unless we have another legal basis and we require such a basis. Consent given can be revoked at any time, but this has no effect on data processing that has already taken place."
+          },
+          {
+            "subtitle": "",
+            "text": "(collectively, \"Purposes\")"
+          }
+        ]
+      },
+      {
+        "title": "5. Data Security and Transfer",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "While no system is absolutely secure, We use reasonable technical and organisational precautions to protect your data and to respect your privacy."
+          },
+          {
+            "subtitle": "",
+            "text": "We employ measures like encryption, secure physical storage, limited access zones, confidentiality agreements, and routine assessments for timely data deletion to safeguard your information."
+          },
+          {
+            "subtitle": "",
+            "text": "The Identity Wallet is designed to store Digital Identity Data and Private Key Material directly on the user's device. As such, no transfer of this data occurs to Cardano Foundation servers or external entities, providing an additional layer of privacy and security."
+          },
+          {
+            "subtitle": "",
+            "text": "Personal Data may be transferred to, and stored at a destination outside the European Economic Area (\"EEA\") where there are appropriate safeguards in place pursuant to Article 46 of the GDPR. This data might be handled by Our staff or Our suppliers outside the EEA for various tasks, including service provision. By providing your personal data, you consent to such transfers, storage, or processing."
+          }
+        ]
+      },
+      {
+        "title": "6. Retention",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "The Foundation will hold onto your Personal Data only as long as needed based on the reasons outlined in this Privacy Policy."
+          },
+          {
+            "subtitle": "",
+            "text": "Digital Identity Data and Private Key Material will be retained on the user's device and will not be stored on Cardano Foundation servers. Users have full control over this data, including its deletion."
+          },
+          {
+            "subtitle": "",
+            "text": "Device/Network Data will be retained only as long as necessary for operational and security purposes. This data will be subject to regular review and deletion as per our data minimization principles."
+          },
+          {
+            "subtitle": "",
+            "text": "We will store and utilize your Personal Data as long as it's required to meet legal obligations, address disagreements, and uphold Our legal agreements and policies. Additionally, We will keep usage data for Our internal analysis purposes. Typically, usage data is kept for a shorter duration unless it aids in enhancing product security or functionality, or when legal requirements necessitate longer retention."
+          }
+        ]
+      },
+      {
+        "title": "7. Data Disclosure",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "We will not trade or sell your Personal Data to third parties."
+          },
+          {
+            "subtitle": "",
+            "text": "We will not disclose any Digital Identity Data or Private Key Information to third parties, as this data is stored solely on the user's device."
+          },
+          {
+            "subtitle": "",
+            "text": "Your other Personal Data, if any, shall only be disclosed or transferred to the following third parties appointed or authorised by the Foundation for the fulfilment of the Purposes described herein, in accordance with GDPR principles such as consent, contractual necessity, legal obligation, vital interests, public task, and legitimate interests. This may include third party processors, such as:"
+          },
+          {
+            "subtitle": "a.",
+            "text": "Data warehouses;"
+          },
+          {
+            "subtitle": "b.",
+            "text": "IT service providers;"
+          },
+          {
+            "subtitle": "c.",
+            "text": "Data analytics and/or marketing agencies;"
+          },
+          {
+            "subtitle": "d.",
+            "text": "Third party service providers, tools or plugins that enable a better user experience for Products, such as social media plugins or online marketing tools, newsletter providers"
+          },
+          {
+            "subtitle": "e.",
+            "text": "Auditors"
+          },
+          {
+            "subtitle": "",
+            "text": "We shall take practical steps to ensure that their employees, officers, agents, consultants, contractors and such other third parties mentioned above who are involved in the collection or processing of your Personal Data will observe and adhere to the terms of this Privacy Policy and GDPR requirements."
+          },
+          {
+            "subtitle": "",
+            "text": "The Foundation may disclose your Personal Data in good faith belief that such disclosure is necessary for one of the following reasons: complying with a legal obligation; protecting and defending the rights or property of the Foundation; preventing or investigating possible wrongdoing in connection with the Products; protecting the personal safety of users of Products or the public; protecting against legal liability; or responding to legal bodies as permitted or required by law such as in compliance with a warrant or subpoena issued by a court of competent jurisdiction; and/or responding to regulatory authorities."
+          },
+          {
+            "subtitle": "",
+            "text": "In addition to the above, your Personal Data may also be disclosed or transferred to Our affiliates and subsidiaries."
+          }
+        ]
+      },
+      {
+        "title": "8. Your Rights",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "Users can access, manage, and delete their Digital Identity Data within the wallet at any time. Any Private Key Material or other data securely stored within your device (as described in section 2) must be removed manually by the user."
+          },
+          {
+            "subtitle": "",
+            "text": "If you want to know what Personal Data the Foundation holds about you or wish for it to be deleted, please reach out to Us at gdpr@cardanofoundation.org."
+          },
+          {
+            "subtitle": "",
+            "text": "In certain circumstances, you possess these data protection rights:"
+          },
+          {
+            "subtitle": "a.",
+            "text": "Access: You can ask for details about your personal data We have."
+          },
+          {
+            "subtitle": "b.",
+            "text": "Rectification: If the data is inaccurate or incomplete, you can request corrections."
+          },
+          {
+            "subtitle": "c.",
+            "text": "Objection: You can contest the use of your data for specific reasons; for instance, using the unsubscribe option in our emails."
+          },
+          {
+            "subtitle": "d.",
+            "text": "Restriction: You can ask Us to limit the processing of your data."
+          },
+          {
+            "subtitle": "e.",
+            "text": "Data Portability: Request a copy of your data from Us in a standard, machine-readable format."
+          },
+          {
+            "subtitle": "f.",
+            "text": "Withdraw Consent: Should We process data based on your consent, you can retract it anytime."
+          },
+          {
+            "subtitle": "",
+            "text": "Please understand We might ask you to confirm your identity before acting on these requests. If unsatisfied with how We handle your data, you can report to your local Data Protection Authority in the EU or EEA."
+          }
+        ]
+      },
+      {
+        "title": "9. Third Party Links",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "Products may contain links to other companies, organizations or websites (collectively, 'Third Party Links'). This Privacy Notice does not apply to such Third Party Links. If you access Third Party Links using the links provided, the operators may collect your personal information."
+          },
+          {
+            "subtitle": "",
+            "text": "The Foundation has no control over and assumes no responsibility for the content, privacy policies or practices of any third-party product or service."
+          }
+        ]
+      },
+      {
+        "title": "10. Changes",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "We may revise or update this Privacy Policy from time to time."
+          },
+          {
+            "subtitle": "",
+            "text": "Any modifications will be reflected on this page. We'll notify you of updates either through email or a notable alert on the Product, while also adjusting the 'effective date' at this Policy's beginning. Regularly reviewing this Policy ensures you stay informed of any alterations, which take effect once displayed on this page."
+          }
+        ]
+      },
+      {
+        "title": "11. Data Privacy Contact",
+        "content": [
+          {
+            "subtitle": "",
+            "text": "For further inquiries or requests in relation to Our handling of your Personal Data or this Privacy Policy please contact Us at gdpr@cardanofoundation.org"
+          }
+        ]
+      }
+    ]
   },
   "passcodelogin": {
     "title": "Welcome back",
@@ -315,7 +750,25 @@
         "done": "Done",
         "restore": "Restore",
         "type": "Type",
-        "attributes": "Attributes",
+        "title": "Title",
+        "description": {
+          "label": "Description",
+          "content": "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials"
+        },
+        "attributes": {
+          "label": "Attributes",
+          "issuee": "Issuee",
+          "issuancedate": "Issuance Date",
+          "lei": "LEI"
+        },
+        "schemaversion": "Schema Version",
+        "issuer": "Issuer",
+        "status": {
+          "label": "Status",
+          "issued": "Issued",
+          "revoked": "Revoked",
+          "timestamp": "Timestamp"
+        },
         "connection": "Connection",
         "issuancedate": "Issuance Date",
         "expirationdate": "Expiration date",

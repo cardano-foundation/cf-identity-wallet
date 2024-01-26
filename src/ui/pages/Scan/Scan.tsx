@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import { IonPage, useIonViewWillEnter } from "@ionic/react";
+import { useIonViewWillEnter } from "@ionic/react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -18,6 +18,7 @@ import { updateReduxState } from "../../../store/utils";
 import { OperationType } from "../../globals/types";
 
 const Scan = () => {
+  const pageId = "scan-tab";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -47,14 +48,12 @@ const Scan = () => {
   }, [currentToastMsg, currentOperation]);
 
   return (
-    <IonPage
-      className="tab-layout scan-tab"
-      data-testid="scan-tab"
+    <TabLayout
+      pageId={pageId}
+      header={false}
     >
-      <TabLayout header={false}>
-        <Scanner />
-      </TabLayout>
-    </IonPage>
+      <Scanner />
+    </TabLayout>
   );
 };
 

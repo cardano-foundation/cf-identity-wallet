@@ -7,11 +7,12 @@ import {
 import { formatShortDate } from "../../utils/formatters";
 import { IdentifierCardInfoDidProps } from "./IdentifierCardInfoKey.types";
 import { CardDetailsBlock, CardDetailsItem } from "../CardDetailsElements";
+import { i18n } from "../../../i18n";
 
 const IdentifierCardInfoDid = ({ cardData }: IdentifierCardInfoDidProps) => {
   return (
     <>
-      <CardDetailsBlock title="identifiers.card.details.information">
+      <CardDetailsBlock title={i18n.t("identifiers.card.details.information")}>
         <CardDetailsItem
           info={cardData.id}
           copyButton={true}
@@ -24,7 +25,7 @@ const IdentifierCardInfoDid = ({ cardData }: IdentifierCardInfoDidProps) => {
           icon={calendarNumberOutline}
         />
       </CardDetailsBlock>
-      <CardDetailsBlock title="identifiers.card.details.type">
+      <CardDetailsBlock title={i18n.t("identifiers.card.details.type")}>
         <CardDetailsItem
           info={cardData.keyType}
           copyButton={true}
@@ -32,7 +33,7 @@ const IdentifierCardInfoDid = ({ cardData }: IdentifierCardInfoDidProps) => {
           testId="copy-button-type"
         />
       </CardDetailsBlock>
-      <CardDetailsBlock title="identifiers.card.details.controller">
+      <CardDetailsBlock title={i18n.t("identifiers.card.details.controller")}>
         <CardDetailsItem
           info={cardData.controller}
           copyButton={true}
@@ -40,7 +41,9 @@ const IdentifierCardInfoDid = ({ cardData }: IdentifierCardInfoDidProps) => {
           testId="copy-button-controller"
         />
       </CardDetailsBlock>
-      <CardDetailsBlock title="identifiers.card.details.publickeybase">
+      <CardDetailsBlock
+        title={i18n.t("identifiers.card.details.publickeybase")}
+      >
         <CardDetailsItem
           info={cardData.publicKeyBase58}
           copyButton={true}

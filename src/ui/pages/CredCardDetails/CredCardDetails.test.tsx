@@ -10,12 +10,12 @@ import { CredCardDetails } from "./CredCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
-import { credsFix } from "../../__fixtures__/credsFix";
+import { credsFixW3c } from "../../__fixtures__/credsFix";
 import { AriesAgent } from "../../../core/agent/agent";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { IdentifierCardDetails } from "../IdentifierCardDetails";
 
-const path = TabsRoutePath.CREDS + "/" + credsFix[0].id;
+const path = TabsRoutePath.CREDS + "/" + credsFixW3c[0].id;
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -33,7 +33,7 @@ jest.mock("../../../core/agent/agent", () => ({
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: credsFix[0].id,
+    id: credsFixW3c[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
@@ -54,7 +54,7 @@ const initialStateCreds = {
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
   identifiersCache: {
-    identifiers: credsFix,
+    identifiers: credsFixW3c,
     favourites: [],
   },
 };
@@ -82,7 +82,7 @@ const initialStateNoPasswordCurrent = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  credsCache: { creds: credsFix },
+  credsCache: { creds: credsFixW3c },
 };
 
 const initialStateNoPasswordArchived = {
@@ -110,7 +110,7 @@ describe("Cards Details page - current not archived credential", () => {
   beforeAll(() => {
     jest
       .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFix[0]);
+      .mockResolvedValue(credsFixW3c[0]);
   });
   beforeEach(() => {
     const mockStore = configureStore();
@@ -122,7 +122,7 @@ describe("Cards Details page - current not archived credential", () => {
   });
 
   test("It renders Card Details", async () => {
-    const { getAllByText, getByTestId, getAllByTestId } = render(
+    const { getByTestId, getAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -133,7 +133,6 @@ describe("Cards Details page - current not archived credential", () => {
       </Provider>
     );
     await waitFor(() => {
-      expect(getAllByText(credsFix[0].credentialType)[0]).toBeInTheDocument();
       expect(getByTestId("creds-options-modal").getAttribute("is-open")).toBe(
         "false"
       );
@@ -166,7 +165,7 @@ describe("Cards Details page - current not archived credential", () => {
     fireEvent.click(copyButton);
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
-        string: credsFix[0].proofValue,
+        string: credsFixW3c[0].proofValue,
       });
     });
   });
@@ -225,7 +224,7 @@ describe("Cards Details page - current not archived credential", () => {
     });
 
     await waitFor(() => {
-      expect(getByText(credsFix[0].id)).toBeVisible();
+      expect(getByText(credsFixW3c[0].id)).toBeVisible();
     });
   });
 
@@ -240,11 +239,11 @@ describe("Cards Details page - current not archived credential", () => {
         </MemoryRouter>
       </Provider>
     );
-    const deleteButton = await findByTestId(
-      "card-details-delete-archive-button"
+    const archiveButton = await findByTestId(
+      "archive-button-credential-card-details"
     );
     act(() => {
-      fireEvent.click(deleteButton);
+      fireEvent.click(archiveButton);
     });
 
     await waitFor(() => {
@@ -263,7 +262,7 @@ describe("Cards Details page - current not archived credential", () => {
       .fn()
       .mockImplementation(async (data: SetOptions): Promise<void> => {
         expect(data.key).toBe(PreferencesKeys.APP_CREDS_FAVOURITES);
-        expect(data.value).toBe(credsFix[0]);
+        expect(data.value).toBe(credsFixW3c[0]);
       });
 
     const { getByTestId } = render(
@@ -294,7 +293,7 @@ describe("Cards Details page - archived credential", () => {
   beforeAll(() => {
     jest
       .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFix[0]);
+      .mockResolvedValue(credsFixW3c[0]);
   });
   beforeEach(() => {
     const mockStore = configureStore();

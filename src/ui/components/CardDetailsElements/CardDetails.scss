@@ -1,0 +1,246 @@
+.card-details {
+  background: var(--ion-color-light-grey);
+
+  .spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Safari, Chrome and Opera > 12.1 */
+  @-webkit-keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  .tab-header,
+  .card-details-content {
+    -webkit-animation: fadein 0.7s; /* Safari, Chrome and Opera > 12.1 */
+    animation: fadein 0.7s;
+  }
+
+  ion-header ion-toolbar {
+    ion-button.button,
+    ion-button.button.md {
+      background: var(--ion-color-light);
+
+      &.heart-button-favourite {
+        background: rgba(var(--ion-color-danger-rgb), 0.15) !important;
+
+        .heart-icon-favourite {
+          color: var(--ion-color-danger);
+        }
+      }
+    }
+  }
+
+  .card-details-content {
+    color: var(--ion-color-secondary);
+
+    .card-details-info-block-line,
+    .card-details-json-column,
+    .card-details-json-row {
+      width: 100%;
+      overflow: hidden;
+      white-space: nowrap;
+
+      strong {
+        text-transform: capitalize;
+        margin-right: 0.35rem;
+      }
+    }
+
+    .card-details-json-row {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .card-details-attributes-id {
+      strong {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+    }
+
+    .card-details-json-nested {
+      background-color: var(--ion-color-light-grey);
+      padding: 0.45rem 1rem;
+
+      &:first-of-type {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-radius: 1rem 1rem 0 0;
+      }
+
+      &:last-of-type {
+        padding-bottom: 1rem;
+        border-radius: 0 0 1rem 1rem;
+      }
+    }
+
+    > * {
+      margin: 1.56rem 0 1rem;
+    }
+
+    .card-details-info-block {
+      h3 {
+        margin: 0.938rem;
+        font-weight: 500;
+      }
+
+      .card-details-info-block-inner {
+        display: flex;
+        flex-direction: column;
+        background-color: white;
+        border-radius: 1rem;
+        padding: 1.15rem;
+
+        > * {
+          min-height: 1.445rem;
+
+          &:not(:last-child) {
+            margin-bottom: 0.85rem;
+          }
+        }
+
+        .card-details-info-block-line {
+          display: flex;
+
+          > * {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+          }
+
+          .card-details-info-block-text-icon {
+            font-size: 1.125rem;
+          }
+
+          .card-details-info-block-icon,
+          .card-details-info-block-text-icon {
+            margin-right: 0.94rem;
+          }
+
+          .card-details-info-block-data {
+            width: 100%;
+            overflow: hidden;
+            white-space: nowrap;
+            --mask: linear-gradient(
+              to right,
+              rgba(var(--ion-color-secondary-rgb)) 0,
+              rgba(var(--ion-color-secondary-rgb)) 85%,
+              rgba(0, 0, 0, 0.5) 90%,
+              rgba(0, 0, 0, 0) 100%
+            );
+            -webkit-mask: var(--mask);
+            mask: var(--mask);
+          }
+        }
+
+        > .card-details-json-row {
+          > * {
+            --mask: linear-gradient(
+              to right,
+              rgba(var(--ion-color-secondary-rgb)) 0,
+              rgba(var(--ion-color-secondary-rgb)) 85%,
+              rgba(0, 0, 0, 0.5) 90%,
+              rgba(0, 0, 0, 0) 100%
+            );
+            -webkit-mask: var(--mask);
+            mask: var(--mask);
+          }
+        }
+
+        ion-button,
+        ion-button.md {
+          height: 1.7rem;
+          min-height: 1.7rem;
+          margin: 0;
+          --background: transparent;
+          --box-shadow: none;
+          --color: var(--ion-color-secondary);
+          --background-activated: var(--ion-color-light-grey);
+
+          ion-icon {
+            opacity: 0.5;
+          }
+
+          &::part(native) {
+            padding: 0;
+          }
+        }
+
+        ion-icon {
+          width: 1.475rem;
+          height: 1.475rem;
+          margin: 0;
+        }
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .card-details-content {
+      > * {
+        margin: 1.326rem 0 0.85rem;
+      }
+
+      .card-details-info-block {
+        h3 {
+          margin: 0.798rem;
+        }
+
+        .card-details-info-block-inner {
+          border-radius: 0.85rem;
+          padding: 0.978rem;
+
+          > * {
+            min-height: 1.156rem;
+
+            &:not(:last-child) {
+              margin-bottom: 0.68rem;
+            }
+          }
+
+          .card-details-info-block-line {
+            .card-details-info-block-text-icon {
+              font-size: 0.956rem;
+            }
+
+            .card-details-info-block-icon,
+            .card-details-info-block-text-icon {
+              margin-right: 0.799rem;
+            }
+          }
+
+          ion-button,
+          ion-button.md {
+            height: 1.445rem;
+            width: 1.445rem;
+          }
+
+          ion-icon {
+            width: 1.254rem;
+            height: 1.254rem;
+            margin: 0;
+          }
+        }
+      }
+    }
+  }
+}
