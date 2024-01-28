@@ -15,11 +15,33 @@ const TermsModal = ({ name, isOpen, setIsOpen }: TermsModalProps) => {
   const sections = termsObject.sections;
   const Section = ({ title, content }: TermsSection) => (
     <div>
-      <h3>{title}</h3>
+      <h3
+        data-testid={`${componentId}-section-${title
+          .replace(/[^aA-zZ]/gim, "")
+          .toLowerCase()}`}
+      >
+        {title}
+      </h3>
       {content.map((item: any, index: number) => (
         <p key={index}>
-          {item.subtitle && <b>{item.subtitle}</b>}
-          {item.text && <span>{item.text}</span>}
+          {item.subtitle && (
+            <b
+              data-testid={`${componentId}-section-${title
+                .replace(/[^aA-zZ]/gim, "")
+                .toLowerCase()}-subtitle-${index + 1}`}
+            >
+              {item.subtitle}
+            </b>
+          )}
+          {item.text && (
+            <span
+              data-testid={`${componentId}-section-${title
+                .replace(/[^aA-zZ]/gim, "")
+                .toLowerCase()}-content-${index + 1}`}
+            >
+              {item.text}
+            </span>
+          )}
         </p>
       ))}
     </div>
@@ -43,7 +65,9 @@ const TermsModal = ({ name, isOpen, setIsOpen }: TermsModalProps) => {
         }
       >
         <p>
-          <b>{`${i18n.t(`${nameNoDash}.intro.text`)}`}</b>
+          <b data-testid={`${componentId}-intro-text`}>{`${i18n.t(
+            `${nameNoDash}.intro.text`
+          )}`}</b>
         </p>
         {sections.map((section: TermsSection, index: number) => (
           <Section
