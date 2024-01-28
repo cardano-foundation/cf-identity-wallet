@@ -1,0 +1,77 @@
+export enum CreatePassword {
+  Description = "You can choose to set an optional password for your Identity Wallet. This password will be required to complete protected operations within the wallet. If you choose to skip and not set a password, you will be asked to provide your passcode to complete protected operations.",
+  Title = "Create your Password",
+}
+
+export enum GenerateSeedPhrase {
+  DescriptionBottom = "This phrase is essentially a representation of your Identity Wallet profile private key. This means that anyone with access to it can control your identity. We strongly recommend not using screenshots or storing this phrase without encryption.",
+  DescriptionTop = "It is critical that you securely store this secret recovery phrase, also referred to as a mnemonic, seed, or backup phrase. You will require this phrase in the event that you change mobile devices or need to regain access to your identity wallet profile.",
+  Title = "Generate your Seed Phrase",
+}
+
+export enum Passcode {
+  Description = "Create a passcode to secure access to your wallet and to continue the onboarding process",
+  Title = "Create your Passcode",
+  TitleReEnter = "Re-enter your Passcode",
+}
+
+export enum TermsOfUse {
+  Title = "Terms of Use",
+  Intro = "Please read these terms of use (\"Terms of Use\" or \"Terms\") carefully before using the services offered by Cardano Foundation (together with our subsidiaries and affiliates, referred to as \"Foundation,\" \"We,\" \"Us\" or \"Our\" in these Terms of Use). These Terms of Use set forth the legally binding terms and conditions for your use of this website and all of the related websites, mobile apps, products and services offered by the Foundation and its affiliated entities including our APK's, API's, plug-ins and browser extensions (collectively, the \"Products\"). By using the Products in any manner, you agree to be bound by these Terms of Use.",
+  Section1Title = "1. USE OF PRODUCTS",
+  Section1Content1 = "You represent and warrant that you: (a) are of legal age to form a binding contract in your jurisdiction; (b) have not previously been suspended or removed from using the Products; and (c) have full power and authority to enter into these Terms of Use and in doing so will not violate any other agreement to which you are a party. If you are registering to use the Products on behalf of a legal entity, you further represent and warrant that (i) such legal entity is duly organized and validly existing under the applicable laws of the jurisdiction of its organization, and (ii) you are duly authorized by such legal entity to act on its behalf.",
+  Section1Content2 = "We reserve the right to make changes or updates to the Products at any time without notice, for any reason at Our sole discretion. We retain the authority to modify, update, limit, or revoke your access to Our Products, including any related accounts, at any time and without prior notice, for any reason at Our sole discretion.",
+  Section1Content3 = "In addition, some Products may be subject to additional terms and conditions promulgated by the Foundation from time to time; your use of such Products is subject to those additional terms and conditions, which are incorporated into these Terms of Use by this reference. If there are any inconsistencies between these Terms of Use and the additional terms, the additional terms will take precedence.",
+  Section1Content4 = "The use of APK Products is subject to these Terms of Use, and by downloading and using APK Products, you agree to comply with these terms and any additional terms we may provide you concerning the use of APK Products. You acknowledge that downloading and installing APK Products requires manual installation on your device and that you are solely responsible for the process and any issues that may arise from installation and use. We ensure that the APK Products we provide are secure, but you must take necessary precautions to protect your device. We may offer limited support for APK Products, and you agree to seek support through the channels we designate. APK Products might not receive automatic updates and It is your responsibility to monitor and install any updates we provide.",
+  Section1Content5 = "By using the Products in any way, you understand and acknowledge that the terms of the Privacy Policy apply to you.",
+  Section1Content6 = "We appreciate any feedback or suggestions you might have regarding Our Products. You can share your thoughts at https://cardanofoundation.org/en/contact-us/. When you provide feedback in any form, you give Us permission to use, share, and build upon your input as We see fit, without owing you anything in return.",
+  Section1Content7 = "If you have a dispute with the Foundation or a claim to raise in relation to the Products, you agree to contact Us using the form at https://cardanofoundation.org/en/contact-us/ to attempt to resolve the issue informally first.",
+  Section1Subtitle1 = "a. Eligibility:",
+  Section1Subtitle2 = "b. Product Changes:",
+  Section1Subtitle3 = "c. Additional Terms:",
+  Section1Subtitle4 = "d. Download and use of Android Package Kit (“APK”) Products:",
+  Section1Subtitle5 = "e. Privacy Policy:",
+  Section1Subtitle6 = "f. Feedback:",
+  Section1Subtitle7 = "g. Dispute Resolution:",
+  Section2Title = "2. YOUR CONTENT",
+  Section2Content1 = "For the purposes of these Terms of Use, 'Your Content' refers to all materials you submit or transmit to, through, or in connection with Our Products, including but not limited to photographs, profile pictures, messages, comments, testimonials, and any other text, graphics, videos, or audio content.",
+  Section2Content2 = "By submitting, posting, or displaying Your Content on or through Our Products, you grant Us a non-exclusive, worldwide, royalty-free, fully paid-up, sublicensable, and transferable license to use, reproduce, process, distribute, create derivative works of, display, and perform Your Content in connection with Our Products and Our business, including for promoting and redistributing part or all of the Products (and derivative works thereof) in any media formats and through any media channels. This license will exist for the period during which Your Content is posted on Our Products or until We choose to remove it, whichever is shorter.",
+  Section2Content3 = "You retain ownership rights in Your Content. However, by submitting Your Content to Our Products, you hereby grant Us the non-exclusive rights and license as set out above. Other than the rights and license you grant in these Terms of Use, We acknowledge and agree that We obtain no right, title, or interest from you under these Terms of Use in any of Your Content.",
+  Section2Content4 = "You represent and warrant that: - You either own Your Content or have the necessary licenses, rights, consents, and permissions to grant the rights and licenses as provided herein; - Your Content does not and will not infringe or violate any third party's intellectual property rights, proprietary rights, privacy rights, confidentiality, rights of publicity or otherwise violate these Terms of Use or applicable law; and - You have obtained all required permissions from any individual whose personal data is part of Your Content, allowing Us to use and disclose the data as set out in these Terms of Use.",
+  Section2Content5 = "You are solely responsible for Your Content and the consequences of posting, publishing, or sharing it. We do not endorse any of Your Content or any opinion, recommendation, or advice expressed therein, and We expressly disclaim any and all liability in connection with Your Content.",
+  Section2Subtitle1 = "a. Definition of 'Your Content':",
+  Section2Subtitle2 = "b. License Grant:",
+  Section2Subtitle3 = "c. Ownership of Your Content:",
+  Section2Subtitle4 = "d. Representations and Warranties:",
+  Section2Subtitle5 = "e. Your Responsibility:",
+  Section3Title = "3. INTELLECTUAL PROPERTY",
+  Section3Content1 = "All intellectual property in or related to the Products, including but not limited to the software, 'Cardano' and 'ADA' marks, logos and the names and logos of the Products ('Our Intellectual Property'), is the property of the Foundation.",
+  Section3Content2 = "We provide you a limited, non-exclusive licence to access and utilise Our Intellectual Property as part of your use of the Products, all in accordance with these Terms of Use. We retain the right to revoke this license at any time for any reason. Outside of the permissions explicitly granted in these Terms of Use, all other rights remain with Us.",
+  Section3Content3 = "Except as provided in these Terms of Use, you agree not to copy, rent, lease, sell or distribute, or create derivative works of Our Intellectual Property Rights. Some Products might be governed by open-source licenses; in such instances, the terms of those specific licenses will apply. You should refer to the specific license terms accompanying each Product or component thereof to understand your rights and obligations. Any other use of the Foundation's intellectual property requires Our express written permission.",
+  Section3Content4 = "You are granted no rights or license to use Foundation trademarks unless in strict accordance with the Foundation's trademark policy.",
+  Section3Subtitle1 = "a. Ownership:",
+  Section3Subtitle2 = "b. Grant of Licence:",
+  Section3Subtitle3 = "c. Restrictions:",
+  Section3Subtitle4 = "d. Trademarks:",
+  Section4Title = "4. DISCLAIMERS; LIMITATION OF LIABILITY",
+  Section4Content1 = "YOU UNDERSTAND AND ACKNOWLEDGE THAT WE ARE PROVIDING THE PRODUCTS, SERVICES, INCLUDING RELATED INFORMATION AND CONTENT, ON AN 'AS IS' AND 'AS AVAILABLE' BASIS, WITHOUT WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED. THIS MAY INCLUDE PRODUCTS OFFERED IN 'BETA' VERSIONS, INTENDED TO PROVIDE THE FOUNDATION WITH FEEDBACK ON THE QUALITY AND USABILITY OF THE PRODUCTS AND APPLICATION PROGRAMMING INTERFACES (APIs). THE FOUNDATION ENTITIES MAKE NO REPRESENTATIONS AND EXPRESSLY DISCLAIM ALL WARRANTIES ABOUT THE SUITABILITY, MERCHANTABILITY, FITNESS FOR PURPOSE, RELIABILITY, AVAILABILITY, TIMELINESS, SECURITY, TITLE AND NON-INFRINGEMENT, ACCURACY OR COMPLETENESS, DATA SYNCHED TO OR MADE AVAILABLE FROM THE PRODUCTS, PRODUCT CONTENT, OR ANY CONSULTING SERVICES WE PROVIDE FOR ANY ASSOCIATED PURPOSE.",
+  Section4Content2 = "TO THE EXTENT PERMITTED BY LAW, IN NO EVENT WILL FOUNDATION ENTITIES BE LIABLE FOR ANY INDIRECT, INCIDENTAL, PUNITIVE, OR CONSEQUENTIAL DAMAGES, OR LOSS OF PROFITS, REVENUE, DATA OR BUSINESS OPPORTUNITIES ARISING OUT OF OR RELATED TO THESE TERMS OF USE, WHETHER AN ACTION IS IN CONTRACT OR TORT AND REGARDLESS OF THE THEORY OF LIABILITY.",
+  Section4Content3 = "THE FOUNDATION ENTITIES MAKE NO PROMISES WITH RESPECT TO, AND EXPRESSLY DISCLAIM ALL LIABILITY, TO THE MAXIMUM EXTENT PERMITTED BY LAW, FOR: (i) CONTENT POSTED BY ANY THIRD-PARTY ON THE PRODUCTS, (ii) THE PRODUCT DESCRIPTIONS OR PRODUCTS, (iii) THIRD-PARTY SITES AND ANY THIRD-PARTY PRODUCT OR SERVICE LISTED ON OR ACCESSIBLE TO YOU THROUGH THE PRODUCTS, AND (iv) THE QUALITY OR CONDUCT OF ANY THIRD PARTY YOU ENCOUNTER IN CONNECTION WITH YOUR USE OF ANY PRODUCT OR WEBSITE ('Third Party Products).",
+  Section4Content4 = "ANY LIABILITY OF THE FOUNDATION ENTITIES IS HEREBY LIMITED TO THE MAXIMUM EXTENT ALLOWED BY APPLICABLE LAW. THE AGGREGATE LIABILITY OF FOUNDATION ENTITIES WILL IN ANY EVENT BE LIMITED TO A SUM EQUAL TO THE TOTAL AMOUNTS PAID OR PAYABLE FOR THE PRODUCTS IN THE TWELVE MONTH PERIOD PRECEDING THE EVENT GIVING RISE TO A CLAIM; PROVIDED HOWEVER, THIS LIMITATION WILL NOT APPLY TO YOU IF NO SUCH FEES ARE PAYABLE, AND IN THIS CASE, IF WE ARE DETERMINED TO HAVE ANY LIABILITY TO YOU OR ANY THIRD PARTY ARISING FROM YOUR USE OF THE PRODUCTS, THEN OUR AGGREGATE LIABILITY WILL BE LIMITED TO ONE HUNDRED U.S. DOLLARS.",
+  Section4Subtitle1 = "a. Disclaimer of Warranties:",
+  Section4Subtitle2 = "No Indirect Damages:",
+  Section4Subtitle3 = "b. Third Party Products:",
+  Section4Subtitle4 = "c. Limitation of Liability:",
+  Section5Title = "5. INDEMNIFICATION",
+  Section5Content1 = "You agree to fully indemnify, defend and hold the Foundation Entities, including their directors, officers, employees, consultants, and other representatives, harmless from and against any claims, damages, losses, costs (including reasonable legal fees), and other expenses resulting directly or indirectly from: (a) any breach or noncompliance of these Terms of Use by you or your affiliates, inclusive of policies mentioned herein; (b) allegations that materials you provide or convey to the Products violate the intellectual property rights of a third party; (c) your or your affiliates' use of Third-Party Products; and/or (d) any negligent or intentional misconduct by you. You shall not agree to any settlement that (i) obligates Us in any manner; (ii) demands an admission from Us; or (iii) assigns liability beyond these indemnifications or restricts Us, without obtaining Our prior written approval.",
+  Section6Title = "6. MISCELLANEOUS",
+  Section6Content1 = "We may modify any part or all of these Terms of Use. The revised version will become effective and binding the next business day after it is posted. We will provide you notice of this revision by email, website banner, in-product notification or publishing revised Terms of Use at this page, if applicable. YOU AGREE THAT YOUR CONTINUED USE OF THE PRODUCTS AFTER SUCH CHANGES BECOME EFFECTIVE CONSTITUTES YOUR ACCEPTANCE OF THE CHANGES. If you do not agree with a modification to the Terms of Use, you must notify Us in writing within thirty (30) days after We send notice of the revision. If We can no longer reasonably provide the Product to you under the terms prior to modification, then the Terms of Use and/or your access to the Products will terminate upon Our notice to you and We will promptly refund any prepaid but unused fees, if any, covering use of the Product.",
+  Section6Content2 = "These Terms of Use are between you and the Foundation only, and not with an application service or application platform provider (such as Apple, Inc., or Google Inc.), which may provide you the application subject to its own terms of use.",
+  Section6Subtitle1 = "a. Amendment:",
+  Section6Subtitle2 = "b. Application Provider Terms:",
+}
+
+export enum VerifySeedPhrase {
+  Description = "Please select every word from your seed phrase in the correct order. If you select a word in the wrong order, select it again to move it back down to the list of available words.",
+  Title = "Verify your Seed Phrase",
+}
