@@ -122,7 +122,12 @@ const PageHeader = ({
         {title && (
           <IonTitle>
             <h2
-              data-testid={`${title.replace(/[^aA-zZ]/gim, "").toLowerCase()}`}
+              data-testid={`${title
+                .trim()
+                .replace(/[^aA-zZ\s]/, "")
+                .split(" ")
+                .join("-")
+                .toLowerCase()}`}
             >
               {title}
             </h2>
