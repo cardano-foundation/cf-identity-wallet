@@ -25,9 +25,13 @@ const config = {
         use: ["style-loader", "css-loader", "postcss-loader"],
       },
       {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: "asset/resource",
+      },
+      {
         test: /\.mjs$/,
         include: /node_modules/,
-        type: 'javascript/auto',
+        type: "javascript/auto",
         resolve: {
           fullySpecified: false,
         },
@@ -37,8 +41,8 @@ const config = {
   resolve: {
     extensions: [".js", ".tsx", ".ts"],
     fallback: {
-      fs: false
-    }
+      fs: false,
+    },
   },
   plugins: [
     new webpack.ProgressPlugin(),
@@ -77,14 +81,14 @@ const config = {
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
     }),
-    new NodePolyfillPlugin()
+    new NodePolyfillPlugin(),
   ],
   infrastructureLogging: {
     level: "info",
   },
   experiments: {
-    asyncWebAssembly: true
-  }
+    asyncWebAssembly: true,
+  },
 };
 
 module.exports = config;
