@@ -1,8 +1,34 @@
 @import "./colors.scss";
 
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: normal;
+  src: url("./assets/fonts/Roboto-Regular.ttf");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: medium;
+  src: url("./assets/fonts/Roboto-Medium.ttf");
+}
+
+@font-face {
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: bold;
+  src: url("./assets/fonts/Roboto-Bold.ttf");
+}
+
+:root[mode="ios"] .roboto,
+:root[mode="md"] .roboto {
+  --ion-font-family: "Roboto" !important;
+  font-family: "Roboto" !important;
+}
+
 body {
   margin: 0;
-  --ion-font-family: "Roboto", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: 500;

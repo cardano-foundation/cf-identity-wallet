@@ -16,7 +16,7 @@ const config = {
         exclude: /node_modules/,
       },
       {
-        test: /\.(jpe?g|png|gif|svg)$/i,
+        test: /\.(jpe?g|png|gif|svg|ttf)$/i,
         type: "asset",
       },
       {
@@ -27,7 +27,7 @@ const config = {
       {
         test: /\.mjs$/,
         include: /node_modules/,
-        type: 'javascript/auto',
+        type: "javascript/auto",
         resolve: {
           fullySpecified: false,
         },
@@ -37,8 +37,8 @@ const config = {
   resolve: {
     extensions: [".js", ".tsx", ".ts"],
     fallback: {
-      fs: false
-    }
+      fs: false,
+    },
   },
   plugins: [
     new webpack.ProgressPlugin(),
@@ -77,14 +77,14 @@ const config = {
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
     }),
-    new NodePolyfillPlugin()
+    new NodePolyfillPlugin(),
   ],
   infrastructureLogging: {
     level: "info",
   },
   experiments: {
-    asyncWebAssembly: true
-  }
+    asyncWebAssembly: true,
+  },
 };
 
 module.exports = config;
