@@ -8,7 +8,7 @@ let generatedPassword: string;
 
 Given(/^skip Create Password screen$/, async function () {
   await CreatePasswordScreen.skipButton.click();
-  await AlertModal.clickConfirmAlertButton();
+  await AlertModal.clickConfirmButton();
 });
 
 Given(/^user tap Skip button on Create Password screen$/, async function () {
