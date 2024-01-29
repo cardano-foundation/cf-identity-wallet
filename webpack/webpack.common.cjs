@@ -16,13 +16,17 @@ const config = {
         exclude: /node_modules/,
       },
       {
-        test: /\.(jpe?g|png|gif|svg|ttf)$/i,
+        test: /\.(jpe?g|png|gif|svg)$/i,
         type: "asset",
       },
       {
         test: /\.css$/i,
         include: path.resolve(__dirname, "..", "src"),
         use: ["style-loader", "css-loader", "postcss-loader"],
+      },
+      {
+        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        type: "asset/resource",
       },
       {
         test: /\.mjs$/,
