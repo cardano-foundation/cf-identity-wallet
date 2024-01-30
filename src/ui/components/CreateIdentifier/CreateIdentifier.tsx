@@ -1,8 +1,11 @@
 import {
   IonButton,
   IonCol,
+  IonContent,
   IonGrid,
+  IonInput,
   IonItem,
+  IonLabel,
   IonModal,
   IonRow,
   IonSpinner,
@@ -30,11 +33,15 @@ import { AriesAgent } from "../../../core/agent/agent";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
 import { IdentifierThemeSelector } from "../IdentifierThemeSelector";
+import { ResponsivePageLayout } from "../layout/ResponsivePageLayout";
+import { PageHeader } from "../PageHeader";
+import { PageFooter } from "../PageFooter";
 
 const CreateIdentifier = ({
   modalIsOpen,
   setModalIsOpen,
 }: CreateIdentifierProps) => {
+  const componentId = "create-identifier-modal";
   const dispatch = useAppDispatch();
   const identifierData = useAppSelector(getIdentifiersCache);
   const [displayNameValue, setDisplayNameValue] = useState("");
@@ -99,131 +106,110 @@ const CreateIdentifier = ({
 
   const TypeItem = ({ index, text }: TypeItemProps) => {
     return (
-      <IonCol>
-        <IonItem
-          onClick={() => {
-            if (selectedType !== index) {
-              setSelectedTheme(index === 0 ? 0 : 4);
-            }
-            setSelectedType(index);
-          }}
-          className={`type-input ${
-            selectedType === index ? "selected-type" : ""
-          }`}
-        >
-          <div className="centered-text">
-            <span>{text}</span>
-          </div>
-        </IonItem>
-      </IonCol>
+      <IonItem
+        onClick={() => {
+          if (selectedType !== index) {
+            setSelectedTheme(index === 0 ? 0 : 4);
+          }
+          setSelectedType(index);
+        }}
+        className={`type-input ${
+          selectedType === index ? "selected-type" : ""
+        }`}
+      >
+        <span>{text}</span>
+      </IonItem>
     );
   };
 
   return (
     <IonModal
       isOpen={modalIsOpen}
-      initialBreakpoint={0.85}
-      breakpoints={[0, 0.85]}
-      className={`page-layout create-identifier-modal ${blur ? "blur" : ""}`}
-      data-testid="create-identifier-modal"
+      breakpoints={[0, 1]}
+      initialBreakpoint={1}
+      data-testid={componentId}
+      className={`${componentId} ${blur ? "blur" : ""}`}
       onDidDismiss={() => resetModal()}
     >
-      {blur ? (
-        <div
-          className="spinner-container"
-          data-testid="spinner-container"
-        >
-          <IonSpinner name="circular" />
-        </div>
-      ) : null}
-      <div className="create-identifier modal">
-        <PageLayout
-          header={true}
-          title={`${i18n.t("createidentifier.title")}`}
-        >
-          <IonGrid>
-            <IonRow className="identifier-name-input">
-              <IonCol>
-                <CustomInput
-                  dataTestId="display-name-input"
-                  title={`${i18n.t("createidentifier.displayname.title")}`}
-                  placeholder={`${i18n.t(
-                    "createidentifier.displayname.placeholder"
-                  )}`}
-                  hiddenInput={false}
-                  onChangeInput={setDisplayNameValue}
-                  value={displayNameValue}
-                />
-              </IonCol>
-            </IonRow>
-
-            <IonRow className="error-message-container">
-              {displayNameValue.length !== 0 && !displayNameValueIsValid ? (
-                <ErrorMessage
-                  message={`${i18n.t("createidentifier.error.maxlength")}`}
-                  timeout={true}
-                />
-              ) : null}
-            </IonRow>
-
-            {!keyboardIsOpen ? (
-              <>
-                <IonRow>
-                  <span className="type-input-title">{`${i18n.t(
-                    "createidentifier.identifiertype.title"
-                  )}`}</span>
-                </IonRow>
-
-                <IonRow
-                  className="identifier-type-selector"
-                  data-testid="identifier-type-selector"
-                >
-                  <TypeItem
-                    index={0}
-                    text={i18n.t("createidentifier.identifiertype.didkey")}
+      <div className={`${componentId}-content`}>
+        {blur ? (
+          <div
+            className="spinner-container"
+            data-testid="spinner-container"
+          >
+            <IonSpinner name="circular" />
+          </div>
+        ) : (
+          <>
+            <PageHeader
+              closeButton={true}
+              closeButtonLabel={`${i18n.t("createidentifier.cancel")}`}
+              closeButtonAction={() => resetModal()}
+              title={`${i18n.t("createidentifier.title")}`}
+            />
+            <div className="identifier-name">
+              <CustomInput
+                dataTestId="display-name-input"
+                title={`${i18n.t("createidentifier.displayname.title")}`}
+                placeholder={`${i18n.t(
+                  "createidentifier.displayname.placeholder"
+                )}`}
+                hiddenInput={false}
+                onChangeInput={setDisplayNameValue}
+                value={displayNameValue}
+              />
+              <div className="error-message-container">
+                {displayNameValue.length !== 0 && !displayNameValueIsValid && (
+                  <ErrorMessage
+                    message={`${i18n.t("createidentifier.error.maxlength")}`}
+                    timeout={true}
                   />
-                  <TypeItem
-                    index={1}
-                    text={i18n.t("createidentifier.identifiertype.keri")}
-                  />
-                </IonRow>
-
-                <IonRow>
-                  <span className="type-input-title">{`${i18n.t(
-                    "createidentifier.theme.title"
-                  )}`}</span>
-                </IonRow>
-                <IdentifierThemeSelector
-                  identifierType={selectedType}
-                  selectedTheme={selectedTheme}
-                  setSelectedTheme={setSelectedTheme}
+                )}
+              </div>
+            </div>
+            <div className="identifier-type">
+              <div className="type-input-title">{`${i18n.t(
+                "createidentifier.identifiertype.title"
+              )}`}</div>
+              <div
+                className="identifier-type-selector"
+                data-testid="identifier-type-selector"
+              >
+                <TypeItem
+                  index={0}
+                  text={i18n.t("createidentifier.identifiertype.didkey")}
                 />
-
-                <IonRow className="continue-button-container">
-                  <IonCol>
-                    <IonButton
-                      shape="round"
-                      expand="block"
-                      className="primary-button"
-                      data-testid="continue-button"
-                      onClick={() => {
-                        setBlur(true);
-                        setTimeout(() => {
-                          handleCreateIdentifier();
-                        }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
-                      }}
-                      disabled={
-                        !(displayNameValueIsValid && typeIsSelectedIsValid)
-                      }
-                    >
-                      {`${i18n.t("createidentifier.confirmbutton")}`}
-                    </IonButton>
-                  </IonCol>
-                </IonRow>
-              </>
-            ) : null}
-          </IonGrid>
-        </PageLayout>
+                <TypeItem
+                  index={1}
+                  text={i18n.t("createidentifier.identifiertype.keri")}
+                />
+              </div>
+            </div>
+            <div className="identifier-theme">
+              <div className="theme-input-title">{`${i18n.t(
+                "createidentifier.theme.title"
+              )}`}</div>
+              <IdentifierThemeSelector
+                identifierType={selectedType}
+                selectedTheme={selectedTheme}
+                setSelectedTheme={setSelectedTheme}
+              />
+            </div>
+            <PageFooter
+              pageId={componentId}
+              primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
+              primaryButtonAction={() => {
+                setBlur(true);
+                setTimeout(() => {
+                  handleCreateIdentifier();
+                }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
+              }}
+              primaryButtonDisabled={
+                !(displayNameValueIsValid && typeIsSelectedIsValid)
+              }
+            />
+          </>
+        )}
       </div>
     </IonModal>
   );

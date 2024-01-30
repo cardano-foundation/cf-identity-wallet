@@ -952,6 +952,7 @@
   },
   "createidentifier": {
     "title": "Add an identifier",
+    "cancel": "Cancel",
     "displayname": {
       "title": "Display name",
       "placeholder": "Create a name for this identifier"

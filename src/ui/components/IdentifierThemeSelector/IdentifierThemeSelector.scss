@@ -1,13 +1,16 @@
 .identifier-theme-selector {
   .identifier-theme-input {
     justify-content: space-between;
-    margin-bottom: 0.725rem;
+
+    &:first-child {
+      margin-bottom: 0.63rem;
+    }
 
     ion-col {
       height: 5.9375rem;
       padding: 0.5rem;
       max-width: calc(50% - 0.3rem);
-      margin: 0.3rem 0;
+      margin: 0;
       border-radius: 0.5rem;
       border: 1px solid var(--ion-color-dark-grey);
       background: var(--ion-color-light);
@@ -50,6 +53,35 @@
         &::part(native) {
           background-color: transparent;
         }
+      }
+    }
+  }
+}
+
+@media screen and (min-width: 250px) and (max-width: 425px) {
+  .identifier-theme-selector .identifier-theme-input ion-col {
+    height: 4.75rem;
+    padding: 0.35rem;
+  }
+
+  .identifier-theme-selector
+    .identifier-theme-input
+    ion-col
+    .theme-input
+    .selected-theme-checkmark {
+    width: 1.2rem;
+    height: 1.2rem;
+    top: 0.2rem;
+    right: 0.2rem;
+
+    .selected-theme-checkmark-inner {
+      width: 0.9rem;
+      height: 0.9rem;
+
+      ion-icon {
+        width: 0.8rem;
+        height: 0.8rem;
+        margin-bottom: 50%;
       }
     }
   }
