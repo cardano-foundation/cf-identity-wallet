@@ -1,13 +1,5 @@
 ion-modal.create-identifier-modal {
   --height: auto;
-
-  .page-header ion-toolbar {
-    padding-inline: 0;
-  }
-
-  .page-footer {
-    margin-bottom: 0;
-  }
 }
 
 .create-identifier-modal-content {
@@ -16,6 +8,18 @@ ion-modal.create-identifier-modal {
   justify-content: end;
   padding: 1.25rem;
   background: var(--ion-color-light);
+
+  .page-header {
+    margin-bottom: 1rem;
+
+    ion-toolbar {
+      padding: 0 !important;
+    }
+  }
+
+  .page-footer {
+    margin-bottom: 0;
+  }
 
   &::part(content) {
     border-radius: 1rem 1rem 0 0;
@@ -46,8 +50,11 @@ ion-modal.create-identifier-modal {
     transform: none;
   }
 
-  ion-item.custom-input .input-line ion-input input::placeholder {
+  ion-item.custom-input .input-line ion-input,
+  ion-item.custom-input .input-line ion-input input::placeholder,
+  .identifier-type {
     font-size: 1rem;
+    font-weight: 400;
   }
 
   .error-message-container {
@@ -106,10 +113,15 @@ ion-modal.create-identifier-modal {
   .create-identifier-modal-content {
     padding: 0.9rem;
 
+    .page-header {
+      margin-bottom: 0.8rem;
+    }
+
     > * {
       margin-bottom: 1.248rem;
     }
 
+    ion-item.custom-input .input-line ion-input,
     ion-item.custom-input .input-line ion-input input::placeholder,
     .identifier-name ion-label,
     .identifier-type .type-input-title,

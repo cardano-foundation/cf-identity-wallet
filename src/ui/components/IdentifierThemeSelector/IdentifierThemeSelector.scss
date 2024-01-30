@@ -58,7 +58,7 @@
   }
 }
 
-@media screen and (min-width: 250px) and (max-width: 425px) {
+@media screen and (min-width: 250px) and (max-width: 370px) {
   .identifier-theme-selector .identifier-theme-input ion-col {
     height: 4.75rem;
     padding: 0.35rem;
@@ -83,6 +83,13 @@
         height: 0.8rem;
         margin-bottom: 50%;
       }
+    }
+  }
+
+  @media screen and (min-width: 371px) and (max-width: 425px) {
+    .identifier-theme-selector .identifier-theme-input ion-col {
+      height: 5.2rem;
+      padding: 0.4rem;
     }
   }
 }
