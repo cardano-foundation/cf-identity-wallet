@@ -29,11 +29,11 @@
         color: var(--ion-color-secondary);
         border-radius: 0.5rem;
 
+        .unselected-theme-circle,
         .selected-theme-checkmark {
           width: 1.5rem;
           height: 1.5rem;
           border-radius: 1.5rem;
-          background: var(--ion-color-primary-gradient);
           position: absolute;
           top: 0.25rem;
           right: 0.25rem;
@@ -50,6 +50,15 @@
           }
         }
 
+        .selected-theme-checkmark {
+          background: var(--ion-color-primary-gradient);
+        }
+
+        .unselected-theme-circle {
+          background: var(--ion-color-light);
+          border: 1px solid var(--ion-color-dark-grey);
+        }
+
         &::part(native) {
           background-color: transparent;
         }
@@ -64,24 +73,23 @@
     padding: 0.35rem;
   }
 
-  .identifier-theme-selector
-    .identifier-theme-input
-    ion-col
-    .theme-input
+  .identifier-theme-selector .identifier-theme-input ion-col .theme-input {
+    .unselected-theme-circle,
     .selected-theme-checkmark {
-    width: 1.2rem;
-    height: 1.2rem;
-    top: 0.2rem;
-    right: 0.2rem;
+      width: 1.2rem;
+      height: 1.2rem;
+      top: 0.2rem;
+      right: 0.2rem;
 
-    .selected-theme-checkmark-inner {
-      width: 0.9rem;
-      height: 0.9rem;
+      .selected-theme-checkmark-inner {
+        width: 0.9rem;
+        height: 0.9rem;
 
-      ion-icon {
-        width: 0.8rem;
-        height: 0.8rem;
-        margin-bottom: 50%;
+        ion-icon {
+          width: 0.8rem;
+          height: 0.8rem;
+          margin-bottom: 50%;
+        }
       }
     }
   }
