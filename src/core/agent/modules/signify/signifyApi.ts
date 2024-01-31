@@ -128,7 +128,7 @@ export class SignifyApi {
     return this.signifyClient.identifiers().interact(signifyName, anchor);
   }
 
-  async checkDelegationSuccess(signifyName: string): Promise<boolean> {
+  async delegationApproved(signifyName: string): Promise<boolean> {
     const identifier = await this.signifyClient.identifiers().get(signifyName);
     const operation = await this.signifyClient
       .keyStates()

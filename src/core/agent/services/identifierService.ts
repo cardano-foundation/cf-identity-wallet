@@ -511,7 +511,7 @@ class IdentifierService extends AgentService {
     if (!metadata.signifyOpName || !metadata.isPending) {
       return;
     }
-    const isDone = await this.agent.modules.signify.checkDelegationSuccess(
+    const isDone = await this.agent.modules.signify.delegationApproved(
       metadata.signifyName!
     );
     if (isDone) {

@@ -498,7 +498,7 @@ describe("Signify API", () => {
 
   test("should wait for the key state query operation to complete", async () => {
     const signifyName = "exampleSignifyName";
-    const result = await api.checkDelegationSuccess(signifyName);
+    const result = await api.delegationApproved(signifyName);
     expect(result).toEqual(true);
   });
 
