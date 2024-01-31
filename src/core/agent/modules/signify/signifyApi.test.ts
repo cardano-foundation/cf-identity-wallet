@@ -489,10 +489,11 @@ describe("Signify API", () => {
 
   test("should create a new delegation identifier with a random UUID as the name", async () => {
     const delegatorPrefix = "ABC123";
-    const delegatePrefix = await api.createDelegationIdentifier(
-      delegatorPrefix
-    );
-    expect(delegatePrefix).toEqual("test");
+    const result = await api.createDelegationIdentifier(delegatorPrefix);
+    expect(result).toEqual({
+      signifyName: expect.any(String),
+      identifier: expect.any(String),
+    });
   });
 
   test("should wait for the key state query operation to complete", async () => {

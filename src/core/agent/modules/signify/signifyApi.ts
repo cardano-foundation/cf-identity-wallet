@@ -112,12 +112,12 @@ export class SignifyApi {
   ): Promise<CreateIdentifierResult> {
     try {
       const signifyName = utils.uuid();
-      const icpResult2 = await this.signifyClient
+      const operation = await this.signifyClient
         .identifiers()
         .create(signifyName, { delpre: delegatorPrefix });
-      const operation = await icpResult2.op();
+      await operation.op();
       return { signifyName, identifier: operation.serder.ked.i };
-    } catch {
+    } catch (err) {
       throw new Error(SignifyApi.FAILED_TO_CREATE_DELEGATION_IDENTIFIER);
     }
   }
