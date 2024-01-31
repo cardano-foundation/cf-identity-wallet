@@ -1,5 +1,10 @@
 ion-modal.create-identifier-modal {
   --height: auto;
+  --background: transparent;
+
+  .ion-page {
+    border-radius: 1rem 1rem 0rem 0rem;
+  }
 
   &.blur .create-identifier-modal-content > *:not(.spinner-container) {
     filter: blur(0.1rem);
@@ -11,10 +16,15 @@ ion-modal.create-identifier-modal {
   flex-direction: column;
   justify-content: end;
   padding: 1.25rem;
+  border-radius: 1rem 1rem 0rem 0rem;
   background: var(--ion-color-light);
 
   .page-header {
     margin-bottom: 1rem;
+
+    ion-buttons {
+      min-width: 20%;
+    }
   }
 
   .page-footer {
@@ -115,10 +125,14 @@ ion-modal.create-identifier-modal {
 
 @media screen and (min-width: 250px) and (max-width: 375px) {
   .create-identifier-modal-content {
-    padding: 0.9rem;
+    padding: 0.5rem 0.9rem;
 
     .page-header {
       margin-bottom: 0.8rem;
+
+      ion-toolbar {
+        max-height: 2.75rem;
+      }
     }
 
     > * {
@@ -131,6 +145,7 @@ ion-modal.create-identifier-modal {
     .identifier-type .type-input-title,
     .identifier-theme .theme-input-title {
       font-size: 0.8rem;
+      margin-bottom: 0.4rem;
     }
 
     .identifier-name {
