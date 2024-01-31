@@ -21,10 +21,6 @@ ion-modal.create-identifier-modal {
     margin-bottom: 0;
   }
 
-  &::part(content) {
-    border-radius: 1rem 1rem 0 0;
-  }
-
   .spinner-container {
     z-index: 1;
     display: flex;
@@ -32,7 +28,7 @@ ion-modal.create-identifier-modal {
     width: 100%;
     align-items: center;
     justify-content: center;
-    background: rgba(3, 3, 33, 0.2);
+    //background: rgba(3, 3, 33, 0.2);
     padding-bottom: 50vh;
   }
 
@@ -109,7 +105,7 @@ ion-modal.create-identifier-modal {
   }
 }
 
-@media screen and (min-width: 250px) and (max-width: 425px) {
+@media screen and (min-width: 250px) and (max-width: 375px) {
   .create-identifier-modal-content {
     padding: 0.9rem;
 
@@ -118,7 +114,7 @@ ion-modal.create-identifier-modal {
     }
 
     > * {
-      margin-bottom: 1.248rem;
+      margin-bottom: 1rem;
     }
 
     ion-item.custom-input .input-line ion-input,
@@ -141,6 +137,14 @@ ion-modal.create-identifier-modal {
     .identifier-type ion-item::part(native) {
       min-height: 2.5rem;
       font-size: 0.8rem;
+    }
+  }
+
+  @media screen and (min-width: 371px) and (max-width: 425px) {
+    .create-identifier-modal-content {
+      > * {
+        margin-bottom: 1.248rem;
+      }
     }
   }
 }
