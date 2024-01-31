@@ -132,7 +132,7 @@ export class SignifyApi {
     const identifier = await this.signifyClient.identifiers().get(signifyName);
     const operation = await this.signifyClient
       .keyStates()
-      .query(identifier.state.di, 1);
+      .query(identifier.state.di, "1");
     await this.waitAndGetDoneOp(
       operation,
       this.opTimeout,
