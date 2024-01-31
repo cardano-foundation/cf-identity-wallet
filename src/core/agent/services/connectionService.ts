@@ -414,6 +414,7 @@ class ConnectionService extends AgentService {
         return {
           type: ConnectionHistoryType.CREDENTIAL_ACCEPTED,
           timestamp: record.createdAt.toISOString(),
+          credentialType: record.credentialType,
         };
       })
     );

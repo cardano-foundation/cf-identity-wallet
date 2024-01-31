@@ -31,6 +31,7 @@ enum ConnectionType {
 
 interface ConnectionHistoryItem {
   type: ConnectionHistoryType;
+  credentialType?: string;
   timestamp: string;
 }
 
