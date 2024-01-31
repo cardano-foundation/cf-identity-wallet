@@ -63,6 +63,10 @@ ion-modal.create-identifier-modal {
     }
   }
 
+  .identifier-name-error ion-item.custom-input .input-line {
+    border-color: var(--ion-color-danger);
+  }
+
   > * {
     margin-bottom: 1.56rem;
   }

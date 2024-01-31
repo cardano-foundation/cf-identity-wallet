@@ -147,7 +147,13 @@ const CreateIdentifier = ({
               closeButtonAction={() => resetModal()}
               title={`${i18n.t("createidentifier.title")}`}
             />
-            <div className="identifier-name">
+            <div
+              className={`identifier-name${
+                displayNameValue.length !== 0 && !displayNameValueIsValid
+                  ? " identifier-name-error"
+                  : ""
+              }`}
+            >
               <CustomInput
                 dataTestId="display-name-input"
                 title={`${i18n.t("createidentifier.displayname.title")}`}
