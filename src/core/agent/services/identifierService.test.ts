@@ -33,6 +33,9 @@ const agent = jest.mocked({
       createMultisig: jest.fn(),
       getNotificationsBySaid: jest.fn(),
       joinMultisig: jest.fn(),
+      createDelegationIdentifier: jest.fn(),
+      interactDelegation: jest.fn(),
+      checkDelegationSuccess: jest.fn(),
     },
   },
   dids: {
@@ -753,5 +756,80 @@ describe("Identifier service of agent", () => {
         }
       )
     ).rejects.toThrowError();
+  });
+
+  it("should call signify.createDelegationIdentifier with the correct parameters and return the result", async () => {
+    const aid = "newIdentifierAid";
+    const displayName = "newDisplayName";
+    const signifyName = "newUuidHere";
+    agent.modules.signify.createDelegationIdentifier = jest
+      .fn()
+      .mockResolvedValue({
+        identifier: aid,
+        signifyName,
+      });
+    expect(
+      await identifierService.createDelegationIdentifier(
+        {
+          method: IdentifierType.KERI,
+          displayName,
+          colors,
+          theme: 0,
+        },
+        "delegationPrefix"
+      )
+    ).toBe(aid);
+    expect(agent.dids.create).not.toBeCalledWith(); // Just in case
+    expect(agent.modules.signify.createDelegationIdentifier).toBeCalled();
+    expect(
+      agent.modules.generalStorage.saveIdentifierMetadataRecord
+    ).toBeCalledWith(expect.any(IdentifierMetadataRecord));
+    const newRecord: IdentifierMetadataRecord =
+      agent.modules.generalStorage.saveIdentifierMetadataRecord.mock
+        .calls[0][0];
+    expect(newRecord.id).toEqual(aid);
+    expect(newRecord.displayName).toEqual(displayName);
+    expect(newRecord.colors).toEqual(colors);
+    expect(newRecord.method).toEqual(IdentifierType.KERI);
+    expect(newRecord.signifyName).toEqual(signifyName);
+    expect(newRecord.isPending).toEqual(true);
+  });
+
+  it("should call the 'interactDelegation' method of the 'signify' module with the given arguments", async () => {
+    const signifyName = "exampleSignifyName";
+    const delegatePrefix = "exampleDelegatePrefix";
+    await identifierService.interactDelegation(signifyName, delegatePrefix);
+
+    expect(agent.modules.signify.interactDelegation).toHaveBeenCalledWith(
+      signifyName,
+      delegatePrefix
+    );
+  });
+
+  it("should call signify.checkDelegationSuccess and update metadata's isPending property to false", async () => {
+    // Arrange
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+
+    agent.modules.signify.checkDelegationSuccess = jest
+      .fn()
+      .mockResolvedValue(true);
+
+    await identifierService.checkDelegationSuccess(metadata);
+
+    expect(agent.modules.signify.checkDelegationSuccess).toHaveBeenCalledWith(
+      metadata.signifyName
+    );
+    expect(
+      agent.modules.generalStorage.updateIdentifierMetadata
+    ).toHaveBeenCalledWith(metadata.id, { isPending: false });
   });
 });

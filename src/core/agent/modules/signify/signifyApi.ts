@@ -30,6 +30,8 @@ export class SignifyApi {
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
   static readonly FAILED_TO_CREATE_IDENTIFIER =
     "Failed to create new managed AID, operation not completing...";
+  static readonly FAILED_TO_CREATE_DELEGATION_IDENTIFIER =
+    "Failed to create new delegation AID";
 
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly BACKER_ADDRESS =
@@ -105,15 +107,19 @@ export class SignifyApi {
     }
   }
 
-  async createDelegationIdentifier(delegatorPrefix: string): Promise<string> {
-    const signifyName = utils.uuid();
-    const icpResult2 = await this.signifyClient
-      .identifiers()
-      .create(signifyName, { delpre: delegatorPrefix });
-    const operation = await icpResult2.op();
-    // no need to wait for operation to complete because it needs to be interacted from delegator
-    const delegatePrefix = operation.name.split(".")[1];
-    return delegatePrefix;
+  async createDelegationIdentifier(
+    delegatorPrefix: string
+  ): Promise<CreateIdentifierResult> {
+    try {
+      const signifyName = utils.uuid();
+      const icpResult2 = await this.signifyClient
+        .identifiers()
+        .create(signifyName, { delpre: delegatorPrefix });
+      const operation = await icpResult2.op();
+      return { signifyName, identifier: operation.serder.ked.i };
+    } catch {
+      throw new Error(SignifyApi.FAILED_TO_CREATE_DELEGATION_IDENTIFIER);
+    }
   }
 
   async interactDelegation(signifyName: string, delegatePrefix: string) {

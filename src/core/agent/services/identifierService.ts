@@ -472,6 +472,55 @@ class IdentifierService extends AgentService {
       };
     });
   }
+
+  async createDelegationIdentifier(
+    metadata: Omit<
+      IdentifierMetadataRecordProps,
+      "id" | "createdAt" | "isArchived"
+    >,
+    delegatorPrefix: string
+  ): Promise<string | undefined> {
+    const type = metadata.method;
+    if (type === IdentifierType.KERI) {
+      const { signifyName, identifier } =
+        await this.agent.modules.signify.createDelegationIdentifier(
+          delegatorPrefix
+        );
+      await this.createIdentifierMetadataRecord({
+        id: identifier,
+        ...metadata,
+        signifyName: signifyName,
+        method: IdentifierType.KERI,
+        isPending: true,
+      });
+      return identifier;
+    }
+  }
+
+  async interactDelegation(
+    signifyName: string,
+    delegatePrefix: string
+  ): Promise<void> {
+    await this.agent.modules.signify.interactDelegation(
+      signifyName,
+      delegatePrefix
+    );
+  }
+
+  async checkDelegationSuccess(metadata: IdentifierMetadataRecord) {
+    if (!metadata.signifyOpName || !metadata.isPending) {
+      return;
+    }
+    const isDone = await this.agent.modules.signify.checkDelegationSuccess(
+      metadata.signifyName!
+    );
+    if (isDone) {
+      await this.agent.modules.generalStorage.updateIdentifierMetadata(
+        metadata.id,
+        { isPending: false }
+      );
+    }
+  }
 }
 
 export { IdentifierService };
