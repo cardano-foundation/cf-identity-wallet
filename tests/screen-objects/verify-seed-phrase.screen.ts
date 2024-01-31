@@ -1,10 +1,17 @@
 import { expect } from "expect-webdriverio";
-
-const delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
+import { VerifySeedPhrase } from "../constants/text.constants.js";
 
 export class VerifySeedPhraseScreen {
   get continueButton() {
     return $("[data-testid=\"primary-button-verify-seed-phrase\"]");
+  }
+
+  get screenDescriptionText() {
+    return $("[data-testid=\"verify-seed-phrase-paragraph-top\"]");
+  }
+
+  get screenTitle() {
+    return $("[data-testid=\"verify-seed-phrase-title\"]");
   }
 
   get seedPhraseContainer() {
@@ -12,6 +19,12 @@ export class VerifySeedPhraseScreen {
   }
 
   async loads() {
+    await expect(this.screenTitle).toBeDisplayed();
+    await expect(this.screenTitle).toHaveText(VerifySeedPhrase.Title);
+    await expect(this.screenDescriptionText).toBeDisplayed();
+    await expect(this.screenDescriptionText).toHaveText(
+      VerifySeedPhrase.Description
+    );
     await expect(this.seedPhraseContainer).toBeDisplayed();
     await expect(this.continueButton).toBeExisting();
   }

@@ -3,12 +3,15 @@ import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { IdentifierCardInfoKeriProps } from "./IdentifierCardInfoKeri.types";
 import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
 import { CardDetailsBlock, CardDetailsItem } from "../CardDetailsElements";
+import { i18n } from "../../../i18n";
 
 const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
   return (
     <>
       {cardData.di !== "" && (
-        <CardDetailsBlock title="identifiers.card.details.delegator.title">
+        <CardDetailsBlock
+          title={i18n.t("identifiers.card.details.delegator.title")}
+        >
           <CardDetailsItem
             info={cardData.di}
             copyButton={true}
@@ -18,7 +21,9 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
         </CardDetailsBlock>
       )}
       {cardData.k.length && (
-        <CardDetailsBlock title="identifiers.card.details.signingkeyslist.title">
+        <CardDetailsBlock
+          title={i18n.t("identifiers.card.details.signingkeyslist.title")}
+        >
           {cardData.k.map((item, index) => {
             return (
               <CardDetailsItem
@@ -33,7 +38,9 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
         </CardDetailsBlock>
       )}
       {cardData.kt > 1 && (
-        <CardDetailsBlock title="identifiers.card.details.signingkeysthreshold.title">
+        <CardDetailsBlock
+          title={i18n.t("identifiers.card.details.signingkeysthreshold.title")}
+        >
           <CardDetailsItem
             info={`${cardData.kt}`}
             copyButton={false}
@@ -43,7 +50,9 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
         </CardDetailsBlock>
       )}
       {cardData.n.length && (
-        <CardDetailsBlock title="identifiers.card.details.nextkeyslist.title">
+        <CardDetailsBlock
+          title={i18n.t("identifiers.card.details.nextkeyslist.title")}
+        >
           {cardData.n.map((item, index) => {
             return (
               <CardDetailsItem
@@ -58,7 +67,9 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
         </CardDetailsBlock>
       )}
       {cardData.nt > 1 && (
-        <CardDetailsBlock title="identifiers.card.details.nextkeysthreshold.title">
+        <CardDetailsBlock
+          title={i18n.t("identifiers.card.details.nextkeysthreshold.title")}
+        >
           <CardDetailsItem
             info={`${cardData.nt}`}
             copyButton={false}
@@ -67,7 +78,9 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
           />
         </CardDetailsBlock>
       )}
-      <CardDetailsBlock title="identifiers.card.details.creationtimestamp.title">
+      <CardDetailsBlock
+        title={i18n.t("identifiers.card.details.creationtimestamp.title")}
+      >
         <CardDetailsItem
           info={
             formatShortDate(cardData.createdAtUTC) +
@@ -80,7 +93,9 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
         />
       </CardDetailsBlock>
       {cardData.s > 0 && cardData.dt && (
-        <CardDetailsBlock title="identifiers.card.details.rotationtimestamp.title">
+        <CardDetailsBlock
+          title={i18n.t("identifiers.card.details.rotationtimestamp.title")}
+        >
           <CardDetailsItem
             info={
               formatShortDate(cardData.dt) +
@@ -94,7 +109,9 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
         </CardDetailsBlock>
       )}
       {cardData.s > 0 && (
-        <CardDetailsBlock title="identifiers.card.details.sequencenumber.title">
+        <CardDetailsBlock
+          title={i18n.t("identifiers.card.details.sequencenumber.title")}
+        >
           <CardDetailsItem
             info={`${cardData.s}`}
             copyButton={true}
@@ -104,7 +121,9 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
         </CardDetailsBlock>
       )}
       {cardData.b.length && (
-        <CardDetailsBlock title="identifiers.card.details.backerslist.title">
+        <CardDetailsBlock
+          title={i18n.t("identifiers.card.details.backerslist.title")}
+        >
           {cardData.b.map((item, index) => {
             return (
               <CardDetailsItem
@@ -118,7 +137,9 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
           })}
         </CardDetailsBlock>
       )}
-      <CardDetailsBlock title="identifiers.card.details.backeraddress.title">
+      <CardDetailsBlock
+        title={i18n.t("identifiers.card.details.backeraddress.title")}
+      >
         <CardDetailsItem
           info={SignifyApi.BACKER_ADDRESS}
           copyButton={true}

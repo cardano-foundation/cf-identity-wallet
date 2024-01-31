@@ -1,4 +1,5 @@
 import { expect } from "expect-webdriverio";
+import { CreatePassword } from "../constants/text.constants.js";
 
 export class CreatePasswordScreen {
   get backArrowIcon() {
@@ -25,12 +26,12 @@ export class CreatePasswordScreen {
     return $("#ion-input-2");
   }
 
-  get pageTopParagraph() {
-    return $("[data-testid=\"create-password-top-paragraph\"]");
-  }
-
   get screenTitle() {
     return $("[data-testid=\"create-password-title\"]");
+  }
+
+  get screenTopParagraph() {
+    return $("[data-testid=\"create-password-top-paragraph\"]");
   }
 
   get skipButton() {
@@ -60,7 +61,11 @@ export class CreatePasswordScreen {
   async loads() {
     await expect(this.backArrowIcon).toBeExisting();
     await expect(this.screenTitle).toBeDisplayed();
-    await expect(this.pageTopParagraph).toBeDisplayed();
+    await expect(this.screenTitle).toHaveText(CreatePassword.Title);
+    await expect(this.screenTopParagraph).toBeDisplayed();
+    await expect(this.screenTopParagraph).toHaveText(
+      CreatePassword.Description
+    );
     await expect(this.createPasswordInput).toBeDisplayed();
     await expect(this.confirmPasswordInput).toBeDisplayed();
     await expect(this.hintInput).toBeDisplayed();

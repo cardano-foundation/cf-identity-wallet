@@ -257,24 +257,20 @@ const IdentifierCardDetails = () => {
               }}
             />
           </div>
+          <ShareIdentifier
+            isOpen={shareIsOpen}
+            setIsOpen={setShareIsOpen}
+            id={cardData.id}
+            name={cardData.displayName}
+          />
+          <IdentifierOptions
+            optionsIsOpen={identifierOptionsIsOpen}
+            setOptionsIsOpen={setIdentifierOptionsIsOpen}
+            cardData={cardData}
+            setCardData={setCardData}
+            handleDeleteIdentifier={deleteIdentifier}
+          />
         </>
-      )}
-      {cardData && (
-        <ShareIdentifier
-          isOpen={shareIsOpen}
-          setIsOpen={setShareIsOpen}
-          id={cardData.id}
-          name={cardData.displayName}
-        />
-      )}
-      {cardData && (
-        <IdentifierOptions
-          optionsIsOpen={identifierOptionsIsOpen}
-          setOptionsIsOpen={setIdentifierOptionsIsOpen}
-          cardData={cardData}
-          setCardData={setCardData}
-          handleDeleteIdentifier={deleteIdentifier}
-        />
       )}
       <Alert
         isOpen={alertIsOpen}

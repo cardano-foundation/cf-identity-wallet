@@ -1,6 +1,7 @@
 import { expect } from "expect-webdriverio";
 import { generateRandomNumbersArray } from "../helpers/generate.js";
 import { log } from "../helpers/logger.js";
+import { Passcode } from "../constants/text.constants.js";
 
 export class PasscodeScreen {
   get digit0Button() {
@@ -57,7 +58,9 @@ export class PasscodeScreen {
 
   async loads() {
     await expect(this.screenTitle).toBeDisplayed();
+    await expect(this.screenTitle).toHaveText(Passcode.Title);
     await expect(this.screenDescriptionText).toBeDisplayed();
+    await expect(this.screenDescriptionText).toHaveText(Passcode.Description);
     await expect(this.digit1Button).toBeDisplayed();
     await expect(this.digit2Button).toBeDisplayed();
     await expect(this.digit3Button).toBeDisplayed();
@@ -68,6 +71,11 @@ export class PasscodeScreen {
     await expect(this.digit8Button).toBeDisplayed();
     await expect(this.digit9Button).toBeDisplayed();
     await expect(this.digit0Button).toBeDisplayed();
+  }
+
+  async loadsReEnterScreen() {
+    await expect(this.screenTitle).toBeDisplayed();
+    await expect(this.screenTitle).toHaveText(Passcode.TitleReEnter);
   }
 
   async enterPasscode(passcode: number[]) {

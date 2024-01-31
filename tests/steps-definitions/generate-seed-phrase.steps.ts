@@ -21,6 +21,20 @@ Given(
   }
 );
 
+Given(
+  /^user tap Terms of Use link on Generate Seed Phrase screen$/,
+  async function () {
+    await GenerateSeedPhraseScreen.termsOfUseLink.click();
+  }
+);
+
+Given(
+  /^user tap Privacy Policy link on Generate Seed Phrase screen$/,
+  async function () {
+    await GenerateSeedPhraseScreen.privacyPolicyLink.click();
+  }
+);
+
 When(
   /^user tap Continue button Generate Seed Phrase screen$/,
   async function () {
