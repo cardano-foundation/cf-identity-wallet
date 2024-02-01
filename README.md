@@ -171,7 +171,7 @@ This command starts the development server and allows you to preview the applica
 You can discover how to run the application in an emulator by following this [link](docs/Running-in-an-Emulator.md).
 
 ## End-to-End (E2E) Testing
-You can gain additional insights into end-to-end testing by visiting the provided [link](docs/End-to-End-Testing.md).
+You can gain additional insights into end-to-end testing by visiting the provided [link](docs/Testing.md).
 
 # Contributing
 
