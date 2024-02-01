@@ -36,6 +36,7 @@ const agent = jest.mocked({
       createDelegationIdentifier: jest.fn(),
       interactDelegation: jest.fn(),
       delegationApproved: jest.fn(),
+      rotateIdentifier: jest.fn(),
     },
   },
   dids: {
@@ -881,5 +882,56 @@ describe("Identifier service of agent", () => {
     expect(
       identifierService.checkDelegationSuccess(metadata)
     ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+  });
+
+  test("should call signify.rotateIdentifier with correct params", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: false,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+    await identifierService.rotateIdentifier(metadata);
+    expect(agent.modules.signify.rotateIdentifier).toHaveBeenCalledWith(
+      metadata.signifyName
+    );
+  });
+
+  test("should call signify.rotateIdentifier with missing signify name and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+
+    expect(identifierService.rotateIdentifier(metadata)).rejects.toThrowError(
+      IdentifierService.AID_MISSING_SIGNIFY_NAME
+    );
+  });
+
+  test("should call signify.rotateIdentifier with DID and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KEY,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+
+    expect(identifierService.rotateIdentifier(metadata)).rejects.toThrowError(
+      IdentifierService.ONLY_CREATE_ROTATION_WITH_AID
+    );
   });
 });
