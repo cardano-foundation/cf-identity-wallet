@@ -52,7 +52,7 @@ class IdentifierService extends AgentService {
   static readonly ONLY_CREATE_DELAGATION_WITH_AID =
     "Can only create delegation using KERI AID";
   static readonly AID_MISSING_SIGNIFY_NAME =
-    "AID document is missing signify name";
+    "Metadata record for KERI AID is missing the Signify name";
   static readonly ONLY_CREATE_ROTATION_WITH_AID =
     "Can only create rotation using KERI AID";
 

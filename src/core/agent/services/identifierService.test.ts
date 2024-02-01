@@ -882,6 +882,7 @@ describe("Identifier service of agent", () => {
     expect(
       identifierService.checkDelegationSuccess(metadata)
     ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    expect(agent.modules.signify.delegationApproved).toBeCalledTimes(0);
   });
 
   test("should call signify.rotateIdentifier with correct params", async () => {
@@ -899,6 +900,7 @@ describe("Identifier service of agent", () => {
     expect(agent.modules.signify.rotateIdentifier).toHaveBeenCalledWith(
       metadata.signifyName
     );
+    expect(agent.modules.signify.delegationApproved).toBeCalledTimes(0);
   });
 
   test("should call signify.rotateIdentifier with missing signify name and throw error", async () => {
