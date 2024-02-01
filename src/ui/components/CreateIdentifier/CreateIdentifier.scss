@@ -1,172 +1,122 @@
 ion-modal.create-identifier-modal {
-  --height: auto;
-  --background: transparent;
-
-  .ion-page {
-    border-radius: 1rem 1rem 0rem 0rem;
-  }
-
   &.blur .create-identifier-modal-content > *:not(.spinner-container) {
     filter: blur(0.1rem);
   }
-}
 
-.create-identifier-modal-content {
-  display: flex;
-  flex-direction: column;
-  justify-content: end;
-  padding: 1.25rem;
-  border-radius: 1rem 1rem 0rem 0rem;
-  background: var(--ion-color-light);
-
-  .page-header {
-    margin-bottom: 1rem;
-
-    ion-buttons {
-      min-width: 20%;
-    }
-  }
-
-  .page-footer {
-    margin-bottom: 0;
-  }
-
-  ion-toolbar {
-    padding: 0 !important;
-  }
-
-  .spinner-container {
-    z-index: 100;
-    position: absolute;
-    top: 0;
-    left: 0;
-    display: flex;
-    height: 100%;
-    width: 100%;
-    align-items: center;
-    justify-content: center;
-    border-radius: 0.5rem 0.5rem 0rem 0rem;
-    background: rgba(3, 3, 33, 0.2);
-  }
-
-  .identifier-name ion-label,
-  .identifier-type .type-input-title,
-  .identifier-theme .theme-input-title {
-    font-size: 1rem;
-    font-weight: 500;
-    line-height: 1.375rem;
-    margin: 0 0 0.625rem;
-    transform: none;
-  }
-
-  ion-item.custom-input .input-line ion-input,
-  ion-item.custom-input .input-line ion-input input::placeholder,
-  .identifier-type {
-    font-size: 1rem;
-    font-weight: 400;
-  }
-
-  .error-message-container {
-    height: 1rem;
-
-    p {
-      font-size: 0.875rem;
-      margin: 0 auto;
-      text-align: left;
-    }
-  }
-
-  .identifier-name-error ion-item.custom-input .input-line {
-    border-color: var(--ion-color-danger);
-  }
-
-  > * {
-    margin-bottom: 1.56rem;
-  }
-
-  .identifier-name {
-    margin-bottom: 0.56rem;
-  }
-
-  .type-input {
-    --background: var(--ion-color-light);
-    --inner-border-width: 0;
-    border: 1px solid var(--ion-color-dark-grey);
-    color: var(--ion-color-secondary);
-    border-radius: 0.5rem;
-  }
-
-  .selected-type {
-    border: 1px solid var(--ion-color-secondary) !important;
-    --background: var(--ion-color-medium-grey);
-  }
-
-  .identifier-type-selector {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-
-    ion-item {
-      width: calc(50% - 0.3rem);
-      margin: 0;
-
-      &::part(native) {
-        min-height: 3.125rem;
-        border-radius: 0.5rem;
-      }
-
-      span {
-        width: 100%;
-        text-align: center;
-      }
-    }
-  }
-}
-
-@media screen and (min-width: 250px) and (max-width: 375px) {
   .create-identifier-modal-content {
-    padding: 0.5rem 0.9rem;
-
-    .page-header {
-      margin-bottom: 0.8rem;
-
-      ion-toolbar {
-        max-height: 2.75rem;
-      }
+    .spinner-container {
+      z-index: 100;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      height: 100%;
+      width: 100%;
+      align-items: center;
+      justify-content: center;
+      border-radius: 0.5rem 0.5rem 0rem 0rem;
+      background: rgba(3, 3, 33, 0.2);
     }
 
-    > * {
-      margin-bottom: 1rem;
+    .identifier-name ion-label,
+    .identifier-type .type-input-title,
+    .identifier-theme .theme-input-title {
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 1.375rem;
+      margin: 0 0 0.625rem;
+      transform: none;
     }
 
     ion-item.custom-input .input-line ion-input,
     ion-item.custom-input .input-line ion-input input::placeholder,
-    .identifier-name ion-label,
-    .identifier-type .type-input-title,
-    .identifier-theme .theme-input-title {
-      font-size: 0.8rem;
-      margin-bottom: 0.4rem;
+    .identifier-type {
+      font-size: 1rem;
+      font-weight: 400;
+    }
+
+    .error-message-container {
+      height: 1rem;
+
+      p {
+        font-size: 0.875rem;
+        margin: 0 auto;
+        text-align: left;
+      }
+    }
+
+    .identifier-name-error ion-item.custom-input .input-line {
+      border-color: var(--ion-color-danger);
     }
 
     .identifier-name {
-      margin-bottom: 0.1rem;
+      margin-bottom: 0.56rem;
     }
 
-    .error-message-container p {
-      font-size: 0.7rem;
-      margin-top: 0.109rem;
+    .type-input {
+      --background: var(--ion-color-light);
+      --inner-border-width: 0;
+      border: 1px solid var(--ion-color-dark-grey);
+      color: var(--ion-color-secondary);
+      border-radius: 0.5rem;
     }
 
-    .identifier-type ion-item::part(native) {
-      min-height: 2.5rem;
-      font-size: 0.8rem;
+    .selected-type {
+      border: 1px solid var(--ion-color-secondary) !important;
+      --background: var(--ion-color-medium-grey);
+    }
+
+    .identifier-type-selector {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      ion-item {
+        width: calc(50% - 0.3rem);
+        margin: 0;
+
+        &::part(native) {
+          min-height: 3.125rem;
+          border-radius: 0.5rem;
+        }
+
+        span {
+          width: 100%;
+          text-align: center;
+        }
+      }
     }
   }
 
-  @media screen and (min-width: 371px) and (max-width: 425px) {
+  @media screen and (min-width: 250px) and (max-width: 375px) {
     .create-identifier-modal-content {
-      > * {
-        margin-bottom: 1.248rem;
+      ion-item.custom-input .input-line ion-input,
+      ion-item.custom-input .input-line ion-input input::placeholder,
+      .identifier-name ion-label,
+      .identifier-type .type-input-title,
+      .identifier-theme .theme-input-title {
+        font-size: 0.8rem;
+      }
+
+      ion-item.custom-input,
+      .identifier-name ion-label,
+      .identifier-type .type-input-title,
+      .identifier-theme .theme-input-title {
+        margin-bottom: 0.4rem;
+      }
+
+      .identifier-name {
+        margin-bottom: 0.1rem;
+      }
+
+      .error-message-container p {
+        font-size: 0.7rem;
+        margin-top: 0.109rem;
+      }
+
+      .identifier-type ion-item::part(native) {
+        min-height: 2.5rem;
+        font-size: 0.8rem;
       }
     }
   }

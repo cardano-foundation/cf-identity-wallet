@@ -1,0 +1,74 @@
+ion-modal.responsive-modal {
+  --height: auto;
+  --background: transparent;
+
+  .ion-page {
+    border-radius: 1rem 1rem 0rem 0rem;
+  }
+
+  .responsive-modal-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    padding: 1.25rem;
+    border-radius: 1rem 1rem 0rem 0rem;
+    background: var(--ion-color-light);
+
+    ion-toolbar {
+      padding: 0 !important;
+    }
+
+    > *:not(.page-header),
+    > *:not(.page-footer) {
+      margin-bottom: 1.56rem;
+    }
+
+    .page-header {
+      margin-bottom: 1rem;
+
+      ion-buttons {
+        min-width: 20%;
+      }
+    }
+
+    .page-footer {
+      margin-bottom: 0;
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 375px) {
+    .responsive-modal-content {
+      padding: 0.5rem 0.9rem;
+
+      > *:not(.page-header),
+      > *:not(.page-footer) {
+        margin-bottom: 1rem;
+      }
+
+      .page-header {
+        margin-bottom: 0.8rem;
+
+        ion-toolbar {
+          max-height: 2.75rem;
+        }
+      }
+    }
+
+    @media screen and (min-width: 371px) and (max-width: 425px) {
+      .responsive-modal-content {
+        padding: 0.9rem;
+
+        > *:not(.page-header),
+        > *:not(.page-footer) {
+          margin-bottom: 1.248rem;
+        }
+
+        .page-header {
+          ion-toolbar {
+            max-height: 3rem;
+          }
+        }
+      }
+    }
+  }
+}

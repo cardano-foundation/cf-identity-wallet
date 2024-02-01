@@ -1,4 +1,4 @@
-import { IonItem, IonModal, IonSpinner } from "@ionic/react";
+import { IonItem, IonSpinner } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
@@ -23,6 +23,7 @@ import { ToastMsgType } from "../../globals/types";
 import { IdentifierThemeSelector } from "../IdentifierThemeSelector";
 import { PageHeader } from "../PageHeader";
 import { PageFooter } from "../PageFooter";
+import { ResponsiveModal } from "../layout/ResponsiveModal";
 
 const CreateIdentifier = ({
   modalIsOpen,
@@ -110,100 +111,102 @@ const CreateIdentifier = ({
   };
 
   return (
-    <IonModal
-      isOpen={modalIsOpen}
-      breakpoints={[0, 1]}
-      initialBreakpoint={1}
-      data-testid={componentId}
-      className={`${componentId} ${blur ? "blur" : ""}`}
-      onDidDismiss={() => resetModal()}
+    <ResponsiveModal
+      componentId={componentId}
+      modalIsOpen={modalIsOpen}
+      customClasses={`${componentId} ${blur ? "blur" : ""}`}
+      onDismiss={() => resetModal()}
     >
-      <div className={`${componentId}-content`}>
-        {blur && (
-          <div
-            className="spinner-container"
-            data-testid="spinner-container"
-          >
-            <IonSpinner name="circular" />
-          </div>
-        )}
-        <>
-          <PageHeader
-            closeButton={true}
-            closeButtonLabel={`${i18n.t("createidentifier.cancel")}`}
-            closeButtonAction={() => resetModal()}
-            title={`${i18n.t("createidentifier.title")}`}
+      {blur && (
+        <div
+          className="spinner-container"
+          data-testid="spinner-container"
+        >
+          <IonSpinner name="circular" />
+        </div>
+      )}
+      <>
+        <PageHeader
+          closeButton={true}
+          closeButtonLabel={`${i18n.t("createidentifier.cancel")}`}
+          closeButtonAction={() => resetModal()}
+          title={`${i18n.t("createidentifier.title")}`}
+        />
+        <div
+          className={`identifier-name${
+            displayNameValue.length !== 0 && !displayNameValueIsValid
+              ? " identifier-name-error"
+              : ""
+          }`}
+        >
+          <CustomInput
+            dataTestId="display-name-input"
+            title={`${i18n.t("createidentifier.displayname.title")}`}
+            placeholder={`${i18n.t(
+              "createidentifier.displayname.placeholder"
+            )}`}
+            hiddenInput={false}
+            onChangeInput={setDisplayNameValue}
+            value={displayNameValue}
           />
-          <div
-            className={`identifier-name${
-              displayNameValue.length !== 0 && !displayNameValueIsValid
-                ? " identifier-name-error"
-                : ""
-            }`}
-          >
-            <CustomInput
-              dataTestId="display-name-input"
-              title={`${i18n.t("createidentifier.displayname.title")}`}
-              placeholder={`${i18n.t(
-                "createidentifier.displayname.placeholder"
-              )}`}
-              hiddenInput={false}
-              onChangeInput={setDisplayNameValue}
-              value={displayNameValue}
-            />
-            <div className="error-message-container">
-              {displayNameValue.length !== 0 && !displayNameValueIsValid && (
-                <ErrorMessage
-                  message={`${i18n.t("createidentifier.error.maxlength")}`}
-                  timeout={true}
+          <div className="error-message-container">
+            {displayNameValue.length !== 0 && !displayNameValueIsValid && (
+              <ErrorMessage
+                message={`${i18n.t("createidentifier.error.maxlength")}`}
+                timeout={true}
+              />
+            )}
+          </div>
+        </div>
+        {!keyboardIsOpen ? (
+          <>
+            <div className="identifier-type">
+              <div className="type-input-title">{`${i18n.t(
+                "createidentifier.identifiertype.title"
+              )}`}</div>
+              <div
+                className="identifier-type-selector"
+                data-testid="identifier-type-selector"
+              >
+                <TypeItem
+                  index={0}
+                  text={i18n.t("createidentifier.identifiertype.didkey")}
                 />
-              )}
+                <TypeItem
+                  index={1}
+                  text={i18n.t("createidentifier.identifiertype.keri")}
+                />
+              </div>
             </div>
-          </div>
-          <div className="identifier-type">
-            <div className="type-input-title">{`${i18n.t(
-              "createidentifier.identifiertype.title"
-            )}`}</div>
-            <div
-              className="identifier-type-selector"
-              data-testid="identifier-type-selector"
-            >
-              <TypeItem
-                index={0}
-                text={i18n.t("createidentifier.identifiertype.didkey")}
-              />
-              <TypeItem
-                index={1}
-                text={i18n.t("createidentifier.identifiertype.keri")}
+            <div className="identifier-theme">
+              <div className="theme-input-title">{`${i18n.t(
+                "createidentifier.theme.title"
+              )}`}</div>
+              <IdentifierThemeSelector
+                identifierType={selectedType}
+                selectedTheme={selectedTheme}
+                setSelectedTheme={setSelectedTheme}
               />
             </div>
-          </div>
-          <div className="identifier-theme">
-            <div className="theme-input-title">{`${i18n.t(
-              "createidentifier.theme.title"
-            )}`}</div>
-            <IdentifierThemeSelector
-              identifierType={selectedType}
-              selectedTheme={selectedTheme}
-              setSelectedTheme={setSelectedTheme}
+            <PageFooter
+              pageId={componentId}
+              primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
+              primaryButtonAction={() => {
+                setBlur(true);
+                setTimeout(() => {
+                  handleCreateIdentifier();
+                }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
+              }}
+              primaryButtonDisabled={
+                !(displayNameValueIsValid && typeIsSelectedIsValid)
+              }
             />
-          </div>
-          <PageFooter
-            pageId={componentId}
-            primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
-            primaryButtonAction={() => {
-              setBlur(true);
-              setTimeout(() => {
-                handleCreateIdentifier();
-              }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
-            }}
-            primaryButtonDisabled={
-              !(displayNameValueIsValid && typeIsSelectedIsValid)
-            }
-          />
-        </>
-      </div>
-    </IonModal>
+          </>
+        ) : (
+          <></>
+        )}
+      </>
+    </ResponsiveModal>
   );
 };
 
