@@ -917,4 +917,21 @@ describe("Identifier service of agent", () => {
       IdentifierService.AID_MISSING_SIGNIFY_NAME
     );
   });
+
+  test("should call signify.rotateIdentifier with DID and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KEY,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+
+    expect(identifierService.rotateIdentifier(metadata)).rejects.toThrowError(
+      IdentifierService.ONLY_CREATE_ROTATION_WITH_AID
+    );
+  });
 });

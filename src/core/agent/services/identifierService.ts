@@ -53,6 +53,8 @@ class IdentifierService extends AgentService {
     "Can only create delegation using KERI AID";
   static readonly AID_MISSING_SIGNIFY_NAME =
     "AID document is missing signify name";
+  static readonly ONLY_CREATE_ROTATION_WITH_AID =
+    "Can only create rotation using KERI AID";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -533,6 +535,9 @@ class IdentifierService extends AgentService {
   }
 
   async rotateIdentifier(metadata: IdentifierMetadataRecord) {
+    if (metadata.method !== IdentifierType.KERI) {
+      throw new Error(IdentifierService.ONLY_CREATE_ROTATION_WITH_AID);
+    }
     if (!metadata.signifyName) {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
