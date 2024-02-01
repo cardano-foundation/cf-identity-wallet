@@ -29,10 +29,6 @@ export class SignifyApi {
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
-  static readonly FAILED_TO_CREATE_IDENTIFIER =
-    "Failed to create new managed AID, operation not completing...";
-  static readonly FAILED_TO_CREATE_DELEGATION_IDENTIFIER =
-    "Failed to create new delegation AID";
 
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly BACKER_ADDRESS =
@@ -107,16 +103,11 @@ export class SignifyApi {
   async createDelegationIdentifier(
     delegatorPrefix: string
   ): Promise<CreateIdentifierResult> {
-    try {
-      const signifyName = utils.uuid();
-      const operation = await this.signifyClient
-        .identifiers()
-        .create(signifyName, { delpre: delegatorPrefix });
-      await operation.op();
-      return { signifyName, identifier: operation.serder.ked.i };
-    } catch (err) {
-      throw new Error(SignifyApi.FAILED_TO_CREATE_DELEGATION_IDENTIFIER);
-    }
+    const signifyName = utils.uuid();
+    const operation = await this.signifyClient
+      .identifiers()
+      .create(signifyName, { delpre: delegatorPrefix });
+    return { signifyName, identifier: operation.serder.ked.i };
   }
 
   async interactDelegation(signifyName: string, delegatePrefix: string) {

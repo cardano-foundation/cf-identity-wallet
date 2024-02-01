@@ -49,6 +49,10 @@ class IdentifierService extends AgentService {
     "There's no notifications for the given SAID";
   static readonly ONLY_ALLOW_KERI_CONTACTS =
     "Can only create multi-sig using KERI contacts with specified OOBI URLs";
+  static readonly ONLY_CREATE_DELAGATION_WITH_AID =
+    "Can only create delegation using KERI AID";
+  static readonly AID_MISSING_SIGNIFY_NAME =
+    "AID document is missing signify name";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -473,31 +477,31 @@ class IdentifierService extends AgentService {
     });
   }
 
-  async createDelegationIdentifier(
+  async createDelegatedIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,
       "id" | "createdAt" | "isArchived"
     >,
     delegatorPrefix: string
   ): Promise<string | undefined> {
-    const type = metadata.method;
-    if (type === IdentifierType.KERI) {
-      const { signifyName, identifier } =
-        await this.agent.modules.signify.createDelegationIdentifier(
-          delegatorPrefix
-        );
-      await this.createIdentifierMetadataRecord({
-        id: identifier,
-        ...metadata,
-        signifyName: signifyName,
-        method: IdentifierType.KERI,
-        isPending: true,
-      });
-      return identifier;
+    if (metadata.method !== IdentifierType.KERI) {
+      throw new Error(IdentifierService.ONLY_CREATE_DELAGATION_WITH_AID);
     }
+    const { signifyName, identifier } =
+      await this.agent.modules.signify.createDelegationIdentifier(
+        delegatorPrefix
+      );
+    await this.createIdentifierMetadataRecord({
+      id: identifier,
+      ...metadata,
+      signifyName: signifyName,
+      method: IdentifierType.KERI,
+      isPending: true,
+    });
+    return identifier;
   }
 
-  async interactDelegation(
+  async approveDelegation(
     signifyName: string,
     delegatePrefix: string
   ): Promise<void> {
@@ -507,12 +511,17 @@ class IdentifierService extends AgentService {
     );
   }
 
-  async checkDelegationSuccess(metadata: IdentifierMetadataRecord) {
-    if (!metadata.signifyOpName || !metadata.isPending) {
-      return;
+  async checkDelegationSuccess(
+    metadata: IdentifierMetadataRecord
+  ): Promise<boolean> {
+    if (!metadata.signifyName) {
+      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    }
+    if (!metadata.isPending) {
+      return true;
     }
     const isDone = await this.agent.modules.signify.delegationApproved(
-      metadata.signifyName!
+      metadata.signifyName
     );
     if (isDone) {
       await this.agent.modules.generalStorage.updateIdentifierMetadata(
@@ -520,6 +529,7 @@ class IdentifierService extends AgentService {
         { isPending: false }
       );
     }
+    return isDone;
   }
 }
 
