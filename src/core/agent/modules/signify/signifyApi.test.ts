@@ -20,6 +20,21 @@ const admitMock = jest
   );
 const submitAdmitMock = jest.fn();
 const interactMock = jest.fn();
+const rotateMock = jest.fn().mockImplementation((name, _config) => {
+  return {
+    done: false,
+    name: `${witnessPrefix}${name}`,
+    op: jest.fn().mockResolvedValue({
+      name: "oobi.test",
+    }),
+    serder: {
+      ked: { i: name },
+    },
+    sigs: [
+      "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+    ],
+  };
+});
 
 const contacts = [
   {
@@ -70,6 +85,7 @@ jest.mock("signify-ts", () => ({
         }),
         addEndRole: jest.fn(),
         interact: interactMock,
+        rotate: rotateMock,
       }),
       operations: jest.fn().mockReturnValue({
         get: jest.fn().mockImplementation((name: string) => {
@@ -513,5 +529,24 @@ describe("Signify API", () => {
       s: "0",
       d: delegatePrefix,
     });
+  });
+
+  test("should call signifyClient.identifiers().interact with the correct parameters", async () => {
+    const signifyName = "exampleSignifyName";
+    const delegatePrefix = "exampleDelegatePrefix";
+
+    await api.interactDelegation(signifyName, delegatePrefix);
+
+    expect(interactMock).toHaveBeenCalledWith(signifyName, {
+      i: delegatePrefix,
+      s: "0",
+      d: delegatePrefix,
+    });
+  });
+
+  test("should call signifyClient.identifiers().rotate with the correct parameters", async () => {
+    const signifyName = "exampleSignifyName";
+    await api.rotateIdentifier(signifyName);
+    expect(rotateMock).toHaveBeenCalledWith(signifyName);
   });
 });

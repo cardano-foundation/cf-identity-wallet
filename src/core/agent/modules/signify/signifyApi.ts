@@ -47,6 +47,9 @@ export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
+  static readonly FAILED_TO_ROTATE_AID =
+    "Failed to rotate AID, operation not completing...";
+
   static readonly VLEI_HOST =
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
@@ -389,5 +392,20 @@ export class SignifyApi {
       icpResult: icpResult,
       name: name,
     };
+  }
+
+  async rotateIdentifier(signifyName: string): Promise<void> {
+    const rotateResult = await this.signifyClient
+      .identifiers()
+      .rotate(signifyName);
+    let operation = await rotateResult.op();
+    operation = await this.waitAndGetDoneOp(
+      operation,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    if (!operation.done) {
+      throw new Error(SignifyApi.FAILED_TO_ROTATE_AID);
+    }
   }
 }

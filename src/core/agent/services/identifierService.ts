@@ -531,6 +531,13 @@ class IdentifierService extends AgentService {
     }
     return isDone;
   }
+
+  async rotateIdentifier(metadata: IdentifierMetadataRecord) {
+    if (!metadata.signifyName) {
+      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    }
+    await this.agent.modules.signify.rotateIdentifier(metadata.signifyName);
+  }
 }
 
 export { IdentifierService };
