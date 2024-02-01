@@ -28,6 +28,14 @@ ion-modal.create-identifier-modal {
       transform: none;
     }
 
+    div.identifier-name {
+      margin-bottom: 0;
+
+      ion-item.custom-input {
+        margin-bottom: 0;
+      }
+    }
+
     ion-item.custom-input .input-line ion-input,
     ion-item.custom-input .input-line ion-input input::placeholder,
     .identifier-type {
@@ -102,14 +110,6 @@ ion-modal.create-identifier-modal {
       .identifier-type .type-input-title,
       .identifier-theme .theme-input-title {
         margin-bottom: 0.4rem;
-      }
-
-      div.identifier-name {
-        margin-bottom: 0;
-
-        ion-item.custom-input {
-          margin-bottom: 0;
-        }
       }
 
       .error-message-container p {
