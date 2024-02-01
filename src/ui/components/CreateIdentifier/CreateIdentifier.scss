@@ -49,7 +49,7 @@ ion-modal.create-identifier-modal {
       border-color: var(--ion-color-danger);
     }
 
-    .identifier-name {
+    div.identifier-name {
       margin-bottom: 0.56rem;
     }
 
@@ -98,15 +98,18 @@ ion-modal.create-identifier-modal {
         font-size: 0.8rem;
       }
 
-      ion-item.custom-input,
       .identifier-name ion-label,
       .identifier-type .type-input-title,
       .identifier-theme .theme-input-title {
         margin-bottom: 0.4rem;
       }
 
-      .identifier-name {
-        margin-bottom: 0.1rem;
+      div.identifier-name {
+        margin-bottom: 0;
+
+        ion-item.custom-input {
+          margin-bottom: 0;
+        }
       }
 
       .error-message-container p {

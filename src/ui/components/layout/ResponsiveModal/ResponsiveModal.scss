@@ -18,8 +18,7 @@ ion-modal.responsive-modal {
       padding: 0 !important;
     }
 
-    > *:not(.page-header),
-    > *:not(.page-footer) {
+    > * {
       margin-bottom: 1.56rem;
     }
 
@@ -40,8 +39,7 @@ ion-modal.responsive-modal {
     .responsive-modal-content {
       padding: 0.5rem 0.9rem;
 
-      > *:not(.page-header),
-      > *:not(.page-footer) {
+      > * {
         margin-bottom: 1rem;
       }
 
@@ -49,8 +47,12 @@ ion-modal.responsive-modal {
         margin-bottom: 0.8rem;
 
         ion-toolbar {
-          max-height: 2.75rem;
+          max-height: 2.5rem;
         }
+      }
+
+      .page-footer {
+        margin-bottom: 0;
       }
     }
 
@@ -58,8 +60,7 @@ ion-modal.responsive-modal {
       .responsive-modal-content {
         padding: 0.9rem;
 
-        > *:not(.page-header),
-        > *:not(.page-footer) {
+        > * {
           margin-bottom: 1.248rem;
         }
 
@@ -67,6 +68,10 @@ ion-modal.responsive-modal {
           ion-toolbar {
             max-height: 3rem;
           }
+        }
+
+        .page-footer {
+          margin-bottom: 0;
         }
       }
     }
