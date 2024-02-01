@@ -47,6 +47,9 @@ export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
+  static readonly FAILED_TO_ROTATE_AID =
+    "Failed to rotate AID, operation not completing...";
+
   static readonly VLEI_HOST =
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
@@ -98,6 +101,38 @@ export class SignifyApi {
       signifyName,
       identifier: operation.serder.ked.i,
     };
+  }
+
+  async createDelegationIdentifier(
+    delegatorPrefix: string
+  ): Promise<CreateIdentifierResult> {
+    const signifyName = utils.uuid();
+    const operation = await this.signifyClient
+      .identifiers()
+      .create(signifyName, { delpre: delegatorPrefix });
+    return { signifyName, identifier: operation.serder.ked.i };
+  }
+
+  async interactDelegation(signifyName: string, delegatePrefix: string) {
+    const anchor = {
+      i: delegatePrefix,
+      s: "0",
+      d: delegatePrefix,
+    };
+    return this.signifyClient.identifiers().interact(signifyName, anchor);
+  }
+
+  async delegationApproved(signifyName: string): Promise<boolean> {
+    const identifier = await this.signifyClient.identifiers().get(signifyName);
+    const operation = await this.signifyClient
+      .keyStates()
+      .query(identifier.state.di, "1");
+    await this.waitAndGetDoneOp(
+      operation,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    return operation.done;
   }
 
   async getIdentifierByName(name: string): Promise<any> {
@@ -357,5 +392,20 @@ export class SignifyApi {
       icpResult: icpResult,
       name: name,
     };
+  }
+
+  async rotateIdentifier(signifyName: string): Promise<void> {
+    const rotateResult = await this.signifyClient
+      .identifiers()
+      .rotate(signifyName);
+    let operation = await rotateResult.op();
+    operation = await this.waitAndGetDoneOp(
+      operation,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    if (!operation.done) {
+      throw new Error(SignifyApi.FAILED_TO_ROTATE_AID);
+    }
   }
 }

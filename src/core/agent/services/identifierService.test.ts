@@ -33,6 +33,10 @@ const agent = jest.mocked({
       createMultisig: jest.fn(),
       getNotificationsBySaid: jest.fn(),
       joinMultisig: jest.fn(),
+      createDelegationIdentifier: jest.fn(),
+      interactDelegation: jest.fn(),
+      delegationApproved: jest.fn(),
+      rotateIdentifier: jest.fn(),
     },
   },
   dids: {
@@ -753,5 +757,183 @@ describe("Identifier service of agent", () => {
         }
       )
     ).rejects.toThrowError();
+  });
+
+  test("should call signify.createDelegationIdentifier with the correct parameters and return the result", async () => {
+    const aid = "newIdentifierAid";
+    const displayName = "newDisplayName";
+    const signifyName = "newUuidHere";
+    agent.modules.signify.createDelegationIdentifier = jest
+      .fn()
+      .mockResolvedValue({
+        identifier: aid,
+        signifyName,
+      });
+    expect(
+      await identifierService.createDelegatedIdentifier(
+        {
+          method: IdentifierType.KERI,
+          displayName,
+          colors,
+          theme: 0,
+        },
+        "delegationPrefix"
+      )
+    ).toBe(aid);
+    expect(agent.dids.create).not.toBeCalledWith(); // Just in case
+    expect(agent.modules.signify.createDelegationIdentifier).toBeCalled();
+    expect(
+      agent.modules.generalStorage.saveIdentifierMetadataRecord
+    ).toBeCalledWith(expect.any(IdentifierMetadataRecord));
+    const newRecord: IdentifierMetadataRecord =
+      agent.modules.generalStorage.saveIdentifierMetadataRecord.mock
+        .calls[0][0];
+    expect(newRecord.id).toEqual(aid);
+    expect(newRecord.displayName).toEqual(displayName);
+    expect(newRecord.colors).toEqual(colors);
+    expect(newRecord.method).toEqual(IdentifierType.KERI);
+    expect(newRecord.signifyName).toEqual(signifyName);
+    expect(newRecord.isPending).toEqual(true);
+  });
+
+  test("should call signify.createDelegationIdentifier with the DID and throw an error", async () => {
+    const displayName = "newDisplayName";
+    expect(
+      identifierService.createDelegatedIdentifier(
+        {
+          method: IdentifierType.KEY,
+          displayName,
+          colors,
+          theme: 0,
+        },
+        "delegationPrefix"
+      )
+    ).rejects.toThrowError(IdentifierService.ONLY_CREATE_DELAGATION_WITH_AID);
+  });
+
+  test("should call the interactDelegation method of the signify module with the given arguments", async () => {
+    const signifyName = "exampleSignifyName";
+    const delegatePrefix = "exampleDelegatePrefix";
+    await identifierService.approveDelegation(signifyName, delegatePrefix);
+
+    expect(agent.modules.signify.interactDelegation).toHaveBeenCalledWith(
+      signifyName,
+      delegatePrefix
+    );
+  });
+
+  test("should call signify.checkDelegationSuccess and update metadata isPending property to false", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+
+    agent.modules.signify.delegationApproved = jest
+      .fn()
+      .mockResolvedValue(true);
+
+    expect(await identifierService.checkDelegationSuccess(metadata)).toEqual(
+      true
+    );
+
+    expect(agent.modules.signify.delegationApproved).toHaveBeenCalledWith(
+      metadata.signifyName
+    );
+    expect(
+      agent.modules.generalStorage.updateIdentifierMetadata
+    ).toHaveBeenCalledWith(metadata.id, { isPending: false });
+  });
+
+  test("should call signify.checkDelegationSuccess with isPending is false and return true", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: false,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+
+    expect(await identifierService.checkDelegationSuccess(metadata)).toEqual(
+      true
+    );
+  });
+
+  test("should call signify.checkDelegationSuccess with missing signify name and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+
+    expect(
+      identifierService.checkDelegationSuccess(metadata)
+    ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    expect(agent.modules.signify.delegationApproved).toBeCalledTimes(0);
+  });
+
+  test("should call signify.rotateIdentifier with correct params", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: false,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+    await identifierService.rotateIdentifier(metadata);
+    expect(agent.modules.signify.rotateIdentifier).toHaveBeenCalledWith(
+      metadata.signifyName
+    );
+    expect(agent.modules.signify.delegationApproved).toBeCalledTimes(0);
+  });
+
+  test("should call signify.rotateIdentifier with missing signify name and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+
+    expect(identifierService.rotateIdentifier(metadata)).rejects.toThrowError(
+      IdentifierService.AID_MISSING_SIGNIFY_NAME
+    );
+  });
+
+  test("should call signify.rotateIdentifier with DID and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KEY,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+
+    expect(identifierService.rotateIdentifier(metadata)).rejects.toThrowError(
+      IdentifierService.ONLY_CREATE_ROTATION_WITH_AID
+    );
   });
 });

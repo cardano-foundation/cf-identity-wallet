@@ -19,6 +19,22 @@ const admitMock = jest
     }
   );
 const submitAdmitMock = jest.fn();
+const interactMock = jest.fn();
+const rotateMock = jest.fn().mockImplementation((name, _config) => {
+  return {
+    done: false,
+    name: `${witnessPrefix}${name}`,
+    op: jest.fn().mockResolvedValue({
+      name: "oobi.test",
+    }),
+    serder: {
+      ked: { i: name },
+    },
+    sigs: [
+      "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+    ],
+  };
+});
 
 const contacts = [
   {
@@ -44,13 +60,21 @@ jest.mock("signify-ts", () => ({
           ],
         }),
         get: jest.fn().mockImplementation((name: string) => {
-          return { name, id: `${aidPrefix}${name}` };
+          return {
+            name,
+            id: `${aidPrefix}${name}`,
+            state: {
+              di: "delegatorPrefix",
+            },
+          };
         }),
         create: jest.fn().mockImplementation((name, _config) => {
           return {
             done: false,
             name: `${witnessPrefix}${name}`,
-            op: jest.fn(),
+            op: jest.fn().mockResolvedValue({
+              name: "oobi.test",
+            }),
             serder: {
               ked: { i: name },
             },
@@ -60,6 +84,8 @@ jest.mock("signify-ts", () => ({
           };
         }),
         addEndRole: jest.fn(),
+        interact: interactMock,
+        rotate: rotateMock,
       }),
       operations: jest.fn().mockReturnValue({
         get: jest.fn().mockImplementation((name: string) => {
@@ -128,6 +154,12 @@ jest.mock("signify-ts", () => ({
       agent: {
         pre: "pre",
       },
+      keyStates: jest.fn().mockReturnValue({
+        query: jest.fn().mockReturnValue({
+          name: "operation",
+          done: true,
+        }),
+      }),
     };
   }),
   Tier: { low: "low" },
@@ -173,6 +205,9 @@ describe("Signify API", () => {
     expect(await api.getIdentifierByName(mockName)).toEqual({
       name: mockName,
       id: `${aidPrefix}${mockName}`,
+      state: {
+        di: "delegatorPrefix",
+      },
     });
   });
 
@@ -466,5 +501,52 @@ describe("Signify API", () => {
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
     expect(result).toHaveProperty("name");
+  });
+
+  test("should create a new delegation identifier with a random UUID as the name", async () => {
+    const delegatorPrefix = "ABC123";
+    const result = await api.createDelegationIdentifier(delegatorPrefix);
+    expect(result).toEqual({
+      signifyName: expect.any(String),
+      identifier: expect.any(String),
+    });
+  });
+
+  test("should wait for the key state query operation to complete", async () => {
+    const signifyName = "exampleSignifyName";
+    const result = await api.delegationApproved(signifyName);
+    expect(result).toEqual(true);
+  });
+
+  test("should call signifyClient.identifiers().interact with the correct parameters", async () => {
+    const signifyName = "exampleSignifyName";
+    const delegatePrefix = "exampleDelegatePrefix";
+
+    await api.interactDelegation(signifyName, delegatePrefix);
+
+    expect(interactMock).toHaveBeenCalledWith(signifyName, {
+      i: delegatePrefix,
+      s: "0",
+      d: delegatePrefix,
+    });
+  });
+
+  test("should call signifyClient.identifiers().interact with the correct parameters", async () => {
+    const signifyName = "exampleSignifyName";
+    const delegatePrefix = "exampleDelegatePrefix";
+
+    await api.interactDelegation(signifyName, delegatePrefix);
+
+    expect(interactMock).toHaveBeenCalledWith(signifyName, {
+      i: delegatePrefix,
+      s: "0",
+      d: delegatePrefix,
+    });
+  });
+
+  test("should call signifyClient.identifiers().rotate with the correct parameters", async () => {
+    const signifyName = "exampleSignifyName";
+    await api.rotateIdentifier(signifyName);
+    expect(rotateMock).toHaveBeenCalledWith(signifyName);
   });
 });
