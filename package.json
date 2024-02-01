@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "^5.0.0",
+    "@aries-framework/askar": "file:../did-playground/aries-framework-javascript/packages/askar/aries-framework-askar-0.4.2.tgz",
     "@aries-framework/core": "^0.4.2",
     "@capacitor-community/barcode-scanner": "^4.0.1",
     "@capacitor-community/sqlite": "^5.5.0",
@@ -39,6 +40,7 @@
     "@multiformats/multiaddr": "^12.1.7",
     "@reduxjs/toolkit": "^1.9.5",
     "@stablelib/ed25519": "^1.0.3",
+    "askar": "file:../cf-dtis-aries/capacitor-askar/askar-0.0.1.tgz",
     "bip39": "^3.0.4",
     "dotenv": "^16.3.1",
     "i18next": "^22.4.14",

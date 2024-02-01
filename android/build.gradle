@@ -21,6 +21,13 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            setUrl("https://maven.pkg.github.com/hyperledger/aries-uniffi-wrappers")
+            credentials {
+                username = "<username>"
+                password = "<password>"
+            }
+        }
     }
 }
 

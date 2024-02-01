@@ -1,6 +1,8 @@
 PODS:
   - AparajitaCapacitorSecureStorage (5.0.0):
     - Capacitor
+  - Askar (0.0.1):
+    - Capacitor
   - Capacitor (5.5.1):
     - CapacitorCordova
   - CapacitorClipboard (5.0.6):
@@ -31,6 +33,7 @@ PODS:
 
 DEPENDENCIES:
   - "AparajitaCapacitorSecureStorage (from `../../node_modules/@aparajita/capacitor-secure-storage`)"
+  - Askar (from `../../node_modules/askar`)
   - "Capacitor (from `../../node_modules/@capacitor/ios`)"
   - "CapacitorClipboard (from `../../node_modules/@capacitor/clipboard`)"
   - "CapacitorCommunityBarcodeScanner (from `../../node_modules/@capacitor-community/barcode-scanner`)"
@@ -50,6 +53,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   AparajitaCapacitorSecureStorage:
     :path: "../../node_modules/@aparajita/capacitor-secure-storage"
+  Askar:
+    :path: "../../node_modules/askar"
   Capacitor:
     :path: "../../node_modules/@capacitor/ios"
   CapacitorClipboard:
@@ -73,6 +78,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   AparajitaCapacitorSecureStorage: 4e40b517555ee2a0e6e034d4bd744b413b98483c
+  Askar: 2cb52d27d2a949194695fd10f473b169b471568b
   Capacitor: 9da0a2415e3b6098511f8b5ffdb578d91ee79f8f
   CapacitorClipboard: 77edf49827ea21da2a9c05c690a4a6a4d07199c4
   CapacitorCommunityBarcodeScanner: 7feb206489c8555a8ca0c74c57ddf49ead774eb8
@@ -86,6 +92,6 @@ SPEC CHECKSUMS:
   SQLCipher: f2e96b3822e3006b379181a0e4fd145f6de29b56
   ZIPFoundation: d170fa8e270b2a32bef9dcdcabff5b8f1a5deced
 
-PODFILE CHECKSUM: 12c7c6ec093cad0df115dcc9a34d57cc41e85bfb
+PODFILE CHECKSUM: c1a2f23de9c2fe1f00866e2a4e0e93f35d3eba9a
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.14.3

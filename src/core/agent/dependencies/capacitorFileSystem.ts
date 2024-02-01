@@ -15,11 +15,7 @@ class CapacitorFileSystem implements FileSystem {
     baseCachePath?: string;
     baseTempPath?: string;
   }) {
-    this.dataPath = Directory.Data;
-    this.cachePath = Directory.Cache;
-    this.tempPath = Directory.Cache;
-
-    this.dataPath = `${CapacitorFileSystem.dataBasePath}/.afj`;
+    this.dataPath = ".afj";
     this.cachePath = options?.baseCachePath
       ? `${options?.baseCachePath}/.afj`
       : `${Directory.Cache}/.afj${
@@ -47,7 +43,7 @@ class CapacitorFileSystem implements FileSystem {
   async createDirectory(path: string): Promise<void> {
     if (!(await this.exists(path))) {
       await Filesystem.mkdir({
-        path: path,
+        path: getDirFromFilePath(path),
         directory: CapacitorFileSystem.dataBasePath,
         recursive: true,
       });

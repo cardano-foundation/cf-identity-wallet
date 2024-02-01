@@ -28,3 +28,6 @@ project(':capacitor-share').projectDir = new File('../node_modules/@capacitor/sh
 
 include ':capacitor-splash-screen'
 project(':capacitor-splash-screen').projectDir = new File('../node_modules/@capacitor/splash-screen/android')
+
+include ':askar'
+project(':askar').projectDir = new File('../node_modules/askar/android')

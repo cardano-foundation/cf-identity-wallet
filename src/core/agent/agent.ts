@@ -13,30 +13,34 @@ import {
   JsonLdCredentialFormatService,
   AutoAcceptCredential,
   W3cCredentialsModule,
+  ConsoleLogger,
+  LogLevel,
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
+import { askarCap } from "askar";
+import { AskarModule } from "@aries-framework/askar";
 import { CapacitorFileSystem } from "./dependencies";
 import { IonicStorageModule, GeneralStorageModule } from "./modules";
 import { HttpOutboundTransport } from "./transports";
 import { SignifyModule } from "./modules/signify";
-import { SqliteStorageModule } from "./modules/sqliteStorage";
 import {
   ConnectionService,
   CredentialService,
   IdentifierService,
   MessageService,
+  SignifyNotificationService,
 } from "./services";
 import { documentLoader } from "./documentLoader";
-import { SignifyNotificationService } from "./services/signifyNotificationService";
 
 const config: InitConfig = {
   label: "idw-agent",
   walletConfig: {
-    id: "idw",
-    key: "idw", // Right now, this key isn't used as we don't have encryption.
+    id: "idw7",
+    key: "idw-encrypt", // @TODO - foconnor: decide on derivation of this key.
   },
   autoUpdateStorageOnStartup: true,
+  logger: new ConsoleLogger(LogLevel.debug),
 };
 
 const agentDependencies: AgentDependencies = {
@@ -56,7 +60,12 @@ const agentModules = {
     resolvers: [new KeyDidResolver()],
   }),
   ...(Capacitor.isNativePlatform()
-    ? { sqliteStorage: new SqliteStorageModule() }
+    ? // ? { sqliteStorage: new SqliteStorageModule() }
+    {
+      askar: new AskarModule({
+        ariesAskar: askarCap,
+      }),
+    }
     : { ionicStorage: new IonicStorageModule() }),
   signify: new SignifyModule(),
   mediationRecipient: new MediationRecipientModule({
