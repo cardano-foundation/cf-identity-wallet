@@ -1,8 +1,11 @@
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { act, render, waitFor } from "@testing-library/react";
+import {
+  ionFireEvent as fireEvent,
+  waitForIonicReact,
+} from "@ionic/react-test-utils";
 import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import { waitForIonicReact } from "@ionic/react-test-utils";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -281,6 +284,32 @@ describe("ConnectionDetails Page", () => {
         "is-open",
         "true"
       )
+    );
+  });
+
+  test("We can switch tabs and see the content", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, queryByTestId, getByText } = render(
+      <MemoryRouter initialEntries={[RoutePath.CONNECTION_DETAILS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={RoutePath.CONNECTION_DETAILS}
+            component={ConnectionDetails}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const segment = getByTestId("connection-details-segment");
+    act(() => {
+      fireEvent.ionChange(segment, "notes");
+    });
+
+    await waitFor(() =>
+      expect(getByTestId("connection-notes-tab")).toBeVisible()
     );
   });
 });
