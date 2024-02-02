@@ -140,7 +140,7 @@ In this section, you'll find detailed PDF documents outlining the various user f
 - Android Studio: For Android emulation (latest version recommended).
 - Capacitor: Version 4.8.1 (refer to package.json). For detailed environment setup, refer to the [Capacitor Environment Setup Guide](https://capacitorjs.com/docs/getting-started/environment-setup).
 - Mobile Device: iOS or Android for running the app on physical devices.
-- Docker (only required for running locally deployed WebRTC relay).
+- Docker (only required if running the credential server in Docker).
 
 Ensure that your system meets these requirements to successfully use and develop the Identity Wallet application.
 

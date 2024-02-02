@@ -25,8 +25,6 @@ import {
   ConnectionStatus,
   GenericRecordType,
 } from "../agent.types";
-// import { LibP2p } from "../transports/libp2p/libP2p";
-// import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
 import { AgentService } from "./agentService";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { AriesAgent } from "../agent";
@@ -536,35 +534,6 @@ class ConnectionService extends AgentService {
     clearTimeout(id);
     return response;
   }
-
-  // @TODO - foconnor: fix and add tests;
-  // These libs are ESM exported and not working in Jest right now - can fix later.
-
-  // async enableP2P() {
-  //   const inBoundTransport = LibP2p.libP2p.inBoundTransport;
-  //   await inBoundTransport.start(this.agent);
-  //   this.agent.registerInboundTransport(inBoundTransport);
-
-  //   const outBoundTransport = new LibP2pOutboundTransport(LibP2p.libP2p);
-  //   await outBoundTransport.start(this.agent);
-  //   this.agent.registerOutboundTransport(outBoundTransport);
-  // }
-
-  // async createNewWebRtcInvitation() {
-  //   const domains = this.agent.config.endpoints;
-  //   const libP2pDomain = domains.find((domain) => domain.includes("libp2p"));
-  //   if (!libP2pDomain) {
-  //     throw new Error(ConnectionService.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
-  //   }
-
-  //   const createInvitation = await this.agent.oob.createInvitation({
-  //     autoAcceptConnection: false,
-  //   });
-
-  //   return createInvitation.outOfBandInvitation.toUrl({
-  //     domain: libP2pDomain,
-  //   });
-  // }
 }
 
 export { ConnectionService };
