@@ -1,4 +1,4 @@
-import { ellipsisVertical } from "ionicons/icons";
+import { ellipsisVertical, addOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { IonLabel, IonSegment, IonSegmentButton } from "@ionic/react";
@@ -219,7 +219,7 @@ const ConnectionDetails = () => {
               className="connection-notes-tab"
               data-testid="connection-notes-tab"
             >
-              {notes.length > 0 && (
+              {notes.length > 0 ? (
                 <div className="connection-details-info-block">
                   <p>{i18n.t("connections.details.notes")}</p>
                   {notes.map((note, index) => (
@@ -238,12 +238,19 @@ const ConnectionDetails = () => {
                     </div>
                   ))}
                 </div>
+              ) : (
+                <p className="connection-notes-empty">
+                  {i18n.t("connections.details.nocurrentnotesext")}
+                </p>
               )}
               <PageFooter
                 pageId={pageId}
-                primaryButtonText={`${i18n.t(
-                  "connections.details.options.labels.manage"
-                )}`}
+                primaryButtonIcon={notes.length > 0 ? "" : addOutline}
+                primaryButtonText={`${
+                  notes.length > 0
+                    ? i18n.t("connections.details.options.labels.manage")
+                    : i18n.t("connections.details.options.labels.add")
+                }`}
                 primaryButtonAction={() => {
                   setOptionsIsOpen(true);
                 }}
