@@ -866,6 +866,7 @@
       "attachments": "Request Attachments",
       "endpoints": "Service Endpoints",
       "notavailable": "N/A",
+      "details": "Details",
       "notes": "Notes",
       "nocurrentnotes": "No current notes",
       "cancel": "Cancel",

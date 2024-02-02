@@ -1,6 +1,7 @@
 import { ellipsisVertical } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { IonLabel, IonSegment, IonSegmentButton } from "@ionic/react";
 import { i18n } from "../../../i18n";
 import { formatShortDate } from "../../utils/formatters";
 import "./ConnectionDetails.scss";
@@ -58,6 +59,7 @@ const ConnectionDetails = () => {
   const [coreNotes, setCoreNotes] = useState<ConnectionNoteDetails[]>([]);
   const [notes, setNotes] = useState<ConnectionNoteDetails[]>([]);
   const currentNoteId = useRef("");
+  const [segmentValue, setSegmentValue] = useState("details");
 
   useEffect(() => {
     async function getDetails() {
@@ -168,42 +170,80 @@ const ConnectionDetails = () => {
             label={connectionDetails?.label}
             date={connectionDetails?.connectionDate}
           />
-          {connectionDetailsData.map((infoBlock, index) => (
-            <ConnectionDetailsInfoBlock
-              key={index}
-              title={infoBlock.title}
-            >
-              {infoBlock.value}
-            </ConnectionDetailsInfoBlock>
-          ))}
-          {notes.length > 0 && (
-            <div className="connection-details-info-block">
-              <p>{i18n.t("connections.details.notes")}</p>
-              {notes.map((note, index) => (
-                <div
-                  className="connection-details-info-block-inner"
-                  key={index}
-                >
-                  <div className="connection-details-info-block-line">
-                    <p className="connection-details-info-block-note-title">
-                      {note.title}
-                    </p>
-                    <p className="connection-details-info-block-note-message">
-                      {note.message}
-                    </p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          <PageFooter
-            pageId={pageId}
-            deleteButtonText={`${i18n.t("connections.details.delete")}`}
-            deleteButtonAction={() => {
-              setAlertDeleteConnectionIsOpen(true);
-              dispatch(setCurrentOperation(OperationType.DELETE_CONNECTION));
+          <IonSegment
+            data-testid="connection-details-segment"
+            value={segmentValue}
+            onIonChange={(event) => {
+              setSegmentValue(`${event.detail.value}`);
             }}
-          />
+          >
+            <IonSegmentButton
+              value="details"
+              data-testid="details-segment-button"
+            >
+              <IonLabel>{`${i18n.t("connections.details.details")}`}</IonLabel>
+            </IonSegmentButton>
+            <IonSegmentButton
+              value="notes"
+              data-testid="notes-segment-button"
+            >
+              <IonLabel>{`${i18n.t("connections.details.notes")}`}</IonLabel>
+            </IonSegmentButton>
+          </IonSegment>
+          {segmentValue === "details" ? (
+            <>
+              {connectionDetailsData.map((infoBlock, index) => (
+                <ConnectionDetailsInfoBlock
+                  key={index}
+                  title={infoBlock.title}
+                >
+                  {infoBlock.value}
+                </ConnectionDetailsInfoBlock>
+              ))}
+              <PageFooter
+                pageId={pageId}
+                deleteButtonText={`${i18n.t("connections.details.delete")}`}
+                deleteButtonAction={() => {
+                  setAlertDeleteConnectionIsOpen(true);
+                  dispatch(
+                    setCurrentOperation(OperationType.DELETE_CONNECTION)
+                  );
+                }}
+              />
+            </>
+          ) : (
+            <>
+              {notes.length > 0 && (
+                <div className="connection-details-info-block">
+                  <p>{i18n.t("connections.details.notes")}</p>
+                  {notes.map((note, index) => (
+                    <div
+                      className="connection-details-info-block-inner"
+                      key={index}
+                    >
+                      <div className="connection-details-info-block-line">
+                        <p className="connection-details-info-block-note-title">
+                          {note.title}
+                        </p>
+                        <p className="connection-details-info-block-note-message">
+                          {note.message}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <PageFooter
+                pageId={pageId}
+                primaryButtonText={`${i18n.t(
+                  "connections.details.options.labels.manage"
+                )}`}
+                primaryButtonAction={() => {
+                  setOptionsIsOpen(true);
+                }}
+              />
+            </>
+          )}
         </div>
         <ConnectionOptions
           optionsIsOpen={optionsIsOpen}
