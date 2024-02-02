@@ -2,4 +2,18 @@
   ion-toolbar ion-buttons ion-button.action-button {
     background: white;
   }
+
+  .connection-details-content > *,
+  .connection-details-tab > *,
+  .connection-notes-tab > * {
+    margin-bottom: 1.56rem;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .connection-details-content > *,
+    .connection-details-tab > *,
+    .connection-notes-tab > * {
+      margin-bottom: 1.2rem;
+    }
+  }
 }

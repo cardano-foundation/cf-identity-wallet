@@ -191,7 +191,10 @@ const ConnectionDetails = () => {
             </IonSegmentButton>
           </IonSegment>
           {segmentValue === "details" ? (
-            <>
+            <div
+              className="connection-details-tab"
+              data-testid="connection-details-tab"
+            >
               {connectionDetailsData.map((infoBlock, index) => (
                 <ConnectionDetailsInfoBlock
                   key={index}
@@ -210,9 +213,12 @@ const ConnectionDetails = () => {
                   );
                 }}
               />
-            </>
+            </div>
           ) : (
-            <>
+            <div
+              className="connection-notes-tab"
+              data-testid="connection-notes-tab"
+            >
               {notes.length > 0 && (
                 <div className="connection-details-info-block">
                   <p>{i18n.t("connections.details.notes")}</p>
@@ -242,7 +248,7 @@ const ConnectionDetails = () => {
                   setOptionsIsOpen(true);
                 }}
               />
-            </>
+            </div>
           )}
         </div>
         <ConnectionOptions
