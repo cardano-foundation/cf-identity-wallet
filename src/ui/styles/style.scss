@@ -16,6 +16,13 @@
 
 @font-face {
   font-family: "Roboto";
+  font-style: italic;
+  font-weight: 500;
+  src: url("../assets/fonts/Roboto-MediumItalic.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: "Roboto";
   font-style: normal;
   font-weight: bold;
   src: url("../assets/fonts/Roboto-Bold.ttf") format("truetype");
@@ -270,4 +277,30 @@ ion-toast {
 
 ion-router-outlet.blur {
   filter: blur(0.1rem);
+}
+
+ion-segment {
+  --background: var(--ion-color-dark-grey);
+
+  ion-segment-button {
+    &.segment-button-checked {
+      &::part(indicator-background) {
+        background: var(--ion-color-primary-gradient);
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 425px) {
+    ion-label {
+      font-size: 0.8rem;
+      height: 1rem;
+      line-height: normal;
+      margin: 0 auto;
+    }
+
+    ion-segment-button.md {
+      height: 2.4rem;
+      min-height: 2.4rem;
+    }
+  }
 }

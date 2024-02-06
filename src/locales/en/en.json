@@ -866,8 +866,10 @@
       "attachments": "Request Attachments",
       "endpoints": "Service Endpoints",
       "notavailable": "N/A",
+      "details": "Details",
       "notes": "Notes",
       "nocurrentnotes": "No current notes",
+      "nocurrentnotesext": "There are currently no notes associated with this connection.",
       "cancel": "Cancel",
       "confirm": "Confirm",
       "title": "Title",
@@ -876,6 +878,7 @@
       "options": {
         "title": "Connection options",
         "labels": {
+          "add": "Add a note",
           "manage": "Manage notes",
           "delete": "Delete connection"
         },
