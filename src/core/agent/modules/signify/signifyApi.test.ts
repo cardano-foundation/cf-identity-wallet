@@ -613,14 +613,9 @@ describe("Signify API", () => {
         },
       },
     ];
-    const result = await api.createMultisigRotation(
-      aid,
-      otherAids,
-      utils.uuid()
-    );
+    const result = await api.rotateMultisigAid(aid, otherAids, utils.uuid());
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
-    expect(result).toHaveProperty("name");
     expect(exchangeSendMock).toBeCalledWith(
       expect.any(String),
       "multisig",

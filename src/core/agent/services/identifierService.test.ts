@@ -37,6 +37,9 @@ const agent = jest.mocked({
       interactDelegation: jest.fn(),
       delegationApproved: jest.fn(),
       rotateIdentifier: jest.fn(),
+      rotateMultisigAid: jest.fn(),
+      joinMultisigRotation: jest.fn(),
+      getIdentifierById: jest.fn(),
     },
   },
   dids: {
@@ -935,5 +938,110 @@ describe("Identifier service of agent", () => {
     expect(identifierService.rotateIdentifier(metadata)).rejects.toThrowError(
       IdentifierService.ONLY_CREATE_ROTATION_WITH_AID
     );
+  });
+
+  test("Can rotate a keri multisig with KERI contacts", async () => {
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    const signifyName = "newUuidHere";
+    agent.modules.signify.getIdentifierByName = jest
+      .fn()
+      .mockResolvedValue(aidReturnedBySignify);
+    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+      identifier: multisigIdentifier,
+      signifyName,
+    });
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    agent.modules.signify.resolveOobi = jest.fn().mockResolvedValue({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {},
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+    agent.modules.signify.rotateMultisigAid = jest.fn().mockResolvedValue({
+      op: { name: `group.${multisigIdentifier}`, done: false },
+      icpResult: {},
+      name: "name",
+    });
+    const otherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.KERI,
+        connectionDate: new Date().toISOString(),
+      },
+    ];
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: false,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+    expect(
+      await identifierService.rotateMultisig(metadata, otherIdentifiers)
+    ).toBe(multisigIdentifier);
+  });
+
+  test("can join the multisig rotation", async () => {
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+      content: {
+        d: "d",
+      },
+    });
+    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+          },
+        },
+      },
+    ]);
+
+    agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
+      {
+        name: "multisig",
+        prefix: "prefix",
+      },
+    ]);
+
+    agent.modules.signify.joinMultisigRotation = jest.fn().mockResolvedValue({
+      op: { name: `group.${multisigIdentifier}`, done: false },
+      icpResult: {},
+      name: "name",
+    });
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          method: IdentifierType.KERI,
+          displayName: "displayName",
+          id: "id",
+          signifyName: "signifyName",
+          createdAt: new Date(),
+          colors: ["#000000", "#000000"],
+          theme: 4,
+        },
+      ]);
+    expect(
+      await identifierService.joinMultisigRotation({
+        id: "id",
+        createdAt: new Date(),
+        a: { d: "d" },
+      })
+    ).toBe(multisigIdentifier);
   });
 });

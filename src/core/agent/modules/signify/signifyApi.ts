@@ -332,14 +332,13 @@ export class SignifyApi {
     };
   }
 
-  async createMultisigRotation(
+  async rotateMultisigAid(
     aid: Aid,
     otherAids: Pick<Aid, "state">[],
     name: string
   ): Promise<{
     op: any;
     icpResult: EventResult;
-    name: string;
   }> {
     const states = [aid["state"], ...otherAids.map((aid) => aid["state"])];
     const icp = await this.signifyClient
@@ -379,7 +378,6 @@ export class SignifyApi {
     return {
       op: op,
       icpResult: icp,
-      name: name,
     };
   }
 

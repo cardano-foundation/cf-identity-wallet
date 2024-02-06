@@ -55,6 +55,8 @@ class IdentifierService extends AgentService {
     "Metadata record for KERI AID is missing the Signify name";
   static readonly ONLY_CREATE_ROTATION_WITH_AID =
     "Can only create rotation using KERI AID";
+  static readonly MULTI_SIG_NOT_FOUND =
+    "There's no multi sig identifier for the given SAID";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -375,6 +377,82 @@ class IdentifierService extends AgentService {
     });
     return multisigId;
   }
+
+  async rotateMultisig(
+    metadata: IdentifierMetadataRecord,
+    otherIdentifierContacts: ConnectionShortDetails[]
+  ): Promise<string | undefined> {
+    if (metadata.method !== IdentifierType.KERI) {
+      throw new Error(IdentifierService.ONLY_CREATE_ROTATION_WITH_AID);
+    }
+    if (!metadata.signifyName) {
+      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    }
+    const ourAid = (await this.agent.modules.signify.getIdentifierByName(
+      metadata.signifyName
+    )) as Aid;
+    // Make sure no non-Keri contacts get passed into this function
+    const nonKeriContact = otherIdentifierContacts.find(
+      (contact) => !contact.oobi || contact.type !== ConnectionType.KERI
+    );
+    if (nonKeriContact) {
+      throw new Error(IdentifierService.ONLY_ALLOW_KERI_CONTACTS);
+    }
+    const otherAids = await Promise.all(
+      otherIdentifierContacts.map(async (contact) => {
+        const aid = await this.agent.modules.signify.resolveOobi(
+          contact.oobi as string
+        );
+        return { state: aid.response };
+      })
+    );
+    const result = await this.agent.modules.signify.rotateMultisigAid(
+      ourAid,
+      otherAids,
+      metadata.signifyName
+    );
+    const multisigId = result.op.name.split(".")[1];
+    return multisigId;
+  }
+
+  async joinMultisigRotation(
+    notification: KeriNotification
+  ): Promise<string | undefined> {
+    const msgSaid = notification.a.d as string;
+    const notifications: MultiSigIcpNotification[] =
+      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    if (!notifications.length) {
+      throw new Error(IdentifierService.SAID_NOTIFICATIONS_NOT_FOUND);
+    }
+    const exn = notifications[0].exn;
+    const multisigId = exn.a.gid;
+    const multiSig = await this.agent.modules.signify.getIdentifierById(
+      multisigId
+    );
+    if (!multiSig) {
+      throw new Error(IdentifierService.MULTI_SIG_NOT_FOUND);
+    }
+    const rstate = exn.a.rstates;
+    const identifiers = await this.getIdentifiers();
+    const identifier = identifiers.find((identifier) => {
+      return rstate.find((item) => identifier.id === item.i);
+    });
+
+    if (identifier && identifier.signifyName) {
+      const aid = await this.agent.modules.signify.getIdentifierByName(
+        identifier?.signifyName
+      );
+      const res = await this.agent.modules.signify.joinMultisigRotation(
+        exn,
+        aid,
+        multiSig.name
+      );
+      await this.agent.genericRecords.deleteById(notification.id as string);
+      const multisigId = res.op.name.split(".")[1];
+      return multisigId;
+    }
+  }
+
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
     const notifications: MultiSigIcpNotification[] =
       await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
