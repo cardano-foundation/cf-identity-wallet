@@ -24,6 +24,10 @@ jest.mock("../../../core/agent/agent", () => ({
           connectionDate: "2017-08-14T19:23:24Z",
           logo: ".png",
           status: "pending",
+          notes: {
+            title: "Title",
+            message: "Message",
+          },
         }),
       },
       credentials: {
