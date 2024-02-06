@@ -71,7 +71,7 @@ const ConnectionDetails = () => {
       setConnectionDetails(connectionDetails);
       if (connectionDetails.notes) {
         setCoreNotes(connectionDetails.notes);
-        setNotes(structuredClone(connectionDetails.notes));
+        setNotes(connectionDetails.notes);
       }
     }
     if (connectionShortDetails?.id) getDetails();

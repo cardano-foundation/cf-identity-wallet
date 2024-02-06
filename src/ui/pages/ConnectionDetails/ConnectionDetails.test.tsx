@@ -6,7 +6,6 @@ import {
 import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { RoutePath } from "../../../routes";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
@@ -26,6 +25,7 @@ jest.mock("../../../core/agent/agent", () => ({
           status: "pending",
           notes: [
             {
+              id: "ebfeb1ebc6f1c276ef71212ec20",
               title: "Title",
               message: "Message",
             },
@@ -332,15 +332,37 @@ describe("ConnectionDetails Page", () => {
       expect(getByTestId("connection-details-segment")).toBeVisible();
     });
 
+    await waitFor(() =>
+      expect(getByTestId("connection-details-tab")).toBeVisible()
+    );
+
     const segment = getByTestId("connection-details-segment");
     act(() => {
       fireEvent.ionChange(segment, "notes");
     });
 
     await waitFor(() =>
+      expect(queryByTestId("connection-details-tab")).toBeNull()
+    );
+
+    await waitFor(() =>
       expect(getByTestId("connection-notes-tab")).toBeVisible()
     );
 
-    //  await waitFor(() => expect(getByText("Title")).toBeVisible());
+    await waitFor(() => expect(getByText("Title")).toBeVisible());
+
+    await waitFor(() => expect(getByText("Message")).toBeVisible());
+
+    act(() => {
+      fireEvent.ionChange(segment, "details");
+    });
+
+    await waitFor(() =>
+      expect(queryByTestId("connection-notes-tab")).toBeNull()
+    );
+
+    await waitFor(() =>
+      expect(getByTestId("connection-details-tab")).toBeVisible()
+    );
   });
 });
