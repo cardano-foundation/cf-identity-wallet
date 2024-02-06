@@ -287,14 +287,19 @@ describe("ConnectionDetails Page", () => {
     );
   });
 
-  test("We can switch tabs and see the content", async () => {
+  test("We can switch between tabs and see the content", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
     const { getByTestId, queryByTestId, getByText } = render(
-      <MemoryRouter initialEntries={[RoutePath.CONNECTION_DETAILS]}>
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
         <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.CREDS}
+            component={Creds}
+          />
+
           <Route
             path={RoutePath.CONNECTION_DETAILS}
             component={ConnectionDetails}
@@ -302,6 +307,24 @@ describe("ConnectionDetails Page", () => {
         </Provider>
       </MemoryRouter>
     );
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
+
+    await waitFor(() => {
+      expect(queryByTestId("connection-item-0")).toBeNull();
+    });
+
+    expect(getByText(connectionsFix[0].label)).toBeVisible();
+
+    act(() => {
+      fireEvent.click(getByText(connectionsFix[0].label));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("connection-details-segment")).toBeVisible();
+    });
 
     const segment = getByTestId("connection-details-segment");
     act(() => {
@@ -311,5 +334,7 @@ describe("ConnectionDetails Page", () => {
     await waitFor(() =>
       expect(getByTestId("connection-notes-tab")).toBeVisible()
     );
+
+    //  await waitFor(() => expect(getByText("Title")).toBeVisible());
   });
 });
