@@ -201,6 +201,8 @@ const keriNotificationsChangeHandler = async (
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
     //TODO: Use dispatch here, handle logic for the multisig notification
+  } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
+    //TODO: Use dispatch here, handle logic for the multisig rotation notification
   }
 };
 

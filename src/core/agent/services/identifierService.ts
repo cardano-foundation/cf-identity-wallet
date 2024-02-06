@@ -547,6 +547,12 @@ class IdentifierService extends AgentService {
     const results = await this.agent.genericRecords.findAllByQuery({
       type: GenericRecordType.NOTIFICATION_KERI,
       route: NotificationRoute.MultiSigIcp,
+      $or: [
+        { route: NotificationRoute.MultiSigIcp },
+        {
+          route: NotificationRoute.MultiSigRot,
+        },
+      ],
     });
     return results.map((result) => {
       return {

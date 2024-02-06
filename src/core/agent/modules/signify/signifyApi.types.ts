@@ -105,6 +105,7 @@ export interface MultiSigIcpNotification {
 export enum NotificationRoute {
   Credential = "/exn/ipex/grant",
   MultiSigIcp = "/multisig/icp",
+  MultiSigRot = "/multisig/rot",
 }
 
 export enum MultiSigRoute {
