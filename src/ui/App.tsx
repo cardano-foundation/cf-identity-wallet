@@ -37,46 +37,33 @@ const App = () => {
     setShowToast(toastMsg !== undefined);
   }, [currentOperation, toastMsg]);
 
-  const AppContent = () => {
-    return (
-      <IonApp>
-        <AppWrapper>
-          <StrictMode>
-            {showScan ? (
-              <FullPageScanner setShowScan={setShowScan} />
-            ) : (
-              <Routes />
-            )}
-            <IncomingRequest />
-            <IonToast
-              isOpen={showToast}
-              onDidDismiss={() => {
-                setShowToast(false);
-                dispatch(setToastMsg());
-              }}
-              message={
-                toastMsg ? `${i18n.t("toast." + toastMsg.toLowerCase())}` : ""
-              }
-              color="secondary"
-              position="top"
-              cssClass="confirmation-toast"
-              duration={1500}
-            />
-          </StrictMode>
-        </AppWrapper>
-      </IonApp>
-    );
-  };
-
-  return previewEnv ? (
-    <iframe
-      src="https://cf-identity-wallet.vercel.app/"
-      title="Identity Wallet"
-      width="338px"
-      height="580px"
-    />
-  ) : (
-    <AppContent />
+  return (
+    <IonApp>
+      <AppWrapper>
+        <StrictMode>
+          {showScan ? (
+            <FullPageScanner setShowScan={setShowScan} />
+          ) : (
+            <Routes />
+          )}
+          <IncomingRequest />
+          <IonToast
+            isOpen={showToast}
+            onDidDismiss={() => {
+              setShowToast(false);
+              dispatch(setToastMsg());
+            }}
+            message={
+              toastMsg ? `${i18n.t("toast." + toastMsg.toLowerCase())}` : ""
+            }
+            color="secondary"
+            position="top"
+            cssClass="confirmation-toast"
+            duration={1500}
+          />
+        </StrictMode>
+      </AppWrapper>
+    </IonApp>
   );
 };
 
