@@ -368,7 +368,6 @@ export class SignifyApi {
 
   async getSigner(aid: Aid): Promise<Signer> {
     const client = this.signifyClient;
-    const signer = await client.manager?.get(aid);
-    return signer;
+    return await client.manager?.get(aid);
   }
 }

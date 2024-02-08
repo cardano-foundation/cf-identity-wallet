@@ -1,11 +1,7 @@
 import { IConnectMessage } from "@fabianbormann/cardano-peer-connect/dist/src/types";
 import { ExperimentalContainer } from "@fabianbormann/cardano-peer-connect";
 import { IdentityWalletConnect } from "./identityWalletConnect";
-
-type ExperimentalAPIFunctions = {
-  getIdentifierId: any;
-  signData: any;
-};
+import { ExperimentalAPIFunctions } from "./peerConnection.types";
 
 class PeerConnection {
   static readonly IDW_LOGO =
