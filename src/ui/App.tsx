@@ -31,6 +31,10 @@ const App = () => {
 
   useEffect(() => {
     if (browserPreview) {
+      setupIonicReact({
+        rippleEffect: false,
+        mode: "ios",
+      });
       document?.querySelector("html")?.classList.add("smartphone-layout");
       document?.querySelector("body")?.classList.add("smartphone-content");
       const sidePanel = document.createElement("div");

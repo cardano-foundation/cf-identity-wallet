@@ -41,6 +41,8 @@
       height: calc(var(--scale-w) * 22.57);
       --border-radius: calc(var(--scale-w) * 22.57);
       --background-activated: var(--ion-color-dark-grey);
+      --background-focused: var(--ion-color-dark-grey);
+      --background-hover: var(--ion-color-dark-grey);
     }
   }
 
