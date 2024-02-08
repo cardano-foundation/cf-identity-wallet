@@ -203,6 +203,11 @@ const ConnectionDetails = () => {
                   {infoBlock.value}
                 </ConnectionDetailsInfoBlock>
               ))}
+              <ConnectionDetailsInfoBlock
+                title={i18n.t("connections.details.history")}
+              >
+                <></>
+              </ConnectionDetailsInfoBlock>
               <PageFooter
                 pageId={pageId}
                 deleteButtonText={`${i18n.t("connections.details.delete")}`}

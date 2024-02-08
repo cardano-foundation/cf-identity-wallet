@@ -865,6 +865,7 @@
       "handshake": "Handshake Protocol",
       "attachments": "Request Attachments",
       "endpoints": "Service Endpoints",
+      "history": "Connection History",
       "notavailable": "N/A",
       "details": "Details",
       "notes": "Notes",
