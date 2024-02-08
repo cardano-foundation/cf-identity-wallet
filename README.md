@@ -65,34 +65,17 @@
 
 # Preview in your Browser
 
-**Disclaimer: Try it now provides access to a preview version of the identity wallet in your browser.  This preview version is <ins>not intended</ins> to be used for any purposes other than previewing the application.**
+**Disclaimer: Try it now provides access to a preview version of the identity wallet in your browser. This preview version is <ins>not intended</ins> to be used for any purposes other than previewing the application.**
 
-To experience the mobile application within the browser, follow these instructions for accessing mobile-view:
-1. Open the developer options by pressing the ``` F12 ``` key on your keyboard or by right-clicking anywhere on the page, then choose ``` Inspect ``` from the context menu.
-2. To Switch to a mobile view:
-    - Chrome:
-        <details>
-          <summary>Click on the icon in the top right corner, as shown in the image below.</summary>
-          <img src="docs/images/readme/Chrome-Mobile-View-1.png" alt="Chrome Mobile View 1"/>
-        </details>
-        <details>
-          <summary>Click on <b>Dimensions</b> and select <b>iPhone 14 Pro Max</b>.</summary>
-          <img src="docs/images/readme/Chrome-Mobile-View-2.png" alt="Chrome Mobile View 2"/>
-        </details>
-    - Firefox:
-        <details>
-          <summary>Click on the icon in the upper right corner, as shown in the image below, then close the panel.</summary>
-          <img src="docs/images/readme/Firefox-Mobile-View-1.png" alt="Firefox Mobile View 1"/>
-        </details>
-        <details>
-          <summary>Click on <b>Dimensions</b> and select <b>Galaxy Note 20</b>.</summary>
-          <img src="docs/images/readme/Firefox-Mobile-View-2.png" alt="Firefox Mobile View 2"/>
-        </details>
+To experience the mobile application within the browser, please select one of the following links below depending wether you are accessing the preview version on your desktop or mobile device.
 <br>
 <div align="center"> 
-      <a href="https://cf-identity-wallet.vercel.app">  🔗  Preview the latest version of the Identity Wallet 🔗 
+  <u>🔗  Preview the latest version of the Identity Wallet on your browser 🔗 </u>
+  <br>
+  <a href="https://cf-identity-wallet.vercel.app/?mobile=true">* On a desktop computer</a>
+  <br>
+  <a href="https://cf-identity-wallet.vercel.app">* On a mobile phone</a>
 </div>
-
 
 # Architecture
 <div align="center"> 
