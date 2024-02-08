@@ -34,6 +34,11 @@
   font-family: "Roboto" !important;
 }
 
+:root {
+  --scale-w: 1vw;
+  --scale-h: 1vh;
+}
+
 body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
@@ -243,11 +248,13 @@ ion-toast {
 
   ion-content {
     &.ios {
-      height: calc(100vh - (6rem + env(safe-area-inset-top)));
+      height: calc(
+        calc(var(--scale-h) * 100) - (6rem + env(safe-area-inset-top))
+      );
     }
 
     &.md {
-      height: calc(100vh - 6rem);
+      height: calc(calc(var(--scale-h) * 100) - 6rem);
     }
   }
 
@@ -309,7 +316,7 @@ ion-segment {
 .smartphone-layout {
   position: relative;
   width: 423px;
-  height: 965px;
+  height: 931px;
   zoom: 75%;
   font-size: 14px;
   margin: 2rem auto;
@@ -318,20 +325,8 @@ ion-segment {
   border-top-width: 60px;
   border-bottom-width: 60px;
   border-radius: 36px;
-
-  .passcode-module-container .passcode-module-numbers-row ion-button {
-    width: 90px;
-    height: 90px;
-    --border-radius: 90px;
-
-    .passcode-module-number-button-inner {
-      font-size: 40px;
-
-      .passcode-module-number-labels span {
-        font-size: 14px;
-      }
-    }
-  }
+  --scale-w: 4px;
+  --scale-h: 4px;
 
   ion-modal {
     --width: 390px;
@@ -369,6 +364,6 @@ ion-segment {
 /* The screen (or content) of the device */
 .smartphone-layout .smartphone-content {
   width: 390px;
-  height: 844px;
+  height: 810px;
   background: white;
 }

@@ -97,11 +97,11 @@
         justify-content: center;
 
         &:first-child .card-footer-column-value {
-          width: 40vw;
+          width: calc(var(--scale-w) * 40);
         }
 
         &:last-child .card-footer-column-value {
-          width: 20vw;
+          width: calc(var(--scale-w) * 20);
         }
 
         .card-footer-column-label {
@@ -178,11 +178,11 @@
 
       .card-footer .card-footer-column {
         &:first-child .card-footer-column-value {
-          width: 40vw;
+          width: calc(var(--scale-w) * 40);
         }
 
         &:last-child .card-footer-column-value {
-          width: 20vw;
+          width: calc(var(--scale-w) * 20);
         }
 
         .card-footer-column-label {

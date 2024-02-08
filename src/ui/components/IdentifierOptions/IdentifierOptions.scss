@@ -30,7 +30,9 @@
 
     .identifier-options-inner {
       overflow: scroll;
-      height: calc(92vh - (11.5rem + env(safe-area-inset-bottom)));
+      height: calc(
+        calc(var(--scale-h) * 92) - (11.5rem + env(safe-area-inset-bottom))
+      );
     }
 
     .footer-col ion-button {
