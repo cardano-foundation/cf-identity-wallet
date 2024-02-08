@@ -3,6 +3,7 @@ import { setupIonicReact, IonApp, IonToast } from "@ionic/react";
 import { Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
+import "./App.scss";
 import { AppWrapper } from "./components/AppWrapper";
 import {
   getCurrentOperation,
