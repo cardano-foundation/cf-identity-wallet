@@ -2,7 +2,7 @@ import { IConnectMessage } from "@fabianbormann/cardano-peer-connect/dist/src/ty
 import { ExperimentalContainer } from "@fabianbormann/cardano-peer-connect";
 import { IdentityWalletConnect } from "./identityWalletConnect";
 import { ExperimentalAPIFunctions } from "./peerConnection.types";
-import { version } from "../../../../package.json";
+import packageInfo from "../../../../package.json";
 
 class PeerConnection {
   static readonly IDW_LOGO =
@@ -12,7 +12,7 @@ class PeerConnection {
     address: "",
     name: "idw_p2p",
     icon: PeerConnection.IDW_LOGO,
-    version: version,
+    version: packageInfo.version,
     requestAutoconnect: true,
   };
 
