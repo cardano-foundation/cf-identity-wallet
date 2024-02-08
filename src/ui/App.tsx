@@ -4,6 +4,7 @@ import { Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
 import "./App.scss";
+import "./styles/smartphoneLayout.scss";
 import { AppWrapper } from "./components/AppWrapper";
 import {
   getCurrentOperation,
@@ -24,12 +25,17 @@ const App = () => {
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const previewEnv = new URLSearchParams(window.location.search).has("mobile");
+  const browserPreview = new URLSearchParams(window.location.search).has(
+    "mobile"
+  );
 
   useEffect(() => {
-    if (previewEnv) {
+    if (browserPreview) {
       document?.querySelector("html")?.classList.add("smartphone-layout");
       document?.querySelector("body")?.classList.add("smartphone-content");
+      const sidePanel = document.createElement("div");
+      sidePanel.classList.add("side-panel");
+      document?.querySelector("body")?.appendChild(sidePanel);
     }
   }, []);
 
