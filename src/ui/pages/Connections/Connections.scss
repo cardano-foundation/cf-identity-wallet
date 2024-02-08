@@ -21,6 +21,7 @@
   &.hide {
     transform: translate3d(100%, 0, 0);
     transition-duration: 0.5s;
+    visibility: hidden;
   }
 
   .back-button {
@@ -95,7 +96,9 @@
   }
 
   .connections-container {
-    height: calc(92vh - (6.813rem + env(safe-area-inset-bottom)));
+    height: calc(
+      calc(var(--scale-h) * 92) - (6.813rem + env(safe-area-inset-bottom))
+    );
 
     > ion-grid {
       padding: 0;
@@ -220,7 +223,7 @@
     }
 
     .connections-container {
-      height: 70vh;
+      height: calc(var(--scale-h) * 70);
     }
 
     .connections-list {

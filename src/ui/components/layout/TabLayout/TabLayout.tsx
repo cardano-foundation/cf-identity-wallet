@@ -7,9 +7,12 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  useIonViewDidEnter,
+  useIonViewDidLeave,
 } from "@ionic/react";
 import { arrowBackOutline, menuOutline } from "ionicons/icons";
 import "./TabLayout.scss";
+import { useState } from "react";
 import { TabLayoutProps } from "./TabLayout.types";
 
 const TabLayout = ({
@@ -30,9 +33,19 @@ const TabLayout = ({
   children,
   placeholder,
 }: TabLayoutProps) => {
+  const [isActive, setIsActive] = useState(false);
+  useIonViewDidEnter(() => {
+    setIsActive(true);
+  });
+
+  useIonViewDidLeave(() => {
+    setIsActive(false);
+  });
   return (
     <IonPage
-      className={`tab-layout ${pageId} ${customClass ? " " + customClass : ""}`}
+      className={`tab-layout ${pageId} ${!isActive ? " " + "ion-hide" : ""} ${
+        customClass ? " " + customClass : ""
+      }`}
       data-testid={pageId}
     >
       {header && (

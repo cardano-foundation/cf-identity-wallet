@@ -750,7 +750,25 @@
         "done": "Done",
         "restore": "Restore",
         "type": "Type",
-        "attributes": "Attributes",
+        "title": "Title",
+        "description": {
+          "label": "Description",
+          "content": "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials"
+        },
+        "attributes": {
+          "label": "Attributes",
+          "issuee": "Issuee",
+          "issuancedate": "Issuance Date",
+          "lei": "LEI"
+        },
+        "schemaversion": "Schema Version",
+        "issuer": "Issuer",
+        "status": {
+          "label": "Status",
+          "issued": "Issued",
+          "revoked": "Revoked",
+          "timestamp": "Timestamp"
+        },
         "connection": "Connection",
         "issuancedate": "Issuance Date",
         "expirationdate": "Expiration date",
@@ -848,8 +866,10 @@
       "attachments": "Request Attachments",
       "endpoints": "Service Endpoints",
       "notavailable": "N/A",
+      "details": "Details",
       "notes": "Notes",
       "nocurrentnotes": "No current notes",
+      "nocurrentnotesext": "There are currently no notes associated with this connection.",
       "cancel": "Cancel",
       "confirm": "Confirm",
       "title": "Title",
@@ -858,6 +878,7 @@
       "options": {
         "title": "Connection options",
         "labels": {
+          "add": "Add a note",
           "manage": "Manage notes",
           "delete": "Delete connection"
         },
@@ -934,6 +955,7 @@
   },
   "createidentifier": {
     "title": "Add an identifier",
+    "cancel": "Cancel",
     "displayname": {
       "title": "Display name",
       "placeholder": "Create a name for this identifier"
@@ -944,7 +966,7 @@
       "keri": "KERI AID"
     },
     "theme": {
-      "title": "Choose Theme"
+      "title": "Choose a theme"
     },
     "confirmbutton": "Create identifier",
     "error": {

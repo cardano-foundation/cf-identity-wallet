@@ -36,6 +36,7 @@ ion-item.custom-input {
       --padding-top: 0.875rem;
       --padding-bottom: 0.875rem;
       --padding-start: 1.25rem;
+      min-height: 3.125rem;
 
       .label-text-wrapper {
         display: none;
@@ -74,7 +75,7 @@ ion-item.custom-input {
         --padding-top: 0.35rem;
         --padding-bottom: 0.35rem;
         --padding-start: 0.8rem;
-        min-height: 100%;
+        min-height: 2.5rem;
         font-size: 0.8rem;
 
         .native-wrapper {

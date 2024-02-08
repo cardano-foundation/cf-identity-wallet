@@ -28,6 +28,15 @@ const IdentifierThemeSelector = ({
     );
   };
 
+  const Circle = () => {
+    return (
+      <div
+        className="unselected-theme-circle"
+        data-testid="unselected-theme-circle"
+      ></div>
+    );
+  };
+
   const ThemeItem = ({ index }: ThemeItemProps) => {
     return (
       <IonCol className={`${selectedTheme === index ? "selected-theme" : ""}`}>
@@ -40,7 +49,7 @@ const IdentifierThemeSelector = ({
             backgroundSize: "cover",
           }}
         >
-          {selectedTheme === index && <Checkmark />}
+          {selectedTheme === index ? <Checkmark /> : <Circle />}
         </IonItem>
       </IonCol>
     );

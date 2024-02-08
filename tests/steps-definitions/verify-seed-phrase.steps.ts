@@ -14,7 +14,7 @@ Given(
     seedPhraseWords = await seedPhrase().save(phraseLength);
     await GenerateSeedPhraseScreen.termsAndConditionsCheckbox.click();
     await GenerateSeedPhraseScreen.continueButton.click();
-    await AlertModal.clickConfirmAlertButton();
+    await AlertModal.clickConfirmButton();
     await VerifySeedPhraseScreen.loads();
   }
 );

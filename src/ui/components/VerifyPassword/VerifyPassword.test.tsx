@@ -7,16 +7,16 @@ import { AnyAction, Store } from "@reduxjs/toolkit";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
-import { credsFix } from "../../__fixtures__/credsFix";
+import { credsFixW3c } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
 import { AriesAgent } from "../../../core/agent/agent";
 
-const path = TabsRoutePath.CREDS + "/" + credsFix[0].id;
+const path = TabsRoutePath.CREDS + "/" + credsFixW3c[0].id;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: credsFix[0].id,
+    id: credsFixW3c[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
@@ -48,7 +48,7 @@ const initialStateNoPassword = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  credsCache: { creds: credsFix },
+  credsCache: { creds: credsFixW3c },
 };
 
 const initialStateWithPassword = {
@@ -68,7 +68,7 @@ const initialStateWithPassword = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  credsCache: { creds: credsFix },
+  credsCache: { creds: credsFixW3c },
 };
 
 describe("Verify Password on Cards Details page", () => {
@@ -85,7 +85,7 @@ describe("Verify Password on Cards Details page", () => {
   test.skip("It renders verify password when clicking on the big archive button", async () => {
     jest
       .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFix[0]);
+      .mockResolvedValue(credsFixW3c[0]);
     const mockStore = configureStore();
     const dispatchMock = jest.fn();
     storeMocked = {

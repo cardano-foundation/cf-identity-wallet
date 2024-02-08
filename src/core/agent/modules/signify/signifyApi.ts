@@ -11,6 +11,7 @@ import {
   Serder,
   EventResult,
   Signer,
+  Operation,
 } from "signify-ts";
 import {
   KeriContact,
@@ -29,8 +30,6 @@ export class SignifyApi {
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
-  static readonly FAILED_TO_CREATE_IDENTIFIER =
-    "Failed to create new managed AID, operation not completing...";
 
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly BACKER_ADDRESS =
@@ -49,6 +48,9 @@ export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
+  static readonly FAILED_TO_ROTATE_AID =
+    "Failed to rotate AID, operation not completing...";
+
   static readonly VLEI_HOST =
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
@@ -84,26 +86,54 @@ export class SignifyApi {
   }
 
   async createIdentifier(): Promise<CreateIdentifierResult> {
-    try {
-      const signifyName = utils.uuid();
-      const operation = await this.signifyClient
-        .identifiers()
-        .create(signifyName, SignifyApi.BACKER_CONFIG);
-      await operation.op();
-      await this.signifyClient
-        .identifiers()
-        .addEndRole(
-          signifyName,
-          SignifyApi.DEFAULT_ROLE,
-          this.signifyClient.agent!.pre
-        );
-      return {
+    const signifyName = utils.uuid();
+    const operation = await this.signifyClient
+      .identifiers()
+      .create(signifyName, SignifyApi.BACKER_CONFIG);
+    await operation.op();
+    await this.signifyClient
+      .identifiers()
+      .addEndRole(
         signifyName,
-        identifier: operation.serder.ked.i,
-      };
-    } catch {
-      throw new Error(SignifyApi.FAILED_TO_CREATE_IDENTIFIER);
-    }
+        SignifyApi.DEFAULT_ROLE,
+        this.signifyClient.agent!.pre
+      );
+    return {
+      signifyName,
+      identifier: operation.serder.ked.i,
+    };
+  }
+
+  async createDelegationIdentifier(
+    delegatorPrefix: string
+  ): Promise<CreateIdentifierResult> {
+    const signifyName = utils.uuid();
+    const operation = await this.signifyClient
+      .identifiers()
+      .create(signifyName, { delpre: delegatorPrefix });
+    return { signifyName, identifier: operation.serder.ked.i };
+  }
+
+  async interactDelegation(signifyName: string, delegatePrefix: string) {
+    const anchor = {
+      i: delegatePrefix,
+      s: "0",
+      d: delegatePrefix,
+    };
+    return this.signifyClient.identifiers().interact(signifyName, anchor);
+  }
+
+  async delegationApproved(signifyName: string): Promise<boolean> {
+    const identifier = await this.signifyClient.identifiers().get(signifyName);
+    const operation = await this.signifyClient
+      .keyStates()
+      .query(identifier.state.di, "1");
+    await this.waitAndGetDoneOp(
+      operation,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    return operation.done;
   }
 
   async getIdentifierByName(name: string): Promise<any> {
@@ -178,7 +208,9 @@ export class SignifyApi {
     return this.signifyClient.credentials().list();
   }
 
-  async getCredentialBySaid(sad: string): Promise<any> {
+  async getCredentialBySaid(
+    sad: string
+  ): Promise<{ acdc?: any; error?: unknown }> {
     try {
       const results = await this.signifyClient.credentials().list({
         filter: {
@@ -186,12 +218,10 @@ export class SignifyApi {
         },
       });
       return {
-        credential: results[0],
-        error: undefined,
+        acdc: results[0],
       };
     } catch (error) {
       return {
-        credential: undefined,
         error,
       };
     }
@@ -208,7 +238,7 @@ export class SignifyApi {
     op: any,
     timeout: number,
     interval: number
-  ): Promise<any> {
+  ): Promise<Operation> {
     const startTime = new Date().getTime();
     while (!op.done && new Date().getTime() < startTime + timeout) {
       op = await this.signifyClient.operations().get(op.name);
@@ -217,9 +247,8 @@ export class SignifyApi {
     return op;
   }
 
-  async getOpByName(name: string): Promise<any> {
-    const op = await this.signifyClient.operations().get(name);
-    return op;
+  async getOpByName(name: string): Promise<Operation> {
+    return this.signifyClient.operations().get(name);
   }
 
   private async getBran(): Promise<string> {
@@ -364,6 +393,21 @@ export class SignifyApi {
       icpResult: icpResult,
       name: name,
     };
+  }
+
+  async rotateIdentifier(signifyName: string): Promise<void> {
+    const rotateResult = await this.signifyClient
+      .identifiers()
+      .rotate(signifyName);
+    let operation = await rotateResult.op();
+    operation = await this.waitAndGetDoneOp(
+      operation,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    if (!operation.done) {
+      throw new Error(SignifyApi.FAILED_TO_ROTATE_AID);
+    }
   }
 
   async getSigner(aid: Aid): Promise<Signer> {

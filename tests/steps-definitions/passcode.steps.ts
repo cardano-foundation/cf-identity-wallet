@@ -15,12 +15,16 @@ Given(/^user generate passcode on Passcode screen$/, async function () {
   await PasscodeScreen.enterPasscode(passcode);
 });
 
+Given(/^user can see Re-enter your Passcode screen$/, async function () {
+  await PasscodeScreen.loadsReEnterScreen();
+});
+
 When(/^user re-enter passcode on Passcode screen$/, async function () {
   await PasscodeScreen.enterPasscode(passcode);
 });
 
 When(
-  /^user tap I cant remember, can I start over button on Passcode screen$/,
+  /^user tap Forgot your passcode button on Passcode screen$/,
   async function () {
     await PasscodeScreen.forgotYourPasscodeButton.click();
   }

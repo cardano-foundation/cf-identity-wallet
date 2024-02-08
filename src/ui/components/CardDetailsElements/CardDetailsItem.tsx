@@ -11,6 +11,7 @@ const CardDetailsItem = ({
   info,
   copyButton,
   icon,
+  keyValue,
   textIcon,
   testId,
 }: CardDetailsItemProps) => {
@@ -35,6 +36,7 @@ const CardDetailsItem = ({
           />
         </span>
       )}
+      {keyValue && <strong>{keyValue}</strong>}
       {textIcon && (
         <span className="card-details-info-block-text-icon">
           {i18n.t(textIcon)}
