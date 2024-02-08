@@ -1,5 +1,5 @@
 .agent-init-error-msg {
-  margin: 30vh 2rem 0 2rem;
+  margin: calc(var(--scale-h) * 30) 2rem 0 2rem;
   text-align: center;
 
   & > p {

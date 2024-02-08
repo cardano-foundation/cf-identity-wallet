@@ -21,7 +21,7 @@ ion-modal.terms-modal {
 
     &.md {
       ion-buttons {
-        min-width: 14vw;
+        min-width: calc(var(--scale-w) * 14);
       }
 
       ion-title {

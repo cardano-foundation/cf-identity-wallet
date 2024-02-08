@@ -1,0 +1,66 @@
+/* Keeping everything in px instead of rem 
+because of compatibility issues with Safari browser */
+.smartphone-layout {
+  position: relative;
+  width: 423px;
+  height: 931px;
+  zoom: 75%;
+  font-size: 14px;
+  margin: 2rem auto;
+  background: var(--ion-color-secondary);
+  border: 16px black solid;
+  border-top-width: 60px;
+  border-bottom-width: 60px;
+  border-radius: 36px;
+  --scale-w: 4px;
+  --scale-h: 8px;
+
+  ion-modal {
+    --width: 390px;
+
+    &.verify-passcode {
+      --height: 810px;
+    }
+  }
+}
+
+.smartphone-layout:before {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 5px;
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: #333;
+  border-radius: 10px;
+}
+
+.smartphone-layout:after {
+  content: "";
+  display: block;
+  width: 35px;
+  height: 35px;
+  position: absolute;
+  left: 50%;
+  bottom: -65px;
+  transform: translate(-50%, -50%);
+  background: #333;
+  border-radius: 50%;
+}
+
+.smartphone-layout .smartphone-content {
+  width: 390px;
+  height: 810px;
+
+  .side-panel {
+    width: 390px;
+    height: 810px;
+    position: absolute;
+    right: -390px;
+    background: var(--ion-color-secondary);
+    border-left: 17px black solid;
+    z-index: 105;
+  }
+}

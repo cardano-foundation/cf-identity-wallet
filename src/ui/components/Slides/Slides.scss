@@ -27,14 +27,14 @@
       img,
       svg {
         height: auto !important;
-        width: 62vw !important;
+        width: calc(var(--scale-w) * 62) !important;
       }
 
       @media screen and (min-height: 300px) and (max-height: 600px) {
         img,
         svg {
           height: auto !important;
-          width: 55vw !important;
+          width: calc(var(--scale-w) * 55) !important;
         }
       }
     }

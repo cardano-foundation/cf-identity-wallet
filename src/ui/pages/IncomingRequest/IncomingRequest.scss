@@ -21,7 +21,7 @@
   }
 
   .request-animation-center {
-    min-height: 20vh;
+    min-height: calc(var(--scale-h) * 20);
   }
 
   .request-icons-row {
