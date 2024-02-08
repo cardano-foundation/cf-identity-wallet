@@ -25,12 +25,9 @@ const App = () => {
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const browserPreview = new URLSearchParams(window.location.search).has(
-    "mobile"
-  );
 
   useEffect(() => {
-    if (browserPreview) {
+    if (new URLSearchParams(window.location.search).has("browserPreview")) {
       setupIonicReact({
         rippleEffect: false,
         mode: "ios",
