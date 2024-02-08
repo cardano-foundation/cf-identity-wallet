@@ -23,8 +23,8 @@ const App = () => {
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const previewEnv =
-    location.hostname === "localhost" || location.hostname === "vercel";
+  const previewEnv = new URLSearchParams(window.location.search).has("mobile");
+
   useEffect(() => {
     if (previewEnv) {
       document?.querySelector("html")?.classList.add("smartphone-layout");
