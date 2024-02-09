@@ -67,7 +67,7 @@
 
 **Disclaimer: Try it now provides access to a preview version of the identity wallet in your browser. This preview version is <ins>not intended</ins> to be used for any purposes other than previewing the application.**
 
-To experience the mobile application within the browser, please select one of the following links below depending wether you are accessing the preview version on your desktop or mobile device.
+To experience the mobile application within the browser, please select one of the following links below, depending on whether you are accessing the preview version on your desktop or mobile device.
 <br>
 <div align="center"> 
 <p><u>🔗  Preview the latest version of the Identity Wallet on your browser 🔗 </u></p>
