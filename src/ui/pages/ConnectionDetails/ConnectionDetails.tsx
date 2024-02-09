@@ -2,8 +2,9 @@ import { ellipsisVertical, addOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { IonLabel, IonSegment, IonSegmentButton } from "@ionic/react";
+import i18next from "i18next";
 import { i18n } from "../../../i18n";
-import { formatShortDate } from "../../utils/formatters";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import "./ConnectionDetails.scss";
 import {
   ConnectionDetails as ConnectionData,
@@ -38,6 +39,7 @@ import { EditConnectionsModal } from "./components/EditConnectionsModal";
 import { ConnectionDetailsInfoBlock } from "./components/ConnectionDetailsInfoBlock";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
+import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 
 const ConnectionDetails = () => {
@@ -206,7 +208,27 @@ const ConnectionDetails = () => {
               <ConnectionDetailsInfoBlock
                 title={i18n.t("connections.details.history")}
               >
-                <></>
+                <div className="connection-details-history-event">
+                  <div className="connection-details-logo">
+                    <img
+                      src={connectionDetails?.logo ?? CardanoLogo}
+                      alt="connection-logo"
+                    />
+                  </div>
+                  <div className="connection-details-history-event-info">
+                    {i18next.t("connections.details.connectedwith", {
+                      issuer: connectionDetails?.label,
+                    })}
+                    <span>
+                      {" " +
+                        formatShortDate(
+                          `${connectionDetails?.connectionDate}`
+                        ) +
+                        " - " +
+                        formatTimeToSec(`${connectionDetails?.connectionDate}`)}
+                    </span>
+                  </div>
+                </div>
               </ConnectionDetailsInfoBlock>
               <PageFooter
                 pageId={pageId}

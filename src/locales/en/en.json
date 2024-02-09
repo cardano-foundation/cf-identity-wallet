@@ -866,6 +866,7 @@
       "attachments": "Request Attachments",
       "endpoints": "Service Endpoints",
       "history": "Connection History",
+      "connectedwith": "Connected with \"{{ issuer }}\"",
       "notavailable": "N/A",
       "details": "Details",
       "notes": "Notes",

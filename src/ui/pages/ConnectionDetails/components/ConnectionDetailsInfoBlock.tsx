@@ -13,7 +13,7 @@ const ConnectionDetailsInfoBlock = ({
       <p>{title}</p>
       <div className="connection-details-info-block-inner">
         <div className="connection-details-info-block-line">
-          <p>{children}</p>
+          {typeof children === "string" ? <p>{children}</p> : children}
         </div>
       </div>
     </div>
