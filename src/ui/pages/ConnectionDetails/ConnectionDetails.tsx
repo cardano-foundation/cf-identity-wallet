@@ -275,34 +275,32 @@ const ConnectionDetails = () => {
                     </span>
                   </p>
                 </div>
-                {connectionHistory &&
-                  connectionHistory.map((historyItem, index) => (
-                    <div
-                      className="connection-details-history-event"
-                      key={index}
-                    >
-                      <div className="connection-details-logo">
-                        <img
-                          src={connectionDetails?.logo ?? CardanoLogo}
-                          alt="connection-logo"
-                        />
-                      </div>
-                      <p className="connection-details-history-event-info">
-                        {i18next.t("connections.details.received", {
-                          credential: historyItem.credentialType
-                            ?.replace(/([A-Z][a-z])/g, " $1")
-                            .replace(/^ /, "")
-                            .replace(/(\d)/g, "$1"),
-                        })}
-                        <span>
-                          {" " +
-                            formatShortDate(`${historyItem.timestamp}`) +
-                            " - " +
-                            formatTimeToSec(`${historyItem.timestamp}`)}
-                        </span>
-                      </p>
+                {connectionHistory && (
+                  <div className="connection-details-history-event">
+                    <div className="connection-details-logo">
+                      <img
+                        src={connectionDetails?.logo ?? CardanoLogo}
+                        alt="connection-logo"
+                      />
                     </div>
-                  ))}
+                    <p className="connection-details-history-event-info">
+                      {i18next.t("connections.details.received", {
+                        credential: connectionHistory[0]?.credentialType
+                          ?.replace(/([A-Z][a-z])/g, " $1")
+                          .replace(/^ /, "")
+                          .replace(/(\d)/g, "$1"),
+                      })}
+                      <span>
+                        {" " +
+                          formatShortDate(
+                            `${connectionHistory[0]?.timestamp}`
+                          ) +
+                          " - " +
+                          formatTimeToSec(`${connectionHistory[0]?.timestamp}`)}
+                      </span>
+                    </p>
+                  </div>
+                )}
               </ConnectionDetailsInfoBlock>
               <PageFooter
                 pageId={pageId}
