@@ -20,6 +20,10 @@
     border-radius: 0.75rem;
     background-color: var(--ion-color-light-grey);
 
+    &:not(:last-of-type) {
+      margin-bottom: 1rem;
+    }
+
     .connection-details-logo {
       width: 15%;
       align-self: center;

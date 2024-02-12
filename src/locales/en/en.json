@@ -867,6 +867,7 @@
       "endpoints": "Service Endpoints",
       "history": "Connection History",
       "connectedwith": "Connected with \"{{ issuer }}\"",
+      "received": "Received \"{{ credential }}\"",
       "notavailable": "N/A",
       "details": "Details",
       "notes": "Notes",
