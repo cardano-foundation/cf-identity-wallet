@@ -107,7 +107,7 @@ const ConnectionDetails = () => {
   }, [connectionShortDetails?.id, modalIsOpen]);
 
   useEffect(() => {
-    //  console.log(connectionHistory);
+    console.log(connectionHistory);
   }, [connectionHistory]);
 
   const handleDone = () => {
@@ -245,6 +245,7 @@ const ConnectionDetails = () => {
                 actionButton={
                   <IonButton
                     shape="round"
+                    color="light"
                     className="sort-history-button"
                     onClick={() => sortHistory()}
                     data-testid="sort-history-button"
