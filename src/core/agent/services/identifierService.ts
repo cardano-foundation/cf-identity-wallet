@@ -49,6 +49,12 @@ class IdentifierService extends AgentService {
     "There's no notifications for the given SAID";
   static readonly ONLY_ALLOW_KERI_CONTACTS =
     "Can only create multi-sig using KERI contacts with specified OOBI URLs";
+  static readonly ONLY_CREATE_DELAGATION_WITH_AID =
+    "Can only create delegation using KERI AID";
+  static readonly AID_MISSING_SIGNIFY_NAME =
+    "Metadata record for KERI AID is missing the Signify name";
+  static readonly ONLY_CREATE_ROTATION_WITH_AID =
+    "Can only create rotation using KERI AID";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -471,6 +477,71 @@ class IdentifierService extends AgentService {
         a: result.content,
       };
     });
+  }
+
+  async createDelegatedIdentifier(
+    metadata: Omit<
+      IdentifierMetadataRecordProps,
+      "id" | "createdAt" | "isArchived"
+    >,
+    delegatorPrefix: string
+  ): Promise<string | undefined> {
+    if (metadata.method !== IdentifierType.KERI) {
+      throw new Error(IdentifierService.ONLY_CREATE_DELAGATION_WITH_AID);
+    }
+    const { signifyName, identifier } =
+      await this.agent.modules.signify.createDelegationIdentifier(
+        delegatorPrefix
+      );
+    await this.createIdentifierMetadataRecord({
+      id: identifier,
+      ...metadata,
+      signifyName: signifyName,
+      method: IdentifierType.KERI,
+      isPending: true,
+    });
+    return identifier;
+  }
+
+  async approveDelegation(
+    signifyName: string,
+    delegatePrefix: string
+  ): Promise<void> {
+    await this.agent.modules.signify.interactDelegation(
+      signifyName,
+      delegatePrefix
+    );
+  }
+
+  async checkDelegationSuccess(
+    metadata: IdentifierMetadataRecord
+  ): Promise<boolean> {
+    if (!metadata.signifyName) {
+      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    }
+    if (!metadata.isPending) {
+      return true;
+    }
+    const isDone = await this.agent.modules.signify.delegationApproved(
+      metadata.signifyName
+    );
+    if (isDone) {
+      await this.agent.modules.generalStorage.updateIdentifierMetadata(
+        metadata.id,
+        { isPending: false }
+      );
+    }
+    return isDone;
+  }
+
+  async rotateIdentifier(metadata: IdentifierMetadataRecord) {
+    if (metadata.method !== IdentifierType.KERI) {
+      throw new Error(IdentifierService.ONLY_CREATE_ROTATION_WITH_AID);
+    }
+    if (!metadata.signifyName) {
+      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    }
+    await this.agent.modules.signify.rotateIdentifier(metadata.signifyName);
   }
 }
 

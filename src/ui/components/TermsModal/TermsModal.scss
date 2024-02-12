@@ -1,0 +1,32 @@
+ion-modal.terms-modal {
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  --height: auto;
+
+  &::part(content) {
+    height: 100%;
+  }
+
+  p *:nth-child(2) {
+    margin-left: 0.5rem;
+  }
+
+  ion-toolbar {
+    --min-height: 4rem;
+
+    h2 {
+      margin: 0 auto;
+    }
+
+    &.md {
+      ion-buttons {
+        min-width: calc(var(--scale-w) * 14);
+      }
+
+      ion-title {
+        width: auto;
+      }
+    }
+  }
+}

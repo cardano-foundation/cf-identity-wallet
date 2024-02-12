@@ -25,10 +25,10 @@ import {
   ConnectionStatus,
   GenericRecordType,
 } from "../agent.types";
-// import { LibP2p } from "../transports/libp2p/libP2p";
-// import { LibP2pOutboundTransport } from "../transports/libP2pOutboundTransport";
 import { AgentService } from "./agentService";
 import { KeriContact } from "../modules/signify/signifyApi.types";
+import { AriesAgent } from "../agent";
+import { IdentifierType } from "./identifierService.types";
 
 const SERVER_GET_SHORTEN_URL =
   // eslint-disable-next-line no-undef
@@ -141,6 +141,40 @@ class ConnectionService extends AgentService {
         alias: operation.alias,
         oobi: url,
       });
+
+      // @TODO - foconnor: This is temporary for ease of development, will be removed soon.
+      // For now this will make KERI contacts operate similarily to DIDComm comms if it's from our deployed cred server.
+      // Will only be confirmed in our wallet once the other agent also resolves our OOBI - it will also issue an ACDC at the same time.
+      if (url.includes("dev.keria.cf-keripy.metadata.dev.cf-deployments.org")) {
+        // This is inefficient but it will change going forward.
+        const aid = (await AriesAgent.agent.identifiers.getIdentifiers()).find(
+          (identifier) => identifier.method === IdentifierType.KERI
+        );
+        if (aid && aid.signifyName) {
+          // signifyName should always be set
+          const oobi = await AriesAgent.agent.connections.getKeriOobi(
+            aid.signifyName
+          );
+          await (
+            await fetch(
+              "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/issueAcdcCredentialWithOobi",
+              {
+                method: "POST",
+                body: JSON.stringify({ oobi }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            )
+          ).json();
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "Please create a KERI AID first before scanning an OOBI of the deployed server, if you wish to be issued an ACDC automatically."
+          );
+        }
+      }
+
       return this.agent.events.emit<ConnectionKeriStateChangedEvent>(
         this.agent.context,
         {
@@ -378,6 +412,7 @@ class ConnectionService extends AgentService {
         return {
           type: ConnectionHistoryType.CREDENTIAL_ACCEPTED,
           timestamp: record.createdAt.toISOString(),
+          credentialType: record.credentialType,
         };
       })
     );
@@ -499,35 +534,6 @@ class ConnectionService extends AgentService {
     clearTimeout(id);
     return response;
   }
-
-  // @TODO - foconnor: fix and add tests;
-  // These libs are ESM exported and not working in Jest right now - can fix later.
-
-  // async enableP2P() {
-  //   const inBoundTransport = LibP2p.libP2p.inBoundTransport;
-  //   await inBoundTransport.start(this.agent);
-  //   this.agent.registerInboundTransport(inBoundTransport);
-
-  //   const outBoundTransport = new LibP2pOutboundTransport(LibP2p.libP2p);
-  //   await outBoundTransport.start(this.agent);
-  //   this.agent.registerOutboundTransport(outBoundTransport);
-  // }
-
-  // async createNewWebRtcInvitation() {
-  //   const domains = this.agent.config.endpoints;
-  //   const libP2pDomain = domains.find((domain) => domain.includes("libp2p"));
-  //   if (!libP2pDomain) {
-  //     throw new Error(ConnectionService.NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG);
-  //   }
-
-  //   const createInvitation = await this.agent.oob.createInvitation({
-  //     autoAcceptConnection: false,
-  //   });
-
-  //   return createInvitation.outOfBandInvitation.toUrl({
-  //     domain: libP2pDomain,
-  //   });
-  // }
 }
 
 export { ConnectionService };

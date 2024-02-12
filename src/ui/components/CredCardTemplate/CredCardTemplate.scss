@@ -36,20 +36,20 @@
     }
   }
 
-  &.university-degree-credential,
-  &.generic-w3c-template {
-    position: relative;
-    background: var(--ion-color-gradient-university-card);
-    text-shadow: 0px 2px 4px rgba(12, 64, 90, 0.5);
+  &.card-body-generic > img {
+    position: absolute;
+    top: -5%;
+    left: -8%;
+    width: 117%;
+    max-width: 140%;
+    opacity: 0.04;
+  }
 
-    > img {
-      position: absolute;
-      top: -5%;
-      left: -8%;
-      width: 117%;
-      max-width: 140%;
-      opacity: 0.04;
-    }
+  &.card-body-generic,
+  &.card-body-acdc {
+    position: relative;
+    background: var(--ion-color-gradient-w3c-card);
+    text-shadow: 0px 2px 4px rgba(12, 64, 90, 0.5);
 
     .cred-card-template-inner {
       color: var(--ion-color-light);
@@ -72,7 +72,7 @@
             .card-footer-column-label,
             .card-footer-column-value {
               text-align: left;
-              width: 40vw;
+              width: calc(var(--scale-w) * 40);
             }
           }
 
@@ -80,7 +80,7 @@
             .card-footer-column-label,
             .card-footer-column-value {
               text-align: right;
-              width: 30vw;
+              width: calc(var(--scale-w) * 30);
             }
           }
 
@@ -136,8 +136,12 @@
             width: 35%;
 
             #react-qrcode-logo {
-              height: calc((100vw - 4.778rem) * 0.35) !important;
-              width: calc((100vw - 4.778rem) * 0.35) !important;
+              height: calc(
+                (calc(var(--scale-w) * 100) - 4.778rem) * 0.35
+              ) !important;
+              width: calc(
+                (calc(var(--scale-w) * 100) - 4.778rem) * 0.35
+              ) !important;
             }
           }
 
@@ -285,7 +289,7 @@
           }
 
           .card-footer-column-value {
-            width: 28vw;
+            width: calc(var(--scale-w) * 28);
             border-radius: 0.25rem;
             background: var(--ion-color-medium-grey);
           }
@@ -352,8 +356,7 @@
       margin-top: -8.8rem;
     }
 
-    &.university-degree-credential,
-    &.generic-w3c-template {
+    &.card-body-generic {
       .cred-card-template-inner {
         .card-footer {
           .card-footer-column {

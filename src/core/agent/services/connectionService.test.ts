@@ -566,6 +566,7 @@ describe("Connection service of agent", () => {
         {
           credentialId: 1,
           createdAt: now,
+          credentialType: "ACDC",
         },
       ]);
     expect(
@@ -574,6 +575,7 @@ describe("Connection service of agent", () => {
       {
         type: ConnectionHistoryType.CREDENTIAL_ACCEPTED,
         timestamp: nowISO,
+        credentialType: "ACDC",
       },
     ]);
     expect(

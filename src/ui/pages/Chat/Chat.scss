@@ -1,5 +1,5 @@
 .chat-tab-content {
-  margin-top: 35vh;
+  margin-top: calc(var(--scale-h) * 35);
   text-align: center;
   width: 100%;
   color: var(--ion-color-secondary);

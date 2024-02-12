@@ -7,7 +7,6 @@ import {
   TWENTYFOUR_WORDS_BIT_LENGTH,
 } from "../../globals/constants";
 import { MnemonicLengthSegmentProps } from "./MnemonicLengthSegment.types";
-import "./MnemonicLengthSegment.scss";
 
 const MnemonicLengthSegment = ({
   seedPhrase,
@@ -16,7 +15,6 @@ const MnemonicLengthSegment = ({
   return (
     <IonSegment
       data-testid="mnemonic-length-segment"
-      className="mnemonic-length-segment"
       value={`${
         seedPhrase.length === MNEMONIC_TWENTYFOUR_WORDS
           ? TWENTYFOUR_WORDS_BIT_LENGTH

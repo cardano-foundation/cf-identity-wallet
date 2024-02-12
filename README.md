@@ -65,34 +65,17 @@
 
 # Preview in your Browser
 
-**Disclaimer: Try it now provides access to a preview version of the identity wallet in your browser.  This preview version is <ins>not intended</ins> to be used for any purposes other than previewing the application.**
+**Disclaimer: This preview version is <ins>not intended</ins> to be used for any purposes other than previewing the application.**
 
-To experience the mobile application within the browser, follow these instructions for accessing mobile-view:
-1. Open the developer options by pressing the ``` F12 ``` key on your keyboard or by right-clicking anywhere on the page, then choose ``` Inspect ``` from the context menu.
-2. To Switch to a mobile view:
-    - Chrome:
-        <details>
-          <summary>Click on the icon in the top right corner, as shown in the image below.</summary>
-          <img src="docs/images/readme/Chrome-Mobile-View-1.png" alt="Chrome Mobile View 1"/>
-        </details>
-        <details>
-          <summary>Click on <b>Dimensions</b> and select <b>iPhone 14 Pro Max</b>.</summary>
-          <img src="docs/images/readme/Chrome-Mobile-View-2.png" alt="Chrome Mobile View 2"/>
-        </details>
-    - Firefox:
-        <details>
-          <summary>Click on the icon in the upper right corner, as shown in the image below, then close the panel.</summary>
-          <img src="docs/images/readme/Firefox-Mobile-View-1.png" alt="Firefox Mobile View 1"/>
-        </details>
-        <details>
-          <summary>Click on <b>Dimensions</b> and select <b>Galaxy Note 20</b>.</summary>
-          <img src="docs/images/readme/Firefox-Mobile-View-2.png" alt="Firefox Mobile View 2"/>
-        </details>
+To experience the mobile application within the browser, please select one of the following links below, depending on whether you are accessing the preview version on your desktop or mobile device.
 <br>
 <div align="center"> 
-      <a href="https://cf-identity-wallet.vercel.app">  🔗  Preview the latest version of the Identity Wallet 🔗 
+<p><u>🔗  Preview the latest version of the Identity Wallet on your browser 🔗 </u></p>
+<br>
+<p><a href="https://cf-identity-wallet.vercel.app/?browserPreview">* On a desktop computer</a></p>
+<br>
+<p><a href="https://cf-identity-wallet.vercel.app">* On a mobile phone</a></p>
 </div>
-
 
 # Architecture
 <div align="center"> 
@@ -140,7 +123,7 @@ In this section, you'll find detailed PDF documents outlining the various user f
 - Android Studio: For Android emulation (latest version recommended).
 - Capacitor: Version 4.8.1 (refer to package.json). For detailed environment setup, refer to the [Capacitor Environment Setup Guide](https://capacitorjs.com/docs/getting-started/environment-setup).
 - Mobile Device: iOS or Android for running the app on physical devices.
-- Docker (only required for running locally deployed WebRTC relay).
+- Docker (only required if running the credential server in Docker).
 
 Ensure that your system meets these requirements to successfully use and develop the Identity Wallet application.
 
@@ -171,7 +154,7 @@ This command starts the development server and allows you to preview the applica
 You can discover how to run the application in an emulator by following this [link](docs/Running-in-an-Emulator.md).
 
 ## End-to-End (E2E) Testing
-You can gain additional insights into end-to-end testing by visiting the provided [link](docs/End-to-End-Testing.md).
+You can gain additional insights into end-to-end testing by visiting the provided [link](docs/Testing.md).
 
 # Contributing
 

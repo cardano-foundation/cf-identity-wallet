@@ -10,11 +10,11 @@ const CardBodyResidency = ({ cardData }: any) => {
         <div className="left-column">
           <img
             src={cardData.cachedDetails?.image}
+            alt="user-picture"
             onError={({ currentTarget }) => {
               currentTarget.onerror = null; // @TODO - sdisalvo: Handle error
               currentTarget.src = imagePlaceholder;
             }}
-            alt="user-picture"
           />
         </div>
         <div className="center-column">

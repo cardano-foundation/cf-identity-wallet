@@ -13,7 +13,6 @@ import {
 import { Alert as AlertConfirm } from "../../components/Alert";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { getNextRoute } from "../../../routes/nextRoute";
-import { TermsOfUseModal } from "../../components/TermsOfUse";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { updateReduxState } from "../../../store/utils";
 import { RoutePath } from "../../../routes";
@@ -24,7 +23,7 @@ import { PageHeader } from "../../components/PageHeader";
 import { PageFooter } from "../../components/PageFooter";
 import { MnemonicLengthSegment } from "../../components/MnemonicLengthSegment";
 import { SeedPhraseModule } from "../../components/SeedPhraseModule";
-import { PrivacyPolicyModal } from "../../components/PrivacyPolicy";
+import { TermsModal } from "../../components/TermsModal";
 
 const GenerateSeedPhrase = () => {
   const pageId = "generate-seed-phrase";
@@ -181,11 +180,13 @@ const GenerateSeedPhrase = () => {
           />
         </p>
       </div>
-      <TermsOfUseModal
+      <TermsModal
+        name="terms-of-use"
         isOpen={termsModalIsOpen}
         setIsOpen={setTermsModalIsOpen}
       />
-      <PrivacyPolicyModal
+      <TermsModal
+        name="privacy-policy"
         isOpen={privacyModalIsOpen}
         setIsOpen={setPrivacyModalIsOpen}
       />

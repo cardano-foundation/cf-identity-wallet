@@ -41,7 +41,7 @@ ion-tab-bar {
     }
 
     ion-label {
-      max-width: 20vw;
+      max-width: calc(var(--scale-w) * 20);
       font-size: 0.75rem;
     }
   }

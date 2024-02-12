@@ -3,10 +3,6 @@
     margin-left: 1.35rem;
   }
 
-  &:not(:last-child) {
-    margin-bottom: 1.56rem;
-  }
-
   .connection-details-info-block-inner {
     display: flex;
     flex-direction: column;
@@ -26,6 +22,10 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+      }
+
+      .connection-details-info-block-note-title {
+        font-weight: 500;
       }
 
       .connection-details-info-block-note-title,
