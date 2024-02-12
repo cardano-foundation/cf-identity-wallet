@@ -245,9 +245,9 @@ const ConnectionDetails = () => {
                 actionButton={
                   <IonButton
                     shape="round"
-                    className="action-button"
+                    className="sort-history-button"
                     onClick={() => sortHistory()}
-                    data-testid="action-button"
+                    data-testid="sort-history-button"
                   >
                     <IonIcon
                       slot="icon-only"
