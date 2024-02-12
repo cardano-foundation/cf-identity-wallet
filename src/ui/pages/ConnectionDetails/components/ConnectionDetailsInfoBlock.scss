@@ -1,27 +1,6 @@
 .connection-details-info-block {
-  .connection-details-info-block-title {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    padding-inline: 1.35rem;
-
-    > * {
-      align-self: center;
-    }
-
-    ion-button {
-      height: 2rem;
-      width: 2rem;
-      min-height: 1.5rem;
-
-      &::part(native) {
-        padding: 0;
-      }
-
-      ion-icon {
-        height: 1.375rem;
-      }
-    }
+  > p {
+    margin-left: 1.35rem;
   }
 
   .connection-details-info-block-inner {
