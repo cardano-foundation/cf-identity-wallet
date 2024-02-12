@@ -2,7 +2,6 @@ import { useHistory, useParams } from "react-router-dom";
 import {
   IonButton,
   IonIcon,
-  IonPage,
   IonSpinner,
   useIonViewWillEnter,
 } from "@ionic/react";

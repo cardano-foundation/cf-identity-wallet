@@ -36,6 +36,7 @@ import { AriesAgent } from "../../../core/agent/agent";
 import {
   ConnectionHistoryItem,
   ConnectionNoteDetails,
+  CredentialType,
 } from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";
@@ -165,6 +166,19 @@ const ConnectionDetails = () => {
     },
   ];
 
+  const credentialBackground = (type: string) => {
+    switch (type) {
+    case CredentialType.PERMANENT_RESIDENT_CARD:
+      return "permanent-resident-card";
+    case CredentialType.ACCESS_PASS_CREDENTIAL:
+      return "access-pass-credential";
+      // case CredentialType.KERI_CREDENTIAL:
+      //   return "card-body-acdc";
+    default:
+      return "card-body-generic";
+    }
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -249,9 +263,10 @@ const ConnectionDetails = () => {
                 {connectionHistory && (
                   <div className="connection-details-history-event">
                     <div className="connection-details-logo">
-                      <img
-                        src={connectionDetails?.logo ?? CardanoLogo}
-                        alt="connection-logo"
+                      <div
+                        className={`cred-card-template ${credentialBackground(
+                          `${connectionHistory[0]?.credentialType}`
+                        )}`}
                       />
                     </div>
                     <p className="connection-details-history-event-info">
