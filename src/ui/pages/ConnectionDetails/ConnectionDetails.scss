@@ -22,16 +22,17 @@
 
     .connection-details-logo {
       width: 15%;
+      align-self: center;
 
       img {
         width: 2.5rem;
-        height: 2.5rem;
         border-radius: 2.5rem;
       }
     }
 
     .connection-details-history-event-info {
-      width: 85%;
+      width: 83%;
+      margin: 0 0 0 2%;
 
       span {
         font-weight: 400;
@@ -48,6 +49,10 @@
     .connection-details-tab > *,
     .connection-notes-tab > * {
       margin-bottom: 1.2rem;
+    }
+
+    .connection-details-history-event {
+      padding: 0.65rem 0.8rem;
     }
   }
 }

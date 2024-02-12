@@ -215,7 +215,7 @@ const ConnectionDetails = () => {
                       alt="connection-logo"
                     />
                   </div>
-                  <div className="connection-details-history-event-info">
+                  <p className="connection-details-history-event-info">
                     {i18next.t("connections.details.connectedwith", {
                       issuer: connectionDetails?.label,
                     })}
@@ -227,7 +227,7 @@ const ConnectionDetails = () => {
                         " - " +
                         formatTimeToSec(`${connectionDetails?.connectionDate}`)}
                     </span>
-                  </div>
+                  </p>
                 </div>
               </ConnectionDetailsInfoBlock>
               <PageFooter
