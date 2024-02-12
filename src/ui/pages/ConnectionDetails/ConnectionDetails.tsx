@@ -33,7 +33,10 @@ import {
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
-import { ConnectionNoteDetails } from "../../../core/agent/agent.types";
+import {
+  ConnectionHistoryItem,
+  ConnectionNoteDetails,
+} from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";
 import { ConnectionDetailsInfoBlock } from "./components/ConnectionDetailsInfoBlock";
@@ -51,6 +54,8 @@ const ConnectionDetails = () => {
   const connectionShortDetails = history?.location
     ?.state as ConnectionShortDetails;
   const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
+  const [connectionHistory, setConnectionHistory] =
+    useState<ConnectionHistoryItem[]>();
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteConnectionIsOpen, setAlertDeleteConnectionIsOpen] =
     useState(false);
@@ -76,8 +81,24 @@ const ConnectionDetails = () => {
         setNotes(connectionDetails.notes);
       }
     }
-    if (connectionShortDetails?.id) getDetails();
+
+    async function getHistory() {
+      const connectionHistory =
+        await AriesAgent.agent.connections.getConnectionHistoryById(
+          connectionShortDetails.id
+        );
+      setConnectionHistory(connectionHistory);
+    }
+
+    if (connectionShortDetails?.id) {
+      getDetails();
+      getHistory();
+    }
   }, [connectionShortDetails?.id, modalIsOpen]);
+
+  useEffect(() => {
+    //  console.log(connectionHistory);
+  }, [connectionHistory]);
 
   const handleDone = () => {
     const data: DataProps = {
