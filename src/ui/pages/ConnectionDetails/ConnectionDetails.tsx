@@ -1,7 +1,17 @@
-import { ellipsisVertical, addOutline } from "ionicons/icons";
+import {
+  ellipsisVertical,
+  addOutline,
+  swapVerticalOutline,
+} from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { IonLabel, IonSegment, IonSegmentButton } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonLabel,
+  IonSegment,
+  IonSegmentButton,
+} from "@ionic/react";
 import i18next from "i18next";
 import { i18n } from "../../../i18n";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
@@ -169,6 +179,10 @@ const ConnectionDetails = () => {
     },
   ];
 
+  const sortHistory = () => {
+    //
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -228,6 +242,20 @@ const ConnectionDetails = () => {
               ))}
               <ConnectionDetailsInfoBlock
                 title={i18n.t("connections.details.history")}
+                actionButton={
+                  <IonButton
+                    shape="round"
+                    className="action-button"
+                    onClick={() => sortHistory()}
+                    data-testid="action-button"
+                  >
+                    <IonIcon
+                      slot="icon-only"
+                      icon={swapVerticalOutline}
+                      color="secondary"
+                    />
+                  </IonButton>
+                }
               >
                 <div className="connection-details-history-event">
                   <div className="connection-details-logo">
