@@ -31,6 +31,9 @@ jest.mock("../../../core/agent/agent", () => ({
             },
           ],
         }),
+        getConnectionHistoryById: jest.fn().mockResolvedValue({
+          // TODO: add history
+        }),
       },
       credentials: {
         getCredentialDetailsById: jest.fn(),
