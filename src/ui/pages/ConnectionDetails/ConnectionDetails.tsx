@@ -55,8 +55,9 @@ const ConnectionDetails = () => {
   const connectionShortDetails = history?.location
     ?.state as ConnectionShortDetails;
   const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
-  const [connectionHistory, setConnectionHistory] =
-    useState<ConnectionHistoryItem[]>();
+  const [connectionHistory, setConnectionHistory] = useState<
+    ConnectionHistoryItem[]
+  >([]);
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteConnectionIsOpen, setAlertDeleteConnectionIsOpen] =
     useState(false);
@@ -242,7 +243,7 @@ const ConnectionDetails = () => {
                     </span>
                   </p>
                 </div>
-                {connectionHistory && (
+                {connectionHistory.length > 0 && (
                   <div className="connection-details-history-event">
                     <div className="connection-details-logo">
                       <div
