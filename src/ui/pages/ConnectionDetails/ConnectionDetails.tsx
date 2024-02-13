@@ -141,24 +141,6 @@ const ConnectionDetails = () => {
       value: formatShortDate(`${connectionDetails?.connectionDate}`),
     },
     {
-      title: i18n.t("connections.details.goalcodes"),
-      value:
-        connectionDetails?.goalCode ||
-        i18n.t("connections.details.notavailable"),
-    },
-    {
-      title: i18n.t("connections.details.handshake"),
-      value:
-        connectionDetails?.handshakeProtocols?.toString() ||
-        i18n.t("connections.details.notavailable"),
-    },
-    {
-      title: i18n.t("connections.details.attachments"),
-      value:
-        connectionDetails?.requestAttachments?.toString() ||
-        i18n.t("connections.details.notavailable"),
-    },
-    {
       title: i18n.t("connections.details.endpoints"),
       value:
         connectionDetails?.serviceEndpoints?.toString() ||
