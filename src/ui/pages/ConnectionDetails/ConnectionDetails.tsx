@@ -154,21 +154,15 @@ const ConnectionDetails = () => {
     if (connectionShortDetails?.type === ConnectionType.KERI) {
       return "card-body-acdc";
     } else if (connectionShortDetails?.type === ConnectionType.DIDCOMM) {
-      let backgroundClass = "";
       switch (connectionHistory[0]?.credentialType) {
       case CredentialType.PERMANENT_RESIDENT_CARD:
-        backgroundClass = "permanent-resident-card";
-        break;
+        return "permanent-resident-card";
       case CredentialType.ACCESS_PASS_CREDENTIAL:
-        backgroundClass = "access-pass-credential";
-        break;
+        return "access-pass-credential";
       default:
-        backgroundClass = "card-body-generic";
-        break;
+        return "card-body-w3c-generic";
       }
-      return backgroundClass;
     }
-    return "card-body-generic";
   };
 
   return (
@@ -252,8 +246,7 @@ const ConnectionDetails = () => {
                     </span>
                   </p>
                 </div>
-                {/* connectionHistory.length > 0 && */}
-                {
+                {connectionHistory.length > 0 && (
                   <div className="connection-details-history-event">
                     <div className="connection-details-logo">
                       <div
@@ -277,7 +270,7 @@ const ConnectionDetails = () => {
                       </span>
                     </p>
                   </div>
-                }
+                )}
               </ConnectionDetailsInfoBlock>
               <PageFooter
                 pageId={pageId}

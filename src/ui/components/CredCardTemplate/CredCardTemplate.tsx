@@ -56,7 +56,7 @@ const CredCardTemplate = ({
             ? shortData.credentialType
               .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
               .toLowerCase()
-            : "card-body-generic"
+            : "card-body-w3c-generic"
         }`}
         onClick={() => {
           if (shortData.status === CredentialMetadataRecordStatus.PENDING) {
