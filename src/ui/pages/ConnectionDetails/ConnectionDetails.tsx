@@ -36,6 +36,7 @@ import { AriesAgent } from "../../../core/agent/agent";
 import {
   ConnectionHistoryItem,
   ConnectionNoteDetails,
+  ConnectionType,
   CredentialType,
 } from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
@@ -149,17 +150,25 @@ const ConnectionDetails = () => {
     },
   ];
 
-  const credentialBackground = (type: string) => {
-    switch (type) {
-    case CredentialType.PERMANENT_RESIDENT_CARD:
-      return "permanent-resident-card";
-    case CredentialType.ACCESS_PASS_CREDENTIAL:
-      return "access-pass-credential";
-      // case CredentialType.KERI_CREDENTIAL:
-      //   return "card-body-acdc";
-    default:
-      return "card-body-generic";
+  const credentialBackground = () => {
+    if (connectionShortDetails?.type === ConnectionType.KERI) {
+      return "card-body-acdc";
+    } else if (connectionShortDetails?.type === ConnectionType.DIDCOMM) {
+      let backgroundClass = "";
+      switch (connectionHistory[0]?.credentialType) {
+      case CredentialType.PERMANENT_RESIDENT_CARD:
+        backgroundClass = "permanent-resident-card";
+        break;
+      case CredentialType.ACCESS_PASS_CREDENTIAL:
+        backgroundClass = "access-pass-credential";
+        break;
+      default:
+        backgroundClass = "card-body-generic";
+        break;
+      }
+      return backgroundClass;
     }
+    return "card-body-generic";
   };
 
   return (
@@ -243,13 +252,12 @@ const ConnectionDetails = () => {
                     </span>
                   </p>
                 </div>
-                {connectionHistory.length > 0 && (
+                {/* connectionHistory.length > 0 && */}
+                {
                   <div className="connection-details-history-event">
                     <div className="connection-details-logo">
                       <div
-                        className={`cred-card-template ${credentialBackground(
-                          `${connectionHistory[0]?.credentialType}`
-                        )}`}
+                        className={`cred-card-template ${credentialBackground()}`}
                       />
                     </div>
                     <p className="connection-details-history-event-info">
@@ -269,7 +277,7 @@ const ConnectionDetails = () => {
                       </span>
                     </p>
                   </div>
-                )}
+                }
               </ConnectionDetailsInfoBlock>
               <PageFooter
                 pageId={pageId}

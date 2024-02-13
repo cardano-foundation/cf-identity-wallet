@@ -99,6 +99,10 @@
     }
   }
 
+  &.card-body-acdc {
+    background: var(--ion-color-gradient-acdc-credential);
+  }
+
   &.access-pass-credential {
     position: relative;
     background: var(--ion-color-gradient-summit-card);
