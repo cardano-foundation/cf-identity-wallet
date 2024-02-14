@@ -1,4 +1,4 @@
-import { ConnectionStatus } from "../../core/agent/agent.types";
+import { ConnectionStatus, ConnectionType } from "../../core/agent/agent.types";
 import CardanoLogo from "../assets/images/CardanoLogo.jpg";
 import { ConnectionShortDetails } from "../pages/Connections/Connections.types";
 
@@ -9,6 +9,7 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-08-14T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.PENDING,
+    type: ConnectionType.DIDCOMM,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec21",
@@ -16,6 +17,7 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-08-16T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
+    type: ConnectionType.DIDCOMM,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec22",
@@ -23,13 +25,15 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-08-13T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
+    type: ConnectionType.DIDCOMM,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec23",
-    label: "DVLA",
-    connectionDate: "2019-05-12T19:23:24Z",
+    label: "45fc3e98-af6b-4797-bdf3-e2124a8089ee",
+    connectionDate: "2024-02-13T11:39:20Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
+    type: ConnectionType.KERI,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec24",
