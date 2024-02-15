@@ -14,7 +14,7 @@ const connectionsFix: ConnectionShortDetails[] = [
   {
     id: "ebfeb1ebc6f1c276ef71212ec21",
     label: "Passport Office",
-    connectionDate: "2017-08-16T19:23:24Z",
+    connectionDate: "2017-08-16T08:21:54Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
     type: ConnectionType.DIDCOMM,
@@ -22,7 +22,7 @@ const connectionsFix: ConnectionShortDetails[] = [
   {
     id: "ebfeb1ebc6f1c276ef71212ec22",
     label: "Cardano Foundation",
-    connectionDate: "2017-08-13T19:23:24Z",
+    connectionDate: "2017-08-13T10:15:11Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
     type: ConnectionType.DIDCOMM,

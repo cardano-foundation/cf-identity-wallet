@@ -582,7 +582,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     );
 
     await waitFor(() =>
-      expect(getByText("14/08/2017 - 20:23:24")).toBeVisible()
+      expect(getByText("14/08/2017 - 19:23:24")).toBeVisible()
     );
 
     await waitFor(() =>
@@ -654,7 +654,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     );
 
     await waitFor(() =>
-      expect(getByText("13/08/2017 - 20:23:24")).toBeVisible()
+      expect(getByText("13/08/2017 - 10:15:11")).toBeVisible()
     );
 
     await waitFor(() =>
@@ -726,7 +726,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     );
 
     await waitFor(() =>
-      expect(getByText("16/08/2017 - 20:23:24")).toBeVisible()
+      expect(getByText("16/08/2017 - 08:21:54")).toBeVisible()
     );
 
     await waitFor(() =>
