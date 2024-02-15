@@ -1,3 +1,37 @@
-.menu-tab-content {
-  //
+.menu-tab {
+  ion-header {
+    margin-bottom: 1rem;
+  }
+
+  ion-content {
+    .menu-input-row {
+      justify-content: space-between;
+      margin-bottom: 0.63rem;
+
+      ion-col {
+        height: 5.9375rem;
+        padding: 0.5rem;
+        max-width: calc(50% - 0.3rem);
+        margin: 0;
+        border-radius: 0.5rem;
+        background: white;
+
+        .menu-input {
+          display: flex;
+          height: 100%;
+          --inner-border-width: 0;
+          color: var(--ion-color-secondary);
+
+          &::part(native) {
+            background-color: transparent;
+          }
+
+          > * {
+            margin-top: 0;
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
 }
