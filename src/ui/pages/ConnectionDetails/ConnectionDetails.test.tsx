@@ -538,24 +538,24 @@ describe("Checking the Connection Details Page when notes are available", () => 
 
 describe("Checking the Connection Details Page when different Credentials are issued", () => {
   test("We can see the connection details for UniversityDegreeCredential", async () => {
+    const historyEvent = {
+      type: 0,
+      timestamp: "2024-02-13T10:16:08.756Z",
+      credentialType: "UniversityDegreeCredential",
+    };
     jest
       .spyOn(AriesAgent.agent.connections, "getConnectionById")
       .mockResolvedValue(connectionsFix[0]);
 
     jest
       .spyOn(AriesAgent.agent.connections, "getConnectionHistoryById")
-      .mockResolvedValue([
-        {
-          type: 0,
-          timestamp: "2024-02-13T10:16:08.756Z",
-          credentialType: "UniversityDegreeCredential",
-        },
-      ]);
+      .mockResolvedValue([historyEvent]);
 
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
+
     const { getByTestId, queryByTestId, getByText } = render(
       <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
         <Provider store={storeMocked}>
@@ -591,7 +591,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     );
 
     await waitFor(() =>
-      expect(getByText("14/08/2017 - 19:23:24")).toBeVisible()
+      expect(getByText("14/08/2017 - 20:23:24")).toBeVisible()
     );
 
     await waitFor(() =>
@@ -663,7 +663,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     );
 
     await waitFor(() =>
-      expect(getByText("13/08/2017 - 10:15:11")).toBeVisible()
+      expect(getByText("13/08/2017 - 11:15:11")).toBeVisible()
     );
 
     await waitFor(() =>
@@ -735,7 +735,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     );
 
     await waitFor(() =>
-      expect(getByText("16/08/2017 - 08:21:54")).toBeVisible()
+      expect(getByText("16/08/2017 - 09:21:54")).toBeVisible()
     );
 
     await waitFor(() =>
@@ -809,7 +809,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     );
 
     await waitFor(() =>
-      expect(getByText("13/02/2024 - 11:39:20")).toBeVisible()
+      expect(getByText("13/02/2024 - 12:39:20")).toBeVisible()
     );
 
     await waitFor(() =>

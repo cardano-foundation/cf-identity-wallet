@@ -225,28 +225,7 @@ const ConnectionDetails = () => {
               <ConnectionDetailsInfoBlock
                 title={i18n.t("connections.details.history")}
               >
-                <div className="connection-details-history-event">
-                  <div className="connection-details-logo">
-                    <img
-                      src={connectionDetails?.logo ?? CardanoLogo}
-                      alt="connection-logo"
-                    />
-                  </div>
-                  <p className="connection-details-history-event-info">
-                    {i18next.t("connections.details.connectedwith", {
-                      issuer: connectionDetails?.label,
-                    })}
-                    <span>
-                      {" " +
-                        formatShortDate(
-                          `${connectionDetails?.connectionDate}`
-                        ) +
-                        " - " +
-                        formatTimeToSec(`${connectionDetails?.connectionDate}`)}
-                    </span>
-                  </p>
-                </div>
-                {connectionHistory.length > 0 && (
+                {connectionHistory?.length > 0 && (
                   <div className="connection-details-history-event">
                     <div className="connection-details-logo">
                       <div
@@ -271,6 +250,27 @@ const ConnectionDetails = () => {
                     </p>
                   </div>
                 )}
+                <div className="connection-details-history-event">
+                  <div className="connection-details-logo">
+                    <img
+                      src={connectionDetails?.logo ?? CardanoLogo}
+                      alt="connection-logo"
+                    />
+                  </div>
+                  <p className="connection-details-history-event-info">
+                    {i18next.t("connections.details.connectedwith", {
+                      issuer: connectionDetails?.label,
+                    })}
+                    <span>
+                      {" " +
+                        formatShortDate(
+                          `${connectionDetails?.connectionDate}`
+                        ) +
+                        " - " +
+                        formatTimeToSec(`${connectionDetails?.connectionDate}`)}
+                    </span>
+                  </p>
+                </div>
               </ConnectionDetailsInfoBlock>
               <PageFooter
                 pageId={pageId}
