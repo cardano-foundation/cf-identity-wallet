@@ -6,12 +6,7 @@ import {
 import { MemoryRouter, Route } from "react-router-dom";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
-import {
-  ConnectionNoteDetails,
-  ConnectionHistoryItem,
-  ConnectionStatus,
-  ConnectionShortDetails,
-} from "../../../core/agent/agent.types";
+import { ConnectionStatus } from "../../../core/agent/agent.types";
 import { RoutePath } from "../../../routes";
 import { TabsRoutePath } from "../../../routes/paths";
 import { filteredCredsFix } from "../../__fixtures__/filteredCredsFix";
@@ -25,16 +20,8 @@ jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
     agent: {
       connections: {
-        getConnectionById: jest.fn().mockResolvedValue({
-          id: "ebfeb1ebc6f1c276ef71212ec20",
-          label: "Cambridge University",
-          connectionDate: "2017-08-14T19:23:24Z",
-          logo: ".png",
-          status: "pending",
-        }),
-        getConnectionHistoryById: jest.fn().mockResolvedValue({
-          // TODO: add history
-        }),
+        getConnectionById: jest.fn(),
+        getConnectionHistoryById: jest.fn(),
       },
       credentials: {
         getCredentialDetailsById: jest.fn(),
@@ -73,6 +60,28 @@ const initialStateFull = {
 };
 
 describe("ConnectionDetails Page", () => {
+  beforeEach(() => {
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnectionById")
+      .mockImplementation(
+        (): Promise<MockConnectionDetails> =>
+          Promise.resolve({
+            id: "ebfeb1ebc6f1c276ef71212ec20",
+            label: "Cambridge University",
+            connectionDate: "2017-08-14T19:23:24Z",
+            logo: ".png",
+            status: "pending" as ConnectionStatus,
+            notes: [
+              {
+                id: "ebfeb1ebc6f1c276ef71212ec20",
+                title: "Title",
+                message: "Message",
+              },
+            ],
+          })
+      );
+  });
+
   test("Open and close ConnectionDetails", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
