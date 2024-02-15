@@ -18,7 +18,6 @@ interface PageHeaderProps {
   progressBarValue?: number;
   progressBarBuffer?: number;
   title?: string;
-  menuButton?: boolean;
 }
 
 export type { PageHeaderProps };

@@ -247,7 +247,6 @@ const CredCardDetails = () => {
         header={true}
         doneLabel={`${i18n.t("creds.card.details.done")}`}
         doneAction={handleDone}
-        menuButton={false}
         additionalButtons={!isArchived && <AdditionalButtons />}
         actionButton={isArchived}
         actionButtonAction={() => setAlertRestoreIsOpen(true)}

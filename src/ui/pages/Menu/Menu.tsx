@@ -18,7 +18,6 @@ const Menu = () => {
     <TabLayout
       pageId={pageId}
       header={true}
-      menuButton={true}
     >
       <div className="menu-tab-content">
         <h2>{i18n.t("menu.tab.header")}</h2>

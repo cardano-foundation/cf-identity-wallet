@@ -33,18 +33,12 @@ const PageHeader = ({
   progressBarValue,
   progressBarBuffer,
   title,
-  menuButton,
 }: PageHeaderProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const hasContent =
-    !!backButton ||
-    !!closeButton ||
-    !!actionButton ||
-    !!progressBar ||
-    !!title ||
-    !!menuButton;
+    !!backButton || !!closeButton || !!actionButton || !!progressBar || !!title;
 
   const handleOnBack = () => {
     if (onBack) {
@@ -146,20 +140,6 @@ const PageHeader = ({
 
         {!progressBar && (
           <IonButtons slot="end">
-            {menuButton && (
-              <IonButton
-                shape="round"
-                className="menu-button"
-                data-testid="menu-button"
-              >
-                <IonIcon
-                  slot="icon-only"
-                  icon={menuOutline}
-                  color="primary"
-                />
-              </IonButton>
-            )}
-
             {actionButton && !actionButtonLabel && (
               <IonButton
                 shape="round"
