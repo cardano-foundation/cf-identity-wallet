@@ -586,8 +586,8 @@
       "identifiers": "Identity",
       "creds": "Credentials",
       "scan": "Scan",
-      "crypto": "Crypto",
-      "chat": "P2P Chat"
+      "chat": "P2P",
+      "menu": "Menu"
     }
   },
   "custominput": {
@@ -851,6 +851,24 @@
       }
     }
   },
+  "scan": {
+    "tab": {
+      "title": "Align the QR code within the frame to scan"
+    },
+    "alert": {
+      "title": "Would you like to grant permission for using your camera?"
+    }
+  },
+  "chat": {
+    "tab": {
+      "header": "Under development"
+    }
+  },
+  "menu": {
+    "tab": {
+      "header": "Menu"
+    }
+  },
   "connections": {
     "tab": {
       "title": "Connections",
@@ -973,16 +991,6 @@
       "maxlength": "Must be less than 32 characters long"
     }
   },
-  "crypto": {
-    "tab": {
-      "header": "Under consideration"
-    }
-  },
-  "chat": {
-    "tab": {
-      "header": "Under development"
-    }
-  },
   "shareqr": {
     "divider": "or",
     "more": "More share options"
@@ -1008,14 +1016,6 @@
     "notesupdated": "Notes updated successfully",
     "noteremoved": "Note removed successfully",
     "maxfavouritesreached": "Maximum of 5 favourites reached"
-  },
-  "scan": {
-    "tab": {
-      "title": "Align the QR code within the frame to scan"
-    },
-    "alert": {
-      "title": "Would you like to grant permission for using your camera?"
-    }
   },
   "request": {
     "connection": {

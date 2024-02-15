@@ -1,18 +1,18 @@
 import { render } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { Crypto } from "./Crypto";
+import { Menu } from "./Menu";
 import { store } from "../../../store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 
-describe("Crypto Tab", () => {
-  test("Renders Crypto Tab", () => {
+describe("Menu Tab", () => {
+  test("Renders Menu Tab", () => {
     const { getByTestId, getByText } = render(
       <Provider store={store}>
-        <Crypto />
+        <Menu />
       </Provider>
     );
 
-    expect(getByTestId("crypto-tab")).toBeInTheDocument();
-    expect(getByText(EN_TRANSLATIONS.crypto.tab.header)).toBeInTheDocument();
+    expect(getByTestId("menu-tab")).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.menu.tab.header)).toBeInTheDocument();
   });
 });
