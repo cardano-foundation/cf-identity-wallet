@@ -1,4 +1,5 @@
-import { useIonViewWillEnter } from "@ionic/react";
+import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
+import { settingsOutline } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
@@ -14,15 +15,29 @@ const Menu = () => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
   });
 
+  const AdditionalButtons = () => {
+    return (
+      <IonButton
+        shape="round"
+        className="connections-button"
+        data-testid="connections-button"
+      >
+        <IonIcon
+          slot="icon-only"
+          icon={settingsOutline}
+          color="primary"
+        />
+      </IonButton>
+    );
+  };
+
   return (
     <TabLayout
       pageId={pageId}
       header={true}
-    >
-      <div className="menu-tab-content">
-        <h2>{i18n.t("menu.tab.header")}</h2>
-      </div>
-    </TabLayout>
+      title={`${i18n.t("menu.tab.header")}`}
+      additionalButtons={<AdditionalButtons />}
+    ></TabLayout>
   );
 };
 

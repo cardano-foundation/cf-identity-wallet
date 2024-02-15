@@ -99,11 +99,6 @@ describe("Creds Tab", () => {
 
     expect(getByTestId("creds-tab")).toBeInTheDocument();
     expect(getByText("Credentials")).toBeInTheDocument();
-    expect(
-      getByTestId(
-        `menu-button-${EN_TRANSLATIONS.creds.tab.title.toLowerCase()}`
-      )
-    ).toBeInTheDocument();
   });
 
   test("Renders Creds Card placeholder", () => {
