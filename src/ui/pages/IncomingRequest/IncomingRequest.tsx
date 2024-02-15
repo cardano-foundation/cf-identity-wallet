@@ -132,6 +132,7 @@ const IncomingRequest = () => {
   return (
     <ResponsivePageLayout
       pageId={pageId}
+      activeStatus={showRequest}
       additionalClassNames={`${showRequest ? "show" : "hide"} ${
         initiateAnimation ? "animation-on" : "animation-off"
       }`}

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IonPage, useIonViewDidEnter, useIonViewDidLeave } from "@ionic/react";
 import { ResponsivePageLayoutProps } from "./ResponsivePageLayout.types";
 import "./ResponsivePageLayout.scss";
@@ -6,6 +6,7 @@ import "./ResponsivePageLayout.scss";
 const ResponsivePageLayout = ({
   header,
   pageId,
+  activeStatus,
   children,
   additionalClassNames,
 }: ResponsivePageLayoutProps) => {
@@ -17,6 +18,11 @@ const ResponsivePageLayout = ({
   useIonViewDidLeave(() => {
     setIsActive(false);
   });
+
+  useEffect(() => {
+    activeStatus && setIsActive(activeStatus);
+  }, [activeStatus]);
+
   return (
     <IonPage
       data-testid={pageId}

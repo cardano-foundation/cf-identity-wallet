@@ -36,7 +36,7 @@
     }
   }
 
-  &.card-body-generic > img {
+  &.card-body-w3c-generic > img {
     position: absolute;
     top: -5%;
     left: -8%;
@@ -45,7 +45,7 @@
     opacity: 0.04;
   }
 
-  &.card-body-generic,
+  &.card-body-w3c-generic,
   &.card-body-acdc {
     position: relative;
     background: var(--ion-color-gradient-w3c-card);
@@ -97,6 +97,10 @@
         }
       }
     }
+  }
+
+  &.card-body-acdc {
+    background: var(--ion-color-gradient-acdc-credential);
   }
 
   &.access-pass-credential {
@@ -356,7 +360,7 @@
       margin-top: -8.8rem;
     }
 
-    &.card-body-generic {
+    &.card-body-w3c-generic {
       .cred-card-template-inner {
         .card-footer {
           .card-footer-column {

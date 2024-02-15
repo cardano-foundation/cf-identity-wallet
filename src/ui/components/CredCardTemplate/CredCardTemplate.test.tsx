@@ -38,7 +38,7 @@ describe("CredCardTemplate", () => {
     expect(getByText("University Degree Credential")).toBeInTheDocument();
     expect(getByText("Bachelor Degree")).toBeInTheDocument();
     expect(getByText("24/01/2024")).toBeInTheDocument();
-    expect(card.classList.contains("card-body-generic")).toBe(true);
+    expect(card.classList.contains("card-body-w3c-generic")).toBe(true);
     expect(getByAltText(/w3c-card-background/i)).toBeInTheDocument();
     expect(getByAltText(/card-logo/i)).toBeInTheDocument();
     act(() => {
@@ -119,7 +119,7 @@ describe("CredCardTemplate", () => {
     const card = getByTestId("cred-card-template-name-index-0");
     expect(getByText("Qualified vLEI Issuer Credential")).toBeInTheDocument();
     expect(getByText("22/01/2024")).toBeInTheDocument();
-    expect(card.classList.contains("card-body-generic")).toBe(true);
+    expect(card.classList.contains("card-body-w3c-generic")).toBe(true);
     expect(getByAltText(/card-logo/i)).toBeInTheDocument();
     act(() => {
       fireEvent.click(card);

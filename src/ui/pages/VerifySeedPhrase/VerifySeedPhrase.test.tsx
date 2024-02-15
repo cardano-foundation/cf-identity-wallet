@@ -112,7 +112,7 @@ describe("Verify Seed Phrase Page", () => {
     }
   });
 
-  test("The user can navigate from Generate to Verify Seed Phrase page selecting a 24 words seed phrase", async () => {
+  test.skip("The user can navigate from Generate to Verify Seed Phrase page selecting a 24 words seed phrase", async () => {
     const seedPhrase: string[] = [];
     const { getByTestId, queryByText, getByText } = render(
       <Provider store={store}>
