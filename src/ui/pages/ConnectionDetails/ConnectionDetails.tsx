@@ -240,12 +240,11 @@ const ConnectionDetails = () => {
                           .replace(/(\d)/g, "$1"),
                       })}
                       <span>
-                        {" " +
-                          formatShortDate(
-                            `${connectionHistory[0]?.timestamp}`
-                          ) +
-                          " - " +
-                          formatTimeToSec(`${connectionHistory[0]?.timestamp}`)}
+                        {` ${formatShortDate(
+                          connectionHistory[0]?.timestamp
+                        )} - ${formatTimeToSec(
+                          connectionHistory[0]?.timestamp
+                        )}`}
                       </span>
                     </p>
                   </div>
@@ -262,12 +261,11 @@ const ConnectionDetails = () => {
                       issuer: connectionDetails?.label,
                     })}
                     <span>
-                      {" " +
-                        formatShortDate(
-                          `${connectionDetails?.connectionDate}`
-                        ) +
-                        " - " +
-                        formatTimeToSec(`${connectionDetails?.connectionDate}`)}
+                      {` ${formatShortDate(
+                        `${connectionDetails?.connectionDate}`
+                      )} - ${formatTimeToSec(
+                        `${connectionDetails?.connectionDate}`
+                      )}`}
                     </span>
                   </p>
                 </div>
