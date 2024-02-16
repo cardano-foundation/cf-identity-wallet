@@ -866,7 +866,15 @@
   },
   "menu": {
     "tab": {
-      "header": "Menu"
+      "header": "Menu",
+      "items": {
+        "profile": "Profile",
+        "crypto": "Crypto",
+        "connections": "Connections",
+        "p2p": "P2P",
+        "identity": "Identity",
+        "credentials": "Credentials"
+      }
     }
   },
   "connections": {

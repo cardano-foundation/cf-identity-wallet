@@ -9,26 +9,48 @@
       margin-bottom: 0.63rem;
 
       ion-col {
-        height: 5.9375rem;
-        padding: 0.5rem;
         max-width: calc(50% - 0.3rem);
         margin: 0;
+        padding: 0;
         border-radius: 0.5rem;
         background: white;
 
         .menu-input {
           display: flex;
-          height: 100%;
+          flex-direction: column;
+          justify-content: space-evenly;
+          height: 5.875rem;
+          padding: 1.25rem;
           --inner-border-width: 0;
           color: var(--ion-color-secondary);
 
-          &::part(native) {
-            background-color: transparent;
+          ion-icon {
+            font-size: 1.25rem;
           }
+        }
+      }
+    }
+  }
 
-          > * {
-            margin-top: 0;
-            margin-bottom: 0;
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    ion-header {
+      margin-bottom: 0.8rem;
+    }
+
+    ion-content {
+      .menu-input-row {
+        margin-bottom: 0.5rem;
+
+        ion-col {
+          max-width: calc(50% - 0.25rem);
+
+          .menu-input {
+            height: 4.7rem;
+            padding: 1rem;
+
+            ion-icon {
+              font-size: 1rem;
+            }
           }
         }
       }

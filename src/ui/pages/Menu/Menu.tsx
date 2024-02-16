@@ -48,7 +48,7 @@ const Menu = () => {
   };
 
   const handleItemSelection = (index: number) => {
-    console.log("selected: ", index);
+    // @TODO - sdisalvo: add some logic for selection
   };
 
   const MenuItem = ({
@@ -62,18 +62,18 @@ const Menu = () => {
   }) => {
     return (
       <IonCol>
-        <IonItem
+        <div
           onClick={() => handleItemSelection(index)}
           data-testid={`menu-input-item-${index}`}
           className="menu-input"
         >
           <IonIcon
-            slot="start"
+            slot="icon-only"
             icon={icon}
             color="primary"
           />
           <IonLabel>{label}</IonLabel>
-        </IonItem>
+        </div>
       </IonCol>
     );
   };
@@ -90,36 +90,36 @@ const Menu = () => {
           <MenuItem
             index={0}
             icon={personCircleOutline}
-            label={"Profile"}
+            label={`${i18n.t("menu.tab.items.profile")}`}
           />
           <MenuItem
             index={1}
             icon={walletOutline}
-            label={"Crypto"}
+            label={`${i18n.t("menu.tab.items.crypto")}`}
           />
         </IonRow>
         <IonRow className="menu-input-row">
           <MenuItem
             index={2}
             icon={peopleOutline}
-            label={"Connections"}
+            label={`${i18n.t("menu.tab.items.connections")}`}
           />
           <MenuItem
             index={3}
             icon={chatbubbleOutline}
-            label={"P2P"}
+            label={`${i18n.t("menu.tab.items.p2p")}`}
           />
         </IonRow>
         <IonRow className="menu-input-row">
           <MenuItem
             index={4}
             icon={fingerPrintOutline}
-            label={"Identity"}
+            label={`${i18n.t("menu.tab.items.identity")}`}
           />
           <MenuItem
             index={5}
             icon={idCardOutline}
-            label={"Credentials"}
+            label={`${i18n.t("menu.tab.items.credentials")}`}
           />
         </IonRow>
       </>
