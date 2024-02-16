@@ -16,8 +16,8 @@ import {
   idCardOutline,
   scan,
   scanOutline,
-  wallet,
-  walletOutline,
+  apps,
+  appsOutline,
 } from "ionicons/icons";
 import React from "react";
 import { useLocation } from "react-router-dom";
@@ -28,7 +28,7 @@ import { Identifiers } from "../../../pages/Identifiers";
 import { Creds } from "../../../pages/Creds";
 import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
-import { Crypto } from "../../../pages/Crypto";
+import { Menu } from "../../../pages/Menu";
 
 const tabsRoutes = [
   {
@@ -50,16 +50,16 @@ const tabsRoutes = [
     icon: [scan, scanOutline],
   },
   {
-    label: i18n.t("tabsmenu.label.crypto"),
-    path: TabsRoutePath.CRYPTO,
-    component: Crypto,
-    icon: [wallet, walletOutline],
-  },
-  {
     label: i18n.t("tabsmenu.label.chat"),
     path: TabsRoutePath.CHAT,
     component: Chat,
     icon: [chatbubble, chatbubbleOutline],
+  },
+  {
+    label: i18n.t("tabsmenu.label.menu"),
+    path: TabsRoutePath.MENU,
+    component: Menu,
+    icon: [apps, appsOutline],
   },
 ];
 const TabsMenu = ({

@@ -10,7 +10,7 @@ import {
   useIonViewDidEnter,
   useIonViewDidLeave,
 } from "@ionic/react";
-import { arrowBackOutline, menuOutline } from "ionicons/icons";
+import { arrowBackOutline } from "ionicons/icons";
 import "./TabLayout.scss";
 import { useState } from "react";
 import { TabLayoutProps } from "./TabLayout.types";
@@ -25,7 +25,6 @@ const TabLayout = ({
   title,
   doneLabel,
   doneAction,
-  menuButton,
   additionalButtons,
   actionButton,
   actionButtonAction,
@@ -95,20 +94,6 @@ const TabLayout = ({
                   data-testid="action-button"
                 >
                   {actionButtonLabel}
-                </IonButton>
-              )}
-
-              {menuButton && (
-                <IonButton
-                  shape="round"
-                  className="menu-button"
-                  data-testid={`menu-button-${title?.toLowerCase()}`}
-                >
-                  <IonIcon
-                    slot="icon-only"
-                    icon={menuOutline}
-                    color="primary"
-                  />
                 </IonButton>
               )}
             </IonButtons>

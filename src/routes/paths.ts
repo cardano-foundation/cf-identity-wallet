@@ -15,8 +15,8 @@ enum TabsRoutePath {
   IDENTIFIERS = "/tabs/identifiers",
   CREDS = "/tabs/creds",
   SCAN = "/tabs/scan",
-  CRYPTO = "/tabs/crypto",
   CHAT = "/tabs/chat",
+  MENU = "/tabs/menu",
   IDENTIFIER_DETAILS = "/tabs/identifiers/:id?",
   CRED_DETAILS = "/tabs/creds/:id?",
 }

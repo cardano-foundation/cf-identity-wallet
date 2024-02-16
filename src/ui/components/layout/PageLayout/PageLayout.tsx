@@ -24,7 +24,6 @@ const PageLayout = ({
   progressBarValue,
   progressBarBuffer,
   title,
-  menuButton,
   footer,
   primaryButtonText,
   primaryButtonAction,
@@ -56,7 +55,6 @@ const PageLayout = ({
             progressBarValue={progressBarValue}
             progressBarBuffer={progressBarBuffer}
             title={title}
-            menuButton={menuButton}
           />
         </IonHeader>
       )}
