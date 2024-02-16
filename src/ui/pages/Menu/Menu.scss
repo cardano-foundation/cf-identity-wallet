@@ -9,18 +9,22 @@
       margin-bottom: 0.63rem;
 
       ion-col {
-        max-width: calc(50% - 0.3rem);
         margin: 0;
         padding: 0;
-        border-radius: 0.5rem;
-        background: white;
+
+        &:first-of-type {
+          margin-right: 0.75rem;
+        }
 
         .menu-input {
+          margin: 0;
           display: flex;
+          background: white;
           flex-direction: column;
           justify-content: space-evenly;
           height: 5.875rem;
           padding: 1.25rem;
+          box-shadow: none;
           --inner-border-width: 0;
           color: var(--ion-color-secondary);
 
@@ -42,7 +46,9 @@
         margin-bottom: 0.5rem;
 
         ion-col {
-          max-width: calc(50% - 0.25rem);
+          &:first-of-type {
+            margin-right: 0.6rem;
+          }
 
           .menu-input {
             height: 4.7rem;

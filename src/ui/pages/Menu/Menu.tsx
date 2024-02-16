@@ -1,8 +1,9 @@
 import {
   IonButton,
+  IonCard,
   IonCol,
+  IonGrid,
   IonIcon,
-  IonItem,
   IonLabel,
   IonRow,
   useIonViewWillEnter,
@@ -62,18 +63,17 @@ const Menu = () => {
   }) => {
     return (
       <IonCol>
-        <div
+        <IonCard
           onClick={() => handleItemSelection(index)}
           data-testid={`menu-input-item-${index}`}
           className="menu-input"
         >
           <IonIcon
-            slot="icon-only"
             icon={icon}
             color="primary"
           />
           <IonLabel>{label}</IonLabel>
-        </div>
+        </IonCard>
       </IonCol>
     );
   };
@@ -85,7 +85,7 @@ const Menu = () => {
       title={`${i18n.t("menu.tab.header")}`}
       additionalButtons={<AdditionalButtons />}
     >
-      <>
+      <IonGrid>
         <IonRow className="menu-input-row">
           <MenuItem
             index={0}
@@ -122,7 +122,7 @@ const Menu = () => {
             label={`${i18n.t("menu.tab.items.credentials")}`}
           />
         </IonRow>
-      </>
+      </IonGrid>
     </TabLayout>
   );
 };
