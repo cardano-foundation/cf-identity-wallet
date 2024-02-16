@@ -14,5 +14,21 @@ describe("Menu Tab", () => {
 
     expect(getByTestId("menu-tab")).toBeInTheDocument();
     expect(getByText(EN_TRANSLATIONS.menu.tab.header)).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.profile)
+    ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.crypto)
+    ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.connections)
+    ).toBeInTheDocument();
+    expect(getByText(EN_TRANSLATIONS.menu.tab.items.p2p)).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.identity)
+    ).toBeInTheDocument();
+    expect(
+      getByText(EN_TRANSLATIONS.menu.tab.items.credentials)
+    ).toBeInTheDocument();
   });
 });
