@@ -136,6 +136,10 @@ export class SignifyApi {
     return operation.done;
   }
 
+  async queryKeyState(prefix: string, sequence: string) {
+    return this.signifyClient.keyStates().query(prefix, sequence);
+  }
+
   async getIdentifierByName(name: string): Promise<any> {
     return this.signifyClient.identifiers().get(name);
   }
@@ -334,13 +338,13 @@ export class SignifyApi {
 
   async rotateMultisigAid(
     aid: Aid,
-    otherAids: Pick<Aid, "state">[],
+    multisigAidMembers: Pick<Aid, "state">[],
     name: string
   ): Promise<{
     op: any;
     icpResult: EventResult;
   }> {
-    const states = [aid["state"], ...otherAids.map((aid) => aid["state"])];
+    const states = [...multisigAidMembers.map((aid) => aid["state"])];
     const icp = await this.signifyClient
       .identifiers()
       .rotate(name, { states: states, rstates: states });
@@ -357,7 +361,7 @@ export class SignifyApi {
     };
 
     const smids = states.map((state) => state["i"]);
-    const recp = otherAids
+    const recp = multisigAidMembers
       .map((aid) => aid["state"])
       .map((state) => state["i"]);
 
@@ -522,5 +526,9 @@ export class SignifyApi {
     if (!operation.done) {
       throw new Error(SignifyApi.FAILED_TO_ROTATE_AID);
     }
+  }
+
+  async getMultisigMembers(name: string): Promise<any> {
+    return this.signifyClient.identifiers().members(name);
   }
 }

@@ -379,8 +379,7 @@ class IdentifierService extends AgentService {
   }
 
   async rotateMultisig(
-    metadata: IdentifierMetadataRecord,
-    otherIdentifierContacts: ConnectionShortDetails[]
+    metadata: IdentifierMetadataRecord
   ): Promise<string | undefined> {
     if (metadata.method !== IdentifierType.KERI) {
       throw new Error(IdentifierService.ONLY_CREATE_ROTATION_WITH_AID);
@@ -388,31 +387,37 @@ class IdentifierService extends AgentService {
     if (!metadata.signifyName) {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
-    const ourAid = (await this.agent.modules.signify.getIdentifierByName(
-      metadata.signifyName
-    )) as Aid;
     // Make sure no non-Keri contacts get passed into this function
-    const nonKeriContact = otherIdentifierContacts.find(
-      (contact) => !contact.oobi || contact.type !== ConnectionType.KERI
+    const members = await this.agent.modules.signify.getMultisigMembers(
+      metadata.signifyName
     );
-    if (nonKeriContact) {
-      throw new Error(IdentifierService.ONLY_ALLOW_KERI_CONTACTS);
-    }
-    const otherAids = await Promise.all(
-      otherIdentifierContacts.map(async (contact) => {
-        const aid = await this.agent.modules.signify.resolveOobi(
-          contact.oobi as string
+    const multisigMembers: Aid[] = [];
+    await Promise.all(
+      members?.signing?.map(async (signing: any) => {
+        const aid = await this.agent.modules.signify.queryKeyState(
+          signing.aid,
+          "0"
         );
-        return { state: aid.response };
+        multisigMembers.push({ state: aid.response } as Aid);
       })
     );
-    const result = await this.agent.modules.signify.rotateMultisigAid(
-      ourAid,
-      otherAids,
-      metadata.signifyName
-    );
-    const multisigId = result.op.name.split(".")[1];
-    return multisigId;
+    const identifiers = await this.getIdentifiers();
+    const identifier = identifiers.find((identifier) => {
+      return multisigMembers.find((item) => identifier.id === item.state.i);
+    });
+    if (identifier && identifier.signifyName) {
+      const aid = await this.agent.modules.signify.getIdentifierByName(
+        identifier?.signifyName
+      );
+
+      const result = await this.agent.modules.signify.rotateMultisigAid(
+        aid,
+        multisigMembers,
+        metadata.signifyName
+      );
+      const multisigId = result.op.name.split(".")[1];
+      return multisigId;
+    }
   }
 
   async joinMultisigRotation(

@@ -40,6 +40,7 @@ const agent = jest.mocked({
       rotateMultisigAid: jest.fn(),
       joinMultisigRotation: jest.fn(),
       getIdentifierById: jest.fn(),
+      getMultisigMembers: jest.fn(),
     },
   },
   dids: {
@@ -968,16 +969,6 @@ describe("Identifier service of agent", () => {
       icpResult: {},
       name: "name",
     });
-    const otherIdentifiers = [
-      {
-        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
-        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
-        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
-        status: ConnectionStatus.CONFIRMED,
-        type: ConnectionType.KERI,
-        connectionDate: new Date().toISOString(),
-      },
-    ];
     const metadata = {
       id: "123456",
       displayName: "John Doe",
@@ -988,9 +979,43 @@ describe("Identifier service of agent", () => {
       signifyName: "john_doe",
       theme: 4,
     } as IdentifierMetadataRecord;
-    expect(
-      await identifierService.rotateMultisig(metadata, otherIdentifiers)
-    ).toBe(multisigIdentifier);
+    agent.modules.signify.getMultisigMembers = jest.fn().mockResolvedValue({
+      signing: [
+        {
+          aid: "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_",
+          ends: {
+            agent: {
+              EGQnU0iNKuvURoeRenW7pZ5wA1Iyijo2EgscSYsK0hum: {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EOpnB724NQqQa58Zqw-ZFEQplQ2hQXpbj6o2gKrzlix3",
+          ends: {
+            agent: {
+              "EAOfcPsG_mHtrzw1TyOxlCiQQlLZn-KTUu4lUy7zB_Na": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EJUPirpdqcZpblLDyQ4P8XkD12wmQUqJb_6M7tUVZT4n",
+          ends: {
+            agent: {
+              "EN6WVdOExj1n6ES-Wzk9yjskoXv_2aEqNEN2iDzttPJb": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+      ],
+    });
+    expect(await identifierService.rotateMultisig(metadata)).toBe(
+      multisigIdentifier
+    );
   });
 
   test("can join the multisig rotation", async () => {

@@ -36,6 +36,7 @@ const rotateMock = jest.fn().mockImplementation((name, _config) => {
     ],
   };
 });
+const membersMock = jest.fn();
 
 const exchangeSendMock = jest.fn();
 
@@ -89,6 +90,7 @@ jest.mock("signify-ts", () => ({
         addEndRole: jest.fn(),
         interact: interactMock,
         rotate: rotateMock,
+        members: membersMock,
       }),
       operations: jest.fn().mockReturnValue({
         get: jest.fn().mockImplementation((name: string) => {
@@ -781,5 +783,11 @@ describe("Signify API", () => {
       },
       ["EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7"]
     );
+  });
+
+  test("should call signifyClient.identifiers().members with the correct parameters", async () => {
+    const signifyName = "exampleSignifyName";
+    await api.getMultisigMembers(signifyName);
+    expect(membersMock).toHaveBeenCalledWith(signifyName);
   });
 });
