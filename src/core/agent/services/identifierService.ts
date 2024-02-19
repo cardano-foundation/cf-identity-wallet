@@ -378,9 +378,8 @@ class IdentifierService extends AgentService {
     return multisigId;
   }
 
-  async rotateMultisig(
-    metadata: IdentifierMetadataRecord
-  ): Promise<string | undefined> {
+  async rotateMultisig(ourIdentifier: string): Promise<string | undefined> {
+    const metadata = await this.getMetadataById(ourIdentifier);
     if (metadata.method !== IdentifierType.KERI) {
       throw new Error(IdentifierService.ONLY_CREATE_ROTATION_WITH_AID);
     }
