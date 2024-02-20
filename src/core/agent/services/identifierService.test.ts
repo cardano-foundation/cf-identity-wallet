@@ -41,7 +41,7 @@ const agent = jest.mocked({
       joinMultisigRotation: jest.fn(),
       getIdentifierById: jest.fn(),
       getMultisigMembers: jest.fn(),
-      queryKeyState : jest.fn(),
+      queryKeyState: jest.fn(),
     },
   },
   dids: {
@@ -942,7 +942,157 @@ describe("Identifier service of agent", () => {
     );
   });
 
-  test("Can rotate a keri multisig with KERI contacts", async () => {
+  test("should can rorate multisig with DID and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KEY,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(metadata);
+    expect(identifierService.rotateMultisig(metadata.id)).rejects.toThrowError(
+      IdentifierService.ONLY_CREATE_ROTATION_WITH_AID
+    );
+  });
+
+  test("should can rorate multisig with KERI multisig do not have manageAid and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(metadata);
+    expect(identifierService.rotateMultisig(metadata.id)).rejects.toThrowError(
+      IdentifierService.AID_IS_NOT_MULTI_SIG
+    );
+  });
+
+  test("should can rorate multisig with KERI multisig do not have signifyName and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 4,
+      multisigManageAid: "123",
+    } as IdentifierMetadataRecord;
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(metadata);
+    expect(identifierService.rotateMultisig(metadata.id)).rejects.toThrowError(
+      IdentifierService.AID_MISSING_SIGNIFY_NAME
+    );
+  });
+
+  test("should can rorate multisig with KERI multisig have members do not rotate it AID first and throw error", async () => {
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    const signifyName = "newUuidHere";
+    agent.modules.signify.getIdentifierByName = jest
+      .fn()
+      .mockResolvedValue(aidReturnedBySignify);
+    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+      identifier: multisigIdentifier,
+      signifyName,
+    });
+    const keriMultisigRecord = {
+      ...keriMetadataRecord,
+      multisigManageAid: "123",
+    };
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMultisigRecord);
+    agent.modules.signify.queryKeyState = jest.fn().mockResolvedValue({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: false,
+      error: null,
+      response: {
+        i: "id",
+      },
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          method: IdentifierType.KERI,
+          displayName: "displayName",
+          id: "id",
+          signifyName: "signifyName",
+          createdAt: new Date(),
+          colors: ["#000000", "#000000"],
+          theme: 4,
+        },
+      ]);
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: false,
+      signifyOpName: "op123",
+      signifyName: "john_doe",
+      theme: 4,
+      multisigManageAid: "123",
+    } as IdentifierMetadataRecord;
+    agent.modules.signify.getMultisigMembers = jest.fn().mockResolvedValue({
+      signing: [
+        {
+          aid: "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_",
+          ends: {
+            agent: {
+              EGQnU0iNKuvURoeRenW7pZ5wA1Iyijo2EgscSYsK0hum: {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EOpnB724NQqQa58Zqw-ZFEQplQ2hQXpbj6o2gKrzlix3",
+          ends: {
+            agent: {
+              "EAOfcPsG_mHtrzw1TyOxlCiQQlLZn-KTUu4lUy7zB_Na": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+        {
+          aid: "EJUPirpdqcZpblLDyQ4P8XkD12wmQUqJb_6M7tUVZT4n",
+          ends: {
+            agent: {
+              "EN6WVdOExj1n6ES-Wzk9yjskoXv_2aEqNEN2iDzttPJb": {
+                http: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/",
+              },
+            },
+          },
+        },
+      ],
+    });
+    expect(identifierService.rotateMultisig(metadata.id)).rejects.toThrowError(
+      IdentifierService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG
+    );
+  });
+
+  test("should can rotate a keri multisig with KERI contacts", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
     agent.modules.signify.getIdentifierByName = jest
@@ -963,7 +1113,7 @@ describe("Identifier service of agent", () => {
       done: true,
       error: null,
       response: {
-        i : "id"
+        i: "id",
       },
       alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
     });
@@ -994,7 +1144,11 @@ describe("Identifier service of agent", () => {
       signifyOpName: "op123",
       signifyName: "john_doe",
       theme: 4,
+      multisigManageAid: "123",
     } as IdentifierMetadataRecord;
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(metadata);
     agent.modules.signify.getMultisigMembers = jest.fn().mockResolvedValue({
       signing: [
         {
@@ -1034,8 +1188,126 @@ describe("Identifier service of agent", () => {
     );
   });
 
-  test("can join the multisig rotation", async () => {
+  test("should can join the multisig rotation with no notification and throw error", async () => {
+    agent.modules.signify.getNotificationsBySaid = jest
+      .fn()
+      .mockResolvedValue([]);
+    expect(
+      identifierService.joinMultisigRotation({
+        id: "id",
+        createdAt: new Date(),
+        a: { d: "d" },
+      })
+    ).rejects.toThrowError(IdentifierService.SAID_NOTIFICATIONS_NOT_FOUND);
+  });
+
+  test("should can join the multisig rotation with AID is not multisig and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "name",
+      theme: 4,
+    } as IdentifierMetadataRecord;
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(metadata);
+    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+      content: {
+        d: "d",
+      },
+    });
+    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+          },
+        },
+      },
+    ]);
+
+    agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
+      {
+        name: "multisig",
+        prefix: "prefix",
+      },
+    ]);
+    expect(
+      identifierService.joinMultisigRotation({
+        id: "id",
+        createdAt: new Date(),
+        a: { d: "d" },
+      })
+    ).rejects.toThrowError(IdentifierService.AID_IS_NOT_MULTI_SIG);
+  });
+
+  test("should can join the multisig rotation with AID is DID and throw error", async () => {
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KEY,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "",
+      theme: 4,
+      multisigManageAid: "123",
+    } as IdentifierMetadataRecord;
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(metadata);
+    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+      content: {
+        d: "d",
+      },
+    });
+    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+          },
+        },
+      },
+    ]);
+
+    agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
+      {
+        name: "multisig",
+        prefix: "prefix",
+      },
+    ]);
+    expect(
+      identifierService.joinMultisigRotation({
+        id: "id",
+        createdAt: new Date(),
+        a: { d: "d" },
+      })
+    ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+  });
+
+  test("should can join the multisig rotation", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
+    const metadata = {
+      id: "123456",
+      displayName: "John Doe",
+      method: IdentifierType.KERI,
+      colors: ["#e0f5bc", "#ccef8f"],
+      isPending: true,
+      signifyOpName: "op123",
+      signifyName: "name",
+      theme: 4,
+      multisigManageAid: "123",
+    } as IdentifierMetadataRecord;
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(metadata);
     agent.genericRecords.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
@@ -1075,6 +1347,7 @@ describe("Identifier service of agent", () => {
           createdAt: new Date(),
           colors: ["#000000", "#000000"],
           theme: 4,
+          multisigManageAid: "123",
         },
       ]);
     expect(

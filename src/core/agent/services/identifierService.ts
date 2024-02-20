@@ -57,6 +57,10 @@ class IdentifierService extends AgentService {
     "Can only create rotation using KERI AID";
   static readonly MULTI_SIG_NOT_FOUND =
     "There's no multi sig identifier for the given SAID";
+  static readonly AID_IS_NOT_MULTI_SIG =
+    "This AID is not a multi sig identifier";
+  static readonly NOT_FOUND_ALL_MEMBER_OF_MULTISIG =
+    "Cannot find all members of multisig or one of the members does not rotate its AID";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -374,54 +378,69 @@ class IdentifierService extends AgentService {
       signifyName,
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
       isPending: result.op.done ? false : true, //this will be updated once the operation is done
+      multisigManageAid: ourIdentifier,
     });
     return multisigId;
   }
 
-  async rotateMultisig(ourIdentifier: string): Promise<string | undefined> {
+  async rotateMultisig(ourIdentifier: string): Promise<string> {
     const metadata = await this.getMetadataById(ourIdentifier);
     if (metadata.method !== IdentifierType.KERI) {
       throw new Error(IdentifierService.ONLY_CREATE_ROTATION_WITH_AID);
     }
-    if (!metadata.signifyName) {
+
+    if (!metadata.multisigManageAid) {
+      throw new Error(IdentifierService.AID_IS_NOT_MULTI_SIG);
+    }
+    const identifierManageAid = await this.getMetadataById(
+      metadata.multisigManageAid
+    );
+
+    if (!metadata.signifyName || !identifierManageAid.signifyName) {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
-    // Make sure no non-Keri contacts get passed into this function
+    const multiSig = await this.agent.modules.signify.getIdentifierByName(
+      metadata.signifyName
+    );
+    if (!multiSig) {
+      throw new Error(IdentifierService.MULTI_SIG_NOT_FOUND);
+    }
+    const nextSequence = (Number(multiSig.state.s) + 1).toString();
+
     const members = await this.agent.modules.signify.getMultisigMembers(
       metadata.signifyName
     );
-    const multisigMembers: Aid[] = [];
-    await Promise.all(
-      members?.signing?.map(async (signing: any) => {
+    const multisigMembers = members?.signing;
+
+    const multisigMumberAids: Aid[] = [];
+    await Promise.allSettled(
+      multisigMembers.map(async (signing: any) => {
         const aid = await this.agent.modules.signify.queryKeyState(
           signing.aid,
-          "0"
+          nextSequence
         );
-        multisigMembers.push({ state: aid.response } as Aid);
+        if (aid.done) {
+          multisigMumberAids.push({ state: aid.response } as Aid);
+        }
       })
     );
-    const identifiers = await this.getIdentifiers();
-    const identifier = identifiers.find((identifier) => {
-      return multisigMembers.find((item) => identifier.id === item.state.i);
-    });
-    if (identifier && identifier.signifyName) {
-      const aid = await this.agent.modules.signify.getIdentifierByName(
-        identifier?.signifyName
-      );
-
-      const result = await this.agent.modules.signify.rotateMultisigAid(
-        aid,
-        multisigMembers,
-        metadata.signifyName
-      );
-      const multisigId = result.op.name.split(".")[1];
-      return multisigId;
+    if (multisigMembers.length !== multisigMumberAids.length) {
+      throw new Error(IdentifierService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG);
     }
+    const aid = await this.agent.modules.signify.getIdentifierByName(
+      identifierManageAid?.signifyName
+    );
+
+    const result = await this.agent.modules.signify.rotateMultisigAid(
+      aid,
+      multisigMumberAids,
+      metadata.signifyName
+    );
+    const multisigId = result.op.name.split(".")[1];
+    return multisigId;
   }
 
-  async joinMultisigRotation(
-    notification: KeriNotification
-  ): Promise<string | undefined> {
+  async joinMultisigRotation(notification: KeriNotification): Promise<string> {
     const msgSaid = notification.a.d as string;
     const notifications: MultiSigIcpNotification[] =
       await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
@@ -430,31 +449,31 @@ class IdentifierService extends AgentService {
     }
     const exn = notifications[0].exn;
     const multisigId = exn.a.gid;
-    const multiSig = await this.agent.modules.signify.getIdentifierById(
-      multisigId
-    );
+    const multiSig = await this.getMetadataById(multisigId);
     if (!multiSig) {
       throw new Error(IdentifierService.MULTI_SIG_NOT_FOUND);
     }
-    const rstate = exn.a.rstates;
-    const identifiers = await this.getIdentifiers();
-    const identifier = identifiers.find((identifier) => {
-      return rstate.find((item) => identifier.id === item.i);
-    });
-
-    if (identifier && identifier.signifyName) {
-      const aid = await this.agent.modules.signify.getIdentifierByName(
-        identifier?.signifyName
-      );
-      const res = await this.agent.modules.signify.joinMultisigRotation(
-        exn,
-        aid,
-        multiSig.name
-      );
-      await this.agent.genericRecords.deleteById(notification.id as string);
-      const multisigId = res.op.name.split(".")[1];
-      return multisigId;
+    if (!multiSig.multisigManageAid) {
+      throw new Error(IdentifierService.AID_IS_NOT_MULTI_SIG);
     }
+    const identifierManageAid = await this.getMetadataById(
+      multiSig.multisigManageAid
+    );
+
+    if (!multiSig.signifyName || !identifierManageAid.signifyName) {
+      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    }
+
+    const aid = await this.agent.modules.signify.getIdentifierByName(
+      identifierManageAid.signifyName
+    );
+    const res = await this.agent.modules.signify.joinMultisigRotation(
+      exn,
+      aid,
+      multiSig.signifyName
+    );
+    await this.agent.genericRecords.deleteById(notification.id);
+    return res.op.name.split(".")[1];
   }
 
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
@@ -488,7 +507,7 @@ class IdentifierService extends AgentService {
     const msgSaid = notification.a.d as string;
     const hasJoined = await this.hasJoinedMultisig(msgSaid);
     if (hasJoined) {
-      await this.agent.genericRecords.deleteById(notification.id as string);
+      await this.agent.genericRecords.deleteById(notification.id);
       return;
     }
     const notifications: MultiSigIcpNotification[] =
@@ -516,7 +535,7 @@ class IdentifierService extends AgentService {
         aid,
         signifyName
       );
-      await this.agent.genericRecords.deleteById(notification.id as string);
+      await this.agent.genericRecords.deleteById(notification.id);
       const multisigId = res.op.name.split(".")[1];
       await this.createIdentifierMetadataRecord({
         id: multisigId,
@@ -527,6 +546,7 @@ class IdentifierService extends AgentService {
         signifyName,
         signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later
         isPending: res.op.done ? false : true, //this will be updated once the operation is done
+        multisigManageAid: identifier.id,
       });
       return multisigId;
     }
