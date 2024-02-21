@@ -12,7 +12,7 @@ const ScrollablePageLayout = ({
   header,
   pageId,
   children,
-  additionalClassNames,
+  customClass,
 }: ScrollablePageLayoutProps) => {
   const [isActive, setIsActive] = useState(false);
   useIonViewDidEnter(() => {
@@ -28,7 +28,7 @@ const ScrollablePageLayout = ({
       className={
         `scrollable-page-layout ${pageId}` +
         (!isActive ? " " + "ion-hide" : "") +
-        (additionalClassNames ? ` ${additionalClassNames}` : "")
+        (customClass ? ` ${customClass}` : "")
       }
     >
       {header}

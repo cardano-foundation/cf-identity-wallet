@@ -9,6 +9,7 @@ interface PageHeaderProps {
   closeButton?: boolean;
   closeButtonAction?: () => void;
   closeButtonLabel?: string;
+  closeButtonIcon?: string;
   actionButton?: boolean;
   actionButtonDisabled?: boolean;
   actionButtonAction?: () => void;

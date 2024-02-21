@@ -5,7 +5,7 @@ interface ResponsivePageLayoutProps {
   pageId?: string;
   activeStatus?: boolean;
   children?: ReactNode;
-  additionalClassNames?: string;
+  customClass?: string;
 }
 
 export type { ResponsivePageLayoutProps };

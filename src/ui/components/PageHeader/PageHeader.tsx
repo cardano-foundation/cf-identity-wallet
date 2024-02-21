@@ -8,7 +8,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { arrowBackOutline, closeOutline, menuOutline } from "ionicons/icons";
+import { arrowBackOutline, closeOutline } from "ionicons/icons";
 import { PageHeaderProps } from "./PageHeader.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache } from "../../../store/reducers/stateCache";
@@ -24,6 +24,7 @@ const PageHeader = ({
   closeButton,
   closeButtonAction,
   closeButtonLabel,
+  closeButtonIcon,
   actionButton,
   actionButtonDisabled,
   actionButtonAction,
@@ -96,7 +97,7 @@ const PageHeader = ({
             >
               <IonIcon
                 slot="icon-only"
-                icon={closeOutline}
+                icon={closeButtonIcon || closeOutline}
                 color="primary"
               />
             </IonButton>

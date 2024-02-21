@@ -4,7 +4,7 @@ interface ScrollablePageLayoutProps {
   header?: ReactNode;
   pageId?: string;
   children?: ReactNode;
-  additionalClassNames?: string;
+  customClass?: string;
 }
 
 export type { ScrollablePageLayoutProps };

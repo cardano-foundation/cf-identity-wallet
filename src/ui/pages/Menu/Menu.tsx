@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   IonButton,
   IonCard,
@@ -23,10 +24,12 @@ import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import "./Menu.scss";
 import { i18n } from "../../../i18n";
+import { Settings } from "../Settings";
 
 const Menu = () => {
   const pageId = "menu-tab";
   const dispatch = useAppDispatch();
+  const [showSettings, setShowSettings] = useState(false);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
@@ -36,8 +39,9 @@ const Menu = () => {
     return (
       <IonButton
         shape="round"
-        className="connections-button"
-        data-testid="connections-button"
+        className="settings-button"
+        data-testid="settings-button"
+        onClick={() => setShowSettings(true)}
       >
         <IonIcon
           slot="icon-only"
@@ -79,51 +83,57 @@ const Menu = () => {
   };
 
   return (
-    <TabLayout
-      pageId={pageId}
-      header={true}
-      title={`${i18n.t("menu.tab.header")}`}
-      additionalButtons={<AdditionalButtons />}
-    >
-      <IonGrid>
-        <IonRow className="menu-input-row">
-          <MenuItem
-            index={0}
-            icon={personCircleOutline}
-            label={`${i18n.t("menu.tab.items.profile")}`}
-          />
-          <MenuItem
-            index={1}
-            icon={walletOutline}
-            label={`${i18n.t("menu.tab.items.crypto")}`}
-          />
-        </IonRow>
-        <IonRow className="menu-input-row">
-          <MenuItem
-            index={2}
-            icon={peopleOutline}
-            label={`${i18n.t("menu.tab.items.connections")}`}
-          />
-          <MenuItem
-            index={3}
-            icon={chatbubbleOutline}
-            label={`${i18n.t("menu.tab.items.p2p")}`}
-          />
-        </IonRow>
-        <IonRow className="menu-input-row">
-          <MenuItem
-            index={4}
-            icon={fingerPrintOutline}
-            label={`${i18n.t("menu.tab.items.identity")}`}
-          />
-          <MenuItem
-            index={5}
-            icon={idCardOutline}
-            label={`${i18n.t("menu.tab.items.credentials")}`}
-          />
-        </IonRow>
-      </IonGrid>
-    </TabLayout>
+    <>
+      <Settings
+        showSettings={showSettings}
+        setShowSettings={setShowSettings}
+      />
+      <TabLayout
+        pageId={pageId}
+        header={true}
+        title={`${i18n.t("menu.tab.header")}`}
+        additionalButtons={<AdditionalButtons />}
+      >
+        <IonGrid>
+          <IonRow className="menu-input-row">
+            <MenuItem
+              index={0}
+              icon={personCircleOutline}
+              label={`${i18n.t("menu.tab.items.profile")}`}
+            />
+            <MenuItem
+              index={1}
+              icon={walletOutline}
+              label={`${i18n.t("menu.tab.items.crypto")}`}
+            />
+          </IonRow>
+          <IonRow className="menu-input-row">
+            <MenuItem
+              index={2}
+              icon={peopleOutline}
+              label={`${i18n.t("menu.tab.items.connections")}`}
+            />
+            <MenuItem
+              index={3}
+              icon={chatbubbleOutline}
+              label={`${i18n.t("menu.tab.items.p2p")}`}
+            />
+          </IonRow>
+          <IonRow className="menu-input-row">
+            <MenuItem
+              index={4}
+              icon={fingerPrintOutline}
+              label={`${i18n.t("menu.tab.items.identity")}`}
+            />
+            <MenuItem
+              index={5}
+              icon={idCardOutline}
+              label={`${i18n.t("menu.tab.items.credentials")}`}
+            />
+          </IonRow>
+        </IonGrid>
+      </TabLayout>
+    </>
   );
 };
 

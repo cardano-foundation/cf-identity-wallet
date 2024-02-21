@@ -8,7 +8,7 @@ const ResponsivePageLayout = ({
   pageId,
   activeStatus,
   children,
-  additionalClassNames,
+  customClass,
 }: ResponsivePageLayoutProps) => {
   const [isActive, setIsActive] = useState(false);
   useIonViewDidEnter(() => {
@@ -29,7 +29,7 @@ const ResponsivePageLayout = ({
       className={
         `responsive-page-layout ${pageId}` +
         (!isActive ? " " + "ion-hide" : "") +
-        (additionalClassNames ? ` ${additionalClassNames}` : "")
+        (customClass ? ` ${customClass}` : "")
       }
     >
       {header}
