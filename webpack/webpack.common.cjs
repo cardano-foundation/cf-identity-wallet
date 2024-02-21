@@ -4,6 +4,7 @@ const CopyPlugin = require("copy-webpack-plugin");
 const webpack = require("webpack");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+require("dotenv").config({ path: "./.env" });
 const config = {
   entry: {
     main: path.join(__dirname, "..", "src", "index.tsx"),
@@ -81,6 +82,7 @@ const config = {
     }),
     new webpack.DefinePlugin({
       VERSION: JSON.stringify(require("../package.json").version),
+      "process.env": JSON.stringify(process.env),
     }),
     new webpack.ProvidePlugin({
       Buffer: ["buffer", "Buffer"],
