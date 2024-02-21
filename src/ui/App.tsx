@@ -16,6 +16,7 @@ import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
 import { i18n } from "../i18n";
 import { IncomingRequest } from "./pages/IncomingRequest";
+import { Settings } from "./pages/Settings";
 
 setupIonicReact();
 
@@ -25,6 +26,7 @@ const App = () => {
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).has("browserPreview")) {
@@ -42,6 +44,7 @@ const App = () => {
 
   useEffect(() => {
     setShowScan(currentOperation === OperationType.SCAN_CONNECTION);
+    setShowSettings(currentOperation === OperationType.SHOW_SETTINGS);
     setShowToast(toastMsg !== undefined);
   }, [currentOperation, toastMsg]);
 
@@ -49,11 +52,7 @@ const App = () => {
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          {showScan ? (
-            <FullPageScanner setShowScan={setShowScan} />
-          ) : (
-            <Routes />
-          )}
+          {showScan ? null : showSettings ? <Settings /> : <Routes />}
           <IncomingRequest />
           <IonToast
             isOpen={showToast}

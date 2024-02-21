@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   IonContent,
   IonPage,
@@ -11,6 +11,7 @@ import "./ScrollablePageLayout.scss";
 const ScrollablePageLayout = ({
   header,
   pageId,
+  activeStatus,
   children,
   customClass,
 }: ScrollablePageLayoutProps) => {
@@ -22,6 +23,11 @@ const ScrollablePageLayout = ({
   useIonViewDidLeave(() => {
     setIsActive(false);
   });
+
+  useEffect(() => {
+    activeStatus && setIsActive(activeStatus);
+  }, [activeStatus]);
+
   return (
     <IonPage
       data-testid={pageId}

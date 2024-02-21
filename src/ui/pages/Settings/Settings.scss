@@ -1,14 +1,4 @@
 .settings {
-  background: var(--ion-color-light);
-  z-index: 102 !important;
-  padding-inline: 0;
-  overflow: initial !important;
-
-  ion-header {
-    margin-bottom: -1px;
-    padding-inline: 1.25rem;
-  }
-
   &.show {
     transform: translate3d(0, 0, 0);
     transition-duration: 0.5s;
@@ -17,15 +7,16 @@
   &.hide {
     transform: translate3d(100%, 0, 0);
     transition-duration: 0.5s;
-    visibility: hidden;
+    .responsive-page-content {
+      visibility: hidden;
+    }
   }
 
-  .back-button {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 1.5rem;
-    background: var(--ion-color-light-grey);
-    flex-direction: row;
-    justify-content: center;
+  .responsive-page-content {
+    justify-content: space-around;
+  }
+
+  h2 {
+    text-align: center;
   }
 }
