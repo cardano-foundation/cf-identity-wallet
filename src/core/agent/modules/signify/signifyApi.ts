@@ -11,6 +11,7 @@ import {
   Serder,
   EventResult,
   Operation,
+  CreateIdentiferArgs,
 } from "signify-ts";
 import {
   KeriContact,
@@ -23,28 +24,16 @@ import {
   MultiSigRoute,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
+import env from "../../../../../configs";
+import { WITNESS_MODE } from "../../../../../configs/types";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
     "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly BACKER_AID = "BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP";
 
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
-  static readonly BACKER_ADDRESS =
-    "addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm";
-
-  static readonly BACKER_CONFIG = {
-    toad: 1,
-    wits: [SignifyApi.BACKER_AID],
-    count: 1,
-    ncount: 1,
-    isith: "1",
-    nsith: "1",
-    data: [{ ca: SignifyApi.BACKER_ADDRESS }],
-  };
-
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
@@ -89,7 +78,7 @@ export class SignifyApi {
     const signifyName = utils.uuid();
     const operation = await this.signifyClient
       .identifiers()
-      .create(signifyName, SignifyApi.BACKER_CONFIG);
+      .create(signifyName, this.getCreateAidOptions());
     await operation.op();
     await this.signifyClient
       .identifiers()
@@ -530,5 +519,22 @@ export class SignifyApi {
 
   async getMultisigMembers(name: string): Promise<any> {
     return this.signifyClient.identifiers().members(name);
+  }
+  private getCreateAidOptions(): CreateIdentiferArgs {
+    if (env.keri.witness === WITNESS_MODE.BACKER) {
+      return {
+        toad: 1,
+        wits: [env.keri.backer.aid],
+        count: 1,
+        ncount: 1,
+        isith: "1",
+        nsith: "1",
+        data: [{ ca: env.keri.backer.address }],
+      };
+    }
+    return {
+      toad: env.keri.pools.length,
+      wits: env.keri.pools,
+    };
   }
 }

@@ -1,0 +1,9 @@
+keri:
+  witness: backer #pools
+  pools: 
+    - BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha
+    - BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapM
+    - BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfX
+  backer:
+    aid: BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP
+    address: addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm

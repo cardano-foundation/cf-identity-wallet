@@ -137,7 +137,10 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
           })}
         </CardDetailsBlock>
       )}
-      <CardDetailsBlock
+
+      {
+        // TODO: must define what to show
+        /* <CardDetailsBlock
         title={i18n.t("identifiers.card.details.backeraddress.title")}
       >
         <CardDetailsItem
@@ -147,7 +150,8 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
           // @TODO - foconnor: This metadata in the future should come with Signify, for now we are "assuming" the address.
           testId="copy-button-backer-address"
         />
-      </CardDetailsBlock>
+      </CardDetailsBlock> */
+      }
     </>
   );
 };
