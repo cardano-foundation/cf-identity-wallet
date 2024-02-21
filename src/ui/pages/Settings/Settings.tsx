@@ -1,5 +1,24 @@
 import { useEffect, useState } from "react";
-import { arrowBackOutline } from "ionicons/icons";
+import {
+  IonCard,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonNote,
+} from "@ionic/react";
+import {
+  arrowBackOutline,
+  chevronForward,
+  lockClosedOutline,
+  informationCircleOutline,
+  keyOutline,
+  chatboxEllipsesOutline,
+  hammerOutline,
+  libraryOutline,
+  checkboxOutline,
+  layersOutline,
+} from "ionicons/icons";
 import { PageHeader } from "../../components/PageHeader";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import "./Settings.scss";
@@ -9,6 +28,7 @@ import {
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { OperationType } from "../../globals/types";
+import { i18n } from "../../../i18n";
 
 const Settings = () => {
   const pageId = "settings";
@@ -20,6 +40,39 @@ const Settings = () => {
     currentOperation === OperationType.SHOW_SETTINGS && setShowSettings(true);
   }, []);
 
+  const securityItems = [
+    {
+      icon: lockClosedOutline,
+      label: i18n.t("settings.sections.security.changepin"),
+    },
+    {
+      icon: informationCircleOutline,
+      label: i18n.t("settings.sections.security.manageoperationspassword"),
+    },
+    {
+      icon: keyOutline,
+      label: i18n.t("settings.sections.security.seedphrase"),
+    },
+  ];
+
+  const supportItems = [
+    {
+      icon: chatboxEllipsesOutline,
+      label: i18n.t("settings.sections.support.contact"),
+    },
+    {
+      icon: hammerOutline,
+      label: i18n.t("settings.sections.support.troubleshooting"),
+    },
+    {
+      icon: libraryOutline,
+      label: i18n.t("settings.sections.support.learnmore"),
+    },
+    {
+      icon: checkboxOutline,
+      label: i18n.t("settings.sections.support.terms"),
+    },
+  ];
   return (
     <ScrollablePageLayout
       pageId={pageId}
@@ -32,11 +85,84 @@ const Settings = () => {
             dispatch(setCurrentOperation(OperationType.IDLE));
           }}
           closeButtonIcon={arrowBackOutline}
+          title={`${i18n.t("settings.sections.header")}`}
         />
       }
       customClass={`${showSettings ? "show" : "hide"}`}
     >
-      <div className={`${pageId}-content`}>Page content</div>
+      <div className={`${pageId}-content`}>
+        <div className="settings-section-title">
+          {i18n.t("settings.sections.security.title")}
+        </div>
+        <IonCard>
+          <IonList lines="none">
+            {securityItems.map((item, index) => {
+              const handleItemClick = () => {
+                // @TODO - sdisalvo: Add your custom onClick logic here for each item
+                // console.log(`Clicked item ${index}`);
+              };
+              return (
+                <IonItem
+                  key={index}
+                  onClick={handleItemClick}
+                >
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={item.icon}
+                    slot="start"
+                  />
+                  <IonLabel>{item.label}</IonLabel>
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={chevronForward}
+                    slot="end"
+                  />
+                </IonItem>
+              );
+            })}
+          </IonList>
+        </IonCard>
+        <div className="settings-section-title">
+          {i18n.t("settings.sections.security.title")}
+        </div>
+        <IonCard>
+          <IonList lines="none">
+            {supportItems.map((item, index) => {
+              const handleItemClick = () => {
+                // @TODO - sdisalvo: Add custom onClick logic here for each item
+                // console.log(`Clicked item ${index}`);
+              };
+              return (
+                <IonItem
+                  key={index}
+                  onClick={handleItemClick}
+                >
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={item.icon}
+                    slot="start"
+                  />
+                  <IonLabel>{item.label}</IonLabel>
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={chevronForward}
+                    slot="end"
+                  />
+                </IonItem>
+              );
+            })}
+            <IonItem>
+              <IonIcon
+                aria-hidden="true"
+                icon={layersOutline}
+                slot="start"
+              />
+              <IonLabel>{i18n.t("settings.sections.support.version")}</IonLabel>
+              <IonNote slot="end">0.0.1</IonNote>
+            </IonItem>
+          </IonList>
+        </IonCard>
+      </div>
     </ScrollablePageLayout>
   );
 };

@@ -12,11 +12,54 @@
     }
   }
 
-  .responsive-page-content {
-    justify-content: space-around;
+  ion-toolbar ion-buttons ion-button.close-button {
+    background: var(--ion-color-light);
   }
 
-  h2 {
-    text-align: center;
+  .settings-content {
+    margin-top: 2rem;
+
+    .settings-section-title {
+      margin: 0.625rem 1.25rem;
+    }
+  }
+
+  ion-card {
+    margin: 0;
+    display: flex;
+    background: white;
+    border-radius: 1rem;
+    flex-direction: column;
+    justify-content: space-evenly;
+    padding: 0.5rem 1.25rem;
+    box-shadow: none;
+    --inner-border-width: 0;
+    margin-bottom: 1.5rem;
+
+    ion-item {
+      --inner-padding-end: 0px;
+
+      &::part(native) {
+        padding: 0;
+      }
+
+      ion-icon {
+        font-size: 1.5rem;
+
+        &:last-child {
+          color: var(--ion-color-dark-grey);
+        }
+      }
+
+      ion-icon,
+      ion-label,
+      ion-note {
+        color: var(--ion-color-secondary);
+      }
+
+      ion-label {
+        margin: 0.813rem 0;
+      }
+    }
   }
 }
