@@ -29,6 +29,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { OperationType } from "../../globals/types";
 import { i18n } from "../../../i18n";
+import pJson from "../../../../package.json";
 
 const Settings = () => {
   const pageId = "settings";
@@ -158,7 +159,7 @@ const Settings = () => {
                 slot="start"
               />
               <IonLabel>{i18n.t("settings.sections.support.version")}</IonLabel>
-              <IonNote slot="end">0.0.1</IonNote>
+              <IonNote slot="end">{pJson.version}</IonNote>
             </IonItem>
           </IonList>
         </IonCard>
