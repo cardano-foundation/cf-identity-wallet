@@ -30,7 +30,7 @@ const ScrollablePageLayout = ({
 
   return (
     <IonPage
-      data-testid={pageId}
+      data-testid={`${pageId}-page`}
       className={
         `scrollable-page-layout ${pageId}` +
         (!isActive ? " " + "ion-hide" : "") +

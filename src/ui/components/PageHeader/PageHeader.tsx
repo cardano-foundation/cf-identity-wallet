@@ -122,7 +122,7 @@ const PageHeader = ({
                 .replace(/[^aA-zZ\s]/, "")
                 .split(" ")
                 .join("-")
-                .toLowerCase()}`}
+                .toLowerCase()}-title`}
             >
               {title}
             </h2>

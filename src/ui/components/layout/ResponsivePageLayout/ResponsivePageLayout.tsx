@@ -25,7 +25,7 @@ const ResponsivePageLayout = ({
 
   return (
     <IonPage
-      data-testid={pageId}
+      data-testid={`${pageId}-page`}
       className={
         `responsive-page-layout ${pageId}` +
         (!isActive ? " " + "ion-hide" : "") +

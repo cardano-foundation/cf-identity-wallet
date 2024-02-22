@@ -102,7 +102,7 @@ const Settings = () => {
           >
             {securityItems.map((item, index) => {
               const handleItemClick = () => {
-                // @TODO - sdisalvo: Add your custom onClick logic here for each item
+                // @TODO - sdisalvo: Add custom onClick logic here for each item
                 // console.log(`Clicked item ${index}`);
               };
               return (
