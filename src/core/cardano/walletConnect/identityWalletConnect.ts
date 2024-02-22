@@ -1,10 +1,10 @@
-import { CardanoPeerConnect } from "@fabianbormann/cardano-peer-connect";
 import { Buffer } from "buffer";
 import {
   Paginate,
   Cip30DataSignature,
   IWalletInfo,
 } from "@fabianbormann/cardano-peer-connect/dist/src/types";
+import { CardanoPeerConnect } from "@fabianbormann/cardano-peer-connect";
 import { AriesAgent } from "../../agent/agent";
 import { IdentifierType } from "../../agent/services/identifierService.types";
 
@@ -14,6 +14,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
     identifierId: string,
     payload: string
   ) => Promise<string>;
+  generateOobi: (identifierId: string) => Promise<string>;
 
   constructor(
     walletInfo: IWalletInfo,
@@ -47,7 +48,21 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       payload: string
     ): Promise<string> => {
       const signer = await AriesAgent.agent.identifiers.getSigner(identifierId);
-      return JSON.stringify(signer.sign(Buffer.from(payload)));
+      return signer.sign(Buffer.from(payload)).qb64;
+    };
+
+    this.generateOobi = async (identifierId: string): Promise<string> => {
+      const identifier = await AriesAgent.agent.identifiers.getIdentifier(
+        identifierId
+      );
+
+      if (identifier?.result.signifyName) {
+        return await AriesAgent.agent.connections.getKeriOobi(
+          identifier?.result.signifyName
+        );
+      }
+
+      return "";
     };
   }
 

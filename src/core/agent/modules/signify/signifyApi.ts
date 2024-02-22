@@ -529,9 +529,11 @@ export class SignifyApi {
     }
   }
 
-  async getSigner(aid: Aid): Promise<Signer> {
-    const client = this.signifyClient;
-    return await client.manager?.get(aid);
+  async getSigner(aid: Aid): Promise<Signer | undefined> {
+    const manager = this.signifyClient.manager;
+    if (manager) {
+      return (await manager.get(aid)).signers[0];
+    }
   }
 
   async getMultisigMembers(name: string): Promise<any> {
