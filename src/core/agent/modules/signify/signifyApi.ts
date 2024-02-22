@@ -51,6 +51,8 @@ export class SignifyApi {
     "Failed to resolve OOBI, operation not completing...";
   static readonly FAILED_TO_ROTATE_AID =
     "Failed to rotate AID, operation not completing...";
+  static readonly FAILED_TO_OBTAIN_SIGNER =
+    "Failed to rotate obtain signer, operation not completing...";
 
   static readonly VLEI_HOST =
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
@@ -529,10 +531,12 @@ export class SignifyApi {
     }
   }
 
-  async getSigner(aid: Aid): Promise<Signer | undefined> {
+  async getSigner(aid: Aid): Promise<Signer> {
     const manager = this.signifyClient.manager;
     if (manager) {
       return (await manager.get(aid)).signers[0];
+    } else {
+      throw new Error(SignifyApi.FAILED_TO_OBTAIN_SIGNER);
     }
   }
 
