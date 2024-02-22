@@ -96,7 +96,10 @@ const Settings = () => {
           {i18n.t("settings.sections.security.title")}
         </div>
         <IonCard>
-          <IonList lines="none">
+          <IonList
+            lines="none"
+            data-testid="settings-security-items"
+          >
             {securityItems.map((item, index) => {
               const handleItemClick = () => {
                 // @TODO - sdisalvo: Add your custom onClick logic here for each item
@@ -106,6 +109,8 @@ const Settings = () => {
                 <IonItem
                   key={index}
                   onClick={handleItemClick}
+                  className="security-item"
+                  data-testid={`security-item-${index}`}
                 >
                   <IonIcon
                     aria-hidden="true"
@@ -124,10 +129,13 @@ const Settings = () => {
           </IonList>
         </IonCard>
         <div className="settings-section-title">
-          {i18n.t("settings.sections.security.title")}
+          {i18n.t("settings.sections.support.title")}
         </div>
         <IonCard>
-          <IonList lines="none">
+          <IonList
+            lines="none"
+            data-testid="settings-support-items"
+          >
             {supportItems.map((item, index) => {
               const handleItemClick = () => {
                 // @TODO - sdisalvo: Add custom onClick logic here for each item
@@ -137,6 +145,8 @@ const Settings = () => {
                 <IonItem
                   key={index}
                   onClick={handleItemClick}
+                  className="support-item"
+                  data-testid={`support-item-${index}`}
                 >
                   <IonIcon
                     aria-hidden="true"
@@ -152,7 +162,7 @@ const Settings = () => {
                 </IonItem>
               );
             })}
-            <IonItem>
+            <IonItem className="support-item">
               <IonIcon
                 aria-hidden="true"
                 icon={layersOutline}
