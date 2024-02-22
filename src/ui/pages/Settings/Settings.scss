@@ -1,4 +1,6 @@
 .settings {
+  display: flex !important;
+
   &.show {
     transform: translate3d(0, 0, 0);
     transition-duration: 0.5s;
@@ -7,9 +9,6 @@
   &.hide {
     transform: translate3d(100%, 0, 0);
     transition-duration: 0.5s;
-    .responsive-page-content {
-      visibility: hidden;
-    }
   }
 
   ion-toolbar ion-buttons ion-button.close-button {

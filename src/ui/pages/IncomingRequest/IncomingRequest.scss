@@ -1,4 +1,6 @@
 .incoming-request {
+  display: flex !important;
+
   &.show {
     transform: translate3d(0, 0, 0);
     transition-duration: 0.5s;

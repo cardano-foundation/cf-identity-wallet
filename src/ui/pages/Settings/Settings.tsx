@@ -39,7 +39,7 @@ const Settings = () => {
 
   useEffect(() => {
     currentOperation === OperationType.SHOW_SETTINGS && setShowSettings(true);
-  }, []);
+  }, [currentOperation]);
 
   const securityItems = [
     {
@@ -74,6 +74,7 @@ const Settings = () => {
       label: i18n.t("settings.sections.support.terms"),
     },
   ];
+
   return (
     <ScrollablePageLayout
       pageId={pageId}

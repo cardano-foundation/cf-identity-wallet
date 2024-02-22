@@ -26,7 +26,6 @@ const App = () => {
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
 
   useEffect(() => {
     if (new URLSearchParams(window.location.search).has("browserPreview")) {
@@ -44,7 +43,6 @@ const App = () => {
 
   useEffect(() => {
     setShowScan(currentOperation === OperationType.SCAN_CONNECTION);
-    setShowSettings(currentOperation === OperationType.SHOW_SETTINGS);
     setShowToast(toastMsg !== undefined);
   }, [currentOperation, toastMsg]);
 
@@ -52,8 +50,14 @@ const App = () => {
     <IonApp>
       <AppWrapper>
         <StrictMode>
-          {showScan ? null : showSettings ? <Settings /> : <Routes />}
+          {showScan ? (
+            <FullPageScanner setShowScan={setShowScan} />
+          ) : (
+            <Routes />
+          )}
+
           <IncomingRequest />
+          <Settings />
           <IonToast
             isOpen={showToast}
             onDidDismiss={() => {
