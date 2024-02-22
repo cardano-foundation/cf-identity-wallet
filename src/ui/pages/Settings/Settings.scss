@@ -97,12 +97,22 @@
 
     ion-item.security-item,
     ion-item.support-item {
+      --min-height: 0;
+
       ion-icon {
         font-size: 1.2rem;
 
         &:first-child {
-          margin-right: 0.8rem;
+          margin: 0 0.8rem 0 0;
         }
+
+        &:last-child {
+          margin: 0 0 0 0.8rem;
+        }
+      }
+
+      ion-label {
+        margin: 0.65rem 0;
       }
     }
   }
