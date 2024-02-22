@@ -39,6 +39,10 @@
     --inner-border-width: 0;
     margin-bottom: 1.5rem;
 
+    ion-list {
+      padding: 0;
+    }
+
     ion-item {
       --inner-padding-end: 0px;
 
@@ -48,6 +52,10 @@
 
       ion-icon {
         font-size: 1.5rem;
+
+        &:first-child {
+          margin-right: 1rem;
+        }
 
         &:last-child {
           color: var(--ion-color-dark-grey);
@@ -62,6 +70,7 @@
 
       ion-label {
         margin: 0.813rem 0;
+        font-weight: 500;
       }
     }
   }
@@ -75,6 +84,10 @@
       margin-top: 1rem;
     }
 
+    ion-card {
+      padding: 0.5rem 1rem;
+    }
+
     .settings-section-title,
     ion-item.security-item ion-label,
     ion-item.support-item ion-label,
@@ -86,6 +99,10 @@
     ion-item.support-item {
       ion-icon {
         font-size: 1.2rem;
+
+        &:first-child {
+          margin-right: 0.8rem;
+        }
       }
     }
   }
