@@ -11,6 +11,10 @@
     transition-duration: 0.5s;
   }
 
+  ion-header ion-toolbar {
+    margin-top: 0.625rem;
+  }
+
   ion-toolbar ion-buttons ion-button.close-button {
     background: var(--ion-color-light);
   }
@@ -63,6 +67,14 @@
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
+    ion-header ion-toolbar {
+      margin-top: 0.531rem;
+    }
+
+    .settings-content {
+      margin-top: 1rem;
+    }
+
     .settings-section-title,
     ion-item.security-item ion-label,
     ion-item.support-item ion-label,
