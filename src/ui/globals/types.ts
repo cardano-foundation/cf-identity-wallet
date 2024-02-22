@@ -26,6 +26,7 @@ enum OperationType {
   SCAN_CONNECTION = "scanConnection",
   ADD_CREDENTIAL = "addCredential",
   RECEIVE_CONNECTION = "receiveConnection",
+  SHOW_SETTINGS = "showSettings",
 }
 
 enum ToastMsgType {
