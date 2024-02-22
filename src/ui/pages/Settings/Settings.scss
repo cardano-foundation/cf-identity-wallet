@@ -13,6 +13,10 @@
 
   ion-header ion-toolbar {
     margin-top: 0.625rem;
+
+    ion-title.md {
+      margin-left: -3rem;
+    }
   }
 
   ion-toolbar ion-buttons ion-button.close-button {
@@ -68,6 +72,11 @@
         color: var(--ion-color-secondary);
       }
 
+      ion-note {
+        font-size: 1rem;
+        opacity: 70%;
+      }
+
       ion-label {
         margin: 0.813rem 0;
         font-weight: 500;
@@ -78,6 +87,10 @@
   @media screen and (min-width: 250px) and (max-width: 370px) {
     ion-header ion-toolbar {
       margin-top: 0.531rem;
+
+      ion-title.md {
+        margin-left: -2rem;
+      }
     }
 
     .settings-content {
@@ -92,7 +105,7 @@
     ion-item.security-item ion-label,
     ion-item.support-item ion-label,
     ion-note {
-      font-size: 0.8rem;
+      font-size: 0.8rem !important;
     }
 
     ion-item.security-item,
