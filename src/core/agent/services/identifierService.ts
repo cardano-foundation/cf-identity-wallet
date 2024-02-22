@@ -56,6 +56,12 @@ class IdentifierService extends AgentService {
     "Metadata record for KERI AID is missing the Signify name";
   static readonly ONLY_CREATE_ROTATION_WITH_AID =
     "Can only create rotation using KERI AID";
+  static readonly MULTI_SIG_NOT_FOUND =
+    "There's no multi sig identifier for the given SAID";
+  static readonly AID_IS_NOT_MULTI_SIG =
+    "This AID is not a multi sig identifier";
+  static readonly NOT_FOUND_ALL_MEMBER_OF_MULTISIG =
+    "Cannot find all members of multisig or one of the members does not rotate its AID";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -383,9 +389,104 @@ class IdentifierService extends AgentService {
       signifyName,
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
       isPending: result.op.done ? false : true, //this will be updated once the operation is done
+      multisigManageAid: ourIdentifier,
     });
     return multisigId;
   }
+
+  async rotateMultisig(ourIdentifier: string): Promise<string> {
+    const metadata = await this.getMetadataById(ourIdentifier);
+    if (metadata.method !== IdentifierType.KERI) {
+      throw new Error(IdentifierService.ONLY_CREATE_ROTATION_WITH_AID);
+    }
+
+    if (!metadata.multisigManageAid) {
+      throw new Error(IdentifierService.AID_IS_NOT_MULTI_SIG);
+    }
+    const identifierManageAid = await this.getMetadataById(
+      metadata.multisigManageAid
+    );
+
+    if (!metadata.signifyName || !identifierManageAid.signifyName) {
+      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    }
+    const multiSig = await this.agent.modules.signify.getIdentifierByName(
+      metadata.signifyName
+    );
+    if (!multiSig) {
+      throw new Error(IdentifierService.MULTI_SIG_NOT_FOUND);
+    }
+    const nextSequence = (Number(multiSig.state.s) + 1).toString();
+
+    const members = await this.agent.modules.signify.getMultisigMembers(
+      metadata.signifyName
+    );
+    const multisigMembers = members?.signing;
+
+    const multisigMumberAids: Aid[] = [];
+    await Promise.allSettled(
+      multisigMembers.map(async (signing: any) => {
+        const aid = await this.agent.modules.signify.queryKeyState(
+          signing.aid,
+          nextSequence
+        );
+        if (aid.done) {
+          multisigMumberAids.push({ state: aid.response } as Aid);
+        }
+      })
+    );
+    if (multisigMembers.length !== multisigMumberAids.length) {
+      throw new Error(IdentifierService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG);
+    }
+    const aid = await this.agent.modules.signify.getIdentifierByName(
+      identifierManageAid?.signifyName
+    );
+
+    const result = await this.agent.modules.signify.rotateMultisigAid(
+      aid,
+      multisigMumberAids,
+      metadata.signifyName
+    );
+    const multisigId = result.op.name.split(".")[1];
+    return multisigId;
+  }
+
+  async joinMultisigRotation(notification: KeriNotification): Promise<string> {
+    const msgSaid = notification.a.d as string;
+    const notifications: MultiSigIcpNotification[] =
+      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    if (!notifications.length) {
+      throw new Error(IdentifierService.SAID_NOTIFICATIONS_NOT_FOUND);
+    }
+    const exn = notifications[0].exn;
+    const multisigId = exn.a.gid;
+    const multiSig = await this.getMetadataById(multisigId);
+    if (!multiSig) {
+      throw new Error(IdentifierService.MULTI_SIG_NOT_FOUND);
+    }
+    if (!multiSig.multisigManageAid) {
+      throw new Error(IdentifierService.AID_IS_NOT_MULTI_SIG);
+    }
+    const identifierManageAid = await this.getMetadataById(
+      multiSig.multisigManageAid
+    );
+
+    if (!multiSig.signifyName || !identifierManageAid.signifyName) {
+      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    }
+
+    const aid = await this.agent.modules.signify.getIdentifierByName(
+      identifierManageAid.signifyName
+    );
+    const res = await this.agent.modules.signify.joinMultisigRotation(
+      exn,
+      aid,
+      multiSig.signifyName
+    );
+    await this.agent.genericRecords.deleteById(notification.id);
+    return res.op.name.split(".")[1];
+  }
+
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
     const notifications: MultiSigIcpNotification[] =
       await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
@@ -417,7 +518,7 @@ class IdentifierService extends AgentService {
     const msgSaid = notification.a.d as string;
     const hasJoined = await this.hasJoinedMultisig(msgSaid);
     if (hasJoined) {
-      await this.agent.genericRecords.deleteById(notification.id as string);
+      await this.agent.genericRecords.deleteById(notification.id);
       return;
     }
     const notifications: MultiSigIcpNotification[] =
@@ -445,7 +546,7 @@ class IdentifierService extends AgentService {
         aid,
         signifyName
       );
-      await this.agent.genericRecords.deleteById(notification.id as string);
+      await this.agent.genericRecords.deleteById(notification.id);
       const multisigId = res.op.name.split(".")[1];
       await this.createIdentifierMetadataRecord({
         id: multisigId,
@@ -456,6 +557,7 @@ class IdentifierService extends AgentService {
         signifyName,
         signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later
         isPending: res.op.done ? false : true, //this will be updated once the operation is done
+        multisigManageAid: identifier.id,
       });
       return multisigId;
     }
@@ -480,6 +582,12 @@ class IdentifierService extends AgentService {
     const results = await this.agent.genericRecords.findAllByQuery({
       type: GenericRecordType.NOTIFICATION_KERI,
       route: NotificationRoute.MultiSigIcp,
+      $or: [
+        { route: NotificationRoute.MultiSigIcp },
+        {
+          route: NotificationRoute.MultiSigRot,
+        },
+      ],
     });
     return results.map((result) => {
       return {

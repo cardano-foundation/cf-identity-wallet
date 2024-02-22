@@ -26,8 +26,9 @@ class SignifyNotificationService extends AgentService {
   ) {
     // We only process with the credential and the multisig at the moment
     if (
-      (notif.a.r === NotificationRoute.Credential ||
-        notif.a.r === NotificationRoute.MultiSigIcp) &&
+      Object.values(NotificationRoute).includes(
+        notif.a.r as NotificationRoute
+      ) &&
       !notif.r
     ) {
       const keriNoti = await this.createKeriNotificationRecord(notif);

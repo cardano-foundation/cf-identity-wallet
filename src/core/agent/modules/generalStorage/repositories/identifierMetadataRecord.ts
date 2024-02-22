@@ -13,6 +13,7 @@ interface IdentifierMetadataRecordProps {
   isPending?: boolean;
   theme: number;
   signifyOpName?: string;
+  multisigManageAid?: string;
 }
 
 class IdentifierMetadataRecord
@@ -28,6 +29,7 @@ class IdentifierMetadataRecord
   signifyOpName?: string | undefined;
   signifyName?: string | undefined;
   theme!: number;
+  multisigManageAid?: string | undefined;
 
   static readonly type = "IdentifierMetadataRecord";
   readonly type = IdentifierMetadataRecord.type;
@@ -45,6 +47,7 @@ class IdentifierMetadataRecord
       this.isDeleted = props.isDeleted ?? false;
       this.isPending = props.isPending ?? false;
       this.signifyOpName = props.signifyOpName;
+      this.multisigManageAid = props.multisigManageAid;
       this.createdAt = props.createdAt ?? new Date();
       this.theme = props.theme;
     }

@@ -164,7 +164,6 @@ const Creds = () => {
         pageId={pageId}
         header={true}
         title={`${i18n.t("creds.tab.title")}`}
-        menuButton={true}
         additionalButtons={
           <AdditionalButtons
             handleConnections={() => setShowConnections(true)}

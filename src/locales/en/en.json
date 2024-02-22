@@ -586,8 +586,8 @@
       "identifiers": "Identity",
       "creds": "Credentials",
       "scan": "Scan",
-      "crypto": "Crypto",
-      "chat": "P2P Chat"
+      "chat": "P2P",
+      "menu": "Menu"
     }
   },
   "custominput": {
@@ -851,6 +851,51 @@
       }
     }
   },
+  "scan": {
+    "tab": {
+      "title": "Align the QR code within the frame to scan"
+    },
+    "alert": {
+      "title": "Would you like to grant permission for using your camera?"
+    }
+  },
+  "chat": {
+    "tab": {
+      "header": "Under development"
+    }
+  },
+  "menu": {
+    "tab": {
+      "header": "Menu",
+      "items": {
+        "profile": "Profile",
+        "crypto": "Crypto",
+        "connections": "Connections",
+        "p2p": "P2P",
+        "identity": "Identity",
+        "credentials": "Credentials"
+      }
+    }
+  },
+  "settings": {
+    "sections": {
+      "header": "Settings",
+      "security": {
+        "title": "Security",
+        "changepin": "Change PIN",
+        "manageoperationspassword": "Manage Operations Password",
+        "seedphrase": "Seed Phrase"
+      },
+      "support": {
+        "title": "Support & Legal",
+        "contact": "Contact",
+        "troubleshooting": "Troubleshooting",
+        "learnmore": "Learn More About Cardano IDW",
+        "terms": "Terms and Privacy Policy",
+        "version": "App Version"
+      }
+    }
+  },
   "connections": {
     "tab": {
       "title": "Connections",
@@ -861,10 +906,10 @@
       "done": "Done",
       "label": "Label",
       "date": "Date Created",
-      "goalcodes": "Goal Codes",
-      "handshake": "Handshake Protocol",
-      "attachments": "Request Attachments",
       "endpoints": "Service Endpoints",
+      "history": "Connection History",
+      "connectedwith": "Connected with \"{{ issuer }}\"",
+      "received": "Received \"{{ credential }}\"",
       "notavailable": "N/A",
       "details": "Details",
       "notes": "Notes",
@@ -973,16 +1018,6 @@
       "maxlength": "Must be less than 32 characters long"
     }
   },
-  "crypto": {
-    "tab": {
-      "header": "Under consideration"
-    }
-  },
-  "chat": {
-    "tab": {
-      "header": "Under development"
-    }
-  },
   "shareqr": {
     "divider": "or",
     "more": "More share options"
@@ -1008,14 +1043,6 @@
     "notesupdated": "Notes updated successfully",
     "noteremoved": "Note removed successfully",
     "maxfavouritesreached": "Maximum of 5 favourites reached"
-  },
-  "scan": {
-    "tab": {
-      "title": "Align the QR code within the frame to scan"
-    },
-    "alert": {
-      "title": "Would you like to grant permission for using your camera?"
-    }
   },
   "request": {
     "connection": {

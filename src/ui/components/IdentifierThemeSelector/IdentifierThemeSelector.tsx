@@ -1,4 +1,4 @@
-import { IonCol, IonIcon, IonItem, IonRow } from "@ionic/react";
+import { IonCard, IonCol, IonGrid, IonIcon, IonRow } from "@ionic/react";
 import { checkmark } from "ionicons/icons";
 import {
   IdentifierThemeSelectorProps,
@@ -33,14 +33,14 @@ const IdentifierThemeSelector = ({
       <div
         className="unselected-theme-circle"
         data-testid="unselected-theme-circle"
-      ></div>
+      />
     );
   };
 
   const ThemeItem = ({ index }: ThemeItemProps) => {
     return (
       <IonCol className={`${selectedTheme === index ? "selected-theme" : ""}`}>
-        <IonItem
+        <IonCard
           onClick={() => setSelectedTheme(index)}
           data-testid={`identifier-theme-selector-item-${index}`}
           className="theme-input"
@@ -50,12 +50,12 @@ const IdentifierThemeSelector = ({
           }}
         >
           {selectedTheme === index ? <Checkmark /> : <Circle />}
-        </IonItem>
+        </IonCard>
       </IonCol>
     );
   };
   return (
-    <div
+    <IonGrid
       className="identifier-theme-selector"
       data-testid="identifier-theme-selector"
     >
@@ -76,7 +76,7 @@ const IdentifierThemeSelector = ({
           <ThemeItem index={5} />
         </IonRow>
       )}
-    </div>
+    </IonGrid>
   );
 };
 

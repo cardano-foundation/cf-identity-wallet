@@ -2,7 +2,6 @@ import { useHistory, useParams } from "react-router-dom";
 import {
   IonButton,
   IonIcon,
-  IonPage,
   IonSpinner,
   useIonViewWillEnter,
 } from "@ionic/react";
@@ -248,7 +247,6 @@ const CredCardDetails = () => {
         header={true}
         doneLabel={`${i18n.t("creds.card.details.done")}`}
         doneAction={handleDone}
-        menuButton={false}
         additionalButtons={!isArchived && <AdditionalButtons />}
         actionButton={isArchived}
         actionButtonAction={() => setAlertRestoreIsOpen(true)}

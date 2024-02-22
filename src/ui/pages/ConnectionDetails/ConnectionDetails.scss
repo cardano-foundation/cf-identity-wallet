@@ -14,6 +14,44 @@
     text-align: center;
   }
 
+  .connection-details-history-event {
+    flex-direction: row;
+    padding: 0.813rem 1rem;
+    border-radius: 0.75rem;
+    background-color: var(--ion-color-light-grey);
+
+    &:not(:last-of-type) {
+      margin-bottom: 1rem;
+    }
+
+    .connection-details-logo {
+      width: 15%;
+      align-self: center;
+
+      img {
+        width: 2.75rem;
+        border-radius: 2.5rem;
+      }
+
+      .cred-card-template {
+        margin: 0;
+        height: 1.571rem;
+        width: 100%;
+        padding: 0;
+        border-radius: 0.125rem;
+      }
+    }
+
+    .connection-details-history-event-info {
+      width: 82%;
+      margin: 0 0 0 3%;
+
+      span {
+        font-weight: 400;
+      }
+    }
+  }
+
   .page-footer ion-icon {
     margin-right: 0.5rem;
   }
@@ -23,6 +61,10 @@
     .connection-details-tab > *,
     .connection-notes-tab > * {
       margin-bottom: 1.2rem;
+    }
+
+    .connection-details-history-event {
+      padding: 0.65rem 0.8rem;
     }
   }
 }

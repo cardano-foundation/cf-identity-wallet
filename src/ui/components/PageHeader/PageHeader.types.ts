@@ -9,6 +9,7 @@ interface PageHeaderProps {
   closeButton?: boolean;
   closeButtonAction?: () => void;
   closeButtonLabel?: string;
+  closeButtonIcon?: string;
   actionButton?: boolean;
   actionButtonDisabled?: boolean;
   actionButtonAction?: () => void;
@@ -18,7 +19,6 @@ interface PageHeaderProps {
   progressBarValue?: number;
   progressBarBuffer?: number;
   title?: string;
-  menuButton?: boolean;
 }
 
 export type { PageHeaderProps };

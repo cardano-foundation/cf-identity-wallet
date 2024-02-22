@@ -3,8 +3,9 @@ import { ReactNode } from "react";
 interface ScrollablePageLayoutProps {
   header?: ReactNode;
   pageId?: string;
+  activeStatus?: boolean;
   children?: ReactNode;
-  additionalClassNames?: string;
+  customClass?: string;
 }
 
 export type { ScrollablePageLayoutProps };

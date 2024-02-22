@@ -95,11 +95,6 @@ describe("Identifiers Tab", () => {
     ).toBeInTheDocument();
     expect(getByTestId("connections-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
-    expect(
-      getByTestId(
-        `menu-button-${EN_TRANSLATIONS.identifiers.tab.title.toLowerCase()}`
-      )
-    ).toBeInTheDocument();
   });
 
   test("Navigate from Identifiers Tab to Card Details and back", async () => {
