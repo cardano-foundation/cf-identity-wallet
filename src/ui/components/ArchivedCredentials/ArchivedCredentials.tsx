@@ -1,21 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   IonButton,
   IonButtons,
   IonCheckbox,
-  IonCol,
   IonFooter,
-  IonGrid,
   IonItem,
+  IonItemOption,
+  IonItemOptions,
+  IonItemSliding,
   IonLabel,
   IonList,
   IonModal,
-  IonRow,
   IonToolbar,
 } from "@ionic/react";
 import i18next from "i18next";
-import { PageLayout } from "../layout/PageLayout";
 import { i18n } from "../../../i18n";
 import "./ArchivedCredentials.scss";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -41,6 +40,10 @@ import {
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
+import {
+  ConnectionType,
+  CredentialType,
+} from "../../../core/agent/agent.types";
 
 const ArchivedCredentials = ({
   archivedCreds,
@@ -72,50 +75,53 @@ const ArchivedCredentials = ({
     return data;
   };
 
-  interface CredentialItemProps {
-    key: number;
-    index: number;
+  const CredentialItem = ({
+    credential,
+  }: {
     credential: CredentialShortDetails;
-  }
-
-  const CredentialItem = ({ credential, index }: CredentialItemProps) => {
-    const credentialColor = {
-      background: `linear-gradient(91.86deg, ${credential.colors[0]} 28.76%, ${credential.colors[1]} 119.14%)`,
-      zIndex: index,
+  }) => {
+    const credentialBackground = () => {
+      if (credential.connectionType === ConnectionType.KERI) {
+        return "card-body-acdc";
+      } else if (credential.connectionType === ConnectionType.DIDCOMM) {
+        switch (credential.credentialType) {
+        case CredentialType.PERMANENT_RESIDENT_CARD:
+          return "permanent-resident-card";
+        case CredentialType.ACCESS_PASS_CREDENTIAL:
+          return "access-pass-credential";
+        default:
+          return "card-body-w3c-generic";
+        }
+      }
     };
-
     return (
-      <IonItem>
-        <IonGrid>
-          <IonRow>
+      <IonItemSliding>
+        <IonItem onClick={() => handleShowCardDetails(credential.id)}>
+          <IonLabel>
             {activeList && (
-              <IonCol className="credential-selector">
-                <IonCheckbox
-                  checked={selectedCredentials.includes(credential.id)}
-                  onIonChange={() => {
-                    handleSelectCredentials(credential.id);
-                  }}
-                />
-              </IonCol>
+              <IonCheckbox
+                checked={selectedCredentials.includes(credential.id)}
+                onIonChange={() => {
+                  handleSelectCredentials(credential.id);
+                }}
+                aria-label=""
+              />
             )}
-            <IonCol
-              className="credential-color"
-              style={credentialColor}
-            />
-            <IonCol
-              className="credential-info"
-              onClick={() => handleShowCardDetails(credential.id)}
-            >
-              <IonLabel className="credential-name">
-                {credential.credentialType}
-              </IonLabel>
-              <IonLabel className="credential-expiration">
+            <div className={`cred-card-template ${credentialBackground()}`} />
+            <div className="credential-info">
+              <div className="credential-name">{credential.credentialType}</div>
+              <div className="credential-expiration">
                 {formatShortDate(credential.issuanceDate)}
-              </IonLabel>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-      </IonItem>
+              </div>
+            </div>
+          </IonLabel>
+        </IonItem>
+
+        <IonItemOptions>
+          <IonItemOption color="dark-grey">Restore</IonItemOption>
+          <IonItemOption color="danger">Delete</IonItemOption>
+        </IonItemOptions>
+      </IonItemSliding>
     );
   };
 
@@ -208,8 +214,7 @@ const ArchivedCredentials = ({
               return (
                 <CredentialItem
                   key={index}
-                  index={index}
-                  credential={credential as CredentialShortDetails}
+                  credential={credential}
                 />
               );
             }
