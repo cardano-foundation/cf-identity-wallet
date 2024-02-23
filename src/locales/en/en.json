@@ -820,7 +820,7 @@
     "archived": {
       "title": "Archived",
       "done": "Done",
-      "edit": "Edit",
+      "select": "Select",
       "selectall": "Select All",
       "deselectall": "Deselect all",
       "cancel": "Cancel",

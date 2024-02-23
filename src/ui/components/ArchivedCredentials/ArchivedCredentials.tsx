@@ -128,8 +128,12 @@ const ArchivedCredentials = ({
         </IonItem>
 
         <IonItemOptions>
-          <IonItemOption color="dark-grey">Restore</IonItemOption>
-          <IonItemOption color="danger">Delete</IonItemOption>
+          <IonItemOption color="dark-grey">
+            {i18n.t("creds.archived.restore")}
+          </IonItemOption>
+          <IonItemOption color="danger">
+            {i18n.t("creds.archived.delete")}
+          </IonItemOption>
         </IonItemOptions>
       </IonItemSliding>
     );
@@ -209,7 +213,7 @@ const ArchivedCredentials = ({
             actionButtonLabel={`${
               activeList
                 ? i18n.t("creds.archived.cancel")
-                : i18n.t("creds.archived.edit")
+                : i18n.t("creds.archived.select")
             }`}
             title={`${i18n.t("creds.archived.title")}`}
           />
