@@ -44,6 +44,10 @@ import {
   ConnectionType,
   CredentialType,
 } from "../../../core/agent/agent.types";
+import Minicred1 from "../../assets/images/minicred1.jpg";
+import Minicred2 from "../../assets/images/minicred2.jpg";
+import Minicred3 from "../../assets/images/minicred3.jpg";
+import Minicred4 from "../../assets/images/minicred4.jpg";
 
 const ArchivedCredentials = ({
   archivedCreds,
@@ -82,21 +86,23 @@ const ArchivedCredentials = ({
   }) => {
     const credentialBackground = () => {
       if (credential.connectionType === ConnectionType.KERI) {
-        return "card-body-acdc";
+        return Minicred4;
       } else if (credential.connectionType === ConnectionType.DIDCOMM) {
         switch (credential.credentialType) {
         case CredentialType.PERMANENT_RESIDENT_CARD:
-          return "permanent-resident-card";
+          return Minicred3;
         case CredentialType.ACCESS_PASS_CREDENTIAL:
-          return "access-pass-credential";
+          return Minicred2;
         default:
-          return "card-body-w3c-generic";
+          return Minicred1;
         }
       }
     };
     return (
       <IonItemSliding>
-        <IonItem onClick={() => handleShowCardDetails(credential.id)}>
+        <IonItem
+          onClick={() => !activeList && handleShowCardDetails(credential.id)}
+        >
           <IonLabel>
             {activeList && (
               <IonCheckbox
@@ -107,7 +113,11 @@ const ArchivedCredentials = ({
                 aria-label=""
               />
             )}
-            <div className={`cred-card-template ${credentialBackground()}`} />
+            <img
+              src={credentialBackground()}
+              alt="credential-miniature"
+              className="credential-miniature"
+            />
             <div className="credential-info">
               <div className="credential-name">{credential.credentialType}</div>
               <div className="credential-expiration">
