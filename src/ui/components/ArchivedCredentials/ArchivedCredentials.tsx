@@ -102,6 +102,9 @@ const ArchivedCredentials = ({
       <IonItemSliding>
         <IonItem
           onClick={() => !activeList && handleShowCardDetails(credential.id)}
+          className={`${
+            selectedCredentials.includes(credential.id) && "selected-credential"
+          }`}
         >
           <IonLabel>
             {activeList && (
