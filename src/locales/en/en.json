@@ -826,7 +826,8 @@
       "cancel": "Cancel",
       "delete": "Delete",
       "restore": "Restore",
-      "selectedamount": "{{amount}} Credentials Selected",
+      "oneselected": "1 Credential Selected",
+      "manyselected": "{{amount}} Credentials Selected",
       "alert": {
         "restoresingle": {
           "title": "Are you sure you want to view this with your other credentials?",

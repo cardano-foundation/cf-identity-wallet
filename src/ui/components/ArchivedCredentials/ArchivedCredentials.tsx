@@ -253,9 +253,11 @@ const ArchivedCredentials = ({
                 </IonButton>
               </IonButtons>
               <div className="selected-amount-credentials-label">
-                {i18next.t("creds.archived.selectedamount", {
-                  amount: selectedCredentials.length,
-                })}
+                {selectedCredentials.length === 1
+                  ? i18n.t("creds.archived.oneselected")
+                  : i18next.t("creds.archived.manyselected", {
+                    amount: selectedCredentials.length,
+                  })}
               </div>
               <IonButtons slot="end">
                 <IonButton
