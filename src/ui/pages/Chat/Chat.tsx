@@ -18,7 +18,6 @@ const Chat = () => {
     <TabLayout
       pageId={pageId}
       header={true}
-      menuButton={true}
     >
       <div className="chat-tab-content">
         <h2>{i18n.t("chat.tab.header")}</h2>

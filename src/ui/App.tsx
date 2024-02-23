@@ -16,6 +16,7 @@ import { FullPageScanner } from "./pages/FullPageScanner";
 import { OperationType } from "./globals/types";
 import { i18n } from "../i18n";
 import { IncomingRequest } from "./pages/IncomingRequest";
+import { Settings } from "./pages/Settings";
 
 setupIonicReact();
 
@@ -54,7 +55,9 @@ const App = () => {
           ) : (
             <Routes />
           )}
+
           <IncomingRequest />
+          <Settings />
           <IonToast
             isOpen={showToast}
             onDidDismiss={() => {

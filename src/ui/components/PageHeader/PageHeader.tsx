@@ -8,7 +8,7 @@ import {
   IonToolbar,
 } from "@ionic/react";
 import { useHistory } from "react-router-dom";
-import { arrowBackOutline, closeOutline, menuOutline } from "ionicons/icons";
+import { arrowBackOutline, closeOutline } from "ionicons/icons";
 import { PageHeaderProps } from "./PageHeader.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { getStateCache } from "../../../store/reducers/stateCache";
@@ -24,6 +24,7 @@ const PageHeader = ({
   closeButton,
   closeButtonAction,
   closeButtonLabel,
+  closeButtonIcon,
   actionButton,
   actionButtonDisabled,
   actionButtonAction,
@@ -33,18 +34,12 @@ const PageHeader = ({
   progressBarValue,
   progressBarBuffer,
   title,
-  menuButton,
 }: PageHeaderProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
   const hasContent =
-    !!backButton ||
-    !!closeButton ||
-    !!actionButton ||
-    !!progressBar ||
-    !!title ||
-    !!menuButton;
+    !!backButton || !!closeButton || !!actionButton || !!progressBar || !!title;
 
   const handleOnBack = () => {
     if (onBack) {
@@ -102,7 +97,7 @@ const PageHeader = ({
             >
               <IonIcon
                 slot="icon-only"
-                icon={closeOutline}
+                icon={closeButtonIcon || closeOutline}
                 color="primary"
               />
             </IonButton>
@@ -127,7 +122,7 @@ const PageHeader = ({
                 .replace(/[^aA-zZ\s]/, "")
                 .split(" ")
                 .join("-")
-                .toLowerCase()}`}
+                .toLowerCase()}-title`}
             >
               {title}
             </h2>
@@ -146,20 +141,6 @@ const PageHeader = ({
 
         {!progressBar && (
           <IonButtons slot="end">
-            {menuButton && (
-              <IonButton
-                shape="round"
-                className="menu-button"
-                data-testid="menu-button"
-              >
-                <IonIcon
-                  slot="icon-only"
-                  icon={menuOutline}
-                  color="primary"
-                />
-              </IonButton>
-            )}
-
             {actionButton && !actionButtonLabel && (
               <IonButton
                 shape="round"

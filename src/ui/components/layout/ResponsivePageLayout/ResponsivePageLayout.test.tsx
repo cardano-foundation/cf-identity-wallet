@@ -17,7 +17,7 @@ describe("Page Layout", () => {
       </Provider>
     );
 
-    expect(getByTestId("page-id")).toBeInTheDocument();
+    expect(getByTestId("page-id-page")).toBeInTheDocument();
     expect(getByText("Title")).toBeInTheDocument();
     expect(getByText("Content")).toBeInTheDocument();
   });

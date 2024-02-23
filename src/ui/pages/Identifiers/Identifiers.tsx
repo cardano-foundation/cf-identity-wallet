@@ -107,7 +107,6 @@ const Identifiers = () => {
         pageId={pageId}
         header={true}
         title={`${i18n.t("identifiers.tab.title")}`}
-        menuButton={true}
         additionalButtons={
           <AdditionalButtons
             handleConnections={() => setShowConnections(true)}

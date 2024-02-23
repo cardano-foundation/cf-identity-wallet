@@ -134,7 +134,6 @@ const Connections = ({
       backButton={true}
       backButtonAction={() => setShowConnections(false)}
       title={`${i18n.t("connections.tab.title")}`}
-      menuButton={true}
       additionalButtons={<AdditionalButtons />}
       placeholder={
         showPlaceholder && (

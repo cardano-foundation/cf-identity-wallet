@@ -2,8 +2,9 @@ import { ellipsisVertical, addOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { IonLabel, IonSegment, IonSegmentButton } from "@ionic/react";
+import i18next from "i18next";
 import { i18n } from "../../../i18n";
-import { formatShortDate } from "../../utils/formatters";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import "./ConnectionDetails.scss";
 import {
   ConnectionDetails as ConnectionData,
@@ -32,12 +33,18 @@ import {
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
-import { ConnectionNoteDetails } from "../../../core/agent/agent.types";
+import {
+  ConnectionHistoryItem,
+  ConnectionNoteDetails,
+  ConnectionType,
+  CredentialType,
+} from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";
 import { ConnectionDetailsInfoBlock } from "./components/ConnectionDetailsInfoBlock";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
+import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 
 const ConnectionDetails = () => {
@@ -49,6 +56,9 @@ const ConnectionDetails = () => {
   const connectionShortDetails = history?.location
     ?.state as ConnectionShortDetails;
   const [connectionDetails, setConnectionDetails] = useState<ConnectionData>();
+  const [connectionHistory, setConnectionHistory] = useState<
+    ConnectionHistoryItem[]
+  >([]);
   const [optionsIsOpen, setOptionsIsOpen] = useState(false);
   const [alertDeleteConnectionIsOpen, setAlertDeleteConnectionIsOpen] =
     useState(false);
@@ -74,7 +84,19 @@ const ConnectionDetails = () => {
         setNotes(connectionDetails.notes);
       }
     }
-    if (connectionShortDetails?.id) getDetails();
+
+    async function getHistory() {
+      const connectionHistory =
+        await AriesAgent.agent.connections.getConnectionHistoryById(
+          connectionShortDetails.id
+        );
+      setConnectionHistory(connectionHistory);
+    }
+
+    if (connectionShortDetails?.id) {
+      getDetails();
+      getHistory();
+    }
   }, [connectionShortDetails?.id, modalIsOpen]);
 
   const handleDone = () => {
@@ -121,30 +143,27 @@ const ConnectionDetails = () => {
       value: formatShortDate(`${connectionDetails?.connectionDate}`),
     },
     {
-      title: i18n.t("connections.details.goalcodes"),
-      value:
-        connectionDetails?.goalCode ||
-        i18n.t("connections.details.notavailable"),
-    },
-    {
-      title: i18n.t("connections.details.handshake"),
-      value:
-        connectionDetails?.handshakeProtocols?.toString() ||
-        i18n.t("connections.details.notavailable"),
-    },
-    {
-      title: i18n.t("connections.details.attachments"),
-      value:
-        connectionDetails?.requestAttachments?.toString() ||
-        i18n.t("connections.details.notavailable"),
-    },
-    {
       title: i18n.t("connections.details.endpoints"),
       value:
         connectionDetails?.serviceEndpoints?.toString() ||
         i18n.t("connections.details.notavailable"),
     },
   ];
+
+  const credentialBackground = () => {
+    if (connectionShortDetails?.type === ConnectionType.KERI) {
+      return "card-body-acdc";
+    } else if (connectionShortDetails?.type === ConnectionType.DIDCOMM) {
+      switch (connectionHistory[0]?.credentialType) {
+      case CredentialType.PERMANENT_RESIDENT_CARD:
+        return "permanent-resident-card";
+      case CredentialType.ACCESS_PASS_CREDENTIAL:
+        return "access-pass-credential";
+      default:
+        return "card-body-w3c-generic";
+      }
+    }
+  };
 
   return (
     <>
@@ -203,6 +222,54 @@ const ConnectionDetails = () => {
                   {infoBlock.value}
                 </ConnectionDetailsInfoBlock>
               ))}
+              <ConnectionDetailsInfoBlock
+                title={i18n.t("connections.details.history")}
+              >
+                {connectionHistory?.length > 0 && (
+                  <div className="connection-details-history-event">
+                    <div className="connection-details-logo">
+                      <div
+                        className={`cred-card-template ${credentialBackground()}`}
+                      />
+                    </div>
+                    <p className="connection-details-history-event-info">
+                      {i18next.t("connections.details.received", {
+                        credential: connectionHistory[0]?.credentialType
+                          ?.replace(/([A-Z][a-z])/g, " $1")
+                          .replace(/^ /, "")
+                          .replace(/(\d)/g, "$1"),
+                      })}
+                      <span>
+                        {` ${formatShortDate(
+                          connectionHistory[0]?.timestamp
+                        )} - ${formatTimeToSec(
+                          connectionHistory[0]?.timestamp
+                        )}`}
+                      </span>
+                    </p>
+                  </div>
+                )}
+                <div className="connection-details-history-event">
+                  <div className="connection-details-logo">
+                    <img
+                      src={connectionDetails?.logo ?? CardanoLogo}
+                      alt="connection-logo"
+                    />
+                  </div>
+                  <p className="connection-details-history-event-info">
+                    {i18next.t("connections.details.connectedwith", {
+                      issuer: connectionDetails?.label,
+                    })}
+                    <span>
+                      {` ${formatShortDate(
+                        `${connectionDetails?.connectionDate}`
+                      )} - ${formatTimeToSec(
+                        `${connectionDetails?.connectionDate}`
+                      )}`}
+                    </span>
+                  </p>
+                </div>
+              </ConnectionDetailsInfoBlock>
               <PageFooter
                 pageId={pageId}
                 deleteButtonText={`${i18n.t("connections.details.delete")}`}

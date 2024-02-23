@@ -56,6 +56,7 @@ class CredentialMetadataRecord
       isArchived: this.isArchived,
       isDeleted: this.isDeleted,
       credentialRecordId: this.credentialRecordId,
+      connectionId: this.connectionId,
     };
   }
 }
