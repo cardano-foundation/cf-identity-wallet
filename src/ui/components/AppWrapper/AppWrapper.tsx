@@ -54,6 +54,7 @@ import {
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
+import { ConfigurationService } from "../../../core/configuration";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -251,6 +252,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.set(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY, "");
       await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
     }
+
+    await new ConfigurationService().start();
 
     try {
       await AriesAgent.agent.start();
