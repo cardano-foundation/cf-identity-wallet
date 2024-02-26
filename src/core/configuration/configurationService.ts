@@ -30,16 +30,37 @@ class ConfigurationService {
     return this.configurationEnv;
   }
 
-  private configurationValid(data: any): boolean {
-    return (
-      (typeof data.keri === "object" &&
-        typeof data.keri.witness === "string" &&
-        data.keri.witness === WitnessMode.BACKER &&
-        typeof data.keri.backer.address === "string" &&
-        typeof data.keri.backer.aid === "string") ||
-      (data.keri.witness === WitnessMode.POOLS &&
-        Array.isArray(data.keri.pools))
-    );
+  private configurationValid(data: Configuration): boolean {
+    const keri = data.keri;
+    if (typeof keri !== "object") {
+      return false;
+    }
+
+    const backerType = keri.backerType;
+    if (typeof backerType !== "string") {
+      return false;
+    }
+
+    if (backerType === WitnessMode.POOLS) {
+      const witnessConfig = keri.pools;
+      return (
+        Array.isArray(witnessConfig) &&
+        witnessConfig.length > 0 &&
+        witnessConfig.every((witness) => typeof witness === "string")
+      );
+    } else if (backerType === WitnessMode.LEDGER) {
+      const ledgerConfig = keri.ledger;
+      if (typeof ledgerConfig !== "object") {
+        return false;
+      }
+
+      return (
+        typeof ledgerConfig.aid === "string" &&
+        typeof ledgerConfig.address === "string"
+      );
+    } else {
+      return false;
+    }
   }
 }
 

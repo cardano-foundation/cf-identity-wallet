@@ -140,12 +140,12 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
         </CardDetailsBlock>
       )}
 
-      {ConfigurationService.env.keri.witness === WitnessMode.BACKER && (
+      {ConfigurationService.env.keri.backerType === WitnessMode.LEDGER && (
         <CardDetailsBlock
           title={i18n.t("identifiers.card.details.backeraddress.title")}
         >
           <CardDetailsItem
-            info={ConfigurationService.env.keri.backer.address}
+            info={ConfigurationService.env.keri.ledger.address}
             copyButton={true}
             icon={personCircleOutline}
             // @TODO - foconnor: This metadata in the future should come with Signify, for now we are "assuming" the address.

@@ -1,17 +1,17 @@
 enum WitnessMode {
   POOLS = "pools",
-  BACKER = "backer",
+  LEDGER = "ledger",
 }
 
 interface Configuration {
   keri:
     | {
-        witness: WitnessMode.POOLS;
+        backerType: WitnessMode.POOLS;
         pools: string[];
       }
     | {
-        witness: WitnessMode.BACKER;
-        backer: {
+        backerType: WitnessMode.LEDGER;
+        ledger: {
           aid: string;
           address: string;
         };

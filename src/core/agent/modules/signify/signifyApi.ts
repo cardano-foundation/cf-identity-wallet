@@ -521,15 +521,15 @@ export class SignifyApi {
     return this.signifyClient.identifiers().members(name);
   }
   private getCreateAidOptions(): CreateIdentiferArgs {
-    if (ConfigurationService.env.keri.witness === WitnessMode.BACKER) {
+    if (ConfigurationService.env.keri.backerType === WitnessMode.LEDGER) {
       return {
         toad: 1,
-        wits: [ConfigurationService.env.keri.backer.aid],
+        wits: [ConfigurationService.env.keri.ledger.aid],
         count: 1,
         ncount: 1,
         isith: "1",
         nsith: "1",
-        data: [{ ca: ConfigurationService.env.keri.backer.address }],
+        data: [{ ca: ConfigurationService.env.keri.ledger.address }],
       };
     }
     return {
