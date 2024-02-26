@@ -202,6 +202,13 @@
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
+    &.archived-credential {
+      .action-button-label,
+      .action-button-label.md {
+        font-size: 0.8rem;
+      }
+    }
+
     .card-details-content {
       > * {
         margin: 1.326rem 0 0.85rem;
