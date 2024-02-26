@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   IonButton,
@@ -98,8 +98,10 @@ const ArchivedCredentials = ({
         }
       }
     };
+
+    const itemSlidingRef = useRef(null);
     return (
-      <IonItemSliding>
+      <IonItemSliding ref={itemSlidingRef}>
         <IonItem
           onClick={() => !activeList && handleShowCardDetails(credential.id)}
           className={`${
@@ -131,10 +133,22 @@ const ArchivedCredentials = ({
         </IonItem>
 
         <IonItemOptions>
-          <IonItemOption color="dark-grey">
+          <IonItemOption
+            color="dark-grey"
+            onClick={() => {
+              setSelectedCredentials([credential.id]);
+              setAlertRestoreIsOpen(true);
+            }}
+          >
             {i18n.t("creds.archived.restore")}
           </IonItemOption>
-          <IonItemOption color="danger">
+          <IonItemOption
+            color="danger"
+            onClick={() => {
+              setSelectedCredentials([credential.id]);
+              setAlertDeleteIsOpen(true);
+            }}
+          >
             {i18n.t("creds.archived.delete")}
           </IonItemOption>
         </IonItemOptions>
@@ -176,6 +190,11 @@ const ArchivedCredentials = ({
       // Should always exist but just in case
       dispatch(setCredsCache([...credsCache, restoredCred]));
     }
+  };
+
+  const handleCancelAction = () => {
+    !activeList && setSelectedCredentials([]);
+    dispatch(setCurrentOperation(OperationType.IDLE));
   };
 
   return (
@@ -294,8 +313,8 @@ const ArchivedCredentials = ({
             setVerifyPasscodeIsOpen(true);
           }
         }}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionCancel={handleCancelAction}
+        actionDismiss={handleCancelAction}
       />
       <AlertRestore
         isOpen={alertRestoreIsOpen}
@@ -321,8 +340,8 @@ const ArchivedCredentials = ({
           );
           resetList();
         }}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionCancel={handleCancelAction}
+        actionDismiss={handleCancelAction}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
