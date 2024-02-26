@@ -127,7 +127,11 @@ const ArchivedCredentials = ({
               className="credential-miniature"
             />
             <div className="credential-info">
-              <div className="credential-name">{credential.credentialType}</div>
+              <div className="credential-name">
+                {credential.credentialType
+                  .replace(/([A-Z][a-z])/g, " $1")
+                  .replace(/(\d)/g, " $1")}
+              </div>
               <div className="credential-expiration">
                 {formatShortDate(credential.issuanceDate)}
               </div>
