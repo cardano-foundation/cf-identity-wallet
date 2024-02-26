@@ -2,6 +2,7 @@ import { CredentialFilter, ready } from "signify-ts";
 import { utils } from "@aries-framework/core";
 import { MultiSigRoute } from "./signifyApi.types";
 import { SignifyApi } from "./signifyApi";
+import { ConfigurationService } from "../../../configuration";
 
 const firstAid = "aid1";
 const secondAid = "aid2";
@@ -185,6 +186,7 @@ const api = new SignifyApi(5, 1);
 describe("Signify API", () => {
   beforeAll(async () => {
     await api.start();
+    await new ConfigurationService().start();
   });
 
   test("should call boot if connect fails", async () => {
