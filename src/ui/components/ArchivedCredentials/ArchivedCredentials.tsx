@@ -69,12 +69,6 @@ const ArchivedCredentials = ({
   const resetList = () => {
     setActiveList(false);
     setSelectedCredentials([]);
-    if (archivedCreds.length === 0) {
-      console.log("0 ", archivedCreds.length);
-      setArchivedCredentialsIsOpen(false);
-    } else {
-      console.log("/ ", archivedCreds.length);
-    }
   };
 
   const selectAll = () => {
@@ -95,12 +89,12 @@ const ArchivedCredentials = ({
         return Minicred4;
       } else if (credential.connectionType === ConnectionType.DIDCOMM) {
         switch (credential.credentialType) {
-          case CredentialType.PERMANENT_RESIDENT_CARD:
-            return Minicred3;
-          case CredentialType.ACCESS_PASS_CREDENTIAL:
-            return Minicred2;
-          default:
-            return Minicred1;
+        case CredentialType.PERMANENT_RESIDENT_CARD:
+          return Minicred3;
+        case CredentialType.ACCESS_PASS_CREDENTIAL:
+          return Minicred2;
+        default:
+          return Minicred1;
         }
       }
     };
@@ -287,8 +281,8 @@ const ArchivedCredentials = ({
                 {selectedCredentials.length === 1
                   ? i18n.t("creds.archived.oneselected")
                   : i18next.t("creds.archived.manyselected", {
-                      amount: selectedCredentials.length,
-                    })}
+                    amount: selectedCredentials.length,
+                  })}
               </div>
               <IonButtons slot="end">
                 <IonButton
