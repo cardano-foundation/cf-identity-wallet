@@ -1,21 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   IonButton,
   IonButtons,
   IonCheckbox,
-  IonCol,
   IonFooter,
-  IonGrid,
   IonItem,
+  IonItemOption,
+  IonItemOptions,
+  IonItemSliding,
   IonLabel,
   IonList,
   IonModal,
-  IonRow,
   IonToolbar,
 } from "@ionic/react";
 import i18next from "i18next";
-import { PageLayout } from "../layout/PageLayout";
 import { i18n } from "../../../i18n";
 import "./ArchivedCredentials.scss";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
@@ -39,12 +38,23 @@ import {
   setCredsCache,
 } from "../../../store/reducers/credsCache";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
+import { PageHeader } from "../PageHeader";
+import {
+  ConnectionType,
+  CredentialType,
+} from "../../../core/agent/agent.types";
+import Minicred1 from "../../assets/images/minicred1.jpg";
+import Minicred2 from "../../assets/images/minicred2.jpg";
+import Minicred3 from "../../assets/images/minicred3.jpg";
+import Minicred4 from "../../assets/images/minicred4.jpg";
 
 const ArchivedCredentials = ({
   archivedCreds,
   archivedCredentialsIsOpen,
   setArchivedCredentialsIsOpen,
 }: ArchivedCredentialsProps) => {
+  const componentId = "archived-credentials";
   const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
@@ -69,50 +79,83 @@ const ArchivedCredentials = ({
     return data;
   };
 
-  interface CredentialItemProps {
-    key: number;
-    index: number;
+  const CredentialItem = ({
+    credential,
+  }: {
     credential: CredentialShortDetails;
-  }
-
-  const CredentialItem = ({ credential, index }: CredentialItemProps) => {
-    const credentialColor = {
-      background: `linear-gradient(91.86deg, ${credential.colors[0]} 28.76%, ${credential.colors[1]} 119.14%)`,
-      zIndex: index,
+  }) => {
+    const credentialBackground = () => {
+      if (credential.connectionType === ConnectionType.KERI) {
+        return Minicred4;
+      } else if (credential.connectionType === ConnectionType.DIDCOMM) {
+        switch (credential.credentialType) {
+        case CredentialType.PERMANENT_RESIDENT_CARD:
+          return Minicred3;
+        case CredentialType.ACCESS_PASS_CREDENTIAL:
+          return Minicred2;
+        default:
+          return Minicred1;
+        }
+      }
     };
 
     return (
-      <IonItem>
-        <IonGrid>
-          <IonRow>
+      <IonItemSliding>
+        <IonItem
+          onClick={() =>
+            activeList
+              ? handleSelectCredentials(credential.id)
+              : handleShowCardDetails(credential.id)
+          }
+          className={`${
+            selectedCredentials.includes(credential.id) && "selected-credential"
+          }`}
+        >
+          <IonLabel>
             {activeList && (
-              <IonCol className="credential-selector">
-                <IonCheckbox
-                  checked={selectedCredentials.includes(credential.id)}
-                  onIonChange={() => {
-                    handleSelectCredentials(credential.id);
-                  }}
-                />
-              </IonCol>
+              <IonCheckbox
+                checked={selectedCredentials.includes(credential.id)}
+                onIonChange={() => {
+                  handleSelectCredentials(credential.id);
+                }}
+                aria-label=""
+              />
             )}
-            <IonCol
-              className="credential-color"
-              style={credentialColor}
+            <img
+              src={credentialBackground()}
+              alt="credential-miniature"
+              className="credential-miniature"
             />
-            <IonCol
-              className="credential-info"
-              onClick={() => handleShowCardDetails(credential.id)}
-            >
-              <IonLabel className="credential-name">
-                {credential.credentialType}
-              </IonLabel>
-              <IonLabel className="credential-expiration">
+            <div className="credential-info">
+              <div className="credential-name">{credential.credentialType}</div>
+              <div className="credential-expiration">
                 {formatShortDate(credential.issuanceDate)}
-              </IonLabel>
-            </IonCol>
-          </IonRow>
-        </IonGrid>
-      </IonItem>
+              </div>
+            </div>
+          </IonLabel>
+        </IonItem>
+
+        <IonItemOptions>
+          <IonItemOption
+            color="dark-grey"
+            onClick={() => {
+              setSelectedCredentials([credential.id]);
+              setAlertRestoreIsOpen(true);
+            }}
+          >
+            {i18n.t("creds.archived.restore")}
+          </IonItemOption>
+          <IonItemOption
+            color="danger"
+            onClick={() => {
+              setSelectedCredentials([credential.id]);
+              setAlertDeleteIsOpen(true);
+            }}
+          >
+            {i18n.t("creds.archived.delete")}
+          </IonItemOption>
+        </IonItemOptions>
+      </IonItemSliding>
     );
   };
 
@@ -152,103 +195,108 @@ const ArchivedCredentials = ({
     }
   };
 
+  const handleCancelAction = () => {
+    !activeList && setSelectedCredentials([]);
+    dispatch(setCurrentOperation(OperationType.IDLE));
+  };
+
   return (
     <IonModal
       isOpen={archivedCredentialsIsOpen}
-      data-testid="archived-credentials"
+      className={`${componentId}-modal${activeList ? " active-list" : ""}`}
+      data-testid={componentId}
       onDidDismiss={() => {
         setArchivedCredentialsIsOpen(false);
         setActiveList(false);
         setSelectedCredentials([]);
       }}
     >
-      <div
-        className={`archived-credentials modal ${
-          activeList ? "active-list" : ""
-        }`}
+      <ScrollablePageLayout
+        pageId={componentId + "-content"}
+        header={
+          <PageHeader
+            closeButton={true}
+            closeButtonAction={() =>
+              activeList
+                ? selectedCredentials.length > 0
+                  ? setSelectedCredentials([])
+                  : setSelectedCredentials(selectAll)
+                : setArchivedCredentialsIsOpen(false)
+            }
+            closeButtonLabel={`${
+              activeList
+                ? selectedCredentials.length > 0
+                  ? i18n.t("creds.archived.deselectall")
+                  : i18n.t("creds.archived.selectall")
+                : i18n.t("creds.archived.done")
+            }`}
+            actionButton={true}
+            actionButtonAction={() => {
+              setSelectedCredentials([]);
+              setActiveList(!activeList);
+            }}
+            actionButtonLabel={`${
+              activeList
+                ? i18n.t("creds.archived.cancel")
+                : i18n.t("creds.archived.select")
+            }`}
+            title={`${i18n.t("creds.archived.title")}`}
+          />
+        }
       >
-        <PageLayout
-          header={true}
-          closeButton={true}
-          closeButtonAction={() =>
-            activeList
-              ? selectedCredentials.length > 0
-                ? setSelectedCredentials([])
-                : setSelectedCredentials(selectAll)
-              : setArchivedCredentialsIsOpen(false)
-          }
-          closeButtonLabel={`${
-            activeList
-              ? selectedCredentials.length > 0
-                ? i18n.t("creds.archived.deselectall")
-                : i18n.t("creds.archived.selectall")
-              : i18n.t("creds.archived.done")
-          }`}
-          actionButton={true}
-          actionButtonAction={() => {
-            setSelectedCredentials([]);
-            setActiveList(!activeList);
-          }}
-          actionButtonLabel={`${
-            activeList
-              ? i18n.t("creds.archived.cancel")
-              : i18n.t("creds.archived.edit")
-          }`}
-          title={`${i18n.t("creds.archived.title")}`}
+        <IonList
+          lines="none"
+          className="archived-credentials-list"
         >
-          <IonList
-            lines="none"
-            className="archived-credentials-list"
+          {archivedCreds.map(
+            (credential: CredentialShortDetails, index: number) => {
+              return (
+                <CredentialItem
+                  key={index}
+                  credential={credential}
+                />
+              );
+            }
+          )}
+        </IonList>
+        {activeList && (
+          <IonFooter
+            collapse="fade"
+            className="archived-credentials-footer ion-no-border"
           >
-            {archivedCreds.map(
-              (credential: CredentialShortDetails, index: number) => {
-                return (
-                  <CredentialItem
-                    key={index}
-                    index={index}
-                    credential={credential as CredentialShortDetails}
-                  />
-                );
-              }
-            )}
-          </IonList>
-          {activeList ? (
-            <IonFooter
-              collapse="fade"
-              className="archived-credentials-footer ion-no-border"
+            <IonToolbar
+              color="light"
+              className="page-footer"
             >
-              <IonToolbar
-                color="light"
-                className="page-footer"
-              >
-                <IonButtons slot="start">
-                  <IonButton
-                    className="delete-credentials-label"
-                    onClick={() => setAlertDeleteIsOpen(true)}
-                    data-testid="delete-credentials"
-                  >
-                    {i18n.t("creds.archived.delete")}
-                  </IonButton>
-                </IonButtons>
-                <div className="selected-amount-credentials-label">
-                  {i18next.t("creds.archived.selectedamount", {
+              <IonButtons slot="start">
+                <IonButton
+                  className="delete-credentials-label"
+                  onClick={() => setAlertDeleteIsOpen(true)}
+                  data-testid="delete-credentials"
+                >
+                  {i18n.t("creds.archived.delete")}
+                </IonButton>
+              </IonButtons>
+              <div className="selected-amount-credentials-label">
+                {selectedCredentials.length === 1
+                  ? i18n.t("creds.archived.oneselected")
+                  : i18next.t("creds.archived.manyselected", {
                     amount: selectedCredentials.length,
                   })}
-                </div>
-                <IonButtons slot="end">
-                  <IonButton
-                    className="restore-credentials-label"
-                    onClick={() => setAlertRestoreIsOpen(true)}
-                    data-testid="restore-credentials"
-                  >
-                    {i18n.t("creds.archived.restore")}
-                  </IonButton>
-                </IonButtons>
-              </IonToolbar>
-            </IonFooter>
-          ) : null}
-        </PageLayout>
-      </div>
+              </div>
+              <IonButtons slot="end">
+                <IonButton
+                  className="restore-credentials-label"
+                  onClick={() => setAlertRestoreIsOpen(true)}
+                  data-testid="restore-credentials"
+                >
+                  {i18n.t("creds.archived.restore")}
+                </IonButton>
+              </IonButtons>
+            </IonToolbar>
+          </IonFooter>
+        )}
+      </ScrollablePageLayout>
       <AlertDelete
         isOpen={alertDeleteIsOpen}
         setIsOpen={setAlertDeleteIsOpen}
@@ -268,8 +316,8 @@ const ArchivedCredentials = ({
             setVerifyPasscodeIsOpen(true);
           }
         }}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionCancel={handleCancelAction}
+        actionDismiss={handleCancelAction}
       />
       <AlertRestore
         isOpen={alertRestoreIsOpen}
@@ -295,8 +343,8 @@ const ArchivedCredentials = ({
           );
           resetList();
         }}
-        actionCancel={() => dispatch(setCurrentOperation(OperationType.IDLE))}
-        actionDismiss={() => dispatch(setCurrentOperation(OperationType.IDLE))}
+        actionCancel={handleCancelAction}
+        actionDismiss={handleCancelAction}
       />
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
