@@ -253,8 +253,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
     }
 
+    await new ConfigurationService().start();
+
     try {
-      await new ConfigurationService().start();
       await AriesAgent.agent.start();
     } catch (e) {
       // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
