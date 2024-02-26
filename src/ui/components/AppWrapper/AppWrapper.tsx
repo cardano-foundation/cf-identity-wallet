@@ -254,8 +254,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     try {
-      await AriesAgent.agent.start();
       await new ConfigurationService().start();
+      await AriesAgent.agent.start();
     } catch (e) {
       // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
       setAgentInitErr(true);

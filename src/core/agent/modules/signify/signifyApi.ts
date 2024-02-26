@@ -13,7 +13,7 @@ import {
   Operation,
   CreateIdentiferArgs,
 } from "signify-ts";
-import { ConfigurationService } from "./../../../configuration/configuration";
+import { ConfigurationService } from "../../../configuration/configurationService";
 import {
   KeriContact,
   CreateIdentifierResult,
@@ -25,7 +25,7 @@ import {
   MultiSigRoute,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
-import { WITNESS_MODE } from "../../../configuration/types";
+import { WitnessMode } from "../../../configuration/configurationService.types";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
@@ -521,7 +521,7 @@ export class SignifyApi {
     return this.signifyClient.identifiers().members(name);
   }
   private getCreateAidOptions(): CreateIdentiferArgs {
-    if (ConfigurationService.env.keri.witness === WITNESS_MODE.BACKER) {
+    if (ConfigurationService.env.keri.witness === WitnessMode.BACKER) {
       return {
         toad: 1,
         wits: [ConfigurationService.env.keri.backer.aid],
