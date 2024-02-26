@@ -601,6 +601,12 @@ describe("Checking the Connection Details Page when different Credentials are is
     await waitFor(() =>
       expect(getByText("13/02/2024 - 10:16:08")).toBeVisible()
     );
+
+    await waitFor(() =>
+      expect(
+        document.getElementsByClassName("card-body-w3c-generic").length
+      ).toBe(1)
+    );
   });
 
   test("We can see the connection details for AccessPassCredential", async () => {
@@ -667,6 +673,12 @@ describe("Checking the Connection Details Page when different Credentials are is
     await waitFor(() =>
       expect(getByText("15/02/2024 - 10:16:08")).toBeVisible()
     );
+
+    await waitFor(() =>
+      expect(
+        document.getElementsByClassName("access-pass-credential").length
+      ).toBe(1)
+    );
   });
 
   test("We can see the connection details for PermanentResidentCard", async () => {
@@ -732,6 +744,12 @@ describe("Checking the Connection Details Page when different Credentials are is
 
     await waitFor(() =>
       expect(getByText("13/02/2024 - 10:16:26")).toBeVisible()
+    );
+
+    await waitFor(() =>
+      expect(
+        document.getElementsByClassName("permanent-resident-card").length
+      ).toBe(1)
     );
   });
 
@@ -802,6 +820,10 @@ describe("Checking the Connection Details Page when different Credentials are is
 
     await waitFor(() =>
       expect(getByText("13/02/2024 - 11:39:22")).toBeVisible()
+    );
+
+    await waitFor(() =>
+      expect(document.getElementsByClassName("card-body-acdc").length).toBe(1)
     );
   });
 });

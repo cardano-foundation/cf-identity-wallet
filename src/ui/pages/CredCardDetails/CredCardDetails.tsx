@@ -243,7 +243,7 @@ const CredCardDetails = () => {
     return (
       <TabLayout
         pageId={pageId}
-        customClass={`card-details${isArchived ? " archived-credential" : ""}`}
+        customClass="card-details"
         header={true}
         doneLabel={`${i18n.t("creds.card.details.done")}`}
         doneAction={handleDone}
