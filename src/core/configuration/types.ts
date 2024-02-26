@@ -3,7 +3,7 @@ enum WITNESS_MODE {
   BACKER = "backer",
 }
 
-type EnvironmentType = {
+interface IConfiguration {
   keri: {
     witness: WITNESS_MODE;
     pools: string[];
@@ -12,7 +12,7 @@ type EnvironmentType = {
       address: string;
     };
   };
-};
+}
 
-export type { EnvironmentType };
+export type { IConfiguration };
 export { WITNESS_MODE };

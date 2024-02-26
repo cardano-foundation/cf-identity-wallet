@@ -54,6 +54,7 @@ import {
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
+import { ConfigurationService } from "../../../core/configuration";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -254,6 +255,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     try {
       await AriesAgent.agent.start();
+      await new ConfigurationService().start();
     } catch (e) {
       // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
       setAgentInitErr(true);

@@ -13,6 +13,7 @@ import {
   Operation,
   CreateIdentiferArgs,
 } from "signify-ts";
+import { ConfigurationService } from "./../../../configuration/configuration";
 import {
   KeriContact,
   CreateIdentifierResult,
@@ -24,8 +25,7 @@ import {
   MultiSigRoute,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
-import env from "../../../../../configs";
-import { WITNESS_MODE } from "../../../../../configs/types";
+import { WITNESS_MODE } from "../../../configuration/types";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
@@ -521,20 +521,20 @@ export class SignifyApi {
     return this.signifyClient.identifiers().members(name);
   }
   private getCreateAidOptions(): CreateIdentiferArgs {
-    if (env.keri.witness === WITNESS_MODE.BACKER) {
+    if (ConfigurationService.env.keri.witness === WITNESS_MODE.BACKER) {
       return {
         toad: 1,
-        wits: [env.keri.backer.aid],
+        wits: [ConfigurationService.env.keri.backer.aid],
         count: 1,
         ncount: 1,
         isith: "1",
         nsith: "1",
-        data: [{ ca: env.keri.backer.address }],
+        data: [{ ca: ConfigurationService.env.keri.backer.address }],
       };
     }
     return {
-      toad: env.keri.pools.length,
-      wits: env.keri.pools,
+      toad: ConfigurationService.env.keri.pools.length,
+      wits: ConfigurationService.env.keri.pools,
     };
   }
 }
