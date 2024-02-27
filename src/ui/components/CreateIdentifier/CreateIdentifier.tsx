@@ -1,4 +1,14 @@
-import { IonCol, IonGrid, IonModal, IonRow, IonSpinner } from "@ionic/react";
+import {
+  IonCheckbox,
+  IonCol,
+  IonGrid,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonModal,
+  IonRow,
+  IonSpinner,
+} from "@ionic/react";
 import { useEffect, useState } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
@@ -26,6 +36,9 @@ import { ResponsiveModal } from "../layout/ResponsiveModal";
 import { TypeItem } from "./components/TypeItem";
 import { IdentifierThemeSelector } from "./components/IdentifierThemeSelector";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
+import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
+import { ConnectionShortDetails } from "../../pages/Connections/Connections.types";
+import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
 
 const CreateIdentifier = ({
   modalIsOpen,
@@ -34,6 +47,7 @@ const CreateIdentifier = ({
   const componentId = "create-identifier-modal";
   const dispatch = useAppDispatch();
   const identifierData = useAppSelector(getIdentifiersCache);
+  const connectionsCache = useAppSelector(getConnectionsCache);
   const [displayNameValue, setDisplayNameValue] = useState("");
   const [selectedIdentifierType, setSelectedIdentifierType] = useState(0);
   const [selectedAidType, setSelectedAidType] = useState(0);
@@ -45,6 +59,21 @@ const CreateIdentifier = ({
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
   const typeIsSelectedIsValid = selectedIdentifierType !== undefined;
+  const [sortedConnections, setSortedConnections] = useState<
+    ConnectionShortDetails[]
+  >([]);
+  const [selectedConnections, setSelectedConnections] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (connectionsCache.length) {
+      const sortedConnections = [...connectionsCache].sort(function (a, b) {
+        const textA = a.label.toUpperCase();
+        const textB = b.label.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
+      setSortedConnections(sortedConnections);
+    }
+  }, [connectionsCache]);
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -115,6 +144,16 @@ const CreateIdentifier = ({
         handleCreateIdentifier();
       }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
     }
+  };
+
+  const handleSelectConnection = (id: string) => {
+    let data = selectedConnections;
+    if (data.find((item) => item === id)) {
+      data = data.filter((item) => item !== id);
+    } else {
+      data = [...selectedConnections, id];
+    }
+    setSelectedConnections(data);
   };
 
   return (
@@ -287,7 +326,39 @@ const CreateIdentifier = ({
                 title={`${i18n.t("createidentifier.connections")}`}
               />
             }
-          ></ScrollablePageLayout>
+          >
+            <IonList>
+              {sortedConnections.map((connection, index) => {
+                return (
+                  <IonItem
+                    key={index}
+                    onClick={() => handleSelectConnection(connection.id)}
+                    className={`${
+                      selectedConnections.includes(connection.id) &&
+                      "selected-connection"
+                    }`}
+                  >
+                    <IonLabel>
+                      <img
+                        src={connection?.logo ?? CardanoLogo}
+                        alt="connection-logo"
+                      />
+                      <span className="connection-name">
+                        {connection.label}
+                      </span>
+                      <IonCheckbox
+                        checked={selectedConnections.includes(connection.id)}
+                        onIonChange={() => {
+                          handleSelectConnection(connection.id);
+                        }}
+                        aria-label=""
+                      />
+                    </IonLabel>
+                  </IonItem>
+                );
+              })}
+            </IonList>
+          </ScrollablePageLayout>
         </IonModal>
       )}
     </>

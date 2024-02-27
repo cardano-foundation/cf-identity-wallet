@@ -106,6 +106,63 @@ ion-modal.create-identifier-modal {
         }
       }
     }
+
+    .scrollable-page-content {
+      ion-list {
+        background: transparent;
+
+        ion-item {
+          --inner-padding-end: 0;
+
+          &::part(native) {
+            padding: 0;
+            background: var(--ion-color-light);
+          }
+
+          ion-label {
+            display: flex;
+            flex-direction: row;
+
+            * {
+              align-self: center;
+            }
+
+            img {
+              width: 2.75rem;
+              height: 2.75rem;
+              border-radius: 2rem;
+            }
+
+            .connection-name {
+              font-size: 1rem;
+              white-space: nowrap;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              text-align: left;
+              width: 100%;
+              margin-left: 1rem;
+            }
+
+            ion-checkbox {
+              --size: 2rem;
+              width: 2rem;
+              margin: 0 0 0 0.375rem;
+
+              &.checkbox-checked {
+                --checkbox-background-checked: var(
+                  --ion-color-primary-gradient
+                );
+                --checkmark-color: var(--ion-color-primary);
+
+                &::part(container) {
+                  border: 0;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
   }
 
   @media screen and (min-width: 250px) and (max-width: 375px) {
