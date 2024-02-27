@@ -3,6 +3,16 @@ ion-modal.create-identifier-modal {
     filter: blur(0.1rem);
   }
 
+  ion-toolbar {
+    &.page-footer {
+      padding: 0;
+    }
+
+    ion-buttons ion-button::part(native) {
+      opacity: 1;
+    }
+  }
+
   .create-identifier-modal-content {
     .spinner-container {
       z-index: 100;
@@ -108,6 +118,15 @@ ion-modal.create-identifier-modal {
     }
 
     .scrollable-page-content {
+      .multisig-subtitle {
+        text-align: center;
+      }
+
+      ion-searchbar {
+        padding: 0;
+        min-height: 1rem;
+      }
+
       ion-list {
         background: transparent;
 

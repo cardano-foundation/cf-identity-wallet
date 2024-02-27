@@ -7,6 +7,7 @@ import {
   IonList,
   IonModal,
   IonRow,
+  IonSearchbar,
   IonSpinner,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
@@ -323,10 +324,16 @@ const CreateIdentifier = ({
                 closeButton={true}
                 closeButtonAction={() => setMultiSigStage(0)}
                 closeButtonLabel={`${i18n.t("createidentifier.back")}`}
-                title={`${i18n.t("createidentifier.connections")}`}
+                title={`${i18n.t("createidentifier.connections.title")}`}
               />
             }
           >
+            <p className="multisig-subtitle">
+              {i18n.t("createidentifier.connections.subtitle")}
+            </p>
+            <IonSearchbar
+              placeholder={`${i18n.t("createidentifier.connections.search")}`}
+            />
             <IonList>
               {sortedConnections.map((connection, index) => {
                 return (
@@ -358,6 +365,14 @@ const CreateIdentifier = ({
                 );
               })}
             </IonList>
+            <PageFooter
+              pageId={componentId}
+              primaryButtonText={`${i18n.t(
+                "createidentifier.connections.continue"
+              )}`}
+              primaryButtonAction={() => handleContinue()}
+              primaryButtonDisabled={!selectedConnections.length}
+            />
           </ScrollablePageLayout>
         </IonModal>
       )}

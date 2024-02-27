@@ -1003,7 +1003,29 @@
     "title": "Add an identifier",
     "cancel": "Cancel",
     "back": "Back",
-    "connections": "Connections",
+    "connections": {
+      "title": "Connections",
+      "subtitle": "Select the connections you want to sign this identifier with",
+      "search": "Search connections",
+      "continue": "Choose connections"
+    },
+    "threshold": {
+      "title": "Set a Threshold",
+      "subtitle": "Set the threshold to determine the level of consensus required",
+      "label": "Threshold",
+      "continue": "Review identifier"
+    },
+    "confirm": {
+      "title": "Confirm",
+      "subtitle": "Double-check all the details for your Keri AID identifier are accurate",
+      "continue": "Confirm identifier",
+      "cancel": "Cancel",
+      "alert": {
+        "text": "Cancelling now means you'll need to restart the identifier adding process. Are you sure you want to cancel?",
+        "cancel": "Yes, cancel",
+        "back": "Back"
+      }
+    },
     "displayname": {
       "title": "Display name",
       "placeholder": "Create a name for this identifier"
