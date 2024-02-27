@@ -1002,6 +1002,8 @@
   "createidentifier": {
     "title": "Add an identifier",
     "cancel": "Cancel",
+    "back": "Back",
+    "connections": "Connections",
     "displayname": {
       "title": "Display name",
       "placeholder": "Create a name for this identifier"
@@ -1010,6 +1012,21 @@
       "title": "Identifier type",
       "didkey": "did:key",
       "keri": "KERI AID"
+    },
+    "aidtype": {
+      "title": "AID type",
+      "default": {
+        "label": "Default",
+        "tooltip": "Lorem ipsum dolor sit amet"
+      },
+      "multisig": {
+        "label": "Multi-sig",
+        "tooltip": "Lorem ipsum dolor sit amet"
+      },
+      "delegated": {
+        "label": "Delegated",
+        "tooltip": "Lorem ipsum dolor sit amet"
+      }
     },
     "theme": {
       "title": "Choose a theme"

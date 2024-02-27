@@ -18,8 +18,12 @@ ion-modal.create-identifier-modal {
       background: rgba(3, 3, 33, 0.2);
     }
 
+    ion-grid {
+      padding: 0;
+    }
+
     .identifier-name ion-label,
-    .identifier-type .type-input-title,
+    .type-input-title,
     .identifier-theme .theme-input-title {
       font-size: 1rem;
       font-weight: 500;
@@ -44,6 +48,10 @@ ion-modal.create-identifier-modal {
           font-size: 1rem;
           font-weight: 400;
         }
+
+        .input-line ion-input input::placeholder {
+          color: rgba(var(--ion-color-secondary-rgb), 0.75);
+        }
       }
 
       .error-message-container {
@@ -57,37 +65,43 @@ ion-modal.create-identifier-modal {
       }
     }
 
-    .identifier-type {
-      .identifier-type-selector {
+    .identifier-type-selector,
+    .aid-type-selector {
+      ion-col {
         padding: 0;
+        margin: 0 0.3rem;
 
-        ion-col {
-          padding: 0;
+        &:first-of-type {
+          margin-left: 0;
+        }
 
-          ion-item {
-            &.type-input {
-              --background: var(--ion-color-light);
-              --inner-border-width: 0;
-              border: 1px solid var(--ion-color-dark-grey);
-              color: var(--ion-color-secondary);
-              border-radius: 0.5rem;
-              width: 95%;
-            }
+        &:last-of-type {
+          margin-right: 0;
+        }
 
-            &.selected-type {
-              border: 1px solid var(--ion-color-secondary) !important;
-              --background: var(--ion-color-medium-grey);
-            }
+        ion-item {
+          &.type-input {
+            --background: var(--ion-color-light);
+            --inner-border-width: 0;
+            border: 1px solid var(--ion-color-dark-grey);
+            color: var(--ion-color-secondary);
+            border-radius: 0.5rem;
+          }
 
-            &::part(native) {
-              min-height: 3.125rem;
-              border-radius: 0.5rem;
-            }
+          &.selected-type {
+            border: 1px solid var(--ion-color-secondary) !important;
+            --background: var(--ion-color-medium-grey);
+          }
 
-            span {
-              width: 100%;
-              text-align: center;
-            }
+          &::part(native) {
+            min-height: 3.125rem;
+            border-radius: 0.5rem;
+          }
+
+          span {
+            width: 100%;
+            text-align: center;
+            font-weight: 400;
           }
         }
       }
