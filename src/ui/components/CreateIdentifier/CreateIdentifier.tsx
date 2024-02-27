@@ -398,7 +398,10 @@ const CreateIdentifier = ({
           <PageHeader
             closeButton={true}
             closeButtonLabel={`${i18n.t("createidentifier.back")}`}
-            closeButtonAction={() => resetModal()}
+            closeButtonAction={() => {
+              setThreshold(1);
+              setMultiSigStage(1);
+            }}
             title={`${i18n.t("createidentifier.threshold.title")}`}
           />
           <p className="multisig-subtitle">
@@ -408,14 +411,20 @@ const CreateIdentifier = ({
             <div className="identifier-threshold-title">
               {i18n.t("createidentifier.threshold.label")}
             </div>
-            <IonItem>
+            <div className="identifier-threshold-items">
               <div className="identifier-threshold-amount">{threshold}</div>
               <div className="identifier-threshold-controls">
                 <IonButton
                   shape="round"
                   className="decrease-threshold-button"
                   data-testid="decrease-threshold-button"
-                  onClick={() => setThreshold(threshold - 1)}
+                  onClick={() => {
+                    if (threshold === 1) {
+                      return;
+                    } else {
+                      setThreshold(threshold - 1);
+                    }
+                  }}
                 >
                   <IonIcon
                     slot="icon-only"
@@ -427,7 +436,13 @@ const CreateIdentifier = ({
                   shape="round"
                   className="increase-threshold-button"
                   data-testid="increase-threshold-button"
-                  onClick={() => setThreshold(threshold + 1)}
+                  onClick={() => {
+                    if (threshold === selectedConnections.length + 1) {
+                      return;
+                    } else {
+                      setThreshold(threshold + 1);
+                    }
+                  }}
                 >
                   <IonIcon
                     slot="icon-only"
@@ -436,7 +451,7 @@ const CreateIdentifier = ({
                   />
                 </IonButton>
               </div>
-            </IonItem>
+            </div>
           </div>
           <PageFooter
             pageId={componentId}

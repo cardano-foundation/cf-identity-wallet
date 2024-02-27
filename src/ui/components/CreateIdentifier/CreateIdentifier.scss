@@ -34,7 +34,8 @@ ion-modal.create-identifier-modal {
 
     .identifier-name ion-label,
     .type-input-title,
-    .identifier-theme .theme-input-title {
+    .identifier-theme .theme-input-title,
+    .identifier-threshold-title {
       font-size: 1rem;
       font-weight: 500;
       line-height: 1.375rem;
@@ -179,17 +180,47 @@ ion-modal.create-identifier-modal {
       }
     }
 
-    .decrease-threshold-button,
-    .increase-threshold-button {
-      width: 1.938rem;
-      height: 1.938rem;
-      --padding-start: 0;
-      --padding-end: 0;
-      border-radius: 2rem;
+    .identifier-threshold {
+      .identifier-threshold-items {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        border: 1px solid var(--ion-color-dark-grey);
+        border-radius: 0.5rem;
+        height: 3.125rem;
+        padding-left: 1.25rem;
+        padding-right: 0.625rem;
 
-      &::part(native) {
-        background: var(--ion-color-light-grey);
-        color: var(--ion-color-secondary);
+        * {
+          align-self: center;
+        }
+
+        .decrease-threshold-button,
+        .increase-threshold-button {
+          width: 1.938rem;
+          height: 1.938rem;
+          min-height: 1.938rem;
+          --padding-start: 0;
+          --padding-end: 0;
+          border-radius: 2rem;
+
+          &::part(native) {
+            color: var(--ion-color-secondary);
+            --background-activated: var(--ion-color-medium-grey);
+          }
+
+          ion-icon {
+            font-size: 1.2rem;
+          }
+        }
+
+        .decrease-threshold-button::part(native) {
+          background: var(--ion-color-light);
+          border: 1px solid var(--ion-color-dark-grey);
+        }
+        .increase-threshold-button::part(native) {
+          background: var(--ion-color-dark-grey);
+        }
       }
     }
   }
