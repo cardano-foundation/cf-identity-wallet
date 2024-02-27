@@ -1018,6 +1018,9 @@
     "confirm": {
       "title": "Confirm",
       "subtitle": "Double-check all the details for your Keri AID identifier are accurate",
+      "displayname": "Display Name",
+      "selectedmembers": "Selected Members",
+      "treshold": "Threshold",
       "continue": "Confirm identifier",
       "cancel": "Cancel",
       "alert": {

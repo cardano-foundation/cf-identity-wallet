@@ -1,5 +1,6 @@
 import {
   IonButton,
+  IonCard,
   IonCheckbox,
   IonCol,
   IonGrid,
@@ -15,7 +16,7 @@ import {
 import { useEffect, useState } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
-import { addOutline, removeOutline } from "ionicons/icons";
+import { addOutline, removeOutline, pencilOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { CreateIdentifierProps } from "./CreateIdentifier.types";
 import { CustomInput } from "../CustomInput";
@@ -139,21 +140,6 @@ const CreateIdentifier = ({
       setSelectedTheme(index === 0 ? 0 : 4);
     }
     setSelectedIdentifierType(index);
-  };
-
-  const handleContinue = () => {
-    if (selectedIdentifierType === 1 && selectedAidType !== 0) {
-      if (selectedConnections.length > 0) {
-        setMultiSigStage(2);
-      } else {
-        setMultiSigStage(1);
-      }
-    } else {
-      setBlur(true);
-      setTimeout(() => {
-        handleCreateIdentifier();
-      }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
-    }
   };
 
   const handleSelectConnection = (id: string) => {
@@ -307,7 +293,16 @@ const CreateIdentifier = ({
                   primaryButtonText={`${i18n.t(
                     "createidentifier.confirmbutton"
                   )}`}
-                  primaryButtonAction={() => handleContinue()}
+                  primaryButtonAction={() => {
+                    if (selectedIdentifierType === 1 && selectedAidType !== 0) {
+                      setMultiSigStage(1);
+                    } else {
+                      setBlur(true);
+                      setTimeout(() => {
+                        handleCreateIdentifier();
+                      }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
+                    }
+                  }}
                   primaryButtonDisabled={
                     !(displayNameValueIsValid && typeIsSelectedIsValid)
                   }
@@ -382,7 +377,7 @@ const CreateIdentifier = ({
               primaryButtonText={`${i18n.t(
                 "createidentifier.connections.continue"
               )}`}
-              primaryButtonAction={() => handleContinue()}
+              primaryButtonAction={() => setMultiSigStage(2)}
               primaryButtonDisabled={!selectedConnections.length}
             />
           </ScrollablePageLayout>
@@ -458,9 +453,108 @@ const CreateIdentifier = ({
             primaryButtonText={`${i18n.t(
               "createidentifier.threshold.continue"
             )}`}
-            primaryButtonAction={() => handleContinue()}
+            primaryButtonAction={() => setMultiSigStage(3)}
           />
         </ResponsiveModal>
+      )}
+      {multiSigStage === 3 && (
+        <IonModal
+          isOpen={modalIsOpen}
+          className={componentId}
+          data-testid={componentId}
+          onDidDismiss={() => resetModal()}
+        >
+          <ScrollablePageLayout
+            pageId={componentId + "-content"}
+            header={
+              <PageHeader
+                closeButton={true}
+                closeButtonAction={() => setMultiSigStage(2)}
+                closeButtonLabel={`${i18n.t("createidentifier.back")}`}
+                title={`${i18n.t("createidentifier.confirm.title")}`}
+              />
+            }
+          >
+            <p className="multisig-subtitle">
+              {i18n.t("createidentifier.confirm.subtitle")}
+            </p>
+            <div>
+              <div className="identifier-list-title">
+                {i18n.t("createidentifier.confirm.displayname")}
+              </div>
+              <IonCard>
+                <IonItem className="identifier-list-item">
+                  <IonLabel>{displayNameValue}</IonLabel>
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={pencilOutline}
+                    slot="end"
+                    onClick={() => setMultiSigStage(0)}
+                  />
+                </IonItem>
+              </IonCard>
+            </div>
+            <div>
+              <div className="identifier-list-title">
+                {i18n.t("createidentifier.confirm.selectedmembers")}
+              </div>
+              <IonCard>
+                {sortedConnections.map((connection, index) => {
+                  if (selectedConnections.includes(connection.id)) {
+                    return (
+                      <IonItem
+                        key={index}
+                        className="identifier-list-item"
+                      >
+                        <IonLabel>
+                          <img
+                            src={connection?.logo ?? CardanoLogo}
+                            alt="connection-logo"
+                          />
+                          <span className="connection-name">
+                            {connection.label}
+                          </span>
+                        </IonLabel>
+                        <IonIcon
+                          aria-hidden="true"
+                          icon={pencilOutline}
+                          slot="end"
+                          onClick={() => setMultiSigStage(1)}
+                        />
+                      </IonItem>
+                    );
+                  }
+                })}
+              </IonCard>
+            </div>
+            <div>
+              <div className="identifier-list-title">
+                {i18n.t("createidentifier.confirm.treshold")}
+              </div>
+              <IonCard>
+                <IonItem className="identifier-list-item">
+                  <IonLabel>{threshold}</IonLabel>
+                  <IonIcon
+                    aria-hidden="true"
+                    icon={pencilOutline}
+                    slot="end"
+                    onClick={() => setMultiSigStage(2)}
+                  />
+                </IonItem>
+              </IonCard>
+            </div>
+            <PageFooter
+              pageId={componentId}
+              primaryButtonText={`${i18n.t(
+                "createidentifier.confirm.continue"
+              )}`}
+              primaryButtonAction={() => {
+                resetModal();
+                alert("Transmit data");
+              }}
+            />
+          </ScrollablePageLayout>
+        </IonModal>
       )}
     </>
   );
