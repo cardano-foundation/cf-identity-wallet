@@ -1,7 +1,9 @@
 import {
+  IonButton,
   IonCheckbox,
   IonCol,
   IonGrid,
+  IonIcon,
   IonItem,
   IonLabel,
   IonList,
@@ -13,6 +15,7 @@ import {
 import { useEffect, useState } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
+import { addOutline, removeOutline } from "ionicons/icons";
 import { i18n } from "../../../i18n";
 import { CreateIdentifierProps } from "./CreateIdentifier.types";
 import { CustomInput } from "../CustomInput";
@@ -64,6 +67,7 @@ const CreateIdentifier = ({
     ConnectionShortDetails[]
   >([]);
   const [selectedConnections, setSelectedConnections] = useState<string[]>([]);
+  const [threshold, setThreshold] = useState(1);
 
   useEffect(() => {
     if (connectionsCache.length) {
@@ -101,6 +105,7 @@ const CreateIdentifier = ({
     setSelectedTheme(0);
     setSelectedAidType(0);
     setMultiSigStage(0);
+    setSelectedConnections([]);
   };
 
   const handleCreateIdentifier = async () => {
@@ -138,7 +143,11 @@ const CreateIdentifier = ({
 
   const handleContinue = () => {
     if (selectedIdentifierType === 1 && selectedAidType !== 0) {
-      setMultiSigStage(1);
+      if (selectedConnections.length > 0) {
+        setMultiSigStage(2);
+      } else {
+        setMultiSigStage(1);
+      }
     } else {
       setBlur(true);
       setTimeout(() => {
@@ -313,7 +322,7 @@ const CreateIdentifier = ({
       {multiSigStage === 1 && (
         <IonModal
           isOpen={modalIsOpen}
-          className={`${componentId} ${blur ? "blur" : ""}`}
+          className={componentId}
           data-testid={componentId}
           onDidDismiss={() => resetModal()}
         >
@@ -322,7 +331,10 @@ const CreateIdentifier = ({
             header={
               <PageHeader
                 closeButton={true}
-                closeButtonAction={() => setMultiSigStage(0)}
+                closeButtonAction={() => {
+                  setMultiSigStage(0);
+                  setSelectedConnections([]);
+                }}
                 closeButtonLabel={`${i18n.t("createidentifier.back")}`}
                 title={`${i18n.t("createidentifier.connections.title")}`}
               />
@@ -375,6 +387,65 @@ const CreateIdentifier = ({
             />
           </ScrollablePageLayout>
         </IonModal>
+      )}
+      {multiSigStage === 2 && (
+        <ResponsiveModal
+          componentId={componentId}
+          modalIsOpen={modalIsOpen}
+          customClasses={componentId}
+          onDismiss={() => resetModal()}
+        >
+          <PageHeader
+            closeButton={true}
+            closeButtonLabel={`${i18n.t("createidentifier.back")}`}
+            closeButtonAction={() => resetModal()}
+            title={`${i18n.t("createidentifier.threshold.title")}`}
+          />
+          <p className="multisig-subtitle">
+            {i18n.t("createidentifier.threshold.subtitle")}
+          </p>
+          <div className="identifier-threshold">
+            <div className="identifier-threshold-title">
+              {i18n.t("createidentifier.threshold.label")}
+            </div>
+            <IonItem>
+              <div className="identifier-threshold-amount">{threshold}</div>
+              <div className="identifier-threshold-controls">
+                <IonButton
+                  shape="round"
+                  className="decrease-threshold-button"
+                  data-testid="decrease-threshold-button"
+                  onClick={() => setThreshold(threshold - 1)}
+                >
+                  <IonIcon
+                    slot="icon-only"
+                    icon={removeOutline}
+                    color="primary"
+                  />
+                </IonButton>
+                <IonButton
+                  shape="round"
+                  className="increase-threshold-button"
+                  data-testid="increase-threshold-button"
+                  onClick={() => setThreshold(threshold + 1)}
+                >
+                  <IonIcon
+                    slot="icon-only"
+                    icon={addOutline}
+                    color="primary"
+                  />
+                </IonButton>
+              </div>
+            </IonItem>
+          </div>
+          <PageFooter
+            pageId={componentId}
+            primaryButtonText={`${i18n.t(
+              "createidentifier.threshold.continue"
+            )}`}
+            primaryButtonAction={() => handleContinue()}
+          />
+        </ResponsiveModal>
       )}
     </>
   );
