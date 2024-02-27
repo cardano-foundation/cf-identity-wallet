@@ -29,68 +29,66 @@ ion-modal.create-identifier-modal {
     }
 
     div.identifier-name {
-      margin-bottom: 0;
+      margin-bottom: 0.56rem;
+
+      &.identifier-name-error ion-item.custom-input .input-line {
+        border-color: var(--ion-color-danger);
+      }
 
       ion-item.custom-input {
         margin-bottom: 0;
-      }
-    }
 
-    ion-item.custom-input .input-line ion-input,
-    ion-item.custom-input .input-line ion-input input::placeholder,
-    .identifier-type {
-      font-size: 1rem;
-      font-weight: 400;
-    }
-
-    .error-message-container {
-      height: 1rem;
-
-      p {
-        font-size: 0.875rem;
-        margin: 0 auto;
-        text-align: left;
-      }
-    }
-
-    .identifier-name-error ion-item.custom-input .input-line {
-      border-color: var(--ion-color-danger);
-    }
-
-    div.identifier-name {
-      margin-bottom: 0.56rem;
-    }
-
-    .type-input {
-      --background: var(--ion-color-light);
-      --inner-border-width: 0;
-      border: 1px solid var(--ion-color-dark-grey);
-      color: var(--ion-color-secondary);
-      border-radius: 0.5rem;
-    }
-
-    .selected-type {
-      border: 1px solid var(--ion-color-secondary) !important;
-      --background: var(--ion-color-medium-grey);
-    }
-
-    .identifier-type-selector {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
-
-      ion-item {
-        width: calc(50% - 0.3rem);
-        margin: 0;
-
-        &::part(native) {
-          min-height: 3.125rem;
-          border-radius: 0.5rem;
+        .input-line ion-input,
+        .input-line ion-input input::placeholder,
+        .identifier-type {
+          font-size: 1rem;
+          font-weight: 400;
         }
+      }
 
-        span {
-          width: 100%;
-          text-align: center;
+      .error-message-container {
+        height: 1rem;
+
+        p {
+          font-size: 0.875rem;
+          margin: 0 auto;
+          text-align: left;
+        }
+      }
+    }
+
+    .identifier-type {
+      .identifier-type-selector {
+        padding: 0;
+
+        ion-col {
+          padding: 0;
+
+          ion-item {
+            &.type-input {
+              --background: var(--ion-color-light);
+              --inner-border-width: 0;
+              border: 1px solid var(--ion-color-dark-grey);
+              color: var(--ion-color-secondary);
+              border-radius: 0.5rem;
+              width: 95%;
+            }
+
+            &.selected-type {
+              border: 1px solid var(--ion-color-secondary) !important;
+              --background: var(--ion-color-medium-grey);
+            }
+
+            &::part(native) {
+              min-height: 3.125rem;
+              border-radius: 0.5rem;
+            }
+
+            span {
+              width: 100%;
+              text-align: center;
+            }
+          }
         }
       }
     }

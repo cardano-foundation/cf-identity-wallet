@@ -1,9 +1,9 @@
-import { IonItem, IonSpinner } from "@ionic/react";
+import { IonCol, IonGrid, IonRow, IonSpinner } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
 import { i18n } from "../../../i18n";
-import { CreateIdentifierProps, TypeItemProps } from "./CreateIdentifier.types";
+import { CreateIdentifierProps } from "./CreateIdentifier.types";
 import { CustomInput } from "../CustomInput";
 import { ErrorMessage } from "../ErrorMessage";
 import "./CreateIdentifier.scss";
@@ -20,10 +20,11 @@ import { ColorGenerator } from "../../utils/colorGenerator";
 import { AriesAgent } from "../../../core/agent/agent";
 import { setToastMsg } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
-import { IdentifierThemeSelector } from "../IdentifierThemeSelector";
 import { PageHeader } from "../PageHeader";
 import { PageFooter } from "../PageFooter";
 import { ResponsiveModal } from "../layout/ResponsiveModal";
+import { TypeItem } from "./components/TypeItem";
+import { IdentifierThemeSelector } from "./components/IdentifierThemeSelector";
 
 const CreateIdentifier = ({
   modalIsOpen,
@@ -33,14 +34,15 @@ const CreateIdentifier = ({
   const dispatch = useAppDispatch();
   const identifierData = useAppSelector(getIdentifiersCache);
   const [displayNameValue, setDisplayNameValue] = useState("");
-  const [selectedType, setSelectedType] = useState(0);
+  const [selectedIdentifierType, setSelectedIdentifierType] = useState(0);
+  const [selectedAidType, setSelectedAidType] = useState(0);
   const [selectedTheme, setSelectedTheme] = useState(0);
   const [blur, setBlur] = useState(false);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
-  const typeIsSelectedIsValid = selectedType !== undefined;
+  const typeIsSelectedIsValid = selectedIdentifierType !== undefined;
 
   useEffect(() => {
     if (Capacitor.isNativePlatform()) {
@@ -63,14 +65,16 @@ const CreateIdentifier = ({
     setModalIsOpen(false);
     setBlur(false);
     setDisplayNameValue("");
-    setSelectedType(0);
+    setSelectedIdentifierType(0);
     setSelectedTheme(0);
+    setSelectedAidType(0);
   };
 
   const handleCreateIdentifier = async () => {
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
-    const type = selectedType === 0 ? IdentifierType.KEY : IdentifierType.KERI;
+    const type =
+      selectedIdentifierType === 0 ? IdentifierType.KEY : IdentifierType.KERI;
     const identifier = await AriesAgent.agent.identifiers.createIdentifier({
       displayName: displayNameValue,
       method: type,
@@ -92,22 +96,11 @@ const CreateIdentifier = ({
     }
   };
 
-  const TypeItem = ({ index, text }: TypeItemProps) => {
-    return (
-      <IonItem
-        onClick={() => {
-          if (selectedType !== index) {
-            setSelectedTheme(index === 0 ? 0 : 4);
-          }
-          setSelectedType(index);
-        }}
-        className={`type-input ${
-          selectedType === index ? "selected-type" : ""
-        }`}
-      >
-        <span>{text}</span>
-      </IonItem>
-    );
+  const identifierTypeSelector = (index: number) => {
+    if (selectedIdentifierType !== index) {
+      setSelectedTheme(index === 0 ? 0 : 4);
+    }
+    setSelectedIdentifierType(index);
   };
 
   return (
@@ -164,26 +157,36 @@ const CreateIdentifier = ({
               <div className="type-input-title">{`${i18n.t(
                 "createidentifier.identifiertype.title"
               )}`}</div>
-              <div
+              <IonGrid
                 className="identifier-type-selector"
                 data-testid="identifier-type-selector"
               >
-                <TypeItem
-                  index={0}
-                  text={i18n.t("createidentifier.identifiertype.didkey")}
-                />
-                <TypeItem
-                  index={1}
-                  text={i18n.t("createidentifier.identifiertype.keri")}
-                />
-              </div>
+                <IonRow>
+                  <IonCol>
+                    <TypeItem
+                      index={0}
+                      text={i18n.t("createidentifier.identifiertype.didkey")}
+                      clickEvent={() => identifierTypeSelector(0)}
+                      selectedType={selectedIdentifierType}
+                    />
+                  </IonCol>
+                  <IonCol>
+                    <TypeItem
+                      index={1}
+                      text={i18n.t("createidentifier.identifiertype.keri")}
+                      clickEvent={() => identifierTypeSelector(1)}
+                      selectedType={selectedIdentifierType}
+                    />
+                  </IonCol>
+                </IonRow>
+              </IonGrid>
             </div>
             <div className="identifier-theme">
               <div className="theme-input-title">{`${i18n.t(
                 "createidentifier.theme.title"
               )}`}</div>
               <IdentifierThemeSelector
-                identifierType={selectedType}
+                identifierType={selectedIdentifierType}
                 selectedTheme={selectedTheme}
                 setSelectedTheme={setSelectedTheme}
               />

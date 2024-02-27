@@ -6,6 +6,23 @@ interface CreateIdentifierProps {
 interface TypeItemProps {
   index: number;
   text: string;
+  clickEvent: () => void;
+  selectedType: number;
 }
 
-export type { CreateIdentifierProps, TypeItemProps };
+interface IdentifierThemeSelectorProps {
+  identifierType: number;
+  selectedTheme: number;
+  setSelectedTheme: (value: number) => void;
+}
+
+interface ThemeItemProps {
+  index: number;
+}
+
+export type {
+  CreateIdentifierProps,
+  TypeItemProps,
+  IdentifierThemeSelectorProps,
+  ThemeItemProps,
+};
