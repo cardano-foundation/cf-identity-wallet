@@ -5,6 +5,11 @@ import BackgroundDid3 from "../assets/images/did-3.png";
 import BackgroundKERI0 from "../assets/images/keri-0.png";
 import BackgroundKERI1 from "../assets/images/keri-1.png";
 
+enum TunnelOption {
+  INFO = "info",
+  SCAN = "scan",
+}
+
 enum CardType {
   CREDS = "creds",
   IDENTIFIERS = "identifiers",
@@ -76,6 +81,7 @@ const PASSCODE_MAPPING = {
 };
 
 export {
+  TunnelOption,
   CardType,
   OperationType,
   ToastMsgType,

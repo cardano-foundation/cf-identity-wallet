@@ -16,6 +16,7 @@ import {
   chatbubbleOutline,
   fingerPrintOutline,
   idCardOutline,
+  globeOutline,
 } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
@@ -23,14 +24,16 @@ import {
   setCurrentOperation,
   setCurrentRoute,
 } from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../../../routes/paths";
+import { RoutePath, TabsRoutePath } from "../../../routes/paths";
 import "./Menu.scss";
 import { i18n } from "../../../i18n";
 import { OperationType } from "../../globals/types";
+import { useHistory } from "react-router-dom";
 
 const Menu = () => {
   const pageId = "menu-tab";
   const dispatch = useAppDispatch();
+  const history = useHistory();
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.MENU }));
@@ -55,23 +58,29 @@ const Menu = () => {
     );
   };
 
-  const handleItemSelection = (index: number) => {
-    // @TODO - sdisalvo: add some logic for selection
+  const handleItemSelection = (route: string) => {
+    if (!route.length) return;
+    dispatch(setCurrentRoute({ path: route }));
+    history.push({
+      pathname: route,
+    });
   };
 
   const MenuItem = ({
     index,
+    route,
     icon,
     label,
   }: {
     index: number;
+    route: string;
     icon: string;
     label: string;
   }) => {
     return (
       <IonCol>
         <IonCard
-          onClick={() => handleItemSelection(index)}
+          onClick={() => handleItemSelection(route)}
           data-testid={`menu-input-item-${index}`}
           className="menu-input"
         >
@@ -96,11 +105,13 @@ const Menu = () => {
         <IonRow className="menu-input-row">
           <MenuItem
             index={0}
+            route=""
             icon={personCircleOutline}
             label={`${i18n.t("menu.tab.items.profile")}`}
           />
           <MenuItem
             index={1}
+            route=""
             icon={walletOutline}
             label={`${i18n.t("menu.tab.items.crypto")}`}
           />
@@ -108,11 +119,13 @@ const Menu = () => {
         <IonRow className="menu-input-row">
           <MenuItem
             index={2}
+            route=""
             icon={peopleOutline}
             label={`${i18n.t("menu.tab.items.connections")}`}
           />
           <MenuItem
             index={3}
+            route=""
             icon={chatbubbleOutline}
             label={`${i18n.t("menu.tab.items.p2p")}`}
           />
@@ -120,13 +133,30 @@ const Menu = () => {
         <IonRow className="menu-input-row">
           <MenuItem
             index={4}
+            route=""
             icon={fingerPrintOutline}
             label={`${i18n.t("menu.tab.items.identity")}`}
           />
           <MenuItem
             index={5}
+            route=""
             icon={idCardOutline}
             label={`${i18n.t("menu.tab.items.credentials")}`}
+          />
+        </IonRow>
+        <IonRow className="menu-input-row">
+          <MenuItem
+            index={6}
+            route={RoutePath.TUNNEL_CONNECT}
+            icon={globeOutline}
+            label={`${i18n.t("menu.tab.items.tunnel")}`}
+          />
+
+          <MenuItem
+            index={7}
+            route=""
+            icon=""
+            label=""
           />
         </IonRow>
       </IonGrid>

@@ -123,6 +123,9 @@ class ConnectionService extends AgentService {
     return connectionRecord.state === DidExchangeState.Completed;
   }
 
+  async resolveOObi(url: string): Promise<void> {
+    return await this.agent.modules.signify.resolveOobi(url);
+  }
   async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/oobi")) {
       this.agent.events.emit<ConnectionKeriStateChangedEvent>(

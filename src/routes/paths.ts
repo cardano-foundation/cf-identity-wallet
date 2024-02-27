@@ -8,6 +8,8 @@ enum RoutePath {
   TABS_MENU = "/tabs",
   CREATE_PASSWORD = "/createpassword",
   CONNECTION_DETAILS = "/connectiondetails",
+  TUNNEL_CONNECT = "/tunnelconnect",
+  OOBI_SCANNER = "/oobiscanner",
 }
 
 enum TabsRoutePath {
