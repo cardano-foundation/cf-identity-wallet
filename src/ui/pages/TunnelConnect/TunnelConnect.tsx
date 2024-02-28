@@ -4,7 +4,6 @@ import "./TunnelConnect.scss";
 import {
   IonButton,
   IonIcon,
-  IonInput,
   IonItem,
   IonLabel,
   IonList,
@@ -19,7 +18,6 @@ import { PageHeader } from "../../components/PageHeader";
 import { AriesAgent } from "../../../core/agent/agent";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { LocationState, OobiObject } from "./TunnelConnect.types";
-import { i18n } from "../../../i18n";
 import { CustomInput } from "../../components/CustomInput";
 import { ShareOOBI } from "./components/ShareOOBI";
 
@@ -108,88 +106,100 @@ const TunnelConnect = () => {
         />
       }
     >
-      <h3 className="resolve-title">Resolve new OOBI:</h3>
-      <div className="name-input">
-        <CustomInput
-          dataTestId="name-input"
-          title="OOBI Name"
-          placeholder="Insert OOBI Name"
-          onChangeInput={setOobiNameValue}
-          optional={false}
-          value={oobiNameValue}
-        />
-      </div>
-      <div className="oobi-input">
-        <CustomInput
-          dataTestId="oobi-input"
-          title="OOBI Name"
-          placeholder="Insert OOBI URL"
-          onChangeInput={setOobiUrlValue}
-          optional={false}
-          value={oobiUrlValue}
-        />
-        <div className="oobi-buttons">
-          <IonButton onClick={handleScanOOBI}>
-            <IonIcon
-              icon={qrCodeOutline}
-              color="light"
-            />
-          </IonButton>
-          <IonButton
-            onClick={handleResolveOOBI}
-            disabled={!oobiUrlValue.length}
-          >
-            Resolve OOBI
-            <IonLoading
-              isOpen={showLoading}
-              message={"Resolving OOBI"}
-              duration={5000}
-            />
-          </IonButton>
+      <div className="content-container">
+        <h3 className="resolve-title">Resolve new OOBI:</h3>
+        <div className="name-input">
+          <CustomInput
+            dataTestId="name-input"
+            title="OOBI Name"
+            placeholder="Insert OOBI Name"
+            onChangeInput={setOobiNameValue}
+            optional={false}
+            value={oobiNameValue}
+          />
         </div>
+        <div className="oobi-input">
+          <CustomInput
+            dataTestId="oobi-input"
+            title="OOBI URL"
+            placeholder="Insert OOBI URL"
+            onChangeInput={setOobiUrlValue}
+            optional={false}
+            value={oobiUrlValue}
+          />
+          <div className="oobi-buttons">
+            <IonButton onClick={handleScanOOBI}>
+              <IonIcon
+                icon={qrCodeOutline}
+                color="light"
+              />
+            </IonButton>
+            <IonButton
+              onClick={handleResolveOOBI}
+              disabled={!oobiUrlValue.length}
+            >
+              Resolve OOBI
+              <IonLoading
+                isOpen={showLoading}
+                message={"Resolving OOBI"}
+                duration={5000}
+              />
+            </IonButton>
+          </div>
+        </div>
+
+        <h3 className="resolved-title">Resolved OOBIs:</h3>
+        <IonList className="oobi-list">
+          {Object.entries(resolvedOobis as Record<string, OobiObject>).map(
+            ([name, oobi]: [string, OobiObject]) => (
+              <IonItem
+                key={oobi.response.i}
+                lines="full"
+                className="oobi-item"
+              >
+                <IonLabel
+                  slot="start"
+                  className="oobi-label"
+                >
+                  <h2>{name}</h2>
+                  <p>{oobi?.metadata?.oobi}</p>
+                  <p>ID: {oobi?.response?.i}</p>
+                  <p>
+                    Date: {new Date(oobi?.response?.dt).toLocaleDateString()}{" "}
+                    {new Date(oobi?.response?.dt).toLocaleTimeString()}
+                  </p>
+                </IonLabel>
+                <IonButton
+                  slot="end"
+                  color="danger"
+                  onClick={() => handleDeleteOobi(name)}
+                >
+                  <IonIcon
+                    className="delete-button-label"
+                    slot="icon-only"
+                    icon={trashOutline}
+                  />
+                </IonButton>
+              </IonItem>
+            )
+          )}
+        </IonList>
+      </div>
+      <div className="fixed-bottom-component">
+        <IonButton
+          onClick={() => setShareModalIsOpen(true)}
+          expand="block"
+        >
+          Share OOBI
+          <IonIcon
+            icon={qrCodeOutline}
+            color="light"
+          />
+        </IonButton>
       </div>
 
-      <h3>Resolved OOBIs:</h3>
-      <IonList className="oobi-list">
-        {Object.entries(resolvedOobis as Record<string, OobiObject>).map(
-          ([name, oobi]: [string, OobiObject]) => (
-            <IonItem
-              key={oobi.response.i}
-              lines="full"
-              className="oobi-item"
-            >
-              <IonLabel
-                slot="start"
-                className="oobi-label"
-              >
-                <h2>
-                  {name}
-                  {oobi.done ? " ✅" : " ❓"}
-                </h2>
-                <p>{oobi?.metadata?.oobi}</p>
-                <p>ID: {oobi?.response?.i}</p>
-                <p>
-                  Date: {new Date(oobi?.response?.dt).toLocaleDateString()}{" "}
-                  {new Date(oobi?.response?.dt).toLocaleTimeString()}
-                </p>
-              </IonLabel>
-              <IonButton
-                slot="end"
-                color="danger"
-                onClick={() => handleDeleteOobi(name)}
-              >
-                <IonIcon
-                  className="delete-button-label"
-                  slot="icon-only"
-                  icon={trashOutline}
-                />
-              </IonButton>
-            </IonItem>
-          )
-        )}
-      </IonList>
       <ShareOOBI
-        modalIsOpen={true}
+        modalIsOpen={shareModalIsOpen}
         setModalIsOpen={setShareModalIsOpen}
       />
     </ScrollablePageLayout>
