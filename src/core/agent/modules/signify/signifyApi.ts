@@ -103,13 +103,25 @@ export class SignifyApi {
     return { signifyName, identifier: operation.serder.ked.i };
   }
 
-  async interactDelegation(signifyName: string, delegatePrefix: string) {
+  async interactDelegation(
+    signifyName: string,
+    delegatePrefix: string
+  ): Promise<boolean> {
     const anchor = {
       i: delegatePrefix,
       s: "0",
       d: delegatePrefix,
     };
-    return this.signifyClient.identifiers().interact(signifyName, anchor);
+    const ixnResult = await this.signifyClient
+      .identifiers()
+      .interact(signifyName, anchor);
+    const operation = await ixnResult.op();
+    await this.waitAndGetDoneOp(
+      operation,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+    return operation.done;
   }
 
   async delegationApproved(signifyName: string): Promise<boolean> {
@@ -271,7 +283,8 @@ export class SignifyApi {
   async createMultisig(
     aid: Aid,
     otherAids: Pick<Aid, "state">[],
-    name: string
+    name: string,
+    delegate?: Aid
   ): Promise<{
     op: any;
     icpResult: EventResult;
@@ -287,6 +300,7 @@ export class SignifyApi {
       wits: aid.state.b,
       states: states,
       rstates: states,
+      delpre: delegate?.prefix,
     });
     const op = await icp.op();
     const serder = icp.serder;

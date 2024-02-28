@@ -700,6 +700,89 @@ describe("Identifier service of agent", () => {
     ).rejects.toThrowError();
   });
 
+  test("Can create a keri delegated multisig with KERI contacts", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    const signifyName = "newUuidHere";
+    agent.modules.signify.getIdentifierByName = jest
+      .fn()
+      .mockResolvedValue(aidReturnedBySignify);
+    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+      identifier: multisigIdentifier,
+      signifyName,
+    });
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    agent.modules.signify.resolveOobi = jest.fn().mockResolvedValue({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {},
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+    agent.modules.signify.createMultisig = jest.fn().mockResolvedValue({
+      op: { name: `group.${multisigIdentifier}`, done: false },
+      icpResult: {},
+      name: "name",
+    });
+    const otherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.KERI,
+        connectionDate: new Date().toISOString(),
+      },
+    ];
+
+    const delegatorContact = {
+      id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyA",
+      label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+      oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionType.KERI,
+      connectionDate: new Date().toISOString(),
+    };
+    const metadata = {
+      theme: 4,
+      colors: ["#000000", "#000000"],
+      displayName: "Multisig",
+    };
+    expect(
+      await identifierService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        metadata as IdentifierMetadataRecordProps,
+        delegatorContact
+      )
+    ).toBe(multisigIdentifier);
+
+    expect(agent.modules.signify.createMultisig).toBeCalledWith(
+      {
+        prefix: "aidHere",
+        state: {
+          b: "b",
+          bt: "bt",
+          di: "di",
+          dt: "dt",
+          k: "k",
+          kt: "kt",
+          n: "n",
+          nt: "nt",
+          s: "s",
+        },
+      },
+      [{ state: {} }],
+      expect.any(String),
+      { state: {} }
+    );
+  });
+
   test("can join the multisig", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
     agent.genericRecords.findById = jest.fn().mockResolvedValue({
