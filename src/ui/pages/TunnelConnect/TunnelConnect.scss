@@ -1,5 +1,24 @@
 .tunnel-connect {
-  .oobi-input {
+  .name-input {
+    margin-top: 10px;
+  }
+  .resolve-title {
     margin-top: 30px;
+  }
+  .oobi-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    --border-style: none;
+    .oobi-label {
+      flex-grow: 1;
+      h2,
+      p {
+        margin: 0;
+      }
+    }
+  }
+  .delete-button-label {
+    margin: 2px 4px;
   }
 }
