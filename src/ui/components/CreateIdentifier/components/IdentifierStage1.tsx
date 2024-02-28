@@ -48,6 +48,10 @@ const IdentifierStage1 = ({ setState, componentId }: IdentifierStageProps) => {
         return textA < textB ? -1 : textA > textB ? 1 : 0;
       });
       setSortedConnections(sortedConnections);
+      setState((prevState: IdentifierStageProps) => ({
+        ...prevState,
+        sortedConnections: sortedConnections,
+      }));
     }
   }, [connectionsCache]);
 

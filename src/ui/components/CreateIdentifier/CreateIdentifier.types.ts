@@ -30,7 +30,8 @@ interface IdentifierStageProps {
     selectedAidType: number;
     selectedTheme: number;
     threshold: number;
-    selectedConnections: ConnectionShortDetails[];
+    sortedConnections: ConnectionShortDetails[];
+    selectedConnections: string[];
   };
   setState: (value: any) => void;
   componentId: string;

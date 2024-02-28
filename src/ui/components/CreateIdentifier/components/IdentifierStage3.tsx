@@ -60,33 +60,37 @@ const IdentifierStage3 = ({
             {i18n.t("createidentifier.confirm.selectedmembers")}
           </div>
           <IonCard>
-            {state.selectedConnections.map((connection, index) => {
-              return (
-                <IonItem
-                  key={index}
-                  className="identifier-list-item"
-                >
-                  <IonLabel>
-                    <img
-                      src={connection?.logo ?? CardanoLogo}
-                      className="connection-logo"
-                      alt="connection-logo"
+            {state.sortedConnections.map((connection, index) => {
+              if (state.selectedConnections.includes(connection.id)) {
+                return (
+                  <IonItem
+                    key={index}
+                    className="identifier-list-item"
+                  >
+                    <IonLabel>
+                      <img
+                        src={connection?.logo ?? CardanoLogo}
+                        className="connection-logo"
+                        alt="connection-logo"
+                      />
+                      <span className="connection-name">
+                        {connection.label}
+                      </span>
+                    </IonLabel>
+                    <IonIcon
+                      aria-hidden="true"
+                      icon={pencilOutline}
+                      slot="end"
+                      onClick={() =>
+                        setState((prevState: IdentifierStageProps) => ({
+                          ...prevState,
+                          multiSigStage: 1,
+                        }))
+                      }
                     />
-                    <span className="connection-name">{connection.label}</span>
-                  </IonLabel>
-                  <IonIcon
-                    aria-hidden="true"
-                    icon={pencilOutline}
-                    slot="end"
-                    onClick={() =>
-                      setState((prevState: IdentifierStageProps) => ({
-                        ...prevState,
-                        multiSigStage: 1,
-                      }))
-                    }
-                  />
-                </IonItem>
-              );
+                  </IonItem>
+                );
+              }
             })}
           </IonCard>
         </div>
@@ -117,7 +121,8 @@ const IdentifierStage3 = ({
         primaryButtonText={`${i18n.t("createidentifier.confirm.continue")}`}
         primaryButtonAction={() => {
           resetModal();
-          alert("Transmit data");
+          // @TODO - sdisalvo: send the request
+          //  console.log(state);
         }}
       />
     </>

@@ -24,27 +24,19 @@ ion-modal.create-identifier-modal {
     background: rgba(3, 3, 33, 0.2);
   }
 
-  &:not(.full-page-modal) ion-toolbar {
-    &.page-footer {
-      padding: 0;
-    }
+  .scrollable-page-layout {
+    padding-bottom: 4rem;
 
-    ion-buttons ion-button::part(native) {
-      opacity: 1;
+    ion-content.scrollable-page-content > *:first-child {
+      padding-top: 1rem;
     }
   }
 
-  &.full-page-modal {
-    .scrollable-page-layout {
-      padding-bottom: 4rem;
-    }
-
-    ion-toolbar.page-footer {
-      z-index: 1000;
-      bottom: calc(-100vh + 4rem);
-      background: var(--ion-color-light);
-      padding-inline: 0.9rem;
-    }
+  ion-toolbar.page-footer {
+    z-index: 1000;
+    bottom: calc(-100vh + 4rem);
+    background: var(--ion-color-light);
+    padding-inline: 0.9rem;
   }
 
   .create-identifier-modal-content {
@@ -268,7 +260,6 @@ ion-modal.create-identifier-modal {
       padding: 0.5rem 1.25rem;
       box-shadow: none;
       --inner-border-width: 0;
-      margin-bottom: 1.5rem;
 
       ion-list {
         padding: 0;
@@ -390,7 +381,7 @@ ion-modal.create-identifier-modal {
 
       ion-card {
         padding: 0.4rem 1rem;
-        margin-bottom: 1.2rem;
+
         ion-item.identifier-list-item {
           --min-height: 2.4rem;
 

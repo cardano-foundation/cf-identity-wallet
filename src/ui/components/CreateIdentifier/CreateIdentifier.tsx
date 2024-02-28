@@ -5,6 +5,7 @@ import "./CreateIdentifier.scss";
 import { IdentifierStage0 } from "./components/IdentifierStage0";
 import { IdentifierStage1 } from "./components/IdentifierStage1";
 import { IdentifierStage2 } from "./components/IdentifierStage2";
+import { IdentifierStage3 } from "./components/IdentifierStage3";
 
 const CreateIdentifier = ({
   modalIsOpen,
@@ -18,6 +19,7 @@ const CreateIdentifier = ({
     selectedAidType: 0,
     selectedTheme: 0,
     threshold: 1,
+    sortedConnections: [],
     selectedConnections: [],
   };
   const [state, setState] = useState(initialState);
@@ -73,6 +75,14 @@ const CreateIdentifier = ({
         )}
         {state.multiSigStage === 2 && (
           <IdentifierStage2
+            state={state}
+            setState={setState}
+            componentId={componentId}
+            resetModal={resetModal}
+          />
+        )}
+        {state.multiSigStage === 3 && (
+          <IdentifierStage3
             state={state}
             setState={setState}
             componentId={componentId}
