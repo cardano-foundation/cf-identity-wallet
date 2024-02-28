@@ -124,6 +124,8 @@ const IdentifierStage3 = ({
           // @TODO - sdisalvo: send the request
           //  console.log(state);
         }}
+        secondaryButtonText={`${i18n.t("createidentifier.confirm.cancel")}`}
+        secondaryButtonAction={() => resetModal()}
       />
     </>
   );

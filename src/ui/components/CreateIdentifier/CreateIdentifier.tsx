@@ -34,10 +34,7 @@ const CreateIdentifier = ({
   const resetModal = () => {
     setBlur(false);
     setModalIsOpen(false);
-    setState((prevState) => ({
-      ...prevState,
-      initialState,
-    }));
+    setState(initialState);
   };
 
   return (
