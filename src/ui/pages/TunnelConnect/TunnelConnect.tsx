@@ -19,6 +19,8 @@ import { PageHeader } from "../../components/PageHeader";
 import { AriesAgent } from "../../../core/agent/agent";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { LocationState, OobiObject } from "./TunnelConnect.types";
+import { i18n } from "../../../i18n";
+import { CustomInput } from "../../components/CustomInput";
 
 const TunnelConnect = () => {
   const pageId = "tunnel-connect";
@@ -39,7 +41,9 @@ const TunnelConnect = () => {
         (resolvedOobis) => {
           setResolvedOobis(resolvedOobis);
           if (Object.keys(resolvedOobis).length) {
-            setOobiNameValue(`Tunnel(${Object.keys(resolvedOobis).length})`);
+            setOobiNameValue(
+              `Tunnel(${Object.keys(resolvedOobis).length + 1})`
+            );
           }
         }
       );
@@ -87,7 +91,7 @@ const TunnelConnect = () => {
 
     setRefreshResolvedOobis(!refreshResolvedOobis);
     setOobiUrlValue("");
-    setOobiNameValue(`Tunnel(${Object.keys(resolvedOobis).length})`);
+    setOobiNameValue(`Tunnel(${Object.keys(resolvedOobis).length + 1})`);
     setShowLoading(false);
   };
 
@@ -104,41 +108,47 @@ const TunnelConnect = () => {
     >
       <h3 className="resolve-title">Resolve new OOBI:</h3>
       <div className="name-input">
-        <IonInput
-          value={oobiNameValue}
-          onIonChange={(e) => setOobiNameValue(e.detail.value!)}
+        <CustomInput
+          dataTestId="name-input"
+          title="OOBI Name"
           placeholder="Insert OOBI Name"
-          clearInput
+          onChangeInput={setOobiNameValue}
+          optional={false}
+          value={oobiNameValue}
         />
       </div>
       <div className="oobi-input">
-        <IonInput
-          value={oobiUrlValue}
-          onIonChange={(e) => setOobiUrlValue(e.detail.value!)}
+        <CustomInput
+          dataTestId="oobi-input"
+          title="OOBI Name"
           placeholder="Insert OOBI URL"
-          clearInput
+          onChangeInput={setOobiUrlValue}
+          optional={false}
+          value={oobiUrlValue}
         />
-        <IonButton onClick={handleScanOOBI}>
-          <IonIcon
-            icon={qrCodeOutline}
-            color="light"
-          />
-        </IonButton>
-        <IonButton
-          onClick={handleResolveOOBI}
-          disabled={!oobiUrlValue.length}
-        >
-          Resolve OOBI
-          <IonLoading
-            isOpen={showLoading}
-            message={"Resolving OOBI"}
-            duration={5000}
-          />
-        </IonButton>
+        <div className="oobi-buttons">
+          <IonButton onClick={handleScanOOBI}>
+            <IonIcon
+              icon={qrCodeOutline}
+              color="light"
+            />
+          </IonButton>
+          <IonButton
+            onClick={handleResolveOOBI}
+            disabled={!oobiUrlValue.length}
+          >
+            Resolve OOBI
+            <IonLoading
+              isOpen={showLoading}
+              message={"Resolving OOBI"}
+              duration={5000}
+            />
+          </IonButton>
+        </div>
       </div>
 
       <h3>Resolved OOBIs:</h3>
-      <IonList>
+      <IonList className="oobi-list">
         {Object.entries(resolvedOobis as Record<string, OobiObject>).map(
           ([name, oobi]: [string, OobiObject]) => (
             <IonItem

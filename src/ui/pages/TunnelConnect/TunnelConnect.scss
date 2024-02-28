@@ -5,6 +5,10 @@
   .resolve-title {
     margin-top: 30px;
   }
+  .oobi-list {
+    border-radius: 10px !important;
+    padding: 5px;
+  }
   .oobi-item {
     display: flex;
     justify-content: space-between;
@@ -20,5 +24,49 @@
   }
   .delete-button-label {
     margin: 2px 4px;
+  }
+  .oobi-buttons {
+    margin-top: 10px;
+  }
+  .card-details-info-block {
+    h3 {
+      margin: 0.798rem;
+    }
+
+    .card-details-info-block-inner {
+      border-radius: 0.85rem;
+      padding: 0.978rem;
+
+      > * {
+        min-height: 1.156rem;
+
+        &:not(:last-child) {
+          margin-bottom: 0.68rem;
+        }
+      }
+
+      .card-details-info-block-line {
+        .card-details-info-block-text-icon {
+          font-size: 0.956rem;
+        }
+
+        .card-details-info-block-icon,
+        .card-details-info-block-text-icon {
+          margin-right: 0.799rem;
+        }
+      }
+
+      ion-button,
+      ion-button.md {
+        height: 1.445rem;
+        width: 1.445rem;
+      }
+
+      ion-icon {
+        width: 1.254rem;
+        height: 1.254rem;
+        margin: 0;
+      }
+    }
   }
 }
