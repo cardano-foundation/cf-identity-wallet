@@ -3,13 +3,26 @@ ion-modal.create-identifier-modal {
     filter: blur(0.1rem);
   }
 
-  ion-toolbar {
+  &:not(.full-page-modal) ion-toolbar {
     &.page-footer {
       padding: 0;
     }
 
     ion-buttons ion-button::part(native) {
       opacity: 1;
+    }
+  }
+
+  &.full-page-modal {
+    .scrollable-page-layout {
+      padding-bottom: 4rem;
+    }
+
+    ion-toolbar.page-footer {
+      z-index: 1000;
+      bottom: calc(-100vh + 4rem);
+      background: var(--ion-color-light);
+      padding-inline: 0.9rem;
     }
   }
 
@@ -95,13 +108,14 @@ ion-modal.create-identifier-modal {
           margin-right: 0;
         }
 
-        ion-item {
+        ion-card {
           &.type-input {
             --background: var(--ion-color-light);
             --inner-border-width: 0;
             border: 1px solid var(--ion-color-dark-grey);
             color: var(--ion-color-secondary);
             border-radius: 0.5rem;
+            height: 3.125rem;
           }
 
           &.selected-type {
@@ -144,26 +158,12 @@ ion-modal.create-identifier-modal {
         }
 
         ion-label {
-          display: flex;
-          flex-direction: row;
-
-          * {
-            align-self: center;
-          }
-
           img {
             width: 2.75rem;
             height: 2.75rem;
-            border-radius: 2rem;
           }
 
           .connection-name {
-            font-size: 1rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-align: left;
-            width: 100%;
             margin-left: 1rem;
           }
 
@@ -182,6 +182,28 @@ ion-modal.create-identifier-modal {
             }
           }
         }
+      }
+    }
+
+    ion-label {
+      display: flex;
+      flex-direction: row;
+
+      * {
+        align-self: center;
+      }
+
+      img {
+        border-radius: 2rem;
+      }
+
+      .connection-name {
+        font-size: 1rem;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-align: left;
+        width: 100%;
       }
     }
 
@@ -252,26 +274,17 @@ ion-modal.create-identifier-modal {
         --inner-padding-end: 0;
 
         ion-label {
-          display: flex;
-          flex-direction: row;
-
-          * {
-            align-self: center;
-          }
+          margin: 0.813rem 0;
+          font-weight: 500;
+          color: var(--ion-color-secondary);
 
           img {
             width: 1.5rem;
             height: 1.5rem;
-            border-radius: 2rem;
           }
 
           .connection-name {
-            font-size: 1rem;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            text-align: left;
-            width: 100%;
+            font-weight: 500;
             margin-left: 0.25rem;
           }
         }
@@ -282,24 +295,8 @@ ion-modal.create-identifier-modal {
 
         ion-icon {
           font-size: 1.5rem;
-
-          &:first-child {
-            margin-right: 1rem;
-          }
-
-          &:last-child {
-            color: var(--ion-color-dark-grey);
-          }
-        }
-
-        ion-icon,
-        ion-label {
           color: var(--ion-color-secondary);
-        }
-
-        ion-label {
-          margin: 0.813rem 0;
-          font-weight: 500;
+          opacity: 0.5;
         }
       }
     }
@@ -307,11 +304,16 @@ ion-modal.create-identifier-modal {
 
   @media screen and (min-width: 250px) and (max-width: 375px) {
     .create-identifier-modal-content {
-      ion-item.custom-input .input-line ion-input,
-      ion-item.custom-input .input-line ion-input input::placeholder,
+      ion-item,
+      ion-label,
+      ion-item .native-input,
+      #display-name-input input::placeholder,
       .identifier-name ion-label,
-      .identifier-type .type-input-title,
-      .identifier-theme .theme-input-title {
+      .type-input-title,
+      .identifier-theme .theme-input-title,
+      .identifier-threshold-title,
+      .identifier-list-title,
+      ion-list ion-item span.connection-name {
         font-size: 0.8rem;
       }
 
@@ -326,9 +328,74 @@ ion-modal.create-identifier-modal {
         margin-top: 0.109rem;
       }
 
-      .identifier-type ion-item::part(native) {
-        min-height: 2.5rem;
-        font-size: 0.8rem;
+      .identifier-type-selector,
+      .aid-type-selector {
+        ion-col ion-card.type-input {
+          height: 2.5rem;
+          font-size: 0.8rem;
+          margin-bottom: 0.75rem;
+          padding-inline: 0.4rem;
+        }
+      }
+
+      ion-list ion-item {
+        ion-label.connection-item {
+          img.connection-logo {
+            width: 2.2rem;
+            height: 2.2rem;
+          }
+
+          .connection-name {
+            margin-left: 0.8rem;
+          }
+
+          ion-checkbox {
+            --size: 1.6rem;
+            width: 1.6rem;
+            margin: 0 0 0 0.3rem;
+          }
+        }
+
+        &.identifier-list-item {
+          ion-label {
+            img.connection-logo {
+              width: 1.2rem;
+              height: 1.2rem;
+            }
+          }
+        }
+      }
+
+      .identifier-threshold .identifier-threshold-items {
+        height: 2.5rem;
+
+        .decrease-threshold-button,
+        .increase-threshold-button {
+          width: 1.55rem;
+          height: 1.55rem;
+          min-height: 1.55rem;
+
+          ion-icon {
+            font-size: 0.96rem;
+          }
+        }
+      }
+
+      ion-card {
+        padding: 0.4rem 1rem;
+        margin-bottom: 1.2rem;
+        ion-item.identifier-list-item {
+          --min-height: 2.4rem;
+
+          ion-label,
+          ion-label span {
+            font-size: 0.8rem;
+          }
+
+          ion-icon {
+            font-size: 0.96rem;
+          }
+        }
       }
     }
   }

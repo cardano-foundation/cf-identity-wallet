@@ -103,6 +103,28 @@ p {
     margin: 0.35rem 0;
     line-height: 1rem;
   }
+
+  ion-searchbar {
+    padding: 0 1rem;
+
+    .searchbar-input {
+      font-size: 0.8rem;
+      height: 2rem;
+      padding: 0.2rem 2.5rem;
+    }
+
+    .searchbar-search-icon {
+      width: 0.8rem;
+
+      &.md {
+        height: 0.8rem;
+      }
+    }
+
+    input::placeholder {
+      font-size: 0.8rem;
+    }
+  }
 }
 
 .safe-area {

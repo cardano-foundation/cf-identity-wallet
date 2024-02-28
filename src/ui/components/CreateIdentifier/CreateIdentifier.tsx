@@ -317,7 +317,7 @@ const CreateIdentifier = ({
       {multiSigStage === 1 && (
         <IonModal
           isOpen={modalIsOpen}
-          className={componentId}
+          className={`${componentId} full-page-modal`}
           data-testid={componentId}
           onDidDismiss={() => resetModal()}
         >
@@ -352,9 +352,10 @@ const CreateIdentifier = ({
                       "selected-connection"
                     }`}
                   >
-                    <IonLabel>
+                    <IonLabel className="connection-item">
                       <img
                         src={connection?.logo ?? CardanoLogo}
+                        className="connection-logo"
                         alt="connection-logo"
                       />
                       <span className="connection-name">
@@ -372,15 +373,15 @@ const CreateIdentifier = ({
                 );
               })}
             </IonList>
-            <PageFooter
-              pageId={componentId}
-              primaryButtonText={`${i18n.t(
-                "createidentifier.connections.continue"
-              )}`}
-              primaryButtonAction={() => setMultiSigStage(2)}
-              primaryButtonDisabled={!selectedConnections.length}
-            />
           </ScrollablePageLayout>
+          <PageFooter
+            pageId={componentId}
+            primaryButtonText={`${i18n.t(
+              "createidentifier.connections.continue"
+            )}`}
+            primaryButtonAction={() => setMultiSigStage(2)}
+            primaryButtonDisabled={!selectedConnections.length}
+          />
         </IonModal>
       )}
       {multiSigStage === 2 && (
@@ -460,7 +461,7 @@ const CreateIdentifier = ({
       {multiSigStage === 3 && (
         <IonModal
           isOpen={modalIsOpen}
-          className={componentId}
+          className={`${componentId} full-page-modal`}
           data-testid={componentId}
           onDidDismiss={() => resetModal()}
         >
@@ -509,6 +510,7 @@ const CreateIdentifier = ({
                         <IonLabel>
                           <img
                             src={connection?.logo ?? CardanoLogo}
+                            className="connection-logo"
                             alt="connection-logo"
                           />
                           <span className="connection-name">
@@ -543,17 +545,15 @@ const CreateIdentifier = ({
                 </IonItem>
               </IonCard>
             </div>
-            <PageFooter
-              pageId={componentId}
-              primaryButtonText={`${i18n.t(
-                "createidentifier.confirm.continue"
-              )}`}
-              primaryButtonAction={() => {
-                resetModal();
-                alert("Transmit data");
-              }}
-            />
           </ScrollablePageLayout>
+          <PageFooter
+            pageId={componentId}
+            primaryButtonText={`${i18n.t("createidentifier.confirm.continue")}`}
+            primaryButtonAction={() => {
+              resetModal();
+              alert("Transmit data");
+            }}
+          />
         </IonModal>
       )}
     </>
