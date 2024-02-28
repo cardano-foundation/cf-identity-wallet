@@ -21,6 +21,7 @@ import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { LocationState, OobiObject } from "./TunnelConnect.types";
 import { i18n } from "../../../i18n";
 import { CustomInput } from "../../components/CustomInput";
+import { ShareOOBI } from "./components/ShareOOBI";
 
 const TunnelConnect = () => {
   const pageId = "tunnel-connect";
@@ -29,6 +30,7 @@ const TunnelConnect = () => {
   const dispatch = useAppDispatch();
   const state = location.state;
 
+  const [shareModalIsOpen, setShareModalIsOpen] = useState(false);
   const [oobiNameValue, setOobiNameValue] = useState("Tunnel");
   const [oobiUrlValue, setOobiUrlValue] = useState(state?.oobiUrl || "");
   const [showLoading, setShowLoading] = useState(false);
@@ -186,6 +188,10 @@ const TunnelConnect = () => {
           )
         )}
       </IonList>
+      <ShareOOBI
+        modalIsOpen={true}
+        setModalIsOpen={setShareModalIsOpen}
+      />
     </ScrollablePageLayout>
   );
 };
