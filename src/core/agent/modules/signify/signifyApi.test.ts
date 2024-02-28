@@ -21,7 +21,21 @@ const admitMock = jest
     }
   );
 const submitAdmitMock = jest.fn();
-const interactMock = jest.fn();
+const interactMock = jest.fn().mockImplementation((name, _config) => {
+  return {
+    done: false,
+    name: `${witnessPrefix}${name}`,
+    op: jest.fn().mockResolvedValue({
+      name: "oobi.test",
+    }),
+    serder: {
+      ked: { i: name },
+    },
+    sigs: [
+      "AACKfSP8e2co2sQH-xl3M-5MfDd9QMPhj1Y0Eo44_IKuamF6PIPkZExcdijrE5Kj1bnAI7rkZ7VTKDg3nXPphsoK",
+    ],
+  };
+});
 const rotateMock = jest.fn().mockImplementation((name, _config) => {
   return {
     done: false,
