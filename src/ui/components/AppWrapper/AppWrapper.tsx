@@ -347,7 +347,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
     });
-    AriesAgent.agent.signifyNotification.onNotificationKeriStateChanged(
+    AriesAgent.agent.signifyNotifications.onNotificationKeriStateChanged(
       (event) => {
         return keriNotificationsChangeHandler(event, dispatch);
       }

@@ -90,26 +90,30 @@ class AriesAgent {
   private signifyNotificationService!: SignifyNotificationService;
 
   get identifiers() {
-    if (!this.identifierService)
+    if (!this.identifierService) {
       this.identifierService = new IdentifierService(this.agent);
+    }
     return this.identifierService;
   }
 
   get connections() {
-    if (!this.connectionService)
+    if (!this.connectionService) {
       this.connectionService = new ConnectionService(this.agent);
+    }
     return this.connectionService;
   }
 
   get messages() {
-    if (!this.messageService)
+    if (!this.messageService) {
       this.messageService = new MessageService(this.agent);
+    }
     return this.messageService;
   }
 
   get credentials() {
-    if (!this.credentialService)
+    if (!this.credentialService) {
       this.credentialService = new CredentialService(this.agent);
+    }
     return this.credentialService;
   }
 
@@ -117,11 +121,12 @@ class AriesAgent {
     return this.agent.genericRecords;
   }
 
-  get signifyNotification() {
-    if (!this.signifyNotificationService)
+  get signifyNotifications() {
+    if (!this.signifyNotificationService) {
       this.signifyNotificationService = new SignifyNotificationService(
         this.agent
       );
+    }
     return this.signifyNotificationService;
   }
 
