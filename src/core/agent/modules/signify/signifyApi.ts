@@ -284,7 +284,7 @@ export class SignifyApi {
     aid: Aid,
     otherAids: Pick<Aid, "state">[],
     name: string,
-    delegator?: Aid
+    delegate?: Aid
   ): Promise<{
     op: any;
     icpResult: EventResult;
@@ -300,7 +300,7 @@ export class SignifyApi {
       wits: aid.state.b,
       states: states,
       rstates: states,
-      delpre: delegator?.prefix,
+      delpre: delegate?.prefix,
     });
     const op = await icp.op();
     const serder = icp.serder;

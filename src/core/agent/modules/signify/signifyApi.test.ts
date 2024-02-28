@@ -26,6 +26,7 @@ const interactMock = jest.fn().mockImplementation((name, _config) => {
     done: false,
     name: `${witnessPrefix}${name}`,
     op: jest.fn().mockResolvedValue({
+      done: true,
       name: "oobi.test",
     }),
     serder: {
@@ -380,6 +381,109 @@ describe("Signify API", () => {
     expect(result).toHaveProperty("name");
   });
 
+  test("can create Keri delegatation multisig", async () => {
+    const aid = {
+      name: "0d5d804a-eb44-42e9-a67a-7e24ab4b7e42",
+      prefix: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+      salty: {},
+      transferable: true,
+      state: {
+        vn: [1, 0],
+        i: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+        s: "0",
+        p: "",
+        d: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+        f: "0",
+        dt: "2023-12-25T07:37:32.006185+00:00",
+        et: "icp",
+        kt: "1",
+        k: ["DOBaDQOTbreUoqMzCzX0f2ywCB2Qbv17qeHMlm85QjZZ"],
+        nt: "1",
+        n: ["EJqXepNeybydv7fb0FdRsDhWxia6i_bDCv1LyucSegMj"],
+        bt: "1",
+        b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
+        c: [],
+        ee: {
+          s: "0",
+          d: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_7",
+          br: [],
+          ba: [],
+        },
+        di: "",
+      },
+      windexes: [0],
+    };
+    const otherAids = [
+      {
+        state: {
+          vn: [1, 0],
+          i: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+          s: "0",
+          p: "",
+          d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+          f: "0",
+          dt: "2023-12-25T07:42:44.975239+00:00",
+          et: "icp",
+          kt: "1",
+          k: ["DIDpyM3TPrV5-ZwpiFDU9HtI9-zXpHtOGLNzfUrzLOs5"],
+          nt: "1",
+          n: ["EMnyXeI28CtemqNmxget-4Xn1DrKehDect1qHwfREo1u"],
+          bt: "1",
+          b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
+          c: [],
+          ee: {
+            s: "0",
+            d: "EJz3axjzmaJOracwpOXTyxtghohwAK7ly0qhCq9-5Bsb",
+            br: [],
+            ba: [],
+          },
+          di: "",
+        },
+      },
+    ];
+
+    const delegateAid = {
+      name: "0d5d804a-eb44-42e9-a67a-7e24ab4b7e42",
+      prefix: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_2",
+      salty: {},
+      transferable: true,
+      state: {
+        vn: [1, 0],
+        i: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_2",
+        s: "0",
+        p: "",
+        d: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_2",
+        f: "0",
+        dt: "2023-12-25T07:37:32.006185+00:00",
+        et: "icp",
+        kt: "1",
+        k: ["DOBaDQOTbreUoqMzCzX0f2ywCB2Qbv17qeHMlm85QjZZ"],
+        nt: "1",
+        n: ["EJqXepNeybydv7fb0FdRsDhWxia6i_bDCv1LyucSegMj"],
+        bt: "1",
+        b: ["BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP"],
+        c: [],
+        ee: {
+          s: "0",
+          d: "EAEMpz0cdBEQN5GSr6NYRYV3PIeF-eBNn64kg4yLFu_2",
+          br: [],
+          ba: [],
+        },
+        di: "",
+      },
+      windexes: [0],
+    };
+    const result = await api.createMultisig(
+      aid,
+      otherAids,
+      utils.uuid(),
+      delegateAid
+    );
+    expect(result).toHaveProperty("op");
+    expect(result).toHaveProperty("icpResult");
+    expect(result).toHaveProperty("name");
+  });
+
   test("Should able to join multisig", async () => {
     const exn = {
       v: "KERI10JSON0007bf_",
@@ -543,20 +647,9 @@ describe("Signify API", () => {
     const signifyName = "exampleSignifyName";
     const delegatePrefix = "exampleDelegatePrefix";
 
-    await api.interactDelegation(signifyName, delegatePrefix);
+    const result = await api.interactDelegation(signifyName, delegatePrefix);
 
-    expect(interactMock).toHaveBeenCalledWith(signifyName, {
-      i: delegatePrefix,
-      s: "0",
-      d: delegatePrefix,
-    });
-  });
-
-  test("should call signifyClient.identifiers().interact with the correct parameters", async () => {
-    const signifyName = "exampleSignifyName";
-    const delegatePrefix = "exampleDelegatePrefix";
-
-    await api.interactDelegation(signifyName, delegatePrefix);
+    expect(result).toEqual(true);
 
     expect(interactMock).toHaveBeenCalledWith(signifyName, {
       i: delegatePrefix,

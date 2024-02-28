@@ -341,7 +341,7 @@ class IdentifierService extends AgentService {
       IdentifierMetadataRecordProps,
       "displayName" | "colors" | "theme"
     >,
-    delegatorContact?: ConnectionShortDetails
+    delegateContact?: ConnectionShortDetails
   ): Promise<string | undefined> {
     const ourMetadata = await this.getMetadataById(ourIdentifier);
     this.validIdentifierMetadata(ourMetadata);
@@ -363,19 +363,19 @@ class IdentifierService extends AgentService {
         return { state: aid.response };
       })
     );
-    let delegatorAid;
-    if (delegatorContact) {
+    let delegateAid;
+    if (delegateContact) {
       const delegator = await this.agent.modules.signify.resolveOobi(
-        delegatorContact.oobi as string
+        delegateContact.oobi as string
       );
-      delegatorAid = { state: delegator.response } as Aid;
+      delegateAid = { state: delegator.response } as Aid;
     }
     const signifyName = utils.uuid();
     const result = await this.agent.modules.signify.createMultisig(
       ourAid,
       otherAids,
       signifyName,
-      delegatorAid
+      delegateAid
     );
     const multisigId = result.op.name.split(".")[1];
     await this.createIdentifierMetadataRecord({
