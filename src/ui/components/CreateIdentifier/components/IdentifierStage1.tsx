@@ -15,6 +15,7 @@ import { ConnectionShortDetails } from "../../../pages/Connections/Connections.t
 import { useAppSelector } from "../../../../store/hooks";
 import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
 import CardanoLogo from "../../../assets/images/CardanoLogo.jpg";
+import { ConnectionType } from "../../../../core/agent/agent.types";
 
 const IdentifierStage1 = ({ setState, componentId }: IdentifierStageProps) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
@@ -22,6 +23,24 @@ const IdentifierStage1 = ({ setState, componentId }: IdentifierStageProps) => {
   const [sortedConnections, setSortedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
+
+  useEffect(() => {
+    if (connectionsCache.length) {
+      const keriConnections = connectionsCache.filter(
+        (connection) => connection.type === ConnectionType.KERI
+      );
+      const sortedConnections = [...keriConnections].sort(function (a, b) {
+        const textA = a.label.toUpperCase();
+        const textB = b.label.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      });
+      setSortedConnections(sortedConnections);
+      setState((prevState: IdentifierStageProps) => ({
+        ...prevState,
+        sortedConnections: sortedConnections,
+      }));
+    }
+  }, [connectionsCache, setState]);
 
   const handleSelectConnection = (id: string) => {
     let data = selectedConnections;
@@ -39,21 +58,6 @@ const IdentifierStage1 = ({ setState, componentId }: IdentifierStageProps) => {
       selectedConnections: selectedConnections,
     }));
   }, [selectedConnections, setState]);
-
-  useEffect(() => {
-    if (connectionsCache.length) {
-      const sortedConnections = [...connectionsCache].sort(function (a, b) {
-        const textA = a.label.toUpperCase();
-        const textB = b.label.toUpperCase();
-        return textA < textB ? -1 : textA > textB ? 1 : 0;
-      });
-      setSortedConnections(sortedConnections);
-      setState((prevState: IdentifierStageProps) => ({
-        ...prevState,
-        sortedConnections: sortedConnections,
-      }));
-    }
-  }, [connectionsCache]);
 
   return (
     <>

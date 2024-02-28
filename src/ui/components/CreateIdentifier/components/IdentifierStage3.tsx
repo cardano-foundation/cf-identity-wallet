@@ -76,18 +76,18 @@ const IdentifierStage3 = ({
                       <span className="connection-name">
                         {connection.label}
                       </span>
+                      <IonIcon
+                        aria-hidden="true"
+                        icon={pencilOutline}
+                        slot="end"
+                        onClick={() =>
+                          setState((prevState: IdentifierStageProps) => ({
+                            ...prevState,
+                            multiSigStage: 1,
+                          }))
+                        }
+                      />
                     </IonLabel>
-                    <IonIcon
-                      aria-hidden="true"
-                      icon={pencilOutline}
-                      slot="end"
-                      onClick={() =>
-                        setState((prevState: IdentifierStageProps) => ({
-                          ...prevState,
-                          multiSigStage: 1,
-                        }))
-                      }
-                    />
                   </IonItem>
                 );
               }

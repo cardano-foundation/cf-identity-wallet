@@ -187,6 +187,7 @@ ion-modal.create-identifier-modal {
     ion-label {
       display: flex;
       flex-direction: row;
+      width: 100%;
 
       * {
         align-self: center;
@@ -202,7 +203,6 @@ ion-modal.create-identifier-modal {
         overflow: hidden;
         text-overflow: ellipsis;
         text-align: left;
-        width: 100%;
       }
     }
 
