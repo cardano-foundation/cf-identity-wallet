@@ -161,6 +161,7 @@ ion-modal.create-identifier-modal {
 
     ion-list {
       background: transparent;
+      padding-inline: 0.063rem;
 
       ion-item {
         --inner-padding-end: 0;
@@ -331,6 +332,10 @@ ion-modal.create-identifier-modal {
         font-size: 0.8rem;
       }
 
+      ion-content.scrollable-page-content > *:first-child {
+        padding-top: 0;
+      }
+
       .identifier-name ion-label,
       .identifier-type .type-input-title,
       .identifier-theme .theme-input-title {
@@ -344,6 +349,10 @@ ion-modal.create-identifier-modal {
 
       .identifier-type-selector,
       .aid-type-selector {
+        ion-row {
+          height: 2.5rem;
+        }
+
         ion-col ion-card.type-input {
           height: 2.5rem;
           font-size: 0.8rem;
@@ -417,11 +426,17 @@ ion-modal.create-identifier-modal {
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
+    .scrollable-page-layout {
+      &:not(.keyboard-is-open) {
+        padding-bottom: 3rem;
+      }
+    }
+
     ion-toolbar.page-footer {
       bottom: calc(-100vh + 3.5rem);
 
       &.identifier-stage-3 {
-        bottom: calc(-100vh + 6.5rem);
+        bottom: calc(-100vh + 6.25rem);
       }
     }
   }
