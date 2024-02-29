@@ -27,6 +27,7 @@ export default {
     "tsx",
     "json",
     "node",
+    "yaml"
   ],
   moduleNameMapper: {
     "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$":
@@ -45,6 +46,7 @@ export default {
   transform: {
     "^.+\\.(ts|tsx)$": "ts-jest",
     "^.+\\.(js|jsx)$": "babel-jest",
+    "\\.yaml$": "jest-transform-yaml",
   },
   setupFilesAfterEnv: ["jest-canvas-mock", "<rootDir>/src/setupTests.ts"],
 };

@@ -877,6 +877,25 @@
       }
     }
   },
+  "settings": {
+    "sections": {
+      "header": "Settings",
+      "security": {
+        "title": "Security",
+        "changepin": "Change PIN",
+        "manageoperationspassword": "Manage Operations Password",
+        "seedphrase": "Seed Phrase"
+      },
+      "support": {
+        "title": "Support & Legal",
+        "contact": "Contact",
+        "troubleshooting": "Troubleshooting",
+        "learnmore": "Learn More About Cardano IDW",
+        "terms": "Terms and Privacy Policy",
+        "version": "App Version"
+      }
+    }
+  },
   "connections": {
     "tab": {
       "title": "Connections",

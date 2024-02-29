@@ -19,10 +19,14 @@ import {
 } from "ionicons/icons";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { useAppDispatch } from "../../../store/hooks";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  setCurrentOperation,
+  setCurrentRoute,
+} from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import "./Menu.scss";
 import { i18n } from "../../../i18n";
+import { OperationType } from "../../globals/types";
 
 const Menu = () => {
   const pageId = "menu-tab";
@@ -36,8 +40,11 @@ const Menu = () => {
     return (
       <IonButton
         shape="round"
-        className="connections-button"
-        data-testid="connections-button"
+        className="settings-button"
+        data-testid="settings-button"
+        onClick={() => {
+          dispatch(setCurrentOperation(OperationType.SHOW_SETTINGS));
+        }}
       >
         <IonIcon
           slot="icon-only"

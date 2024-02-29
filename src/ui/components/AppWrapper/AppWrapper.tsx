@@ -54,6 +54,7 @@ import {
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
+import { ConfigurationService } from "../../../core/configuration";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -203,16 +204,23 @@ const keriNotificationsChangeHandler = async (
     //TODO: Use dispatch here, handle logic for the multisig notification
   } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
     //TODO: Use dispatch here, handle logic for the multisig rotation notification
-  } else if (event?.a?.r === NotificationRoute.GrantRequest) {
-    dispatch(
-      setQueueIncomingRequest({
-        id: event?.id,
-        type: IncomingRequestType.REQ_GRANT,
-        logo: "", // TODO: must define Keri logo
-        label: "Tunnel wallet grant request",
-        source: ConnectionType.KERI,
-      })
+  } else if (event?.a?.r === NotificationRoute.TunnelRequest) {
+    const exchange = await AriesAgent.agent.credentials.getKeriExchangeMessage(
+      event.a.d as string
     );
+    //TODO: hard fix the value at the moment, may need to change these in the future
+    const tunnelAid = "EBDX49akYZ9g_TplwZn1ounNRMtx7SJEmdBuhw4mjSIp";
+    if (exchange.exn.i === tunnelAid) {
+      dispatch(
+        setQueueIncomingRequest({
+          id: event?.id,
+          type: IncomingRequestType.REQ_GRANT,
+          logo: "", // TODO: must define Keri logo
+          label: "Tunnel wallet grant request",
+          source: ConnectionType.KERI,
+        })
+      );
+    }
   }
 };
 
@@ -261,6 +269,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.set(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY, "");
       await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
     }
+
+    await new ConfigurationService().start();
 
     try {
       await AriesAgent.agent.start();
@@ -370,7 +380,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await Promise.all([
         AriesAgent.agent.connections.getUnhandledConnections(),
         AriesAgent.agent.credentials.getUnhandledCredentials(),
-        AriesAgent.agent.credentials.getUnhandledReqGrantEvents(),
+        AriesAgent.agent.credentials.getUnhandledTunnelRequestEvents(),
       ])
     )
       .flat()

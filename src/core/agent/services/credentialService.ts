@@ -614,7 +614,7 @@ class CredentialService extends AgentService {
     const notificationsList =
       await this.agent.modules.signify.getNotifications();
     let unreadGrantNotes = notificationsList.notes.filter(
-      (note: any) => !note.r && note.a.r === "/tunnel/server/request"
+      (note: any) => !note.r && note.a.r === NotificationRoute.Credential
     );
     unreadGrantNotes = await Promise.all(
       unreadGrantNotes.map(async (note: any) => {
@@ -635,7 +635,7 @@ class CredentialService extends AgentService {
         notification.exchange.exn.e.acdc === expectedDomain
     );
     triedTime++;
-    while (!unreadGrantNotes?.length) {
+    if (!unreadGrantNotes?.length) {
       if (triedTime > retryTimes) {
         throw new Error(CredentialService.ACDC_NOT_APPEARING);
       }
@@ -661,7 +661,7 @@ class CredentialService extends AgentService {
     });
   }
 
-  private async callEnterpriseDiscloseAcdc(
+  private async requestEnterpriseDisclosure(
     serverEndpoint: string,
     aidPrefix: string,
     schemaSaid: string
@@ -680,22 +680,24 @@ class CredentialService extends AgentService {
 
   async handleReqGrant(id: string) {
     //TODO: hard fix the value at the moment, may need to change these in the future
-    const enterpriseServerEndpoint = "http://localhost:3001";
     const schemaSaid = "EGjD1gCLi9ecZSZp9zevkgZGyEX_MbOdmhBFt4o0wvdb";
     const tunnelAid = "EBDX49akYZ9g_TplwZn1ounNRMtx7SJEmdBuhw4mjSIp";
     const keriNoti = await this.getKeriNotificationRecordById(id);
     const exchange = await this.agent.modules.signify.getKeriExchange(
       keriNoti.a.d as string
     );
+    const enterpriseServerEndpoint = exchange.exn.a.serverEndpoint;
     const sender = exchange.exn.i;
     if (sender !== tunnelAid) {
-      throw new Error();
+      throw new Error("The exchange sender is not the tunnel");
     }
     const credentials = await this.agent.modules.signify.getCredentials(
       exchange.exn.a.filter
     );
     if (!credentials.length) {
-      throw new Error();
+      throw new Error(
+        `Wallet does not hold an ACDC matching the tunnel's request: ${schemaSaid}`
+      );
     }
     const serverOobiUrl = exchange.exn.a.serverOobiUrl;
     const resolveServerOobiResult =
@@ -707,13 +709,14 @@ class CredentialService extends AgentService {
     const idWalletOobiUrl = await this.agent.modules.signify.getOobi(
       selectedIdentifier.name
     );
+    const triggerTime = new Date().getTime();
     /**Resolve OOBI */
     await this.callEnterpriseResolveOobi(
       enterpriseServerEndpoint,
       idWalletOobiUrl
     );
     /**Disclose ACDC */
-    await this.callEnterpriseDiscloseAcdc(
+    await this.requestEnterpriseDisclosure(
       enterpriseServerEndpoint,
       selectedIdentifier.prefix,
       schemaSaid
@@ -731,6 +734,9 @@ class CredentialService extends AgentService {
         return currentDateTime > maxDateTime ? currentObj : latestObj;
       }
     );
+    if (new Date(latestGrant.exchange.exn.a.dt).getTime() < triggerTime) {
+      throw new Error("The grant is too old");
+    }
     await this.agent.modules.signify.markNotification(latestGrant.notiId);
     await this.agent.modules.signify.admitIpex(
       latestGrant.notiSaid,
@@ -752,7 +758,7 @@ class CredentialService extends AgentService {
       selectedIdentifier.name,
       selectedAid,
       "grant",
-      NotificationRoute.GrantRequest,
+      NotificationRoute.TunnelRequest,
       {},
       [serverAid],
       {
@@ -761,11 +767,11 @@ class CredentialService extends AgentService {
     );
   }
 
-  async getUnhandledReqGrantEvents(): Promise<KeriNotification[]> {
+  async getUnhandledTunnelRequestEvents(): Promise<KeriNotification[]> {
     const results = await this.agent.genericRecords.findAllByQuery({
       type: GenericRecordType.NOTIFICATION_KERI,
-      route: NotificationRoute.GrantRequest,
-      $or: [{ route: NotificationRoute.GrantRequest }],
+      route: NotificationRoute.TunnelRequest,
+      $or: [{ route: NotificationRoute.TunnelRequest }],
     });
     return results.map((result) => {
       return {
@@ -774,6 +780,10 @@ class CredentialService extends AgentService {
         a: result.content,
       };
     });
+  }
+
+  async getKeriExchangeMessage(said: string) {
+    return this.agent.modules.signify.getKeriExchange(said);
   }
 }
 
