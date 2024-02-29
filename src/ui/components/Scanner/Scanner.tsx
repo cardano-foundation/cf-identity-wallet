@@ -92,10 +92,10 @@ const Scanner = forwardRef((props: ScannerProps, ref) => {
   useEffect(() => {
     if (
       currentRoute?.path === TabsRoutePath.SCAN ||
-      currentRoute?.path === RoutePath.OOBI_SCANNER
-      //currentOperation === OperationType.SCAN_CONNECTION)
-      //currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
-      //currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING
+      currentRoute?.path === RoutePath.OOBI_SCANNER ||
+      (currentOperation === OperationType.SCAN_CONNECTION &&
+        currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
+        currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING)
     ) {
       initScan();
     } else {
