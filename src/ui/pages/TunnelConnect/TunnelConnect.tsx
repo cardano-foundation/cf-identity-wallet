@@ -130,13 +130,10 @@ const TunnelConnect = () => {
     setShowLoading(true);
     // TODO: Validate oobi url
     if (!oobiUrlValue) {
-      alert("Invalid OOBI URL format");
       return;
     }
 
     await AriesAgent.agent.connections.resolveOObi(oobiUrlValue, oobiNameValue);
-    // TODO: store operation in Preferences
-
     setRefreshResolvedOobis(!refreshResolvedOobis);
     setOobiUrlValue("");
     setOobiNameValue(`Tunnel(${Object.keys(resolvedOobis).length + 1})`);
