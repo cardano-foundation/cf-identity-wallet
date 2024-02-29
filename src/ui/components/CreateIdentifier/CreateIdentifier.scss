@@ -37,6 +37,10 @@ ion-modal.create-identifier-modal {
     bottom: calc(-100vh + 4rem);
     background: var(--ion-color-light);
     padding-inline: 0.9rem;
+
+    &.identifier-stage-3 {
+      bottom: calc(-100vh + 8rem);
+    }
   }
 
   .create-identifier-modal-content {

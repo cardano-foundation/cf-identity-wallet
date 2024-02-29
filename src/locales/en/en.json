@@ -1067,6 +1067,7 @@
   },
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
+    "identifierrequested": "Identifier request pending",
     "identifiercreated": "New identifier created successfully",
     "identifierupdated": "Identifier successfully updated",
     "identifierdeleted": "Identifier successfully deleted",

@@ -1,11 +1,16 @@
 import { IonCard, IonItem, IonLabel, IonIcon } from "@ionic/react";
 import { pencilOutline } from "ionicons/icons";
+import { useState } from "react";
 import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
 import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import CardanoLogo from "../../../assets/images/CardanoLogo.jpg";
+import { Alert } from "../../Alert";
+import { useAppDispatch } from "../../../../store/hooks";
+import { setToastMsg } from "../../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../../globals/types";
 
 const IdentifierStage3 = ({
   state,
@@ -13,6 +18,8 @@ const IdentifierStage3 = ({
   componentId,
   resetModal,
 }: IdentifierStageProps) => {
+  const dispatch = useAppDispatch();
+  const [alertIsOpen, setAlertIsOpen] = useState(false);
   return (
     <>
       <ScrollablePageLayout
@@ -118,14 +125,30 @@ const IdentifierStage3 = ({
       </ScrollablePageLayout>
       <PageFooter
         pageId={componentId}
+        customClass="identifier-stage-3"
         primaryButtonText={`${i18n.t("createidentifier.confirm.continue")}`}
         primaryButtonAction={() => {
-          resetModal();
           // @TODO - sdisalvo: send the request
           //  console.log(state);
+          dispatch(setToastMsg(ToastMsgType.IDENTIFIER_REQUESTED));
+          resetModal();
         }}
         secondaryButtonText={`${i18n.t("createidentifier.confirm.cancel")}`}
-        secondaryButtonAction={() => resetModal()}
+        secondaryButtonAction={() => setAlertIsOpen(true)}
+      />
+      <Alert
+        isOpen={alertIsOpen}
+        setIsOpen={setAlertIsOpen}
+        dataTestId="alert-cancel"
+        headerText={i18n.t("createidentifier.confirm.alert.text")}
+        confirmButtonText={`${i18n.t("createidentifier.confirm.alert.cancel")}`}
+        cancelButtonText={`${i18n.t("createidentifier.confirm.alert.back")}`}
+        actionConfirm={() => {
+          setAlertIsOpen(false);
+          resetModal();
+        }}
+        actionCancel={() => setAlertIsOpen(false)}
+        actionDismiss={() => setAlertIsOpen(false)}
       />
     </>
   );
