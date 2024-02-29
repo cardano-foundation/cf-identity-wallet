@@ -78,12 +78,13 @@ const Scanner = forwardRef((props: ScannerProps, ref) => {
           // have a loading screen with "waiting for server..." etc,
           // and it can update to an error if the QR is invalid with a re-scan btn
 
-          //dispatch(setCurrentOperation(OperationType.IDLE));
-          // @TODO - foconnor: when above loading screen in place, handle invalid QR code
-          /*
-          await AriesAgent.agent.connections.receiveInvitationFromUrl(
-            result.content
-          );*/
+          if (currentRoute?.path !== RoutePath.OOBI_SCANNER) {
+            dispatch(setCurrentOperation(OperationType.IDLE));
+            // @TODO - foconnor: when above loading screen in place, handle invalid QR code
+            await AriesAgent.agent.connections.receiveInvitationFromUrl(
+              result.content
+            );
+          }
         }
       }
     }
