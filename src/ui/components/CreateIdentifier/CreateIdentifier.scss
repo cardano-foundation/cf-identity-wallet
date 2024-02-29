@@ -45,7 +45,7 @@ ion-modal.create-identifier-modal {
 
   .create-identifier-modal-content {
     ion-grid {
-      padding: 0;
+      padding: 0 0.063rem;
     }
 
     .identifier-name ion-label,
@@ -168,6 +168,7 @@ ion-modal.create-identifier-modal {
 
           .connection-name {
             margin-left: 1rem;
+            width: 100%;
           }
 
           ion-checkbox {
@@ -288,6 +289,7 @@ ion-modal.create-identifier-modal {
           .connection-name {
             font-weight: 500;
             margin-left: 0.25rem;
+            width: 100%;
           }
         }
 
@@ -340,30 +342,32 @@ ion-modal.create-identifier-modal {
         }
       }
 
-      ion-list ion-item {
-        ion-label.connection-item {
-          img.connection-logo {
-            width: 2.2rem;
-            height: 2.2rem;
-          }
-
-          .connection-name {
-            margin-left: 0.8rem;
-          }
-
-          ion-checkbox {
-            --size: 1.6rem;
-            width: 1.6rem;
-            margin: 0 0 0 0.3rem;
-          }
+      ion-label.connection-item {
+        img.connection-logo {
+          width: 2.2rem;
+          height: 2.2rem;
         }
 
-        &.identifier-list-item {
-          ion-label {
-            img.connection-logo {
-              width: 1.2rem;
-              height: 1.2rem;
-            }
+        .connection-name {
+          margin-left: 0.8rem;
+        }
+
+        ion-checkbox {
+          --size: 1.6rem;
+          width: 1.6rem;
+          margin: 0 0 0 0.3rem;
+        }
+      }
+
+      ion-card ion-item.identifier-list-item {
+        --min-height: 2.4rem;
+
+        ion-label {
+          margin: 0.65rem 0;
+
+          img.connection-logo {
+            width: 1.2rem;
+            height: 1.2rem;
           }
         }
       }
@@ -398,6 +402,16 @@ ion-modal.create-identifier-modal {
             font-size: 0.96rem;
           }
         }
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    ion-toolbar.page-footer {
+      bottom: calc(-100vh + 3.5rem);
+
+      &.identifier-stage-3 {
+        bottom: calc(-100vh + 6.5rem);
       }
     }
   }

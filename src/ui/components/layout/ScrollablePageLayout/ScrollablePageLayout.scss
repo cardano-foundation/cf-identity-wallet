@@ -22,6 +22,10 @@
     padding-inline: 0.9rem;
 
     .scrollable-page-content {
+      > * {
+        margin: 0 auto 1.248rem;
+      }
+
       > h2 {
         margin: 0.5rem 0 0.94rem;
       }
