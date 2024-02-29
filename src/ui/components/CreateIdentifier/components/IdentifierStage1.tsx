@@ -110,6 +110,7 @@ const IdentifierStage1 = ({
                   <span className="connection-name">{connection.label}</span>
                   <IonCheckbox
                     checked={selectedConnections.includes(connection.id)}
+                    data-testid={`connection-checkbox-${index}`}
                     onIonChange={() => {
                       handleSelectConnection(connection.id);
                     }}

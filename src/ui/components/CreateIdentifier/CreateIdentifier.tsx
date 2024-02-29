@@ -43,7 +43,6 @@ const CreateIdentifier = ({
         isOpen={modalIsOpen}
         className={`${componentId} full-page-modal ${blur ? "blur" : ""}`}
         data-testid={componentId}
-        onDidDismiss={() => resetModal()}
       >
         {blur && (
           <div
