@@ -89,7 +89,7 @@ const ShareQR = ({
                 data-testid="share-qr-modal-qr-code"
               >
                 <QRCode
-                  value={content.QRData}
+                  value={"OOBI URL"}
                   size={250}
                   fgColor={"black"}
                   bgColor={"white"}

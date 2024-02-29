@@ -11,7 +11,7 @@ import {
 } from "@ionic/react";
 import { qrCodeOutline, trashOutline } from "ionicons/icons";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
-import { useAppDispatch } from "../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { RoutePath } from "../../../routes";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
@@ -20,6 +20,9 @@ import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { LocationState, OobiObject } from "./TunnelConnect.types";
 import { CustomInput } from "../../components/CustomInput";
 import { ShareOOBI } from "./components/ShareOOBI";
+import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
+import { ColorGenerator } from "../../utils/colorGenerator";
+import { IdentifierType } from "../../../core/agent/services/identifierService.types";
 
 const TunnelConnect = () => {
   const pageId = "tunnel-connect";
@@ -27,6 +30,7 @@ const TunnelConnect = () => {
   const location = useLocation<LocationState>();
   const dispatch = useAppDispatch();
   const state = location.state;
+  const identifiersData = useAppSelector(getIdentifiersCache);
 
   const [shareModalIsOpen, setShareModalIsOpen] = useState(false);
   const [oobiNameValue, setOobiNameValue] = useState("Tunnel");
@@ -34,6 +38,7 @@ const TunnelConnect = () => {
   const [showLoading, setShowLoading] = useState(false);
   const [refreshResolvedOobis, setRefreshResolvedOobis] = useState(false);
   const [resolvedOobis, setResolvedOobis] = useState({});
+  const [walletOobi, setWalletOobi] = useState("");
 
   useEffect(() => {
     try {
@@ -51,6 +56,47 @@ const TunnelConnect = () => {
       // TODO: handle error
     }
   }, [refreshResolvedOobis]);
+
+  useEffect(() => {
+    const keriaAIDs = identifiersData.filter(
+      (id) => id.method === IdentifierType.KERI
+    );
+    if (keriaAIDs.length) {
+      const firstAid = keriaAIDs[0];
+      if (typeof firstAid.signifyName === "string") {
+        AriesAgent.agent.connections
+          .getKeriOobi(firstAid.signifyName)
+          .then((oobi) => {
+            setWalletOobi(oobi);
+          });
+      }
+    } else {
+      const colorGenerator = new ColorGenerator();
+      const newColor = colorGenerator.generateNextColor();
+      AriesAgent.agent.identifiers
+        .createIdentifier({
+          displayName: "Keria-For-Tunnel",
+          method: IdentifierType.KERI,
+          colors: [newColor[1], newColor[0]],
+          theme: 0,
+        })
+        .then((identifier) => {
+          if (identifier) {
+            AriesAgent.agent.identifiers
+              .getIdentifier(identifier)
+              .then((aid) => {
+                if (typeof aid?.result?.signifyName === "string") {
+                  AriesAgent.agent.connections
+                    .getKeriOobi(aid?.result.signifyName)
+                    .then((oobi) => {
+                      setWalletOobi(oobi);
+                    });
+                }
+              });
+          }
+        });
+    }
+  }, []);
 
   const handleDeleteOobi = async (name: string) => {
     let resolvedOobis: Record<string, any> = {};
@@ -86,7 +132,6 @@ const TunnelConnect = () => {
     }
 
     await AriesAgent.agent.connections.resolveOObi(oobiUrlValue, oobiNameValue);
-
     // TODO: store operation in Preferences
 
     setRefreshResolvedOobis(!refreshResolvedOobis);
@@ -107,7 +152,7 @@ const TunnelConnect = () => {
       }
     >
       <div className="content-container">
-        <h3 className="resolve-title">Resolve new OOBI:</h3>
+        <h3 className="resolve-title">Resolve new OOBI</h3>
         <div className="name-input">
           <CustomInput
             dataTestId="name-input"
@@ -118,79 +163,86 @@ const TunnelConnect = () => {
             value={oobiNameValue}
           />
         </div>
+
         <div className="oobi-input">
-          <CustomInput
-            dataTestId="oobi-input"
-            title="OOBI URL"
-            placeholder="Insert OOBI URL"
-            onChangeInput={setOobiUrlValue}
-            optional={false}
-            value={oobiUrlValue}
-          />
-          <div className="oobi-buttons">
-            <IonButton onClick={handleScanOOBI}>
-              <IonIcon
-                icon={qrCodeOutline}
-                color="light"
-              />
-            </IonButton>
+          <div className="input-with-button">
+            <CustomInput
+              dataTestId="oobi-input"
+              title="OOBI URL"
+              placeholder="Insert OOBI URL"
+              onChangeInput={setOobiUrlValue}
+              optional={false}
+              value={oobiUrlValue}
+            />
             <IonButton
-              onClick={handleResolveOOBI}
-              disabled={!oobiUrlValue.length}
+              onClick={handleScanOOBI}
+              className="scan-qr-button"
             >
-              Resolve OOBI
-              <IonLoading
-                isOpen={showLoading}
-                message={"Resolving OOBI"}
-                duration={5000}
-              />
+              <IonIcon icon={qrCodeOutline} />
             </IonButton>
           </div>
+          <IonButton
+            onClick={handleResolveOOBI}
+            disabled={!oobiUrlValue.length}
+            className="resolve-oobi-button"
+          >
+            Resolve OOBI
+            <IonLoading
+              isOpen={showLoading}
+              message={"Resolving OOBI"}
+              duration={5000}
+            />
+          </IonButton>
         </div>
 
-        <h3 className="resolved-title">Resolved OOBIs:</h3>
-        <IonList className="oobi-list">
-          {Object.entries(resolvedOobis as Record<string, OobiObject>).map(
-            ([name, oobi]: [string, OobiObject]) => (
-              <IonItem
-                key={oobi.response.i}
-                lines="full"
-                className="oobi-item"
-              >
-                <IonLabel
-                  slot="start"
-                  className="oobi-label"
-                >
-                  <h2>{name}</h2>
-                  <p>{oobi?.metadata?.oobi}</p>
-                  <p>ID: {oobi?.response?.i}</p>
-                  <p>
-                    Date: {new Date(oobi?.response?.dt).toLocaleDateString()}{" "}
-                    {new Date(oobi?.response?.dt).toLocaleTimeString()}
-                  </p>
-                </IonLabel>
-                <IonButton
-                  slot="end"
-                  color="danger"
-                  onClick={() => handleDeleteOobi(name)}
-                >
-                  <IonIcon
-                    className="delete-button-label"
-                    slot="icon-only"
-                    icon={trashOutline}
-                  />
-                </IonButton>
-              </IonItem>
-            )
-          )}
-        </IonList>
+        {Object.keys(resolvedOobis).length ? (
+          <>
+            <h3 className="resolved-title">Resolved OOBIs:</h3>
+            <IonList className="oobi-list">
+              {Object.entries(resolvedOobis as Record<string, OobiObject>).map(
+                ([name, oobi]: [string, OobiObject]) => (
+                  <IonItem
+                    key={oobi.response.i}
+                    lines="full"
+                    className="oobi-item"
+                  >
+                    <IonLabel
+                      slot="start"
+                      className="oobi-label"
+                    >
+                      <h2>{name}</h2>
+                      <p>{oobi?.metadata?.oobi}</p>
+                      <p>ID: {oobi?.response?.i}</p>
+                      <p>
+                        Date:{" "}
+                        {new Date(oobi?.response?.dt).toLocaleDateString()}{" "}
+                        {new Date(oobi?.response?.dt).toLocaleTimeString()}
+                      </p>
+                    </IonLabel>
+                    <IonButton
+                      slot="end"
+                      color="danger"
+                      onClick={() => handleDeleteOobi(name)}
+                    >
+                      <IonIcon
+                        className="delete-button-label"
+                        slot="icon-only"
+                        icon={trashOutline}
+                      />
+                    </IonButton>
+                  </IonItem>
+                )
+              )}
+            </IonList>
+          </>
+        ) : null}
       </div>
       <div className="fixed-bottom-component">
         <IonButton
           onClick={() => setShareModalIsOpen(true)}
           expand="block"
         >
-          Share OOBI
+          Share wallet OOBI
           <IonIcon
             icon={qrCodeOutline}
             color="light"
@@ -201,6 +253,7 @@ const TunnelConnect = () => {
       <ShareOOBI
         modalIsOpen={shareModalIsOpen}
         setModalIsOpen={setShareModalIsOpen}
+        content={walletOobi}
       />
     </ScrollablePageLayout>
   );
