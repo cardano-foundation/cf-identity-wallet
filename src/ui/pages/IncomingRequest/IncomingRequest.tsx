@@ -123,6 +123,8 @@ const IncomingRequest = () => {
       } else {
         AriesAgent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
       }
+    } else if (incomingRequest.type === IncomingRequestType.REQ_GRANT) {
+      AriesAgent.agent.credentials.handleReqGrant(incomingRequest.id);
     }
     setTimeout(() => {
       handleReset();

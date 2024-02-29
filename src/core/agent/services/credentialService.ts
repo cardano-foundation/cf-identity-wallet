@@ -604,6 +604,177 @@ class CredentialService extends AgentService {
       }
     }
   }
+
+  private async waitForEnterpriseAcdcToAppear(
+    serverAid: string,
+    expectedDomain: string,
+    retryTimes: number,
+    triedTime = 0
+  ) {
+    const notificationsList =
+      await this.agent.modules.signify.getNotifications();
+    let unreadGrantNotes = notificationsList.notes.filter(
+      (note: any) => !note.r && note.a.r === "/tunnel/server/request"
+    );
+    unreadGrantNotes = await Promise.all(
+      unreadGrantNotes.map(async (note: any) => {
+        const exchange = await this.agent.modules.signify.getKeriExchange(
+          note.a.d
+        );
+        return {
+          notiId: note.i,
+          notiSaid: note.a.d,
+          exchange,
+        };
+      })
+    );
+    unreadGrantNotes = unreadGrantNotes.filter(
+      (notification: any) =>
+        notification.exchange.exn.i === serverAid &&
+        notification.exchange.exn.e.acdc &&
+        notification.exchange.exn.e.acdc === expectedDomain
+    );
+    triedTime++;
+    while (!unreadGrantNotes?.length) {
+      if (triedTime > retryTimes) {
+        throw new Error(CredentialService.ACDC_NOT_APPEARING);
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      await this.waitForEnterpriseAcdcToAppear(
+        serverAid,
+        expectedDomain,
+        retryTimes,
+        triedTime
+      );
+    }
+    return unreadGrantNotes;
+  }
+
+  private async callEnterpriseResolveOobi(
+    serverEndpoint: string,
+    oobiUrl: string
+  ) {
+    await fetch(`${serverEndpoint}/resolve-oobi`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ oobiUrl: oobiUrl }),
+    });
+  }
+
+  private async callEnterpriseDiscloseAcdc(
+    serverEndpoint: string,
+    aidPrefix: string,
+    schemaSaid: string
+  ) {
+    await fetch(`${serverEndpoint}/disclosure-acdc`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        aidPrefix: aidPrefix,
+        schemaSaid,
+      }),
+    });
+  }
+
+  async handleReqGrant(id: string) {
+    //TODO: hard fix the value at the moment, may need to change these in the future
+    const enterpriseServerEndpoint = "http://localhost:3001";
+    const schemaSaid = "EGjD1gCLi9ecZSZp9zevkgZGyEX_MbOdmhBFt4o0wvdb";
+    const tunnelAid = "EBDX49akYZ9g_TplwZn1ounNRMtx7SJEmdBuhw4mjSIp";
+    const keriNoti = await this.getKeriNotificationRecordById(id);
+    const exchange = await this.agent.modules.signify.getKeriExchange(
+      keriNoti.a.d as string
+    );
+    const sender = exchange.exn.i;
+    if (sender !== tunnelAid) {
+      throw new Error();
+    }
+    const credentials = await this.agent.modules.signify.getCredentials(
+      exchange.exn.a.filter
+    );
+    if (!credentials.length) {
+      throw new Error();
+    }
+    const serverOobiUrl = exchange.exn.a.serverOobiUrl;
+    const resolveServerOobiResult =
+      await this.agent.modules.signify.resolveOobi(serverOobiUrl);
+    const serverAid = resolveServerOobiResult.response.i;
+    const identitiers = await this.agent.modules.signify.getAllIdentifiers();
+    //TODO: May need to create a screen to select which identifier will be used
+    const selectedIdentifier = identitiers.aids[0];
+    const idWalletOobiUrl = await this.agent.modules.signify.getOobi(
+      selectedIdentifier.name
+    );
+    /**Resolve OOBI */
+    await this.callEnterpriseResolveOobi(
+      enterpriseServerEndpoint,
+      idWalletOobiUrl
+    );
+    /**Disclose ACDC */
+    await this.callEnterpriseDiscloseAcdc(
+      enterpriseServerEndpoint,
+      selectedIdentifier.prefix,
+      schemaSaid
+    );
+    /**Mark notification as read and admit it*/
+    const unreadGrantNotes = await this.waitForEnterpriseAcdcToAppear(
+      serverAid,
+      enterpriseServerEndpoint,
+      5
+    );
+    const latestGrant = unreadGrantNotes.reduce(
+      (latestObj: any, currentObj: any) => {
+        const maxDateTime = latestObj.exchange.exn.a.dt;
+        const currentDateTime = currentObj.exchange.exn.a.dt;
+        return currentDateTime > maxDateTime ? currentObj : latestObj;
+      }
+    );
+    await this.agent.modules.signify.markNotification(latestGrant.notiId);
+    await this.agent.modules.signify.admitIpex(
+      latestGrant.notiSaid,
+      selectedIdentifier.name,
+      latestGrant.exchange.exn.i
+    );
+    /**do an IPEX exchange of the holding ACDC */
+    const acdc = credentials[0];
+    await this.agent.modules.signify.grantAcdcIpexExchange(
+      selectedIdentifier.name,
+      acdc,
+      serverAid
+    );
+    /**Send exchange message that contains the tunnel AID */
+    const selectedAid = await this.agent.modules.signify.getIdentifierByName(
+      selectedIdentifier.name
+    );
+    await this.agent.modules.signify.sendExn(
+      selectedIdentifier.name,
+      selectedAid,
+      "grant",
+      NotificationRoute.GrantRequest,
+      {},
+      [serverAid],
+      {
+        sid: tunnelAid,
+      }
+    );
+  }
+
+  async getUnhandledReqGrantEvents(): Promise<KeriNotification[]> {
+    const results = await this.agent.genericRecords.findAllByQuery({
+      type: GenericRecordType.NOTIFICATION_KERI,
+      route: NotificationRoute.GrantRequest,
+      $or: [{ route: NotificationRoute.GrantRequest }],
+    });
+    return results.map((result) => {
+      return {
+        id: result.id,
+        createdAt: result.createdAt,
+        a: result.content,
+      };
+    });
+  }
 }
 
 export { CredentialService };

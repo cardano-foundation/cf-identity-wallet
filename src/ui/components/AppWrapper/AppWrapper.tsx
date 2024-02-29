@@ -203,6 +203,16 @@ const keriNotificationsChangeHandler = async (
     //TODO: Use dispatch here, handle logic for the multisig notification
   } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
     //TODO: Use dispatch here, handle logic for the multisig rotation notification
+  } else if (event?.a?.r === NotificationRoute.GrantRequest) {
+    dispatch(
+      setQueueIncomingRequest({
+        id: event?.id,
+        type: IncomingRequestType.REQ_GRANT,
+        logo: "", // TODO: must define Keri logo
+        label: "Tunnel wallet grant request",
+        source: ConnectionType.KERI,
+      })
+    );
   }
 };
 
@@ -360,6 +370,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await Promise.all([
         AriesAgent.agent.connections.getUnhandledConnections(),
         AriesAgent.agent.credentials.getUnhandledCredentials(),
+        AriesAgent.agent.credentials.getUnhandledReqGrantEvents(),
       ])
     )
       .flat()
