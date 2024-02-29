@@ -14,6 +14,7 @@ const ShareOOBI = ({
   modalIsOpen,
   setModalIsOpen,
   content,
+  name,
 }: ShareOOBIProps) => {
   const componentId = "share-oobi-modal";
   const dispatch = useAppDispatch();
@@ -38,7 +39,7 @@ const ShareOOBI = ({
           closeButton={true}
           closeButtonLabel="Close"
           closeButtonAction={() => resetModal()}
-          title="Share OOBI"
+          title={`Share ${name} OOBI`}
         />
         <div className="qr-container">
           <div className="text-explanation">

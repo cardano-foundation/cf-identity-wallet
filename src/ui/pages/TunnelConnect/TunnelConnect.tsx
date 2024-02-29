@@ -39,6 +39,7 @@ const TunnelConnect = () => {
   const [refreshResolvedOobis, setRefreshResolvedOobis] = useState(false);
   const [resolvedOobis, setResolvedOobis] = useState({});
   const [walletOobi, setWalletOobi] = useState("");
+  const [sharedAidName, setSharedAidName] = useState("");
 
   useEffect(() => {
     try {
@@ -68,6 +69,7 @@ const TunnelConnect = () => {
           .getKeriOobi(firstAid.signifyName)
           .then((oobi) => {
             setWalletOobi(oobi);
+            setSharedAidName(firstAid.displayName);
           });
       }
     } else {
@@ -90,6 +92,7 @@ const TunnelConnect = () => {
                     .getKeriOobi(aid?.result.signifyName)
                     .then((oobi) => {
                       setWalletOobi(oobi);
+                      setSharedAidName(aid?.result.displayName);
                     });
                 }
               });
@@ -254,6 +257,7 @@ const TunnelConnect = () => {
         modalIsOpen={shareModalIsOpen}
         setModalIsOpen={setShareModalIsOpen}
         content={walletOobi}
+        name={sharedAidName}
       />
     </ScrollablePageLayout>
   );
