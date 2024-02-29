@@ -36,8 +36,10 @@ const IdentifierStage0 = ({
   const identifierData = useAppSelector(getIdentifiersCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
-  const [displayNameValue, setDisplayNameValue] = useState("");
-  const [selectedTheme, setSelectedTheme] = useState(0);
+  const [displayNameValue, setDisplayNameValue] = useState(
+    state.displayNameValue
+  );
+  const [selectedTheme, setSelectedTheme] = useState(state.selectedTheme);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
   const typeIsSelectedIsValid = state.selectedIdentifierType !== undefined;

@@ -17,9 +17,15 @@ import { getConnectionsCache } from "../../../../store/reducers/connectionsCache
 import CardanoLogo from "../../../assets/images/CardanoLogo.jpg";
 import { ConnectionType } from "../../../../core/agent/agent.types";
 
-const IdentifierStage1 = ({ setState, componentId }: IdentifierStageProps) => {
+const IdentifierStage1 = ({
+  state,
+  setState,
+  componentId,
+}: IdentifierStageProps) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
-  const [selectedConnections, setSelectedConnections] = useState<string[]>([]);
+  const [selectedConnections, setSelectedConnections] = useState<string[]>(
+    state.selectedConnections
+  );
   const [sortedConnections, setSortedConnections] = useState<
     ConnectionShortDetails[]
   >([]);

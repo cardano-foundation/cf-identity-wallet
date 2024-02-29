@@ -34,12 +34,12 @@ ion-modal.create-identifier-modal {
 
   ion-toolbar.page-footer {
     z-index: 1000;
-    bottom: calc(-100vh + 4rem);
+    bottom: calc(-100vh + 4.5rem);
     background: var(--ion-color-light);
     padding-inline: 0.9rem;
 
     &.identifier-stage-3 {
-      bottom: calc(-100vh + 8rem);
+      bottom: calc(-100vh + 8.5rem);
     }
   }
 
