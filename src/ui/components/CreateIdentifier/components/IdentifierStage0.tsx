@@ -111,6 +111,7 @@ const IdentifierStage0 = ({
     <>
       <ScrollablePageLayout
         pageId={componentId + "-content"}
+        customClass={keyboardIsOpen ? "keyboard-is-open" : ""}
         header={
           <PageHeader
             closeButton={true}
@@ -146,129 +147,122 @@ const IdentifierStage0 = ({
             )}
           </div>
         </div>
-        {!keyboardIsOpen && (
-          <>
-            <div className="identifier-type">
-              <div className="type-input-title">{`${i18n.t(
-                "createidentifier.identifiertype.title"
-              )}`}</div>
-              <IonGrid
-                className="identifier-type-selector"
-                data-testid="identifier-type-selector"
-              >
-                <IonRow>
-                  <IonCol>
-                    <TypeItem
-                      index={0}
-                      text={i18n.t("createidentifier.identifiertype.didkey")}
-                      clickEvent={() => identifierTypeSelector(0)}
-                      selectedType={state.selectedIdentifierType}
-                    />
-                  </IonCol>
-                  <IonCol>
-                    <TypeItem
-                      index={1}
-                      text={i18n.t("createidentifier.identifiertype.keri")}
-                      clickEvent={() => identifierTypeSelector(1)}
-                      selectedType={state.selectedIdentifierType}
-                    />
-                  </IonCol>
-                </IonRow>
-              </IonGrid>
-            </div>
-            {state.selectedIdentifierType === 1 && (
-              <div className="aid-type">
-                <div className="type-input-title">{`${i18n.t(
-                  "createidentifier.aidtype.title"
-                )}`}</div>
-                <IonGrid
-                  className="aid-type-selector"
-                  data-testid="aid-type-selector"
-                >
-                  <IonRow>
-                    <IonCol>
-                      <TypeItem
-                        index={0}
-                        text={i18n.t("createidentifier.aidtype.default.label")}
-                        clickEvent={() =>
-                          setState((prevState: IdentifierStageProps) => ({
-                            ...prevState,
-                            selectedAidType: 0,
-                          }))
-                        }
-                        selectedType={state.selectedAidType}
-                      />
-                    </IonCol>
-                    <IonCol>
-                      <TypeItem
-                        index={1}
-                        text={i18n.t("createidentifier.aidtype.multisig.label")}
-                        clickEvent={() =>
-                          setState((prevState: IdentifierStageProps) => ({
-                            ...prevState,
-                            selectedAidType: 1,
-                          }))
-                        }
-                        selectedType={state.selectedAidType}
-                      />
-                    </IonCol>
-                    <IonCol>
-                      <TypeItem
-                        index={2}
-                        text={i18n.t(
-                          "createidentifier.aidtype.delegated.label"
-                        )}
-                        clickEvent={() =>
-                          setState((prevState: IdentifierStageProps) => ({
-                            ...prevState,
-                            selectedAidType: 2,
-                          }))
-                        }
-                        selectedType={state.selectedAidType}
-                      />
-                    </IonCol>
-                  </IonRow>
-                </IonGrid>
-              </div>
-            )}
-            <div className="identifier-theme">
-              <div className="theme-input-title">{`${i18n.t(
-                "createidentifier.theme.title"
-              )}`}</div>
-              <IdentifierThemeSelector
-                identifierType={state.selectedIdentifierType}
-                selectedTheme={selectedTheme}
-                setSelectedTheme={setSelectedTheme}
-              />
-            </div>
-          </>
+        <div className="identifier-type">
+          <div className="type-input-title">{`${i18n.t(
+            "createidentifier.identifiertype.title"
+          )}`}</div>
+          <IonGrid
+            className="identifier-type-selector"
+            data-testid="identifier-type-selector"
+          >
+            <IonRow>
+              <IonCol>
+                <TypeItem
+                  index={0}
+                  text={i18n.t("createidentifier.identifiertype.didkey")}
+                  clickEvent={() => identifierTypeSelector(0)}
+                  selectedType={state.selectedIdentifierType}
+                />
+              </IonCol>
+              <IonCol>
+                <TypeItem
+                  index={1}
+                  text={i18n.t("createidentifier.identifiertype.keri")}
+                  clickEvent={() => identifierTypeSelector(1)}
+                  selectedType={state.selectedIdentifierType}
+                />
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+        </div>
+        {state.selectedIdentifierType === 1 && (
+          <div className="aid-type">
+            <div className="type-input-title">{`${i18n.t(
+              "createidentifier.aidtype.title"
+            )}`}</div>
+            <IonGrid
+              className="aid-type-selector"
+              data-testid="aid-type-selector"
+            >
+              <IonRow>
+                <IonCol>
+                  <TypeItem
+                    index={0}
+                    text={i18n.t("createidentifier.aidtype.default.label")}
+                    clickEvent={() =>
+                      setState((prevState: IdentifierStageProps) => ({
+                        ...prevState,
+                        selectedAidType: 0,
+                      }))
+                    }
+                    selectedType={state.selectedAidType}
+                  />
+                </IonCol>
+                <IonCol>
+                  <TypeItem
+                    index={1}
+                    text={i18n.t("createidentifier.aidtype.multisig.label")}
+                    clickEvent={() =>
+                      setState((prevState: IdentifierStageProps) => ({
+                        ...prevState,
+                        selectedAidType: 1,
+                      }))
+                    }
+                    selectedType={state.selectedAidType}
+                  />
+                </IonCol>
+                <IonCol>
+                  <TypeItem
+                    index={2}
+                    text={i18n.t("createidentifier.aidtype.delegated.label")}
+                    clickEvent={() =>
+                      setState((prevState: IdentifierStageProps) => ({
+                        ...prevState,
+                        selectedAidType: 2,
+                      }))
+                    }
+                    selectedType={state.selectedAidType}
+                  />
+                </IonCol>
+              </IonRow>
+            </IonGrid>
+          </div>
         )}
+        <div className="identifier-theme">
+          <div className="theme-input-title">{`${i18n.t(
+            "createidentifier.theme.title"
+          )}`}</div>
+          <IdentifierThemeSelector
+            identifierType={state.selectedIdentifierType}
+            selectedTheme={selectedTheme}
+            setSelectedTheme={setSelectedTheme}
+          />
+        </div>
       </ScrollablePageLayout>
-      {!keyboardIsOpen && (
-        <PageFooter
-          pageId={componentId}
-          primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
-          primaryButtonAction={() => {
-            if (
-              state.selectedIdentifierType === 1 &&
-              state.selectedAidType !== 0
-            ) {
-              setState((prevState: IdentifierStageProps) => ({
-                ...prevState,
-                multiSigStage: 1,
-              }));
-            } else {
-              setBlur && setBlur(true);
-              setTimeout(() => {
-                handleCreateIdentifier();
-              }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
-            }
-          }}
-          primaryButtonDisabled={
-            !(displayNameValueIsValid && typeIsSelectedIsValid)
+      <PageFooter
+        pageId={componentId}
+        customClass={keyboardIsOpen ? "ion-hide" : ""}
+        primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
+        primaryButtonAction={() => {
+          if (
+            state.selectedIdentifierType === 1 &&
+            state.selectedAidType !== 0
+          ) {
+            setState((prevState: IdentifierStageProps) => ({
+              ...prevState,
+              multiSigStage: 1,
+            }));
+          } else {
+            setBlur && setBlur(true);
+            setTimeout(() => {
+              handleCreateIdentifier();
+            }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
           }
-        />
-      )}
+        }}
+        primaryButtonDisabled={
+          !(displayNameValueIsValid && typeIsSelectedIsValid)
+        }
+      />
     </>
   );
 };

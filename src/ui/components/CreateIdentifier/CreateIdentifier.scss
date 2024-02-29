@@ -25,7 +25,17 @@ ion-modal.create-identifier-modal {
   }
 
   .scrollable-page-layout {
-    padding-bottom: 4rem;
+    &:not(.keyboard-is-open) {
+      padding-bottom: 4rem;
+    }
+
+    &.keyboard-is-open ion-content.scrollable-page-content {
+      overflow: hidden;
+    }
+
+    ion-title.md {
+      margin-left: -3rem;
+    }
 
     ion-content.scrollable-page-content > *:first-child {
       padding-top: 1rem;
@@ -123,7 +133,7 @@ ion-modal.create-identifier-modal {
 
           &.selected-type {
             border: 1px solid var(--ion-color-secondary) !important;
-            --background: var(--ion-color-medium-grey);
+            background: var(--ion-color-medium-grey);
           }
 
           &::part(native) {
