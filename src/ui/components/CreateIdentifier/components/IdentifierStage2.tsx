@@ -11,6 +11,22 @@ const IdentifierStage2 = ({
   setState,
   componentId,
 }: IdentifierStageProps) => {
+  const updateThreshold = (amount: number) => {
+    const newThreshold = state.threshold + amount;
+
+    if (
+      newThreshold < 1 ||
+      newThreshold > state.selectedConnections.length + 1
+    ) {
+      return;
+    }
+
+    setState((prevState: IdentifierStageProps) => ({
+      ...prevState,
+      threshold: newThreshold,
+    }));
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -44,16 +60,7 @@ const IdentifierStage2 = ({
                 shape="round"
                 className="decrease-threshold-button"
                 data-testid="decrease-threshold-button"
-                onClick={() => {
-                  if (state.threshold === 1) {
-                    return;
-                  } else {
-                    setState((prevState: IdentifierStageProps) => ({
-                      ...prevState,
-                      threshold: state.threshold - 1,
-                    }));
-                  }
-                }}
+                onClick={() => updateThreshold(-1)}
               >
                 <IonIcon
                   slot="icon-only"
@@ -65,19 +72,7 @@ const IdentifierStage2 = ({
                 shape="round"
                 className="increase-threshold-button"
                 data-testid="increase-threshold-button"
-                onClick={() => {
-                  if (
-                    state.threshold ===
-                    state.selectedConnections.length + 1
-                  ) {
-                    return;
-                  } else {
-                    setState((prevState: IdentifierStageProps) => ({
-                      ...prevState,
-                      threshold: state.threshold + 1,
-                    }));
-                  }
-                }}
+                onClick={() => updateThreshold(1)}
               >
                 <IonIcon
                   slot="icon-only"
