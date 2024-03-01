@@ -25,13 +25,8 @@ interface OobiResponse {
 
 interface OobiObject {
   name: string;
-  metadata: {
-    oobi: string;
-  };
-  done: boolean;
-  error: null | string;
-  response: OobiResponse;
-  alias: string;
+  url: string;
+  dt: string;
 }
 
 interface LocationState {

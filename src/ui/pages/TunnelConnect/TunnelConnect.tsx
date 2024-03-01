@@ -101,7 +101,7 @@ const TunnelConnect = () => {
     }
   }, []);
 
-  const handleDeleteOobi = async (name: string) => {
+  const handleDeleteOobi = async (key: string) => {
     let resolvedOobis: Record<string, any> = {};
     try {
       const storedResolvedOobis = await PreferencesStorage.get(
@@ -112,7 +112,7 @@ const TunnelConnect = () => {
       return;
     }
 
-    delete resolvedOobis[name];
+    delete resolvedOobis[key];
 
     await PreferencesStorage.set(
       PreferencesKeys.APP_TUNNEL_CONNECT,
@@ -200,9 +200,9 @@ const TunnelConnect = () => {
             <h3 className="resolved-title">Resolved OOBIs:</h3>
             <IonList className="oobi-list">
               {Object.entries(resolvedOobis as Record<string, OobiObject>).map(
-                ([name, oobi]: [string, OobiObject]) => (
+                ([key, oobi]: [string, OobiObject]) => (
                   <IonItem
-                    key={oobi.response.i}
+                    key={key}
                     lines="full"
                     className="oobi-item"
                   >
@@ -210,19 +210,19 @@ const TunnelConnect = () => {
                       slot="start"
                       className="oobi-label"
                     >
-                      <h2>{name}</h2>
-                      <p>{oobi?.metadata?.oobi}</p>
-                      <p>ID: {oobi?.response?.i}</p>
+                      <h2>{oobi.name}</h2>
+                      <p>{oobi?.url}</p>
+                      <p>ID: {key}</p>
+
                       <p>
-                        Date:{" "}
-                        {new Date(oobi?.response?.dt).toLocaleDateString()}{" "}
-                        {new Date(oobi?.response?.dt).toLocaleTimeString()}
+                        Date: {new Date(oobi?.dt).toLocaleDateString()}{" "}
+                        {new Date(oobi?.dt).toLocaleTimeString()}
                       </p>
                     </IonLabel>
                     <IonButton
                       slot="end"
                       color="danger"
-                      onClick={() => handleDeleteOobi(name)}
+                      onClick={() => handleDeleteOobi(key)}
                     >
                       <IonIcon
                         className="delete-button-label"

@@ -139,6 +139,7 @@ class ConnectionService extends AgentService {
     resolvedOobis[resolvedOobi.response.i] = {
       url,
       name,
+      dt: resolvedOobi.response.dt,
     };
     await PreferencesStorage.set(
       PreferencesKeys.APP_TUNNEL_CONNECT,
