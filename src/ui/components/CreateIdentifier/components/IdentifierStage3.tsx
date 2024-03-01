@@ -8,11 +8,13 @@ import { ScrollablePageLayout } from "../../layout/ScrollablePageLayout";
 import { IdentifierStageProps } from "../CreateIdentifier.types";
 import CardanoLogo from "../../../assets/images/CardanoLogo.jpg";
 import { Alert } from "../../Alert";
-import { useAppDispatch } from "../../../../store/hooks";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
 import { AriesAgent } from "../../../../core/agent/agent";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
+import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
+import { IdentifierType } from "../../../../core/agent/services/identifierService.types";
 
 const IdentifierStage3 = ({
   state,
@@ -22,7 +24,12 @@ const IdentifierStage3 = ({
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const ourIdentifier = "";
+  // @TODO - sdisalvo: This is a temporary fix to get the identifier created.
+  // We'll need to work out a proper way to get 'ourIdentifier'.
+  const identifiersData = useAppSelector(getIdentifiersCache);
+  const ourIdentifier = identifiersData.filter(
+    (identifier) => identifier.method === IdentifierType.KERI
+  )[0].id;
   const otherIdentifierContacts: ConnectionShortDetails[] =
     state.sortedConnections.filter((connection) =>
       state.selectedConnections.includes(connection.id)
