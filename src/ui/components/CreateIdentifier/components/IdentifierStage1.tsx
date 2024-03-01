@@ -75,7 +75,7 @@ const IdentifierStage1 = ({
             closeButtonAction={() => {
               setState((prevState: IdentifierStageProps) => ({
                 ...prevState,
-                multiSigStage: 0,
+                identifierCreationStage: 0,
                 selectedConnections: [],
               }));
             }}
@@ -128,7 +128,7 @@ const IdentifierStage1 = ({
         primaryButtonAction={() =>
           setState((prevState: IdentifierStageProps) => ({
             ...prevState,
-            multiSigStage: 2,
+            identifierCreationStage: 2,
           }))
         }
         primaryButtonDisabled={!selectedConnections.length}

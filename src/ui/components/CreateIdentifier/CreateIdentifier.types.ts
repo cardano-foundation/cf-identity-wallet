@@ -24,7 +24,7 @@ interface ThemeItemProps {
 
 interface IdentifierStageProps {
   state: {
-    multiSigStage: number;
+    identifierCreationStage: number;
     displayNameValue: string;
     selectedIdentifierType: number;
     selectedAidType: number;

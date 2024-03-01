@@ -23,7 +23,7 @@ const IdentifierStage2 = ({
               setState((prevState: IdentifierStageProps) => ({
                 ...prevState,
                 threshold: 1,
-                multiSigStage: 1,
+                identifierCreationStage: 1,
               }));
             }}
             title={`${i18n.t("createidentifier.threshold.title")}`}
@@ -95,7 +95,7 @@ const IdentifierStage2 = ({
         primaryButtonAction={() =>
           setState((prevState: IdentifierStageProps) => ({
             ...prevState,
-            multiSigStage: 3,
+            identifierCreationStage: 3,
           }))
         }
       />

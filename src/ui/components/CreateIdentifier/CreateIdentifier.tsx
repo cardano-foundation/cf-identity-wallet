@@ -13,7 +13,7 @@ const CreateIdentifier = ({
 }: CreateIdentifierProps) => {
   const componentId = "create-identifier-modal";
   const initialState = {
-    multiSigStage: 0,
+    identifierCreationStage: 0,
     displayNameValue: "",
     selectedIdentifierType: 0,
     selectedAidType: 0,
@@ -52,7 +52,7 @@ const CreateIdentifier = ({
             <IonSpinner name="circular" />
           </div>
         )}
-        {state.multiSigStage === 0 && (
+        {state.identifierCreationStage === 0 && (
           <IdentifierStage0
             state={state}
             setState={setState}
@@ -61,7 +61,7 @@ const CreateIdentifier = ({
             setBlur={setBlur}
           />
         )}
-        {state.multiSigStage === 1 && (
+        {state.identifierCreationStage === 1 && (
           <IdentifierStage1
             state={state}
             setState={setState}
@@ -69,7 +69,7 @@ const CreateIdentifier = ({
             resetModal={resetModal}
           />
         )}
-        {state.multiSigStage === 2 && (
+        {state.identifierCreationStage === 2 && (
           <IdentifierStage2
             state={state}
             setState={setState}
@@ -77,7 +77,7 @@ const CreateIdentifier = ({
             resetModal={resetModal}
           />
         )}
-        {state.multiSigStage === 3 && (
+        {state.identifierCreationStage === 3 && (
           <IdentifierStage3
             state={state}
             setState={setState}

@@ -30,7 +30,7 @@ const IdentifierStage3 = ({
             closeButtonAction={() =>
               setState((prevState: IdentifierStageProps) => ({
                 ...prevState,
-                multiSigStage: 2,
+                identifierCreationStage: 2,
               }))
             }
             closeButtonLabel={`${i18n.t("createidentifier.back")}`}
@@ -55,7 +55,7 @@ const IdentifierStage3 = ({
                 onClick={() =>
                   setState((prevState: IdentifierStageProps) => ({
                     ...prevState,
-                    multiSigStage: 0,
+                    identifierCreationStage: 0,
                   }))
                 }
               />
@@ -90,7 +90,7 @@ const IdentifierStage3 = ({
                         onClick={() =>
                           setState((prevState: IdentifierStageProps) => ({
                             ...prevState,
-                            multiSigStage: 1,
+                            identifierCreationStage: 1,
                           }))
                         }
                       />
@@ -115,7 +115,7 @@ const IdentifierStage3 = ({
                 onClick={() =>
                   setState((prevState: IdentifierStageProps) => ({
                     ...prevState,
-                    multiSigStage: 2,
+                    identifierCreationStage: 2,
                   }))
                 }
               />

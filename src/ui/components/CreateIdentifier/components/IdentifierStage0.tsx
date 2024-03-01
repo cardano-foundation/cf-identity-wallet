@@ -250,7 +250,7 @@ const IdentifierStage0 = ({
           ) {
             setState((prevState: IdentifierStageProps) => ({
               ...prevState,
-              multiSigStage: 1,
+              identifierCreationStage: 1,
             }));
           } else {
             setBlur && setBlur(true);
