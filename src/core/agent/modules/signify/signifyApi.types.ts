@@ -106,6 +106,7 @@ export enum NotificationRoute {
   Credential = "/exn/ipex/grant",
   MultiSigIcp = "/multisig/icp",
   MultiSigRot = "/multisig/rot",
+  TunnelRequest = "/tunnel/server/request",
 }
 
 export enum MultiSigRoute {

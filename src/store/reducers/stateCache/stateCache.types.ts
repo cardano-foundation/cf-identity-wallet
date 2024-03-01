@@ -21,6 +21,7 @@ enum IncomingRequestType {
   CONNECTION_RESPONSE = "connection-response",
   CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
   CONNECTION_INCOMING = "connection-incoming",
+  REQ_GRANT = "req-grant",
 }
 
 interface IncomingRequestProps {

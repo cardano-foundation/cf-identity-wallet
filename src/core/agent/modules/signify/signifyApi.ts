@@ -197,8 +197,35 @@ export class SignifyApi {
       .submitAdmit(holderAidName, admit, sigs, aend, [issuerAid]);
   }
 
-  async getCredentials(): Promise<any> {
+  async getCredentials(filters?: any): Promise<any> {
+    if (filters) {
+      return this.signifyClient.credentials().list({
+        filter: filters,
+      });
+    }
     return this.signifyClient.credentials().list();
+  }
+
+  async grantAcdcIpexExchange(
+    senderName: string,
+    acdc: any,
+    recipient: string
+  ): Promise<void> {
+    const datetime = new Date().toISOString().replace("Z", "000+00:00");
+    const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+      senderName: senderName,
+      recipient,
+      acdc: new Serder(acdc.sad),
+      anc: new Serder(acdc.anc),
+      iss: new Serder(acdc.iss),
+      acdcAttachment: acdc.atc,
+      ancAttachment: acdc.ancatc,
+      issAttachment: acdc.issAtc,
+      datetime,
+    });
+    await this.signifyClient
+      .ipex()
+      .submitGrant(senderName, grant, gsigs, gend, [recipient]);
   }
 
   async getCredentialBySaid(
@@ -520,6 +547,7 @@ export class SignifyApi {
   async getMultisigMembers(name: string): Promise<any> {
     return this.signifyClient.identifiers().members(name);
   }
+
   private getCreateAidOptions(): CreateIdentiferArgs {
     if (ConfigurationService.env.keri.backerType === WitnessMode.LEDGER) {
       return {
@@ -536,5 +564,22 @@ export class SignifyApi {
       toad: ConfigurationService.env.keri.pools.length,
       wits: ConfigurationService.env.keri.pools,
     };
+  }
+
+  async sendExn(
+    name: string,
+    aid: Aid,
+    topic: string,
+    route: string,
+    embeds: {
+      icp?: (string | Serder)[];
+      rot?: (string | Serder)[];
+    },
+    recp: any,
+    payload: any
+  ): Promise<any> {
+    return this.signifyClient
+      .exchanges()
+      .send(name, topic, aid, route, payload, embeds, recp);
   }
 }

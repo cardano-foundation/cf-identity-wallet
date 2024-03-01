@@ -204,6 +204,23 @@ const keriNotificationsChangeHandler = async (
     //TODO: Use dispatch here, handle logic for the multisig notification
   } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
     //TODO: Use dispatch here, handle logic for the multisig rotation notification
+  } else if (event?.a?.r === NotificationRoute.TunnelRequest) {
+    const exchange = await AriesAgent.agent.credentials.getKeriExchangeMessage(
+      event.a.d as string
+    );
+    //TODO: hard fix the value at the moment, may need to change these in the future
+    const tunnelAid = "EBDX49akYZ9g_TplwZn1ounNRMtx7SJEmdBuhw4mjSIp";
+    if (exchange.exn.i === tunnelAid) {
+      dispatch(
+        setQueueIncomingRequest({
+          id: event?.id,
+          type: IncomingRequestType.REQ_GRANT,
+          logo: "", // TODO: must define Keri logo
+          label: "Tunnel wallet grant request",
+          source: ConnectionType.KERI,
+        })
+      );
+    }
   }
 };
 
@@ -363,6 +380,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await Promise.all([
         AriesAgent.agent.connections.getUnhandledConnections(),
         AriesAgent.agent.credentials.getUnhandledCredentials(),
+        AriesAgent.agent.credentials.getUnhandledTunnelRequestEvents(),
       ])
     )
       .flat()
