@@ -17,8 +17,12 @@ import {
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
+import { RoutePath } from "../../../routes";
 
-const Scanner = forwardRef((props, ref) => {
+interface ScannerProps {
+  handleContent?: (content: string) => void;
+}
+const Scanner = forwardRef((props: ScannerProps, ref) => {
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentToastMsg = useAppSelector(getToastMsg);
@@ -69,14 +73,18 @@ const Scanner = forwardRef((props, ref) => {
         const result = await startScan();
         if (result.hasContent) {
           stopScan();
+          if (props.handleContent) props.handleContent(result.content);
           // @TODO - foconnor: instead of setting the optype to idle we should
           // have a loading screen with "waiting for server..." etc,
           // and it can update to an error if the QR is invalid with a re-scan btn
-          dispatch(setCurrentOperation(OperationType.IDLE));
-          // @TODO - foconnor: when above loading screen in place, handle invalid QR code
-          await AriesAgent.agent.connections.receiveInvitationFromUrl(
-            result.content
-          );
+
+          if (currentRoute?.path !== RoutePath.OOBI_SCANNER) {
+            dispatch(setCurrentOperation(OperationType.IDLE));
+            // @TODO - foconnor: when above loading screen in place, handle invalid QR code
+            await AriesAgent.agent.connections.receiveInvitationFromUrl(
+              result.content
+            );
+          }
         }
       }
     }
@@ -84,10 +92,11 @@ const Scanner = forwardRef((props, ref) => {
 
   useEffect(() => {
     if (
-      (currentRoute?.path === TabsRoutePath.SCAN ||
+      currentRoute?.path === RoutePath.OOBI_SCANNER ||
+      ((currentRoute?.path === TabsRoutePath.SCAN ||
         currentOperation === OperationType.SCAN_CONNECTION) &&
-      currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
-      currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING
+        currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
+        currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING)
     ) {
       initScan();
     } else {

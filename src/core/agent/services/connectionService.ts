@@ -29,6 +29,7 @@ import { AgentService } from "./agentService";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { AriesAgent } from "../agent";
 import { IdentifierType } from "./identifierService.types";
+import { PreferencesKeys, PreferencesStorage } from "../../storage";
 
 const SERVER_GET_SHORTEN_URL =
   // eslint-disable-next-line no-undef
@@ -123,6 +124,28 @@ class ConnectionService extends AgentService {
     return connectionRecord.state === DidExchangeState.Completed;
   }
 
+  async resolveOObi(url: string, name: string): Promise<void> {
+    const resolvedOobi = await this.agent.modules.signify.resolveOobi(url);
+    let resolvedOobis: Record<string, any> = {};
+    try {
+      const storedResolvedOobis = await PreferencesStorage.get(
+        PreferencesKeys.APP_TUNNEL_CONNECT
+      );
+      resolvedOobis = storedResolvedOobis || {};
+    } catch (e) {
+      // TODO: handle error
+    }
+
+    resolvedOobis[resolvedOobi.response.i] = {
+      url,
+      name,
+      dt: resolvedOobi.response.dt,
+    };
+    await PreferencesStorage.set(
+      PreferencesKeys.APP_TUNNEL_CONNECT,
+      resolvedOobis
+    );
+  }
   async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/oobi")) {
       this.agent.events.emit<ConnectionKeriStateChangedEvent>(

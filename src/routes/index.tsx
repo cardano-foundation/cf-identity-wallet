@@ -22,6 +22,8 @@ import { IdentifierCardDetails } from "../ui/pages/IdentifierCardDetails";
 import { CredCardDetails } from "../ui/pages/CredCardDetails";
 import { ConnectionDetails } from "../ui/pages/ConnectionDetails";
 import { AuthenticatedRouteProps } from "./routes.types";
+import { TunnelConnect } from "../ui/pages/TunnelConnect";
+import { OOBIScanner } from "../ui/pages/OOBIScanner";
 
 const AuthenticatedRoute: React.FC<AuthenticatedRouteProps> = (props) => {
   const authentication = useAppSelector(getAuthentication);
@@ -110,6 +112,18 @@ const Routes = () => {
           path={RoutePath.CONNECTION_DETAILS}
           exact
           component={ConnectionDetails}
+          nextPathname={nextPath.pathname}
+        />
+        <AuthenticatedRoute
+          path={RoutePath.TUNNEL_CONNECT}
+          exact
+          component={TunnelConnect}
+          nextPathname={nextPath.pathname}
+        />
+        <AuthenticatedRoute
+          path={RoutePath.OOBI_SCANNER}
+          exact
+          component={OOBIScanner}
           nextPathname={nextPath.pathname}
         />
         {tabsRoutes.map((tab, index: number) => {

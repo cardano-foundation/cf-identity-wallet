@@ -1,0 +1,136 @@
+.tunnel-connect {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin-top: 10px;
+
+  .content-container {
+    flex: 1;
+
+    .resolve-title {
+      margin-top: 30px;
+    }
+    .resolved-title {
+      margin: 30px 0px 10px 0px;
+    }
+
+    .oobi-input .input-with-button {
+      display: flex;
+      width: 100%;
+    }
+
+    .oobi-input .input-with-button > *:first-child {
+      flex-grow: 1;
+    }
+
+    .scan-qr-button {
+      height: 22px;
+      margin-top: 36px;
+      margin-left: 5px;
+    }
+
+    .resolve-oobi-button {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    .oobi-list {
+      border-radius: 10px !important;
+      padding: 5px;
+      margin-bottom: 65px;
+    }
+    .oobi-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      --border-style: none;
+      .oobi-label {
+        flex-grow: 1;
+        h2,
+        p {
+          margin: 0;
+        }
+      }
+    }
+    .delete-button-label {
+      margin: 2px 4px;
+    }
+    .oobi-buttons {
+      margin-top: 10px;
+    }
+    .card-details-info-block {
+      h3 {
+        margin: 0.798rem;
+      }
+
+      .card-details-info-block-inner {
+        border-radius: 0.85rem;
+        padding: 0.978rem;
+
+        > * {
+          min-height: 1.156rem;
+
+          &:not(:last-child) {
+            margin-bottom: 0.68rem;
+          }
+        }
+
+        .card-details-info-block-line {
+          .card-details-info-block-text-icon {
+            font-size: 0.956rem;
+          }
+
+          .card-details-info-block-icon,
+          .card-details-info-block-text-icon {
+            margin-right: 0.799rem;
+          }
+        }
+
+        ion-button,
+        ion-button.md {
+          height: 1.445rem;
+          width: 1.445rem;
+        }
+
+        ion-icon {
+          width: 1.254rem;
+          height: 1.254rem;
+          margin: 0;
+        }
+      }
+    }
+    .center-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin-top: 30px;
+      cursor: pointer;
+    }
+  }
+
+  .fixed-bottom-component {
+    margin-bottom: 15px !important;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+
+    ion-button {
+      width: 200px;
+    }
+
+    ion-icon {
+      margin-left: 5px;
+      width: 24px;
+    }
+  }
+
+  .share-title {
+    margin: 0;
+    display: inline-block;
+  }
+}

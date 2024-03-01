@@ -28,10 +28,8 @@ import { KeyStoreKeys, SecureStorage } from "../../../storage";
 import { WitnessMode } from "../../../configuration/configurationService.types";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT =
-    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
+  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
 
   // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly DEFAULT_ROLE = "agent";

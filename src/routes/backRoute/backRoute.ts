@@ -122,6 +122,9 @@ const backRoute: Record<string, any> = {
   [RoutePath.CONNECTION_DETAILS]: {
     updateRedux: [removeCurrentRoute],
   },
+  [RoutePath.TUNNEL_CONNECT]: {
+    updateRedux: [removeCurrentRoute],
+  },
   [TabsRoutePath.IDENTIFIER_DETAILS]: {
     updateRedux: [removeCurrentRoute],
   },
