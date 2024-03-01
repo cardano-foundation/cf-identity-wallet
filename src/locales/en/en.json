@@ -1002,6 +1002,33 @@
   "createidentifier": {
     "title": "Add an identifier",
     "cancel": "Cancel",
+    "back": "Back",
+    "connections": {
+      "title": "Connections",
+      "subtitle": "Select the connections you want to sign this identifier with",
+      "search": "Search connections",
+      "continue": "Choose connections"
+    },
+    "threshold": {
+      "title": "Set a Threshold",
+      "subtitle": "Set the threshold to determine the level of consensus required",
+      "label": "Threshold",
+      "continue": "Review identifier"
+    },
+    "confirm": {
+      "title": "Confirm",
+      "subtitle": "Double-check all the details for your Keri AID identifier are accurate",
+      "displayname": "Display Name",
+      "selectedmembers": "Selected Members",
+      "treshold": "Threshold",
+      "continue": "Confirm identifier",
+      "cancel": "Cancel",
+      "alert": {
+        "text": "Cancelling now means you'll need to restart the identifier adding process. Are you sure you want to cancel?",
+        "cancel": "Yes, cancel",
+        "back": "Back"
+      }
+    },
     "displayname": {
       "title": "Display name",
       "placeholder": "Create a name for this identifier"
@@ -1010,6 +1037,21 @@
       "title": "Identifier type",
       "didkey": "did:key",
       "keri": "KERI AID"
+    },
+    "aidtype": {
+      "title": "AID type",
+      "default": {
+        "label": "Default",
+        "tooltip": "Lorem ipsum dolor sit amet"
+      },
+      "multisig": {
+        "label": "Multi-sig",
+        "tooltip": "Lorem ipsum dolor sit amet"
+      },
+      "delegated": {
+        "label": "Delegated",
+        "tooltip": "Lorem ipsum dolor sit amet"
+      }
     },
     "theme": {
       "title": "Choose a theme"
@@ -1025,6 +1067,7 @@
   },
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
+    "identifierrequested": "Identifier request pending",
     "identifiercreated": "New identifier created successfully",
     "identifierupdated": "Identifier successfully updated",
     "identifierdeleted": "Identifier successfully deleted",
