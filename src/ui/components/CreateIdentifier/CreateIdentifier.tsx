@@ -7,6 +7,13 @@ import { IdentifierStage1 } from "./components/IdentifierStage1";
 import { IdentifierStage2 } from "./components/IdentifierStage2";
 import { IdentifierStage3 } from "./components/IdentifierStage3";
 
+const stages = [
+  IdentifierStage0,
+  IdentifierStage1,
+  IdentifierStage2,
+  IdentifierStage3,
+];
+
 const CreateIdentifier = ({
   modalIsOpen,
   setModalIsOpen,
@@ -26,9 +33,11 @@ const CreateIdentifier = ({
   const [blur, setBlur] = useState(false);
 
   useEffect(() => {
-    blur
-      ? document?.querySelector("ion-router-outlet")?.classList.add("blur")
-      : document?.querySelector("ion-router-outlet")?.classList.remove("blur");
+    if (blur) {
+      document?.querySelector("ion-router-outlet")?.classList.add("blur");
+    } else {
+      document?.querySelector("ion-router-outlet")?.classList.remove("blur");
+    }
   }, [blur]);
 
   const resetModal = () => {
@@ -37,56 +46,30 @@ const CreateIdentifier = ({
     setState(initialState);
   };
 
+  const CurrentStage = stages[state.identifierCreationStage];
+
   return (
-    <>
-      <IonModal
-        isOpen={modalIsOpen}
-        className={`${componentId} full-page-modal ${blur ? "blur" : ""}`}
-        data-testid={componentId}
-      >
-        {blur && (
-          <div
-            className="spinner-container"
-            data-testid="spinner-container"
-          >
-            <IonSpinner name="circular" />
-          </div>
-        )}
-        {state.identifierCreationStage === 0 && (
-          <IdentifierStage0
-            state={state}
-            setState={setState}
-            componentId={componentId}
-            resetModal={resetModal}
-            setBlur={setBlur}
-          />
-        )}
-        {state.identifierCreationStage === 1 && (
-          <IdentifierStage1
-            state={state}
-            setState={setState}
-            componentId={componentId}
-            resetModal={resetModal}
-          />
-        )}
-        {state.identifierCreationStage === 2 && (
-          <IdentifierStage2
-            state={state}
-            setState={setState}
-            componentId={componentId}
-            resetModal={resetModal}
-          />
-        )}
-        {state.identifierCreationStage === 3 && (
-          <IdentifierStage3
-            state={state}
-            setState={setState}
-            componentId={componentId}
-            resetModal={resetModal}
-          />
-        )}
-      </IonModal>
-    </>
+    <IonModal
+      isOpen={modalIsOpen}
+      className={`${componentId} full-page-modal ${blur ? "blur" : ""}`}
+      data-testid={componentId}
+    >
+      {blur && (
+        <div
+          className="spinner-container"
+          data-testid="spinner-container"
+        >
+          <IonSpinner name="circular" />
+        </div>
+      )}
+      <CurrentStage
+        state={state}
+        setState={setState}
+        componentId={componentId}
+        resetModal={resetModal}
+        setBlur={setBlur}
+      />
+    </IonModal>
   );
 };
 
