@@ -72,8 +72,8 @@ const Scanner = forwardRef((props: ScannerProps, ref) => {
         BarcodeScanner.hideBackground();
         const result = await startScan();
         if (result.hasContent) {
-          if (props.handleContent) props.handleContent(result.content);
           stopScan();
+          if (props.handleContent) props.handleContent(result.content);
           // @TODO - foconnor: instead of setting the optype to idle we should
           // have a loading screen with "waiting for server..." etc,
           // and it can update to an error if the QR is invalid with a re-scan btn
