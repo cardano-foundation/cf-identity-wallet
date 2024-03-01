@@ -29,7 +29,7 @@ const IdentifierStage3 = ({
   const identifiersData = useAppSelector(getIdentifiersCache);
   const ourIdentifier = identifiersData.filter(
     (identifier) => identifier.method === IdentifierType.KERI
-  )[0].id;
+  )[0]?.id;
   const otherIdentifierContacts: ConnectionShortDetails[] =
     state.sortedConnections.filter((connection) =>
       state.selectedConnections.includes(connection.id)
