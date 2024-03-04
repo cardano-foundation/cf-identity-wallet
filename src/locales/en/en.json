@@ -648,10 +648,7 @@
       "create": "Add an identifier",
       "allidentifiers": "All identifiers",
       "pendingidentifiers": "Pending identifiers",
-      "type": {
-        "didkey": "did:key",
-        "keri": "KERI AID"
-      }
+      "identifiertype": "KERI AID"
     },
     "card": {
       "layout": {

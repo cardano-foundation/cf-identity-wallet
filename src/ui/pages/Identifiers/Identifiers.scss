@@ -1,6 +1,7 @@
 .identifiers-tab {
   ion-list {
     margin: 0.875rem 0 2rem 0;
+    padding: 0;
 
     ion-item.pending-identifier {
       --inner-padding-end: 0;
@@ -44,6 +45,33 @@
             font-size: 0.875rem;
             font-weight: 400;
             color: var(--ion-color-secondary);
+          }
+        }
+      }
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    ion-list {
+      margin: 0.7rem 0 1.6rem 0;
+
+      ion-item.pending-identifier ion-label {
+        .pending-identifier-miniature {
+          height: 2.2rem;
+          width: 3.85rem;
+          border-radius: 0.2rem;
+        }
+
+        .pending-identifier-info {
+          margin-left: 0.752rem;
+
+          .pending-identifier-info-top-line {
+            font-size: 0.8rem;
+            margin-bottom: 0.31rem;
+          }
+
+          .pending-identifier-info-bottom-line {
+            font-size: 0.7rem;
           }
         }
       }

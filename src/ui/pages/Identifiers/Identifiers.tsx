@@ -23,10 +23,7 @@ import { CreateIdentifier } from "../../components/CreateIdentifier";
 import { CardType, IDENTIFIER_BG_MAPPING } from "../../globals/types";
 import { Connections } from "../Connections";
 import { formatShortDate } from "../../utils/formatters";
-import {
-  IdentifierShortDetails,
-  IdentifierType,
-} from "../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
 import "./Identifiers.scss";
 
 interface AdditionalButtonsProps {
@@ -73,18 +70,15 @@ const Identifiers = () => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
-  const favIdentifiers = identifiersData.filter((identifier) =>
-    favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-  );
-  const allIdentifiers = identifiersData.filter(
-    (identifier) =>
-      !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-  );
-  // @TODO - sdisalvo: Temporary fix until we have a way to get the identifiers from the cache
-  // const pendingIdentifiers = identifiersData.filter((identifier) => identifier.isPending);
-  const pendingIdentifiers = identifiersData.filter(
-    (identifier) => identifier.displayName === "Test M"
-  );
+  const [favIdentifiers, setFavIdentifiers] = useState<
+    IdentifierShortDetails[]
+  >([]);
+  const [allIdentifiers, setAllIdentifiers] = useState<
+    IdentifierShortDetails[]
+  >([]);
+  const [pendingIdentifiers, setPendingIdentifiers] = useState<
+    IdentifierShortDetails[]
+  >([]);
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [showConnections, setShowConnections] = useState(false);
@@ -95,7 +89,25 @@ const Identifiers = () => {
 
   useEffect(() => {
     setShowPlaceholder(identifiersData.length === 0);
-  }, [identifiersData]);
+    setFavIdentifiers(
+      identifiersData.filter((identifier) =>
+        favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
+      )
+    );
+    setAllIdentifiers(
+      identifiersData.filter(
+        (identifier) =>
+          !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
+      )
+    );
+    // @TODO - sdisalvo: Temporary fix until we have a way to get the identifiers from the cache
+    // setPendingIdentifiers(identifiersData.filter((identifier) => identifier.isPending));
+    setPendingIdentifiers(
+      identifiersData.filter(
+        (identifier) => identifier.displayName === "Test M"
+      )
+    );
+  }, [favouritesIdentifiers, identifiersData]);
 
   const findTimeById = (id: string) => {
     const found = favouritesIdentifiers?.find((item) => item.id === id);
@@ -137,11 +149,9 @@ const Identifiers = () => {
                 .replace(/(\d)/g, " $1")}
             </div>
             <div className="pending-identifier-info-bottom-line">
-              {identifier.method === IdentifierType.KERI
-                ? i18n.t("identifiers.tab.type.keri")
-                : i18n.t("identifiers.tab.type.didkey")}
-              {"  •  "}
-              {formatShortDate(identifier.createdAtUTC)}
+              {`${i18n.t(
+                "identifiers.tab.identifiertype"
+              )}  •  ${formatShortDate(identifier.createdAtUTC)}`}
             </div>
           </div>
         </IonLabel>
