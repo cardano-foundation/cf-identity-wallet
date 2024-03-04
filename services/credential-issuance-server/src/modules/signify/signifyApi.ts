@@ -125,6 +125,10 @@ export class SignifyApi {
       .submitGrant(issuerName, grant, gsigs, gend, [recipient]);
   }
 
+  async contacts(): Promise<any> {
+    return this.signifyClient.contacts().list();
+  }
+
   /**
    * Note - op must be of type any here until Signify cleans up its typing.
    */

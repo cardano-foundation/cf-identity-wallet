@@ -5,13 +5,15 @@ import { invitationApi, keriOobiApi } from "./apis/invitation.api";
 import {
   invitationWithCredential,
   invitationWithCredentialConnectionless,
-  issueCredentialWithKeriOobi,
+  issueAcdcCredential,
   offerCredentialOverConnection,
 } from "./apis/credential.api";
 import { getConnectionByDid } from "./apis/connection.api";
 import { createShortenUrl, getFullUrl } from "./apis/shorten.api";
 import { summitAccessPass } from "./apis/credential-context";
 import { schemaApi } from "./apis/schema.api";
+import { contactList } from "./apis/contact.api";
+import { resolveOobi } from "./apis/oobi.api";
 
 const router = express.Router();
 router.get(config.path.ping, ping);
@@ -27,7 +29,9 @@ router.get(config.path.shorten, getFullUrl);
 router.post(config.path.createShorten, createShortenUrl);
 router.get(config.path.credentials.summit, summitAccessPass);
 router.get(config.path.keriOobi, keriOobiApi);
-router.post(config.path.issueAcdcCredentialWithOobi, issueCredentialWithKeriOobi);
+router.post(config.path.issueAcdcCredential, issueAcdcCredential);
 router.get(config.path.schemaOobi, schemaApi);
+router.post(config.path.resolveOobi, resolveOobi);
+router.get(config.path.contact, contactList);
 
 export default router;

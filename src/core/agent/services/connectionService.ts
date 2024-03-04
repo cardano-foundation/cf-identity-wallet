@@ -29,6 +29,7 @@ import { AgentService } from "./agentService";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { AriesAgent } from "../agent";
 import { IdentifierType } from "./identifierService.types";
+import { SignifyApi } from "../modules/signify/signifyApi";
 
 const SERVER_GET_SHORTEN_URL =
   // eslint-disable-next-line no-undef
@@ -157,10 +158,25 @@ class ConnectionService extends AgentService {
           );
           await (
             await fetch(
-              "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/issueAcdcCredentialWithOobi",
+              "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/resolveOobi",
               {
                 method: "POST",
                 body: JSON.stringify({ oobi }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            )
+          ).json();
+          await (
+            await fetch(
+              "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/issueAcdcCredential",
+              {
+                method: "POST",
+                body: JSON.stringify({
+                  aid: aid.id,
+                  schemaSaid: SignifyApi.SCHEMA_SAID,
+                }),
                 headers: {
                   "Content-Type": "application/json",
                 },

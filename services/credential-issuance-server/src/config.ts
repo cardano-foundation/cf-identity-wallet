@@ -20,8 +20,10 @@ const config = {
       summit: "/credentials/schemas/summit/v1",
     },
     keriOobi: "/keriOobi",
-    issueAcdcCredentialWithOobi : "/issueAcdcCredentialWithOobi",
+    issueAcdcCredential : "/issueAcdcCredential",
     schemaOobi: "/oobi/:id",
+    contact: "/contact",
+    resolveOobi: "/resolveOobi",
   },
 };
 
