@@ -27,6 +27,13 @@ const IdentifierStage2 = ({
     }));
   };
 
+  const handleContinue = () => {
+    setState((prevState: IdentifierStageProps) => ({
+      ...prevState,
+      identifierCreationStage: 3,
+    }));
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -87,12 +94,7 @@ const IdentifierStage2 = ({
       <PageFooter
         pageId={componentId}
         primaryButtonText={`${i18n.t("createidentifier.threshold.continue")}`}
-        primaryButtonAction={() =>
-          setState((prevState: IdentifierStageProps) => ({
-            ...prevState,
-            identifierCreationStage: 3,
-          }))
-        }
+        primaryButtonAction={() => handleContinue()}
       />
     </>
   );

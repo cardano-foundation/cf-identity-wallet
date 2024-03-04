@@ -54,12 +54,13 @@ const IdentifierStage1 = ({
     setSelectedConnections(data);
   };
 
-  useEffect(() => {
+  const handleContinue = () => {
     setState((prevState: IdentifierStageProps) => ({
       ...prevState,
+      identifierCreationStage: 2,
       selectedConnections: selectedConnections,
     }));
-  }, [selectedConnections, setState]);
+  };
 
   return (
     <>
@@ -121,12 +122,7 @@ const IdentifierStage1 = ({
       <PageFooter
         pageId={componentId}
         primaryButtonText={`${i18n.t("createidentifier.connections.continue")}`}
-        primaryButtonAction={() =>
-          setState((prevState: IdentifierStageProps) => ({
-            ...prevState,
-            identifierCreationStage: 2,
-          }))
-        }
+        primaryButtonAction={() => handleContinue()}
         primaryButtonDisabled={!selectedConnections.length}
       />
     </>

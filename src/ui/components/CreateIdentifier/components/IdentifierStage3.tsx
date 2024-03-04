@@ -27,23 +27,23 @@ const IdentifierStage3 = ({
   // @TODO - sdisalvo: This is a temporary fix to get the identifier created.
   // We'll need to work out a proper way to get 'ourIdentifier'.
   const identifiersData = useAppSelector(getIdentifiersCache);
-  const [ourIdentifier, setOurIdentifier] = useState("");
-  const otherIdentifierContacts: ConnectionShortDetails[] =
-    state.selectedConnections.sort(function (a, b) {
-      const textA = a.label.toUpperCase();
-      const textB = b.label.toUpperCase();
-      return textA < textB ? -1 : textA > textB ? 1 : 0;
-    });
-
-  useEffect(() => {
-    setOurIdentifier(
-      identifiersData.filter(
-        (identifier) => identifier.method === IdentifierType.KERI
-      )[0]?.id
-    );
-  }, [identifiersData, state.selectedConnections]);
+  const ourIdentifier = identifiersData.find(
+    (identifier) => identifier.method === IdentifierType.KERI
+  )?.id;
+  const [otherIdentifierContacts, setOtherIdentifierContacts] = useState<
+    ConnectionShortDetails[]
+  >([]);
 
   const createMultisigIdentifier = async () => {
+    if (!ourIdentifier) {
+      // @TODO - sdisalvo: Leaving this until we have a story to add a proper
+      // logger to the project so we can adjust the log level and timestamp it.
+      // eslint-disable-next-line no-console
+      console.warn(
+        "Attempting to create multi-sig without a corresponding normal AID to manage local keys"
+      );
+      return;
+    }
     await AriesAgent.agent.identifiers.createMultisig(
       ourIdentifier,
       otherIdentifierContacts,
@@ -54,6 +54,22 @@ const IdentifierStage3 = ({
         displayName: state.displayNameValue,
       }
     );
+  };
+
+  useEffect(() => {
+    setOtherIdentifierContacts(
+      state.selectedConnections.sort(function (a, b) {
+        const textA = a.label.toUpperCase();
+        const textB = b.label.toUpperCase();
+        return textA < textB ? -1 : textA > textB ? 1 : 0;
+      })
+    );
+  }, [state.selectedConnections]);
+
+  const handleContinue = async () => {
+    await createMultisigIdentifier();
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_REQUESTED));
+    resetModal();
   };
   return (
     <>
@@ -158,11 +174,7 @@ const IdentifierStage3 = ({
         pageId={componentId}
         customClass="identifier-stage-3"
         primaryButtonText={`${i18n.t("createidentifier.confirm.continue")}`}
-        primaryButtonAction={async () => {
-          await createMultisigIdentifier();
-          dispatch(setToastMsg(ToastMsgType.IDENTIFIER_REQUESTED));
-          resetModal();
-        }}
+        primaryButtonAction={async () => handleContinue()}
         secondaryButtonText={`${i18n.t("createidentifier.confirm.cancel")}`}
         secondaryButtonAction={() => setAlertIsOpen(true)}
       />
