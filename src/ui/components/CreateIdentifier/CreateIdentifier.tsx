@@ -26,7 +26,6 @@ const CreateIdentifier = ({
     selectedAidType: 0,
     selectedTheme: 0,
     threshold: 1,
-    sortedConnections: [],
     selectedConnections: [],
   };
   const [state, setState] = useState(initialState);

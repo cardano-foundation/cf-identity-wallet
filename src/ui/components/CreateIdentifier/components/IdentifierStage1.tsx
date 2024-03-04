@@ -23,9 +23,9 @@ const IdentifierStage1 = ({
   componentId,
 }: IdentifierStageProps) => {
   const connectionsCache = useAppSelector(getConnectionsCache);
-  const [selectedConnections, setSelectedConnections] = useState<string[]>(
-    state.selectedConnections
-  );
+  const [selectedConnections, setSelectedConnections] = useState<
+    ConnectionShortDetails[]
+  >(state.selectedConnections);
   const [sortedConnections, setSortedConnections] = useState<
     ConnectionShortDetails[]
   >([]);
@@ -41,19 +41,15 @@ const IdentifierStage1 = ({
         return textA < textB ? -1 : textA > textB ? 1 : 0;
       });
       setSortedConnections(sortedConnections);
-      setState((prevState: IdentifierStageProps) => ({
-        ...prevState,
-        sortedConnections: sortedConnections,
-      }));
     }
   }, [connectionsCache, setState]);
 
-  const handleSelectConnection = (id: string) => {
+  const handleSelectConnection = (connection: ConnectionShortDetails) => {
     let data = selectedConnections;
-    if (data.find((item) => item === id)) {
-      data = data.filter((item) => item !== id);
+    if (data.find((item) => item === connection)) {
+      data = data.filter((item) => item !== connection);
     } else {
-      data = [...selectedConnections, id];
+      data = [...selectedConnections, connection];
     }
     setSelectedConnections(data);
   };
@@ -95,9 +91,9 @@ const IdentifierStage1 = ({
             return (
               <IonItem
                 key={index}
-                onClick={() => handleSelectConnection(connection.id)}
+                onClick={() => handleSelectConnection(connection)}
                 className={`${
-                  selectedConnections.includes(connection.id) &&
+                  selectedConnections.includes(connection) &&
                   "selected-connection"
                 }`}
               >
@@ -109,10 +105,10 @@ const IdentifierStage1 = ({
                   />
                   <span className="connection-name">{connection.label}</span>
                   <IonCheckbox
-                    checked={selectedConnections.includes(connection.id)}
+                    checked={selectedConnections.includes(connection)}
                     data-testid={`connection-checkbox-${index}`}
                     onIonChange={() => {
-                      handleSelectConnection(connection.id);
+                      handleSelectConnection(connection);
                     }}
                     aria-label=""
                   />

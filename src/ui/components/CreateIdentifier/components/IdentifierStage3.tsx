@@ -31,9 +31,11 @@ const IdentifierStage3 = ({
     (identifier) => identifier.method === IdentifierType.KERI
   )[0]?.id;
   const otherIdentifierContacts: ConnectionShortDetails[] =
-    state.sortedConnections.filter((connection) =>
-      state.selectedConnections.includes(connection.id)
-    );
+    state.selectedConnections.sort(function (a, b) {
+      const textA = a.label.toUpperCase();
+      const textB = b.label.toUpperCase();
+      return textA < textB ? -1 : textA > textB ? 1 : 0;
+    });
 
   const createMultisigIdentifier = async () => {
     await AriesAgent.agent.identifiers.createMultisig(
@@ -94,37 +96,33 @@ const IdentifierStage3 = ({
             {i18n.t("createidentifier.confirm.selectedmembers")}
           </div>
           <IonCard>
-            {state.sortedConnections.map((connection, index) => {
-              if (state.selectedConnections.includes(connection.id)) {
-                return (
-                  <IonItem
-                    key={index}
-                    className="identifier-list-item"
-                  >
-                    <IonLabel>
-                      <img
-                        src={connection?.logo ?? CardanoLogo}
-                        className="connection-logo"
-                        alt="connection-logo"
-                      />
-                      <span className="connection-name">
-                        {connection.label}
-                      </span>
-                      <IonIcon
-                        aria-hidden="true"
-                        icon={pencilOutline}
-                        slot="end"
-                        onClick={() =>
-                          setState((prevState: IdentifierStageProps) => ({
-                            ...prevState,
-                            identifierCreationStage: 1,
-                          }))
-                        }
-                      />
-                    </IonLabel>
-                  </IonItem>
-                );
-              }
+            {otherIdentifierContacts.map((connection, index) => {
+              return (
+                <IonItem
+                  key={index}
+                  className="identifier-list-item"
+                >
+                  <IonLabel>
+                    <img
+                      src={connection?.logo ?? CardanoLogo}
+                      className="connection-logo"
+                      alt="connection-logo"
+                    />
+                    <span className="connection-name">{connection.label}</span>
+                    <IonIcon
+                      aria-hidden="true"
+                      icon={pencilOutline}
+                      slot="end"
+                      onClick={() =>
+                        setState((prevState: IdentifierStageProps) => ({
+                          ...prevState,
+                          identifierCreationStage: 1,
+                        }))
+                      }
+                    />
+                  </IonLabel>
+                </IonItem>
+              );
             })}
           </IonCard>
         </div>
@@ -154,7 +152,7 @@ const IdentifierStage3 = ({
         pageId={componentId}
         customClass="identifier-stage-3"
         primaryButtonText={`${i18n.t("createidentifier.confirm.continue")}`}
-        primaryButtonAction={() => {
+        primaryButtonAction={async () => {
           createMultisigIdentifier();
           dispatch(setToastMsg(ToastMsgType.IDENTIFIER_REQUESTED));
           resetModal();
