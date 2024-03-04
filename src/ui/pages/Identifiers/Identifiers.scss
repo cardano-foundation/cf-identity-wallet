@@ -1,0 +1,52 @@
+.identifiers-tab {
+  ion-list {
+    margin: 0.875rem 0 2rem 0;
+
+    ion-item.pending-identifier {
+      --inner-padding-end: 0;
+
+      &:not(:last-child) {
+        border-bottom: 1px solid rgba(var(--ion-color-dark-grey-rgb), 0.5);
+      }
+
+      &::part(native) {
+        padding: 0;
+        background: var(--ion-color-light);
+      }
+
+      ion-label {
+        display: flex;
+        flex-direction: row;
+
+        .pending-identifier-miniature {
+          height: 2.75rem;
+          width: 4.813rem;
+          border-radius: 0.25rem;
+        }
+
+        .pending-identifier-info {
+          padding: 0;
+          margin-left: 0.94rem;
+          display: flex;
+          flex-direction: column;
+
+          .pending-identifier-info-top-line {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--ion-color-primary);
+            margin-bottom: 0.31rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+
+          .pending-identifier-info-bottom-line {
+            font-size: 0.875rem;
+            font-weight: 400;
+            color: var(--ion-color-secondary);
+          }
+        }
+      }
+    }
+  }
+}

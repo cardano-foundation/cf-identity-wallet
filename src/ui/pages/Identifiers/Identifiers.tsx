@@ -1,4 +1,11 @@
-import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
+import {
+  IonButton,
+  IonIcon,
+  IonItem,
+  IonLabel,
+  IonList,
+  useIonViewWillEnter,
+} from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -13,8 +20,14 @@ import {
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
-import { CardType } from "../../globals/types";
+import { CardType, IDENTIFIER_BG_MAPPING } from "../../globals/types";
 import { Connections } from "../Connections";
+import { formatShortDate } from "../../utils/formatters";
+import {
+  IdentifierShortDetails,
+  IdentifierType,
+} from "../../../core/agent/services/identifierService.types";
+import "./Identifiers.scss";
 
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
@@ -60,6 +73,18 @@ const Identifiers = () => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
+  const favIdentifiers = identifiersData.filter((identifier) =>
+    favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
+  );
+  const allIdentifiers = identifiersData.filter(
+    (identifier) =>
+      !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
+  );
+  // @TODO - sdisalvo: Temporary fix until we have a way to get the identifiers from the cache
+  // const pendingIdentifiers = identifiersData.filter((identifier) => identifier.isPending);
+  const pendingIdentifiers = identifiersData.filter(
+    (identifier) => identifier.displayName === "Test M"
+  );
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [showConnections, setShowConnections] = useState(false);
@@ -77,10 +102,6 @@ const Identifiers = () => {
     return found ? found.time : null;
   };
 
-  const favIdentifiers = identifiersData.filter((identifier) =>
-    favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-  );
-
   const sortedFavIdentifiers = favIdentifiers.sort((a, b) => {
     const timeA = findTimeById(a.id);
     const timeB = findTimeById(b.id);
@@ -92,10 +113,41 @@ const Identifiers = () => {
     return timeA - timeB;
   });
 
-  const allIdentifiers = identifiersData.filter(
-    (identifier) =>
-      !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-  );
+  const PendingIdentifier = ({
+    identifier,
+  }: {
+    identifier: IdentifierShortDetails;
+  }) => {
+    return (
+      <IonItem className="pending-identifier">
+        <IonLabel>
+          <div
+            className="pending-identifier-miniature"
+            style={{
+              backgroundImage: `url(${
+                IDENTIFIER_BG_MAPPING[identifier.theme]
+              })`,
+              backgroundSize: "cover",
+            }}
+          />
+          <div className="pending-identifier-info">
+            <div className="pending-identifier-info-top-line">
+              {identifier.displayName
+                .replace(/([A-Z][a-z])/g, " $1")
+                .replace(/(\d)/g, " $1")}
+            </div>
+            <div className="pending-identifier-info-bottom-line">
+              {identifier.method === IdentifierType.KERI
+                ? i18n.t("identifiers.tab.type.keri")
+                : i18n.t("identifiers.tab.type.didkey")}
+              {"  •  "}
+              {formatShortDate(identifier.createdAtUTC)}
+            </div>
+          </div>
+        </IonLabel>
+      </IonItem>
+    );
+  };
 
   return (
     <>
@@ -151,6 +203,28 @@ const Identifiers = () => {
                   cardsType={CardType.IDENTIFIERS}
                   cardsData={allIdentifiers}
                 />
+              </>
+            )}
+            {!!pendingIdentifiers.length && (
+              <>
+                <div className="cards-title cards-title-all">
+                  {i18n.t("identifiers.tab.pendingidentifiers")}
+                </div>
+                <IonList
+                  lines="none"
+                  className="pending-identifiers-list"
+                >
+                  {pendingIdentifiers.map(
+                    (identifier: IdentifierShortDetails, index: number) => {
+                      return (
+                        <PendingIdentifier
+                          key={index}
+                          identifier={identifier}
+                        />
+                      );
+                    }
+                  )}
+                </IonList>
               </>
             )}
           </>
