@@ -107,6 +107,20 @@ const IdentifierStage0 = ({
     }
   };
 
+  const handleContinue = () => {
+    if (state.selectedIdentifierType === 1 && state.selectedAidType !== 0) {
+      setState((prevState: IdentifierStageProps) => ({
+        ...prevState,
+        identifierCreationStage: 1,
+      }));
+    } else {
+      setBlur && setBlur(true);
+      setTimeout(() => {
+        handleCreateIdentifier();
+      }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
+    }
+  };
+
   return (
     <>
       <ScrollablePageLayout
@@ -243,22 +257,7 @@ const IdentifierStage0 = ({
         pageId={componentId}
         customClass={keyboardIsOpen ? "ion-hide" : ""}
         primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
-        primaryButtonAction={() => {
-          if (
-            state.selectedIdentifierType === 1 &&
-            state.selectedAidType !== 0
-          ) {
-            setState((prevState: IdentifierStageProps) => ({
-              ...prevState,
-              identifierCreationStage: 1,
-            }));
-          } else {
-            setBlur && setBlur(true);
-            setTimeout(() => {
-              handleCreateIdentifier();
-            }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
-          }
-        }}
+        primaryButtonAction={() => handleContinue()}
         primaryButtonDisabled={
           !(displayNameValueIsValid && typeIsSelectedIsValid)
         }
