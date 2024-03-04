@@ -1,6 +1,6 @@
 import { IonCard, IonItem, IonLabel, IonIcon } from "@ionic/react";
 import { pencilOutline } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../PageFooter";
 import { PageHeader } from "../../PageHeader";
@@ -27,15 +27,21 @@ const IdentifierStage3 = ({
   // @TODO - sdisalvo: This is a temporary fix to get the identifier created.
   // We'll need to work out a proper way to get 'ourIdentifier'.
   const identifiersData = useAppSelector(getIdentifiersCache);
-  const ourIdentifier = identifiersData.filter(
-    (identifier) => identifier.method === IdentifierType.KERI
-  )[0]?.id;
+  const [ourIdentifier, setOurIdentifier] = useState("");
   const otherIdentifierContacts: ConnectionShortDetails[] =
     state.selectedConnections.sort(function (a, b) {
       const textA = a.label.toUpperCase();
       const textB = b.label.toUpperCase();
       return textA < textB ? -1 : textA > textB ? 1 : 0;
     });
+
+  useEffect(() => {
+    setOurIdentifier(
+      identifiersData.filter(
+        (identifier) => identifier.method === IdentifierType.KERI
+      )[0]?.id
+    );
+  }, [identifiersData, state.selectedConnections]);
 
   const createMultisigIdentifier = async () => {
     await AriesAgent.agent.identifiers.createMultisig(
@@ -153,7 +159,7 @@ const IdentifierStage3 = ({
         customClass="identifier-stage-3"
         primaryButtonText={`${i18n.t("createidentifier.confirm.continue")}`}
         primaryButtonAction={async () => {
-          createMultisigIdentifier();
+          await createMultisigIdentifier();
           dispatch(setToastMsg(ToastMsgType.IDENTIFIER_REQUESTED));
           resetModal();
         }}
