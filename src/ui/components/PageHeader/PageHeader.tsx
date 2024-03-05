@@ -34,6 +34,7 @@ const PageHeader = ({
   progressBarValue,
   progressBarBuffer,
   title,
+  additionalButtons,
 }: PageHeaderProps) => {
   const history = useHistory();
   const dispatch = useAppDispatch();
@@ -71,7 +72,7 @@ const PageHeader = ({
         hasContent ? "show-header" : "hide-header"
       }`}
     >
-      <IonToolbar color="light">
+      <IonToolbar>
         <IonButtons slot="start">
           {backButton && (
             <IonButton
@@ -167,6 +168,8 @@ const PageHeader = ({
                 <p>{actionButtonLabel}</p>
               </IonButton>
             )}
+
+            {additionalButtons && additionalButtons}
           </IonButtons>
         )}
       </IonToolbar>

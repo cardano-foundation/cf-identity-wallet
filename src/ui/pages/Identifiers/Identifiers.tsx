@@ -145,7 +145,7 @@ const Identifiers = () => {
         {!showPlaceholder && (
           <>
             {!!favIdentifiers.length && (
-              <div>
+              <div className="identifiers-tab-content-block">
                 {allIdentifiers.length ? (
                   <h3>{i18n.t("creds.tab.favourites")}</h3>
                 ) : null}
@@ -157,7 +157,7 @@ const Identifiers = () => {
               </div>
             )}
             {!!allIdentifiers.length && (
-              <div>
+              <div className="identifiers-tab-content-block">
                 {!!favIdentifiers.length && (
                   <h3>{i18n.t("identifiers.tab.allidentifiers")}</h3>
                 )}
@@ -169,7 +169,7 @@ const Identifiers = () => {
               </div>
             )}
             {!!pendingIdentifiers.length && (
-              <div>
+              <div className="identifiers-tab-content-block">
                 <h3>{i18n.t("identifiers.tab.pendingidentifiers")}</h3>
                 <IdentifiersList
                   identifiers={pendingIdentifiers}
