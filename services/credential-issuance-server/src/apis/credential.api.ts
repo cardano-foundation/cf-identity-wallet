@@ -96,9 +96,32 @@ async function issueAcdcCredential(
   httpResponse(res, response);
 }
 
+async function applySchema(
+  req: Request,
+  res: Response
+): Promise<void> {
+  const { schemaSaid, aid } = req.body;
+  if (!SCHEMA_ACDC[schemaSaid]) {
+    const response: ResponseData<string> = {
+      statusCode: 409,
+      success: false,
+      data: "",
+    };
+    return httpResponse(res, response);
+  }
+  await AriesAgent.agent.applySchema(schemaSaid, aid);
+  const response: ResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: "Apply schema successfully",
+  };
+  httpResponse(res, response);
+}
+
 export {
   offerCredentialOverConnection,
   invitationWithCredential,
   invitationWithCredentialConnectionless,
   issueAcdcCredential,
+  applySchema
 };

@@ -248,6 +248,14 @@ class AriesAgent {
     );
   }
 
+  async applySchema(schemaSaid, aid) {
+    return this.agent.modules.signify.applySchema(
+      AriesAgent.ISSUER_AID_NAME,
+      schemaSaid,
+      aid
+    );
+  }
+
   async contacts() {
     return this.agent.modules.signify.contacts();
   }

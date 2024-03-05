@@ -24,6 +24,7 @@ const config = {
     schemaOobi: "/oobi/:id",
     contact: "/contact",
     resolveOobi: "/resolveOobi",
+    applySchema: "/applySchema",
   },
 };
 

@@ -32,7 +32,7 @@ export class SignifyApi {
     await signifyReady();
     this.signifyClient = new SignifyClient(
       SignifyApi.LOCAL_KERIA_ENDPOINT,
-      randomPasscode(),  // Different on every restart but this is OK for our purposes.
+      randomPasscode(), // Different on every restart but this is OK for our purposes.
       Tier.low,
       SignifyApi.LOCAL_KERIA_BOOT_ENDPOINT
     );
@@ -46,9 +46,7 @@ export class SignifyApi {
   }
 
   async createIdentifier(signifyName: string): Promise<any> {
-    const op = await this.signifyClient
-      .identifiers()
-      .create(signifyName);
+    const op = await this.signifyClient.identifiers().create(signifyName);
     await op.op();
     const aid1 = await this.getIdentifierByName(signifyName);
     await this.signifyClient
@@ -107,22 +105,35 @@ export class SignifyApi {
     const result = await this.signifyClient
       .credentials()
       .issue({ issuerName, registryId, schemaId, recipient, data: vcdata });
-    await this.waitAndGetDoneOp(result.op, this.opTimeout, this.opRetryInterval);
-    
+    await this.waitAndGetDoneOp(
+      result.op,
+      this.opTimeout,
+      this.opRetryInterval
+    );
+
     const datetime = new Date().toISOString().replace("Z", "000+00:00");
-    const [grant, gsigs, gend] = await this.signifyClient
-      .ipex()
-      .grant({
-        senderName: issuerName,
-        recipient,
-        acdc: result.acdc,
-        iss: result.iss,
-        anc: result.anc,
-        datetime
-      })
+    const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
+      senderName: issuerName,
+      recipient,
+      acdc: result.acdc,
+      iss: result.iss,
+      anc: result.anc,
+      datetime,
+    });
     await this.signifyClient
       .ipex()
       .submitGrant(issuerName, grant, gsigs, gend, [recipient]);
+  }
+
+  async applySchema(senderName: string, schemaSaid: string, recipient: string) {
+    const [grant, gsigs] = await this.signifyClient.ipex().apply({
+      senderName,
+      recipient,
+      schema: schemaSaid,
+    });
+    await this.signifyClient
+      .ipex()
+      .submitApply(senderName, grant, gsigs, [recipient]);
   }
 
   async contacts(): Promise<any> {
