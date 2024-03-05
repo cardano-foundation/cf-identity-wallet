@@ -3,7 +3,7 @@
     margin: 0.875rem 0 2rem 0;
     padding: 0;
 
-    ion-item.pending-identifier {
+    ion-item.identifier-item {
       --inner-padding-end: 0;
 
       &:not(:last-child) {
@@ -19,29 +19,29 @@
         display: flex;
         flex-direction: row;
 
-        .pending-identifier-miniature {
+        .identifier-miniature {
           height: 2.75rem;
           width: 4.813rem;
           border-radius: 0.25rem;
         }
 
-        .pending-identifier-info {
-          padding: 0;
+        .identifier-info {
+          padding: 0.125rem 0;
           margin-left: 0.94rem;
           display: flex;
           flex-direction: column;
+          justify-content: space-evenly;
 
-          .pending-identifier-info-top-line {
+          .identifier-info-top-line {
             font-size: 1rem;
             font-weight: 500;
             color: var(--ion-color-primary);
-            margin-bottom: 0.31rem;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
           }
 
-          .pending-identifier-info-bottom-line {
+          .identifier-info-bottom-line {
             font-size: 0.875rem;
             font-weight: 400;
             color: var(--ion-color-secondary);
@@ -55,22 +55,22 @@
     ion-list {
       margin: 0.7rem 0 1.6rem 0;
 
-      ion-item.pending-identifier ion-label {
-        .pending-identifier-miniature {
+      ion-item.identifier-item ion-label {
+        .identifier-miniature {
           height: 2.2rem;
           width: 3.85rem;
           border-radius: 0.2rem;
         }
 
-        .pending-identifier-info {
+        .identifier-info {
           margin-left: 0.752rem;
 
-          .pending-identifier-info-top-line {
+          .identifier-info-top-line {
             font-size: 0.8rem;
             margin-bottom: 0.31rem;
           }
 
-          .pending-identifier-info-bottom-line {
+          .identifier-info-bottom-line {
             font-size: 0.7rem;
           }
         }

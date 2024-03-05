@@ -1,11 +1,4 @@
-import {
-  IonButton,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonList,
-  useIonViewWillEnter,
-} from "@ionic/react";
+import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
 import { useEffect, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -20,11 +13,11 @@ import {
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
-import { CardType, IDENTIFIER_BG_MAPPING } from "../../globals/types";
+import { CardType } from "../../globals/types";
 import { Connections } from "../Connections";
-import { formatShortDate } from "../../utils/formatters";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
 import "./Identifiers.scss";
+import { IdentifiersList } from "./components/IdentifiersList";
 
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
@@ -117,47 +110,11 @@ const Identifiers = () => {
   const sortedFavIdentifiers = favIdentifiers.sort((a, b) => {
     const timeA = findTimeById(a.id);
     const timeB = findTimeById(b.id);
-
     if (timeA === null && timeB === null) return 0;
     if (timeA === null) return 1;
     if (timeB === null) return -1;
-
     return timeA - timeB;
   });
-
-  const PendingIdentifier = ({
-    identifier,
-  }: {
-    identifier: IdentifierShortDetails;
-  }) => {
-    return (
-      <IonItem className="pending-identifier">
-        <IonLabel>
-          <div
-            className="pending-identifier-miniature"
-            style={{
-              backgroundImage: `url(${
-                IDENTIFIER_BG_MAPPING[identifier.theme]
-              })`,
-              backgroundSize: "cover",
-            }}
-          />
-          <div className="pending-identifier-info">
-            <div className="pending-identifier-info-top-line">
-              {identifier.displayName
-                .replace(/([A-Z][a-z])/g, " $1")
-                .replace(/(\d)/g, " $1")}
-            </div>
-            <div className="pending-identifier-info-bottom-line">
-              {`${i18n.t(
-                "identifiers.tab.identifiertype"
-              )}  •  ${formatShortDate(identifier.createdAtUTC)}`}
-            </div>
-          </div>
-        </IonLabel>
-      </IonItem>
-    );
-  };
 
   return (
     <>
@@ -188,54 +145,37 @@ const Identifiers = () => {
         {!showPlaceholder && (
           <>
             {!!favIdentifiers.length && (
-              <>
+              <div>
                 {allIdentifiers.length ? (
-                  <div className="cards-title">
-                    {i18n.t("creds.tab.favourites")}
-                  </div>
+                  <h3>{i18n.t("creds.tab.favourites")}</h3>
                 ) : null}
                 <CardsStack
                   name="favs"
                   cardsType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
                 />
-              </>
+              </div>
             )}
             {!!allIdentifiers.length && (
-              <>
+              <div>
                 {!!favIdentifiers.length && (
-                  <div className="cards-title cards-title-all">
-                    {i18n.t("identifiers.tab.allidentifiers")}
-                  </div>
+                  <h3>{i18n.t("identifiers.tab.allidentifiers")}</h3>
                 )}
                 <CardsStack
                   name="allidentifiers"
                   cardsType={CardType.IDENTIFIERS}
                   cardsData={allIdentifiers}
                 />
-              </>
+              </div>
             )}
             {!!pendingIdentifiers.length && (
-              <>
-                <div className="cards-title cards-title-all">
-                  {i18n.t("identifiers.tab.pendingidentifiers")}
-                </div>
-                <IonList
-                  lines="none"
-                  className="pending-identifiers-list"
-                >
-                  {pendingIdentifiers.map(
-                    (identifier: IdentifierShortDetails, index: number) => {
-                      return (
-                        <PendingIdentifier
-                          key={index}
-                          identifier={identifier}
-                        />
-                      );
-                    }
-                  )}
-                </IonList>
-              </>
+              <div>
+                <h3>{i18n.t("identifiers.tab.pendingidentifiers")}</h3>
+                <IdentifiersList
+                  identifiers={pendingIdentifiers}
+                  showDate={true}
+                />
+              </div>
             )}
           </>
         )}
