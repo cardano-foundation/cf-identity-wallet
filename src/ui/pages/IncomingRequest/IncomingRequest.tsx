@@ -63,6 +63,8 @@ const IncomingRequest = () => {
             setRequestData({ label: "W3C" });
           }
           setRequestType(DIDCommRequestType.CREDENTIAL);
+        } else if (incomingRequest.type === IncomingRequestType.REQ_GRANT) {
+          // TODO:
         }
         setShowRequest(true);
       }
@@ -70,6 +72,83 @@ const IncomingRequest = () => {
     void handle();
   }, [incomingRequest.id]);
 
+  const getContentByType = () => {
+    if (!incomingRequest.id.length) return;
+
+    switch (incomingRequest.type) {
+    case IncomingRequestType.CONNECTION_INCOMING: {
+      return {
+        title: i18n.t("request.connection.title"),
+        info: i18n.t("request.connection.requestconnection"),
+        type: DIDCommRequestType.CONNECTION,
+        status: i18next.t("request.pending", {
+          action: incomingRequest.type,
+        }),
+        alert: {
+          title: i18n.t("request.connection.alert.titleconfirm"),
+          confirm: i18n.t("request.connection.alert.confirm"),
+        },
+        label: incomingRequest.label,
+        logo: incomingRequest.logo,
+        button: i18n.t("request.connection.button.label"),
+      };
+    }
+    case IncomingRequestType.CONNECTION_RESPONSE: {
+      return {
+        title: i18n.t("request.connection.title"),
+        info: i18n.t("request.connection.requestconnection"),
+        type: DIDCommRequestType.CONNECTION,
+        status: i18next.t("request.success", {
+          action: incomingRequest.type,
+        }),
+        alert: {
+          title: i18n.t("request.connection.alert.titleconfirm"),
+          confirm: i18n.t("request.connection.alert.confirm"),
+        },
+        label: incomingRequest.label,
+        logo: incomingRequest.logo,
+        button: i18n.t("request.connection.button.label"),
+      };
+    }
+    case IncomingRequestType.CREDENTIAL_OFFER_RECEIVED: {
+      return {
+        title: i18n.t("request.credential.title"),
+        info: i18n.t("request.credential.offercredential"),
+        type: DIDCommRequestType.CREDENTIAL,
+        status: i18next.t("request.success", {
+          action: incomingRequest.type,
+        }),
+        alert: {
+          title: i18n.t("request.credential.alert.titleconfirm"),
+          confirm: i18n.t("request.credential.alert.confirm"),
+        },
+        label: incomingRequest?.label || "W3C",
+        logo: incomingRequest?.logo,
+        button: i18n.t("request.credential.button.label"),
+      };
+    }
+    case IncomingRequestType.REQ_GRANT: {
+      return {
+        title: i18n.t("request.grantreq.title"),
+        info: i18n.t("request.grantreq.offerlogin"),
+        type: "Login",
+        status: i18next.t("request.pending", {
+          action: incomingRequest.type,
+        }),
+        alert: {
+          title: i18n.t("request.grantreq.alert.titleconfirm"),
+          confirm: i18n.t("request.grantreq.alert.confirm"),
+        },
+        label: incomingRequest?.label || "Web",
+        logo: incomingRequest?.logo,
+        button: i18n.t("request.grantreq.button.label"),
+      };
+    }
+    default: {
+      return undefined;
+    }
+    }
+  };
   const handleReset = () => {
     setShowRequest(false);
     setInitiateAnimation(false);
@@ -124,13 +203,18 @@ const IncomingRequest = () => {
         AriesAgent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
       }
     } else if (incomingRequest.type === IncomingRequestType.REQ_GRANT) {
-      AriesAgent.agent.credentials.handleReqGrant(incomingRequest.id);
+      AriesAgent.agent.credentials.handleReqGrant(
+        incomingRequest.id,
+        incomingRequest.payload.said,
+        incomingRequest.payload
+      );
     }
     setTimeout(() => {
       handleReset();
     }, RESET_DELAY);
   };
 
+  const content = getContentByType();
   return (
     <ResponsivePageLayout
       pageId={pageId}
@@ -139,11 +223,7 @@ const IncomingRequest = () => {
         initiateAnimation ? "animation-on" : "animation-off"
       }`}
     >
-      {requestType === DIDCommRequestType.CONNECTION ? (
-        <h2>{i18n.t("request.connection.title")}</h2>
-      ) : (
-        <h2>{i18n.t("request.credential.title")}</h2>
-      )}
+      <h2>{content?.title}</h2>
       <div className="request-animation-center">
         <div className="request-icons-row">
           <div className="request-user-logo">
@@ -164,49 +244,26 @@ const IncomingRequest = () => {
           </div>
           <div className="request-provider-logo">
             <img
-              src={requestData?.logo ?? CardanoLogo}
+              src={content?.logo ?? CardanoLogo}
               alt="request-provider-logo"
             />
           </div>
         </div>
         <div className="request-info-row">
           <IonCol size="12">
-            {requestType === DIDCommRequestType.CONNECTION ? (
-              <span>
-                {requestType + i18n.t("request.connection.requestconnection")}
-              </span>
-            ) : (
-              <span>
-                {requestType + i18n.t("request.credential.offercredential")}
-              </span>
-            )}
-            <strong>{requestData?.label}</strong>
+            <span>{`${content?.type}${content?.info}`}</span>
+            <strong>{content?.label}</strong>
           </IonCol>
         </div>
         <div className="request-status">
           <IonCol size="12">
-            <strong>
-              {incomingRequest.type ===
-                IncomingRequestType.CONNECTION_INCOMING ||
-              incomingRequest.type ===
-                IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
-                ? i18next.t("request.pending", {
-                  action: requestType,
-                })
-                : i18next.t("request.success", {
-                  action: requestType,
-                })}
-            </strong>
+            <strong>{content?.status}</strong>
           </IonCol>
         </div>
       </div>
       <PageFooter
         pageId={pageId}
-        primaryButtonText={
-          requestType === DIDCommRequestType.CONNECTION
-            ? `${i18n.t("request.button.connect")}`
-            : `${i18n.t("request.button.acceptoffer")}`
-        }
+        primaryButtonText={content?.button}
         primaryButtonAction={() => handleAccept()}
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
         secondaryButtonAction={() => handleCancel()}

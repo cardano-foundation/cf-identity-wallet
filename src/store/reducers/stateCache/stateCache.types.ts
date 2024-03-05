@@ -30,6 +30,7 @@ interface IncomingRequestProps {
   logo?: string;
   label?: string;
   source?: ConnectionType;
+  payload?: any;
 }
 
 interface QueueProps<T> {

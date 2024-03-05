@@ -1052,6 +1052,9 @@
       "alert": {
         "titleconfirm": "Are you sure about proceeding with your connection to {{initiator}}?",
         "confirm": "Yes, connect"
+      },
+      "button": {
+        "label": "Connect"
       }
     },
     "credential": {
@@ -1060,11 +1063,23 @@
       "alert": {
         "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
         "confirm": "Yes, accept credential"
+      },
+      "button": {
+        "label": "Accept offer"
+      }
+    },
+    "grantreq": {
+      "title": "Login",
+      "offerlogin": " from",
+      "alert": {
+        "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
+        "confirm": "Yes, login"
+      },
+      "button": {
+        "label": "Login"
       }
     },
     "button": {
-      "connect": "Connect",
-      "acceptoffer": "Accept credential",
       "cancel": "Cancel"
     },
     "alert": {

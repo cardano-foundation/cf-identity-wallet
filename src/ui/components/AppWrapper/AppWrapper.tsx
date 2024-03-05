@@ -208,6 +208,24 @@ const keriNotificationsChangeHandler = async (
     const exchange = await AriesAgent.agent.credentials.getKeriExchangeMessage(
       event.a.d as string
     );
+
+    dispatch(
+      setQueueIncomingRequest({
+        id: event?.id,
+        type: IncomingRequestType.REQ_GRANT,
+        logo: exchange?.exn?.a?.logo || "",
+        label: `${new URL(exchange?.exn?.a?.serverEndpoint).hostname}`,
+        source: ConnectionType.KERI,
+        payload: {
+          said: exchange?.exn?.a?.tunnelAid,
+          exn: exchange?.exn,
+        },
+      })
+    );
+  } else if (event?.a?.r === NotificationRoute.ServerRequest) {
+    const exchange = await AriesAgent.agent.credentials.getKeriExchangeMessage(
+      event.a.d as string
+    );
     //TODO: hard fix the value at the moment, may need to change these in the future
     const tunnelAid = "EBDX49akYZ9g_TplwZn1ounNRMtx7SJEmdBuhw4mjSIp";
     if (exchange.exn.i === tunnelAid) {

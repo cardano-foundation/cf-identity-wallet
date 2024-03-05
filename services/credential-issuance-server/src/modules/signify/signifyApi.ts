@@ -9,10 +9,8 @@ import {
 import { AriesAgent } from "../../ariesAgent";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT =
-    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
+  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";

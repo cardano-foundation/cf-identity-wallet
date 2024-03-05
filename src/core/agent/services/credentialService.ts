@@ -678,19 +678,15 @@ class CredentialService extends AgentService {
     });
   }
 
-  async handleReqGrant(id: string) {
+  async handleReqGrant(id: string, tunnelAid: string, payload: any) {
     //TODO: hard fix the value at the moment, may need to change these in the future
     const schemaSaid = "EGjD1gCLi9ecZSZp9zevkgZGyEX_MbOdmhBFt4o0wvdb";
-    const tunnelAid = "EBDX49akYZ9g_TplwZn1ounNRMtx7SJEmdBuhw4mjSIp";
     const keriNoti = await this.getKeriNotificationRecordById(id);
     const exchange = await this.agent.modules.signify.getKeriExchange(
       keriNoti.a.d as string
     );
     const enterpriseServerEndpoint = exchange.exn.a.serverEndpoint;
-    const sender = exchange.exn.i;
-    if (sender !== tunnelAid) {
-      throw new Error("The exchange sender is not the tunnel");
-    }
+
     const credentials = await this.agent.modules.signify.getCredentials(
       exchange.exn.a.filter
     );
@@ -715,12 +711,14 @@ class CredentialService extends AgentService {
       enterpriseServerEndpoint,
       idWalletOobiUrl
     );
+
     /**Disclose ACDC */
     await this.requestEnterpriseDisclosure(
       enterpriseServerEndpoint,
       selectedIdentifier.prefix,
       schemaSaid
     );
+
     /**Mark notification as read and admit it*/
     const unreadGrantNotes = await this.waitForEnterpriseAcdcToAppear(
       serverAid,
@@ -754,6 +752,7 @@ class CredentialService extends AgentService {
     const selectedAid = await this.agent.modules.signify.getIdentifierByName(
       selectedIdentifier.name
     );
+
     await this.agent.modules.signify.sendExn(
       selectedIdentifier.name,
       selectedAid,

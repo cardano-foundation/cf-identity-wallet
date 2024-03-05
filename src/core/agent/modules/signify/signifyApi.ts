@@ -197,11 +197,11 @@ export class SignifyApi {
 
   async getCredentials(filters?: any): Promise<any> {
     if (filters) {
-      return this.signifyClient.credentials().list({
+      return await this.signifyClient.credentials().list({
         filter: filters,
       });
     }
-    return this.signifyClient.credentials().list();
+    return await this.signifyClient.credentials().list();
   }
 
   async grantAcdcIpexExchange(
