@@ -22,9 +22,9 @@ const config = {
     keriOobi: "/keriOobi",
     issueAcdcCredential : "/issueAcdcCredential",
     schemaOobi: "/oobi/:id",
-    contact: "/contact",
+    contacts: "/contacts",
     resolveOobi: "/resolveOobi",
-    applySchema: "/applySchema",
+    requestDisclosure: "/requestDisclosure",
   },
 };
 

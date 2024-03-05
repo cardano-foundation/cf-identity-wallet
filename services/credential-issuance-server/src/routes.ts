@@ -3,7 +3,7 @@ import { config } from "./config";
 import { ping } from "./apis/ping.api";
 import { invitationApi, keriOobiApi } from "./apis/invitation.api";
 import {
-  applySchema,
+  requestDisclosure,
   invitationWithCredential,
   invitationWithCredentialConnectionless,
   issueAcdcCredential,
@@ -33,7 +33,7 @@ router.get(config.path.keriOobi, keriOobiApi);
 router.post(config.path.issueAcdcCredential, issueAcdcCredential);
 router.get(config.path.schemaOobi, schemaApi);
 router.post(config.path.resolveOobi, resolveOobi);
-router.get(config.path.contact, contactList);
-router.post(config.path.applySchema, applySchema);
+router.get(config.path.contacts, contactList);
+router.post(config.path.requestDisclosure, requestDisclosure);
 
 export default router;

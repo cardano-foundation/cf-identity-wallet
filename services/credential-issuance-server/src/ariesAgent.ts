@@ -248,8 +248,8 @@ class AriesAgent {
     );
   }
 
-  async applySchema(schemaSaid, aid) {
-    return this.agent.modules.signify.applySchema(
+  async requestDisclosure(schemaSaid, aid) {
+    return this.agent.modules.signify.requestDisclosure(
       AriesAgent.ISSUER_AID_NAME,
       schemaSaid,
       aid

@@ -125,15 +125,15 @@ export class SignifyApi {
       .submitGrant(issuerName, grant, gsigs, gend, [recipient]);
   }
 
-  async applySchema(senderName: string, schemaSaid: string, recipient: string) {
-    const [grant, gsigs] = await this.signifyClient.ipex().apply({
+  async requestDisclosure(senderName: string, schemaSaid: string, recipient: string) {
+    const [apply, sigs] = await this.signifyClient.ipex().apply({
       senderName,
       recipient,
       schema: schemaSaid,
     });
     await this.signifyClient
       .ipex()
-      .submitApply(senderName, grant, gsigs, [recipient]);
+      .submitApply(senderName, apply, sigs, [recipient]);
   }
 
   async contacts(): Promise<any> {

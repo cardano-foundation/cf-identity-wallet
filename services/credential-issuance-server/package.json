@@ -29,7 +29,7 @@
         "qrcode-terminal": "^0.12.0",
         "uuid": "^9.0.1",
         "ws": "^8.13.0",
-        "signify-ts": "github:cardano-foundation/signify-ts#feat/ipexApplyOfferAgree"
+        "signify-ts": "github:cardano-foundation/signify-ts#c1422b041d2ff53b3d4456a29443722b95f35fb5"
     },
     "devDependencies": {
         "nodemon": "^3.0.1",
