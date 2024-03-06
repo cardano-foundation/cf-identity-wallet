@@ -31,7 +31,7 @@ jest.mock("../../../core/agent/agent", () => ({
             publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
           },
         }),
-        checkMultisigComplete: jest.fn(),
+        checkMultisigComplete: jest.fn().mockResolvedValue({ done: true }),
       },
       credentials: {
         getCredentialDetailsById: jest.fn().mockResolvedValue({}),
@@ -83,9 +83,6 @@ describe("Cards Stack Component", () => {
 
   test("It navigates to Identifier Card Details and back", async () => {
     jest.useFakeTimers();
-    jest
-      .spyOn(AriesAgent.agent.identifiers, "checkMultisigComplete")
-      .mockResolvedValue(true);
     const { findByTestId } = render(
       <MemoryRouter>
         <Provider store={store}>
