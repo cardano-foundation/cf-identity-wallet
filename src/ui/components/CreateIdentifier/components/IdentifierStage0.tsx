@@ -100,6 +100,7 @@ const IdentifierStage0 = ({
         createdAtUTC: new Date().toISOString(),
         colors: [newColor[1], newColor[0]],
         theme: state.selectedTheme,
+        isPending: false,
       };
       dispatch(setIdentifiersCache([...identifierData, newIdentifier]));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
