@@ -147,12 +147,10 @@ class IdentifierService extends AgentService {
   }
 
   //Update multisig's status
-  async checkMultisigComplete(identifier: string): Promise<{ done: boolean }> {
+  async checkMultisigComplete(identifier: string): Promise<boolean> {
     const metadata = await this.getMetadataById(identifier);
     const markMultisigResult = await this.markMultisigCompleteIfReady(metadata);
-    return typeof markMultisigResult?.done == "boolean"
-      ? markMultisigResult
-      : { done: true };
+    return markMultisigResult.done;
   }
 
   async createIdentifier(
