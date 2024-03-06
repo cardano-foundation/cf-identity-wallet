@@ -62,6 +62,8 @@ class IdentifierService extends AgentService {
     "This AID is not a multi sig identifier";
   static readonly NOT_FOUND_ALL_MEMBER_OF_MULTISIG =
     "Cannot find all members of multisig or one of the members does not rotate its AID";
+  static readonly ONLY_ALLOW_KERI_IDENTIFIERS_FOR_SIGNING =
+    "Can only sign using KERI identifiers";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -230,6 +232,19 @@ class IdentifierService extends AgentService {
   async getSigner(identifier: string): Promise<Signer> {
     const metadata = await this.getMetadataById(identifier);
     this.validIdentifierMetadata(metadata);
+
+    if (metadata.method !== IdentifierType.KERI) {
+      throw new Error(
+        `${IdentifierService.ONLY_ALLOW_KERI_IDENTIFIERS_FOR_SIGNING} ${metadata.id}`
+      );
+    }
+
+    if (!metadata.signifyName) {
+      throw new Error(
+        `${IdentifierService.AID_MISSING_SIGNIFY_NAME} ${metadata.id}`
+      );
+    }
+
     const aid = (await this.agent.modules.signify.getIdentifierByName(
       metadata.signifyName as string
     )) as Aid;

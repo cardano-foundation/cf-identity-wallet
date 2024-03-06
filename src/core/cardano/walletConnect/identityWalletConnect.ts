@@ -5,16 +5,27 @@ import {
   IWalletInfo,
 } from "@fabianbormann/cardano-peer-connect/dist/src/types";
 import { CardanoPeerConnect } from "@fabianbormann/cardano-peer-connect";
+import { Signer } from "signify-ts";
 import { AriesAgent } from "../../agent/agent";
 import { IdentifierType } from "../../agent/services/identifierService.types";
+import { PreferencesStorage } from "../../storage";
 
 class IdentityWalletConnect extends CardanoPeerConnect {
+  static readonly IDENTIFIER_ID_NOT_LOCATED =
+    "The id doesn't correspond with any stored identifier";
+  static readonly NO_IDENTIFIERS_STORED = "No stored identifiers";
+  static readonly NO_KERI_IDENTIFIERS_STORED = "No KERI identifiers stored";
+  static readonly AID_MISSING_SIGNIFY_NAME =
+    "Metadata record for KERI AID is missing the Signify name";
+
   getIdentifierId: () => Promise<string>;
   signDataWithIdentifier: (
     identifierId: string,
     payload: string
   ) => Promise<string>;
   generateOobi: (identifierId: string) => Promise<string>;
+
+  signerCache: Record<string, Signer>;
 
   constructor(
     walletInfo: IWalletInfo,
@@ -29,26 +40,31 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       logLevel: "info",
     });
 
+    this.signerCache = {};
+
     this.getIdentifierId = async (): Promise<string> => {
       const identifiers = await AriesAgent.agent.identifiers.getIdentifiers();
-      if (identifiers && identifiers.length > 0) {
-        for (const identifier of identifiers) {
-          if (identifier.method === IdentifierType.KERI) {
-            return identifier.id;
-          }
-        }
-        throw new Error("No KERI identifier stored");
-      } else {
-        throw new Error("No identifier stored");
+      if (!(identifiers && identifiers.length > 0)) {
+        throw new Error(IdentityWalletConnect.NO_IDENTIFIERS_STORED);
       }
+
+      for (const identifier of identifiers) {
+        if (identifier.method === IdentifierType.KERI) {
+          return identifier.id;
+        }
+      }
+      throw new Error(IdentityWalletConnect.NO_KERI_IDENTIFIERS_STORED);
     };
 
     this.signDataWithIdentifier = async (
       identifierId: string,
       payload: string
     ): Promise<string> => {
-      const signer = await AriesAgent.agent.identifiers.getSigner(identifierId);
-      return signer.sign(Buffer.from(payload)).qb64;
+      if (this.signerCache[identifierId] === undefined) {
+        this.signerCache[identifierId] =
+          await AriesAgent.agent.identifiers.getSigner(identifierId);
+      }
+      return this.signerCache[identifierId].sign(Buffer.from(payload)).qb64;
     };
 
     this.generateOobi = async (identifierId: string): Promise<string> => {
@@ -56,13 +72,19 @@ class IdentityWalletConnect extends CardanoPeerConnect {
         identifierId
       );
 
-      if (identifier?.result.signifyName) {
-        return await AriesAgent.agent.connections.getKeriOobi(
-          identifier?.result.signifyName
+      if (!identifier) {
+        throw new Error(
+          `${IdentityWalletConnect.IDENTIFIER_ID_NOT_LOCATED} ${identifierId}`
         );
       }
 
-      return "";
+      if (!identifier.result.signifyName) {
+        throw new Error(`${IdentityWalletConnect.AID_MISSING_SIGNIFY_NAME}`);
+      }
+
+      return await AriesAgent.agent.connections.getKeriOobi(
+        identifier.result.signifyName
+      );
     };
   }
 
