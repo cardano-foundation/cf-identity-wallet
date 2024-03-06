@@ -216,10 +216,6 @@ const keriNotificationsChangeHandler = async (
         logo: exchange?.exn?.a?.logo || "",
         label: `${new URL(exchange?.exn?.a?.serverEndpoint).hostname}`,
         source: ConnectionType.KERI,
-        payload: {
-          said: exchange?.exn?.a?.tunnelAid,
-          exn: exchange?.exn,
-        },
       })
     );
   } else if (event?.a?.r === NotificationRoute.ServerRequest) {

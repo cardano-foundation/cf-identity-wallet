@@ -677,7 +677,7 @@ class CredentialService extends AgentService {
     });
   }
 
-  async handleReqGrant(id: string, tunnelAid: string, payload: any) {
+  async handleReqGrant(id: string, tunnelAid: string) {
     //TODO: hard fix the value at the moment, may need to change these in the future
     const schemaSaid = "EGjD1gCLi9ecZSZp9zevkgZGyEX_MbOdmhBFt4o0wvdb";
     const keriNoti = await this.getKeriNotificationRecordById(id);

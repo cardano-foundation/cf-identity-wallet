@@ -205,8 +205,7 @@ const IncomingRequest = () => {
     } else if (incomingRequest.type === IncomingRequestType.REQ_GRANT) {
       AriesAgent.agent.credentials.handleReqGrant(
         incomingRequest.id,
-        incomingRequest.payload.said,
-        incomingRequest.payload
+        incomingRequest.payload.said
       );
     }
     setTimeout(() => {
