@@ -666,7 +666,7 @@ class CredentialService extends AgentService {
     aidPrefix: string,
     schemaSaid: string
   ) {
-    await fetch(`${serverEndpoint}/disclosure-acdc`, {
+    const result = await fetch(`${serverEndpoint}/disclosure-acdc`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -676,6 +676,8 @@ class CredentialService extends AgentService {
         schemaSaid,
       }),
     });
+
+    return await result.json();
   }
 
   async handleReqGrant(id: string, tunnelAid: string, payload: any) {
@@ -695,6 +697,7 @@ class CredentialService extends AgentService {
         `Wallet does not hold an ACDC matching the tunnel's request: ${schemaSaid}`
       );
     }
+
     const serverOobiUrl = exchange.exn.a.serverOobiUrl;
     const resolveServerOobiResult =
       await this.agent.modules.signify.resolveOobi(serverOobiUrl);
@@ -702,9 +705,11 @@ class CredentialService extends AgentService {
     const identitiers = await this.agent.modules.signify.getAllIdentifiers();
     //TODO: May need to create a screen to select which identifier will be used
     const selectedIdentifier = identitiers.aids[0];
+
     const idWalletOobiUrl = await this.agent.modules.signify.getOobi(
       selectedIdentifier.name
     );
+
     const triggerTime = new Date().getTime();
     /**Resolve OOBI */
     await this.callEnterpriseResolveOobi(
@@ -713,7 +718,7 @@ class CredentialService extends AgentService {
     );
 
     /**Disclose ACDC */
-    await this.requestEnterpriseDisclosure(
+    const discloseResult = await this.requestEnterpriseDisclosure(
       enterpriseServerEndpoint,
       selectedIdentifier.prefix,
       schemaSaid
@@ -723,8 +728,9 @@ class CredentialService extends AgentService {
     const unreadGrantNotes = await this.waitForEnterpriseAcdcToAppear(
       serverAid,
       enterpriseServerEndpoint,
-      5
+      120
     );
+
     const latestGrant = unreadGrantNotes.reduce(
       (latestObj: any, currentObj: any) => {
         const maxDateTime = latestObj.exchange.exn.a.dt;
@@ -757,7 +763,7 @@ class CredentialService extends AgentService {
       selectedIdentifier.name,
       selectedAid,
       "grant",
-      NotificationRoute.TunnelRequest,
+      NotificationRoute.ServerRequest,
       {},
       [serverAid],
       {
