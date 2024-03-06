@@ -82,6 +82,7 @@ class IdentifierService extends AgentService {
         createdAtUTC: metadata.createdAt.toISOString(),
         colors: metadata.colors,
         theme: metadata.theme,
+        isPending: metadata.isPending,
       });
     }
     return identifiers;

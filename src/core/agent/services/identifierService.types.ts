@@ -11,6 +11,7 @@ interface IdentifierShortDetails {
   signifyName?: string;
   colors: [string, string];
   theme: number;
+  isPending?: boolean;
 }
 
 type GetIdentifierResult =
@@ -25,7 +26,6 @@ interface DIDDetails extends IdentifierShortDetails {
 
 interface KERIDetails extends IdentifierShortDetails {
   signifyOpName?: string;
-  isPending?: boolean;
   s: number;
   dt: string;
   kt: number;

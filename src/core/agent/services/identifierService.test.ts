@@ -137,6 +137,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KEY,
         createdAtUTC: nowISO,
         theme: 0,
+        isPending: false,
       },
       {
         id: keriMetadataRecord.id,
@@ -146,6 +147,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KERI,
         createdAtUTC: nowISO,
         theme: 0,
+        isPending: false,
       },
     ]);
   });
@@ -163,6 +165,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KEY,
         createdAtUTC: nowISO,
         theme: 0,
+        isPending: false,
       },
       {
         id: keriMetadataRecord.id,
@@ -172,6 +175,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KERI,
         createdAtUTC: nowISO,
         theme: 0,
+        isPending: false,
       },
     ]);
   });
