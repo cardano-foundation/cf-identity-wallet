@@ -113,9 +113,8 @@ class IdentifierService extends AgentService {
       const aid = await this.agent.modules.signify.getIdentifierByName(
         metadata.signifyName as string
       );
-      //Update multisig's status if it is pending
       if (metadata.isPending && metadata.signifyOpName) {
-        await this.markMultisigCompleteIfReady(metadata);
+        return undefined;
       }
       if (!aid) {
         return undefined;
@@ -145,6 +144,13 @@ class IdentifierService extends AgentService {
         },
       };
     }
+  }
+
+  //Update multisig's status
+  async checkMultisigComplete(identifier: string): Promise<boolean> {
+    const metadata = await this.getMetadataById(identifier);
+    const markMultisigResult = await this.markMultisigCompleteIfReady(metadata);
+    return markMultisigResult.done;
   }
 
   async createIdentifier(
@@ -574,7 +580,9 @@ class IdentifierService extends AgentService {
 
   async markMultisigCompleteIfReady(metadata: IdentifierMetadataRecord) {
     if (!metadata.signifyOpName || !metadata.isPending) {
-      return;
+      return {
+        done: true,
+      };
     }
     const pendingOperation = await this.agent.modules.signify.getOpByName(
       metadata.signifyOpName
@@ -584,7 +592,9 @@ class IdentifierService extends AgentService {
         metadata.id,
         { isPending: false }
       );
+      return { done: true };
     }
+    return { done: false };
   }
 
   async getUnhandledMultisigIdentifiers(): Promise<KeriNotification[]> {

@@ -31,6 +31,7 @@ jest.mock("../../../core/agent/agent", () => ({
             publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
           },
         }),
+        checkMultisigComplete: jest.fn().mockResolvedValue(true),
       },
       credentials: {
         getCredentialDetailsById: jest.fn().mockResolvedValue({}),
