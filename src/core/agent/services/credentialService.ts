@@ -631,8 +631,7 @@ class CredentialService extends AgentService {
     unreadGrantNotes = unreadGrantNotes.filter(
       (notification: any) =>
         notification.exchange.exn.i === serverAid &&
-        notification.exchange.exn.e.acdc &&
-        notification.exchange.exn.e.acdc === expectedDomain
+        notification.exchange.exn.e.acdc?.a?.domain === expectedDomain
     );
     triedTime++;
     if (!unreadGrantNotes?.length) {
@@ -666,7 +665,7 @@ class CredentialService extends AgentService {
     aidPrefix: string,
     schemaSaid: string
   ) {
-    const result = await fetch(`${serverEndpoint}/disclosure-acdc`, {
+    await fetch(`${serverEndpoint}/disclosure-acdc`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -676,8 +675,6 @@ class CredentialService extends AgentService {
         schemaSaid,
       }),
     });
-
-    return await result.json();
   }
 
   async handleReqGrant(id: string, tunnelAid: string, payload: any) {

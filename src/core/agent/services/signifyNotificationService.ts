@@ -2,7 +2,12 @@ import { AgentService } from "./agentService";
 import { GenericRecordType, KeriNotification } from "../agent.types";
 import { Notification } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
+
 class SignifyNotificationService extends AgentService {
+  // @TODO - foconnor: This is just for the tunnel PoC.
+  static readonly TUNNEL_DOMAIN_SCHEMA_SAID =
+    "EGjD1gCLi9ecZSZp9zevkgZGyEX_MbOdmhBFt4o0wvdb";
+
   async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
   ) {
@@ -31,9 +36,15 @@ class SignifyNotificationService extends AgentService {
       ) &&
       !notif.r
     ) {
-      const keriNoti = await this.createKeriNotificationRecord(notif);
-      callback(keriNoti);
-      await this.agent.modules.signify.markNotification(notif.i);
+      const exn = await this.agent.modules.signify.getKeriExchange(notif.a.d);
+      if (
+        exn?.exn?.e?.acdc?.s !==
+        SignifyNotificationService.TUNNEL_DOMAIN_SCHEMA_SAID
+      ) {
+        const keriNoti = await this.createKeriNotificationRecord(notif);
+        callback(keriNoti);
+        await this.agent.modules.signify.markNotification(notif.i);
+      }
     }
   }
 
