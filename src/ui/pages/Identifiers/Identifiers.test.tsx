@@ -160,7 +160,7 @@ describe("Identifiers Tab", () => {
 
     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
 
-    const doneButton = getByTestId("tab-done-button");
+    const doneButton = getByTestId("close-button");
 
     act(() => {
       fireEvent.click(doneButton);
