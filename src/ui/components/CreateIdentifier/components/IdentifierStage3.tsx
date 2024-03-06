@@ -13,13 +13,20 @@ import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
 import { AriesAgent } from "../../../../core/agent/agent";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
-import { getIdentifiersCache } from "../../../../store/reducers/identifiersCache";
-import { IdentifierType } from "../../../../core/agent/services/identifierService.types";
+import {
+  getIdentifiersCache,
+  setIdentifiersCache,
+} from "../../../../store/reducers/identifiersCache";
+import {
+  IdentifierShortDetails,
+  IdentifierType,
+} from "../../../../core/agent/services/identifierService.types";
 
 const IdentifierStage3 = ({
   state,
   setState,
   componentId,
+  setBlur,
   resetModal,
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
@@ -27,6 +34,7 @@ const IdentifierStage3 = ({
   // @TODO - sdisalvo: This is a temporary fix to get the identifier created.
   // We'll need to work out a proper way to get 'ourIdentifier'.
   const identifiersData = useAppSelector(getIdentifiersCache);
+  const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const ourIdentifier = identifiersData.find(
     (identifier) => identifier.method === IdentifierType.KERI
   )?.id;
@@ -43,17 +51,33 @@ const IdentifierStage3 = ({
         "Attempting to create multi-sig without a corresponding normal AID to manage local keys"
       );
       return;
-    }
-    await AriesAgent.agent.identifiers.createMultisig(
-      ourIdentifier,
-      otherIdentifierContacts,
-      {
-        theme: state.selectedTheme,
-        // @TODO - sdisalvo: Colors will need to be removed
-        colors: ["#000000", "#000000"],
-        displayName: state.displayNameValue,
+    } else {
+      const identifier = await AriesAgent.agent.identifiers.createMultisig(
+        ourIdentifier,
+        otherIdentifierContacts,
+        {
+          theme: state.selectedTheme,
+          // @TODO - sdisalvo: Colors will need to be removed
+          colors: ["#000000", "#000000"],
+          displayName: state.displayNameValue,
+        }
+      );
+      if (identifier) {
+        const newIdentifier: IdentifierShortDetails = {
+          id: identifier,
+          method: IdentifierType.KERI,
+          displayName: state.displayNameValue,
+          createdAtUTC: new Date().toISOString(),
+          // @TODO - sdisalvo: Colors will need to be removed
+          colors: ["#000000", "#000000"],
+          theme: state.selectedTheme,
+          isPending: true,
+        };
+        dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
+        dispatch(setToastMsg(ToastMsgType.IDENTIFIER_REQUESTED));
+        resetModal && resetModal();
       }
-    );
+    }
   };
 
   useEffect(() => {
@@ -67,10 +91,12 @@ const IdentifierStage3 = ({
   }, [state.selectedConnections]);
 
   const handleContinue = async () => {
-    await createMultisigIdentifier();
-    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_REQUESTED));
-    resetModal();
+    setBlur && setBlur(true);
+    setTimeout(async () => {
+      await createMultisigIdentifier();
+    }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
   };
+
   return (
     <>
       <ScrollablePageLayout

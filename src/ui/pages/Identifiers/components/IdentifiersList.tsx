@@ -10,9 +10,11 @@ import { formatShortDate } from "../../../utils/formatters";
 const IdentifiersList = ({
   identifiers,
   showDate,
+  handleClick,
 }: {
   identifiers: IdentifierShortDetails[];
   showDate?: boolean;
+  handleClick?: (identifier: IdentifierShortDetails) => void;
 }) => {
   return (
     <IonList
@@ -22,8 +24,9 @@ const IdentifiersList = ({
       {identifiers.map((identifier: IdentifierShortDetails, index: number) => {
         return (
           <IonItem
-            className="identifier-item"
             key={index}
+            className="identifier-item"
+            onClick={() => handleClick && handleClick(identifier)}
           >
             <IonLabel>
               <div

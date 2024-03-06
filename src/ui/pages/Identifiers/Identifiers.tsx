@@ -18,6 +18,7 @@ import { Connections } from "../Connections";
 import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
 import "./Identifiers.scss";
 import { IdentifiersList } from "./components/IdentifiersList";
+import { AriesAgent } from "../../../core/agent/agent";
 
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
@@ -72,7 +73,8 @@ const Identifiers = () => {
   const [pendingIdentifiers, setPendingIdentifiers] = useState<
     IdentifierShortDetails[]
   >([]);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
+    useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [showConnections, setShowConnections] = useState(false);
 
@@ -88,17 +90,15 @@ const Identifiers = () => {
       )
     );
     setAllIdentifiers(
-      identifiersData.filter(
-        (identifier) =>
-          !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-      )
+      identifiersData
+        .filter((identifier) => !identifier.isPending)
+        .filter(
+          (identifier) =>
+            !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
+        )
     );
-    // @TODO - sdisalvo: Temporary fix until we have a way to get the identifiers from the cache
-    // setPendingIdentifiers(identifiersData.filter((identifier) => identifier.isPending));
     setPendingIdentifiers(
-      identifiersData.filter(
-        (identifier) => identifier.displayName === "Test M"
-      )
+      identifiersData.filter((identifier) => identifier.isPending)
     );
   }, [favouritesIdentifiers, identifiersData]);
 
@@ -116,6 +116,15 @@ const Identifiers = () => {
     return timeA - timeB;
   });
 
+  const handlePendingClick = async (identifier: IdentifierShortDetails) => {
+    /**The below code only return false if the identifier is a multisig and it is not ready */
+    const checkMultisigComplete =
+      await AriesAgent.agent.identifiers.checkMultisigComplete(identifier.id);
+    if (!checkMultisigComplete) {
+      return;
+    }
+  };
+
   return (
     <>
       <Connections
@@ -129,14 +138,14 @@ const Identifiers = () => {
         additionalButtons={
           <AdditionalButtons
             handleConnections={() => setShowConnections(true)}
-            handleCreateIdentifier={() => setModalIsOpen(true)}
+            handleCreateIdentifier={() => setCreateIdentifierModalIsOpen(true)}
           />
         }
         placeholder={
           showPlaceholder && (
             <CardsPlaceholder
               buttonLabel={i18n.t("identifiers.tab.create")}
-              buttonAction={() => setModalIsOpen(true)}
+              buttonAction={() => setCreateIdentifierModalIsOpen(true)}
               testId={pageId}
             />
           )
@@ -174,6 +183,9 @@ const Identifiers = () => {
                 <IdentifiersList
                   identifiers={pendingIdentifiers}
                   showDate={true}
+                  handleClick={async (identifier) =>
+                    handlePendingClick(identifier)
+                  }
                 />
               </div>
             )}
@@ -181,8 +193,10 @@ const Identifiers = () => {
         )}
       </TabLayout>
       <CreateIdentifier
-        modalIsOpen={modalIsOpen}
-        setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
+        modalIsOpen={createIdentifierModalIsOpen}
+        setModalIsOpen={(isOpen: boolean) =>
+          setCreateIdentifierModalIsOpen(isOpen)
+        }
       />
     </>
   );
