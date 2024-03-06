@@ -341,7 +341,8 @@ class IdentifierService extends AgentService {
       IdentifierMetadataRecordProps,
       "displayName" | "colors" | "theme"
     >,
-    delegateContact?: ConnectionShortDetails
+    delegateContact?: ConnectionShortDetails,
+    threshold?: number
   ): Promise<string | undefined> {
     const ourMetadata = await this.getMetadataById(ourIdentifier);
     this.validIdentifierMetadata(ourMetadata);
@@ -370,14 +371,24 @@ class IdentifierService extends AgentService {
       );
       delegateAid = { state: delegator.response } as Aid;
     }
+    if (!threshold) {
+      threshold = otherAids.length + 1;
+    }
+
     const signifyName = utils.uuid();
     const result = await this.agent.modules.signify.createMultisig(
       ourAid,
       otherAids,
       signifyName,
-      delegateAid
+      delegateAid,
+      threshold
     );
     const multisigId = result.op.name.split(".")[1];
+    //this will be updated once the operation is done
+    let isPending = true;
+    if (result.op.done || threshold === 1) {
+      isPending = false;
+    }
     await this.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
@@ -386,7 +397,7 @@ class IdentifierService extends AgentService {
       theme: meta.theme,
       signifyName,
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
-      isPending: result.op.done ? false : true, //this will be updated once the operation is done
+      isPending,
       multisigManageAid: ourIdentifier,
     });
     return multisigId;
