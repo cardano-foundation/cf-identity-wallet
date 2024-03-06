@@ -10,6 +10,7 @@ import { CardType } from "../../globals/types";
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
 import { CredCardTemplate } from "../CredCardTemplate";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -56,12 +57,18 @@ const CardsStack = ({
     );
   };
 
-  const handleShowCardDetails = (index: number) => {
+  const handleShowCardDetails = async (index: number) => {
     setIsActive(true);
     let pathname = "";
 
     if (cardsType === CardType.IDENTIFIERS) {
       const data = cardsData[index] as DIDDetails;
+      /**The below code only return false if the identifier is a multisig and it is not ready */
+      const checkMultisigComplete =
+        await AriesAgent.agent.identifiers.checkMultisigComplete(data.id);
+      if (!checkMultisigComplete) {
+        return;
+      }
       pathname = `/tabs/identifiers/${data.id}`;
     } else {
       const data = cardsData[index] as CredentialShortDetails;
