@@ -82,7 +82,7 @@ class IdentifierService extends AgentService {
         createdAtUTC: metadata.createdAt.toISOString(),
         colors: metadata.colors,
         theme: metadata.theme,
-        isPending: metadata.isPending,
+        isPending: metadata.isPending ?? false,
       });
     }
     return identifiers;
@@ -133,7 +133,7 @@ class IdentifierService extends AgentService {
           colors: metadata.colors,
           theme: metadata.theme,
           signifyOpName: metadata.signifyOpName,
-          isPending: metadata.isPending,
+          isPending: metadata.isPending ?? false,
           s: aid.state.s,
           dt: aid.state.dt,
           kt: aid.state.kt,
@@ -311,6 +311,7 @@ class IdentifierService extends AgentService {
       controller: record.did,
       keyType: signingKey.type.toString(),
       publicKeyBase58: signingKey.publicKeyBase58,
+      isPending: false,
     };
   }
 

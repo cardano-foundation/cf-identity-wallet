@@ -293,6 +293,7 @@ describe("Identifier service of agent", () => {
         publicKeyBase58: pkey,
         createdAtUTC: nowISO,
         method: IdentifierType.KEY,
+        isPending: false,
       },
     });
   });

@@ -11,7 +11,7 @@ interface IdentifierShortDetails {
   signifyName?: string;
   colors: [string, string];
   theme: number;
-  isPending?: boolean;
+  isPending: boolean;
 }
 
 type GetIdentifierResult =
