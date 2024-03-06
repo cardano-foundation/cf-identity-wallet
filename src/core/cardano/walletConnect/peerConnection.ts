@@ -7,6 +7,9 @@ import ICON_BASE64 from "../../../assets/icon-only";
 import { PreferencesStorage, PreferencesKeys } from "../../storage";
 
 class PeerConnection {
+  static readonly PEER_CONNECTION_START_PENDING =
+    "The PeerConnection.start() has not been called yet";
+
   private walletInfo = {
     address: "",
     name: "idw_p2p",
@@ -27,10 +30,19 @@ class PeerConnection {
   private connected = false;
 
   async start() {
+    let meerkatSeed = null;
+
+    try {
+      meerkatSeed = (
+        await PreferencesStorage.get(PreferencesKeys.APP_MEERKAT_SEED)
+      )?.seed as string;
+    } catch {
+      meerkatSeed = null;
+    }
+
     this.identityWalletConnect = new IdentityWalletConnect(
       this.walletInfo,
-      (await PreferencesStorage.get(PreferencesKeys.APP_MEERKAT_SEED))
-        ?.seed as string,
+      meerkatSeed,
       this.announce
     );
     this.identityWalletConnect.setOnConnect(
@@ -55,21 +67,24 @@ class PeerConnection {
   }
 
   connectWithDApp(dAppIdentifier: string) {
-    if (this.identityWalletConnect) {
-      const seed = this.identityWalletConnect.connect(dAppIdentifier);
-      PreferencesStorage.set(PreferencesKeys.APP_MEERKAT_SEED, {
-        meerkatSeed: seed,
-      });
-      localStorage.setItem("meerkat-identity-wallet-seed", seed);
-      this.connected = true;
+    if (this.identityWalletConnect === undefined) {
+      throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
     }
+
+    const seed = this.identityWalletConnect.connect(dAppIdentifier);
+    PreferencesStorage.set(PreferencesKeys.APP_MEERKAT_SEED, {
+      meerkatSeed: seed,
+    });
+    this.connected = true;
   }
 
   disconnectDApp(dAppIdentifier: string) {
-    if (this.identityWalletConnect) {
-      this.identityWalletConnect.disconnect(dAppIdentifier);
-      this.connected = false;
+    if (this.identityWalletConnect === undefined) {
+      throw new Error(PeerConnection.PEER_CONNECTION_START_PENDING);
     }
+
+    this.identityWalletConnect.disconnect(dAppIdentifier);
+    this.connected = false;
   }
 
   isConnected() {

@@ -25,7 +25,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
   ) => Promise<string>;
   generateOobi: (identifierId: string) => Promise<string>;
 
-  signerCache: Record<string, Signer>;
+  signerCache: Map<string, Signer>;
 
   constructor(
     walletInfo: IWalletInfo,
@@ -40,7 +40,7 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       logLevel: "info",
     });
 
-    this.signerCache = {};
+    this.signerCache = new Map();
 
     this.getIdentifierId = async (): Promise<string> => {
       const identifiers = await AriesAgent.agent.identifiers.getIdentifiers();
@@ -60,11 +60,14 @@ class IdentityWalletConnect extends CardanoPeerConnect {
       identifierId: string,
       payload: string
     ): Promise<string> => {
-      if (this.signerCache[identifierId] === undefined) {
-        this.signerCache[identifierId] =
-          await AriesAgent.agent.identifiers.getSigner(identifierId);
+      if (this.signerCache.get(identifierId) === undefined) {
+        this.signerCache.set(
+          identifierId,
+          await AriesAgent.agent.identifiers.getSigner(identifierId)
+        );
       }
-      return this.signerCache[identifierId].sign(Buffer.from(payload)).qb64;
+      return this.signerCache.get(identifierId)!.sign(Buffer.from(payload))
+        .qb64;
     };
 
     this.generateOobi = async (identifierId: string): Promise<string> => {
