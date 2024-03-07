@@ -39,6 +39,7 @@ export class SignifyApi {
     "Failed to resolve OOBI, operation not completing...";
   static readonly FAILED_TO_ROTATE_AID =
     "Failed to rotate AID, operation not completing...";
+  static readonly INVALID_THRESHOLD = "Invalid threshold";
 
   static readonly VLEI_HOST =
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
@@ -284,18 +285,22 @@ export class SignifyApi {
     aid: Aid,
     otherAids: Pick<Aid, "state">[],
     name: string,
+    threshold: number,
     delegate?: Aid
   ): Promise<{
     op: any;
     icpResult: EventResult;
     name: string;
   }> {
+    if (threshold < 1 || threshold > otherAids.length + 1) {
+      throw new Error(SignifyApi.INVALID_THRESHOLD);
+    }
     const states = [aid["state"], ...otherAids.map((aid) => aid["state"])];
     const icp = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
       mhab: aid,
-      isith: otherAids.length + 1,
-      nsith: otherAids.length + 1,
+      isith: threshold,
+      nsith: threshold,
       toad: aid.state.b.length,
       wits: aid.state.b,
       states: states,
