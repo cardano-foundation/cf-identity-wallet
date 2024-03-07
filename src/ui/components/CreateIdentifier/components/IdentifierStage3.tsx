@@ -53,7 +53,7 @@ const IdentifierStage3 = ({
         colors: ["#000000", "#000000"],
         displayName: state.displayNameValue,
       },
-      otherIdentifierContacts.length + 1
+      state.threshold
     );
   };
 
