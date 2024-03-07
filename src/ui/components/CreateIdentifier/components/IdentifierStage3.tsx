@@ -52,7 +52,8 @@ const IdentifierStage3 = ({
         // @TODO - sdisalvo: Colors will need to be removed
         colors: ["#000000", "#000000"],
         displayName: state.displayNameValue,
-      }
+      },
+      state.threshold
     );
   };
 

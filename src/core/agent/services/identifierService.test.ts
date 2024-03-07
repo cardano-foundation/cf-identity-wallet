@@ -683,9 +683,59 @@ describe("Identifier service of agent", () => {
       await identifierService.createMultisig(
         creatorIdentifier,
         otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps
+        metadata as IdentifierMetadataRecordProps,
+        otherIdentifiers.length + 1
       )
     ).toBe(multisigIdentifier);
+    expect(
+      agent.modules.generalStorage.saveIdentifierMetadataRecord
+    ).toBeCalledWith(
+      expect.objectContaining({ id: multisigIdentifier, isPending: true })
+    );
+
+    agent.modules.signify.createMultisig = jest.fn().mockResolvedValue({
+      op: { name: `group.${multisigIdentifier}1`, done: false },
+      icpResult: {},
+      name: "name",
+    });
+    expect(
+      await identifierService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        metadata as IdentifierMetadataRecordProps,
+        1
+      )
+    ).toBe(`${multisigIdentifier}1`);
+    expect(
+      agent.modules.generalStorage.saveIdentifierMetadataRecord
+    ).toBeCalledWith(
+      expect.objectContaining({
+        id: `${multisigIdentifier}1`,
+        isPending: false,
+      })
+    );
+
+    agent.modules.signify.createMultisig = jest.fn().mockResolvedValue({
+      op: { name: `group.${multisigIdentifier}2`, done: true },
+      icpResult: {},
+      name: "name",
+    });
+    expect(
+      await identifierService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        metadata as IdentifierMetadataRecordProps,
+        2
+      )
+    ).toBe(`${multisigIdentifier}2`);
+    expect(
+      agent.modules.generalStorage.saveIdentifierMetadataRecord
+    ).toBeCalledWith(
+      expect.objectContaining({
+        id: `${multisigIdentifier}2`,
+        isPending: false,
+      })
+    );
 
     const invalidOtherIdentifiers = [
       {
@@ -700,7 +750,8 @@ describe("Identifier service of agent", () => {
       identifierService.createMultisig(
         creatorIdentifier,
         invalidOtherIdentifiers,
-        metadata as IdentifierMetadataRecordProps
+        metadata as IdentifierMetadataRecordProps,
+        invalidOtherIdentifiers.length + 1
       )
     ).rejects.toThrowError();
   });
@@ -763,6 +814,7 @@ describe("Identifier service of agent", () => {
         creatorIdentifier,
         otherIdentifiers,
         metadata as IdentifierMetadataRecordProps,
+        otherIdentifiers.length + 1,
         delegatorContact
       )
     ).toBe(multisigIdentifier);
@@ -784,6 +836,7 @@ describe("Identifier service of agent", () => {
       },
       [{ state: {} }],
       expect.any(String),
+      otherIdentifiers.length + 1,
       { state: {} }
     );
   });
