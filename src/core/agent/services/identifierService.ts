@@ -599,6 +599,7 @@ class IdentifierService extends AgentService {
       "displayName" | "colors" | "theme"
     >
   ): Promise<string | undefined> {
+    // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const msgSaid = notification.a.d as string;
     const hasJoined = await this.hasJoinedMultisig(msgSaid);
     if (hasJoined) {
