@@ -72,10 +72,16 @@ const IdentifierStage3 = ({
           // @TODO - sdisalvo: Colors will need to be removed
           colors: ["#000000", "#000000"],
           theme: state.selectedTheme,
-          isPending: true,
+          isPending: state.threshold >= 2,
         };
         dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
-        dispatch(setToastMsg(ToastMsgType.IDENTIFIER_REQUESTED));
+        dispatch(
+          setToastMsg(
+            state.threshold === 1
+              ? ToastMsgType.IDENTIFIER_CREATED
+              : ToastMsgType.IDENTIFIER_REQUESTED
+          )
+        );
         resetModal && resetModal();
       }
     }
