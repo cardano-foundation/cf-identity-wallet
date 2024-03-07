@@ -117,6 +117,8 @@ const Identifiers = () => {
   });
 
   const handlePendingClick = async (identifier: IdentifierShortDetails) => {
+    // @TODO - sdisalvo: This is a temporary fix Patrick initially added to the CardStack
+    // and I moved it here since PendingIdentifiers are never going to show up in the stack.
     /**The below code only return false if the identifier is a multisig and it is not ready */
     const checkMultisigComplete =
       await AriesAgent.agent.identifiers.checkMultisigComplete(identifier.id);

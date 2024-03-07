@@ -16,21 +16,25 @@ const IdentifiersList = ({
   showDate?: boolean;
   handleClick?: (identifier: IdentifierShortDetails) => void;
 }) => {
+  const componentId = "identifiers-list";
   return (
     <IonList
       lines="none"
-      className="identifiers-list"
+      className={componentId}
+      data-testid={componentId}
     >
       {identifiers.map((identifier: IdentifierShortDetails, index: number) => {
         return (
           <IonItem
             key={index}
             className="identifier-item"
+            data-testid={`identifier-item-${index}`}
             onClick={() => handleClick && handleClick(identifier)}
           >
             <IonLabel>
               <div
                 className="identifier-miniature"
+                data-testid={`identifier-miniature-${index}`}
                 style={{
                   backgroundImage: `url(${
                     IDENTIFIER_BG_MAPPING[identifier.theme]
@@ -44,7 +48,10 @@ const IdentifiersList = ({
                     .replace(/([A-Z][a-z])/g, " $1")
                     .replace(/(\d)/g, " $1")}
                 </div>
-                <div className="identifier-info-bottom-line">
+                <div
+                  className="identifier-info"
+                  data-testid={`identifier-info-${index}`}
+                >
                   {identifier.method === IdentifierType.KERI
                     ? i18n.t("identifiers.tab.type.keri")
                     : i18n.t("identifiers.tab.type.didkey")}

@@ -4,7 +4,6 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { Identifiers } from "./Identifiers";
-import { store } from "../../../store";
 import { TabsRoutePath } from "../../../routes/paths";
 import { IdentifierCardDetails } from "../IdentifierCardDetails";
 import {
@@ -85,7 +84,7 @@ describe("Identifiers Tab", () => {
 
   test("Renders Identifiers Tab and all elements in it", () => {
     const { getByText, getByTestId } = render(
-      <Provider store={store}>
+      <Provider store={mockedStore}>
         <Identifiers />
       </Provider>
     );
@@ -96,6 +95,8 @@ describe("Identifiers Tab", () => {
     ).toBeInTheDocument();
     expect(getByTestId("connections-button")).toBeInTheDocument();
     expect(getByTestId("add-button")).toBeInTheDocument();
+    expect(getByTestId("identifiers-list")).toBeInTheDocument();
+    expect(getByTestId("identifier-item-0")).toBeInTheDocument();
   });
 
   test("Navigate from Identifiers Tab to Card Details and back", async () => {
