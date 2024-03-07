@@ -13,7 +13,7 @@ import { AgentService } from "./agentService";
 import {
   Aid,
   IdentifierResult,
-  MultiSigIcpNotification,
+  MultiSigExnMessage,
   NotificationRoute,
 } from "../modules/signify/signifyApi.types";
 import {
@@ -22,6 +22,7 @@ import {
   GenericRecordType,
   KeriNotification,
 } from "../agent.types";
+import { AriesAgent } from "../agent";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
   [IdentifierType.KEY]: [0, 1, 2, 3],
@@ -45,8 +46,8 @@ class IdentifierService extends AgentService {
     "DID was successfully created but the DID was not returned in the state returned";
   static readonly IDENTIFIER_NOT_ARCHIVED = "Identifier was not archived";
   static readonly THEME_WAS_NOT_VALID = "Identifier theme was not valid";
-  static readonly SAID_NOTIFICATIONS_NOT_FOUND =
-    "There's no notifications for the given SAID";
+  static readonly EXN_MESSAGE_NOT_FOUND =
+    "There's no exchange message for the given SAID";
   static readonly ONLY_ALLOW_KERI_CONTACTS =
     "Can only create multi-sig using KERI contacts with specified OOBI URLs";
   static readonly ONLY_CREATE_DELAGATION_WITH_AID =
@@ -61,6 +62,12 @@ class IdentifierService extends AgentService {
     "This AID is not a multi sig identifier";
   static readonly NOT_FOUND_ALL_MEMBER_OF_MULTISIG =
     "Cannot find all members of multisig or one of the members does not rotate its AID";
+  static readonly CANNOT_JOIN_MULTISIG_ICP =
+    "Cannot join multi-sig inception as we do not control any member AID of the multi-sig";
+  static readonly MULTI_SIG_SENDER_AID_CONTACT_MISSING =
+    "Cannot find KERI contact for multi-sig inception event sender";
+  static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
+    "Multi-sig join request contains unknown AIDs (not connected)";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -467,10 +474,10 @@ class IdentifierService extends AgentService {
 
   async joinMultisigRotation(notification: KeriNotification): Promise<string> {
     const msgSaid = notification.a.d as string;
-    const notifications: MultiSigIcpNotification[] =
-      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    const notifications: MultiSigExnMessage[] =
+      await this.agent.modules.signify.getMultisigMessageBySaid(msgSaid);
     if (!notifications.length) {
-      throw new Error(IdentifierService.SAID_NOTIFICATIONS_NOT_FOUND);
+      throw new Error(IdentifierService.EXN_MESSAGE_NOT_FOUND);
     }
     const exn = notifications[0].exn;
     const multisigId = exn.a.gid;
@@ -502,8 +509,8 @@ class IdentifierService extends AgentService {
   }
 
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
-    const notifications: MultiSigIcpNotification[] =
-      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    const notifications: MultiSigExnMessage[] =
+      await this.agent.modules.signify.getMultisigMessageBySaid(msgSaid);
     if (!notifications.length) {
       return false;
     }
@@ -522,6 +529,69 @@ class IdentifierService extends AgentService {
     return false;
   }
 
+  async getMultisigIcpDetails(notification: KeriNotification) {
+    const msgSaid = notification.a.d as string;
+    const icpMsg: MultiSigExnMessage[] =
+      await this.agent.modules.signify.getMultisigMessageBySaid(msgSaid);
+
+    if (!icpMsg.length) {
+      throw new Error(`${IdentifierService.EXN_MESSAGE_NOT_FOUND} ${msgSaid}`);
+    }
+
+    const senderAid = icpMsg[0].exn.i;
+    const senderContact =
+      await AriesAgent.agent.connections.getConnectionKeriShortDetailById(
+        icpMsg[0].exn.i
+      );
+    if (!senderContact) {
+      throw new Error(IdentifierService.MULTI_SIG_SENDER_AID_CONTACT_MISSING);
+    }
+
+    const smids = icpMsg[0].exn.a.smids;
+    // @TODO - foconnor: These searches should be optimised, revisit.
+    const ourIdentifiers = await this.getIdentifiers();
+    const ourConnections = await AriesAgent.agent.connections.getConnections();
+
+    let ourIdentifier;
+    const otherConnections = [];
+    for (const member of smids) {
+      if (member === senderAid) {
+        continue;
+      }
+
+      if (!ourIdentifier) {
+        const identifier = ourIdentifiers.find(
+          (identifier) => identifier.id === member
+        );
+        if (identifier) {
+          ourIdentifier = identifier;
+          continue;
+        }
+      }
+
+      for (const connection of ourConnections) {
+        if (connection.id === member) {
+          otherConnections.push(connection);
+        }
+      }
+    }
+
+    if (!ourIdentifier) {
+      throw new Error(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
+    }
+
+    if (otherConnections.length !== smids.length - 2) {
+      // Should be 2 less for us and the sender
+      throw new Error(IdentifierService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
+    }
+
+    return {
+      ourIdentifier,
+      sender: senderContact,
+      otherConnections,
+    };
+  }
+
   async joinMultisig(
     notification: KeriNotification,
     meta: Pick<
@@ -535,46 +605,50 @@ class IdentifierService extends AgentService {
       await this.agent.genericRecords.deleteById(notification.id);
       return;
     }
-    const notifications: MultiSigIcpNotification[] =
-      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    const icpMsg: MultiSigExnMessage[] =
+      await this.agent.modules.signify.getMultisigMessageBySaid(msgSaid);
 
-    if (!notifications.length) {
-      throw new Error(
-        `${IdentifierService.SAID_NOTIFICATIONS_NOT_FOUND} ${msgSaid}`
-      );
+    if (!icpMsg.length) {
+      throw new Error(`${IdentifierService.EXN_MESSAGE_NOT_FOUND} ${msgSaid}`);
     }
-    const exn = notifications[0].exn;
+    const exn = icpMsg[0].exn;
     const rstate = exn.a.rstates;
     const identifiers = await this.getIdentifiers();
     const identifier = identifiers.find((identifier) => {
       return rstate.find((item) => identifier.id === item.i);
     });
 
-    if (identifier && identifier.signifyName) {
-      const aid = await this.agent.modules.signify.getIdentifierByName(
-        identifier?.signifyName
-      );
-      const signifyName = utils.uuid();
-      const res = await this.agent.modules.signify.joinMultisig(
-        exn,
-        aid,
-        signifyName
-      );
-      await this.agent.genericRecords.deleteById(notification.id);
-      const multisigId = res.op.name.split(".")[1];
-      await this.createIdentifierMetadataRecord({
-        id: multisigId,
-        displayName: meta.displayName,
-        method: IdentifierType.KERI,
-        colors: meta.colors,
-        theme: meta.theme,
-        signifyName,
-        signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later
-        isPending: res.op.done ? false : true, //this will be updated once the operation is done
-        multisigManageAid: identifier.id,
-      });
-      return multisigId;
+    if (!identifier) {
+      throw new Error(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
     }
+
+    if (!identifier.signifyName) {
+      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    }
+
+    const aid = await this.agent.modules.signify.getIdentifierByName(
+      identifier?.signifyName
+    );
+    const signifyName = utils.uuid();
+    const res = await this.agent.modules.signify.joinMultisig(
+      exn,
+      aid,
+      signifyName
+    );
+    await this.agent.genericRecords.deleteById(notification.id);
+    const multisigId = res.op.name.split(".")[1];
+    await this.createIdentifierMetadataRecord({
+      id: multisigId,
+      displayName: meta.displayName,
+      method: IdentifierType.KERI,
+      colors: meta.colors,
+      theme: meta.theme,
+      signifyName,
+      signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later
+      isPending: res.op.done ? false : true, //this will be updated once the operation is done
+      multisigManageAid: identifier.id,
+    });
+    return multisigId;
   }
 
   async markMultisigCompleteIfReady(metadata: IdentifierMetadataRecord) {

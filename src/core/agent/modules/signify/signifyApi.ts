@@ -21,7 +21,7 @@ import {
   IdentifiersListResult,
   CreateMultisigExnPayload,
   Aid,
-  MultiSigIcpNotification,
+  MultiSigExnMessage,
   MultiSigRoute,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
@@ -394,7 +394,7 @@ export class SignifyApi {
   }
 
   async joinMultisigRotation(
-    exn: MultiSigIcpNotification["exn"],
+    exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string
   ): Promise<{
@@ -458,14 +458,12 @@ export class SignifyApi {
       .send(name, "multisig", aid, route, payload, embeds, recp);
   }
 
-  async getNotificationsBySaid(
-    said: string
-  ): Promise<MultiSigIcpNotification[]> {
+  async getMultisigMessageBySaid(said: string): Promise<MultiSigExnMessage[]> {
     return this.signifyClient.groups().getRequest(said);
   }
 
   async joinMultisig(
-    exn: MultiSigIcpNotification["exn"],
+    exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string
   ): Promise<{

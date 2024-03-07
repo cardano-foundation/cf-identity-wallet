@@ -31,7 +31,7 @@ const agent = jest.mocked({
       getAllIdentifiers: jest.fn(),
       resolveOobi: jest.fn(),
       createMultisig: jest.fn(),
-      getNotificationsBySaid: jest.fn(),
+      getMultisigMessageBySaid: jest.fn(),
       joinMultisig: jest.fn(),
       createDelegationIdentifier: jest.fn(),
       interactDelegation: jest.fn(),
@@ -841,23 +841,25 @@ describe("Identifier service of agent", () => {
     );
   });
 
-  test("can join the multisig", async () => {
+  test("can join the multisig inception", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
     agent.genericRecords.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
     });
-    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+            },
           },
         },
-      },
-    ]);
+      ]);
 
     agent.modules.signify.joinMultisig = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}`, done: false },
@@ -889,8 +891,8 @@ describe("Identifier service of agent", () => {
     ).toBe(multisigIdentifier);
   });
 
-  test("should not join the multisig", async () => {
-    agent.modules.signify.getNotificationsBySaid = jest
+  test("cannot join multisig by notification if exn messages are missing", async () => {
+    agent.modules.signify.getMultisigMessageBySaid = jest
       .fn()
       .mockResolvedValue([]);
     await expect(
@@ -1330,7 +1332,7 @@ describe("Identifier service of agent", () => {
   });
 
   test("should can join the multisig rotation with no notification and throw error", async () => {
-    agent.modules.signify.getNotificationsBySaid = jest
+    agent.modules.signify.getMultisigMessageBySaid = jest
       .fn()
       .mockResolvedValue([]);
     expect(
@@ -1339,7 +1341,7 @@ describe("Identifier service of agent", () => {
         createdAt: new Date(),
         a: { d: "d" },
       })
-    ).rejects.toThrowError(IdentifierService.SAID_NOTIFICATIONS_NOT_FOUND);
+    ).rejects.toThrowError(IdentifierService.EXN_MESSAGE_NOT_FOUND);
   });
 
   test("should can join the multisig rotation with AID is not multisig and throw error", async () => {
@@ -1361,16 +1363,18 @@ describe("Identifier service of agent", () => {
         d: "d",
       },
     });
-    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+            },
           },
         },
-      },
-    ]);
+      ]);
 
     agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
       {
@@ -1407,16 +1411,18 @@ describe("Identifier service of agent", () => {
         d: "d",
       },
     });
-    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+            },
           },
         },
-      },
-    ]);
+      ]);
 
     agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
       {
@@ -1454,16 +1460,18 @@ describe("Identifier service of agent", () => {
         d: "d",
       },
     });
-    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+            },
           },
         },
-      },
-    ]);
+      ]);
 
     agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
       {
