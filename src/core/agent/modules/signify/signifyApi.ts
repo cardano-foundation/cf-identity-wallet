@@ -285,16 +285,13 @@ export class SignifyApi {
     aid: Aid,
     otherAids: Pick<Aid, "state">[],
     name: string,
-    delegate?: Aid,
-    threshold?: number
+    threshold: number,
+    delegate?: Aid
   ): Promise<{
     op: any;
     icpResult: EventResult;
     name: string;
   }> {
-    if (!threshold) {
-      threshold = otherAids.length + 1;
-    }
     if (threshold < 1 || threshold > otherAids.length + 1) {
       throw new Error(SignifyApi.INVALID_THRESHOLD);
     }

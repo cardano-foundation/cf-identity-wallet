@@ -347,8 +347,8 @@ class IdentifierService extends AgentService {
       IdentifierMetadataRecordProps,
       "displayName" | "colors" | "theme"
     >,
-    delegateContact?: ConnectionShortDetails,
-    threshold?: number
+    threshold: number,
+    delegateContact?: ConnectionShortDetails
   ): Promise<string | undefined> {
     const ourMetadata = await this.getMetadataById(ourIdentifier);
     this.validIdentifierMetadata(ourMetadata);
@@ -377,17 +377,14 @@ class IdentifierService extends AgentService {
       );
       delegateAid = { state: delegator.response } as Aid;
     }
-    if (!threshold) {
-      threshold = otherAids.length + 1;
-    }
 
     const signifyName = utils.uuid();
     const result = await this.agent.modules.signify.createMultisig(
       ourAid,
       otherAids,
       signifyName,
-      delegateAid,
-      threshold
+      threshold,
+      delegateAid
     );
     const multisigId = result.op.name.split(".")[1];
     //this will be updated once the operation is done
