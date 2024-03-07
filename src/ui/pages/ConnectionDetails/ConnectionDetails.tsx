@@ -173,6 +173,7 @@ const ConnectionDetails = () => {
     <>
       <ScrollablePageLayout
         pageId={pageId}
+        customClass="item-details-page"
         header={
           <PageHeader
             closeButton={true}

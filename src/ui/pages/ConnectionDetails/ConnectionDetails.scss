@@ -1,6 +1,24 @@
 .connection-details {
-  ion-toolbar ion-buttons ion-button.action-button {
-    background: white;
+  background: var(--ion-color-light-grey);
+
+  ion-header ion-toolbar {
+    --background: var(--ion-color-light-grey);
+
+    ion-button:not(.close-button-label),
+    ion-button.md:not(.close-button-label) {
+      width: 2.8125rem;
+      height: 2.8125rem;
+      border-radius: 1.5rem;
+      background: var(--ion-color-light);
+
+      &:not(:first-child) {
+        margin-left: 0.5rem;
+      }
+
+      &::part(native) {
+        padding: 0.5rem;
+      }
+    }
   }
 
   .connection-details-content > *,

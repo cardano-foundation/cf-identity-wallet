@@ -646,7 +646,12 @@
     "tab": {
       "title": "Identity",
       "create": "Add an identifier",
-      "allidentifiers": "All identifiers"
+      "allidentifiers": "All identifiers",
+      "pendingidentifiers": "Pending identifiers",
+      "type": {
+        "didkey": "W3C did:key",
+        "keri": "KERI AID"
+      }
     },
     "card": {
       "layout": {

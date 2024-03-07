@@ -3,6 +3,7 @@ ion-modal.create-identifier-modal {
     .create-identifier-modal-content > *:not(.spinner-container),
     ion-toolbar.page-footer {
       filter: blur(0.1rem);
+      --background: rgba(3, 3, 33, 0);
     }
 
     ion-toolbar.page-footer {
@@ -42,14 +43,17 @@ ion-modal.create-identifier-modal {
     }
   }
 
-  ion-toolbar.page-footer {
-    z-index: 1000;
-    bottom: calc(-100vh + 4.5rem);
-    background: var(--ion-color-light);
-    padding-inline: 0.9rem;
+  ion-toolbar {
+    --background: var(--ion-color-light);
 
-    &.identifier-stage-3 {
-      bottom: calc(-100vh + 8.5rem);
+    &.page-footer {
+      z-index: 1000;
+      bottom: calc(-100vh + 4.5rem);
+      padding-inline: 0.9rem;
+
+      &.identifier-stage-3 {
+        bottom: calc(-100vh + 8.5rem);
+      }
     }
   }
 

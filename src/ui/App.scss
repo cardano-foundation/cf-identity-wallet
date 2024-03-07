@@ -57,30 +57,39 @@ h1 {
 }
 
 h2 {
-  margin: 0;
   font-size: 1.5rem;
   line-height: 1.756rem;
 }
 
 h3 {
-  margin: 0;
-  font-size: 1rem;
+  font-size: 1.25rem;
+}
+
+h3,
+h4 {
   line-height: 1.172rem;
 }
 
 h1,
 h2,
-h3 {
+h3,
+h4 {
   color: var(--ion-color-primary);
 }
 
 h2,
-h3 {
+h3,
+h4 {
+  margin: 0;
   font-weight: 700;
 }
 
-p {
+p,
+h4 {
   font-size: 1rem;
+}
+
+p {
   margin: 0.5rem 0;
   padding-inline: 0;
   line-height: 1.375rem;
@@ -97,9 +106,16 @@ p {
     font-size: 1.25rem;
   }
 
-  p,
   h3 {
+    font-size: 1rem;
+  }
+
+  p,
+  h4 {
     font-size: 0.8rem;
+  }
+
+  p {
     margin: 0.35rem 0;
     line-height: 1rem;
   }

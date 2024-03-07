@@ -63,12 +63,6 @@ const CardsStack = ({
 
     if (cardsType === CardType.IDENTIFIERS) {
       const data = cardsData[index] as DIDDetails;
-      /**The below code only return false if the identifier is a multisig and it is not ready */
-      const checkMultisigComplete =
-        await AriesAgent.agent.identifiers.checkMultisigComplete(data.id);
-      if (!checkMultisigComplete) {
-        return;
-      }
       pathname = `/tabs/identifiers/${data.id}`;
     } else {
       const data = cardsData[index] as CredentialShortDetails;
