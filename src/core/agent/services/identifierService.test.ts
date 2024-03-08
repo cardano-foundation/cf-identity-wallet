@@ -11,6 +11,7 @@ import {
 } from "../modules/generalStorage/repositories/identifierMetadataRecord";
 import { IdentifierType } from "./identifierService.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
+import { AriesAgent } from "../agent";
 
 // We are losing typing here but the Agent class is overly complex to setup for tests.
 const agent = jest.mocked({
@@ -1506,5 +1507,355 @@ describe("Identifier service of agent", () => {
         a: { d: "d" },
       })
     ).toBe(multisigIdentifier);
+  });
+
+  test("cannot join multisig if there's no identifier matched", async () => {
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          method: IdentifierType.KERI,
+          displayName: "displayName",
+          id: "id1",
+          signifyName: "signifyName",
+          createdAt: new Date(),
+          colors: ["#000000", "#000000"],
+          theme: 4,
+        },
+      ]);
+    await expect(
+      identifierService.joinMultisig(
+        { id: "id", createdAt: new Date(), a: { d: "d" } },
+        {
+          theme: 4,
+          colors: ["#000000", "#000000"],
+          displayName: "Multisig",
+        }
+      )
+    ).rejects.toThrowError(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
+  });
+
+  test("cannot join multisig if the identifier does not have signifyName", async () => {
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          method: IdentifierType.KERI,
+          displayName: "displayName",
+          id: "id",
+          signifyName: undefined,
+          createdAt: new Date(),
+          colors: ["#000000", "#000000"],
+          theme: 4,
+        },
+      ]);
+    await expect(
+      identifierService.joinMultisig(
+        { id: "id", createdAt: new Date(), a: { d: "d" } },
+        {
+          theme: 4,
+          colors: ["#000000", "#000000"],
+          displayName: "Multisig",
+        }
+      )
+    ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+  });
+
+  test("Can get multisig icp details of 2 persons multi-sig", async () => {
+    const identifierMetadata = {
+      method: IdentifierType.KERI,
+      displayName: "displayName",
+      id: "id",
+      signifyName: undefined,
+      createdAt: new Date(),
+      colors: ["#000000", "#000000"],
+      theme: 4,
+    };
+
+    const senderData = {
+      id: "senderId",
+      connectionDate: nowISO,
+      label: "keri",
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionType.KERI,
+    };
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: ["id", "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"],
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([identifierMetadata]);
+
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnectionKeriShortDetailById")
+      .mockResolvedValue(senderData);
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnections")
+      .mockResolvedValue([]);
+
+    const result = await identifierService.getMultisigIcpDetails({
+      id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+      createdAt: new Date("2024-03-08T08:52:10.801Z"),
+      a: {
+        r: "/multisig/icp",
+        d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+      },
+    });
+    expect(result.ourIdentifier.id).toBe(identifierMetadata.id);
+    expect(result.sender.id).toBe(senderData.id);
+    expect(result.otherConnections.length).toBe(0);
+  });
+
+  test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
+    const identifierMetadata = {
+      method: IdentifierType.KERI,
+      displayName: "displayName",
+      id: "id",
+      signifyName: undefined,
+      createdAt: new Date(),
+      colors: ["#000000", "#000000"],
+      theme: 4,
+    };
+
+    const senderData = {
+      id: "senderId",
+      connectionDate: nowISO,
+      label: "keri",
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionType.KERI,
+    };
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: [
+                "id",
+                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1B",
+                "senderId",
+              ],
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([identifierMetadata]);
+
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnectionKeriShortDetailById")
+      .mockResolvedValue(senderData);
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnections")
+      .mockResolvedValue([
+        {
+          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.PENDING,
+          type: ConnectionType.DIDCOMM,
+        },
+        {
+          id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.CONFIRMED,
+          type: ConnectionType.DIDCOMM,
+        },
+      ]);
+
+    await expect(
+      identifierService.getMultisigIcpDetails({
+        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+        createdAt: new Date("2024-03-08T08:52:10.801Z"),
+        a: {
+          r: "/multisig/icp",
+          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+        },
+      })
+    ).rejects.toThrowError(IdentifierService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
+  });
+
+  test("Can get multisig icp details of 3 persons multi-sig", async () => {
+    const identifierMetadata = {
+      method: IdentifierType.KERI,
+      displayName: "displayName",
+      id: "id",
+      signifyName: undefined,
+      createdAt: new Date(),
+      colors: ["#000000", "#000000"],
+      theme: 4,
+    };
+
+    const senderData = {
+      id: "senderId",
+      connectionDate: nowISO,
+      label: "keri",
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionType.KERI,
+    };
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: [
+                "id",
+                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+                "senderId",
+              ],
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([identifierMetadata]);
+
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnectionKeriShortDetailById")
+      .mockResolvedValue(senderData);
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnections")
+      .mockResolvedValue([
+        {
+          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.PENDING,
+          type: ConnectionType.DIDCOMM,
+        },
+      ]);
+    const result = await identifierService.getMultisigIcpDetails({
+      id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+      createdAt: new Date("2024-03-08T08:52:10.801Z"),
+      a: {
+        r: "/multisig/icp",
+        d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+      },
+    });
+    expect(result.ourIdentifier.id).toBe(identifierMetadata.id);
+    expect(result.sender.id).toBe(senderData.id);
+    expect(result.otherConnections.length).toBe(1);
+  });
+
+  test("Throw error if we do not control any member AID of the multi-sig", async () => {
+    const identifierMetadata = {
+      method: IdentifierType.KERI,
+      displayName: "displayName",
+      id: "id",
+      signifyName: undefined,
+      createdAt: new Date(),
+      colors: ["#000000", "#000000"],
+      theme: 4,
+    };
+
+    const senderData = {
+      id: "senderId",
+      connectionDate: nowISO,
+      label: "keri",
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionType.KERI,
+    };
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: [
+                "id1",
+                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+                "senderId",
+              ],
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([identifierMetadata]);
+
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnectionKeriShortDetailById")
+      .mockResolvedValue(senderData);
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnections")
+      .mockResolvedValue([
+        {
+          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.PENDING,
+          type: ConnectionType.DIDCOMM,
+        },
+        {
+          id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.CONFIRMED,
+          type: ConnectionType.DIDCOMM,
+        },
+      ]);
+
+    await expect(
+      identifierService.getMultisigIcpDetails({
+        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+        createdAt: new Date("2024-03-08T08:52:10.801Z"),
+        a: {
+          r: "/multisig/icp",
+          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+        },
+      })
+    ).rejects.toThrowError(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
   });
 });
