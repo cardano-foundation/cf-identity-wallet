@@ -1,12 +1,4 @@
 import { useEffect, useState } from "react";
-import { IonCol, IonIcon } from "@ionic/react";
-import {
-  checkmark,
-  personCircleOutline,
-  swapHorizontalOutline,
-} from "ionicons/icons";
-import i18next from "i18next";
-import { i18n } from "../../../i18n";
 import "./IncomingRequest.scss";
 import {
   getQueueIncomingRequest,
@@ -16,11 +8,10 @@ import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { DIDCommRequestType } from "../../globals/types";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
-import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
-import { PageFooter } from "../../components/PageFooter";
 import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
+import RequestComponent from "./components/RequestComponent";
 
 const IncomingRequest = () => {
   const pageId = "incoming-request";
@@ -132,83 +123,20 @@ const IncomingRequest = () => {
   return (
     <ResponsivePageLayout
       pageId={pageId}
-      activeStatus={showRequest}
-      customClass={`${showRequest ? "show" : "hide"} ${
+      activeStatus={showRequest && requestData !== undefined}
+      customClass={`${showRequest && requestData ? "show" : "hide"} ${
         initiateAnimation ? "animation-on" : "animation-off"
       }`}
     >
-      {requestType === DIDCommRequestType.CONNECTION ? (
-        <h2>{i18n.t("request.connection.title")}</h2>
-      ) : (
-        <h2>{i18n.t("request.credential.title")}</h2>
+      {requestData && (
+        <RequestComponent
+          pageId={pageId}
+          requestData={requestData}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          incomingRequestType={incomingRequest.type}
+        />
       )}
-      <div className="request-animation-center">
-        <div className="request-icons-row">
-          <div className="request-user-logo">
-            <IonIcon
-              icon={personCircleOutline}
-              color="light"
-            />
-          </div>
-          <div className="request-swap-logo">
-            <span>
-              <IonIcon icon={swapHorizontalOutline} />
-            </span>
-          </div>
-          <div className="request-checkmark-logo">
-            <span>
-              <IonIcon icon={checkmark} />
-            </span>
-          </div>
-          <div className="request-provider-logo">
-            <img
-              src={requestData?.logo ?? CardanoLogo}
-              alt="request-provider-logo"
-            />
-          </div>
-        </div>
-        <div className="request-info-row">
-          <IonCol size="12">
-            {requestType === DIDCommRequestType.CONNECTION ? (
-              <span>
-                {requestType + i18n.t("request.connection.requestconnection")}
-              </span>
-            ) : (
-              <span>
-                {requestType + i18n.t("request.credential.offercredential")}
-              </span>
-            )}
-            <strong>{requestData?.label}</strong>
-          </IonCol>
-        </div>
-        <div className="request-status">
-          <IonCol size="12">
-            <strong>
-              {incomingRequest.type ===
-                IncomingRequestType.CONNECTION_INCOMING ||
-              incomingRequest.type ===
-                IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
-                ? i18next.t("request.pending", {
-                  action: requestType,
-                })
-                : i18next.t("request.success", {
-                  action: requestType,
-                })}
-            </strong>
-          </IonCol>
-        </div>
-      </div>
-      <PageFooter
-        pageId={pageId}
-        primaryButtonText={
-          requestType === DIDCommRequestType.CONNECTION
-            ? `${i18n.t("request.button.connect")}`
-            : `${i18n.t("request.button.acceptoffer")}`
-        }
-        primaryButtonAction={() => handleAccept()}
-        secondaryButtonText={`${i18n.t("request.button.cancel")}`}
-        secondaryButtonAction={() => handleCancel()}
-      />
     </ResponsivePageLayout>
   );
 };
