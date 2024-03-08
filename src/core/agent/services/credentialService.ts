@@ -34,6 +34,7 @@ import {
   ACDCDetails,
 } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
+import { SignifyNotificationService } from "./signifyNotificationService";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -677,25 +678,25 @@ class CredentialService extends AgentService {
     });
   }
 
-  async handleReqGrant(id: string, tunnelAid: string) {
-    //TODO: hard fix the value at the moment, may need to change these in the future
-    const schemaSaid = "EGjD1gCLi9ecZSZp9zevkgZGyEX_MbOdmhBFt4o0wvdb";
-    const keriNoti = await this.getKeriNotificationRecordById(id);
-    const exchange = await this.agent.modules.signify.getKeriExchange(
-      keriNoti.a.d as string
+  async handleReqGrant(notificationId: string) {
+    const tunnelReqNotif = await this.getKeriNotificationRecordById(
+      notificationId
     );
-    const enterpriseServerEndpoint = exchange.exn.a.serverEndpoint;
+    const tunnelReqExnMsg = await this.agent.modules.signify.getKeriExchange(
+      tunnelReqNotif.a.d as string
+    );
+    const enterpriseServerEndpoint = tunnelReqExnMsg.exn.a.serverEndpoint;
 
     const credentials = await this.agent.modules.signify.getCredentials(
-      exchange.exn.a.filter
+      tunnelReqExnMsg.exn.a.filter
     );
     if (!credentials.length) {
       throw new Error(
-        `Wallet does not hold an ACDC matching the tunnel's request: ${schemaSaid}`
+        `Wallet does not hold an ACDC matching the tunnel's filter request: ${tunnelReqExnMsg.exn.a.filter}`
       );
     }
 
-    const serverOobiUrl = exchange.exn.a.serverOobiUrl;
+    const serverOobiUrl = tunnelReqExnMsg.exn.a.serverOobiUrl;
     const resolveServerOobiResult =
       await this.agent.modules.signify.resolveOobi(serverOobiUrl);
     const serverAid = resolveServerOobiResult.response.i;
@@ -707,6 +708,7 @@ class CredentialService extends AgentService {
       selectedIdentifier.name
     );
 
+    // @TODO - foconnor: If we've already trusted this domain, we don't need to do this again.
     const triggerTime = new Date().getTime();
     /**Resolve OOBI */
     await this.callEnterpriseResolveOobi(
@@ -715,17 +717,17 @@ class CredentialService extends AgentService {
     );
 
     /**Disclose ACDC */
-    const discloseResult = await this.requestEnterpriseDisclosure(
+    await this.requestEnterpriseDisclosure(
       enterpriseServerEndpoint,
       selectedIdentifier.prefix,
-      schemaSaid
+      SignifyNotificationService.TUNNEL_DOMAIN_SCHEMA_SAID
     );
 
     /**Mark notification as read and admit it*/
     const unreadGrantNotes = await this.waitForEnterpriseAcdcToAppear(
       serverAid,
-      enterpriseServerEndpoint,
-      120
+      new URL(enterpriseServerEndpoint).hostname,
+      5
     );
 
     const latestGrant = unreadGrantNotes.reduce(
@@ -759,21 +761,23 @@ class CredentialService extends AgentService {
     await this.agent.modules.signify.sendExn(
       selectedIdentifier.name,
       selectedAid,
-      "grant",
-      NotificationRoute.ServerRequest,
+      "tunnel",
+      NotificationRoute.OutboundTunnelRequest,
       {},
       [serverAid],
       {
-        sid: tunnelAid,
+        sid: tunnelReqExnMsg.exn.a.tunnelAid,
       }
     );
+
+    await this.agent.genericRecords.deleteById(tunnelReqNotif.id);
   }
 
   async getUnhandledTunnelRequestEvents(): Promise<KeriNotification[]> {
     const results = await this.agent.genericRecords.findAllByQuery({
       type: GenericRecordType.NOTIFICATION_KERI,
-      route: NotificationRoute.TunnelRequest,
-      $or: [{ route: NotificationRoute.TunnelRequest }],
+      route: NotificationRoute.IncomingTunnelRequest,
+      $or: [{ route: NotificationRoute.IncomingTunnelRequest }],
     });
     return results.map((result) => {
       return {
@@ -786,6 +790,10 @@ class CredentialService extends AgentService {
 
   async getKeriExchangeMessage(said: string) {
     return this.agent.modules.signify.getKeriExchange(said);
+  }
+
+  async getSchemaName(said: string) {
+    return this.agent.modules.signify.getSchemaName(said);
   }
 }
 

@@ -1068,19 +1068,19 @@
         "label": "Accept offer"
       }
     },
-    "grantreq": {
-      "title": "Login",
-      "offerlogin": " from",
+    "tunnelreq": {
+      "title": "Browser Login Request",
+      "offerlogin": " to website",
       "alert": {
         "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
         "confirm": "Yes, login"
       },
       "button": {
-        "label": "Login"
+        "label": "Approve login"
       }
     },
     "button": {
-      "cancel": "Cancel"
+      "cancel": "Ignore"
     },
     "alert": {
       "cancel": "Cancel"

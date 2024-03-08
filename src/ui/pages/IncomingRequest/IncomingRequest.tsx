@@ -63,7 +63,9 @@ const IncomingRequest = () => {
             setRequestData({ label: "W3C" });
           }
           setRequestType(DIDCommRequestType.CREDENTIAL);
-        } else if (incomingRequest.type === IncomingRequestType.REQ_GRANT) {
+        } else if (
+          incomingRequest.type === IncomingRequestType.TUNNEL_REQUEST
+        ) {
           // TODO:
         }
         setShowRequest(true);
@@ -127,21 +129,22 @@ const IncomingRequest = () => {
         button: i18n.t("request.credential.button.label"),
       };
     }
-    case IncomingRequestType.REQ_GRANT: {
+    case IncomingRequestType.TUNNEL_REQUEST: {
       return {
-        title: i18n.t("request.grantreq.title"),
-        info: i18n.t("request.grantreq.offerlogin"),
+        title: i18n.t("request.tunnelreq.title"),
+        info: i18n.t("request.tunnelreq.offerlogin"),
         type: "Login",
         status: i18next.t("request.pending", {
           action: incomingRequest.type,
         }),
         alert: {
-          title: i18n.t("request.grantreq.alert.titleconfirm"),
-          confirm: i18n.t("request.grantreq.alert.confirm"),
+          title: i18n.t("request.tunnelreq.alert.titleconfirm"),
+          confirm: i18n.t("request.tunnelreq.alert.confirm"),
         },
-        label: incomingRequest?.label || "Web",
-        logo: incomingRequest?.logo,
-        button: i18n.t("request.grantreq.button.label"),
+        label: incomingRequest.label || "Web",
+        logo: incomingRequest.logo,
+        button: i18n.t("request.tunnelreq.button.label"),
+        schema: incomingRequest.payload?.schema,
       };
     }
     default: {
@@ -149,6 +152,7 @@ const IncomingRequest = () => {
     }
     }
   };
+
   const handleReset = () => {
     setShowRequest(false);
     setInitiateAnimation(false);
@@ -182,6 +186,11 @@ const IncomingRequest = () => {
       const updatedConnections =
         await AriesAgent.agent.connections.getConnections();
       dispatch(setConnectionsCache([...updatedConnections]));
+    } else if (incomingRequest.type === IncomingRequestType.TUNNEL_REQUEST) {
+      // @TODO - foconnor: This delete function should be in the SignifyNotificationService.
+      await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
+        incomingRequest.id
+      );
     }
     handleReset();
   };
@@ -202,11 +211,8 @@ const IncomingRequest = () => {
       } else {
         AriesAgent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
       }
-    } else if (incomingRequest.type === IncomingRequestType.REQ_GRANT) {
-      AriesAgent.agent.credentials.handleReqGrant(
-        incomingRequest.id,
-        incomingRequest.payload.said
-      );
+    } else if (incomingRequest.type === IncomingRequestType.TUNNEL_REQUEST) {
+      AriesAgent.agent.credentials.handleReqGrant(incomingRequest.id);
     }
     setTimeout(() => {
       handleReset();
@@ -254,6 +260,14 @@ const IncomingRequest = () => {
             <strong>{content?.label}</strong>
           </IonCol>
         </div>
+        {content?.schema !== undefined && (
+          <div className="request-info-row">
+            <IonCol size="12">
+              <span>using credential</span>
+              <strong>{content.schema}</strong>
+            </IonCol>
+          </div>
+        )}
         <div className="request-status">
           <IonCol size="12">
             <strong>{content?.status}</strong>

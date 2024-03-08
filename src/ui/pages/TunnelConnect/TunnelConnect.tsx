@@ -64,14 +64,15 @@ const TunnelConnect = () => {
     );
     if (keriaAIDs.length) {
       const firstAid = keriaAIDs[0];
-      if (typeof firstAid.signifyName === "string") {
-        AriesAgent.agent.connections
-          .getKeriOobi(firstAid.signifyName)
-          .then((oobi) => {
-            setWalletOobi(oobi);
-            setSharedAidName(firstAid.displayName);
-          });
+      if (!firstAid.signifyName) {
+        throw new Error("Missing Signify name");
       }
+      AriesAgent.agent.connections
+        .getKeriOobi(firstAid.signifyName)
+        .then((oobi) => {
+          setWalletOobi(oobi);
+          setSharedAidName(firstAid.displayName);
+        });
     } else {
       const colorGenerator = new ColorGenerator();
       const newColor = colorGenerator.generateNextColor();
