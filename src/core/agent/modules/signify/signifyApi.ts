@@ -473,11 +473,15 @@ export class SignifyApi {
     name: string;
   }> {
     const icp = exn.e.icp;
+
+    // @TODO - foconnor: We can skip our member and get state from aid param.
     const states = await Promise.all(
       exn.a.smids.map(
         async (member) => (await this.signifyClient.keyStates().get(member))[0]
       )
     );
+
+    // @TODO - foconnor: Check if smids === rmids, and if so, skip this.
     const rstates = await Promise.all(
       exn.a.rmids.map(
         async (member) => (await this.signifyClient.keyStates().get(member))[0]
