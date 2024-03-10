@@ -1,3 +1,5 @@
+import { ConnectionShortDetails } from "../agent.types";
+
 enum IdentifierType {
   KEY = "key",
   KERI = "keri",
@@ -37,6 +39,13 @@ interface KERIDetails extends IdentifierShortDetails {
   di: string;
 }
 
+interface MultiSigIcpRequestDetails {
+  ourIdentifier: IdentifierShortDetails;
+  sender: ConnectionShortDetails;
+  otherConnections: ConnectionShortDetails[];
+  threshold: number;
+}
+
 export { IdentifierType };
 
 export type {
@@ -44,4 +53,5 @@ export type {
   DIDDetails,
   KERIDetails,
   GetIdentifierResult,
+  MultiSigIcpRequestDetails,
 };

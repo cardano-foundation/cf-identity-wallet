@@ -61,6 +61,7 @@ export class SignifyApi {
   async start(): Promise<void> {
     await signifyReady();
     const bran = await this.getBran();
+    // @TODO - foconnor: Review of Tier level.
     this.signifyClient = new SignifyClient(
       SignifyApi.LOCAL_KERIA_ENDPOINT,
       bran,
@@ -472,7 +473,16 @@ export class SignifyApi {
     name: string;
   }> {
     const icp = exn.e.icp;
-    const rstates = exn.a.rstates;
+    const states = await Promise.all(
+      exn.a.smids.map(
+        async (member) => (await this.signifyClient.keyStates().get(member))[0]
+      )
+    );
+    const rstates = await Promise.all(
+      exn.a.rmids.map(
+        async (member) => (await this.signifyClient.keyStates().get(member))[0]
+      )
+    );
     const icpResult = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
       mhab: aid,
@@ -480,7 +490,7 @@ export class SignifyApi {
       nsith: icp.nt,
       toad: parseInt(icp.bt),
       wits: icp.b,
-      states: rstates,
+      states,
       rstates,
     });
     const op = await icpResult.op();
@@ -495,7 +505,7 @@ export class SignifyApi {
     };
 
     const smids = exn.a.smids;
-    const recp = rstates
+    const recp = states
       .filter((r) => r.i !== aid.state.i)
       .map((state) => state["i"]);
     await this.sendMultisigExn(

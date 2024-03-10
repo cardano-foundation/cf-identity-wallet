@@ -4,6 +4,7 @@ import {
   GetIdentifierResult,
   IdentifierShortDetails,
   IdentifierType,
+  MultiSigIcpRequestDetails,
 } from "./identifierService.types";
 import {
   IdentifierMetadataRecord,
@@ -529,7 +530,9 @@ class IdentifierService extends AgentService {
     return false;
   }
 
-  async getMultisigIcpDetails(notification: KeriNotification) {
+  async getMultisigIcpDetails(
+    notification: KeriNotification
+  ): Promise<MultiSigIcpRequestDetails> {
     const msgSaid = notification.a.d as string;
     const icpMsg: MultiSigExnMessage[] =
       await this.agent.modules.signify.getMultisigMessageBySaid(msgSaid);
@@ -589,6 +592,7 @@ class IdentifierService extends AgentService {
       ourIdentifier,
       sender: senderContact,
       otherConnections,
+      threshold: parseInt(icpMsg[0].exn.e.icp.kt),
     };
   }
 
@@ -613,10 +617,10 @@ class IdentifierService extends AgentService {
       throw new Error(`${IdentifierService.EXN_MESSAGE_NOT_FOUND} ${msgSaid}`);
     }
     const exn = icpMsg[0].exn;
-    const rstate = exn.a.rstates;
+    const smids = exn.a.smids;
     const identifiers = await this.getIdentifiers();
     const identifier = identifiers.find((identifier) => {
-      return rstate.find((item) => identifier.id === item.i);
+      return smids.find((member) => identifier.id === member);
     });
 
     if (!identifier) {
