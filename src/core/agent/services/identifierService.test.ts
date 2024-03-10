@@ -57,6 +57,17 @@ const agent = jest.mocked({
 });
 const identifierService = new IdentifierService(agent as any as Agent);
 
+jest.mock("../../../core/agent/agent", () => ({
+  AriesAgent: {
+    agent: {
+      connections: {
+        getConnectionKeriShortDetailById: jest.fn(),
+        getConnections: jest.fn(),
+      },
+    },
+  },
+}));
+
 const now = new Date();
 const nowISO = now.toISOString();
 const colors: [string, string] = ["#fff", "#fff"];
@@ -856,7 +867,8 @@ describe("Identifier service of agent", () => {
           exn: {
             a: {
               name: "signifyName",
-              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+              smids: ["id"],
+              rmids: ["id"],
             },
           },
         },
@@ -1517,7 +1529,8 @@ describe("Identifier service of agent", () => {
           exn: {
             a: {
               name: "signifyName",
-              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+              smids: ["id"],
+              rmids: ["id"],
             },
           },
         },
@@ -1556,7 +1569,8 @@ describe("Identifier service of agent", () => {
           exn: {
             a: {
               name: "signifyName",
-              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+              smids: ["id"],
+              rmids: ["id"],
             },
           },
         },
@@ -1614,6 +1628,11 @@ describe("Identifier service of agent", () => {
               name: "signifyName",
               smids: ["id", "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"],
             },
+            e: {
+              icp: {
+                kt: 2,
+              },
+            },
           },
         },
       ]);
@@ -1622,11 +1641,11 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
-    jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionKeriShortDetailById")
+    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+      .fn()
       .mockResolvedValue(senderData);
-    jest
-      .spyOn(AriesAgent.agent.connections, "getConnections")
+    AriesAgent.agent.connections.getConnections = jest
+      .fn()
       .mockResolvedValue([]);
 
     const result = await identifierService.getMultisigIcpDetails({
@@ -1640,6 +1659,7 @@ describe("Identifier service of agent", () => {
     expect(result.ourIdentifier.id).toBe(identifierMetadata.id);
     expect(result.sender.id).toBe(senderData.id);
     expect(result.otherConnections.length).toBe(0);
+    expect(result.threshold).toBe(2);
   });
 
   test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
@@ -1681,29 +1701,27 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
-    jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionKeriShortDetailById")
+    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+      .fn()
       .mockResolvedValue(senderData);
-    jest
-      .spyOn(AriesAgent.agent.connections, "getConnections")
-      .mockResolvedValue([
-        {
-          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.PENDING,
-          type: ConnectionType.DIDCOMM,
-        },
-        {
-          id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.CONFIRMED,
-          type: ConnectionType.DIDCOMM,
-        },
-      ]);
+    AriesAgent.agent.connections.getConnections = jest.fn().mockResolvedValue([
+      {
+        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.PENDING,
+        type: ConnectionType.DIDCOMM,
+      },
+      {
+        id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.DIDCOMM,
+      },
+    ]);
 
     await expect(
       identifierService.getMultisigIcpDetails({
@@ -1748,6 +1766,11 @@ describe("Identifier service of agent", () => {
                 "senderId",
               ],
             },
+            e: {
+              icp: {
+                kt: 3,
+              },
+            },
           },
         },
       ]);
@@ -1756,21 +1779,19 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
-    jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionKeriShortDetailById")
+    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+      .fn()
       .mockResolvedValue(senderData);
-    jest
-      .spyOn(AriesAgent.agent.connections, "getConnections")
-      .mockResolvedValue([
-        {
-          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.PENDING,
-          type: ConnectionType.DIDCOMM,
-        },
-      ]);
+    AriesAgent.agent.connections.getConnections = jest.fn().mockResolvedValue([
+      {
+        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.PENDING,
+        type: ConnectionType.DIDCOMM,
+      },
+    ]);
     const result = await identifierService.getMultisigIcpDetails({
       id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
       createdAt: new Date("2024-03-08T08:52:10.801Z"),
@@ -1782,6 +1803,10 @@ describe("Identifier service of agent", () => {
     expect(result.ourIdentifier.id).toBe(identifierMetadata.id);
     expect(result.sender.id).toBe(senderData.id);
     expect(result.otherConnections.length).toBe(1);
+    expect(result.otherConnections[0].id).toBe(
+      "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
+    );
+    expect(result.threshold).toBe(3);
   });
 
   test("Throw error if we do not control any member AID of the multi-sig", async () => {
@@ -1857,5 +1882,59 @@ describe("Identifier service of agent", () => {
         },
       })
     ).rejects.toThrowError(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
+  });
+
+  test("cannot get multi-sig details from an unknown sender (missing metadata)", async () => {
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: [
+                "id1",
+                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+                "senderId",
+              ],
+            },
+          },
+        },
+      ]);
+    // @TODO - foconnor: This is not ideal as our identifier service is getting tightly coupled with the connection service.
+    // Re-work this later.
+    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+      .fn()
+      .mockImplementation(() => {
+        throw new Error("Some error from connection service");
+      });
+    await expect(
+      identifierService.getMultisigIcpDetails({
+        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+        createdAt: new Date("2024-03-08T08:52:10.801Z"),
+        a: {
+          r: "/multisig/icp",
+          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+        },
+      })
+    ).rejects.toThrowError("Some error from connection service");
+  });
+
+  test("cannot get multi-sig details from a notification with no matching exn message", async () => {
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([]);
+    await expect(
+      identifierService.getMultisigIcpDetails({
+        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+        createdAt: new Date("2024-03-08T08:52:10.801Z"),
+        a: {
+          r: "/multisig/icp",
+          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+        },
+      })
+    ).rejects.toThrowError(
+      `${IdentifierService.EXN_MESSAGE_NOT_FOUND} EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW`
+    );
   });
 });

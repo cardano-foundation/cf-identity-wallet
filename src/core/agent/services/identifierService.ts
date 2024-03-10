@@ -65,8 +65,6 @@ class IdentifierService extends AgentService {
     "Cannot find all members of multisig or one of the members does not rotate its AID";
   static readonly CANNOT_JOIN_MULTISIG_ICP =
     "Cannot join multi-sig inception as we do not control any member AID of the multi-sig";
-  static readonly MULTI_SIG_SENDER_AID_CONTACT_MISSING =
-    "Cannot find KERI contact for multi-sig inception event sender";
   static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
     "Multi-sig join request contains unknown AIDs (not connected)";
 
@@ -542,13 +540,11 @@ class IdentifierService extends AgentService {
     }
 
     const senderAid = icpMsg[0].exn.i;
+    // @TODO - foconnor: This cross service call should be handled better.
     const senderContact =
       await AriesAgent.agent.connections.getConnectionKeriShortDetailById(
         icpMsg[0].exn.i
       );
-    if (!senderContact) {
-      throw new Error(IdentifierService.MULTI_SIG_SENDER_AID_CONTACT_MISSING);
-    }
 
     const smids = icpMsg[0].exn.a.smids;
     // @TODO - foconnor: These searches should be optimised, revisit.

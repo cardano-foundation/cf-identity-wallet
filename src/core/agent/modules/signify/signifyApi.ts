@@ -33,13 +33,14 @@ export class SignifyApi {
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
 
-  // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
   static readonly FAILED_TO_ROTATE_AID =
     "Failed to rotate AID, operation not completing...";
   static readonly INVALID_THRESHOLD = "Invalid threshold";
+  static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
+    "Unable to retrieve key states for given multi-sig member";
 
   static readonly VLEI_HOST =
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
@@ -476,16 +477,24 @@ export class SignifyApi {
 
     // @TODO - foconnor: We can skip our member and get state from aid param.
     const states = await Promise.all(
-      exn.a.smids.map(
-        async (member) => (await this.signifyClient.keyStates().get(member))[0]
-      )
+      exn.a.smids.map(async (member) => {
+        const result = await this.signifyClient.keyStates().get(member);
+        if (result.length === 0) {
+          throw new Error(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
+        }
+        return result[0];
+      })
     );
 
     // @TODO - foconnor: Check if smids === rmids, and if so, skip this.
     const rstates = await Promise.all(
-      exn.a.rmids.map(
-        async (member) => (await this.signifyClient.keyStates().get(member))[0]
-      )
+      exn.a.rmids.map(async (member) => {
+        const result = await this.signifyClient.keyStates().get(member);
+        if (result.length === 0) {
+          throw new Error(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
+        }
+        return result[0];
+      })
     );
     const icpResult = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
