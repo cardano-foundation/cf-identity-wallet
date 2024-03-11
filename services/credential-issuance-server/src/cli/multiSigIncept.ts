@@ -80,14 +80,6 @@ async function main() {
 
   // --> Alice creates and sends to Bob and our IDW.
   const states = [aliceAid["state"], bobAid["state"], resolveIdwOpA.response];
-  console.log(`it is here as ${JSON.stringify({
-    algo: Algos.group,
-    mhab: aliceAid,
-    isith: 3,
-    nsith: 3,
-    states,
-    rstates: states,
-  }, null, 2)}`);
   const aliceIcp = await aliceClient.identifiers().create("multisig", {
     algo: Algos.group,
     mhab: aliceAid,
