@@ -21,7 +21,7 @@ import {
   IdentifiersListResult,
   CreateMultisigExnPayload,
   Aid,
-  MultiSigIcpNotification,
+  MultiSigExnMessage,
   MultiSigRoute,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
@@ -33,13 +33,14 @@ export class SignifyApi {
   static readonly LOCAL_KERIA_BOOT_ENDPOINT =
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
 
-  // For now we connect to a single backer and hard-code the address - better solution should be provided in the future.
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
   static readonly FAILED_TO_ROTATE_AID =
     "Failed to rotate AID, operation not completing...";
   static readonly INVALID_THRESHOLD = "Invalid threshold";
+  static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
+    "Unable to retrieve key states for given multi-sig member";
 
   static readonly VLEI_HOST =
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
@@ -61,6 +62,7 @@ export class SignifyApi {
   async start(): Promise<void> {
     await signifyReady();
     const bran = await this.getBran();
+    // @TODO - foconnor: Review of Tier level.
     this.signifyClient = new SignifyClient(
       SignifyApi.LOCAL_KERIA_ENDPOINT,
       bran,
@@ -394,7 +396,7 @@ export class SignifyApi {
   }
 
   async joinMultisigRotation(
-    exn: MultiSigIcpNotification["exn"],
+    exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string
   ): Promise<{
@@ -458,14 +460,12 @@ export class SignifyApi {
       .send(name, "multisig", aid, route, payload, embeds, recp);
   }
 
-  async getNotificationsBySaid(
-    said: string
-  ): Promise<MultiSigIcpNotification[]> {
+  async getMultisigMessageBySaid(said: string): Promise<MultiSigExnMessage[]> {
     return this.signifyClient.groups().getRequest(said);
   }
 
   async joinMultisig(
-    exn: MultiSigIcpNotification["exn"],
+    exn: MultiSigExnMessage["exn"],
     aid: Aid,
     name: string
   ): Promise<{
@@ -474,7 +474,28 @@ export class SignifyApi {
     name: string;
   }> {
     const icp = exn.e.icp;
-    const rstates = exn.a.rstates;
+
+    // @TODO - foconnor: We can skip our member and get state from aid param.
+    const states = await Promise.all(
+      exn.a.smids.map(async (member) => {
+        const result = await this.signifyClient.keyStates().get(member);
+        if (result.length === 0) {
+          throw new Error(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
+        }
+        return result[0];
+      })
+    );
+
+    // @TODO - foconnor: Check if smids === rmids, and if so, skip this.
+    const rstates = await Promise.all(
+      exn.a.rmids.map(async (member) => {
+        const result = await this.signifyClient.keyStates().get(member);
+        if (result.length === 0) {
+          throw new Error(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
+        }
+        return result[0];
+      })
+    );
     const icpResult = await this.signifyClient.identifiers().create(name, {
       algo: Algos.group,
       mhab: aid,
@@ -482,7 +503,7 @@ export class SignifyApi {
       nsith: icp.nt,
       toad: parseInt(icp.bt),
       wits: icp.b,
-      states: rstates,
+      states,
       rstates,
     });
     const op = await icpResult.op();
@@ -497,7 +518,7 @@ export class SignifyApi {
     };
 
     const smids = exn.a.smids;
-    const recp = rstates
+    const recp = states
       .filter((r) => r.i !== aid.state.i)
       .map((state) => state["i"]);
     await this.sendMultisigExn(
