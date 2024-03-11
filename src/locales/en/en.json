@@ -1119,8 +1119,11 @@
       "accepted": "Accepted",
       "threshold": "Threshold",
       "alert": {
-        "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
-        "confirm": "Yes, accept credential"
+        "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
+        "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
+        "accept": "Accept",
+        "decline": "Decline",
+        "cancel": "Cancel"
       }
     },
     "button": {

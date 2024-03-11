@@ -10,7 +10,7 @@ interface CardDetailsItemProps {
   testId?: string;
 }
 
-interface CardDetailsInfoBlockProps {
+interface CardDetailsBlockProps {
   title: string;
   children?: ReactNode;
 }
@@ -22,6 +22,6 @@ interface CardDetailsAttributesProps {
 
 export type {
   CardDetailsItemProps,
-  CardDetailsInfoBlockProps,
+  CardDetailsBlockProps,
   CardDetailsAttributesProps,
 };

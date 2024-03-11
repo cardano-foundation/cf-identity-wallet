@@ -3,10 +3,11 @@ import "./IncomingRequest.scss";
 import {
   getQueueIncomingRequest,
   dequeueCredentialCredentialRequest,
+  setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { DIDCommRequestType } from "../../globals/types";
+import { DIDCommRequestType, OperationType } from "../../globals/types";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
@@ -132,6 +133,11 @@ const IncomingRequest = () => {
     }, RESET_DELAY);
   };
 
+  const handleIgnore = async () => {
+    setShowRequest(false);
+    dispatch(setCurrentOperation(OperationType.IDLE));
+  };
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
@@ -145,10 +151,7 @@ const IncomingRequest = () => {
           IncomingRequestType.MULTI_SIG_REQUEST_INCOMING && (
           <PageHeader
             closeButton={true}
-            closeButtonAction={() => {
-              setShowRequest(false);
-              // dispatch(setCurrentOperation(OperationType.IDLE));
-            }}
+            closeButtonAction={() => handleIgnore()}
             closeButtonLabel={`${i18n.t("request.button.ignore")}`}
             title={`${i18n.t("request.multisig.title")}`}
           />

@@ -2,7 +2,7 @@ import { calendarNumberOutline, personCircleOutline } from "ionicons/icons";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { IdentifierCardInfoKeriProps } from "./IdentifierCardInfoKeri.types";
 import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
-import { CardDetailsInfoBlock, CardDetailsItem } from "../CardDetailsElements";
+import { CardDetailsBlock, CardDetailsItem } from "../CardDetailsElements";
 import { i18n } from "../../../i18n";
 import { ConfigurationService } from "../../../core/configuration";
 import { WitnessMode } from "../../../core/configuration/configurationService.types";
@@ -11,7 +11,7 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
   return (
     <>
       {cardData.di !== "" && (
-        <CardDetailsInfoBlock
+        <CardDetailsBlock
           title={i18n.t("identifiers.card.details.delegator.title")}
         >
           <CardDetailsItem
@@ -20,10 +20,10 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
             textIcon="identifiers.card.details.delegator.icon"
             testId="delegator-copy-button"
           />
-        </CardDetailsInfoBlock>
+        </CardDetailsBlock>
       )}
       {cardData.k.length && (
-        <CardDetailsInfoBlock
+        <CardDetailsBlock
           title={i18n.t("identifiers.card.details.signingkeyslist.title")}
         >
           {cardData.k.map((item, index) => {
@@ -37,10 +37,10 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
               />
             );
           })}
-        </CardDetailsInfoBlock>
+        </CardDetailsBlock>
       )}
       {cardData.kt > 1 && (
-        <CardDetailsInfoBlock
+        <CardDetailsBlock
           title={i18n.t("identifiers.card.details.signingkeysthreshold.title")}
         >
           <CardDetailsItem
@@ -49,10 +49,10 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
             textIcon="identifiers.card.details.signingkeysthreshold.icon"
             testId="signing-keys-threshold"
           />
-        </CardDetailsInfoBlock>
+        </CardDetailsBlock>
       )}
       {cardData.n.length && (
-        <CardDetailsInfoBlock
+        <CardDetailsBlock
           title={i18n.t("identifiers.card.details.nextkeyslist.title")}
         >
           {cardData.n.map((item, index) => {
@@ -66,10 +66,10 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
               />
             );
           })}
-        </CardDetailsInfoBlock>
+        </CardDetailsBlock>
       )}
       {cardData.nt > 1 && (
-        <CardDetailsInfoBlock
+        <CardDetailsBlock
           title={i18n.t("identifiers.card.details.nextkeysthreshold.title")}
         >
           <CardDetailsItem
@@ -78,9 +78,9 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
             textIcon="identifiers.card.details.nextkeysthreshold.icon"
             testId="next-keys-threshold"
           />
-        </CardDetailsInfoBlock>
+        </CardDetailsBlock>
       )}
-      <CardDetailsInfoBlock
+      <CardDetailsBlock
         title={i18n.t("identifiers.card.details.creationtimestamp.title")}
       >
         <CardDetailsItem
@@ -93,9 +93,9 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
           icon={calendarNumberOutline}
           testId="creation-timestamp"
         />
-      </CardDetailsInfoBlock>
+      </CardDetailsBlock>
       {cardData.s > 0 && cardData.dt && (
-        <CardDetailsInfoBlock
+        <CardDetailsBlock
           title={i18n.t("identifiers.card.details.rotationtimestamp.title")}
         >
           <CardDetailsItem
@@ -108,10 +108,10 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
             textIcon="identifiers.card.details.rotationtimestamp.icon"
             testId="rotation-timestamp"
           />
-        </CardDetailsInfoBlock>
+        </CardDetailsBlock>
       )}
       {cardData.s > 0 && (
-        <CardDetailsInfoBlock
+        <CardDetailsBlock
           title={i18n.t("identifiers.card.details.sequencenumber.title")}
         >
           <CardDetailsItem
@@ -120,10 +120,10 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
             textIcon="identifiers.card.details.sequencenumber.icon"
             testId="sequence-number"
           />
-        </CardDetailsInfoBlock>
+        </CardDetailsBlock>
       )}
       {cardData.b.length && (
-        <CardDetailsInfoBlock
+        <CardDetailsBlock
           title={i18n.t("identifiers.card.details.backerslist.title")}
         >
           {cardData.b.map((item, index) => {
@@ -137,11 +137,11 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
               />
             );
           })}
-        </CardDetailsInfoBlock>
+        </CardDetailsBlock>
       )}
 
       {ConfigurationService.env.keri.backerType === WitnessMode.LEDGER && (
-        <CardDetailsInfoBlock
+        <CardDetailsBlock
           title={i18n.t("identifiers.card.details.backeraddress.title")}
         >
           <CardDetailsItem
@@ -151,7 +151,7 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
             // @TODO - foconnor: This metadata in the future should come with Signify, for now we are "assuming" the address.
             testId="copy-button-backer-address"
           />
-        </CardDetailsInfoBlock>
+        </CardDetailsBlock>
       )}
     </>
   );

@@ -1,6 +1,10 @@
 .incoming-request {
   display: flex !important;
 
+  ion-header ion-toolbar {
+    --background: var(--ion-color-light);
+  }
+
   &.show {
     transform: translate3d(0, 0, 0);
     transition-duration: 0.5s;
@@ -22,8 +26,69 @@
     text-align: center;
   }
 
-  p.request-subtitle {
+  p.multi-sig-request-subtitle {
     text-align: center;
+  }
+
+  .multi-sig-request-section {
+    h4 {
+      margin: 0.938rem;
+      font-weight: 500;
+    }
+
+    ion-card {
+      margin: 0;
+      display: flex;
+      background: white;
+      border-radius: 1rem;
+      flex-direction: column;
+      justify-content: space-evenly;
+      padding: 0.5rem 1.25rem;
+      box-shadow: none;
+      --inner-border-width: 0;
+      margin-bottom: 1.5rem;
+
+      ion-list {
+        padding: 0;
+      }
+
+      ion-item.request-item {
+        --min-height: 3rem;
+        --inner-padding-end: 0px;
+
+        &::part(native) {
+          padding: 0;
+        }
+
+        ion-icon {
+          font-size: 1.5rem;
+
+          &:first-child {
+            margin-right: 1rem;
+          }
+
+          &:last-child {
+            color: var(--ion-color-dark-grey);
+          }
+        }
+
+        ion-icon,
+        ion-label,
+        ion-note {
+          color: var(--ion-color-secondary);
+        }
+
+        ion-note {
+          font-size: 1rem;
+          opacity: 70%;
+        }
+
+        ion-label {
+          margin: 0.813rem 0;
+          font-weight: 500;
+        }
+      }
+    }
   }
 
   .request-animation-center {
@@ -195,6 +260,41 @@
 
         strong {
           font-size: 0.8rem;
+        }
+      }
+    }
+
+    .multi-sig-request-section {
+      ion-card {
+        padding: 0.5rem 1rem;
+      }
+
+      h4,
+      ion-item.request-item ion-label {
+        font-size: 0.8rem !important;
+      }
+
+      h4 {
+        margin: 0.798rem;
+      }
+
+      ion-item.request-item {
+        --min-height: 2.4rem;
+
+        ion-icon {
+          font-size: 1.2rem;
+
+          &:first-child {
+            margin: 0 0.8rem 0 0;
+          }
+
+          &:last-child {
+            margin: 0 0 0 0.8rem;
+          }
+        }
+
+        ion-label {
+          margin: 0.65rem 0;
         }
       }
     }
