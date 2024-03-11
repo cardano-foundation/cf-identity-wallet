@@ -21,6 +21,24 @@ const admitMock = jest
     }
   );
 const submitAdmitMock = jest.fn();
+
+const offerMock = jest
+  .fn()
+  .mockImplementation(
+    (name: string, message: string, grant: string, datetime?: string) => {
+      return [{}, ["sigs"], "aend"];
+    }
+  );
+const submitOfferMock = jest.fn();
+
+const grantMock = jest
+  .fn()
+  .mockImplementation(
+    (name: string, message: string, grant: string, datetime?: string) => {
+      return [{}, ["sigs"], "aend"];
+    }
+  );
+const submitGrantMock = jest.fn();
 const interactMock = jest.fn().mockImplementation((name, _config) => {
   return {
     done: false,
@@ -55,6 +73,11 @@ const rotateMock = jest.fn().mockImplementation((name, _config) => {
 const membersMock = jest.fn();
 
 const exchangeSendMock = jest.fn();
+const credentialListMock = jest
+  .fn()
+  .mockImplementation((kargs?: CredentialFilter) => {
+    return credentials;
+  });
 
 const contacts = [
   {
@@ -160,11 +183,13 @@ jest.mock("signify-ts", () => ({
       ipex: jest.fn().mockReturnValue({
         admit: admitMock,
         submitAdmit: submitAdmitMock,
+        offer: offerMock,
+        submitOffer: submitOfferMock,
+        grant: grantMock,
+        submitGrant: submitGrantMock,
       }),
       credentials: jest.fn().mockReturnValue({
-        list: jest.fn().mockImplementation((kargs?: CredentialFilter) => {
-          return credentials;
-        }),
+        list: credentialListMock,
       }),
       exchanges: jest.fn().mockReturnValue({
         get: jest.fn().mockImplementation((name: string, said: string) => {
@@ -193,6 +218,7 @@ jest.mock("signify-ts", () => ({
   Siger: jest.fn(),
   d: jest.fn().mockReturnValue("string"),
   messagize: jest.fn(),
+  Serder: jest.fn(),
 }));
 
 // Set low timeout - fake timers would be better but having issues advancing timer at exact right time
@@ -898,5 +924,52 @@ describe("Signify API", () => {
     const signifyName = "exampleSignifyName";
     await api.getMultisigMembers(signifyName);
     expect(membersMock).toHaveBeenCalledWith(signifyName);
+  });
+
+  test("Should offer the acdc with correct params", async () => {
+    const signifyName = "name";
+    const recipient = "abc123";
+    const acdc = {
+      sad: {},
+    };
+    await api.offerAcdc(signifyName, recipient, acdc);
+    expect(offerMock).toBeCalledWith({
+      senderName: signifyName,
+      recipient,
+      acdc: {},
+    });
+    expect(submitOfferMock).toBeCalledWith(signifyName, {}, ["sigs"], "aend", [
+      recipient,
+    ]);
+  });
+
+  test("Should grant the acdc with correct params", async () => {
+    const signifyName = "name";
+    const recipient = "abc123";
+    const acdc = {};
+    await api.grantAcdc(signifyName, recipient, acdc);
+    expect(grantMock).toBeCalledWith({
+      senderName: signifyName,
+      recipient,
+      acdcAttachment: undefined,
+      anc: {},
+      ancAttachment: undefined,
+      iss: {},
+      issAttachment: undefined,
+      acdc: {},
+    });
+    expect(submitGrantMock).toBeCalledWith(signifyName, {}, ["sigs"], "aend", [
+      recipient,
+    ]);
+  });
+
+  test("Should filter the acdc with schema said", async () => {
+    const schemaSaid = "said";
+    await api.getCredentialsBySchema(schemaSaid);
+    expect(credentialListMock).toBeCalledWith({
+      filter: {
+        "-s": { $eq: schemaSaid },
+      },
+    });
   });
 });

@@ -232,6 +232,14 @@ export class SignifyApi {
     }
   }
 
+  async getCredentialsBySchema(schemaSaid: string): Promise<any> {
+    return this.signifyClient.credentials().list({
+      filter: {
+        "-s": { $eq: schemaSaid },
+      },
+    });
+  }
+
   async getKeriExchange(notificationD: string): Promise<any> {
     return this.signifyClient.exchanges().get(notificationD);
   }
@@ -534,6 +542,34 @@ export class SignifyApi {
   async getMultisigMembers(name: string): Promise<any> {
     return this.signifyClient.identifiers().members(name);
   }
+
+  async offerAcdc(signifyName: string, recipient: string, ourAcdc: any) {
+    const [offer, sigs, gend] = await this.signifyClient.ipex().offer({
+      senderName: signifyName,
+      recipient,
+      acdc: new Serder(ourAcdc.sad),
+    });
+    await this.signifyClient
+      .ipex()
+      .submitOffer(signifyName, offer, sigs, gend, [recipient]);
+  }
+
+  async grantAcdc(signifyName: string, recipient: string, ourAcdc: any) {
+    const [offer, sigs, gend] = await this.signifyClient.ipex().grant({
+      senderName: signifyName,
+      recipient: recipient,
+      acdc: new Serder(ourAcdc.sad),
+      anc: new Serder(ourAcdc.anc),
+      iss: new Serder(ourAcdc.iss),
+      acdcAttachment: ourAcdc.atc,
+      ancAttachment: ourAcdc.ancatc,
+      issAttachment: ourAcdc.issAtc,
+    });
+    await this.signifyClient
+      .ipex()
+      .submitGrant(signifyName, offer, sigs, gend, [recipient]);
+  }
+
   private getCreateAidOptions(): CreateIdentiferArgs {
     if (ConfigurationService.env.keri.backerType === WitnessMode.LEDGER) {
       return {
