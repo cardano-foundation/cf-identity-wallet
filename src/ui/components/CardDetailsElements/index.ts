@@ -1,3 +1,3 @@
-export * from "./CardDetailsBlock";
+export * from "./CardDetailsInfoBlock";
 export * from "./CardDetailsItem";
 export * from "./CardDetailsAttributes";

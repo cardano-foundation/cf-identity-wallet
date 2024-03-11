@@ -1110,10 +1110,26 @@
         "confirm": "Yes, accept credential"
       }
     },
+    "multisig": {
+      "title": "Identifier request",
+      "subtitle": "Review this multi-sig identifier request",
+      "requestfrom": "Request from",
+      "othermembers": "Other members",
+      "pending": "Pending",
+      "accepted": "Accepted",
+      "threshold": "Threshold",
+      "alert": {
+        "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
+        "confirm": "Yes, accept credential"
+      }
+    },
     "button": {
       "connect": "Connect",
       "acceptoffer": "Accept credential",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "ignore": "Ignore",
+      "accept": "Accept",
+      "decline": "Decline"
     },
     "alert": {
       "cancel": "Cancel"

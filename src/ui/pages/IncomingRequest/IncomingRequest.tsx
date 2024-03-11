@@ -12,14 +12,17 @@ import { ConnectionType } from "../../../core/agent/agent.types";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
 import RequestComponent from "./components/RequestComponent";
+import { PageHeader } from "../../components/PageHeader";
+import { i18n } from "../../../i18n";
+import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
 const IncomingRequest = () => {
   const pageId = "incoming-request";
   const dispatch = useAppDispatch();
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
-  const incomingRequest = !queueIncomingRequest.isProcessing
-    ? { id: "" }
-    : queueIncomingRequest.queues[0] ?? { id: "" };
+  // const incomingRequest = !queueIncomingRequest.isProcessing
+  //   ? { id: "" }
+  //   : queueIncomingRequest.queues[0] ?? { id: "" };
   const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [requestData, setRequestData] = useState<{
@@ -28,6 +31,14 @@ const IncomingRequest = () => {
   }>();
   const [requestType, setRequestType] = useState<DIDCommRequestType>();
   const RESET_DELAY = 4000;
+
+  const incomingRequest = {
+    id: "abcd",
+    type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+    label: "label",
+    logo: CardanoLogo,
+    source: ConnectionType.KERI,
+  };
 
   useEffect(() => {
     async function handle() {
@@ -59,6 +70,7 @@ const IncomingRequest = () => {
       }
     }
     void handle();
+    setRequestData({ label: "label", logo: CardanoLogo });
   }, [incomingRequest.id]);
 
   const handleReset = () => {
@@ -127,6 +139,21 @@ const IncomingRequest = () => {
       customClass={`${showRequest && requestData ? "show" : "hide"} ${
         initiateAnimation ? "animation-on" : "animation-off"
       }`}
+      header={
+        requestData &&
+        incomingRequest.type ===
+          IncomingRequestType.MULTI_SIG_REQUEST_INCOMING && (
+          <PageHeader
+            closeButton={true}
+            closeButtonAction={() => {
+              setShowRequest(false);
+              // dispatch(setCurrentOperation(OperationType.IDLE));
+            }}
+            closeButtonLabel={`${i18n.t("request.button.ignore")}`}
+            title={`${i18n.t("request.multisig.title")}`}
+          />
+        )
+      }
     >
       {requestData && (
         <RequestComponent

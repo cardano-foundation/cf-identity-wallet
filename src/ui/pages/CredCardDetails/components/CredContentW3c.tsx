@@ -7,7 +7,7 @@ import {
 import { JsonObject } from "@aries-framework/core";
 import { i18n } from "../../../../i18n";
 import {
-  CardDetailsBlock,
+  CardDetailsInfoBlock,
   CardDetailsItem,
   CardDetailsAttributes,
 } from "../../../components/CardDetailsElements";
@@ -26,7 +26,7 @@ const CredContentW3c = ({
 }: CredContentW3cProps) => {
   return (
     <div className="card-details-content">
-      <CardDetailsBlock title={i18n.t("creds.card.details.type")}>
+      <CardDetailsInfoBlock title={i18n.t("creds.card.details.type")}>
         <CardDetailsItem
           info={cardData.credentialType
             .replace(/([A-Z][a-z])/g, " $1")
@@ -34,16 +34,18 @@ const CredContentW3c = ({
           icon={informationCircleOutline}
           testId="card-details-credential-type"
         />
-      </CardDetailsBlock>
+      </CardDetailsInfoBlock>
       {cardData.credentialSubject && (
-        <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>
+        <CardDetailsInfoBlock
+          title={i18n.t("creds.card.details.attributes.label")}
+        >
           <CardDetailsAttributes
             data={cardData.credentialSubject as JsonObject}
           />
-        </CardDetailsBlock>
+        </CardDetailsInfoBlock>
       )}
       {connectionDetails?.label && (
-        <CardDetailsBlock title={i18n.t("creds.card.details.connection")}>
+        <CardDetailsInfoBlock title={i18n.t("creds.card.details.connection")}>
           <CardDetailsItem
             info={connectionDetails.label}
             icon={pricetagOutline}
@@ -55,9 +57,9 @@ const CredContentW3c = ({
             icon={keyOutline}
             testId="card-details-connection-id"
           />
-        </CardDetailsBlock>
+        </CardDetailsInfoBlock>
       )}
-      <CardDetailsBlock title={i18n.t("creds.card.details.issuancedate")}>
+      <CardDetailsInfoBlock title={i18n.t("creds.card.details.issuancedate")}>
         <CardDetailsItem
           info={
             cardData.issuanceDate
@@ -69,8 +71,8 @@ const CredContentW3c = ({
           icon={calendarNumberOutline}
           testId="card-details-issuance-date"
         />
-      </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("creds.card.details.expirationdate")}>
+      </CardDetailsInfoBlock>
+      <CardDetailsInfoBlock title={i18n.t("creds.card.details.expirationdate")}>
         <CardDetailsItem
           info={
             cardData.expirationDate
@@ -82,8 +84,8 @@ const CredContentW3c = ({
           icon={calendarNumberOutline}
           testId="card-details-expiration-date"
         />
-      </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("creds.card.details.prooftypes")}>
+      </CardDetailsInfoBlock>
+      <CardDetailsInfoBlock title={i18n.t("creds.card.details.prooftypes")}>
         <CardDetailsItem
           info={cardData.proofType}
           icon={informationCircleOutline}
@@ -97,7 +99,7 @@ const CredContentW3c = ({
             testId="card-details-proof-value"
           />
         )}
-      </CardDetailsBlock>
+      </CardDetailsInfoBlock>
     </div>
   );
 };

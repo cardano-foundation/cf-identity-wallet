@@ -1,4 +1,3 @@
-import { IonCol, IonIcon } from "@ionic/react";
 import {
   checkmark,
   personCircleOutline,
@@ -6,10 +5,9 @@ import {
 } from "ionicons/icons";
 import i18next from "i18next";
 import { i18n } from "../../../../i18n";
-import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
-import { DIDCommRequestType } from "../../../globals/types";
 import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
+import { CardDetailsInfoBlock } from "../../../components/CardDetailsElements/CardDetailsInfoBlock";
 
 const MultiSigRequest = ({
   pageId,
@@ -19,56 +17,21 @@ const MultiSigRequest = ({
 }: RequestProps) => {
   return (
     <>
-      <h2>{i18n.t("request.connection.title")}</h2>
-      <div className="request-animation-center">
-        <div className="request-icons-row">
-          <div className="request-user-logo">
-            <IonIcon
-              icon={personCircleOutline}
-              color="light"
-            />
-          </div>
-          <div className="request-swap-logo">
-            <span>
-              <IonIcon icon={swapHorizontalOutline} />
-            </span>
-          </div>
-          <div className="request-checkmark-logo">
-            <span>
-              <IonIcon icon={checkmark} />
-            </span>
-          </div>
-          <div className="request-provider-logo">
-            <img
-              src={requestData?.logo ?? CardanoLogo}
-              alt="request-provider-logo"
-            />
-          </div>
-        </div>
-        <div className="request-info-row">
-          <IonCol size="12">
-            <span>
-              {DIDCommRequestType.CONNECTION +
-                i18n.t("request.connection.requestconnection")}
-            </span>
-            <strong>{requestData?.label}</strong>
-          </IonCol>
-        </div>
-        <div className="request-status">
-          <IonCol size="12">
-            <strong>
-              {i18next.t("request.pending", {
-                action: DIDCommRequestType.CONNECTION,
-              })}
-            </strong>
-          </IonCol>
-        </div>
-      </div>
+      <p className="request-subtitle">{i18n.t("request.multisig.subtitle")}</p>
+      <CardDetailsInfoBlock title={i18n.t("request.multisig.requestfrom")}>
+        <div>X</div>
+      </CardDetailsInfoBlock>
+      <CardDetailsInfoBlock title={i18n.t("request.multisig.othermembers")}>
+        <div>X</div>
+      </CardDetailsInfoBlock>
+      <CardDetailsInfoBlock title={i18n.t("request.multisig.threshold")}>
+        <div>1</div>
+      </CardDetailsInfoBlock>
       <PageFooter
         pageId={pageId}
-        primaryButtonText={`${i18n.t("request.button.connect")}`}
+        primaryButtonText={`${i18n.t("request.button.accept")}`}
         primaryButtonAction={() => handleAccept()}
-        secondaryButtonText={`${i18n.t("request.button.cancel")}`}
+        secondaryButtonText={`${i18n.t("request.button.decline")}`}
         secondaryButtonAction={() => handleCancel()}
       />
     </>
