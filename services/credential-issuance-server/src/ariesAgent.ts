@@ -20,6 +20,7 @@ import { HttpInboundTransport, agentDependencies } from "@aries-framework/node";
 import { config } from "./config";
 import { SignifyModule } from "./modules/signify";
 import { documentLoader } from "./utils/documentLoader";
+import { NotificationRoute } from "./modules/signify/signifyApi.types";
 
 const agentConfig: InitConfig = {
   endpoints: config.endpoints,
@@ -259,6 +260,49 @@ class AriesAgent {
   async contacts() {
     return this.agent.modules.signify.contacts();
   }
+
+  async onNotificationKeriStateChanged() {
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
+      const notifications = await this.agent.modules.signify.getNotifications();
+      for (const notif of notifications.notes) {
+        await this.processNotification(notif);
+      }
+      await new Promise((rs) => {
+        setTimeout(() => {
+          rs(true);
+        }, 2000);
+      });
+    }
+  }
+
+  private async processNotification(notif: any) {
+    if (
+      Object.values(NotificationRoute).includes(
+        notif.a.r as NotificationRoute
+      ) &&
+      !notif.r
+    ) {
+      switch (notif.a.r) {
+        case NotificationRoute.ExnIpexOffer: {
+          const msg = await this.agent.modules.signify.getExchangeMsg(
+            notif.a.d!
+          );
+          await this.agent.modules.signify.agreeOffer(
+            AriesAgent.ISSUER_AID_NAME,
+            msg.exn.d,
+            msg.exn.i,
+            msg.exn.e.acdc
+          );
+          break;
+        }
+        default:
+          break;
+      }
+      await this.agent.modules.signify.deleteNotification(notif.i);
+    }
+  }
+
   async initKeri(schema?: string, issuerName?: string) {
     const SAIDSchema = schema ? schema : AriesAgent.SCHEMA_SAID;
     const AIDIssuerName = issuerName ? issuerName : AriesAgent.ISSUER_AID_NAME;
@@ -275,6 +319,7 @@ class AriesAgent {
     this.keriRegistryRegk = await this.agent.modules.signify.createRegistry(
       AIDIssuerName
     );
+    this.onNotificationKeriStateChanged();
     return identifier;
   }
 }

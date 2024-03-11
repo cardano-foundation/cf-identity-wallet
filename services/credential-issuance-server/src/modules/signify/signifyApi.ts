@@ -125,7 +125,11 @@ export class SignifyApi {
       .submitGrant(issuerName, grant, gsigs, gend, [recipient]);
   }
 
-  async requestDisclosure(senderName: string, schemaSaid: string, recipient: string) {
+  async requestDisclosure(
+    senderName: string,
+    schemaSaid: string,
+    recipient: string
+  ) {
     const [apply, sigs] = await this.signifyClient.ipex().apply({
       senderName,
       recipient,
@@ -136,8 +140,40 @@ export class SignifyApi {
       .submitApply(senderName, apply, sigs, [recipient]);
   }
 
+  async agreeOffer(
+    senderName: string,
+    offerSaid: string,
+    recipient: string,
+    acdc: Object
+  ) {
+    const [apply, sigs] = await this.signifyClient.ipex().agree({
+      senderName,
+      recipient,
+      offer: offerSaid,
+      message: JSON.stringify({
+        i: recipient,
+        acdc: JSON.stringify(acdc),
+      }),
+    });
+    await this.signifyClient
+      .ipex()
+      .submitAgree(senderName, apply, sigs, [recipient]);
+  }
+
   async contacts(): Promise<any> {
     return this.signifyClient.contacts().list();
+  }
+
+  async getNotifications() {
+    return this.signifyClient.notifications().list();
+  }
+
+  async deleteNotification(said: string) {
+    return this.signifyClient.notifications().delete(said);
+  }
+
+  async getExchangeMsg(said: string) {
+    return this.signifyClient.exchanges().get(said);
   }
 
   /**

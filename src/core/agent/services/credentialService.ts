@@ -50,6 +50,10 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_NOT_FOUND =
     "Credential with given SAID not found on KERIA";
 
+  static readonly CREDENTIAL_NOT_FOUND_WITH_SCHEMA =
+    "Credential with given schema SAID not found on KERIA";
+  static readonly AID_NOT_FOUND = "AID with given SAID not found on KERIA";
+
   onCredentialStateChanged(
     callback: (event: CredentialStateChangedEvent) => void
   ) {
@@ -401,6 +405,70 @@ class CredentialService extends AgentService {
         },
       },
     });
+  }
+
+  async offerAcdc(id: string) {
+    const keriNoti = await this.getKeriNotificationRecordById(id);
+    const msgSaid = keriNoti.a.d as string;
+    const msg = await this.agent.modules.signify.getKeriExchange(msgSaid);
+    const schemaSaid = msg.exn.a.s;
+    const creds = await this.agent.modules.signify.getCredentialsBySchema(
+      schemaSaid
+    );
+    if (!creds || creds.length === 0) {
+      throw new Error(CredentialService.CREDENTIAL_NOT_FOUND_WITH_SCHEMA);
+    }
+    const pickedCred = creds[0];
+    let holderSignifyName;
+    const holder =
+      await this.agent.modules.generalStorage.getIdentifierMetadata(
+        msg.exn.a.i
+      );
+    if (holder && holder.signifyName) {
+      holderSignifyName = holder.signifyName;
+    } else {
+      const identifierHolder =
+        await this.agent.modules.signify.getIdentifierById(msg.exn.a.i);
+      holderSignifyName = identifierHolder?.name;
+    }
+    if (!holderSignifyName) {
+      throw new Error(CredentialService.AID_NOT_FOUND);
+    }
+
+    return this.agent.modules.signify.offerAcdc(
+      holderSignifyName,
+      msg.exn.i,
+      pickedCred
+    );
+  }
+
+  async grantApplyAcdc(id: string) {
+    const keriNoti = await this.getKeriNotificationRecordById(id);
+    const msgSaid = keriNoti.a.d as string;
+    const msg = await this.agent.modules.signify.getKeriExchange(msgSaid);
+    const exnMessage = JSON.parse(msg.exn.a.m);
+    const pickedCred = exnMessage.acdc;
+    let holderSignifyName;
+    const holder =
+      await this.agent.modules.generalStorage.getIdentifierMetadata(
+        exnMessage.i
+      );
+    if (holder && holder.signifyName) {
+      holderSignifyName = holder.signifyName;
+    } else {
+      const identifierHolder =
+        await this.agent.modules.signify.getIdentifierById(msg.exn.a.i);
+      holderSignifyName = identifierHolder?.name;
+    }
+    if (!holderSignifyName) {
+      throw new Error(CredentialService.AID_NOT_FOUND);
+    }
+
+    return this.agent.modules.signify.grantAcdc(
+      holderSignifyName,
+      msg.exn.i,
+      pickedCred
+    );
   }
 
   async getUnhandledCredentials(): Promise<
