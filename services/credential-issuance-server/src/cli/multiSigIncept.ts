@@ -53,21 +53,21 @@ async function main() {
   
   await signifyReady();
   
-  const alice = await getClient();
-  const aliceAid = await createIdentifier(alice, "alice");
-  const oobiA = await alice.oobis().get("alice");
+  const aliceClient = await getClient();
+  const aliceAid = await createIdentifier(aliceClient, "alice");
+  const oobiA = await aliceClient.oobis().get("alice");
   console.info(`Alice created: ${aliceAid.prefix}`);
   
-  const bob = await getClient();
-  const bobAid = await createIdentifier(bob, "bob");
-  const oobiB = await bob.oobis().get("bob");
+  const bobClient = await getClient();
+  const bobAid = await createIdentifier(bobClient, "bob");
+  const oobiB = await bobClient.oobis().get("bob");
   console.info(`Bob created: ${bobAid.prefix}`);
 
-  await waitAndGetDoneOp(alice, await alice.oobis().resolve(oobiB.oobis[0], "bob"));
-  await waitAndGetDoneOp(bob, await bob.oobis().resolve(oobiA.oobis[0], "alice"));
+  await waitAndGetDoneOp(aliceClient, await aliceClient.oobis().resolve(oobiB.oobis[0], "bob"));
+  await waitAndGetDoneOp(bobClient, await bobClient.oobis().resolve(oobiA.oobis[0], "alice"));
 
-  const resolveIdwOpA = await waitAndGetDoneOp(alice, await alice.oobis().resolve(idwOobi, "idw"));
-  await waitAndGetDoneOp(bob, await bob.oobis().resolve(idwOobi, "idw"));
+  const resolveIdwOpA = await waitAndGetDoneOp(aliceClient, await aliceClient.oobis().resolve(idwOobi, "idw"));
+  await waitAndGetDoneOp(bobClient, await bobClient.oobis().resolve(idwOobi, "idw"));
 
   console.info(`\nAlice OOBI: ${oobiA.oobis[0]}`);
   qrcode.generate(oobiA.oobis[0], { small: true });
@@ -88,7 +88,7 @@ async function main() {
     states,
     rstates: states,
   }, null, 2)}`);
-  const aliceIcp = await alice.identifiers().create("multisig", {
+  const aliceIcp = await aliceClient.identifiers().create("multisig", {
     algo: Algos.group,
     mhab: aliceAid,
     isith: 3,
@@ -106,7 +106,7 @@ async function main() {
 
   const smids = states.map((state) => state["i"]);
   const recp = [bobAid["state"], resolveIdwOpA.response].map((state) => state["i"]);
-  await alice
+  await aliceClient
     .exchanges()
     .send(
       "alice",
@@ -121,11 +121,11 @@ async function main() {
   console.info("Alice has sent out the inception event!");
    
   // --> Bob wait and join.
-  const receviedMsgSaid = await waitForFirstNotification(bob, "/multisig/icp");
-  const receivedMsg = (await bob.groups().getRequest(receviedMsgSaid))[0].exn;
+  const receviedMsgSaid = await waitForFirstNotification(bobClient, "/multisig/icp");
+  const receivedMsg = (await bobClient.groups().getRequest(receviedMsgSaid))[0].exn;
   const receivedIcp = receivedMsg.e.icp;
 
-  const bobIcp = await bob.identifiers().create("multisig", {
+  const bobIcp = await bobClient.identifiers().create("multisig", {
       algo: Algos.group,
       mhab: bobAid,
       isith: receivedIcp.kt,
@@ -144,7 +144,7 @@ async function main() {
   const bobEmbeds = { icp: [bobSerder, bobAtc] };
 
   const bobRecp = [aliceAid["state"], resolveIdwOpA.response].map((state) => state["i"]);
-  await bob.exchanges().send(
+  await bobClient.exchanges().send(
     "bob",
     "multisig",
     bobAid,
@@ -159,8 +159,8 @@ async function main() {
   await rl.question("Accept the multi-sig in IDW, and press enter once done...");
   rl.close();
 
-  await waitAndGetDoneOp(alice, aliceIcpOp);
-  await waitAndGetDoneOp(bob, bobIcpOp);
+  await waitAndGetDoneOp(aliceClient, aliceIcpOp);
+  await waitAndGetDoneOp(bobClient, bobIcpOp);
 
   console.info("Multi-sig fully complete!")
 }
