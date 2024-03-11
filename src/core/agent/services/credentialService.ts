@@ -435,11 +435,12 @@ class CredentialService extends AgentService {
       throw new Error(CredentialService.AID_NOT_FOUND);
     }
 
-    return this.agent.modules.signify.offerAcdc(
+    await this.agent.modules.signify.offerAcdc(
       holderSignifyName,
       msg.exn.i,
       pickedCred
     );
+    await this.deleteKeriNotificationRecordById(id);
   }
 
   async grantApplyAcdc(id: string) {
@@ -447,7 +448,12 @@ class CredentialService extends AgentService {
     const msgSaid = keriNoti.a.d as string;
     const msg = await this.agent.modules.signify.getKeriExchange(msgSaid);
     const exnMessage = JSON.parse(msg.exn.a.m);
-    const pickedCred = exnMessage.acdc;
+    const pickedCred = await this.agent.modules.signify.getCredentialBySaid(
+      exnMessage.acdc.d
+    );
+    if (!pickedCred.acdc) {
+      throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
+    }
     let holderSignifyName;
     const holder =
       await this.agent.modules.generalStorage.getIdentifierMetadata(
@@ -464,11 +470,12 @@ class CredentialService extends AgentService {
       throw new Error(CredentialService.AID_NOT_FOUND);
     }
 
-    return this.agent.modules.signify.grantAcdc(
+    await this.agent.modules.signify.grantAcdc(
       holderSignifyName,
       msg.exn.i,
-      pickedCred
+      pickedCred.acdc
     );
+    await this.deleteKeriNotificationRecordById(id);
   }
 
   async getUnhandledCredentials(): Promise<

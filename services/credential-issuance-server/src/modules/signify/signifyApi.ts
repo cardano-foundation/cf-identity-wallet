@@ -152,7 +152,7 @@ export class SignifyApi {
       offer: offerSaid,
       message: JSON.stringify({
         i: recipient,
-        acdc: JSON.stringify(acdc),
+        acdc,
       }),
     });
     await this.signifyClient

@@ -1175,9 +1175,9 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
         i: "i",
       },
     });
-    agent.modules.signify.getCredentialsBySchema = jest
+    agent.modules.signify.getCredentialBySaid = jest
       .fn()
-      .mockReturnValue([{}]);
+      .mockReturnValue({ acdc: {} });
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockReturnValue({
@@ -1213,15 +1213,49 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
         i: "i",
       },
     });
-    agent.modules.signify.getCredentialsBySchema = jest
+    agent.modules.signify.getCredentialBySaid = jest
       .fn()
-      .mockReturnValue([{}]);
+      .mockReturnValue({ acdc: {} });
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockReturnValue(null);
     agent.modules.signify.getIdentifierById = jest.fn().mockReturnValue(null);
     await expect(credentialService.grantApplyAcdc(id)).rejects.toThrowError(
       CredentialService.AID_NOT_FOUND
+    );
+  });
+
+  test("can not grant Keri Acdc if acdc is not existed", async () => {
+    const id = "uuid";
+    const date = new Date();
+    agent.genericRecords.findById = jest.fn().mockImplementation((id) => {
+      if (id == "uuid") {
+        return {
+          id,
+          createdAt: date,
+          content: {
+            d: "keri",
+          },
+        };
+      }
+      return;
+    });
+    agent.modules.signify.getKeriExchange = jest.fn().mockReturnValue({
+      exn: {
+        a: {
+          m: JSON.stringify({
+            i: "i",
+            acdc: {},
+          }),
+        },
+        i: "i",
+      },
+    });
+    agent.modules.signify.getCredentialBySaid = jest
+      .fn()
+      .mockReturnValue({ acdc: undefined });
+    await expect(credentialService.grantApplyAcdc(id)).rejects.toThrowError(
+      CredentialService.CREDENTIAL_NOT_FOUND
     );
   });
 });
