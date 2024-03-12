@@ -122,7 +122,7 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
           />
         </CardDetailsBlock>
       )}
-      {cardData.b.length && (
+      {!!cardData.b.length && (
         <CardDetailsBlock
           title={i18n.t("identifiers.card.details.backerslist.title")}
         >

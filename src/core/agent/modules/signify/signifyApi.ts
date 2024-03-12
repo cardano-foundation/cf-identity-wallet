@@ -580,4 +580,8 @@ export class SignifyApi {
       .exchanges()
       .send(name, topic, aid, route, payload, embeds, recp);
   }
+
+  async getSchemaName(said: string) {
+    return this.signifyClient.schemas().get(said);
+  }
 }
