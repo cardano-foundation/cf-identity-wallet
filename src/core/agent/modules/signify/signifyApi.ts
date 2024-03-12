@@ -187,8 +187,8 @@ export class SignifyApi {
     return Oobi;
   }
 
-  async getNotifications() {
-    return this.signifyClient.notifications().list();
+  async getNotifications(start = 0, end = 24) {
+    return this.signifyClient.notifications().list(start, end);
   }
 
   async markNotification(id: string) {

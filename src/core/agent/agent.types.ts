@@ -112,6 +112,11 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
+interface KeriNotificationQuery {
+  nextIndex: number;
+  lastNotificationId: string;
+}
+
 export {
   Blockchain,
   ConnectionStatus,
@@ -133,4 +138,5 @@ export type {
   ConnectionKeriStateChangedEvent,
   KeriNotification,
   AcdcKeriStateChangedEvent,
+  KeriNotificationQuery,
 };
