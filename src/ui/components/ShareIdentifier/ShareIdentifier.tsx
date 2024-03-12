@@ -17,6 +17,9 @@ import { i18n } from "../../../i18n";
 import { ShareIdentifierProps } from "./ShareIdentifier.types";
 import { writeToClipboard } from "../../utils/clipboard";
 import "./ShareIdentifier.scss";
+import { useAppDispatch } from "../../../store/hooks";
+import { setToastMsg } from "../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../globals/types";
 
 const ShareIdentifier = ({
   isOpen,
@@ -24,6 +27,8 @@ const ShareIdentifier = ({
   id,
   name,
 }: ShareIdentifierProps) => {
+  const dispatch = useAppDispatch();
+
   return (
     <IonModal
       isOpen={isOpen}
@@ -81,7 +86,10 @@ const ShareIdentifier = ({
                 <span
                   className="share-identifier-option"
                   data-testid="share-identifier-copy-button"
-                  onClick={() => writeToClipboard(id)}
+                  onClick={() => {
+                    writeToClipboard(id);
+                    dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
+                  }}
                 >
                   <span>
                     <IonButton shape="round">
