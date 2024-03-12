@@ -79,7 +79,7 @@ export class SignifyApi {
     const signifyName = utils.uuid();
     const operation = await this.signifyClient
       .identifiers()
-      .create(signifyName); //, this.getCreateAidOptions());
+      .create(signifyName, this.getCreateAidOptions());
     await operation.op();
     await this.signifyClient
       .identifiers()
@@ -541,15 +541,17 @@ export class SignifyApi {
   }
   private getCreateAidOptions(): CreateIdentiferArgs {
     if (ConfigurationService.env.keri.backerType === WitnessMode.LEDGER) {
-      return {
-        toad: 1,
-        wits: [ConfigurationService.env.keri.ledger.aid],
-        count: 1,
-        ncount: 1,
-        isith: "1",
-        nsith: "1",
-        data: [{ ca: ConfigurationService.env.keri.ledger.address }],
-      };
+      // @TODO - foconnor: cardano-backer issues, disabled while migrating to self hosted version.
+      return {};
+      // return {
+      //   toad: 1,
+      //   wits: [ConfigurationService.env.keri.ledger.aid],
+      //   count: 1,
+      //   ncount: 1,
+      //   isith: "1",
+      //   nsith: "1",
+      //   data: [{ ca: ConfigurationService.env.keri.ledger.address }],
+      // };
     }
     return {
       toad: ConfigurationService.env.keri.pools.length,
