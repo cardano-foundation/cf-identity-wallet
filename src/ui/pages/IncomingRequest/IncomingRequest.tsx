@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "./IncomingRequest.scss";
 import {
   getQueueIncomingRequest,
-  dequeueCredentialCredentialRequest,
+  dequeueCredentialRequest,
   setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -13,12 +13,8 @@ import {
   IncomingRequestType,
 } from "../../../store/reducers/stateCache/stateCache.types";
 import { ConnectionType } from "../../../core/agent/agent.types";
-import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
 import RequestComponent from "./components/RequestComponent";
-import { PageHeader } from "../../components/PageHeader";
-import { i18n } from "../../../i18n";
-import CardanoLogo from "../../../ui/assets/images/CardanoLogo.jpg";
 
 const IncomingRequest = () => {
   const pageId = "incoming-request";
@@ -67,24 +63,24 @@ const IncomingRequest = () => {
           incomingRequest.type ===
           IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
         ) {
-          // TODO: handle case when incomingRequest.type is MultiSig
+          setRequestData({
+            id: incomingRequest.id,
+            label: incomingRequest.label,
+            logo: incomingRequest.logo,
+            multisigIcpDetails: incomingRequest.multisigIcpDetails,
+          });
         }
         setShowRequest(true);
       }
     }
     void handle();
-    setRequestData({
-      id: incomingRequest.id,
-      label: "label",
-      logo: CardanoLogo,
-    });
   }, [incomingRequest.id]);
 
   const handleReset = () => {
     setShowRequest(false);
     setInitiateAnimation(false);
     setTimeout(() => {
-      dispatch(dequeueCredentialCredentialRequest());
+      dispatch(dequeueCredentialRequest());
     }, 0.5 * 1000);
   };
 
@@ -144,36 +140,18 @@ const IncomingRequest = () => {
     dispatch(setCurrentOperation(OperationType.IDLE));
   };
 
-  return (
-    <ResponsivePageLayout
+  return showRequest && requestData ? (
+    <RequestComponent
       pageId={pageId}
-      activeStatus={showRequest && requestData !== undefined}
-      customClass={`${showRequest && requestData ? "show" : "hide"} ${
-        initiateAnimation ? "animation-on" : "animation-off"
-      }`}
-      header={
-        requestData &&
-        incomingRequest.type ===
-          IncomingRequestType.MULTI_SIG_REQUEST_INCOMING && (
-          <PageHeader
-            closeButton={true}
-            closeButtonAction={() => handleIgnore()}
-            closeButtonLabel={`${i18n.t("request.button.ignore")}`}
-            title={`${i18n.t("request.multisig.title")}`}
-          />
-        )
-      }
-    >
-      {requestData && (
-        <RequestComponent
-          pageId={pageId}
-          requestData={requestData}
-          handleAccept={handleAccept}
-          handleCancel={handleCancel}
-          incomingRequestType={incomingRequest.type}
-        />
-      )}
-    </ResponsivePageLayout>
+      requestData={requestData}
+      initiateAnimation={initiateAnimation}
+      handleAccept={handleAccept}
+      handleCancel={handleCancel}
+      handleIgnore={handleIgnore}
+      incomingRequestType={incomingRequest.type}
+    />
+  ) : (
+    <></>
   );
 };
 

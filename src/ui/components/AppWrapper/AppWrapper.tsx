@@ -55,6 +55,8 @@ import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/id
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
+import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
+import { connectionsFix } from "../../__fixtures__/connectionsFix";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -404,6 +406,20 @@ const AppWrapper = (props: { children: ReactNode }) => {
       AriesAgent.agent.connections.syncKeriaContacts(),
       AriesAgent.agent.credentials.syncACDCs(),
     ]);
+
+    dispatch(
+      setQueueIncomingRequest({
+        id: "1234567890",
+        type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+        source: ConnectionType.KERI,
+        multisigIcpDetails: {
+          ourIdentifier: filteredKeriFix[0],
+          sender: connectionsFix[3],
+          otherConnections: [connectionsFix[3]],
+          threshold: 1,
+        },
+      })
+    );
   };
 
   // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.

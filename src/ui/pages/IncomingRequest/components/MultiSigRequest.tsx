@@ -1,6 +1,6 @@
 import { personCircleOutline } from "ionicons/icons";
 import i18next from "i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { IonCard, IonIcon, IonItem, IonLabel, IonList } from "@ionic/react";
 import { i18n } from "../../../../i18n";
 import { PageFooter } from "../../../components/PageFooter";
@@ -9,12 +9,16 @@ import {
   Alert as AlertAccept,
   Alert as AlertDecline,
 } from "../../../components/Alert";
+import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
+import { PageHeader } from "../../../components/PageHeader";
 
 const MultiSigRequest = ({
   pageId,
   requestData,
+  initiateAnimation,
   handleAccept,
   handleCancel,
+  handleIgnore,
 }: RequestProps) => {
   const [alertAcceptIsOpen, setAlertAcceptIsOpen] = useState(false);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
@@ -28,8 +32,27 @@ const MultiSigRequest = ({
     setAlertDeclineIsOpen(false);
     handleCancel();
   };
+
+  useEffect(() => {
+    console.log(requestData);
+  }, [requestData]);
+
   return (
-    <>
+    <ScrollablePageLayout
+      pageId={pageId}
+      activeStatus={!!requestData}
+      customClass={`${requestData ? "show" : "hide"} ${
+        initiateAnimation ? "animation-on" : "animation-off"
+      }`}
+      header={
+        <PageHeader
+          closeButton={true}
+          closeButtonAction={() => handleIgnore && handleIgnore()}
+          closeButtonLabel={`${i18n.t("request.button.ignore")}`}
+          title={`${i18n.t("request.multisig.title")}`}
+        />
+      }
+    >
       <p className="multi-sig-request-subtitle">
         {i18n.t("request.multisig.subtitle")}
       </p>
@@ -126,7 +149,7 @@ const MultiSigRequest = ({
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}
       />
-    </>
+    </ScrollablePageLayout>
   );
 };
 
