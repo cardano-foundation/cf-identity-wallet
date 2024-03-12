@@ -10,15 +10,23 @@ import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
 import { DIDCommRequestType } from "../../../globals/types";
 import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
+import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
 
 const CredentialRequest = ({
   pageId,
   requestData,
+  initiateAnimation,
   handleAccept,
   handleCancel,
 }: RequestProps) => {
   return (
-    <>
+    <ResponsivePageLayout
+      pageId={pageId}
+      activeStatus={!!requestData}
+      customClass={`${requestData ? "show" : "hide"} ${
+        initiateAnimation ? "animation-on" : "animation-off"
+      }`}
+    >
       <h2>{i18n.t("request.credential.title")}</h2>
       <div className="request-animation-center">
         <div className="request-icons-row">
@@ -71,7 +79,7 @@ const CredentialRequest = ({
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
         secondaryButtonAction={() => handleCancel()}
       />
-    </>
+    </ResponsivePageLayout>
   );
 };
 
