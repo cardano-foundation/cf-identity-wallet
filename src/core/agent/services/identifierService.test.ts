@@ -11,6 +11,7 @@ import {
 } from "../modules/generalStorage/repositories/identifierMetadataRecord";
 import { IdentifierType } from "./identifierService.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
+import { AriesAgent } from "../agent";
 
 // We are losing typing here but the Agent class is overly complex to setup for tests.
 const agent = jest.mocked({
@@ -31,7 +32,7 @@ const agent = jest.mocked({
       getAllIdentifiers: jest.fn(),
       resolveOobi: jest.fn(),
       createMultisig: jest.fn(),
-      getNotificationsBySaid: jest.fn(),
+      getMultisigMessageBySaid: jest.fn(),
       joinMultisig: jest.fn(),
       createDelegationIdentifier: jest.fn(),
       interactDelegation: jest.fn(),
@@ -55,6 +56,17 @@ const agent = jest.mocked({
   },
 });
 const identifierService = new IdentifierService(agent as any as Agent);
+
+jest.mock("../../../core/agent/agent", () => ({
+  AriesAgent: {
+    agent: {
+      connections: {
+        getConnectionKeriShortDetailById: jest.fn(),
+        getConnections: jest.fn(),
+      },
+    },
+  },
+}));
 
 const now = new Date();
 const nowISO = now.toISOString();
@@ -137,6 +149,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KEY,
         createdAtUTC: nowISO,
         theme: 0,
+        isPending: false,
       },
       {
         id: keriMetadataRecord.id,
@@ -146,6 +159,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KERI,
         createdAtUTC: nowISO,
         theme: 0,
+        isPending: false,
       },
     ]);
   });
@@ -163,6 +177,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KEY,
         createdAtUTC: nowISO,
         theme: 0,
+        isPending: false,
       },
       {
         id: keriMetadataRecord.id,
@@ -172,6 +187,7 @@ describe("Identifier service of agent", () => {
         method: IdentifierType.KERI,
         createdAtUTC: nowISO,
         theme: 0,
+        isPending: false,
       },
     ]);
   });
@@ -289,6 +305,7 @@ describe("Identifier service of agent", () => {
         publicKeyBase58: pkey,
         createdAtUTC: nowISO,
         method: IdentifierType.KEY,
+        isPending: false,
       },
     });
   });
@@ -678,9 +695,59 @@ describe("Identifier service of agent", () => {
       await identifierService.createMultisig(
         creatorIdentifier,
         otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps
+        metadata as IdentifierMetadataRecordProps,
+        otherIdentifiers.length + 1
       )
     ).toBe(multisigIdentifier);
+    expect(
+      agent.modules.generalStorage.saveIdentifierMetadataRecord
+    ).toBeCalledWith(
+      expect.objectContaining({ id: multisigIdentifier, isPending: true })
+    );
+
+    agent.modules.signify.createMultisig = jest.fn().mockResolvedValue({
+      op: { name: `group.${multisigIdentifier}1`, done: false },
+      icpResult: {},
+      name: "name",
+    });
+    expect(
+      await identifierService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        metadata as IdentifierMetadataRecordProps,
+        1
+      )
+    ).toBe(`${multisigIdentifier}1`);
+    expect(
+      agent.modules.generalStorage.saveIdentifierMetadataRecord
+    ).toBeCalledWith(
+      expect.objectContaining({
+        id: `${multisigIdentifier}1`,
+        isPending: false,
+      })
+    );
+
+    agent.modules.signify.createMultisig = jest.fn().mockResolvedValue({
+      op: { name: `group.${multisigIdentifier}2`, done: true },
+      icpResult: {},
+      name: "name",
+    });
+    expect(
+      await identifierService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        metadata as IdentifierMetadataRecordProps,
+        2
+      )
+    ).toBe(`${multisigIdentifier}2`);
+    expect(
+      agent.modules.generalStorage.saveIdentifierMetadataRecord
+    ).toBeCalledWith(
+      expect.objectContaining({
+        id: `${multisigIdentifier}2`,
+        isPending: false,
+      })
+    );
 
     const invalidOtherIdentifiers = [
       {
@@ -695,28 +762,117 @@ describe("Identifier service of agent", () => {
       identifierService.createMultisig(
         creatorIdentifier,
         invalidOtherIdentifiers,
-        metadata as IdentifierMetadataRecordProps
+        metadata as IdentifierMetadataRecordProps,
+        invalidOtherIdentifiers.length + 1
       )
     ).rejects.toThrowError();
   });
 
-  test("can join the multisig", async () => {
+  test("Can create a keri delegated multisig with KERI contacts", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const multisigIdentifier = "newMultisigIdentifierAid";
+    const signifyName = "newUuidHere";
+    agent.modules.signify.getIdentifierByName = jest
+      .fn()
+      .mockResolvedValue(aidReturnedBySignify);
+    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+      identifier: multisigIdentifier,
+      signifyName,
+    });
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    agent.modules.signify.resolveOobi = jest.fn().mockResolvedValue({
+      name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
+      metadata: {
+        oobi: "testOobi",
+      },
+      done: true,
+      error: null,
+      response: {},
+      alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
+    });
+    agent.modules.signify.createMultisig = jest.fn().mockResolvedValue({
+      op: { name: `group.${multisigIdentifier}`, done: false },
+      icpResult: {},
+      name: "name",
+    });
+    const otherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.KERI,
+        connectionDate: new Date().toISOString(),
+      },
+    ];
+
+    const delegatorContact = {
+      id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyA",
+      label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+      oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionType.KERI,
+      connectionDate: new Date().toISOString(),
+    };
+    const metadata = {
+      theme: 4,
+      colors: ["#000000", "#000000"],
+      displayName: "Multisig",
+    };
+    expect(
+      await identifierService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        metadata as IdentifierMetadataRecordProps,
+        otherIdentifiers.length + 1,
+        delegatorContact
+      )
+    ).toBe(multisigIdentifier);
+
+    expect(agent.modules.signify.createMultisig).toBeCalledWith(
+      {
+        prefix: "aidHere",
+        state: {
+          b: "b",
+          bt: "bt",
+          di: "di",
+          dt: "dt",
+          k: "k",
+          kt: "kt",
+          n: "n",
+          nt: "nt",
+          s: "s",
+        },
+      },
+      [{ state: {} }],
+      expect.any(String),
+      otherIdentifiers.length + 1,
+      { state: {} }
+    );
+  });
+
+  test("can join the multisig inception", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
     agent.genericRecords.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
     });
-    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: ["id"],
+              rmids: ["id"],
+            },
           },
         },
-      },
-    ]);
+      ]);
 
     agent.modules.signify.joinMultisig = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}`, done: false },
@@ -748,8 +904,8 @@ describe("Identifier service of agent", () => {
     ).toBe(multisigIdentifier);
   });
 
-  test("should not join the multisig", async () => {
-    agent.modules.signify.getNotificationsBySaid = jest
+  test("cannot join multisig by notification if exn messages are missing", async () => {
+    agent.modules.signify.getMultisigMessageBySaid = jest
       .fn()
       .mockResolvedValue([]);
     await expect(
@@ -1189,7 +1345,7 @@ describe("Identifier service of agent", () => {
   });
 
   test("should can join the multisig rotation with no notification and throw error", async () => {
-    agent.modules.signify.getNotificationsBySaid = jest
+    agent.modules.signify.getMultisigMessageBySaid = jest
       .fn()
       .mockResolvedValue([]);
     expect(
@@ -1198,7 +1354,7 @@ describe("Identifier service of agent", () => {
         createdAt: new Date(),
         a: { d: "d" },
       })
-    ).rejects.toThrowError(IdentifierService.SAID_NOTIFICATIONS_NOT_FOUND);
+    ).rejects.toThrowError(IdentifierService.EXN_MESSAGE_NOT_FOUND);
   });
 
   test("should can join the multisig rotation with AID is not multisig and throw error", async () => {
@@ -1220,16 +1376,18 @@ describe("Identifier service of agent", () => {
         d: "d",
       },
     });
-    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+            },
           },
         },
-      },
-    ]);
+      ]);
 
     agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
       {
@@ -1266,16 +1424,18 @@ describe("Identifier service of agent", () => {
         d: "d",
       },
     });
-    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+            },
           },
         },
-      },
-    ]);
+      ]);
 
     agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
       {
@@ -1313,16 +1473,18 @@ describe("Identifier service of agent", () => {
         d: "d",
       },
     });
-    agent.modules.signify.getNotificationsBySaid = jest.fn().mockResolvedValue([
-      {
-        exn: {
-          a: {
-            name: "signifyName",
-            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
+            },
           },
         },
-      },
-    ]);
+      ]);
 
     agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
       {
@@ -1357,5 +1519,422 @@ describe("Identifier service of agent", () => {
         a: { d: "d" },
       })
     ).toBe(multisigIdentifier);
+  });
+
+  test("cannot join multisig if there's no identifier matched", async () => {
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: ["id"],
+              rmids: ["id"],
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          method: IdentifierType.KERI,
+          displayName: "displayName",
+          id: "id1",
+          signifyName: "signifyName",
+          createdAt: new Date(),
+          colors: ["#000000", "#000000"],
+          theme: 4,
+        },
+      ]);
+    await expect(
+      identifierService.joinMultisig(
+        { id: "id", createdAt: new Date(), a: { d: "d" } },
+        {
+          theme: 4,
+          colors: ["#000000", "#000000"],
+          displayName: "Multisig",
+        }
+      )
+    ).rejects.toThrowError(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
+  });
+
+  test("cannot join multisig if the identifier does not have signifyName", async () => {
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: ["id"],
+              rmids: ["id"],
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          method: IdentifierType.KERI,
+          displayName: "displayName",
+          id: "id",
+          signifyName: undefined,
+          createdAt: new Date(),
+          colors: ["#000000", "#000000"],
+          theme: 4,
+        },
+      ]);
+    await expect(
+      identifierService.joinMultisig(
+        { id: "id", createdAt: new Date(), a: { d: "d" } },
+        {
+          theme: 4,
+          colors: ["#000000", "#000000"],
+          displayName: "Multisig",
+        }
+      )
+    ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+  });
+
+  test("Can get multisig icp details of 2 persons multi-sig", async () => {
+    const identifierMetadata = {
+      method: IdentifierType.KERI,
+      displayName: "displayName",
+      id: "id",
+      signifyName: undefined,
+      createdAt: new Date(),
+      colors: ["#000000", "#000000"],
+      theme: 4,
+    };
+
+    const senderData = {
+      id: "senderId",
+      connectionDate: nowISO,
+      label: "keri",
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionType.KERI,
+    };
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: ["id", "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"],
+            },
+            e: {
+              icp: {
+                kt: 2,
+              },
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([identifierMetadata]);
+
+    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+      .fn()
+      .mockResolvedValue(senderData);
+    AriesAgent.agent.connections.getConnections = jest
+      .fn()
+      .mockResolvedValue([]);
+
+    const result = await identifierService.getMultisigIcpDetails({
+      id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+      createdAt: new Date("2024-03-08T08:52:10.801Z"),
+      a: {
+        r: "/multisig/icp",
+        d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+      },
+    });
+    expect(result.ourIdentifier.id).toBe(identifierMetadata.id);
+    expect(result.sender.id).toBe(senderData.id);
+    expect(result.otherConnections.length).toBe(0);
+    expect(result.threshold).toBe(2);
+  });
+
+  test("Throw error if the Multi-sig join request contains unknown AIDs", async () => {
+    const identifierMetadata = {
+      method: IdentifierType.KERI,
+      displayName: "displayName",
+      id: "id",
+      signifyName: undefined,
+      createdAt: new Date(),
+      colors: ["#000000", "#000000"],
+      theme: 4,
+    };
+
+    const senderData = {
+      id: "senderId",
+      connectionDate: nowISO,
+      label: "keri",
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionType.KERI,
+    };
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: [
+                "id",
+                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1B",
+                "senderId",
+              ],
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([identifierMetadata]);
+
+    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+      .fn()
+      .mockResolvedValue(senderData);
+    AriesAgent.agent.connections.getConnections = jest.fn().mockResolvedValue([
+      {
+        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.PENDING,
+        type: ConnectionType.DIDCOMM,
+      },
+      {
+        id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.DIDCOMM,
+      },
+    ]);
+
+    await expect(
+      identifierService.getMultisigIcpDetails({
+        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+        createdAt: new Date("2024-03-08T08:52:10.801Z"),
+        a: {
+          r: "/multisig/icp",
+          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+        },
+      })
+    ).rejects.toThrowError(IdentifierService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
+  });
+
+  test("Can get multisig icp details of 3 persons multi-sig", async () => {
+    const identifierMetadata = {
+      method: IdentifierType.KERI,
+      displayName: "displayName",
+      id: "id",
+      signifyName: undefined,
+      createdAt: new Date(),
+      colors: ["#000000", "#000000"],
+      theme: 4,
+    };
+
+    const senderData = {
+      id: "senderId",
+      connectionDate: nowISO,
+      label: "keri",
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionType.KERI,
+    };
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: [
+                "id",
+                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+                "senderId",
+              ],
+            },
+            e: {
+              icp: {
+                kt: 3,
+              },
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([identifierMetadata]);
+
+    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+      .fn()
+      .mockResolvedValue(senderData);
+    AriesAgent.agent.connections.getConnections = jest.fn().mockResolvedValue([
+      {
+        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.PENDING,
+        type: ConnectionType.DIDCOMM,
+      },
+    ]);
+    const result = await identifierService.getMultisigIcpDetails({
+      id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+      createdAt: new Date("2024-03-08T08:52:10.801Z"),
+      a: {
+        r: "/multisig/icp",
+        d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+      },
+    });
+    expect(result.ourIdentifier.id).toBe(identifierMetadata.id);
+    expect(result.sender.id).toBe(senderData.id);
+    expect(result.otherConnections.length).toBe(1);
+    expect(result.otherConnections[0].id).toBe(
+      "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"
+    );
+    expect(result.threshold).toBe(3);
+  });
+
+  test("Throw error if we do not control any member AID of the multi-sig", async () => {
+    const identifierMetadata = {
+      method: IdentifierType.KERI,
+      displayName: "displayName",
+      id: "id",
+      signifyName: undefined,
+      createdAt: new Date(),
+      colors: ["#000000", "#000000"],
+      theme: 4,
+    };
+
+    const senderData = {
+      id: "senderId",
+      connectionDate: nowISO,
+      label: "keri",
+      status: ConnectionStatus.CONFIRMED,
+      type: ConnectionType.KERI,
+    };
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: [
+                "id1",
+                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+                "senderId",
+              ],
+            },
+          },
+        },
+      ]);
+
+    agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([identifierMetadata]);
+
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnectionKeriShortDetailById")
+      .mockResolvedValue(senderData);
+    jest
+      .spyOn(AriesAgent.agent.connections, "getConnections")
+      .mockResolvedValue([
+        {
+          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.PENDING,
+          type: ConnectionType.DIDCOMM,
+        },
+        {
+          id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
+          connectionDate: nowISO,
+          label: "",
+          logo: "logoUrl",
+          status: ConnectionStatus.CONFIRMED,
+          type: ConnectionType.DIDCOMM,
+        },
+      ]);
+
+    await expect(
+      identifierService.getMultisigIcpDetails({
+        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+        createdAt: new Date("2024-03-08T08:52:10.801Z"),
+        a: {
+          r: "/multisig/icp",
+          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+        },
+      })
+    ).rejects.toThrowError(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
+  });
+
+  test("cannot get multi-sig details from an unknown sender (missing metadata)", async () => {
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([
+        {
+          exn: {
+            a: {
+              name: "signifyName",
+              smids: [
+                "id1",
+                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+                "senderId",
+              ],
+            },
+          },
+        },
+      ]);
+    // @TODO - foconnor: This is not ideal as our identifier service is getting tightly coupled with the connection service.
+    // Re-work this later.
+    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+      .fn()
+      .mockImplementation(() => {
+        throw new Error("Some error from connection service");
+      });
+    await expect(
+      identifierService.getMultisigIcpDetails({
+        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+        createdAt: new Date("2024-03-08T08:52:10.801Z"),
+        a: {
+          r: "/multisig/icp",
+          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+        },
+      })
+    ).rejects.toThrowError("Some error from connection service");
+  });
+
+  test("cannot get multi-sig details from a notification with no matching exn message", async () => {
+    agent.modules.signify.getMultisigMessageBySaid = jest
+      .fn()
+      .mockResolvedValue([]);
+    await expect(
+      identifierService.getMultisigIcpDetails({
+        id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
+        createdAt: new Date("2024-03-08T08:52:10.801Z"),
+        a: {
+          r: "/multisig/icp",
+          d: "EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW",
+        },
+      })
+    ).rejects.toThrowError(
+      `${IdentifierService.EXN_MESSAGE_NOT_FOUND} EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW`
+    );
   });
 });

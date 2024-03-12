@@ -10,6 +10,7 @@ import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
 import { IdentifierCardDetails } from "../../pages/IdentifierCardDetails";
 import { AriesAgent } from "../../../core/agent/agent";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
+import { ConfigurationService } from "../../../core/configuration";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[1].id;
 
@@ -70,6 +71,10 @@ const storeMocked2 = {
 };
 
 describe("Cards Details page", () => {
+  beforeAll(async () => {
+    await new ConfigurationService().start();
+  });
+
   test("It renders Keri Card Details", async () => {
     const { getByText, getByTestId, getAllByTestId } = render(
       <Provider store={storeMocked}>

@@ -4,6 +4,8 @@ import { IdentifierCardInfoKeriProps } from "./IdentifierCardInfoKeri.types";
 import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
 import { CardDetailsBlock, CardDetailsItem } from "../CardDetailsElements";
 import { i18n } from "../../../i18n";
+import { ConfigurationService } from "../../../core/configuration";
+import { WitnessMode } from "../../../core/configuration/configurationService.types";
 
 const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
   return (
@@ -120,7 +122,7 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
           />
         </CardDetailsBlock>
       )}
-      {cardData.b.length && (
+      {cardData.b.length > 0 && (
         <CardDetailsBlock
           title={i18n.t("identifiers.card.details.backerslist.title")}
         >
@@ -137,17 +139,20 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
           })}
         </CardDetailsBlock>
       )}
-      <CardDetailsBlock
-        title={i18n.t("identifiers.card.details.backeraddress.title")}
-      >
-        <CardDetailsItem
-          info={SignifyApi.BACKER_ADDRESS}
-          copyButton={true}
-          icon={personCircleOutline}
-          // @TODO - foconnor: This metadata in the future should come with Signify, for now we are "assuming" the address.
-          testId="copy-button-backer-address"
-        />
-      </CardDetailsBlock>
+
+      {ConfigurationService.env.keri.backerType === WitnessMode.LEDGER && (
+        <CardDetailsBlock
+          title={i18n.t("identifiers.card.details.backeraddress.title")}
+        >
+          <CardDetailsItem
+            info={ConfigurationService.env.keri.ledger.address}
+            copyButton={true}
+            icon={personCircleOutline}
+            // @TODO - foconnor: This metadata in the future should come with Signify, for now we are "assuming" the address.
+            testId="copy-button-backer-address"
+          />
+        </CardDetailsBlock>
+      )}
     </>
   );
 };

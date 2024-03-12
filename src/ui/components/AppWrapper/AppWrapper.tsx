@@ -54,6 +54,7 @@ import {
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
+import { ConfigurationService } from "../../../core/configuration";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -252,6 +253,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
     }
 
+    await new ConfigurationService().start();
+
     try {
       await AriesAgent.agent.start();
     } catch (e) {
@@ -344,7 +347,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
     });
-    AriesAgent.agent.signifyNotification.onNotificationKeriStateChanged(
+    AriesAgent.agent.signifyNotifications.onNotificationKeriStateChanged(
       (event) => {
         return keriNotificationsChangeHandler(event, dispatch);
       }

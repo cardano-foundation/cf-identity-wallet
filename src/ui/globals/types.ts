@@ -31,6 +31,7 @@ enum OperationType {
 
 enum ToastMsgType {
   COPIED_TO_CLIPBOARD = "copiedToClipboard",
+  IDENTIFIER_REQUESTED = "identifierRequested",
   IDENTIFIER_CREATED = "identifierCreated",
   IDENTIFIER_UPDATED = "identifierUpdated",
   IDENTIFIER_DELETED = "identifierDeleted",

@@ -10,6 +10,7 @@ import { CardType } from "../../globals/types";
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
 import { CredCardTemplate } from "../CredCardTemplate";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -56,7 +57,7 @@ const CardsStack = ({
     );
   };
 
-  const handleShowCardDetails = (index: number) => {
+  const handleShowCardDetails = async (index: number) => {
     setIsActive(true);
     let pathname = "";
 

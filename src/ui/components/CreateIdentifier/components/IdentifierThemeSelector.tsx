@@ -3,9 +3,9 @@ import { checkmark } from "ionicons/icons";
 import {
   IdentifierThemeSelectorProps,
   ThemeItemProps,
-} from "./IdentifierThemeSelector.types";
+} from "../CreateIdentifier.types";
 import "./IdentifierThemeSelector.scss";
-import { IDENTIFIER_BG_MAPPING } from "../../globals/types";
+import { IDENTIFIER_BG_MAPPING } from "../../../globals/types";
 
 const IdentifierThemeSelector = ({
   identifierType,

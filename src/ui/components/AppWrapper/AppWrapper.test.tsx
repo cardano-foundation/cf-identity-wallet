@@ -64,7 +64,7 @@ jest.mock("../../../core/agent/agent", () => ({
         onBasicMessageStateChanged: jest.fn(),
         pickupMessagesFromMediator: jest.fn(),
       },
-      signifyNotification: {
+      signifyNotifications: {
         onNotificationKeriStateChanged: jest.fn(),
       },
     },

@@ -12,7 +12,6 @@ import {
   heart,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -50,6 +49,8 @@ import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate"
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { PageFooter } from "../../components/PageFooter";
 import "../../components/CardDetailsElements/CardDetails.scss";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import { PageHeader } from "../../components/PageHeader";
 
 const IdentifierCardDetails = () => {
   const pageId = "identifier-card-details";
@@ -219,13 +220,17 @@ const IdentifierCardDetails = () => {
   };
 
   return (
-    <TabLayout
+    <ScrollablePageLayout
       pageId={pageId}
       customClass="card-details"
-      header={true}
-      doneLabel={`${i18n.t("identifiers.card.details.done")}`}
-      doneAction={handleDone}
-      additionalButtons={<AdditionalButtons />}
+      header={
+        <PageHeader
+          closeButton={true}
+          closeButtonLabel={`${i18n.t("identifiers.card.details.done")}`}
+          closeButtonAction={() => handleDone()}
+          additionalButtons={<AdditionalButtons />}
+        />
+      }
     >
       {!cardData ? (
         <div
@@ -306,7 +311,7 @@ const IdentifierCardDetails = () => {
         setIsOpen={setVerifyPasscodeIsOpen}
         onVerify={handleDelete}
       />
-    </TabLayout>
+    </ScrollablePageLayout>
   );
 };
 

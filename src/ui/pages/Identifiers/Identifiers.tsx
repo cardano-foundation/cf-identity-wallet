@@ -15,6 +15,10 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
 import { CardType } from "../../globals/types";
 import { Connections } from "../Connections";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
+import "./Identifiers.scss";
+import { IdentifiersList } from "./components/IdentifiersList";
+import { AriesAgent } from "../../../core/agent/agent";
 
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
@@ -60,7 +64,17 @@ const Identifiers = () => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
   const favouritesIdentifiers = useAppSelector(getFavouritesIdentifiersCache);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [favIdentifiers, setFavIdentifiers] = useState<
+    IdentifierShortDetails[]
+  >([]);
+  const [allIdentifiers, setAllIdentifiers] = useState<
+    IdentifierShortDetails[]
+  >([]);
+  const [pendingIdentifiers, setPendingIdentifiers] = useState<
+    IdentifierShortDetails[]
+  >([]);
+  const [createIdentifierModalIsOpen, setCreateIdentifierModalIsOpen] =
+    useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [showConnections, setShowConnections] = useState(false);
 
@@ -70,32 +84,48 @@ const Identifiers = () => {
 
   useEffect(() => {
     setShowPlaceholder(identifiersData.length === 0);
-  }, [identifiersData]);
+    setFavIdentifiers(
+      identifiersData.filter((identifier) =>
+        favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
+      )
+    );
+    setAllIdentifiers(
+      identifiersData
+        .filter((identifier) => !identifier.isPending)
+        .filter(
+          (identifier) =>
+            !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
+        )
+    );
+    setPendingIdentifiers(
+      identifiersData.filter((identifier) => identifier.isPending)
+    );
+  }, [favouritesIdentifiers, identifiersData]);
 
   const findTimeById = (id: string) => {
     const found = favouritesIdentifiers?.find((item) => item.id === id);
     return found ? found.time : null;
   };
 
-  const favIdentifiers = identifiersData.filter((identifier) =>
-    favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-  );
-
   const sortedFavIdentifiers = favIdentifiers.sort((a, b) => {
     const timeA = findTimeById(a.id);
     const timeB = findTimeById(b.id);
-
     if (timeA === null && timeB === null) return 0;
     if (timeA === null) return 1;
     if (timeB === null) return -1;
-
     return timeA - timeB;
   });
 
-  const allIdentifiers = identifiersData.filter(
-    (identifier) =>
-      !favouritesIdentifiers?.some((fav) => fav.id === identifier.id)
-  );
+  const handlePendingClick = async (identifier: IdentifierShortDetails) => {
+    // @TODO - sdisalvo: This is a temporary fix Patrick initially added to the CardStack
+    // and I moved it here since PendingIdentifiers are never going to show up in the stack.
+    /**The below code only return false if the identifier is a multisig and it is not ready */
+    const checkMultisigComplete =
+      await AriesAgent.agent.identifiers.checkMultisigComplete(identifier.id);
+    if (!checkMultisigComplete) {
+      return;
+    }
+  };
 
   return (
     <>
@@ -110,14 +140,14 @@ const Identifiers = () => {
         additionalButtons={
           <AdditionalButtons
             handleConnections={() => setShowConnections(true)}
-            handleCreateIdentifier={() => setModalIsOpen(true)}
+            handleCreateIdentifier={() => setCreateIdentifierModalIsOpen(true)}
           />
         }
         placeholder={
           showPlaceholder && (
             <CardsPlaceholder
               buttonLabel={i18n.t("identifiers.tab.create")}
-              buttonAction={() => setModalIsOpen(true)}
+              buttonAction={() => setCreateIdentifierModalIsOpen(true)}
               testId={pageId}
             />
           )
@@ -126,39 +156,49 @@ const Identifiers = () => {
         {!showPlaceholder && (
           <>
             {!!favIdentifiers.length && (
-              <>
+              <div className="identifiers-tab-content-block">
                 {allIdentifiers.length ? (
-                  <div className="cards-title">
-                    {i18n.t("creds.tab.favourites")}
-                  </div>
+                  <h3>{i18n.t("creds.tab.favourites")}</h3>
                 ) : null}
                 <CardsStack
                   name="favs"
                   cardsType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
                 />
-              </>
+              </div>
             )}
             {!!allIdentifiers.length && (
-              <>
+              <div className="identifiers-tab-content-block">
                 {!!favIdentifiers.length && (
-                  <div className="cards-title cards-title-all">
-                    {i18n.t("identifiers.tab.allidentifiers")}
-                  </div>
+                  <h3>{i18n.t("identifiers.tab.allidentifiers")}</h3>
                 )}
                 <CardsStack
                   name="allidentifiers"
                   cardsType={CardType.IDENTIFIERS}
                   cardsData={allIdentifiers}
                 />
-              </>
+              </div>
+            )}
+            {!!pendingIdentifiers.length && (
+              <div className="identifiers-tab-content-block">
+                <h3>{i18n.t("identifiers.tab.pendingidentifiers")}</h3>
+                <IdentifiersList
+                  identifiers={pendingIdentifiers}
+                  showDate={true}
+                  handleClick={async (identifier) =>
+                    handlePendingClick(identifier)
+                  }
+                />
+              </div>
             )}
           </>
         )}
       </TabLayout>
       <CreateIdentifier
-        modalIsOpen={modalIsOpen}
-        setModalIsOpen={(isOpen: boolean) => setModalIsOpen(isOpen)}
+        modalIsOpen={createIdentifierModalIsOpen}
+        setModalIsOpen={(isOpen: boolean) =>
+          setCreateIdentifierModalIsOpen(isOpen)
+        }
       />
     </>
   );

@@ -27,16 +27,29 @@
     }
   }
 
-  .tab-header,
+  .page-header,
   .card-details-content {
     -webkit-animation: fadein 0.7s; /* Safari, Chrome and Opera > 12.1 */
     animation: fadein 0.7s;
   }
 
   ion-header ion-toolbar {
-    ion-button.button,
-    ion-button.button.md {
+    --background: var(--ion-color-light-grey);
+
+    ion-button:not(.close-button-label),
+    ion-button.md:not(.close-button-label) {
+      width: 2.8125rem;
+      height: 2.8125rem;
+      border-radius: 1.5rem;
       background: var(--ion-color-light);
+
+      &:not(:first-child) {
+        margin-left: 0.5rem;
+      }
+
+      &::part(native) {
+        padding: 0.5rem;
+      }
 
       &.heart-button-favourite {
         background: rgba(var(--ion-color-danger-rgb), 0.15) !important;
@@ -45,6 +58,20 @@
           color: var(--ion-color-danger);
         }
       }
+    }
+  }
+
+  &.archived-credential {
+    .action-button-label,
+    .action-button-label.md {
+      background: none;
+    }
+  }
+
+  ion-content.scrollable-page-content,
+  ion-content.scrollable-page-content.md {
+    > *:first-child {
+      margin-top: 1.5rem;
     }
   }
 
@@ -57,6 +84,7 @@
       width: 100%;
       overflow: hidden;
       white-space: nowrap;
+      color: var(--ion-color-primary);
 
       strong {
         text-transform: capitalize;
@@ -91,6 +119,10 @@
         padding-bottom: 1rem;
         border-radius: 0 0 1rem 1rem;
       }
+
+      span {
+        font-weight: 400;
+      }
     }
 
     > * {
@@ -98,17 +130,22 @@
     }
 
     .card-details-info-block {
-      h3 {
+      > h4 {
         margin: 0.938rem;
         font-weight: 500;
       }
 
       .card-details-info-block-inner {
+        margin: 0;
         display: flex;
-        flex-direction: column;
-        background-color: white;
+        background: white;
         border-radius: 1rem;
-        padding: 1.15rem;
+        flex-direction: column;
+        justify-content: space-evenly;
+        padding: 0.5rem 1.25rem;
+        box-shadow: none;
+        --inner-border-width: 0;
+        margin-bottom: 1.5rem;
 
         > * {
           min-height: 1.445rem;
@@ -116,6 +153,14 @@
           &:not(:last-child) {
             margin-bottom: 0.85rem;
           }
+        }
+
+        &:first-child {
+          margin-right: 1rem;
+        }
+
+        h4 {
+          font-weight: 500;
         }
 
         .card-details-info-block-line {
@@ -138,6 +183,7 @@
 
           .card-details-info-block-data {
             width: 100%;
+            margin: 0.813rem 0;
             overflow: hidden;
             white-space: nowrap;
             --mask: linear-gradient(
@@ -153,6 +199,10 @@
         }
 
         > .card-details-json-row {
+          span span {
+            font-weight: 400;
+          }
+
           > * {
             --mask: linear-gradient(
               to right,
@@ -195,19 +245,41 @@
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
+    &.archived-credential {
+      .action-button-label,
+      .action-button-label.md {
+        font-size: 0.8rem;
+      }
+    }
+
+    ion-header ion-toolbar {
+      ion-button:not(.close-button-label),
+      ion-button.md:not(.close-button-label) {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 1.275rem;
+      }
+    }
+
+    ion-content.scrollable-page-content,
+    ion-content.scrollable-page-content.md {
+      > *:first-child {
+        margin-top: 1.275rem;
+      }
+    }
+
     .card-details-content {
       > * {
         margin: 1.326rem 0 0.85rem;
       }
 
       .card-details-info-block {
-        h3 {
+        > h4 {
           margin: 0.798rem;
         }
 
         .card-details-info-block-inner {
-          border-radius: 0.85rem;
-          padding: 0.978rem;
+          padding: 0.5rem 1rem;
 
           > * {
             min-height: 1.156rem;
@@ -225,6 +297,10 @@
             .card-details-info-block-icon,
             .card-details-info-block-text-icon {
               margin-right: 0.799rem;
+            }
+
+            .card-details-info-block-data {
+              margin: 0.5rem 0;
             }
           }
 
