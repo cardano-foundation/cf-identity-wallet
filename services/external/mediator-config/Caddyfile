@@ -25,7 +25,7 @@
         	Access-Control-Allow-Headers *
         	defer
     	}	
-		reverse_proxy http://mediator:3000 {
+		reverse_proxy http://mediator:3001 {
         	header_down -Access-Control-Allow-Origin
     	}
 		respond @options 204
