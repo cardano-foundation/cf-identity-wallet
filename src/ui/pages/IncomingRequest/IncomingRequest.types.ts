@@ -1,9 +1,8 @@
+import { IncomingRequestProps } from "../../../store/reducers/stateCache/stateCache.types";
+
 interface RequestProps {
   pageId: string;
-  requestData: {
-    label: string;
-    logo?: string;
-  };
+  requestData: IncomingRequestProps;
   handleAccept: () => void;
   handleCancel: () => void;
   incomingRequestType?: string;

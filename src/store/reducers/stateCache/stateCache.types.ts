@@ -1,4 +1,5 @@
 import { ConnectionType } from "../../../core/agent/agent.types";
+import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifierService.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 
 interface PayloadData<T = any> {
@@ -30,6 +31,7 @@ interface IncomingRequestProps {
   logo?: string;
   label?: string;
   source?: ConnectionType;
+  multisigIcpDetails?: MultiSigIcpRequestDetails;
 }
 
 interface QueueProps<T> {

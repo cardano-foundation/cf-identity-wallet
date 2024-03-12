@@ -8,7 +8,10 @@ import {
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { DIDCommRequestType, OperationType } from "../../globals/types";
-import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
+import {
+  IncomingRequestProps,
+  IncomingRequestType,
+} from "../../../store/reducers/stateCache/stateCache.types";
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { ResponsivePageLayout } from "../../components/layout/ResponsivePageLayout";
 import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
@@ -21,25 +24,14 @@ const IncomingRequest = () => {
   const pageId = "incoming-request";
   const dispatch = useAppDispatch();
   const queueIncomingRequest = useAppSelector(getQueueIncomingRequest);
-  // const incomingRequest = !queueIncomingRequest.isProcessing
-  //   ? { id: "" }
-  //   : queueIncomingRequest.queues[0] ?? { id: "" };
+  const incomingRequest = !queueIncomingRequest.isProcessing
+    ? { id: "" }
+    : queueIncomingRequest.queues[0] ?? { id: "" };
   const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
-  const [requestData, setRequestData] = useState<{
-    label: string;
-    logo?: string;
-  }>();
+  const [requestData, setRequestData] = useState<IncomingRequestProps>();
   const [requestType, setRequestType] = useState<DIDCommRequestType>();
   const RESET_DELAY = 4000;
-
-  const incomingRequest = {
-    id: "abcd",
-    type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-    label: "label",
-    logo: CardanoLogo,
-    source: ConnectionType.KERI,
-  };
 
   useEffect(() => {
     async function handle() {
@@ -49,8 +41,9 @@ const IncomingRequest = () => {
           incomingRequest.type === IncomingRequestType.CONNECTION_RESPONSE
         ) {
           setRequestData({
-            label: incomingRequest.label as string,
-            logo: incomingRequest.logo as string,
+            id: incomingRequest.id,
+            label: incomingRequest.label,
+            logo: incomingRequest.logo,
           });
           setRequestType(DIDCommRequestType.CONNECTION);
         } else if (
@@ -58,20 +51,33 @@ const IncomingRequest = () => {
         ) {
           if (incomingRequest.label) {
             setRequestData({
+              id: incomingRequest.id,
               label: incomingRequest.label,
               logo: incomingRequest.logo,
             });
           } else {
             // @TODO: handle case when connectionId is not present
-            setRequestData({ label: "W3C" });
+            setRequestData({
+              id: incomingRequest.id,
+              label: "W3C",
+            });
           }
           setRequestType(DIDCommRequestType.CREDENTIAL);
+        } else if (
+          incomingRequest.type ===
+          IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
+        ) {
+          // TODO: handle case when incomingRequest.type is MultiSig
         }
         setShowRequest(true);
       }
     }
     void handle();
-    setRequestData({ label: "label", logo: CardanoLogo });
+    setRequestData({
+      id: incomingRequest.id,
+      label: "label",
+      logo: CardanoLogo,
+    });
   }, [incomingRequest.id]);
 
   const handleReset = () => {
