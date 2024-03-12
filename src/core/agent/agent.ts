@@ -161,6 +161,9 @@ class AriesAgent {
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
     this.agent.registerOutboundTransport(new WsOutboundTransport());
     this.signifyApi = new SignifyApi();
+    this.basicRecordStorage = Capacitor.isNativePlatform()
+      ? new SqliteStorage()
+      : new IonicStorage();
   }
 
   static get agent() {
@@ -172,9 +175,6 @@ class AriesAgent {
 
   async start(): Promise<void> {
     if (!AriesAgent.ready) {
-      this.basicRecordStorage = Capacitor.isNativePlatform()
-        ? new SqliteStorage()
-        : new IonicStorage();
       await this.basicRecordStorage.open(config.walletConfig?.id || "idw");
       await this.agent.initialize();
       await this.signifyApi.start();
