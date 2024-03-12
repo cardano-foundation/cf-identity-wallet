@@ -1,9 +1,6 @@
 .incoming-request {
   display: flex !important;
-
-  ion-header ion-toolbar {
-    --background: var(--ion-color-light);
-  }
+  margin-bottom: 6.25rem;
 
   &.show {
     transform: translate3d(0, 0, 0);
@@ -18,19 +15,25 @@
     }
   }
 
-  .responsive-page-content {
-    justify-content: space-around;
+  ion-header ion-toolbar {
+    margin-top: 0.625rem;
+    --background: var(--ion-color-light);
+
+    ion-title.md {
+      margin-left: -3rem;
+    }
   }
 
   h2 {
     text-align: center;
   }
 
-  p.multi-sig-request-subtitle {
+  p.multisig-request-subtitle {
     text-align: center;
+    margin: 0.8rem auto 1.75rem;
   }
 
-  .multi-sig-request-section {
+  .multisig-request-section {
     h4 {
       margin: 0.938rem;
       font-weight: 500;
@@ -49,43 +52,76 @@
       margin-bottom: 1.5rem;
 
       ion-list {
-        padding: 0;
-      }
-
-      ion-item.request-item {
-        --min-height: 3rem;
-        --inner-padding-end: 0px;
-
-        &::part(native) {
+        ion-grid {
           padding: 0;
-        }
 
-        ion-icon {
-          font-size: 1.5rem;
+          ion-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0;
 
-          &:first-child {
-            margin-right: 1rem;
+            ion-col {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+              padding: 0;
+            }
           }
-
-          &:last-child {
-            color: var(--ion-color-dark-grey);
-          }
         }
 
-        ion-icon,
-        ion-label,
-        ion-note {
-          color: var(--ion-color-secondary);
-        }
-
-        ion-note {
-          font-size: 1rem;
-          opacity: 70%;
-        }
-
-        ion-label {
-          margin: 0.813rem 0;
+        ion-item {
+          --inner-padding-end: 0;
           font-weight: 500;
+
+          &::part(native) {
+            padding: 0;
+          }
+
+          &:not(:last-child) {
+            margin-bottom: 0.5rem;
+          }
+        }
+
+        ion-col {
+          &.multisig-connection-logo {
+            position: relative;
+
+            img {
+              width: 2rem;
+              border-radius: 2rem;
+            }
+          }
+
+          &.multisig-connection-info {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            ion-label {
+              display: flex;
+              flex-direction: column;
+              justify-content: center;
+            }
+          }
+
+          ion-chip {
+            width: 6rem;
+            height: 1.9rem;
+            font-weight: 400;
+            margin: 0.3rem auto;
+            border-radius: 0.5rem;
+            padding-inline: 0.62rem;
+
+            &.accepted {
+              background: var(--ion-color-primary-gradient);
+            }
+
+            span {
+              text-transform: capitalize;
+              margin-right: 4px;
+              font-size: 0.8rem;
+            }
+          }
         }
       }
     }
@@ -251,22 +287,17 @@
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
-    .request-info-row,
-    .request-status {
-      ion-col {
-        span {
-          font-size: 0.7rem;
-        }
+    ion-header ion-toolbar {
+      margin-top: 0.531rem;
 
-        strong {
-          font-size: 0.8rem;
-        }
+      ion-title.md {
+        margin-left: -2rem;
       }
     }
 
-    .multi-sig-request-section {
-      ion-card {
-        padding: 0.5rem 1rem;
+    .multisig-request-section {
+      h4 {
+        margin: 0.798rem;
       }
 
       h4,
@@ -274,27 +305,35 @@
         font-size: 0.8rem !important;
       }
 
-      h4 {
-        margin: 0.798rem;
-      }
+      ion-card {
+        padding: 0.4rem 1rem;
 
-      ion-item.request-item {
-        --min-height: 2.4rem;
+        ion-item.multisig-request-item {
+          --min-height: 2.4rem;
 
-        ion-icon {
-          font-size: 1.2rem;
-
-          &:first-child {
-            margin: 0 0.8rem 0 0;
+          .multisig-connection-logo img {
+            width: 1.6rem;
+            border-radius: 1.6rem;
           }
 
-          &:last-child {
-            margin: 0 0 0 0.8rem;
+          ion-label {
+            font-size: 0.8rem;
           }
-        }
 
-        ion-label {
-          margin: 0.65rem 0;
+          ion-chip {
+            width: 4.8rem;
+            height: 1.52rem;
+            padding-inline: 0.5rem;
+
+            ion-icon {
+              height: 0.8rem;
+              margin-inline-end: 0.25rem;
+            }
+
+            span {
+              font-size: 0.64rem;
+            }
+          }
         }
       }
     }
@@ -426,5 +465,18 @@
       animation-delay: 1.5s;
       animation: translateFooterDownAnimation 1.5s forwards;
     }
+  }
+}
+
+ion-toolbar.multisig-request-footer {
+  --background: var(--ion-color-light);
+  z-index: 1000;
+  bottom: calc(-100vh + 8.5rem);
+  padding-inline: 0.9rem;
+}
+
+@media screen and (min-width: 250px) and (max-width: 370px) {
+  ion-toolbar.multisig-request-footer {
+    bottom: calc(-100vh + 6.25rem);
   }
 }

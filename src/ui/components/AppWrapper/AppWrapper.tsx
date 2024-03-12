@@ -415,7 +415,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         multisigIcpDetails: {
           ourIdentifier: filteredKeriFix[0],
           sender: connectionsFix[3],
-          otherConnections: [connectionsFix[3]],
+          otherConnections: [connectionsFix[4], connectionsFix[5]],
           threshold: 1,
         },
       })

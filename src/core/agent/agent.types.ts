@@ -1,5 +1,4 @@
 import { BaseEvent } from "@aries-framework/core";
-import { IdentifierMetadataRecordProps } from "./modules";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -12,6 +11,7 @@ enum Blockchain {
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
+  ACCEPTED = "accepted",
 }
 
 enum GenericRecordType {

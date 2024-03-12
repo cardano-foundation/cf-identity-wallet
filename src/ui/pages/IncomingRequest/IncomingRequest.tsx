@@ -65,8 +65,6 @@ const IncomingRequest = () => {
         ) {
           setRequestData({
             id: incomingRequest.id,
-            label: incomingRequest.label,
-            logo: incomingRequest.logo,
             multisigIcpDetails: incomingRequest.multisigIcpDetails,
           });
         }
