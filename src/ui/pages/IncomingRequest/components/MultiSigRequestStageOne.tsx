@@ -1,47 +1,42 @@
 import {
-  personCircleOutline,
-  hourglassOutline,
-  checkmark,
-} from "ionicons/icons";
-import i18next from "i18next";
-import { useEffect, useState } from "react";
-import {
   IonCard,
-  IonChip,
-  IonCol,
-  IonGrid,
-  IonIcon,
-  IonItem,
-  IonLabel,
   IonList,
+  IonItem,
+  IonGrid,
   IonRow,
+  IonCol,
+  IonLabel,
+  IonChip,
+  IonIcon,
 } from "@ionic/react";
-import { i18n } from "../../../../i18n";
-import { PageFooter } from "../../../components/PageFooter";
-import { RequestProps } from "../IncomingRequest.types";
+import { hourglassOutline, checkmark } from "ionicons/icons";
+import { useState } from "react";
 import {
   Alert as AlertAccept,
   Alert as AlertDecline,
 } from "../../../components/Alert";
-import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
-import { PageHeader } from "../../../components/PageHeader";
+import { i18n } from "../../../../i18n";
 import { ConnectionStatus } from "../../../../core/agent/agent.types";
 import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
+import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
+import { PageFooter } from "../../../components/PageFooter";
+import { RequestProps } from "../IncomingRequest.types";
+import { PageHeader } from "../../../components/PageHeader";
 
-const MultiSigRequest = ({
+const MultiSigRequestStageOne = ({
   pageId,
   requestData,
   initiateAnimation,
-  handleAccept,
   handleCancel,
   handleIgnore,
+  setRequestStage,
 }: RequestProps) => {
   const [alertAcceptIsOpen, setAlertAcceptIsOpen] = useState(false);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
 
   const actionAccept = () => {
     setAlertAcceptIsOpen(false);
-    handleAccept();
+    setRequestStage && setRequestStage(1);
   };
 
   const actionDecline = () => {
@@ -207,4 +202,4 @@ const MultiSigRequest = ({
   );
 };
 
-export { MultiSigRequest };
+export { MultiSigRequestStageOne };

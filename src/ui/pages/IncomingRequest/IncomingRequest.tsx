@@ -7,7 +7,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { DIDCommRequestType, OperationType } from "../../globals/types";
+import { OperationType } from "../../globals/types";
 import {
   IncomingRequestProps,
   IncomingRequestType,
@@ -26,53 +26,14 @@ const IncomingRequest = () => {
   const [showRequest, setShowRequest] = useState(false);
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [requestData, setRequestData] = useState<IncomingRequestProps>();
-  const [requestType, setRequestType] = useState<DIDCommRequestType>();
-  const RESET_DELAY = 4000;
+  const ANIMATION_DELAY = 4000;
 
   useEffect(() => {
-    async function handle() {
-      if (incomingRequest.id.length > 0) {
-        if (
-          incomingRequest.type === IncomingRequestType.CONNECTION_INCOMING ||
-          incomingRequest.type === IncomingRequestType.CONNECTION_RESPONSE
-        ) {
-          setRequestData({
-            id: incomingRequest.id,
-            label: incomingRequest.label,
-            logo: incomingRequest.logo,
-          });
-          setRequestType(DIDCommRequestType.CONNECTION);
-        } else if (
-          incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
-        ) {
-          if (incomingRequest.label) {
-            setRequestData({
-              id: incomingRequest.id,
-              label: incomingRequest.label,
-              logo: incomingRequest.logo,
-            });
-          } else {
-            // @TODO: handle case when connectionId is not present
-            setRequestData({
-              id: incomingRequest.id,
-              label: "W3C",
-            });
-          }
-          setRequestType(DIDCommRequestType.CREDENTIAL);
-        } else if (
-          incomingRequest.type ===
-          IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
-        ) {
-          setRequestData({
-            id: incomingRequest.id,
-            multisigIcpDetails: incomingRequest.multisigIcpDetails,
-          });
-        }
-        setShowRequest(true);
-      }
+    if (incomingRequest.id.length > 0) {
+      setRequestData(incomingRequest);
+      setShowRequest(true);
     }
-    void handle();
-  }, [incomingRequest.id]);
+  }, [incomingRequest]);
 
   const handleReset = () => {
     setShowRequest(false);
@@ -107,6 +68,10 @@ const IncomingRequest = () => {
       const updatedConnections =
         await AriesAgent.agent.connections.getConnections();
       dispatch(setConnectionsCache([...updatedConnections]));
+    } else if (
+      incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
+    ) {
+      // @TODO - sdisalvo: will handle sending decline response to the sender of the request
     }
     handleReset();
   };
@@ -127,15 +92,23 @@ const IncomingRequest = () => {
       } else {
         AriesAgent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
       }
+    } else if (
+      incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
+    ) {
+      // @TODO - sdisalvo: will handle sending confirmation to the sender of the request
     }
     setTimeout(() => {
       handleReset();
-    }, RESET_DELAY);
+    }, ANIMATION_DELAY);
   };
 
   const handleIgnore = async () => {
-    setShowRequest(false);
-    dispatch(setCurrentOperation(OperationType.IDLE));
+    if (
+      incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
+    ) {
+      // @TODO - sdisalvo: will handle sending request to a different queue to be actioned at a later stage
+    }
+    handleReset();
   };
 
   return showRequest && requestData ? (
