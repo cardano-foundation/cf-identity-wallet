@@ -337,4 +337,41 @@ describe("Generate Seed Phrase screen from Onboarding", () => {
     fireEvent.ionChange(termsCheckbox, "[checked=\"false\"");
     expect(termsCheckbox.hasAttribute("[checked=\"false\""));
   });
+  test("Display seed number on seed phrase segment", async () => {
+    const initialState = {
+      stateCache: {
+        routes: [RoutePath.GENERATE_SEED_PHRASE],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+        },
+        currentOperation: OperationType.IDLE,
+      },
+      seedPhraseCache: {
+        seedPhrase160: "",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked(initialState)}>
+        <Router history={history}>
+          <GenerateSeedPhrase />
+        </Router>
+      </Provider>
+    );
+
+    const seedPhraseContainer = getByTestId("seed-phrase-container");
+
+    expect(seedPhraseContainer.childNodes.length).toBe(MNEMONIC_FIFTEEN_WORDS);
+
+    await waitFor(() => {
+      const seedNumberElements = seedPhraseContainer.querySelectorAll(
+        "span[data-testid*=\"word-index-number\"]"
+      );
+      expect(seedNumberElements.length).toBe(MNEMONIC_FIFTEEN_WORDS);
+    });
+  });
 });
