@@ -3,3 +3,4 @@ keri:
   ledger:
     aid: BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP
     address: addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm
+enableCredoTs : true

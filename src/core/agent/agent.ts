@@ -16,6 +16,7 @@ import {
 } from "@aries-framework/core";
 import { EventEmitter } from "events";
 import { Capacitor } from "@capacitor/core";
+import { GenericRecordsApi } from "@aries-framework/core/build/modules/generic-records";
 import { CapacitorFileSystem } from "./dependencies";
 import { IonicStorageModule, GeneralStorageModule } from "./modules";
 import { HttpOutboundTransport } from "./transports";
@@ -29,6 +30,10 @@ import {
 } from "./services";
 import { documentLoader } from "./documentLoader";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
+import { BasicStoragesApi } from "../storage/storage.types";
+import { ConfigurationService } from "../configuration";
+import { SqliteStorage } from "../storage/sqliteStorage";
+import { IonicStorage } from "../storage/ionicStorage";
 
 const config: InitConfig = {
   label: "idw-agent",
@@ -80,6 +85,7 @@ const agentModules = {
 class AriesAgent {
   private static instance: AriesAgent;
   private readonly agent!: Agent<typeof agentModules>;
+  private basicRecordStorage!: GenericRecordsApi | BasicStoragesApi;
   static ready = false;
 
   // @TODO - foconnor: Registering these should be more generic, but OK for now
@@ -91,28 +97,40 @@ class AriesAgent {
 
   get identifiers() {
     if (!this.identifierService) {
-      this.identifierService = new IdentifierService(this.agent);
+      this.identifierService = new IdentifierService(
+        this.agent,
+        this.basicRecordStorage
+      );
     }
     return this.identifierService;
   }
 
   get connections() {
     if (!this.connectionService) {
-      this.connectionService = new ConnectionService(this.agent);
+      this.connectionService = new ConnectionService(
+        this.agent,
+        this.basicRecordStorage
+      );
     }
     return this.connectionService;
   }
 
   get messages() {
     if (!this.messageService) {
-      this.messageService = new MessageService(this.agent);
+      this.messageService = new MessageService(
+        this.agent,
+        this.basicRecordStorage
+      );
     }
     return this.messageService;
   }
 
   get credentials() {
     if (!this.credentialService) {
-      this.credentialService = new CredentialService(this.agent);
+      this.credentialService = new CredentialService(
+        this.agent,
+        this.basicRecordStorage
+      );
     }
     return this.credentialService;
   }
@@ -124,7 +142,8 @@ class AriesAgent {
   get signifyNotifications() {
     if (!this.signifyNotificationService) {
       this.signifyNotificationService = new SignifyNotificationService(
-        this.agent
+        this.agent,
+        this.basicRecordStorage
       );
     }
     return this.signifyNotificationService;
@@ -149,7 +168,16 @@ class AriesAgent {
 
   async start(): Promise<void> {
     if (!AriesAgent.ready) {
-      await this.agent.initialize();
+      if (ConfigurationService.env.enableCredoTs) {
+        this.basicRecordStorage = this.genericRecords;
+      } else {
+        this.basicRecordStorage = Capacitor.isNativePlatform()
+          ? new SqliteStorage()
+          : new IonicStorage();
+        await this.basicRecordStorage.open(config.walletConfig?.id || "idw");
+      }
+      await this.agent.initialize(); // TODO: must remove it when enableCredoTs is false
+
       await this.agent.modules.signify.start();
       AriesAgent.ready = true;
     }

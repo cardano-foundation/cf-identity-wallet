@@ -29,6 +29,7 @@ import { AgentService } from "./agentService";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { AriesAgent } from "../agent";
 import { IdentifierType } from "./identifierService.types";
+import { BasicRecord } from "../../storage/storage.types";
 
 const SERVER_GET_SHORTEN_URL =
   // eslint-disable-next-line no-undef
@@ -272,7 +273,7 @@ class ConnectionService extends AgentService {
   }
 
   private getConnectionKeriShortDetails(
-    record: GenericRecord
+    record: GenericRecord | BasicRecord
   ): ConnectionShortDetails {
     return {
       id: record.id,
@@ -304,14 +305,14 @@ class ConnectionService extends AgentService {
     connectionType?: ConnectionType
   ): Promise<void> {
     if (connectionType === ConnectionType.KERI) {
-      await this.agent.genericRecords.deleteById(id);
+      await this.basicStorage!.deleteById(id);
       await this.agent.modules.signify.deleteContactById(id);
     } else {
       await this.agent.connections.deleteById(id);
     }
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
-      this.agent.genericRecords.deleteById(note.id);
+      this.basicStorage!.deleteById(note.id);
     }
   }
 
@@ -333,7 +334,7 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    await this.agent.genericRecords.save({
+    await this.basicStorage!.save({
       id: utils.uuid(),
       content: note,
       tags: {
@@ -347,18 +348,16 @@ class ConnectionService extends AgentService {
     connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.agent.genericRecords.findById(
-      connectionNoteId
-    );
+    const noteRecord = await this.basicStorage!.findById(connectionNoteId);
     if (!noteRecord) {
       throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
     }
     noteRecord.content = note;
-    await this.agent.genericRecords.update(noteRecord);
+    await this.basicStorage!.update(noteRecord);
   }
 
   async deleteConnectionNoteById(connectionNoteId: string) {
-    return this.agent.genericRecords.deleteById(connectionNoteId);
+    return this.basicStorage!.deleteById(connectionNoteId);
   }
 
   async getKeriOobi(signifyName: string): Promise<string> {
@@ -369,7 +368,7 @@ class ConnectionService extends AgentService {
     connectionId: string,
     metadata?: Record<string, unknown>
   ): Promise<void> {
-    await this.agent.genericRecords.save({
+    await this.basicStorage!.save({
       id: connectionId,
       content: metadata || {},
       tags: {
@@ -380,10 +379,8 @@ class ConnectionService extends AgentService {
 
   private async getConnectionKeriMetadataById(
     connectionId: string
-  ): Promise<GenericRecord> {
-    const connectionKeri = await this.agent.genericRecords.findById(
-      connectionId
-    );
+  ): Promise<GenericRecord | BasicRecord> {
+    const connectionKeri = await this.basicStorage!.findById(connectionId);
     if (!connectionKeri) {
       throw new Error(
         ConnectionService.CONNECTION_KERI_METADATA_RECORD_NOT_FOUND
@@ -392,8 +389,10 @@ class ConnectionService extends AgentService {
     return connectionKeri;
   }
 
-  async getAllConnectionKeriMetadata(): Promise<GenericRecord[]> {
-    const connectionKeris = await this.agent.genericRecords.findAllByQuery({
+  async getAllConnectionKeriMetadata(): Promise<
+    GenericRecord[] | BasicRecord[]
+    > {
+    const connectionKeris = await this.basicStorage!.findAllByQuery({
       type: GenericRecordType.CONNECTION_KERI_METADATA,
     });
     return connectionKeris;
@@ -439,7 +438,9 @@ class ConnectionService extends AgentService {
     const storageContacts = await this.getAllConnectionKeriMetadata();
     const unSyncedData = signifyContacts.filter(
       (contact: KeriContact) =>
-        !storageContacts.find((item) => contact.id === item.id)
+        !(storageContacts as any).find(
+          (item: BasicRecord | GenericRecord) => contact.id == item.id
+        )
     );
     if (unSyncedData.length) {
       //sync the storage with the signify data
@@ -455,7 +456,7 @@ class ConnectionService extends AgentService {
   private async getConnectNotesByConnectionId(
     connectionId: string
   ): Promise<ConnectionNoteDetails[]> {
-    const notes = await this.agent.genericRecords.findAllByQuery({
+    const notes = await this.basicStorage!.findAllByQuery({
       connectionId,
       type: GenericRecordType.CONNECTION_NOTE,
     });
