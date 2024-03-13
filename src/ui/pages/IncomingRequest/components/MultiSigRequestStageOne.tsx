@@ -6,17 +6,13 @@ import {
   IonRow,
   IonCol,
   IonLabel,
-  IonChip,
-  IonIcon,
 } from "@ionic/react";
-import { hourglassOutline, checkmark } from "ionicons/icons";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert as AlertAccept,
   Alert as AlertDecline,
 } from "../../../components/Alert";
 import { i18n } from "../../../../i18n";
-import { ConnectionStatus } from "../../../../core/agent/agent.types";
 import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
 import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../components/PageFooter";
@@ -26,13 +22,18 @@ import { PageHeader } from "../../../components/PageHeader";
 const MultiSigRequestStageOne = ({
   pageId,
   requestData,
-  initiateAnimation,
   handleCancel,
   handleIgnore,
   setRequestStage,
 }: RequestProps) => {
+  const [show, setShow] = useState(false);
+  const ANIMATION_DELAY = 1000;
   const [alertAcceptIsOpen, setAlertAcceptIsOpen] = useState(false);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
+
+  useEffect(() => {
+    setShow(true);
+  }, []);
 
   const actionAccept = () => {
     setAlertAcceptIsOpen(false);
@@ -44,28 +45,33 @@ const MultiSigRequestStageOne = ({
     handleCancel();
   };
 
+  const actionIgnore = () => {
+    setShow(false);
+    setTimeout(() => {
+      handleIgnore && handleIgnore();
+    }, ANIMATION_DELAY);
+  };
+
   return (
     <>
       <ScrollablePageLayout
         pageId={pageId}
         activeStatus={!!requestData}
-        customClass={`${requestData ? "show" : "hide"} ${
-          initiateAnimation ? "animation-on" : "animation-off"
-        }`}
+        customClass={`${show ? "show" : "hide"}`}
         header={
           <PageHeader
             closeButton={true}
-            closeButtonAction={() => handleIgnore && handleIgnore()}
+            closeButtonAction={() => actionIgnore()}
             closeButtonLabel={`${i18n.t("request.button.ignore")}`}
-            title={`${i18n.t("request.multisig.title")}`}
+            title={`${i18n.t("request.multisig.stageone.title")}`}
           />
         }
       >
         <p className="multisig-request-subtitle">
-          {i18n.t("request.multisig.subtitle")}
+          {i18n.t("request.multisig.stageone.subtitle")}
         </p>
         <div className="multisig-request-section">
-          <h4>{i18n.t("request.multisig.requestfrom")}</h4>
+          <h4>{i18n.t("request.multisig.stageone.requestfrom")}</h4>
           <IonCard className="multisig-request-details">
             <IonList lines="none">
               <IonItem className="multisig-request-item">
@@ -98,7 +104,7 @@ const MultiSigRequestStageOne = ({
           </IonCard>
         </div>
         <div className="multisig-request-section">
-          <h4>{i18n.t("request.multisig.othermembers")}</h4>
+          <h4>{i18n.t("request.multisig.stageone.othermembers")}</h4>
           <IonCard className="multisig-request-details">
             <IonList lines="none">
               {requestData.multisigIcpDetails?.otherConnections.map(
@@ -121,32 +127,10 @@ const MultiSigRequestStageOne = ({
                             />
                           </IonCol>
                           <IonCol
-                            size="6.25"
+                            size="10.35"
                             className="multisig-connection-info"
                           >
                             <IonLabel>{connection.label}</IonLabel>
-                          </IonCol>
-                          <IonCol
-                            size="3.75"
-                            className="multisig-connection-status"
-                          >
-                            <IonChip
-                              className={
-                                connection.status === ConnectionStatus.ACCEPTED
-                                  ? "accepted"
-                                  : ""
-                              }
-                            >
-                              <IonIcon
-                                icon={
-                                  connection.status === ConnectionStatus.PENDING
-                                    ? hourglassOutline
-                                    : checkmark
-                                }
-                                color="primary"
-                              />
-                              <span>{connection.status}</span>
-                            </IonChip>
                           </IonCol>
                         </IonRow>
                       </IonGrid>
@@ -158,7 +142,7 @@ const MultiSigRequestStageOne = ({
           </IonCard>
         </div>
         <div className="multisig-request-section">
-          <h4>{i18n.t("request.multisig.threshold")}</h4>
+          <h4>{i18n.t("request.multisig.stageone.threshold")}</h4>
           <IonCard className="multisig-request-details">
             <IonList lines="none">
               <IonItem className="multisig-request-item">
@@ -180,9 +164,11 @@ const MultiSigRequestStageOne = ({
         isOpen={alertAcceptIsOpen}
         setIsOpen={setAlertAcceptIsOpen}
         dataTestId="multisig-request-alert"
-        headerText={i18n.t("request.multisig.alert.textaccept")}
-        confirmButtonText={`${i18n.t("request.multisig.alert.accept")}`}
-        cancelButtonText={`${i18n.t("request.multisig.alert.cancel")}`}
+        headerText={i18n.t("request.multisig.stageone.alert.textaccept")}
+        confirmButtonText={`${i18n.t(
+          "request.multisig.stageone.alert.accept"
+        )}`}
+        cancelButtonText={`${i18n.t("request.multisig.stageone.alert.cancel")}`}
         actionConfirm={() => actionAccept()}
         actionCancel={() => setAlertAcceptIsOpen(false)}
         actionDismiss={() => setAlertAcceptIsOpen(false)}
@@ -191,9 +177,11 @@ const MultiSigRequestStageOne = ({
         isOpen={alertDeclineIsOpen}
         setIsOpen={setAlertDeclineIsOpen}
         dataTestId="multisig-request-alert"
-        headerText={i18n.t("request.multisig.alert.textdecline")}
-        confirmButtonText={`${i18n.t("request.multisig.alert.decline")}`}
-        cancelButtonText={`${i18n.t("request.multisig.alert.cancel")}`}
+        headerText={i18n.t("request.multisig.stageone.alert.textdecline")}
+        confirmButtonText={`${i18n.t(
+          "request.multisig.stageone.alert.decline"
+        )}`}
+        cancelButtonText={`${i18n.t("request.multisig.stageone.alert.cancel")}`}
         actionConfirm={() => actionDecline()}
         actionCancel={() => setAlertDeclineIsOpen(false)}
         actionDismiss={() => setAlertDeclineIsOpen(false)}

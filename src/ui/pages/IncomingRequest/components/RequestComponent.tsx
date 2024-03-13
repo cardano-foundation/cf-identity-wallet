@@ -8,6 +8,8 @@ import { MultiSigRequestStageTwo } from "./MultiSigRequestStageTwo";
 
 const RequestComponent = ({
   pageId,
+  blur,
+  setBlur,
   requestData,
   initiateAnimation,
   handleAccept,
@@ -54,6 +56,8 @@ const RequestComponent = ({
     ) : (
       <MultiSigRequestStageTwo
         pageId={pageId}
+        blur={blur}
+        setBlur={setBlur}
         requestData={requestData}
         initiateAnimation={initiateAnimation}
         handleAccept={handleAccept}
@@ -66,4 +70,4 @@ const RequestComponent = ({
   }
 };
 
-export default RequestComponent;
+export { RequestComponent };

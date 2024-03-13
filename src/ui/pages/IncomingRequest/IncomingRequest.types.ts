@@ -2,6 +2,8 @@ import { IncomingRequestProps } from "../../../store/reducers/stateCache/stateCa
 
 interface RequestProps {
   pageId: string;
+  blur?: boolean;
+  setBlur?: (value: boolean) => void;
   requestData: IncomingRequestProps;
   initiateAnimation: boolean;
   handleAccept: () => void;

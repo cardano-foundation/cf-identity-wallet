@@ -3,18 +3,16 @@ import "./IncomingRequest.scss";
 import {
   getQueueIncomingRequest,
   dequeueCredentialRequest,
-  setCurrentOperation,
 } from "../../../store/reducers/stateCache";
 import { AriesAgent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { OperationType } from "../../globals/types";
 import {
   IncomingRequestProps,
   IncomingRequestType,
 } from "../../../store/reducers/stateCache/stateCache.types";
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
-import RequestComponent from "./components/RequestComponent";
+import { RequestComponent } from "./components/RequestComponent";
 
 const IncomingRequest = () => {
   const pageId = "incoming-request";
@@ -27,6 +25,7 @@ const IncomingRequest = () => {
   const [initiateAnimation, setInitiateAnimation] = useState(false);
   const [requestData, setRequestData] = useState<IncomingRequestProps>();
   const ANIMATION_DELAY = 4000;
+  const [blur, setBlur] = useState(false);
 
   useEffect(() => {
     if (incomingRequest.id.length > 0) {
@@ -35,9 +34,19 @@ const IncomingRequest = () => {
     }
   }, [incomingRequest]);
 
+  useEffect(() => {
+    if (blur) {
+      document?.querySelector("ion-router-outlet")?.classList.add("blur");
+    } else {
+      document?.querySelector("ion-router-outlet")?.classList.remove("blur");
+    }
+  }, [blur]);
+
   const handleReset = () => {
-    setShowRequest(false);
     setInitiateAnimation(false);
+    setShowRequest(false);
+    setBlur(false);
+
     setTimeout(() => {
       dispatch(dequeueCredentialRequest());
     }, 0.5 * 1000);
@@ -71,7 +80,7 @@ const IncomingRequest = () => {
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      // @TODO - sdisalvo: will handle sending decline response to the sender of the request
+      // @TODO - sdisalvo: will handle decline multi-sig request
     }
     handleReset();
   };
@@ -95,7 +104,7 @@ const IncomingRequest = () => {
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      // @TODO - sdisalvo: will handle sending confirmation to the sender of the request
+      // @TODO - sdisalvo: will handle anything else that might be needed for multi-sig
     }
     setTimeout(() => {
       handleReset();
@@ -111,18 +120,22 @@ const IncomingRequest = () => {
     handleReset();
   };
 
-  return showRequest && requestData ? (
-    <RequestComponent
-      pageId={pageId}
-      requestData={requestData}
-      initiateAnimation={initiateAnimation}
-      handleAccept={handleAccept}
-      handleCancel={handleCancel}
-      handleIgnore={handleIgnore}
-      incomingRequestType={incomingRequest.type}
-    />
-  ) : (
-    <></>
+  return (
+    <>
+      {showRequest && requestData && (
+        <RequestComponent
+          pageId={pageId}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={requestData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={incomingRequest.type}
+        />
+      )}
+    </>
   );
 };
 

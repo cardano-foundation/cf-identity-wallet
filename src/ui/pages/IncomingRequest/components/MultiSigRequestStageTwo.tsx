@@ -1,202 +1,114 @@
-import {
-  IonCard,
-  IonList,
-  IonItem,
-  IonGrid,
-  IonRow,
-  IonCol,
-  IonLabel,
-  IonChip,
-  IonIcon,
-} from "@ionic/react";
-import { hourglassOutline, checkmark } from "ionicons/icons";
-import { useState } from "react";
-import {
-  Alert as AlertAccept,
-  Alert as AlertDecline,
-} from "../../../components/Alert";
+import { IonSpinner } from "@ionic/react";
+import { useEffect, useState } from "react";
 import { i18n } from "../../../../i18n";
-import { ConnectionStatus } from "../../../../core/agent/agent.types";
-import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
 import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
 import { PageHeader } from "../../../components/PageHeader";
+import { IdentifierThemeSelector } from "../../../components/CreateIdentifier/components/IdentifierThemeSelector";
+import { CustomInput } from "../../../components/CustomInput";
+import { ErrorMessage } from "../../../components/ErrorMessage";
+import { AriesAgent } from "../../../../core/agent/agent";
 
 const MultiSigRequestStageTwo = ({
   pageId,
+  blur,
+  setBlur,
   requestData,
-  initiateAnimation,
-  handleCancel,
-  handleIgnore,
+  handleAccept,
   setRequestStage,
 }: RequestProps) => {
-  const [alertAcceptIsOpen, setAlertAcceptIsOpen] = useState(false);
-  const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
+  const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
+  const [displayNameValue, setDisplayNameValue] = useState("");
+  const [selectedTheme, setSelectedTheme] = useState(4);
+  const [show, setShow] = useState(true);
+  const displayNameValueIsValid =
+    displayNameValue.length > 0 && displayNameValue.length <= 32;
 
-  const actionAccept = () => {
-    setAlertAcceptIsOpen(false);
-    setRequestStage && setRequestStage(1);
-  };
-
-  const actionDecline = () => {
-    setAlertDeclineIsOpen(false);
-    handleCancel();
+  const handleRequest = async () => {
+    setBlur && setBlur(true);
+    if (requestData.event) {
+      await AriesAgent.agent.identifiers.joinMultisig(requestData.event, {
+        theme: selectedTheme,
+        colors: ["#000000", "#000000"],
+        displayName: displayNameValue,
+      });
+    }
+    setShow(false);
+    handleAccept();
   };
 
   return (
     <>
+      {blur && (
+        <div
+          className="multisig-spinner-container"
+          data-testid="multisig-spinner-container"
+        >
+          <IonSpinner name="circular" />
+        </div>
+      )}
       <ScrollablePageLayout
         pageId={pageId}
         activeStatus={!!requestData}
-        customClass={`${requestData ? "show" : "hide"} ${
-          initiateAnimation ? "animation-on" : "animation-off"
+        customClass={`setup-identifier ${show ? "show" : "hide"} ${
+          blur ? "blur" : ""
         }`}
         header={
           <PageHeader
             closeButton={true}
-            closeButtonAction={() => handleIgnore && handleIgnore()}
-            closeButtonLabel={`${i18n.t("request.button.ignore")}`}
-            title={`${i18n.t("request.multisig.title")}`}
+            closeButtonAction={() => setRequestStage && setRequestStage(0)}
+            closeButtonLabel={`${i18n.t("request.button.back")}`}
+            title={`${i18n.t("request.multisig.stagetwo.title")}`}
           />
         }
       >
-        <p className="multisig-request-subtitle">
-          {i18n.t("request.multisig.subtitle")}
-        </p>
         <div className="multisig-request-section">
-          <h4>{i18n.t("request.multisig.requestfrom")}</h4>
-          <IonCard className="multisig-request-details">
-            <IonList lines="none">
-              <IonItem className="multisig-request-item">
-                <IonGrid>
-                  <IonRow>
-                    <IonCol
-                      size="1.25"
-                      className="multisig-connection-logo"
-                    >
-                      <img
-                        src={
-                          requestData.multisigIcpDetails?.sender.logo ??
-                          CardanoLogo
-                        }
-                        alt="multisig-connection-logo"
-                      />
-                    </IonCol>
-                    <IonCol
-                      size="10.35"
-                      className="multisig-connection-info"
-                    >
-                      <IonLabel>
-                        {requestData.multisigIcpDetails?.sender.label}
-                      </IonLabel>
-                    </IonCol>
-                  </IonRow>
-                </IonGrid>
-              </IonItem>
-            </IonList>
-          </IonCard>
-        </div>
-        <div className="multisig-request-section">
-          <h4>{i18n.t("request.multisig.othermembers")}</h4>
-          <IonCard className="multisig-request-details">
-            <IonList lines="none">
-              {requestData.multisigIcpDetails?.otherConnections.map(
-                (connection, index) => {
-                  return (
-                    <IonItem
-                      key={index}
-                      className="multisig-request-item"
-                      data-testid={`multisig-connection-${index}`}
-                    >
-                      <IonGrid>
-                        <IonRow>
-                          <IonCol
-                            size="1.25"
-                            className="multisig-connection-logo"
-                          >
-                            <img
-                              src={connection.logo ?? CardanoLogo}
-                              alt="multisig-connection-logo"
-                            />
-                          </IonCol>
-                          <IonCol
-                            size="6.25"
-                            className="multisig-connection-info"
-                          >
-                            <IonLabel>{connection.label}</IonLabel>
-                          </IonCol>
-                          <IonCol
-                            size="3.75"
-                            className="multisig-connection-status"
-                          >
-                            <IonChip
-                              className={
-                                connection.status === ConnectionStatus.ACCEPTED
-                                  ? "accepted"
-                                  : ""
-                              }
-                            >
-                              <IonIcon
-                                icon={
-                                  connection.status === ConnectionStatus.PENDING
-                                    ? hourglassOutline
-                                    : checkmark
-                                }
-                                color="primary"
-                              />
-                              <span>{connection.status}</span>
-                            </IonChip>
-                          </IonCol>
-                        </IonRow>
-                      </IonGrid>
-                    </IonItem>
-                  );
-                }
+          <h4>{i18n.t("request.multisig.stagetwo.displayname")}</h4>
+          <div
+            className={`identifier-name${
+              displayNameValue.length !== 0 && !displayNameValueIsValid
+                ? " identifier-name-error"
+                : ""
+            }`}
+          >
+            <CustomInput
+              dataTestId="display-name-input"
+              title=""
+              placeholder={`${i18n.t(
+                "createidentifier.displayname.placeholder"
+              )}`}
+              hiddenInput={false}
+              onChangeInput={setDisplayNameValue}
+              value={displayNameValue}
+            />
+            <div className="error-message-container">
+              {displayNameValue.length !== 0 && !displayNameValueIsValid && (
+                <ErrorMessage
+                  message={`${i18n.t("createidentifier.error.maxlength")}`}
+                  timeout={true}
+                />
               )}
-            </IonList>
-          </IonCard>
+            </div>
+          </div>
         </div>
         <div className="multisig-request-section">
-          <h4>{i18n.t("request.multisig.threshold")}</h4>
-          <IonCard className="multisig-request-details">
-            <IonList lines="none">
-              <IonItem className="multisig-request-item">
-                <IonLabel>{requestData.multisigIcpDetails?.threshold}</IonLabel>
-              </IonItem>
-            </IonList>
-          </IonCard>
+          <h4>{i18n.t("createidentifier.theme.title")}</h4>
+          <IdentifierThemeSelector
+            identifierType={1}
+            selectedTheme={selectedTheme}
+            setSelectedTheme={setSelectedTheme}
+          />
         </div>
       </ScrollablePageLayout>
       <PageFooter
         pageId={pageId}
-        customClass="multisig-request-footer"
-        primaryButtonText={`${i18n.t("request.button.accept")}`}
-        primaryButtonAction={() => setAlertAcceptIsOpen(true)}
-        secondaryButtonText={`${i18n.t("request.button.decline")}`}
-        secondaryButtonAction={() => setAlertDeclineIsOpen(true)}
-      />
-      <AlertAccept
-        isOpen={alertAcceptIsOpen}
-        setIsOpen={setAlertAcceptIsOpen}
-        dataTestId="multisig-request-alert"
-        headerText={i18n.t("request.multisig.alert.textaccept")}
-        confirmButtonText={`${i18n.t("request.multisig.alert.accept")}`}
-        cancelButtonText={`${i18n.t("request.multisig.alert.cancel")}`}
-        actionConfirm={() => actionAccept()}
-        actionCancel={() => setAlertAcceptIsOpen(false)}
-        actionDismiss={() => setAlertAcceptIsOpen(false)}
-      />
-      <AlertDecline
-        isOpen={alertDeclineIsOpen}
-        setIsOpen={setAlertDeclineIsOpen}
-        dataTestId="multisig-request-alert"
-        headerText={i18n.t("request.multisig.alert.textdecline")}
-        confirmButtonText={`${i18n.t("request.multisig.alert.decline")}`}
-        cancelButtonText={`${i18n.t("request.multisig.alert.cancel")}`}
-        actionConfirm={() => actionDecline()}
-        actionCancel={() => setAlertDeclineIsOpen(false)}
-        actionDismiss={() => setAlertDeclineIsOpen(false)}
+        customClass={`multisig-request-footer setup-identifier ${
+          blur ? "blur" : ""
+        }`}
+        primaryButtonText={`${i18n.t("request.button.addidentifier")}`}
+        primaryButtonAction={async () => handleRequest()}
+        primaryButtonDisabled={!displayNameValueIsValid}
       />
     </>
   );

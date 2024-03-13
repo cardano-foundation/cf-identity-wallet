@@ -209,6 +209,7 @@ const keriNotificationsChangeHandler = async (
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
+        event: event,
         type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
         source: ConnectionType.KERI,
         multisigIcpDetails: multisigIcpDetails,

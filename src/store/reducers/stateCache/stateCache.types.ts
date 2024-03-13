@@ -1,4 +1,7 @@
-import { ConnectionType } from "../../../core/agent/agent.types";
+import {
+  ConnectionType,
+  KeriNotification,
+} from "../../../core/agent/agent.types";
 import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifierService.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 
@@ -31,6 +34,7 @@ interface IncomingRequestProps {
   logo?: string;
   label?: string;
   source?: ConnectionType;
+  event?: KeriNotification;
   multisigIcpDetails?: MultiSigIcpRequestDetails;
 }
 
