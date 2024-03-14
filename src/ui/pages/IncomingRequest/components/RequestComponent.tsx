@@ -8,6 +8,7 @@ import { MultiSigRequestStageTwo } from "./MultiSigRequestStageTwo";
 
 const RequestComponent = ({
   pageId,
+  activeStatus,
   blur,
   setBlur,
   requestData,
@@ -24,6 +25,7 @@ const RequestComponent = ({
     return (
       <ConnectionRequest
         pageId={pageId}
+        activeStatus={activeStatus}
         requestData={requestData}
         initiateAnimation={initiateAnimation}
         handleAccept={handleAccept}
@@ -35,6 +37,7 @@ const RequestComponent = ({
     return (
       <CredentialRequest
         pageId={pageId}
+        activeStatus={activeStatus}
         requestData={requestData}
         initiateAnimation={initiateAnimation}
         handleAccept={handleAccept}
@@ -46,6 +49,7 @@ const RequestComponent = ({
     return requestStage === 0 ? (
       <MultiSigRequestStageOne
         pageId={pageId}
+        activeStatus={activeStatus}
         requestData={requestData}
         initiateAnimation={initiateAnimation}
         handleAccept={handleAccept}
@@ -56,6 +60,7 @@ const RequestComponent = ({
     ) : (
       <MultiSigRequestStageTwo
         pageId={pageId}
+        activeStatus={activeStatus}
         blur={blur}
         setBlur={setBlur}
         requestData={requestData}

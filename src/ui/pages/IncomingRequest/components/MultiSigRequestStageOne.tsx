@@ -21,19 +21,14 @@ import { PageHeader } from "../../../components/PageHeader";
 
 const MultiSigRequestStageOne = ({
   pageId,
+  activeStatus,
   requestData,
   handleCancel,
   handleIgnore,
   setRequestStage,
 }: RequestProps) => {
-  const [show, setShow] = useState(false);
-  const ANIMATION_DELAY = 1000;
   const [alertAcceptIsOpen, setAlertAcceptIsOpen] = useState(false);
   const [alertDeclineIsOpen, setAlertDeclineIsOpen] = useState(false);
-
-  useEffect(() => {
-    setShow(true);
-  }, []);
 
   const actionAccept = () => {
     setAlertAcceptIsOpen(false);
@@ -46,18 +41,15 @@ const MultiSigRequestStageOne = ({
   };
 
   const actionIgnore = () => {
-    setShow(false);
-    setTimeout(() => {
-      handleIgnore && handleIgnore();
-    }, ANIMATION_DELAY);
+    handleIgnore && handleIgnore();
   };
 
   return (
     <>
       <ScrollablePageLayout
         pageId={pageId}
-        activeStatus={!!requestData}
-        customClass={`${show ? "show" : "hide"}`}
+        activeStatus={activeStatus}
+        customClass={`${activeStatus ? "show" : "hide"}`}
         header={
           <PageHeader
             closeButton={true}
@@ -151,15 +143,15 @@ const MultiSigRequestStageOne = ({
             </IonList>
           </IonCard>
         </div>
+        <PageFooter
+          pageId={pageId}
+          customClass="multisig-request-footer"
+          primaryButtonText={`${i18n.t("request.button.accept")}`}
+          primaryButtonAction={() => setAlertAcceptIsOpen(true)}
+          secondaryButtonText={`${i18n.t("request.button.decline")}`}
+          secondaryButtonAction={() => setAlertDeclineIsOpen(true)}
+        />
       </ScrollablePageLayout>
-      <PageFooter
-        pageId={pageId}
-        customClass="multisig-request-footer"
-        primaryButtonText={`${i18n.t("request.button.accept")}`}
-        primaryButtonAction={() => setAlertAcceptIsOpen(true)}
-        secondaryButtonText={`${i18n.t("request.button.decline")}`}
-        secondaryButtonAction={() => setAlertDeclineIsOpen(true)}
-      />
       <AlertAccept
         isOpen={alertAcceptIsOpen}
         setIsOpen={setAlertAcceptIsOpen}

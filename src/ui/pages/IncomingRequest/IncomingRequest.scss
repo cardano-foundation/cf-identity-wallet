@@ -1,6 +1,5 @@
 .incoming-request {
   display: flex !important;
-  margin-bottom: 6.25rem;
 
   &.show {
     transform: translate3d(0, 0, 0);
@@ -14,6 +13,11 @@
     .scrollable-page-content {
       visibility: hidden;
     }
+  }
+
+  &.setup-identifier.blur {
+    filter: blur(0.1rem);
+    --background: rgba(3, 3, 33, 0);
   }
 
   ion-header ion-toolbar {
@@ -320,6 +324,22 @@
     }
   }
 
+  ion-toolbar.multisig-request-footer {
+    --background: var(--ion-color-light);
+    z-index: 1000;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    padding-inline: 0.9rem;
+
+    &.setup-identifier {
+      &.blur {
+        filter: blur(0.1rem);
+        --background: rgba(3, 3, 33, 0);
+      }
+    }
+  }
+
   @media screen and (min-width: 250px) and (max-width: 370px) {
     ion-header ion-toolbar {
       margin-top: 0.531rem;
@@ -330,6 +350,10 @@
     }
 
     .multisig-request-section {
+      &:last-of-type {
+        margin-bottom: 25vh;
+      }
+
       h4 {
         margin: 0.798rem;
       }
@@ -341,6 +365,10 @@
 
       ion-card {
         padding: 0.4rem 1rem;
+
+        ion-list {
+          padding: 0;
+        }
 
         ion-item.multisig-request-item {
           --min-height: 2.4rem;
@@ -355,7 +383,6 @@
           }
         }
       }
-      //
     }
   }
 
@@ -486,11 +513,6 @@
       animation: translateFooterDownAnimation 1.5s forwards;
     }
   }
-
-  &.setup-identifier.blur {
-    filter: blur(0.1rem);
-    --background: rgba(3, 3, 33, 0);
-  }
 }
 
 .multisig-spinner-container {
@@ -504,26 +526,4 @@
   align-items: center;
   justify-content: center;
   background: rgba(3, 3, 33, 0.2);
-}
-
-ion-toolbar.multisig-request-footer {
-  --background: var(--ion-color-light);
-  z-index: 1000;
-  bottom: calc(-100vh + 8.5rem);
-  padding-inline: 0.9rem;
-
-  &.setup-identifier {
-    bottom: calc(-100vh + 4.5rem);
-
-    &.blur {
-      filter: blur(0.1rem);
-      --background: rgba(3, 3, 33, 0);
-    }
-  }
-}
-
-@media screen and (min-width: 250px) and (max-width: 370px) {
-  ion-toolbar.multisig-request-footer {
-    bottom: calc(-100vh + 6.25rem);
-  }
 }

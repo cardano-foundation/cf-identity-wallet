@@ -12,6 +12,7 @@ import { AriesAgent } from "../../../../core/agent/agent";
 
 const MultiSigRequestStageTwo = ({
   pageId,
+  activeStatus,
   blur,
   setBlur,
   requestData,
@@ -21,7 +22,6 @@ const MultiSigRequestStageTwo = ({
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const [displayNameValue, setDisplayNameValue] = useState("");
   const [selectedTheme, setSelectedTheme] = useState(4);
-  const [show, setShow] = useState(true);
   const displayNameValueIsValid =
     displayNameValue.length > 0 && displayNameValue.length <= 32;
 
@@ -34,7 +34,6 @@ const MultiSigRequestStageTwo = ({
         displayName: displayNameValue,
       });
     }
-    setShow(false);
     handleAccept();
   };
 
@@ -50,8 +49,8 @@ const MultiSigRequestStageTwo = ({
       )}
       <ScrollablePageLayout
         pageId={pageId}
-        activeStatus={!!requestData}
-        customClass={`setup-identifier ${show ? "show" : "hide"} ${
+        activeStatus={activeStatus}
+        customClass={`setup-identifier ${activeStatus ? "show" : "hide"} ${
           blur ? "blur" : ""
         }`}
         header={
@@ -100,16 +99,16 @@ const MultiSigRequestStageTwo = ({
             setSelectedTheme={setSelectedTheme}
           />
         </div>
+        <PageFooter
+          pageId={pageId}
+          customClass={`multisig-request-footer setup-identifier ${
+            blur ? "blur" : ""
+          }`}
+          primaryButtonText={`${i18n.t("request.button.addidentifier")}`}
+          primaryButtonAction={async () => handleRequest()}
+          primaryButtonDisabled={!displayNameValueIsValid}
+        />
       </ScrollablePageLayout>
-      <PageFooter
-        pageId={pageId}
-        customClass={`multisig-request-footer setup-identifier ${
-          blur ? "blur" : ""
-        }`}
-        primaryButtonText={`${i18n.t("request.button.addidentifier")}`}
-        primaryButtonAction={async () => handleRequest()}
-        primaryButtonDisabled={!displayNameValueIsValid}
-      />
     </>
   );
 };

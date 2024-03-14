@@ -14,6 +14,7 @@ import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageL
 
 const ConnectionRequest = ({
   pageId,
+  activeStatus,
   requestData,
   initiateAnimation,
   handleAccept,
@@ -22,8 +23,8 @@ const ConnectionRequest = ({
   return (
     <ResponsivePageLayout
       pageId={pageId}
-      activeStatus={!!requestData}
-      customClass={`${requestData ? "show" : "hide"} ${
+      activeStatus={activeStatus}
+      customClass={`${activeStatus ? "show" : "hide"} ${
         initiateAnimation ? "animation-on" : "animation-off"
       }`}
     >

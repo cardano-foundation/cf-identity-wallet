@@ -120,22 +120,23 @@ const IncomingRequest = () => {
     handleReset();
   };
 
+  const defaultRequestData: IncomingRequestProps = {
+    id: "",
+  };
+
   return (
-    <>
-      {showRequest && requestData && (
-        <RequestComponent
-          pageId={pageId}
-          blur={blur}
-          setBlur={setBlur}
-          requestData={requestData}
-          initiateAnimation={initiateAnimation}
-          handleAccept={handleAccept}
-          handleCancel={handleCancel}
-          handleIgnore={handleIgnore}
-          incomingRequestType={incomingRequest.type}
-        />
-      )}
-    </>
+    <RequestComponent
+      pageId={pageId}
+      activeStatus={showRequest}
+      blur={blur}
+      setBlur={setBlur}
+      requestData={requestData || defaultRequestData}
+      initiateAnimation={initiateAnimation}
+      handleAccept={handleAccept}
+      handleCancel={handleCancel}
+      handleIgnore={handleIgnore}
+      incomingRequestType={incomingRequest.type}
+    />
   );
 };
 

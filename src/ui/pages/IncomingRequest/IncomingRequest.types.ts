@@ -2,6 +2,7 @@ import { IncomingRequestProps } from "../../../store/reducers/stateCache/stateCa
 
 interface RequestProps {
   pageId: string;
+  activeStatus?: boolean;
   blur?: boolean;
   setBlur?: (value: boolean) => void;
   requestData: IncomingRequestProps;
