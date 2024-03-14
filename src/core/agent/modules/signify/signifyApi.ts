@@ -76,7 +76,7 @@ export class SignifyApi {
     const signifyName = utils.uuid();
     const operation = await this.signifyClient
       .identifiers()
-      .create(signifyName, this.getCreateAidOptions());
+      .create(signifyName); //, this.getCreateAidOptions());
     await operation.op();
     await this.signifyClient
       .identifiers()

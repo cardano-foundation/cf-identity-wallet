@@ -611,13 +611,14 @@ class CredentialService extends AgentService {
     expectedDomain: string,
     retryTimes: number,
     triedTime = 0
-  ) {
+  ): Promise<{ notiId: string; notiSaid: string; exchange: any }[]> {
     const notificationsList =
       await this.agent.modules.signify.getNotifications();
-    let unreadGrantNotes = notificationsList.notes.filter(
+    const unreadGrantNotes: any[] = notificationsList.notes.filter(
       (note: any) => !note.r && note.a.r === NotificationRoute.Credential
     );
-    unreadGrantNotes = await Promise.all(
+
+    const unreadGrantExnMsgs = await Promise.all(
       unreadGrantNotes.map(async (note: any) => {
         const exchange = await this.agent.modules.signify.getKeriExchange(
           note.a.d
@@ -629,25 +630,28 @@ class CredentialService extends AgentService {
         };
       })
     );
-    unreadGrantNotes = unreadGrantNotes.filter(
-      (notification: any) =>
-        notification.exchange.exn.i === serverAid &&
-        notification.exchange.exn.e.acdc?.a?.domain === expectedDomain
+
+    const matchingUnreadGrants = unreadGrantExnMsgs.filter(
+      (message: { notiId: string; notiSaid: string; exchange: any }) =>
+        message.exchange.exn.i === serverAid &&
+        message.exchange.exn.e.acdc?.a?.domain === expectedDomain
     );
-    triedTime++;
-    if (!unreadGrantNotes?.length) {
+
+    if (matchingUnreadGrants.length === 0) {
+      triedTime++;
       if (triedTime > retryTimes) {
         throw new Error(CredentialService.ACDC_NOT_APPEARING);
       }
       await new Promise((resolve) => setTimeout(resolve, 1000));
-      await this.waitForEnterpriseAcdcToAppear(
+      return this.waitForEnterpriseAcdcToAppear(
         serverAid,
         expectedDomain,
         retryTimes,
         triedTime
       );
     }
-    return unreadGrantNotes;
+
+    return matchingUnreadGrants;
   }
 
   private async callEnterpriseResolveOobi(
@@ -727,7 +731,7 @@ class CredentialService extends AgentService {
     const unreadGrantNotes = await this.waitForEnterpriseAcdcToAppear(
       serverAid,
       new URL(enterpriseServerEndpoint).hostname,
-      5
+      10
     );
 
     const latestGrant = unreadGrantNotes.reduce(

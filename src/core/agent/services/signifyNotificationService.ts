@@ -37,6 +37,36 @@ class SignifyNotificationService extends AgentService {
       !notif.r
     ) {
       const exn = await this.agent.modules.signify.getKeriExchange(notif.a.d);
+      if (notif.a.r === NotificationRoute.TunnelPing) {
+        const toId = exn?.exn?.a?.to;
+        if (!toId) {
+          await this.agent.modules.signify.markNotification(notif.i);
+          return;
+        }
+
+        const ourIdentifier =
+          await this.agent.modules.signify.getIdentifierById(toId);
+        if (!ourIdentifier) {
+          await this.agent.modules.signify.markNotification(notif.i);
+          return;
+        }
+
+        await this.agent.modules.signify.sendExn(
+          ourIdentifier.name,
+          await this.agent.modules.signify.getIdentifierByName(
+            ourIdentifier.name
+          ), // @TODO - foconnor: Shouldn't need this call too (typing issue)
+          "tunnel",
+          NotificationRoute.TunnelPong,
+          {},
+          [exn?.exn?.i],
+          {}
+        );
+
+        await this.agent.modules.signify.markNotification(notif.i);
+        return;
+      }
+
       if (
         exn?.exn?.e?.acdc?.s !==
         SignifyNotificationService.TUNNEL_DOMAIN_SCHEMA_SAID
