@@ -10,7 +10,6 @@ import { CardType } from "../../globals/types";
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
 import { CredCardTemplate } from "../CredCardTemplate";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
-import { AriesAgent } from "../../../core/agent/agent";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
@@ -58,6 +57,7 @@ const CardsStack = ({
   };
 
   const handleShowCardDetails = async (index: number) => {
+    if (isActive) return;
     setIsActive(true);
     let pathname = "";
 
@@ -78,7 +78,11 @@ const CardsStack = ({
     }, CLEAR_STATE_DELAY);
   };
 
-  return <div className="cards-stack-container">{renderCards(cardsData)}</div>;
+  const containerClasses = `cards-stack-container ${
+    isActive ? "transition-start" : ""
+  }`;
+
+  return <div className={containerClasses}>{renderCards(cardsData)}</div>;
 };
 
 export { CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };
