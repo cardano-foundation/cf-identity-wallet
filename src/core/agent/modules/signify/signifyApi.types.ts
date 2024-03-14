@@ -108,6 +108,8 @@ export enum NotificationRoute {
   MultiSigRot = "/multisig/rot",
   OutboundTunnelRequest = "/tunnel/server/request",
   IncomingTunnelRequest = "/tunnel/wallet/request",
+  TunnelPing = "/tunnel/ping",
+  TunnelPong = "/tunnel/pong",
 }
 
 export enum MultiSigRoute {
