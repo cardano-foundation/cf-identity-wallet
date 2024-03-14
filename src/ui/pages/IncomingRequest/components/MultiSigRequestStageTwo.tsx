@@ -9,6 +9,17 @@ import { IdentifierThemeSelector } from "../../../components/CreateIdentifier/co
 import { CustomInput } from "../../../components/CustomInput";
 import { ErrorMessage } from "../../../components/ErrorMessage";
 import { AriesAgent } from "../../../../core/agent/agent";
+import {
+  IdentifierShortDetails,
+  IdentifierType,
+} from "../../../../core/agent/services/identifierService.types";
+import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
+import {
+  getIdentifiersCache,
+  setIdentifiersCache,
+} from "../../../../store/reducers/identifiersCache";
+import { setToastMsg } from "../../../../store/reducers/stateCache";
+import { ToastMsgType } from "../../../globals/types";
 
 const MultiSigRequestStageTwo = ({
   pageId,
@@ -19,6 +30,8 @@ const MultiSigRequestStageTwo = ({
   handleAccept,
   setRequestStage,
 }: RequestProps) => {
+  const dispatch = useAppDispatch();
+  const identifiersData = useAppSelector(getIdentifiersCache);
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const [displayNameValue, setDisplayNameValue] = useState("");
   const [selectedTheme, setSelectedTheme] = useState(4);
@@ -27,12 +40,39 @@ const MultiSigRequestStageTwo = ({
 
   const handleRequest = async () => {
     setBlur && setBlur(true);
-    if (requestData.event) {
-      await AriesAgent.agent.identifiers.joinMultisig(requestData.event, {
-        theme: selectedTheme,
-        colors: ["#000000", "#000000"],
-        displayName: displayNameValue,
-      });
+    if (!(requestData.event && requestData.multisigIcpDetails)) {
+      // Do some error thing here... maybe it's just a TODO
+    } else {
+      const multisigId = await AriesAgent.agent.identifiers.joinMultisig(
+        requestData.event,
+        {
+          theme: selectedTheme,
+          // @TODO - sdisalvo: Colors will need to be removed
+          colors: ["#000000", "#000000"],
+          displayName: displayNameValue,
+        }
+      );
+
+      if (multisigId) {
+        const newIdentifier: IdentifierShortDetails = {
+          id: multisigId,
+          method: IdentifierType.KERI,
+          displayName: displayNameValue,
+          createdAtUTC: `${requestData.event?.createdAt}`,
+          // @TODO - sdisalvo: Colors will need to be removed
+          colors: ["#000000", "#000000"],
+          theme: selectedTheme,
+          isPending: requestData.multisigIcpDetails.threshold >= 2,
+        };
+        dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
+        dispatch(
+          setToastMsg(
+            requestData.multisigIcpDetails.threshold === 1
+              ? ToastMsgType.IDENTIFIER_CREATED
+              : ToastMsgType.IDENTIFIER_REQUESTED
+          )
+        );
+      }
     }
     handleAccept();
   };

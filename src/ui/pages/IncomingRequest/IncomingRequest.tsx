@@ -80,7 +80,9 @@ const IncomingRequest = () => {
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      // @TODO - sdisalvo: will handle decline multi-sig request
+      await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
+        incomingRequest.id
+      );
     }
     handleReset();
   };
@@ -104,7 +106,9 @@ const IncomingRequest = () => {
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      // @TODO - sdisalvo: will handle anything else that might be needed for multi-sig
+      AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
+        incomingRequest.id
+      );
     }
     setTimeout(() => {
       handleReset();
@@ -115,7 +119,7 @@ const IncomingRequest = () => {
     if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      // @TODO - sdisalvo: will handle sending request to a different queue to be actioned at a later stage
+      // @TODO - sdisalvo: placeholder for ignoring the request
     }
     handleReset();
   };

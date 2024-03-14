@@ -15,6 +15,10 @@
     }
   }
 
+  .responsive-page-content {
+    justify-content: space-around;
+  }
+
   &.setup-identifier.blur {
     filter: blur(0.1rem);
     --background: rgba(3, 3, 33, 0);
