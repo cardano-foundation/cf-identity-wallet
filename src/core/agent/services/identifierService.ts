@@ -152,7 +152,7 @@ class IdentifierService extends AgentService {
       IdentifierMetadataRecordProps,
       "id" | "createdAt" | "isArchived"
     >
-  ): Promise<string | undefined> {
+  ): Promise<{ identifier: string; signifyName?: string } | undefined> {
     const type = metadata.method;
     if (type === IdentifierType.KERI) {
       const { signifyName, identifier } =
@@ -162,7 +162,7 @@ class IdentifierService extends AgentService {
         ...metadata,
         signifyName: signifyName,
       });
-      return identifier;
+      return { identifier, signifyName };
     }
 
     const result = await this.agent.dids.create({
@@ -178,7 +178,7 @@ class IdentifierService extends AgentService {
       id: result.didState.did,
       ...metadata,
     });
-    return result.didState.did;
+    return { identifier: result.didState.did };
   }
 
   async archiveIdentifier(identifier: string): Promise<void> {

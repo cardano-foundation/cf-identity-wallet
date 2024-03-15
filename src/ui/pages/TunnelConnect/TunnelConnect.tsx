@@ -62,6 +62,7 @@ const TunnelConnect = () => {
     const keriaAIDs = identifiersData.filter(
       (id) => id.method === IdentifierType.KERI
     );
+
     if (keriaAIDs.length) {
       const firstAid = keriaAIDs[0];
       if (!firstAid.signifyName) {
@@ -83,10 +84,10 @@ const TunnelConnect = () => {
           colors: [newColor[1], newColor[0]],
           theme: 0,
         })
-        .then((identifier) => {
-          if (identifier) {
+        .then((createIdentifierResult) => {
+          if (createIdentifierResult?.identifier) {
             AriesAgent.agent.identifiers
-              .getIdentifier(identifier)
+              .getIdentifier(createIdentifierResult.identifier)
               .then((aid) => {
                 if (typeof aid?.result?.signifyName === "string") {
                   AriesAgent.agent.connections

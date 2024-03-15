@@ -71,18 +71,21 @@ const CreateIdentifier = ({
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
     const type = selectedType === 0 ? IdentifierType.KEY : IdentifierType.KERI;
-    const identifier = await AriesAgent.agent.identifiers.createIdentifier({
-      displayName: displayNameValue,
-      method: type,
-      colors: [newColor[1], newColor[0]],
-      theme: selectedTheme,
-    });
-    if (identifier) {
+    const createIdentifierResult =
+      await AriesAgent.agent.identifiers.createIdentifier({
+        displayName: displayNameValue,
+        method: type,
+        colors: [newColor[1], newColor[0]],
+        theme: selectedTheme,
+      });
+
+    if (createIdentifierResult?.identifier) {
       const newIdentifier: IdentifierShortDetails = {
-        id: identifier,
+        id: createIdentifierResult.identifier,
         method: type,
         displayName: displayNameValue,
         createdAtUTC: new Date().toISOString(),
+        signifyName: createIdentifierResult.signifyName,
         colors: [newColor[1], newColor[0]],
         theme: selectedTheme,
       };
