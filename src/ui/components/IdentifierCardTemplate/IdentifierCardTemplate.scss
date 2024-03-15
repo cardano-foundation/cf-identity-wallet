@@ -9,8 +9,10 @@
   &.active:not(:first-child):hover {
     // @TODO - foconnor: We should avoid this - animating with top.
     position: absolute;
-    top: 11.5rem;
-    transition: top 1.5s;
+    top: -1rem !important;
+    margin-top: 0;
+    transition: top 0.5s;
+    box-shadow: none;
   }
 
   &.active:not(:hover) {
@@ -126,7 +128,7 @@
     line-height: 1.169rem;
 
     &.active:not(:first-child):hover {
-      top: 9.775rem;
+      top: -1rem !important;
     }
 
     &:not(:first-child) {

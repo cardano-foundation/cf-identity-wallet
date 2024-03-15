@@ -10,19 +10,20 @@ import { CardType } from "../../globals/types";
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
 import { CredCardTemplate } from "../CredCardTemplate";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import { CardsStackProps } from "./CardsStack.types";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
+const getCardStyles = (index: number) => ({
+  top: index * 30,
+});
 
 const CardsStack = ({
   name,
   cardsType,
   cardsData,
-}: {
-  name: string;
-  cardsType: CardType;
-  cardsData: IdentifierShortDetails[] | CredentialShortDetails[];
-}) => {
+  onShowCardDetails,
+}: CardsStackProps) => {
   const history = useHistory();
   const [isActive, setIsActive] = useState(false);
 
@@ -42,6 +43,7 @@ const CardsStack = ({
             cardData={cardData as IdentifierShortDetails}
             isActive={isActive}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
+            styles={getCardStyles(index)}
           />
         ) : (
           <CredCardTemplate
@@ -51,6 +53,7 @@ const CardsStack = ({
             shortData={cardData as CredentialShortDetails}
             isActive={isActive}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
+            styles={getCardStyles(index)}
           />
         )
     );
@@ -59,6 +62,7 @@ const CardsStack = ({
   const handleShowCardDetails = async (index: number) => {
     if (isActive) return;
     setIsActive(true);
+    onShowCardDetails?.();
     let pathname = "";
 
     if (cardsType === CardType.IDENTIFIERS) {
