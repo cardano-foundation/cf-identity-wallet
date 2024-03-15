@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
 import {
@@ -26,6 +26,7 @@ const CardsStack = ({
 }: CardsStackProps) => {
   const history = useHistory();
   const [isActive, setIsActive] = useState(false);
+  const inShowCardProgress = useRef(false);
 
   const renderCards = (
     cardsData: IdentifierShortDetails[] | CredentialShortDetails[]
@@ -60,7 +61,8 @@ const CardsStack = ({
   };
 
   const handleShowCardDetails = async (index: number) => {
-    if (isActive) return;
+    if (inShowCardProgress.current) return;
+    inShowCardProgress.current = true;
     setIsActive(true);
     onShowCardDetails?.();
     let pathname = "";
@@ -79,6 +81,7 @@ const CardsStack = ({
 
     setTimeout(() => {
       setIsActive(false);
+      inShowCardProgress.current = false;
     }, CLEAR_STATE_DELAY);
   };
 
