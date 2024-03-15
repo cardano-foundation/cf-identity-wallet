@@ -28,6 +28,8 @@ import {
 } from "../../../store/reducers/credsCache";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
+const CLEAR_STATE_DELAY = 1000;
+
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
   handleConnections: () => void;
@@ -80,6 +82,7 @@ const Creds = () => {
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
+  const [showNavAnimation, setShowNavAnimation] = useState(false);
 
   const fetchArchivedCreds = async () => {
     // @TODO - sdisalvo: handle error
@@ -138,6 +141,12 @@ const Creds = () => {
     (cred) => !favCredsCache?.some((fav) => fav.id === cred.id)
   );
 
+  const handleShowNavAnimation = () => {
+    setShowNavAnimation(true);
+
+    setTimeout(() => setShowNavAnimation(false), CLEAR_STATE_DELAY);
+  };
+
   const ArchivedCredentialsButton = () => {
     return (
       <div className="archived-credentials-button-container">
@@ -163,6 +172,7 @@ const Creds = () => {
       <TabLayout
         pageId={pageId}
         header={true}
+        customClass={showNavAnimation ? "cred-nav-animation" : undefined}
         title={`${i18n.t("creds.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
@@ -193,6 +203,7 @@ const Creds = () => {
                   name="favs"
                   cardsType={CardType.CREDS}
                   cardsData={sortedFavCreds}
+                  onShowCardDetails={handleShowNavAnimation}
                 />
               </>
             )}
@@ -207,6 +218,7 @@ const Creds = () => {
                   name="allcreds"
                   cardsType={CardType.CREDS}
                   cardsData={allCreds}
+                  onShowCardDetails={handleShowNavAnimation}
                 />
               </>
             )}

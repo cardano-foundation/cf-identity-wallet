@@ -20,6 +20,8 @@ import "./Identifiers.scss";
 import { IdentifiersList } from "./components/IdentifiersList";
 import { AriesAgent } from "../../../core/agent/agent";
 
+const CLEAR_STATE_DELAY = 1000;
+
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
   handleConnections: () => void;
@@ -77,6 +79,7 @@ const Identifiers = () => {
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [showConnections, setShowConnections] = useState(false);
+  const [showNavAnimation, setShowNavAnimation] = useState(false);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
@@ -127,6 +130,12 @@ const Identifiers = () => {
     }
   };
 
+  const handleShowNavAnimation = () => {
+    setShowNavAnimation(true);
+
+    setTimeout(() => setShowNavAnimation(false), CLEAR_STATE_DELAY);
+  };
+
   return (
     <>
       <Connections
@@ -136,6 +145,7 @@ const Identifiers = () => {
       <TabLayout
         pageId={pageId}
         header={true}
+        customClass={showNavAnimation ? "identifier-nav-animation" : undefined}
         title={`${i18n.t("identifiers.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
@@ -164,6 +174,7 @@ const Identifiers = () => {
                   name="favs"
                   cardsType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
+                  onShowCardDetails={handleShowNavAnimation}
                 />
               </div>
             )}
@@ -176,6 +187,7 @@ const Identifiers = () => {
                   name="allidentifiers"
                   cardsType={CardType.IDENTIFIERS}
                   cardsData={allIdentifiers}
+                  onShowCardDetails={handleShowNavAnimation}
                 />
               </div>
             )}

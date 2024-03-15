@@ -21,3 +21,20 @@
     }
   }
 }
+
+.cred-nav-animation {
+  .tab-header {
+    ion-button {
+      transform: scale(0);
+      transition: transform 0.25s;
+      transition-delay: 0.1s;
+    }
+
+    ion-title h2 {
+      width: fit-content;
+      transform: scale(0);
+      transition: transform 0.25s;
+      transition-delay: 0.1s;
+    }
+  }
+}
