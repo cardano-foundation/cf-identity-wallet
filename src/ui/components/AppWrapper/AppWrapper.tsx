@@ -241,16 +241,19 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   const initApp = async () => {
+    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
+    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
     try {
       const isInitialized = await PreferencesStorage.get(
         PreferencesKeys.APP_ALREADY_INIT
       );
       dispatch(setInitialized(isInitialized?.initialized as boolean));
     } catch (e) {
-      // TODO
-      await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, "");
-      await SecureStorage.set(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY, "");
-      await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
+      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY);
+      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
+      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
 
     await new ConfigurationService().start();
