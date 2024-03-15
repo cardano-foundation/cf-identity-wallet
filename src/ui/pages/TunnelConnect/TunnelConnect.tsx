@@ -42,20 +42,16 @@ const TunnelConnect = () => {
   const [sharedAidName, setSharedAidName] = useState("");
 
   useEffect(() => {
-    try {
-      PreferencesStorage.get(PreferencesKeys.APP_TUNNEL_CONNECT).then(
-        (resolvedOobis) => {
-          setResolvedOobis(resolvedOobis);
-          if (Object.keys(resolvedOobis).length) {
-            setOobiNameValue(
-              `Tunnel(${Object.keys(resolvedOobis).length + 1})`
-            );
-          }
+    PreferencesStorage.get(PreferencesKeys.APP_TUNNEL_CONNECT)
+      .then((resolvedOobis) => {
+        setResolvedOobis(resolvedOobis);
+        if (Object.keys(resolvedOobis).length) {
+          setOobiNameValue(`Tunnel(${Object.keys(resolvedOobis).length + 1})`);
         }
-      );
-    } catch (e) {
-      // TODO: handle error
-    }
+      })
+      .catch((e) => {
+        // TODO: handle error
+      });
   }, [refreshResolvedOobis]);
 
   useEffect(() => {
