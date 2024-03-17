@@ -117,7 +117,7 @@ class IdentifierService extends AgentService {
       };
     } else {
       const metadata = await this.getMetadataById(identifier);
-      const aid = await this.agent.modules.signify.getIdentifierByName(
+      const aid = await this.signifyApi.getIdentifierByName(
         metadata.signifyName as string
       );
       if (metadata.isPending && metadata.signifyOpName) {
@@ -169,7 +169,7 @@ class IdentifierService extends AgentService {
     const type = metadata.method;
     if (type === IdentifierType.KERI) {
       const { signifyName, identifier } =
-        await this.agent.modules.signify.createIdentifier();
+        await this.signifyApi.createIdentifier();
       await this.createIdentifierMetadataRecord({
         id: identifier,
         ...metadata,
@@ -241,7 +241,7 @@ class IdentifierService extends AgentService {
 
   async syncKeriaIdentifiers() {
     const { aids: signifyIdentifiers } =
-      await this.agent.modules.signify.getAllIdentifiers();
+      await this.signifyApi.getAllIdentifiers();
     const storageIdentifiers =
       await this.agent.modules.generalStorage.getKeriIdentifiersMetadata();
     const unSyncedData = signifyIdentifiers.filter(
@@ -360,7 +360,7 @@ class IdentifierService extends AgentService {
   ): Promise<string | undefined> {
     const ourMetadata = await this.getMetadataById(ourIdentifier);
     this.validIdentifierMetadata(ourMetadata);
-    const ourAid = (await this.agent.modules.signify.getIdentifierByName(
+    const ourAid = (await this.signifyApi.getIdentifierByName(
       ourMetadata.signifyName as string
     )) as Aid;
     //Make sure no non-Keri contacts get passed into this function
@@ -372,22 +372,20 @@ class IdentifierService extends AgentService {
     }
     const otherAids = await Promise.all(
       otherIdentifierContacts.map(async (contact) => {
-        const aid = await this.agent.modules.signify.resolveOobi(
-          contact.oobi as string
-        );
+        const aid = await this.signifyApi.resolveOobi(contact.oobi as string);
         return { state: aid.response };
       })
     );
     let delegateAid;
     if (delegateContact) {
-      const delegator = await this.agent.modules.signify.resolveOobi(
+      const delegator = await this.signifyApi.resolveOobi(
         delegateContact.oobi as string
       );
       delegateAid = { state: delegator.response } as Aid;
     }
 
     const signifyName = utils.uuid();
-    const result = await this.agent.modules.signify.createMultisig(
+    const result = await this.signifyApi.createMultisig(
       ourAid,
       otherAids,
       signifyName,
@@ -430,7 +428,7 @@ class IdentifierService extends AgentService {
     if (!metadata.signifyName || !identifierManageAid.signifyName) {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
-    const multiSig = await this.agent.modules.signify.getIdentifierByName(
+    const multiSig = await this.signifyApi.getIdentifierByName(
       metadata.signifyName
     );
     if (!multiSig) {
@@ -438,7 +436,7 @@ class IdentifierService extends AgentService {
     }
     const nextSequence = (Number(multiSig.state.s) + 1).toString();
 
-    const members = await this.agent.modules.signify.getMultisigMembers(
+    const members = await this.signifyApi.getMultisigMembers(
       metadata.signifyName
     );
     const multisigMembers = members?.signing;
@@ -446,7 +444,7 @@ class IdentifierService extends AgentService {
     const multisigMumberAids: Aid[] = [];
     await Promise.allSettled(
       multisigMembers.map(async (signing: any) => {
-        const aid = await this.agent.modules.signify.queryKeyState(
+        const aid = await this.signifyApi.queryKeyState(
           signing.aid,
           nextSequence
         );
@@ -458,11 +456,11 @@ class IdentifierService extends AgentService {
     if (multisigMembers.length !== multisigMumberAids.length) {
       throw new Error(IdentifierService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG);
     }
-    const aid = await this.agent.modules.signify.getIdentifierByName(
+    const aid = await this.signifyApi.getIdentifierByName(
       identifierManageAid?.signifyName
     );
 
-    const result = await this.agent.modules.signify.rotateMultisigAid(
+    const result = await this.signifyApi.rotateMultisigAid(
       aid,
       multisigMumberAids,
       metadata.signifyName
@@ -474,7 +472,7 @@ class IdentifierService extends AgentService {
   async joinMultisigRotation(notification: KeriNotification): Promise<string> {
     const msgSaid = notification.a.d as string;
     const notifications: MultiSigExnMessage[] =
-      await this.agent.modules.signify.getMultisigMessageBySaid(msgSaid);
+      await this.signifyApi.getMultisigMessageBySaid(msgSaid);
     if (!notifications.length) {
       throw new Error(IdentifierService.EXN_MESSAGE_NOT_FOUND);
     }
@@ -495,10 +493,10 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
 
-    const aid = await this.agent.modules.signify.getIdentifierByName(
+    const aid = await this.signifyApi.getIdentifierByName(
       identifierManageAid.signifyName
     );
-    const res = await this.agent.modules.signify.joinMultisigRotation(
+    const res = await this.signifyApi.joinMultisigRotation(
       exn,
       aid,
       multiSig.signifyName
@@ -509,16 +507,14 @@ class IdentifierService extends AgentService {
 
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
     const notifications: MultiSigExnMessage[] =
-      await this.agent.modules.signify.getMultisigMessageBySaid(msgSaid);
+      await this.signifyApi.getMultisigMessageBySaid(msgSaid);
     if (!notifications.length) {
       return false;
     }
     const exn = notifications[0].exn;
     const multisigId = exn.a.gid;
     try {
-      const multiSig = await this.agent.modules.signify.getIdentifierById(
-        multisigId
-      );
+      const multiSig = await this.signifyApi.getIdentifierById(multisigId);
       if (multiSig) {
         return true;
       }
@@ -533,7 +529,7 @@ class IdentifierService extends AgentService {
   ): Promise<MultiSigIcpRequestDetails> {
     const msgSaid = notification.a.d as string;
     const icpMsg: MultiSigExnMessage[] =
-      await this.agent.modules.signify.getMultisigMessageBySaid(msgSaid);
+      await this.signifyApi.getMultisigMessageBySaid(msgSaid);
 
     if (!icpMsg.length) {
       throw new Error(`${IdentifierService.EXN_MESSAGE_NOT_FOUND} ${msgSaid}`);
@@ -607,7 +603,7 @@ class IdentifierService extends AgentService {
       return;
     }
     const icpMsg: MultiSigExnMessage[] =
-      await this.agent.modules.signify.getMultisigMessageBySaid(msgSaid);
+      await this.signifyApi.getMultisigMessageBySaid(msgSaid);
 
     if (!icpMsg.length) {
       throw new Error(`${IdentifierService.EXN_MESSAGE_NOT_FOUND} ${msgSaid}`);
@@ -627,15 +623,11 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
 
-    const aid = await this.agent.modules.signify.getIdentifierByName(
+    const aid = await this.signifyApi.getIdentifierByName(
       identifier?.signifyName
     );
     const signifyName = utils.uuid();
-    const res = await this.agent.modules.signify.joinMultisig(
-      exn,
-      aid,
-      signifyName
-    );
+    const res = await this.signifyApi.joinMultisig(exn, aid, signifyName);
     await this.basicStorage.deleteById(notification.id);
     const multisigId = res.op.name.split(".")[1];
     await this.createIdentifierMetadataRecord({
@@ -658,7 +650,7 @@ class IdentifierService extends AgentService {
         done: true,
       };
     }
-    const pendingOperation = await this.agent.modules.signify.getOpByName(
+    const pendingOperation = await this.signifyApi.getOpByName(
       metadata.signifyOpName
     );
     if (pendingOperation && pendingOperation.done) {
@@ -702,9 +694,7 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.ONLY_CREATE_DELAGATION_WITH_AID);
     }
     const { signifyName, identifier } =
-      await this.agent.modules.signify.createDelegationIdentifier(
-        delegatorPrefix
-      );
+      await this.signifyApi.createDelegationIdentifier(delegatorPrefix);
     await this.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
@@ -719,10 +709,7 @@ class IdentifierService extends AgentService {
     signifyName: string,
     delegatePrefix: string
   ): Promise<void> {
-    await this.agent.modules.signify.interactDelegation(
-      signifyName,
-      delegatePrefix
-    );
+    await this.signifyApi.interactDelegation(signifyName, delegatePrefix);
   }
 
   async checkDelegationSuccess(
@@ -734,7 +721,7 @@ class IdentifierService extends AgentService {
     if (!metadata.isPending) {
       return true;
     }
-    const isDone = await this.agent.modules.signify.delegationApproved(
+    const isDone = await this.signifyApi.delegationApproved(
       metadata.signifyName
     );
     if (isDone) {
@@ -753,7 +740,7 @@ class IdentifierService extends AgentService {
     if (!metadata.signifyName) {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
-    await this.agent.modules.signify.rotateIdentifier(metadata.signifyName);
+    await this.signifyApi.rotateIdentifier(metadata.signifyName);
   }
 }
 
