@@ -11,7 +11,6 @@ import {
   OutOfBandRecord,
   utils,
 } from "@aries-framework/core";
-import { GenericRecord } from "@aries-framework/core/build/modules/generic-records/repository/GenericRecord";
 import {
   ConnectionDetails,
   ConnectionHistoryItem,
@@ -273,7 +272,7 @@ class ConnectionService extends AgentService {
   }
 
   private getConnectionKeriShortDetails(
-    record: GenericRecord | BasicRecord
+    record: BasicRecord
   ): ConnectionShortDetails {
     return {
       id: record.id,
@@ -305,14 +304,14 @@ class ConnectionService extends AgentService {
     connectionType?: ConnectionType
   ): Promise<void> {
     if (connectionType === ConnectionType.KERI) {
-      await this.basicStorage!.deleteById(id);
+      await this.basicStorage.deleteById(id);
       await this.agent.modules.signify.deleteContactById(id);
     } else {
       await this.agent.connections.deleteById(id);
     }
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
-      this.basicStorage!.deleteById(note.id);
+      this.basicStorage.deleteById(note.id);
     }
   }
 
@@ -334,7 +333,7 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    await this.basicStorage!.save({
+    await this.basicStorage.save({
       id: utils.uuid(),
       content: note,
       tags: {
@@ -348,16 +347,16 @@ class ConnectionService extends AgentService {
     connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.basicStorage!.findById(connectionNoteId);
+    const noteRecord = await this.basicStorage.findById(connectionNoteId);
     if (!noteRecord) {
       throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
     }
     noteRecord.content = note;
-    await this.basicStorage!.update(noteRecord);
+    await this.basicStorage.update(noteRecord);
   }
 
   async deleteConnectionNoteById(connectionNoteId: string) {
-    return this.basicStorage!.deleteById(connectionNoteId);
+    return this.basicStorage.deleteById(connectionNoteId);
   }
 
   async getKeriOobi(signifyName: string): Promise<string> {
@@ -368,7 +367,7 @@ class ConnectionService extends AgentService {
     connectionId: string,
     metadata?: Record<string, unknown>
   ): Promise<void> {
-    await this.basicStorage!.save({
+    await this.basicStorage.save({
       id: connectionId,
       content: metadata || {},
       tags: {
@@ -379,8 +378,8 @@ class ConnectionService extends AgentService {
 
   private async getConnectionKeriMetadataById(
     connectionId: string
-  ): Promise<GenericRecord | BasicRecord> {
-    const connectionKeri = await this.basicStorage!.findById(connectionId);
+  ): Promise<BasicRecord> {
+    const connectionKeri = await this.basicStorage.findById(connectionId);
     if (!connectionKeri) {
       throw new Error(
         ConnectionService.CONNECTION_KERI_METADATA_RECORD_NOT_FOUND
@@ -389,10 +388,8 @@ class ConnectionService extends AgentService {
     return connectionKeri;
   }
 
-  async getAllConnectionKeriMetadata(): Promise<
-    GenericRecord[] | BasicRecord[]
-    > {
-    const connectionKeris = await this.basicStorage!.findAllByQuery({
+  async getAllConnectionKeriMetadata(): Promise<BasicRecord[]> {
+    const connectionKeris = await this.basicStorage.findAllByQuery({
       type: GenericRecordType.CONNECTION_KERI_METADATA,
     });
     return connectionKeris;
@@ -438,9 +435,7 @@ class ConnectionService extends AgentService {
     const storageContacts = await this.getAllConnectionKeriMetadata();
     const unSyncedData = signifyContacts.filter(
       (contact: KeriContact) =>
-        !(storageContacts as any).find(
-          (item: BasicRecord | GenericRecord) => contact.id == item.id
-        )
+        !storageContacts.find((item: BasicRecord) => contact.id == item.id)
     );
     if (unSyncedData.length) {
       //sync the storage with the signify data
@@ -456,7 +451,7 @@ class ConnectionService extends AgentService {
   private async getConnectNotesByConnectionId(
     connectionId: string
   ): Promise<ConnectionNoteDetails[]> {
-    const notes = await this.basicStorage!.findAllByQuery({
+    const notes = await this.basicStorage.findAllByQuery({
       connectionId,
       type: GenericRecordType.CONNECTION_NOTE,
     });

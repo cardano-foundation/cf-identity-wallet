@@ -78,7 +78,20 @@ const agent = jest.mocked({
     deleteById: jest.fn(),
   },
 });
-const credentialService = new CredentialService(agent as any as Agent);
+const basicStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+const credentialService = new CredentialService(
+  agent as any as Agent,
+  basicStorage
+);
 
 const now = new Date();
 const nowISO = now.toISOString();
@@ -349,7 +362,7 @@ describe("Credential service of agent", () => {
         credentialMetadataRecordA,
         credentialMetadataRecordB,
       ]);
-    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
     expect(await credentialService.getCredentials()).toStrictEqual([
       {
@@ -377,7 +390,7 @@ describe("Credential service of agent", () => {
     agent.modules.generalStorage.getAllCredentialMetadata = jest
       .fn()
       .mockResolvedValue([]);
-    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
     expect(await credentialService.getCredentials()).toStrictEqual([]);
   });
@@ -724,9 +737,7 @@ describe("Credential service of agent", () => {
     agent.credentials.findAllByQuery = jest
       .fn()
       .mockResolvedValueOnce([credentialOfferReceivedRecordAutoAccept]);
-    agent.genericRecords.findAllByQuery = jest
-      .fn()
-      .mockResolvedValue(genericRecords);
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue(genericRecords);
 
     expect(await credentialService.getUnhandledCredentials()).toEqual(
       [
@@ -877,13 +888,13 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
   test("can delete keri notification by ID", async () => {
     const id = "uuid";
     await credentialService.deleteKeriNotificationRecordById(id);
-    expect(agent.genericRecords.deleteById).toBeCalled();
+    expect(basicStorage.deleteById).toBeCalled();
   });
 
   test("accept KERI ACDC", async () => {
     const id = "uuid";
     const date = new Date();
-    agent.genericRecords.findById = jest.fn().mockImplementation((id) => {
+    basicStorage.findById = jest.fn().mockImplementation((id) => {
       if (id == "uuid") {
         return {
           id,
@@ -930,12 +941,12 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       });
     await credentialService.acceptKeriAcdc(id);
     expect(agent.events.emit).toBeCalled();
-    expect(agent.genericRecords.deleteById).toBeCalled();
+    expect(basicStorage.deleteById).toBeCalled();
   });
 
   test("Must throw an error when there's no KERI notification", async () => {
     const id = "not-found-id";
-    agent.genericRecords.findById = jest.fn();
+    basicStorage.findById = jest.fn();
     await expect(credentialService.acceptKeriAcdc(id)).rejects.toThrowError(
       `${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`
     );

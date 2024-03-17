@@ -33,8 +33,20 @@ const agent = jest.mocked({
   },
 });
 
+const basicStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
 const signifyNotificationService = new SignifyNotificationService(
-  agent as any as Agent
+  agent as any as Agent,
+  basicStorage
 );
 
 describe("Signify notification service of agent", () => {

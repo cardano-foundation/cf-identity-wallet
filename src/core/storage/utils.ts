@@ -1,12 +1,14 @@
-import { BasicRecord, StorageRecord } from "../storage.types";
+import { BasicRecord, StorageRecord, TagsBase } from "./storage.types";
 
 function deserializeRecord(storageRecord: StorageRecord): BasicRecord {
   const parsedValue = JSON.parse(storageRecord.value);
-  return new BasicRecord({
+  const record = new BasicRecord({
+    ...parsedValue,
     id: storageRecord.name,
-    content: parsedValue.content,
     tags: parsedValue._tags,
   });
+  record.replaceTags(storageRecord.tags as TagsBase);
+  return record;
 }
 
 export { deserializeRecord };

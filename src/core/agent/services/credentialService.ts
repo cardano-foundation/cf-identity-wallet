@@ -433,7 +433,7 @@ class CredentialService extends AgentService {
   }
 
   private async getKeriCredentialNotifications(): Promise<KeriNotification[]> {
-    const results = await this.agent.genericRecords.findAllByQuery({
+    const results = await this.basicStorage.findAllByQuery({
       type: GenericRecordType.NOTIFICATION_KERI,
       route: NotificationRoute.Credential,
     });
@@ -495,7 +495,7 @@ class CredentialService extends AgentService {
   private async getKeriNotificationRecordById(
     id: string
   ): Promise<KeriNotification> {
-    const result = await this.agent.genericRecords.findById(id);
+    const result = await this.basicStorage.findById(id);
     if (!result) {
       throw new Error(`${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`);
     }
@@ -507,7 +507,7 @@ class CredentialService extends AgentService {
   }
 
   async deleteKeriNotificationRecordById(id: string): Promise<void> {
-    await this.agent.genericRecords.deleteById(id);
+    await this.basicStorage.deleteById(id);
   }
 
   async acceptKeriAcdc(id: string): Promise<void> {

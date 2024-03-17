@@ -503,7 +503,7 @@ class IdentifierService extends AgentService {
       aid,
       multiSig.signifyName
     );
-    await this.agent.genericRecords.deleteById(notification.id);
+    await this.basicStorage.deleteById(notification.id);
     return res.op.name.split(".")[1];
   }
 
@@ -603,7 +603,7 @@ class IdentifierService extends AgentService {
     const msgSaid = notification.a.d as string;
     const hasJoined = await this.hasJoinedMultisig(msgSaid);
     if (hasJoined) {
-      await this.agent.genericRecords.deleteById(notification.id);
+      await this.basicStorage.deleteById(notification.id);
       return;
     }
     const icpMsg: MultiSigExnMessage[] =
@@ -636,7 +636,7 @@ class IdentifierService extends AgentService {
       aid,
       signifyName
     );
-    await this.agent.genericRecords.deleteById(notification.id);
+    await this.basicStorage.deleteById(notification.id);
     const multisigId = res.op.name.split(".")[1];
     await this.createIdentifierMetadataRecord({
       id: multisigId,
@@ -672,7 +672,7 @@ class IdentifierService extends AgentService {
   }
 
   async getUnhandledMultisigIdentifiers(): Promise<KeriNotification[]> {
-    const results = await this.agent.genericRecords.findAllByQuery({
+    const results = await this.basicStorage.findAllByQuery({
       type: GenericRecordType.NOTIFICATION_KERI,
       route: NotificationRoute.MultiSigIcp,
       $or: [

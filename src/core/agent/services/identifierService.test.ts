@@ -55,7 +55,21 @@ const agent = jest.mocked({
     deleteById: jest.fn(),
   },
 });
-const identifierService = new IdentifierService(agent as any as Agent);
+
+const basicStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+const identifierService = new IdentifierService(
+  agent as any as Agent,
+  basicStorage
+);
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -855,7 +869,7 @@ describe("Identifier service of agent", () => {
 
   test("can join the multisig inception", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
-    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+    basicStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
@@ -1371,7 +1385,7 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(metadata);
-    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+    basicStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
@@ -1419,7 +1433,7 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(metadata);
-    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+    basicStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
@@ -1468,7 +1482,7 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(metadata);
-    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+    basicStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },

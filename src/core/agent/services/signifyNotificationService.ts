@@ -40,7 +40,7 @@ class SignifyNotificationService extends AgentService {
   private async createKeriNotificationRecord(
     event: Notification
   ): Promise<KeriNotification> {
-    const result = await this.agent.genericRecords.save({
+    const result = await this.basicStorage.save({
       id: event.i,
       content: event.a,
       tags: {
