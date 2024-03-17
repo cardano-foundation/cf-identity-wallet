@@ -173,7 +173,7 @@ class SqliteStorage implements BasicStoragesApi {
   async scanItems(query?: Query<BasicRecord>): Promise<StorageRecord[]> {
     let scanValues = [BasicRecord.type];
     let scanQuery = SqliteStorage.SCAN_QUERY_SQL;
-    if (query) {
+    if (query && Object.keys(query).length > 0) {
       const dbQuery = convertDbQuery(query);
       const { condition, values } = this.getQueryConditionSql(dbQuery);
       scanQuery += " AND " + condition;
