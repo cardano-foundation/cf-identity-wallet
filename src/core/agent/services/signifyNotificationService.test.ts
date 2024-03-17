@@ -88,14 +88,14 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
-    agent.genericRecords.save = jest
+    basicStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
     jest.useFakeTimers();
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
     }
-    expect(agent.genericRecords.save).toBeCalledTimes(2);
+    expect(basicStorage.save).toBeCalledTimes(2);
     expect(callback).toBeCalledTimes(2);
   });
 });
