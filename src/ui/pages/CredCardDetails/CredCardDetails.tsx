@@ -105,21 +105,19 @@ const CredCardDetails = () => {
   const handleDone = () => {
     setNavAnimation(true);
 
-    setTimeout(() => {
-      const { nextPath, updateRedux } = getNextRoute(
-        TabsRoutePath.CRED_DETAILS,
-        {
-          store: { stateCache },
-        }
-      );
+    const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CRED_DETAILS, {
+      store: { stateCache },
+    });
 
+    updateReduxState(
+      nextPath.pathname,
+      { store: { stateCache } },
+      dispatch,
+      updateRedux
+    );
+
+    setTimeout(() => {
       history.push(nextPath.pathname);
-      updateReduxState(
-        nextPath.pathname,
-        { store: { stateCache } },
-        dispatch,
-        updateRedux
-      );
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {

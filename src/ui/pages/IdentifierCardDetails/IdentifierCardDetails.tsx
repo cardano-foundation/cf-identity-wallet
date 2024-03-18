@@ -99,22 +99,22 @@ const IdentifierCardDetails = () => {
 
   const handleDone = () => {
     setNavAnimation(true);
+    const { backPath, updateRedux } = getBackRoute(
+      TabsRoutePath.IDENTIFIER_DETAILS,
+      {
+        store: { stateCache },
+      }
+    );
+
+    updateReduxState(
+      backPath.pathname,
+      { store: { stateCache } },
+      dispatch,
+      updateRedux
+    );
 
     setTimeout(() => {
-      const { backPath, updateRedux } = getBackRoute(
-        TabsRoutePath.IDENTIFIER_DETAILS,
-        {
-          store: { stateCache },
-        }
-      );
-
       history.push(backPath.pathname);
-      updateReduxState(
-        backPath.pathname,
-        { store: { stateCache } },
-        dispatch,
-        updateRedux
-      );
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {
