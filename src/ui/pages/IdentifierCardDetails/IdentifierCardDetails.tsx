@@ -53,6 +53,9 @@ import "./IdentifierCardDetails.scss";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
 
+const NAVIGATION_DELAY = 250;
+const CLEAR_ANIMATION = 1000;
+
 const IdentifierCardDetails = () => {
   const pageId = "identifier-card-details";
   const history = useHistory();
@@ -71,6 +74,7 @@ const IdentifierCardDetails = () => {
     DIDDetails | KERIDetails | undefined
   >();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [navAnimation, setNavAnimation] = useState(false);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id
@@ -94,20 +98,28 @@ const IdentifierCardDetails = () => {
   });
 
   const handleDone = () => {
-    const { backPath, updateRedux } = getBackRoute(
-      TabsRoutePath.IDENTIFIER_DETAILS,
-      {
-        store: { stateCache },
-      }
-    );
+    setNavAnimation(true);
 
-    updateReduxState(
-      backPath.pathname,
-      { store: { stateCache } },
-      dispatch,
-      updateRedux
-    );
-    history.push(backPath.pathname);
+    setTimeout(() => {
+      const { backPath, updateRedux } = getBackRoute(
+        TabsRoutePath.IDENTIFIER_DETAILS,
+        {
+          store: { stateCache },
+        }
+      );
+
+      history.push(backPath.pathname);
+      updateReduxState(
+        backPath.pathname,
+        { store: { stateCache } },
+        dispatch,
+        updateRedux
+      );
+    }, NAVIGATION_DELAY);
+
+    setTimeout(() => {
+      setNavAnimation(false);
+    }, CLEAR_ANIMATION);
   };
 
   const handleDelete = async () => {
@@ -220,10 +232,14 @@ const IdentifierCardDetails = () => {
     );
   };
 
+  const pageClasses = `card-details ${
+    navAnimation ? "back-animation" : "open-animation"
+  }`;
+
   return (
     <ScrollablePageLayout
       pageId={pageId}
-      customClass="card-details"
+      customClass={pageClasses}
       header={
         <PageHeader
           closeButton={true}

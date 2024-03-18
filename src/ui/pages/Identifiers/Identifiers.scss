@@ -92,19 +92,58 @@
   }
 }
 
-.identifier-nav-animation {
+.identifier-tab {
   .tab-header {
-    ion-button {
-      transform: scale(0);
-      transition: transform 0.25s;
-      transition-delay: 0.1s;
-    }
-
     ion-title h2 {
       width: fit-content;
+    }
+  }
+
+  &.identifier-open-animation {
+    .tab-header {
+      ion-button {
+        animation: zoomOut 0.25s ease-in-out;
+        animation-fill-mode: forwards;
+      }
+
+      ion-title h2 {
+        animation: zoomOut 0.25s ease-in-out;
+        animation-fill-mode: forwards;
+      }
+    }
+
+    @keyframes zoomOut {
+      from {
+        transform: scale(0);
+      }
+
+      to {
+        transform: scale(1);
+      }
+    }
+  }
+
+  &.identifier-nav-animation {
+    .tab-header {
+      ion-button {
+        animation: zoomIn 0.25s ease-in-out;
+        animation-fill-mode: forwards;
+      }
+
+      ion-title h2 {
+        animation: zoomIn 0.25s ease-in-out;
+        animation-fill-mode: forwards;
+      }
+    }
+  }
+
+  @keyframes zoomIn {
+    from {
+      transform: scale(1);
+    }
+
+    to {
       transform: scale(0);
-      transition: transform 0.25s;
-      transition-delay: 0.1s;
     }
   }
 }

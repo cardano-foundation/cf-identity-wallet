@@ -1,13 +1,14 @@
-.identifier-card-details {
+.open-animation {
   .page-header {
     ion-button {
-      animation: zoomOut 0.25s ease-in-out;
+      animation: identifierScaleOut 0.25s ease-in-out;
     }
 
-    @keyframes zoomOut {
+    @keyframes identifierScaleOut {
       from {
         transform: scale(0);
       }
+
       to {
         transform: scale(1);
       }
@@ -24,6 +25,7 @@
         opacity: 0;
         margin-top: -1.56rem;
       }
+
       to {
         height: 100vh;
         overflow-y: hidden;
@@ -34,22 +36,65 @@
   }
 }
 
-@media screen and (min-width: 250px) and (max-width: 370px) {
-  .card-details-content {
-    animation: expand 0.7s ease-in-out;
+.back-animation {
+  .page-header {
+    ion-button {
+      animation: identifierScaleIn 0.25s ease-in-out;
+      animation-fill-mode: forwards;
+    }
 
-    @keyframes expand {
+    @keyframes identifierScaleIn {
       from {
-        height: 0;
-        overflow-y: hidden;
-        opacity: 0;
-        margin-top: -1.326rem;
+        transform: scale(1);
       }
+
       to {
-        height: 100vh;
-        overflow-y: hidden;
-        opacity: 1;
-        margin-top: -1.326rem;
+        transform: scale(0);
+      }
+    }
+  }
+
+  .card-details-content {
+    animation: collapse 0.25s ease-in-out;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes collapse {
+    from {
+      height: 100vh;
+      overflow-y: hidden;
+      opacity: 1;
+      margin-top: -1.56rem;
+    }
+
+    to {
+      height: 0;
+      overflow-y: hidden;
+      opacity: 0;
+      margin-top: -1.56rem;
+    }
+  }
+}
+
+@media screen and (min-width: 250px) and (max-width: 370px) {
+  .open-animation {
+    .card-details-content {
+      animation: expand 0.7s ease-in-out;
+
+      @keyframes expand {
+        from {
+          height: 0;
+          overflow-y: hidden;
+          opacity: 0;
+          margin-top: -1.326rem;
+        }
+
+        to {
+          height: 100vh;
+          overflow-y: hidden;
+          opacity: 1;
+          margin-top: -1.326rem;
+        }
       }
     }
   }

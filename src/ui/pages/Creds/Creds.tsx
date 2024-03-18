@@ -163,6 +163,10 @@ const Creds = () => {
     );
   };
 
+  const tabClasses = `cred-tab ${
+    showNavAnimation ? "cred-nav-animation" : "cred-open-animation"
+  }`;
+
   return (
     <>
       <Connections
@@ -172,7 +176,7 @@ const Creds = () => {
       <TabLayout
         pageId={pageId}
         header={true}
-        customClass={showNavAnimation ? "cred-nav-animation" : undefined}
+        customClass={tabClasses}
         title={`${i18n.t("creds.tab.title")}`}
         additionalButtons={
           <AdditionalButtons

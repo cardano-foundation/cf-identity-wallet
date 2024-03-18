@@ -136,6 +136,10 @@ const Identifiers = () => {
     setTimeout(() => setShowNavAnimation(false), CLEAR_STATE_DELAY);
   };
 
+  const tabClasses = `identifier-tab ${
+    showNavAnimation ? "identifier-nav-animation" : "identifier-open-animation"
+  }`;
+
   return (
     <>
       <Connections
@@ -145,7 +149,7 @@ const Identifiers = () => {
       <TabLayout
         pageId={pageId}
         header={true}
-        customClass={showNavAnimation ? "identifier-nav-animation" : undefined}
+        customClass={tabClasses}
         title={`${i18n.t("identifiers.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
