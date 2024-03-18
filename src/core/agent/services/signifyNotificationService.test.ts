@@ -45,7 +45,9 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const signifyApi = jest.mocked({});
+const signifyApi = jest.mocked({
+  markNotification: jest.fn(),
+});
 
 const signifyNotificationService = new SignifyNotificationService(
   agent as any as Agent,
