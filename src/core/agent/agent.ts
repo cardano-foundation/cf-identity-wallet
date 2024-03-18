@@ -160,6 +160,7 @@ class AriesAgent {
     });
     this.agent.registerOutboundTransport(new HttpOutboundTransport());
     this.agent.registerOutboundTransport(new WsOutboundTransport());
+    this.signifyApi = new SignifyApi();
   }
 
   static get agent() {
@@ -176,8 +177,7 @@ class AriesAgent {
         : new IonicStorage();
       await this.basicRecordStorage.open(config.walletConfig?.id || "idw");
       await this.agent.initialize();
-      this.signifyApi = new SignifyApi();
-      this.signifyApi.start();
+      await this.signifyApi.start();
       AriesAgent.ready = true;
     }
   }
