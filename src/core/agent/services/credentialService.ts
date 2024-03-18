@@ -1,24 +1,9 @@
 import {
-  AutoAcceptCredential,
-  CredentialEventTypes,
-  CredentialExchangeRecord,
-  CredentialState,
-  CredentialStateChangedEvent,
-  ProposeCredentialOptions,
-  V2OfferCredentialMessage,
-  AriesFrameworkError,
-  JsonCredential,
-  JsonLdCredentialDetailFormat,
-  W3cJsonLdVerifiableCredential,
-  JsonObject,
-} from "@aries-framework/core";
-import {
   KeriNotification,
   GenericRecordType,
   AcdcKeriStateChangedEvent,
   AcdcKeriEventTypes,
   ConnectionType,
-  CredentialType,
 } from "../agent.types";
 import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
@@ -28,7 +13,6 @@ import {
 } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../../ui/utils/colorGenerator";
 import {
-  W3CCredentialDetails,
   CredentialShortDetails,
   CredentialStatus,
   ACDCDetails,
@@ -92,10 +76,6 @@ class CredentialService extends AgentService {
     id: string
   ): Promise<CredentialShortDetails> {
     return this.getCredentialShortDetails(await this.getMetadataById(id));
-  }
-
-  async getCredentialRecordById(id: string): Promise<CredentialExchangeRecord> {
-    return this.agent.credentials.getById(id);
   }
 
   async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
@@ -231,9 +211,7 @@ class CredentialService extends AgentService {
         id
       );
     if (!metadata) {
-      throw new AriesFrameworkError(
-        CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
-      );
+      throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
     }
 
     metadata.status = CredentialMetadataRecordStatus.CONFIRMED;

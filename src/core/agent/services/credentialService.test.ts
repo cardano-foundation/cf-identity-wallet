@@ -339,26 +339,6 @@ describe("Credential service of agent", () => {
   beforeEach(() => {
     jest.resetAllMocks();
   });
-
-  test("can accept a credential", async () => {
-    const credentialRecordId = "connection1";
-    await credentialService.acceptCredentialOffer(credentialRecordId);
-    expect(agent.credentials.acceptOffer).toBeCalledWith({
-      credentialRecordId,
-    });
-  });
-
-  test("can propose a credential", async () => {
-    const credentialRecordId = "connection1";
-    await credentialService.proposeCredential(credentialRecordId, {});
-    expect(agent.credentials.proposeCredential).toBeCalledWith({
-      protocolVersion: "v2",
-      connectionId: credentialRecordId,
-      credentialFormats: {},
-      autoAcceptCredential: AutoAcceptCredential.Always,
-    });
-  });
-
   test("can get all credentials", async () => {
     agent.modules.generalStorage.getAllCredentialMetadata = jest
       .fn()
@@ -515,14 +495,6 @@ describe("Credential service of agent", () => {
       agent.modules.generalStorage.updateCredentialMetadata
     ).not.toBeCalled();
   });
-
-  test("get credential successfully record by id", () => {
-    credentialService.getCredentialRecordById(credentialDoneExchangeRecord.id);
-    expect(agent.credentials.getById).toBeCalledWith(
-      credentialDoneExchangeRecord.id
-    );
-  });
-
   test("get credential details successfully record by id", async () => {
     agent.modules.generalStorage.getCredentialMetadata = jest
       .fn()
@@ -585,18 +557,6 @@ describe("Credential service of agent", () => {
     });
   });
 
-  test("get preview credential successfully by credentialRecord", async () => {
-    agent.credentials.findOfferMessage = jest
-      .fn()
-      .mockResolvedValue(v2OfferCredentialMessage);
-    const data = await credentialService.getPreviewCredential(
-      credentialDoneExchangeRecord
-    );
-    expect(data).toStrictEqual({
-      data: "message",
-    });
-  });
-
   test("create metadata record successfully", async () => {
     await credentialService.createMetadata(credentialMetadataProps);
     expect(
@@ -604,139 +564,6 @@ describe("Credential service of agent", () => {
     ).toBeCalled();
   });
 
-  test("update university credential metadata completed without connection successfully when credential is done", async () => {
-    agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
-      jest.fn().mockResolvedValue(universityCredMetadataProps);
-    agent.w3cCredentials.getCredentialRecordById = jest
-      .fn()
-      .mockResolvedValue(w3cCredentialRecord);
-    const dataAfterUpdate = await credentialService.updateMetadataCompleted(
-      credentialDoneExchangeRecord
-    );
-    expect(dataAfterUpdate).toStrictEqual({
-      colors: universityCredMetadataProps.colors,
-      credentialType: w3cCredentialRecord.credential.type[1],
-      id: id1,
-      isArchived: false,
-      issuanceDate: w3cCredentialRecord.credential.issuanceDate,
-      status: CredentialMetadataRecordStatus.CONFIRMED,
-      cachedDetails: universityCredMetadataProps.cachedDetails,
-      connectionType: ConnectionType.DIDCOMM,
-    });
-  });
-
-  test("update residency credential metadata completed without connection successfully when credential is done", async () => {
-    agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
-      jest.fn().mockResolvedValue(residencyCredMetadataProps);
-    agent.w3cCredentials.getCredentialRecordById = jest
-      .fn()
-      .mockResolvedValue(w3cResidencyCredentialRecord);
-    const dataAfterUpdate = await credentialService.updateMetadataCompleted(
-      credentialDoneExchangeRecord
-    );
-    expect(dataAfterUpdate).toStrictEqual({
-      colors: residencyCredMetadataProps.colors,
-      credentialType: residencyCredMetadataProps.credentialType,
-      id: id1,
-      isArchived: false,
-      issuanceDate: w3cCredentialRecord.credential.issuanceDate,
-      status: CredentialMetadataRecordStatus.CONFIRMED,
-      cachedDetails: residencyCredMetadataProps.cachedDetails,
-      connectionType: ConnectionType.DIDCOMM,
-    });
-  });
-
-  test("update summit credential metadata completed without connection successfully when credential is done", async () => {
-    agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
-      jest.fn().mockResolvedValue(summitCredMetadataProps);
-    agent.w3cCredentials.getCredentialRecordById = jest
-      .fn()
-      .mockResolvedValue(w3cSummitCredentialRecord);
-    const dataAfterUpdate = await credentialService.updateMetadataCompleted(
-      credentialDoneExchangeRecord
-    );
-    expect(dataAfterUpdate).toStrictEqual({
-      colors: summitCredMetadataProps.colors,
-      credentialType: summitCredMetadataProps.credentialType,
-      id: id1,
-      isArchived: false,
-      issuanceDate: w3cCredentialRecord.credential.issuanceDate,
-      status: CredentialMetadataRecordStatus.CONFIRMED,
-      cachedDetails: summitCredMetadataProps.cachedDetails,
-      connectionType: ConnectionType.DIDCOMM,
-    });
-  });
-
-  test("update metadata completed with connection successfully when credential is done", async () => {
-    agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId =
-      jest.fn().mockResolvedValue(credentialMetadataRecordA);
-    agent.w3cCredentials.getCredentialRecordById = jest
-      .fn()
-      .mockResolvedValue(w3cCredentialRecord);
-    const dataAfterUpdate = await credentialService.updateMetadataCompleted(
-      credentialDoneExchangeRecord
-    );
-    expect(dataAfterUpdate.status).toEqual(
-      CredentialMetadataRecordStatus.CONFIRMED
-    );
-    expect(dataAfterUpdate.credentialType).toEqual(
-      w3cCredentialRecord.credential.type[1]
-    );
-  });
-
-  test("negotiation credential must fail if did haven't found", async () => {
-    const testDid = "did:key:test";
-    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([]);
-
-    await expect(
-      credentialService.negotiateOfferWithDid(
-        testDid,
-        credentialOfferReceivedRecordNoAutoAccept
-      )
-    ).rejects.toThrowError(CredentialService.CREATED_DID_NOT_FOUND);
-  });
-
-  test("negotiation credential must fail if credential preview haven't found", async () => {
-    const testDid = "did:key:test";
-
-    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([{ did: testDid }]);
-
-    await expect(
-      credentialService.negotiateOfferWithDid(
-        testDid,
-        credentialOfferReceivedRecordNoAutoAccept
-      )
-    ).rejects.toThrowError(CredentialService.CREDENTIAL_MISSING_FOR_NEGOTIATE);
-  });
-
-  test("negotiation credential with preview credential run successfully", async () => {
-    const testDid = "did:key:test";
-    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([{ did: testDid }]);
-
-    credentialService.getPreviewCredential = jest.fn().mockResolvedValue({
-      options: {},
-      credential: {},
-    });
-
-    await credentialService.negotiateOfferWithDid(
-      testDid,
-      credentialOfferReceivedRecordNoAutoAccept
-    );
-
-    expect(agent.credentials.negotiateOffer).toBeCalledWith({
-      credentialRecordId: credentialOfferReceivedRecordNoAutoAccept.id,
-      credentialFormats: {
-        jsonld: {
-          options: {},
-          credential: {
-            credentialSubject: {
-              id: testDid,
-            },
-          },
-        },
-      },
-    });
-  });
   test("can get unhandled credentials to re-processing", async () => {
     agent.credentials.findAllByQuery = jest
       .fn()
@@ -816,53 +643,6 @@ describe("Credential service of agent", () => {
 });
 
 describe("Credential service of agent - CredentialExchangeRecord helpers", () => {
-  test("callback will run when have a event listener", async () => {
-    const callback = jest.fn();
-    credentialService.onCredentialStateChanged(callback);
-    const event: CredentialStateChangedEvent = {
-      type: CredentialEventTypes.CredentialStateChanged,
-      payload: {
-        credentialRecord: credentialDoneExchangeRecord,
-        previousState: CredentialState.CredentialReceived,
-      },
-      metadata: {
-        contextCorrelationId: id1,
-      },
-    };
-    agent.eventEmitter.emit(CredentialEventTypes.CredentialStateChanged, event);
-    expect(callback).toBeCalledWith(event);
-  });
-
-  test("credential record represents incoming offer", () => {
-    expect(
-      credentialService.isCredentialOfferReceived(
-        credentialOfferReceivedRecordAutoAccept
-      )
-    ).toBe(true);
-  });
-
-  test("credential record represents incoming offer should be ignored if auto accept is always", () => {
-    expect(
-      credentialService.isCredentialOfferReceived(
-        credentialOfferReceivedRecordNoAutoAccept
-      )
-    ).toBe(false);
-  });
-
-  test("credential record represents after accepted credential", () => {
-    expect(
-      credentialService.isCredentialRequestSent(
-        credentialRequestSentRecordAutoAccept
-      )
-    ).toBe(true);
-  });
-
-  test("credential record represents done", () => {
-    expect(
-      credentialService.isCredentialDone(credentialDoneExchangeRecord)
-    ).toBe(true);
-  });
-
   test("callback will run when have a event listener of ACDC KERI state changed", async () => {
     const callback = jest.fn();
     credentialService.onAcdcKeriStateChanged(callback);
