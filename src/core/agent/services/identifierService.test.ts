@@ -893,14 +893,11 @@ describe("Identifier service of agent", () => {
         },
       ]);
     expect(
-      await identifierService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 4,
-          colors: ["#000000", "#000000"],
-          displayName: "Multisig",
-        }
-      )
+      await identifierService.joinMultisig("id", "d", {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      })
     ).toBe(multisigIdentifier);
   });
 
@@ -909,14 +906,11 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue([]);
     await expect(
-      identifierService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 4,
-          colors: ["#000000", "#000000"],
-          displayName: "Multisig",
-        }
-      )
+      identifierService.joinMultisig("id", "d", {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      })
     ).rejects.toThrowError();
   });
 
@@ -1550,14 +1544,11 @@ describe("Identifier service of agent", () => {
         },
       ]);
     await expect(
-      identifierService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 4,
-          colors: ["#000000", "#000000"],
-          displayName: "Multisig",
-        }
-      )
+      identifierService.joinMultisig("id", "d", {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      })
     ).rejects.toThrowError(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
   });
 
@@ -1590,14 +1581,11 @@ describe("Identifier service of agent", () => {
         },
       ]);
     await expect(
-      identifierService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 4,
-          colors: ["#000000", "#000000"],
-          displayName: "Multisig",
-        }
-      )
+      identifierService.joinMultisig("id", "d", {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      })
     ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
   });
 

@@ -29,6 +29,7 @@ import { AgentService } from "./agentService";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { AriesAgent } from "../agent";
 import { IdentifierType } from "./identifierService.types";
+import { ColorGenerator } from "../../../ui/utils/colorGenerator";
 
 const SERVER_GET_SHORTEN_URL =
   // eslint-disable-next-line no-undef
@@ -137,10 +138,39 @@ class ConnectionService extends AgentService {
       );
       const operation = await this.agent.modules.signify.resolveOobi(url);
       const connectionId = operation.response.i;
-      await this.createConnectionKeriMetadata(connectionId, {
+      const connectionMetadata: any = {
         alias: operation.alias,
         oobi: url,
-      });
+      };
+      if (url.includes("groupId")) {
+        const params = new URLSearchParams(new URL(url).search);
+        const groupId = params.get("groupId");
+        const identifiers = await AriesAgent.agent.identifiers.getIdentifiers();
+        const identifierWithGroupId = identifiers.find(
+          (identifier) => identifier.groupMetadata?.groupId == groupId
+        );
+        if (identifierWithGroupId) {
+          connectionMetadata.groupId = groupId;
+        } else {
+          //TODO: Open a pop up to get the display name and colors inputs
+          const displayName = utils.uuid();
+          const colorGenerator = new ColorGenerator();
+          const newColor = colorGenerator.generateNextColor();
+
+          await AriesAgent.agent.identifiers.createIdentifier({
+            displayName,
+            method: IdentifierType.KERI,
+            colors: [newColor[1], newColor[0]],
+            theme: 0,
+            groupMetadata: {
+              groupId: utils.uuid(),
+              groupInitiator: false,
+              groupCreated: false,
+            },
+          });
+        }
+      }
+      await this.createConnectionKeriMetadata(connectionId, connectionMetadata);
 
       // @TODO - foconnor: This is temporary for ease of development, will be removed soon.
       // For now this will make KERI contacts operate similarily to DIDComm comms if it's from our deployed cred server.
@@ -255,6 +285,20 @@ class ConnectionService extends AgentService {
     return connectionsDetails;
   }
 
+  async getAssociatedKeriContacts(
+    groupId: string
+  ): Promise<ConnectionShortDetails[]> {
+    const connectionsDetails: ConnectionShortDetails[] = [];
+    const connectionKeriMetadatas = await this.getAllConnectionKeriMetadata();
+    const associatedKeriContacts = connectionKeriMetadatas.filter(
+      (contact) => contact?.content?.groupId === groupId
+    );
+    associatedKeriContacts.forEach(async (connection) => {
+      connectionsDetails.push(this.getConnectionKeriShortDetails(connection));
+    });
+    return connectionsDetails;
+  }
+
   getConnectionShortDetails(
     connection: ConnectionRecord
   ): ConnectionShortDetails {
@@ -274,7 +318,7 @@ class ConnectionService extends AgentService {
   private getConnectionKeriShortDetails(
     record: GenericRecord
   ): ConnectionShortDetails {
-    return {
+    const connection: ConnectionShortDetails = {
       id: record.id,
       label: record.content?.alias as string,
       connectionDate: record.createdAt.toISOString(),
@@ -282,6 +326,10 @@ class ConnectionService extends AgentService {
       type: ConnectionType.KERI,
       oobi: record.content?.oobi as string,
     };
+    if (record.content?.groupId) {
+      connection.groupId = record.content.groupId as string;
+    }
+    return connection;
   }
 
   async getConnectionById(

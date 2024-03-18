@@ -5,6 +5,12 @@ enum IdentifierType {
   KERI = "keri",
 }
 
+interface groupMetadata {
+  groupId: string;
+  groupInitiator: boolean;
+  groupCreated: boolean;
+}
+
 interface IdentifierShortDetails {
   id: string;
   method: IdentifierType;
@@ -14,6 +20,7 @@ interface IdentifierShortDetails {
   colors: [string, string];
   theme: number;
   isPending: boolean;
+  groupMetadata?: groupMetadata;
 }
 
 type GetIdentifierResult =

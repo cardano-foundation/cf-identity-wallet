@@ -3,6 +3,8 @@ import { utils } from "@aries-framework/core";
 import { MultiSigRoute } from "./signifyApi.types";
 import { SignifyApi } from "./signifyApi";
 import { ConfigurationService } from "../../../configuration";
+import { AriesAgent } from "../../agent";
+import { IdentifierType } from "../../services/identifierService.types";
 
 const firstAid = "aid1";
 const secondAid = "aid2";
@@ -381,6 +383,20 @@ describe("Signify API", () => {
 
   test("can get oobi by name", async () => {
     const mockName = "keriuuid";
+    jest
+      .spyOn(AriesAgent.agent.identifiers, "getIdentifiers")
+      .mockResolvedValue([
+        {
+          id: "id",
+          displayName: "Identifier 1",
+          signifyName: mockName,
+          colors: ["#fff", "#fff"],
+          method: IdentifierType.KEY,
+          createdAtUTC: new Date().toISOString(),
+          theme: 0,
+          isPending: false,
+        },
+      ]);
     expect(await api.getOobi(mockName)).toEqual(oobiPrefix + mockName);
   });
 

@@ -2,6 +2,7 @@ import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
 import { IonGrid, IonRow, IonCol } from "@ionic/react";
 import { useEffect, useState } from "react";
+import { utils } from "@aries-framework/core";
 import { i18n } from "../../../../i18n";
 import { CustomInput } from "../../CustomInput";
 import { ErrorMessage } from "../../ErrorMessage";
@@ -87,13 +88,24 @@ const IdentifierStage0 = ({
       state.selectedIdentifierType === 0
         ? IdentifierType.KEY
         : IdentifierType.KERI;
-    const identifier = await AriesAgent.agent.identifiers.createIdentifier({
+    const metadata: any = {
       displayName: state.displayNameValue,
       method: type,
       // @TODO - sdisalvo: Colors will need to be removed
       colors: [newColor[1], newColor[0]],
       theme: state.selectedTheme,
-    });
+    };
+    const groupMetadata = {
+      groupId: utils.uuid(),
+      groupInitiator: true,
+      groupCreated: false,
+    };
+    if (type === IdentifierType.KERI) {
+      metadata.groupMetadata = groupMetadata;
+    }
+    const identifier = await AriesAgent.agent.identifiers.createIdentifier(
+      metadata
+    );
     if (identifier) {
       const newIdentifier: IdentifierShortDetails = {
         id: identifier,
@@ -105,6 +117,9 @@ const IdentifierStage0 = ({
         theme: state.selectedTheme,
         isPending: false,
       };
+      if (type === IdentifierType.KERI) {
+        newIdentifier.groupMetadata = groupMetadata;
+      }
       dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
       resetModal && resetModal();

@@ -173,7 +173,7 @@ class IdentifierService extends AgentService {
       await this.createIdentifierMetadataRecord({
         id: identifier,
         ...metadata,
-        signifyName: signifyName,
+        signifyName,
       });
       return identifier;
     }
@@ -378,6 +378,12 @@ class IdentifierService extends AgentService {
         return { state: aid.response };
       })
     );
+    const notLinkedContacts = otherIdentifierContacts.filter(
+      (contact) => contact.groupId !== ourMetadata.groupMetadata?.groupId
+    );
+    if (notLinkedContacts.length) {
+      // Todo: I got confused about this part, I will update it later
+    }
     let delegateAid;
     if (delegateContact) {
       const delegator = await this.agent.modules.signify.resolveOobi(
@@ -411,6 +417,10 @@ class IdentifierService extends AgentService {
       isPending,
       multisigManageAid: ourIdentifier,
     });
+    if (ourMetadata.groupMetadata) {
+      ourMetadata.groupMetadata.groupCreated = true;
+      await this.updateIdentifier(ourMetadata.id, ourMetadata);
+    }
     return multisigId;
   }
 
@@ -593,24 +603,28 @@ class IdentifierService extends AgentService {
   }
 
   async joinMultisig(
-    notification: KeriNotification,
+    notificationId: string,
+    notificationSaid: string,
     meta: Pick<
       IdentifierMetadataRecordProps,
       "displayName" | "colors" | "theme"
     >
   ): Promise<string | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
-    const msgSaid = notification.a.d as string;
-    const hasJoined = await this.hasJoinedMultisig(msgSaid);
+    const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
-      await this.agent.genericRecords.deleteById(notification.id);
+      await this.agent.genericRecords.deleteById(notificationId);
       return;
     }
     const icpMsg: MultiSigExnMessage[] =
-      await this.agent.modules.signify.getMultisigMessageBySaid(msgSaid);
+      await this.agent.modules.signify.getMultisigMessageBySaid(
+        notificationSaid
+      );
 
     if (!icpMsg.length) {
-      throw new Error(`${IdentifierService.EXN_MESSAGE_NOT_FOUND} ${msgSaid}`);
+      throw new Error(
+        `${IdentifierService.EXN_MESSAGE_NOT_FOUND} ${notificationSaid}`
+      );
     }
     const exn = icpMsg[0].exn;
     const smids = exn.a.smids;
@@ -636,7 +650,7 @@ class IdentifierService extends AgentService {
       aid,
       signifyName
     );
-    await this.agent.genericRecords.deleteById(notification.id);
+    await this.agent.genericRecords.deleteById(notificationId);
     const multisigId = res.op.name.split(".")[1];
     await this.createIdentifierMetadataRecord({
       id: multisigId,
@@ -649,6 +663,11 @@ class IdentifierService extends AgentService {
       isPending: res.op.done ? false : true, //this will be updated once the operation is done
       multisigManageAid: identifier.id,
     });
+    if (identifier.groupMetadata) {
+      identifier.groupMetadata.groupCreated = true;
+      await this.updateIdentifier(identifier.id, identifier);
+    }
+    identifier.groupMetadata?.groupCreated;
     return multisigId;
   }
 

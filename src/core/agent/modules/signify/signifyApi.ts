@@ -26,6 +26,7 @@ import {
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 import { WitnessMode } from "../../../configuration/configurationService.types";
+import { AriesAgent } from "../../agent";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
@@ -149,9 +150,16 @@ export class SignifyApi {
   }
 
   async getOobi(name: string): Promise<string> {
+    const identifiers = await AriesAgent.agent.identifiers.getIdentifiers();
+    const identifierMetadata = identifiers.find(
+      (identifier) => identifier.signifyName === name
+    );
     const result = await this.signifyClient
       .oobis()
       .get(name, SignifyApi.DEFAULT_ROLE);
+    if (identifierMetadata && identifierMetadata?.groupMetadata?.groupId) {
+      return `${result.oobis[0]}?groupid=${identifierMetadata?.groupMetadata?.groupId}`;
+    }
     return result.oobis[0];
   }
 

@@ -55,6 +55,7 @@ interface ConnectionShortDetails {
   status: ConnectionStatus;
   type?: ConnectionType;
   oobi?: string;
+  groupId?: string;
 }
 
 type ConnectionNoteDetails = {
