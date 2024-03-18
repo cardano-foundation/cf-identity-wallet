@@ -18,6 +18,7 @@ enum GenericRecordType {
   CONNECTION_NOTE = "connection-note",
   CONNECTION_KERI_METADATA = "connection-keri-metadata",
   NOTIFICATION_KERI = "notification-keri",
+  IDENTIFIER_RECORD = "identifier-record",
 }
 
 enum ConnectionHistoryType {
@@ -112,6 +113,11 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
+interface BaseEventEmitter {
+  type: string;
+  payload: Record<string, unknown>;
+}
+
 export {
   Blockchain,
   ConnectionStatus,
@@ -133,4 +139,5 @@ export type {
   ConnectionKeriStateChangedEvent,
   KeriNotification,
   AcdcKeriStateChangedEvent,
+  BaseEventEmitter,
 };

@@ -1,16 +1,4 @@
-import {
-  AriesFrameworkError,
-  ConnectionEventTypes,
-  ConnectionRecord,
-  ConnectionStateChangedEvent,
-  ConnectionType as AriesConnectionType,
-  DidExchangeRole,
-  DidExchangeState,
-  JsonEncoder,
-  OutOfBandDidCommService,
-  OutOfBandRecord,
-  utils,
-} from "@aries-framework/core";
+import { v4 as uuidv4 } from "uuid";
 import {
   ConnectionDetails,
   ConnectionHistoryItem,
@@ -30,11 +18,6 @@ import { AriesAgent } from "../agent";
 import { IdentifierType } from "./identifierService.types";
 import { BasicRecord } from "../../storage/storage.types";
 
-const SERVER_GET_SHORTEN_URL =
-  // eslint-disable-next-line no-undef
-  process.env.REACT_APP_SERVER_GET_SHORTEN_URL ??
-  "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org";
-
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
   //   "No domain found in config";
@@ -47,21 +30,10 @@ class ConnectionService extends AgentService {
   static readonly CONNECTION_KERI_METADATA_RECORD_NOT_FOUND =
     "Connection keri metadata record not found";
 
-  onConnectionStateChanged(
-    callback: (event: ConnectionStateChangedEvent) => void
-  ) {
-    this.agent.events.on(
-      ConnectionEventTypes.ConnectionStateChanged,
-      async (event: ConnectionStateChangedEvent) => {
-        callback(event);
-      }
-    );
-  }
-
   onConnectionKeriStateChanged(
     callback: (event: ConnectionKeriStateChangedEvent) => void
   ) {
-    this.agent.events.on(
+    this.eventService.on(
       ConnectionKeriEventTypes.ConnectionKeriStateChanged,
       async (event: ConnectionKeriStateChangedEvent) => {
         callback(event);
@@ -69,72 +41,15 @@ class ConnectionService extends AgentService {
     );
   }
 
-  /**
-   * Role: Responder, Check to see if there are incoming connection requests
-   * @param connectionRecord
-   */
-  isConnectionRequestReceived(connectionRecord: ConnectionRecord) {
-    return (
-      connectionRecord.role === DidExchangeRole.Responder &&
-      connectionRecord.state === DidExchangeState.RequestReceived &&
-      !connectionRecord.autoAcceptConnection
-    );
-  }
-
-  /**
-   * Role: Responder, after accepted incoming connection requests
-   * @param connectionRecord
-   */
-  isConnectionResponseSent(connectionRecord: ConnectionRecord) {
-    return (
-      connectionRecord.role === DidExchangeRole.Responder &&
-      connectionRecord.state === DidExchangeState.ResponseSent
-    );
-  }
-
-  /**
-   * Role: invitee
-   * @param connectionRecord
-   */
-  isConnectionRequestSent(connectionRecord: ConnectionRecord) {
-    return (
-      connectionRecord.role === DidExchangeRole.Requester &&
-      connectionRecord.state === DidExchangeState.RequestSent
-    );
-  }
-
-  /**
-   * Role: invitee
-   * @param connectionRecord
-   */
-  isConnectionResponseReceived(connectionRecord: ConnectionRecord) {
-    return (
-      connectionRecord.role === DidExchangeRole.Requester &&
-      connectionRecord.state === DidExchangeState.ResponseReceived &&
-      !connectionRecord.autoAcceptConnection
-    );
-  }
-
-  /**
-   * Role: invitee, inviter
-   * @param connectionRecord
-   */
-  isConnectionConnected(connectionRecord: ConnectionRecord) {
-    return connectionRecord.state === DidExchangeState.Completed;
-  }
-
   async receiveInvitationFromUrl(url: string): Promise<void> {
     if (url.includes("/oobi")) {
-      this.agent.events.emit<ConnectionKeriStateChangedEvent>(
-        this.agent.context,
-        {
-          type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
-          payload: {
-            connectionId: undefined,
-            status: ConnectionStatus.PENDING,
-          },
-        }
-      );
+      this.eventService.emit<ConnectionKeriStateChangedEvent>({
+        type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+        payload: {
+          connectionId: undefined,
+          status: ConnectionStatus.PENDING,
+        },
+      });
       const operation = await this.signifyApi.resolveOobi(url);
       const connectionId = operation.response.i;
       await this.createConnectionKeriMetadata(connectionId, {
@@ -175,100 +90,23 @@ class ConnectionService extends AgentService {
         }
       }
 
-      return this.agent.events.emit<ConnectionKeriStateChangedEvent>(
-        this.agent.context,
-        {
-          type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
-          payload: {
-            connectionId: operation.response.i,
-            status: ConnectionStatus.CONFIRMED,
-          },
-        }
-      );
+      return this.eventService.emit<ConnectionKeriStateChangedEvent>({
+        type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
+        payload: {
+          connectionId: operation.response.i,
+          status: ConnectionStatus.CONFIRMED,
+        },
+      });
     }
-    if (url.includes("/shorten")) {
-      const response = await this.fetchShortUrl(url);
-      url = await response.text();
-    }
-    await this.agent.oob.receiveInvitationFromUrl(url, {
-      autoAcceptConnection: false,
-      autoAcceptInvitation: true,
-      reuseConnection: true,
-    });
-  }
-
-  // @TODO: this is a temporary feature, an api should be added in the mediator to get the shorten url
-  async getShortenUrl(invitationUrl: string): Promise<string> {
-    const getUrl = await fetch(`${SERVER_GET_SHORTEN_URL}/shorten`, {
-      method: "POST",
-      body: JSON.stringify({ url: invitationUrl }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const response = await getUrl.text();
-    return JsonEncoder.fromString(response).data;
-  }
-
-  async acceptRequestConnection(connectionId: string) {
-    await this.agent.connections.acceptRequest(connectionId);
-  }
-
-  async acceptResponseConnection(connectionId: string) {
-    await this.agent.connections.acceptResponse(connectionId);
-  }
-
-  async createMediatorInvitation() {
-    const record = await this.agent.oob.createInvitation();
-    if (!record) {
-      throw new Error(ConnectionService.COULD_NOT_CREATE_OOB_VIA_MEDIATOR);
-    }
-
-    const invitationUrl = record.outOfBandInvitation.toUrl({
-      domain: "didcomm://invite",
-    });
-
-    return {
-      record,
-      invitation: record.outOfBandInvitation,
-      invitationUrl,
-    };
-  }
-
-  private isMediatorConnection(connection: ConnectionRecord) {
-    return connection.connectionTypes.includes(AriesConnectionType.Mediator);
   }
 
   async getConnections(): Promise<ConnectionShortDetails[]> {
-    const connections = await this.agent.connections.getAll();
     const connectionsDetails: ConnectionShortDetails[] = [];
-    connections.forEach((connection) => {
-      if (this.isMediatorConnection(connection)) {
-        return;
-      }
-      connectionsDetails.push(this.getConnectionShortDetails(connection));
-    });
     const connectionKeriMetadatas = await this.getAllConnectionKeriMetadata();
     connectionKeriMetadatas.forEach(async (connection) => {
       connectionsDetails.push(this.getConnectionKeriShortDetails(connection));
     });
     return connectionsDetails;
-  }
-
-  getConnectionShortDetails(
-    connection: ConnectionRecord
-  ): ConnectionShortDetails {
-    return {
-      id: connection.id,
-      label: connection.theirLabel ?? "",
-      connectionDate: connection.createdAt.toISOString(),
-      logo: connection.imageUrl,
-      status:
-        connection.state === DidExchangeState.Completed
-          ? ConnectionStatus.CONFIRMED
-          : ConnectionStatus.PENDING,
-      type: ConnectionType.DIDCOMM,
-    };
   }
 
   private getConnectionKeriShortDetails(
@@ -288,38 +126,19 @@ class ConnectionService extends AgentService {
     id: string,
     type?: ConnectionType
   ): Promise<ConnectionDetails> {
-    if (type === ConnectionType.KERI) {
-      return this.getKeriConnectionDetails(id);
-    }
-    const connection = await this.agent.connections.getById(id);
-    let outOfBandRecord: OutOfBandRecord | undefined;
-    if (connection.outOfBandId) {
-      outOfBandRecord = await this.agent.oob.getById(connection.outOfBandId);
-    }
-    return this.getConnectionDetails(connection, outOfBandRecord);
+    return this.getKeriConnectionDetails(id);
   }
 
   async deleteConnectionById(
     id: string,
     connectionType?: ConnectionType
   ): Promise<void> {
-    if (connectionType === ConnectionType.KERI) {
-      await this.basicStorage.deleteById(id);
-      await this.signifyApi.deleteContactById(id);
-    } else {
-      await this.agent.connections.deleteById(id);
-    }
+    await this.basicStorage.deleteById(id);
+    await this.signifyApi.deleteContactById(id);
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
       this.basicStorage.deleteById(note.id);
     }
-  }
-
-  async getConnectionShortDetailById(
-    id: string
-  ): Promise<ConnectionShortDetails> {
-    const connection = await this.agent.connections.getById(id);
-    return this.getConnectionShortDetails(connection);
   }
 
   async getConnectionKeriShortDetailById(
@@ -334,7 +153,7 @@ class ConnectionService extends AgentService {
     note: ConnectionNoteProps
   ): Promise<void> {
     await this.basicStorage.save({
-      id: utils.uuid(),
+      id: uuidv4(),
       content: note,
       tags: {
         connectionId,
@@ -415,21 +234,6 @@ class ConnectionService extends AgentService {
     return histories;
   }
 
-  async getUnhandledConnections(): Promise<ConnectionRecord[]> {
-    return this.agent.connections.findAllByQuery({
-      $or: [
-        {
-          state: DidExchangeState.ResponseReceived,
-          role: DidExchangeRole.Requester,
-        },
-        {
-          state: DidExchangeState.RequestReceived,
-          role: DidExchangeRole.Responder,
-        },
-      ],
-    });
-  }
-
   async syncKeriaContacts() {
     const signifyContacts = await this.signifyApi.getContacts();
     const storageContacts = await this.getAllConnectionKeriMetadata();
@@ -464,36 +268,6 @@ class ConnectionService extends AgentService {
     });
   }
 
-  private async getConnectionDetails(
-    connection: ConnectionRecord,
-    outOfBandRecord?: OutOfBandRecord
-  ): Promise<ConnectionDetails> {
-    return {
-      label: connection?.theirLabel ?? "",
-      logo:
-        connection?.imageUrl ?? outOfBandRecord?.outOfBandInvitation?.imageUrl,
-      id: connection.id,
-      status:
-        connection.state === DidExchangeState.Completed
-          ? ConnectionStatus.CONFIRMED
-          : ConnectionStatus.PENDING,
-      connectionDate: connection.createdAt.toISOString(),
-      goalCode: outOfBandRecord?.outOfBandInvitation.goalCode,
-      handshakeProtocols:
-        outOfBandRecord?.outOfBandInvitation.handshakeProtocols,
-      requestAttachments: outOfBandRecord?.outOfBandInvitation
-        .getRequests()
-        ?.map((request) => request["@id"]),
-      serviceEndpoints: outOfBandRecord?.outOfBandInvitation
-        .getServices()
-        ?.filter((service) => typeof service !== "string")
-        .map(
-          (service) => (service as OutOfBandDidCommService)?.serviceEndpoint
-        ),
-      notes: await this.getConnectNotesByConnectionId(connection.id),
-    };
-  }
-
   private async getKeriConnectionDetails(
     id: string
   ): Promise<ConnectionDetails> {
@@ -508,27 +282,6 @@ class ConnectionService extends AgentService {
       serviceEndpoints: [connection.oobi],
       notes: await this.getConnectNotesByConnectionId(connection.id),
     };
-  }
-
-  private async fetchShortUrl(invitationUrl: string) {
-    const abortController = new AbortController();
-    const id = setTimeout(() => abortController.abort(), 15000);
-    let response;
-    try {
-      response = await fetch(invitationUrl, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-      });
-    } catch (error) {
-      throw new AriesFrameworkError(
-        `Get request failed on provided url ${invitationUrl}`
-      );
-    }
-    clearTimeout(id);
-    return response;
   }
 }
 

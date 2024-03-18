@@ -50,66 +50,13 @@ class CredentialService extends AgentService {
   static readonly CREDENTIAL_NOT_FOUND =
     "Credential with given SAID not found on KERIA";
 
-  onCredentialStateChanged(
-    callback: (event: CredentialStateChangedEvent) => void
-  ) {
-    this.agent.events.on(
-      CredentialEventTypes.CredentialStateChanged,
-      async (event: CredentialStateChangedEvent) => {
-        callback(event);
-      }
-    );
-  }
-
   onAcdcKeriStateChanged(callback: (event: AcdcKeriStateChangedEvent) => void) {
-    this.agent.events.on(
+    this.eventService.on(
       AcdcKeriEventTypes.AcdcKeriStateChanged,
       async (event: AcdcKeriStateChangedEvent) => {
         callback(event);
       }
     );
-  }
-
-  /**
-   * Role: holder, check to see if incoming credential offer received
-   * @param credentialRecord
-   */
-  isCredentialOfferReceived(credentialRecord: CredentialExchangeRecord) {
-    return (
-      credentialRecord.state === CredentialState.OfferReceived &&
-      !credentialRecord.autoAcceptCredential
-    );
-  }
-
-  isCredentialDone(credentialRecord: CredentialExchangeRecord) {
-    return credentialRecord.state === CredentialState.Done;
-  }
-
-  isCredentialRequestSent(credentialRecord: CredentialExchangeRecord) {
-    return (
-      credentialRecord.state === CredentialState.RequestSent &&
-      !credentialRecord.autoAcceptCredential
-    );
-  }
-
-  async acceptCredentialOffer(credentialRecordId: string) {
-    await this.agent.credentials.acceptOffer({ credentialRecordId });
-  }
-
-  async declineCredentialOffer(credentialRecordId: string) {
-    await this.agent.credentials.declineOffer(credentialRecordId);
-  }
-
-  async proposeCredential(
-    connectionId: string,
-    credentialFormats: ProposeCredentialOptions["credentialFormats"]
-  ) {
-    return this.agent.credentials.proposeCredential({
-      protocolVersion: "v2",
-      connectionId: connectionId,
-      credentialFormats: credentialFormats,
-      autoAcceptCredential: AutoAcceptCredential.Always,
-    });
   }
 
   async getCredentials(
@@ -151,194 +98,42 @@ class CredentialService extends AgentService {
     return this.agent.credentials.getById(id);
   }
 
-  async getCredentialDetailsById(
-    id: string
-  ): Promise<W3CCredentialDetails | ACDCDetails> {
+  async getCredentialDetailsById(id: string): Promise<ACDCDetails> {
     const metadata = await this.getMetadataById(id);
-    if (metadata.connectionType === ConnectionType.KERI) {
-      const { acdc, error } = await this.signifyApi.getCredentialBySaid(
-        metadata.credentialRecordId
-      );
-      if (error) {
-        throw error;
-      }
-      if (!acdc) {
-        throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
-      }
-      return {
-        ...this.getCredentialShortDetails(metadata),
-        i: acdc.sad.i,
-        a: acdc.sad.a,
-        s: {
-          title: acdc.schema.title,
-          description: acdc.schema.description,
-          version: acdc.schema.version,
-        },
-        lastStatus: {
-          s: acdc.status.s,
-          dt: new Date(acdc.status.dt).toISOString(),
-        },
-        connectionType: ConnectionType.KERI,
-      };
-    }
-    const credentialRecord = await this.getCredentialRecordById(
+    const { acdc, error } = await this.signifyApi.getCredentialBySaid(
       metadata.credentialRecordId
     );
-    // current, get first credential, handle later
-    const w3cCredential =
-      await this.agent.w3cCredentials.getCredentialRecordById(
-        credentialRecord.credentials[0].credentialRecordId
-      );
-    const credentialSubject = w3cCredential.credential
-      .credentialSubject as any as JsonCredential["credentialSubject"];
-    const credential =
-      w3cCredential.credential as W3cJsonLdVerifiableCredential;
-    const proof = credential.proof;
+    if (error) {
+      throw error;
+    }
+    if (!acdc) {
+      throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
+    }
     return {
       ...this.getCredentialShortDetails(metadata),
-      type: w3cCredential.credential.type,
-      connectionId: credentialRecord.connectionId,
-      expirationDate: w3cCredential.credential?.expirationDate,
-      credentialSubject: credentialSubject,
-      proofType: Array.isArray(proof)
-        ? proof.map((p) => p.type).join(",")
-        : proof.type,
-      proofValue: Array.isArray(proof)
-        ? proof.map((p) => p.jws).join(",")
-        : proof.jws,
-      connectionType: ConnectionType.DIDCOMM,
+      i: acdc.sad.i,
+      a: acdc.sad.a,
+      s: {
+        title: acdc.schema.title,
+        description: acdc.schema.description,
+        version: acdc.schema.version,
+      },
+      lastStatus: {
+        s: acdc.status.s,
+        dt: new Date(acdc.status.dt).toISOString(),
+      },
+      connectionType: ConnectionType.KERI,
     };
-  }
-
-  async getPreviewCredential(credentialRecord: CredentialExchangeRecord) {
-    const v2OfferCredentialMessage: V2OfferCredentialMessage | null =
-      await this.agent.credentials.findOfferMessage(credentialRecord.id);
-    if (!v2OfferCredentialMessage) {
-      return null;
-    }
-    const attachments = v2OfferCredentialMessage.offerAttachments;
-    // Current, get first attachment, handle later
-    const attachment = attachments?.[0];
-    if (!attachment) {
-      return null;
-    }
-    return attachment.getDataAsJson<JsonLdCredentialDetailFormat>();
   }
 
   async createMetadata(data: CredentialMetadataRecordProps) {
     const metadataRecord = new CredentialMetadataRecord({
       ...data,
     });
+
     await this.agent.modules.generalStorage.saveCredentialMetadataRecord(
       metadataRecord
     );
-  }
-
-  async updateMetadataCompleted(
-    credentialRecord: CredentialExchangeRecord
-  ): Promise<CredentialShortDetails> {
-    const metadata =
-      await this.agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId(
-        credentialRecord.id
-      );
-    const w3cCredential =
-      await this.agent.w3cCredentials.getCredentialRecordById(
-        credentialRecord.credentials[0].credentialRecordId
-      );
-
-    if (!metadata) {
-      throw new AriesFrameworkError(
-        CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
-      );
-    }
-    const credentialType = w3cCredential.credential.type?.find(
-      (t) => t !== "VerifiableCredential"
-    );
-    const data = {
-      credentialType: credentialType,
-      status: CredentialMetadataRecordStatus.CONFIRMED,
-    };
-
-    const credentialSubject = w3cCredential.credential
-      .credentialSubject as any as JsonCredential["credentialSubject"];
-    const checkedCredentialSubject = Array.isArray(credentialSubject)
-      ? undefined
-      : credentialSubject;
-    const response = {
-      colors: metadata.colors,
-      credentialType: data.credentialType || "",
-      id: metadata.id,
-      isArchived: metadata.isArchived ?? false,
-      issuanceDate: metadata.issuanceDate,
-      status: data.status,
-      connectionType: metadata.connectionType,
-    };
-
-    if (credentialType === CredentialType.UNIVERSITY_DEGREE_CREDENTIAL) {
-      const universityDegreeCredSubject = (
-        checkedCredentialSubject?.degree as JsonObject
-      )?.type as string;
-      const credentialMetadataRecord = {
-        ...data,
-        cachedDetails: {
-          degreeType: universityDegreeCredSubject || "",
-        },
-      };
-      await this.agent.modules.generalStorage.updateCredentialMetadata(
-        metadata?.id,
-        credentialMetadataRecord
-      );
-      return {
-        ...response,
-        cachedDetails: credentialMetadataRecord.cachedDetails,
-      };
-    } else if (credentialType === CredentialType.PERMANENT_RESIDENT_CARD) {
-      const expirationDate = w3cCredential.credential.expirationDate;
-      const credentialMetadataRecord = {
-        ...data,
-        cachedDetails: {
-          expirationDate: expirationDate || "",
-          image: checkedCredentialSubject?.image as string,
-          givenName: checkedCredentialSubject?.givenName as string,
-          familyName: checkedCredentialSubject?.familyName as string,
-          birthCountry: checkedCredentialSubject?.birthCountry as string,
-          lprCategory: checkedCredentialSubject?.lprCategory as string,
-          residentSince: checkedCredentialSubject?.residentSince as string,
-        },
-      };
-      await this.agent.modules.generalStorage.updateCredentialMetadata(
-        metadata?.id,
-        credentialMetadataRecord
-      );
-      return {
-        ...response,
-        cachedDetails: credentialMetadataRecord.cachedDetails,
-      };
-    } else if (credentialType === CredentialType.ACCESS_PASS_CREDENTIAL) {
-      const credentialMetadataRecord = {
-        ...data,
-        cachedDetails: {
-          summitType: checkedCredentialSubject?.type as string,
-          startDate: checkedCredentialSubject?.startDate as string,
-          endDate: checkedCredentialSubject?.endDate as string,
-          passId: checkedCredentialSubject?.passId as string,
-        },
-      };
-      await this.agent.modules.generalStorage.updateCredentialMetadata(
-        metadata?.id,
-        credentialMetadataRecord
-      );
-      return {
-        ...response,
-        cachedDetails: credentialMetadataRecord.cachedDetails,
-      };
-    } else {
-      await this.agent.modules.generalStorage.updateCredentialMetadata(
-        metadata?.id,
-        data
-      );
-      return response;
-    }
   }
 
   async archiveCredential(id: string): Promise<void> {
@@ -369,49 +164,8 @@ class CredentialService extends AgentService {
     });
   }
 
-  async negotiateOfferWithDid(
-    subjectDid: string,
-    credentialExchangeRecord: CredentialExchangeRecord
-  ): Promise<void> {
-    const [createdDid] = await this.agent.dids.getCreatedDids({
-      did: subjectDid,
-    });
-    if (!createdDid) {
-      throw new Error(`${CredentialService.CREATED_DID_NOT_FOUND}`);
-    }
-    const w3cCredential = await this.getPreviewCredential(
-      credentialExchangeRecord
-    );
-    if (!w3cCredential) {
-      throw new Error(`${CredentialService.CREDENTIAL_MISSING_FOR_NEGOTIATE}`);
-    }
-    await this.agent.credentials.negotiateOffer({
-      credentialRecordId: credentialExchangeRecord.id,
-      credentialFormats: {
-        jsonld: {
-          ...w3cCredential,
-          credential: {
-            ...w3cCredential.credential,
-            credentialSubject: {
-              ...w3cCredential.credential.credentialSubject,
-              id: subjectDid,
-            },
-          },
-        },
-      },
-    });
-  }
-
-  async getUnhandledCredentials(): Promise<
-    (CredentialExchangeRecord | KeriNotification)[]
-    > {
-    const results = await Promise.all([
-      this.agent.credentials.findAllByQuery({
-        state: CredentialState.OfferReceived,
-      }),
-      this.getKeriCredentialNotifications(),
-    ]);
-    return results.flat();
+  async getUnhandledCredentials(): Promise<KeriNotification[]> {
+    return this.getKeriCredentialNotifications();
   }
 
   private validArchivedCredential(metadata: CredentialMetadataRecord): void {
@@ -517,7 +271,7 @@ class CredentialService extends AgentService {
     const credentialId = keriExchange.exn.e.acdc.d;
     await this.createAcdcMetadataRecord(keriExchange.exn);
 
-    this.agent.events.emit<AcdcKeriStateChangedEvent>(this.agent.context, {
+    this.eventService.emit<AcdcKeriStateChangedEvent>({
       type: AcdcKeriEventTypes.AcdcKeriStateChanged,
       payload: {
         credentialId,
@@ -554,7 +308,7 @@ class CredentialService extends AgentService {
       cred
     );
     await this.deleteKeriNotificationRecordById(id);
-    this.agent.events.emit<AcdcKeriStateChangedEvent>(this.agent.context, {
+    this.eventService.emit<AcdcKeriStateChangedEvent>({
       type: AcdcKeriEventTypes.AcdcKeriStateChanged,
       payload: {
         status: CredentialStatus.CONFIRMED,
