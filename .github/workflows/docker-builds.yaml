@@ -63,10 +63,11 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           version: "1.0.1"
 
-      - name: 🌍 earthly: docker build + push
+      - name: 🌍 earthly - docker build and push
         env:
           EARTHLY_BUILD_ARGS: ${{ steps.metadata.outputs.EARTHLY_BUILD_ARGS }}
-        run: earthly +docker-publish
+        run: |
+          earthly +docker-publish
 
 #      - name: Docker Login (hub.docker.com)
 #        uses: docker/login-action@v2
