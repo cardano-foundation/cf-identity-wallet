@@ -632,9 +632,13 @@ class CredentialService extends AgentService {
     );
 
     const matchingUnreadGrants = unreadGrantExnMsgs.filter(
-      (message: { notiId: string; notiSaid: string; exchange: any }) =>
-        message.exchange.exn.i === serverAid &&
-        message.exchange.exn.e.acdc?.a?.domain === expectedDomain
+      (message: { notiId: string; notiSaid: string; exchange: any }) => {
+        return (
+          message.exchange.exn.i === serverAid &&
+          new URL(message.exchange.exn.e.acdc?.a?.domain).hostname ===
+            expectedDomain
+        );
+      }
     );
 
     if (matchingUnreadGrants.length === 0) {

@@ -208,10 +208,10 @@ const keriNotificationsChangeHandler = async (
     const exchange = await AriesAgent.agent.credentials.getKeriExchangeMessage(
       event.a.d as string
     );
-
     const schema = await AriesAgent.agent.credentials.getSchemaName(
       exchange?.exn?.a?.filter?.["-s"]
     );
+
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
