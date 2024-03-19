@@ -2,7 +2,7 @@ import { useState } from "react";
 import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
 import { RequestProps } from "../IncomingRequest.types";
 import { ConnectionRequest } from "./ConnectionRequest";
-import CredentialRequest from "./CredentialRequest";
+import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequestStageOne } from "./MultiSigRequestStageOne";
 import { MultiSigRequestStageTwo } from "./MultiSigRequestStageTwo";
 

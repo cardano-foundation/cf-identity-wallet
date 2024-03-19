@@ -84,4 +84,4 @@ const CredentialRequest = ({
   );
 };
 
-export default CredentialRequest;
+export { CredentialRequest };
