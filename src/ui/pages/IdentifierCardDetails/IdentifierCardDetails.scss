@@ -1,5 +1,6 @@
 .identifier-card-details {
   .multi-sig-contact-list {
+
     ion-grid,
     ion-col {
       padding: 0;
@@ -100,5 +101,12 @@
         margin-top: -1.24rem;
       }
     }
+  }
+
+  .identifier-card-detail-spinner-container {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }

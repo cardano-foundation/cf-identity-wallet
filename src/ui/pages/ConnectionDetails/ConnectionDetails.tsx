@@ -1,7 +1,12 @@
 import { ellipsisVertical, addOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { IonLabel, IonSegment, IonSegmentButton } from "@ionic/react";
+import {
+  IonLabel,
+  IonSegment,
+  IonSegmentButton,
+  IonSpinner,
+} from "@ionic/react";
 import i18next from "i18next";
 import { i18n } from "../../../i18n";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
@@ -74,27 +79,47 @@ const ConnectionDetails = () => {
   const [notes, setNotes] = useState<ConnectionNoteDetails[]>([]);
   const currentNoteId = useRef("");
   const [segmentValue, setSegmentValue] = useState("details");
+  const [loading, setLoading] = useState({
+    details: false,
+    history: false,
+  });
 
   useEffect(() => {
+    setLoading({
+      history: true,
+      details: true,
+    });
     async function getDetails() {
-      const connectionDetails =
-        await AriesAgent.agent.connections.getConnectionById(
-          connectionShortDetails.id,
-          connectionShortDetails.type
-        );
-      setConnectionDetails(connectionDetails);
-      if (connectionDetails.notes) {
-        setCoreNotes(connectionDetails.notes);
-        setNotes(connectionDetails.notes);
+      try {
+        const connectionDetails =
+          await AriesAgent.agent.connections.getConnectionById(
+            connectionShortDetails.id,
+            connectionShortDetails.type
+          );
+        setConnectionDetails(connectionDetails);
+        if (connectionDetails.notes) {
+          setCoreNotes(connectionDetails.notes);
+          setNotes(connectionDetails.notes);
+        }
+      } catch (e) {
+        // @TODO - Error handling.
+      } finally {
+        setLoading((value) => ({ ...value, details: false }));
       }
     }
 
     async function getHistory() {
-      const connectionHistory =
-        await AriesAgent.agent.connections.getConnectionHistoryById(
-          connectionShortDetails.id
-        );
-      setConnectionHistory(connectionHistory);
+      try {
+        const connectionHistory =
+          await AriesAgent.agent.connections.getConnectionHistoryById(
+            connectionShortDetails.id
+          );
+        setConnectionHistory(connectionHistory);
+      } catch (e) {
+        // @TODO - Error handling.
+      } finally {
+        setLoading((value) => ({ ...value, history: false }));
+      }
     }
 
     if (connectionShortDetails?.id) {
@@ -168,6 +193,17 @@ const ConnectionDetails = () => {
       }
     }
   };
+
+  if (loading.details || loading.history) {
+    return (
+      <div
+        className="connection-detail-spinner-container"
+        data-testid="connection-detail-spinner-container"
+      >
+        <IonSpinner name="circular" />
+      </div>
+    );
+  }
 
   return (
     <>
