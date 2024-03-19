@@ -7,7 +7,7 @@ import {
   IonCol,
   IonLabel,
 } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   Alert as AlertAccept,
   Alert as AlertDecline,
@@ -155,7 +155,7 @@ const MultiSigRequestStageOne = ({
       <AlertAccept
         isOpen={alertAcceptIsOpen}
         setIsOpen={setAlertAcceptIsOpen}
-        dataTestId="multisig-request-alert"
+        dataTestId="multisig-request-alert-accept"
         headerText={i18n.t("request.multisig.stageone.alert.textaccept")}
         confirmButtonText={`${i18n.t(
           "request.multisig.stageone.alert.accept"
@@ -168,7 +168,7 @@ const MultiSigRequestStageOne = ({
       <AlertDecline
         isOpen={alertDeclineIsOpen}
         setIsOpen={setAlertDeclineIsOpen}
-        dataTestId="multisig-request-alert"
+        dataTestId="multisig-request-alert-decline"
         headerText={i18n.t("request.multisig.stageone.alert.textdecline")}
         confirmButtonText={`${i18n.t(
           "request.multisig.stageone.alert.decline"

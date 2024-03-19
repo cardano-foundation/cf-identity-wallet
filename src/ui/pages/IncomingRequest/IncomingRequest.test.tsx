@@ -1,17 +1,29 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
 mockIonicReact();
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  queryByText,
+  render,
+  waitFor,
+} from "@testing-library/react";
+import { EventEmitter } from "events";
 import { Provider } from "react-redux";
+import { Agent } from "@aries-framework/core";
 import { store } from "../../../store";
 import { IncomingRequest } from "./IncomingRequest";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { AriesAgent } from "../../../core/agent/agent";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { i18n } from "../../../i18n";
+import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   setQueueIncomingRequest,
   dequeueCredentialRequest,
 } from "../../../store/reducers/stateCache";
+import { ConnectionType } from "../../../core/agent/agent.types";
+import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
+import { CredentialService } from "../../../core/agent/services";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -194,5 +206,141 @@ describe("Credential request", () => {
     await waitFor(() => {
       expect(declineCredentialOfferSpy).toBeCalledWith(id);
     });
+  });
+});
+
+const eventEmitter = new EventEmitter();
+
+const agent = jest.mocked({
+  credentials: {
+    acceptOffer: jest.fn(),
+    proposeCredential: jest.fn(),
+    deleteById: jest.fn(),
+    getById: jest.fn(),
+    findOfferMessage: jest.fn(),
+    negotiateOffer: jest.fn(),
+    findAllByQuery: jest.fn(),
+  },
+  connections: {
+    findById: jest.fn(),
+  },
+  events: {
+    on: eventEmitter.on.bind(eventEmitter),
+    emit: jest.fn(),
+  },
+  eventEmitter: {
+    emit: eventEmitter.emit.bind(eventEmitter),
+  },
+  modules: {
+    generalStorage: {
+      getAllCredentialMetadata: jest.fn(),
+      updateCredentialMetadata: jest.fn(),
+      deleteCredentialMetadata: jest.fn(),
+      getCredentialMetadata: jest.fn(),
+      saveCredentialMetadataRecord: jest.fn(),
+      getCredentialMetadataByCredentialRecordId: jest.fn(),
+      getIdentifierMetadata: jest.fn(),
+    },
+    signify: {
+      admitIpex: jest.fn(),
+      getNotifications: jest.fn(),
+      markNotification: jest.fn(),
+      getKeriExchange: jest.fn(),
+      getCredentials: jest.fn(),
+      getCredentialBySaid: jest.fn(),
+    },
+  },
+  w3cCredentials: {
+    getCredentialRecordById: jest.fn(),
+  },
+  dids: {
+    getCreatedDids: jest.fn(),
+  },
+  genericRecords: {
+    save: jest.fn(),
+    findAllByQuery: jest.fn(),
+    findById: jest.fn(),
+    deleteById: jest.fn(),
+  },
+});
+const credentialService = new CredentialService(agent as any as Agent);
+
+describe("Multi-Sig request", () => {
+  const requestDetails = {
+    id: "abc123456",
+    type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+    source: ConnectionType.KERI,
+    multisigIcpDetails: {
+      ourIdentifier: filteredKeriFix[0],
+      sender: connectionsFix[3],
+      otherConnections: [connectionsFix[4], connectionsFix[5]],
+      threshold: 1,
+    },
+  };
+
+  afterEach(async () => {
+    await credentialService.deleteKeriNotificationRecordById(requestDetails.id);
+  });
+
+  test("It receives incoming Multi-Sig request and render content in MultiSigRequestStageOne", async () => {
+    store.dispatch(setQueueIncomingRequest(requestDetails));
+
+    const { getByText } = render(
+      <Provider store={store}>
+        <IncomingRequest />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.request.multisig.stageone.title)
+    ).toBeInTheDocument();
+    expect(
+      getByText(requestDetails.multisigIcpDetails.sender.label)
+    ).toBeInTheDocument();
+    expect(
+      getByText(requestDetails.multisigIcpDetails.otherConnections[0].label)
+    ).toBeInTheDocument();
+    expect(
+      getByText(requestDetails.multisigIcpDetails.otherConnections[1].label)
+    ).toBeInTheDocument();
+    expect(
+      getByText(requestDetails.multisigIcpDetails.threshold.toString())
+    ).toBeInTheDocument();
+  });
+
+  test("Selecting Cancel will open the Alert pop-up", async () => {
+    store.dispatch(setQueueIncomingRequest(requestDetails));
+    const { getByText } = render(
+      <Provider store={store}>
+        <IncomingRequest />
+      </Provider>
+    );
+
+    const footerCancelButton = getByText(
+      EN_TRANSLATIONS.request.button.decline
+    );
+    act(() => {
+      fireEvent.click(footerCancelButton);
+    });
+    expect(
+      getByText(EN_TRANSLATIONS.request.multisig.stageone.alert.textdecline)
+    ).toBeInTheDocument();
+  });
+
+  test("Selecting Accept will open the Alert pop-up", async () => {
+    store.dispatch(setQueueIncomingRequest(requestDetails));
+    const { getByText } = render(
+      <Provider store={store}>
+        <IncomingRequest />
+      </Provider>
+    );
+
+    const continueButton = getByText(EN_TRANSLATIONS.request.button.accept);
+    act(() => {
+      fireEvent.click(continueButton);
+    });
+    expect(
+      getByText(EN_TRANSLATIONS.request.multisig.stageone.alert.textaccept)
+    ).toBeInTheDocument();
   });
 });
