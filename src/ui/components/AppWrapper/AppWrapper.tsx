@@ -55,8 +55,6 @@ import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/id
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
-import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
-import { connectionsFix } from "../../__fixtures__/connectionsFix";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
