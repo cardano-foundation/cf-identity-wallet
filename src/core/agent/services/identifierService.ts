@@ -23,6 +23,7 @@ import {
   KeriNotification,
 } from "../agent.types";
 import { AriesAgent } from "../agent";
+import { BasicRecord } from "../../storage/storage.types";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
   [IdentifierType.KEY]: [0, 1, 2, 3],
@@ -69,14 +70,8 @@ class IdentifierService extends AgentService {
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
-    let listMetadata: IdentifierMetadataRecord[];
-    if (getArchived) {
-      listMetadata =
-        await this.agent.modules.generalStorage.getAllArchivedIdentifierMetadata();
-    } else {
-      listMetadata =
-        await this.agent.modules.generalStorage.getAllAvailableIdentifierMetadata();
-    }
+    let listMetadata: IdentifierMetadataRecord[] =
+      await this.getAllIdentifierMetadata(getArchived);
     for (let i = 0; i < listMetadata.length; i++) {
       const metadata = listMetadata[i];
       identifiers.push({
@@ -159,36 +154,24 @@ class IdentifierService extends AgentService {
   }
 
   async archiveIdentifier(identifier: string): Promise<void> {
-    return this.agent.modules.generalStorage.archiveIdentifierMetadata(
-      identifier
-    );
+    return this.updateIdentifierMetadata(identifier, { isArchived: true });
   }
 
   async deleteIdentifier(identifier: string): Promise<void> {
     const metadata = await this.getMetadataById(identifier);
     this.validArchivedIdentifier(metadata);
     if (metadata.method === IdentifierType.KERI) {
-      await this.agent.modules.generalStorage.updateIdentifierMetadata(
-        identifier,
-        {
-          ...metadata,
-          isDeleted: true,
-        }
-      );
-    } else {
-      await this.agent.modules.generalStorage.deleteIdentifierMetadata(
-        identifier
-      );
+      await this.updateIdentifierMetadata(identifier, {
+        ...metadata,
+        isDeleted: true,
+      });
     }
   }
 
   async restoreIdentifier(identifier: string): Promise<void> {
     const metadata = await this.getMetadataById(identifier);
     this.validArchivedIdentifier(metadata);
-    return this.agent.modules.generalStorage.updateIdentifierMetadata(
-      identifier,
-      { isArchived: false }
-    );
+    return this.updateIdentifierMetadata(identifier, { isArchived: false });
   }
 
   async updateIdentifier(
@@ -197,17 +180,16 @@ class IdentifierService extends AgentService {
   ): Promise<void> {
     const metadata = await this.getMetadataById(identifier);
     this.validIdentifierMetadata(metadata);
-    return this.agent.modules.generalStorage.updateIdentifierMetadata(
-      identifier,
-      { theme: data.theme, displayName: data.displayName }
-    );
+    return this.updateIdentifierMetadata(identifier, {
+      theme: data.theme,
+      displayName: data.displayName,
+    });
   }
 
   async syncKeriaIdentifiers() {
     const { aids: signifyIdentifiers } =
       await this.signifyApi.getAllIdentifiers();
-    const storageIdentifiers =
-      await this.agent.modules.generalStorage.getKeriIdentifiersMetadata();
+    const storageIdentifiers = await this.getKeriIdentifiersMetadata();
     const unSyncedData = signifyIdentifiers.filter(
       (identifier: IdentifierResult) =>
         !storageIdentifiers.find((item) => identifier.prefix === item.id)
@@ -234,7 +216,7 @@ class IdentifierService extends AgentService {
         `${IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING} ${id}`
       );
     }
-    return metadata.content as unknown as IdentifierMetadataRecord;
+    return this.parseIdentifierMetadataRecord(metadata);
   }
 
   private async createIdentifierMetadataRecord(
@@ -578,10 +560,7 @@ class IdentifierService extends AgentService {
       metadata.signifyOpName
     );
     if (pendingOperation && pendingOperation.done) {
-      await this.agent.modules.generalStorage.updateIdentifierMetadata(
-        metadata.id,
-        { isPending: false }
-      );
+      await this.updateIdentifierMetadata(metadata.id, { isPending: false });
       return { done: true };
     }
     return { done: false };
@@ -649,10 +628,7 @@ class IdentifierService extends AgentService {
       metadata.signifyName
     );
     if (isDone) {
-      await this.agent.modules.generalStorage.updateIdentifierMetadata(
-        metadata.id,
-        { isPending: false }
-      );
+      await this.updateIdentifierMetadata(metadata.id, { isPending: false });
     }
     return isDone;
   }
@@ -665,6 +641,59 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
     await this.signifyApi.rotateIdentifier(metadata.signifyName);
+  }
+
+  async getAllIdentifierMetadata(
+    isArchived: boolean
+  ): Promise<IdentifierMetadataRecord[]> {
+    const basicRecords = await this.basicStorage.findAllByQuery({
+      type: GenericRecordType.IDENTIFIER_RECORD,
+      isArchived,
+    });
+    return basicRecords.map((bc) => {
+      return bc.content as any as IdentifierMetadataRecord;
+    });
+  }
+
+  async getIdentifierMetadata(id: string): Promise<IdentifierMetadataRecord> {
+    const basicRecord = await this.basicStorage.findById(id);
+    if(!basicRecord){
+      throw new Error() // TODO
+    }
+    return this.parseIdentifierMetadataRecord(basicRecord);
+  }
+
+  async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
+    const basicRecords = await this.basicStorage.findAllByQuery({
+      type: GenericRecordType.IDENTIFIER_RECORD,
+      method: IdentifierType.KERI,
+    });
+    return basicRecords.map((bc) => {
+      return this.parseIdentifierMetadataRecord(bc);
+    });
+  }
+
+  async updateIdentifierMetadata(
+    id: string,
+    metadata: Partial<IdentifierMetadataRecord>
+  ) {
+    let identifierMetadataRecord = await this.getMetadataById(id);
+    identifierMetadataRecord = {
+      ...identifierMetadataRecord.toJSON(),
+      ...metadata,
+    } as IdentifierMetadataRecord;
+    const basicRecord = new BasicRecord({
+      id: identifierMetadataRecord.id,
+      content: identifierMetadataRecord.toJSON(),
+      tags: identifierMetadataRecord.getTags(),
+    });
+    await this.basicStorage.save(basicRecord);
+  }
+
+  private parseIdentifierMetadataRecord(
+    basicRecord: BasicRecord
+  ): IdentifierMetadataRecord {
+    return basicRecord.content as any as IdentifierMetadataRecord;
   }
 }
 

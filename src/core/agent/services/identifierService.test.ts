@@ -1,9 +1,3 @@
-import {
-  Agent,
-  DidDocumentRole,
-  DidRecord,
-  KeyType,
-} from "@aries-framework/core";
 import { IdentifierService } from "./identifierService";
 import {
   IdentifierMetadataRecord,
@@ -70,7 +64,6 @@ const signifyApi = jest.mocked({
 });
 
 const identifierService = new IdentifierService(
-  agent as any as Agent,
   basicStorage,
   signifyApi as any as SignifyApi
 );
@@ -121,18 +114,6 @@ const keriMetadataRecordProps = {
 const keriMetadataRecord = new IdentifierMetadataRecord(
   keriMetadataRecordProps
 );
-
-const didRecord = new DidRecord({
-  did: "did:key:xyz",
-  role: DidDocumentRole.Created,
-  createdAt: now,
-});
-
-const wrongDidRecord = new DidRecord({
-  did: "did:keri:xyz",
-  role: DidDocumentRole.Created,
-  createdAt: now,
-});
 
 const aidReturnedBySignify = {
   prefix: keriMetadataRecord.id,
@@ -230,103 +211,6 @@ describe("Identifier service of agent", () => {
     expect(agent.dids.getCreatedDids).toBeCalledWith({ did });
   });
 
-  test("incorrect did method returned ", async () => {
-    const did = "did:key:xyz";
-    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([wrongDidRecord]);
-    await expect(identifierService.getIdentifier(did)).rejects.toThrowError(
-      IdentifierService.DID_MISSING_INCORRECT
-    );
-    expect(agent.dids.getCreatedDids).toBeCalledWith({ did });
-  });
-
-  test("resolved did key document missing actual did document entry", async () => {
-    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([didRecord]);
-    agent.dids.resolve = jest.fn().mockResolvedValue({});
-    await expect(identifierService.getIdentifier(did)).rejects.toThrowError(
-      IdentifierService.DID_MISSING_DID_DOC
-    );
-    expect(agent.dids.getCreatedDids).toBeCalledWith({ did });
-    expect(agent.dids.resolve).toBeCalledWith(did);
-  });
-
-  test("resolved did key document in unexpected format: missing vkey", async () => {
-    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([didRecord]);
-    agent.dids.resolve = jest.fn().mockResolvedValue({ didDocument: {} });
-    await expect(identifierService.getIdentifier(did)).rejects.toThrowError(
-      IdentifierService.UNEXPECTED_DID_DOC_FORMAT
-    );
-    expect(agent.dids.getCreatedDids).toBeCalledWith({ did });
-    expect(agent.dids.resolve).toBeCalledWith(did);
-  });
-
-  test("resolved did key document in unexpected format: missing vkey pubkey", async () => {
-    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([didRecord]);
-    agent.dids.resolve = jest.fn().mockResolvedValue({
-      didDocument: { verificationMethod: [{ id: "key0", type: keyType }] },
-    });
-    await expect(identifierService.getIdentifier(did)).rejects.toThrowError(
-      IdentifierService.UNEXPECTED_DID_DOC_FORMAT
-    );
-    expect(agent.dids.getCreatedDids).toBeCalledWith({ did });
-    expect(agent.dids.resolve).toBeCalledWith(did);
-  });
-
-  test("missing did identifier metadata record", async () => {
-    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([didRecord]);
-    agent.dids.resolve = jest.fn().mockResolvedValue({
-      didDocument: {
-        verificationMethod: [
-          { id: "key0", type: keyType, publicKeyBase58: pkey },
-        ],
-      },
-    });
-    agent.modules.generalStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(null);
-    await expect(identifierService.getIdentifier(did)).rejects.toThrowError(
-      IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING
-    );
-    expect(agent.dids.getCreatedDids).toBeCalledWith({ did });
-    expect(agent.dids.resolve).toBeCalledWith(did);
-    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
-      did
-    );
-  });
-
-  test("can get a did identifier in detailed view", async () => {
-    agent.dids.getCreatedDids = jest.fn().mockResolvedValue([didRecord]);
-    agent.dids.resolve = jest.fn().mockResolvedValue({
-      didDocument: {
-        verificationMethod: [
-          { id: "key0", type: keyType, publicKeyBase58: pkey },
-        ],
-      },
-    });
-    agent.modules.generalStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(didMetadataRecord);
-    const result = await identifierService.getIdentifier(did);
-    expect(agent.dids.getCreatedDids).toBeCalledWith({ did });
-    expect(agent.dids.resolve).toBeCalledWith(did);
-    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
-      did
-    );
-    expect(result).toStrictEqual({
-      type: IdentifierType.KEY, // @TODO: foconnor - IdentifierType maybe should be .KERI and .DID instead of .KEY.
-      result: {
-        id: did,
-        displayName: didMetadataRecordProps.displayName,
-        colors: didMetadataRecordProps.colors,
-        controller: did,
-        theme: 0,
-        keyType,
-        publicKeyBase58: pkey,
-        createdAtUTC: nowISO,
-        method: IdentifierType.KEY,
-        isPending: false,
-      },
-    });
-  });
 
   test("search for non existant keri aid (in db)", async () => {
     await expect(
@@ -411,67 +295,6 @@ describe("Identifier service of agent", () => {
     expect(newRecord.signifyName).toEqual(signifyName);
   });
 
-  test("can create a did:key identifier", async () => {
-    const did = "did:key:test";
-    const displayName = "newDisplayName";
-    agent.dids.create = jest.fn().mockResolvedValue({
-      didState: {
-        did,
-      },
-    });
-    expect(
-      await identifierService.createIdentifier({
-        method: IdentifierType.KEY,
-        displayName,
-        colors,
-        theme: 0,
-      })
-    ).toBe(did);
-    expect(signifyApi.createIdentifier).not.toBeCalled(); // Just in case
-    expect(agent.dids.create).toBeCalledWith({
-      method: IdentifierType.KEY,
-      options: { keyType: KeyType.Ed25519 },
-    });
-    expect(
-      agent.modules.generalStorage.saveIdentifierMetadataRecord
-    ).toBeCalledWith(expect.any(IdentifierMetadataRecord));
-    const newRecord: IdentifierMetadataRecord =
-      agent.modules.generalStorage.saveIdentifierMetadataRecord.mock
-        .calls[0][0];
-    expect(newRecord.id).toEqual(did);
-    expect(newRecord.displayName).toEqual(displayName);
-    expect(newRecord.colors).toEqual(colors);
-    expect(newRecord.method).toEqual(IdentifierType.KEY);
-  });
-
-  test("can update a did:key identifier", async () => {
-    const did = "did:key:test";
-    const displayName = "newDisplayName";
-    agent.dids.create = jest.fn().mockResolvedValue({
-      didState: {
-        did,
-      },
-    });
-    await identifierService.createIdentifier({
-      method: IdentifierType.KEY,
-      displayName,
-      colors,
-      theme: 0,
-    });
-    agent.modules.generalStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue(didMetadataRecord);
-    await identifierService.updateIdentifier(did, {
-      theme: 1,
-      displayName: "test",
-    });
-    expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
-      did
-    );
-    expect(
-      agent.modules.generalStorage.updateIdentifierMetadata
-    ).toBeCalledWith(did, { theme: 1, displayName: "test" });
-  });
 
   test("cannot create a keri identifier if theme is not valid", async () => {
     const aid = "newIdentifierAid";
@@ -508,32 +331,6 @@ describe("Identifier service of agent", () => {
       })
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
   });
-
-  test("should not create metadata record if did:key create result malformed", async () => {
-    const displayName = "newDisplayName";
-    agent.dids.create = jest.fn().mockResolvedValue({
-      didState: {},
-    });
-    await expect(
-      identifierService.createIdentifier({
-        method: IdentifierType.KEY,
-        displayName,
-        colors,
-        theme: 0,
-      })
-    ).rejects.toThrowError(
-      IdentifierService.UNEXPECTED_MISSING_DID_RESULT_ON_CREATE
-    );
-    expect(signifyApi.createIdentifier).not.toBeCalled(); // Just in case
-    expect(agent.dids.create).toBeCalledWith({
-      method: IdentifierType.KEY,
-      options: { keyType: KeyType.Ed25519 },
-    });
-    expect(
-      agent.modules.generalStorage.saveIdentifierMetadataRecord
-    ).not.toBeCalled();
-  });
-
   // For archive/delete/restore tests there is no difference between did:key and keri
   test("can archive any identifier (re-archiving does nothing)", async () => {
     const id = "id";

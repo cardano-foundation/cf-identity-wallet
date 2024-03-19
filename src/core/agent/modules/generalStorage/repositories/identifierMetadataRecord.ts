@@ -1,4 +1,4 @@
-import { BaseRecord } from "@aries-framework/core";
+import { BaseRecord } from "../../../../storage/storage.types";
 import { IdentifierType } from "../../../services/identifierService.types";
 
 interface IdentifierMetadataRecordProps {

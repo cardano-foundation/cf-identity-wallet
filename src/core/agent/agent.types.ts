@@ -1,5 +1,3 @@
-import { BaseEvent } from "@aries-framework/core";
-import { IdentifierMetadataRecordProps } from "./modules";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -19,6 +17,7 @@ enum GenericRecordType {
   CONNECTION_KERI_METADATA = "connection-keri-metadata",
   NOTIFICATION_KERI = "notification-keri",
   IDENTIFIER_RECORD = "identifier-record",
+  CREDENTIAL_METADATA_RECORD = "credential-metadata-record",
 }
 
 enum ConnectionHistoryType {
@@ -86,7 +85,7 @@ enum ConnectionKeriEventTypes {
 enum AcdcKeriEventTypes {
   AcdcKeriStateChanged = "AcdcKeriStateChanged",
 }
-interface ConnectionKeriStateChangedEvent extends BaseEvent {
+interface ConnectionKeriStateChangedEvent extends BaseEventEmitter {
   type: typeof ConnectionKeriEventTypes.ConnectionKeriStateChanged;
   payload: {
     connectionId?: string;
@@ -94,7 +93,7 @@ interface ConnectionKeriStateChangedEvent extends BaseEvent {
   };
 }
 
-interface AcdcKeriStateChangedEvent extends BaseEvent {
+interface AcdcKeriStateChangedEvent extends BaseEventEmitter {
   type: typeof AcdcKeriEventTypes.AcdcKeriStateChanged;
   payload:
     | {

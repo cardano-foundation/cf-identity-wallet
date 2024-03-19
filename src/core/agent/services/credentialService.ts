@@ -5,7 +5,6 @@ import {
   AcdcKeriEventTypes,
   ConnectionType,
 } from "../agent.types";
-import { CredentialMetadataRecord } from "../modules";
 import { AgentService } from "./agentService";
 import {
   CredentialMetadataRecordProps,
@@ -18,6 +17,9 @@ import {
   ACDCDetails,
 } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
+import { CredentialMetadataRecord } from "../modules/generalStorage/repositories/credentialMetadataRecord";
+import { BasicRecord } from "../../storage/storage.types";
+import { AriesAgent } from "../agent";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -46,10 +48,7 @@ class CredentialService extends AgentService {
   async getCredentials(
     isGetArchive = false
   ): Promise<CredentialShortDetails[]> {
-    const listMetadatas =
-      await this.agent.modules.generalStorage.getAllCredentialMetadata(
-        isGetArchive
-      );
+    const listMetadatas = await this.getAllCredentialMetadata(isGetArchive);
     //only get credentials that are not deleted
     return listMetadatas
       .filter((item) => !item.isDeleted)
@@ -111,13 +110,11 @@ class CredentialService extends AgentService {
       ...data,
     });
 
-    await this.agent.modules.generalStorage.saveCredentialMetadataRecord(
-      metadataRecord
-    );
+    await this.saveCredentialMetadataRecord(metadataRecord);
   }
 
   async archiveCredential(id: string): Promise<void> {
-    await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
+    await this.updateCredentialMetadata(id, {
       isArchived: true,
     });
   }
@@ -127,19 +124,19 @@ class CredentialService extends AgentService {
     this.validArchivedCredential(metadata);
     //With KERI, we only soft delete because we need to sync with KERIA. This will prevent re-sync deleted records.
     if (metadata.connectionType === ConnectionType.KERI) {
-      await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
+      await this.updateCredentialMetadata(id, {
         ...metadata,
         isDeleted: true,
       });
     } else {
-      await this.agent.modules.generalStorage.deleteCredentialMetadata(id);
+      await this.deleteCredentialMetadata(id);
     }
   }
 
   async restoreCredential(id: string): Promise<void> {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
-    await this.agent.modules.generalStorage.updateCredentialMetadata(id, {
+    await this.updateCredentialMetadata(id, {
       isArchived: false,
     });
   }
@@ -157,8 +154,7 @@ class CredentialService extends AgentService {
   }
 
   private async getMetadataById(id: string): Promise<CredentialMetadataRecord> {
-    const metadata =
-      await this.agent.modules.generalStorage.getCredentialMetadata(id);
+    const metadata = await this.getCredentialMetadata(id);
     if (!metadata) {
       throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
     }
@@ -206,20 +202,14 @@ class CredentialService extends AgentService {
     id: string,
     cred: any
   ): Promise<CredentialShortDetails> {
-    const metadata =
-      await this.agent.modules.generalStorage.getCredentialMetadataByCredentialRecordId(
-        id
-      );
+    const metadata = await this.getCredentialMetadataByCredentialRecordId(id);
     if (!metadata) {
       throw new Error(CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG);
     }
 
     metadata.status = CredentialMetadataRecordStatus.CONFIRMED;
     metadata.credentialType = cred.schema?.title;
-    await this.agent.modules.generalStorage.updateCredentialMetadata(
-      metadata.id,
-      metadata
-    );
+    await this.updateCredentialMetadata(metadata.id, metadata);
     return this.getCredentialShortDetails(metadata);
   }
 
@@ -257,10 +247,9 @@ class CredentialService extends AgentService {
       },
     });
     let holderSignifyName;
-    const holder =
-      await this.agent.modules.generalStorage.getIdentifierMetadata(
-        keriExchange.exn.a.i
-      );
+    const holder = await AriesAgent.agent.identifiers.getIdentifierMetadata(
+      keriExchange.exn.a.i
+    );
     if (holder && holder.signifyName) {
       holderSignifyName = holder.signifyName;
     } else {
@@ -311,8 +300,7 @@ class CredentialService extends AgentService {
 
   async syncACDCs() {
     const signifyCredentials = await this.signifyApi.getCredentials();
-    const storedCredentials =
-      await this.agent.modules.generalStorage.getAllCredentialMetadata();
+    const storedCredentials = await this.getAllCredentialMetadata();
     const unSyncedData = signifyCredentials.filter(
       (credential: any) =>
         !storedCredentials.find(
@@ -328,6 +316,87 @@ class CredentialService extends AgentService {
         );
       }
     }
+  }
+
+  async getAllCredentialMetadata(isArchived?: boolean) {
+    const basicRecords = await this.basicStorage.findAllByQuery({
+      type: GenericRecordType.CREDENTIAL_METADATA_RECORD,
+      ...(isArchived !== undefined ? { isArchived } : {}),
+    });
+    return basicRecords.map((bc) => {
+      return this.parseCredentialMetadataRecord(bc);
+    });
+  }
+
+  async deleteCredentialMetadata(id: string) {
+    return this.basicStorage.deleteById(id);
+  }
+
+  async getCredentialMetadata(id: string) {
+    const basicRecord = await this.basicStorage.findById(id);
+    if (!basicRecord) {
+      throw new Error(); // TODO
+    }
+    return this.parseCredentialMetadataRecord(basicRecord);
+  }
+
+  async getCredentialMetadataByCredentialRecordId(credentialId: string) {
+    const basicRecords = await this.basicStorage.findAllByQuery({
+      type: GenericRecordType.CREDENTIAL_METADATA_RECORD,
+      credentialId,
+    });
+    const basicRecord = basicRecords[0];
+    if (!basicRecord) {
+      throw new Error(); // TODO
+    }
+    return this.parseCredentialMetadataRecord(basicRecord);
+  }
+
+  async getCredentialMetadataByConnectionId(connectionId: string) {
+    const basicRecords = await this.basicStorage.findAllByQuery({
+      type: GenericRecordType.CREDENTIAL_METADATA_RECORD,
+      connectionId,
+    });
+    return basicRecords.map((bc) => {
+      return this.parseCredentialMetadataRecord(bc);
+    });
+  }
+
+  async saveCredentialMetadataRecord(data: CredentialMetadataRecord) {
+    const record = new CredentialMetadataRecord({
+      ...data,
+    });
+    return this.basicStorage.save({
+      id: record.id,
+      content: record.toJSON(),
+      tags: {
+        ...record.getTags(),
+        type: GenericRecordType.CREDENTIAL_METADATA_RECORD,
+      },
+    });
+  }
+
+  async updateCredentialMetadata(
+    id: string,
+    metadata: Partial<CredentialMetadataRecord>
+  ) {
+    let identifierMetadataRecord = await this.getMetadataById(id);
+    identifierMetadataRecord = {
+      ...identifierMetadataRecord.toJSON(),
+      ...metadata,
+    } as CredentialMetadataRecord;
+    const basicRecord = new BasicRecord({
+      id: identifierMetadataRecord.id,
+      content: identifierMetadataRecord.toJSON(),
+      tags: identifierMetadataRecord.getTags(),
+    });
+    await this.basicStorage.save(basicRecord);
+  }
+
+  private parseCredentialMetadataRecord(
+    basicRecord: BasicRecord
+  ): CredentialMetadataRecord {
+    return basicRecord.content as any as CredentialMetadataRecord;
   }
 }
 

@@ -1,7 +1,4 @@
-import { EventEmitter } from "events";
-import { Agent } from "@aries-framework/core";
 import {
-  ConnectionHistoryType,
   ConnectionType,
   ConnectionStatus,
   GenericRecordType,
@@ -27,10 +24,7 @@ const signifyApi = jest.mocked({
   deleteContactById: jest.fn(),
 });
 
-const agent = {};
-
 const connectionService = new ConnectionService(
-  agent as any as Agent,
   basicStorage,
   signifyApi as any as SignifyApi
 );

@@ -13,10 +13,10 @@ import {
   GenericRecordType,
 } from "../agent.types";
 import { AgentService } from "./agentService";
-import { KeriContact } from "../modules/signify/signifyApi.types";
 import { AriesAgent } from "../agent";
 import { IdentifierType } from "./identifierService.types";
 import { BasicRecord } from "../../storage/storage.types";
+import { KeriContact } from "../modules/signify/signifyApi.types";
 
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
@@ -219,7 +219,7 @@ class ConnectionService extends AgentService {
   ): Promise<ConnectionHistoryItem[]> {
     let histories: ConnectionHistoryItem[] = [];
     const credentialRecords =
-      await this.agent.modules.generalStorage.getCredentialMetadataByConnectionId(
+      await AriesAgent.agent.credentials.getCredentialMetadataByConnectionId(
         connectionId
       );
     histories = histories.concat(

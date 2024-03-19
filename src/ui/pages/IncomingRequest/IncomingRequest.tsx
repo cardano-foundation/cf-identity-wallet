@@ -110,19 +110,19 @@ const IncomingRequest = () => {
   const handleAccept = async () => {
     setInitiateAnimation(true);
     if (incomingRequest.type === IncomingRequestType.CONNECTION_INCOMING) {
-      AriesAgent.agent.connections.acceptRequestConnection(incomingRequest.id);
+      // AriesAgent.agent.connections.acceptRequestConnection(incomingRequest.id);
     } else if (
       incomingRequest.type === IncomingRequestType.CONNECTION_RESPONSE
     ) {
-      AriesAgent.agent.connections.acceptResponseConnection(incomingRequest.id);
+      // AriesAgent.agent.connections.acceptResponseConnection(incomingRequest.id);
     } else if (
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
       if (incomingRequest.source === ConnectionType.KERI) {
         AriesAgent.agent.credentials.acceptKeriAcdc(incomingRequest.id);
-      } else {
-        AriesAgent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
-      }
+      // } else {
+      //   AriesAgent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
+      // }
     }
     setTimeout(() => {
       handleReset();

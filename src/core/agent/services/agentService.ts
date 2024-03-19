@@ -1,5 +1,5 @@
-import { BasicStoragesApi } from "../../storage/storage.types";
 import { SignifyApi } from "../modules/signify/signifyApi";
+import { BasicStoragesApi } from "../../storage/storage.types";
 import { EventService } from "./eventService";
 
 abstract class AgentService {
