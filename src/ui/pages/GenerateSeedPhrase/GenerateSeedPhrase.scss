@@ -31,6 +31,12 @@
       }
     }
   }
+
+  .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
 }
 
 .terms-and-conditions-body {
