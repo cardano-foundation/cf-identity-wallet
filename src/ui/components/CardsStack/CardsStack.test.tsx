@@ -31,6 +31,7 @@ jest.mock("../../../core/agent/agent", () => ({
             publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
           },
         }),
+        checkMultisigComplete: jest.fn().mockResolvedValue(true),
       },
       credentials: {
         getCredentialDetailsById: jest.fn().mockResolvedValue({}),
@@ -110,7 +111,7 @@ describe("Cards Stack Component", () => {
 
     await waitFor(() => expect(firstCard).toHaveClass("active"));
 
-    const doneButton = await findByTestId("tab-done-button");
+    const doneButton = await findByTestId("close-button");
     act(() => {
       fireEvent.click(doneButton);
       jest.advanceTimersByTime(CLEAR_STATE_DELAY);

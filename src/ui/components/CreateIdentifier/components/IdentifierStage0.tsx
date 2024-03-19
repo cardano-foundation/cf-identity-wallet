@@ -33,7 +33,7 @@ const IdentifierStage0 = ({
   resetModal,
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
-  const identifierData = useAppSelector(getIdentifiersCache);
+  const identifiersData = useAppSelector(getIdentifiersCache);
   const CREATE_IDENTIFIER_BLUR_TIMEOUT = 250;
   const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const [displayNameValue, setDisplayNameValue] = useState(
@@ -80,6 +80,7 @@ const IdentifierStage0 = ({
   }, [selectedTheme, setState]);
 
   const handleCreateIdentifier = async () => {
+    // @TODO - sdisalvo: Colors will need to be removed
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
     const type =
@@ -89,6 +90,7 @@ const IdentifierStage0 = ({
     const identifier = await AriesAgent.agent.identifiers.createIdentifier({
       displayName: state.displayNameValue,
       method: type,
+      // @TODO - sdisalvo: Colors will need to be removed
       colors: [newColor[1], newColor[0]],
       theme: state.selectedTheme,
     });
@@ -98,12 +100,28 @@ const IdentifierStage0 = ({
         method: type,
         displayName: state.displayNameValue,
         createdAtUTC: new Date().toISOString(),
+        // @TODO - sdisalvo: Colors will need to be removed
         colors: [newColor[1], newColor[0]],
         theme: state.selectedTheme,
+        isPending: false,
       };
-      dispatch(setIdentifiersCache([...identifierData, newIdentifier]));
+      dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
       resetModal && resetModal();
+    }
+  };
+
+  const handleContinue = async () => {
+    if (state.selectedIdentifierType === 1 && state.selectedAidType !== 0) {
+      setState((prevState: IdentifierStageProps) => ({
+        ...prevState,
+        identifierCreationStage: 1,
+      }));
+    } else {
+      setBlur && setBlur(true);
+      setTimeout(async () => {
+        await handleCreateIdentifier();
+      }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
     }
   };
 
@@ -243,22 +261,7 @@ const IdentifierStage0 = ({
         pageId={componentId}
         customClass={keyboardIsOpen ? "ion-hide" : ""}
         primaryButtonText={`${i18n.t("createidentifier.confirmbutton")}`}
-        primaryButtonAction={() => {
-          if (
-            state.selectedIdentifierType === 1 &&
-            state.selectedAidType !== 0
-          ) {
-            setState((prevState: IdentifierStageProps) => ({
-              ...prevState,
-              identifierCreationStage: 1,
-            }));
-          } else {
-            setBlur && setBlur(true);
-            setTimeout(() => {
-              handleCreateIdentifier();
-            }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
-          }
-        }}
+        primaryButtonAction={async () => handleContinue()}
         primaryButtonDisabled={
           !(displayNameValueIsValid && typeIsSelectedIsValid)
         }

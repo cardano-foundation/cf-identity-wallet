@@ -3,10 +3,10 @@ import {
   SignifyClient,
   ready as signifyReady,
   Tier,
-  Operation,
   randomPasscode,
 } from "signify-ts";
 import { AriesAgent } from "../../ariesAgent";
+import { waitAndGetDoneOp } from "./utils";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
@@ -73,7 +73,8 @@ export class SignifyApi {
   async resolveOobi(url: string): Promise<any> {
     const alias = utils.uuid();
     let operation = await this.signifyClient.oobis().resolve(url, alias);
-    operation = await this.waitAndGetDoneOp(
+    operation = await waitAndGetDoneOp(
+      this.signifyClient,
       operation,
       this.opTimeout,
       this.opRetryInterval
@@ -105,12 +106,8 @@ export class SignifyApi {
     const result = await this.signifyClient
       .credentials()
       .issue({ issuerName, registryId, schemaId, recipient, data: vcdata });
-    await this.waitAndGetDoneOp(
-      result.op,
-      this.opTimeout,
-      this.opRetryInterval
-    );
-
+    await waitAndGetDoneOp(this.signifyClient, result.op, this.opTimeout, this.opRetryInterval);
+    
     const datetime = new Date().toISOString().replace("Z", "000+00:00");
     const [grant, gsigs, gend] = await this.signifyClient.ipex().grant({
       senderName: issuerName,

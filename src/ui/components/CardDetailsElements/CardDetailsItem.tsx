@@ -38,11 +38,11 @@ const CardDetailsItem = ({
       )}
       {keyValue && <strong>{keyValue}</strong>}
       {textIcon && (
-        <span className="card-details-info-block-text-icon">
+        <h4 className="card-details-info-block-text-icon">
           {i18n.t(textIcon)}
-        </span>
+        </h4>
       )}
-      <span className="card-details-info-block-data">{info}</span>
+      <h4 className="card-details-info-block-data">{info}</h4>
       {copyButton && (
         <span>
           <IonButton
