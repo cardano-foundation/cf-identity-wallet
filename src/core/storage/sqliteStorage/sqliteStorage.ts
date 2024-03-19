@@ -10,10 +10,10 @@ import {
   SaveBasicRecordOption,
   StorageRecord,
 } from "../storage.types";
-import { getUnMigrationSqls } from "../../agent/modules/sqliteStorage/wallet/utils";
 import {
   TagDataType,
   convertDbQuery,
+  getUnMigrationSqls,
   isNilOrEmptyString,
   resolveTagsFromDb,
 } from "./utils";
