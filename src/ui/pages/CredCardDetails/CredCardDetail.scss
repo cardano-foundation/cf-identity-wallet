@@ -1,20 +1,4 @@
 .cred-open-animation {
-  .page-header {
-    ion-button {
-      animation: credScaleOut 0.25s ease-in-out;
-    }
-
-    @keyframes credScaleOut {
-      from {
-        transform: scale(0);
-      }
-
-      to {
-        transform: scale(1);
-      }
-    }
-  }
-
   .card-details-content {
     animation: credExpand 0.7s ease-in-out;
 
@@ -37,23 +21,6 @@
 }
 
 .cred-back-animation {
-  .page-header {
-    ion-button {
-      animation: credScaleIn 0.25s ease-in-out;
-      animation-fill-mode: forwards;
-    }
-
-    @keyframes credScaleIn {
-      from {
-        transform: scale(1);
-      }
-
-      to {
-        transform: scale(0);
-      }
-    }
-  }
-
   .card-details-content {
     animation: credCollapse 0.25s ease-in-out;
     animation-fill-mode: forwards;

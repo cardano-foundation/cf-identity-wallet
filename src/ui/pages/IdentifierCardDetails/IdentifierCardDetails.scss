@@ -1,20 +1,4 @@
 .open-animation {
-  .page-header {
-    ion-button {
-      animation: identifierScaleOut 0.25s ease-in-out;
-    }
-
-    @keyframes identifierScaleOut {
-      from {
-        transform: scale(0);
-      }
-
-      to {
-        transform: scale(1);
-      }
-    }
-  }
-
   .card-details-content {
     animation: expand 0.7s ease-in-out;
 
@@ -37,23 +21,6 @@
 }
 
 .back-animation {
-  .page-header {
-    ion-button {
-      animation: identifierScaleIn 0.25s ease-in-out;
-      animation-fill-mode: forwards;
-    }
-
-    @keyframes identifierScaleIn {
-      from {
-        transform: scale(1);
-      }
-
-      to {
-        transform: scale(0);
-      }
-    }
-  }
-
   .card-details-content {
     animation: collapse 0.25s ease-in-out;
     animation-fill-mode: forwards;

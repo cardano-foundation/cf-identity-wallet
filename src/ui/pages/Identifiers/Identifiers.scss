@@ -93,57 +93,56 @@
 }
 
 .identifier-tab {
-  .tab-header {
-    ion-title h2 {
-      width: fit-content;
+  &.cards-identifier-nav {
+    .identifier-favourite-cards {
+      animation: indentifierFavouriteCardResize 0.25s ease;
+      animation-fill-mode: forwards;
+
+      @keyframes indentifierFavouriteCardResize {
+        from {
+          opacity: 0;
+          overflow: hidden;
+          margin-top: 0;
+        }
+        to {
+          opacity: 0;
+          height: 0;
+          overflow: hidden;
+        }
+      }
     }
-  }
 
-  &.identifier-open-animation {
-    .tab-header {
-      ion-button {
-        animation: zoomOut 0.25s ease-in-out;
-        animation-fill-mode: forwards;
-      }
-
-      ion-title h2 {
-        animation: zoomOut 0.25s ease-in-out;
-        animation-fill-mode: forwards;
-      }
-    }
-
-    @keyframes zoomOut {
-      from {
-        transform: scale(0);
-      }
-
-      to {
-        transform: scale(1);
+    .identifier-cards {
+      h3 {
+        display: none;
       }
     }
   }
 
-  &.identifier-nav-animation {
-    .tab-header {
-      ion-button {
-        animation: zoomIn 0.25s ease-in-out;
-        animation-fill-mode: forwards;
-      }
-
-      ion-title h2 {
-        animation: zoomIn 0.25s ease-in-out;
-        animation-fill-mode: forwards;
-      }
-    }
-  }
-
-  @keyframes zoomIn {
-    from {
-      transform: scale(1);
+  &.favorite-identifier-nav {
+    .identifier-cards {
+      display: none;
     }
 
-    to {
-      transform: scale(0);
+    .identifier-favourite-cards {
+      h3 {
+        animation: indentifierFavouriteCardHeaderResize 0.25s ease;
+        animation-fill-mode: forwards;
+
+        @keyframes indentifierFavouriteCardHeaderResize {
+          from {
+            opacity: 0;
+            overflow: hidden;
+            margin-top: 0;
+            height: 1.25rem;
+          }
+          to {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+          }
+        }
+      }
     }
   }
 }

@@ -22,58 +22,57 @@
   }
 }
 
-.cred-tab {
-  .tab-header {
-    ion-title h2 {
-      width: fit-content;
+.credential-tab {
+  &.cards-credential-nav {
+    .credential-favourite-cards {
+      animation: credentialFavouriteCardResize 0.25s ease;
+      animation-fill-mode: forwards;
+
+      @keyframes credentialFavouriteCardResize {
+        from {
+          opacity: 0;
+          overflow: hidden;
+          margin-top: 0;
+        }
+        to {
+          opacity: 0;
+          height: 0;
+          overflow: hidden;
+        }
+      }
     }
-  }
 
-  &.cred-open-animation {
-    .tab-header {
-      ion-button {
-        animation: zoomOut 0.25s ease-in-out;
-        animation-fill-mode: forwards;
-      }
-
-      ion-title h2 {
-        animation: zoomOut 0.25s ease-in-out;
-        animation-fill-mode: forwards;
-      }
-    }
-
-    @keyframes zoomOut {
-      from {
-        transform: scale(0);
-      }
-
-      to {
-        transform: scale(1);
+    .credential-cards {
+      h3 {
+        display: none;
       }
     }
   }
 
-  &.cred-nav-animation {
-    .tab-header {
-      ion-button {
-        animation: zoomIn 0.25s ease-in-out;
-        animation-fill-mode: forwards;
-      }
-
-      ion-title h2 {
-        animation: zoomIn 0.25s ease-in-out;
-        animation-fill-mode: forwards;
-      }
-    }
-  }
-
-  @keyframes zoomIn {
-    from {
-      transform: scale(1);
+  &.favorite-credential-nav {
+    .credential-cards {
+      display: none;
     }
 
-    to {
-      transform: scale(0);
+    .credential-favourite-cards {
+      h3 {
+        animation: credentialFavouriteCardHeaderResize 0.25s ease;
+        animation-fill-mode: forwards;
+
+        @keyframes credentialFavouriteCardHeaderResize {
+          from {
+            opacity: 0;
+            overflow: hidden;
+            margin-top: 0;
+            height: 1.25rem;
+          }
+          to {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+          }
+        }
+      }
     }
   }
 }
