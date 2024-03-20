@@ -282,7 +282,7 @@ const ConnectionDetails = () => {
                           .replace(/^ /, "")
                           .replace(/(\d)/g, "$1"),
                       })}
-                      <span>
+                      <span data-testid="connection-history-timestamp">
                         {` ${formatShortDate(
                           connectionHistory[0]?.timestamp
                         )} - ${formatTimeToSec(
@@ -303,7 +303,7 @@ const ConnectionDetails = () => {
                     {i18next.t("connections.details.connectedwith", {
                       issuer: connectionDetails?.label,
                     })}
-                    <span>
+                    <span data-testid="connection-detail-date">
                       {` ${formatShortDate(
                         `${connectionDetails?.connectionDate}`
                       )} - ${formatTimeToSec(
