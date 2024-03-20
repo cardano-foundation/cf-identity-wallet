@@ -5,11 +5,8 @@ import { BasicStoragesApi } from "../../storage/storage.types";
 abstract class AgentService {
   protected readonly agent: Agent<typeof agentModules>;
 
-  protected readonly basicStorage!: BasicStoragesApi;
-
-  constructor(agent: Agent, basicStorage: BasicStoragesApi) {
+  constructor(agent: Agent) {
     this.agent = agent;
-    this.basicStorage = basicStorage!;
   }
 }
 

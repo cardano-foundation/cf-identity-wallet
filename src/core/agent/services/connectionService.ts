@@ -304,14 +304,14 @@ class ConnectionService extends AgentService {
     connectionType?: ConnectionType
   ): Promise<void> {
     if (connectionType === ConnectionType.KERI) {
-      await this.basicStorage.deleteById(id);
+      await AriesAgent.agent.storage.deleteById(id);
       await this.agent.modules.signify.deleteContactById(id);
     } else {
       await this.agent.connections.deleteById(id);
     }
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
-      this.basicStorage.deleteById(note.id);
+      AriesAgent.agent.storage.deleteById(note.id);
     }
   }
 
@@ -333,7 +333,7 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    await this.basicStorage.save({
+    await AriesAgent.agent.storage.save({
       id: utils.uuid(),
       content: note,
       tags: {
@@ -347,16 +347,18 @@ class ConnectionService extends AgentService {
     connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.basicStorage.findById(connectionNoteId);
+    const noteRecord = await AriesAgent.agent.storage.findById(
+      connectionNoteId
+    );
     if (!noteRecord) {
       throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
     }
     noteRecord.content = note;
-    await this.basicStorage.update(noteRecord);
+    await AriesAgent.agent.storage.update(noteRecord);
   }
 
   async deleteConnectionNoteById(connectionNoteId: string) {
-    return this.basicStorage.deleteById(connectionNoteId);
+    return AriesAgent.agent.storage.deleteById(connectionNoteId);
   }
 
   async getKeriOobi(signifyName: string): Promise<string> {
@@ -367,7 +369,7 @@ class ConnectionService extends AgentService {
     connectionId: string,
     metadata?: Record<string, unknown>
   ): Promise<void> {
-    await this.basicStorage.save({
+    await AriesAgent.agent.storage.save({
       id: connectionId,
       content: metadata || {},
       tags: {
@@ -379,7 +381,9 @@ class ConnectionService extends AgentService {
   private async getConnectionKeriMetadataById(
     connectionId: string
   ): Promise<BasicRecord> {
-    const connectionKeri = await this.basicStorage.findById(connectionId);
+    const connectionKeri = await AriesAgent.agent.storage.findById(
+      connectionId
+    );
     if (!connectionKeri) {
       throw new Error(
         ConnectionService.CONNECTION_KERI_METADATA_RECORD_NOT_FOUND
@@ -389,7 +393,7 @@ class ConnectionService extends AgentService {
   }
 
   async getAllConnectionKeriMetadata(): Promise<BasicRecord[]> {
-    const connectionKeris = await this.basicStorage.findAllByQuery({
+    const connectionKeris = await AriesAgent.agent.storage.findAllByQuery({
       type: GenericRecordType.CONNECTION_KERI_METADATA,
     });
     return connectionKeris;
@@ -451,7 +455,7 @@ class ConnectionService extends AgentService {
   private async getConnectNotesByConnectionId(
     connectionId: string
   ): Promise<ConnectionNoteDetails[]> {
-    const notes = await this.basicStorage.findAllByQuery({
+    const notes = await AriesAgent.agent.storage.findAllByQuery({
       connectionId,
       type: GenericRecordType.CONNECTION_NOTE,
     });
