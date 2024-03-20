@@ -87,9 +87,9 @@ const IncomingRequest = () => {
           incomingRequest.id
         );
       } else {
-        await AriesAgent.agent.credentials.declineCredentialOffer(
-          incomingRequest.id
-        );
+        // await AriesAgent.agent.credentials.declineCredentialOffer(
+        //   incomingRequest.id
+        // );
       }
     } else if (
       incomingRequest.type === IncomingRequestType.CONNECTION_INCOMING ||
@@ -213,4 +213,4 @@ const IncomingRequest = () => {
   );
 };
 
-export { IncomingRequest };
+// export { IncomingRequest }

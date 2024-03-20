@@ -1,8 +1,8 @@
 import { CredentialFilter, ready } from "signify-ts";
-import { utils } from "@aries-framework/core";
 import { MultiSigRoute } from "./signifyApi.types";
 import { SignifyApi } from "./signifyApi";
 import { ConfigurationService } from "../../../configuration";
+import { v4 as uuidv4 } from "uuid";
 
 const firstAid = "aid1";
 const secondAid = "aid2";
@@ -362,7 +362,6 @@ describe("Signify API", () => {
 
   test("can create an identifier", async () => {
     const mockName = "keriuuid";
-    jest.spyOn(utils, "uuid").mockReturnValue(mockName);
     const { signifyName, identifier } = await api.createIdentifier();
     expect(signifyName).toBe(mockName);
     expect(identifier).toBe(mockName);
@@ -524,7 +523,7 @@ describe("Signify API", () => {
     const result = await api.createMultisig(
       aid,
       otherAids,
-      utils.uuid(),
+      uuidv4(),
       otherAids.length + 1
     );
     expect(result).toHaveProperty("op");
@@ -627,7 +626,7 @@ describe("Signify API", () => {
     const result = await api.createMultisig(
       aid,
       otherAids,
-      utils.uuid(),
+      uuidv4(),
       otherAids.length + 1,
       delegateAid
     );
@@ -640,7 +639,7 @@ describe("Signify API", () => {
     const result = await api.joinMultisig(
       multisigIcpExn,
       multisigMember,
-      utils.uuid()
+      uuidv4()
     );
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
@@ -651,7 +650,7 @@ describe("Signify API", () => {
   test("should throw if we cannot retrieve smid states joining multisig", async () => {
     getKeyStateMock = jest.fn().mockResolvedValueOnce([]);
     await expect(
-      api.joinMultisig(multisigIcpExn, multisigMember, utils.uuid())
+      api.joinMultisig(multisigIcpExn, multisigMember, uuidv4())
     ).rejects.toThrowError(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
   });
 
@@ -668,7 +667,7 @@ describe("Signify API", () => {
       .mockResolvedValueOnce(getKeyStateRet)
       .mockResolvedValue([]);
     await expect(
-      api.joinMultisig(multisigIcpExn, multisigMember, utils.uuid())
+      api.joinMultisig(multisigIcpExn, multisigMember, uuidv4())
     ).rejects.toThrowError(SignifyApi.CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER);
   });
 
@@ -740,7 +739,7 @@ describe("Signify API", () => {
     const result = await api.rotateMultisigAid(
       multisigMember,
       otherAids,
-      utils.uuid()
+      uuidv4()
     );
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
@@ -857,7 +856,7 @@ describe("Signify API", () => {
     const result = await api.joinMultisigRotation(
       exn,
       multisigMember,
-      utils.uuid()
+      uuidv4()
     );
     expect(result).toHaveProperty("op");
     expect(result).toHaveProperty("icpResult");
@@ -911,10 +910,10 @@ describe("Signify API", () => {
       },
     ];
     await expect(
-      api.createMultisig(multisigMember, otherAids, utils.uuid(), 5)
+      api.createMultisig(multisigMember, otherAids, uuidv4(), 5)
     ).rejects.toThrowError(SignifyApi.INVALID_THRESHOLD);
     await expect(
-      api.createMultisig(multisigMember, otherAids, utils.uuid(), 0)
+      api.createMultisig(multisigMember, otherAids, uuidv4(), 0)
     ).rejects.toThrowError(SignifyApi.INVALID_THRESHOLD);
   });
 });

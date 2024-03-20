@@ -1,5 +1,4 @@
 import { keyOutline, informationCircleOutline } from "ionicons/icons";
-import { JsonObject } from "@aries-framework/core";
 import { i18n } from "../../../../i18n";
 import {
   CardDetailsBlock,
@@ -27,7 +26,7 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
       </CardDetailsBlock>
       {cardData.a && (
         <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>
-          <CardDetailsAttributes data={cardData.a as JsonObject} />
+          <CardDetailsAttributes data={cardData.a as any} />
         </CardDetailsBlock>
       )}
       <CardDetailsBlock title={i18n.t("creds.card.details.schemaversion")}>
@@ -47,7 +46,7 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
       </CardDetailsBlock>
       <CardDetailsBlock title={i18n.t("creds.card.details.status.label")}>
         <CardDetailsAttributes
-          data={cardData.lastStatus as JsonObject}
+          data={cardData.lastStatus as any}
           customType="status"
         />
       </CardDetailsBlock>

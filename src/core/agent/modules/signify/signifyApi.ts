@@ -1,4 +1,3 @@
-import { utils } from "@aries-framework/core";
 import {
   SignifyClient,
   ready as signifyReady,
@@ -26,6 +25,7 @@ import {
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
 import { WitnessMode } from "../../../configuration/configurationService.types";
+import { v4 as uuidv4 } from "uuid";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
@@ -78,7 +78,7 @@ export class SignifyApi {
   }
 
   async createIdentifier(): Promise<CreateIdentifierResult> {
-    const signifyName = utils.uuid();
+    const signifyName = uuidv4();
     const operation = await this.signifyClient
       .identifiers()
       .create(signifyName, this.getCreateAidOptions());
@@ -99,7 +99,7 @@ export class SignifyApi {
   async createDelegationIdentifier(
     delegatorPrefix: string
   ): Promise<CreateIdentifierResult> {
-    const signifyName = utils.uuid();
+    const signifyName = uuidv4();
     const operation = await this.signifyClient
       .identifiers()
       .create(signifyName, { delpre: delegatorPrefix });
@@ -174,7 +174,7 @@ export class SignifyApi {
     if (SignifyApi.resolvedOobi[url]) {
       return SignifyApi.resolvedOobi[url];
     }
-    const alias = utils.uuid();
+    const alias = uuidv4();
     let operation = await this.signifyClient.oobis().resolve(url, alias);
     operation = await this.waitAndGetDoneOp(
       operation,

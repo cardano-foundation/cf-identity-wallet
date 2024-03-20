@@ -162,7 +162,6 @@ class IdentifierService extends AgentService {
     this.validArchivedIdentifier(metadata);
     if (metadata.method === IdentifierType.KERI) {
       await this.updateIdentifierMetadata(identifier, {
-        ...metadata,
         isDeleted: true,
       });
     }
@@ -219,14 +218,12 @@ class IdentifierService extends AgentService {
     return this.parseIdentifierMetadataRecord(metadata);
   }
 
-  private async createIdentifierMetadataRecord(
-    data: IdentifierMetadataRecordProps
-  ) {
+  async createIdentifierMetadataRecord(data: IdentifierMetadataRecordProps) {
     this.validIdentifierMetadata(data);
     const record = new IdentifierMetadataRecord({
       ...data,
     });
-    return this.basicStorage.save({
+    await this.basicStorage.save({
       id: record.id,
       content: record.toJSON(),
       tags: { ...record.getTags(), type: GenericRecordType.IDENTIFIER_RECORD },
@@ -657,8 +654,8 @@ class IdentifierService extends AgentService {
 
   async getIdentifierMetadata(id: string): Promise<IdentifierMetadataRecord> {
     const basicRecord = await this.basicStorage.findById(id);
-    if(!basicRecord){
-      throw new Error() // TODO
+    if (!basicRecord) {
+      throw new Error(); // TODO
     }
     return this.parseIdentifierMetadataRecord(basicRecord);
   }

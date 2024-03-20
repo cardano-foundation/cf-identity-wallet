@@ -1,13 +1,7 @@
 import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import {
-  ConnectionStateChangedEvent,
-  CredentialStateChangedEvent,
-} from "@aries-framework/core";
-import {
   AppWrapper,
-  connectionStateChangedHandler,
-  credentialStateChangedHandler,
 } from "./AppWrapper";
 import { store } from "../../../store";
 import { AriesAgent } from "../../../core/agent/agent";

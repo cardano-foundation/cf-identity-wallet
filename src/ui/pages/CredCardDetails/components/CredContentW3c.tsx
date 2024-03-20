@@ -4,7 +4,6 @@ import {
   informationCircleOutline,
   pricetagOutline,
 } from "ionicons/icons";
-import { JsonObject } from "@aries-framework/core";
 import { i18n } from "../../../../i18n";
 import {
   CardDetailsBlock,
@@ -38,7 +37,7 @@ const CredContentW3c = ({
       {cardData.credentialSubject && (
         <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>
           <CardDetailsAttributes
-            data={cardData.credentialSubject as JsonObject}
+            data={cardData.credentialSubject as any}
           />
         </CardDetailsBlock>
       )}
