@@ -1,12 +1,6 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
 mockIonicReact();
-import {
-  act,
-  fireEvent,
-  queryByText,
-  render,
-  waitFor,
-} from "@testing-library/react";
+import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { EventEmitter } from "events";
 import { Provider } from "react-redux";
 import { Agent } from "@aries-framework/core";

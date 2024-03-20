@@ -1,5 +1,5 @@
 import { IonSpinner } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { i18n } from "../../../../i18n";
 import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../components/PageFooter";
@@ -32,7 +32,6 @@ const MultiSigRequestStageTwo = ({
 }: RequestProps) => {
   const dispatch = useAppDispatch();
   const identifiersData = useAppSelector(getIdentifiersCache);
-  const [keyboardIsOpen, setKeyboardIsOpen] = useState(false);
   const [displayNameValue, setDisplayNameValue] = useState("");
   const [selectedTheme, setSelectedTheme] = useState(4);
   const displayNameValueIsValid =
