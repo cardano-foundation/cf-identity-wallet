@@ -635,8 +635,7 @@ class CredentialService extends AgentService {
       (message: { notiId: string; notiSaid: string; exchange: any }) => {
         return (
           message.exchange.exn.i === serverAid &&
-          new URL(message.exchange.exn.e.acdc?.a?.domain).hostname ===
-            expectedDomain
+          message.exchange.exn.e.acdc?.a?.domain === expectedDomain
         );
       }
     );
