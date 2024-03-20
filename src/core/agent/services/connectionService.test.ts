@@ -648,7 +648,7 @@ describe("Connection service of agent", () => {
       return { name: url, response: { i: "id" } };
     });
     const oobi =
-      "http://127.0.0.1:3902/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
+      "http://testdomain.com/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
     await connectionService.receiveInvitationFromUrl(oobi);
     // We aren't too concerned with testing the config passed
     expect(agent.modules.signify.resolveOobi).toBeCalledWith(oobi);

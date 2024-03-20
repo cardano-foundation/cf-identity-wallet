@@ -63,12 +63,95 @@ const IncomingRequest = () => {
             setRequestData({ label: "W3C" });
           }
           setRequestType(DIDCommRequestType.CREDENTIAL);
+        } else if (
+          incomingRequest.type === IncomingRequestType.TUNNEL_REQUEST
+        ) {
+          // TODO:
         }
         setShowRequest(true);
       }
     }
     void handle();
   }, [incomingRequest.id]);
+
+  const getContentByType = () => {
+    if (!incomingRequest.id.length) return;
+
+    switch (incomingRequest.type) {
+    case IncomingRequestType.CONNECTION_INCOMING: {
+      return {
+        title: i18n.t("request.connection.title"),
+        info: i18n.t("request.connection.requestconnection"),
+        type: DIDCommRequestType.CONNECTION,
+        status: i18next.t("request.pending", {
+          action: incomingRequest.type,
+        }),
+        alert: {
+          title: i18n.t("request.connection.alert.titleconfirm"),
+          confirm: i18n.t("request.connection.alert.confirm"),
+        },
+        label: incomingRequest.label,
+        logo: incomingRequest.logo,
+        button: i18n.t("request.connection.button.label"),
+      };
+    }
+    case IncomingRequestType.CONNECTION_RESPONSE: {
+      return {
+        title: i18n.t("request.connection.title"),
+        info: i18n.t("request.connection.requestconnection"),
+        type: DIDCommRequestType.CONNECTION,
+        status: i18next.t("request.success", {
+          action: incomingRequest.type,
+        }),
+        alert: {
+          title: i18n.t("request.connection.alert.titleconfirm"),
+          confirm: i18n.t("request.connection.alert.confirm"),
+        },
+        label: incomingRequest.label,
+        logo: incomingRequest.logo,
+        button: i18n.t("request.connection.button.label"),
+      };
+    }
+    case IncomingRequestType.CREDENTIAL_OFFER_RECEIVED: {
+      return {
+        title: i18n.t("request.credential.title"),
+        info: i18n.t("request.credential.offercredential"),
+        type: DIDCommRequestType.CREDENTIAL,
+        status: i18next.t("request.success", {
+          action: incomingRequest.type,
+        }),
+        alert: {
+          title: i18n.t("request.credential.alert.titleconfirm"),
+          confirm: i18n.t("request.credential.alert.confirm"),
+        },
+        label: incomingRequest?.label || "W3C",
+        logo: incomingRequest?.logo,
+        button: i18n.t("request.credential.button.label"),
+      };
+    }
+    case IncomingRequestType.TUNNEL_REQUEST: {
+      return {
+        title: i18n.t("request.tunnelreq.title"),
+        info: i18n.t("request.tunnelreq.offerlogin"),
+        type: "Login",
+        status: i18next.t("request.pending", {
+          action: incomingRequest.type,
+        }),
+        alert: {
+          title: i18n.t("request.tunnelreq.alert.titleconfirm"),
+          confirm: i18n.t("request.tunnelreq.alert.confirm"),
+        },
+        label: incomingRequest.label || "Web",
+        logo: incomingRequest.logo,
+        button: i18n.t("request.tunnelreq.button.label"),
+        schema: incomingRequest.payload?.schema,
+      };
+    }
+    default: {
+      return undefined;
+    }
+    }
+  };
 
   const handleReset = () => {
     setShowRequest(false);
@@ -103,6 +186,11 @@ const IncomingRequest = () => {
       const updatedConnections =
         await AriesAgent.agent.connections.getConnections();
       dispatch(setConnectionsCache([...updatedConnections]));
+    } else if (incomingRequest.type === IncomingRequestType.TUNNEL_REQUEST) {
+      // @TODO - foconnor: This delete function should be in the SignifyNotificationService.
+      await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
+        incomingRequest.id
+      );
     }
     handleReset();
   };
@@ -123,7 +211,7 @@ const IncomingRequest = () => {
       } else {
         AriesAgent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
       }
-    } else if (incomingRequest.type === IncomingRequestType.REQ_GRANT) {
+    } else if (incomingRequest.type === IncomingRequestType.TUNNEL_REQUEST) {
       AriesAgent.agent.credentials.handleReqGrant(incomingRequest.id);
     }
     setTimeout(() => {
@@ -131,6 +219,7 @@ const IncomingRequest = () => {
     }, RESET_DELAY);
   };
 
+  const content = getContentByType();
   return (
     <ResponsivePageLayout
       pageId={pageId}
@@ -139,11 +228,7 @@ const IncomingRequest = () => {
         initiateAnimation ? "animation-on" : "animation-off"
       }`}
     >
-      {requestType === DIDCommRequestType.CONNECTION ? (
-        <h2>{i18n.t("request.connection.title")}</h2>
-      ) : (
-        <h2>{i18n.t("request.credential.title")}</h2>
-      )}
+      <h2>{content?.title}</h2>
       <div className="request-animation-center">
         <div className="request-icons-row">
           <div className="request-user-logo">
@@ -164,49 +249,34 @@ const IncomingRequest = () => {
           </div>
           <div className="request-provider-logo">
             <img
-              src={requestData?.logo ?? CardanoLogo}
+              src={content?.logo ?? CardanoLogo}
               alt="request-provider-logo"
             />
           </div>
         </div>
         <div className="request-info-row">
           <IonCol size="12">
-            {requestType === DIDCommRequestType.CONNECTION ? (
-              <span>
-                {requestType + i18n.t("request.connection.requestconnection")}
-              </span>
-            ) : (
-              <span>
-                {requestType + i18n.t("request.credential.offercredential")}
-              </span>
-            )}
-            <strong>{requestData?.label}</strong>
+            <span>{`${content?.type}${content?.info}`}</span>
+            <strong>{content?.label}</strong>
           </IonCol>
         </div>
+        {content?.schema !== undefined && (
+          <div className="request-info-row">
+            <IonCol size="12">
+              <span>using credential</span>
+              <strong>{content.schema}</strong>
+            </IonCol>
+          </div>
+        )}
         <div className="request-status">
           <IonCol size="12">
-            <strong>
-              {incomingRequest.type ===
-                IncomingRequestType.CONNECTION_INCOMING ||
-              incomingRequest.type ===
-                IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
-                ? i18next.t("request.pending", {
-                  action: requestType,
-                })
-                : i18next.t("request.success", {
-                  action: requestType,
-                })}
-            </strong>
+            <strong>{content?.status}</strong>
           </IonCol>
         </div>
       </div>
       <PageFooter
         pageId={pageId}
-        primaryButtonText={
-          requestType === DIDCommRequestType.CONNECTION
-            ? `${i18n.t("request.button.connect")}`
-            : `${i18n.t("request.button.acceptoffer")}`
-        }
+        primaryButtonText={content?.button}
         primaryButtonAction={() => handleAccept()}
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
         secondaryButtonAction={() => handleCancel()}

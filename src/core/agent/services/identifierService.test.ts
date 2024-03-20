@@ -360,7 +360,7 @@ describe("Identifier service of agent", () => {
         colors,
         theme: 0,
       })
-    ).toBe(aid);
+    ).toStrictEqual({ identifier: aid, signifyName });
     expect(agent.dids.create).not.toBeCalledWith(); // Just in case
     expect(agent.modules.signify.createIdentifier).toBeCalled();
     expect(
@@ -391,7 +391,7 @@ describe("Identifier service of agent", () => {
         colors,
         theme: 0,
       })
-    ).toBe(did);
+    ).toStrictEqual({ identifier: did });
     expect(agent.modules.signify.createIdentifier).not.toBeCalled(); // Just in case
     expect(agent.dids.create).toBeCalledWith({
       method: IdentifierType.KEY,

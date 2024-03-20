@@ -186,7 +186,7 @@ describe("Credential request", () => {
       </Provider>
     );
     const btnCancel = await findByText(
-      i18n.t("request.alert.cancel").toString()
+      i18n.t("request.button.cancel").toString()
     );
     act(() => {
       btnCancel.click();

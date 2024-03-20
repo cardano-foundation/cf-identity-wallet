@@ -76,7 +76,7 @@ export class SignifyApi {
     const signifyName = utils.uuid();
     const operation = await this.signifyClient
       .identifiers()
-      .create(signifyName, this.getCreateAidOptions());
+      .create(signifyName); //, this.getCreateAidOptions());
     await operation.op();
     await this.signifyClient
       .identifiers()
@@ -197,11 +197,11 @@ export class SignifyApi {
 
   async getCredentials(filters?: any): Promise<any> {
     if (filters) {
-      return this.signifyClient.credentials().list({
+      return await this.signifyClient.credentials().list({
         filter: filters,
       });
     }
-    return this.signifyClient.credentials().list();
+    return await this.signifyClient.credentials().list();
   }
 
   async grantAcdcIpexExchange(
@@ -579,5 +579,9 @@ export class SignifyApi {
     return this.signifyClient
       .exchanges()
       .send(name, topic, aid, route, payload, embeds, recp);
+  }
+
+  async getSchemaName(said: string) {
+    return this.signifyClient.schemas().get(said);
   }
 }

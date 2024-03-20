@@ -18,6 +18,7 @@ const agent = jest.mocked({
       createIdentifier: jest.fn(),
       getAllIdentifiers: jest.fn(),
       markNotification: jest.fn(),
+      getKeriExchange: jest.fn(),
     },
   },
   dids: {

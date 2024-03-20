@@ -42,36 +42,34 @@ const TunnelConnect = () => {
   const [sharedAidName, setSharedAidName] = useState("");
 
   useEffect(() => {
-    try {
-      PreferencesStorage.get(PreferencesKeys.APP_TUNNEL_CONNECT).then(
-        (resolvedOobis) => {
-          setResolvedOobis(resolvedOobis);
-          if (Object.keys(resolvedOobis).length) {
-            setOobiNameValue(
-              `Tunnel(${Object.keys(resolvedOobis).length + 1})`
-            );
-          }
+    PreferencesStorage.get(PreferencesKeys.APP_TUNNEL_CONNECT)
+      .then((resolvedOobis) => {
+        setResolvedOobis(resolvedOobis);
+        if (Object.keys(resolvedOobis).length) {
+          setOobiNameValue(`Tunnel(${Object.keys(resolvedOobis).length + 1})`);
         }
-      );
-    } catch (e) {
-      // TODO: handle error
-    }
+      })
+      .catch((e) => {
+        // TODO: handle error
+      });
   }, [refreshResolvedOobis]);
 
   useEffect(() => {
     const keriaAIDs = identifiersData.filter(
       (id) => id.method === IdentifierType.KERI
     );
+
     if (keriaAIDs.length) {
       const firstAid = keriaAIDs[0];
-      if (typeof firstAid.signifyName === "string") {
-        AriesAgent.agent.connections
-          .getKeriOobi(firstAid.signifyName)
-          .then((oobi) => {
-            setWalletOobi(oobi);
-            setSharedAidName(firstAid.displayName);
-          });
+      if (!firstAid.signifyName) {
+        throw new Error("Missing Signify name");
       }
+      AriesAgent.agent.connections
+        .getKeriOobi(firstAid.signifyName)
+        .then((oobi) => {
+          setWalletOobi(oobi);
+          setSharedAidName(firstAid.displayName);
+        });
     } else {
       const colorGenerator = new ColorGenerator();
       const newColor = colorGenerator.generateNextColor();
@@ -82,10 +80,10 @@ const TunnelConnect = () => {
           colors: [newColor[1], newColor[0]],
           theme: 0,
         })
-        .then((identifier) => {
-          if (identifier) {
+        .then((createIdentifierResult) => {
+          if (createIdentifierResult?.identifier) {
             AriesAgent.agent.identifiers
-              .getIdentifier(identifier)
+              .getIdentifier(createIdentifierResult.identifier)
               .then((aid) => {
                 if (typeof aid?.result?.signifyName === "string") {
                   AriesAgent.agent.connections

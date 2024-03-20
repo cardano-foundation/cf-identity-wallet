@@ -204,23 +204,26 @@ const keriNotificationsChangeHandler = async (
     //TODO: Use dispatch here, handle logic for the multisig notification
   } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
     //TODO: Use dispatch here, handle logic for the multisig rotation notification
-  } else if (event?.a?.r === NotificationRoute.TunnelRequest) {
+  } else if (event?.a?.r === NotificationRoute.IncomingTunnelRequest) {
     const exchange = await AriesAgent.agent.credentials.getKeriExchangeMessage(
       event.a.d as string
     );
-    //TODO: hard fix the value at the moment, may need to change these in the future
-    const tunnelAid = "EBDX49akYZ9g_TplwZn1ounNRMtx7SJEmdBuhw4mjSIp";
-    if (exchange.exn.i === tunnelAid) {
-      dispatch(
-        setQueueIncomingRequest({
-          id: event?.id,
-          type: IncomingRequestType.REQ_GRANT,
-          logo: "", // TODO: must define Keri logo
-          label: "Tunnel wallet grant request",
-          source: ConnectionType.KERI,
-        })
-      );
-    }
+    const schema = await AriesAgent.agent.credentials.getSchemaName(
+      exchange?.exn?.a?.filter?.["-s"]
+    );
+
+    dispatch(
+      setQueueIncomingRequest({
+        id: event?.id,
+        type: IncomingRequestType.TUNNEL_REQUEST,
+        logo: exchange?.exn?.a?.logo || "",
+        label: new URL(exchange?.exn?.a?.serverEndpoint).hostname,
+        source: ConnectionType.KERI,
+        payload: {
+          schema: schema.title,
+        },
+      })
+    );
   }
 };
 
