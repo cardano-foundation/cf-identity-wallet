@@ -85,10 +85,6 @@ const ConnectionDetails = () => {
   });
 
   useEffect(() => {
-    setLoading({
-      history: true,
-      details: true,
-    });
     async function getDetails() {
       try {
         const connectionDetails =
@@ -123,6 +119,10 @@ const ConnectionDetails = () => {
     }
 
     if (connectionShortDetails?.id) {
+      setLoading({
+        history: true,
+        details: true,
+      });
       getDetails();
       getHistory();
     }
