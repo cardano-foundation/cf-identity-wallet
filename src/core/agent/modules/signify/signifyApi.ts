@@ -28,10 +28,8 @@ import { KeyStoreKeys, SecureStorage } from "../../../storage";
 import { WitnessMode } from "../../../configuration/configurationService.types";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT =
-    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
+  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
 
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
@@ -44,7 +42,7 @@ export class SignifyApi {
 
   static readonly VLEI_HOST =
     "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
-  static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static readonly SCHEMA_SAID = "EIdO4tWBPSmKA9ug9y9ZWSE8mRWgO_qqr7SwenQNZW3A";
   static resolvedOobi: { [key: string]: any } = {};
 
   private signifyClient!: SignifyClient;
@@ -81,7 +79,7 @@ export class SignifyApi {
     const signifyName = utils.uuid();
     const operation = await this.signifyClient
       .identifiers()
-      .create(signifyName, this.getCreateAidOptions());
+      .create(signifyName); //, this.getCreateAidOptions());
     await operation.op();
     await this.signifyClient
       .identifiers()

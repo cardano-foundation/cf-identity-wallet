@@ -78,7 +78,7 @@ async function issueAcdcCredential(
   req: Request,
   res: Response
 ): Promise<void> {
-  const { schemaSaid, aid } = req.body;
+  const { schemaSaid, aid, name } = req.body;
   if (!SCHEMA_ACDC[schemaSaid]) {
     const response: ResponseData<string> = {
       statusCode: 409,
@@ -87,7 +87,7 @@ async function issueAcdcCredential(
     };
     return httpResponse(res, response);
   }
-  await AriesAgent.agent.issueAcdcCredentialByAid(schemaSaid, aid);
+  await AriesAgent.agent.issueAcdcCredentialByAid(schemaSaid, aid, name);
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,

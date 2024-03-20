@@ -4,15 +4,14 @@ import {
   ready as signifyReady,
   Tier,
   randomPasscode,
+  Operation,
 } from "signify-ts";
 import { AriesAgent } from "../../ariesAgent";
 import { waitAndGetDoneOp } from "./utils";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT =
-    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
+  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
@@ -98,11 +97,20 @@ export class SignifyApi {
     issuerName: string,
     registryId: string,
     schemaId: string,
-    recipient: string
+    recipient: string,
+    name?: string
   ) {
-    const vcdata = {
-      LEI: "5493001KJTIIGC8Y1R17",
-    };
+    let vcdata = {}
+    if (schemaId === "EIdO4tWBPSmKA9ug9y9ZWSE8mRWgO_qqr7SwenQNZW3A") {
+      vcdata = {
+        attendeeName: name,
+      };
+    } else {
+      vcdata = {
+        LEI: "5493001KJTIIGC8Y1R17",
+      };
+    }
+    
     const result = await this.signifyClient
       .credentials()
       .issue({ issuerName, registryId, schemaId, recipient, data: vcdata });
@@ -123,14 +131,14 @@ export class SignifyApi {
   }
 
   async requestDisclosure(senderName: string, schemaSaid: string, recipient: string) {
-    const [apply, sigs] = await this.signifyClient.ipex().apply({
+    /*const [apply, sigs] = await this.signifyClient.ipex().apply({
       senderName,
       recipient,
       schema: schemaSaid,
     });
     await this.signifyClient
       .ipex()
-      .submitApply(senderName, apply, sigs, [recipient]);
+      .submitApply(senderName, apply, sigs, [recipient]);*/
   }
 
   async contacts(): Promise<any> {

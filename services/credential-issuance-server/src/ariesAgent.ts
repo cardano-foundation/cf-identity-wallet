@@ -33,9 +33,7 @@ const agentConfig: InitConfig = {
 
 class AriesAgent {
   static readonly ISSUER_AID_NAME = "issuer";
-  static readonly VLEI_HOST =
-    "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
-  static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static readonly SCHEMA_SAID = "EIdO4tWBPSmKA9ug9y9ZWSE8mRWgO_qqr7SwenQNZW3A";
 
   private static instance: AriesAgent;
   private readonly agent: Agent<{
@@ -239,12 +237,13 @@ class AriesAgent {
     return this.agent.modules.signify.resolveOobi(url);
   }
 
-  async issueAcdcCredentialByAid(schemaSaid, aid) {
+  async issueAcdcCredentialByAid(schemaSaid, aid, name?) {
     return this.agent.modules.signify.issueCredential(
       AriesAgent.ISSUER_AID_NAME,
       this.keriRegistryRegk,
       schemaSaid,
-      aid
+      aid,
+      name
     );
   }
 
@@ -269,9 +268,7 @@ class AriesAgent {
     const identifier = await this.agent.modules.signify.createIdentifier(
       AIDIssuerName
     );
-    await this.agent.modules.signify.resolveOobi(
-      AriesAgent.VLEI_HOST + SAIDSchema
-    );
+    await this.agent.modules.signify.resolveOobi(`${config.endpoint}/oobi/${SAIDSchema}`);
     this.keriRegistryRegk = await this.agent.modules.signify.createRegistry(
       AIDIssuerName
     );
