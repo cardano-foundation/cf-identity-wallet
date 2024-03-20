@@ -67,6 +67,10 @@ class IdentifierService extends AgentService {
     "Cannot join multi-sig inception as we do not control any member AID of the multi-sig";
   static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
     "Multi-sig join request contains unknown AIDs (not connected)";
+  static readonly MISSING_GROUP_METADATA =
+    "Metadata record for group is missing";
+  static readonly ONLY_ALLOW_LINKED_CONTACTS =
+    "Only allow to create multisig with linked contacts";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -89,6 +93,7 @@ class IdentifierService extends AgentService {
         colors: metadata.colors,
         theme: metadata.theme,
         isPending: metadata.isPending ?? false,
+        groupMetadata: metadata.groupMetadata,
       });
     }
     return identifiers;
@@ -151,6 +156,50 @@ class IdentifierService extends AgentService {
         },
       };
     }
+  }
+
+  async getKeriIdentifierBySignifyName(
+    signifyName: string
+  ): Promise<IdentifierShortDetails> {
+    const metadata =
+      await this.agent.modules.generalStorage.getKeriIdentifierMetadataByName(
+        signifyName
+      );
+    if (!metadata) {
+      throw new Error(IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING);
+    }
+    return {
+      method: metadata.method,
+      displayName: metadata.displayName,
+      id: metadata.id,
+      signifyName: metadata.signifyName,
+      createdAtUTC: metadata.createdAt.toISOString(),
+      colors: metadata.colors,
+      theme: metadata.theme,
+      isPending: metadata.isPending ?? false,
+    };
+  }
+
+  async getKeriIdentifierByGroupId(
+    groupId: string
+  ): Promise<IdentifierShortDetails> {
+    const metadata =
+      await this.agent.modules.generalStorage.getKeriIdentifierMetadataByGroupId(
+        groupId
+      );
+    if (!metadata) {
+      throw new Error(IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING);
+    }
+    return {
+      method: metadata.method,
+      displayName: metadata.displayName,
+      id: metadata.id,
+      signifyName: metadata.signifyName,
+      createdAtUTC: metadata.createdAt.toISOString(),
+      colors: metadata.colors,
+      theme: metadata.theme,
+      isPending: metadata.isPending ?? false,
+    };
   }
 
   //Update multisig's status
@@ -359,6 +408,15 @@ class IdentifierService extends AgentService {
     delegateContact?: ConnectionShortDetails
   ): Promise<string | undefined> {
     const ourMetadata = await this.getMetadataById(ourIdentifier);
+    if (!ourMetadata.groupMetadata) {
+      throw new Error(IdentifierService.MISSING_GROUP_METADATA);
+    }
+    const notLinkedContacts = otherIdentifierContacts.filter(
+      (contact) => contact.groupId !== ourMetadata.groupMetadata?.groupId
+    );
+    if (notLinkedContacts.length) {
+      throw new Error(IdentifierService.ONLY_ALLOW_LINKED_CONTACTS);
+    }
     this.validIdentifierMetadata(ourMetadata);
     const ourAid = (await this.agent.modules.signify.getIdentifierByName(
       ourMetadata.signifyName as string
@@ -378,12 +436,6 @@ class IdentifierService extends AgentService {
         return { state: aid.response };
       })
     );
-    const notLinkedContacts = otherIdentifierContacts.filter(
-      (contact) => contact.groupId !== ourMetadata.groupMetadata?.groupId
-    );
-    if (notLinkedContacts.length) {
-      // Todo: I got confused about this part, I will update it later
-    }
     let delegateAid;
     if (delegateContact) {
       const delegator = await this.agent.modules.signify.resolveOobi(
@@ -417,10 +469,8 @@ class IdentifierService extends AgentService {
       isPending,
       multisigManageAid: ourIdentifier,
     });
-    if (ourMetadata.groupMetadata) {
-      ourMetadata.groupMetadata.groupCreated = true;
-      await this.updateIdentifier(ourMetadata.id, ourMetadata);
-    }
+    ourMetadata.groupMetadata.groupCreated = true;
+    await this.updateIdentifier(ourMetadata.id, ourMetadata);
     return multisigId;
   }
 
@@ -641,6 +691,9 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
 
+    if (!identifier.groupMetadata) {
+      throw new Error(IdentifierService.MISSING_GROUP_METADATA);
+    }
     const aid = await this.agent.modules.signify.getIdentifierByName(
       identifier?.signifyName
     );
@@ -663,11 +716,8 @@ class IdentifierService extends AgentService {
       isPending: res.op.done ? false : true, //this will be updated once the operation is done
       multisigManageAid: identifier.id,
     });
-    if (identifier.groupMetadata) {
-      identifier.groupMetadata.groupCreated = true;
-      await this.updateIdentifier(identifier.id, identifier);
-    }
-    identifier.groupMetadata?.groupCreated;
+    identifier.groupMetadata.groupCreated = true;
+    await this.updateIdentifier(identifier.id, identifier);
     return multisigId;
   }
 

@@ -95,12 +95,13 @@ const IdentifierStage0 = ({
       colors: [newColor[1], newColor[0]],
       theme: state.selectedTheme,
     };
-    const groupMetadata = {
-      groupId: utils.uuid(),
-      groupInitiator: true,
-      groupCreated: false,
-    };
-    if (type === IdentifierType.KERI) {
+    let groupMetadata;
+    if (type === IdentifierType.KERI && state.selectedAidType == 1) {
+      groupMetadata = {
+        groupId: utils.uuid(),
+        groupInitiator: true,
+        groupCreated: false,
+      };
       metadata.groupMetadata = groupMetadata;
     }
     const identifier = await AriesAgent.agent.identifiers.createIdentifier(
@@ -117,7 +118,7 @@ const IdentifierStage0 = ({
         theme: state.selectedTheme,
         isPending: false,
       };
-      if (type === IdentifierType.KERI) {
+      if (groupMetadata) {
         newIdentifier.groupMetadata = groupMetadata;
       }
       dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));

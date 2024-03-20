@@ -144,11 +144,11 @@ class ConnectionService extends AgentService {
       };
       if (url.includes("groupId")) {
         const params = new URLSearchParams(new URL(url).search);
-        const groupId = params.get("groupId");
-        const identifiers = await AriesAgent.agent.identifiers.getIdentifiers();
-        const identifierWithGroupId = identifiers.find(
-          (identifier) => identifier.groupMetadata?.groupId == groupId
-        );
+        const groupId = params.get("groupId") as string;
+        const identifierWithGroupId =
+          await AriesAgent.agent.identifiers.getKeriIdentifierByGroupId(
+            groupId
+          );
         if (identifierWithGroupId) {
           connectionMetadata.groupId = groupId;
         } else {

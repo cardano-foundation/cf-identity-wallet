@@ -383,21 +383,35 @@ describe("Signify API", () => {
 
   test("can get oobi by name", async () => {
     const mockName = "keriuuid";
+    const groupId = "123";
+    const identifierData = {
+      id: "id",
+      displayName: "Identifier 1",
+      signifyName: mockName,
+      colors: ["#fff", "#fff"] as [string, string],
+      method: IdentifierType.KEY,
+      createdAtUTC: new Date().toISOString(),
+      theme: 0,
+      isPending: false,
+    };
     jest
-      .spyOn(AriesAgent.agent.identifiers, "getIdentifiers")
-      .mockResolvedValue([
-        {
-          id: "id",
-          displayName: "Identifier 1",
-          signifyName: mockName,
-          colors: ["#fff", "#fff"],
-          method: IdentifierType.KEY,
-          createdAtUTC: new Date().toISOString(),
-          theme: 0,
-          isPending: false,
-        },
-      ]);
+      .spyOn(AriesAgent.agent.identifiers, "getKeriIdentifierBySignifyName")
+      .mockResolvedValue(identifierData);
     expect(await api.getOobi(mockName)).toEqual(oobiPrefix + mockName);
+
+    jest
+      .spyOn(AriesAgent.agent.identifiers, "getKeriIdentifierBySignifyName")
+      .mockResolvedValue({
+        ...identifierData,
+        groupMetadata: {
+          groupId,
+          groupInitiator: true,
+          groupCreated: false,
+        },
+      });
+    expect(await api.getOobi(mockName)).toEqual(
+      oobiPrefix + mockName + `?groupId=${groupId}`
+    );
   });
 
   test("can resolve oobi", async () => {

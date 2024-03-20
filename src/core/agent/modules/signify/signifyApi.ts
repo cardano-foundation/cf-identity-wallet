@@ -150,15 +150,13 @@ export class SignifyApi {
   }
 
   async getOobi(name: string): Promise<string> {
-    const identifiers = await AriesAgent.agent.identifiers.getIdentifiers();
-    const identifierMetadata = identifiers.find(
-      (identifier) => identifier.signifyName === name
-    );
+    const identifierMetadata =
+      await AriesAgent.agent.identifiers.getKeriIdentifierBySignifyName(name);
     const result = await this.signifyClient
       .oobis()
       .get(name, SignifyApi.DEFAULT_ROLE);
     if (identifierMetadata && identifierMetadata?.groupMetadata?.groupId) {
-      return `${result.oobis[0]}?groupid=${identifierMetadata?.groupMetadata?.groupId}`;
+      return `${result.oobis[0]}?groupId=${identifierMetadata?.groupMetadata?.groupId}`;
     }
     return result.oobis[0];
   }

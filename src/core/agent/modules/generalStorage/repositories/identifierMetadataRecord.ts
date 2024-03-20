@@ -65,6 +65,8 @@ class IdentifierMetadataRecord
   getTags() {
     return {
       ...this._tags,
+      signifyName: this.signifyName,
+      groupId: this.groupMetadata?.groupId,
       isArchived: this.isArchived,
       isDeleted: this.isDeleted,
       isPending: this.isPending,

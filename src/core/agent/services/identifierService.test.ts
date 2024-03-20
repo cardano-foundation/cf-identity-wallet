@@ -91,6 +91,12 @@ const archivedMetadataRecord = new IdentifierMetadataRecord({
   theme: 0,
 });
 
+const groupMetadata = {
+  groupId: "group-id",
+  groupInitiator: true,
+  groupCreated: false,
+};
+
 const keriMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
@@ -99,6 +105,7 @@ const keriMetadataRecordProps = {
   signifyName: "uuid-here",
   createdAt: now,
   theme: 0,
+  groupMetadata,
 };
 const keriMetadataRecord = new IdentifierMetadataRecord(
   keriMetadataRecordProps
@@ -150,6 +157,7 @@ describe("Identifier service of agent", () => {
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
+        groupMetadata: undefined,
       },
       {
         id: keriMetadataRecord.id,
@@ -160,6 +168,7 @@ describe("Identifier service of agent", () => {
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
+        groupMetadata,
       },
     ]);
   });
@@ -178,6 +187,7 @@ describe("Identifier service of agent", () => {
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
+        groupMetadata: undefined,
       },
       {
         id: keriMetadataRecord.id,
@@ -188,6 +198,7 @@ describe("Identifier service of agent", () => {
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
+        groupMetadata,
       },
     ]);
   });
@@ -684,6 +695,7 @@ describe("Identifier service of agent", () => {
         status: ConnectionStatus.CONFIRMED,
         type: ConnectionType.KERI,
         connectionDate: new Date().toISOString(),
+        groupId: "group-id",
       },
     ];
     const metadata = {
@@ -805,6 +817,7 @@ describe("Identifier service of agent", () => {
         status: ConnectionStatus.CONFIRMED,
         type: ConnectionType.KERI,
         connectionDate: new Date().toISOString(),
+        groupId: "group-id",
       },
     ];
 
@@ -860,6 +873,11 @@ describe("Identifier service of agent", () => {
         d: "d",
       },
     });
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue({
+        keriMetadataRecord,
+      });
     agent.modules.signify.getMultisigMessageBySaid = jest
       .fn()
       .mockResolvedValue([
@@ -890,6 +908,7 @@ describe("Identifier service of agent", () => {
           createdAt: new Date(),
           colors: ["#000000", "#000000"],
           theme: 4,
+          groupMetadata,
         },
       ]);
     expect(
