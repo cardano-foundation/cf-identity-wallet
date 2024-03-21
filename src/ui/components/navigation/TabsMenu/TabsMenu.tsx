@@ -19,7 +19,7 @@ import {
   apps,
   appsOutline,
 } from "ionicons/icons";
-import React from "react";
+import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
@@ -29,6 +29,9 @@ import { Creds } from "../../../pages/Creds";
 import { Scan } from "../../../pages/Scan";
 import { Chat } from "../../../pages/Chat";
 import { Menu } from "../../../pages/Menu";
+import { SetUserName } from "../../SetUserName";
+import { useAppSelector } from "../../../../store/hooks";
+import { getStateCache } from "../../../../store/reducers/stateCache";
 
 const tabsRoutes = [
   {
@@ -70,6 +73,11 @@ const TabsMenu = ({
   path: string;
 }) => {
   const location = useLocation();
+  const stateCache = useAppSelector(getStateCache);
+  const [isOpen, setIsOpen] = useState(
+    !stateCache.authentication.userName.length
+  );
+
   return (
     <IonTabs>
       <IonRouterOutlet animated={false}>
@@ -82,6 +90,10 @@ const TabsMenu = ({
           path={path}
           component={tab}
           exact={true}
+        />
+        <SetUserName
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
         />
       </IonRouterOutlet>
 

@@ -49,6 +49,8 @@ enum ToastMsgType {
   NOTES_UPDATED = "notesUpdated",
   NOTE_REMOVED = "noteRemoved",
   MAX_FAVOURITES_REACHED = "maxFavouritesReached",
+  USERNAME_CREATION_SUCCESS = "usernameCreated",
+  USERNAME_CREATION_ERROR = "usernameError",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

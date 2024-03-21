@@ -1090,7 +1090,9 @@
     "newcredentialadded": "New credential added",
     "notesupdated": "Notes updated successfully",
     "noteremoved": "Note removed successfully",
-    "maxfavouritesreached": "Maximum of 5 favourites reached"
+    "maxfavouritesreached": "Maximum of 5 favourites reached",
+    "usernameCreated": "Welcome, {{username}}!",
+    "usernameError": "Unable to set name. Please try again."
   },
   "request": {
     "connection": {

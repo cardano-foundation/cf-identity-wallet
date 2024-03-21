@@ -335,6 +335,29 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     }
 
+    try {
+      const userName = await PreferencesStorage.get(
+        PreferencesKeys.APP_USER_NAME
+      );
+      dispatch(
+        setAuthentication({
+          ...authentication,
+          userName: userName?.value as string,
+        })
+      );
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+        )
+      ) {
+        throw e;
+      }
+    }
+
     dispatch(
       setAuthentication({
         ...authentication,
