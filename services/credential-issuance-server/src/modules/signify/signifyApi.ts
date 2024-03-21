@@ -8,10 +8,13 @@ import {
 } from "signify-ts";
 import { AriesAgent } from "../../ariesAgent";
 import { waitAndGetDoneOp } from "./utils";
+import { config } from "../../config";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
+  static readonly LOCAL_KERIA_ENDPOINT =
+    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
+    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
@@ -100,8 +103,10 @@ export class SignifyApi {
     recipient: string,
     name?: string
   ) {
+    await this.resolveOobi(`${config.endpoint}/oobi/${schemaId}`);
+    
     let vcdata = {}
-    if (schemaId === "EIdO4tWBPSmKA9ug9y9ZWSE8mRWgO_qqr7SwenQNZW3A") {
+    if (schemaId === "EKYv475K1k6uMt9IJw99NM8iLQuQf1bKfSHqA1XIKoQy") {
       vcdata = {
         attendeeName: name,
       };

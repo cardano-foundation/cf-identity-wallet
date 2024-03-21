@@ -28,8 +28,10 @@ import { KeyStoreKeys, SecureStorage } from "../../../storage";
 import { WitnessMode } from "../../../configuration/configurationService.types";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT = "http://127.0.0.1:3901";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT = "http://127.0.0.1:3903";
+  static readonly LOCAL_KERIA_ENDPOINT =
+    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
+  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
+    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
 
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
@@ -40,10 +42,12 @@ export class SignifyApi {
   static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
     "Unable to retrieve key states for given multi-sig member";
 
-  // static readonly CREDENTIAL_SERVER =
-  // "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
-  static readonly CREDENTIAL_SERVER = "http://127.0.0.1:3001/oobi/";
-  static readonly SCHEMA_SAID = "EIdO4tWBPSmKA9ug9y9ZWSE8mRWgO_qqr7SwenQNZW3A";
+  static readonly CREDENTIAL_SERVER =
+    "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
+  static readonly SCHEMA_SAID_VLEI =
+    "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static readonly SCHEMA_SAID_IIW_DEMO =
+    "EKYv475K1k6uMt9IJw99NM8iLQuQf1bKfSHqA1XIKoQy";
   static resolvedOobi: { [key: string]: any } = {};
 
   private signifyClient!: SignifyClient;
@@ -80,7 +84,7 @@ export class SignifyApi {
     const signifyName = utils.uuid();
     const operation = await this.signifyClient
       .identifiers()
-      .create(signifyName); //, this.getCreateAidOptions());
+      .create(signifyName, this.getCreateAidOptions());
     await operation.op();
     await this.signifyClient
       .identifiers()
@@ -203,7 +207,10 @@ export class SignifyApi {
   ): Promise<void> {
     // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
     await this.resolveOobi(
-      SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID
+      SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID_VLEI
+    );
+    await this.resolveOobi(
+      SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID_IIW_DEMO
     );
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.signifyClient

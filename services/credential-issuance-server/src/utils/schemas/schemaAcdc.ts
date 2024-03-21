@@ -89,10 +89,10 @@ const SCHEMA_ACDC = {
     additionalProperties: false,
     required: ["i", "ri", "s", "d"],
   }, 
-  "EIdO4tWBPSmKA9ug9y9ZWSE8mRWgO_qqr7SwenQNZW3A": {
-    $id: "EIdO4tWBPSmKA9ug9y9ZWSE8mRWgO_qqr7SwenQNZW3A",
+  "EKYv475K1k6uMt9IJw99NM8iLQuQf1bKfSHqA1XIKoQy": {
+    $id: "EKYv475K1k6uMt9IJw99NM8iLQuQf1bKfSHqA1XIKoQy",
     $schema: "http://json-schema.org/draft-07/schema#",
-    title: "Identity Wallet Demo Attendance Credential",
+    title: "IIW 2024 Demo Day Credential",
     description: "This Trust Over IP (ToIP) Authentic Chained Data Container (ACDC) Credential provides an end-verifiable attestation that the holder attended the Internet Identity Workshop (IIW) on April 16 - 18, 2024, and participated in the Cardano Foundation's Mobile Key Event Receipt Infrastructure (KERI) Wallet demonstration.",
     type: "object",
     credentialType: "DomainCredential",

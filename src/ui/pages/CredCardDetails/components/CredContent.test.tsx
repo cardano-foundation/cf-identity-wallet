@@ -176,7 +176,9 @@ describe("Creds content", () => {
       getByText(EN_TRANSLATIONS.creds.card.details.description.label)
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.creds.card.details.description.content)
+      getByText(
+        "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials"
+      )
     ).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.creds.card.details.attributes.label)

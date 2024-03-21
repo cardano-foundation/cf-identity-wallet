@@ -33,7 +33,6 @@ const agentConfig: InitConfig = {
 
 class AriesAgent {
   static readonly ISSUER_AID_NAME = "issuer";
-  static readonly SCHEMA_SAID = "EIdO4tWBPSmKA9ug9y9ZWSE8mRWgO_qqr7SwenQNZW3A";
 
   private static instance: AriesAgent;
   private readonly agent: Agent<{
@@ -258,8 +257,8 @@ class AriesAgent {
   async contacts() {
     return this.agent.modules.signify.contacts();
   }
-  async initKeri(schema?: string, issuerName?: string) {
-    const SAIDSchema = schema ? schema : AriesAgent.SCHEMA_SAID;
+
+  async initKeri(issuerName?: string) {
     const AIDIssuerName = issuerName ? issuerName : AriesAgent.ISSUER_AID_NAME;
     const existedIndentifier = await this.agent.modules.signify
       .getIdentifierByName(AIDIssuerName)
@@ -268,7 +267,6 @@ class AriesAgent {
     const identifier = await this.agent.modules.signify.createIdentifier(
       AIDIssuerName
     );
-    await this.agent.modules.signify.resolveOobi(`${config.endpoint}/oobi/${SAIDSchema}`);
     this.keriRegistryRegk = await this.agent.modules.signify.createRegistry(
       AIDIssuerName
     );
