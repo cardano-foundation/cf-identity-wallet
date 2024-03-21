@@ -20,8 +20,8 @@ const RequestComponent = ({
 }: RequestProps) => {
   const [requestStage, setRequestStage] = useState(0);
   switch (incomingRequestType) {
-  case IncomingRequestType.CONNECTION_INCOMING ||
-      IncomingRequestType.CONNECTION_RESPONSE:
+  case IncomingRequestType.CONNECTION_INCOMING:
+  case IncomingRequestType.CONNECTION_RESPONSE:
     return (
       <ConnectionRequest
         pageId={pageId}
