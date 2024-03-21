@@ -785,9 +785,7 @@ describe("Checking the Connection Details Page when different Credentials are is
     });
 
     await waitFor(() =>
-      expect(
-        getByText("Connected with \"45fc3e98-af6b-4797-bdf3-e2124a8089ee\"")
-      ).toBeVisible()
+      expect(getByText("Connected with \"John Smith\"")).toBeVisible()
     );
 
     await waitFor(() =>

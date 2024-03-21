@@ -1,4 +1,11 @@
 .identifier-card-details {
+  .multi-sig-contact-list {
+    ion-grid,
+    ion-col {
+      padding: 0;
+    }
+  }
+
   .page-header {
     margin-top: 0.625rem;
   }
