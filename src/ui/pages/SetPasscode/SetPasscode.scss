@@ -17,4 +17,10 @@
       }
     }
   }
+
+  .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
 }
