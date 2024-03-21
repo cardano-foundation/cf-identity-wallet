@@ -1,13 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
 
-export type TagsBase = Record<string | number, unknown>;
-
-export type RecordTags<Record extends BaseRecord> = ReturnType<
-  Record["getTags"]
->;
-
+type Tags = Record<string | number, unknown>;
 abstract class BaseRecord {
-  protected _tags: TagsBase = {} as TagsBase;
+  protected _tags: Tags = {} as Tags;
 
   id!: string;
 
@@ -15,40 +10,39 @@ abstract class BaseRecord {
 
   updatedAt?: Date;
 
-  abstract getTags(): TagsBase;
+  abstract getTags(): Tags;
 
-  setTag(name: keyof TagsBase, value: TagsBase[keyof TagsBase]) {
+  setTag(name: keyof Tags, value: Tags[keyof Tags]) {
     this._tags[name] = value;
   }
 
-  getTag(name: keyof TagsBase | keyof TagsBase) {
+  getTag(name: keyof Tags | keyof Tags) {
     return this.getTags()[name];
   }
 
-  setTags(tags: Partial<TagsBase>) {
+  setTags(tags: Partial<Tags>) {
     this._tags = {
       ...this._tags,
       ...tags,
     };
   }
 
-  public replaceTags(tags: TagsBase & Partial<TagsBase>) {
+  replaceTags(tags: Tags & Partial<Tags>) {
     this._tags = tags;
   }
 }
 
-type GenericRecordTags = TagsBase;
 interface BasicRecordStorageProps {
   id?: string;
   createdAt?: Date;
-  tags?: GenericRecordTags;
+  tags?: Tags;
   content: Record<string, unknown>;
   type: RecordType;
 }
 interface SaveBasicRecordOption {
   content: Record<string, unknown>;
   id?: string;
-  tags?: GenericRecordTags;
+  tags?: Tags;
   type: RecordType;
 }
 
@@ -64,14 +58,11 @@ class BasicRecord extends BaseRecord {
 
   constructor(props: BasicRecordStorageProps) {
     super();
-
-    if (props) {
-      this.id = props.id ?? uuidv4();
-      this.createdAt = props.createdAt ?? new Date();
-      this.content = props.content;
-      this._tags = props.tags ?? {};
-      this.type = props.type;
-    }
+    this.id = props.id ?? uuidv4();
+    this.createdAt = props.createdAt ?? new Date();
+    this.content = props.content;
+    this._tags = props.tags ?? {};
+    this.type = props.type;
   }
 
   getTags() {
@@ -81,10 +72,8 @@ class BasicRecord extends BaseRecord {
   }
 }
 
-export type SimpleQuery<T extends BaseRecord> = Partial<
-  ReturnType<T["getTags"]>
-> &
-  TagsBase;
+type SimpleQuery<T extends BaseRecord> = Partial<ReturnType<T["getTags"]>> &
+  Tags;
 interface AdvancedQuery<T extends BaseRecord> {
   $and?: Query<T>[];
   $or?: Query<T>[];
