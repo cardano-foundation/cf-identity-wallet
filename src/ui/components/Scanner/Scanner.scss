@@ -17,6 +17,7 @@
 }
 
 .qr-code-scanner {
+  --scale-scan: 1;
   height: calc(var(--scale-h) * 100);
   display: flex;
   flex-direction: column;
@@ -36,10 +37,14 @@
     }
 
     .qr-code-scanner-icon {
-      width: 18rem;
-      height: 18rem;
+      width: calc(var(--scale-scan) * 18rem);
+      height: calc(var(--scale-scan) * 18rem);
       margin: 1.5rem 0;
       --ionicon-stroke-width: 0.938rem;
     }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    --scale-scan: 0.7;
   }
 }

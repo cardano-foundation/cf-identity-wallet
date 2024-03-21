@@ -1,14 +1,15 @@
 import { AgentService } from "./agentService";
-import { GenericRecordType, KeriNotification } from "../agent.types";
 import { Notification } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
+import { RecordType } from "../../storage/storage.types";
+import { KeriNotification } from "../agent.types";
 class SignifyNotificationService extends AgentService {
   async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
   ) {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const notifications = await this.agent.modules.signify.getNotifications();
+      const notifications = await this.signifyApi.getNotifications();
       for (const notif of notifications.notes) {
         await this.processNotification(notif, callback);
       }
@@ -33,18 +34,19 @@ class SignifyNotificationService extends AgentService {
     ) {
       const keriNoti = await this.createKeriNotificationRecord(notif);
       callback(keriNoti);
-      await this.agent.modules.signify.markNotification(notif.i);
+      await this.signifyApi.markNotification(notif.i);
     }
   }
 
   private async createKeriNotificationRecord(
     event: Notification
   ): Promise<KeriNotification> {
-    const result = await this.agent.genericRecords.save({
+    const result = await this.basicStorage.save({
       id: event.i,
       content: event.a,
+      type: RecordType.NOTIFICATION_KERI,
       tags: {
-        type: GenericRecordType.NOTIFICATION_KERI,
+        type: RecordType.NOTIFICATION_KERI,
         route: event.a.r,
       },
     });

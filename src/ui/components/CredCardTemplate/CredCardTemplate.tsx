@@ -26,6 +26,7 @@ const CredCardTemplate = ({
   isActive,
   index,
   onHandleShowCardDetails,
+  styles,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const isResidency =
@@ -42,6 +43,7 @@ const CredCardTemplate = ({
       backgroundImage: `url(${KeriBackground})`,
       backgroundSize: "cover",
     }),
+    ...styles,
   };
 
   return (

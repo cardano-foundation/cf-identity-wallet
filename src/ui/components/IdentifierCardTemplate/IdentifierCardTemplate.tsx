@@ -13,11 +13,13 @@ const IdentifierCardTemplate = ({
   isActive,
   index = 0,
   onHandleShowCardDetails,
+  styles,
 }: IdentifierCardTemplateProps) => {
   const identifierCardTemplateStyles = {
     backgroundImage: `url(${IDENTIFIER_BG_MAPPING[cardData.theme]})`,
     backgroundSize: "cover",
     zIndex: index,
+    ...styles,
   };
 
   return (

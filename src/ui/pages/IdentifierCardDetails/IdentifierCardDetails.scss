@@ -1,2 +1,111 @@
 .identifier-card-details {
+  .multi-sig-contact-list {
+    ion-grid,
+    ion-col {
+      padding: 0;
+    }
+  }
+
+  .page-header {
+    margin-top: 0.625rem;
+  }
+}
+
+.open-animation {
+  .card-details-content {
+    animation: expand 0.7s ease-in-out;
+
+    @keyframes expand {
+      from {
+        height: 0;
+        overflow-y: hidden;
+        opacity: 0;
+        margin-top: -1.56rem;
+      }
+
+      to {
+        height: 100vh;
+        overflow-y: hidden;
+        opacity: 1;
+        margin-top: -1.56rem;
+      }
+    }
+  }
+}
+
+.back-animation {
+  .card-details-content {
+    animation: collapse 0.25s ease-in-out;
+    animation-fill-mode: forwards;
+  }
+
+  @keyframes collapse {
+    from {
+      height: 100vh;
+      overflow-y: hidden;
+      opacity: 1;
+      margin-top: -1.56rem;
+    }
+
+    to {
+      height: 0;
+      overflow-y: hidden;
+      opacity: 0;
+      margin-top: -1.56rem;
+    }
+  }
+}
+
+@media screen and (min-width: 250px) and (max-width: 370px) {
+  .open-animation {
+    .card-details-content {
+      animation: minsizeExpand 0.7s ease-in-out;
+
+      @keyframes minsizeExpand {
+        from {
+          height: 0;
+          overflow-y: hidden;
+          opacity: 0;
+          margin-top: -1.24rem;
+        }
+
+        to {
+          height: 100vh;
+          overflow-y: hidden;
+          opacity: 1;
+          margin-top: -1.24rem;
+        }
+      }
+    }
+  }
+
+  .back-animation {
+    .card-details-content {
+      animation: miniSizecollapse 0.25s ease-in-out;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes miniSizecollapse {
+      from {
+        height: 100vh;
+        overflow-y: hidden;
+        opacity: 1;
+        margin-top: -1.24rem;
+      }
+
+      to {
+        height: 0;
+        overflow-y: hidden;
+        opacity: 0;
+        margin-top: -1.24rem;
+      }
+    }
+  }
+
+  .identifier-card-detail-spinner-container {
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 }
