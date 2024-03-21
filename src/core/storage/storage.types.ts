@@ -102,4 +102,4 @@ interface StorageRecord {
 }
 
 export { BasicRecord, BaseRecord, RecordType };
-export type { StorageApi, Query, SaveBasicRecordOption, StorageRecord };
+export type { StorageApi, Query, SaveBasicRecordOption, StorageRecord, Tags };

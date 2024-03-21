@@ -1,4 +1,4 @@
-import { BasicRecord, StorageRecord, TagsBase } from "./storage.types";
+import { BasicRecord, StorageRecord, Tags } from "./storage.types";
 
 function deserializeRecord(storageRecord: StorageRecord): BasicRecord {
   const parsedValue = JSON.parse(storageRecord.value);
@@ -12,7 +12,7 @@ function deserializeRecord(storageRecord: StorageRecord): BasicRecord {
     }),
     type: storageRecord.category,
   });
-  record.replaceTags(storageRecord.tags as TagsBase);
+  record.replaceTags(storageRecord.tags as Tags);
   return record;
 }
 
