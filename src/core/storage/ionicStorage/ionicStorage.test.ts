@@ -1,5 +1,5 @@
 import { IonicStorage } from "./ionicStorage";
-import { BasicRecord } from "../storage.types";
+import { BasicRecord, RecordType } from "../storage.types";
 
 const startTime = new Date();
 
@@ -25,7 +25,7 @@ const getMock = jest.fn().mockImplementation(async (id: string) => {
 const forEachMock = jest.fn().mockImplementation((fn: () => void) => {
   const items = [
     {
-      category: BasicRecord.type,
+      category: RecordType.CONNECTION_KERI_METADATA,
       name: existingRecord.id,
       value: JSON.stringify({
         id: "test-0",
@@ -34,7 +34,7 @@ const forEachMock = jest.fn().mockImplementation((fn: () => void) => {
       tags: { firstTag: "exists", secondTag: "exists" },
     },
     {
-      category: BasicRecord.type,
+      category: RecordType.CONNECTION_KERI_METADATA,
       name: existingRecord.id,
       value: JSON.stringify({
         id: "test-0",
@@ -44,7 +44,7 @@ const forEachMock = jest.fn().mockImplementation((fn: () => void) => {
     },
 
     {
-      category: BasicRecord.type,
+      category: RecordType.CONNECTION_KERI_METADATA,
       name: existingRecord.id,
       value: JSON.stringify({
         id: "test-0",
@@ -77,6 +77,7 @@ const existingRecord = new BasicRecord({
   content: {
     test: "1",
   },
+  type: RecordType.CONNECTION_KERI_METADATA,
   createdAt: startTime,
 });
 const updatedRecord = new BasicRecord({
@@ -84,6 +85,7 @@ const updatedRecord = new BasicRecord({
   content: {
     test: "1",
   },
+  type: RecordType.CONNECTION_KERI_METADATA,
   createdAt: startTime,
 });
 const newRecord = new BasicRecord({
@@ -91,6 +93,7 @@ const newRecord = new BasicRecord({
   content: {
     test: "1",
   },
+  type: RecordType.CONNECTION_KERI_METADATA,
   createdAt: startTime,
 });
 
@@ -183,7 +186,7 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
   test("should get an existing record", async () => {
     const record = await storageService.findById(existingRecord.id);
     expect(getMock).toBeCalledWith(existingRecord.id);
-    expect(record.type).toEqual(BasicRecord.type);
+    expect(record.type).toEqual(RecordType.CONNECTION_KERI_METADATA);
     expect(record.id).toEqual(existingRecord.id);
   });
 
@@ -195,7 +198,9 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
   });
 
   test("should return all items for a record type but none others", async () => {
-    const result = await storageService.getAll();
+    const result = await storageService.getAll(
+      RecordType.CONNECTION_KERI_METADATA
+    );
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(3);
     expect(result[0].id).toEqual(existingRecord.id);
@@ -203,45 +208,60 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
 
   test("should find an item if every record tag is part of the query", async () => {
     const tags = { firstTag: "exists", secondTag: "exists" };
-    const result = await storageService.findAllByQuery(tags);
+    const result = await storageService.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      tags
+    );
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(1);
   });
 
   test("should find an item if every query tag is part of the record tags", async () => {
     const tags = { firstTag: "exists" };
-    const result = await storageService.findAllByQuery(tags);
+    const result = await storageService.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      tags
+    );
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(1);
   });
 
   test("should not find an item by tag that doesn't exist", async () => {
     const tags = { doesNotExist: "doesNotExist" };
-    const result = await storageService.findAllByQuery(tags);
+    const result = await storageService.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      tags
+    );
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(0);
   });
 
   test("should only return an item if every tag matches", async () => {
     const tags = { firstTag: "exists", secondTag: "doesNotExist" };
-    const result = await storageService.findAllByQuery(tags);
+    const result = await storageService.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      tags
+    );
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(0);
   });
 
   test("should find items with $or query", async () => {
     const query = { $or: [{ firstTag: "exists" }, { firstTag: "exists2" }] };
-    const result = await storageService.findAllByQuery(query);
+    const result = await storageService.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      query
+    );
     expect(forEachMock).toBeCalled();
     expect(result).toMatchObject([
       {
         _tags: { firstTag: "exists", secondTag: "exists" },
-        type: "GenericRecord",
+        type: RecordType.CONNECTION_KERI_METADATA,
         id: "test1",
       },
       {
         _tags: { firstTag: "exists2", secondTag: "exists2" },
-        type: "GenericRecord",
+        type: RecordType.CONNECTION_KERI_METADATA,
         id: "test1",
       },
     ]);
@@ -249,17 +269,20 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
 
   test("should find items with $not query", async () => {
     const query = { $not: { firstTag: "exists" } };
-    const result = await storageService.findAllByQuery(query);
+    const result = await storageService.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      query
+    );
     expect(forEachMock).toBeCalled();
     expect(result).toMatchObject([
       {
         _tags: { firstTag: "exists2", secondTag: "exists2" },
-        type: "GenericRecord",
+        type: RecordType.CONNECTION_KERI_METADATA,
         id: "test1",
       },
       {
         _tags: { firstTag: "exists3", secondTag: "exists3" },
-        type: "GenericRecord",
+        type: RecordType.CONNECTION_KERI_METADATA,
         id: "test1",
       },
     ]);
@@ -267,7 +290,10 @@ describe("Ionic Storage Module: Basic Storage Service", () => {
 
   test("should find an item with $and query", async () => {
     const tags = { $and: [{ firstTag: "exists" }, { secondTag: "exists" }] };
-    const result = await storageService.findAllByQuery(tags);
+    const result = await storageService.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      tags
+    );
     expect(forEachMock).toBeCalled();
     expect(result.length).toEqual(1);
   });

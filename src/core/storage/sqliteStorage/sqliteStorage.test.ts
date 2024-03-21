@@ -1,6 +1,6 @@
 import { SqliteStorage } from "./sqliteStorage";
 import { convertDbQuery } from "./utils";
-import { BasicRecord, StorageRecord } from "../storage.types";
+import { BasicRecord, RecordType, StorageRecord } from "../storage.types";
 
 const startTime = new Date();
 
@@ -50,46 +50,49 @@ const getMock = jest
   });
 const getAllKvMock = jest
   .spyOn(SqliteStorage.prototype, "scanItems")
-  .mockImplementation(async (query: any): Promise<StorageRecord[]> => {
-    const records = [
-      {
-        category: BasicRecord.type,
-        name: existingRecord.id,
-        value: JSON.stringify({
-          id: "test-0",
-          updatedAt: startTime,
-        }),
-        tags: { firstTag: "exists", secondTag: "exists" },
-      },
-      {
-        category: BasicRecord.type,
-        name: newRecord.id,
-        value: JSON.stringify({
-          id: "storagerecord-0",
-          storageVersion: "0.0.1",
-        }),
-        tags: { firstTag: "exists1", secondTag: "exists1" },
-      },
-    ] as StorageRecord[];
-    let instances: StorageRecord[] = [];
-    if (query) {
-      records.forEach((record) => {
-        if (record.category && record.category === BasicRecord.type) {
-          for (const [queryKey, queryVal] of Object.entries(query)) {
-            if (record.tags[queryKey] !== queryVal && queryVal !== undefined) {
-              return;
+  .mockImplementation(
+    async (type: RecordType, query: any): Promise<StorageRecord[]> => {
+      const records = [
+        {
+          category: RecordType.CONNECTION_KERI_METADATA,
+          name: existingRecord.id,
+          value: JSON.stringify({
+            id: "test-0",
+            updatedAt: startTime,
+          }),
+          tags: { firstTag: "exists", secondTag: "exists" },
+        },
+        {
+          category: RecordType.CONNECTION_KERI_METADATA,
+          name: newRecord.id,
+          value: JSON.stringify({
+            id: "storagerecord-0",
+            storageVersion: "0.0.1",
+          }),
+          tags: { firstTag: "exists1", secondTag: "exists1" },
+        },
+      ] as StorageRecord[];
+      let instances: StorageRecord[] = [];
+      if (query) {
+        records.forEach((record) => {
+          if (record.category && record.category === type) {
+            for (const [queryKey, queryVal] of Object.entries(query)) {
+              if (
+                record.tags[queryKey] !== queryVal &&
+                queryVal !== undefined
+              ) {
+                return;
+              }
             }
+            instances.push(record);
           }
-          instances.push(record);
-        }
-      });
-    } else {
-      instances = records;
+        });
+      } else {
+        instances = records;
+      }
+      return instances;
     }
-    return instances;
-  });
-
-const storeSessionMock = {};
+  );
 
 jest.mock("@capacitor-community/sqlite", () => ({
   CapacitorSQLite: jest.fn().mockImplementation(() => {
@@ -116,10 +119,12 @@ const existingRecord = new BasicRecord({
   content: {
     test: 1,
   },
+  type: RecordType.CONNECTION_KERI_METADATA,
   createdAt: startTime,
 });
 const updatedRecord = new BasicRecord({
   id: "test1",
+  type: RecordType.CONNECTION_KERI_METADATA,
   createdAt: startTime,
   content: {
     test: 1,
@@ -127,6 +132,7 @@ const updatedRecord = new BasicRecord({
 });
 const newRecord = new BasicRecord({
   id: "test3",
+  type: RecordType.CONNECTION_KERI_METADATA,
   createdAt: startTime,
   content: {
     test: 1,
@@ -209,7 +215,7 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
   test("should get an existing record", async () => {
     const record = await storageService.findById(existingRecord.id);
     expect(getMock).toBeCalledWith(existingRecord.id);
-    expect(record.type).toEqual(BasicRecord.type);
+    expect(record.type).toEqual(RecordType.CONNECTION_KERI_METADATA);
     expect(record.id).toEqual(existingRecord.id);
   });
 
@@ -221,7 +227,9 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
   });
 
   test("should return all items for a record type but none others", async () => {
-    const result = await storageService.getAll();
+    const result = await storageService.getAll(
+      RecordType.CONNECTION_KERI_METADATA
+    );
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(2);
     expect(result[0].id).toEqual(existingRecord.id);
@@ -229,28 +237,40 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
 
   test("should find an item if every record tag is part of the query", async () => {
     const tags = { firstTag: "exists", secondTag: "exists" };
-    const result = await storageService.findAllByQuery(tags);
+    const result = await storageService.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      tags
+    );
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(1);
   });
 
   test("should find an item if every query tag is part of the record tags", async () => {
     const tags = { firstTag: "exists" };
-    const result = await storageService.findAllByQuery(tags);
+    const result = await storageService.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      tags
+    );
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(1);
   });
 
   test("should not find an item by tag that doesn't exist", async () => {
     const tags = { doesNotExist: "doesNotExist" };
-    const result = await storageService.findAllByQuery(tags);
+    const result = await storageService.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      tags
+    );
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(0);
   });
 
   test("should only return an item if every tag matches", async () => {
     const tags = { firstTag: "exists", secondTag: "doesNotExist" };
-    const result = await storageService.findAllByQuery(tags);
+    const result = await storageService.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      tags
+    );
     expect(getAllKvMock).toBeCalled();
     expect(result.length).toEqual(0);
   });

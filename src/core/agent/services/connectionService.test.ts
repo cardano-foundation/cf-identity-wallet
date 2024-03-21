@@ -15,10 +15,10 @@ import {
   ConnectionHistoryType,
   ConnectionType,
   ConnectionStatus,
-  GenericRecordType,
 } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { SignifyApi } from "../modules/signify/signifyApi";
+import { RecordType } from "../../storage/storage.types";
 
 const eventEmitter = new EventEmitter();
 
@@ -332,17 +332,16 @@ describe("Connection service of agent", () => {
   });
 
   test("can get all connections", async () => {
-    basicStorage.findAllByQuery.mockImplementation(() => {
-      return [
-        {
-          id: keriContacts[0].id,
-          createdAt: now,
-          content: {
-            alias: "keri",
-          },
+    basicStorage.getAll = jest.fn().mockResolvedValue([
+      {
+        id: keriContacts[0].id,
+        createdAt: now,
+        type: RecordType.CONNECTION_KERI_METADATA,
+        content: {
+          alias: "keri",
         },
-      ];
-    });
+      },
+    ]);
     agent.connections.getAll = jest
       .fn()
       .mockResolvedValue([
@@ -380,7 +379,7 @@ describe("Connection service of agent", () => {
 
   test("can get all connections if there are none", async () => {
     agent.connections.getAll = jest.fn().mockResolvedValue([]);
-    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    basicStorage.getAll = jest.fn().mockResolvedValue([]);
     expect(await connectionService.getConnections()).toStrictEqual([]);
     expect(agent.connections.getAll).toBeCalled();
   });
@@ -529,7 +528,8 @@ describe("Connection service of agent", () => {
     expect(basicStorage.save).toBeCalledWith({
       id: expect.any(String),
       content: note,
-      tags: { connectionId, type: GenericRecordType.CONNECTION_NOTE },
+      type: RecordType.CONNECTION_NOTE,
+      tags: { connectionId },
     });
   });
 
@@ -713,7 +713,7 @@ describe("Connection service of agent", () => {
         wellKnowns: [],
       },
     ]);
-    basicStorage.findAllByQuery = jest.fn().mockReturnValue([]);
+    basicStorage.getAll = jest.fn().mockReturnValue([]);
     await connectionService.syncKeriaContacts();
     expect(basicStorage.save).toBeCalledTimes(2);
   });

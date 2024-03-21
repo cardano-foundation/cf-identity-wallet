@@ -10,6 +10,7 @@ function deserializeRecord(storageRecord: StorageRecord): BasicRecord {
     ...(parsedValue.updatedAt ?? {
       updatedAt: new Date(parsedValue.updatedAt),
     }),
+    type: storageRecord.category,
   });
   record.replaceTags(storageRecord.tags as TagsBase);
   return record;

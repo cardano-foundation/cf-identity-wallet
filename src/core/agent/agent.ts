@@ -28,7 +28,7 @@ import {
 } from "./services";
 import { documentLoader } from "./documentLoader";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
-import { BasicStoragesApi } from "../storage/storage.types";
+import { StorageApi } from "../storage/storage.types";
 import { SqliteStorage } from "../storage/sqliteStorage";
 import { IonicStorage } from "../storage/ionicStorage";
 import { SignifyApi } from "./modules/signify/signifyApi";
@@ -82,7 +82,7 @@ const agentModules = {
 class AriesAgent {
   private static instance: AriesAgent;
   private readonly agent!: Agent<typeof agentModules>;
-  private basicRecordStorage!: BasicStoragesApi;
+  private basicRecordStorage!: StorageApi;
   private signifyApi!: SignifyApi;
   static ready = false;
 
@@ -138,7 +138,7 @@ class AriesAgent {
   }
 
   get genericRecords() {
-    return this.basicRecordStorage;
+    return this.agent.genericRecords;
   }
 
   get signifyNotifications() {

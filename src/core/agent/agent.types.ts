@@ -14,12 +14,6 @@ enum ConnectionStatus {
   PENDING = "pending",
 }
 
-enum GenericRecordType {
-  CONNECTION_NOTE = "connection-note",
-  CONNECTION_KERI_METADATA = "connection-keri-metadata",
-  NOTIFICATION_KERI = "notification-keri",
-}
-
 enum ConnectionHistoryType {
   CREDENTIAL_ACCEPTED,
 }
@@ -115,7 +109,6 @@ interface KeriNotification {
 export {
   Blockchain,
   ConnectionStatus,
-  GenericRecordType,
   ConnectionHistoryType,
   MiscRecordId,
   ConnectionType,

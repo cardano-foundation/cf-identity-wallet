@@ -16,7 +16,6 @@ interface Configuration {
           address: string;
         };
       };
-  enableCredoTs: boolean;
 }
 
 export type { Configuration };
