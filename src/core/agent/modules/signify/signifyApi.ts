@@ -40,8 +40,9 @@ export class SignifyApi {
   static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
     "Unable to retrieve key states for given multi-sig member";
 
-  static readonly VLEI_HOST =
-    "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
+  // static readonly CREDENTIAL_SERVER =
+  // "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
+  static readonly CREDENTIAL_SERVER = "http://127.0.0.1:3001/oobi/";
   static readonly SCHEMA_SAID = "EIdO4tWBPSmKA9ug9y9ZWSE8mRWgO_qqr7SwenQNZW3A";
   static resolvedOobi: { [key: string]: any } = {};
 
@@ -200,7 +201,10 @@ export class SignifyApi {
     holderAidName: string,
     issuerAid: string
   ): Promise<void> {
-    await this.resolveOobi(SignifyApi.VLEI_HOST + SignifyApi.SCHEMA_SAID);
+    // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
+    await this.resolveOobi(
+      SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID
+    );
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.signifyClient
       .ipex()
