@@ -756,8 +756,7 @@
         "type": "Type",
         "title": "Title",
         "description": {
-          "label": "Description",
-          "content": "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials"
+          "label": "Description"
         },
         "attributes": {
           "label": "Attributes",

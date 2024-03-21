@@ -142,37 +142,36 @@ class ConnectionService extends AgentService {
       });
 
       // @TODO - foconnor: This is temporary for ease of development, will be removed soon.
-      // For now this will make KERI contacts operate similarily to DIDComm comms if it's from our deployed cred server.
-      // Will only be confirmed in our wallet once the other agent also resolves our OOBI - it will also issue an ACDC at the same time.
-      // if (url.includes("dev.keria.cf-keripy.metadata.dev.cf-deployments.org")) {
-      //   // This is inefficient but it will change going forward.
-      //   const aid = (await AriesAgent.agent.identifiers.getIdentifiers()).find(
-      //     (identifier) => identifier.method === IdentifierType.KERI
-      //   );
-      //   if (aid && aid.signifyName) {
-      //     // signifyName should always be set
-      //     const oobi = await AriesAgent.agent.connections.getKeriOobi(
-      //       aid.signifyName
-      //     );
-      //     await (
-      //       await fetch(
-      //         "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/issueAcdcCredentialWithOobi",
-      //         {
-      //           method: "POST",
-      //           body: JSON.stringify({ oobi }),
-      //           headers: {
-      //             "Content-Type": "application/json",
-      //           },
-      //         }
-      //       )
-      //     ).json();
-      //   } else {
-      //     // eslint-disable-next-line no-console
-      //     console.warn(
-      //       "Please create a KERI AID first before scanning an OOBI of the deployed server, if you wish to be issued an ACDC automatically."
-      //     );
-      //   }
-      // }
+      // This will take our first KERI identifier and get the server to resolve it, so that the connection is resolved from both sides and we can issue to this wallet using its API.
+      if (url.includes("dev.keria.cf-keripy.metadata.dev.cf-deployments.org")) {
+        // This is inefficient but it will change going forward.
+        const aid = (await AriesAgent.agent.identifiers.getIdentifiers()).find(
+          (identifier) => identifier.method === IdentifierType.KERI
+        );
+        if (aid && aid.signifyName) {
+          // signifyName should always be set
+          const oobi = await AriesAgent.agent.connections.getKeriOobi(
+            aid.signifyName
+          );
+          await (
+            await fetch(
+              "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/resolveOobi",
+              {
+                method: "POST",
+                body: JSON.stringify({ oobi }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }
+            )
+          ).json();
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn(
+            "Please create a KERI AID first before scanning an OOBI of the deployed server, if you wish to be issued an ACDC automatically."
+          );
+        }
+      }
 
       return this.agent.events.emit<ConnectionKeriStateChangedEvent>(
         this.agent.context,
