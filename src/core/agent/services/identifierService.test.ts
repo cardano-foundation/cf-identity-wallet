@@ -13,17 +13,6 @@ import { IdentifierType } from "./identifierService.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
 import { AriesAgent } from "../agent";
 
-const basicStorage = jest.mocked({
-  open: jest.fn(),
-  save: jest.fn(),
-  delete: jest.fn(),
-  deleteById: jest.fn(),
-  update: jest.fn(),
-  findById: jest.fn(),
-  findAllByQuery: jest.fn(),
-  getAll: jest.fn(),
-});
-
 // We are losing typing here but the Agent class is overly complex to setup for tests.
 const agent = jest.mocked({
   modules: {
@@ -61,9 +50,26 @@ const agent = jest.mocked({
     resolve: jest.fn(),
     create: jest.fn(),
   },
+  genericRecords: {
+    findById: jest.fn(),
+    deleteById: jest.fn(),
+  },
 });
 
-const identifierService = new IdentifierService(agent as any as Agent);
+const basicStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+const identifierService = new IdentifierService(
+  agent as any as Agent,
+  basicStorage
+);
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -73,7 +79,6 @@ jest.mock("../../../core/agent/agent", () => ({
         getConnections: jest.fn(),
       },
     },
-    storage: basicStorage,
   },
 }));
 

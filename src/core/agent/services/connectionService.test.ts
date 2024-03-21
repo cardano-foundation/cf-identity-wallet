@@ -21,17 +21,6 @@ import { ConnectionService } from "./connectionService";
 
 const eventEmitter = new EventEmitter();
 
-const basicStorage = {
-  open: jest.fn(),
-  save: jest.fn(),
-  delete: jest.fn(),
-  deleteById: jest.fn(),
-  update: jest.fn(),
-  findById: jest.fn(),
-  findAllByQuery: jest.fn(),
-  getAll: jest.fn(),
-};
-
 const agent = jest.mocked({
   oob: {
     receiveInvitationFromUrl: jest.fn(),
@@ -74,19 +63,21 @@ const agent = jest.mocked({
   },
 });
 
-jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
-    agent: {
-      connections: {
-        getConnectionKeriShortDetailById: jest.fn(),
-        getConnections: jest.fn(),
-      },
-    },
-    storage: basicStorage,
-  },
-}));
+const basicStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
 
-const connectionService = new ConnectionService(agent as any as Agent);
+const connectionService = new ConnectionService(
+  agent as any as Agent,
+  basicStorage
+);
 
 const oobi = new OutOfBandInvitation({
   label: "label",
