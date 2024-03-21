@@ -661,7 +661,6 @@
         "done": "Done",
         "information": "Information",
         "type": "Type",
-        "controller": "Controller",
         "publickeybase": "Public Key Base 58",
         "delegator": {
           "title": "Delegator Identifier Prefix",
