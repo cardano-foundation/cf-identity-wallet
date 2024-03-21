@@ -16,8 +16,11 @@ import {
   ConnectionType,
   ConnectionStatus,
   GenericRecordType,
+  KeriConnectionType,
 } from "../agent.types";
 import { ConnectionService } from "./connectionService";
+import { AriesAgent } from "../agent";
+import { IdentifierType } from "./identifierService.types";
 
 const eventEmitter = new EventEmitter();
 
@@ -285,6 +288,61 @@ describe("Connection service of agent", () => {
       oobi,
       expect.any(Object)
     );
+  });
+
+  test("Should return connection type to trigger UI to create a new identifier", async () => {
+    const groupId = "123";
+    const oobi = `http://localhost/oobi=3423?groupId=${groupId}`;
+    agent.events.emit = jest.fn();
+    agent.modules.signify.resolveOobi = jest.fn().mockImplementation((url) => {
+      return { name: url, response: { i: "id" } };
+    });
+    jest
+      .spyOn(AriesAgent.agent.identifiers, "getKeriIdentifierByGroupId")
+      .mockResolvedValue(null);
+    const result = await connectionService.receiveInvitationFromUrl(oobi);
+    expect(result).toStrictEqual({
+      type: KeriConnectionType.MULTI_SIG,
+      groupId,
+    });
+  });
+
+  test("Can receive OOBIs with groupId", async () => {
+    const groupId = "123";
+    const oobi = `http://localhost/oobi=3423?groupId=${groupId}`;
+    agent.events.emit = jest.fn();
+    agent.modules.signify.resolveOobi = jest.fn().mockImplementation((url) => {
+      return { alias: "alias", name: url, response: { i: "id" } };
+    });
+    jest
+      .spyOn(AriesAgent.agent.identifiers, "getKeriIdentifierByGroupId")
+      .mockResolvedValue({
+        method: IdentifierType.KERI,
+        displayName: "displayName",
+        id: "id",
+        signifyName: "uuid",
+        createdAtUTC: new Date().toISOString(),
+        colors: ["#ffff", "#ffff"],
+        theme: 0,
+        isPending: false,
+        groupMetadata: {
+          groupId,
+          groupCreated: false,
+          groupInitiator: true,
+        },
+      });
+    await connectionService.receiveInvitationFromUrl(oobi);
+    expect(agent.genericRecords.save).toBeCalledWith({
+      id: "id",
+      content: {
+        alias: "alias",
+        oobi,
+        groupId,
+      },
+      tags: {
+        type: GenericRecordType.CONNECTION_KERI_METADATA,
+      },
+    });
   });
 
   test("can accept a request by connection id", async () => {

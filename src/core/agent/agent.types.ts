@@ -1,5 +1,4 @@
 import { BaseEvent } from "@aries-framework/core";
-import { IdentifierMetadataRecordProps } from "./modules";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -113,6 +112,15 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
+enum KeriConnectionType {
+  NORMAL = "NORMAL",
+  MULTI_SIG = "MULTI_SIG",
+}
+
+type OobiScan =
+  | { type: KeriConnectionType.NORMAL }
+  | { type: KeriConnectionType.MULTI_SIG; groupId: string };
+
 export {
   Blockchain,
   ConnectionStatus,
@@ -123,6 +131,7 @@ export {
   CredentialType,
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
+  KeriConnectionType,
 };
 export type {
   CryptoAccountRecordShortDetails,
@@ -134,4 +143,5 @@ export type {
   ConnectionKeriStateChangedEvent,
   KeriNotification,
   AcdcKeriStateChangedEvent,
+  OobiScan,
 };

@@ -70,7 +70,10 @@ class IdentifierService extends AgentService {
   static readonly MISSING_GROUP_METADATA =
     "Metadata record for group is missing";
   static readonly ONLY_ALLOW_LINKED_CONTACTS =
-    "Only allow to create multisig with linked contacts";
+    "Only allowed to create multi-sig using contacts with a matching groupId to our member identifier";
+  static readonly ONLY_ALLOW_GROUP_INITIATOR =
+    "Only the group initiator can create the multisig";
+  static readonly GROUP_ALREADY_EXISTs = "Group already exists";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -182,13 +185,13 @@ class IdentifierService extends AgentService {
 
   async getKeriIdentifierByGroupId(
     groupId: string
-  ): Promise<IdentifierShortDetails> {
+  ): Promise<IdentifierShortDetails | null> {
     const metadata =
       await this.agent.modules.generalStorage.getKeriIdentifierMetadataByGroupId(
         groupId
       );
     if (!metadata) {
-      throw new Error(IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING);
+      return null;
     }
     return {
       method: metadata.method,
@@ -400,16 +403,18 @@ class IdentifierService extends AgentService {
   async createMultisig(
     ourIdentifier: string,
     otherIdentifierContacts: ConnectionShortDetails[],
-    meta: Pick<
-      IdentifierMetadataRecordProps,
-      "displayName" | "colors" | "theme"
-    >,
     threshold: number,
     delegateContact?: ConnectionShortDetails
   ): Promise<string | undefined> {
     const ourMetadata = await this.getMetadataById(ourIdentifier);
     if (!ourMetadata.groupMetadata) {
       throw new Error(IdentifierService.MISSING_GROUP_METADATA);
+    }
+    if (!ourMetadata.groupMetadata.groupInitiator) {
+      throw new Error(IdentifierService.ONLY_ALLOW_GROUP_INITIATOR);
+    }
+    if (ourMetadata.groupMetadata.groupCreated) {
+      throw new Error(IdentifierService.GROUP_ALREADY_EXISTs);
     }
     const notLinkedContacts = otherIdentifierContacts.filter(
       (contact) => contact.groupId !== ourMetadata.groupMetadata?.groupId
@@ -460,10 +465,10 @@ class IdentifierService extends AgentService {
     }
     await this.createIdentifierMetadataRecord({
       id: multisigId,
-      displayName: meta.displayName,
+      displayName: ourMetadata.displayName,
       method: IdentifierType.KERI,
-      colors: meta.colors,
-      theme: meta.theme,
+      colors: ourMetadata.colors,
+      theme: ourMetadata.theme,
       signifyName,
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
       isPending,

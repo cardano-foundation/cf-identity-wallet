@@ -24,12 +24,13 @@ import {
   ConnectionType,
   ConnectionStatus,
   GenericRecordType,
+  OobiScan,
+  KeriConnectionType,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { AriesAgent } from "../agent";
 import { IdentifierType } from "./identifierService.types";
-import { ColorGenerator } from "../../../ui/utils/colorGenerator";
 
 const SERVER_GET_SHORTEN_URL =
   // eslint-disable-next-line no-undef
@@ -124,7 +125,7 @@ class ConnectionService extends AgentService {
     return connectionRecord.state === DidExchangeState.Completed;
   }
 
-  async receiveInvitationFromUrl(url: string): Promise<void> {
+  async receiveInvitationFromUrl(url: string): Promise<OobiScan> {
     if (url.includes("/oobi")) {
       this.agent.events.emit<ConnectionKeriStateChangedEvent>(
         this.agent.context,
@@ -152,22 +153,9 @@ class ConnectionService extends AgentService {
         if (identifierWithGroupId) {
           connectionMetadata.groupId = groupId;
         } else {
-          //TODO: Open a pop up to get the display name and colors inputs
-          const displayName = utils.uuid();
-          const colorGenerator = new ColorGenerator();
-          const newColor = colorGenerator.generateNextColor();
-
-          await AriesAgent.agent.identifiers.createIdentifier({
-            displayName,
-            method: IdentifierType.KERI,
-            colors: [newColor[1], newColor[0]],
-            theme: 0,
-            groupMetadata: {
-              groupId: utils.uuid(),
-              groupInitiator: false,
-              groupCreated: false,
-            },
-          });
+          /**Return this and then the UI will open a pop up to get the display name
+           * and colors inputs */
+          return { type: KeriConnectionType.MULTI_SIG, groupId };
         }
       }
       await this.createConnectionKeriMetadata(connectionId, connectionMetadata);
@@ -183,7 +171,8 @@ class ConnectionService extends AgentService {
         if (aid && aid.signifyName) {
           // signifyName should always be set
           const oobi = await AriesAgent.agent.connections.getKeriOobi(
-            aid.signifyName
+            aid.signifyName,
+            aid.groupMetadata?.groupId
           );
           await (
             await fetch(
@@ -205,7 +194,7 @@ class ConnectionService extends AgentService {
         }
       }
 
-      return this.agent.events.emit<ConnectionKeriStateChangedEvent>(
+      this.agent.events.emit<ConnectionKeriStateChangedEvent>(
         this.agent.context,
         {
           type: ConnectionKeriEventTypes.ConnectionKeriStateChanged,
@@ -215,6 +204,7 @@ class ConnectionService extends AgentService {
           },
         }
       );
+      return { type: KeriConnectionType.NORMAL };
     }
     if (url.includes("/shorten")) {
       const response = await this.fetchShortUrl(url);
@@ -225,6 +215,7 @@ class ConnectionService extends AgentService {
       autoAcceptInvitation: true,
       reuseConnection: true,
     });
+    return { type: KeriConnectionType.NORMAL };
   }
 
   // @TODO: this is a temporary feature, an api should be added in the mediator to get the shorten url
@@ -285,14 +276,12 @@ class ConnectionService extends AgentService {
     return connectionsDetails;
   }
 
-  async getAssociatedKeriContacts(
+  async getMultisigLinkedContacts(
     groupId: string
   ): Promise<ConnectionShortDetails[]> {
     const connectionsDetails: ConnectionShortDetails[] = [];
-    const connectionKeriMetadatas = await this.getAllConnectionKeriMetadata();
-    const associatedKeriContacts = connectionKeriMetadatas.filter(
-      (contact) => contact?.content?.groupId === groupId
-    );
+    const associatedKeriContacts =
+      await this.getKeriConnectionMetadataByGroupId(groupId);
     associatedKeriContacts.forEach(async (connection) => {
       connectionsDetails.push(this.getConnectionKeriShortDetails(connection));
     });
@@ -409,8 +398,8 @@ class ConnectionService extends AgentService {
     return this.agent.genericRecords.deleteById(connectionNoteId);
   }
 
-  async getKeriOobi(signifyName: string): Promise<string> {
-    return this.agent.modules.signify.getOobi(signifyName);
+  async getKeriOobi(signifyName: string, groupId?: string): Promise<string> {
+    return this.agent.modules.signify.getOobi(signifyName, groupId);
   }
 
   private async createConnectionKeriMetadata(
@@ -445,6 +434,16 @@ class ConnectionService extends AgentService {
       type: GenericRecordType.CONNECTION_KERI_METADATA,
     });
     return connectionKeris;
+  }
+
+  async getKeriConnectionMetadataByGroupId(
+    groupId: string
+  ): Promise<GenericRecord[]> {
+    const connections = await this.agent.genericRecords.findAllByQuery({
+      groupId,
+      type: GenericRecordType.CONNECTION_KERI_METADATA,
+    });
+    return connections;
   }
 
   async getConnectionHistoryById(
