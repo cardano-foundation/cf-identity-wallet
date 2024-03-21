@@ -1,3 +1,9 @@
+.identifier-card-details {
+  .page-header {
+    margin-top: 0.625rem;
+  }
+}
+
 .open-animation {
   .card-details-content {
     animation: expand 0.7s ease-in-out;
@@ -46,22 +52,45 @@
 @media screen and (min-width: 250px) and (max-width: 370px) {
   .open-animation {
     .card-details-content {
-      animation: expand 0.7s ease-in-out;
+      animation: minsizeExpand 0.7s ease-in-out;
 
-      @keyframes expand {
+      @keyframes minsizeExpand {
         from {
           height: 0;
           overflow-y: hidden;
           opacity: 0;
-          margin-top: -1.326rem;
+          margin-top: -1.25rem;
         }
 
         to {
           height: 100vh;
           overflow-y: hidden;
           opacity: 1;
-          margin-top: -1.326rem;
+          margin-top: -1.25rem;
         }
+      }
+    }
+  }
+
+  .back-animation {
+    .card-details-content {
+      animation: miniSizecollapse 0.25s ease-in-out;
+      animation-fill-mode: forwards;
+    }
+
+    @keyframes miniSizecollapse {
+      from {
+        height: 100vh;
+        overflow-y: hidden;
+        opacity: 1;
+        margin-top: -1.25rem;
+      }
+
+      to {
+        height: 0;
+        overflow-y: hidden;
+        opacity: 0;
+        margin-top: -1.25rem;
       }
     }
   }
