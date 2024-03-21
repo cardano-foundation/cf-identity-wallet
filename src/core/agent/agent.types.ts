@@ -112,7 +112,7 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
-interface KeriNotificationQuery {
+interface KeriaNotificationMarker {
   nextIndex: number;
   lastNotificationId: string;
 }
@@ -138,5 +138,5 @@ export type {
   ConnectionKeriStateChangedEvent,
   KeriNotification,
   AcdcKeriStateChangedEvent,
-  KeriNotificationQuery,
+  KeriaNotificationMarker,
 };

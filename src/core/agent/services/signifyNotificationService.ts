@@ -2,7 +2,7 @@ import { AgentService } from "./agentService";
 import {
   GenericRecordType,
   KeriNotification,
-  KeriNotificationQuery,
+  KeriaNotificationMarker,
 } from "../agent.types";
 import { Notification } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
@@ -13,19 +13,24 @@ class SignifyNotificationService extends AgentService {
   ) {
     // eslint-disable-next-line no-constant-condition
     while (true) {
+      let notificationQuery = {
+        nextIndex: 0,
+        lastNotificationId: "",
+      };
       try {
-        await PreferencesStorage.get(PreferencesKeys.APP_NOTIFICATION_QUERIES);
+        notificationQuery = (await PreferencesStorage.get(
+          PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER
+        )) as unknown as KeriaNotificationMarker;
       } catch (error) {
         /**Set the preference key */
-        await PreferencesStorage.set(PreferencesKeys.APP_NOTIFICATION_QUERIES, {
-          nextIndex: 0,
-          lastNotificationId: "",
-        });
+        await PreferencesStorage.set(
+          PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
+          {
+            nextIndex: 0,
+            lastNotificationId: "",
+          }
+        );
       }
-      const notificationQuery = (await PreferencesStorage.get(
-        PreferencesKeys.APP_NOTIFICATION_QUERIES
-      )) as unknown as KeriNotificationQuery;
-
       const startFetchingIndex =
         notificationQuery.nextIndex > 0
           ? notificationQuery.nextIndex - 1
@@ -40,10 +45,13 @@ class SignifyNotificationService extends AgentService {
         notifications.notes[0].i !== notificationQuery.lastNotificationId
       ) {
         /**This is to verify no notifications were deleted for some reason (which affects the batch range) */
-        await PreferencesStorage.set(PreferencesKeys.APP_NOTIFICATION_QUERIES, {
-          nextIndex: 0,
-          lastNotificationId: "",
-        });
+        await PreferencesStorage.set(
+          PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
+          {
+            nextIndex: 0,
+            lastNotificationId: "",
+          }
+        );
         continue;
       }
       if (notificationQuery.nextIndex > 0) {
@@ -53,18 +61,22 @@ class SignifyNotificationService extends AgentService {
       for (const notif of notifications.notes) {
         await this.processNotification(notif, callback);
       }
-      if (!notifications.notes.length) {
+      if (notifications.notes.length) {
+        const nextNotificationIndex =
+          startFetchingIndex + notifications.notes.length;
+        await PreferencesStorage.set(
+          PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
+          {
+            nextIndex: nextNotificationIndex,
+            lastNotificationId:
+              notifications.notes[nextNotificationIndex - 1].i,
+          }
+        );
+      } else {
         await new Promise((rs) => {
           setTimeout(() => {
             rs(true);
           }, 2000);
-        });
-      } else {
-        const nextNotificationIndex =
-          startFetchingIndex + notifications.notes.length;
-        await PreferencesStorage.set(PreferencesKeys.APP_NOTIFICATION_QUERIES, {
-          nextIndex: nextNotificationIndex,
-          lastNotificationId: notifications.notes[nextNotificationIndex - 1].i,
         });
       }
     }

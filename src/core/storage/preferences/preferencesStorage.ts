@@ -13,7 +13,7 @@ enum PreferencesKeys {
   APP_HIDE_CRYPTO_BALANCES = "app-hide-crypto-balances",
   APP_IDENTIFIERS_FAVOURITES = "app-identifiers-favourites",
   APP_CREDS_FAVOURITES = "app-creds-favourites",
-  APP_NOTIFICATION_QUERIES = "app-notification-queries",
+  APP_KERIA_NOTIFICATION_MARKER = "app-notification-queries",
 }
 
 class PreferencesStorage {
