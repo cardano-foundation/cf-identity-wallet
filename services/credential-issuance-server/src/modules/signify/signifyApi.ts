@@ -18,6 +18,7 @@ export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
+  static readonly UNKNOW_SCHEMA_ID = "Unknow Schema ID: "
   private signifyClient!: SignifyClient;
   private opTimeout: number;
   private opRetryInterval: number;
@@ -110,10 +111,12 @@ export class SignifyApi {
       vcdata = {
         attendeeName: name,
       };
-    } else {
+    } else if (schemaId === "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao") {
       vcdata = {
         LEI: "5493001KJTIIGC8Y1R17",
       };
+    } else {
+      throw new Error(SignifyApi.UNKNOW_SCHEMA_ID + schemaId);
     }
     
     const result = await this.signifyClient
