@@ -29,7 +29,7 @@ import {
 } from "./services";
 import { documentLoader } from "./documentLoader";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
-import { BasicStoragesApi } from "../storage/storage.types";
+import { StorageApi } from "../storage/storage.types";
 import { SqliteStorage } from "../storage/sqliteStorage";
 import { IonicStorage } from "../storage/ionicStorage";
 
@@ -83,7 +83,7 @@ const agentModules = {
 class AriesAgent {
   private static instance: AriesAgent;
   private readonly agent!: Agent<typeof agentModules>;
-  private basicRecordStorage!: BasicStoragesApi;
+  private basicRecordStorage!: StorageApi;
   static ready = false;
 
   // @TODO - foconnor: Registering these should be more generic, but OK for now
@@ -134,7 +134,7 @@ class AriesAgent {
   }
 
   get genericRecords() {
-    return this.basicRecordStorage;
+    return this.agent.genericRecords;
   }
 
   get signifyNotifications() {

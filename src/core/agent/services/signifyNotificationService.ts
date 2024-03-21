@@ -1,7 +1,8 @@
 import { AgentService } from "./agentService";
-import { GenericRecordType, KeriNotification } from "../agent.types";
 import { Notification } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
+import { RecordType } from "../../storage/storage.types";
+import { KeriNotification } from "../agent.types";
 class SignifyNotificationService extends AgentService {
   async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
@@ -43,8 +44,9 @@ class SignifyNotificationService extends AgentService {
     const result = await this.basicStorage.save({
       id: event.i,
       content: event.a,
+      type: RecordType.NOTIFICATION_KERI,
       tags: {
-        type: GenericRecordType.NOTIFICATION_KERI,
+        type: RecordType.NOTIFICATION_KERI,
         route: event.a.r,
       },
     });

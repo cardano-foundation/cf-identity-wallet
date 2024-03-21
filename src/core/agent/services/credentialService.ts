@@ -14,7 +14,6 @@ import {
 } from "@aries-framework/core";
 import {
   KeriNotification,
-  GenericRecordType,
   AcdcKeriStateChangedEvent,
   AcdcKeriEventTypes,
   ConnectionType,
@@ -34,6 +33,7 @@ import {
   ACDCDetails,
 } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
+import { RecordType } from "../../storage/storage.types";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -433,10 +433,12 @@ class CredentialService extends AgentService {
   }
 
   private async getKeriCredentialNotifications(): Promise<KeriNotification[]> {
-    const results = await this.basicStorage.findAllByQuery({
-      type: GenericRecordType.NOTIFICATION_KERI,
-      route: NotificationRoute.Credential,
-    });
+    const results = await this.basicStorage.findAllByQuery(
+      RecordType.NOTIFICATION_KERI,
+      {
+        route: NotificationRoute.Credential,
+      }
+    );
     return results.map((result) => {
       return {
         id: result.id,

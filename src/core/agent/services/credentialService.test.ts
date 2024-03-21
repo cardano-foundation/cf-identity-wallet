@@ -954,6 +954,12 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
 
   test("Must throw 'Credential with given SAID not found on KERIA' when there's no KERI credential", async () => {
     const id = "not-found-id";
+    agent.modules.generalStorage.getCredentialMetadata = jest
+      .fn()
+      .mockReturnValue({
+        id,
+        connectionType: ConnectionType.KERI,
+      });
     agent.modules.signify.getCredentialBySaid = jest
       .fn()
       .mockResolvedValue({ credential: undefined, error: undefined });

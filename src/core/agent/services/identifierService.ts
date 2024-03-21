@@ -20,10 +20,10 @@ import {
 import {
   ConnectionShortDetails,
   ConnectionType,
-  GenericRecordType,
   KeriNotification,
 } from "../agent.types";
 import { AriesAgent } from "../agent";
+import { RecordType } from "../../storage/storage.types";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
   [IdentifierType.KEY]: [0, 1, 2, 3],
@@ -672,16 +672,18 @@ class IdentifierService extends AgentService {
   }
 
   async getUnhandledMultisigIdentifiers(): Promise<KeriNotification[]> {
-    const results = await this.basicStorage.findAllByQuery({
-      type: GenericRecordType.NOTIFICATION_KERI,
-      route: NotificationRoute.MultiSigIcp,
-      $or: [
-        { route: NotificationRoute.MultiSigIcp },
-        {
-          route: NotificationRoute.MultiSigRot,
-        },
-      ],
-    });
+    const results = await this.basicStorage.findAllByQuery(
+      RecordType.NOTIFICATION_KERI,
+      {
+        route: NotificationRoute.MultiSigIcp,
+        $or: [
+          { route: NotificationRoute.MultiSigIcp },
+          {
+            route: NotificationRoute.MultiSigRot,
+          },
+        ],
+      }
+    );
     return results.map((result) => {
       return {
         id: result.id,
