@@ -18,6 +18,7 @@ import {
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
 import { CredentialService } from "../../../core/agent/services";
+import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -33,11 +34,84 @@ jest.mock("../../../core/agent/agent", () => ({
     },
   },
 }));
+
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
     get: jest.fn(),
   },
 }));
+
+const eventEmitter = new EventEmitter();
+
+const agent = jest.mocked({
+  credentials: {
+    acceptOffer: jest.fn(),
+    proposeCredential: jest.fn(),
+    deleteById: jest.fn(),
+    getById: jest.fn(),
+    findOfferMessage: jest.fn(),
+    negotiateOffer: jest.fn(),
+    findAllByQuery: jest.fn(),
+  },
+  connections: {
+    findById: jest.fn(),
+  },
+  events: {
+    on: eventEmitter.on.bind(eventEmitter),
+    emit: jest.fn(),
+  },
+  eventEmitter: {
+    emit: eventEmitter.emit.bind(eventEmitter),
+  },
+  modules: {
+    generalStorage: {
+      getAllCredentialMetadata: jest.fn(),
+      updateCredentialMetadata: jest.fn(),
+      deleteCredentialMetadata: jest.fn(),
+      getCredentialMetadata: jest.fn(),
+      saveCredentialMetadataRecord: jest.fn(),
+      getCredentialMetadataByCredentialRecordId: jest.fn(),
+      getIdentifierMetadata: jest.fn(),
+    },
+  },
+  w3cCredentials: {
+    getCredentialRecordById: jest.fn(),
+  },
+  dids: {
+    getCreatedDids: jest.fn(),
+  },
+  genericRecords: {
+    save: jest.fn(),
+    findAllByQuery: jest.fn(),
+    findById: jest.fn(),
+    deleteById: jest.fn(),
+  },
+});
+const basicStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const signifyApi = jest.mocked({
+  admitIpex: jest.fn(),
+  getNotifications: jest.fn(),
+  markNotification: jest.fn(),
+  getKeriExchange: jest.fn(),
+  getCredentials: jest.fn(),
+  getCredentialBySaid: jest.fn(),
+});
+
+const credentialService = new CredentialService(
+  agent as any as Agent,
+  basicStorage,
+  signifyApi as any as SignifyApi
+);
 
 const connectionMock = connectionsFix[0];
 
@@ -202,62 +276,6 @@ describe("Credential request", () => {
     });
   });
 });
-
-const eventEmitter = new EventEmitter();
-
-const agent = jest.mocked({
-  credentials: {
-    acceptOffer: jest.fn(),
-    proposeCredential: jest.fn(),
-    deleteById: jest.fn(),
-    getById: jest.fn(),
-    findOfferMessage: jest.fn(),
-    negotiateOffer: jest.fn(),
-    findAllByQuery: jest.fn(),
-  },
-  connections: {
-    findById: jest.fn(),
-  },
-  events: {
-    on: eventEmitter.on.bind(eventEmitter),
-    emit: jest.fn(),
-  },
-  eventEmitter: {
-    emit: eventEmitter.emit.bind(eventEmitter),
-  },
-  modules: {
-    generalStorage: {
-      getAllCredentialMetadata: jest.fn(),
-      updateCredentialMetadata: jest.fn(),
-      deleteCredentialMetadata: jest.fn(),
-      getCredentialMetadata: jest.fn(),
-      saveCredentialMetadataRecord: jest.fn(),
-      getCredentialMetadataByCredentialRecordId: jest.fn(),
-      getIdentifierMetadata: jest.fn(),
-    },
-    signify: {
-      admitIpex: jest.fn(),
-      getNotifications: jest.fn(),
-      markNotification: jest.fn(),
-      getKeriExchange: jest.fn(),
-      getCredentials: jest.fn(),
-      getCredentialBySaid: jest.fn(),
-    },
-  },
-  w3cCredentials: {
-    getCredentialRecordById: jest.fn(),
-  },
-  dids: {
-    getCreatedDids: jest.fn(),
-  },
-  genericRecords: {
-    save: jest.fn(),
-    findAllByQuery: jest.fn(),
-    findById: jest.fn(),
-    deleteById: jest.fn(),
-  },
-});
-const credentialService = new CredentialService(agent as any as Agent);
 
 describe("Multi-Sig request", () => {
   const requestDetails = {
