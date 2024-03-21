@@ -4,6 +4,13 @@
   }
 }
 
+.cred-detail-spinner-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .cred-open-animation {
   .card-details-content {
     animation: credExpand 0.7s ease-in-out;
