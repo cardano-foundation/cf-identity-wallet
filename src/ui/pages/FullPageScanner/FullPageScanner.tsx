@@ -16,6 +16,7 @@ import {
   ScannerRefComponent,
 } from "./FullPageScanner.types";
 import { OperationType } from "../../globals/types";
+import "./FullPageScanner.scss";
 
 const FullPageScanner = ({ setShowScan }: FullPageScannerProps) => {
   const dispatch = useAppDispatch();
