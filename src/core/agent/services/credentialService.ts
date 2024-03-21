@@ -156,10 +156,9 @@ class CredentialService extends AgentService {
   ): Promise<W3CCredentialDetails | ACDCDetails> {
     const metadata = await this.getMetadataById(id);
     if (metadata.connectionType === ConnectionType.KERI) {
-      const { acdc, error } =
-        await this.agent.modules.signify.getCredentialBySaid(
-          metadata.credentialRecordId
-        );
+      const { acdc, error } = await this.signifyApi.getCredentialBySaid(
+        metadata.credentialRecordId
+      );
       if (error) {
         throw error;
       }
@@ -514,7 +513,7 @@ class CredentialService extends AgentService {
 
   async acceptKeriAcdc(id: string): Promise<void> {
     const keriNoti = await this.getKeriNotificationRecordById(id);
-    const keriExchange = await this.agent.modules.signify.getKeriExchange(
+    const keriExchange = await this.signifyApi.getKeriExchange(
       keriNoti.a.d as string
     );
     const credentialId = keriExchange.exn.e.acdc.d;
@@ -535,17 +534,16 @@ class CredentialService extends AgentService {
     if (holder && holder.signifyName) {
       holderSignifyName = holder.signifyName;
     } else {
-      const identifierHolder =
-        await this.agent.modules.signify.getIdentifierById(
-          keriExchange.exn.a.i
-        );
+      const identifierHolder = await this.signifyApi.getIdentifierById(
+        keriExchange.exn.a.i
+      );
       holderSignifyName = identifierHolder?.name;
     }
     if (!holderSignifyName) {
       throw new Error(CredentialService.ISSUEE_NOT_FOUND);
     }
 
-    await this.agent.modules.signify.admitIpex(
+    await this.signifyApi.admitIpex(
       keriNoti.a.d as string,
       holderSignifyName,
       keriExchange.exn.i
@@ -568,26 +566,21 @@ class CredentialService extends AgentService {
   }
 
   private async waitForAcdcToAppear(credentialId: string): Promise<any> {
-    let { acdc } = await this.agent.modules.signify.getCredentialBySaid(
-      credentialId
-    );
+    let { acdc } = await this.signifyApi.getCredentialBySaid(credentialId);
     let retryTimes = 0;
     while (!acdc) {
       if (retryTimes > 120) {
         throw new Error(CredentialService.ACDC_NOT_APPEARING);
       }
       await new Promise((resolve) => setTimeout(resolve, 500));
-      acdc = (
-        await this.agent.modules.signify.getCredentialBySaid(credentialId)
-      ).acdc;
+      acdc = (await this.signifyApi.getCredentialBySaid(credentialId)).acdc;
       retryTimes++;
     }
     return acdc;
   }
 
   async syncACDCs() {
-    const signifyCredentials =
-      await this.agent.modules.signify.getCredentials();
+    const signifyCredentials = await this.signifyApi.getCredentials();
     const storedCredentials =
       await this.agent.modules.generalStorage.getAllCredentialMetadata();
     const unSyncedData = signifyCredentials.filter(

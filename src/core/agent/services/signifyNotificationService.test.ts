@@ -1,5 +1,6 @@
 import { Agent } from "@aries-framework/core";
 import { SignifyNotificationService } from "./signifyNotificationService";
+import { SignifyApi } from "../modules/signify/signifyApi";
 
 const agent = jest.mocked({
   modules: {
@@ -44,9 +45,14 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
+const signifyApi = jest.mocked({
+  markNotification: jest.fn(),
+});
+
 const signifyNotificationService = new SignifyNotificationService(
   agent as any as Agent,
-  basicStorage
+  basicStorage,
+  signifyApi as any as SignifyApi
 );
 
 describe("Signify notification service of agent", () => {

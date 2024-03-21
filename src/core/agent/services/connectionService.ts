@@ -134,7 +134,7 @@ class ConnectionService extends AgentService {
           },
         }
       );
-      const operation = await this.agent.modules.signify.resolveOobi(url);
+      const operation = await this.signifyApi.resolveOobi(url);
       const connectionId = operation.response.i;
       await this.createConnectionKeriMetadata(connectionId, {
         alias: operation.alias,
@@ -304,7 +304,7 @@ class ConnectionService extends AgentService {
   ): Promise<void> {
     if (connectionType === ConnectionType.KERI) {
       await this.basicStorage.deleteById(id);
-      await this.agent.modules.signify.deleteContactById(id);
+      await this.signifyApi.deleteContactById(id);
     } else {
       await this.agent.connections.deleteById(id);
     }
@@ -359,7 +359,7 @@ class ConnectionService extends AgentService {
   }
 
   async getKeriOobi(signifyName: string): Promise<string> {
-    return this.agent.modules.signify.getOobi(signifyName);
+    return this.signifyApi.getOobi(signifyName);
   }
 
   private async createConnectionKeriMetadata(
@@ -431,7 +431,7 @@ class ConnectionService extends AgentService {
   }
 
   async syncKeriaContacts() {
-    const signifyContacts = await this.agent.modules.signify.getContacts();
+    const signifyContacts = await this.signifyApi.getContacts();
     const storageContacts = await this.getAllConnectionKeriMetadata();
     const unSyncedData = signifyContacts.filter(
       (contact: KeriContact) =>
@@ -499,7 +499,7 @@ class ConnectionService extends AgentService {
   private async getKeriConnectionDetails(
     id: string
   ): Promise<ConnectionDetails> {
-    const connection = await this.agent.modules.signify.getContactById(id);
+    const connection = await this.signifyApi.getContactById(id);
     return {
       label: connection?.alias,
       id: connection.id,

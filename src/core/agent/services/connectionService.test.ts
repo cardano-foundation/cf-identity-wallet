@@ -17,6 +17,7 @@ import {
   ConnectionStatus,
 } from "../agent.types";
 import { ConnectionService } from "./connectionService";
+import { SignifyApi } from "../modules/signify/signifyApi";
 import { RecordType } from "../../storage/storage.types";
 
 const eventEmitter = new EventEmitter();
@@ -38,12 +39,6 @@ const agent = jest.mocked({
   modules: {
     generalStorage: {
       getCredentialMetadataByConnectionId: jest.fn(),
-    },
-    signify: {
-      resolveOobi: jest.fn(),
-      getContacts: jest.fn(),
-      getOobi: jest.fn(),
-      deleteContactById: jest.fn(),
     },
   },
   receiveMessage: jest.fn(),
@@ -74,9 +69,17 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
+const signifyApi = jest.mocked({
+  resolveOobi: jest.fn(),
+  getContacts: jest.fn(),
+  getOobi: jest.fn(),
+  deleteContactById: jest.fn(),
+});
+
 const connectionService = new ConnectionService(
   agent as any as Agent,
-  basicStorage
+  basicStorage,
+  signifyApi as any as SignifyApi
 );
 
 const oobi = new OutOfBandInvitation({
@@ -345,9 +348,7 @@ describe("Connection service of agent", () => {
         incomingConnectionRecordNoAutoAccept,
         completedConnectionRecord,
       ]);
-    agent.modules.signify.getContacts = jest
-      .fn()
-      .mockResolvedValue(keriContacts);
+    signifyApi.getContacts = jest.fn().mockResolvedValue(keriContacts);
     expect(await connectionService.getConnections()).toEqual([
       {
         id: id1,
@@ -624,9 +625,7 @@ describe("Connection service of agent", () => {
       ConnectionType.KERI
     );
     expect(basicStorage.deleteById).toBeCalledWith(connectionId);
-    expect(agent.modules.signify.deleteContactById).toBeCalledWith(
-      connectionId
-    );
+    expect(signifyApi.deleteContactById).toBeCalledWith(connectionId);
     await connectionService.deleteConnectionById(
       connectionId,
       ConnectionType.DIDCOMM
@@ -656,14 +655,14 @@ describe("Connection service of agent", () => {
   });
 
   test("can receive keri oobi", async () => {
-    agent.modules.signify.resolveOobi.mockImplementation((url) => {
+    signifyApi.resolveOobi.mockImplementation((url) => {
       return { name: url, response: { i: "id" } };
     });
     const oobi =
       "http://127.0.0.1:3902/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
     await connectionService.receiveInvitationFromUrl(oobi);
     // We aren't too concerned with testing the config passed
-    expect(agent.modules.signify.resolveOobi).toBeCalledWith(oobi);
+    expect(signifyApi.resolveOobi).toBeCalledWith(oobi);
   });
 
   test("can get connection keri (short detail view) by id", async () => {
@@ -689,18 +688,16 @@ describe("Connection service of agent", () => {
   });
 
   test("can get KERI OOBI", async () => {
-    agent.modules.signify.getOobi = jest
-      .fn()
-      .mockImplementation((name: string) => {
-        return `${oobiPrefix}${name}`;
-      });
+    signifyApi.getOobi = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}`;
+    });
     const signifyName = "keriuuid";
     const KeriOobi = await connectionService.getKeriOobi(signifyName);
     expect(KeriOobi).toEqual(oobiPrefix + signifyName);
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
-    agent.modules.signify.getContacts = jest.fn().mockReturnValue([
+    signifyApi.getContacts = jest.fn().mockReturnValue([
       {
         id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
         alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",

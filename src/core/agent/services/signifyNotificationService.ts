@@ -9,7 +9,7 @@ class SignifyNotificationService extends AgentService {
   ) {
     // eslint-disable-next-line no-constant-condition
     while (true) {
-      const notifications = await this.agent.modules.signify.getNotifications();
+      const notifications = await this.signifyApi.getNotifications();
       for (const notif of notifications.notes) {
         await this.processNotification(notif, callback);
       }
@@ -34,7 +34,7 @@ class SignifyNotificationService extends AgentService {
     ) {
       const keriNoti = await this.createKeriNotificationRecord(notif);
       callback(keriNoti);
-      await this.agent.modules.signify.markNotification(notif.i);
+      await this.signifyApi.markNotification(notif.i);
     }
   }
 
