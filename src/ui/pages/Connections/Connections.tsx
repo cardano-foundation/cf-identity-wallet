@@ -60,12 +60,12 @@ const Connections = ({
   }, [connectionsCache]);
 
   async function handleProvideQr() {
-    const invitation =
-      await AriesAgent.agent.connections.createMediatorInvitation();
-    const shortUrl = await AriesAgent.agent.connections.getShortenUrl(
-      invitation.invitationUrl
-    );
-    setInvitationLink(shortUrl);
+    // const invitation =
+    //   await AriesAgent.agent.connections.createMediatorInvitation();
+    // const shortUrl = await AriesAgent.agent.connections.getShortenUrl(
+    //   invitation.invitationUrl
+    // );
+    // setInvitationLink(shortUrl);
     setConnectModalIsOpen(false);
   }
 

@@ -120,9 +120,9 @@ const IncomingRequest = () => {
     ) {
       if (incomingRequest.source === ConnectionType.KERI) {
         AriesAgent.agent.credentials.acceptKeriAcdc(incomingRequest.id);
-      // } else {
-      //   AriesAgent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
-      // }
+      } else {
+        // AriesAgent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
+      }
     }
     setTimeout(() => {
       handleReset();
@@ -213,4 +213,4 @@ const IncomingRequest = () => {
   );
 };
 
-// export { IncomingRequest }
+export { IncomingRequest };

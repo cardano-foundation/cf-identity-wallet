@@ -632,19 +632,17 @@ describe("Identifier service of agent", () => {
       icpResult: {},
       name: "name",
     });
-    identifierService.getAllIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          method: IdentifierType.KERI,
-          displayName: "displayName",
-          id: "id",
-          signifyName: "signifyName",
-          createdAt: new Date(),
-          colors: ["#000000", "#000000"],
-          theme: 4,
-        },
-      ]);
+    identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
+      {
+        method: IdentifierType.KERI,
+        displayName: "displayName",
+        id: "id",
+        signifyName: "signifyName",
+        createdAt: new Date(),
+        colors: ["#000000", "#000000"],
+        theme: 4,
+      },
+    ]);
     expect(
       await identifierService.joinMultisig(
         { id: "id", createdAt: new Date(), a: { d: "d" } },
@@ -923,19 +921,17 @@ describe("Identifier service of agent", () => {
       },
       alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
     });
-    identifierService.getAllIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          method: IdentifierType.KERI,
-          displayName: "displayName",
-          id: "id",
-          signifyName: "signifyName",
-          createdAt: new Date(),
-          colors: ["#000000", "#000000"],
-          theme: 4,
-        },
-      ]);
+    identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
+      {
+        method: IdentifierType.KERI,
+        displayName: "displayName",
+        id: "id",
+        signifyName: "signifyName",
+        createdAt: new Date(),
+        colors: ["#000000", "#000000"],
+        theme: 4,
+      },
+    ]);
     const metadata = {
       id: "123456",
       displayName: "John Doe",
@@ -1011,19 +1007,17 @@ describe("Identifier service of agent", () => {
       },
       alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
     });
-    identifierService.getAllAvailableIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          method: IdentifierType.KERI,
-          displayName: "displayName",
-          id: "id",
-          signifyName: "signifyName",
-          createdAt: new Date(),
-          colors: ["#000000", "#000000"],
-          theme: 4,
-        },
-      ]);
+    identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
+      {
+        method: IdentifierType.KERI,
+        displayName: "displayName",
+        id: "id",
+        signifyName: "signifyName",
+        createdAt: new Date(),
+        colors: ["#000000", "#000000"],
+        theme: 4,
+      },
+    ]);
     signifyApi.rotateMultisigAid = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}`, done: false },
       icpResult: {},
@@ -1228,20 +1222,18 @@ describe("Identifier service of agent", () => {
       icpResult: {},
       name: "name",
     });
-    identifierService.getAllAvailableIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          method: IdentifierType.KERI,
-          displayName: "displayName",
-          id: "id",
-          signifyName: "signifyName",
-          createdAt: new Date(),
-          colors: ["#000000", "#000000"],
-          theme: 4,
-          multisigManageAid: "123",
-        },
-      ]);
+    identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
+      {
+        method: IdentifierType.KERI,
+        displayName: "displayName",
+        id: "id",
+        signifyName: "signifyName",
+        createdAt: new Date(),
+        colors: ["#000000", "#000000"],
+        theme: 4,
+        multisigManageAid: "123",
+      },
+    ]);
     expect(
       await identifierService.joinMultisigRotation({
         id: "id",
@@ -1264,19 +1256,17 @@ describe("Identifier service of agent", () => {
       },
     ]);
 
-    identifierService.getAllAvailableIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          method: IdentifierType.KERI,
-          displayName: "displayName",
-          id: "id1",
-          signifyName: "signifyName",
-          createdAt: new Date(),
-          colors: ["#000000", "#000000"],
-          theme: 4,
-        },
-      ]);
+    identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
+      {
+        method: IdentifierType.KERI,
+        displayName: "displayName",
+        id: "id1",
+        signifyName: "signifyName",
+        createdAt: new Date(),
+        colors: ["#000000", "#000000"],
+        theme: 4,
+      },
+    ]);
     await expect(
       identifierService.joinMultisig(
         { id: "id", createdAt: new Date(), a: { d: "d" } },
@@ -1302,19 +1292,17 @@ describe("Identifier service of agent", () => {
       },
     ]);
 
-    identifierService.getAllAvailableIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          method: IdentifierType.KERI,
-          displayName: "displayName",
-          id: "id",
-          signifyName: undefined,
-          createdAt: new Date(),
-          colors: ["#000000", "#000000"],
-          theme: 4,
-        },
-      ]);
+    identifierService.getAllIdentifierMetadata = jest.fn().mockResolvedValue([
+      {
+        method: IdentifierType.KERI,
+        displayName: "displayName",
+        id: "id",
+        signifyName: undefined,
+        createdAt: new Date(),
+        colors: ["#000000", "#000000"],
+        theme: 4,
+      },
+    ]);
     await expect(
       identifierService.joinMultisig(
         { id: "id", createdAt: new Date(), a: { d: "d" } },
@@ -1361,7 +1349,7 @@ describe("Identifier service of agent", () => {
       },
     ]);
 
-    identifierService.getAllAvailableIdentifierMetadata = jest
+    identifierService.getAllIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
@@ -1419,7 +1407,7 @@ describe("Identifier service of agent", () => {
       },
     ]);
 
-    identifierService.getAllAvailableIdentifierMetadata = jest
+    identifierService.getAllIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
@@ -1495,7 +1483,7 @@ describe("Identifier service of agent", () => {
       },
     ]);
 
-    identifierService.getAllAvailableIdentifierMetadata = jest
+    identifierService.getAllIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
@@ -1562,7 +1550,7 @@ describe("Identifier service of agent", () => {
       },
     ]);
 
-    identifierService.getAllAvailableIdentifierMetadata = jest
+    identifierService.getAllIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([identifierMetadata]);
 

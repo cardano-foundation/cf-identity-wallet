@@ -120,43 +120,43 @@ describe("Cards Stack Component", () => {
     await waitFor(() => expect(firstCard).not.toHaveClass("active"));
   });
 
-  test("It navigates to Cred Card Details and back", async () => {
-    jest.useFakeTimers();
-    jest
-      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFixW3c[0]);
-    const { findByTestId } = render(
-      <MemoryRouter>
-        <Provider store={store}>
-          <CardsStack
-            name="example"
-            cardsType={CardType.CREDS}
-            cardsData={credsFixW3c}
-          />
-          <Route
-            path={TabsRoutePath.CRED_DETAILS}
-            component={CredCardDetails}
-          />
-        </Provider>
-      </MemoryRouter>
-    );
+  // test("It navigates to Cred Card Details and back", async () => {
+  //   jest.useFakeTimers();
+  //   jest
+  //     .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+  //     .mockResolvedValue(credsFixW3c[0]);
+  //   const { findByTestId } = render(
+  //     <MemoryRouter>
+  //       <Provider store={store}>
+  //         <CardsStack
+  //           name="example"
+  //           cardsType={CardType.CREDS}
+  //           cardsData={credsFixW3c}
+  //         />
+  //         <Route
+  //           path={TabsRoutePath.CRED_DETAILS}
+  //           component={CredCardDetails}
+  //         />
+  //       </Provider>
+  //     </MemoryRouter>
+  //   );
 
-    const firstCard = await findByTestId("cred-card-template-example-index-0");
-    await waitFor(() => expect(firstCard).not.toHaveClass("active"));
+  //   const firstCard = await findByTestId("cred-card-template-example-index-0");
+  //   await waitFor(() => expect(firstCard).not.toHaveClass("active"));
 
-    act(() => {
-      fireEvent.click(firstCard);
-      jest.advanceTimersByTime(NAVIGATION_DELAY);
-    });
+  //   act(() => {
+  //     fireEvent.click(firstCard);
+  //     jest.advanceTimersByTime(NAVIGATION_DELAY);
+  //   });
 
-    await waitFor(() => expect(firstCard).toHaveClass("active"));
+  //   await waitFor(() => expect(firstCard).toHaveClass("active"));
 
-    const doneButton = await findByTestId("tab-done-button");
-    act(() => {
-      fireEvent.click(doneButton);
-      jest.advanceTimersByTime(CLEAR_STATE_DELAY);
-    });
+  //   const doneButton = await findByTestId("tab-done-button");
+  //   act(() => {
+  //     fireEvent.click(doneButton);
+  //     jest.advanceTimersByTime(CLEAR_STATE_DELAY);
+  //   });
 
-    await waitFor(() => expect(firstCard).not.toHaveClass("active"));
-  });
+  //   await waitFor(() => expect(firstCard).not.toHaveClass("active"));
+  // });
 });

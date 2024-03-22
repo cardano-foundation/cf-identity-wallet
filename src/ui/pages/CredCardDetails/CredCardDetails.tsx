@@ -85,16 +85,16 @@ const CredCardDetails = () => {
       await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
     setCardData(cardDetails);
 
-    if (cardDetails.connectionType === ConnectionType.DIDCOMM) {
-      const connectionDetails =
-        cardDetails.connectionId &&
-        (await AriesAgent.agent.connections?.getConnectionById(
-          cardDetails.connectionId
-        ));
-      if (connectionDetails) {
-        setConnectionDetails(connectionDetails);
-      }
-    }
+    // if (cardDetails.connectionType === ConnectionType.DIDCOMM) {
+    //   const connectionDetails =
+    //     cardDetails.connectionId &&
+    //     (await AriesAgent.agent.connections?.getConnectionById(
+    //       cardDetails.connectionId
+    //     ));
+    //   if (connectionDetails) {
+    //     setConnectionDetails(connectionDetails);
+    //   }
+    // }
   };
 
   const handleDone = () => {
