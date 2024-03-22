@@ -100,7 +100,7 @@ const VerifyPassword = ({
     }
 
     const hint = (
-      await AriesAgent.agent.genericRecords.findById(MiscRecordId.OP_PASS_HINT)
+      await AriesAgent.agent.basicStorages.findById(MiscRecordId.OP_PASS_HINT)
     )?.content?.value;
     if (hint) {
       setStoredHint(`${hint}`);

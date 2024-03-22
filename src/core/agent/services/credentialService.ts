@@ -1,3 +1,4 @@
+import { plainToInstance } from "class-transformer";
 import {
   KeriNotification,
   AcdcKeriStateChangedEvent,
@@ -17,9 +18,8 @@ import {
 } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { CredentialMetadataRecord } from "../modules/generalStorage/repositories/credentialMetadataRecord";
-import { BasicRecord } from "../../storage/storage.types";
+import { BasicRecord , RecordType } from "../../storage/storage.types";
 import { AriesAgent } from "../agent";
-import { RecordType } from "../../storage/storage.types";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -125,7 +125,6 @@ class CredentialService extends AgentService {
     //With KERI, we only soft delete because we need to sync with KERIA. This will prevent re-sync deleted records.
     if (metadata.connectionType === ConnectionType.KERI) {
       await this.updateCredentialMetadata(id, {
-        ...metadata,
         isDeleted: true,
       });
     } else {
@@ -321,10 +320,12 @@ class CredentialService extends AgentService {
   }
 
   async getAllCredentialMetadata(isArchived?: boolean) {
-    const basicRecords = await this.basicStorage.findAllByQuery({
-      type: RecordType.CREDENTIAL_METADATA_RECORD,
-      ...(isArchived !== undefined ? { isArchived } : {}),
-    });
+    const basicRecords = await this.basicStorage.findAllByQuery(
+      RecordType.CREDENTIAL_METADATA_RECORD,
+      {
+        ...(isArchived !== undefined ? { isArchived } : {}),
+      }
+    );
     return basicRecords.map((bc) => {
       return this.parseCredentialMetadataRecord(bc);
     });
@@ -336,29 +337,30 @@ class CredentialService extends AgentService {
 
   async getCredentialMetadata(id: string) {
     const basicRecord = await this.basicStorage.findById(id);
-    if (!basicRecord) {
-      throw new Error(); // TODO
-    }
     return this.parseCredentialMetadataRecord(basicRecord);
   }
 
   async getCredentialMetadataByCredentialRecordId(credentialId: string) {
-    const basicRecords = await this.basicStorage.findAllByQuery({
-      type: RecordType.CREDENTIAL_METADATA_RECORD,
-      credentialId,
-    });
+    const basicRecords = await this.basicStorage.findAllByQuery(
+      RecordType.CREDENTIAL_METADATA_RECORD,
+      {
+        credentialId,
+      }
+    );
     const basicRecord = basicRecords[0];
     if (!basicRecord) {
-      throw new Error(); // TODO
+      throw new Error(CredentialService.CREDENTIAL_NOT_FOUND);
     }
     return this.parseCredentialMetadataRecord(basicRecord);
   }
 
   async getCredentialMetadataByConnectionId(connectionId: string) {
-    const basicRecords = await this.basicStorage.findAllByQuery({
-      type: RecordType.CREDENTIAL_METADATA_RECORD,
-      connectionId,
-    });
+    const basicRecords = await this.basicStorage.findAllByQuery(
+      RecordType.CREDENTIAL_METADATA_RECORD,
+      {
+        connectionId,
+      }
+    );
     return basicRecords.map((bc) => {
       return this.parseCredentialMetadataRecord(bc);
     });
@@ -373,32 +375,59 @@ class CredentialService extends AgentService {
       content: record.toJSON(),
       tags: {
         ...record.getTags(),
-        type: RecordType.CREDENTIAL_METADATA_RECORD,
       },
+      type: RecordType.CREDENTIAL_METADATA_RECORD,
     });
   }
 
   async updateCredentialMetadata(
     id: string,
-    metadata: Partial<CredentialMetadataRecord>
+    data: Partial<
+      Pick<
+        CredentialMetadataRecord,
+        | "isArchived"
+        | "colors"
+        | "status"
+        | "credentialType"
+        | "isDeleted"
+        | "cachedDetails"
+      >
+    >
   ) {
-    let identifierMetadataRecord = await this.getMetadataById(id);
-    identifierMetadataRecord = {
-      ...identifierMetadataRecord.toJSON(),
-      ...metadata,
-    } as CredentialMetadataRecord;
-    const basicRecord = new BasicRecord({
-      id: identifierMetadataRecord.id,
-      content: identifierMetadataRecord.toJSON(),
-      tags: identifierMetadataRecord.getTags(),
-    });
-    await this.basicStorage.save(basicRecord);
+    const record = await this.getMetadataById(id);
+    if (record) {
+      if (data.colors) record.colors = data.colors;
+      if (data.status) record.status = data.status;
+      if (data.credentialType) record.credentialType = data.credentialType;
+      if (data.isArchived !== undefined) record.isArchived = data.isArchived;
+      if (data.isDeleted !== undefined) record.isDeleted = data.isDeleted;
+      if (data.cachedDetails) record.cachedDetails = data.cachedDetails;
+      const basicRecord = new BasicRecord({
+        id: record.id,
+        content: record.toJSON(),
+        tags: record.getTags(),
+        type: RecordType.CREDENTIAL_METADATA_RECORD,
+      });
+      await this.basicStorage.update(basicRecord);
+    }
   }
 
   private parseCredentialMetadataRecord(
     basicRecord: BasicRecord
   ): CredentialMetadataRecord {
-    return basicRecord.content as any as CredentialMetadataRecord;
+    const instance = plainToInstance(
+      CredentialMetadataRecord,
+      basicRecord.content,
+      {
+        exposeDefaultValues: true,
+      }
+    );
+    instance.createdAt = new Date(instance.createdAt);
+    instance.updatedAt = instance.updatedAt
+      ? new Date(instance.createdAt)
+      : undefined;
+    instance.replaceTags(basicRecord.getTags());
+    return instance;
   }
 }
 

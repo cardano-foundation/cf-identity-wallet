@@ -5,7 +5,7 @@ import {
   IdentifierService,
 } from "./services";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
-import { BasicStoragesApi } from "../storage/storage.types";
+import { StorageApi } from "../storage/storage.types";
 import { SqliteStorage } from "../storage/sqliteStorage";
 import { IonicStorage } from "../storage/ionicStorage";
 import { SignifyApi } from "./modules/signify/signifyApi";
@@ -20,7 +20,7 @@ const config = {
 };
 class AriesAgent {
   private static instance: AriesAgent;
-  private basicRecordStorage!: BasicStoragesApi;
+  private basicRecordStorage!: StorageApi;
   private signifyApi!: SignifyApi;
   static ready = false;
 
@@ -60,7 +60,7 @@ class AriesAgent {
     return this.credentialService;
   }
 
-  get genericRecords() {
+  get basicStorages() {
     return this.basicRecordStorage;
   }
 

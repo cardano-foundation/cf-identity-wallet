@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
+import { instanceToPlain } from "class-transformer";
 
 type Tags = Record<string | number, unknown>;
 abstract class BaseRecord {
@@ -30,6 +31,12 @@ abstract class BaseRecord {
   replaceTags(tags: Tags & Partial<Tags>) {
     this._tags = tags;
   }
+
+  toJSON(): Record<string, unknown> {
+    return instanceToPlain(this, {
+      exposeDefaultValues: true,
+    });
+  }
 }
 
 interface BasicRecordStorageProps {
@@ -51,7 +58,8 @@ enum RecordType {
   CONNECTION_KERI_METADATA = "ConnectionKeriMetadata",
   NOTIFICATION_KERI = "NotificationKeri",
   CREDENTIAL_METADATA_RECORD = "CredentialMetadataRecord",
-  IDENTIFIER_METADATA_RECORD = "IdentifierMetadataRecord"
+  IDENTIFIER_METADATA_RECORD = "IdentifierMetadataRecord",
+  OP_PASS_HINT = "OpPassHint",
 }
 
 class BasicRecord extends BaseRecord {
@@ -89,7 +97,7 @@ interface StorageApi {
   delete(record: BasicRecord): Promise<void>;
   deleteById(id: string): Promise<void>;
   update(record: BasicRecord): Promise<void>;
-  findById(id: string): Promise<BasicRecord | null>;
+  findById(id: string): Promise<BasicRecord>;
   findAllByQuery(
     type: RecordType,
     query: Query<BasicRecord>
