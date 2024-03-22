@@ -5,6 +5,20 @@ enum IdentifierType {
   KERI = "keri",
 }
 
+interface groupMetadata {
+  groupId: string;
+  groupInitiator: boolean;
+  groupCreated: boolean;
+}
+
+interface createIdentifierInputs {
+  displayName: string;
+  method: IdentifierType;
+  colors: [string, string];
+  theme: number;
+  groupMetadata?: groupMetadata;
+}
+
 interface IdentifierShortDetails {
   id: string;
   method: IdentifierType;
@@ -14,6 +28,7 @@ interface IdentifierShortDetails {
   colors: [string, string];
   theme: number;
   isPending: boolean;
+  groupMetadata?: groupMetadata;
 }
 
 type GetIdentifierResult =
@@ -54,4 +69,5 @@ export type {
   KERIDetails,
   GetIdentifierResult,
   MultiSigIcpRequestDetails,
+  createIdentifierInputs,
 };

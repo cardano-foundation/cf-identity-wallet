@@ -62,6 +62,28 @@ export class GeneralStorageApi {
     return this.identifierMetadataRepository.findById(this.agentContext, id);
   }
 
+  async getKeriIdentifierMetadataByName(
+    signifyName: string
+  ): Promise<IdentifierMetadataRecord | null> {
+    return this.identifierMetadataRepository.findSingleByQuery(
+      this.agentContext,
+      {
+        signifyName,
+      }
+    );
+  }
+
+  async getKeriIdentifierMetadataByGroupId(
+    groupId: string
+  ): Promise<IdentifierMetadataRecord | null> {
+    return this.identifierMetadataRepository.findSingleByQuery(
+      this.agentContext,
+      {
+        groupId,
+      }
+    );
+  }
+
   async archiveIdentifierMetadata(id: string): Promise<void> {
     return this.updateIdentifierMetadata(id, { isArchived: true });
   }

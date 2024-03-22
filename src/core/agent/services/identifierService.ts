@@ -67,6 +67,13 @@ class IdentifierService extends AgentService {
     "Cannot join multi-sig inception as we do not control any member AID of the multi-sig";
   static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
     "Multi-sig join request contains unknown AIDs (not connected)";
+  static readonly MISSING_GROUP_METADATA =
+    "Metadata record for group is missing";
+  static readonly ONLY_ALLOW_LINKED_CONTACTS =
+    "Only allowed to create multi-sig using contacts with a matching groupId to our member identifier";
+  static readonly ONLY_ALLOW_GROUP_INITIATOR =
+    "Only the group initiator can create the multisig";
+  static readonly GROUP_ALREADY_EXISTs = "Group already exists";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -89,6 +96,7 @@ class IdentifierService extends AgentService {
         colors: metadata.colors,
         theme: metadata.theme,
         isPending: metadata.isPending ?? false,
+        groupMetadata: metadata.groupMetadata,
       });
     }
     return identifiers;
@@ -153,6 +161,50 @@ class IdentifierService extends AgentService {
     }
   }
 
+  async getKeriIdentifierBySignifyName(
+    signifyName: string
+  ): Promise<IdentifierShortDetails> {
+    const metadata =
+      await this.agent.modules.generalStorage.getKeriIdentifierMetadataByName(
+        signifyName
+      );
+    if (!metadata) {
+      throw new Error(IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING);
+    }
+    return {
+      method: metadata.method,
+      displayName: metadata.displayName,
+      id: metadata.id,
+      signifyName: metadata.signifyName,
+      createdAtUTC: metadata.createdAt.toISOString(),
+      colors: metadata.colors,
+      theme: metadata.theme,
+      isPending: metadata.isPending ?? false,
+    };
+  }
+
+  async getKeriIdentifierByGroupId(
+    groupId: string
+  ): Promise<IdentifierShortDetails | null> {
+    const metadata =
+      await this.agent.modules.generalStorage.getKeriIdentifierMetadataByGroupId(
+        groupId
+      );
+    if (!metadata) {
+      return null;
+    }
+    return {
+      method: metadata.method,
+      displayName: metadata.displayName,
+      id: metadata.id,
+      signifyName: metadata.signifyName,
+      createdAtUTC: metadata.createdAt.toISOString(),
+      colors: metadata.colors,
+      theme: metadata.theme,
+      isPending: metadata.isPending ?? false,
+    };
+  }
+
   //Update multisig's status
   async checkMultisigComplete(identifier: string): Promise<boolean> {
     const metadata = await this.getMetadataById(identifier);
@@ -173,7 +225,7 @@ class IdentifierService extends AgentService {
       await this.createIdentifierMetadataRecord({
         id: identifier,
         ...metadata,
-        signifyName: signifyName,
+        signifyName,
       });
       return identifier;
     }
@@ -351,14 +403,25 @@ class IdentifierService extends AgentService {
   async createMultisig(
     ourIdentifier: string,
     otherIdentifierContacts: ConnectionShortDetails[],
-    meta: Pick<
-      IdentifierMetadataRecordProps,
-      "displayName" | "colors" | "theme"
-    >,
     threshold: number,
     delegateContact?: ConnectionShortDetails
   ): Promise<string | undefined> {
     const ourMetadata = await this.getMetadataById(ourIdentifier);
+    if (!ourMetadata.groupMetadata) {
+      throw new Error(IdentifierService.MISSING_GROUP_METADATA);
+    }
+    if (!ourMetadata.groupMetadata.groupInitiator) {
+      throw new Error(IdentifierService.ONLY_ALLOW_GROUP_INITIATOR);
+    }
+    if (ourMetadata.groupMetadata.groupCreated) {
+      throw new Error(IdentifierService.GROUP_ALREADY_EXISTs);
+    }
+    const notLinkedContacts = otherIdentifierContacts.filter(
+      (contact) => contact.groupId !== ourMetadata.groupMetadata?.groupId
+    );
+    if (notLinkedContacts.length) {
+      throw new Error(IdentifierService.ONLY_ALLOW_LINKED_CONTACTS);
+    }
     this.validIdentifierMetadata(ourMetadata);
     const ourAid = (await this.signifyApi.getIdentifierByName(
       ourMetadata.signifyName as string
@@ -400,15 +463,17 @@ class IdentifierService extends AgentService {
     }
     await this.createIdentifierMetadataRecord({
       id: multisigId,
-      displayName: meta.displayName,
+      displayName: ourMetadata.displayName,
       method: IdentifierType.KERI,
-      colors: meta.colors,
-      theme: meta.theme,
+      colors: ourMetadata.colors,
+      theme: ourMetadata.theme,
       signifyName,
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
       isPending,
       multisigManageAid: ourIdentifier,
     });
+    ourMetadata.groupMetadata.groupCreated = true;
+    await this.updateIdentifier(ourMetadata.id, ourMetadata);
     return multisigId;
   }
 
@@ -589,24 +654,26 @@ class IdentifierService extends AgentService {
   }
 
   async joinMultisig(
-    notification: KeriNotification,
+    notificationId: string,
+    notificationSaid: string,
     meta: Pick<
       IdentifierMetadataRecordProps,
       "displayName" | "colors" | "theme"
     >
   ): Promise<string | undefined> {
     // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
-    const msgSaid = notification.a.d as string;
-    const hasJoined = await this.hasJoinedMultisig(msgSaid);
+    const hasJoined = await this.hasJoinedMultisig(notificationSaid);
     if (hasJoined) {
-      await this.basicStorage.deleteById(notification.id);
+      await this.basicStorage.deleteById(notificationId);
       return;
     }
     const icpMsg: MultiSigExnMessage[] =
-      await this.signifyApi.getMultisigMessageBySaid(msgSaid);
+      await this.signifyApi.getMultisigMessageBySaid(notificationSaid);
 
     if (!icpMsg.length) {
-      throw new Error(`${IdentifierService.EXN_MESSAGE_NOT_FOUND} ${msgSaid}`);
+      throw new Error(
+        `${IdentifierService.EXN_MESSAGE_NOT_FOUND} ${notificationSaid}`
+      );
     }
     const exn = icpMsg[0].exn;
     const smids = exn.a.smids;
@@ -623,12 +690,15 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
 
+    if (!identifier.groupMetadata) {
+      throw new Error(IdentifierService.MISSING_GROUP_METADATA);
+    }
     const aid = await this.signifyApi.getIdentifierByName(
       identifier?.signifyName
     );
     const signifyName = utils.uuid();
     const res = await this.signifyApi.joinMultisig(exn, aid, signifyName);
-    await this.basicStorage.deleteById(notification.id);
+    await this.basicStorage.deleteById(notificationId);
     const multisigId = res.op.name.split(".")[1];
     await this.createIdentifierMetadataRecord({
       id: multisigId,
@@ -641,6 +711,8 @@ class IdentifierService extends AgentService {
       isPending: res.op.done ? false : true, //this will be updated once the operation is done
       multisigManageAid: identifier.id,
     });
+    identifier.groupMetadata.groupCreated = true;
+    await this.updateIdentifier(identifier.id, identifier);
     return multisigId;
   }
 

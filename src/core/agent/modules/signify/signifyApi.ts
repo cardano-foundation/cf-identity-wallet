@@ -151,10 +151,13 @@ export class SignifyApi {
     return this.signifyClient.identifiers().get(name);
   }
 
-  async getOobi(name: string): Promise<string> {
+  async getOobi(name: string, groupId?: string): Promise<string> {
     const result = await this.signifyClient
       .oobis()
       .get(name, SignifyApi.DEFAULT_ROLE);
+    if (groupId) {
+      return `${result.oobis[0]}?groupId=${groupId}`;
+    }
     return result.oobis[0];
   }
 

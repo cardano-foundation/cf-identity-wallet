@@ -49,6 +49,7 @@ interface ConnectionShortDetails {
   status: ConnectionStatus;
   type?: ConnectionType;
   oobi?: string;
+  groupId?: string;
 }
 
 type ConnectionNoteDetails = {
@@ -106,6 +107,15 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
+enum KeriConnectionType {
+  NORMAL = "NORMAL",
+  MULTI_SIG = "MULTI_SIG",
+}
+
+type OobiScan =
+  | { type: KeriConnectionType.NORMAL }
+  | { type: KeriConnectionType.MULTI_SIG; groupId: string };
+
 interface KeriaNotificationMarker {
   nextIndex: number;
   lastNotificationId: string;
@@ -120,6 +130,7 @@ export {
   CredentialType,
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
+  KeriConnectionType,
 };
 export type {
   CryptoAccountRecordShortDetails,
@@ -131,5 +142,6 @@ export type {
   ConnectionKeriStateChangedEvent,
   KeriNotification,
   AcdcKeriStateChangedEvent,
+  OobiScan,
   KeriaNotificationMarker,
 };

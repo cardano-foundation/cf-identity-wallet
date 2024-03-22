@@ -26,6 +26,8 @@ const agent = jest.mocked({
       deleteIdentifierMetadata: jest.fn(),
       updateIdentifierMetadata: jest.fn(),
       getKeriIdentifiersMetadata: jest.fn(),
+      getKeriIdentifierMetadataByName: jest.fn(),
+      getKeriIdentifierMetadataByGroupId: jest.fn(),
     },
   },
   dids: {
@@ -109,6 +111,12 @@ const archivedMetadataRecord = new IdentifierMetadataRecord({
   theme: 0,
 });
 
+const groupMetadata = {
+  groupId: "group-id",
+  groupInitiator: true,
+  groupCreated: false,
+};
+
 const keriMetadataRecordProps = {
   id: "aidHere",
   displayName: "Identifier 2",
@@ -117,6 +125,7 @@ const keriMetadataRecordProps = {
   signifyName: "uuid-here",
   createdAt: now,
   theme: 0,
+  groupMetadata,
 };
 const keriMetadataRecord = new IdentifierMetadataRecord(
   keriMetadataRecordProps
@@ -168,6 +177,7 @@ describe("Identifier service of agent", () => {
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
+        groupMetadata: undefined,
       },
       {
         id: keriMetadataRecord.id,
@@ -178,6 +188,7 @@ describe("Identifier service of agent", () => {
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
+        groupMetadata,
       },
     ]);
   });
@@ -196,6 +207,7 @@ describe("Identifier service of agent", () => {
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
+        groupMetadata: undefined,
       },
       {
         id: keriMetadataRecord.id,
@@ -206,6 +218,7 @@ describe("Identifier service of agent", () => {
         createdAtUTC: nowISO,
         theme: 0,
         isPending: false,
+        groupMetadata,
       },
     ]);
   });
@@ -702,18 +715,13 @@ describe("Identifier service of agent", () => {
         status: ConnectionStatus.CONFIRMED,
         type: ConnectionType.KERI,
         connectionDate: new Date().toISOString(),
+        groupId: "group-id",
       },
     ];
-    const metadata = {
-      theme: 4,
-      colors: ["#000000", "#000000"],
-      displayName: "Multisig",
-    };
     expect(
       await identifierService.createMultisig(
         creatorIdentifier,
         otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
         otherIdentifiers.length + 1
       )
     ).toBe(multisigIdentifier);
@@ -723,6 +731,7 @@ describe("Identifier service of agent", () => {
       expect.objectContaining({ id: multisigIdentifier, isPending: true })
     );
 
+    (keriMetadataRecord.groupMetadata as any).groupCreated = false;
     signifyApi.createMultisig = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}1`, done: false },
       icpResult: {},
@@ -732,7 +741,6 @@ describe("Identifier service of agent", () => {
       await identifierService.createMultisig(
         creatorIdentifier,
         otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
         1
       )
     ).toBe(`${multisigIdentifier}1`);
@@ -745,6 +753,7 @@ describe("Identifier service of agent", () => {
       })
     );
 
+    (keriMetadataRecord.groupMetadata as any).groupCreated = false;
     signifyApi.createMultisig = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}2`, done: true },
       icpResult: {},
@@ -754,7 +763,6 @@ describe("Identifier service of agent", () => {
       await identifierService.createMultisig(
         creatorIdentifier,
         otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
         2
       )
     ).toBe(`${multisigIdentifier}2`);
@@ -767,6 +775,7 @@ describe("Identifier service of agent", () => {
       })
     );
 
+    (keriMetadataRecord.groupMetadata as any).groupCreated = false;
     const invalidOtherIdentifiers = [
       {
         id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
@@ -780,7 +789,6 @@ describe("Identifier service of agent", () => {
       identifierService.createMultisig(
         creatorIdentifier,
         invalidOtherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
         invalidOtherIdentifiers.length + 1
       )
     ).rejects.toThrowError();
@@ -823,6 +831,7 @@ describe("Identifier service of agent", () => {
         status: ConnectionStatus.CONFIRMED,
         type: ConnectionType.KERI,
         connectionDate: new Date().toISOString(),
+        groupId: "group-id",
       },
     ];
 
@@ -834,16 +843,10 @@ describe("Identifier service of agent", () => {
       type: ConnectionType.KERI,
       connectionDate: new Date().toISOString(),
     };
-    const metadata = {
-      theme: 4,
-      colors: ["#000000", "#000000"],
-      displayName: "Multisig",
-    };
     expect(
       await identifierService.createMultisig(
         creatorIdentifier,
         otherIdentifiers,
-        metadata as IdentifierMetadataRecordProps,
         otherIdentifiers.length + 1,
         delegatorContact
       )
@@ -873,6 +876,11 @@ describe("Identifier service of agent", () => {
 
   test("can join the multisig inception", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue({
+        signifyName: "name",
+      });
     basicStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
@@ -906,31 +914,26 @@ describe("Identifier service of agent", () => {
           createdAt: new Date(),
           colors: ["#000000", "#000000"],
           theme: 4,
+          groupMetadata,
         },
       ]);
     expect(
-      await identifierService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 4,
-          colors: ["#000000", "#000000"],
-          displayName: "Multisig",
-        }
-      )
+      await identifierService.joinMultisig("id", "d", {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      })
     ).toBe(multisigIdentifier);
   });
 
   test("cannot join multisig by notification if exn messages are missing", async () => {
     signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([]);
     await expect(
-      identifierService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 4,
-          colors: ["#000000", "#000000"],
-          displayName: "Multisig",
-        }
-      )
+      identifierService.joinMultisig("id", "d", {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      })
     ).rejects.toThrowError();
   });
 
@@ -1550,14 +1553,11 @@ describe("Identifier service of agent", () => {
         },
       ]);
     await expect(
-      identifierService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 4,
-          colors: ["#000000", "#000000"],
-          displayName: "Multisig",
-        }
-      )
+      identifierService.joinMultisig("id", "d", {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      })
     ).rejects.toThrowError(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
   });
 
@@ -1588,14 +1588,11 @@ describe("Identifier service of agent", () => {
         },
       ]);
     await expect(
-      identifierService.joinMultisig(
-        { id: "id", createdAt: new Date(), a: { d: "d" } },
-        {
-          theme: 4,
-          colors: ["#000000", "#000000"],
-          displayName: "Multisig",
-        }
-      )
+      identifierService.joinMultisig("id", "d", {
+        theme: 4,
+        colors: ["#000000", "#000000"],
+        displayName: "Multisig",
+      })
     ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
   });
 
@@ -1922,5 +1919,190 @@ describe("Identifier service of agent", () => {
     ).rejects.toThrowError(
       `${IdentifierService.EXN_MESSAGE_NOT_FOUND} EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW`
     );
+  });
+
+  test("Can get KERI identifier by Signify name", async () => {
+    agent.modules.generalStorage.getKeriIdentifierMetadataByName = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    expect(
+      await identifierService.getKeriIdentifierBySignifyName(
+        keriMetadataRecord.id
+      )
+    ).toStrictEqual({
+      method: keriMetadataRecord.method,
+      displayName: keriMetadataRecord.displayName,
+      id: keriMetadataRecord.id,
+      signifyName: keriMetadataRecord.signifyName,
+      createdAtUTC: keriMetadataRecord.createdAt.toISOString(),
+      colors: keriMetadataRecord.colors,
+      theme: keriMetadataRecord.theme,
+      isPending: keriMetadataRecord.isPending ?? false,
+    });
+  });
+
+  test("Should throw an error if there is no identifier matches the signify name", async () => {
+    agent.modules.generalStorage.getKeriIdentifierMetadataByName = jest
+      .fn()
+      .mockResolvedValue(null);
+    await expect(
+      identifierService.getKeriIdentifierBySignifyName(keriMetadataRecord.id)
+    ).rejects.toThrowError(
+      IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING
+    );
+  });
+
+  test("Can get KERI identifier by group id", async () => {
+    agent.modules.generalStorage.getKeriIdentifierMetadataByGroupId = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    expect(
+      await identifierService.getKeriIdentifierByGroupId(
+        keriMetadataRecord.groupMetadata?.groupId as string
+      )
+    ).toStrictEqual({
+      method: keriMetadataRecord.method,
+      displayName: keriMetadataRecord.displayName,
+      id: keriMetadataRecord.id,
+      signifyName: keriMetadataRecord.signifyName,
+      createdAtUTC: keriMetadataRecord.createdAt.toISOString(),
+      colors: keriMetadataRecord.colors,
+      theme: keriMetadataRecord.theme,
+      isPending: keriMetadataRecord.isPending ?? false,
+    });
+    /**null result */
+    agent.modules.generalStorage.getKeriIdentifierMetadataByGroupId = jest
+      .fn()
+      .mockResolvedValue(null);
+    expect(
+      await identifierService.getKeriIdentifierByGroupId(
+        keriMetadataRecord.groupMetadata?.groupId as string
+      )
+    ).toStrictEqual(null);
+  });
+
+  test("Should throw errors when create KERI multisigs with invalid identifier", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const identifierMetaData = {
+      id: "creatorIdentifier",
+      displayName: "Identifier 2",
+      colors,
+      method: IdentifierType.KERI,
+      signifyName: "uuid-here",
+      createdAt: now,
+      theme: 0,
+    };
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(
+        new IdentifierMetadataRecord({
+          ...identifierMetaData,
+          groupMetadata: undefined,
+        })
+      );
+    const otherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.KERI,
+        connectionDate: new Date().toISOString(),
+        groupId: "group-id",
+      },
+    ];
+    /**Identifier doesn't have groupMetadata */
+    await expect(
+      identifierService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        otherIdentifiers.length + 1
+      )
+    ).rejects.toThrowError(IdentifierService.MISSING_GROUP_METADATA);
+
+    /**Identifier's group is already created */
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(
+        new IdentifierMetadataRecord({
+          ...identifierMetaData,
+          groupMetadata: {
+            groupId: "123",
+            groupCreated: true,
+            groupInitiator: true,
+          },
+        })
+      );
+    await expect(
+      identifierService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        otherIdentifiers.length + 1
+      )
+    ).rejects.toThrowError(IdentifierService.GROUP_ALREADY_EXISTs);
+
+    /**Identifier's not groupInitiator */
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(
+        new IdentifierMetadataRecord({
+          ...identifierMetaData,
+          groupMetadata: {
+            groupId: "123",
+            groupCreated: false,
+            groupInitiator: false,
+          },
+        })
+      );
+    await expect(
+      identifierService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        otherIdentifiers.length + 1
+      )
+    ).rejects.toThrowError(IdentifierService.ONLY_ALLOW_GROUP_INITIATOR);
+  });
+
+  test("Should throw errors when create KERI multisigs with invalid contacts", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const identifierMetaData = {
+      id: "creatorIdentifier",
+      displayName: "Identifier 2",
+      colors,
+      method: IdentifierType.KERI,
+      signifyName: "uuid-here",
+      createdAt: now,
+      theme: 0,
+    };
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(
+        new IdentifierMetadataRecord({
+          ...identifierMetaData,
+          groupMetadata: {
+            groupCreated: false,
+            groupInitiator: true,
+            groupId: "not-group-id",
+          },
+        })
+      );
+    const otherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.KERI,
+        connectionDate: new Date().toISOString(),
+        groupId: "group-id",
+      },
+    ];
+    await expect(
+      identifierService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        otherIdentifiers.length + 1
+      )
+    ).rejects.toThrowError(IdentifierService.ONLY_ALLOW_LINKED_CONTACTS);
   });
 });

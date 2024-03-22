@@ -43,7 +43,8 @@ const MultiSigRequestStageTwo = ({
       // Do some error thing here... maybe it's just a TODO
     } else {
       const multisigId = await AriesAgent.agent.identifiers.joinMultisig(
-        requestData.event,
+        requestData.event.id,
+        requestData.event.a.d as string,
         {
           theme: selectedTheme,
           // @TODO - sdisalvo: Colors will need to be removed

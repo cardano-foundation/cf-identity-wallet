@@ -1,6 +1,12 @@
 import { BaseRecord } from "@aries-framework/core";
 import { IdentifierType } from "../../../services/identifierService.types";
 
+interface groupMetadata {
+  groupId: string;
+  groupInitiator: boolean;
+  groupCreated: boolean;
+}
+
 interface IdentifierMetadataRecordProps {
   id: string;
   displayName: string;
@@ -14,6 +20,7 @@ interface IdentifierMetadataRecordProps {
   theme: number;
   signifyOpName?: string;
   multisigManageAid?: string;
+  groupMetadata?: groupMetadata;
 }
 
 class IdentifierMetadataRecord
@@ -30,6 +37,7 @@ class IdentifierMetadataRecord
   signifyName?: string | undefined;
   theme!: number;
   multisigManageAid?: string | undefined;
+  groupMetadata?: groupMetadata;
 
   static readonly type = "IdentifierMetadataRecord";
   readonly type = IdentifierMetadataRecord.type;
@@ -50,12 +58,15 @@ class IdentifierMetadataRecord
       this.multisigManageAid = props.multisigManageAid;
       this.createdAt = props.createdAt ?? new Date();
       this.theme = props.theme;
+      this.groupMetadata = props.groupMetadata;
     }
   }
 
   getTags() {
     return {
       ...this._tags,
+      signifyName: this.signifyName,
+      groupId: this.groupMetadata?.groupId,
       isArchived: this.isArchived,
       isDeleted: this.isDeleted,
       isPending: this.isPending,
