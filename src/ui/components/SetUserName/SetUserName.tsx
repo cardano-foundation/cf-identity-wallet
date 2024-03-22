@@ -1,9 +1,8 @@
-import { AlertInput, IonAlert } from "@ionic/react";
-import { useEffect, useState } from "react";
+import { IonAlert } from "@ionic/react";
 import { SetUserNameProps } from "./SetUserName.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
-  getStateCache,
+  getAuthentication,
   setAuthentication,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
@@ -12,19 +11,19 @@ import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 
 const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
   const dispatch = useAppDispatch();
-  const stateCache = useAppSelector(getStateCache);
+  const authentication = useAppSelector(getAuthentication);
   const componentId = "set-user-name";
 
-  const handleConfirm = (name: string) => {
-    if (name.length === 0) {
+  const handleConfirm = (userName: string) => {
+    if (userName.length === 0) {
       dispatch(setToastMsg(ToastMsgType.USERNAME_CREATION_ERROR));
     } else {
       setAuthentication({
-        ...stateCache.authentication,
-        userName: name,
+        ...authentication,
+        userName,
       });
       PreferencesStorage.set(PreferencesKeys.APP_USER_NAME, {
-        userName: name,
+        userName,
       })
         .then(() => {
           dispatch(setToastMsg(ToastMsgType.USERNAME_CREATION_SUCCESS));
@@ -44,7 +43,7 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
       header="Please enter your info"
       inputs={[
         {
-          name: "name",
+          name: "userName",
           id: componentId + "-input",
           placeholder: "Name (max 32 characters)",
           attributes: {
@@ -56,7 +55,7 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
         {
           text: "Confirm",
           role: "confirm",
-          handler: (alertData) => handleConfirm(alertData.name),
+          handler: (alertData) => handleConfirm(alertData.userName),
         },
       ]}
     />
