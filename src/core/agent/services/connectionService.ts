@@ -71,7 +71,7 @@ class ConnectionService extends AgentService {
           );
           await (
             await fetch(
-              "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/issueAcdcCredentialWithOobi",
+              "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/resolveOobi",
               {
                 method: "POST",
                 body: JSON.stringify({ oobi }),

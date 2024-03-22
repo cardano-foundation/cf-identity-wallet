@@ -9,7 +9,7 @@ class EventService {
     this.eventEmitter = new EventEmitter();
   }
   emit<T extends BaseEventEmitter>(data: EmitEvent<T>): void {
-    this.eventEmitter.emit(data.type, data.payload);
+    this.eventEmitter.emit(data.type, data);
   }
   on<T extends BaseEventEmitter>(
     event: T["type"],
