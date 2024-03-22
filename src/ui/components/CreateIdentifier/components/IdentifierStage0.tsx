@@ -96,7 +96,7 @@ const IdentifierStage0 = ({
     });
     if (identifier) {
       const newIdentifier: IdentifierShortDetails = {
-        id: identifier,
+        id: identifier.identifier,
         method: type,
         displayName: state.displayNameValue,
         createdAtUTC: new Date().toISOString(),

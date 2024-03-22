@@ -124,7 +124,7 @@ class ConnectionService extends AgentService {
   }
 
   async resolveOObi(url: string, name: string): Promise<void> {
-    const resolvedOobi = await this.agent.modules.signify.resolveOobi(url);
+    const resolvedOobi = await this.signifyApi.resolveOobi(url);
     let resolvedOobis: Record<string, any> = {};
     try {
       const storedResolvedOobis = await PreferencesStorage.get(

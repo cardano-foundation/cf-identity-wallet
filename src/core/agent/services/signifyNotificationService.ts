@@ -103,7 +103,7 @@ class SignifyNotificationService extends AgentService {
       ) &&
       !notif.r
     ) {
-      const exn = await this.agent.modules.signify.getKeriExchange(notif.a.d);
+      const exn = await this.signifyApi.getKeriExchange(notif.a.d);
       if (notif.a.r === NotificationRoute.TunnelPing) {
         const toId = exn?.exn?.a?.to;
         if (!toId) {
@@ -111,18 +111,15 @@ class SignifyNotificationService extends AgentService {
           return;
         }
 
-        const ourIdentifier =
-          await this.agent.modules.signify.getIdentifierById(toId);
+        const ourIdentifier = await this.signifyApi.getIdentifierById(toId);
         if (!ourIdentifier) {
           await this.signifyApi.markNotification(notif.i);
           return;
         }
 
-        await this.agent.modules.signify.sendExn(
+        await this.signifyApi.sendExn(
           ourIdentifier.name,
-          await this.agent.modules.signify.getIdentifierByName(
-            ourIdentifier.name
-          ), // @TODO - foconnor: Shouldn't need this call too (typing issue)
+          await this.signifyApi.getIdentifierByName(ourIdentifier.name), // @TODO - foconnor: Shouldn't need this call too (typing issue)
           "tunnel",
           NotificationRoute.TunnelPong,
           {},
