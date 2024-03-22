@@ -116,6 +116,11 @@ type OobiScan =
   | { type: KeriConnectionType.NORMAL }
   | { type: KeriConnectionType.MULTI_SIG; groupId: string };
 
+interface KeriaNotificationMarker {
+  nextIndex: number;
+  lastNotificationId: string;
+}
+
 export {
   Blockchain,
   ConnectionStatus,
@@ -138,4 +143,5 @@ export type {
   KeriNotification,
   AcdcKeriStateChangedEvent,
   OobiScan,
+  KeriaNotificationMarker,
 };
