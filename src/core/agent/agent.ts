@@ -92,7 +92,6 @@ class AriesAgent {
     if (!AriesAgent.ready) {
       await this.basicRecordStorage.open(config.walletConfig?.id || "idw");
       await this.signifyApi.start();
-
       AriesAgent.ready = true;
     }
   }

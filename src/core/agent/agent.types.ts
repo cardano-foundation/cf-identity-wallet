@@ -12,14 +12,6 @@ enum ConnectionStatus {
   PENDING = "pending",
 }
 
-enum GenericRecordType {
-  CONNECTION_NOTE = "connection-note",
-  CONNECTION_KERI_METADATA = "connection-keri-metadata",
-  NOTIFICATION_KERI = "notification-keri",
-  IDENTIFIER_RECORD = "identifier-record",
-  CREDENTIAL_METADATA_RECORD = "credential-metadata-record",
-}
-
 enum ConnectionHistoryType {
   CREDENTIAL_ACCEPTED,
 }
@@ -120,7 +112,6 @@ interface BaseEventEmitter {
 export {
   Blockchain,
   ConnectionStatus,
-  GenericRecordType,
   ConnectionHistoryType,
   MiscRecordId,
   ConnectionType,

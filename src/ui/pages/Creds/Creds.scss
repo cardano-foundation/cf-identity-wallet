@@ -21,3 +21,58 @@
     }
   }
 }
+
+.credential-tab {
+  &.cards-credential-nav {
+    .credential-favourite-cards {
+      animation: credentialFavouriteCardResize 0.25s ease;
+      animation-fill-mode: forwards;
+
+      @keyframes credentialFavouriteCardResize {
+        from {
+          opacity: 0;
+          overflow: hidden;
+          margin-top: 0;
+        }
+        to {
+          opacity: 0;
+          height: 0;
+          overflow: hidden;
+        }
+      }
+    }
+
+    .credential-cards {
+      h3 {
+        display: none;
+      }
+    }
+  }
+
+  &.favorite-credential-nav {
+    .credential-cards {
+      display: none;
+    }
+
+    .credential-favourite-cards {
+      h3 {
+        animation: credentialFavouriteCardHeaderResize 0.25s ease;
+        animation-fill-mode: forwards;
+
+        @keyframes credentialFavouriteCardHeaderResize {
+          from {
+            opacity: 0;
+            overflow: hidden;
+            margin-top: 0;
+            height: 1.25rem;
+          }
+          to {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,6 +1,5 @@
 import {
   KeriNotification,
-  GenericRecordType,
   AcdcKeriStateChangedEvent,
   AcdcKeriEventTypes,
   ConnectionType,
@@ -20,6 +19,7 @@ import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { CredentialMetadataRecord } from "../modules/generalStorage/repositories/credentialMetadataRecord";
 import { BasicRecord } from "../../storage/storage.types";
 import { AriesAgent } from "../agent";
+import { RecordType } from "../../storage/storage.types";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -162,10 +162,12 @@ class CredentialService extends AgentService {
   }
 
   private async getKeriCredentialNotifications(): Promise<KeriNotification[]> {
-    const results = await this.basicStorage.findAllByQuery({
-      type: GenericRecordType.NOTIFICATION_KERI,
-      route: NotificationRoute.Credential,
-    });
+    const results = await this.basicStorage.findAllByQuery(
+      RecordType.NOTIFICATION_KERI,
+      {
+        route: NotificationRoute.Credential,
+      }
+    );
     return results.map((result) => {
       return {
         id: result.id,
@@ -320,7 +322,7 @@ class CredentialService extends AgentService {
 
   async getAllCredentialMetadata(isArchived?: boolean) {
     const basicRecords = await this.basicStorage.findAllByQuery({
-      type: GenericRecordType.CREDENTIAL_METADATA_RECORD,
+      type: RecordType.CREDENTIAL_METADATA_RECORD,
       ...(isArchived !== undefined ? { isArchived } : {}),
     });
     return basicRecords.map((bc) => {
@@ -342,7 +344,7 @@ class CredentialService extends AgentService {
 
   async getCredentialMetadataByCredentialRecordId(credentialId: string) {
     const basicRecords = await this.basicStorage.findAllByQuery({
-      type: GenericRecordType.CREDENTIAL_METADATA_RECORD,
+      type: RecordType.CREDENTIAL_METADATA_RECORD,
       credentialId,
     });
     const basicRecord = basicRecords[0];
@@ -354,7 +356,7 @@ class CredentialService extends AgentService {
 
   async getCredentialMetadataByConnectionId(connectionId: string) {
     const basicRecords = await this.basicStorage.findAllByQuery({
-      type: GenericRecordType.CREDENTIAL_METADATA_RECORD,
+      type: RecordType.CREDENTIAL_METADATA_RECORD,
       connectionId,
     });
     return basicRecords.map((bc) => {
@@ -371,7 +373,7 @@ class CredentialService extends AgentService {
       content: record.toJSON(),
       tags: {
         ...record.getTags(),
-        type: GenericRecordType.CREDENTIAL_METADATA_RECORD,
+        type: RecordType.CREDENTIAL_METADATA_RECORD,
       },
     });
   }

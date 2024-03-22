@@ -1,13 +1,14 @@
 import { Storage, Drivers } from "@ionic/storage";
 import {
   BasicRecord,
-  BasicStoragesApi,
+  StorageApi,
   Query,
   SaveBasicRecordOption,
+  RecordType,
 } from "../storage.types";
 import { deserializeRecord } from "../utils";
 
-class IonicStorage implements BasicStoragesApi {
+class IonicStorage implements StorageApi {
   private static readonly drivers = [Drivers.IndexedDB];
   private static readonly SESION_IS_NOT_INITIALIZED =
     "Session is not initialized";
@@ -30,6 +31,7 @@ class IonicStorage implements BasicStoragesApi {
   }
 
   async save({
+    type,
     content,
     tags,
     id,
@@ -39,6 +41,7 @@ class IonicStorage implements BasicStoragesApi {
       id,
       content,
       tags,
+      type,
     });
     if (await this.session!.get(record.id)) {
       throw new Error(
@@ -103,14 +106,17 @@ class IonicStorage implements BasicStoragesApi {
     }
     return deserializeRecord(recordStorage);
   }
-  async findAllByQuery(query: Query<BasicRecord>): Promise<BasicRecord[]> {
+  async findAllByQuery(
+    type: RecordType,
+    query: Query<BasicRecord>
+  ): Promise<BasicRecord[]> {
     this.checkSession(this.session);
     const instances: BasicRecord[] = [];
 
     await this.session!.forEach((record) => {
       if (
         record.category &&
-        record.category === BasicRecord.type &&
+        record.category === type &&
         this.checkRecordIsValidWithQuery(record, query)
       ) {
         instances.push(deserializeRecord(record));
@@ -120,11 +126,11 @@ class IonicStorage implements BasicStoragesApi {
     return instances;
   }
 
-  async getAll(): Promise<BasicRecord[]> {
+  async getAll(type: RecordType): Promise<BasicRecord[]> {
     this.checkSession(this.session);
     const instances: BasicRecord[] = [];
     await this.session!.forEach((value) => {
-      if (value.category && value.category === BasicRecord.type) {
+      if (value.category && value.category === type) {
         instances.push(deserializeRecord(value));
       }
     });

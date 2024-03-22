@@ -1,14 +1,14 @@
-.identifier-card-details {
+.cred-card-detail {
   .page-header {
     margin-top: 0.625rem;
   }
 }
 
-.open-animation {
+.cred-open-animation {
   .card-details-content {
-    animation: expand 0.7s ease-in-out;
+    animation: credExpand 0.7s ease-in-out;
 
-    @keyframes expand {
+    @keyframes credExpand {
       from {
         height: 0;
         overflow-y: hidden;
@@ -26,13 +26,13 @@
   }
 }
 
-.back-animation {
+.cred-back-animation {
   .card-details-content {
-    animation: collapse 0.25s ease-in-out;
+    animation: credCollapse 0.25s ease-in-out;
     animation-fill-mode: forwards;
   }
 
-  @keyframes collapse {
+  @keyframes credCollapse {
     from {
       height: 100vh;
       overflow-y: hidden;
@@ -50,35 +50,32 @@
 }
 
 @media screen and (min-width: 250px) and (max-width: 370px) {
-  .open-animation {
-    .card-details-content {
-      animation: minsizeExpand 0.7s ease-in-out;
+  .cred-details-content {
+    animation: credMinSizeExpand 0.7s ease-in-out;
 
-      @keyframes minsizeExpand {
-        from {
-          height: 0;
-          overflow-y: hidden;
-          opacity: 0;
-          margin-top: -1.24rem;
-        }
-
-        to {
-          height: 100vh;
-          overflow-y: hidden;
-          opacity: 1;
-          margin-top: -1.24rem;
-        }
+    @keyframes credMinSizeExpand {
+      from {
+        height: 0;
+        overflow-y: hidden;
+        opacity: 0;
+        margin-top: -1.24rem;
+      }
+      to {
+        height: 100vh;
+        overflow-y: hidden;
+        opacity: 1;
+        margin-top: -1.24rem;
       }
     }
   }
 
-  .back-animation {
+  .cred-back-animation {
     .card-details-content {
-      animation: miniSizecollapse 0.25s ease-in-out;
+      animation: credMiniSizeCollapse 0.25s ease-in-out;
       animation-fill-mode: forwards;
     }
 
-    @keyframes miniSizecollapse {
+    @keyframes credMiniSizeCollapse {
       from {
         height: 100vh;
         overflow-y: hidden;

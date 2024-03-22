@@ -1,5 +1,5 @@
-import { SignifyApi } from "../modules/signify/signifyApi";
 import { SignifyNotificationService } from "./signifyNotificationService";
+import { SignifyApi } from "../modules/signify/signifyApi";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),

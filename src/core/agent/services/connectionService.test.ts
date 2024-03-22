@@ -1,10 +1,11 @@
 import {
   ConnectionType,
   ConnectionStatus,
-  GenericRecordType,
 } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { SignifyApi } from "../modules/signify/signifyApi";
+import { RecordType } from "../../storage/storage.types";
+
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -47,17 +48,16 @@ describe("Connection service of agent", () => {
     jest.resetAllMocks();
   });
   test("can get all connections", async () => {
-    basicStorage.findAllByQuery.mockImplementation(() => {
-      return [
-        {
-          id: keriContacts[0].id,
-          createdAt: now,
-          content: {
-            alias: "keri",
-          },
+    basicStorage.getAll = jest.fn().mockResolvedValue([
+      {
+        id: keriContacts[0].id,
+        createdAt: now,
+        type: RecordType.CONNECTION_KERI_METADATA,
+        content: {
+          alias: "keri",
         },
-      ];
-    });
+      },
+    ]);
     signifyApi.getContacts = jest.fn().mockResolvedValue(keriContacts);
     expect(await connectionService.getConnections()).toEqual([
       {
@@ -80,7 +80,8 @@ describe("Connection service of agent", () => {
     expect(basicStorage.save).toBeCalledWith({
       id: expect.any(String),
       content: note,
-      tags: { connectionId, type: GenericRecordType.CONNECTION_NOTE },
+      type: RecordType.CONNECTION_NOTE,
+      tags: { connectionId },
     });
   });
 

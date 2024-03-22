@@ -1,6 +1,6 @@
 import { IonButton, IonIcon, useIonViewWillEnter } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import { CardsPlaceholder } from "../../components/CardsPlaceholder";
@@ -19,6 +19,9 @@ import { IdentifierShortDetails } from "../../../core/agent/services/identifierS
 import "./Identifiers.scss";
 import { IdentifiersList } from "./components/IdentifiersList";
 import { AriesAgent } from "../../../core/agent/agent";
+import { StartAnimationSource } from "./Identifiers.type";
+
+const CLEAR_STATE_DELAY = 1000;
 
 interface AdditionalButtonsProps {
   handleCreateIdentifier: () => void;
@@ -77,6 +80,9 @@ const Identifiers = () => {
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [showConnections, setShowConnections] = useState(false);
+  const [navAnimation, setNavAnimation] =
+    useState<StartAnimationSource>("none");
+  const favouriteContainerElement = useRef<HTMLDivElement>(null);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.IDENTIFIERS }));
@@ -127,6 +133,30 @@ const Identifiers = () => {
     }
   };
 
+  const handleShowNavAnimation = (source: StartAnimationSource) => {
+    if (favouriteContainerElement.current && source !== "favourite") {
+      favouriteContainerElement.current.style.height =
+        favouriteContainerElement.current.scrollHeight + "px";
+    }
+
+    setNavAnimation(source);
+
+    setTimeout(() => {
+      setNavAnimation("none");
+      if (favouriteContainerElement.current) {
+        favouriteContainerElement.current.removeAttribute("style");
+      }
+    }, CLEAR_STATE_DELAY);
+  };
+
+  const tabClasses = `identifier-tab ${
+    navAnimation === "cards"
+      ? "cards-identifier-nav"
+      : navAnimation === "favourite"
+        ? "favorite-identifier-nav"
+        : ""
+  }`;
+
   return (
     <>
       <Connections
@@ -136,6 +166,7 @@ const Identifiers = () => {
       <TabLayout
         pageId={pageId}
         header={true}
+        customClass={tabClasses}
         title={`${i18n.t("identifiers.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
@@ -156,7 +187,10 @@ const Identifiers = () => {
         {!showPlaceholder && (
           <>
             {!!favIdentifiers.length && (
-              <div className="identifiers-tab-content-block">
+              <div
+                ref={favouriteContainerElement}
+                className="identifiers-tab-content-block identifier-favourite-cards"
+              >
                 {allIdentifiers.length ? (
                   <h3>{i18n.t("creds.tab.favourites")}</h3>
                 ) : null}
@@ -164,11 +198,12 @@ const Identifiers = () => {
                   name="favs"
                   cardsType={CardType.IDENTIFIERS}
                   cardsData={sortedFavIdentifiers}
+                  onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
               </div>
             )}
             {!!allIdentifiers.length && (
-              <div className="identifiers-tab-content-block">
+              <div className="identifiers-tab-content-block identifier-cards">
                 {!!favIdentifiers.length && (
                   <h3>{i18n.t("identifiers.tab.allidentifiers")}</h3>
                 )}
@@ -176,6 +211,7 @@ const Identifiers = () => {
                   name="allidentifiers"
                   cardsType={CardType.IDENTIFIERS}
                   cardsData={allIdentifiers}
+                  onShowCardDetails={() => handleShowNavAnimation("cards")}
                 />
               </div>
             )}

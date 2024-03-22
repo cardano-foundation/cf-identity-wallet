@@ -10,12 +10,11 @@ import {
   ConnectionShortDetails,
   ConnectionType,
   ConnectionStatus,
-  GenericRecordType,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { AriesAgent } from "../agent";
 import { IdentifierType } from "./identifierService.types";
-import { BasicRecord } from "../../storage/storage.types";
+import { BasicRecord, RecordType } from "../../storage/storage.types";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 
 class ConnectionService extends AgentService {
@@ -155,9 +154,9 @@ class ConnectionService extends AgentService {
     await this.basicStorage.save({
       id: uuidv4(),
       content: note,
+      type: RecordType.CONNECTION_NOTE,
       tags: {
         connectionId,
-        type: GenericRecordType.CONNECTION_NOTE,
       },
     });
   }
@@ -189,8 +188,9 @@ class ConnectionService extends AgentService {
     await this.basicStorage.save({
       id: connectionId,
       content: metadata || {},
+      type: RecordType.CONNECTION_KERI_METADATA,
       tags: {
-        type: GenericRecordType.CONNECTION_KERI_METADATA,
+        type: RecordType.CONNECTION_KERI_METADATA,
       },
     });
   }
@@ -208,9 +208,9 @@ class ConnectionService extends AgentService {
   }
 
   async getAllConnectionKeriMetadata(): Promise<BasicRecord[]> {
-    const connectionKeris = await this.basicStorage.findAllByQuery({
-      type: GenericRecordType.CONNECTION_KERI_METADATA,
-    });
+    const connectionKeris = await this.basicStorage.getAll(
+      RecordType.CONNECTION_KERI_METADATA
+    );
     return connectionKeris;
   }
 
@@ -255,10 +255,12 @@ class ConnectionService extends AgentService {
   private async getConnectNotesByConnectionId(
     connectionId: string
   ): Promise<ConnectionNoteDetails[]> {
-    const notes = await this.basicStorage.findAllByQuery({
-      connectionId,
-      type: GenericRecordType.CONNECTION_NOTE,
-    });
+    const notes = await this.basicStorage.findAllByQuery(
+      RecordType.CONNECTION_NOTE,
+      {
+        connectionId,
+      }
+    );
     return notes.map((note) => {
       return {
         id: note.id,

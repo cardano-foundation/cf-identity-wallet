@@ -5,9 +5,9 @@
     "curls": ["http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/"]
   },
   "iurls": [
-    "http://dev.backer.cf-keripy.metadata.dev.cf-deployments.org:5666/oobi/BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP/controller",
+    "http://dev.backer.cf-keripy.metadata.dev.cf-deployments.org:5666/oobi/BD39IWoiPYhhq5yn2l7FTQykcjhZma1KmfWrWr9ZYUFD/controller",
     "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:5642/oobi/BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha/controller",
     "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:5643/oobi/BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapM/controller",
-    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:5644/oobi/BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfX/controller"
+    "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:5644/oobi/BIKKuvBwpmDVA4Ds-EpL5bt9OqPzWPja2LigFYZN2YfX/controller" 
   ]
 }

@@ -5,10 +5,11 @@ import {
 } from "@capacitor-community/sqlite";
 import {
   BasicRecord,
-  BasicStoragesApi,
+  StorageApi,
   Query,
   SaveBasicRecordOption,
   StorageRecord,
+  RecordType,
 } from "../storage.types";
 import {
   TagDataType,
@@ -19,7 +20,7 @@ import {
 } from "./utils";
 import { deserializeRecord } from "../utils";
 
-class SqliteStorage implements BasicStoragesApi {
+class SqliteStorage implements StorageApi {
   private static readonly SESION_IS_NOT_INITIALIZED =
     "Session is not initialized";
   static readonly RECORD_ALREADY_EXISTS_ERROR_MSG =
@@ -55,6 +56,7 @@ class SqliteStorage implements BasicStoragesApi {
   private session?: SQLiteDBConnection;
 
   async save({
+    type,
     content,
     tags,
     id,
@@ -63,6 +65,7 @@ class SqliteStorage implements BasicStoragesApi {
     const record = new BasicRecord({
       id,
       content,
+      type,
     });
 
     if (await this.getItem(record.id)) {
@@ -134,11 +137,11 @@ class SqliteStorage implements BasicStoragesApi {
     return deserializeRecord(record);
   }
 
-  async getAll(): Promise<BasicRecord[]> {
+  async getAll(type: RecordType): Promise<BasicRecord[]> {
     this.checkSession(this.session);
     const instances: BasicRecord[] = [];
 
-    const records = await this.scanItems();
+    const records = await this.scanItems(type);
 
     records.forEach((value) => {
       instances.push(deserializeRecord(value));
@@ -147,12 +150,15 @@ class SqliteStorage implements BasicStoragesApi {
     return instances;
   }
 
-  async findAllByQuery(query: Query<BasicRecord>): Promise<BasicRecord[]> {
+  async findAllByQuery(
+    type: RecordType,
+    query: Query<BasicRecord>
+  ): Promise<BasicRecord[]> {
     this.checkSession(this.session);
 
     const instances: BasicRecord[] = [];
 
-    const records = await this.scanItems(query);
+    const records = await this.scanItems(type, query);
     records.forEach((value) => {
       instances.push(deserializeRecord(value));
     });
@@ -170,8 +176,11 @@ class SqliteStorage implements BasicStoragesApi {
     return undefined;
   }
 
-  async scanItems(query?: Query<BasicRecord>): Promise<StorageRecord[]> {
-    let scanValues = [BasicRecord.type];
+  async scanItems(
+    type: RecordType,
+    query?: Query<BasicRecord>
+  ): Promise<StorageRecord[]> {
+    let scanValues = [type as string];
     let scanQuery = SqliteStorage.SCAN_QUERY_SQL;
     if (query && Object.keys(query).length > 0) {
       const dbQuery = convertDbQuery(query);
