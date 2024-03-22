@@ -15,6 +15,7 @@ import { ColorGenerator } from "../../../utils/colorGenerator";
 import {
   IdentifierShortDetails,
   IdentifierType,
+  createIdentifierInputs,
 } from "../../../../core/agent/services/identifierService.types";
 import { AriesAgent } from "../../../../core/agent/agent";
 import {
@@ -88,7 +89,7 @@ const IdentifierStage0 = ({
       state.selectedIdentifierType === 0
         ? IdentifierType.KEY
         : IdentifierType.KERI;
-    const metadata: any = {
+    const metadata: createIdentifierInputs = {
       displayName: state.displayNameValue,
       method: type,
       // @TODO - sdisalvo: Colors will need to be removed

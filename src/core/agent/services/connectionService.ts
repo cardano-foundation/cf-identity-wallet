@@ -278,8 +278,13 @@ class ConnectionService extends AgentService {
     groupId: string
   ): Promise<ConnectionShortDetails[]> {
     const connectionsDetails: ConnectionShortDetails[] = [];
-    const associatedKeriContacts =
-      await this.getKeriConnectionMetadataByGroupId(groupId);
+    const associatedKeriContacts = await this.basicStorage.findAllByQuery(
+      RecordType.CONNECTION_KERI_METADATA,
+      {
+        groupId,
+        type: RecordType.CONNECTION_KERI_METADATA,
+      }
+    );
     associatedKeriContacts.forEach(async (connection) => {
       connectionsDetails.push(this.getConnectionKeriShortDetails(connection));
     });
@@ -429,19 +434,6 @@ class ConnectionService extends AgentService {
       RecordType.CONNECTION_KERI_METADATA
     );
     return connectionKeris;
-  }
-
-  async getKeriConnectionMetadataByGroupId(
-    groupId: string
-  ): Promise<BasicRecord[]> {
-    const connections = await this.basicStorage.findAllByQuery(
-      RecordType.CONNECTION_KERI_METADATA,
-      {
-        groupId,
-        type: RecordType.CONNECTION_KERI_METADATA,
-      }
-    );
-    return connections;
   }
 
   async getConnectionHistoryById(

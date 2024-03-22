@@ -776,4 +776,31 @@ describe("Connection service of agent", () => {
     await connectionService.syncKeriaContacts();
     expect(basicStorage.save).toBeCalledTimes(2);
   });
+
+  test("Can get multisig linked contacts", async () => {
+    const groupId = "123";
+    const metadata = {
+      id: "id",
+      content: {
+        alias: "alias",
+        oobi: `localhost/oobi=2442?groupId=${groupId}`,
+        groupId,
+      },
+      createdAt: new Date(),
+    };
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([metadata]);
+    expect(
+      await connectionService.getMultisigLinkedContacts(groupId)
+    ).toStrictEqual([
+      {
+        id: metadata.id,
+        label: metadata.content.alias,
+        connectionDate: metadata.createdAt.toISOString(),
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.KERI,
+        oobi: metadata.content.oobi,
+        groupId: metadata.content.groupId,
+      },
+    ]);
+  });
 });

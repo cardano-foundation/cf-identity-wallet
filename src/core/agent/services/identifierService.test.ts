@@ -1970,12 +1970,19 @@ describe("Identifier service of agent", () => {
       theme: keriMetadataRecord.theme,
       isPending: keriMetadataRecord.isPending ?? false,
     });
+    /**null result */
+    agent.modules.generalStorage.getKeriIdentifierMetadataByGroupId = jest
+      .fn()
+      .mockResolvedValue(null);
+    expect(
+      await identifierService.getKeriIdentifierByGroupId(
+        keriMetadataRecord.groupMetadata?.groupId as string
+      )
+    ).toStrictEqual(null);
   });
 
   test("Should throw errors when create KERI multisigs with invalid identifier", async () => {
     const creatorIdentifier = "creatorIdentifier";
-    const multisigIdentifier = "newMultisigIdentifierAid";
-    const signifyName = "newUuidHere";
     const identifierMetaData = {
       id: "creatorIdentifier",
       displayName: "Identifier 2",
@@ -2054,5 +2061,48 @@ describe("Identifier service of agent", () => {
         otherIdentifiers.length + 1
       )
     ).rejects.toThrowError(IdentifierService.ONLY_ALLOW_GROUP_INITIATOR);
+  });
+
+  test("Should throw errors when create KERI multisigs with invalid contacts", async () => {
+    const creatorIdentifier = "creatorIdentifier";
+    const identifierMetaData = {
+      id: "creatorIdentifier",
+      displayName: "Identifier 2",
+      colors,
+      method: IdentifierType.KERI,
+      signifyName: "uuid-here",
+      createdAt: now,
+      theme: 0,
+    };
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(
+        new IdentifierMetadataRecord({
+          ...identifierMetaData,
+          groupMetadata: {
+            groupCreated: false,
+            groupInitiator: true,
+            groupId: "not-group-id",
+          },
+        })
+      );
+    const otherIdentifiers = [
+      {
+        id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
+        label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
+        oobi: "http://127.0.0.1:3902/oobi/ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP/agent/EF_dfLFGvUh9kMsV2LIJQtrkuXWG_-wxWzC_XjCWjlkQ",
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.KERI,
+        connectionDate: new Date().toISOString(),
+        groupId: "group-id",
+      },
+    ];
+    await expect(
+      identifierService.createMultisig(
+        creatorIdentifier,
+        otherIdentifiers,
+        otherIdentifiers.length + 1
+      )
+    ).rejects.toThrowError(IdentifierService.ONLY_ALLOW_LINKED_CONTACTS);
   });
 });

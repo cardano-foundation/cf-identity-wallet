@@ -11,6 +11,14 @@ interface groupMetadata {
   groupCreated: boolean;
 }
 
+interface createIdentifierInputs {
+  displayName: string;
+  method: IdentifierType;
+  colors: [string, string];
+  theme: number;
+  groupMetadata?: groupMetadata;
+}
+
 interface IdentifierShortDetails {
   id: string;
   method: IdentifierType;
@@ -61,4 +69,5 @@ export type {
   KERIDetails,
   GetIdentifierResult,
   MultiSigIcpRequestDetails,
+  createIdentifierInputs,
 };
