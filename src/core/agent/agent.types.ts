@@ -11,12 +11,7 @@ enum Blockchain {
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
-}
-
-enum GenericRecordType {
-  CONNECTION_NOTE = "connection-note",
-  CONNECTION_KERI_METADATA = "connection-keri-metadata",
-  NOTIFICATION_KERI = "notification-keri",
+  ACCEPTED = "accepted",
 }
 
 enum ConnectionHistoryType {
@@ -124,7 +119,6 @@ type OobiScan =
 export {
   Blockchain,
   ConnectionStatus,
-  GenericRecordType,
   ConnectionHistoryType,
   MiscRecordId,
   ConnectionType,

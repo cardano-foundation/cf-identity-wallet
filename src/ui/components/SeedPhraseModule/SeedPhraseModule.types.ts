@@ -6,6 +6,7 @@ interface SeedPhraseModuleProps {
   addSeedPhraseSelected?: (word: string) => void;
   removeSeedPhraseSelected?: (index: number) => void;
   emptyWord?: boolean;
+  hideSeedNumber?: boolean;
 }
 
 export type { SeedPhraseModuleProps };

@@ -272,49 +272,49 @@
       > * {
         margin: 1.326rem 0 0.85rem;
       }
+    }
 
-      .card-details-info-block {
-        > h4 {
-          margin: 0.798rem;
+    .card-details-info-block {
+      > h4 {
+        margin: 0.798rem;
+      }
+
+      .card-details-info-block-inner {
+        padding: 0.5rem 1rem;
+
+        > * {
+          min-height: 1.156rem;
+
+          &:not(:last-child) {
+            margin-bottom: 0.68rem;
+          }
         }
 
-        .card-details-info-block-inner {
-          padding: 0.5rem 1rem;
-
-          > * {
-            min-height: 1.156rem;
-
-            &:not(:last-child) {
-              margin-bottom: 0.68rem;
-            }
+        .card-details-info-block-line {
+          .card-details-info-block-text-icon {
+            font-size: 0.956rem;
           }
 
-          .card-details-info-block-line {
-            .card-details-info-block-text-icon {
-              font-size: 0.956rem;
-            }
-
-            .card-details-info-block-icon,
-            .card-details-info-block-text-icon {
-              margin-right: 0.799rem;
-            }
-
-            .card-details-info-block-data {
-              margin: 0.5rem 0;
-            }
+          .card-details-info-block-icon,
+          .card-details-info-block-text-icon {
+            margin-right: 0.799rem;
           }
 
-          ion-button,
-          ion-button.md {
-            height: 1.445rem;
-            width: 1.445rem;
+          .card-details-info-block-data {
+            margin: 0.5rem 0;
           }
+        }
 
-          ion-icon {
-            width: 1.254rem;
-            height: 1.254rem;
-            margin: 0;
-          }
+        ion-button,
+        ion-button.md {
+          height: 1.445rem;
+          width: 1.445rem;
+        }
+
+        ion-icon {
+          width: 1.254rem;
+          height: 1.254rem;
+          margin: 0;
         }
       }
     }

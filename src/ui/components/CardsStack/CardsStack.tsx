@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
 import {
@@ -10,22 +10,23 @@ import { CardType } from "../../globals/types";
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
 import { CredCardTemplate } from "../CredCardTemplate";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
-import { AriesAgent } from "../../../core/agent/agent";
+import { CardsStackProps } from "./CardsStack.types";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
+const getCardStyles = (index: number) => ({
+  top: index * 30,
+});
 
 const CardsStack = ({
   name,
   cardsType,
   cardsData,
-}: {
-  name: string;
-  cardsType: CardType;
-  cardsData: IdentifierShortDetails[] | CredentialShortDetails[];
-}) => {
+  onShowCardDetails,
+}: CardsStackProps) => {
   const history = useHistory();
   const [isActive, setIsActive] = useState(false);
+  const inShowCardProgress = useRef(false);
 
   const renderCards = (
     cardsData: IdentifierShortDetails[] | CredentialShortDetails[]
@@ -43,6 +44,7 @@ const CardsStack = ({
             cardData={cardData as IdentifierShortDetails}
             isActive={isActive}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
+            styles={getCardStyles(index)}
           />
         ) : (
           <CredCardTemplate
@@ -52,13 +54,17 @@ const CardsStack = ({
             shortData={cardData as CredentialShortDetails}
             isActive={isActive}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
+            styles={getCardStyles(index)}
           />
         )
     );
   };
 
   const handleShowCardDetails = async (index: number) => {
+    if (inShowCardProgress.current) return;
+    inShowCardProgress.current = true;
     setIsActive(true);
+    onShowCardDetails?.();
     let pathname = "";
 
     if (cardsType === CardType.IDENTIFIERS) {
@@ -75,10 +81,15 @@ const CardsStack = ({
 
     setTimeout(() => {
       setIsActive(false);
+      inShowCardProgress.current = false;
     }, CLEAR_STATE_DELAY);
   };
 
-  return <div className="cards-stack-container">{renderCards(cardsData)}</div>;
+  const containerClasses = `cards-stack-container ${
+    isActive ? "transition-start" : ""
+  }`;
+
+  return <div className={containerClasses}>{renderCards(cardsData)}</div>;
 };
 
 export { CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };

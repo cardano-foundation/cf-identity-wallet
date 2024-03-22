@@ -12,6 +12,7 @@ import {
 import { IdentifierType } from "./identifierService.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
 import { AriesAgent } from "../agent";
+import { SignifyApi } from "../modules/signify/signifyApi";
 
 // We are losing typing here but the Agent class is overly complex to setup for tests.
 const agent = jest.mocked({
@@ -28,24 +29,6 @@ const agent = jest.mocked({
       getKeriIdentifierMetadataByName: jest.fn(),
       getKeriIdentifierMetadataByGroupId: jest.fn(),
     },
-    signify: {
-      getIdentifierByName: jest.fn(),
-      createIdentifier: jest.fn(),
-      getAllIdentifiers: jest.fn(),
-      resolveOobi: jest.fn(),
-      createMultisig: jest.fn(),
-      getMultisigMessageBySaid: jest.fn(),
-      joinMultisig: jest.fn(),
-      createDelegationIdentifier: jest.fn(),
-      interactDelegation: jest.fn(),
-      delegationApproved: jest.fn(),
-      rotateIdentifier: jest.fn(),
-      rotateMultisigAid: jest.fn(),
-      joinMultisigRotation: jest.fn(),
-      getIdentifierById: jest.fn(),
-      getMultisigMembers: jest.fn(),
-      queryKeyState: jest.fn(),
-    },
   },
   dids: {
     getCreatedDids: jest.fn(),
@@ -57,7 +40,42 @@ const agent = jest.mocked({
     deleteById: jest.fn(),
   },
 });
-const identifierService = new IdentifierService(agent as any as Agent);
+
+const basicStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const signifyApi = jest.mocked({
+  getIdentifierByName: jest.fn(),
+  createIdentifier: jest.fn(),
+  getAllIdentifiers: jest.fn(),
+  resolveOobi: jest.fn(),
+  createMultisig: jest.fn(),
+  getMultisigMessageBySaid: jest.fn(),
+  joinMultisig: jest.fn(),
+  createDelegationIdentifier: jest.fn(),
+  interactDelegation: jest.fn(),
+  delegationApproved: jest.fn(),
+  rotateIdentifier: jest.fn(),
+  rotateMultisigAid: jest.fn(),
+  joinMultisigRotation: jest.fn(),
+  getIdentifierById: jest.fn(),
+  getMultisigMembers: jest.fn(),
+  queryKeyState: jest.fn(),
+});
+
+const identifierService = new IdentifierService(
+  agent as any as Agent,
+  basicStorage,
+  signifyApi as any as SignifyApi
+);
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -344,7 +362,7 @@ describe("Identifier service of agent", () => {
     expect(agent.modules.generalStorage.getIdentifierMetadata).toBeCalledWith(
       keriMetadataRecord.id
     );
-    expect(agent.modules.signify.getIdentifierByName).toBeCalledWith(
+    expect(signifyApi.getIdentifierByName).toBeCalledWith(
       keriMetadataRecordProps.signifyName
     );
   });
@@ -353,7 +371,7 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    agent.modules.signify.getIdentifierByName = jest
+    signifyApi.getIdentifierByName = jest
       .fn()
       .mockResolvedValue(aidReturnedBySignify);
     expect(
@@ -379,7 +397,7 @@ describe("Identifier service of agent", () => {
     const aid = "newIdentifierAid";
     const displayName = "newDisplayName";
     const signifyName = "newUuidHere";
-    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+    signifyApi.createIdentifier = jest.fn().mockResolvedValue({
       identifier: aid,
       signifyName,
     });
@@ -392,7 +410,7 @@ describe("Identifier service of agent", () => {
       })
     ).toBe(aid);
     expect(agent.dids.create).not.toBeCalledWith(); // Just in case
-    expect(agent.modules.signify.createIdentifier).toBeCalled();
+    expect(signifyApi.createIdentifier).toBeCalled();
     expect(
       agent.modules.generalStorage.saveIdentifierMetadataRecord
     ).toBeCalledWith(expect.any(IdentifierMetadataRecord));
@@ -422,7 +440,7 @@ describe("Identifier service of agent", () => {
         theme: 0,
       })
     ).toBe(did);
-    expect(agent.modules.signify.createIdentifier).not.toBeCalled(); // Just in case
+    expect(signifyApi.createIdentifier).not.toBeCalled(); // Just in case
     expect(agent.dids.create).toBeCalledWith({
       method: IdentifierType.KEY,
       options: { keyType: KeyType.Ed25519 },
@@ -472,7 +490,7 @@ describe("Identifier service of agent", () => {
     const aid = "newIdentifierAid";
     const displayName = "newDisplayName";
     const signifyName = "newUuidHere";
-    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+    signifyApi.createIdentifier = jest.fn().mockResolvedValue({
       identifier: aid,
       signifyName,
     });
@@ -490,7 +508,7 @@ describe("Identifier service of agent", () => {
     const aid = "newIdentifierAid";
     const displayName = "newDisplayName";
     const signifyName = "newUuidHere";
-    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+    signifyApi.createIdentifier = jest.fn().mockResolvedValue({
       identifier: aid,
       signifyName,
     });
@@ -519,7 +537,7 @@ describe("Identifier service of agent", () => {
     ).rejects.toThrowError(
       IdentifierService.UNEXPECTED_MISSING_DID_RESULT_ON_CREATE
     );
-    expect(agent.modules.signify.createIdentifier).not.toBeCalled(); // Just in case
+    expect(signifyApi.createIdentifier).not.toBeCalled(); // Just in case
     expect(agent.dids.create).toBeCalledWith({
       method: IdentifierType.KEY,
       options: { keyType: KeyType.Ed25519 },
@@ -629,7 +647,7 @@ describe("Identifier service of agent", () => {
   });
 
   test("Should call saveIdentifierMetadataRecord when there are un-synced KERI identifiers", async () => {
-    agent.modules.signify.getAllIdentifiers = jest.fn().mockReturnValue({
+    signifyApi.getAllIdentifiers = jest.fn().mockReturnValue({
       aids: [
         {
           name: "12219bf2-613a-4d5f-8c5d-5d093e7035b3",
@@ -664,17 +682,17 @@ describe("Identifier service of agent", () => {
     const creatorIdentifier = "creatorIdentifier";
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
-    agent.modules.signify.getIdentifierByName = jest
+    signifyApi.getIdentifierByName = jest
       .fn()
       .mockResolvedValue(aidReturnedBySignify);
-    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+    signifyApi.createIdentifier = jest.fn().mockResolvedValue({
       identifier: multisigIdentifier,
       signifyName,
     });
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    agent.modules.signify.resolveOobi = jest.fn().mockResolvedValue({
+    signifyApi.resolveOobi = jest.fn().mockResolvedValue({
       name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
       metadata: {
         oobi: "testOobi",
@@ -684,7 +702,7 @@ describe("Identifier service of agent", () => {
       response: {},
       alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
     });
-    agent.modules.signify.createMultisig = jest.fn().mockResolvedValue({
+    signifyApi.createMultisig = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}`, done: false },
       icpResult: {},
       name: "name",
@@ -714,7 +732,7 @@ describe("Identifier service of agent", () => {
     );
 
     (keriMetadataRecord.groupMetadata as any).groupCreated = false;
-    agent.modules.signify.createMultisig = jest.fn().mockResolvedValue({
+    signifyApi.createMultisig = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}1`, done: false },
       icpResult: {},
       name: "name",
@@ -736,7 +754,7 @@ describe("Identifier service of agent", () => {
     );
 
     (keriMetadataRecord.groupMetadata as any).groupCreated = false;
-    agent.modules.signify.createMultisig = jest.fn().mockResolvedValue({
+    signifyApi.createMultisig = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}2`, done: true },
       icpResult: {},
       name: "name",
@@ -780,17 +798,17 @@ describe("Identifier service of agent", () => {
     const creatorIdentifier = "creatorIdentifier";
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
-    agent.modules.signify.getIdentifierByName = jest
+    signifyApi.getIdentifierByName = jest
       .fn()
       .mockResolvedValue(aidReturnedBySignify);
-    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+    signifyApi.createIdentifier = jest.fn().mockResolvedValue({
       identifier: multisigIdentifier,
       signifyName,
     });
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    agent.modules.signify.resolveOobi = jest.fn().mockResolvedValue({
+    signifyApi.resolveOobi = jest.fn().mockResolvedValue({
       name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
       metadata: {
         oobi: "testOobi",
@@ -800,7 +818,7 @@ describe("Identifier service of agent", () => {
       response: {},
       alias: "c5dd639c-d875-4f9f-97e5-ed5c5fdbbeb1",
     });
-    agent.modules.signify.createMultisig = jest.fn().mockResolvedValue({
+    signifyApi.createMultisig = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}`, done: false },
       icpResult: {},
       name: "name",
@@ -834,7 +852,7 @@ describe("Identifier service of agent", () => {
       )
     ).toBe(multisigIdentifier);
 
-    expect(agent.modules.signify.createMultisig).toBeCalledWith(
+    expect(signifyApi.createMultisig).toBeCalledWith(
       {
         prefix: "aidHere",
         state: {
@@ -858,31 +876,24 @@ describe("Identifier service of agent", () => {
 
   test("can join the multisig inception", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
-    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+    basicStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
     });
-    agent.modules.generalStorage.getIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue({
-        keriMetadataRecord,
-      });
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          exn: {
-            a: {
-              name: "signifyName",
-              smids: ["id"],
-              rmids: ["id"],
-            },
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            smids: ["id"],
+            rmids: ["id"],
           },
         },
-      ]);
+      },
+    ]);
 
-    agent.modules.signify.joinMultisig = jest.fn().mockResolvedValue({
+    signifyApi.joinMultisig = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}`, done: false },
       icpResult: {},
       name: "name",
@@ -911,9 +922,7 @@ describe("Identifier service of agent", () => {
   });
 
   test("cannot join multisig by notification if exn messages are missing", async () => {
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([]);
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([]);
     await expect(
       identifierService.joinMultisig("id", "d", {
         theme: 4,
@@ -927,12 +936,10 @@ describe("Identifier service of agent", () => {
     const aid = "newIdentifierAid";
     const displayName = "newDisplayName";
     const signifyName = "newUuidHere";
-    agent.modules.signify.createDelegationIdentifier = jest
-      .fn()
-      .mockResolvedValue({
-        identifier: aid,
-        signifyName,
-      });
+    signifyApi.createDelegationIdentifier = jest.fn().mockResolvedValue({
+      identifier: aid,
+      signifyName,
+    });
     expect(
       await identifierService.createDelegatedIdentifier(
         {
@@ -945,7 +952,7 @@ describe("Identifier service of agent", () => {
       )
     ).toBe(aid);
     expect(agent.dids.create).not.toBeCalledWith(); // Just in case
-    expect(agent.modules.signify.createDelegationIdentifier).toBeCalled();
+    expect(signifyApi.createDelegationIdentifier).toBeCalled();
     expect(
       agent.modules.generalStorage.saveIdentifierMetadataRecord
     ).toBeCalledWith(expect.any(IdentifierMetadataRecord));
@@ -980,7 +987,7 @@ describe("Identifier service of agent", () => {
     const delegatePrefix = "exampleDelegatePrefix";
     await identifierService.approveDelegation(signifyName, delegatePrefix);
 
-    expect(agent.modules.signify.interactDelegation).toHaveBeenCalledWith(
+    expect(signifyApi.interactDelegation).toHaveBeenCalledWith(
       signifyName,
       delegatePrefix
     );
@@ -998,15 +1005,13 @@ describe("Identifier service of agent", () => {
       theme: 4,
     } as IdentifierMetadataRecord;
 
-    agent.modules.signify.delegationApproved = jest
-      .fn()
-      .mockResolvedValue(true);
+    signifyApi.delegationApproved = jest.fn().mockResolvedValue(true);
 
     expect(await identifierService.checkDelegationSuccess(metadata)).toEqual(
       true
     );
 
-    expect(agent.modules.signify.delegationApproved).toHaveBeenCalledWith(
+    expect(signifyApi.delegationApproved).toHaveBeenCalledWith(
       metadata.signifyName
     );
     expect(
@@ -1046,7 +1051,7 @@ describe("Identifier service of agent", () => {
     expect(
       identifierService.checkDelegationSuccess(metadata)
     ).rejects.toThrowError(IdentifierService.AID_MISSING_SIGNIFY_NAME);
-    expect(agent.modules.signify.delegationApproved).toBeCalledTimes(0);
+    expect(signifyApi.delegationApproved).toBeCalledTimes(0);
   });
 
   test("should call signify.rotateIdentifier with correct params", async () => {
@@ -1061,10 +1066,10 @@ describe("Identifier service of agent", () => {
       theme: 4,
     } as IdentifierMetadataRecord;
     await identifierService.rotateIdentifier(metadata);
-    expect(agent.modules.signify.rotateIdentifier).toHaveBeenCalledWith(
+    expect(signifyApi.rotateIdentifier).toHaveBeenCalledWith(
       metadata.signifyName
     );
-    expect(agent.modules.signify.delegationApproved).toBeCalledTimes(0);
+    expect(signifyApi.delegationApproved).toBeCalledTimes(0);
   });
 
   test("should call signify.rotateIdentifier with missing signify name and throw error", async () => {
@@ -1162,10 +1167,10 @@ describe("Identifier service of agent", () => {
   test("should can rorate multisig with KERI multisig have members do not rotate it AID first and throw error", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
-    agent.modules.signify.getIdentifierByName = jest
+    signifyApi.getIdentifierByName = jest
       .fn()
       .mockResolvedValue(aidReturnedBySignify);
-    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+    signifyApi.createIdentifier = jest.fn().mockResolvedValue({
       identifier: multisigIdentifier,
       signifyName,
     });
@@ -1176,7 +1181,7 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMultisigRecord);
-    agent.modules.signify.queryKeyState = jest.fn().mockResolvedValue({
+    signifyApi.queryKeyState = jest.fn().mockResolvedValue({
       name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
       metadata: {
         oobi: "testOobi",
@@ -1212,7 +1217,7 @@ describe("Identifier service of agent", () => {
       theme: 4,
       multisigManageAid: "123",
     } as IdentifierMetadataRecord;
-    agent.modules.signify.getMultisigMembers = jest.fn().mockResolvedValue({
+    signifyApi.getMultisigMembers = jest.fn().mockResolvedValue({
       signing: [
         {
           aid: "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_",
@@ -1254,17 +1259,17 @@ describe("Identifier service of agent", () => {
   test("should can rotate a keri multisig with KERI contacts", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
     const signifyName = "newUuidHere";
-    agent.modules.signify.getIdentifierByName = jest
+    signifyApi.getIdentifierByName = jest
       .fn()
       .mockResolvedValue(aidReturnedBySignify);
-    agent.modules.signify.createIdentifier = jest.fn().mockResolvedValue({
+    signifyApi.createIdentifier = jest.fn().mockResolvedValue({
       identifier: multisigIdentifier,
       signifyName,
     });
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    agent.modules.signify.queryKeyState = jest.fn().mockResolvedValue({
+    signifyApi.queryKeyState = jest.fn().mockResolvedValue({
       name: "oobi.AM3es3rJ201QzbzYuclUipYzgzysegLeQsjRqykNrmwC",
       metadata: {
         oobi: "testOobi",
@@ -1289,7 +1294,7 @@ describe("Identifier service of agent", () => {
           theme: 4,
         },
       ]);
-    agent.modules.signify.rotateMultisigAid = jest.fn().mockResolvedValue({
+    signifyApi.rotateMultisigAid = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}`, done: false },
       icpResult: {},
       name: "name",
@@ -1308,7 +1313,7 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(metadata);
-    agent.modules.signify.getMultisigMembers = jest.fn().mockResolvedValue({
+    signifyApi.getMultisigMembers = jest.fn().mockResolvedValue({
       signing: [
         {
           aid: "ENYqRaAQBWtpS7fgCGirVy-zJNRcWu2ZUsRNBjzvrfR_",
@@ -1348,9 +1353,7 @@ describe("Identifier service of agent", () => {
   });
 
   test("should can join the multisig rotation with no notification and throw error", async () => {
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([]);
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([]);
     expect(
       identifierService.joinMultisigRotation({
         id: "id",
@@ -1374,25 +1377,23 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(metadata);
-    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+    basicStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
     });
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          exn: {
-            a: {
-              name: "signifyName",
-              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
-            },
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
           },
         },
-      ]);
+      },
+    ]);
 
-    agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
+    signifyApi.getIdentifierById = jest.fn().mockResolvedValue([
       {
         name: "multisig",
         prefix: "prefix",
@@ -1422,25 +1423,23 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(metadata);
-    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+    basicStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
     });
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          exn: {
-            a: {
-              name: "signifyName",
-              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
-            },
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
           },
         },
-      ]);
+      },
+    ]);
 
-    agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
+    signifyApi.getIdentifierById = jest.fn().mockResolvedValue([
       {
         name: "multisig",
         prefix: "prefix",
@@ -1471,32 +1470,30 @@ describe("Identifier service of agent", () => {
     agent.modules.generalStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(metadata);
-    agent.genericRecords.findById = jest.fn().mockResolvedValue({
+    basicStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",
       },
     });
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          exn: {
-            a: {
-              name: "signifyName",
-              rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
-            },
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            rstates: [{ i: "id", signifyName: "rstateSignifyName" }],
           },
         },
-      ]);
+      },
+    ]);
 
-    agent.modules.signify.getIdentifierById = jest.fn().mockResolvedValue([
+    signifyApi.getIdentifierById = jest.fn().mockResolvedValue([
       {
         name: "multisig",
         prefix: "prefix",
       },
     ]);
 
-    agent.modules.signify.joinMultisigRotation = jest.fn().mockResolvedValue({
+    signifyApi.joinMultisigRotation = jest.fn().mockResolvedValue({
       op: { name: `group.${multisigIdentifier}`, done: false },
       icpResult: {},
       name: "name",
@@ -1525,19 +1522,17 @@ describe("Identifier service of agent", () => {
   });
 
   test("cannot join multisig if there's no identifier matched", async () => {
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          exn: {
-            a: {
-              name: "signifyName",
-              smids: ["id"],
-              rmids: ["id"],
-            },
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            smids: ["id"],
+            rmids: ["id"],
           },
         },
-      ]);
+      },
+    ]);
 
     agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
       .fn()
@@ -1562,19 +1557,17 @@ describe("Identifier service of agent", () => {
   });
 
   test("cannot join multisig if the identifier does not have signifyName", async () => {
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          exn: {
-            a: {
-              name: "signifyName",
-              smids: ["id"],
-              rmids: ["id"],
-            },
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            smids: ["id"],
+            rmids: ["id"],
           },
         },
-      ]);
+      },
+    ]);
 
     agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
       .fn()
@@ -1616,23 +1609,21 @@ describe("Identifier service of agent", () => {
       status: ConnectionStatus.CONFIRMED,
       type: ConnectionType.KERI,
     };
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          exn: {
-            a: {
-              name: "signifyName",
-              smids: ["id", "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"],
-            },
-            e: {
-              icp: {
-                kt: 2,
-              },
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            smids: ["id", "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A"],
+          },
+          e: {
+            icp: {
+              kt: 2,
             },
           },
         },
-      ]);
+      },
+    ]);
 
     agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
       .fn()
@@ -1677,22 +1668,20 @@ describe("Identifier service of agent", () => {
       status: ConnectionStatus.CONFIRMED,
       type: ConnectionType.KERI,
     };
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          exn: {
-            a: {
-              name: "signifyName",
-              smids: [
-                "id",
-                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1B",
-                "senderId",
-              ],
-            },
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            smids: [
+              "id",
+              "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1B",
+              "senderId",
+            ],
           },
         },
-      ]);
+      },
+    ]);
 
     agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
       .fn()
@@ -1750,27 +1739,25 @@ describe("Identifier service of agent", () => {
       status: ConnectionStatus.CONFIRMED,
       type: ConnectionType.KERI,
     };
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          exn: {
-            a: {
-              name: "signifyName",
-              smids: [
-                "id",
-                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-                "senderId",
-              ],
-            },
-            e: {
-              icp: {
-                kt: 3,
-              },
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            smids: [
+              "id",
+              "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+              "senderId",
+            ],
+          },
+          e: {
+            icp: {
+              kt: 3,
             },
           },
         },
-      ]);
+      },
+    ]);
 
     agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
       .fn()
@@ -1824,22 +1811,20 @@ describe("Identifier service of agent", () => {
       status: ConnectionStatus.CONFIRMED,
       type: ConnectionType.KERI,
     };
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          exn: {
-            a: {
-              name: "signifyName",
-              smids: [
-                "id1",
-                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-                "senderId",
-              ],
-            },
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            smids: [
+              "id1",
+              "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+              "senderId",
+            ],
           },
         },
-      ]);
+      },
+    ]);
 
     agent.modules.generalStorage.getAllAvailableIdentifierMetadata = jest
       .fn()
@@ -1882,22 +1867,20 @@ describe("Identifier service of agent", () => {
   });
 
   test("cannot get multi-sig details from an unknown sender (missing metadata)", async () => {
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([
-        {
-          exn: {
-            a: {
-              name: "signifyName",
-              smids: [
-                "id1",
-                "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-                "senderId",
-              ],
-            },
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([
+      {
+        exn: {
+          a: {
+            name: "signifyName",
+            smids: [
+              "id1",
+              "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+              "senderId",
+            ],
           },
         },
-      ]);
+      },
+    ]);
     // @TODO - foconnor: This is not ideal as our identifier service is getting tightly coupled with the connection service.
     // Re-work this later.
     AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
@@ -1918,9 +1901,7 @@ describe("Identifier service of agent", () => {
   });
 
   test("cannot get multi-sig details from a notification with no matching exn message", async () => {
-    agent.modules.signify.getMultisigMessageBySaid = jest
-      .fn()
-      .mockResolvedValue([]);
+    signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([]);
     await expect(
       identifierService.getMultisigIcpDetails({
         id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
