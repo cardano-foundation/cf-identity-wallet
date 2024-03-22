@@ -646,7 +646,12 @@
     "tab": {
       "title": "Identity",
       "create": "Add an identifier",
-      "allidentifiers": "All identifiers"
+      "allidentifiers": "All identifiers",
+      "pendingidentifiers": "Pending identifiers",
+      "type": {
+        "didkey": "W3C did:key",
+        "keri": "KERI AID"
+      }
     },
     "card": {
       "layout": {
@@ -656,7 +661,6 @@
         "done": "Done",
         "information": "Information",
         "type": "Type",
-        "controller": "Controller",
         "publickeybase": "Public Key Base 58",
         "delegator": {
           "title": "Delegator Identifier Prefix",
@@ -752,8 +756,7 @@
         "type": "Type",
         "title": "Title",
         "description": {
-          "label": "Description",
-          "content": "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials"
+          "label": "Description"
         },
         "attributes": {
           "label": "Attributes",
@@ -820,13 +823,14 @@
     "archived": {
       "title": "Archived",
       "done": "Done",
-      "edit": "Edit",
+      "select": "Select",
       "selectall": "Select All",
       "deselectall": "Deselect all",
       "cancel": "Cancel",
       "delete": "Delete",
       "restore": "Restore",
-      "selectedamount": "{{amount}} Credentials Selected",
+      "oneselected": "1 Credential Selected",
+      "manyselected": "{{amount}} Credentials Selected",
       "alert": {
         "restoresingle": {
           "title": "Are you sure you want to view this with your other credentials?",
@@ -1002,6 +1006,33 @@
   "createidentifier": {
     "title": "Add an identifier",
     "cancel": "Cancel",
+    "back": "Back",
+    "connections": {
+      "title": "Connections",
+      "subtitle": "Select the connections you want to sign this identifier with",
+      "search": "Search connections",
+      "continue": "Choose connections"
+    },
+    "threshold": {
+      "title": "Set a Threshold",
+      "subtitle": "Set the threshold to determine the level of consensus required",
+      "label": "Threshold",
+      "continue": "Review identifier"
+    },
+    "confirm": {
+      "title": "Confirm",
+      "subtitle": "Double-check all the details for your Keri AID identifier are accurate",
+      "displayname": "Display Name",
+      "selectedmembers": "Selected Members",
+      "treshold": "Threshold",
+      "continue": "Confirm identifier",
+      "cancel": "Cancel",
+      "alert": {
+        "text": "Cancelling now means you'll need to restart the identifier adding process. Are you sure you want to cancel?",
+        "cancel": "Yes, cancel",
+        "back": "Back"
+      }
+    },
     "displayname": {
       "title": "Display name",
       "placeholder": "Create a name for this identifier"
@@ -1010,6 +1041,21 @@
       "title": "Identifier type",
       "didkey": "did:key",
       "keri": "KERI AID"
+    },
+    "aidtype": {
+      "title": "AID type",
+      "default": {
+        "label": "Default",
+        "tooltip": "Lorem ipsum dolor sit amet"
+      },
+      "multisig": {
+        "label": "Multi-sig",
+        "tooltip": "Lorem ipsum dolor sit amet"
+      },
+      "delegated": {
+        "label": "Delegated",
+        "tooltip": "Lorem ipsum dolor sit amet"
+      }
     },
     "theme": {
       "title": "Choose a theme"
@@ -1025,6 +1071,7 @@
   },
   "toast": {
     "copiedtoclipboard": "Copied to clipboard",
+    "identifierrequested": "Identifier request pending",
     "identifiercreated": "New identifier created successfully",
     "identifierupdated": "Identifier successfully updated",
     "identifierdeleted": "Identifier successfully deleted",
@@ -1079,8 +1126,38 @@
         "label": "Approve login"
       }
     },
+    "multisig": {
+      "stageone": {
+        "title": "Identifier request",
+        "subtitle": "Review this multi-sig identifier request",
+        "requestfrom": "Request from",
+        "othermembers": "Other members",
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "threshold": "Threshold",
+        "alert": {
+          "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
+          "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
+          "accept": "Accept",
+          "decline": "Decline",
+          "cancel": "Cancel"
+        }
+      },
+      "stagetwo": {
+        "title": "Setup identifier",
+        "displayname": "Display name",
+        "chooseatheme": "Choose a theme"
+      }
+    },
     "button": {
-      "cancel": "Ignore"
+      "connect": "Connect",
+      "acceptoffer": "Accept credential",
+      "cancel": "Ignore",
+      "ignore": "Ignore",
+      "back": "Back",
+      "accept": "Accept",
+      "decline": "Decline",
+      "addidentifier": "Add identifier"
     },
     "alert": {
       "cancel": "Cancel"

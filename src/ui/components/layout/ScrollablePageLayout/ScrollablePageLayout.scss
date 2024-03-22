@@ -18,10 +18,14 @@
     }
   }
 
-  @media screen and (min-width: 250px) and (max-width: 425px) {
+  @media screen and (min-width: 250px) and (max-width: 370px) {
     padding-inline: 0.9rem;
 
     .scrollable-page-content {
+      > * {
+        margin: 0 auto 1.248rem;
+      }
+
       > h2 {
         margin: 0.5rem 0 0.94rem;
       }

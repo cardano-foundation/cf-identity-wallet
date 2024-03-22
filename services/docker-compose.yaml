@@ -46,6 +46,13 @@ services:
     entrypoint: vLEI-server -s ./schema/acdc -c ./samples/acdc/ -o ./samples/oobis/
     ports:
       - 7723:7723
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vlei.rule=Host(`${VLEI_HOST:-vlei-server}`)"
+      - "traefik.http.routers.keria.entrypoints=websecure"
+      - "traefik.http.routers.keria.tls.certresolver=myresolver"
+      - "traefik.http.routers.keria.service=keria"
+      - "traefik.http.services.keria.loadbalancer.server.port=7723"
 
   caddy:
     container_name: caddy
@@ -86,6 +93,9 @@ services:
       context: ../cf-identity-wallet/credential-issuance-server
       dockerfile: ./Dockerfile
     restart: unless-stopped
+    environment:
+      - PORT=3010
+      - ENDPOINT=https://${CRED_HOST}
     ports:
       - 3010:3010
     labels:

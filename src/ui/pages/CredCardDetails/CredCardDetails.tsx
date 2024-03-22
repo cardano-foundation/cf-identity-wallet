@@ -44,10 +44,14 @@ import {
   W3CCredentialDetails,
 } from "../../../core/agent/services/credentialService.types";
 import "../../components/CardDetailsElements/CardDetails.scss";
+import "./CredCardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { CredContentW3c } from "./components/CredContentW3c";
 import { CredContentAcdc } from "./components/CredContentAcdc";
+
+const NAVIGATION_DELAY = 250;
+const CLEAR_ANIMATION = 1000;
 
 const CredCardDetails = () => {
   const pageId = "credential-card-details";
@@ -68,6 +72,8 @@ const CredCardDetails = () => {
   >();
   const [connectionDetails, setConnectionDetails] =
     useState<ConnectionDetails>();
+
+  const [navAnimation, setNavAnimation] = useState(false);
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
@@ -98,6 +104,8 @@ const CredCardDetails = () => {
   };
 
   const handleDone = () => {
+    setNavAnimation(true);
+
     const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CRED_DETAILS, {
       store: { stateCache },
     });
@@ -108,7 +116,14 @@ const CredCardDetails = () => {
       dispatch,
       updateRedux
     );
-    history.push(nextPath.pathname);
+
+    setTimeout(() => {
+      history.push(nextPath.pathname);
+    }, NAVIGATION_DELAY);
+
+    setTimeout(() => {
+      setNavAnimation(false);
+    }, CLEAR_ANIMATION);
   };
 
   const handleArchiveCredential = async () => {
@@ -224,8 +239,8 @@ const CredCardDetails = () => {
   if (!cardData) {
     return (
       <div
-        className="spinner-container"
-        data-testid="spinner-container"
+        className="cred-detail-spinner-container"
+        data-testid="cred-detail-spinner-container"
       >
         <IonSpinner name="circular" />
       </div>
@@ -240,10 +255,14 @@ const CredCardDetails = () => {
       return null;
     }
 
+    const pageClasses = `cred-card-detail card-details${
+      isArchived ? " archived-credential" : ""
+    } ${navAnimation ? "cred-back-animation" : "cred-open-animation"}`;
+
     return (
       <TabLayout
         pageId={pageId}
-        customClass="card-details"
+        customClass={pageClasses}
         header={true}
         doneLabel={`${i18n.t("creds.card.details.done")}`}
         doneAction={handleDone}

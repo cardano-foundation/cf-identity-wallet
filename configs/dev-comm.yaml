@@ -1,5 +1,5 @@
 keri:
-  backerType: ledger #pools
+  backerType: ledger
   ledger:
-    aid: BIe_q0F4EkYPEne6jUnSV1exxOYeGf_AMSMvegpF4XQP
-    address: addr_test1vq0w66kmwwgkedxpcysfmy6z3lqxnyj7t4zzt5df3xv3qcs6cmmqm
+    aid: BD39IWoiPYhhq5yn2l7FTQykcjhZma1KmfWrWr9ZYUFD
+    address: addr_test1vqefk7cyhcyet03humlzkyl2cj8jwezvr6gu8cg8jrkdq7cf30wpu

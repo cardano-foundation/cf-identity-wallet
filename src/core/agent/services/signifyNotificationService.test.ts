@@ -1,5 +1,6 @@
 import { Agent } from "@aries-framework/core";
 import { SignifyNotificationService } from "./signifyNotificationService";
+import { SignifyApi } from "../modules/signify/signifyApi";
 
 const agent = jest.mocked({
   modules: {
@@ -34,8 +35,25 @@ const agent = jest.mocked({
   },
 });
 
+const basicStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const signifyApi = jest.mocked({
+  markNotification: jest.fn(),
+});
+
 const signifyNotificationService = new SignifyNotificationService(
-  agent as any as Agent
+  agent as any as Agent,
+  basicStorage,
+  signifyApi as any as SignifyApi
 );
 
 describe("Signify notification service of agent", () => {
@@ -77,14 +95,14 @@ describe("Signify notification service of agent", () => {
         },
       },
     ];
-    agent.genericRecords.save = jest
+    basicStorage.save = jest
       .fn()
       .mockReturnValue({ id: "id", createdAt: new Date(), content: {} });
     jest.useFakeTimers();
     for (const notif of notes) {
       await signifyNotificationService.processNotification(notif, callback);
     }
-    expect(agent.genericRecords.save).toBeCalledTimes(2);
+    expect(basicStorage.save).toBeCalledTimes(2);
     expect(callback).toBeCalledTimes(2);
   });
 });

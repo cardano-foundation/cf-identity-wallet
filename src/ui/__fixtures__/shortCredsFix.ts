@@ -56,6 +56,14 @@ const shortCredsFix: CredentialShortDetails[] = [
     status: CredentialMetadataRecordStatus.CONFIRMED,
     connectionType: 1,
   },
+  {
+    id: "metadata:EKfweht5lOkjaguB5dz42BMkfejhBFIF9-ghumzCJ6nv",
+    colors: ["#8fefba", "#bcf5d6"],
+    issuanceDate: "2024-01-22T16:03:44.643Z",
+    credentialType: "Qualified vLEI Issuer Credential",
+    status: CredentialMetadataRecordStatus.PENDING,
+    connectionType: 1,
+  },
 ];
 
 export { shortCredsFix };
