@@ -876,6 +876,11 @@ describe("Identifier service of agent", () => {
 
   test("can join the multisig inception", async () => {
     const multisigIdentifier = "newMultisigIdentifierAid";
+    agent.modules.generalStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue({
+        signifyName: "name",
+      });
     basicStorage.findById = jest.fn().mockResolvedValue({
       content: {
         d: "d",

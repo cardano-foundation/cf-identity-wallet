@@ -349,13 +349,14 @@ describe("Connection service of agent", () => {
         },
       });
     await connectionService.receiveInvitationFromUrl(oobi);
-    expect(agent.genericRecords.save).toBeCalledWith({
+    expect(basicStorage.save).toBeCalledWith({
       id: "id",
       content: {
         alias: "alias",
         oobi,
         groupId,
       },
+      type: RecordType.CONNECTION_KERI_METADATA,
       tags: {
         type: RecordType.CONNECTION_KERI_METADATA,
       },
