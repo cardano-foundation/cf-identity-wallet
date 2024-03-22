@@ -42,9 +42,12 @@ export class SignifyApi {
   static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
     "Unable to retrieve key states for given multi-sig member";
 
-  static readonly VLEI_HOST =
-    "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
-  static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static readonly CREDENTIAL_SERVER =
+    "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
+  static readonly SCHEMA_SAID_VLEI =
+    "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static readonly SCHEMA_SAID_IIW_DEMO =
+    "EKYv475K1k6uMt9IJw99NM8iLQuQf1bKfSHqA1XIKoQy";
   static resolvedOobi: { [key: string]: any } = {};
 
   private signifyClient!: SignifyClient;
@@ -81,7 +84,7 @@ export class SignifyApi {
     const signifyName = utils.uuid();
     const operation = await this.signifyClient
       .identifiers()
-      .create(signifyName, this.getCreateAidOptions());
+      .create(signifyName); //, this.getCreateAidOptions());
     await operation.op();
     await this.signifyClient
       .identifiers()
@@ -189,8 +192,8 @@ export class SignifyApi {
     return Oobi;
   }
 
-  async getNotifications() {
-    return this.signifyClient.notifications().list();
+  async getNotifications(start = 0, end = 24) {
+    return this.signifyClient.notifications().list(start, end);
   }
 
   async markNotification(id: string) {
@@ -202,7 +205,13 @@ export class SignifyApi {
     holderAidName: string,
     issuerAid: string
   ): Promise<void> {
-    await this.resolveOobi(SignifyApi.VLEI_HOST + SignifyApi.SCHEMA_SAID);
+    // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
+    await this.resolveOobi(
+      SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID_VLEI
+    );
+    await this.resolveOobi(
+      SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID_IIW_DEMO
+    );
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.signifyClient
       .ipex()

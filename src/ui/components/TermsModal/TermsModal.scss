@@ -4,6 +4,12 @@ ion-modal.terms-modal {
   justify-content: end;
   --height: auto;
 
+  .page-header {
+    ion-toolbar {
+      --background: transparent;
+    }
+  }
+
   &::part(content) {
     height: 100%;
   }

@@ -204,7 +204,7 @@ class SqliteStorageService<T extends BaseRecord> implements StorageService<T> {
   ): Promise<StorageObject[]> {
     let scanValues = [category];
     let scanQuery = SqliteStorageService.SCAN_QUERY_SQL;
-    if (query) {
+    if (query && Object.keys(query).length > 0) {
       const dbQuery = convertDbQuery(query);
       const { condition, values } = this.getQueryConditionSql(dbQuery);
       scanQuery += " AND " + condition;

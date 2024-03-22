@@ -1,5 +1,4 @@
 import { BaseEvent } from "@aries-framework/core";
-import { IdentifierMetadataRecordProps } from "./modules";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -12,12 +11,7 @@ enum Blockchain {
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
-}
-
-enum GenericRecordType {
-  CONNECTION_NOTE = "connection-note",
-  CONNECTION_KERI_METADATA = "connection-keri-metadata",
-  NOTIFICATION_KERI = "notification-keri",
+  ACCEPTED = "accepted",
 }
 
 enum ConnectionHistoryType {
@@ -112,10 +106,14 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
+interface KeriaNotificationMarker {
+  nextIndex: number;
+  lastNotificationId: string;
+}
+
 export {
   Blockchain,
   ConnectionStatus,
-  GenericRecordType,
   ConnectionHistoryType,
   MiscRecordId,
   ConnectionType,
@@ -133,4 +131,5 @@ export type {
   ConnectionKeriStateChangedEvent,
   KeriNotification,
   AcdcKeriStateChangedEvent,
+  KeriaNotificationMarker,
 };

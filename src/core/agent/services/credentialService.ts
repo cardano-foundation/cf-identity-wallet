@@ -14,7 +14,6 @@ import {
 } from "@aries-framework/core";
 import {
   KeriNotification,
-  GenericRecordType,
   AcdcKeriStateChangedEvent,
   AcdcKeriEventTypes,
   ConnectionType,
@@ -34,6 +33,7 @@ import {
   ACDCDetails,
 } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
+import { RecordType } from "../../storage/storage.types";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -156,10 +156,9 @@ class CredentialService extends AgentService {
   ): Promise<W3CCredentialDetails | ACDCDetails> {
     const metadata = await this.getMetadataById(id);
     if (metadata.connectionType === ConnectionType.KERI) {
-      const { acdc, error } =
-        await this.agent.modules.signify.getCredentialBySaid(
-          metadata.credentialRecordId
-        );
+      const { acdc, error } = await this.signifyApi.getCredentialBySaid(
+        metadata.credentialRecordId
+      );
       if (error) {
         throw error;
       }
@@ -433,10 +432,12 @@ class CredentialService extends AgentService {
   }
 
   private async getKeriCredentialNotifications(): Promise<KeriNotification[]> {
-    const results = await this.agent.genericRecords.findAllByQuery({
-      type: GenericRecordType.NOTIFICATION_KERI,
-      route: NotificationRoute.Credential,
-    });
+    const results = await this.basicStorage.findAllByQuery(
+      RecordType.NOTIFICATION_KERI,
+      {
+        route: NotificationRoute.Credential,
+      }
+    );
     return results.map((result) => {
       return {
         id: result.id,
@@ -495,7 +496,7 @@ class CredentialService extends AgentService {
   private async getKeriNotificationRecordById(
     id: string
   ): Promise<KeriNotification> {
-    const result = await this.agent.genericRecords.findById(id);
+    const result = await this.basicStorage.findById(id);
     if (!result) {
       throw new Error(`${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`);
     }
@@ -507,12 +508,12 @@ class CredentialService extends AgentService {
   }
 
   async deleteKeriNotificationRecordById(id: string): Promise<void> {
-    await this.agent.genericRecords.deleteById(id);
+    await this.basicStorage.deleteById(id);
   }
 
   async acceptKeriAcdc(id: string): Promise<void> {
     const keriNoti = await this.getKeriNotificationRecordById(id);
-    const keriExchange = await this.agent.modules.signify.getKeriExchange(
+    const keriExchange = await this.signifyApi.getKeriExchange(
       keriNoti.a.d as string
     );
     const credentialId = keriExchange.exn.e.acdc.d;
@@ -533,17 +534,16 @@ class CredentialService extends AgentService {
     if (holder && holder.signifyName) {
       holderSignifyName = holder.signifyName;
     } else {
-      const identifierHolder =
-        await this.agent.modules.signify.getIdentifierById(
-          keriExchange.exn.a.i
-        );
+      const identifierHolder = await this.signifyApi.getIdentifierById(
+        keriExchange.exn.a.i
+      );
       holderSignifyName = identifierHolder?.name;
     }
     if (!holderSignifyName) {
       throw new Error(CredentialService.ISSUEE_NOT_FOUND);
     }
 
-    await this.agent.modules.signify.admitIpex(
+    await this.signifyApi.admitIpex(
       keriNoti.a.d as string,
       holderSignifyName,
       keriExchange.exn.i
@@ -566,26 +566,21 @@ class CredentialService extends AgentService {
   }
 
   private async waitForAcdcToAppear(credentialId: string): Promise<any> {
-    let { acdc } = await this.agent.modules.signify.getCredentialBySaid(
-      credentialId
-    );
+    let { acdc } = await this.signifyApi.getCredentialBySaid(credentialId);
     let retryTimes = 0;
     while (!acdc) {
       if (retryTimes > 120) {
         throw new Error(CredentialService.ACDC_NOT_APPEARING);
       }
       await new Promise((resolve) => setTimeout(resolve, 500));
-      acdc = (
-        await this.agent.modules.signify.getCredentialBySaid(credentialId)
-      ).acdc;
+      acdc = (await this.signifyApi.getCredentialBySaid(credentialId)).acdc;
       retryTimes++;
     }
     return acdc;
   }
 
   async syncACDCs() {
-    const signifyCredentials =
-      await this.agent.modules.signify.getCredentials();
+    const signifyCredentials = await this.signifyApi.getCredentials();
     const storedCredentials =
       await this.agent.modules.generalStorage.getAllCredentialMetadata();
     const unSyncedData = signifyCredentials.filter(
