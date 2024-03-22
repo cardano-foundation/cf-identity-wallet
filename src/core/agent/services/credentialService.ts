@@ -18,7 +18,7 @@ import {
 } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { CredentialMetadataRecord } from "../modules/generalStorage/repositories/credentialMetadataRecord";
-import { BasicRecord , RecordType } from "../../storage/storage.types";
+import { BasicRecord, RecordType } from "../../storage/storage.types";
 import { AriesAgent } from "../agent";
 
 class CredentialService extends AgentService {
@@ -340,11 +340,11 @@ class CredentialService extends AgentService {
     return this.parseCredentialMetadataRecord(basicRecord);
   }
 
-  async getCredentialMetadataByCredentialRecordId(credentialId: string) {
+  async getCredentialMetadataByCredentialRecordId(credentialRecordId: string) {
     const basicRecords = await this.basicStorage.findAllByQuery(
       RecordType.CREDENTIAL_METADATA_RECORD,
       {
-        credentialId,
+        credentialRecordId,
       }
     );
     const basicRecord = basicRecords[0];
