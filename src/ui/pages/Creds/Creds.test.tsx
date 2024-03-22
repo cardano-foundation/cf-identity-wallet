@@ -188,7 +188,7 @@ describe("Creds Tab", () => {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,
     };
-    const { getByTestId, queryByTestId, getByText } = render(
+    const { getByTestId, queryByTestId, getByText, getAllByText } = render(
       <Provider store={storeMocked}>
         <Creds />
       </Provider>
@@ -206,7 +206,7 @@ describe("Creds Tab", () => {
     expect(
       getByText(formatShortDate(`${connectionsFix[0].connectionDate}`))
     ).toBeVisible();
-    expect(getByText(connectionsFix[0].status)).toBeVisible();
+    expect(getAllByText(connectionsFix[0].status)[0]).toBeVisible();
   });
 
   test.skip("Show Add Connections modal", async () => {

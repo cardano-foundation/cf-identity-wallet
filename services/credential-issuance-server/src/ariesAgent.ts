@@ -33,8 +33,6 @@ const agentConfig: InitConfig = {
 
 class AriesAgent {
   static readonly ISSUER_AID_NAME = "issuer";
-  static readonly VLEI_HOST = "https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
-  static readonly SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
 
   private static instance: AriesAgent;
   private readonly agent: Agent<{
@@ -143,7 +141,7 @@ class AriesAgent {
           degree: {
             type: "BachelorDegree",
             name: "Bachelor of Science and Arts",
-          }
+          },
         },
         expirationDate: "2100-10-22T12:23:48Z",
       },
@@ -234,23 +232,44 @@ class AriesAgent {
     return this.agent.modules.signify.getOobi(AriesAgent.ISSUER_AID_NAME);
   }
 
-  async issueAcdcCredentialByOobi(url: string) {
-    const aid = await this.agent.modules.signify.resolveOobi(url);
+  async resolveOobi(url: string) {
+    return this.agent.modules.signify.resolveOobi(url);
+  }
+
+  async issueAcdcCredentialByAid(schemaSaid, aid, name?) {
     return this.agent.modules.signify.issueCredential(
       AriesAgent.ISSUER_AID_NAME,
       this.keriRegistryRegk,
-      AriesAgent.SCHEMA_SAID,
-      aid?.response.i
+      schemaSaid,
+      aid,
+      name
     );
   }
-  async initKeri(schema?: string, issuerName?: string) {
-    const SAIDSchema = schema ? schema : AriesAgent.SCHEMA_SAID;
+
+  async requestDisclosure(schemaSaid, aid) {
+    return this.agent.modules.signify.requestDisclosure(
+      AriesAgent.ISSUER_AID_NAME,
+      schemaSaid,
+      aid
+    );
+  }
+
+  async contacts() {
+    return this.agent.modules.signify.contacts();
+  }
+
+  async initKeri(issuerName?: string) {
     const AIDIssuerName = issuerName ? issuerName : AriesAgent.ISSUER_AID_NAME;
-    const existedIndentifier = await this.agent.modules.signify.getIdentifierByName(AIDIssuerName).catch(() => null);
+    const existedIndentifier = await this.agent.modules.signify
+      .getIdentifierByName(AIDIssuerName)
+      .catch(() => null);
     if (existedIndentifier) return existedIndentifier;
-    const identifier = await this.agent.modules.signify.createIdentifier(AIDIssuerName);
-    await this.agent.modules.signify.resolveOobi(AriesAgent.VLEI_HOST + SAIDSchema);
-    this.keriRegistryRegk = await this.agent.modules.signify.createRegistry(AIDIssuerName);
+    const identifier = await this.agent.modules.signify.createIdentifier(
+      AIDIssuerName
+    );
+    this.keriRegistryRegk = await this.agent.modules.signify.createRegistry(
+      AIDIssuerName
+    );
     return identifier;
   }
 }

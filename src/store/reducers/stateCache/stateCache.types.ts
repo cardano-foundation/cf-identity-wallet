@@ -1,4 +1,8 @@
-import { ConnectionType } from "../../../core/agent/agent.types";
+import {
+  ConnectionType,
+  KeriNotification,
+} from "../../../core/agent/agent.types";
+import { MultiSigIcpRequestDetails } from "../../../core/agent/services/identifierService.types";
 import { OperationType, ToastMsgType } from "../../../ui/globals/types";
 
 interface PayloadData<T = any> {
@@ -21,6 +25,7 @@ enum IncomingRequestType {
   CONNECTION_RESPONSE = "connection-response",
   CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
   CONNECTION_INCOMING = "connection-incoming",
+  MULTI_SIG_REQUEST_INCOMING = "multi-sig-request-incoming",
 }
 
 interface IncomingRequestProps {
@@ -29,6 +34,8 @@ interface IncomingRequestProps {
   logo?: string;
   label?: string;
   source?: ConnectionType;
+  event?: KeriNotification;
+  multisigIcpDetails?: MultiSigIcpRequestDetails;
 }
 
 interface QueueProps<T> {

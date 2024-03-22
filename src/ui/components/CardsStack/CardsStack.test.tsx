@@ -159,4 +159,73 @@ describe("Cards Stack Component", () => {
 
     await waitFor(() => expect(firstCard).not.toHaveClass("active"));
   });
+
+  test("Call the callback after card active", async () => {
+    const onActiveDetail = jest.fn();
+    jest.useFakeTimers();
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixW3c[0]);
+    const { findByTestId } = render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <CardsStack
+            name="example"
+            cardsType={CardType.CREDS}
+            cardsData={credsFixW3c}
+            onShowCardDetails={onActiveDetail}
+          />
+          <Route
+            path={TabsRoutePath.CRED_DETAILS}
+            component={CredCardDetails}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const firstCard = await findByTestId("cred-card-template-example-index-0");
+    await waitFor(() => expect(firstCard).not.toHaveClass("active"));
+
+    act(() => {
+      fireEvent.click(firstCard);
+      jest.advanceTimersByTime(NAVIGATION_DELAY);
+    });
+
+    expect(onActiveDetail).toBeCalledTimes(1);
+  });
+
+  test("Prevent mutilple click card", async () => {
+    const onActiveDetail = jest.fn();
+    jest.useFakeTimers();
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixW3c[0]);
+    const { findByTestId } = render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <CardsStack
+            name="example"
+            cardsType={CardType.CREDS}
+            cardsData={credsFixW3c}
+            onShowCardDetails={onActiveDetail}
+          />
+          <Route
+            path={TabsRoutePath.CRED_DETAILS}
+            component={CredCardDetails}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const firstCard = await findByTestId("cred-card-template-example-index-0");
+    await waitFor(() => expect(firstCard).not.toHaveClass("active"));
+
+    act(() => {
+      fireEvent.click(firstCard);
+      fireEvent.click(firstCard);
+      jest.advanceTimersByTime(NAVIGATION_DELAY);
+    });
+
+    expect(onActiveDetail).toBeCalledTimes(1);
+  });
 });

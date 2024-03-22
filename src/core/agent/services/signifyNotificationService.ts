@@ -1,27 +1,26 @@
 import { AgentService } from "./agentService";
-import {
-  GenericRecordType,
-  KeriNotification,
-  KeriaNotificationMarker,
-} from "../agent.types";
+import { KeriNotification, KeriaNotificationMarker } from "../agent.types";
 import { Notification } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
+import { RecordType } from "../../storage/storage.types";
 class SignifyNotificationService extends AgentService {
   async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
   ) {
-    // eslint-disable-next-line no-constant-condition
-    while (true) {
-      let notificationQuery = {
-        nextIndex: 0,
-        lastNotificationId: "",
-      };
-      try {
-        notificationQuery = (await PreferencesStorage.get(
-          PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER
-        )) as unknown as KeriaNotificationMarker;
-      } catch (error) {
+    let notificationQuery = {
+      nextIndex: 0,
+      lastNotificationId: "",
+    };
+    try {
+      notificationQuery = (await PreferencesStorage.get(
+        PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER
+      )) as unknown as KeriaNotificationMarker;
+    } catch (error) {
+      if (
+        (error as Error).message ==
+        `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER}`
+      ) {
         /**Set the preference key */
         await PreferencesStorage.set(
           PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
@@ -30,13 +29,18 @@ class SignifyNotificationService extends AgentService {
             lastNotificationId: "",
           }
         );
+      } else {
+        throw error;
       }
+    }
+    // eslint-disable-next-line no-constant-condition
+    while (true) {
       const startFetchingIndex =
         notificationQuery.nextIndex > 0
           ? notificationQuery.nextIndex - 1
           : notificationQuery.nextIndex;
 
-      const notifications = await this.agent.modules.signify.getNotifications(
+      const notifications = await this.signifyApi.getNotifications(
         startFetchingIndex,
         startFetchingIndex + 24
       );
@@ -45,12 +49,13 @@ class SignifyNotificationService extends AgentService {
         notifications.notes[0].i !== notificationQuery.lastNotificationId
       ) {
         /**This is to verify no notifications were deleted for some reason (which affects the batch range) */
+        notificationQuery = {
+          nextIndex: 0,
+          lastNotificationId: "",
+        };
         await PreferencesStorage.set(
           PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
-          {
-            nextIndex: 0,
-            lastNotificationId: "",
-          }
+          notificationQuery
         );
         continue;
       }
@@ -64,13 +69,13 @@ class SignifyNotificationService extends AgentService {
       if (notifications.notes.length) {
         const nextNotificationIndex =
           startFetchingIndex + notifications.notes.length;
+        notificationQuery = {
+          nextIndex: nextNotificationIndex,
+          lastNotificationId: notifications.notes[nextNotificationIndex - 1].i,
+        };
         await PreferencesStorage.set(
           PreferencesKeys.APP_KERIA_NOTIFICATION_MARKER,
-          {
-            nextIndex: nextNotificationIndex,
-            lastNotificationId:
-              notifications.notes[nextNotificationIndex - 1].i,
-          }
+          notificationQuery
         );
       } else {
         await new Promise((rs) => {
@@ -95,20 +100,21 @@ class SignifyNotificationService extends AgentService {
     ) {
       const keriNoti = await this.createKeriNotificationRecord(notif);
       callback(keriNoti);
-      await this.agent.modules.signify.markNotification(notif.i);
+      await this.signifyApi.markNotification(notif.i);
     } else if (!notif.r) {
-      this.agent.modules.signify.markNotification(notif.i);
+      this.signifyApi.markNotification(notif.i);
     }
   }
 
   private async createKeriNotificationRecord(
     event: Notification
   ): Promise<KeriNotification> {
-    const result = await this.agent.genericRecords.save({
+    const result = await this.basicStorage.save({
       id: event.i,
       content: event.a,
+      type: RecordType.NOTIFICATION_KERI,
       tags: {
-        type: GenericRecordType.NOTIFICATION_KERI,
+        type: RecordType.NOTIFICATION_KERI,
         route: event.a.r,
       },
     });
