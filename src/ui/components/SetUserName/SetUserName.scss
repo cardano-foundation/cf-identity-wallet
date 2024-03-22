@@ -1,0 +1,25 @@
+ion-modal#set-user-name {
+  --height: fit-content;
+  padding: 1.25rem;
+  --border-radius: 1rem;
+  --box-shadow: 2px 2px 10px 0px rgba(3, 3, 33, 0.3);
+
+  .wrapper {
+    padding: 1.25rem;
+
+    h4 {
+      font-size: 1.125rem;
+      text-align: center;
+      color: var(--ion-color-primary);
+    }
+
+    ion-item.custom-input {
+      --background: white;
+      margin: 1.563rem 0;
+    }
+
+    ion-toolbar.page-footer {
+      padding: 0;
+    }
+  }
+}

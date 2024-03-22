@@ -282,7 +282,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setPauseQueueIncomingRequest(true));
     const connectionsDetails =
       await AriesAgent.agent.connections.getConnections();
-    let userName = "";
+    let userName: PreferencesStorageItem = { userName: "" };
     const credentials = await AriesAgent.agent.credentials.getCredentials();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
@@ -338,8 +338,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     try {
-      userName = (await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME))
-        .userName;
+      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
     } catch (e) {
       if (
         !(e instanceof Error) ||
@@ -356,7 +355,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(
       setAuthentication({
         ...authentication,
-        userName,
+        userName: userName.userName as string,
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,

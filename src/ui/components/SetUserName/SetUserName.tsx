@@ -1,4 +1,5 @@
-import { IonAlert } from "@ionic/react";
+import { IonModal } from "@ionic/react";
+import { useState } from "react";
 import { SetUserNameProps } from "./SetUserName.types";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
@@ -8,13 +9,18 @@ import {
 } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
+import "./SetUserName.scss";
+import { i18n } from "../../../i18n";
+import { CustomInput } from "../CustomInput";
+import { PageFooter } from "../PageFooter";
 
 const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
   const dispatch = useAppDispatch();
   const authentication = useAppSelector(getAuthentication);
   const componentId = "set-user-name";
+  const [userName, setUserName] = useState("");
 
-  const handleConfirm = (userName: string) => {
+  const handleConfirm = () => {
     if (userName.length === 0) {
       dispatch(setToastMsg(ToastMsgType.USERNAME_CREATION_ERROR));
     } else {
@@ -36,29 +42,29 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
   };
 
   return (
-    <IonAlert
+    <IonModal
       isOpen={isOpen}
-      backdropDismiss={false}
-      data-testid={componentId}
-      header="Please enter your info"
-      inputs={[
-        {
-          name: "userName",
-          id: componentId + "-input",
-          placeholder: "Name (max 32 characters)",
-          attributes: {
-            maxlength: 32,
-          },
-        },
-      ]}
-      buttons={[
-        {
-          text: "Confirm",
-          role: "confirm",
-          handler: (alertData) => handleConfirm(alertData.userName),
-        },
-      ]}
-    />
+      id={componentId}
+      backdropDismiss={!isOpen}
+    >
+      <div className="wrapper">
+        <h4>{i18n.t("setusername.title")}</h4>
+        <CustomInput
+          dataTestId={`${componentId}-input`}
+          title={`${i18n.t("setusername.input.title")}`}
+          placeholder={`${i18n.t("setusername.input.placeholder")}`}
+          hiddenInput={false}
+          onChangeInput={setUserName}
+          value={userName}
+        />
+        <PageFooter
+          pageId={componentId}
+          primaryButtonDisabled={userName.length === 0}
+          primaryButtonText={`${i18n.t("setusername.button.confirm")}`}
+          primaryButtonAction={() => handleConfirm()}
+        />
+      </div>
+    </IonModal>
   );
 };
 

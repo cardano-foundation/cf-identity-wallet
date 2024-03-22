@@ -7,7 +7,9 @@ import "./App.scss";
 import "./styles/smartphoneLayout.scss";
 import { AppWrapper } from "./components/AppWrapper";
 import {
+  getAuthentication,
   getCurrentOperation,
+  getCurrentRoute,
   getToastMsg,
   setToastMsg,
 } from "../store/reducers/stateCache";
@@ -17,11 +19,16 @@ import { OperationType } from "./globals/types";
 import { i18n } from "../i18n";
 import { IncomingRequest } from "./pages/IncomingRequest";
 import { Settings } from "./pages/Settings";
+import { SetUserName } from "./components/SetUserName";
+import { TabsRoutePath } from "../routes/paths";
 
 setupIonicReact();
 
 const App = () => {
   const dispatch = useAppDispatch();
+  const authentication = useAppSelector(getAuthentication);
+  const currentRoute = useAppSelector(getCurrentRoute);
+  const [showSetUserName, setShowSetUserName] = useState(false);
   const currentOperation = useAppSelector(getCurrentOperation);
   const toastMsg = useAppSelector(getToastMsg);
   const [showScan, setShowScan] = useState(false);
@@ -46,6 +53,15 @@ const App = () => {
     setShowToast(toastMsg !== undefined);
   }, [currentOperation, toastMsg]);
 
+  useEffect(() => {
+    if (
+      authentication.userName?.length === 0 &&
+      currentRoute?.path.includes(TabsRoutePath.ROOT)
+    ) {
+      setShowSetUserName(true);
+    }
+  }, [authentication, currentRoute]);
+
   return (
     <IonApp>
       <AppWrapper>
@@ -53,7 +69,13 @@ const App = () => {
           {showScan ? (
             <FullPageScanner setShowScan={setShowScan} />
           ) : (
-            <Routes />
+            <>
+              <Routes />
+              <SetUserName
+                isOpen={showSetUserName}
+                setIsOpen={setShowSetUserName}
+              />
+            </>
           )}
 
           <IncomingRequest />
