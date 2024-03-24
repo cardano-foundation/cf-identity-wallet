@@ -34,9 +34,9 @@ export class SignifyApi {
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
+  static readonly INVALID_THRESHOLD = "Invalid threshold";
   static readonly FAILED_TO_ROTATE_AID =
     "Failed to rotate AID, operation not completing...";
-  static readonly INVALID_THRESHOLD = "Invalid threshold";
   static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
     "Unable to retrieve key states for given multi-sig member";
 
