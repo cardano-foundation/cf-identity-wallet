@@ -1,5 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
 import { instanceToPlain } from "class-transformer";
+import { BasicRecord } from "../agent/records";
 
 type Tags = Record<string | number, unknown>;
 abstract class BaseRecord {
@@ -39,13 +39,6 @@ abstract class BaseRecord {
   }
 }
 
-interface BasicRecordStorageProps {
-  id?: string;
-  createdAt?: Date;
-  tags?: Tags;
-  content: Record<string, unknown>;
-  type: RecordType;
-}
 interface SaveBasicRecordOption {
   content: Record<string, unknown>;
   id?: string;
@@ -60,26 +53,6 @@ enum RecordType {
   CREDENTIAL_METADATA_RECORD = "CredentialMetadataRecord",
   IDENTIFIER_METADATA_RECORD = "IdentifierMetadataRecord",
   OP_PASS_HINT = "OpPassHint",
-}
-
-class BasicRecord extends BaseRecord {
-  content!: Record<string, unknown>;
-  type!: RecordType;
-
-  constructor(props: BasicRecordStorageProps) {
-    super();
-    this.id = props.id ?? uuidv4();
-    this.createdAt = props.createdAt ?? new Date();
-    this.content = props.content;
-    this._tags = props.tags ?? {};
-    this.type = props.type;
-  }
-
-  getTags() {
-    return {
-      ...this._tags,
-    };
-  }
 }
 
 type SimpleQuery<T extends BaseRecord> = Partial<ReturnType<T["getTags"]>> &
@@ -97,7 +70,7 @@ interface StorageApi {
   delete(record: BasicRecord): Promise<void>;
   deleteById(id: string): Promise<void>;
   update(record: BasicRecord): Promise<void>;
-  findById(id: string): Promise<BasicRecord>;
+  findById(id: string): Promise<BasicRecord | null>;
   findAllByQuery(
     type: RecordType,
     query: Query<BasicRecord>
@@ -111,5 +84,5 @@ interface StorageRecord {
   category: string;
 }
 
-export { BasicRecord, BaseRecord, RecordType };
+export { BaseRecord, RecordType };
 export type { StorageApi, Query, SaveBasicRecordOption, StorageRecord, Tags };

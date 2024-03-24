@@ -4,7 +4,6 @@ import {
   SQLiteDBConnection,
 } from "@capacitor-community/sqlite";
 import {
-  BasicRecord,
   StorageApi,
   Query,
   SaveBasicRecordOption,
@@ -19,6 +18,7 @@ import {
   resolveTagsFromDb,
 } from "./utils";
 import { deserializeRecord } from "../utils";
+import { BasicRecord } from "../../agent/records";
 
 class SqliteStorage implements StorageApi {
   private static readonly SESION_IS_NOT_INITIALIZED =
@@ -126,13 +126,13 @@ class SqliteStorage implements StorageApi {
     await this.deleteItem(id);
   }
 
-  async findById(id: string): Promise<BasicRecord> {
+  async findById(id: string): Promise<BasicRecord | null> {
     this.checkSession(this.session);
 
     const record = await this.getItem(id);
 
     if (!record) {
-      throw new Error(`${SqliteStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`);
+      return null;
     }
     return deserializeRecord(record);
   }

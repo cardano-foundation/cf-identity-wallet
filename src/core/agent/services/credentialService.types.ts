@@ -1,5 +1,5 @@
 import { ConnectionType } from "../agent.types";
-import { CredentialMetadataRecordProps } from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 
 enum CredentialStatus {
   CONFIRMED = "confirmed",

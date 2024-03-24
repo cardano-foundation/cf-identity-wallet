@@ -14,8 +14,9 @@ import {
 import { AgentService } from "./agentService";
 import { AriesAgent } from "../agent";
 import { IdentifierType } from "./identifierService.types";
-import { BasicRecord, RecordType } from "../../storage/storage.types";
 import { KeriContact } from "../modules/signify/signifyApi.types";
+import { BasicRecord } from "../records";
+import { RecordType } from "../../storage/storage.types";
 
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =

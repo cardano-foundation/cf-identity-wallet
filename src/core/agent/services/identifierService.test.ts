@@ -2,7 +2,7 @@ import { IdentifierService } from "./identifierService";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
-} from "../modules/generalStorage/repositories/identifierMetadataRecord";
+} from "../records/identifierMetadataRecord";
 import { IdentifierType } from "./identifierService.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
 import { AriesAgent } from "../agent";
@@ -57,23 +57,6 @@ jest.mock("../../../core/agent/agent", () => ({
 const now = new Date();
 const nowISO = now.toISOString();
 const colors: [string, string] = ["#fff", "#fff"];
-const did = "did:key:xyz";
-
-const didMetadataRecordProps = {
-  id: did,
-  displayName: "Identifier 1",
-  signifyName: "uuid-here-1",
-  colors,
-  method: IdentifierType.KEY,
-  createdAt: now,
-  theme: 0,
-};
-const didMetadataRecord = new IdentifierMetadataRecord(didMetadataRecordProps);
-const archivedMetadataRecord = new IdentifierMetadataRecord({
-  ...didMetadataRecordProps,
-  isArchived: true,
-  theme: 0,
-});
 
 const keriMetadataRecordProps = {
   id: "aidHere",
@@ -84,6 +67,12 @@ const keriMetadataRecordProps = {
   createdAt: now,
   theme: 0,
 };
+const archivedMetadataRecord = new IdentifierMetadataRecord({
+  ...keriMetadataRecordProps,
+  isArchived: true,
+  theme: 0,
+});
+
 const keriMetadataRecord = new IdentifierMetadataRecord(
   keriMetadataRecordProps
 );
@@ -108,49 +97,11 @@ describe("Identifier service of agent", () => {
     jest.resetAllMocks();
   });
 
-  test("can get all non-archived identifiers", async () => {
-    basicStorage.findAllByQuery = jest
-      .fn()
-      .mockResolvedValue([didMetadataRecord, keriMetadataRecord]);
-    expect(await identifierService.getIdentifiers()).toStrictEqual([
-      {
-        id: did,
-        displayName: "Identifier 1",
-        signifyName: "uuid-here-1",
-        colors,
-        method: IdentifierType.KEY,
-        createdAtUTC: nowISO,
-        theme: 0,
-        isPending: false,
-      },
-      {
-        id: keriMetadataRecord.id,
-        displayName: "Identifier 2",
-        signifyName: "uuid-here",
-        colors,
-        method: IdentifierType.KERI,
-        createdAtUTC: nowISO,
-        theme: 0,
-        isPending: false,
-      },
-    ]);
-  });
-
-  test("can get all archived identifiers", async () => {
+  test("can get all identifiers", async () => {
     identifierService.getAllIdentifierMetadata = jest
       .fn()
-      .mockResolvedValue([didMetadataRecord, keriMetadataRecord]);
-    expect(await identifierService.getIdentifiers(true)).toStrictEqual([
-      {
-        id: did,
-        displayName: "Identifier 1",
-        signifyName: "uuid-here-1",
-        colors,
-        method: IdentifierType.KEY,
-        createdAtUTC: nowISO,
-        theme: 0,
-        isPending: false,
-      },
+      .mockResolvedValue([keriMetadataRecord]);
+    expect(await identifierService.getIdentifiers()).toStrictEqual([
       {
         id: keriMetadataRecord.id,
         displayName: "Identifier 2",
@@ -171,22 +122,14 @@ describe("Identifier service of agent", () => {
     expect(await identifierService.getIdentifiers()).toStrictEqual([]);
   });
 
-  test("can get all archived identifiers without error if there are none", async () => {
-    identifierService.getAllIdentifierMetadata = jest
-      .fn()
-      .mockResolvedValue([]);
-    expect(await identifierService.getIdentifiers(true)).toStrictEqual([]);
-  });
-
   test("search for non existant keri aid (in db)", async () => {
+    basicStorage.findById = jest.fn().mockResolvedValue(null);
     await expect(
       identifierService.getIdentifier(keriMetadataRecord.id)
     ).rejects.toThrowError(
       IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING
     );
-    expect(identifierService.getIdentifierMetadata).toBeCalledWith(
-      keriMetadataRecord.id
-    );
+    expect(basicStorage.findById).toBeCalledWith(keriMetadataRecord.id);
   });
 
   test("identifier exists in the database but not on Signify", async () => {
@@ -247,9 +190,7 @@ describe("Identifier service of agent", () => {
       })
     ).toBe(aid);
     expect(signifyApi.createIdentifier).toBeCalled();
-    expect(identifierService.createIdentifierMetadataRecord).toBeCalledWith(
-      expect.any(IdentifierMetadataRecord)
-    );
+    expect(basicStorage.save).toBeCalledTimes(1);
   });
 
   test("cannot create a keri identifier if theme is not valid", async () => {
@@ -260,6 +201,7 @@ describe("Identifier service of agent", () => {
       identifier: aid,
       signifyName,
     });
+
     await expect(
       identifierService.createIdentifier({
         method: IdentifierType.KERI,
@@ -287,19 +229,12 @@ describe("Identifier service of agent", () => {
       })
     ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
   });
-  // For archive/delete/restore tests there is no difference between did:key and keri
-  test("can archive any identifier (re-archiving does nothing)", async () => {
-    const id = "id";
-    await identifierService.archiveIdentifier(id);
-    expect(identifierService.updateIdentifierMetadata).toBeCalledWith(id, {
-      isArchived: true,
-    });
-  });
-
+  // For archive/delete/restore tests
   test("can delete an archived identifier (identifier and metadata record)", async () => {
     identifierService.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(archivedMetadataRecord);
+    identifierService.updateIdentifierMetadata = jest.fn();
     await identifierService.deleteIdentifier(archivedMetadataRecord.id);
     expect(identifierService.getIdentifierMetadata).toBeCalledWith(
       archivedMetadataRecord.id
@@ -315,33 +250,23 @@ describe("Identifier service of agent", () => {
   test("cannot delete a non-archived credential", async () => {
     identifierService.getIdentifierMetadata = jest
       .fn()
-      .mockResolvedValue(didMetadataRecord);
+      .mockResolvedValue(keriMetadataRecord);
+    identifierService.updateIdentifierMetadata = jest.fn();
     await expect(
-      identifierService.deleteIdentifier(didMetadataRecord.id)
+      identifierService.deleteIdentifier(keriMetadataRecord.id)
     ).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
     expect(identifierService.getIdentifierMetadata).toBeCalledWith(
-      didMetadataRecord.id
+      keriMetadataRecord.id
     );
     expect(identifierService.updateIdentifierMetadata).not.toBeCalled();
-  });
-
-  test("cannot delete a credential without a metadata record", async () => {
-    identifierService.getIdentifierMetadata = jest.fn().mockResolvedValue(null);
-    await expect(
-      identifierService.deleteIdentifier(didMetadataRecord.id)
-    ).rejects.toThrowError(
-      IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING
-    );
-    expect(identifierService.getIdentifierMetadata).toBeCalledWith(
-      didMetadataRecord.id
-    );
-    expect(identifierService.updateIdentifier).not.toBeCalled();
   });
 
   test("can restore an archived credential", async () => {
     identifierService.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(archivedMetadataRecord);
+    identifierService.updateIdentifierMetadata = jest.fn();
+
     await identifierService.restoreIdentifier(archivedMetadataRecord.id);
     expect(identifierService.getIdentifierMetadata).toBeCalledWith(
       archivedMetadataRecord.id
@@ -355,25 +280,13 @@ describe("Identifier service of agent", () => {
   test("cannot restore a non-archived credential", async () => {
     identifierService.getIdentifierMetadata = jest
       .fn()
-      .mockResolvedValue(didMetadataRecord);
+      .mockResolvedValue(keriMetadataRecord);
+
     await expect(
-      identifierService.restoreIdentifier(didMetadataRecord.id)
+      identifierService.restoreIdentifier(keriMetadataRecord.id)
     ).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
     expect(identifierService.getIdentifierMetadata).toBeCalledWith(
-      didMetadataRecord.id
-    );
-    expect(identifierService.updateIdentifierMetadata).not.toBeCalled();
-  });
-
-  test("cannot restore a credential without a metadata record", async () => {
-    identifierService.getIdentifierMetadata = jest.fn().mockResolvedValue(null);
-    await expect(
-      identifierService.restoreIdentifier(didMetadataRecord.id)
-    ).rejects.toThrowError(
-      IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING
-    );
-    expect(identifierService.getIdentifierMetadata).toBeCalledWith(
-      didMetadataRecord.id
+      keriMetadataRecord.id
     );
     expect(identifierService.updateIdentifierMetadata).not.toBeCalled();
   });
@@ -405,7 +318,7 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockReturnValue([]);
     await identifierService.syncKeriaIdentifiers();
-    expect(identifierService.createIdentifierMetadataRecord).toBeCalledTimes(1);
+    expect(basicStorage.save).toBeCalledTimes(1);
   });
 
   test("Can create a keri multisig with KERI contacts", async () => {
@@ -460,8 +373,8 @@ describe("Identifier service of agent", () => {
         otherIdentifiers.length + 1
       )
     ).toBe(multisigIdentifier);
-    expect(identifierService.createIdentifierMetadataRecord).toBeCalledWith(
-      expect.objectContaining({ id: multisigIdentifier, isPending: true })
+    expect(basicStorage.save).toBeCalledWith(
+      expect.objectContaining({ id: multisigIdentifier })
     );
 
     signifyApi.createMultisig = jest.fn().mockResolvedValue({
@@ -477,10 +390,9 @@ describe("Identifier service of agent", () => {
         1
       )
     ).toBe(`${multisigIdentifier}1`);
-    expect(identifierService.createIdentifierMetadataRecord).toBeCalledWith(
+    expect(basicStorage.save).toBeCalledWith(
       expect.objectContaining({
         id: `${multisigIdentifier}1`,
-        isPending: false,
       })
     );
 
@@ -497,10 +409,9 @@ describe("Identifier service of agent", () => {
         2
       )
     ).toBe(`${multisigIdentifier}2`);
-    expect(identifierService.createIdentifierMetadataRecord).toBeCalledWith(
+    expect(basicStorage.save).toBeCalledWith(
       expect.objectContaining({
         id: `${multisigIdentifier}2`,
-        isPending: false,
       })
     );
 
@@ -689,9 +600,7 @@ describe("Identifier service of agent", () => {
       )
     ).toBe(aid);
     expect(signifyApi.createDelegationIdentifier).toBeCalled();
-    expect(identifierService.createIdentifierMetadataRecord).toBeCalledWith(
-      expect.any(IdentifierMetadataRecord)
-    );
+    expect(basicStorage.save).toBeCalledTimes(1);
   });
 
   test("should call signify.createDelegationIdentifier with the DID and throw an error", async () => {

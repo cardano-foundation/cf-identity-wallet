@@ -4,6 +4,7 @@ import {
   IonContent,
   IonGrid,
   IonIcon,
+  IonInput,
   IonItemDivider,
   IonItemGroup,
   IonLabel,
@@ -55,6 +56,7 @@ const Connections = ({
     connectionsCache.length === 0
   );
 
+  const [oobi, setOOBI] = useState<string>();
   useEffect(() => {
     setShowPlaceholder(connectionsCache.length === 0);
   }, [connectionsCache]);
@@ -67,6 +69,11 @@ const Connections = ({
     // );
     // setInvitationLink(shortUrl);
     setConnectModalIsOpen(false);
+  }
+
+  async function handleSet() {
+    const invitation =
+      await AriesAgent.agent.connections.receiveInvitationFromUrl(oobi!);
   }
 
   const handleConnectModal = () => {
@@ -135,16 +142,21 @@ const Connections = ({
       backButtonAction={() => setShowConnections(false)}
       title={`${i18n.t("connections.tab.title")}`}
       additionalButtons={<AdditionalButtons />}
-      placeholder={
-        showPlaceholder && (
-          <CardsPlaceholder
-            buttonLabel={i18n.t("connections.tab.create")}
-            buttonAction={handleConnectModal}
-            testId={pageId}
-          />
-        )
-      }
+      // placeholder={
+      //   showPlaceholder && (
+      //     <CardsPlaceholder
+      //       buttonLabel={i18n.t("connections.tab.create")}
+      //       buttonAction={handleConnectModal}
+      //       testId={pageId}
+      //     />
+      //   )
+      // }
     >
+      <IonInput
+        value={oobi}
+        onIonChange={(e) => setOOBI(String(e.target.value) || "")}
+      />
+      <IonButton onClick={handleSet}>Resolve OOBI</IonButton>
       {!showPlaceholder && (
         <>
           <IonSearchbar

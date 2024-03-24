@@ -5,8 +5,8 @@ import {
   SummitCredCachedDetails,
   UniversityCredCachedDetails,
 } from "./credentialMetadataRecord.types";
-import { ConnectionType } from "../../../agent.types";
-import { BaseRecord } from "../../../../storage/storage.types";
+import { ConnectionType } from "../agent.types";
+import { BaseRecord } from "../../storage/storage.types";
 
 class CredentialMetadataRecord
   extends BaseRecord

@@ -1,11 +1,7 @@
-import {
-  ConnectionType,
-  ConnectionStatus,
-} from "../agent.types";
+import { ConnectionType, ConnectionStatus } from "../agent.types";
 import { ConnectionService } from "./connectionService";
 import { SignifyApi } from "../modules/signify/signifyApi";
 import { RecordType } from "../../storage/storage.types";
-
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -210,7 +206,7 @@ describe("Connection service of agent", () => {
         wellKnowns: [],
       },
     ]);
-    basicStorage.findAllByQuery = jest.fn().mockReturnValue([]);
+    basicStorage.getAll = jest.fn().mockReturnValue([]);
     await connectionService.syncKeriaContacts();
     expect(basicStorage.save).toBeCalledTimes(2);
   });

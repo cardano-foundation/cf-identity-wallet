@@ -9,7 +9,7 @@ import { AgentService } from "./agentService";
 import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
-} from "../modules/generalStorage/repositories/credentialMetadataRecord.types";
+} from "../records/credentialMetadataRecord.types";
 import { ColorGenerator } from "../../../ui/utils/colorGenerator";
 import {
   CredentialShortDetails,
@@ -17,9 +17,10 @@ import {
   ACDCDetails,
 } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
-import { CredentialMetadataRecord } from "../modules/generalStorage/repositories/credentialMetadataRecord";
-import { BasicRecord, RecordType } from "../../storage/storage.types";
+import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
+import { RecordType } from "../../storage/storage.types";
 import { AriesAgent } from "../agent";
+import { BasicRecord } from "../records";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -335,8 +336,13 @@ class CredentialService extends AgentService {
     return this.basicStorage.deleteById(id);
   }
 
-  async getCredentialMetadata(id: string) {
+  async getCredentialMetadata(
+    id: string
+  ): Promise<CredentialMetadataRecord | null> {
     const basicRecord = await this.basicStorage.findById(id);
+    if (!basicRecord) {
+      return null;
+    }
     return this.parseCredentialMetadataRecord(basicRecord);
   }
 
