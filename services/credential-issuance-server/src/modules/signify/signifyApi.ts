@@ -5,7 +5,7 @@ import {
   Tier,
   randomPasscode,
 } from "signify-ts";
-import { AriesAgent } from "../../ariesAgent";
+import { AriesAgent } from "../../agent";
 import { waitAndGetDoneOp } from "./utils";
 
 export class SignifyApi {
