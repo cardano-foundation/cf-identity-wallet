@@ -36,6 +36,7 @@ jest.mock("../core/agent/agent", () => ({
         getUnhandledCredentials: jest.fn(),
         onAcdcKeriStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
+        getUnhandledTunnelRequestEvents: jest.fn(),
       },
       messages: {
         onBasicMessageStateChanged: jest.fn(),

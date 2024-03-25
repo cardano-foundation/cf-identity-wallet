@@ -14,13 +14,6 @@ const agent = jest.mocked({
       updateIdentifierMetadata: jest.fn(),
       getKeriIdentifiersMetadata: jest.fn(),
     },
-    signify: {
-      getIdentifierByName: jest.fn(),
-      createIdentifier: jest.fn(),
-      getAllIdentifiers: jest.fn(),
-      markNotification: jest.fn(),
-      getKeriExchange: jest.fn(),
-    },
   },
   dids: {
     getCreatedDids: jest.fn(),
@@ -47,7 +40,11 @@ const basicStorage = jest.mocked({
 });
 
 const signifyApi = jest.mocked({
+  getIdentifierByName: jest.fn(),
+  createIdentifier: jest.fn(),
+  getAllIdentifiers: jest.fn(),
   markNotification: jest.fn(),
+  getKeriExchange: jest.fn(),
 });
 
 const signifyNotificationService = new SignifyNotificationService(

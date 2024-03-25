@@ -426,7 +426,7 @@ describe("Identifier service of agent", () => {
         colors,
         theme: 0,
       })
-    ).toBe({ identifier: did });
+    ).toStrictEqual({ identifier: did });
     expect(signifyApi.createIdentifier).not.toBeCalled(); // Just in case
     expect(agent.dids.create).toBeCalledWith({
       method: IdentifierType.KEY,
