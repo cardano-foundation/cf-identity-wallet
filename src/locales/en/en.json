@@ -1115,7 +1115,7 @@
         "label": "Accept offer"
       }
     },
-    "tunnelreq": {
+    "tunnel": {
       "title": "Browser Login Request",
       "offerlogin": " to website",
       "alert": {

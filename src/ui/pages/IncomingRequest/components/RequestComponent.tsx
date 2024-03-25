@@ -5,6 +5,7 @@ import { ConnectionRequest } from "./ConnectionRequest";
 import { CredentialRequest } from "./CredentialRequest";
 import { MultiSigRequestStageOne } from "./MultiSigRequestStageOne";
 import { MultiSigRequestStageTwo } from "./MultiSigRequestStageTwo";
+import { TunnelRequest } from "./TunnelRequest";
 
 const RequestComponent = ({
   pageId,
@@ -68,6 +69,18 @@ const RequestComponent = ({
         handleAccept={handleAccept}
         handleCancel={handleCancel}
         setRequestStage={setRequestStage}
+      />
+    );
+  case IncomingRequestType.TUNNEL_REQUEST:
+    return (
+      <TunnelRequest
+        pageId={pageId}
+        activeStatus={activeStatus}
+        requestData={requestData}
+        initiateAnimation={initiateAnimation}
+        handleAccept={handleAccept}
+        handleCancel={handleCancel}
+        incomingRequestType={incomingRequestType}
       />
     );
   default:

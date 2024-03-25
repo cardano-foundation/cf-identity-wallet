@@ -77,14 +77,14 @@ const IncomingRequest = () => {
       const updatedConnections =
         await AriesAgent.agent.connections.getConnections();
       dispatch(setConnectionsCache([...updatedConnections]));
-    } else if (incomingRequest.type === IncomingRequestType.TUNNEL_REQUEST) {
-      // @TODO - foconnor: This delete function should be in the SignifyNotificationService.
-      await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
-        incomingRequest.id
-      );
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
+      await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
+        incomingRequest.id
+      );
+    } else if (incomingRequest.type === IncomingRequestType.TUNNEL_REQUEST) {
+      // @TODO - foconnor: This delete function should be in the SignifyNotificationService.
       await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
         incomingRequest.id
       );
@@ -108,14 +108,14 @@ const IncomingRequest = () => {
       } else {
         AriesAgent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
       }
-    } else if (incomingRequest.type === IncomingRequestType.TUNNEL_REQUEST) {
-      AriesAgent.agent.credentials.handleReqGrant(incomingRequest.id);
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
       AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
         incomingRequest.id
       );
+    } else if (incomingRequest.type === IncomingRequestType.TUNNEL_REQUEST) {
+      AriesAgent.agent.credentials.handleReqGrant(incomingRequest.id);
     }
     setTimeout(() => {
       handleReset();

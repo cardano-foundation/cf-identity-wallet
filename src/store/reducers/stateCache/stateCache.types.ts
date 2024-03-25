@@ -25,8 +25,8 @@ enum IncomingRequestType {
   CONNECTION_RESPONSE = "connection-response",
   CREDENTIAL_OFFER_RECEIVED = "credential-offer-received",
   CONNECTION_INCOMING = "connection-incoming",
-  TUNNEL_REQUEST = "tunnel-request",
   MULTI_SIG_REQUEST_INCOMING = "multi-sig-request-incoming",
+  TUNNEL_REQUEST = "tunnel-request",
 }
 
 interface IncomingRequestProps {
