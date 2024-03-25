@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useState } from "react";
+import { StrictMode, useEffect, useMemo, useState } from "react";
 import { setupIonicReact, IonApp, IonToast } from "@ionic/react";
 import { Routes } from "../routes";
 import "./styles/ionic.scss";
@@ -17,6 +17,7 @@ import { OperationType } from "./globals/types";
 import { i18n } from "../i18n";
 import { IncomingRequest } from "./pages/IncomingRequest";
 import { Settings } from "./pages/Settings";
+import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 
 setupIonicReact();
 
@@ -27,8 +28,13 @@ const App = () => {
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
+  const isPreviewMode = useMemo(
+    () => new URLSearchParams(window.location.search).has("browserPreview"),
+    []
+  );
+
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).has("browserPreview")) {
+    if (isPreviewMode) {
       setupIonicReact({
         rippleEffect: false,
         mode: "ios",
@@ -39,7 +45,7 @@ const App = () => {
       sidePanel.classList.add("side-panel");
       document?.querySelector("body")?.appendChild(sidePanel);
     }
-  }, []);
+  }, [isPreviewMode]);
 
   useEffect(() => {
     setShowScan(currentOperation === OperationType.SCAN_CONNECTION);
@@ -53,7 +59,10 @@ const App = () => {
           {showScan ? (
             <FullPageScanner setShowScan={setShowScan} />
           ) : (
-            <Routes />
+            <>
+              {isPreviewMode && <MobileHeaderPreview />}
+              <Routes />
+            </>
           )}
 
           <IncomingRequest />
