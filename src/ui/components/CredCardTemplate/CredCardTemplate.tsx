@@ -27,6 +27,7 @@ const CredCardTemplate = ({
   index,
   onHandleShowCardDetails,
   styles,
+  pickedCard,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const isResidency =
@@ -59,7 +60,7 @@ const CredCardTemplate = ({
               .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
               .toLowerCase()
             : "card-body-w3c-generic"
-        }`}
+        } ${pickedCard ? "picked-card" : "not-picked"}`}
         onClick={() => {
           if (shortData.status === CredentialMetadataRecordStatus.PENDING) {
             setAlertIsOpen(true);
