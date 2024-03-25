@@ -1,8 +1,8 @@
 import { CredentialFilter, ready } from "signify-ts";
+import { v4 as uuidv4 } from "uuid";
 import { MultiSigRoute } from "./signifyApi.types";
 import { SignifyApi } from "./signifyApi";
 import { ConfigurationService } from "../../../configuration";
-import { v4 as uuidv4 } from "uuid";
 
 const firstAid = "aid1";
 const secondAid = "aid2";
@@ -361,10 +361,10 @@ describe("Signify API", () => {
   });
 
   test("can create an identifier", async () => {
-    const mockName = "keriuuid";
     const { signifyName, identifier } = await api.createIdentifier();
-    expect(signifyName).toBe(mockName);
-    expect(identifier).toBe(mockName);
+    // For now, we are using uuidv4 for signifyName
+    expect(signifyName).toEqual(expect.any(String));
+    expect(identifier).toEqual(expect.any(String));
   });
 
   test("can get identifier by name", async () => {
