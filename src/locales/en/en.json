@@ -1117,7 +1117,7 @@
     },
     "tunnel": {
       "title": "Browser Login Request",
-      "offerlogin": " to website",
+      "acceptlogin": "Login to website",
       "alert": {
         "titleconfirm": "Are you sure you want to continue with {{initiator}}?",
         "confirm": "Yes, login"
@@ -1157,7 +1157,8 @@
       "back": "Back",
       "accept": "Accept",
       "decline": "Decline",
-      "addidentifier": "Add identifier"
+      "addidentifier": "Add identifier",
+      "acceptlogin": "Accept login"
     },
     "alert": {
       "cancel": "Cancel"

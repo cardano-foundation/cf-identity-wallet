@@ -56,10 +56,7 @@ const TunnelRequest = ({
         </div>
         <div className="request-info-row">
           <IonCol size="12">
-            <span>
-              {DIDCommRequestType.CREDENTIAL +
-                i18n.t("request.tunnel.offerlogin")}
-            </span>
+            <span>{i18n.t("request.tunnel.acceptlogin")}</span>
             <strong>{requestData?.label}</strong>
           </IonCol>
         </div>
@@ -67,15 +64,23 @@ const TunnelRequest = ({
           <IonCol size="12">
             <strong>
               {i18next.t("request.pending", {
-                action: DIDCommRequestType.CREDENTIAL,
+                action: DIDCommRequestType.TUNNEL_LOGIN,
               })}
             </strong>
           </IonCol>
         </div>
+        {requestData.payload?.schema !== undefined && (
+          <div className="request-info-row">
+            <IonCol size="12">
+              <span>using credential</span>
+              <strong>{requestData.payload?.schema}</strong>
+            </IonCol>
+          </div>
+        )}
       </div>
       <PageFooter
         pageId={pageId}
-        primaryButtonText={`${i18n.t("request.button.acceptoffer")}`}
+        primaryButtonText={`${i18n.t("request.button.acceptlogin")}`}
         primaryButtonAction={() => handleAccept()}
         secondaryButtonText={`${i18n.t("request.button.cancel")}`}
         secondaryButtonAction={() => handleCancel()}

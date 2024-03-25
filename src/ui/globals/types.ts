@@ -13,6 +13,7 @@ enum CardType {
 enum DIDCommRequestType {
   CONNECTION = "Connection",
   CREDENTIAL = "Credential",
+  TUNNEL_LOGIN = "Tunnel login", // @TODO - foconnor: This type doesn't make sense here.
 }
 
 // String enums as some of these map to i18n values (if relevant)
