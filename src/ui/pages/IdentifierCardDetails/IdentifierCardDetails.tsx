@@ -251,8 +251,8 @@ const IdentifierCardDetails = () => {
     >
       {!cardData ? (
         <div
-          className="spinner-container"
-          data-testid="spinner-container"
+          className="identifier-card-detail-spinner-container"
+          data-testid="identifier-card-detail-spinner-container"
         >
           <IonSpinner name="circular" />
         </div>

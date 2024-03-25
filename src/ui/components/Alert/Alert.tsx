@@ -51,7 +51,9 @@ const Alert = ({
   return (
     <div
       data-testid={dataTestId}
-      className={isOpen ? "alert-visible" : "alert-invisible"}
+      className={`custom-alert-container ${
+        isOpen ? "alert-visible" : "alert-invisible"
+      }`}
     >
       <IonAlert
         isOpen={isOpen}

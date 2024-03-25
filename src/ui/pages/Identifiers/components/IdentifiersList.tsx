@@ -49,7 +49,7 @@ const IdentifiersList = ({
                     .replace(/(\d)/g, " $1")}
                 </div>
                 <div
-                  className="identifier-info"
+                  className="identifier-info-bottom-line"
                   data-testid={`identifier-info-${index}`}
                 >
                   {identifier.method === IdentifierType.KERI

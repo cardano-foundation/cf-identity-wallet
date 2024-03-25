@@ -44,6 +44,7 @@ import {
   W3CCredentialDetails,
 } from "../../../core/agent/services/credentialService.types";
 import "../../components/CardDetailsElements/CardDetails.scss";
+import "./CredCardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { CredContentW3c } from "./components/CredContentW3c";
@@ -238,8 +239,8 @@ const CredCardDetails = () => {
   if (!cardData) {
     return (
       <div
-        className="spinner-container"
-        data-testid="spinner-container"
+        className="cred-detail-spinner-container"
+        data-testid="cred-detail-spinner-container"
       >
         <IonSpinner name="circular" />
       </div>

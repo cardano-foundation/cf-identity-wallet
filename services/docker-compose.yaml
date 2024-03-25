@@ -62,6 +62,7 @@ services:
     restart: unless-stopped
     environment:
       - PORT=3010
+      - ENDPOINT=https://${CRED_HOST}
     ports:
       - 3010:3010
     labels:

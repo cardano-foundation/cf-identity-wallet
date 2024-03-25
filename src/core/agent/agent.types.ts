@@ -10,6 +10,7 @@ enum Blockchain {
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
+  ACCEPTED = "accepted",
 }
 
 enum ConnectionHistoryType {

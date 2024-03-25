@@ -62,7 +62,7 @@ describe("Connections page", () => {
   });
 
   test("It renders connections page successfully", async () => {
-    const { getByTestId, getByText } = render(
+    const { getByTestId, getByText, getAllByText } = render(
       <Provider store={mockedStore}>
         <Connections
           setShowConnections={mockSetShowConnections}
@@ -78,7 +78,7 @@ describe("Connections page", () => {
     expect(
       getByText(formatShortDate(connectionsFix[0].connectionDate))
     ).toBeInTheDocument();
-    expect(getByText(connectionsFix[0].status)).toBeInTheDocument();
+    expect(getAllByText(connectionsFix[0].status)[0]).toBeInTheDocument();
   });
 
   test.skip("It renders connection modal successfully", async () => {

@@ -82,7 +82,17 @@ const keriNotificationsChangeHandler = async (
       })
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
-    //TODO: Use dispatch here, handle logic for the multisig notification
+    const multisigIcpDetails =
+      await AriesAgent.agent.identifiers.getMultisigIcpDetails(event);
+    dispatch(
+      setQueueIncomingRequest({
+        id: event?.id,
+        event: event,
+        type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+        source: ConnectionType.KERI,
+        multisigIcpDetails: multisigIcpDetails,
+      })
+    );
   } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
     //TODO: Use dispatch here, handle logic for the multisig rotation notification
   }

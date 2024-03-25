@@ -756,8 +756,7 @@
         "type": "Type",
         "title": "Title",
         "description": {
-          "label": "Description",
-          "content": "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials"
+          "label": "Description"
         },
         "attributes": {
           "label": "Attributes",
@@ -1109,10 +1108,38 @@
         "confirm": "Yes, accept credential"
       }
     },
+    "multisig": {
+      "stageone": {
+        "title": "Identifier request",
+        "subtitle": "Review this multi-sig identifier request",
+        "requestfrom": "Request from",
+        "othermembers": "Other members",
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "threshold": "Threshold",
+        "alert": {
+          "textaccept": "Are you sure you want to approve this request? You won't be able to change your decision later.",
+          "textdecline": "Are you sure you want to decline this request? You won't be able to change your decision later.",
+          "accept": "Accept",
+          "decline": "Decline",
+          "cancel": "Cancel"
+        }
+      },
+      "stagetwo": {
+        "title": "Setup identifier",
+        "displayname": "Display name",
+        "chooseatheme": "Choose a theme"
+      }
+    },
     "button": {
       "connect": "Connect",
       "acceptoffer": "Accept credential",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "ignore": "Ignore",
+      "back": "Back",
+      "accept": "Accept",
+      "decline": "Decline",
+      "addidentifier": "Add identifier"
     },
     "alert": {
       "cancel": "Cancel"

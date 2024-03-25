@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   getFavouritesIdentifiersCache,
   getIdentifiersCache,
+  setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import { setCurrentRoute } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../../../routes/paths";
@@ -80,6 +81,7 @@ const Identifiers = () => {
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
   const [showConnections, setShowConnections] = useState(false);
+  const [toggleClick, setToggleClick] = useState(false);
   const [navAnimation, setNavAnimation] =
     useState<StartAnimationSource>("none");
   const favouriteContainerElement = useRef<HTMLDivElement>(null);
@@ -106,7 +108,7 @@ const Identifiers = () => {
     setPendingIdentifiers(
       identifiersData.filter((identifier) => identifier.isPending)
     );
-  }, [favouritesIdentifiers, identifiersData]);
+  }, [favouritesIdentifiers, identifiersData, toggleClick]);
 
   const findTimeById = (id: string) => {
     const found = favouritesIdentifiers?.find((item) => item.id === id);
@@ -130,6 +132,15 @@ const Identifiers = () => {
       await AriesAgent.agent.identifiers.checkMultisigComplete(identifier.id);
     if (!checkMultisigComplete) {
       return;
+    } else {
+      const updatedIdentifiers = identifiersData.map((item) => {
+        if (item.id === identifier.id && item.isPending) {
+          return { ...item, isPending: false };
+        }
+        return item;
+      });
+      dispatch(setIdentifiersCache(updatedIdentifiers));
+      setToggleClick(!toggleClick);
     }
   };
 
