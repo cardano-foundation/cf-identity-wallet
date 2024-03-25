@@ -105,9 +105,15 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
+
 interface BaseEventEmitter {
   type: string;
   payload: Record<string, unknown>;
+}
+
+interface KeriaNotificationMarker {
+  nextIndex: number;
+  lastNotificationId: string;
 }
 
 export {
@@ -120,6 +126,7 @@ export {
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
 };
+
 export type {
   CryptoAccountRecordShortDetails,
   ConnectionShortDetails,
@@ -131,4 +138,5 @@ export type {
   KeriNotification,
   AcdcKeriStateChangedEvent,
   BaseEventEmitter,
+  KeriaNotificationMarker,
 };
