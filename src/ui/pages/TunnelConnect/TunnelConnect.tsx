@@ -55,49 +55,23 @@ const TunnelConnect = () => {
   }, [refreshResolvedOobis]);
 
   useEffect(() => {
-    const keriaAIDs = identifiersData.filter(
-      (id) => id.method === IdentifierType.KERI
+    const aid = identifiersData.find(
+      (id) => id.method === IdentifierType.KERI && id.signifyName !== undefined
     );
 
-    if (keriaAIDs.length) {
-      const firstAid = keriaAIDs[0];
-      if (!firstAid.signifyName) {
+    if (aid) {
+      if (!aid.signifyName) {
         throw new Error("Missing Signify name");
       }
-      AriesAgent.agent.connections
-        .getKeriOobi(firstAid.signifyName)
-        .then((oobi) => {
-          setWalletOobi(oobi);
-          setSharedAidName(firstAid.displayName);
-        });
+      AriesAgent.agent.connections.getKeriOobi(aid.signifyName).then((oobi) => {
+        setWalletOobi(oobi);
+        setSharedAidName(aid.displayName);
+      });
     } else {
-      const colorGenerator = new ColorGenerator();
-      const newColor = colorGenerator.generateNextColor();
-      AriesAgent.agent.identifiers
-        .createIdentifier({
-          displayName: "Keria-For-Tunnel",
-          method: IdentifierType.KERI,
-          colors: [newColor[1], newColor[0]],
-          theme: 0,
-        })
-        .then((createIdentifierResult) => {
-          if (createIdentifierResult?.identifier) {
-            AriesAgent.agent.identifiers
-              .getIdentifier(createIdentifierResult.identifier)
-              .then((aid) => {
-                if (typeof aid?.result?.signifyName === "string") {
-                  AriesAgent.agent.connections
-                    .getKeriOobi(aid?.result.signifyName)
-                    .then((oobi) => {
-                      setWalletOobi(oobi);
-                      setSharedAidName(aid?.result.displayName);
-                    });
-                }
-              });
-          }
-        });
+      setWalletOobi("");
+      setSharedAidName("");
     }
-  }, []);
+  }, [identifiersData]);
 
   const handleDeleteOobi = async (key: string) => {
     let resolvedOobis: Record<string, any> = {};
@@ -235,25 +209,31 @@ const TunnelConnect = () => {
           </>
         ) : null}
       </div>
-      <div className="fixed-bottom-component">
-        <IonButton
-          onClick={() => setShareModalIsOpen(true)}
-          expand="block"
-        >
-          Share wallet OOBI
-          <IonIcon
-            icon={qrCodeOutline}
-            color="light"
-          />
-        </IonButton>
-      </div>
+      {walletOobi !== "" && sharedAidName !== "" ? (
+        <>
+          <div className="fixed-bottom-component">
+            <IonButton
+              onClick={() => setShareModalIsOpen(true)}
+              expand="block"
+            >
+              Share wallet OOBI
+              <IonIcon
+                icon={qrCodeOutline}
+                color="light"
+              />
+            </IonButton>
+          </div>
 
-      <ShareOOBI
-        modalIsOpen={shareModalIsOpen}
-        setModalIsOpen={setShareModalIsOpen}
-        content={walletOobi}
-        name={sharedAidName}
-      />
+          <ShareOOBI
+            modalIsOpen={shareModalIsOpen}
+            setModalIsOpen={setShareModalIsOpen}
+            content={walletOobi}
+            name={sharedAidName}
+          />
+        </>
+      ) : (
+        <></>
+      )}
     </ScrollablePageLayout>
   );
 };

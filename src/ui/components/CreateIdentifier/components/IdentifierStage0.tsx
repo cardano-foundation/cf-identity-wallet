@@ -104,6 +104,7 @@ const IdentifierStage0 = ({
         colors: [newColor[1], newColor[0]],
         theme: state.selectedTheme,
         isPending: false,
+        signifyName: identifier.signifyName,
       };
       dispatch(setIdentifiersCache([...identifiersData, newIdentifier]));
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_CREATED));
