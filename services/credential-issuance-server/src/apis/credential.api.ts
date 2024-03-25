@@ -1,14 +1,20 @@
 import { Request, Response } from "express";
-import { AriesAgent } from "../agent";
+import { Agent } from "../agent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
+import { SCHEMA_ACDC } from "../utils/schemas/schemaAcdc";
 
-async function issueCredentialWithKeriOobi(
-  req: Request,
-  res: Response
-): Promise<void> {
-  const { oobi } = req.body;
-  await AriesAgent.agent.issueAcdcCredentialByOobi(oobi);
+async function issueAcdcCredential(req: Request, res: Response): Promise<void> {
+  const { schemaSaid, aid, name } = req.body;
+  if (!SCHEMA_ACDC[schemaSaid]) {
+    const response: ResponseData<string> = {
+      statusCode: 409,
+      success: false,
+      data: "",
+    };
+    return httpResponse(res, response);
+  }
+  await Agent.agent.issueAcdcCredentialByAid(schemaSaid, aid, name);
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
@@ -17,4 +23,15 @@ async function issueCredentialWithKeriOobi(
   httpResponse(res, response);
 }
 
-export { issueCredentialWithKeriOobi };
+async function requestDisclosure(req: Request, res: Response): Promise<void> {
+  const { schemaSaid, aid } = req.body;
+  await Agent.agent.requestDisclosure(schemaSaid, aid);
+  const response: ResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: "Apply schema successfully",
+  };
+  httpResponse(res, response);
+}
+
+export { issueAcdcCredential, requestDisclosure };

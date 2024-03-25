@@ -11,8 +11,11 @@ const config = {
     shorten: "/shorten/:id",
     createShorten: "/shorten",
     keriOobi: "/keriOobi",
-    issueAcdcCredentialWithOobi: "/issueAcdcCredentialWithOobi",
+    issueAcdcCredential : "/issueAcdcCredential",
     schemaOobi: "/oobi/:id",
+    contacts: "/contacts",
+    resolveOobi: "/resolveOobi",
+    requestDisclosure: "/requestDisclosure",
   },
 };
 

@@ -22,7 +22,7 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
         />
       </CardDetailsBlock>
       <CardDetailsBlock title={i18n.t("creds.card.details.description.label")}>
-        {i18n.t("creds.card.details.description.content")}
+        {cardData.s.description}
       </CardDetailsBlock>
       {cardData.a && (
         <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>

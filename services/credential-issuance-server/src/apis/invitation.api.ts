@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { AriesAgent } from "../agent";
+import { Agent } from "../agent";
 import { ResponseData } from "../types/response.type";
 import { generableQRcodeWithUrl, httpResponse } from "../utils/response.util";
 
 async function keriOobiApi(_: Request, res: Response) {
-  const url = await AriesAgent.agent.createKeriOobi();
+  const url = await Agent.agent.createKeriOobi();
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,

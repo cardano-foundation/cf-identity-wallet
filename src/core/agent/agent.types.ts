@@ -10,6 +10,7 @@ enum Blockchain {
 enum ConnectionStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
+  ACCEPTED = "accepted",
 }
 
 enum ConnectionHistoryType {
@@ -109,6 +110,11 @@ interface BaseEventEmitter {
   payload: Record<string, unknown>;
 }
 
+interface KeriaNotificationMarker {
+  nextIndex: number;
+  lastNotificationId: string;
+}
+
 export {
   Blockchain,
   ConnectionStatus,
@@ -119,6 +125,7 @@ export {
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
 };
+
 export type {
   CryptoAccountRecordShortDetails,
   ConnectionShortDetails,
@@ -130,4 +137,5 @@ export type {
   KeriNotification,
   AcdcKeriStateChangedEvent,
   BaseEventEmitter,
+  KeriaNotificationMarker,
 };
