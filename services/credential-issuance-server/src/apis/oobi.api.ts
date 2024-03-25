@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { Agent } from "../ariesAgent";
+import { Agent } from "../agent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 
