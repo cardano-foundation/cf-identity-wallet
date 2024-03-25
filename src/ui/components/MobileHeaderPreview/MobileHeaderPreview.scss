@@ -6,10 +6,6 @@
   align-items: center;
   padding: 0.8125rem 2rem;
   position: relative;
-  /*
-  * Because preview mobile header should display on top of all page layout and some layout is modal. 
-  * Therefore I need fix z-index with high value.
-  */
   z-index: 22000;
 
   .left-side {
