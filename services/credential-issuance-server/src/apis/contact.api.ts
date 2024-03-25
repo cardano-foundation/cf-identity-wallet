@@ -1,10 +1,10 @@
 import { Request, Response } from "express";
-import { AriesAgent } from "../ariesAgent";
+import { Agent } from "../agent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 
 async function contactList(_: Request, res: Response) {
-  const data = await AriesAgent.agent.contacts();
+  const data = await Agent.agent.contacts();
   const response: ResponseData<any> = {
     statusCode: 200,
     success: true,

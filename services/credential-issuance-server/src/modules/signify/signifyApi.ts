@@ -6,7 +6,7 @@ import {
   randomPasscode,
   Operation,
 } from "signify-ts";
-import { AriesAgent } from "../../ariesAgent";
+import { Agent } from "../../agent";
 import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
 
@@ -45,7 +45,7 @@ export class SignifyApi {
       await this.signifyClient.boot();
       await this.signifyClient.connect();
     }
-    await AriesAgent.agent.initKeri();
+    await Agent.agent.initKeri();
   }
 
   async createIdentifier(signifyName: string): Promise<any> {

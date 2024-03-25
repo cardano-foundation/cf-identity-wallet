@@ -105,7 +105,6 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
-
 interface BaseEventEmitter {
   type: string;
   payload: Record<string, unknown>;
