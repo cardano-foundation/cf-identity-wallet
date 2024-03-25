@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useState } from "react";
+import { StrictMode, useEffect, useMemo, useState } from "react";
 import { setupIonicReact, IonApp } from "@ionic/react";
 import { Routes } from "../routes";
 import "./styles/ionic.scss";
@@ -20,6 +20,7 @@ import { Settings } from "./pages/Settings";
 import { SetUserName } from "./components/SetUserName";
 import { TabsRoutePath } from "../routes/paths";
 import CustomToast from "./components/CustomToast/CustomToast";
+import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
 
 setupIonicReact();
 
@@ -32,8 +33,13 @@ const App = () => {
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
+  const isPreviewMode = useMemo(
+    () => new URLSearchParams(window.location.search).has("browserPreview"),
+    []
+  );
+
   useEffect(() => {
-    if (new URLSearchParams(window.location.search).has("browserPreview")) {
+    if (isPreviewMode) {
       setupIonicReact({
         rippleEffect: false,
         mode: "ios",
@@ -44,7 +50,7 @@ const App = () => {
       sidePanel.classList.add("side-panel");
       document?.querySelector("body")?.appendChild(sidePanel);
     }
-  }, []);
+  }, [isPreviewMode]);
 
   useEffect(() => {
     setShowScan(currentOperation === OperationType.SCAN_CONNECTION);
@@ -69,13 +75,14 @@ const App = () => {
           ) : (
             <>
               <Routes />
-              <SetUserName
-                isOpen={showSetUserName}
-                setIsOpen={setShowSetUserName}
-              />
+              {isPreviewMode && <MobileHeaderPreview />}
+              <Routes />
             </>
           )}
-
+          <SetUserName
+            isOpen={showSetUserName}
+            setIsOpen={setShowSetUserName}
+          />
           <IncomingRequest />
           <Settings />
           <CustomToast
