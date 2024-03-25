@@ -99,9 +99,15 @@ const VerifyPassword = ({
       }
     }
 
-    const hint = (
-      await AriesAgent.agent.basicStorages.findById(MiscRecordId.OP_PASS_HINT)
-    )?.content?.value;
+    let hint;
+    try {
+      hint = (
+        await AriesAgent.agent.basicStorages.findById(MiscRecordId.OP_PASS_HINT)
+      )?.content?.value;
+    } catch (error) {
+      // TODO: @bao-sotatek handle error for this
+    }
+
     if (hint) {
       setStoredHint(`${hint}`);
     }
