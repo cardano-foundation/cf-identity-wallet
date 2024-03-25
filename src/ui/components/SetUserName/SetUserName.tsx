@@ -24,10 +24,12 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
     if (userName.length === 0) {
       dispatch(setToastMsg(ToastMsgType.USERNAME_CREATION_ERROR));
     } else {
-      setAuthentication({
-        ...authentication,
-        userName,
-      });
+      dispatch(
+        setAuthentication({
+          ...authentication,
+          userName,
+        })
+      );
       PreferencesStorage.set(PreferencesKeys.APP_USER_NAME, {
         userName,
       })
@@ -54,6 +56,7 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
           title={`${i18n.t("setusername.input.title")}`}
           placeholder={`${i18n.t("setusername.input.placeholder")}`}
           hiddenInput={false}
+          autofocus={true}
           onChangeInput={setUserName}
           value={userName}
         />
