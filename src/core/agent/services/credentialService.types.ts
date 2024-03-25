@@ -11,12 +11,23 @@ type CredentialShortDetails = Omit<
   "credentialRecordId" | "connectionId" | "createdAt" | "issuerLogo"
 >;
 
+type JSONValue =
+  | string
+  | number
+  | boolean
+  | { [x: string]: JSONValue }
+  | Array<JSONValue>;
+
+interface JSONObject {
+  [x: string]: JSONValue;
+}
+
 interface W3CCredentialDetails extends CredentialShortDetails {
   connectionType: ConnectionType.DIDCOMM;
   type: string[];
   connectionId?: string;
   expirationDate?: string;
-  credentialSubject: any;
+  credentialSubject: JSONObject;
   proofType: string;
   proofValue?: string;
 }
@@ -57,4 +68,5 @@ export type {
   ACDCDetails,
   Notification,
   W3CCredentialDetails,
+  JSONObject,
 };
