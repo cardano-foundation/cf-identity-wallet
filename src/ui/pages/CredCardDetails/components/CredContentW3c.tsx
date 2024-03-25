@@ -11,7 +11,10 @@ import {
   CardDetailsAttributes,
 } from "../../../components/CardDetailsElements";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
-import { W3CCredentialDetails } from "../../../../core/agent/services/credentialService.types";
+import {
+  JSONObject,
+  W3CCredentialDetails,
+} from "../../../../core/agent/services/credentialService.types";
 import { ConnectionDetails } from "../../Connections/Connections.types";
 
 interface CredContentW3cProps {
@@ -37,7 +40,7 @@ const CredContentW3c = ({
       {cardData.credentialSubject && (
         <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>
           <CardDetailsAttributes
-            data={cardData.credentialSubject as any}
+            data={cardData.credentialSubject as JSONObject}
           />
         </CardDetailsBlock>
       )}
