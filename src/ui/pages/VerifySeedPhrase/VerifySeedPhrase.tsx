@@ -166,6 +166,7 @@ const VerifySeedPhrase = () => {
         testId="original-seed-phrase-container"
         seedPhrase={seedPhraseRemaining}
         addSeedPhraseSelected={addSeedPhraseSelected}
+        hideSeedNumber
       />
       <PageFooter
         pageId={pageId}

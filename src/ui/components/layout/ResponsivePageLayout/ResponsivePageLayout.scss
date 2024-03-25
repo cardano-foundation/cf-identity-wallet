@@ -9,6 +9,10 @@
     flex-direction: column;
     height: 100%;
 
+    .custom-alert-container {
+      display: none;
+    }
+
     > * {
       flex: 0 1 auto;
       margin: 0.5rem 0;

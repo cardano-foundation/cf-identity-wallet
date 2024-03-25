@@ -31,6 +31,7 @@ jest.mock("../../../core/agent/agent", () => ({
             publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
           },
         }),
+        checkMultisigComplete: jest.fn().mockResolvedValue(true),
       },
       credentials: {
         getCredentialDetailsById: jest.fn().mockResolvedValue({}),
@@ -110,7 +111,7 @@ describe("Cards Stack Component", () => {
 
     await waitFor(() => expect(firstCard).toHaveClass("active"));
 
-    const doneButton = await findByTestId("tab-done-button");
+    const doneButton = await findByTestId("close-button");
     act(() => {
       fireEvent.click(doneButton);
       jest.advanceTimersByTime(CLEAR_STATE_DELAY);
@@ -157,5 +158,74 @@ describe("Cards Stack Component", () => {
     });
 
     await waitFor(() => expect(firstCard).not.toHaveClass("active"));
+  });
+
+  test("Call the callback after card active", async () => {
+    const onActiveDetail = jest.fn();
+    jest.useFakeTimers();
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixW3c[0]);
+    const { findByTestId } = render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <CardsStack
+            name="example"
+            cardsType={CardType.CREDS}
+            cardsData={credsFixW3c}
+            onShowCardDetails={onActiveDetail}
+          />
+          <Route
+            path={TabsRoutePath.CRED_DETAILS}
+            component={CredCardDetails}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const firstCard = await findByTestId("cred-card-template-example-index-0");
+    await waitFor(() => expect(firstCard).not.toHaveClass("active"));
+
+    act(() => {
+      fireEvent.click(firstCard);
+      jest.advanceTimersByTime(NAVIGATION_DELAY);
+    });
+
+    expect(onActiveDetail).toBeCalledTimes(1);
+  });
+
+  test("Prevent mutilple click card", async () => {
+    const onActiveDetail = jest.fn();
+    jest.useFakeTimers();
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixW3c[0]);
+    const { findByTestId } = render(
+      <MemoryRouter>
+        <Provider store={store}>
+          <CardsStack
+            name="example"
+            cardsType={CardType.CREDS}
+            cardsData={credsFixW3c}
+            onShowCardDetails={onActiveDetail}
+          />
+          <Route
+            path={TabsRoutePath.CRED_DETAILS}
+            component={CredCardDetails}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    const firstCard = await findByTestId("cred-card-template-example-index-0");
+    await waitFor(() => expect(firstCard).not.toHaveClass("active"));
+
+    act(() => {
+      fireEvent.click(firstCard);
+      fireEvent.click(firstCard);
+      jest.advanceTimersByTime(NAVIGATION_DELAY);
+    });
+
+    expect(onActiveDetail).toBeCalledTimes(1);
   });
 });

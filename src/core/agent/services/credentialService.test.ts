@@ -23,6 +23,7 @@ import {
   AcdcKeriStateChangedEvent,
   ConnectionType,
 } from "../agent.types";
+import { SignifyApi } from "../modules/signify/signifyApi";
 
 const eventEmitter = new EventEmitter();
 
@@ -56,14 +57,6 @@ const agent = jest.mocked({
       getCredentialMetadataByCredentialRecordId: jest.fn(),
       getIdentifierMetadata: jest.fn(),
     },
-    signify: {
-      admitIpex: jest.fn(),
-      getNotifications: jest.fn(),
-      markNotification: jest.fn(),
-      getKeriExchange: jest.fn(),
-      getCredentials: jest.fn(),
-      getCredentialBySaid: jest.fn(),
-    },
   },
   w3cCredentials: {
     getCredentialRecordById: jest.fn(),
@@ -78,7 +71,31 @@ const agent = jest.mocked({
     deleteById: jest.fn(),
   },
 });
-const credentialService = new CredentialService(agent as any as Agent);
+const basicStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const signifyApi = jest.mocked({
+  admitIpex: jest.fn(),
+  getNotifications: jest.fn(),
+  markNotification: jest.fn(),
+  getKeriExchange: jest.fn(),
+  getCredentials: jest.fn(),
+  getCredentialBySaid: jest.fn(),
+});
+
+const credentialService = new CredentialService(
+  agent as any as Agent,
+  basicStorage,
+  signifyApi as any as SignifyApi
+);
 
 const now = new Date();
 const nowISO = now.toISOString();
@@ -349,7 +366,7 @@ describe("Credential service of agent", () => {
         credentialMetadataRecordA,
         credentialMetadataRecordB,
       ]);
-    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
     expect(await credentialService.getCredentials()).toStrictEqual([
       {
@@ -377,7 +394,7 @@ describe("Credential service of agent", () => {
     agent.modules.generalStorage.getAllCredentialMetadata = jest
       .fn()
       .mockResolvedValue([]);
-    agent.genericRecords.findAllByQuery = jest.fn().mockResolvedValue([]);
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
 
     expect(await credentialService.getCredentials()).toStrictEqual([]);
   });
@@ -724,9 +741,7 @@ describe("Credential service of agent", () => {
     agent.credentials.findAllByQuery = jest
       .fn()
       .mockResolvedValueOnce([credentialOfferReceivedRecordAutoAccept]);
-    agent.genericRecords.findAllByQuery = jest
-      .fn()
-      .mockResolvedValue(genericRecords);
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue(genericRecords);
 
     expect(await credentialService.getUnhandledCredentials()).toEqual(
       [
@@ -773,9 +788,7 @@ describe("Credential service of agent", () => {
         dt: nowISO,
       },
     };
-    agent.modules.signify.getCredentialBySaid = jest
-      .fn()
-      .mockResolvedValue({ acdc });
+    signifyApi.getCredentialBySaid = jest.fn().mockResolvedValue({ acdc });
 
     await expect(
       credentialService.getCredentialDetailsById(acdcMetadataRecord.id)
@@ -877,13 +890,13 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
   test("can delete keri notification by ID", async () => {
     const id = "uuid";
     await credentialService.deleteKeriNotificationRecordById(id);
-    expect(agent.genericRecords.deleteById).toBeCalled();
+    expect(basicStorage.deleteById).toBeCalled();
   });
 
   test("accept KERI ACDC", async () => {
     const id = "uuid";
     const date = new Date();
-    agent.genericRecords.findById = jest.fn().mockImplementation((id) => {
+    basicStorage.findById = jest.fn().mockImplementation((id) => {
       if (id == "uuid") {
         return {
           id,
@@ -895,7 +908,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       }
       return;
     });
-    agent.modules.signify.getKeriExchange = jest.fn().mockResolvedValue({
+    signifyApi.getKeriExchange = jest.fn().mockResolvedValue({
       exn: {
         a: {
           i: "uuid",
@@ -916,7 +929,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       .mockResolvedValue({
         signifyName: "holder",
       });
-    agent.modules.signify.getCredentialBySaid = jest.fn().mockResolvedValue({
+    signifyApi.getCredentialBySaid = jest.fn().mockResolvedValue({
       acdc: {
         sad: {
           d: "id",
@@ -930,12 +943,12 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       });
     await credentialService.acceptKeriAcdc(id);
     expect(agent.events.emit).toBeCalled();
-    expect(agent.genericRecords.deleteById).toBeCalled();
+    expect(basicStorage.deleteById).toBeCalled();
   });
 
   test("Must throw an error when there's no KERI notification", async () => {
     const id = "not-found-id";
-    agent.genericRecords.findById = jest.fn();
+    basicStorage.findById = jest.fn();
     await expect(credentialService.acceptKeriAcdc(id)).rejects.toThrowError(
       `${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`
     );
@@ -943,7 +956,13 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
 
   test("Must throw 'Credential with given SAID not found on KERIA' when there's no KERI credential", async () => {
     const id = "not-found-id";
-    agent.modules.signify.getCredentialBySaid = jest
+    agent.modules.generalStorage.getCredentialMetadata = jest
+      .fn()
+      .mockReturnValue({
+        id,
+        connectionType: ConnectionType.KERI,
+      });
+    signifyApi.getCredentialBySaid = jest
       .fn()
       .mockResolvedValue({ credential: undefined, error: undefined });
     await expect(
@@ -952,7 +971,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
   });
   test("Must throw an error when there's error from Signigy-ts ", async () => {
     const id = "not-found-id";
-    agent.modules.signify.getCredentialBySaid = jest.fn().mockResolvedValue({
+    signifyApi.getCredentialBySaid = jest.fn().mockResolvedValue({
       credential: undefined,
       error: new Error("Network error"),
     });
@@ -962,7 +981,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
   });
 
   test("Should call saveCredentialMetadataRecord when there are un-synced KERI credentials", async () => {
-    agent.modules.signify.getCredentials = jest.fn().mockReturnValue([
+    signifyApi.getCredentials = jest.fn().mockReturnValue([
       {
         sad: {
           v: "ACDC10JSON000197_",

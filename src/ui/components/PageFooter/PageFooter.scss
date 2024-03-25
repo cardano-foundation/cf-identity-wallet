@@ -12,4 +12,10 @@
       margin-bottom: 0;
     }
   }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    ion-button {
+      margin: 0 auto 0.8rem;
+    }
+  }
 }

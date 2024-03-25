@@ -1,5 +1,6 @@
 interface PageFooterProps {
   pageId?: string;
+  customClass?: string;
   primaryButtonIcon?: string;
   primaryButtonText?: string;
   primaryButtonAction?: () => void;

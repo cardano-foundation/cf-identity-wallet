@@ -6,6 +6,10 @@
       margin-bottom: 0.63rem;
     }
 
+    &:last-child {
+      margin-bottom: 0;
+    }
+
     ion-col {
       height: 5.9375rem;
       padding: 0.5rem;
@@ -26,6 +30,7 @@
       .theme-input {
         margin: 0;
         height: 100%;
+        border-radius: 0.5rem;
         --background: var(--ion-color-light);
         --inner-border-width: 0;
         border: 1px solid var(--ion-color-dark-grey);

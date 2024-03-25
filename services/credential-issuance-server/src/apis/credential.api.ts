@@ -3,6 +3,7 @@ import { CONNECTION_NOT_FOUND, MISSING_CONNECTION_ID } from "../errors";
 import { AriesAgent } from "../ariesAgent";
 import { ResponseData } from "../types/response.type";
 import { generableQRcodeWithUrl, httpResponse } from "../utils/response.util";
+import { SCHEMA_ACDC } from "../utils/schemas/schemaAcdc";
 
 async function offerCredentialOverConnection(
   req: Request,
@@ -73,12 +74,20 @@ async function invitationWithCredentialConnectionless(
   httpResponse(res, response);
 }
 
-async function issueCredentialWithKeriOobi(
+async function issueAcdcCredential(
   req: Request,
   res: Response
 ): Promise<void> {
-  const { oobi } = req.body;
-  await AriesAgent.agent.issueAcdcCredentialByOobi(oobi);
+  const { schemaSaid, aid, name } = req.body;
+  if (!SCHEMA_ACDC[schemaSaid]) {
+    const response: ResponseData<string> = {
+      statusCode: 409,
+      success: false,
+      data: "",
+    };
+    return httpResponse(res, response);
+  }
+  await AriesAgent.agent.issueAcdcCredentialByAid(schemaSaid, aid, name);
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,
@@ -87,9 +96,24 @@ async function issueCredentialWithKeriOobi(
   httpResponse(res, response);
 }
 
+async function requestDisclosure(
+  req: Request,
+  res: Response
+): Promise<void> {
+  const { schemaSaid, aid } = req.body;
+  await AriesAgent.agent.requestDisclosure(schemaSaid, aid);
+  const response: ResponseData<string> = {
+    statusCode: 200,
+    success: true,
+    data: "Apply schema successfully",
+  };
+  httpResponse(res, response);
+}
+
 export {
   offerCredentialOverConnection,
   invitationWithCredential,
   invitationWithCredentialConnectionless,
-  issueCredentialWithKeriOobi,
+  issueAcdcCredential,
+  requestDisclosure
 };

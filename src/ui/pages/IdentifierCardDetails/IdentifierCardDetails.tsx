@@ -12,7 +12,6 @@ import {
   heart,
 } from "ionicons/icons";
 import { useEffect, useState } from "react";
-import { TabLayout } from "../../components/layout/TabLayout";
 import { TabsRoutePath } from "../../../routes/paths";
 import { i18n } from "../../../i18n";
 import { getBackRoute } from "../../../routes/backRoute";
@@ -50,6 +49,12 @@ import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate"
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { PageFooter } from "../../components/PageFooter";
 import "../../components/CardDetailsElements/CardDetails.scss";
+import "./IdentifierCardDetails.scss";
+import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import { PageHeader } from "../../components/PageHeader";
+
+const NAVIGATION_DELAY = 250;
+const CLEAR_ANIMATION = 1000;
 
 const IdentifierCardDetails = () => {
   const pageId = "identifier-card-details";
@@ -69,6 +74,7 @@ const IdentifierCardDetails = () => {
     DIDDetails | KERIDetails | undefined
   >();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+  const [navAnimation, setNavAnimation] = useState(false);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id
@@ -92,6 +98,7 @@ const IdentifierCardDetails = () => {
   });
 
   const handleDone = () => {
+    setNavAnimation(true);
     const { backPath, updateRedux } = getBackRoute(
       TabsRoutePath.IDENTIFIER_DETAILS,
       {
@@ -105,7 +112,14 @@ const IdentifierCardDetails = () => {
       dispatch,
       updateRedux
     );
-    history.push(backPath.pathname);
+
+    setTimeout(() => {
+      history.push(backPath.pathname);
+    }, NAVIGATION_DELAY);
+
+    setTimeout(() => {
+      setNavAnimation(false);
+    }, CLEAR_ANIMATION);
   };
 
   const handleDelete = async () => {
@@ -218,19 +232,27 @@ const IdentifierCardDetails = () => {
     );
   };
 
+  const pageClasses = `card-details ${
+    navAnimation ? "back-animation" : "open-animation"
+  }`;
+
   return (
-    <TabLayout
+    <ScrollablePageLayout
       pageId={pageId}
-      customClass="card-details"
-      header={true}
-      doneLabel={`${i18n.t("identifiers.card.details.done")}`}
-      doneAction={handleDone}
-      additionalButtons={<AdditionalButtons />}
+      customClass={pageClasses}
+      header={
+        <PageHeader
+          closeButton={true}
+          closeButtonLabel={`${i18n.t("identifiers.card.details.done")}`}
+          closeButtonAction={() => handleDone()}
+          additionalButtons={<AdditionalButtons />}
+        />
+      }
     >
       {!cardData ? (
         <div
-          className="spinner-container"
-          data-testid="spinner-container"
+          className="identifier-card-detail-spinner-container"
+          data-testid="identifier-card-detail-spinner-container"
         >
           <IonSpinner name="circular" />
         </div>
@@ -306,7 +328,7 @@ const IdentifierCardDetails = () => {
         setIsOpen={setVerifyPasscodeIsOpen}
         onVerify={handleDelete}
       />
-    </TabLayout>
+    </ScrollablePageLayout>
   );
 };
 

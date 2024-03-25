@@ -13,11 +13,14 @@ const IdentifierCardTemplate = ({
   isActive,
   index = 0,
   onHandleShowCardDetails,
+  styles,
+  pickedCard,
 }: IdentifierCardTemplateProps) => {
   const identifierCardTemplateStyles = {
     backgroundImage: `url(${IDENTIFIER_BG_MAPPING[cardData.theme]})`,
     backgroundSize: "cover",
     zIndex: index,
+    ...styles,
   };
 
   return (
@@ -26,7 +29,9 @@ const IdentifierCardTemplate = ({
       data-testid={`identifier-card-template-${
         index !== undefined ? `${name}-index-${index}` : ""
       }`}
-      className={`identifier-card-template ${isActive ? "active" : ""}`}
+      className={`identifier-card-template ${isActive ? "active" : ""} ${
+        pickedCard ? "picked-card" : "not-picked"
+      }`}
       onClick={() => {
         if (onHandleShowCardDetails) {
           onHandleShowCardDetails(index);

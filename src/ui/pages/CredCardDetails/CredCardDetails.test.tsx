@@ -339,3 +339,85 @@ describe("Cards Details page - archived credential", () => {
     });
   });
 });
+
+describe("Cards Details loading", () => {
+  let storeMocked: Store<unknown, AnyAction>;
+  beforeAll(() => {
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixW3c[0]);
+  });
+  beforeEach(() => {
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateNoPasswordArchived),
+      dispatch: dispatchMock,
+    };
+  });
+
+  test("Show loading when card data is empty", async () => {
+    const initialStateCreds = {
+      stateCache: {
+        routes: [TabsRoutePath.CREDS],
+        authentication: {
+          loggedIn: true,
+          time: Date.now(),
+          passcodeIsSet: true,
+          passwordIsSet: true,
+        },
+      },
+      seedPhraseCache: {
+        seedPhrase160:
+          "example1 example2 example3 example4 example5 example6 example7 example8 example9 example10 example11 example12 example13 example14 example15",
+        seedPhrase256: "",
+        selected: FIFTEEN_WORDS_BIT_LENGTH,
+      },
+      identifiersCache: {
+        identifiers: [],
+        favourites: [],
+      },
+      credsCache: {
+        creds: [],
+      },
+    };
+    const innerMockStore = configureStore();
+
+    const storeMockedCreds = {
+      ...innerMockStore(initialStateCreds),
+      dispatch: dispatchMock,
+    };
+
+    const { queryByTestId } = render(
+      <Provider store={storeMockedCreds}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId("cred-detail-spinner-container")).toBeVisible();
+    });
+  });
+
+  test("Hidden loading when card data has value", async () => {
+    const { queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(queryByTestId("cred-detail-spinner-container")).toBe(null);
+    });
+  });
+});

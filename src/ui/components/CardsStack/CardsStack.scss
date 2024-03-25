@@ -1,5 +1,10 @@
 .cards-stack-container {
   display: flex;
   flex-direction: column;
-  margin-bottom: 2rem;
+  overflow-y: visible;
+
+  &.transition-start {
+    height: 100vh;
+    position: relative;
+  }
 }

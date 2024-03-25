@@ -489,4 +489,64 @@ describe("Verify Seed Phrase Page", () => {
       ).toBeVisible()
     );
   });
+
+  test("Display seed phrase number on matching section", async () => {
+    const history = createMemoryHistory();
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Router history={history}>
+          <VerifySeedPhrase />
+        </Router>
+      </Provider>
+    );
+
+    const matchingSeedPhraseContainer = getByTestId(
+      "matching-seed-phrase-container"
+    );
+    const originalSeedPhraseContainer = getByTestId(
+      "original-seed-phrase-container"
+    );
+
+    await waitFor(() =>
+      expect(originalSeedPhraseContainer.childNodes.length).toBe(
+        MNEMONIC_FIFTEEN_WORDS
+      )
+    );
+
+    initialState.seedPhraseCache.seedPhrase160
+      .split(" ")
+      .forEach(async (word) => {
+        fireEvent.click(getByText(`${word}`));
+      });
+
+    await waitFor(() => {
+      const seedNumberElements = matchingSeedPhraseContainer.querySelectorAll(
+        "span[data-testid*=\"word-index-number\"]"
+      );
+      expect(seedNumberElements.length).toBe(MNEMONIC_FIFTEEN_WORDS);
+    });
+  });
+  test("Hidden seed phrase number on original section", async () => {
+    const history = createMemoryHistory();
+    history.push(RoutePath.VERIFY_SEED_PHRASE);
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <Router history={history}>
+          <VerifySeedPhrase />
+        </Router>
+      </Provider>
+    );
+
+    const originalSeedPhraseContainer = getByTestId(
+      "original-seed-phrase-container"
+    );
+
+    await waitFor(() => {
+      const seedNumberElements = originalSeedPhraseContainer.querySelectorAll(
+        "span[data-testid*=\"word-index-number\"]"
+      );
+      expect(seedNumberElements.length).toBe(0);
+    });
+  });
 });

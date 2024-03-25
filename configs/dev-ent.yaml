@@ -1,5 +1,5 @@
 keri:
-  backerType: pools #ledger
+  backerType: pools
   pools: 
     - BBilc4-L3tFUnfM_wJr4S4OJanAv_VmF_dJNN6vkf2Ha
     - BLskRTInXnMxWaGqcpSyMgo0nYbalW99cGZESrz3zapM

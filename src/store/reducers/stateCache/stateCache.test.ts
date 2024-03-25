@@ -13,7 +13,7 @@ import {
   setCurrentRoute,
   setPauseQueueIncomingRequest,
   setQueueIncomingRequest,
-  dequeueCredentialCredentialRequest,
+  dequeueCredentialRequest,
   StateCacheProps,
   stateCacheSlice,
 } from "./stateCache";
@@ -132,7 +132,7 @@ describe("State Cache", () => {
         type: IncomingRequestType.CONNECTION_INCOMING,
       },
     ];
-    const action = dequeueCredentialCredentialRequest();
+    const action = dequeueCredentialRequest();
     const nextState = stateCacheSlice.reducer(initialStateMock, action);
     expect(nextState.queueIncomingRequest.queues.length).toEqual(1);
     expect(nextState.queueIncomingRequest.isProcessing).toEqual(true);
@@ -159,7 +159,7 @@ describe("State Cache", () => {
     );
   });
 
-  test("isProcessing should be true after dequeueCredentialCredentialRequest and queue still has elements", () => {
+  test("isProcessing should be true after dequeueCredentialRequest and queue still has elements", () => {
     const initialStateMock: StateCacheProps = JSON.parse(
       JSON.stringify(initialState)
     );
@@ -173,7 +173,7 @@ describe("State Cache", () => {
         type: IncomingRequestType.CONNECTION_INCOMING,
       },
     ];
-    const action = dequeueCredentialCredentialRequest();
+    const action = dequeueCredentialRequest();
     const nextState = stateCacheSlice.reducer(initialStateMock, action);
     expect(nextState.queueIncomingRequest.queues.length).toEqual(1);
     expect(nextState.queueIncomingRequest.isProcessing).toEqual(true);

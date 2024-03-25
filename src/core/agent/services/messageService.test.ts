@@ -7,6 +7,7 @@ import {
 import { EventEmitter } from "events";
 import { EventMetadata } from "@aries-framework/core/build/agent/Events";
 import { MessageService } from "./messageService";
+import { SignifyApi } from "../modules/signify/signifyApi";
 
 const eventEmitter = new EventEmitter();
 
@@ -28,7 +29,24 @@ const agent = jest.mocked({
   },
 });
 
-const messageService = new MessageService(agent as any as Agent);
+const basicStorage = jest.mocked({
+  open: jest.fn(),
+  save: jest.fn(),
+  delete: jest.fn(),
+  deleteById: jest.fn(),
+  update: jest.fn(),
+  findById: jest.fn(),
+  findAllByQuery: jest.fn(),
+  getAll: jest.fn(),
+});
+
+const signifyApi = jest.mocked({});
+
+const messageService = new MessageService(
+  agent as any as Agent,
+  basicStorage,
+  signifyApi as any as SignifyApi
+);
 
 describe("Message service of agent - BasicMessageRecord helper", () => {
   test("should emit event when basic message state changed", async () => {

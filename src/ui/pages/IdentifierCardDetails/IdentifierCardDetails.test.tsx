@@ -14,6 +14,7 @@ import {
   filteredKeriFix,
 } from "../../__fixtures__/filteredIdentifierFix";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
+import { AriesAgent } from "../../../core/agent/agent";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 
@@ -382,5 +383,47 @@ describe("Cards Details page", () => {
     await waitFor(() => {
       expect(queryByText(EN_TRANSLATIONS.verifypassword.title)).toBeVisible();
     });
+  });
+
+  test("Show loading when indetifier data is null", async () => {
+    AriesAgent.agent.identifiers.getIdentifiers = jest
+      .fn()
+      .mockResolvedValue(null);
+
+    const { getByTestId } = render(
+      <Provider store={storeMockedDidKey}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={IdentifierCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() =>
+      expect(
+        getByTestId("identifier-card-detail-spinner-container")
+      ).toBeVisible()
+    );
+  });
+
+  test("Hide loading after retrieved indetifier data", async () => {
+    const { queryByTestId } = render(
+      <Provider store={storeMockedDidKey}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={IdentifierCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+
+    await waitFor(() =>
+      expect(queryByTestId("identifier-card-detail-spinner-container")).toBe(
+        null
+      )
+    );
   });
 });

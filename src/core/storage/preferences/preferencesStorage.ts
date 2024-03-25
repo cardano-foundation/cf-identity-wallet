@@ -14,6 +14,7 @@ enum PreferencesKeys {
   APP_IDENTIFIERS_FAVOURITES = "app-identifiers-favourites",
   APP_CREDS_FAVOURITES = "app-creds-favourites",
   APP_TUNNEL_CONNECT = "app-tunnel-connect",
+  APP_KERIA_NOTIFICATION_MARKER = "app-keria-notification-marker",
 }
 
 class PreferencesStorage {

@@ -9,10 +9,11 @@ import {
 import { CredContentW3c } from "./CredContentW3c";
 import { CredContentAcdc } from "./CredContentAcdc";
 import { store } from "../../../../store";
+import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 
 describe("Creds content", () => {
   test("Render University Degree Credential content", () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, queryByText } = render(
       <Provider store={store}>
         <CredContentW3c
           cardData={credsFixW3c[0]}
@@ -41,7 +42,13 @@ describe("Creds content", () => {
     expect(
       getByText(EN_TRANSLATIONS.creds.card.details.issuancedate)
     ).toBeVisible();
-    expect(getByText("24/01/2024 - 16:20:26")).toBeVisible();
+    expect(
+      queryByText(
+        `${formatShortDate(credsFixW3c[0].issuanceDate)} - ${formatTimeToSec(
+          credsFixW3c[0].issuanceDate
+        )}`
+      )
+    ).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.creds.card.details.expirationdate)
     ).toBeVisible();
@@ -58,7 +65,7 @@ describe("Creds content", () => {
   });
 
   test("Render Access Pass Credential content", () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, queryByText } = render(
       <Provider store={store}>
         <CredContentW3c
           cardData={credsFixW3c[1]}
@@ -91,7 +98,13 @@ describe("Creds content", () => {
     expect(
       getByText(EN_TRANSLATIONS.creds.card.details.issuancedate)
     ).toBeVisible();
-    expect(getByText("24/01/2024 - 16:19:33")).toBeVisible();
+    expect(
+      queryByText(
+        `${formatShortDate(credsFixW3c[1].issuanceDate)} - ${formatTimeToSec(
+          credsFixW3c[1].issuanceDate
+        )}`
+      )
+    ).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.creds.card.details.expirationdate)
     ).toBeVisible();
@@ -108,7 +121,7 @@ describe("Creds content", () => {
   });
 
   test("Render Permanent Resident Card content", () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, queryByText } = render(
       <Provider store={store}>
         <CredContentW3c
           cardData={credsFixW3c[2]}
@@ -147,11 +160,23 @@ describe("Creds content", () => {
     expect(
       getByText(EN_TRANSLATIONS.creds.card.details.issuancedate)
     ).toBeVisible();
-    expect(getByText("24/01/2024 - 16:21:09")).toBeVisible();
+    expect(
+      queryByText(
+        `${formatShortDate(credsFixW3c[2].issuanceDate)} - ${formatTimeToSec(
+          credsFixW3c[2].issuanceDate
+        )}`
+      )
+    ).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.creds.card.details.expirationdate)
     ).toBeVisible();
-    expect(getByText("12/12/2025 - 12:12:12")).toBeVisible();
+    expect(
+      queryByText(
+        `${formatShortDate(credsFixW3c[2].expirationDate!)} - ${formatTimeToSec(
+          credsFixW3c[2].expirationDate!
+        )}`
+      )
+    ).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.creds.card.details.prooftypes)
     ).toBeVisible();
@@ -164,7 +189,7 @@ describe("Creds content", () => {
   });
 
   test("Render ACDC cedential content", () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, queryAllByTestId } = render(
       <Provider store={store}>
         <CredContentAcdc cardData={credsFixAcdc[0]} />
       </Provider>
@@ -176,7 +201,9 @@ describe("Creds content", () => {
       getByText(EN_TRANSLATIONS.creds.card.details.description.label)
     ).toBeVisible();
     expect(
-      getByText(EN_TRANSLATIONS.creds.card.details.description.content)
+      getByText(
+        "A vLEI Credential issued by GLEIF to Qualified vLEI Issuers which allows the Qualified vLEI Issuers to issue, verify and revoke Legal Entity vLEI Credentials and Legal Entity Official Organizational Role vLEI Credentials"
+      )
     ).toBeVisible();
     expect(
       getByText(EN_TRANSLATIONS.creds.card.details.attributes.label)
@@ -184,7 +211,12 @@ describe("Creds content", () => {
     expect(
       getByText("EJWgO4hwKxNMxu2aUpmGFMozKt9Eq2Jz8n-xXR7CYtY_")
     ).toBeVisible();
-    expect(getByText("22/01/2024 - 16:03:44")).toBeVisible();
+    expect(queryAllByTestId("cred-detail-time").length).toBe(2);
+    expect(queryAllByTestId("cred-detail-time")[0]).toHaveTextContent(
+      `${formatShortDate(credsFixAcdc[0].a.dt)} - ${formatTimeToSec(
+        credsFixAcdc[0].a.dt
+      )}`
+    );
     expect(getByText("5493001KJTIIGC8Y1R17")).toBeVisible();
     expect(getByText("1.0.0")).toBeVisible();
     expect(
@@ -202,6 +234,10 @@ describe("Creds content", () => {
     expect(
       getByText(EN_TRANSLATIONS.creds.card.details.status.issued)
     ).toBeVisible();
-    expect(getByText("22/01/2024 - 16:05:44")).toBeVisible();
+    expect(queryAllByTestId("cred-detail-time")[1]).toHaveTextContent(
+      `${formatShortDate(credsFixAcdc[0].lastStatus.dt)} - ${formatTimeToSec(
+        credsFixAcdc[0].lastStatus.dt
+      )}`
+    );
   });
 });

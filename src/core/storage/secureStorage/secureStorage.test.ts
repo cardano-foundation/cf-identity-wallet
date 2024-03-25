@@ -16,7 +16,7 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
   },
 }));
 
-describe("Secure Storage Facade", () => {
+describe("Secure storage service (secure enclave/TEE)", () => {
   test("will throw if an item is missing from the secure storage or return the value if not", async () => {
     expect(await SecureStorage.get(EXISTING_KEY)).toEqual(EXISTING_VALUE);
     expect(SecureStorage.get(NON_EXISTING_KEY)).rejects.toThrow(

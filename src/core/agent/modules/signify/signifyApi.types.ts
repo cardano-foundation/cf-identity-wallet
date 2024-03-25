@@ -64,7 +64,7 @@ export interface Aid {
   windexes: number[];
 }
 
-export interface MultiSigIcpNotification {
+export interface MultiSigExnMessage {
   exn: {
     v: string;
     t: string;

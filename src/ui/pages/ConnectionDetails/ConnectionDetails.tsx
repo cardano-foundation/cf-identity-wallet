@@ -1,7 +1,12 @@
 import { ellipsisVertical, addOutline } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { IonLabel, IonSegment, IonSegmentButton } from "@ionic/react";
+import {
+  IonLabel,
+  IonSegment,
+  IonSegmentButton,
+  IonSpinner,
+} from "@ionic/react";
 import i18next from "i18next";
 import { i18n } from "../../../i18n";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
@@ -46,6 +51,10 @@ import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
+import Minicred1 from "../../assets/images/minicred1.jpg";
+import Minicred2 from "../../assets/images/minicred2.jpg";
+import Minicred3 from "../../assets/images/minicred3.jpg";
+import Minicred4 from "../../assets/images/minicred4.jpg";
 
 const ConnectionDetails = () => {
   const pageId = "connection-details";
@@ -70,30 +79,50 @@ const ConnectionDetails = () => {
   const [notes, setNotes] = useState<ConnectionNoteDetails[]>([]);
   const currentNoteId = useRef("");
   const [segmentValue, setSegmentValue] = useState("details");
+  const [loading, setLoading] = useState({
+    details: false,
+    history: false,
+  });
 
   useEffect(() => {
     async function getDetails() {
-      const connectionDetails =
-        await AriesAgent.agent.connections.getConnectionById(
-          connectionShortDetails.id,
-          connectionShortDetails.type
-        );
-      setConnectionDetails(connectionDetails);
-      if (connectionDetails.notes) {
-        setCoreNotes(connectionDetails.notes);
-        setNotes(connectionDetails.notes);
+      try {
+        const connectionDetails =
+          await AriesAgent.agent.connections.getConnectionById(
+            connectionShortDetails.id,
+            connectionShortDetails.type
+          );
+        setConnectionDetails(connectionDetails);
+        if (connectionDetails.notes) {
+          setCoreNotes(connectionDetails.notes);
+          setNotes(connectionDetails.notes);
+        }
+      } catch (e) {
+        // @TODO - Error handling.
+      } finally {
+        setLoading((value) => ({ ...value, details: false }));
       }
     }
 
     async function getHistory() {
-      const connectionHistory =
-        await AriesAgent.agent.connections.getConnectionHistoryById(
-          connectionShortDetails.id
-        );
-      setConnectionHistory(connectionHistory);
+      try {
+        const connectionHistory =
+          await AriesAgent.agent.connections.getConnectionHistoryById(
+            connectionShortDetails.id
+          );
+        setConnectionHistory(connectionHistory);
+      } catch (e) {
+        // @TODO - Error handling.
+      } finally {
+        setLoading((value) => ({ ...value, history: false }));
+      }
     }
 
     if (connectionShortDetails?.id) {
+      setLoading({
+        history: true,
+        details: true,
+      });
       getDetails();
       getHistory();
     }
@@ -152,23 +181,35 @@ const ConnectionDetails = () => {
 
   const credentialBackground = () => {
     if (connectionShortDetails?.type === ConnectionType.KERI) {
-      return "card-body-acdc";
+      return Minicred4;
     } else if (connectionShortDetails?.type === ConnectionType.DIDCOMM) {
       switch (connectionHistory[0]?.credentialType) {
       case CredentialType.PERMANENT_RESIDENT_CARD:
-        return "permanent-resident-card";
+        return Minicred3;
       case CredentialType.ACCESS_PASS_CREDENTIAL:
-        return "access-pass-credential";
+        return Minicred2;
       default:
-        return "card-body-w3c-generic";
+        return Minicred1;
       }
     }
   };
+
+  if (loading.details || loading.history) {
+    return (
+      <div
+        className="connection-detail-spinner-container"
+        data-testid="connection-detail-spinner-container"
+      >
+        <IonSpinner name="circular" />
+      </div>
+    );
+  }
 
   return (
     <>
       <ScrollablePageLayout
         pageId={pageId}
+        customClass="item-details-page"
         header={
           <PageHeader
             closeButton={true}
@@ -228,8 +269,10 @@ const ConnectionDetails = () => {
                 {connectionHistory?.length > 0 && (
                   <div className="connection-details-history-event">
                     <div className="connection-details-logo">
-                      <div
-                        className={`cred-card-template ${credentialBackground()}`}
+                      <img
+                        src={credentialBackground()}
+                        alt="credential-miniature"
+                        className="credential-miniature"
                       />
                     </div>
                     <p className="connection-details-history-event-info">
@@ -239,7 +282,7 @@ const ConnectionDetails = () => {
                           .replace(/^ /, "")
                           .replace(/(\d)/g, "$1"),
                       })}
-                      <span>
+                      <span data-testid="connection-history-timestamp">
                         {` ${formatShortDate(
                           connectionHistory[0]?.timestamp
                         )} - ${formatTimeToSec(
@@ -260,7 +303,7 @@ const ConnectionDetails = () => {
                     {i18next.t("connections.details.connectedwith", {
                       issuer: connectionDetails?.label,
                     })}
-                    <span>
+                    <span data-testid="connection-detail-date">
                       {` ${formatShortDate(
                         `${connectionDetails?.connectionDate}`
                       )} - ${formatTimeToSec(

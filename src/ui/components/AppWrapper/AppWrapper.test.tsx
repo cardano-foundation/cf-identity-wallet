@@ -65,7 +65,7 @@ jest.mock("../../../core/agent/agent", () => ({
         onBasicMessageStateChanged: jest.fn(),
         pickupMessagesFromMediator: jest.fn(),
       },
-      signifyNotification: {
+      signifyNotifications: {
         onNotificationKeriStateChanged: jest.fn(),
       },
     },
@@ -75,6 +75,7 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
     set: jest.fn(),
     get: jest.fn(),
+    remove: jest.fn(),
   },
 }));
 

@@ -39,7 +39,6 @@
 
   ion-searchbar {
     padding: 0 1.25rem;
-    height: 3rem;
   }
 
   .connections-tab-center {
@@ -202,25 +201,6 @@
 
     ion-searchbar {
       padding: 0 1rem;
-      height: 2.4rem;
-
-      .searchbar-input {
-        font-size: 0.8rem;
-        height: 2rem;
-        padding: 0.2rem 2.5rem;
-      }
-
-      .searchbar-search-icon {
-        width: 0.8rem;
-
-        &.ios {
-          padding-left: 0.3rem;
-        }
-
-        &.md {
-          height: 0.8rem;
-        }
-      }
     }
 
     .connections-container {

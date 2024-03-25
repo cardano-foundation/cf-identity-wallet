@@ -35,6 +35,7 @@ describe("identifiersCacheSlice", () => {
         createdAtUTC: "example-date",
         colors: ["#92FFC0", "#47FF94"],
         theme: 0,
+        isPending: false,
       },
     ];
     const newState = identifiersCacheSlice.reducer(

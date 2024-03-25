@@ -15,6 +15,7 @@ import { Creds } from "../Creds";
 import { ConnectionDetails } from "./ConnectionDetails";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { AriesAgent } from "../../../core/agent/agent";
+import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -159,6 +160,12 @@ describe("ConnectionDetails Page", () => {
       fireEvent.click(getByText(connectionsFix[0].label));
     });
 
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.connections.details.label)
+      ).toBeVisible();
+    });
+
     act(() => {
       fireEvent.click(getByTestId("action-button"));
     });
@@ -208,6 +215,74 @@ describe("ConnectionDetails Page", () => {
     await waitFor(() =>
       expect(alertDeleteConnection).toHaveClass("alert-visible")
     );
+  });
+
+  test("Show loading spin when load data", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getByText } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.CREDS}
+            component={Creds}
+          />
+
+          <Route
+            path={RoutePath.CONNECTION_DETAILS}
+            component={ConnectionDetails}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
+
+    act(() => {
+      fireEvent.click(getByText(connectionsFix[0].label));
+    });
+
+    expect(getByTestId("connection-detail-spinner-container")).toBeVisible();
+  });
+
+  test("Hide loading spin after load data", async () => {
+    const storeMocked = {
+      ...mockStore(initialStateFull),
+      dispatch: dispatchMock,
+    };
+    const { getByTestId, getByText, queryByTestId } = render(
+      <MemoryRouter initialEntries={[TabsRoutePath.CREDS]}>
+        <Provider store={storeMocked}>
+          <Route
+            path={TabsRoutePath.CREDS}
+            component={Creds}
+          />
+
+          <Route
+            path={RoutePath.CONNECTION_DETAILS}
+            component={ConnectionDetails}
+          />
+        </Provider>
+      </MemoryRouter>
+    );
+
+    act(() => {
+      fireEvent.click(getByTestId("connections-button"));
+    });
+
+    act(() => {
+      fireEvent.click(getByText(connectionsFix[0].label));
+    });
+
+    expect(getByTestId("connection-detail-spinner-container")).toBeVisible();
+
+    await waitFor(() => {
+      expect(queryByTestId("connection-detail-spinner-container")).toBe(null);
+    });
   });
 
   test.skip("Delete button in the ConnectionOptions modal triggers a confirmation alert", async () => {
@@ -590,22 +665,25 @@ describe("Checking the Connection Details Page when different Credentials are is
       expect(getByText("Connected with \"Cambridge University\"")).toBeVisible()
     );
 
-    await waitFor(() =>
-      expect(getByText("14/01/2017 - 19:23:24")).toBeVisible()
-    );
+    await waitFor(() => {
+      expect(getByTestId("connection-detail-date")).toBeVisible();
+      expect(getByTestId("connection-detail-date")).toHaveTextContent(
+        `${formatShortDate(
+          connectionsFix[0].connectionDate
+        )} - ${formatTimeToSec(connectionsFix[0].connectionDate)}`
+      );
+    });
 
     await waitFor(() =>
       expect(getByText("Received \"University Degree Credential\"")).toBeVisible()
     );
 
     await waitFor(() =>
-      expect(getByText("13/02/2024 - 10:16:08")).toBeVisible()
-    );
-
-    await waitFor(() =>
-      expect(
-        document.getElementsByClassName("card-body-w3c-generic").length
-      ).toBe(1)
+      expect(getByTestId("connection-history-timestamp")).toHaveTextContent(
+        `${formatShortDate("2024-02-13T10:16:08.756Z")} - ${formatTimeToSec(
+          "2024-02-13T10:16:08.756Z"
+        )}`
+      )
     );
   });
 
@@ -662,22 +740,25 @@ describe("Checking the Connection Details Page when different Credentials are is
       expect(getByText("Connected with \"Cardano Foundation\"")).toBeVisible()
     );
 
-    await waitFor(() =>
-      expect(getByText("13/01/2017 - 10:15:11")).toBeVisible()
-    );
+    await waitFor(() => {
+      expect(getByTestId("connection-detail-date")).toBeVisible();
+      expect(getByTestId("connection-detail-date")).toHaveTextContent(
+        `${formatShortDate(
+          connectionsFix[2].connectionDate
+        )} - ${formatTimeToSec(connectionsFix[2].connectionDate)}`
+      );
+    });
 
     await waitFor(() =>
       expect(getByText("Received \"Access Pass Credential\"")).toBeVisible()
     );
 
     await waitFor(() =>
-      expect(getByText("15/02/2024 - 10:16:08")).toBeVisible()
-    );
-
-    await waitFor(() =>
-      expect(
-        document.getElementsByClassName("access-pass-credential").length
-      ).toBe(1)
+      expect(getByTestId("connection-history-timestamp")).toHaveTextContent(
+        `${formatShortDate("2024-02-15T10:16:08.756Z")} - ${formatTimeToSec(
+          "2024-02-15T10:16:08.756Z"
+        )}`
+      )
     );
   });
 
@@ -734,22 +815,25 @@ describe("Checking the Connection Details Page when different Credentials are is
       expect(getByText("Connected with \"Passport Office\"")).toBeVisible()
     );
 
-    await waitFor(() =>
-      expect(getByText("16/01/2017 - 08:21:54")).toBeVisible()
-    );
+    await waitFor(() => {
+      expect(getByTestId("connection-detail-date")).toBeVisible();
+      expect(getByTestId("connection-detail-date")).toHaveTextContent(
+        `${formatShortDate(
+          connectionsFix[1].connectionDate
+        )} - ${formatTimeToSec(connectionsFix[1].connectionDate)}`
+      );
+    });
 
     await waitFor(() =>
       expect(getByText("Received \"Permanent Resident Card\"")).toBeVisible()
     );
 
     await waitFor(() =>
-      expect(getByText("13/02/2024 - 10:16:26")).toBeVisible()
-    );
-
-    await waitFor(() =>
-      expect(
-        document.getElementsByClassName("permanent-resident-card").length
-      ).toBe(1)
+      expect(getByTestId("connection-history-timestamp")).toHaveTextContent(
+        `${formatShortDate("2024-02-13T10:16:26.919Z")} - ${formatTimeToSec(
+          "2024-02-13T10:16:26.919Z"
+        )}`
+      )
     );
   });
 
@@ -803,14 +887,17 @@ describe("Checking the Connection Details Page when different Credentials are is
     });
 
     await waitFor(() =>
-      expect(
-        getByText("Connected with \"45fc3e98-af6b-4797-bdf3-e2124a8089ee\"")
-      ).toBeVisible()
+      expect(getByText("Connected with \"John Smith\"")).toBeVisible()
     );
 
-    await waitFor(() =>
-      expect(getByText("13/02/2024 - 11:39:20")).toBeVisible()
-    );
+    await waitFor(() => {
+      expect(getByTestId("connection-detail-date")).toBeVisible();
+      expect(getByTestId("connection-detail-date")).toHaveTextContent(
+        `${formatShortDate(
+          connectionsFix[3].connectionDate
+        )} - ${formatTimeToSec(connectionsFix[3].connectionDate)}`
+      );
+    });
 
     await waitFor(() =>
       expect(
@@ -819,11 +906,11 @@ describe("Checking the Connection Details Page when different Credentials are is
     );
 
     await waitFor(() =>
-      expect(getByText("13/02/2024 - 11:39:22")).toBeVisible()
-    );
-
-    await waitFor(() =>
-      expect(document.getElementsByClassName("card-body-acdc").length).toBe(1)
+      expect(getByTestId("connection-history-timestamp")).toHaveTextContent(
+        `${formatShortDate("2024-02-13T11:39:22.919Z")} - ${formatTimeToSec(
+          "2024-02-13T11:39:22.919Z"
+        )}`
+      )
     );
   });
 });

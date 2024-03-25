@@ -1,6 +1,8 @@
 /* Keeping everything in px instead of rem 
 because of compatibility issues with Safari browser */
 .smartphone-layout {
+  --preview-height: 900px;
+
   position: relative;
   width: 423px;
   height: 931px;
@@ -8,59 +10,43 @@ because of compatibility issues with Safari browser */
   font-size: 14px;
   margin: 2rem auto;
   background: var(--ion-color-secondary);
-  border: 16px black solid;
-  border-top-width: 60px;
-  border-bottom-width: 60px;
-  border-radius: 36px;
   --scale-w: 4px;
   --scale-h: 8px;
+  overflow: hidden;
 
   ion-modal {
     --width: 390px;
 
     &.verify-passcode {
-      --height: 810px;
+      --height: var(--preview-height);
     }
   }
-}
 
-.smartphone-layout:before {
-  content: "";
-  display: block;
-  width: 60px;
-  height: 5px;
-  position: absolute;
-  top: -30px;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  background: #333;
-  border-radius: 10px;
-}
+  .mobile-preview-header {
+    display: flex;
+  }
 
-.smartphone-layout:after {
-  content: "";
-  display: block;
-  width: 35px;
-  height: 35px;
-  position: absolute;
-  left: 50%;
-  bottom: -65px;
-  transform: translate(-50%, -50%);
-  background: #333;
-  border-radius: 50%;
-}
+  .tab-layout,
+  .scrollable-page-layout,
+  .responsive-page-layout {
+    padding-top: 45.5px;
+  }
 
-.smartphone-layout .smartphone-content {
-  width: 390px;
-  height: 810px;
+  .smartphone-content {
+    width: 423px;
+    height: var(--preview-height);
+    border: 16px black solid;
+    border-radius: 25px;
 
-  .side-panel {
-    width: 390px;
-    height: 810px;
-    position: absolute;
-    right: -390px;
-    background: var(--ion-color-secondary);
-    border-left: 17px black solid;
-    z-index: 105;
+    .side-panel {
+      width: 423px;
+      height: 800px;
+      position: absolute;
+      right: -423px;
+      background: var(--ion-color-secondary);
+      border-left: 16px black solid;
+      z-index: 105;
+      top: -2px;
+    }
   }
 }

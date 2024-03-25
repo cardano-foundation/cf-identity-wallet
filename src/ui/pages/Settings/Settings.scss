@@ -1,5 +1,6 @@
 .settings {
   display: flex !important;
+  background: var(--ion-color-light-grey);
 
   &.show {
     transform: translate3d(0, 0, 0);
@@ -13,6 +14,7 @@
 
   ion-header ion-toolbar {
     margin-top: 0.625rem;
+    --background: var(--ion-color-light-grey);
 
     ion-title.md {
       margin-left: -3rem;
@@ -20,7 +22,9 @@
   }
 
   ion-toolbar ion-buttons ion-button.close-button {
-    background: var(--ion-color-light);
+    --background-activated: var(--ion-color-light-grey);
+    --background-focused: var(--ion-color-light-grey);
+    --background-hover: var(--ion-color-light-grey);
   }
 
   .settings-content {

@@ -2,7 +2,6 @@ import {
   keyOutline,
   calendarNumberOutline,
   pricetagOutline,
-  personCircleOutline,
 } from "ionicons/icons";
 import { formatShortDate } from "../../utils/formatters";
 import { IdentifierCardInfoDidProps } from "./IdentifierCardInfoKey.types";
@@ -31,14 +30,6 @@ const IdentifierCardInfoDid = ({ cardData }: IdentifierCardInfoDidProps) => {
           copyButton={true}
           icon={pricetagOutline}
           testId="copy-button-type"
-        />
-      </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("identifiers.card.details.controller")}>
-        <CardDetailsItem
-          info={cardData.controller}
-          copyButton={true}
-          icon={personCircleOutline}
-          testId="copy-button-controller"
         />
       </CardDetailsBlock>
       <CardDetailsBlock

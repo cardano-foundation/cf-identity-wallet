@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
 import {
@@ -10,21 +10,23 @@ import { CardType } from "../../globals/types";
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
 import { CredCardTemplate } from "../CredCardTemplate";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import { CardsStackProps } from "./CardsStack.types";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
+const getCardStyles = (index: number) => ({
+  top: index * 30,
+});
 
 const CardsStack = ({
   name,
   cardsType,
   cardsData,
-}: {
-  name: string;
-  cardsType: CardType;
-  cardsData: IdentifierShortDetails[] | CredentialShortDetails[];
-}) => {
+  onShowCardDetails,
+}: CardsStackProps) => {
   const history = useHistory();
-  const [isActive, setIsActive] = useState(false);
+  const [pickedCardIndex, setPickedCardIndex] = useState<number | null>(null);
+  const inShowCardProgress = useRef(false);
 
   const renderCards = (
     cardsData: IdentifierShortDetails[] | CredentialShortDetails[]
@@ -40,8 +42,10 @@ const CardsStack = ({
             key={index}
             index={index}
             cardData={cardData as IdentifierShortDetails}
-            isActive={isActive}
+            isActive={pickedCardIndex !== null}
+            pickedCard={index === pickedCardIndex}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
+            styles={getCardStyles(index)}
           />
         ) : (
           <CredCardTemplate
@@ -49,15 +53,20 @@ const CardsStack = ({
             key={index}
             index={index}
             shortData={cardData as CredentialShortDetails}
-            isActive={isActive}
+            isActive={pickedCardIndex !== null}
+            pickedCard={index === pickedCardIndex}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
+            styles={getCardStyles(index)}
           />
         )
     );
   };
 
-  const handleShowCardDetails = (index: number) => {
-    setIsActive(true);
+  const handleShowCardDetails = async (index: number) => {
+    if (inShowCardProgress.current) return;
+    inShowCardProgress.current = true;
+    setPickedCardIndex(index);
+    onShowCardDetails?.();
     let pathname = "";
 
     if (cardsType === CardType.IDENTIFIERS) {
@@ -73,11 +82,16 @@ const CardsStack = ({
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {
-      setIsActive(false);
+      setPickedCardIndex(null);
+      inShowCardProgress.current = false;
     }, CLEAR_STATE_DELAY);
   };
 
-  return <div className="cards-stack-container">{renderCards(cardsData)}</div>;
+  const containerClasses = `cards-stack-container ${
+    pickedCardIndex !== null ? "transition-start" : ""
+  }`;
+
+  return <div className={containerClasses}>{renderCards(cardsData)}</div>;
 };
 
 export { CardsStack, NAVIGATION_DELAY, CLEAR_STATE_DELAY };

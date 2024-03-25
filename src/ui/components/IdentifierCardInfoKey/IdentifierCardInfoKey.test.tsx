@@ -162,35 +162,6 @@ describe("Cards Details page", () => {
     });
   });
 
-  test("It copies controller to clipboard", async () => {
-    Clipboard.write = jest.fn();
-    const { getByText, getByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={IdentifierCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
-
-    await waitFor(() =>
-      expect(
-        getByText(
-          didFix[0].id.substring(8, 13) + "..." + didFix[0].id.slice(-5)
-        )
-      ).toBeInTheDocument()
-    );
-    fireEvent.click(getByTestId("copy-button-controller"));
-
-    await waitFor(() => {
-      expect(Clipboard.write).toHaveBeenCalledWith({
-        string: didFix[0].controller,
-      });
-    });
-  });
-
   test("It copies publicKeyBase58 to clipboard", async () => {
     Clipboard.write = jest.fn();
     const { getByText, getByTestId } = render(

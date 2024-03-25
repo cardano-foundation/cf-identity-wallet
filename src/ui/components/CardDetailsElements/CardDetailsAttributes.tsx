@@ -30,7 +30,9 @@ const CardDetailsAttributes = ({
     return (
       <>
         {item[10] === "T" ? (
-          <span>{formatShortDate(item) + " - " + formatTimeToSec(item)}</span>
+          <span data-testid="cred-detail-time">
+            {formatShortDate(item) + " - " + formatTimeToSec(item)}
+          </span>
         ) : (
           typeof item === ("string" || "number") && (
             <span>
