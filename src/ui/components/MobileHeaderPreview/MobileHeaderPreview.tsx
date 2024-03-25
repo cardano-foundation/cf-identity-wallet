@@ -7,7 +7,10 @@ export const MobileHeaderPreview = () => {
   const date = formatShortTime(new Date().toISOString());
 
   return (
-    <div className="mobile-header-preview">
+    <div
+      data-testid="mobile-preview-header"
+      className="mobile-preview-header"
+    >
       <div className="left-side">{date}</div>
       <div className="camera" />
       <div className="right-side">
