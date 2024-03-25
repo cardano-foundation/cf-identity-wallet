@@ -74,8 +74,9 @@ const MultiSigRequestStageOne = ({
                       className="multisig-connection-logo"
                     >
                       <img
+                        data-testid="multisig-connection-logo"
                         src={
-                          requestData.multisigIcpDetails?.sender.logo ??
+                          requestData.multisigIcpDetails?.sender.logo ||
                           CardanoLogo
                         }
                         alt="multisig-connection-logo"
@@ -114,7 +115,8 @@ const MultiSigRequestStageOne = ({
                             className="multisig-connection-logo"
                           >
                             <img
-                              src={connection.logo ?? CardanoLogo}
+                              data-testid={`other-multisig-connection-logo-${index}`}
+                              src={connection.logo || CardanoLogo}
                               alt="multisig-connection-logo"
                             />
                           </IonCol>
