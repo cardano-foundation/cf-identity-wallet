@@ -7,6 +7,7 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredDidFix } from "../../__fixtures__/filteredIdentifierFix";
 import { SetUserName } from "./SetUserName";
 import { ToastMsgType } from "../../globals/types";
+import { setToastMsg } from "../../../store/reducers/stateCache";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
@@ -21,7 +22,7 @@ describe("CreateIdentifier modal", () => {
       routes: ["/"],
       authentication: {
         loggedIn: true,
-        userName: "Test",
+        userName: "",
         time: Date.now(),
         passcodeIsSet: true,
       },
@@ -40,26 +41,37 @@ describe("CreateIdentifier modal", () => {
     dispatch: dispatchMock,
   };
 
-  test("It renders generic message successfully", async () => {
-    const toastMsg = ToastMsgType.COPIED_TO_CLIPBOARD;
-    const showToast = true;
-    const setShowToast = jest.fn();
-    const { getByTestId } = render(
+  test("It renders modal successfully", async () => {
+    const showSetUserName = true;
+    const setShowSetUserName = jest.fn();
+    const { getByTestId, getByText } = render(
       <Provider store={storeMocked}>
         <SetUserName
-          toastMsg={toastMsg}
-          showToast={showToast}
-          setShowToast={setShowToast}
+          isOpen={showSetUserName}
+          setIsOpen={setShowSetUserName}
         />
       </Provider>
     );
-    expect(getByTestId("confirmation-toast")).toHaveAttribute(
-      "message",
-      EN_TRANSLATIONS.toast.copiedtoclipboard
+    expect(getByText(EN_TRANSLATIONS.setusername.title)).toBeVisible();
+  });
+
+  test.skip("It sets username successfully", async () => {
+    const showSetUserName = true;
+    const setShowSetUserName = jest.fn();
+    const dispatch = jest.fn();
+    const { getByTestId, getByText } = render(
+      <Provider store={storeMocked}>
+        <SetUserName
+          isOpen={showSetUserName}
+          setIsOpen={setShowSetUserName}
+        />
+      </Provider>
     );
-    expect(getByTestId("confirmation-toast")).toHaveAttribute(
-      "color",
-      "secondary"
+    const userNameInput = getByTestId("set-user-name-input");
+    fireEvent.change(userNameInput, { target: { value: "Test" } });
+    fireEvent.click(getByTestId("primary-button-set-user-name"));
+    expect(dispatch).toBeCalledWith(
+      setToastMsg(ToastMsgType.USERNAME_CREATION_SUCCESS)
     );
   });
 });

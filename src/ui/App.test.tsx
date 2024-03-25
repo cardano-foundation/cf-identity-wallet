@@ -1,7 +1,11 @@
 import { render, waitFor } from "@testing-library/react";
+import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
+import { MemoryRouter, Route } from "react-router-dom";
 import { App } from "./App";
+import { TabsRoutePath } from "../routes/paths";
 import { store } from "../store";
+import { Identifiers } from "./pages/Identifiers";
 
 jest.mock("../core/agent/agent", () => ({
   AriesAgent: {
@@ -47,6 +51,7 @@ jest.mock("../core/agent/agent", () => ({
     },
   },
 }));
+
 jest.mock("@aparajita/capacitor-secure-storage", () => ({
   SecureStorage: {
     set: jest.fn(),
@@ -54,6 +59,32 @@ jest.mock("@aparajita/capacitor-secure-storage", () => ({
     remove: jest.fn(),
   },
 }));
+
+const mockStore = configureStore();
+const dispatchMock = jest.fn();
+const initialState = {
+  stateCache: {
+    routes: [TabsRoutePath.IDENTIFIERS],
+    authentication: {
+      loggedIn: true,
+      userName: "",
+      time: Date.now(),
+      passcodeIsSet: true,
+    },
+  },
+  connectionsCache: {
+    connections: [],
+  },
+  identifiersCache: {
+    identifiers: [],
+    favourites: [],
+  },
+};
+
+const storeMocked = {
+  ...mockStore(initialState),
+  dispatch: dispatchMock,
+};
 
 describe("App", () => {
   test("Mobile header hidden when app not in preview mode", async () => {
@@ -65,6 +96,22 @@ describe("App", () => {
 
     await waitFor(() => {
       expect(queryByTestId("mobile-preview-header")).not.toBeInTheDocument();
+    });
+  });
+
+  test.skip("It renders SetUserName modal", async () => {
+    const { queryByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[TabsRoutePath.IDENTIFIERS]}>
+          <Route
+            path={TabsRoutePath.IDENTIFIERS}
+            component={Identifiers}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
+    await waitFor(() => {
+      expect(queryByTestId("set-user-name")).toBeInTheDocument();
     });
   });
 });

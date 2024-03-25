@@ -60,7 +60,7 @@ const App = () => {
   useEffect(() => {
     if (
       authentication.userName?.length === 0 &&
-      currentRoute?.path.includes(TabsRoutePath.ROOT)
+      currentRoute?.path?.includes(TabsRoutePath.ROOT)
     ) {
       setShowSetUserName(true);
     }
@@ -74,7 +74,6 @@ const App = () => {
             <FullPageScanner setShowScan={setShowScan} />
           ) : (
             <>
-              <Routes />
               {isPreviewMode && <MobileHeaderPreview />}
               <Routes />
             </>
