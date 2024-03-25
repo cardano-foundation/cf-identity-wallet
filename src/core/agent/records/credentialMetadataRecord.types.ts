@@ -1,4 +1,4 @@
-import { ConnectionType } from "../../../agent.types";
+import { ConnectionType } from "../agent.types";
 
 enum CredentialMetadataRecordStatus {
   CONFIRMED = "confirmed",

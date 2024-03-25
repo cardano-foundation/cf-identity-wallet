@@ -1,38 +1,5 @@
-import { Agent } from "@aries-framework/core";
 import { SignifyNotificationService } from "./signifyNotificationService";
 import { SignifyApi } from "../modules/signify/signifyApi";
-
-const agent = jest.mocked({
-  modules: {
-    generalStorage: {
-      getAllAvailableIdentifierMetadata: jest.fn(),
-      getAllArchivedIdentifierMetadata: jest.fn(),
-      getIdentifierMetadata: jest.fn(),
-      saveIdentifierMetadataRecord: jest.fn(),
-      archiveIdentifierMetadata: jest.fn(),
-      deleteIdentifierMetadata: jest.fn(),
-      updateIdentifierMetadata: jest.fn(),
-      getKeriIdentifiersMetadata: jest.fn(),
-    },
-    signify: {
-      getIdentifierByName: jest.fn(),
-      createIdentifier: jest.fn(),
-      getAllIdentifiers: jest.fn(),
-      markNotification: jest.fn(),
-    },
-  },
-  dids: {
-    getCreatedDids: jest.fn(),
-    resolve: jest.fn(),
-    create: jest.fn(),
-  },
-  genericRecords: {
-    save: jest.fn(),
-    findAllByQuery: jest.fn(),
-    findById: jest.fn(),
-    deleteById: jest.fn(),
-  },
-});
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -50,7 +17,6 @@ const signifyApi = jest.mocked({
 });
 
 const signifyNotificationService = new SignifyNotificationService(
-  agent as any as Agent,
   basicStorage,
   signifyApi as any as SignifyApi
 );

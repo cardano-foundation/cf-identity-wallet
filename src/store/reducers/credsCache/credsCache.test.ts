@@ -10,7 +10,7 @@ import {
   updateOrAddCredsCache,
 } from "./credsCache";
 import { RootState } from "../../index";
-import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../identifiersCache/identifiersCache.types";

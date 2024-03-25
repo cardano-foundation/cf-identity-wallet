@@ -1,4 +1,3 @@
-import { JsonObject } from "@aries-framework/core";
 import { ReactNode } from "react";
 
 interface CardDetailsItemProps {
@@ -16,7 +15,7 @@ interface CardDetailsBlockProps {
 }
 
 interface CardDetailsAttributesProps {
-  data: JsonObject;
+  data: any;
   customType?: string;
 }
 

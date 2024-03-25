@@ -1,6 +1,7 @@
 import { SqliteStorage } from "./sqliteStorage";
 import { convertDbQuery } from "./utils";
-import { BasicRecord, RecordType, StorageRecord } from "../storage.types";
+import { RecordType, StorageRecord } from "../storage.types";
+import { BasicRecord } from "../../agent/records";
 
 const startTime = new Date();
 
@@ -215,15 +216,15 @@ describe("Aries - Sqlite Storage Module: Storage Service", () => {
   test("should get an existing record", async () => {
     const record = await storageService.findById(existingRecord.id);
     expect(getMock).toBeCalledWith(existingRecord.id);
-    expect(record.type).toEqual(RecordType.CONNECTION_KERI_METADATA);
-    expect(record.id).toEqual(existingRecord.id);
+    expect(record!.type).toEqual(RecordType.CONNECTION_KERI_METADATA);
+    expect(record!.id).toEqual(existingRecord.id);
   });
 
-  test("should throw an error if trying to retrieve a record that does not exist", async () => {
-    await expect(storageService.findById(newRecord.id)).rejects.toThrow(
-      `${SqliteStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${newRecord.id}`
-    );
-    expect(getMock).toBeCalledWith(newRecord.id);
+  test("should get an non existing record", async () => {
+    const nonExistingId = "nonExistingId";
+    const record = await storageService.findById(nonExistingId);
+    expect(getMock).toBeCalledWith(nonExistingId);
+    expect(record).toEqual(null);
   });
 
   test("should return all items for a record type but none others", async () => {

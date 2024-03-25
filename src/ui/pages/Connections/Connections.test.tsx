@@ -2,7 +2,6 @@ import { mockIonicReact } from "@ionic/react-test-utils";
 mockIonicReact();
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
-import { OutOfBandInvitation, OutOfBandRecord } from "@aries-framework/core";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -101,16 +100,16 @@ describe("Connections page", () => {
   });
 
   test.skip("It renders QR code successfully", async () => {
-    jest
-      .spyOn(AriesAgent.agent.connections, "createMediatorInvitation")
-      .mockResolvedValue({
-        invitationUrl: "http://example.com?oob=abc123",
-        record: {} as OutOfBandRecord,
-        invitation: {} as OutOfBandInvitation,
-      });
-    jest
-      .spyOn(AriesAgent.agent.connections, "getShortenUrl")
-      .mockResolvedValue("http://example.com/shorten/123");
+    // jest
+    //   .spyOn(AriesAgent.agent.connections, "createMediatorInvitation")
+    //   .mockResolvedValue({
+    //     invitationUrl: "http://example.com?oob=abc123",
+    //     record: {} as OutOfBandRecord,
+    //     invitation: {} as OutOfBandInvitation,
+    //   });
+    // jest
+    //   .spyOn(AriesAgent.agent.connections, "getShortenUrl")
+    //   .mockResolvedValue("http://example.com/shorten/123");
     const { getByText, getByTestId } = render(
       <Provider store={mockedStore}>
         <Connections

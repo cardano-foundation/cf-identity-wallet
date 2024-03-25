@@ -1,4 +1,5 @@
-import { v4 as uuidv4 } from "uuid";
+import { instanceToPlain } from "class-transformer";
+import { BasicRecord } from "../agent/records";
 
 type Tags = Record<string | number, unknown>;
 abstract class BaseRecord {
@@ -30,15 +31,14 @@ abstract class BaseRecord {
   replaceTags(tags: Tags & Partial<Tags>) {
     this._tags = tags;
   }
+
+  toJSON(): Record<string, unknown> {
+    return instanceToPlain(this, {
+      exposeDefaultValues: true,
+    });
+  }
 }
 
-interface BasicRecordStorageProps {
-  id?: string;
-  createdAt?: Date;
-  tags?: Tags;
-  content: Record<string, unknown>;
-  type: RecordType;
-}
 interface SaveBasicRecordOption {
   content: Record<string, unknown>;
   id?: string;
@@ -50,26 +50,9 @@ enum RecordType {
   CONNECTION_NOTE = "ConnectionNote",
   CONNECTION_KERI_METADATA = "ConnectionKeriMetadata",
   NOTIFICATION_KERI = "NotificationKeri",
-}
-
-class BasicRecord extends BaseRecord {
-  content!: Record<string, unknown>;
-  type!: RecordType;
-
-  constructor(props: BasicRecordStorageProps) {
-    super();
-    this.id = props.id ?? uuidv4();
-    this.createdAt = props.createdAt ?? new Date();
-    this.content = props.content;
-    this._tags = props.tags ?? {};
-    this.type = props.type;
-  }
-
-  getTags() {
-    return {
-      ...this._tags,
-    };
-  }
+  CREDENTIAL_METADATA_RECORD = "CredentialMetadataRecord",
+  IDENTIFIER_METADATA_RECORD = "IdentifierMetadataRecord",
+  OP_PASS_HINT = "OpPassHint",
 }
 
 type SimpleQuery<T extends BaseRecord> = Partial<ReturnType<T["getTags"]>> &
@@ -101,5 +84,5 @@ interface StorageRecord {
   category: string;
 }
 
-export { BasicRecord, BaseRecord, RecordType };
+export { BaseRecord, RecordType };
 export type { StorageApi, Query, SaveBasicRecordOption, StorageRecord, Tags };

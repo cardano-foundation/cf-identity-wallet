@@ -1,4 +1,3 @@
-import { BaseEvent } from "@aries-framework/core";
 import {
   CredentialShortDetails,
   CredentialStatus,
@@ -79,7 +78,7 @@ enum ConnectionKeriEventTypes {
 enum AcdcKeriEventTypes {
   AcdcKeriStateChanged = "AcdcKeriStateChanged",
 }
-interface ConnectionKeriStateChangedEvent extends BaseEvent {
+interface ConnectionKeriStateChangedEvent extends BaseEventEmitter {
   type: typeof ConnectionKeriEventTypes.ConnectionKeriStateChanged;
   payload: {
     connectionId?: string;
@@ -87,7 +86,7 @@ interface ConnectionKeriStateChangedEvent extends BaseEvent {
   };
 }
 
-interface AcdcKeriStateChangedEvent extends BaseEvent {
+interface AcdcKeriStateChangedEvent extends BaseEventEmitter {
   type: typeof AcdcKeriEventTypes.AcdcKeriStateChanged;
   payload:
     | {
@@ -106,6 +105,12 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
+
+interface BaseEventEmitter {
+  type: string;
+  payload: Record<string, unknown>;
+}
+
 interface KeriaNotificationMarker {
   nextIndex: number;
   lastNotificationId: string;
@@ -121,6 +126,7 @@ export {
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
 };
+
 export type {
   CryptoAccountRecordShortDetails,
   ConnectionShortDetails,
@@ -131,5 +137,6 @@ export type {
   ConnectionKeriStateChangedEvent,
   KeriNotification,
   AcdcKeriStateChangedEvent,
+  BaseEventEmitter,
   KeriaNotificationMarker,
 };

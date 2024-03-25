@@ -1,12 +1,14 @@
 import { keyOutline, informationCircleOutline } from "ionicons/icons";
-import { JsonObject } from "@aries-framework/core";
 import { i18n } from "../../../../i18n";
 import {
   CardDetailsBlock,
   CardDetailsItem,
   CardDetailsAttributes,
 } from "../../../components/CardDetailsElements";
-import { ACDCDetails } from "../../../../core/agent/services/credentialService.types";
+import {
+  ACDCDetails,
+  JSONObject,
+} from "../../../../core/agent/services/credentialService.types";
 
 interface ACDCContentProps {
   cardData: ACDCDetails;
@@ -27,7 +29,7 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
       </CardDetailsBlock>
       {cardData.a && (
         <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>
-          <CardDetailsAttributes data={cardData.a as JsonObject} />
+          <CardDetailsAttributes data={cardData.a as JSONObject} />
         </CardDetailsBlock>
       )}
       <CardDetailsBlock title={i18n.t("creds.card.details.schemaversion")}>
@@ -47,7 +49,7 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
       </CardDetailsBlock>
       <CardDetailsBlock title={i18n.t("creds.card.details.status.label")}>
         <CardDetailsAttributes
-          data={cardData.lastStatus as JsonObject}
+          data={cardData.lastStatus as JSONObject}
           customType="status"
         />
       </CardDetailsBlock>
