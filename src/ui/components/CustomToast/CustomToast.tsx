@@ -32,10 +32,11 @@ const CustomToast = ({
       }
       color={toastMsg?.toLowerCase().includes("error") ? "danger" : "secondary"}
       position="top"
+      data-testid="confirmation-toast"
       cssClass="confirmation-toast"
       duration={TOAST_DURATION}
     />
   );
 };
 
-export default CustomToast;
+export { CustomToast };

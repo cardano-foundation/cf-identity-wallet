@@ -47,9 +47,10 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
     <IonModal
       isOpen={isOpen}
       id={componentId}
+      data-testid={`${componentId}-modal`}
       backdropDismiss={!isOpen}
     >
-      <div className="wrapper">
+      <div className={`${componentId}-wrapper`}>
         <h4>{i18n.t("setusername.title")}</h4>
         <CustomInput
           dataTestId={`${componentId}-input`}

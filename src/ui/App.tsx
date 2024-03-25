@@ -19,8 +19,8 @@ import { IncomingRequest } from "./pages/IncomingRequest";
 import { Settings } from "./pages/Settings";
 import { SetUserName } from "./components/SetUserName";
 import { TabsRoutePath } from "../routes/paths";
-import CustomToast from "./components/CustomToast/CustomToast";
 import { MobileHeaderPreview } from "./components/MobileHeaderPreview";
+import { CustomToast } from "./components/CustomToast/CustomToast";
 
 setupIonicReact();
 
