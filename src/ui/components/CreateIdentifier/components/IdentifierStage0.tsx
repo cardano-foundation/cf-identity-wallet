@@ -1,6 +1,6 @@
 import { Keyboard } from "@capacitor/keyboard";
 import { Capacitor } from "@capacitor/core";
-import { IonGrid, IonRow, IonCol } from "@ionic/react";
+import { IonCol, IonGrid, IonRow } from "@ionic/react";
 import { useEffect, useState } from "react";
 import { i18n } from "../../../../i18n";
 import { CustomInput } from "../../CustomInput";
@@ -176,6 +176,7 @@ const IdentifierStage0 = ({
             <IonRow>
               <IonCol>
                 <TypeItem
+                  dataTestId="identifier-type-didkey"
                   index={0}
                   text={i18n.t("createidentifier.identifiertype.didkey")}
                   clickEvent={() => identifierTypeSelector(0)}
@@ -184,6 +185,7 @@ const IdentifierStage0 = ({
               </IonCol>
               <IonCol>
                 <TypeItem
+                  dataTestId="identifier-type-keri"
                   index={1}
                   text={i18n.t("createidentifier.identifiertype.keri")}
                   clickEvent={() => identifierTypeSelector(1)}
@@ -205,6 +207,7 @@ const IdentifierStage0 = ({
               <IonRow>
                 <IonCol>
                   <TypeItem
+                    dataTestId="identifier-aidtype-default"
                     index={0}
                     text={i18n.t("createidentifier.aidtype.default.label")}
                     clickEvent={() =>
@@ -218,6 +221,7 @@ const IdentifierStage0 = ({
                 </IonCol>
                 <IonCol>
                   <TypeItem
+                    dataTestId="identifier-aidtype-multisig"
                     index={1}
                     text={i18n.t("createidentifier.aidtype.multisig.label")}
                     clickEvent={() =>
@@ -231,6 +235,7 @@ const IdentifierStage0 = ({
                 </IonCol>
                 <IonCol>
                   <TypeItem
+                    dataTestId="identifier-aidtype-delegated"
                     index={2}
                     text={i18n.t("createidentifier.aidtype.delegated.label")}
                     clickEvent={() =>

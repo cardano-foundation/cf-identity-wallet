@@ -16,11 +16,11 @@ import {
 import { Share } from "@capacitor/share";
 import {
   codeSlashOutline,
+  copyOutline,
+  downloadOutline,
   pencilOutline,
   shareOutline,
   trashOutline,
-  copyOutline,
-  downloadOutline,
 } from "ionicons/icons";
 import { Capacitor } from "@capacitor/core";
 import { Keyboard } from "@capacitor/keyboard";
@@ -195,7 +195,7 @@ const IdentifierOptions = ({
                 <IonCol size="12">
                   <span
                     className="identifier-options-option"
-                    data-testid="identifier-options-view-button"
+                    data-testid="view-json-identifier-options"
                     onClick={() => {
                       setOptionsIsOpen(false);
                       setViewIsOpen(true);
@@ -215,7 +215,7 @@ const IdentifierOptions = ({
                   </span>
                   <span
                     className="identifier-options-option"
-                    data-testid="identifier-options-identifier-options-button"
+                    data-testid="edit-identifier-options"
                     onClick={() => {
                       dispatch(
                         setCurrentOperation(OperationType.UPDATE_IDENTIFIER)
@@ -239,7 +239,7 @@ const IdentifierOptions = ({
                   </span>
                   <span
                     className="identifier-options-option"
-                    data-testid="identifier-options-share-button"
+                    data-testid="share-identifier-options"
                     onClick={async () => {
                       await Share.share({
                         text: cardData.displayName + " " + cardData.id,
@@ -260,7 +260,7 @@ const IdentifierOptions = ({
                   </span>
                   <span
                     className="identifier-options-option"
-                    data-testid="delete-button-identifier-options"
+                    data-testid="delete-identifier-options"
                     onClick={() => {
                       setOptionsIsOpen(false);
                       handleDelete();
@@ -401,6 +401,7 @@ const IdentifierOptions = ({
                 <IonRow>
                   <IonCol className="footer-col">
                     <IonButton
+                      data-testid="copy-json-button"
                       shape="round"
                       expand="block"
                       fill="outline"
@@ -418,6 +419,7 @@ const IdentifierOptions = ({
                       {i18n.t("identifiers.card.details.view.copy")}
                     </IonButton>
                     <IonButton
+                      data-testid="save-to-device-button"
                       shape="round"
                       expand="block"
                       className="primary-button"

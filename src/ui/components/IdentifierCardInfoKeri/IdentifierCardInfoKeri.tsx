@@ -1,7 +1,6 @@
 import { calendarNumberOutline, personCircleOutline } from "ionicons/icons";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { IdentifierCardInfoKeriProps } from "./IdentifierCardInfoKeri.types";
-import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
 import { CardDetailsBlock, CardDetailsItem } from "../CardDetailsElements";
 import { i18n } from "../../../i18n";
 import { ConfigurationService } from "../../../core/configuration";
@@ -18,7 +17,7 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
             info={cardData.di}
             copyButton={true}
             textIcon="identifiers.card.details.delegator.icon"
-            testId="delegator-copy-button"
+            testId="delegator"
           />
         </CardDetailsBlock>
       )}
@@ -33,7 +32,7 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
                 info={item}
                 copyButton={true}
                 textIcon="identifiers.card.details.signingkeyslist.icon"
-                testId={`signing-keys-list-copy-button-${index}`}
+                testId={`signing-key-${index}`}
               />
             );
           })}
@@ -62,7 +61,7 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
                 info={item}
                 copyButton={true}
                 textIcon="identifiers.card.details.nextkeyslist.icon"
-                testId={`next-keys-list-copy-button-${index}`}
+                testId={`next-key-${index}`}
               />
             );
           })}
@@ -133,7 +132,7 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
                 info={item}
                 copyButton={true}
                 textIcon="identifiers.card.details.backerslist.icon"
-                testId={`backers-list-copy-button-${index}`}
+                testId={`backer-${index}`}
               />
             );
           })}
@@ -149,7 +148,7 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
             copyButton={true}
             icon={personCircleOutline}
             // @TODO - foconnor: This metadata in the future should come with Signify, for now we are "assuming" the address.
-            testId="copy-button-backer-address"
+            testId="backer-address"
           />
         </CardDetailsBlock>
       )}

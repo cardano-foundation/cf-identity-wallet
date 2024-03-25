@@ -56,9 +56,11 @@ const ShareIdentifier = ({
         >
           <IonGrid>
             <IonRow>
-              <IonCol size="12">
+              <IonCol
+                data-testid="share-identifier-qr-code"
+                size="12"
+              >
                 <QRCode
-                  data-testid="share-identifier-qr-code"
                   value={id}
                   size={250}
                   fgColor={"black"}
@@ -85,21 +87,26 @@ const ShareIdentifier = ({
               <IonCol size="12">
                 <span
                   className="share-identifier-option"
-                  data-testid="share-identifier-copy-button"
                   onClick={() => {
                     writeToClipboard(id);
                     dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));
                   }}
                 >
                   <span>
-                    <IonButton shape="round">
+                    <IonButton
+                      data-testid="share-identifier-copy-button"
+                      shape="round"
+                    >
                       <IonIcon
                         slot="icon-only"
                         icon={copyOutline}
                       />
                     </IonButton>
                   </span>
-                  <span className="share-identifier-label">
+                  <span
+                    className="share-identifier-label"
+                    data-testid="share-identifier-copy-label"
+                  >
                     {i18n.t("shareidentifier.copykey")}
                   </span>
                 </span>
@@ -113,14 +120,20 @@ const ShareIdentifier = ({
                   }}
                 >
                   <span>
-                    <IonButton shape="round">
+                    <IonButton
+                      data-testid="share-identifier-more-button"
+                      shape="round"
+                    >
                       <IonIcon
                         slot="icon-only"
                         icon={openOutline}
                       />
                     </IonButton>
                   </span>
-                  <span className="share-identifier-info-block-data">
+                  <span
+                    className="share-identifier-info-block-data"
+                    data-testid="share-identifier-more-label"
+                  >
                     {i18n.t("shareidentifier.more")}
                   </span>
                 </span>

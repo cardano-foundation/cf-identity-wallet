@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { IonButton, IonIcon, IonInput, IonItem, IonLabel } from "@ionic/react";
-import { eyeOutline, eyeOffOutline } from "ionicons/icons";
+import { eyeOffOutline, eyeOutline } from "ionicons/icons";
 import { CustomInputProps } from "./CustomInput.types";
 import "./CustomInput.scss";
 import { i18n } from "../../../i18n";
@@ -26,7 +26,10 @@ const CustomInput = ({
   };
   return (
     <IonItem className={`custom-input ${error ? "error" : ""}`}>
-      <IonLabel position="stacked">
+      <IonLabel
+        position="stacked"
+        data-testid={`${title?.toLowerCase().replace(" ", "-")}-title`}
+      >
         {title}
         {optional && (
           <span className="custom-input-optional">

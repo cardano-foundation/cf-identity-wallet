@@ -1,5 +1,5 @@
 import { StrictMode, useEffect, useState } from "react";
-import { setupIonicReact, IonApp, IonToast } from "@ionic/react";
+import { IonApp, IonToast, setupIonicReact } from "@ionic/react";
 import { Routes } from "../routes";
 import "./styles/ionic.scss";
 import "./styles/style.scss";
@@ -59,6 +59,7 @@ const App = () => {
           <IncomingRequest />
           <Settings />
           <IonToast
+            data-testid="toast-message"
             isOpen={showToast}
             onDidDismiss={() => {
               setShowToast(false);

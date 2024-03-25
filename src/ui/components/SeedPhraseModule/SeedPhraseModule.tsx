@@ -67,7 +67,10 @@ const SeedPhraseModule = ({
           );
         })}
         {emptyWord && (
-          <IonChip className="empty-word">
+          <IonChip
+            className="empty-word"
+            data-testid={`empty-word-${seedPhrase.length + 1}`}
+          >
             <span className="index">{seedPhrase.length + 1}.</span>
           </IonChip>
         )}
