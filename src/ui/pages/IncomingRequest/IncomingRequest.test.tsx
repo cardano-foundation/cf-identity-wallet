@@ -1,15 +1,12 @@
 import { mockIonicReact } from "@ionic/react-test-utils";
 mockIonicReact();
-import { act, fireEvent, render, waitFor } from "@testing-library/react";
+import { act, fireEvent, render } from "@testing-library/react";
 import { EventEmitter } from "events";
 import { Provider } from "react-redux";
-import { Agent } from "@aries-framework/core";
 import { store } from "../../../store";
 import { IncomingRequest } from "./IncomingRequest";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
-import { AriesAgent } from "../../../core/agent/agent";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { i18n } from "../../../i18n";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import {
   setQueueIncomingRequest,
