@@ -364,7 +364,7 @@ describe("Signify API", () => {
     const { signifyName, identifier } = await api.createIdentifier();
     // For now, we are using uuidv4 for signifyName
     expect(signifyName).toEqual(expect.any(String));
-    expect(identifier).toBe(expect.any(String));
+    expect(identifier).toEqual(expect.any(String));
   });
 
   test("can get identifier by name", async () => {
