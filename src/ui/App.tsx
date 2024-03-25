@@ -28,8 +28,9 @@ const App = () => {
   const [showScan, setShowScan] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  const isPreviewMode = new URLSearchParams(window.location.search).has(
-    "browserPreview"
+  const isPreviewMode = useMemo(
+    () => new URLSearchParams(window.location.search).has("browserPreview"),
+    []
   );
 
   useEffect(() => {

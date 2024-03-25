@@ -4,8 +4,12 @@
   background-color: transparent;
   justify-content: space-between;
   align-items: center;
-  padding: 13px 32px;
+  padding: 0.8125rem 2rem;
   position: relative;
+  /*
+  * Because preview mobile header should display on top of all page layout and some layout is modal. 
+  * Therefore I need fix z-index with high value.
+  */
   z-index: 22000;
 
   .left-side {
@@ -14,10 +18,10 @@
   }
 
   .camera {
-    background-color: black;
-    width: 100px;
+    background-color: var(--black);
+    width: 6.25rem;
     height: 100%;
-    border-radius: 20px;
+    border-radius: 1.25rem;
   }
 
   .right-side {

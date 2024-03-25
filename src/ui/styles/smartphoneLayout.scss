@@ -10,8 +10,6 @@ because of compatibility issues with Safari browser */
   font-size: 14px;
   margin: 2rem auto;
   background: var(--ion-color-secondary);
-  border: 16px black solid;
-  border-radius: 36px;
   --scale-w: 4px;
   --scale-h: 8px;
   overflow: hidden;
@@ -35,15 +33,16 @@ because of compatibility issues with Safari browser */
   }
 
   .smartphone-content {
-    width: 390px;
+    width: 423px;
     height: var(--preview-height);
+    border: 16px black solid;
     border-radius: 25px;
 
     .side-panel {
-      width: 390px;
-      height: 815px;
+      width: 423px;
+      height: 800px;
       position: absolute;
-      right: -390px;
+      right: -423px;
       background: var(--ion-color-secondary);
       border-left: 16px black solid;
       z-index: 105;
