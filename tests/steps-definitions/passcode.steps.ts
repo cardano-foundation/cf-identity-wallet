@@ -1,18 +1,16 @@
 import { Given, Then, When } from "@wdio/cucumber-framework";
 import PasscodeScreen from "../screen-objects/passcode.screen.js";
 
-let passcode: number[];
-
 Given(
   /^user enter a generated passcode on Passcode screen$/,
   async function () {
-    passcode = await PasscodeScreen.createAndEnterRandomPasscode();
+    this.passcode = await PasscodeScreen.createAndEnterRandomPasscode();
   }
 );
 
 Given(/^user generate passcode on Passcode screen$/, async function () {
-  passcode = await PasscodeScreen.createAndEnterRandomPasscode();
-  await PasscodeScreen.enterPasscode(passcode);
+  this.passcode = await PasscodeScreen.createAndEnterRandomPasscode();
+  await PasscodeScreen.enterPasscode(this.passcode);
 });
 
 Given(/^user can see Re-enter your Passcode screen$/, async function () {
@@ -20,7 +18,7 @@ Given(/^user can see Re-enter your Passcode screen$/, async function () {
 });
 
 When(/^user re-enter passcode on Passcode screen$/, async function () {
-  await PasscodeScreen.enterPasscode(passcode);
+  await PasscodeScreen.enterPasscode(this.passcode);
 });
 
 When(

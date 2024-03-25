@@ -18,10 +18,9 @@ export class MenuToolbar {
     await findAndClickElement("[data-testid=\"back-button\"]");
   }
 
-  async loads(screenLocator: string) {
+  async loads() {
     await expect(this.addButton).toBeDisplayed();
     await expect(this.connectionsButton).toBeDisplayed();
-    await expect(this.menusButton(screenLocator)).toBeDisplayed();
   }
 }
 

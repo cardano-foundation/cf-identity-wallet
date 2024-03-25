@@ -1,7 +1,7 @@
 import { Given, Then, When } from "@wdio/cucumber-framework";
 import { expect } from "expect-webdriverio";
 import { seedPhrase } from "../helpers/seed-phrase.js";
-import GenerateSeedPhraseScreen from "../screen-objects/generate-seed-phrase.screen.js";
+import GenerateSeedPhraseScreen from "../screen-objects/seed-phrase/seed-phrase-generate.screen.js";
 
 export let seedPhraseWords: string[] = [];
 

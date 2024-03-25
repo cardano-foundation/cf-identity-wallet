@@ -5,16 +5,16 @@ export class TabBar {
     return $("#tab-button-Credentials");
   }
 
-  get cryptoTabButton() {
-    return $("#tab-button-Crypto");
-  }
-
   get identityTabButton() {
     return $("#tab-button-Identity");
   }
 
+  get menuTabButton() {
+    return $("#tab-button-Menu");
+  }
+
   get p2pChatTabButton() {
-    return $("[data-testid=\"tab-button-p2p-chat\"]");
+    return $("#tab-button-P2P");
   }
 
   get scanTabButton() {
@@ -25,8 +25,8 @@ export class TabBar {
     await expect(this.identityTabButton).toBeDisplayed();
     await expect(this.credentialsTabButton).toBeDisplayed();
     await expect(this.scanTabButton).toBeDisplayed();
-    await expect(this.cryptoTabButton).toBeDisplayed();
     await expect(this.p2pChatTabButton).toBeDisplayed();
+    await expect(this.menuTabButton).toBeDisplayed();
   }
 }
 

@@ -1,14 +1,14 @@
 export class BaseModal {
-  get closeButton() {
-    return $("[data-testid=\"close-button\"]");
+  get doneButton() {
+    return $("[data-testid=\"close-button-label\"]");
   }
 
   async introTitle(modalName: string) {
-    return $(`[data-testid="${modalName}"]`);
+    return $(`[data-testid="${modalName}-title"]`);
   }
 
   async introText(modalName: string) {
-    return this.introTitle(`${modalName}-modal-intro-text`);
+    return $(`[data-testid="${modalName}-modal-intro-text"]`);
   }
 
   returnSectionTitleLocator = (modalName: string, sectionName: string) =>

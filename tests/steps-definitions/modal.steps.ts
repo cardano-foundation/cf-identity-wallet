@@ -3,23 +3,31 @@ import AlertModal from "../screen-objects/components/alert.modal.js";
 import BaseModal from "../screen-objects/components/base.modal.js";
 import PrivacyPolicyModal from "../screen-objects/components/privacy-policy.modal.js";
 import TermsOfUseModal from "../screen-objects/components/terms-of-use.modal.js";
+import { log } from "../helpers/logger.js";
 
-When(/^tap Cancel button on alert modal$/, async function () {
+When(/^tap Cancel button on alert modal$/, async function() {
   await AlertModal.clickCancelButton();
 });
 
-When(/^tap Confirm button on alert modal$/, async function () {
+When(/^tap Confirm button on alert modal$/, async function() {
   await AlertModal.clickConfirmButton();
+  log.info(`PASCODE: ${this.passcode}`);
 });
 
-When(/^user tap Done button on modal$/, async function () {
-  await BaseModal.closeButton.click();
+When(/^user tap Done button on modal$/, async function() {
+  await BaseModal.doneButton.waitForClickable();
+  await BaseModal.doneButton.click();
 });
 
-Then(/^user can see Terms of Use modal$/, async function () {
+When(/^user tap Cancel button on modal$/, async function() {
+  await BaseModal.doneButton.waitForClickable();
+  await BaseModal.doneButton.click();
+});
+
+Then(/^user can see Terms of Use modal$/, async function() {
   await TermsOfUseModal.loads();
 });
 
-Then(/^user can see Privacy Policy modal$/, async function () {
+Then(/^user can see Privacy Policy modal$/, async function() {
   await PrivacyPolicyModal.loads();
 });

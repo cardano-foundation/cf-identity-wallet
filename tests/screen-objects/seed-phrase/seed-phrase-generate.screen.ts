@@ -1,7 +1,7 @@
 import { expect } from "expect-webdriverio";
-import { GenerateSeedPhrase } from "../constants/text.constants.js";
+import { GenerateSeedPhrase } from "../../constants/text.constants.js";
 
-export class GenerateSeedPhraseScreen {
+export class SeedPhraseGenerateScreen {
   get continueButton() {
     return $("[data-testid=\"primary-button-generate-seed-phrase\"]");
   }
@@ -46,10 +46,6 @@ export class GenerateSeedPhraseScreen {
     return $(`[data-testid="${phraseLength.toString()}-words-segment-button"]`);
   }
 
-  seedPhraseWordText(wordNumber: number) {
-    return $(`[data-testid="word-index-${wordNumber.toString()}"]`);
-  }
-
   async loads() {
     await expect(this.screenTitle).toBeExisting();
     await expect(this.screenTitle).toHaveText(GenerateSeedPhrase.Title);
@@ -72,4 +68,4 @@ export class GenerateSeedPhraseScreen {
   }
 }
 
-export default new GenerateSeedPhraseScreen();
+export default new SeedPhraseGenerateScreen();

@@ -1,7 +1,7 @@
 import { expect } from "expect-webdriverio";
-import { VerifySeedPhrase } from "../constants/text.constants.js";
+import { VerifySeedPhrase } from "../../constants/text.constants.js";
 
-export class VerifySeedPhraseScreen {
+export class SeedPhraseVerifyScreen {
   get continueButton() {
     return $("[data-testid=\"primary-button-verify-seed-phrase\"]");
   }
@@ -30,4 +30,4 @@ export class VerifySeedPhraseScreen {
   }
 }
 
-export default new VerifySeedPhraseScreen();
+export default new SeedPhraseVerifyScreen();
