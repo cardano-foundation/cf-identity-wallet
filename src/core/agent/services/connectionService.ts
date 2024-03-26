@@ -135,11 +135,10 @@ class ConnectionService extends AgentService {
         }
       );
 
-      const alias = new URL(url).searchParams.get("name") ?? undefined;
-      const operation = await this.signifyApi.resolveOobi(url, alias);
+      const operation = await this.signifyApi.resolveOobi(url);
       const connectionId = operation.response.i;
       await this.createConnectionKeriMetadata(connectionId, {
-        alias: alias ?? operation.alias,
+        alias: operation.alias,
         oobi: url,
       });
 

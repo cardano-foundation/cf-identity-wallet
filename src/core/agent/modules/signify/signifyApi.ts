@@ -173,11 +173,11 @@ export class SignifyApi {
     return this.signifyClient.contacts().delete(id);
   }
 
-  async resolveOobi(url: string, alias?: string): Promise<any> {
+  async resolveOobi(url: string): Promise<any> {
     if (SignifyApi.resolvedOobi[url]) {
       return SignifyApi.resolvedOobi[url];
     }
-    alias = alias ?? utils.uuid();
+    const alias = new URL(url).searchParams.get("name") ?? utils.uuid();
     const operation = await this.waitAndGetDoneOp(
       await this.signifyClient.oobis().resolve(url, alias),
       this.opTimeout,
