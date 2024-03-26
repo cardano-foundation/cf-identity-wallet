@@ -1152,8 +1152,7 @@
   "setusername": {
     "title": "Welcome! What should we call you?",
     "input": {
-      "title": "Name",
-      "placeholder": "Name (max 32 characters)"
+      "title": "Name"
     },
     "button": {
       "confirm": "Confirm"

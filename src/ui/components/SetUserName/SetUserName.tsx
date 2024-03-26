@@ -51,11 +51,10 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
       backdropDismiss={!isOpen}
     >
       <div className={`${componentId}-wrapper`}>
-        <h4>{i18n.t("setusername.title")}</h4>
+        <h3>{i18n.t("setusername.title")}</h3>
         <CustomInput
           dataTestId={`${componentId}-input`}
           title={`${i18n.t("setusername.input.title")}`}
-          placeholder={`${i18n.t("setusername.input.placeholder")}`}
           hiddenInput={false}
           autofocus={true}
           onChangeInput={setUserName}
