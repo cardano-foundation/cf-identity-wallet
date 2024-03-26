@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
@@ -7,14 +6,14 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { filteredDidFix } from "../../__fixtures__/filteredIdentifierFix";
 import { SetUserName } from "./SetUserName";
 import { ToastMsgType } from "../../globals/types";
-import { setToastMsg } from "../../../store/reducers/stateCache";
+import { PreferencesKeys } from "../../../core/storage";
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
   IonModal: ({ children }: { children: any }) => children,
 }));
 
-describe("CreateIdentifier modal", () => {
+describe("SetUserName component", () => {
   const mockStore = configureStore();
   const dispatchMock = jest.fn();
   const initialState = {
@@ -44,7 +43,7 @@ describe("CreateIdentifier modal", () => {
   test("It renders modal successfully", async () => {
     const showSetUserName = true;
     const setShowSetUserName = jest.fn();
-    const { getByTestId, getByText } = render(
+    const { getByText } = render(
       <Provider store={storeMocked}>
         <SetUserName
           isOpen={showSetUserName}
@@ -53,25 +52,64 @@ describe("CreateIdentifier modal", () => {
       </Provider>
     );
     expect(getByText(EN_TRANSLATIONS.setusername.title)).toBeVisible();
+    expect(getByText(EN_TRANSLATIONS.setusername.button.confirm)).toBeVisible();
   });
 
-  test.skip("It sets username successfully", async () => {
-    const showSetUserName = true;
-    const setShowSetUserName = jest.fn();
-    const dispatch = jest.fn();
-    const { getByTestId, getByText } = render(
+  test.skip("It should call handleConfirm when the primary button is clicked", async () => {
+    const setIsOpenMock = jest.fn();
+    const mockDispatch = jest.fn();
+    const mockGetAuthentication = jest.fn();
+    const mockSetAuthentication = jest.fn();
+    const mockSetToastMsg = jest.fn();
+    const mockPreferencesStorage = {
+      set: jest.fn().mockResolvedValue({}),
+    };
+
+    const { getByText, getByTestId } = render(
       <Provider store={storeMocked}>
         <SetUserName
-          isOpen={showSetUserName}
-          setIsOpen={setShowSetUserName}
+          isOpen={true}
+          setIsOpen={setIsOpenMock}
         />
       </Provider>
     );
-    const userNameInput = getByTestId("set-user-name-input");
-    fireEvent.change(userNameInput, { target: { value: "Test" } });
-    fireEvent.click(getByTestId("primary-button-set-user-name"));
-    expect(dispatch).toBeCalledWith(
-      setToastMsg(ToastMsgType.USERNAME_CREATION_SUCCESS)
-    );
+
+    act(() => {
+      fireEvent.change(getByTestId("set-user-name-input"), {
+        target: { value: "testUser" },
+      });
+    });
+
+    act(() => {
+      fireEvent.click(getByText(EN_TRANSLATIONS.setusername.button.confirm));
+    });
+
+    await waitFor(() => {
+      expect(mockDispatch).toHaveBeenCalledWith(
+        mockSetAuthentication({
+          ...mockGetAuthentication(),
+          userName: "testUser",
+        })
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockPreferencesStorage.set).toHaveBeenCalledWith(
+        PreferencesKeys.APP_USER_NAME,
+        {
+          userName: "testUser",
+        }
+      );
+    });
+
+    await waitFor(() => {
+      expect(mockDispatch).toHaveBeenCalledWith(
+        mockSetToastMsg(ToastMsgType.USERNAME_CREATION_SUCCESS)
+      );
+    });
+
+    await waitFor(() => {
+      expect(setIsOpenMock).toHaveBeenCalledWith(false);
+    });
   });
 });

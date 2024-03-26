@@ -63,7 +63,7 @@ const IdentifierStage3 = ({
           theme: state.selectedTheme,
           // @TODO - sdisalvo: Colors will need to be removed
           colors: ["#000000", "#000000"],
-          displayName: authentication.userName,
+          displayName: state.displayNameValue,
         },
         state.threshold
       );
