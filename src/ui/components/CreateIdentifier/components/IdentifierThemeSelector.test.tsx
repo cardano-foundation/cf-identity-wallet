@@ -18,7 +18,7 @@ describe("Identifier Theme Selector", () => {
     fireEvent.click(getByTestId("identifier-theme-selector-item-0"));
 
     await waitFor(() => {
-      expect(setNewSelectedTheme).toHaveBeenCalledWith(4);
+      expect(setNewSelectedTheme).toHaveBeenCalledWith(0);
     });
   });
 });

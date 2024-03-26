@@ -81,9 +81,6 @@ describe("CreateIdentifier modal", () => {
     const displayNameInput = getByTestId("display-name-input");
     fireEvent.change(displayNameInput, { target: { value: "Test" } });
     fireEvent.click(
-      getByText(EN_TRANSLATIONS.createidentifier.identifiertype.keri)
-    );
-    fireEvent.click(
       getByText(EN_TRANSLATIONS.createidentifier.aidtype.multisig.label)
     );
     fireEvent.click(getByTestId("primary-button-create-identifier-modal"));

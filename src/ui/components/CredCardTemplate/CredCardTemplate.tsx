@@ -65,7 +65,7 @@ const CredCardTemplate = ({
               </IonChip>
             ) : (
               <span className="credential-type">
-                ? shortData.credentialType
+                {shortData.credentialType}
               </span>
             )}
           </div>

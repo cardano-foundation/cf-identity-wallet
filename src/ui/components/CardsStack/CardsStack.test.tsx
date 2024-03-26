@@ -7,9 +7,7 @@ import { store } from "../../../store";
 import { IdentifierCardDetails } from "../../pages/IdentifierCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
-import { CredCardDetails } from "../../pages/CredCardDetails";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
-import { AriesAgent } from "../../../core/agent/agent";
 import { CardType } from "../../globals/types";
 
 jest.mock("../../../core/agent/agent", () => ({
@@ -55,7 +53,7 @@ describe("Cards Stack Component", () => {
       </Provider>
     );
     const firstCardId = getByText(
-      identifierFix[0].id.substring(8, 13) +
+      identifierFix[0].id.substring(0, 5) +
         "..." +
         identifierFix[0].id.slice(-5)
     );
