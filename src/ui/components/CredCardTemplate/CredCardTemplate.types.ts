@@ -8,6 +8,7 @@ interface CredCardTemplateProps {
   index?: number;
   onHandleShowCardDetails?: (index: number | undefined) => void;
   styles?: CSSProperties;
+  pickedCard?: boolean;
 }
 
 export type { CredCardTemplateProps };
