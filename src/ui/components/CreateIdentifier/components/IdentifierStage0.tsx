@@ -55,15 +55,15 @@ const IdentifierStage0 = ({
     }
   }, []);
 
-  const identifierTypeSelector = (index: number) => {
-    if (state.selectedIdentifierType !== index) {
-      setSelectedTheme(index === 0 ? 0 : 4);
-    }
-    setState((prevState: IdentifierStageProps) => ({
-      ...prevState,
-      selectedIdentifierType: index,
-    }));
-  };
+  // const identifierTypeSelector = (index: number) => {
+  //   if (state.selectedIdentifierType !== index) {
+  //     setSelectedTheme(index === 0 ? 0 : 4);
+  //   }
+  //   setState((prevState: IdentifierStageProps) => ({
+  //     ...prevState,
+  //     selectedIdentifierType: index,
+  //   }));
+  // };
 
   useEffect(() => {
     setState((prevState: IdentifierStageProps) => ({
@@ -83,10 +83,7 @@ const IdentifierStage0 = ({
     // @TODO - sdisalvo: Colors will need to be removed
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
-    const type =
-      state.selectedIdentifierType === 0
-        ? IdentifierType.KEY
-        : IdentifierType.KERI;
+    const type = IdentifierType.KERI; //
     const identifier = await AriesAgent.agent.identifiers.createIdentifier({
       displayName: state.displayNameValue,
       method: type,
@@ -164,34 +161,6 @@ const IdentifierStage0 = ({
               />
             )}
           </div>
-        </div>
-        <div className="identifier-type">
-          <div className="type-input-title">{`${i18n.t(
-            "createidentifier.identifiertype.title"
-          )}`}</div>
-          <IonGrid
-            className="identifier-type-selector"
-            data-testid="identifier-type-selector"
-          >
-            <IonRow>
-              <IonCol>
-                <TypeItem
-                  index={0}
-                  text={i18n.t("createidentifier.identifiertype.didkey")}
-                  clickEvent={() => identifierTypeSelector(0)}
-                  selectedType={state.selectedIdentifierType}
-                />
-              </IonCol>
-              <IonCol>
-                <TypeItem
-                  index={1}
-                  text={i18n.t("createidentifier.identifiertype.keri")}
-                  clickEvent={() => identifierTypeSelector(1)}
-                  selectedType={state.selectedIdentifierType}
-                />
-              </IonCol>
-            </IonRow>
-          </IonGrid>
         </div>
         {state.selectedIdentifierType === 1 && (
           <div className="aid-type">

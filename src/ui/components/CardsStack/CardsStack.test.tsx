@@ -6,7 +6,7 @@ import { identifierFix } from "../../__fixtures__/identifierFix";
 import { store } from "../../../store";
 import { IdentifierCardDetails } from "../../pages/IdentifierCardDetails";
 import { TabsRoutePath } from "../navigation/TabsMenu";
-import { credsFixW3c } from "../../__fixtures__/credsFix";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
 import { AriesAgent } from "../../../core/agent/agent";
@@ -70,7 +70,7 @@ describe("Cards Stack Component", () => {
           cardsType={CardType.CREDS}
           cardsData={[
             {
-              ...credsFixW3c[0],
+              ...credsFixAcdc[0],
               status: CredentialMetadataRecordStatus.PENDING,
             },
           ]}

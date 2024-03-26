@@ -1,7 +1,6 @@
 import { ConnectionShortDetails } from "../agent.types";
 
 enum IdentifierType {
-  KEY = "key",
   KERI = "keri",
 }
 
@@ -16,15 +15,8 @@ interface IdentifierShortDetails {
   isPending: boolean;
 }
 
-type GetIdentifierResult =
-  | { type: IdentifierType.KERI; result: KERIDetails }
-  | { type: IdentifierType.KEY; result: DIDDetails };
+type GetIdentifierResult = { type: IdentifierType.KERI; result: KERIDetails };
 
-interface DIDDetails extends IdentifierShortDetails {
-  keyType: string;
-  controller: string;
-  publicKeyBase58: string;
-}
 
 interface KERIDetails extends IdentifierShortDetails {
   signifyOpName?: string;
@@ -50,7 +42,6 @@ export { IdentifierType };
 
 export type {
   IdentifierShortDetails,
-  DIDDetails,
   KERIDetails,
   GetIdentifierResult,
   MultiSigIcpRequestDetails,

@@ -10,7 +10,7 @@ enum CardType {
   IDENTIFIERS = "identifiers",
 }
 
-enum DIDCommRequestType {
+enum RequestType {
   CONNECTION = "Connection",
   CREDENTIAL = "Credential",
 }
@@ -80,7 +80,7 @@ export {
   CardType,
   OperationType,
   ToastMsgType,
-  DIDCommRequestType,
+  RequestType,
   IDENTIFIER_BG_MAPPING,
   PASSCODE_MAPPING,
 };

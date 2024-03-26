@@ -10,12 +10,12 @@ import { CredCardDetails } from "./CredCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
-import { credsFixW3c } from "../../__fixtures__/credsFix";
+import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { AriesAgent } from "../../../core/agent/agent";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { IdentifierCardDetails } from "../IdentifierCardDetails";
 
-const path = TabsRoutePath.CREDS + "/" + credsFixW3c[0].id;
+const path = TabsRoutePath.CREDS + "/" + credsFixAcdc[0].id;
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -33,7 +33,7 @@ jest.mock("../../../core/agent/agent", () => ({
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: credsFixW3c[0].id,
+    id: credsFixAcdc[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
@@ -54,7 +54,7 @@ const initialStateCreds = {
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
   identifiersCache: {
-    identifiers: credsFixW3c,
+    identifiers: credsFixAcdc,
     favourites: [],
   },
 };
@@ -82,7 +82,7 @@ const initialStateNoPasswordCurrent = {
     seedPhrase256: "",
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
-  credsCache: { creds: credsFixW3c },
+  credsCache: { creds: credsFixAcdc },
 };
 
 const initialStateNoPasswordArchived = {

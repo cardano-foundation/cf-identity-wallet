@@ -1,23 +1,7 @@
 import {
-  DIDDetails,
   IdentifierType,
   KERIDetails,
 } from "../../core/agent/services/identifierService.types";
-
-const didFix: DIDDetails[] = [
-  {
-    id: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
-    method: IdentifierType.KEY,
-    displayName: "Anonymous ID",
-    createdAtUTC: "2023-01-01T19:23:24Z",
-    colors: ["#92FFC0", "#47FF94"],
-    theme: 0,
-    keyType: "Ed25519",
-    controller: "did:key:z6MkpNyGdCf5cy1S9gbLD1857YK5Ey1pnQoZxVeeGifA1ZQv",
-    publicKeyBase58: "AviE3J4duRXM6AEvHSUJqVnDBYoGNXZDGUjiSSh96LdY",
-    isPending: false,
-  },
-];
 
 const keriFix: KERIDetails[] = [
   {
@@ -46,6 +30,6 @@ const keriFix: KERIDetails[] = [
   },
 ];
 
-const identifierFix = [...didFix, ...keriFix];
+const identifierFix = [...keriFix];
 
-export { didFix, keriFix, identifierFix };
+export { keriFix, identifierFix };

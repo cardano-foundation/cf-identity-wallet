@@ -87,7 +87,7 @@ const ArchivedCredentials = ({
     const credentialBackground = () => {
       if (credential.connectionType === ConnectionType.KERI) {
         return Minicred4;
-      } else if (credential.connectionType === ConnectionType.DIDCOMM) {
+      } else if (credential.connectionType === ConnectionType.KERI) {
         switch (credential.credentialType) {
         case CredentialType.PERMANENT_RESIDENT_CARD:
           return Minicred3;

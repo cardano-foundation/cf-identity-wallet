@@ -27,7 +27,7 @@ import { RecordType } from "../../storage/storage.types";
 import { BasicRecord } from "../records";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
-  [IdentifierType.KEY]: [0, 1, 2, 3],
+  // [IdentifierType.KEY]: [0, 1, 2, 3],
   [IdentifierType.KERI]: [4, 5],
 };
 

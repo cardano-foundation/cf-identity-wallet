@@ -125,7 +125,7 @@ const keriNotifications = genericRecords.map((result) => {
 //         issuanceDate: nowISO,
 //         status: CredentialMetadataRecordStatus.CONFIRMED,
 //         cachedDetails: undefined,
-//         connectionType: ConnectionType.DIDCOMM,
+//         connectionType: ConnectionType.KERI,
 //       },
 //       {
 //         id: id2,
@@ -134,7 +134,7 @@ const keriNotifications = genericRecords.map((result) => {
 //         issuanceDate: nowISO,
 //         status: CredentialMetadataRecordStatus.CONFIRMED,
 //         cachedDetails: undefined,
-//         connectionType: ConnectionType.DIDCOMM,
+//         connectionType: ConnectionType.KERI,
 //       },
 //     ]);
 //   });

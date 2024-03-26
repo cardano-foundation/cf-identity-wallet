@@ -24,7 +24,7 @@ import {
 import "./Connections.scss";
 import { ConnectModal } from "../../components/ConnectModal";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import { DIDCommRequestType } from "../../globals/types";
+import { RequestType } from "../../globals/types";
 import { getStateCache } from "../../../store/reducers/stateCache";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
@@ -182,7 +182,7 @@ const Connections = ({
         </>
       )}
       <ConnectModal
-        type={DIDCommRequestType.CONNECTION}
+        type={RequestType.CONNECTION}
         connectModalIsOpen={connectModalIsOpen}
         setConnectModalIsOpen={setConnectModalIsOpen}
         handleProvideQr={handleProvideQr}

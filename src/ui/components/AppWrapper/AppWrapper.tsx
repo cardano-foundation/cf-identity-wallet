@@ -31,8 +31,6 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { OperationType, ToastMsgType } from "../../globals/types";
-import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
-import { ColorGenerator } from "../../utils/colorGenerator";
 import {
   KeriNotification,
   ConnectionKeriStateChangedEvent,
@@ -41,7 +39,6 @@ import {
   ConnectionType,
 } from "../../../core/agent/agent.types";
 import {
-  CredentialShortDetails,
   CredentialStatus,
 } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
@@ -270,7 +267,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
       <div className="agent-init-error-msg">
         <p>
           There’s an issue connecting to the cloud services we depend on right
-          now (DIDComm mediator, KERIA) - please check your internet connection,
+          now (KERIA) - please check your internet connection,
           or if this problem persists, let us know on Discord!
         </p>
         <p>

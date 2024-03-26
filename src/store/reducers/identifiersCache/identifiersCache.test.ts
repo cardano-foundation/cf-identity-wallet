@@ -30,7 +30,7 @@ describe("identifiersCacheSlice", () => {
     const identifiers: IdentifierShortDetails[] = [
       {
         id: "id-1",
-        method: IdentifierType.KEY,
+        method: IdentifierType.KERI,
         displayName: "example-name",
         createdAtUTC: "example-date",
         colors: ["#92FFC0", "#47FF94"],
@@ -93,14 +93,14 @@ describe("get identifier Cache", () => {
         identifiers: [
           {
             id: "id-1",
-            method: IdentifierType.KEY,
+            method: IdentifierType.KERI,
             displayName: "example-name-1",
             createdAtUTC: "example-date",
             colors: ["#92FFC0", "#47FF94"],
           },
           {
             id: "id-2",
-            method: IdentifierType.KEY,
+            method: IdentifierType.KERI,
             displayName: "example-name-2",
             createdAtUTC: "example-date",
             colors: ["#FFBC60", "#FFA21F"],

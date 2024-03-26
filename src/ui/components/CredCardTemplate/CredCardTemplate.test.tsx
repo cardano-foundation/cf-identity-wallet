@@ -9,23 +9,8 @@ import { Provider } from "react-redux";
 import { store } from "../../../store";
 import { CredCardTemplate } from "./CredCardTemplate";
 import { shortCredsFix } from "../../__fixtures__/shortCredsFix";
-import CardBodyResidency from "./CardBodyResidence";
 
 describe("CredCardTemplate", () => {
-  it("should handle image loading error and display fallback image", () => {
-    const cardData = {
-      cachedDetails: {
-        image: "invalid-image-url",
-      },
-    };
-    render(<CardBodyResidency cardData={cardData} />);
-    const imageElement = screen.getByRole("img", {
-      name: /user-picture/i,
-    }) as HTMLImageElement;
-    const errorEvent = new Event("error");
-    imageElement.dispatchEvent(errorEvent);
-    expect(imageElement.src).toContain("http://localhost/undefined");
-  });
 
   it("renders University Degree Credential", async () => {
     const handleShowCardDetails = jest.fn();

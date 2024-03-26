@@ -182,7 +182,7 @@ const ConnectionDetails = () => {
   const credentialBackground = () => {
     if (connectionShortDetails?.type === ConnectionType.KERI) {
       return Minicred4;
-    } else if (connectionShortDetails?.type === ConnectionType.DIDCOMM) {
+    } else if (connectionShortDetails?.type === ConnectionType.KERI) {
       switch (connectionHistory[0]?.credentialType) {
       case CredentialType.PERMANENT_RESIDENT_CARD:
         return Minicred3;

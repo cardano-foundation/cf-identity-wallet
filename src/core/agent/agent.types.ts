@@ -18,7 +18,6 @@ enum ConnectionHistoryType {
 }
 
 enum ConnectionType {
-  DIDCOMM,
   KERI,
 }
 

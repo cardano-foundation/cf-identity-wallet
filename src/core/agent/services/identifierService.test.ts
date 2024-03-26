@@ -420,7 +420,7 @@ describe("Identifier service of agent", () => {
         id: "ENsj-3icUgAutHtrUHYnUPnP8RiafT5tOdVIZarFHuyP",
         label: "f4732f8a-1967-454a-8865-2bbf2377c26e",
         status: ConnectionStatus.CONFIRMED,
-        type: ConnectionType.DIDCOMM,
+        type: ConnectionType.KERI,
         connectionDate: new Date().toISOString(),
       },
     ];
@@ -608,7 +608,7 @@ describe("Identifier service of agent", () => {
     expect(
       identifierService.createDelegatedIdentifier(
         {
-          method: IdentifierType.KEY,
+          method: IdentifierType.KERI,
           displayName,
           colors,
           theme: 0,
@@ -730,7 +730,7 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KEY,
+      method: IdentifierType.KERI,
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
@@ -747,7 +747,7 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KEY,
+      method: IdentifierType.KERI,
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
@@ -1045,7 +1045,7 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KEY,
+      method: IdentifierType.KERI,
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
@@ -1330,7 +1330,7 @@ describe("Identifier service of agent", () => {
         label: "",
         logo: "logoUrl",
         status: ConnectionStatus.PENDING,
-        type: ConnectionType.DIDCOMM,
+        type: ConnectionType.KERI,
       },
       {
         id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
@@ -1338,7 +1338,7 @@ describe("Identifier service of agent", () => {
         label: "",
         logo: "logoUrl",
         status: ConnectionStatus.CONFIRMED,
-        type: ConnectionType.DIDCOMM,
+        type: ConnectionType.KERI,
       },
     ]);
 
@@ -1406,7 +1406,7 @@ describe("Identifier service of agent", () => {
         label: "",
         logo: "logoUrl",
         status: ConnectionStatus.PENDING,
-        type: ConnectionType.DIDCOMM,
+        type: ConnectionType.KERI,
       },
     ]);
     const result = await identifierService.getMultisigIcpDetails({
@@ -1475,7 +1475,7 @@ describe("Identifier service of agent", () => {
           label: "",
           logo: "logoUrl",
           status: ConnectionStatus.PENDING,
-          type: ConnectionType.DIDCOMM,
+          type: ConnectionType.KERI,
         },
         {
           id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
@@ -1483,7 +1483,7 @@ describe("Identifier service of agent", () => {
           label: "",
           logo: "logoUrl",
           status: ConnectionStatus.CONFIRMED,
-          type: ConnectionType.DIDCOMM,
+          type: ConnectionType.KERI,
         },
       ]);
 

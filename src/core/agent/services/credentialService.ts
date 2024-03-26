@@ -67,7 +67,6 @@ class CredentialService extends AgentService {
       issuanceDate: metadata.issuanceDate,
       credentialType: metadata.credentialType,
       status: metadata.status,
-      cachedDetails: metadata.cachedDetails,
       connectionType: metadata.connectionType,
     };
   }
@@ -396,7 +395,6 @@ class CredentialService extends AgentService {
         | "status"
         | "credentialType"
         | "isDeleted"
-        | "cachedDetails"
       >
     >
   ) {
@@ -407,7 +405,6 @@ class CredentialService extends AgentService {
       if (data.credentialType) record.credentialType = data.credentialType;
       if (data.isArchived !== undefined) record.isArchived = data.isArchived;
       if (data.isDeleted !== undefined) record.isDeleted = data.isDeleted;
-      if (data.cachedDetails) record.cachedDetails = data.cachedDetails;
       const basicRecord = new BasicRecord({
         id: record.id,
         content: record.toJSON(),

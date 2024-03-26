@@ -5,10 +5,10 @@ import {
 } from "./identifierMetadataRecord";
 
 const mockData: IdentifierMetadataRecordProps = {
-  id: "did:key:z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",
-  displayName: "New Did",
+  id: "z6Mkpph7qyemfmHt5cSEXXbhm1VbSZT789X8Ep4eA7ndGxGh",
+  displayName: "New AID",
   colors: ["#000000", "#FFFFFF"],
-  method: IdentifierType.KEY,
+  method: IdentifierType.KERI,
   isArchived: true,
   theme: 0,
 };
