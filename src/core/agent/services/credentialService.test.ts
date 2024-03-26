@@ -24,6 +24,8 @@ import {
   ConnectionType,
 } from "../agent.types";
 import { SignifyApi } from "../modules/signify/signifyApi";
+import { RecordType } from "../../storage/storage.types";
+import { NotificationRoute } from "../modules/signify/signifyApi.types";
 
 const eventEmitter = new EventEmitter();
 
@@ -1059,6 +1061,21 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       credentialService.getCredentialShortDetailsById("randomid")
     ).rejects.toThrowError(
       CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+    );
+  });
+
+  test("Should pass the filter throught findAllByQuery when call getUnhandledCredentials", async () => {
+    agent.credentials.findAllByQuery = jest.fn().mockResolvedValueOnce([]);
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    await credentialService.getUnhandledCredentials({
+      isDismissed: false,
+    });
+    expect(basicStorage.findAllByQuery).toBeCalledWith(
+      RecordType.NOTIFICATION_KERI,
+      {
+        route: NotificationRoute.Credential,
+        isDismissed: false,
+      }
     );
   });
 });

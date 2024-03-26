@@ -133,7 +133,7 @@ class SignifyNotificationService extends AgentService {
     if (!notificationRecord) {
       throw new Error(SignifyNotificationService.KERI_NOTIFICATION_NOT_FOUND);
     }
-    notificationRecord?.setTag("isDismissed", true);
+    notificationRecord.setTag("isDismissed", true);
     await this.basicStorage.update(notificationRecord);
   }
 

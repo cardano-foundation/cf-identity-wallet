@@ -402,18 +402,16 @@ class CredentialService extends AgentService {
     });
   }
 
-  async getUnhandledCredentials(filters?: {
-    isDismissed?: boolean;
-  }): Promise<(CredentialExchangeRecord | KeriNotification)[]> {
-    let otherFilters = {};
-    if (typeof filters?.isDismissed === "boolean") {
-      otherFilters = { isDismissed: filters?.isDismissed };
-    }
+  async getUnhandledCredentials(
+    filters: {
+      isDismissed?: boolean;
+    } = {}
+  ): Promise<(CredentialExchangeRecord | KeriNotification)[]> {
     const results = await Promise.all([
       this.agent.credentials.findAllByQuery({
         state: CredentialState.OfferReceived,
       }),
-      this.getKeriCredentialNotifications(otherFilters),
+      this.getKeriCredentialNotifications(filters),
     ]);
     return results.flat();
   }
@@ -435,18 +433,16 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  private async getKeriCredentialNotifications(filters?: {
-    isDismissed?: boolean;
-  }): Promise<KeriNotification[]> {
-    let otherFilters = {};
-    if (typeof filters?.isDismissed === "boolean") {
-      otherFilters = { isDismissed: filters?.isDismissed };
-    }
+  private async getKeriCredentialNotifications(
+    filters: {
+      isDismissed?: boolean;
+    } = {}
+  ): Promise<KeriNotification[]> {
     const results = await this.basicStorage.findAllByQuery(
       RecordType.NOTIFICATION_KERI,
       {
         route: NotificationRoute.Credential,
-        ...otherFilters,
+        ...filters,
       }
     );
     return results.map((result) => {
