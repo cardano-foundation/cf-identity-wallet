@@ -9,10 +9,7 @@ import { IdentifierStageProps } from "../CreateIdentifier.types";
 import CardanoLogo from "../../../assets/images/CardanoLogo.jpg";
 import { Alert } from "../../Alert";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
-import {
-  getAuthentication,
-  setToastMsg,
-} from "../../../../store/reducers/stateCache";
+import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
 import { AriesAgent } from "../../../../core/agent/agent";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
@@ -33,7 +30,6 @@ const IdentifierStage3 = ({
   resetModal,
 }: IdentifierStageProps) => {
   const dispatch = useAppDispatch();
-  const authentication = useAppSelector(getAuthentication);
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   // @TODO - sdisalvo: This is a temporary fix to get the identifier created.
   // We'll need to work out a proper way to get 'ourIdentifier'.
