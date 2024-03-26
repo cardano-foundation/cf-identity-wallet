@@ -55,6 +55,7 @@ import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/id
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
+import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -281,6 +282,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setPauseQueueIncomingRequest(true));
     const connectionsDetails =
       await AriesAgent.agent.connections.getConnections();
+    let userName: PreferencesStorageItem = { userName: "" };
     const credentials = await AriesAgent.agent.credentials.getCredentials();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
@@ -335,9 +337,25 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     }
 
+    try {
+      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+        )
+      ) {
+        throw e;
+      }
+    }
+
     dispatch(
       setAuthentication({
         ...authentication,
+        userName: userName.userName as string,
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
