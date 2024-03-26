@@ -5,6 +5,8 @@ import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { RecordType } from "../../storage/storage.types";
 class SignifyNotificationService extends AgentService {
+  static readonly KERI_NOTIFICATION_NOT_FOUND =
+    "Keri notification record not found";
   async onNotificationKeriStateChanged(
     callback: (event: KeriNotification) => void
   ) {
@@ -114,6 +116,7 @@ class SignifyNotificationService extends AgentService {
       content: event.a,
       type: RecordType.NOTIFICATION_KERI,
       tags: {
+        isDismissed: false,
         type: RecordType.NOTIFICATION_KERI,
         route: event.a.r,
       },
@@ -123,6 +126,26 @@ class SignifyNotificationService extends AgentService {
       createdAt: result.createdAt,
       a: result.content,
     };
+  }
+
+  async dismissNotification(notificationId: string) {
+    const notificationRecord = await this.basicStorage.findById(notificationId);
+    if (!notificationRecord) {
+      throw new Error(SignifyNotificationService.KERI_NOTIFICATION_NOT_FOUND);
+    }
+    notificationRecord?.setTag("isDismissed", true);
+    await this.basicStorage.update(notificationRecord);
+  }
+
+  /**This allow us to get all dismissed notifications */
+  async getDismissedNotifications() {
+    const notifications = await this.basicStorage.findAllByQuery(
+      RecordType.NOTIFICATION_KERI,
+      {
+        isDismissed: true,
+      }
+    );
+    return notifications;
   }
 }
 
