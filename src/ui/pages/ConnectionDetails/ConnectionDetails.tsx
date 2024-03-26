@@ -42,7 +42,6 @@ import {
   ConnectionHistoryItem,
   ConnectionNoteDetails,
   ConnectionType,
-  CredentialType,
 } from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";
@@ -180,18 +179,7 @@ const ConnectionDetails = () => {
   ];
 
   const credentialBackground = () => {
-    if (connectionShortDetails?.type === ConnectionType.KERI) {
-      return Minicred4;
-    } else if (connectionShortDetails?.type === ConnectionType.KERI) {
-      switch (connectionHistory[0]?.credentialType) {
-      case CredentialType.PERMANENT_RESIDENT_CARD:
-        return Minicred3;
-      case CredentialType.ACCESS_PASS_CREDENTIAL:
-        return Minicred2;
-      default:
-        return Minicred1;
-      }
-    }
+    return Minicred4;
   };
 
   if (loading.details || loading.history) {

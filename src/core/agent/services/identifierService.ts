@@ -27,8 +27,7 @@ import { RecordType } from "../../storage/storage.types";
 import { BasicRecord } from "../records";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
-  // [IdentifierType.KEY]: [0, 1, 2, 3],
-  [IdentifierType.KERI]: [4, 5],
+  [IdentifierType.KERI]: [0, 1],
 };
 
 class IdentifierService extends AgentService {
@@ -198,7 +197,7 @@ class IdentifierService extends AgentService {
           displayName: identifier.prefix, //same as the id at the moment
           method: IdentifierType.KERI,
           colors: ["#e0f5bc", "#ccef8f"],
-          theme: 4,
+          theme: 0,
           signifyName: identifier.name,
         });
       }

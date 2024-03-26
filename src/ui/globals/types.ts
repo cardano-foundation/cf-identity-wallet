@@ -1,7 +1,3 @@
-import BackgroundDid0 from "../assets/images/did-0.png";
-import BackgroundDid1 from "../assets/images/did-1.png";
-import BackgroundDid2 from "../assets/images/did-2.png";
-import BackgroundDid3 from "../assets/images/did-3.png";
 import BackgroundKERI0 from "../assets/images/keri-0.png";
 import BackgroundKERI1 from "../assets/images/keri-1.png";
 
@@ -52,12 +48,8 @@ enum ToastMsgType {
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {
-  0: BackgroundDid0,
-  1: BackgroundDid1,
-  2: BackgroundDid2,
-  3: BackgroundDid3,
-  4: BackgroundKERI0,
-  5: BackgroundKERI1,
+  0: BackgroundKERI0,
+  1: BackgroundKERI1,
 };
 
 const PASSCODE_MAPPING = {

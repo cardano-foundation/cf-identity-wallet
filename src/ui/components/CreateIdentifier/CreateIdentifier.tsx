@@ -24,7 +24,7 @@ const CreateIdentifier = ({
     displayNameValue: "",
     selectedIdentifierType: 1,
     selectedAidType: 0,
-    selectedTheme: 4,
+    selectedTheme: 0,
     threshold: 1,
     selectedConnections: [],
   };

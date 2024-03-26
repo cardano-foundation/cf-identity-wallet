@@ -55,16 +55,6 @@ const IdentifierStage0 = ({
     }
   }, []);
 
-  // const identifierTypeSelector = (index: number) => {
-  //   if (state.selectedIdentifierType !== index) {
-  //     setSelectedTheme(index === 0 ? 0 : 4);
-  //   }
-  //   setState((prevState: IdentifierStageProps) => ({
-  //     ...prevState,
-  //     selectedIdentifierType: index,
-  //   }));
-  // };
-
   useEffect(() => {
     setState((prevState: IdentifierStageProps) => ({
       ...prevState,
@@ -162,65 +152,63 @@ const IdentifierStage0 = ({
             )}
           </div>
         </div>
-        {state.selectedIdentifierType === 1 && (
-          <div className="aid-type">
-            <div className="type-input-title">{`${i18n.t(
-              "createidentifier.aidtype.title"
-            )}`}</div>
-            <IonGrid
-              className="aid-type-selector"
-              data-testid="aid-type-selector"
-            >
-              <IonRow>
-                <IonCol>
-                  <TypeItem
-                    index={0}
-                    text={i18n.t("createidentifier.aidtype.default.label")}
-                    clickEvent={() =>
-                      setState((prevState: IdentifierStageProps) => ({
-                        ...prevState,
-                        selectedAidType: 0,
-                      }))
-                    }
-                    selectedType={state.selectedAidType}
-                  />
-                </IonCol>
-                <IonCol>
-                  <TypeItem
-                    index={1}
-                    text={i18n.t("createidentifier.aidtype.multisig.label")}
-                    clickEvent={() =>
-                      setState((prevState: IdentifierStageProps) => ({
-                        ...prevState,
-                        selectedAidType: 1,
-                      }))
-                    }
-                    selectedType={state.selectedAidType}
-                  />
-                </IonCol>
-                <IonCol>
-                  <TypeItem
-                    index={2}
-                    text={i18n.t("createidentifier.aidtype.delegated.label")}
-                    clickEvent={() =>
-                      setState((prevState: IdentifierStageProps) => ({
-                        ...prevState,
-                        selectedAidType: 2,
-                      }))
-                    }
-                    selectedType={state.selectedAidType}
-                  />
-                </IonCol>
-              </IonRow>
-            </IonGrid>
-          </div>
-        )}
+        <div className="aid-type">
+          <div className="type-input-title">{`${i18n.t(
+            "createidentifier.aidtype.title"
+          )}`}</div>
+          <IonGrid
+            className="aid-type-selector"
+            data-testid="aid-type-selector"
+          >
+            <IonRow>
+              <IonCol>
+                <TypeItem
+                  index={0}
+                  text={i18n.t("createidentifier.aidtype.default.label")}
+                  clickEvent={() =>
+                    setState((prevState: IdentifierStageProps) => ({
+                      ...prevState,
+                      selectedAidType: 0,
+                    }))
+                  }
+                  selectedType={state.selectedAidType}
+                />
+              </IonCol>
+              <IonCol>
+                <TypeItem
+                  index={1}
+                  text={i18n.t("createidentifier.aidtype.multisig.label")}
+                  clickEvent={() =>
+                    setState((prevState: IdentifierStageProps) => ({
+                      ...prevState,
+                      selectedAidType: 1,
+                    }))
+                  }
+                  selectedType={state.selectedAidType}
+                />
+              </IonCol>
+              <IonCol>
+                <TypeItem
+                  index={2}
+                  text={i18n.t("createidentifier.aidtype.delegated.label")}
+                  clickEvent={() =>
+                    setState((prevState: IdentifierStageProps) => ({
+                      ...prevState,
+                      selectedAidType: 2,
+                    }))
+                  }
+                  selectedType={state.selectedAidType}
+                />
+              </IonCol>
+            </IonRow>
+          </IonGrid>
+        </div>
+
         <div className="identifier-theme">
           <div className="theme-input-title">{`${i18n.t(
             "createidentifier.theme.title"
           )}`}</div>
           <IdentifierThemeSelector
-            identifierType={state.selectedIdentifierType}
             selectedTheme={selectedTheme}
             setSelectedTheme={setSelectedTheme}
           />

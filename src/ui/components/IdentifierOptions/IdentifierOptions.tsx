@@ -357,7 +357,6 @@ const IdentifierOptions = ({
                 )}`}</span>
               </IonRow>
               <IdentifierThemeSelector
-                identifierType={1}
                 selectedTheme={newSelectedTheme}
                 setSelectedTheme={setNewSelectedTheme}
               />

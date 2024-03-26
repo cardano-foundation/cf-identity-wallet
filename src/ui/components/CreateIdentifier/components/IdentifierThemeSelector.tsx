@@ -8,7 +8,6 @@ import "./IdentifierThemeSelector.scss";
 import { IDENTIFIER_BG_MAPPING } from "../../../globals/types";
 
 const IdentifierThemeSelector = ({
-  identifierType,
   selectedTheme,
   setSelectedTheme,
 }: IdentifierThemeSelectorProps) => {
@@ -59,23 +58,12 @@ const IdentifierThemeSelector = ({
       className="identifier-theme-selector"
       data-testid="identifier-theme-selector"
     >
-      {identifierType === 0 ? (
-        <>
-          <IonRow className="identifier-theme-input">
-            <ThemeItem index={0} />
-            <ThemeItem index={1} />
-          </IonRow>
-          <IonRow className="identifier-theme-input">
-            <ThemeItem index={2} />
-            <ThemeItem index={3} />
-          </IonRow>
-        </>
-      ) : (
+      <>
         <IonRow className="identifier-theme-input">
-          <ThemeItem index={4} />
-          <ThemeItem index={5} />
+          <ThemeItem index={0} />
+          <ThemeItem index={1} />
         </IonRow>
-      )}
+      </>
     </IonGrid>
   );
 };
