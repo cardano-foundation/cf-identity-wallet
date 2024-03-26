@@ -21,25 +21,22 @@ const SetUserName = ({ isOpen, setIsOpen }: SetUserNameProps) => {
   const [userName, setUserName] = useState("");
 
   const handleConfirm = () => {
-    if (userName.length === 0) {
-      dispatch(setToastMsg(ToastMsgType.USERNAME_CREATION_ERROR));
-    } else {
-      dispatch(
-        setAuthentication({
-          ...authentication,
-          userName,
-        })
-      );
-      PreferencesStorage.set(PreferencesKeys.APP_USER_NAME, {
+    dispatch(
+      setAuthentication({
+        ...authentication,
         userName,
       })
-        .then(() => {
-          dispatch(setToastMsg(ToastMsgType.USERNAME_CREATION_SUCCESS));
-        })
-        .catch((error) => {
-          /*TODO: handle error*/
-        });
-    }
+    );
+    PreferencesStorage.set(PreferencesKeys.APP_USER_NAME, {
+      userName,
+    })
+      .then(() => {
+        dispatch(setToastMsg(ToastMsgType.USERNAME_CREATION_SUCCESS));
+      })
+      .catch((error) => {
+        /*TODO: handle error*/
+        dispatch(setToastMsg(ToastMsgType.USERNAME_CREATION_ERROR));
+      });
     setIsOpen(false);
   };
 
