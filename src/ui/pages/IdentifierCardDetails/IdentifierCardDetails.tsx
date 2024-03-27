@@ -282,8 +282,7 @@ const IdentifierCardDetails = () => {
           <ShareIdentifier
             isOpen={shareIsOpen}
             setIsOpen={setShareIsOpen}
-            id={cardData.id}
-            name={cardData.displayName}
+            cardData={cardData as KERIDetails}
           />
           <IdentifierOptions
             optionsIsOpen={identifierOptionsIsOpen}

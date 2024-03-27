@@ -1,8 +1,9 @@
+import { KERIDetails } from "../../../core/agent/services/identifierService.types";
+
 interface ShareIdentifierProps {
   isOpen: boolean;
   setIsOpen: (value: boolean) => void;
-  id: string;
-  name: string;
+  cardData: KERIDetails;
 }
 
 export type { ShareIdentifierProps };
