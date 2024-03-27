@@ -12,12 +12,12 @@ import { AriesAgent } from "../../../core/agent/agent";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { ConfigurationService } from "../../../core/configuration";
 
-const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[1].id;
+const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 
 jest.mock("react-router-dom", () => ({
   ...jest.requireActual("react-router-dom"),
   useParams: () => ({
-    id: identifierFix[1].id,
+    id: identifierFix[0].id,
   }),
   useRouteMatch: () => ({ url: path }),
 }));
@@ -28,7 +28,7 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifier: jest
           .fn()
-          .mockResolvedValue({ type: "keri", result: identifierFix[1] }),
+          .mockResolvedValue({ type: "keri", result: identifierFix[0] }),
       },
       genericRecords: {
         findById: jest.fn(),

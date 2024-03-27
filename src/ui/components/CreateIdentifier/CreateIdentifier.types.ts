@@ -13,7 +13,6 @@ interface TypeItemProps {
 }
 
 interface IdentifierThemeSelectorProps {
-  identifierType: number;
   selectedTheme: number;
   setSelectedTheme: (value: number) => void;
 }

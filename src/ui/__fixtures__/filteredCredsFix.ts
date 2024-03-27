@@ -9,7 +9,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     credentialType: "University Credential",
     colors: ["#FFBC60", "#FFA21F"],
     status: CredentialMetadataRecordStatus.CONFIRMED,
-    connectionType: ConnectionType.DIDCOMM,
+    connectionType: ConnectionType.KERI,
   },
   {
     id: "did:example:ebfeb1f712ebc6f1c276e12ec21",
@@ -17,7 +17,7 @@ const filteredCredsFix: CredentialShortDetails[] = [
     credentialType: "University Credential",
     colors: ["#D9EDDF", "#ACD8B9"],
     status: CredentialMetadataRecordStatus.CONFIRMED,
-    connectionType: ConnectionType.DIDCOMM,
+    connectionType: ConnectionType.KERI,
   },
 ];
 

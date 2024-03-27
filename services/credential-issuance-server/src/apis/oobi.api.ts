@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import { AriesAgent } from "../ariesAgent";
+import { Agent } from "../agent";
 import { ResponseData } from "../types/response.type";
 import { httpResponse } from "../utils/response.util";
 
 async function resolveOobi(req: Request, res: Response) {
   const { oobi } = req.body;
-  await AriesAgent.agent.resolveOobi(oobi);
+  await Agent.agent.resolveOobi(oobi);
   const response: ResponseData<string> = {
     statusCode: 200,
     success: true,

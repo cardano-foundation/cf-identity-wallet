@@ -18,7 +18,6 @@ enum ConnectionHistoryType {
 }
 
 enum ConnectionType {
-  DIDCOMM,
   KERI,
 }
 
@@ -66,12 +65,6 @@ interface ConnectionDetails extends ConnectionShortDetails {
   notes?: ConnectionNoteDetails[];
 }
 
-enum CredentialType {
-  UNIVERSITY_DEGREE_CREDENTIAL = "UniversityDegreeCredential",
-  ACCESS_PASS_CREDENTIAL = "AccessPassCredential",
-  PERMANENT_RESIDENT_CARD = "PermanentResidentCard",
-}
-
 enum ConnectionKeriEventTypes {
   ConnectionKeriStateChanged = "ConnectionKeriStateChanged",
 }
@@ -105,7 +98,6 @@ interface KeriNotification {
   a: Record<string, unknown>;
 }
 
-
 interface BaseEventEmitter {
   type: string;
   payload: Record<string, unknown>;
@@ -122,7 +114,6 @@ export {
   ConnectionHistoryType,
   MiscRecordId,
   ConnectionType,
-  CredentialType,
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
 };

@@ -263,7 +263,7 @@ describe("Connection state changed handler", () => {
   //         issuanceDate:
   //           credentialStateChangedEventMock.payload.credentialRecord.createdAt.toISOString(),
   //         status: CredentialMetadataRecordStatus.PENDING,
-  //         connectionType: ConnectionType.DIDCOMM,
+  //         connectionType: ConnectionType.KERI,
   //       })
   //     );
   //   });

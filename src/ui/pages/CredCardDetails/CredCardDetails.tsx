@@ -39,15 +39,10 @@ import { getNextRoute } from "../../../routes/nextRoute";
 import { CredCardTemplate } from "../../components/CredCardTemplate";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { ConnectionDetails } from "../Connections/Connections.types";
-import {
-  ACDCDetails,
-  W3CCredentialDetails,
-} from "../../../core/agent/services/credentialService.types";
+import { ACDCDetails } from "../../../core/agent/services/credentialService.types";
 import "../../components/CardDetailsElements/CardDetails.scss";
 import "./CredCardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
-import { ConnectionType } from "../../../core/agent/agent.types";
-import { CredContentW3c } from "./components/CredContentW3c";
 import { CredContentAcdc } from "./components/CredContentAcdc";
 
 const NAVIGATION_DELAY = 250;
@@ -67,9 +62,7 @@ const CredCardDetails = () => {
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<
-    W3CCredentialDetails | ACDCDetails
-  >();
+  const [cardData, setCardData] = useState<ACDCDetails>();
   const [connectionDetails, setConnectionDetails] =
     useState<ConnectionDetails>();
 
@@ -91,7 +84,7 @@ const CredCardDetails = () => {
       await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
     setCardData(cardDetails);
 
-    // if (cardDetails.connectionType === ConnectionType.DIDCOMM) {
+    // if (cardDetails.connectionType === ConnectionType.KERI) {
     //   const connectionDetails =
     //     cardDetails.connectionId &&
     //     (await AriesAgent.agent.connections?.getConnectionById(
@@ -246,15 +239,6 @@ const CredCardDetails = () => {
       </div>
     );
   } else {
-    if (
-      cardData.connectionType === ConnectionType.DIDCOMM &&
-      Array.isArray(cardData.credentialSubject)
-    ) {
-      // @TODO - sdisalvo: Prevent app crashing when credentialSubject is an array
-      // Keeping this as a safety net as we may want to show a message in the future.
-      return null;
-    }
-
     const pageClasses = `cred-card-detail card-details${
       isArchived ? " archived-credential" : ""
     } ${navAnimation ? "cred-back-animation" : "cred-open-animation"}`;
@@ -285,14 +269,7 @@ const CredCardDetails = () => {
               isActive={false}
             />
             <div className="card-details-content">
-              {cardData.connectionType === ConnectionType.DIDCOMM ? (
-                <CredContentW3c
-                  cardData={cardData}
-                  connectionDetails={connectionDetails}
-                />
-              ) : (
-                <CredContentAcdc cardData={cardData} />
-              )}
+              <CredContentAcdc cardData={cardData} />
               <PageFooter
                 pageId={pageId}
                 archiveButtonText={

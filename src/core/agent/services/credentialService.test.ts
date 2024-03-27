@@ -125,7 +125,7 @@ const keriNotifications = genericRecords.map((result) => {
 //         issuanceDate: nowISO,
 //         status: CredentialMetadataRecordStatus.CONFIRMED,
 //         cachedDetails: undefined,
-//         connectionType: ConnectionType.DIDCOMM,
+//         connectionType: ConnectionType.KERI,
 //       },
 //       {
 //         id: id2,
@@ -134,7 +134,7 @@ const keriNotifications = genericRecords.map((result) => {
 //         issuanceDate: nowISO,
 //         status: CredentialMetadataRecordStatus.CONFIRMED,
 //         cachedDetails: undefined,
-//         connectionType: ConnectionType.DIDCOMM,
+//         connectionType: ConnectionType.KERI,
 //       },
 //     ]);
 //   });
@@ -485,7 +485,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       credentialType,
       connectionType: ConnectionType.KERI,
       issuanceDate: nowISO,
-      cachedDetails: undefined,
       isDeleted: false,
       connectionId: undefined,
     });
@@ -498,7 +497,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       credentialType,
       connectionType: ConnectionType.KERI,
       issuanceDate: nowISO,
-      cachedDetails: undefined,
     });
   });
 

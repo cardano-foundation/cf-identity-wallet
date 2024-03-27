@@ -6,7 +6,7 @@ import configureStore from "redux-mock-store";
 import { store } from "../../../store";
 import { i18n } from "../../../i18n";
 import { ConnectModal } from "./ConnectModal";
-import { DIDCommRequestType, OperationType } from "../../globals/types";
+import { RequestType, OperationType } from "../../globals/types";
 import { setCurrentOperation } from "../../../store/reducers/stateCache";
 
 describe("Connection modal", () => {
@@ -14,7 +14,7 @@ describe("Connection modal", () => {
     const { getByText } = render(
       <Provider store={store}>
         <ConnectModal
-          type={DIDCommRequestType.CONNECTION}
+          type={RequestType.CONNECTION}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}
           handleProvideQr={jest.fn()}
@@ -24,7 +24,7 @@ describe("Connection modal", () => {
     const title = getByText(
       `${
         i18n.t("connectmodal.title") +
-        DIDCommRequestType.CONNECTION.toLowerCase()
+        RequestType.CONNECTION.toLowerCase()
       }`
     );
     expect(title).toBeInTheDocument();
@@ -40,7 +40,7 @@ describe("Connection modal", () => {
     const { getByTestId } = render(
       <Provider store={storeMocked}>
         <ConnectModal
-          type={DIDCommRequestType.CONNECTION}
+          type={RequestType.CONNECTION}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}
           handleProvideQr={jest.fn()}
@@ -61,7 +61,7 @@ describe("Connection modal", () => {
     const { getByTestId } = render(
       <Provider store={store}>
         <ConnectModal
-          type={DIDCommRequestType.CONNECTION}
+          type={RequestType.CONNECTION}
           connectModalIsOpen={true}
           setConnectModalIsOpen={jest.fn()}
           handleProvideQr={handleProvideQr}

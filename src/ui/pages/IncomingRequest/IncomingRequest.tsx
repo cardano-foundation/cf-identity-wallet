@@ -60,23 +60,19 @@ const IncomingRequest = () => {
         await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
           incomingRequest.id
         );
-      } else {
-        // await AriesAgent.agent.credentials.declineCredentialOffer(
-        //   incomingRequest.id
-        // );
       }
     } else if (
       incomingRequest.type === IncomingRequestType.CONNECTION_INCOMING ||
       incomingRequest.type === IncomingRequestType.CONNECTION_RESPONSE
     ) {
       // TODO: will handle with KERI connection if it is supported
-      await AriesAgent.agent.connections.deleteConnectionById(
-        incomingRequest.id,
-        ConnectionType.DIDCOMM
-      );
-      const updatedConnections =
-        await AriesAgent.agent.connections.getConnections();
-      dispatch(setConnectionsCache([...updatedConnections]));
+      // await AriesAgent.agent.connections.deleteConnectionById(
+      //   incomingRequest.id,
+      //   ConnectionType.DIDCOMM
+      // );
+      // const updatedConnections =
+      //   await AriesAgent.agent.connections.getConnections();
+      // dispatch(setConnectionsCache([...updatedConnections]));
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {

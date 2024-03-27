@@ -133,7 +133,6 @@ const MultiSigRequestStageTwo = ({
         <div className="multisig-request-section">
           <h4>{i18n.t("createidentifier.theme.title")}</h4>
           <IdentifierThemeSelector
-            identifierType={1}
             selectedTheme={selectedTheme}
             setSelectedTheme={setSelectedTheme}
           />

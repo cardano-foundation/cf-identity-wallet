@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
 import {
-  DIDDetails,
   IdentifierShortDetails,
 } from "../../../core/agent/services/identifierService.types";
 import { CardType } from "../../globals/types";
@@ -68,7 +67,7 @@ const CardsStack = ({
     let pathname = "";
 
     if (cardsType === CardType.IDENTIFIERS) {
-      const data = cardsData[index] as DIDDetails;
+      const data = cardsData[index] as any; // @bao-sotatek: TODO
       pathname = `/tabs/identifiers/${data.id}`;
     } else {
       const data = cardsData[index] as CredentialShortDetails;

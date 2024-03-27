@@ -357,7 +357,6 @@ const IdentifierOptions = ({
                 )}`}</span>
               </IonRow>
               <IdentifierThemeSelector
-                identifierType={cardData.method === IdentifierType.KEY ? 0 : 1}
                 selectedTheme={newSelectedTheme}
                 setSelectedTheme={setNewSelectedTheme}
               />

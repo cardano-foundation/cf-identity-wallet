@@ -34,13 +34,8 @@ import {
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import { AriesAgent } from "../../../core/agent/agent";
-import {
-  DIDDetails,
-  IdentifierType,
-  KERIDetails,
-} from "../../../core/agent/services/identifierService.types";
+import { KERIDetails } from "../../../core/agent/services/identifierService.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { IdentifierCardInfoDid } from "../../components/IdentifierCardInfoKey";
 import { IdentifierCardInfoKeri } from "../../components/IdentifierCardInfoKeri";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
@@ -70,9 +65,7 @@ const IdentifierCardDetails = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<
-    DIDDetails | KERIDetails | undefined
-  >();
+  const [cardData, setCardData] = useState<KERIDetails | undefined>();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [navAnimation, setNavAnimation] = useState(false);
 
@@ -263,11 +256,7 @@ const IdentifierCardDetails = () => {
             isActive={false}
           />
           <div className="card-details-content">
-            {cardData.method === IdentifierType.KEY ? (
-              <IdentifierCardInfoDid cardData={cardData as DIDDetails} />
-            ) : (
-              <IdentifierCardInfoKeri cardData={cardData as KERIDetails} />
-            )}
+            <IdentifierCardInfoKeri cardData={cardData as KERIDetails} />
             <PageFooter
               pageId={pageId}
               deleteButtonText={`${i18n.t(

@@ -22,16 +22,6 @@ interface JSONObject {
   [x: string]: JSONValue;
 }
 
-interface W3CCredentialDetails extends CredentialShortDetails {
-  connectionType: ConnectionType.DIDCOMM;
-  type: string[];
-  connectionId?: string;
-  expirationDate?: string;
-  credentialSubject: JSONObject;
-  proofType: string;
-  proofValue?: string;
-}
-
 interface ACDCDetails extends CredentialShortDetails {
   connectionType: ConnectionType.KERI;
   i: string;
@@ -67,6 +57,5 @@ export type {
   CredentialShortDetails,
   ACDCDetails,
   Notification,
-  W3CCredentialDetails,
   JSONObject,
 };

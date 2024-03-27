@@ -10,7 +10,7 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-01-14T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.PENDING,
-    type: ConnectionType.DIDCOMM,
+    type: ConnectionType.KERI,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec21",
@@ -18,7 +18,7 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-01-16T08:21:54Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
-    type: ConnectionType.DIDCOMM,
+    type: ConnectionType.KERI,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec22",
@@ -26,7 +26,7 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-01-13T10:15:11Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
-    type: ConnectionType.DIDCOMM,
+    type: ConnectionType.KERI,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec23",
@@ -58,6 +58,7 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2020-07-06T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
+    type: ConnectionType.KERI,
   },
 ];
 
