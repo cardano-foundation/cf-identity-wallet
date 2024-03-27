@@ -82,65 +82,65 @@ describe("Verify Password on Cards Details page", () => {
     };
   });
 
-  // test.skip("It renders verify password when clicking on the big archive button", async () => {
-  //   jest
-  //     .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-  //     .mockResolvedValue(credsFixW3c[0]);
-  //   const mockStore = configureStore();
-  //   const dispatchMock = jest.fn();
-  //   storeMocked = {
-  //     ...mockStore(initialStateWithPassword),
-  //     dispatch: dispatchMock,
-  //   };
-  //   const { findByTestId, getAllByText, getAllByTestId } = render(
-  //     <Provider store={storeMocked}>
-  //       <MemoryRouter initialEntries={[path]}>
-  //         <Route
-  //           path={path}
-  //           component={CredCardDetails}
-  //         />
-  //       </MemoryRouter>
-  //     </Provider>
-  //   );
+  test.skip("It renders verify password when clicking on the big archive button", async () => {
+    jest
+      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixAcdc[0]);
+    const mockStore = configureStore();
+    const dispatchMock = jest.fn();
+    storeMocked = {
+      ...mockStore(initialStateWithPassword),
+      dispatch: dispatchMock,
+    };
+    const { findByTestId, getAllByText, getAllByTestId } = render(
+      <Provider store={storeMocked}>
+        <MemoryRouter initialEntries={[path]}>
+          <Route
+            path={path}
+            component={CredCardDetails}
+          />
+        </MemoryRouter>
+      </Provider>
+    );
 
-  //   const archiveButton = await findByTestId(
-  //     "archive-button-credential-card-details"
-  //   );
+    const archiveButton = await findByTestId(
+      "archive-button-credential-card-details"
+    );
 
-  //   act(() => {
-  //     fireEvent.click(archiveButton);
-  //   });
+    act(() => {
+      fireEvent.click(archiveButton);
+    });
 
-  //   await waitFor(() => {
-  //     expect(
-  //       getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
-  //     ).toBeVisible();
-  //   });
+    await waitFor(() => {
+      expect(
+        getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
+      ).toBeVisible();
+    });
 
-  //   await waitFor(() => {
-  //     expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
-  //       "is-open",
-  //       "false"
-  //     );
-  //   });
+    await waitFor(() => {
+      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
+        "is-open",
+        "false"
+      );
+    });
 
-  //   act(() => {
-  //     fireEvent.click(
-  //       getAllByText(
-  //         EN_TRANSLATIONS.creds.card.details.alert.archive.confirm
-  //       )[0]
-  //     );
-  //   });
+    act(() => {
+      fireEvent.click(
+        getAllByText(
+          EN_TRANSLATIONS.creds.card.details.alert.archive.confirm
+        )[0]
+      );
+    });
 
-  //   await waitForIonicReact();
+    await waitForIonicReact();
 
-  //   await waitFor(() => {
-  //     expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
-  //       "is-open",
-  //       "true"
-  //     );
-  //   });
-  // });
+    await waitFor(() => {
+      expect(getAllByTestId("verify-password")[1]).toHaveAttribute(
+        "is-open",
+        "true"
+      );
+    });
+  });
 
   test.skip("It asks to verify the password when users try to archive the cred using the button in the modal", async () => {
     const mockStore = configureStore();

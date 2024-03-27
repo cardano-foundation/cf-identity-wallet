@@ -485,7 +485,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       credentialType,
       connectionType: ConnectionType.KERI,
       issuanceDate: nowISO,
-      cachedDetails: undefined,
       isDeleted: false,
       connectionId: undefined,
     });
@@ -498,7 +497,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       credentialType,
       connectionType: ConnectionType.KERI,
       issuanceDate: nowISO,
-      cachedDetails: undefined,
     });
   });
 

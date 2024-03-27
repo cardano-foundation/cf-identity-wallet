@@ -12,6 +12,7 @@ import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { AriesAgent } from "../../../core/agent/agent";
+import { ConfigurationService } from "../../../core/configuration";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
 
@@ -69,6 +70,9 @@ const storeMockedAidKeri = {
 };
 
 describe("Cards Details page", () => {
+  beforeAll(async () => {
+    await new ConfigurationService().start();
+  });
   test("It opens the sharing modal", async () => {
     const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>
@@ -108,7 +112,7 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(8, 13) +
+          filteredKeriFix[0].id.substring(0, 5) +
             "..." +
             filteredKeriFix[0].id.slice(-5)
         )
@@ -138,7 +142,7 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(8, 13) +
+          filteredKeriFix[0].id.substring(0, 5) +
             "..." +
             filteredKeriFix[0].id.slice(-5)
         )
@@ -170,7 +174,7 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(8, 13) +
+          filteredKeriFix[0].id.substring(0, 5) +
             "..." +
             filteredKeriFix[0].id.slice(-5)
         )
@@ -214,7 +218,7 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(8, 13) +
+          filteredKeriFix[0].id.substring(0, 5) +
             "..." +
             filteredKeriFix[0].id.slice(-5)
         )
@@ -272,7 +276,7 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(8, 13) +
+          filteredKeriFix[0].id.substring(0, 5) +
             "..." +
             filteredKeriFix[0].id.slice(-5)
         )
@@ -334,7 +338,7 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(8, 13) +
+          filteredKeriFix[0].id.substring(0, 5) +
             "..." +
             filteredKeriFix[0].id.slice(-5)
         )

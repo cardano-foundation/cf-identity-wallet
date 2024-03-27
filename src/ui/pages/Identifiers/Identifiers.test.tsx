@@ -143,7 +143,7 @@ describe("Identifiers Tab", () => {
 
     expect(
       getByText(
-        filteredIdentifierFix[0].id.substring(8, 13) +
+        filteredIdentifierFix[0].id.substring(0, 5) +
           "..." +
           filteredIdentifierFix[0].id.slice(-5)
       )

@@ -361,7 +361,7 @@ describe("Identifier service of agent", () => {
       },
     ];
     const metadata = {
-      theme: 4,
+      theme: 0,
       colors: ["#000000", "#000000"],
       displayName: "Multisig",
     };
@@ -483,7 +483,7 @@ describe("Identifier service of agent", () => {
       connectionDate: new Date().toISOString(),
     };
     const metadata = {
-      theme: 4,
+      theme: 0,
       colors: ["#000000", "#000000"],
       displayName: "Multisig",
     };
@@ -551,14 +551,14 @@ describe("Identifier service of agent", () => {
         signifyName: "signifyName",
         createdAt: new Date(),
         colors: ["#000000", "#000000"],
-        theme: 4,
+        theme: 0,
       },
     ]);
     expect(
       await identifierService.joinMultisig(
         { id: "id", createdAt: new Date(), a: { d: "d" } },
         {
-          theme: 4,
+          theme: 0,
           colors: ["#000000", "#000000"],
           displayName: "Multisig",
         }
@@ -572,7 +572,7 @@ describe("Identifier service of agent", () => {
       identifierService.joinMultisig(
         { id: "id", createdAt: new Date(), a: { d: "d" } },
         {
-          theme: 4,
+          theme: 0,
           colors: ["#000000", "#000000"],
           displayName: "Multisig",
         }
@@ -608,7 +608,7 @@ describe("Identifier service of agent", () => {
     expect(
       identifierService.createDelegatedIdentifier(
         {
-          method: IdentifierType.KERI,
+          method: "notKeri" as IdentifierType,
           displayName,
           colors,
           theme: 0,
@@ -730,7 +730,7 @@ describe("Identifier service of agent", () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KERI,
+      method: "notKeri" as IdentifierType,
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
@@ -743,11 +743,11 @@ describe("Identifier service of agent", () => {
     );
   });
 
-  test("should can rorate multisig with DID and throw error", async () => {
+  test("should can rorate multisig with not KERI and throw error", async () => {
     const metadata = {
       id: "123456",
       displayName: "John Doe",
-      method: IdentifierType.KERI,
+      method: "notKeri" as IdentifierType,
       colors: ["#e0f5bc", "#ccef8f"],
       isPending: true,
       signifyOpName: "op123",
