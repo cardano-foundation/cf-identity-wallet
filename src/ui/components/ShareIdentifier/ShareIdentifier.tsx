@@ -17,7 +17,7 @@ import { ResponsiveModal } from "../layout/ResponsiveModal";
 const ShareIdentifier = ({
   isOpen,
   setIsOpen,
-  cardData,
+  signifyName,
 }: ShareIdentifierProps) => {
   const componentId = "share-identifier-modal";
   const dispatch = useAppDispatch();
@@ -26,10 +26,10 @@ const ShareIdentifier = ({
   const [oobi, setOobi] = useState("");
 
   useEffect(() => {
-    if (cardData) {
+    if (signifyName) {
       const fetchOobi = async () => {
         const oobiValue = await AriesAgent.agent.connections.getKeriOobi(
-          `${cardData.signifyName}`,
+          `${signifyName}`,
           userName
         );
         if (oobiValue) {
@@ -38,7 +38,7 @@ const ShareIdentifier = ({
       };
       fetchOobi();
     }
-  }, [cardData, userName]);
+  }, [signifyName, userName]);
 
   return (
     <ResponsiveModal

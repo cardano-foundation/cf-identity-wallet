@@ -14,7 +14,7 @@ const setIsOpen = jest.fn();
 const props: ShareIdentifierProps = {
   isOpen: true,
   setIsOpen,
-  cardData: keriFix[0],
+  signifyName: keriFix[0].signifyName,
 };
 describe("Share Indentifier (OOBI)", () => {
   test("Show toast when copy identifier", async () => {
@@ -30,7 +30,7 @@ describe("Share Indentifier (OOBI)", () => {
         <ShareIdentifier
           isOpen={props.isOpen}
           setIsOpen={props.setIsOpen}
-          cardData={props.cardData}
+          signifyName={props.signifyName}
         />
       </Provider>
     );
