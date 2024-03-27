@@ -177,10 +177,9 @@ export class SignifyApi {
     if (SignifyApi.resolvedOobi[url]) {
       return SignifyApi.resolvedOobi[url];
     }
-    const alias = utils.uuid();
-    let operation = await this.signifyClient.oobis().resolve(url, alias);
-    operation = await this.waitAndGetDoneOp(
-      operation,
+    const alias = new URL(url).searchParams.get("name") ?? utils.uuid();
+    const operation = await this.waitAndGetDoneOp(
+      await this.signifyClient.oobis().resolve(url, alias),
       this.opTimeout,
       this.opRetryInterval
     );
