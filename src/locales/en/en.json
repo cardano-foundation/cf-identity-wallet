@@ -646,6 +646,7 @@
     "tab": {
       "title": "Identity",
       "create": "Add an identifier",
+      "favourites": "Favourites",
       "allidentifiers": "All identifiers",
       "pendingidentifiers": "Pending identifiers",
       "type": {
