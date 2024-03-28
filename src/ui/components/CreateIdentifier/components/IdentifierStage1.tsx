@@ -14,8 +14,9 @@ import { IdentifierStageProps } from "../CreateIdentifier.types";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 import { useAppSelector } from "../../../../store/hooks";
 import { getConnectionsCache } from "../../../../store/reducers/connectionsCache";
-import CardanoLogo from "../../../assets/images/CardanoLogo.jpg";
 import { ConnectionType } from "../../../../core/agent/agent.types";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import DidComLogo from "../../../assets/images/didCommGeneric.jpg";
 
 const IdentifierStage1 = ({
   state,
@@ -62,6 +63,9 @@ const IdentifierStage1 = ({
     }));
   };
 
+  const getFallbackLogo = (type?: ConnectionType) =>
+    type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
+
   return (
     <>
       <ScrollablePageLayout
@@ -100,7 +104,7 @@ const IdentifierStage1 = ({
               >
                 <IonLabel className="connection-item">
                   <img
-                    src={connection?.logo ?? CardanoLogo}
+                    src={connection?.logo || getFallbackLogo(connection?.type)}
                     className="connection-logo"
                     alt="connection-logo"
                   />
