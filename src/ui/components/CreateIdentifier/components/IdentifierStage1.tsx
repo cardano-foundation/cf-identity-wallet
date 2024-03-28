@@ -106,6 +106,7 @@ const IdentifierStage1 = ({
                   <img
                     src={connection?.logo || getFallbackLogo(connection?.type)}
                     className="connection-logo"
+                    data-testid="identifier-stage-1-logo"
                     alt="connection-logo"
                   />
                   <span className="connection-name">{connection.label}</span>

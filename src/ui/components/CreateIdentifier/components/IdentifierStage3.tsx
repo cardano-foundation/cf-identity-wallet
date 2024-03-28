@@ -168,6 +168,7 @@ const IdentifierStage3 = ({
                       src={connection?.logo || getFallbackLogo(connection.type)}
                       className="connection-logo"
                       alt="connection-logo"
+                      data-testId={`identifier-stage-3-connection-logo-${index}`}
                     />
                     <span className="connection-name">{connection.label}</span>
                     <IonIcon

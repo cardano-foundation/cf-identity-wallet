@@ -173,7 +173,7 @@ describe("Multi-Sig request", () => {
   });
 
   test("Display fallback image when provider logo is empty: CREDENTIAL_OFFER_RECEIVED MULTI_SIG_REQUEST_INCOMING - stage 0", async () => {
-    const testData = {
+    const data = {
       id: "abc123456",
       type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
       source: ConnectionType.KERI,
@@ -188,19 +188,23 @@ describe("Multi-Sig request", () => {
             ...connectionsFix[4],
             logo: "",
           },
-          connectionsFix[5],
+          {
+            ...connectionsFix[5],
+            logo: "",
+          },
         ],
         threshold: 1,
       },
     };
-    const { getByTestId } = render(
+
+    const { getByText, queryByTestId, getByTestId } = render(
       <Provider store={storeMocked}>
         <RequestComponent
           pageId={pageId}
           activeStatus={activeStatus}
           blur={blur}
           setBlur={setBlur}
-          requestData={testData}
+          requestData={requestData}
           initiateAnimation={initiateAnimation}
           handleAccept={handleAccept}
           handleCancel={handleCancel}
@@ -211,7 +215,15 @@ describe("Multi-Sig request", () => {
     );
 
     expect(
-      getByTestId("multisig-connection-logo").getAttribute("src")
+      getByText(EN_TRANSLATIONS.request.multisig.stageone.title)
+    ).toBeInTheDocument();
+
+    expect(queryByTestId("multisig-connection-fallback-logo")).toBeVisible();
+    expect(
+      getByTestId("other-multisig-connection-logo-0").getAttribute("src")
+    ).not.toBe(undefined);
+    expect(
+      getByTestId("other-multisig-connection-logo-1").getAttribute("src")
     ).not.toBe(undefined);
   });
 });

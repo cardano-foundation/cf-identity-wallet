@@ -88,7 +88,10 @@ const MultiSigRequestStageOne = ({
                           alt="multisig-connection-logo"
                         />
                       ) : (
-                        <div className="request-user-logo">
+                        <div
+                          data-testid="multisig-connection-fallback-logo"
+                          className="request-user-logo"
+                        >
                           <IonIcon
                             icon={personCircleOutline}
                             color="light"
