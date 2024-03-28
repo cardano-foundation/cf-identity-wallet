@@ -997,9 +997,11 @@
     }
   },
   "shareidentifier": {
-    "title": "Share identifier",
+    "title": "Share connection",
+    "subtitle": "To share, either scan the QR code or select from the provided options below",
+    "done": "Done",
     "divider": "or",
-    "copykey": "Copy Identifier",
+    "copykey": "Copy Out-of-Band Invitation (OOBI)",
     "more": "More share options"
   },
   "createidentifier": {
