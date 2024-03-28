@@ -43,10 +43,10 @@
 .credential-tab {
   &.cards-credential-nav {
     .credential-favourite-cards {
-      animation: indentifierFavouriteCardResize 0.25s ease;
+      animation: credentialFavouriteCardResize 0.25s ease;
       animation-fill-mode: forwards;
 
-      @keyframes indentifierFavouriteCardResize {
+      @keyframes credentialFavouriteCardResize {
         from {
           opacity: 0;
           overflow: hidden;
@@ -75,10 +75,10 @@
 
     .credential-favourite-cards {
       h3 {
-        animation: indentifierFavouriteCardHeaderResize 0.25s ease;
+        animation: credentialFavouriteCardHeaderResize 0.25s ease;
         animation-fill-mode: forwards;
 
-        @keyframes indentifierFavouriteCardHeaderResize {
+        @keyframes credentialFavouriteCardHeaderResize {
           from {
             opacity: 0;
             overflow: hidden;
