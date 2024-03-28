@@ -1,4 +1,10 @@
 .share-identifier-modal {
+  &.md {
+    .share-identifier-body {
+      margin-bottom: 0;
+    }
+  }
+
   .responsive-modal-content {
     .page-header {
       ion-toolbar {
