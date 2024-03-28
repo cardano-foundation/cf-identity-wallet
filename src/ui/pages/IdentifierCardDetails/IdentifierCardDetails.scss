@@ -101,11 +101,11 @@
       }
     }
   }
+}
 
-  .identifier-card-detail-spinner-container {
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
+.identifier-card-detail-spinner-container {
+  height: calc(100vh - 102px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
