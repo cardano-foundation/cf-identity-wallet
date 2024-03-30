@@ -20,14 +20,12 @@
         height: 0;
         overflow-y: hidden;
         opacity: 0;
-        margin-top: -1.56rem;
       }
 
       to {
         height: 100vh;
         overflow-y: hidden;
         opacity: 1;
-        margin-top: -1.56rem;
       }
     }
   }
@@ -44,61 +42,12 @@
       height: 100vh;
       overflow-y: hidden;
       opacity: 1;
-      margin-top: -1.56rem;
     }
 
     to {
       height: 0;
       overflow-y: hidden;
       opacity: 0;
-      margin-top: -1.56rem;
-    }
-  }
-}
-
-@media screen and (min-width: 250px) and (max-width: 370px) {
-  .open-animation {
-    .card-details-content {
-      animation: minsizeExpand 0.7s ease-in-out;
-
-      @keyframes minsizeExpand {
-        from {
-          height: 0;
-          overflow-y: hidden;
-          opacity: 0;
-          margin-top: -1.24rem;
-        }
-
-        to {
-          height: 100vh;
-          overflow-y: hidden;
-          opacity: 1;
-          margin-top: -1.24rem;
-        }
-      }
-    }
-  }
-
-  .back-animation {
-    .card-details-content {
-      animation: miniSizecollapse 0.25s ease-in-out;
-      animation-fill-mode: forwards;
-    }
-
-    @keyframes miniSizecollapse {
-      from {
-        height: 100vh;
-        overflow-y: hidden;
-        opacity: 1;
-        margin-top: -1.24rem;
-      }
-
-      to {
-        height: 0;
-        overflow-y: hidden;
-        opacity: 0;
-        margin-top: -1.24rem;
-      }
     }
   }
 }

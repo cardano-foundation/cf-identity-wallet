@@ -6,14 +6,14 @@ import {
 } from "ionicons/icons";
 import { JsonObject } from "@aries-framework/core";
 import { i18n } from "../../../../i18n";
-import {
-  CardDetailsBlock,
-  CardDetailsItem,
-  CardDetailsAttributes,
-} from "../../../components/CardDetailsElements";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 import { W3CCredentialDetails } from "../../../../core/agent/services/credentialService.types";
 import { ConnectionDetails } from "../../Connections/Connections.types";
+import {
+  CardDetailsAttributes,
+  CardDetailsBlock,
+  CardDetailsItem,
+} from "../../../components/card-detail";
 
 interface CredContentW3cProps {
   cardData: W3CCredentialDetails;
@@ -25,7 +25,7 @@ const CredContentW3c = ({
   connectionDetails,
 }: CredContentW3cProps) => {
   return (
-    <div className="card-details-content">
+    <>
       <CardDetailsBlock title={i18n.t("creds.card.details.type")}>
         <CardDetailsItem
           info={cardData.credentialType
@@ -98,7 +98,7 @@ const CredContentW3c = ({
           />
         )}
       </CardDetailsBlock>
-    </div>
+    </>
   );
 };
 

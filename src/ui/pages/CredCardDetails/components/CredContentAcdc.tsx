@@ -1,12 +1,12 @@
 import { keyOutline, informationCircleOutline } from "ionicons/icons";
 import { JsonObject } from "@aries-framework/core";
 import { i18n } from "../../../../i18n";
+import { ACDCDetails } from "../../../../core/agent/services/credentialService.types";
 import {
   CardDetailsBlock,
   CardDetailsItem,
   CardDetailsAttributes,
-} from "../../../components/CardDetailsElements";
-import { ACDCDetails } from "../../../../core/agent/services/credentialService.types";
+} from "../../../components/card-detail";
 
 interface ACDCContentProps {
   cardData: ACDCDetails;
@@ -14,7 +14,7 @@ interface ACDCContentProps {
 
 const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
   return (
-    <div className="card-details-content">
+    <>
       <CardDetailsBlock title={i18n.t("creds.card.details.title")}>
         <CardDetailsItem
           info={cardData.credentialType}
@@ -22,7 +22,10 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
           testId="card-details-credential-type"
         />
       </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("creds.card.details.description.label")}>
+      <CardDetailsBlock
+        className="cred-content-acdc-card"
+        title={i18n.t("creds.card.details.description.label")}
+      >
         {cardData.s.description}
       </CardDetailsBlock>
       {cardData.a && (
@@ -45,13 +48,16 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
           testId="card-details-issuer"
         />
       </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("creds.card.details.status.label")}>
+      <CardDetailsBlock
+        className="cred-content-acdc-card-status"
+        title={i18n.t("creds.card.details.status.label")}
+      >
         <CardDetailsAttributes
           data={cardData.lastStatus as JsonObject}
           customType="status"
         />
       </CardDetailsBlock>
-    </div>
+    </>
   );
 };
 

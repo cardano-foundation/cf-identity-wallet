@@ -5,8 +5,8 @@ import {
 } from "ionicons/icons";
 import { formatShortDate } from "../../utils/formatters";
 import { IdentifierCardInfoDidProps } from "./IdentifierCardInfoKey.types";
-import { CardDetailsBlock, CardDetailsItem } from "../CardDetailsElements";
 import { i18n } from "../../../i18n";
+import { CardDetailsBlock, CardDetailsItem } from "../card-detail";
 
 const IdentifierCardInfoDid = ({ cardData }: IdentifierCardInfoDidProps) => {
   return (

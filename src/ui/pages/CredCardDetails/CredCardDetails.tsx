@@ -43,7 +43,7 @@ import {
   ACDCDetails,
   W3CCredentialDetails,
 } from "../../../core/agent/services/credentialService.types";
-import "../../components/CardDetailsElements/CardDetails.scss";
+import "../../components/card-detail/CardDetails.scss";
 import "./CredCardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
 import { ConnectionType } from "../../../core/agent/agent.types";
