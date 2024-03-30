@@ -6,6 +6,7 @@ import { CardDetailsNestedAttributesProps } from "./CardDetailsAttributes.types"
 import { reservedKeysFilter } from "./CardDetailsAttributes.utils";
 import "./CardDetailsAttributes.scss";
 import { CardDetailsBlock } from "../CardDetailsBlock";
+import { combineClassNames } from "../../../utils/style";
 
 const CardDetailsNestedAttributes = ({
   attribute,
@@ -30,6 +31,11 @@ const CardDetailsNestedAttributes = ({
     return "";
   }, []);
 
+  const isObjectItem = typeof item === "object" && item !== null;
+  const detailItemsClass = combineClassNames("card-details-attribute-item", {
+    "has-nested-item": isObjectItem,
+  });
+
   const infoTestId = item[10] === "T" ? "cred-detail-time" : undefined;
   const innerCardKeyValue =
     cardKeyValue || `${reservedKeysFilter(key, customType)}:`;
@@ -40,9 +46,10 @@ const CardDetailsNestedAttributes = ({
         keyValue={innerCardKeyValue}
         info={cardDetailInfo}
         infoTestId={infoTestId}
-        className="card-details-nested-attribute"
+        className={detailItemsClass}
+        mask={false}
       />
-      {typeof item === "object" && item !== null && (
+      {isObjectItem && (
         <CardDetailsBlock className="card-details-nested-content">
           {Object.entries(item).map((sub: any, i: number) => {
             return (

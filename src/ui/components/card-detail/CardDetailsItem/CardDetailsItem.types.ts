@@ -7,4 +7,5 @@ export interface CardDetailsItemProps {
   testId?: string;
   infoTestId?: string;
   className?: string;
+  mask?: boolean;
 }

@@ -18,6 +18,7 @@ const CardDetailsItem = ({
   testId,
   infoTestId,
   className,
+  mask = true,
 }: CardDetailsItemProps) => {
   const dispatch = useAppDispatch();
 
@@ -27,6 +28,7 @@ const CardDetailsItem = ({
   );
   const textClass = combineClassNames("card-details-info-block-data", {
     "card-details-info-block-subtext": !!keyValue,
+    mask: mask,
   });
 
   return (
@@ -57,13 +59,15 @@ const CardDetailsItem = ({
         </IonText>
       )}
       <div className="card-details-info-content">
-        {keyValue && (
-          <IonText className="card-details-info-block-key">{keyValue}</IonText>
-        )}
         <IonText
           data-testid={infoTestId}
           className={textClass}
         >
+          {keyValue && (
+            <IonText className="card-details-info-block-key">
+              {keyValue}
+            </IonText>
+          )}
           {info}
         </IonText>
         {copyButton && (

@@ -99,6 +99,10 @@
     > *:not(:first-child) {
       margin: 1.56rem 0 1rem;
     }
+
+    .card-details-info-block-inner:has(.card-details-attribute-item) {
+      padding: 1.25rem;
+    }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {
@@ -136,6 +140,10 @@
 
       > *:not(:first-child) {
         margin: 1rem 0 0.85rem;
+      }
+
+      .card-details-info-block-inner:has(.card-details-attribute-item) {
+        padding: 1rem 1.25rem;
       }
     }
   }

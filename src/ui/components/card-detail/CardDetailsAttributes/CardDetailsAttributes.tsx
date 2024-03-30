@@ -19,6 +19,7 @@ const CardDetailsAttributes = ({
               key={index}
               info={item[1] as string}
               copyButton={true}
+              className="card-details-attribute-item"
               testId="card-details-attributes-id"
             />
           );
@@ -37,6 +38,7 @@ const CardDetailsAttributes = ({
                 info={item[1] as string}
                 copyButton={`${item[1]}`.length > 15}
                 testId="card-details-generic-attribute"
+                className="card-details-attribute-item"
               />
             ) : (
               <CardDetailsNestedAttributes
