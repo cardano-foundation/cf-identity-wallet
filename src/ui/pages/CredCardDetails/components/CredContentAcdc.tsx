@@ -29,7 +29,10 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
         {cardData.s.description}
       </CardDetailsBlock>
       {cardData.a && (
-        <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>
+        <CardDetailsBlock
+          className="card-attribute-block"
+          title={i18n.t("creds.card.details.attributes.label")}
+        >
           <CardDetailsAttributes data={cardData.a as JsonObject} />
         </CardDetailsBlock>
       )}
@@ -49,7 +52,7 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
         />
       </CardDetailsBlock>
       <CardDetailsBlock
-        className="cred-content-acdc-card-status"
+        className="card-attribute-block"
         title={i18n.t("creds.card.details.status.label")}
       >
         <CardDetailsAttributes

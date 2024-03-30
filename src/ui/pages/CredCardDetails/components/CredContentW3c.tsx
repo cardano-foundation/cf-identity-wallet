@@ -36,7 +36,10 @@ const CredContentW3c = ({
         />
       </CardDetailsBlock>
       {cardData.credentialSubject && (
-        <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>
+        <CardDetailsBlock
+          className="card-attribute-block"
+          title={i18n.t("creds.card.details.attributes.label")}
+        >
           <CardDetailsAttributes
             data={cardData.credentialSubject as JsonObject}
           />
