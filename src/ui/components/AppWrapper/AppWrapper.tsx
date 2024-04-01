@@ -37,12 +37,12 @@ import {
   ConnectionStatus,
   AcdcKeriStateChangedEvent,
   ConnectionType,
+  NotificationRoute,
 } from "../../../core/agent/agent.types";
 import {
   CredentialStatus,
 } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
-import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
 
@@ -80,7 +80,7 @@ const keriNotificationsChangeHandler = async (
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
     const multisigIcpDetails =
-      await Agent.agent.identifiers.getMultisigIcpDetails(event);
+      await Agent.agent.multiSigs.getMultisigIcpDetails(event);
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
@@ -166,7 +166,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
     const storedIdentifiers =
-      await Agent.agent.identifiers.getIdentifiers();
+      await Agent.agent.singleSigs.getIdentifiers();
 
     // @TODO - handle error
     try {
@@ -234,7 +234,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
         return keriNotificationsChangeHandler(event, dispatch);
       }
     );
-    Agent.agent.credentials.onAcdcKeriStateChanged((event) => {
+    Agent.agent.ipexCommunications.onAcdcKeriStateChanged((event) => {
       return keriAcdcChangeHandler(event, dispatch);
     });
 
@@ -242,7 +242,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     const oldMessages = (
       await Promise.all([
-        Agent.agent.credentials.getUnhandledCredentials(),
+        Agent.agent.ipexCommunications.getUnhandledCredentials(),
       ])
     )
       .flat()
@@ -254,9 +254,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     });
     // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
     await Promise.all([
-      Agent.agent.identifiers.syncKeriaIdentifiers(),
+      Agent.agent.singleSigs.syncKeriaIdentifiers(),
       Agent.agent.connections.syncKeriaContacts(),
-      Agent.agent.credentials.syncACDCs(),
+      Agent.agent.ipexCommunications.syncACDCs(),
     ]);
   };
 

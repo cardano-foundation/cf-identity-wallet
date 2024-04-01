@@ -52,7 +52,7 @@ const IdentifierStage3 = ({
       );
       return;
     } else {
-      const identifier = await Agent.agent.identifiers.createMultisig(
+      const identifier = await Agent.agent.multiSigs.createMultisig(
         ourIdentifier,
         otherIdentifierContacts,
         {

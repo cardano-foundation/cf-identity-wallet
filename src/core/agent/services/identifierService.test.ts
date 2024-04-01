@@ -6,6 +6,8 @@ import {
 import { IdentifierType } from "./identifierService.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
 import { Agent } from "../agent";
+import { EventService } from "./eventService";
+import { CredentialStorage, IdentifierStorage } from "../records";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),

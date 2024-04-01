@@ -1,5 +1,6 @@
 import { SignifyNotificationService } from "./signifyNotificationService";
-import { SignifyApi } from "../modules/signify/signifyApi";
+import { EventService } from "./eventService";
+import { CredentialStorage, IdentifierStorage } from "../records";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -16,9 +17,16 @@ const signifyApi = jest.mocked({
   markNotification: jest.fn(),
 });
 
+const agentServicesProps = {
+  basicStorage: basicStorage,
+  signifyClient: {} as unknown as any,
+  eventService: new EventService(),
+  identifierStorage: new IdentifierStorage(basicStorage),
+  credentialStorage: new CredentialStorage(basicStorage),
+};
+
 const signifyNotificationService = new SignifyNotificationService(
-  basicStorage,
-  signifyApi as any as SignifyApi
+  agentServicesProps
 );
 
 describe("Signify notification service of agent", () => {

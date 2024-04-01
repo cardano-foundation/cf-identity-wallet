@@ -1,3 +1,4 @@
+import { IdentifierResult } from "../agent.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
@@ -106,7 +107,9 @@ class SingleSigService extends AgentService {
   }
 
   async deleteIdentifier(identifier: string): Promise<void> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(identifier);
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      identifier
+    );
     this.validArchivedIdentifier(metadata);
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isDeleted: true,
@@ -114,7 +117,9 @@ class SingleSigService extends AgentService {
   }
 
   async restoreIdentifier(identifier: string): Promise<void> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(identifier);
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      identifier
+    );
     this.validArchivedIdentifier(metadata);
     await this.identifierStorage.updateIdentifierMetadata(identifier, {
       isArchived: false,
@@ -125,12 +130,39 @@ class SingleSigService extends AgentService {
     identifier: string,
     data: Pick<IdentifierMetadataRecordProps, "theme" | "displayName">
   ): Promise<void> {
-    const metadata = await this.identifierStorage.getIdentifierMetadata(identifier);
+    const metadata = await this.identifierStorage.getIdentifierMetadata(
+      identifier
+    );
     this.validIdentifierMetadata(metadata);
     return this.identifierStorage.updateIdentifierMetadata(identifier, {
       theme: data.theme,
       displayName: data.displayName,
     });
+  }
+
+  async syncKeriaIdentifiers() {
+    const { aids: signifyIdentifiers } = await this.signifyClient
+      .identifiers()
+      .list();
+    const storageIdentifiers =
+      await this.identifierStorage.getKeriIdentifiersMetadata();
+    const unSyncedData = signifyIdentifiers.filter(
+      (identifier: IdentifierResult) =>
+        !storageIdentifiers.find((item) => identifier.prefix === item.id)
+    );
+    if (unSyncedData.length) {
+      //sync the storage with the signify data
+      for (const identifier of unSyncedData) {
+        await this.identifierStorage.createIdentifierMetadataRecord({
+          id: identifier.prefix,
+          displayName: identifier.prefix, //same as the id at the moment
+          method: IdentifierType.KERI,
+          colors: ["#e0f5bc", "#ccef8f"],
+          theme: 0,
+          signifyName: identifier.name,
+        });
+      }
+    }
   }
 
   private validArchivedIdentifier(metadata: IdentifierMetadataRecord): void {

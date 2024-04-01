@@ -148,7 +148,6 @@ const ConnectionDetails = () => {
     async function deleteConnection() {
       await Agent.agent.connections.deleteConnectionById(
         connectionShortDetails.id,
-        connectionShortDetails.type
       );
       const updatedConnections = connectionsData.filter(
         (item) => item.id !== connectionDetails?.id

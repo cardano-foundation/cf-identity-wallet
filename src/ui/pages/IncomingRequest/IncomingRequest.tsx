@@ -57,7 +57,7 @@ const IncomingRequest = () => {
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
       if (incomingRequest.source === ConnectionType.KERI) {
-        await Agent.agent.credentials.deleteKeriNotificationRecordById(
+        await Agent.agent.ipexCommunications.deleteKeriNotificationRecordById(
           incomingRequest.id
         );
       }
@@ -76,7 +76,7 @@ const IncomingRequest = () => {
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      await Agent.agent.credentials.deleteKeriNotificationRecordById(
+      await Agent.agent.ipexCommunications.deleteKeriNotificationRecordById(
         incomingRequest.id
       );
     }
@@ -95,14 +95,14 @@ const IncomingRequest = () => {
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
       if (incomingRequest.source === ConnectionType.KERI) {
-        Agent.agent.credentials.acceptKeriAcdc(incomingRequest.id);
+        Agent.agent.ipexCommunications.acceptKeriAcdc(incomingRequest.id);
       } else {
         // Agent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
       }
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      Agent.agent.credentials.deleteKeriNotificationRecordById(
+      Agent.agent.ipexCommunications.deleteKeriNotificationRecordById(
         incomingRequest.id
       );
     }

@@ -74,7 +74,7 @@ const IdentifierStage0 = ({
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
     const type = IdentifierType.KERI; //
-    const identifier = await Agent.agent.identifiers.createIdentifier({
+    const identifier = await Agent.agent.singleSigs.createIdentifier({
       displayName: state.displayNameValue,
       method: type,
       // @TODO - sdisalvo: Colors will need to be removed

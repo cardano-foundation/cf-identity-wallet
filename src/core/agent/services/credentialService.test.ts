@@ -3,10 +3,7 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../records/credentialMetadataRecord.types";
-import { CredentialStatus } from "./credentialService.types";
 import {
-  AcdcKeriEventTypes,
-  AcdcKeriStateChangedEvent,
   ConnectionType,
 } from "../agent.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
@@ -23,15 +20,6 @@ const basicStorage = jest.mocked({
   findById: jest.fn(),
   findAllByQuery: jest.fn(),
   getAll: jest.fn(),
-});
-
-const signifyApi = jest.mocked({
-  admitIpex: jest.fn(),
-  getNotifications: jest.fn(),
-  markNotification: jest.fn(),
-  getKeriExchange: jest.fn(),
-  getCredentials: jest.fn(),
-  getCredentialBySaid: jest.fn(),
 });
 
 

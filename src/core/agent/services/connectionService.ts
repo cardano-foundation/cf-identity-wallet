@@ -10,11 +10,11 @@ import {
   ConnectionShortDetails,
   ConnectionType,
   ConnectionStatus,
+  KeriContact,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
 import { IdentifierType } from "./identifierService.types";
-import { KeriContact } from "../modules/signify/signifyApi.types";
 import { BasicRecord } from "../records";
 import { RecordType } from "../../storage/storage.types";
 import { waitAndGetDoneOp } from "./utils";
@@ -63,7 +63,7 @@ class ConnectionService extends AgentService {
       // This will take our first KERI identifier and get the server to resolve it, so that the connection is resolved from both sides and we can issue to this wallet using its API.
       if (url.includes("dev.keria.cf-keripy.metadata.dev.cf-deployments.org")) {
         // This is inefficient but it will change going forward.
-        const aid = (await Agent.agent.identifiers.getIdentifiers()).find(
+        const aid = (await Agent.agent.singleSigs.getIdentifiers()).find(
           (identifier) => identifier.method === IdentifierType.KERI
         );
         if (aid && aid.signifyName) {
@@ -177,7 +177,10 @@ class ConnectionService extends AgentService {
   }
 
   async getKeriOobi(signifyName: string): Promise<string> {
-    return this.signifyClient.oobis().get(signifyName);
+    const result = await this.signifyClient
+    .oobis()
+    .get(signifyName);
+  return result.oobis[0];
   }
 
   private async createConnectionKeriMetadata(

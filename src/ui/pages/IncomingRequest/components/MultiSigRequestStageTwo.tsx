@@ -42,7 +42,7 @@ const MultiSigRequestStageTwo = ({
     if (!(requestData.event && requestData.multisigIcpDetails)) {
       // Do some error thing here... maybe it's just a TODO
     } else {
-      const multisigId = await Agent.agent.identifiers.joinMultisig(
+      const multisigId = await Agent.agent.multiSigs.joinMultisig(
         requestData.event,
         {
           theme: selectedTheme,

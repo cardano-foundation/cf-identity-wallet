@@ -75,8 +75,9 @@ const IdentifierCardDetails = () => {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const cardDetailsResult =
-        await Agent.agent.identifiers.getIdentifier(params.id);
+      const cardDetailsResult = await Agent.agent.singleSigs.getIdentifier(
+        params.id
+      );
       if (cardDetailsResult) {
         setCardData(cardDetailsResult.result);
       } else {
@@ -132,8 +133,8 @@ const IdentifierCardDetails = () => {
   const deleteIdentifier = async () => {
     if (cardData) {
       // For now there is no archiving in the UI so does both.
-      await Agent.agent.identifiers.archiveIdentifier(cardData.id);
-      await Agent.agent.identifiers.deleteIdentifier(cardData.id);
+      await Agent.agent.singleSigs.archiveIdentifier(cardData.id);
+      await Agent.agent.singleSigs.deleteIdentifier(cardData.id);
       if (isFavourite) {
         handleSetFavourite(cardData.id);
       }

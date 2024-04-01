@@ -15,7 +15,12 @@ import {
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
 import { CredentialService } from "../../../core/agent/services";
-import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
+import {
+  CredentialStorage,
+  IdentifierStorage,
+} from "../../../core/agent/records";
+import { EventService } from "../../../core/agent/services/eventService";
+import { IpexCommunicationService } from "../../../core/agent/services/ipexCommunicationService";
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -104,9 +109,18 @@ const signifyApi = jest.mocked({
   getCredentialBySaid: jest.fn(),
 });
 
-const credentialService = new CredentialService(
-  basicStorage,
-  signifyApi as any as SignifyApi
+const agentServicesProps = {
+  basicStorage: basicStorage,
+  signifyClient: {} as unknown as any,
+  eventService: new EventService(),
+  identifierStorage: new IdentifierStorage(basicStorage),
+  credentialStorage: new CredentialStorage(basicStorage),
+};
+
+const credentialService = new CredentialService(agentServicesProps);
+
+const ipexCommunicationService = new IpexCommunicationService(
+  agentServicesProps
 );
 
 const connectionMock = connectionsFix[0];
@@ -273,7 +287,9 @@ describe("Multi-Sig request", () => {
   };
 
   afterEach(async () => {
-    await credentialService.deleteKeriNotificationRecordById(requestDetails.id);
+    await ipexCommunicationService.deleteKeriNotificationRecordById(
+      requestDetails.id
+    );
   });
 
   test("It receives incoming Multi-Sig request and render content in MultiSigRequestStageOne", async () => {

@@ -11,7 +11,7 @@ import {
   IdentifiersListResult,
   NotificationRoute,
 } from "../agent.types";
-import { CredentialMetadataRecord } from "../records";
+import { CredentialMetadataRecord, IdentifierMetadataRecord } from "../records";
 import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
@@ -147,7 +147,8 @@ class IpexCommunicationService extends AgentService {
     };
   }
 
-  private async deleteKeriNotificationRecordById(id: string): Promise<void> {
+
+  async deleteKeriNotificationRecordById(id: string): Promise<void> {
     await this.basicStorage.deleteById(id);
   }
 

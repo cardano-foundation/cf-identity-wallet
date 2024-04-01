@@ -106,7 +106,7 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
-    expect(Agent.agent.identifiers.getIdentifier).toBeCalledWith(
+    expect(Agent.agent.singleSigs.getIdentifier).toBeCalledWith(
       filteredKeriFix[0].id
     );
   });

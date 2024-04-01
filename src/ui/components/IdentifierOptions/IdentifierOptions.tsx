@@ -122,7 +122,7 @@ const IdentifierOptions = ({
       displayName: newDisplayName,
       theme: newSelectedTheme,
     };
-    await Agent.agent.identifiers.updateIdentifier(cardData.id, {
+    await Agent.agent.singleSigs.updateIdentifier(cardData.id, {
       displayName: newDisplayName,
       theme: newSelectedTheme,
     });

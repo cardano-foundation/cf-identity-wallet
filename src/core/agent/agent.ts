@@ -18,8 +18,7 @@ import {
 } from "signify-ts";
 import { EventService } from "./services/eventService";
 import { CredentialStorage, IdentifierStorage } from "./records";
-import { SecureStorage } from "@aparajita/capacitor-secure-storage";
-import { KeyStoreKeys } from "../storage";
+import { KeyStoreKeys, SecureStorage } from "../storage";
 import { MultiSigService } from "./services/multiSigService";
 import { IpexCommunicationService } from "./services/ipexCommunicationService";
 
@@ -38,7 +37,7 @@ class Agent {
     "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
 
   private static instance: Agent;
-  private agentServicesProps: AgentServicesProps;
+  private agentServicesProps!: AgentServicesProps;
 
   private basicRecordStorage!: StorageApi;
   private signifyClient!: SignifyClient;
@@ -115,13 +114,6 @@ class Agent {
     this.basicRecordStorage = Capacitor.isNativePlatform()
       ? new SqliteStorage()
       : new IonicStorage();
-    this.agentServicesProps = {
-      basicStorage: this.basicRecordStorage,
-      signifyClient: this.signifyClient,
-      eventService: new EventService(),
-      identifierStorage: new IdentifierStorage(this.basicRecordStorage),
-      credentialStorage: new CredentialStorage(this.basicRecordStorage),
-    };
   }
 
   static get agent() {
@@ -149,6 +141,13 @@ class Agent {
         await this.signifyClient.boot();
         await this.signifyClient.connect();
       }
+      this.agentServicesProps = {
+        basicStorage: this.basicRecordStorage,
+        signifyClient: this.signifyClient,
+        eventService: new EventService(),
+        identifierStorage: new IdentifierStorage(this.basicRecordStorage),
+        credentialStorage: new CredentialStorage(this.basicRecordStorage),
+      };
       Agent.ready = true;
     }
   }

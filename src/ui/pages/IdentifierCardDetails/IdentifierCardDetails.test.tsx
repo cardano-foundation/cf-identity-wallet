@@ -367,7 +367,7 @@ describe("Cards Details page", () => {
   });
 
   test("Show loading when indetifier data is null", async () => {
-    Agent.agent.identifiers.getIdentifiers = jest
+    Agent.agent.singleSigs.getIdentifiers = jest
       .fn()
       .mockResolvedValue(null);
 
