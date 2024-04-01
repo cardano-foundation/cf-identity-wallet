@@ -68,7 +68,7 @@ const App = () => {
   }, [authentication, currentRoute]);
 
   useEffect(() => {
-    if (isPlatform("ios") || isPlatform("android")) {
+    if (isPlatform("ios")) {
       StatusBar.setStyle({
         style: Style.Light,
       });
