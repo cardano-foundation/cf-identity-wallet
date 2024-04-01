@@ -45,7 +45,6 @@ keria-src:
   FROM alpine
   GIT CLONE --branch $KERIA_GIT_REF $KERIA_GIT_REPO_URL /keria
   RUN sed -i "s|'keri>=.*,$|'$KERIA_KERIPY_DEPEND_VERSION_OVERRIDE',|" /keria/setup.py
-  RUN cat /keria/setup.py
   SAVE ARTIFACT /keria
 
 keria:
