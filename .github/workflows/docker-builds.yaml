@@ -19,7 +19,7 @@ jobs:
     permissions:
       contents: read
       packages: write
-    runs-on: self-hosted
+    #runs-on: self-hosted
     steps:
       - name: Checkout
         uses: actions/checkout@v3
