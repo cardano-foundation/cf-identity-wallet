@@ -1,18 +1,22 @@
-import { SignifyApi } from "../modules/signify/signifyApi";
 import { StorageApi } from "../../storage/storage.types";
 import { EventService } from "./eventService";
+import { AgentServicesProps } from "../agent.types";
+import { SignifyClient } from "signify-ts";
+import { CredentialStorage, IdentifierStorage } from "../records";
 
 abstract class AgentService {
   protected readonly basicStorage: StorageApi;
-
-  protected readonly signifyApi: SignifyApi;
-
+  protected readonly signifyClient: SignifyClient;
   protected readonly eventService: EventService;
+  protected readonly identifierStorage: IdentifierStorage;
+  protected readonly credentialStorage: CredentialStorage;
 
-  constructor(basicStorage: StorageApi, signifyApi: SignifyApi) {
-    this.basicStorage = basicStorage;
-    this.signifyApi = signifyApi;
-    this.eventService = new EventService();
+  constructor(agentServicesProps: AgentServicesProps) {
+    this.basicStorage = agentServicesProps.basicStorage;
+    this.signifyClient = agentServicesProps.signifyClient;
+    this.eventService = agentServicesProps.eventService;
+    this.identifierStorage = agentServicesProps.identifierStorage;
+    this.credentialStorage = agentServicesProps.credentialStorage;
   }
 }
 

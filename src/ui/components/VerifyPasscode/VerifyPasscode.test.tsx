@@ -9,7 +9,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
 import { CredCardDetails } from "../../pages/CredCardDetails";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 
 const path = TabsRoutePath.CREDS + "/" + credsFixAcdc[0].id;
 
@@ -22,7 +22,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       credentials: {
         getCredentialDetailsById: jest.fn(),
@@ -67,7 +67,7 @@ describe("Verify Passcode on Cards Details page", () => {
 
   // test("It renders verify passcode when clicking on the big button", async () => {
   //   jest
-  //     .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+  //     .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
   //     .mockResolvedValue(credsFixW3c[0]);
   //   const { findByTestId, getAllByText, getAllByTestId } = render(
   //     <Provider store={storeMocked}>

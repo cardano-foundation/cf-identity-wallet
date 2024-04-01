@@ -15,7 +15,7 @@ import {
   IdentifierShortDetails,
   IdentifierType,
 } from "../../../../core/agent/services/identifierService.types";
-import { AriesAgent } from "../../../../core/agent/agent";
+import { Agent } from "../../../../core/agent/agent";
 import {
   getIdentifiersCache,
   setIdentifiersCache,
@@ -74,7 +74,7 @@ const IdentifierStage0 = ({
     const colorGenerator = new ColorGenerator();
     const newColor = colorGenerator.generateNextColor();
     const type = IdentifierType.KERI; //
-    const identifier = await AriesAgent.agent.identifiers.createIdentifier({
+    const identifier = await Agent.agent.identifiers.createIdentifier({
       displayName: state.displayNameValue,
       method: type,
       // @TODO - sdisalvo: Colors will need to be removed

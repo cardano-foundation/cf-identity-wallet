@@ -37,7 +37,7 @@ import {
 } from "../../../store/reducers/connectionsCache";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionHistoryItem,
   ConnectionNoteDetails,
@@ -87,7 +87,7 @@ const ConnectionDetails = () => {
     async function getDetails() {
       try {
         const connectionDetails =
-          await AriesAgent.agent.connections.getConnectionById(
+          await Agent.agent.connections.getConnectionById(
             connectionShortDetails.id,
             connectionShortDetails.type
           );
@@ -106,7 +106,7 @@ const ConnectionDetails = () => {
     async function getHistory() {
       try {
         const connectionHistory =
-          await AriesAgent.agent.connections.getConnectionHistoryById(
+          await Agent.agent.connections.getConnectionHistoryById(
             connectionShortDetails.id
           );
         setConnectionHistory(connectionHistory);
@@ -146,7 +146,7 @@ const ConnectionDetails = () => {
 
   const verifyAction = () => {
     async function deleteConnection() {
-      await AriesAgent.agent.connections.deleteConnectionById(
+      await Agent.agent.connections.deleteConnectionById(
         connectionShortDetails.id,
         connectionShortDetails.type
       );

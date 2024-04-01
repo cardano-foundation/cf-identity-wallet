@@ -11,7 +11,7 @@ import { Alert } from "../../Alert";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
-import { AriesAgent } from "../../../../core/agent/agent";
+import { Agent } from "../../../../core/agent/agent";
 import { ConnectionShortDetails } from "../../../pages/Connections/Connections.types";
 import {
   getIdentifiersCache,
@@ -52,7 +52,7 @@ const IdentifierStage3 = ({
       );
       return;
     } else {
-      const identifier = await AriesAgent.agent.identifiers.createMultisig(
+      const identifier = await Agent.agent.identifiers.createMultisig(
         ourIdentifier,
         otherIdentifierContacts,
         {

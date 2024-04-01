@@ -8,7 +8,7 @@ import { PageHeader } from "../../../components/PageHeader";
 import { IdentifierThemeSelector } from "../../../components/CreateIdentifier/components/IdentifierThemeSelector";
 import { CustomInput } from "../../../components/CustomInput";
 import { ErrorMessage } from "../../../components/ErrorMessage";
-import { AriesAgent } from "../../../../core/agent/agent";
+import { Agent } from "../../../../core/agent/agent";
 import {
   IdentifierShortDetails,
   IdentifierType,
@@ -42,7 +42,7 @@ const MultiSigRequestStageTwo = ({
     if (!(requestData.event && requestData.multisigIcpDetails)) {
       // Do some error thing here... maybe it's just a TODO
     } else {
-      const multisigId = await AriesAgent.agent.identifiers.joinMultisig(
+      const multisigId = await Agent.agent.identifiers.joinMultisig(
         requestData.event,
         {
           theme: selectedTheme,

@@ -30,7 +30,7 @@ import {
   setCurrentOperation,
   setToastMsg,
 } from "../../../store/reducers/stateCache";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { ArchivedCredentialsProps } from "./ArchivedCredentials.types";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import {
@@ -166,14 +166,14 @@ const ArchivedCredentials = ({
     setVerifyPasscodeIsOpen(false);
     // @TODO - sdisalvo: handle error
     await Promise.all(
-      ids.map((id) => AriesAgent.agent.credentials.deleteCredential(id))
+      ids.map((id) => Agent.agent.credentials.deleteCredential(id))
     );
   };
 
   const handleRestoreCredential = async (id: string) => {
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
-    await AriesAgent.agent.credentials.restoreCredential(id);
+    await Agent.agent.credentials.restoreCredential(id);
     const restoredCred = archivedCreds.find((cred) => cred.id === id);
     if (restoredCred) {
       // Should always exist but just in case

@@ -14,11 +14,11 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 import { Creds } from "../Creds";
 import { ConnectionDetails } from "./ConnectionDetails";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       connections: {
         getConnectionById: jest.fn(),
@@ -63,7 +63,7 @@ const initialStateFull = {
 describe("ConnectionDetails Page", () => {
   beforeEach(() => {
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionById")
+      .spyOn(Agent.agent.connections, "getConnectionById")
       .mockImplementation(
         (): Promise<MockConnectionDetails> =>
           Promise.resolve({
@@ -464,7 +464,7 @@ interface MockConnectionDetails {
 describe("Checking the Connection Details Page when no notes are available", () => {
   beforeEach(() => {
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionById")
+      .spyOn(Agent.agent.connections, "getConnectionById")
       .mockImplementation(
         (): Promise<MockConnectionDetails> =>
           Promise.resolve({
@@ -537,7 +537,7 @@ describe("Checking the Connection Details Page when no notes are available", () 
 describe("Checking the Connection Details Page when notes are available", () => {
   beforeEach(() => {
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionById")
+      .spyOn(Agent.agent.connections, "getConnectionById")
       .mockImplementation(
         (): Promise<MockConnectionDetails> =>
           Promise.resolve({
@@ -619,11 +619,11 @@ describe("Checking the Connection Details Page when different Credentials are is
       credentialType: "UniversityDegreeCredential",
     };
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionById")
+      .spyOn(Agent.agent.connections, "getConnectionById")
       .mockResolvedValue(connectionsFix[0]);
 
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionHistoryById")
+      .spyOn(Agent.agent.connections, "getConnectionHistoryById")
       .mockResolvedValue([historyEvent]);
 
     const storeMocked = {
@@ -689,11 +689,11 @@ describe("Checking the Connection Details Page when different Credentials are is
 
   test("We can see the connection details for AccessPassCredential", async () => {
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionById")
+      .spyOn(Agent.agent.connections, "getConnectionById")
       .mockResolvedValue(connectionsFix[2]);
 
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionHistoryById")
+      .spyOn(Agent.agent.connections, "getConnectionHistoryById")
       .mockResolvedValue([
         {
           type: 0,
@@ -764,11 +764,11 @@ describe("Checking the Connection Details Page when different Credentials are is
 
   test("We can see the connection details for PermanentResidentCard", async () => {
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionById")
+      .spyOn(Agent.agent.connections, "getConnectionById")
       .mockResolvedValue(connectionsFix[1]);
 
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionHistoryById")
+      .spyOn(Agent.agent.connections, "getConnectionHistoryById")
       .mockResolvedValue([
         {
           type: 0,
@@ -839,11 +839,11 @@ describe("Checking the Connection Details Page when different Credentials are is
 
   test("We can see the connection details for Qualified vLEI Issuer", async () => {
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionById")
+      .spyOn(Agent.agent.connections, "getConnectionById")
       .mockResolvedValue(connectionsFix[3]);
 
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionHistoryById")
+      .spyOn(Agent.agent.connections, "getConnectionHistoryById")
       .mockResolvedValue([
         {
           type: 0,

@@ -33,7 +33,7 @@ import { updateReduxState } from "../../../store/utils";
 import { getConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { ShareQR } from "../../components/ShareQR/ShareQR";
 import { MoreOptions } from "../../components/ShareQR/MoreOptions";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { AlphabeticList } from "./components/AlphabeticList";
 import { AlphabetSelector } from "./components/AlphabetSelector";
 
@@ -61,8 +61,8 @@ const Connections = ({
 
   async function handleProvideQr() {
     // const invitation =
-    //   await AriesAgent.agent.connections.createMediatorInvitation();
-    // const shortUrl = await AriesAgent.agent.connections.getShortenUrl(
+    //   await Agent.agent.connections.createMediatorInvitation();
+    // const shortUrl = await Agent.agent.connections.getShortenUrl(
     //   invitation.invitationUrl
     // );
     // setInvitationLink(shortUrl);

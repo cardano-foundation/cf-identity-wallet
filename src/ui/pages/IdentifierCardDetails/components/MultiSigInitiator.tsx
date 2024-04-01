@@ -9,7 +9,7 @@ import {
   IonRow,
 } from "@ionic/react";
 import { KERIDetails } from "../../../../core/agent/services/identifierService.types";
-import { AriesAgent } from "../../../../core/agent/agent";
+import { Agent } from "../../../../core/agent/agent";
 import {
   CardDetailsBlock,
   CardDetailsItem,
@@ -23,7 +23,7 @@ const MultiSigInitiator = ({ cardData }: { cardData: KERIDetails }) => {
   useEffect(() => {
     if (cardData) {
       const fetchOobi = async () => {
-        const oobiValue = await AriesAgent.agent.connections.getKeriOobi(
+        const oobiValue = await Agent.agent.connections.getKeriOobi(
           `${cardData.signifyName}`
         );
         if (oobiValue) {
@@ -41,7 +41,7 @@ const MultiSigInitiator = ({ cardData }: { cardData: KERIDetails }) => {
     setSecondUrl((ev.target as HTMLInputElement).value);
   };
   const handleSubmit = async (url: string) => {
-    await AriesAgent.agent.connections.receiveInvitationFromUrl(url);
+    await Agent.agent.connections.receiveInvitationFromUrl(url);
   };
 
   return (

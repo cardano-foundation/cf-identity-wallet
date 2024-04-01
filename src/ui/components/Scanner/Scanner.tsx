@@ -16,7 +16,7 @@ import {
 } from "../../../store/reducers/stateCache";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OperationType, ToastMsgType } from "../../globals/types";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 
 const Scanner = forwardRef((props, ref) => {
   const dispatch = useAppDispatch();
@@ -74,7 +74,7 @@ const Scanner = forwardRef((props, ref) => {
           // and it can update to an error if the QR is invalid with a re-scan btn
           dispatch(setCurrentOperation(OperationType.IDLE));
           // @TODO - foconnor: when above loading screen in place, handle invalid QR code
-          await AriesAgent.agent.connections.receiveInvitationFromUrl(
+          await Agent.agent.connections.receiveInvitationFromUrl(
             result.content
           );
         }

@@ -8,7 +8,7 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
 import { IdentifierCardDetails } from "../../pages/IdentifierCardDetails";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { ConfigurationService } from "../../../core/configuration";
 
@@ -23,7 +23,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       identifiers: {
         getIdentifier: jest
@@ -106,7 +106,7 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
-    expect(AriesAgent.agent.identifiers.getIdentifier).toBeCalledWith(
+    expect(Agent.agent.identifiers.getIdentifier).toBeCalledWith(
       filteredKeriFix[0].id
     );
   });

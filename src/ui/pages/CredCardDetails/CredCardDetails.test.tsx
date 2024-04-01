@@ -11,14 +11,14 @@ import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { credsFixAcdc } from "../../__fixtures__/credsFix";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { IdentifierCardDetails } from "../IdentifierCardDetails";
 
 const path = TabsRoutePath.CREDS + "/" + credsFixAcdc[0].id;
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       credentials: {
         getCredentialDetailsById: jest.fn(),
@@ -109,7 +109,7 @@ describe("Cards Details page - current not archived credential", () => {
   let storeMocked: Store<unknown, AnyAction>;
   beforeAll(() => {
     jest
-      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
       .mockResolvedValue(credsFixAcdc[0]);
   });
   beforeEach(() => {
@@ -267,7 +267,7 @@ describe("Cards Details page - archived credential", () => {
   let storeMocked: Store<unknown, AnyAction>;
   beforeAll(() => {
     // jest
-    //   .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+    //   .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
     //   .mockResolvedValue(credsFixW3c[0]);
   });
   beforeEach(() => {
