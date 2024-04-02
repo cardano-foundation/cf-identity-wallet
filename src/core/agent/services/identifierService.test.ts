@@ -13,6 +13,8 @@ import { IdentifierType } from "./identifierService.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
 import { AriesAgent } from "../agent";
 import { SignifyApi } from "../modules/signify/signifyApi";
+import { RecordType } from "../../storage/storage.types";
+import { NotificationRoute } from "../modules/signify/signifyApi.types";
 
 // We are losing typing here but the Agent class is overly complex to setup for tests.
 const agent = jest.mocked({
@@ -1921,6 +1923,53 @@ describe("Identifier service of agent", () => {
       })
     ).rejects.toThrowError(
       `${IdentifierService.EXN_MESSAGE_NOT_FOUND} EHe8OnqWhR--r7zPJy97PS2B5rY7Zp4vnYQICs4gXodW`
+    );
+  });
+
+  test("Can get unhandled Multisig Identifier notifications", async () => {
+    const basicRecord = {
+      _tags: {
+        isDismiss: true,
+        type: RecordType.NOTIFICATION_KERI,
+        route: NotificationRoute.MultiSigIcp,
+      },
+      id: "AIeGgKkS23FDK4mxpfodpbWhTydFz2tdM64DER6EdgG-",
+      createdAt: "2024-03-25T09:33:05.325Z",
+      content: {
+        r: NotificationRoute.MultiSigIcp,
+        d: "EF6Nmxz8hs0oVc4loyh2J5Sq9H3Z7apQVqjO6e4chtsp",
+      },
+      type: RecordType.NOTIFICATION_KERI,
+    };
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([basicRecord]);
+    expect(
+      await identifierService.getUnhandledMultisigIdentifiers()
+    ).toStrictEqual([
+      {
+        id: basicRecord.id,
+        createdAt: basicRecord.createdAt,
+        a: basicRecord.content,
+      },
+    ]);
+  });
+
+  test("Should pass the filter throught findAllByQuery when call getUnhandledMultisigIdentifiers", async () => {
+    basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    await identifierService.getUnhandledMultisigIdentifiers({
+      isDismissed: false,
+    });
+    expect(basicStorage.findAllByQuery).toBeCalledWith(
+      RecordType.NOTIFICATION_KERI,
+      {
+        route: NotificationRoute.MultiSigIcp,
+        isDismissed: false,
+        $or: [
+          { route: NotificationRoute.MultiSigIcp },
+          {
+            route: NotificationRoute.MultiSigRot,
+          },
+        ],
+      }
     );
   });
 });

@@ -208,7 +208,7 @@ const Creds = () => {
               buttonAction={handleCreateCred}
               testId={pageId}
             >
-              {archivedCreds.length > 0 && <ArchivedCredentialsButton />}
+              {!!archivedCreds.length && <ArchivedCredentialsButton />}
             </CardsPlaceholder>
           )
         }
@@ -218,11 +218,9 @@ const Creds = () => {
             {favCreds.length > 0 && (
               <div
                 ref={favouriteContainerElement}
-                className="credential-favourite-cards"
+                className="credentials-tab-content-block credential-favourite-cards"
               >
-                <div className="cards-title">
-                  {i18n.t("creds.tab.favourites")}
-                </div>
+                {!!allCreds.length && <h3>{i18n.t("creds.tab.favourites")}</h3>}
                 <CardsStack
                   name="favs"
                   cardsType={CardType.CREDS}
@@ -231,13 +229,9 @@ const Creds = () => {
                 />
               </div>
             )}
-            {allCreds.length > 0 && (
-              <div className="credential-cards">
-                {favCreds.length > 0 && (
-                  <div className="cards-title cards-title-all">
-                    {i18n.t("creds.tab.allcreds")}
-                  </div>
-                )}
+            {!!allCreds.length && (
+              <div className="credentials-tab-content-block credential-cards">
+                {!!favCreds.length && <h3>{i18n.t("creds.tab.allcreds")}</h3>}
                 <CardsStack
                   name="allcreds"
                   cardsType={CardType.CREDS}
@@ -246,7 +240,7 @@ const Creds = () => {
                 />
               </div>
             )}
-            {archivedCreds.length > 0 && <ArchivedCredentialsButton />}
+            {!!archivedCreds.length && <ArchivedCredentialsButton />}
           </>
         )}
       </TabLayout>

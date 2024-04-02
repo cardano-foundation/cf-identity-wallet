@@ -14,9 +14,6 @@ import { CardsStackProps } from "./CardsStack.types";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
-const getCardStyles = (index: number) => ({
-  top: index * 30,
-});
 
 const CardsStack = ({
   name,
@@ -45,18 +42,16 @@ const CardsStack = ({
             isActive={pickedCardIndex !== null}
             pickedCard={index === pickedCardIndex}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
-            styles={getCardStyles(index)}
           />
         ) : (
           <CredCardTemplate
             name={name}
             key={index}
             index={index}
-            shortData={cardData as CredentialShortDetails}
+            cardData={cardData as CredentialShortDetails}
             isActive={pickedCardIndex !== null}
             pickedCard={index === pickedCardIndex}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
-            styles={getCardStyles(index)}
           />
         )
     );

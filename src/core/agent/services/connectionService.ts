@@ -157,6 +157,7 @@ class ConnectionService extends AgentService {
           },
         }
       );
+
       const operation = await this.signifyApi.resolveOobi(url);
       const connectionId = operation.response.i;
       await this.createConnectionKeriMetadata(connectionId, {
@@ -323,7 +324,8 @@ class ConnectionService extends AgentService {
   ): Promise<void> {
     if (connectionType === ConnectionType.KERI) {
       await this.basicStorage.deleteById(id);
-      await this.signifyApi.deleteContactById(id);
+      // @TODO - foconnor: Deleting contact by ID throwing an error in KERIA right now, disabling temp...
+      // await this.signifyApi.deleteContactById(id);
     } else {
       await this.agent.connections.deleteById(id);
     }
@@ -377,8 +379,9 @@ class ConnectionService extends AgentService {
     return this.basicStorage.deleteById(connectionNoteId);
   }
 
-  async getKeriOobi(signifyName: string): Promise<string> {
-    return this.signifyApi.getOobi(signifyName);
+  async getKeriOobi(signifyName: string, alias?: string): Promise<string> {
+    const oobi = await this.signifyApi.getOobi(signifyName);
+    return alias ? `${oobi}?name=${encodeURIComponent(alias)}` : oobi;
   }
 
   private async createConnectionKeriMetadata(

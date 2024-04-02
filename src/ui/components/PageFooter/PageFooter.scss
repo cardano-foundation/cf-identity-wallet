@@ -11,6 +11,11 @@
     &:last-of-type {
       margin-bottom: 0;
     }
+
+    &.secondary-button.ion-activated {
+      --ion-toolbar-color: var(--ion-color-light);
+      --ion-toolbar-background: var(--ion-color-primary);
+    }
   }
 
   @media screen and (min-width: 250px) and (max-width: 370px) {

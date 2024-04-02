@@ -625,7 +625,7 @@ describe("Connection service of agent", () => {
       ConnectionType.KERI
     );
     expect(basicStorage.deleteById).toBeCalledWith(connectionId);
-    expect(signifyApi.deleteContactById).toBeCalledWith(connectionId);
+    // expect(signifyApi.deleteContactById).toBeCalledWith(connectionId);  // @TODO - foconnor: Re-enable once KERIA fixed.
     await connectionService.deleteConnectionById(
       connectionId,
       ConnectionType.DIDCOMM
@@ -694,6 +694,20 @@ describe("Connection service of agent", () => {
     const signifyName = "keriuuid";
     const KeriOobi = await connectionService.getKeriOobi(signifyName);
     expect(KeriOobi).toEqual(oobiPrefix + signifyName);
+  });
+
+  test("can get a KERI OOBI with an alias (URL encoded)", async () => {
+    signifyApi.getOobi = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}`;
+    });
+    const signifyName = "keriuuid";
+    const KeriOobi = await connectionService.getKeriOobi(
+      signifyName,
+      "alias with spaces"
+    );
+    expect(KeriOobi).toEqual(
+      `${oobiPrefix}${signifyName}?name=alias%20with%20spaces`
+    );
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {

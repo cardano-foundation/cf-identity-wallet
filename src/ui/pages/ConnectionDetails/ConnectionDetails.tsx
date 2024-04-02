@@ -49,12 +49,13 @@ import { EditConnectionsModal } from "./components/EditConnectionsModal";
 import { ConnectionDetailsInfoBlock } from "./components/ConnectionDetailsInfoBlock";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
-import CardanoLogo from "../../assets/images/CardanoLogo.jpg";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import Minicred1 from "../../assets/images/minicred1.jpg";
 import Minicred2 from "../../assets/images/minicred2.jpg";
 import Minicred3 from "../../assets/images/minicred3.jpg";
 import Minicred4 from "../../assets/images/minicred4.jpg";
+import KeriLogo from "../../assets/images/KeriGeneric.jpg";
+import DidComLogo from "../../assets/images/didCommGeneric.jpg";
 
 const ConnectionDetails = () => {
   const pageId = "connection-details";
@@ -194,6 +195,9 @@ const ConnectionDetails = () => {
     }
   };
 
+  const fallbackLogo =
+    connectionDetails?.type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
+
   if (loading.details || loading.history) {
     return (
       <div
@@ -226,7 +230,7 @@ const ConnectionDetails = () => {
       >
         <div className="connection-details-content">
           <ConnectionDetailsHeader
-            logo={connectionDetails?.logo}
+            logo={connectionDetails?.logo || fallbackLogo}
             label={connectionDetails?.label}
             date={connectionDetails?.connectionDate}
           />
@@ -295,7 +299,7 @@ const ConnectionDetails = () => {
                 <div className="connection-details-history-event">
                   <div className="connection-details-logo">
                     <img
-                      src={connectionDetails?.logo ?? CardanoLogo}
+                      src={connectionDetails?.logo || fallbackLogo}
                       alt="connection-logo"
                     />
                   </div>

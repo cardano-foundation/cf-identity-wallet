@@ -69,6 +69,33 @@ describe("Multi-Sig request", () => {
     ).toBeInTheDocument();
   });
 
+  test("Display fallback when provider logo is empty for CONNECTION_INCOMING", async () => {
+    const testData = {
+      ...requestData,
+      logo: "",
+    };
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={testData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={IncomingRequestType.CONNECTION_INCOMING}
+        />
+      </Provider>
+    );
+
+    expect(getByTestId("request-provider-logo").getAttribute("src")).not.toBe(
+      undefined
+    );
+  });
+
   test("It renders content for CREDENTIAL_OFFER_RECEIVED ", async () => {
     const { getByText } = render(
       <Provider store={storeMocked}>
@@ -92,6 +119,36 @@ describe("Multi-Sig request", () => {
     ).toBeInTheDocument();
   });
 
+  test("Display fallback image when provider logo is empty: CREDENTIAL_OFFER_RECEIVED", async () => {
+    const testData = {
+      ...requestData,
+      logo: "",
+    };
+
+    const { getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={testData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={IncomingRequestType.CREDENTIAL_OFFER_RECEIVED}
+        />
+      </Provider>
+    );
+
+    expect(getByTestId("credential-request-provider-logo")).toBeInTheDocument();
+
+    expect(
+      getByTestId("credential-request-provider-logo").getAttribute("src")
+    ).not.toBe(undefined);
+  });
+
   test("It renders content for MULTI_SIG_REQUEST_INCOMING - stage 0", async () => {
     const { getByText } = render(
       <Provider store={storeMocked}>
@@ -113,5 +170,60 @@ describe("Multi-Sig request", () => {
     expect(
       getByText(EN_TRANSLATIONS.request.multisig.stageone.title)
     ).toBeInTheDocument();
+  });
+
+  test("Display fallback image when provider logo is empty: CREDENTIAL_OFFER_RECEIVED MULTI_SIG_REQUEST_INCOMING - stage 0", async () => {
+    const data = {
+      id: "abc123456",
+      type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+      source: ConnectionType.KERI,
+      multisigIcpDetails: {
+        ourIdentifier: filteredKeriFix[0],
+        sender: {
+          ...connectionsFix[3],
+          logo: "",
+        },
+        otherConnections: [
+          {
+            ...connectionsFix[4],
+            logo: "",
+          },
+          {
+            ...connectionsFix[5],
+            logo: "",
+          },
+        ],
+        threshold: 1,
+      },
+    };
+
+    const { getByText, queryByTestId, getByTestId } = render(
+      <Provider store={storeMocked}>
+        <RequestComponent
+          pageId={pageId}
+          activeStatus={activeStatus}
+          blur={blur}
+          setBlur={setBlur}
+          requestData={requestData}
+          initiateAnimation={initiateAnimation}
+          handleAccept={handleAccept}
+          handleCancel={handleCancel}
+          handleIgnore={handleIgnore}
+          incomingRequestType={IncomingRequestType.MULTI_SIG_REQUEST_INCOMING}
+        />
+      </Provider>
+    );
+
+    expect(
+      getByText(EN_TRANSLATIONS.request.multisig.stageone.title)
+    ).toBeInTheDocument();
+
+    expect(queryByTestId("multisig-connection-fallback-logo")).toBeVisible();
+    expect(
+      getByTestId("other-multisig-connection-logo-0").getAttribute("src")
+    ).not.toBe(undefined);
+    expect(
+      getByTestId("other-multisig-connection-logo-1").getAttribute("src")
+    ).not.toBe(undefined);
   });
 });

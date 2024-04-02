@@ -663,11 +663,16 @@ class IdentifierService extends AgentService {
     return { done: false };
   }
 
-  async getUnhandledMultisigIdentifiers(): Promise<KeriNotification[]> {
+  async getUnhandledMultisigIdentifiers(
+    filters: {
+      isDismissed?: boolean;
+    } = {}
+  ): Promise<KeriNotification[]> {
     const results = await this.basicStorage.findAllByQuery(
       RecordType.NOTIFICATION_KERI,
       {
         route: NotificationRoute.MultiSigIcp,
+        ...filters,
         $or: [
           { route: NotificationRoute.MultiSigIcp },
           {
