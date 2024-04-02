@@ -707,9 +707,17 @@ class CredentialService extends AgentService {
       serverOobiUrl
     );
     const serverAid = resolveServerOobiResult.response.i;
-    const identitiers = await this.signifyApi.getAllIdentifiers();
-    //TODO: May need to create a screen to select which identifier will be used
-    const selectedIdentifier = identitiers.aids[0];
+    const identifiers = await this.signifyApi.getAllIdentifiers();
+
+    // Picking the first non multi-sig identifier (this isn't that robust...)
+    const selectedIdentifier = identifiers.aids.find(
+      (identifier) => identifier.salty
+    );
+    if (!selectedIdentifier) {
+      throw new Error(
+        "Couldn't find the single sig identifier to accept tunnel request with..."
+      );
+    }
 
     const idWalletOobiUrl = await this.signifyApi.getOobi(
       selectedIdentifier.name
@@ -780,12 +788,18 @@ class CredentialService extends AgentService {
     await this.agent.genericRecords.deleteById(tunnelReqNotif.id);
   }
 
-  async getUnhandledTunnelRequestEvents(): Promise<KeriNotification[]> {
-    const results = await this.agent.genericRecords.findAllByQuery({
-      type: RecordType.NOTIFICATION_KERI,
-      route: NotificationRoute.IncomingTunnelRequest,
-      $or: [{ route: NotificationRoute.IncomingTunnelRequest }],
-    });
+  async getUnhandledTunnelRequestEvents(
+    filters: {
+      isDismissed?: boolean;
+    } = {}
+  ): Promise<KeriNotification[]> {
+    const results = await this.basicStorage.findAllByQuery(
+      RecordType.NOTIFICATION_KERI,
+      {
+        route: NotificationRoute.IncomingTunnelRequest,
+        ...filters,
+      }
+    );
     return results.map((result) => {
       return {
         id: result.id,

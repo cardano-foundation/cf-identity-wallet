@@ -419,7 +419,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
         AriesAgent.agent.identifiers.getUnhandledMultisigIdentifiers({
           isDismissed: false,
         }),
-        AriesAgent.agent.credentials.getUnhandledTunnelRequestEvents(),
+        AriesAgent.agent.credentials.getUnhandledTunnelRequestEvents({
+          isDismissed: false,
+        }),
       ])
     )
       .flat()
