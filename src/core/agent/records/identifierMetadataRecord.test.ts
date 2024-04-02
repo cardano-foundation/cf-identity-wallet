@@ -1,4 +1,4 @@
-import { IdentifierType } from "../services/identifierService.types";
+import { IdentifierType } from "../services/singleSig.types";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,

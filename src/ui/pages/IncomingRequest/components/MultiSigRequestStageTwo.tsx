@@ -12,7 +12,7 @@ import { Agent } from "../../../../core/agent/agent";
 import {
   IdentifierShortDetails,
   IdentifierType,
-} from "../../../../core/agent/services/identifierService.types";
+} from "../../../../core/agent/services/singleSig.types";
 import { useAppDispatch, useAppSelector } from "../../../../store/hooks";
 import {
   getIdentifiersCache,

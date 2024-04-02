@@ -1,7 +1,7 @@
 import {
   IdentifierShortDetails,
   IdentifierType,
-} from "../../core/agent/services/identifierService.types";
+} from "../../core/agent/services/singleSig.types";
 
 const filteredKeriFix: IdentifierShortDetails[] = [
   {

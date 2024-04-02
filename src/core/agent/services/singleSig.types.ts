@@ -17,7 +17,6 @@ interface IdentifierShortDetails {
 
 type GetIdentifierResult = { type: IdentifierType.KERI; result: KERIDetails };
 
-
 interface KERIDetails extends IdentifierShortDetails {
   signifyOpName?: string;
   s: number;

@@ -1,11 +1,11 @@
+import { plainToInstance } from "class-transformer";
 import { RecordType, StorageApi } from "../../storage/storage.types";
-import { IdentifierType } from "../services/identifierService.types";
+import { IdentifierType } from "../services/singleSig.types";
 import { BasicRecord } from "./basicRecord";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "./identifierMetadataRecord";
-import { plainToInstance } from "class-transformer";
 
 class IdentifierStorage {
   static readonly IDENTIFIER_METADATA_RECORD_MISSING =
@@ -15,9 +15,7 @@ class IdentifierStorage {
     this.basicStorage = basicStorage;
   }
 
-  async getIdentifierMetadata(
-    id: string
-  ): Promise<IdentifierMetadataRecord> {
+  async getIdentifierMetadata(id: string): Promise<IdentifierMetadataRecord> {
     const metadata = await this.basicStorage.findById(id);
     if (!metadata) {
       throw new Error(IdentifierStorage.IDENTIFIER_METADATA_RECORD_MISSING);

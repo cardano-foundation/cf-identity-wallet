@@ -15,6 +15,8 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
+const contactListMock = jest.fn();
+
 const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
@@ -47,14 +49,14 @@ const signifyClient = jest.mocked({
     resolve: jest.fn().mockImplementation((name: string) => {
       return {
         done: true,
-        response : {
-          i : name
-        }
+        response: {
+          i: name,
+        },
       };
     }),
   }),
   contacts: () => ({
-    list: jest.fn().mockResolvedValue([]),
+    list: contactListMock,
     get: jest.fn().mockImplementation((id: string) => {
       return {
         alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
@@ -212,6 +214,9 @@ describe("Connection service of agent", () => {
   });
 
   test("can receive keri oobi", async () => {
+    signifyClient.oobis().resolve.mockResolvedValue({
+      done: true,
+    });
     const oobi =
       "http://127.0.0.1:3902/oobi/EBRcDDwjOfqZwC1w2XFcE1mKQUb1LekNNidkZ8mrIEaw/agent/EEXekkGu9IAzav6pZVJhkLnjtjM5v3AcyA-pdKUcaGei";
     await connectionService.receiveInvitationFromUrl(oobi);
@@ -249,7 +254,7 @@ describe("Connection service of agent", () => {
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
-    signifyClient.contacts().list = jest.fn().mockReturnValue([
+    contactListMock.mockReturnValue([
       {
         id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
         alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",

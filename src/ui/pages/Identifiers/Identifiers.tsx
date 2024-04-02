@@ -16,7 +16,7 @@ import { TabsRoutePath } from "../../../routes/paths";
 import { CreateIdentifier } from "../../components/CreateIdentifier";
 import { CardType } from "../../globals/types";
 import { Connections } from "../Connections";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/singleSig.types";
 import "./Identifiers.scss";
 import { IdentifiersList } from "./components/IdentifiersList";
 import { Agent } from "../../../core/agent/agent";

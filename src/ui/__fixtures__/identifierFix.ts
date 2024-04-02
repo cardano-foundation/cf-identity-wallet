@@ -1,7 +1,7 @@
 import {
   IdentifierType,
   KERIDetails,
-} from "../../core/agent/services/identifierService.types";
+} from "../../core/agent/services/singleSig.types";
 
 const keriFix: KERIDetails[] = [
   {

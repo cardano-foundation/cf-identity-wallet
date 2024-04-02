@@ -14,7 +14,7 @@ import {
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
-import { IdentifierType } from "./identifierService.types";
+import { IdentifierType } from "./singleSig.types";
 import { BasicRecord } from "../records";
 import { RecordType } from "../../storage/storage.types";
 import { waitAndGetDoneOp } from "./utils";
@@ -177,10 +177,8 @@ class ConnectionService extends AgentService {
   }
 
   async getKeriOobi(signifyName: string): Promise<string> {
-    const result = await this.signifyClient
-    .oobis()
-    .get(signifyName);
-  return result.oobis[0];
+    const result = await this.signifyClient.oobis().get(signifyName);
+    return result.oobis[0];
   }
 
   private async createConnectionKeriMetadata(

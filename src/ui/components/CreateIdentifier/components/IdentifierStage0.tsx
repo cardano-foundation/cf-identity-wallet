@@ -14,7 +14,7 @@ import { ColorGenerator } from "../../../utils/colorGenerator";
 import {
   IdentifierShortDetails,
   IdentifierType,
-} from "../../../../core/agent/services/identifierService.types";
+} from "../../../../core/agent/services/singleSig.types";
 import { Agent } from "../../../../core/agent/agent";
 import {
   getIdentifiersCache,

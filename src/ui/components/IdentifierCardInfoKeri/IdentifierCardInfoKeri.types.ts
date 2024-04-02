@@ -1,4 +1,4 @@
-import { KERIDetails } from "../../../core/agent/services/identifierService.types";
+import { KERIDetails } from "../../../core/agent/services/singleSig.types";
 
 interface IdentifierCardInfoKeriProps {
   cardData: KERIDetails;

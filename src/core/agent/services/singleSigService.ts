@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from "uuid";
 import { IdentifierResult } from "../agent.types";
 import {
   IdentifierMetadataRecord,
@@ -8,8 +9,7 @@ import {
   GetIdentifierResult,
   IdentifierShortDetails,
   IdentifierType,
-} from "./identifierService.types";
-import { v4 as uuidv4 } from "uuid";
+} from "./singleSig.types";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
   [IdentifierType.KERI]: [0, 1],
@@ -92,6 +92,7 @@ class SingleSigService extends AgentService {
       .identifiers()
       .addEndRole(signifyName, "agent", this.signifyClient.agent!.pre);
     const identifier = operation.serder.ked.i;
+    this.validIdentifierMetadata(metadata);
     await this.identifierStorage.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
@@ -174,13 +175,13 @@ class SingleSigService extends AgentService {
   }
 
   private validIdentifierMetadata(
-    metadata: IdentifierMetadataRecordProps
+    metadata: Pick<IdentifierMetadataRecordProps, "theme" | "method">
   ): void {
     if (
       metadata.theme &&
       !identifierTypeMappingTheme[metadata.method].includes(metadata.theme)
     ) {
-      throw new Error(`${SingleSigService.THEME_WAS_NOT_VALID} ${metadata.id}`);
+      throw new Error(`${SingleSigService.THEME_WAS_NOT_VALID}`);
     }
   }
 }

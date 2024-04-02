@@ -6,7 +6,7 @@ import { IdentifiersList } from "./IdentifiersList";
 import {
   IdentifierShortDetails,
   IdentifierType,
-} from "../../../../core/agent/services/identifierService.types";
+} from "../../../../core/agent/services/singleSig.types";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../../globals/constants";

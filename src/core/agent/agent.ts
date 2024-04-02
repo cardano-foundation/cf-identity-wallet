@@ -1,8 +1,13 @@
 import { Capacitor } from "@capacitor/core";
 import {
+  randomPasscode,
+  SignifyClient,
+  ready as signifyReady,
+  Tier,
+} from "signify-ts";
+import {
   ConnectionService,
   CredentialService,
-  IdentifierService,
   SingleSigService,
 } from "./services";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
@@ -10,12 +15,6 @@ import { StorageApi } from "../storage/storage.types";
 import { SqliteStorage } from "../storage/sqliteStorage";
 import { IonicStorage } from "../storage/ionicStorage";
 import { AgentServicesProps } from "./agent.types";
-import {
-  randomPasscode,
-  SignifyClient,
-  ready as signifyReady,
-  Tier,
-} from "signify-ts";
 import { EventService } from "./services/eventService";
 import { CredentialStorage, IdentifierStorage } from "./records";
 import { KeyStoreKeys, SecureStorage } from "../storage";
@@ -44,7 +43,6 @@ class Agent {
   static ready = false;
 
   // @TODO - foconnor: Registering these should be more generic, but OK for now
-  private identifierService!: IdentifierService;
   private singleSigService!: SingleSigService;
   private multiSigService!: MultiSigService;
   private ipexCommunicationService!: IpexCommunicationService;
@@ -52,13 +50,6 @@ class Agent {
   private connectionService!: ConnectionService;
   private credentialService!: CredentialService;
   private signifyNotificationService!: SignifyNotificationService;
-
-  get identifiers() {
-    if (!this.identifierService) {
-      this.identifierService = new IdentifierService(this.agentServicesProps);
-    }
-    return this.identifierService;
-  }
 
   get singleSigs() {
     if (!this.singleSigService) {

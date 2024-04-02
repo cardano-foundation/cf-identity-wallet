@@ -1,13 +1,13 @@
-import { IdentifierService } from "./identifierService";
 import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
-import { IdentifierType } from "./identifierService.types";
+import { IdentifierType } from "./singleSig.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { CredentialStorage, IdentifierStorage } from "../records";
+import { SingleSigService } from "./singleSigService";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -20,34 +20,93 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const signifyApi = jest.mocked({
-  getIdentifierByName: jest.fn(),
-  createIdentifier: jest.fn(),
-  getAllIdentifiers: jest.fn(),
-  resolveOobi: jest.fn(),
-  createMultisig: jest.fn(),
-  getMultisigMessageBySaid: jest.fn(),
-  joinMultisig: jest.fn(),
-  createDelegationIdentifier: jest.fn(),
-  interactDelegation: jest.fn(),
-  delegationApproved: jest.fn(),
-  rotateIdentifier: jest.fn(),
-  rotateMultisigAid: jest.fn(),
-  joinMultisigRotation: jest.fn(),
-  getIdentifierById: jest.fn(),
-  getMultisigMembers: jest.fn(),
-  queryKeyState: jest.fn(),
+const identifiersGetMock = jest.fn();
+const identifiersCreateMock = jest.fn();
+
+const signifyClient = jest.mocked({
+  connect: jest.fn(),
+  boot: jest.fn(),
+  identifiers: () => ({
+    list: jest.fn(),
+    get: identifiersGetMock,
+    create: identifiersCreateMock,
+    addEndRole: jest.fn(),
+    interact: jest.fn(),
+    rotate: jest.fn(),
+    members: jest.fn(),
+  }),
+  operations: () => ({
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        done: true,
+        response: {
+          i: id,
+        },
+      };
+    }),
+  }),
+  oobis: () => ({
+    get: jest.fn(),
+    resolve: jest.fn().mockImplementation((name: string) => {
+      return {
+        done: true,
+        response: {
+          i: name,
+        },
+      };
+    }),
+  }),
+  contacts: () => ({
+    list: jest.fn(),
+    get: jest.fn().mockImplementation((id: string) => {
+      return {
+        alias: "e57ee6c2-2efb-4158-878e-ce36639c761f",
+        oobi: "oobi",
+        id,
+      };
+    }),
+    delete: jest.fn(),
+  }),
+  notifications: () => ({
+    list: jest.fn(),
+    mark: jest.fn(),
+  }),
+  ipex: () => ({
+    admit: jest.fn(),
+    submitAdmit: jest.fn(),
+  }),
+  credentials: () => ({
+    list: jest.fn(),
+  }),
+  exchanges: () => ({
+    get: jest.fn(),
+    send: jest.fn(),
+  }),
+  agent: {
+    pre: "pre",
+  },
+  keyStates: () => ({
+    query: jest.fn(),
+    get: jest.fn(),
+  }),
+});
+const identifierStorage = jest.mocked({
+  getIdentifierMetadata: jest.fn(),
+  getAllIdentifierMetadata: jest.fn(),
+  getKeriIdentifiersMetadata: jest.fn(),
+  updateIdentifierMetadata: jest.fn(),
+  createIdentifierMetadataRecord: jest.fn(),
 });
 
 const agentServicesProps = {
   basicStorage: basicStorage,
-  signifyClient: {} as unknown as any,
+  signifyClient: signifyClient as any,
   eventService: new EventService(),
-  identifierStorage: new IdentifierStorage(basicStorage),
+  identifierStorage: identifierStorage as any,
   credentialStorage: new CredentialStorage(basicStorage),
 };
 
-const identifierService = new IdentifierService(agentServicesProps);
+const singleSigService = new SingleSigService(agentServicesProps);
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -98,190 +157,170 @@ const aidReturnedBySignify = {
   },
 };
 
-describe("Identifier service of agent", () => {
-  // beforeEach(() => {
-  //   jest.resetAllMocks();
-  // });
-  // test("can get all identifiers", async () => {
-  //   identifierService.getAllIdentifierMetadata = jest
-  //     .fn()
-  //     .mockResolvedValue([keriMetadataRecord]);
-  //   expect(await identifierService.getIdentifiers()).toStrictEqual([
-  //     {
-  //       id: keriMetadataRecord.id,
-  //       displayName: "Identifier 2",
-  //       signifyName: "uuid-here",
-  //       colors,
-  //       method: IdentifierType.KERI,
-  //       createdAtUTC: nowISO,
-  //       theme: 0,
-  //       isPending: false,
-  //     },
-  //   ]);
-  // });
-  // test("can get all identifiers without error if there are none", async () => {
-  //   identifierService.getAllIdentifierMetadata = jest
-  //     .fn()
-  //     .mockResolvedValue([]);
-  //   expect(await identifierService.getIdentifiers()).toStrictEqual([]);
-  // });
-  // test("search for non existant keri aid (in db)", async () => {
-  //   basicStorage.findById = jest.fn().mockResolvedValue(null);
-  //   await expect(
-  //     identifierService.getIdentifier(keriMetadataRecord.id)
-  //   ).rejects.toThrowError(
-  //     IdentifierService.IDENTIFIER_METADATA_RECORD_MISSING
-  //   );
-  //   expect(basicStorage.findById).toBeCalledWith(keriMetadataRecord.id);
-  // });
-  // test("identifier exists in the database but not on Signify", async () => {
-  //   identifierService.getIdentifierMetadata = jest
-  //     .fn()
-  //     .mockResolvedValue(keriMetadataRecord);
-  //   expect(await identifierService.getIdentifier(keriMetadataRecord.id)).toBe(
-  //     undefined
-  //   );
-  //   expect(identifierService.getIdentifierMetadata).toBeCalledWith(
-  //     keriMetadataRecord.id
-  //   );
-  //   expect(signifyApi.getIdentifierByName).toBeCalledWith(
-  //     keriMetadataRecordProps.signifyName
-  //   );
-  // });
-  // test("can get a keri identifier in detailed view", async () => {
-  //   identifierService.getIdentifierMetadata = jest
-  //     .fn()
-  //     .mockResolvedValue(keriMetadataRecord);
-  //   signifyApi.getIdentifierByName = jest
-  //     .fn()
-  //     .mockResolvedValue(aidReturnedBySignify);
-  //   expect(
-  //     await identifierService.getIdentifier(keriMetadataRecord.id)
-  //   ).toStrictEqual({
-  //     type: IdentifierType.KERI,
-  //     result: {
-  //       id: keriMetadataRecord.id,
-  //       method: IdentifierType.KERI, // @TODO - foconnor: Redundant info.
-  //       displayName: keriMetadataRecordProps.displayName,
-  //       createdAtUTC: nowISO,
-  //       colors,
-  //       theme: 0,
-  //       ...aidReturnedBySignify.state,
-  //       signifyOpName: undefined,
-  //       signifyName: "uuid-here",
-  //       isPending: false,
-  //     },
-  //   });
-  // });
-  // test("can create a keri identifier", async () => {
-  //   const aid = "newIdentifierAid";
-  //   const displayName = "newDisplayName";
-  //   const signifyName = "newUuidHere";
-  //   signifyApi.createIdentifier = jest.fn().mockResolvedValue({
-  //     identifier: aid,
-  //     signifyName,
-  //   });
-  //   expect(
-  //     await identifierService.createIdentifier({
-  //       method: IdentifierType.KERI,
-  //       displayName,
-  //       colors,
-  //       theme: 0,
-  //     })
-  //   ).toBe(aid);
-  //   expect(signifyApi.createIdentifier).toBeCalled();
-  //   expect(basicStorage.save).toBeCalledTimes(1);
-  // });
-  // test("cannot create a keri identifier if theme is not valid", async () => {
-  //   const aid = "newIdentifierAid";
-  //   const displayName = "newDisplayName";
-  //   const signifyName = "newUuidHere";
-  //   signifyApi.createIdentifier = jest.fn().mockResolvedValue({
-  //     identifier: aid,
-  //     signifyName,
-  //   });
-  //   await expect(
-  //     identifierService.createIdentifier({
-  //       method: IdentifierType.KERI,
-  //       displayName,
-  //       colors,
-  //       theme: 3,
-  //     })
-  //   ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
-  // });
-  // test("cannot create a did:key identifier if theme is not valid", async () => {
-  //   const aid = "newIdentifierAid";
-  //   const displayName = "newDisplayName";
-  //   const signifyName = "newUuidHere";
-  //   signifyApi.createIdentifier = jest.fn().mockResolvedValue({
-  //     identifier: aid,
-  //     signifyName,
-  //   });
-  //   await expect(
-  //     identifierService.createIdentifier({
-  //       method: IdentifierType.KERI,
-  //       displayName,
-  //       colors,
-  //       theme: 8,
-  //     })
-  //   ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
-  // });
-  // // For archive/delete/restore tests
-  // test("can delete an archived identifier (identifier and metadata record)", async () => {
-  //   identifierService.getIdentifierMetadata = jest
-  //     .fn()
-  //     .mockResolvedValue(archivedMetadataRecord);
-  //   identifierService.updateIdentifierMetadata = jest.fn();
-  //   await identifierService.deleteIdentifier(archivedMetadataRecord.id);
-  //   expect(identifierService.getIdentifierMetadata).toBeCalledWith(
-  //     archivedMetadataRecord.id
-  //   );
-  //   expect(identifierService.updateIdentifierMetadata).toBeCalledWith(
-  //     archivedMetadataRecord.id,
-  //     {
-  //       isDeleted: true,
-  //     }
-  //   );
-  // });
-  // test("cannot delete a non-archived credential", async () => {
-  //   identifierService.getIdentifierMetadata = jest
-  //     .fn()
-  //     .mockResolvedValue(keriMetadataRecord);
-  //   identifierService.updateIdentifierMetadata = jest.fn();
-  //   await expect(
-  //     identifierService.deleteIdentifier(keriMetadataRecord.id)
-  //   ).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
-  //   expect(identifierService.getIdentifierMetadata).toBeCalledWith(
-  //     keriMetadataRecord.id
-  //   );
-  //   expect(identifierService.updateIdentifierMetadata).not.toBeCalled();
-  // });
-  // test("can restore an archived credential", async () => {
-  //   identifierService.getIdentifierMetadata = jest
-  //     .fn()
-  //     .mockResolvedValue(archivedMetadataRecord);
-  //   identifierService.updateIdentifierMetadata = jest.fn();
-  //   await identifierService.restoreIdentifier(archivedMetadataRecord.id);
-  //   expect(identifierService.getIdentifierMetadata).toBeCalledWith(
-  //     archivedMetadataRecord.id
-  //   );
-  //   expect(identifierService.updateIdentifierMetadata).toBeCalledWith(
-  //     archivedMetadataRecord.id,
-  //     { isArchived: false }
-  //   );
-  // });
-  // test("cannot restore a non-archived credential", async () => {
-  //   identifierService.getIdentifierMetadata = jest
-  //     .fn()
-  //     .mockResolvedValue(keriMetadataRecord);
-  //   await expect(
-  //     identifierService.restoreIdentifier(keriMetadataRecord.id)
-  //   ).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
-  //   expect(identifierService.getIdentifierMetadata).toBeCalledWith(
-  //     keriMetadataRecord.id
-  //   );
-  //   expect(identifierService.updateIdentifierMetadata).not.toBeCalled();
-  // });
+describe("Single sig service of agent", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
+  test("can get all identifiers", async () => {
+    identifierStorage.getAllIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([keriMetadataRecord]);
+    expect(await singleSigService.getIdentifiers()).toStrictEqual([
+      {
+        id: keriMetadataRecord.id,
+        displayName: "Identifier 2",
+        signifyName: "uuid-here",
+        colors,
+        method: IdentifierType.KERI,
+        createdAtUTC: nowISO,
+        theme: 0,
+        isPending: false,
+      },
+    ]);
+  });
+  test("can get all identifiers without error if there are none", async () => {
+    identifierStorage.getAllIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue([]);
+    expect(await singleSigService.getIdentifiers()).toStrictEqual([]);
+  });
+
+  test("identifier exists in the database but not on Signify", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    expect(await singleSigService.getIdentifier(keriMetadataRecord.id)).toBe(
+      undefined
+    );
+    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
+      keriMetadataRecord.id
+    );
+  });
+  test("can get a keri identifier in detailed view", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    identifiersGetMock.mockResolvedValue(aidReturnedBySignify);
+    expect(
+      await singleSigService.getIdentifier(keriMetadataRecord.id)
+    ).toStrictEqual({
+      type: IdentifierType.KERI,
+      result: {
+        id: keriMetadataRecord.id,
+        method: IdentifierType.KERI, // @TODO - foconnor: Redundant info.
+        displayName: keriMetadataRecordProps.displayName,
+        createdAtUTC: nowISO,
+        colors,
+        theme: 0,
+        ...aidReturnedBySignify.state,
+        signifyOpName: undefined,
+        signifyName: "uuid-here",
+        isPending: false,
+      },
+    });
+  });
+  test("can create a keri identifier", async () => {
+    const aid = "newIdentifierAid";
+    const displayName = "newDisplayName";
+    identifiersCreateMock.mockResolvedValue({
+      serder: {
+        ked: {
+          i: aid,
+        },
+      },
+      op: jest.fn(),
+    });
+    expect(
+      await singleSigService.createIdentifier({
+        method: IdentifierType.KERI,
+        displayName,
+        colors,
+        theme: 0,
+      })
+    ).toBe(aid);
+    expect(identifiersCreateMock).toBeCalled();
+    expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
+  });
+  test("cannot create a keri identifier if theme is not valid", async () => {
+    const displayName = "newDisplayName";
+    identifiersCreateMock.mockResolvedValue({
+      serder: {
+        ked: {
+          i: "i",
+        },
+      },
+      op: jest.fn(),
+    });
+    await expect(
+      singleSigService.createIdentifier({
+        method: IdentifierType.KERI,
+        displayName,
+        colors,
+        theme: 3,
+      })
+    ).rejects.toThrowError(SingleSigService.THEME_WAS_NOT_VALID);
+  });
+
+  // For archive/delete/restore tests
+  test("can delete an archived identifier (identifier and metadata record)", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(archivedMetadataRecord);
+    identifierStorage.updateIdentifierMetadata = jest.fn();
+    await singleSigService.deleteIdentifier(archivedMetadataRecord.id);
+    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id
+    );
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id,
+      {
+        isDeleted: true,
+      }
+    );
+  });
+
+  test("cannot delete a non-archived credential", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    identifierStorage.updateIdentifierMetadata = jest.fn();
+    await expect(
+      singleSigService.deleteIdentifier(keriMetadataRecord.id)
+    ).rejects.toThrowError(SingleSigService.IDENTIFIER_NOT_ARCHIVED);
+    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
+      keriMetadataRecord.id
+    );
+    expect(identifierStorage.updateIdentifierMetadata).not.toBeCalled();
+  });
+
+  test("can restore an archived credential", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(archivedMetadataRecord);
+    identifierStorage.updateIdentifierMetadata = jest.fn();
+    await singleSigService.restoreIdentifier(archivedMetadataRecord.id);
+    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id
+    );
+    expect(identifierStorage.updateIdentifierMetadata).toBeCalledWith(
+      archivedMetadataRecord.id,
+      { isArchived: false }
+    );
+  });
+
+  test("cannot restore a non-archived credential", async () => {
+    identifierStorage.getIdentifierMetadata = jest
+      .fn()
+      .mockResolvedValue(keriMetadataRecord);
+    await expect(
+      singleSigService.restoreIdentifier(keriMetadataRecord.id)
+    ).rejects.toThrowError(SingleSigService.IDENTIFIER_NOT_ARCHIVED);
+    expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
+      keriMetadataRecord.id
+    );
+    expect(identifierStorage.updateIdentifierMetadata).not.toBeCalled();
+  });
+
   // test("Should call createIdentifierMetadataRecord when there are un-synced KERI identifiers", async () => {
   //   signifyApi.getAllIdentifiers = jest.fn().mockReturnValue({
   //     aids: [

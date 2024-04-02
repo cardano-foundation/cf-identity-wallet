@@ -1,7 +1,7 @@
 import { Algos, d, EventResult, messagize, Siger } from "signify-ts";
+import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../agent";
-import { ConnectionShortDetails, KeriNotification } from "../agent.types";
-import {
+import { ConnectionShortDetails, KeriNotification ,
   Aid,
   IdentifierResult,
   MultiSigExnMessage,
@@ -13,11 +13,7 @@ import {
   IdentifierMetadataRecordProps,
 } from "../records";
 import { AgentService } from "./agentService";
-import {
-  IdentifierType,
-  MultiSigIcpRequestDetails,
-} from "./identifierService.types";
-import { v4 as uuidv4 } from "uuid";
+import { IdentifierType, MultiSigIcpRequestDetails } from "./singleSig.types";
 import { sendMultisigExn, waitAndGetDoneOp } from "./utils";
 import { RecordType } from "../../storage/storage.types";
 
