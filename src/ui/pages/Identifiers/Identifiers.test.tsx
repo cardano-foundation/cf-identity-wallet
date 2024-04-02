@@ -18,7 +18,7 @@ import { connectionsFix } from "../../__fixtures__/connectionsFix";
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
-      identifiers: {
+      singleSigs: {
         getIdentifier: jest.fn().mockResolvedValue({}),
         checkMultisigComplete: jest.fn().mockResolvedValue(true),
       },

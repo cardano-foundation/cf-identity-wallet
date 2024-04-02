@@ -318,4 +318,58 @@ describe("Credential service of agent", () => {
       },
     });
   });
+
+  test("Must throw 'Credential with given SAID not found on KERIA' when there's no KERI credential", async () => {
+    const id = "not-found-id";
+    credentialStorage.getCredentialMetadata = jest
+      .fn()
+      .mockResolvedValue({ ...credentialMetadataRecordA, isArchived: true });
+    credentialListMock.mockResolvedValue([]);
+
+    await expect(
+      credentialService.getCredentialDetailsById(id)
+    ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
+  });
+
+  test("Must throw an error when there's error from Signigy-ts ", async () => {
+    const id = "not-found-id";
+    credentialListMock.mockRejectedValue("Network Error");
+    await expect(
+      credentialService.getCredentialDetailsById(id)
+    ).rejects.toThrowError();
+  });
+
+  test("can get credential short details by ID", async () => {
+    const id = "testid";
+    const credentialType = "TYPE-001";
+    credentialStorage.getCredentialMetadata = jest.fn().mockReturnValue({
+      id,
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+      colors,
+      credentialType,
+      connectionType: ConnectionType.KERI,
+      issuanceDate: nowISO,
+      isDeleted: false,
+      connectionId: undefined,
+    });
+    expect(
+      await credentialService.getCredentialShortDetailsById(id)
+    ).toStrictEqual({
+      id,
+      colors,
+      status: CredentialMetadataRecordStatus.CONFIRMED,
+      credentialType,
+      connectionType: ConnectionType.KERI,
+      issuanceDate: nowISO,
+    });
+  });
+
+  test("cannot get credential short details by ID if the credential does not exist", async () => {
+    credentialStorage.getCredentialMetadata = jest.fn().mockResolvedValue(null);
+    await expect(
+      credentialService.getCredentialShortDetailsById("randomid")
+    ).rejects.toThrowError(
+      CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
+    );
+  });
 });

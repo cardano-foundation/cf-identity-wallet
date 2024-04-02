@@ -13,13 +13,15 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
-const signifyApi = jest.mocked({
-  markNotification: jest.fn(),
+const signifyClient = jest.mocked({
+  notifications: () => ({
+    mark: jest.fn(),
+  }),
 });
 
 const agentServicesProps = {
   basicStorage: basicStorage,
-  signifyClient: {} as unknown as any,
+  signifyClient: signifyClient as unknown as any,
   eventService: new EventService(),
   identifierStorage: new IdentifierStorage(basicStorage),
   credentialStorage: new CredentialStorage(basicStorage),

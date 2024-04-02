@@ -22,7 +22,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       start: jest.fn(),
-      identifiers: {
+      singleSigs: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
       },
@@ -49,7 +49,6 @@ jest.mock("../../../core/agent/agent", () => ({
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
         getUnhandledCredentials: jest.fn(),
-        onAcdcKeriStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },
       messages: {
@@ -58,6 +57,11 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       signifyNotifications: {
         onNotificationKeriStateChanged: jest.fn(),
+      },
+      ipexCommunications: {
+        onAcdcKeriStateChanged: jest.fn(),
+        getUnhandledCredentials: jest.fn(),
+        syncACDCs: jest.fn(),
       },
     },
   },

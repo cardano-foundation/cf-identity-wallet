@@ -25,7 +25,7 @@ jest.mock("react-router-dom", () => ({
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
-      identifiers: {
+      singleSigs: {
         getIdentifier: jest
           .fn()
           .mockResolvedValue({ type: "keri", result: identifierFix[0] }),

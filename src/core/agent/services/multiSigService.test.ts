@@ -21,6 +21,7 @@ const basicStorage = jest.mocked({
   getAll: jest.fn(),
 });
 
+const identifiersListMock = jest.fn();
 const identifiersGetMock = jest.fn();
 const identifiersCreateMock = jest.fn();
 
@@ -28,7 +29,7 @@ const signifyClient = jest.mocked({
   connect: jest.fn(),
   boot: jest.fn(),
   identifiers: () => ({
-    list: jest.fn(),
+    list: identifiersListMock,
     get: identifiersGetMock,
     create: identifiersCreateMock,
     addEndRole: jest.fn(),
@@ -90,6 +91,8 @@ const signifyClient = jest.mocked({
     query: jest.fn(),
     get: jest.fn(),
   }),
+
+  groups: () => ({ getRequest: jest.fn().mockResolvedValue([]) }),
 });
 const identifierStorage = jest.mocked({
   getIdentifierMetadata: jest.fn(),
@@ -163,35 +166,6 @@ describe("Single sig service of agent", () => {
     jest.resetAllMocks();
   });
 
-  // test("Should call createIdentifierMetadataRecord when there are un-synced KERI identifiers", async () => {
-  //   signifyApi.getAllIdentifiers = jest.fn().mockReturnValue({
-  //     aids: [
-  //       {
-  //         name: "12219bf2-613a-4d5f-8c5d-5d093e7035b3",
-  //         prefix: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-  //         salty: {
-  //           sxlt: "1AAHb70F3mVAOPNTX3GTp3lsfmwCxqLXa4MKDY-bR4oDlW_Env9lEPyo92Qya_OGK0QDeGOjzmEgXnRixFOm8uoaqYcrAs38qmZg",
-  //           pidx: 0,
-  //           kidx: 0,
-  //           stem: "signify:aid",
-  //           tier: "low",
-  //           dcode: "E",
-  //           icodes: ["A"],
-  //           ncodes: ["A"],
-  //           transferable: true,
-  //         },
-  //       },
-  //     ],
-  //     start: 1,
-  //     end: 2,
-  //     total: 1,
-  //   });
-  //   identifierService.getKeriIdentifiersMetadata = jest
-  //     .fn()
-  //     .mockReturnValue([]);
-  //   await identifierService.syncKeriaIdentifiers();
-  //   expect(basicStorage.save).toBeCalledTimes(1);
-  // });
   // test("Can create a keri multisig with KERI contacts", async () => {
   //   const creatorIdentifier = "creatorIdentifier";
   //   const multisigIdentifier = "newMultisigIdentifierAid";
@@ -428,19 +402,18 @@ describe("Single sig service of agent", () => {
   //     )
   //   ).toBe(multisigIdentifier);
   // });
-  // test("cannot join multisig by notification if exn messages are missing", async () => {
-  //   signifyApi.getMultisigMessageBySaid = jest.fn().mockResolvedValue([]);
-  //   await expect(
-  //     identifierService.joinMultisig(
-  //       { id: "id", createdAt: new Date(), a: { d: "d" } },
-  //       {
-  //         theme: 0,
-  //         colors: ["#000000", "#000000"],
-  //         displayName: "Multisig",
-  //       }
-  //     )
-  //   ).rejects.toThrowError();
-  // });
+  test("cannot join multisig by notification if exn messages are missing", async () => {
+    await expect(
+      multiSigService.joinMultisig(
+        { id: "id", createdAt: new Date(), a: { d: "d" } },
+        {
+          theme: 0,
+          colors: ["#000000", "#000000"],
+          displayName: "Multisig",
+        }
+      )
+    ).rejects.toThrowError();
+  });
   // test("should call signify.createDelegationIdentifier with the correct parameters and return the result", async () => {
   //   const aid = "newIdentifierAid";
   //   const displayName = "newDisplayName";

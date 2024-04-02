@@ -3,9 +3,15 @@ import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
 } from "../records/credentialMetadataRecord.types";
-import { ConnectionType } from "../agent.types";
+import {
+  AcdcKeriEventTypes,
+  AcdcKeriStateChangedEvent,
+  ConnectionType,
+} from "../agent.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { EventService } from "./eventService";
+import { IpexCommunicationService } from "./ipexCommunicationService";
+import { CredentialStatus } from "./credentialService.types";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -37,6 +43,7 @@ const credentialStorage = jest.mocked({
 });
 
 const credentialListMock = jest.fn();
+const exchangeGetMock = jest.fn();
 
 const signifyClient = jest.mocked({
   connect: jest.fn(),
@@ -87,14 +94,14 @@ const signifyClient = jest.mocked({
     mark: jest.fn(),
   }),
   ipex: () => ({
-    admit: jest.fn(),
+    admit: jest.fn().mockResolvedValue(["admit", "sigs", "aend"]),
     submitAdmit: jest.fn(),
   }),
   credentials: () => ({
     list: credentialListMock,
   }),
   exchanges: () => ({
-    get: jest.fn(),
+    get: exchangeGetMock,
     send: jest.fn(),
   }),
   agent: {
@@ -106,15 +113,19 @@ const signifyClient = jest.mocked({
   }),
 });
 
+const eventService = new EventService();
+
 const agentServicesProps = {
   basicStorage: basicStorage,
   signifyClient: signifyClient as any,
-  eventService: new EventService(),
+  eventService,
   identifierStorage: identifierStorage as any,
   credentialStorage: credentialStorage as any,
 };
 
-const credentialService = new CredentialService(agentServicesProps);
+const ipexCommunicationService = new IpexCommunicationService(
+  agentServicesProps
+);
 
 const now = new Date();
 const nowISO = now.toISOString();
@@ -149,184 +160,128 @@ const archivedMetadataRecord = new CredentialMetadataRecord({
 });
 
 describe("Credential service of agent - CredentialExchangeRecord helpers", () => {
-  // test("create metadata record successfully", async () => {
-  //   await credentialService.createMetadata(credentialMetadataProps);
-  //   expect(credentialStorage.saveCredentialMetadataRecord).toBeCalled();
-  // });
-  // test("callback will run when have a event listener of ACDC KERI state changed", async () => {
-  //   const callback = jest.fn();
-  //   credentialService.onAcdcKeriStateChanged(callback);
-  //   const event: AcdcKeriStateChangedEvent = {
-  //     type: AcdcKeriEventTypes.AcdcKeriStateChanged,
-  //     payload: {
-  //       credential: {
-  //         id: "acdc",
-  //         colors: ["#fff", "#fff"],
-  //         issuanceDate: "dt",
-  //         credentialType: "type",
-  //         status: CredentialMetadataRecordStatus.CONFIRMED,
-  //         connectionType: ConnectionType.KERI,
-  //       },
-  //       status: CredentialStatus.CONFIRMED,
-  //     }
-  //   };
-  //   // credentialService..emit(AcdcKeriEventTypes.AcdcKeriStateChanged, event);
-  //   expect(callback).toBeCalledWith(event);
-  // });
-  // test("can delete keri notification by ID", async () => {
-  //   const id = "uuid";
-  //   await credentialService.deleteKeriNotificationRecordById(id);
-  //   expect(basicStorage.deleteById).toBeCalled();
-  // });
-  // test("accept KERI ACDC", async () => {
-  //   const id = "uuid";
-  //   const date = new Date();
-  //   basicStorage.findById = jest.fn().mockImplementation((id) => {
-  //     if (id == "uuid") {
-  //       return {
-  //         id,
-  //         createdAt: date,
-  //         content: {
-  //           d: "keri",
-  //         },
-  //       };
-  //     }
-  //     return;
-  //   });
-  //   signifyApi.getKeriExchange = jest.fn().mockResolvedValue({
-  //     exn: {
-  //       a: {
-  //         i: "uuid",
-  //       },
-  //       i: "i",
-  //       e: {
-  //         acdc: {
-  //           d: "id",
-  //           a: {
-  //             dt: nowISO,
-  //           },
-  //         },
-  //       },
-  //     },
-  //   });
-  //   // credentialService.getIdentifierMetadata = jest
-  //   //   .fn()
-  //   //   .mockResolvedValue({
-  //   //     signifyName: "holder",
-  //   //   });
-  //   signifyApi.getCredentialBySaid = jest.fn().mockResolvedValue({
-  //     acdc: {
-  //       sad: {
-  //         d: "id",
-  //       },
-  //     },
-  //     error: undefined,
-  //   });
-  //   credentialService.getCredentialMetadataByCredentialRecordId =
-  //     jest.fn().mockResolvedValue({
-  //       id: "id",
-  //     });
-  //   await credentialService.acceptKeriAcdc(id);
-  //   // expect(agent.events.emit).toBeCalled();
-  //   expect(basicStorage.deleteById).toBeCalled();
-  // });
-  // test("Must throw an error when there's no KERI notification", async () => {
-  //   const id = "not-found-id";
-  //   basicStorage.findById = jest.fn();
-  //   await expect(credentialService.acceptKeriAcdc(id)).rejects.toThrowError(
-  //     `${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`
-  //   );
-  // });
-  // test("Must throw 'Credential with given SAID not found on KERIA' when there's no KERI credential", async () => {
-  //   const id = "not-found-id";
-  //   signifyApi.getCredentialBySaid = jest
-  //     .fn()
-  //     .mockResolvedValue({ credential: undefined, error: undefined });
-  //   await expect(
-  //     credentialService.getCredentialDetailsById(id)
-  //   ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
-  // });
-  // test("Must throw an error when there's error from Signigy-ts ", async () => {
-  //   const id = "not-found-id";
-  //   signifyApi.getCredentialBySaid = jest.fn().mockResolvedValue({
-  //     credential: undefined,
-  //     error: new Error("Network error"),
-  //   });
-  //   await expect(
-  //     credentialService.getCredentialDetailsById(id)
-  //   ).rejects.toThrowError();
-  // });
-  // test("Should call saveCredentialMetadataRecord when there are un-synced KERI credentials", async () => {
-  //   signifyApi.getCredentials = jest.fn().mockReturnValue([
-  //     {
-  //       sad: {
-  //         v: "ACDC10JSON000197_",
-  //         d: "EIuZp_JvO5pbNmS8jyG96t3d4XENaFSJpLtbLySxvz-X",
-  //         i: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
-  //         ri: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
-  //         s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-  //         a: {
-  //           d: "EDqWl2zEU2LtoVmP1s2jpWx9oFs3bs0zHxH6kdnIgx3-",
-  //           i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-  //           dt: "2023-11-29T02:13:34.858000+00:00",
-  //           LEI: "5493001KJTIIGC8Y1R17",
-  //         },
-  //       },
-  //     },
-  //     {
-  //       sad: {
-  //         v: "ACDC10JSON000197_",
-  //         d: "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadEPY",
-  //         i: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
-  //         ri: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
-  //         s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
-  //         a: {
-  //           d: "EC67QqakhZ1bZgKci_HsGMIKQybEdc9mJqykBecOG4rJ",
-  //           i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
-  //           dt: "2023-11-29T02:12:35.716000+00:00",
-  //           LEI: "5493001KJTIIGC8Y1R17",
-  //         },
-  //       },
-  //     },
-  //   ]);
-  //   credentialService.getAllCredentialMetadata = jest
-  //     .fn()
-  //     .mockReturnValue([]);
-  //   await credentialService.syncACDCs();
-  //   expect(
-  //     credentialService.saveCredentialMetadataRecord
-  //   ).toBeCalledTimes(2);
-  // });
-  // test("can get credential short details by ID", async () => {
-  //   const id = "testid";
-  //   const credentialType = "TYPE-001";
-  //   credentialService.getCredentialMetadata = jest.fn().mockReturnValue({
-  //     id,
-  //     status: CredentialMetadataRecordStatus.CONFIRMED,
-  //     colors,
-  //     credentialType,
-  //     connectionType: ConnectionType.KERI,
-  //     issuanceDate: nowISO,
-  //     isDeleted: false,
-  //     connectionId: undefined,
-  //   });
-  //   expect(
-  //     await credentialService.getCredentialShortDetailsById(id)
-  //   ).toStrictEqual({
-  //     id,
-  //     colors,
-  //     status: CredentialMetadataRecordStatus.CONFIRMED,
-  //     credentialType,
-  //     connectionType: ConnectionType.KERI,
-  //     issuanceDate: nowISO,
-  //   });
-  // });
-  // test("cannot get credential short details by ID if the credential does not exist", async () => {
-  //   credentialService.getCredentialMetadata = jest.fn().mockResolvedValue(null);
-  //   await expect(
-  //     credentialService.getCredentialShortDetailsById("randomid")
-  //   ).rejects.toThrowError(
-  //     CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
-  //   );
-  // });
+  test("callback will run when have a event listener of ACDC KERI state changed", async () => {
+    const callback = jest.fn();
+    ipexCommunicationService.onAcdcKeriStateChanged(callback);
+    const event: AcdcKeriStateChangedEvent = {
+      type: AcdcKeriEventTypes.AcdcKeriStateChanged,
+      payload: {
+        credential: {
+          id: "acdc",
+          colors: ["#fff", "#fff"],
+          issuanceDate: "dt",
+          credentialType: "type",
+          status: CredentialMetadataRecordStatus.CONFIRMED,
+          connectionType: ConnectionType.KERI,
+        },
+        status: CredentialStatus.CONFIRMED,
+      },
+    };
+    eventService.emit(event);
+    expect(callback).toBeCalledWith(event);
+  });
+
+  test("can delete keri notification by ID", async () => {
+    const id = "uuid";
+    await ipexCommunicationService.deleteKeriNotificationRecordById(id);
+    expect(basicStorage.deleteById).toBeCalled();
+  });
+
+  test("accept KERI ACDC", async () => {
+    const id = "uuid";
+    const date = new Date();
+    basicStorage.findById = jest.fn().mockImplementation((id) => {
+      if (id == "uuid") {
+        return {
+          id,
+          createdAt: date,
+          content: {
+            d: "keri",
+          },
+        };
+      }
+      return;
+    });
+    exchangeGetMock.mockResolvedValue({
+      exn: {
+        a: {
+          i: "uuid",
+        },
+        i: "i",
+        e: {
+          acdc: {
+            d: "id",
+            a: {
+              dt: nowISO,
+            },
+          },
+        },
+      },
+    });
+    identifierStorage.getIdentifierMetadata = jest.fn().mockResolvedValue({
+      signifyName: "holder",
+    });
+    credentialListMock.mockResolvedValue([
+      {
+        sad: {
+          d: "id",
+        },
+      },
+    ]);
+    credentialStorage.getCredentialMetadataByCredentialRecordId = jest
+      .fn()
+      .mockResolvedValue({
+        id: "id",
+      });
+    await ipexCommunicationService.acceptKeriAcdc(id);
+    expect(basicStorage.deleteById).toBeCalled();
+  });
+
+  test("Must throw an error when there's no KERI notification", async () => {
+    const id = "not-found-id";
+    basicStorage.findById = jest.fn();
+    await expect(
+      ipexCommunicationService.acceptKeriAcdc(id)
+    ).rejects.toThrowError(
+      `${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`
+    );
+  });
+
+  test("Should call saveCredentialMetadataRecord when there are un-synced KERI credentials", async () => {
+    credentialListMock.mockReturnValue([
+      {
+        sad: {
+          v: "ACDC10JSON000197_",
+          d: "EIuZp_JvO5pbNmS8jyG96t3d4XENaFSJpLtbLySxvz-X",
+          i: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
+          ri: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
+          s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+          a: {
+            d: "EDqWl2zEU2LtoVmP1s2jpWx9oFs3bs0zHxH6kdnIgx3-",
+            i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+            dt: "2023-11-29T02:13:34.858000+00:00",
+            LEI: "5493001KJTIIGC8Y1R17",
+          },
+        },
+      },
+      {
+        sad: {
+          v: "ACDC10JSON000197_",
+          d: "EL24R3ECGtv_UzQmYUcu9AeP1ks2JPzTxgPcQPkadEPY",
+          i: "ECTcHGs3EhJEdVTW10vm5pkiDlOXlR8bPBj9-8LSpZ3W",
+          ri: "EA67QQC6C6OG4Pok44UHKegNS0YoQm3yxeZwJEbbdCrh",
+          s: "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao",
+          a: {
+            d: "EC67QqakhZ1bZgKci_HsGMIKQybEdc9mJqykBecOG4rJ",
+            i: "EL-EboMhx-DaBLiAS_Vm3qtJOubb2rkcS3zLU_r7UXtl",
+            dt: "2023-11-29T02:12:35.716000+00:00",
+            LEI: "5493001KJTIIGC8Y1R17",
+          },
+        },
+      },
+    ]);
+    credentialStorage.getAllCredentialMetadata = jest.fn().mockReturnValue([]);
+    await ipexCommunicationService.syncACDCs();
+    expect(credentialStorage.saveCredentialMetadataRecord).toBeCalledTimes(2);
+  });
 });
