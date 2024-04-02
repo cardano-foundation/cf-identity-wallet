@@ -84,7 +84,6 @@ const ShareIdentifier = ({
         <div className="share-identifier-body-component">
           <span
             className="share-identifier-option"
-            data-testid="share-identifier-copy-button"
             onClick={() => {
               writeToClipboard(oobi);
               dispatch(setToastMsg(ToastMsgType.COPIED_TO_CLIPBOARD));

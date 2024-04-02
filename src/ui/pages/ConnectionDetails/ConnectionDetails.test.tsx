@@ -208,7 +208,9 @@ describe("ConnectionDetails Page", () => {
       "alert-confirm-delete-connection"
     );
     expect(alertDeleteConnection).toHaveClass("alert-invisible");
-    const deleteButton = await findByTestId("delete-button-connection-details");
+    const deleteButton = await findByTestId(
+      "delete-button-identifier-card-details"
+    );
     act(() => {
       fireEvent.click(deleteButton);
     });

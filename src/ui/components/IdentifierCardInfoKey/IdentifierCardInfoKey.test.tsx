@@ -125,7 +125,7 @@ describe("Cards Details page", () => {
         )
       ).toBeInTheDocument()
     );
-    fireEvent.click(getByTestId("copy-button-id"));
+    fireEvent.click(getByTestId("information-copy-button"));
 
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
@@ -154,7 +154,7 @@ describe("Cards Details page", () => {
         )
       ).toBeInTheDocument()
     );
-    fireEvent.click(getByTestId("copy-button-type"));
+    fireEvent.click(getByTestId("type-copy-button"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
         string: didFix[0].keyType,
@@ -182,7 +182,7 @@ describe("Cards Details page", () => {
         )
       ).toBeInTheDocument()
     );
-    fireEvent.click(getByTestId("copy-button-publicKeyBase58"));
+    fireEvent.click(getByTestId("publickeybase58-copy-button"));
 
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
