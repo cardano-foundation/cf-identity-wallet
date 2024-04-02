@@ -1,9 +1,13 @@
 import { expect } from "expect-webdriverio";
-import { VerifySeedPhrase } from "../constants/text.constants.js";
+import { SeedPhraseVerify } from "../../constants/text.constants.js";
 
-export class VerifySeedPhraseScreen {
+export class SeedPhraseVerifyScreen {
   get continueButton() {
     return $("[data-testid=\"primary-button-verify-seed-phrase\"]");
+  }
+
+  get id() {
+    return "[data-testid=\"verify-seed-phrase-page\"]";
   }
 
   get screenDescriptionText() {
@@ -20,14 +24,14 @@ export class VerifySeedPhraseScreen {
 
   async loads() {
     await expect(this.screenTitle).toBeDisplayed();
-    await expect(this.screenTitle).toHaveText(VerifySeedPhrase.Title);
+    await expect(this.screenTitle).toHaveText(SeedPhraseVerify.Title);
     await expect(this.screenDescriptionText).toBeDisplayed();
     await expect(this.screenDescriptionText).toHaveText(
-      VerifySeedPhrase.Description
+      SeedPhraseVerify.Description
     );
     await expect(this.seedPhraseContainer).toBeDisplayed();
     await expect(this.continueButton).toBeExisting();
   }
 }
 
-export default new VerifySeedPhraseScreen();
+export default new SeedPhraseVerifyScreen();
