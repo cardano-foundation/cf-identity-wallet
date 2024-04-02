@@ -42,12 +42,18 @@ const CardDetailsItem = ({
           {i18n.t(textIcon)}
         </h4>
       )}
-      <h4 className="card-details-info-block-data">{info}</h4>
+      <h4
+        className="card-details-info-block-data"
+        data-testid={`${testId}-text-value`}
+      >
+        {info}
+      </h4>
       {copyButton && (
         <span>
           <IonButton
             shape="round"
             className="copy-button"
+            data-testid={`${testId}-copy-button`}
           >
             <IonIcon
               slot="icon-only"

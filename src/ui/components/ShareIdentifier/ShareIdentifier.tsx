@@ -57,9 +57,11 @@ const ShareIdentifier = ({
         {i18n.t("shareidentifier.subtitle")}
       </p>
       <div className="share-identifier-body">
-        <div className="share-identifier-body-component">
+        <div
+          className="share-identifier-body-component"
+          data-testid="share-identifier-qr-code"
+        >
           <QRCode
-            data-testid="share-identifier-qr-code"
             value={oobi}
             size={250}
             fgColor={"black"}
@@ -89,14 +91,20 @@ const ShareIdentifier = ({
             }}
           >
             <span>
-              <IonButton shape="round">
+              <IonButton
+                data-testid="share-identifier-copy-button"
+                shape="round"
+              >
                 <IonIcon
                   slot="icon-only"
                   icon={copyOutline}
                 />
               </IonButton>
             </span>
-            <span className="share-identifier-label">
+            <span
+              className="share-identifier-label"
+              data-testid="share-identifier-copy-label"
+            >
               {i18n.t("shareidentifier.copykey")}
             </span>
           </span>
@@ -110,14 +118,20 @@ const ShareIdentifier = ({
             }}
           >
             <span>
-              <IonButton shape="round">
+              <IonButton
+                shape="round"
+                data-testid="share-identifier-more-button"
+              >
                 <IonIcon
                   slot="icon-only"
                   icon={openOutline}
                 />
               </IonButton>
             </span>
-            <span className="share-identifier-info-block-data">
+            <span
+              className="share-identifier-info-block-data"
+              data-testid="share-identifier-more-label"
+            >
               {i18n.t("shareidentifier.more")}
             </span>
           </span>
