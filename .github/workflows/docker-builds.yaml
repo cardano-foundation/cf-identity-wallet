@@ -71,7 +71,6 @@ jobs:
 
       - name: 🌍 earthly (docker build and push)
         env:
-          DOCKER_REGISTRIES: ${{ secrets.DOCKER_REGISTRIES }}
-          EARTHLY_BUILD_ARGS: ${{ steps.metadata.outputs.EARTHLY_BUILD_ARGS }}
+          EARTHLY_BUILD_ARGS: ${{ steps.metadata.outputs.EARTHLY_BUILD_ARGS }},DOCKER_REGISTRIES=${{ secrets.DOCKER_REGISTRIES }}
         run: |
           earthly +docker-publish
