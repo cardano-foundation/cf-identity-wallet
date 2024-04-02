@@ -1,6 +1,6 @@
 VERSION 0.8
 
-ARG --global DOCKER_IMAGES_TARGETS="keria vlei mediator mediator-caddy credential-issuance-server"
+ARG --global DOCKER_IMAGES_TARGETS="keria vlei credential-issuance-server"
 
 ARG --global KERIA_GIT_REPO_URL="https://github.com/WebOfTrust/keria.git"
 ARG --global KERIA_GIT_REF=fb6009a7ceaf39f36bf63651f14fc5a53dc743d4
