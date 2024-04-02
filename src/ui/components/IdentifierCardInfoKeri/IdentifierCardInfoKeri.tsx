@@ -1,11 +1,10 @@
 import { calendarNumberOutline, personCircleOutline } from "ionicons/icons";
 import { formatShortDate, formatTimeToSec } from "../../utils/formatters";
 import { IdentifierCardInfoKeriProps } from "./IdentifierCardInfoKeri.types";
-import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
 import { CardDetailsBlock, CardDetailsItem } from "../CardDetailsElements";
 import { i18n } from "../../../i18n";
 import { ConfigurationService } from "../../../core/configuration";
-import { WitnessMode } from "../../../core/configuration/configurationService.types";
+import { BackingMode } from "../../../core/configuration/configurationService.types";
 
 const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
   return (
@@ -140,12 +139,13 @@ const IdentifierCardInfoKeri = ({ cardData }: IdentifierCardInfoKeriProps) => {
         </CardDetailsBlock>
       )}
 
-      {ConfigurationService.env.keri.backerType === WitnessMode.LEDGER && (
+      {/* @TODO - foconnor: We should verify the particular identifier is ledger based, not that our config is. */}
+      {ConfigurationService.env.keri.backing.mode === BackingMode.LEDGER && (
         <CardDetailsBlock
           title={i18n.t("identifiers.card.details.backeraddress.title")}
         >
           <CardDetailsItem
-            info={ConfigurationService.env.keri.ledger.address}
+            info={ConfigurationService.env.keri.backing.ledger.address}
             copyButton={true}
             icon={personCircleOutline}
             // @TODO - foconnor: This metadata in the future should come with Signify, for now we are "assuming" the address.
