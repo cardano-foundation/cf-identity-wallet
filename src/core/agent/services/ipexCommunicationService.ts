@@ -1,16 +1,15 @@
 import { ColorGenerator } from "../../../ui/utils/colorGenerator";
 import { RecordType } from "../../storage/storage.types";
+import { Agent } from "../agent";
 import {
   AcdcKeriEventTypes,
   AcdcKeriStateChangedEvent,
   ConnectionType,
   KeriNotification,
-} from "../agent.types";
-import {
+
   IdentifierResult,
   IdentifiersListResult,
-  NotificationRoute,
-} from "../agent.types";
+  NotificationRoute} from "../agent.types";
 import { CredentialMetadataRecord, IdentifierMetadataRecord } from "../records";
 import {
   CredentialMetadataRecordProps,
@@ -33,6 +32,13 @@ class IpexCommunicationService extends AgentService {
 
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
     "Credential metadata missing for stored credential";
+
+  static readonly CREDENTIAL_SERVER =
+    "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
+  static readonly SCHEMA_SAID_VLEI =
+    "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
+  static readonly SCHEMA_SAID_IIW_DEMO =
+    "EKYv475K1k6uMt9IJw99NM8iLQuQf1bKfSHqA1XIKoQy";
 
   onAcdcKeriStateChanged(callback: (event: AcdcKeriStateChangedEvent) => void) {
     this.eventService.on(
@@ -147,7 +153,6 @@ class IpexCommunicationService extends AgentService {
     };
   }
 
-
   async deleteKeriNotificationRecordById(id: string): Promise<void> {
     await this.basicStorage.deleteById(id);
   }
@@ -236,13 +241,14 @@ class IpexCommunicationService extends AgentService {
     issuerAid: string
   ): Promise<void> {
     // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
-    // await this.resolveOobi(
-    //   SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID_VLEI
-    // );
-    // await this.resolveOobi(
-    //   SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID_IIW_DEMO
-    // );
-    // TODO - bao-sotatek
+    await Agent.agent.connections.resolveOobi(
+      IpexCommunicationService.CREDENTIAL_SERVER +
+        IpexCommunicationService.SCHEMA_SAID_VLEI
+    );
+    await Agent.agent.connections.resolveOobi(
+      IpexCommunicationService.CREDENTIAL_SERVER +
+        IpexCommunicationService.SCHEMA_SAID_IIW_DEMO
+    );
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.signifyClient
       .ipex()
