@@ -199,6 +199,7 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+        height: 8rem;
 
         .residence-card-info {
           flex: 1;
@@ -219,6 +220,7 @@
 
             img {
               border-radius: 0.5rem;
+              height: 100%;
             }
           }
 
@@ -397,6 +399,8 @@
     &.permanent-resident-card {
       .cred-card-template-inner {
         .card-body {
+          height: 6.5rem;
+
           > div {
             &.left-column {
               width: 35%;
@@ -481,13 +485,17 @@
 
     &.permanent-resident-card {
       .cred-card-template-inner {
-        color: var(--ion-color-primary);
-
         .card-body {
+          height: 9.5rem;
+
           > div {
             &.left-column {
               width: 29%;
             }
+          }
+
+          .residence-card-info {
+            margin-left: 1.5rem;
           }
         }
       }
