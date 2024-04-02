@@ -1,0 +1,14 @@
+keri:
+  keria:
+    url: "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org"
+    bootUrl: "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org"
+  credentials:
+    testServer:
+      urlExt: "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org"
+      urlInt: "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org"
+      oobiUrl: "http://dev.keria.cf-keripy.metadata.dev.cf-deployments.org:3902/oobi"
+  backing:
+    mode: ledger
+    ledger:
+      aid: BD39IWoiPYhhq5yn2l7FTQykcjhZma1KmfWrWr9ZYUFD
+      address: addr_test1vqefk7cyhcyet03humlzkyl2cj8jwezvr6gu8cg8jrkdq7cf30wpu

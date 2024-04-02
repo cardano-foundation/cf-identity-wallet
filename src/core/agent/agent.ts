@@ -179,6 +179,9 @@ class AriesAgent {
       await this.agent.initialize();
       await this.signifyApi.start();
       AriesAgent.ready = true;
+      await this.connections.receiveInvitationFromUrl(
+        "http://keria:3902/oobi/EBGErsBsjjgxXOFBSULFntGXwrz6748XxuThBEae2UTA/agent/EJeMK8Ip3yXAq0zx85hgTbcHnpVrZBHnSfJqz6tvzepI?name=CF%20Credential%20Issuance"
+      );
     }
   }
 }

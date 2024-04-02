@@ -25,14 +25,9 @@ import {
   MultiSigRoute,
 } from "./signifyApi.types";
 import { KeyStoreKeys, SecureStorage } from "../../../storage";
-import { WitnessMode } from "../../../configuration/configurationService.types";
+import { BackingMode } from "../../../configuration/configurationService.types";
 
 export class SignifyApi {
-  static readonly LOCAL_KERIA_ENDPOINT =
-    "https://dev.keria.cf-keripy.metadata.dev.cf-deployments.org";
-  static readonly LOCAL_KERIA_BOOT_ENDPOINT =
-    "https://dev.keria-boot.cf-keripy.metadata.dev.cf-deployments.org";
-
   static readonly DEFAULT_ROLE = "agent";
   static readonly FAILED_TO_RESOLVE_OOBI =
     "Failed to resolve OOBI, operation not completing...";
@@ -42,8 +37,6 @@ export class SignifyApi {
   static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
     "Unable to retrieve key states for given multi-sig member";
 
-  static readonly CREDENTIAL_SERVER =
-    "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
   static readonly SCHEMA_SAID_VLEI =
     "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
   static readonly SCHEMA_SAID_IIW_DEMO =
@@ -67,10 +60,10 @@ export class SignifyApi {
     const bran = await this.getBran();
     // @TODO - foconnor: Review of Tier level.
     this.signifyClient = new SignifyClient(
-      SignifyApi.LOCAL_KERIA_ENDPOINT,
+      ConfigurationService.env.keri.keria.url,
       bran,
       Tier.low,
-      SignifyApi.LOCAL_KERIA_BOOT_ENDPOINT
+      ConfigurationService.env.keri.keria.bootUrl
     );
     try {
       await this.signifyClient.connect();
@@ -84,7 +77,7 @@ export class SignifyApi {
     const signifyName = utils.uuid();
     const operation = await this.signifyClient
       .identifiers()
-      .create(signifyName); //, this.getCreateAidOptions());
+      .create(signifyName, this.getCreateAidOptions());
     await operation.op();
     await this.signifyClient
       .identifiers()
@@ -206,10 +199,10 @@ export class SignifyApi {
   ): Promise<void> {
     // @TODO - foconnor: For now this will only work with our test server, we need to find a better way to handle this in production.
     await this.resolveOobi(
-      SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID_VLEI
+      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${SignifyApi.SCHEMA_SAID_VLEI}`
     );
     await this.resolveOobi(
-      SignifyApi.CREDENTIAL_SERVER + SignifyApi.SCHEMA_SAID_IIW_DEMO
+      `${ConfigurationService.env.keri.credentials.testServer.urlInt}/oobi/${SignifyApi.SCHEMA_SAID_IIW_DEMO}`
     );
     const dt = new Date().toISOString().replace("Z", "000+00:00");
     const [admit, sigs, aend] = await this.signifyClient
@@ -568,21 +561,26 @@ export class SignifyApi {
   async getMultisigMembers(name: string): Promise<any> {
     return this.signifyClient.identifiers().members(name);
   }
+
   private getCreateAidOptions(): CreateIdentiferArgs {
-    if (ConfigurationService.env.keri.backerType === WitnessMode.LEDGER) {
+    switch (ConfigurationService.env.keri.backing.mode) {
+    case BackingMode.DIRECT:
+      return {};
+    case BackingMode.LEDGER:
       return {
         toad: 1,
-        wits: [ConfigurationService.env.keri.ledger.aid],
+        wits: [ConfigurationService.env.keri.backing.ledger.aid],
         count: 1,
         ncount: 1,
         isith: "1",
         nsith: "1",
-        data: [{ ca: ConfigurationService.env.keri.ledger.address }],
+        data: [{ ca: ConfigurationService.env.keri.backing.ledger.address }],
+      };
+    case BackingMode.POOLS:
+      return {
+        toad: ConfigurationService.env.keri.backing.pools.length,
+        wits: ConfigurationService.env.keri.backing.pools,
       };
     }
-    return {
-      toad: ConfigurationService.env.keri.pools.length,
-      wits: ConfigurationService.env.keri.pools,
-    };
   }
 }
