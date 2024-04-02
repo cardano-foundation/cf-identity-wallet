@@ -24,11 +24,12 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     environment:
-      - OOBI_ENDPOINT=http://cred-issuance:3001
+      - OOBI_ENDPOINT=http://cred-issuance:3002
       - KERIA_ENDPOINT=http://keria:3901
       - KERIA_BOOT_ENDPOINT=http://keria:3903
+      - PORT=3002
     ports:
-      - 3001:3001
+      - 3002:3002
     volumes:
       - issuer-server-data:/usr/local/var/keri
 

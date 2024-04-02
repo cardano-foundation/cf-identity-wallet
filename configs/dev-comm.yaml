@@ -4,8 +4,8 @@ keri:
     bootUrl: "http://127.0.0.1:3903"
   credentials:
     testServer:
-      urlExt: "http://127.0.0.1:3001"
-      urlInt: "http://cred-issuance:3001"
+      urlExt: "http://127.0.0.1:3002"
+      urlInt: "http://cred-issuance:3002"
       oobiUrl: "http://keria:3902/oobi"
   backing:
     mode: ledger
