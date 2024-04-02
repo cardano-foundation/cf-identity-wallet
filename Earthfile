@@ -62,6 +62,7 @@ keria:
   FROM DOCKERFILE -f +keria-src/keria/images/keria.dockerfile +keria-src/keria/*
   ENTRYPOINT keria start --config-file backer-oobis --config-dir ./scripts
   SAVE IMAGE $EARTHLY_TARGET_NAME:$KERIA_GIT_REF
+  SAVE IMAGE $EARTHLY_TARGET_NAME:latest
 
 vlei-src:
   FROM scratch
@@ -73,6 +74,7 @@ vlei:
   FROM DOCKERFILE -f +vlei-src/vlei/container/Dockerfile +vlei-src/vlei/*
   ENTRYPOINT vLEI-server -s ./schema/acdc -c ./samples/acdc/ -o ./samples/oobis/
   SAVE IMAGE $EARTHLY_TARGET_NAME:$VLEI_GIT_REF
+  SAVE IMAGE $EARTHLY_TARGET_NAME:latest
 
 mediator-src:
   FROM alpine
