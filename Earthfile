@@ -11,7 +11,7 @@ ARG --global VLEI_GIT_REF="ed982313dab86bfada3825857601a10d71ce9631"
 ARG --global ARIES_MEDIATOR_GIT_REPO_URL="https://github.com/hyperledger/aries-mediator-service.git"
 ARG --global ARIES_MEDIATOR_GIT_REF="765914d969ea73854eae401795dbe85c64f8a115"
 
-ARG --global DOCKER_IMAGE_EXTRA_TAGS=""
+ARG --global DOCKER_IMAGES_EXTRA_TAGS=""
 ARG --global DOCKER_REGISTRIES=""
 ARG --global HUB_DOCKER_COM_USER=cardanofoundation
 
@@ -29,8 +29,8 @@ docker-publish:
   LOCALLY
   FOR registry IN $DOCKER_REGISTRIES
     FOR image_target IN $DOCKER_IMAGES_TARGETS
-      IF [ ! -z "$DOCKER_IMAGE_EXTRA_TAGS" ]
-        FOR image_tag IN $DOCKER_IMAGE_EXTRA_TAGS
+      IF [ ! -z "$DOCKER_IMAGES_EXTRA_TAGS" ]
+        FOR image_tag IN $DOCKER_IMAGES_EXTRA_TAGS
           IF [ "$registry" = "hub.docker.com" ]
             RUN docker tag ${image_target}:latest ${HUB_DOCKER_COM_USER}/${image_target}:${image_tag}
             RUN docker push ${HUB_DOCKER_COM_USER}/${image_target}:${image_tag}
