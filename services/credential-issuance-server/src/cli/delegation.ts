@@ -17,6 +17,8 @@ import { waitAndGetDoneOp } from "../modules/signify/utils";
 import { utils } from "@aries-framework/core";
 import { config } from "../config";
 
+const credServer =
+  "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org";
 async function getClient(): Promise<SignifyClient> {
   const client = new SignifyClient(
     SignifyApi.LOCAL_KERIA_ENDPOINT,
@@ -44,17 +46,20 @@ async function createIdentifier(
 async function waitForFirstNotification(
   client: SignifyClient,
   route: string,
-  timeout = 40000,
+  timeout = 20000,
   interval = 250
 ) {
   const startTime = Date.now();
   while (Date.now() - startTime < timeout) {
     const notes = (await client.notifications().list()).notes;
-    console.log({ notes });
     const note = notes.find((note) => note.a.r === route && note.r === false);
     if (note) {
+      console.log({ note })
       await client.notifications().mark(note.i);
-      return note.a.d;
+      return {
+        said: note.a.d,
+        id: note.i,
+      };
     }
     await new Promise((resolve) => setTimeout(resolve, interval));
   }
@@ -82,13 +87,13 @@ async function getOrCreateContact(
 
 async function retryGetCredentials(
   client: SignifyClient,
-  timeout = 20000,
+  timeout = 60000,
   interval = 250
 ) {
   const startTime = Date.now();
   while (Date.now() - startTime < timeout) {
     const creds = await client.credentials().list();
-    console.log({ creds })
+    console.log({ creds });
     if (creds.length) {
       return creds;
     }
@@ -97,13 +102,31 @@ async function retryGetCredentials(
   throw new Error("No credential");
 }
 
+async function createProfile(name) {
+  const client = await getClient();
+  const signifyName = utils.uuid();
+  const aid = await createIdentifier(client, signifyName);
+  const oobi = await client.oobis().get(signifyName, "agent");
+  console.info(
+    `${name} created: { prefix: ${aid.prefix}, name: ${signifyName} }`
+  );
+  return {
+    client,
+    signifyName,
+    aid,
+    oobi,
+  };
+}
+
 async function main() {
+  console.time("Time");
   await signifyReady();
 
   //Issuer identifier
   const issuerClient = await getClient();
   const issuerSignifyName = utils.uuid();
   const issuerAid = await createIdentifier(issuerClient, issuerSignifyName);
+  const issuerOobi = await issuerClient.oobis().get(issuerSignifyName, "agent");
   console.info(
     `Issuer created: { prefix: ${issuerAid.prefix}, name: ${issuerSignifyName} }`
   );
@@ -111,7 +134,13 @@ async function main() {
   //Verifier identifier
   const verifierClient = await getClient();
   const verifierSignifyName = utils.uuid();
-  const verifierAid = await createIdentifier(verifierClient, verifierSignifyName);
+  const verifierAid = await createIdentifier(
+    verifierClient,
+    verifierSignifyName
+  );
+  const verifierOobi = await verifierClient
+    .oobis()
+    .get(verifierSignifyName, "agent");
   console.info(
     `Verifier created: { prefix: ${verifierAid.prefix}, name: ${verifierSignifyName} }`
   );
@@ -140,7 +169,7 @@ async function main() {
   console.info(
     `Delegator created: { prefix: ${delegatorAid.prefix}, name: ${delegatorSignifyName} }`
   );
-  console.log({ delegatorOobi });
+
   //Delegate
   const delegateClient = await getClient();
   const delegateSignifyName = utils.uuid();
@@ -150,7 +179,6 @@ async function main() {
       .oobis()
       .resolve(delegatorOobi.oobis[0], delegatorSignifyName)
   );
-  console.log("OOBI A resolved");
   const createDelegateResult = await delegateClient
     .identifiers()
     .create(delegateSignifyName, { delpre: delegatorAid.prefix });
@@ -161,8 +189,6 @@ async function main() {
   console.info(
     `Delegate created: { prefix: ${delegateAid.prefix}, name: ${delegateSignifyName} }`
   );
-  // Create contacts
-  await getOrCreateContact(issuerClient, "holder", delegatorOobi.oobis[0]);
 
   // Delegator client approves delegation
   const anchor = {
@@ -175,26 +201,61 @@ async function main() {
     .interact(delegatorSignifyName, anchor);
   await waitAndGetDoneOp(delegatorClient, await ixnResult1.op());
   console.log("Delegator approved delegation");
+  await delegateClient
+    .identifiers()
+    .addEndRole(
+      delegateSignifyName,
+      SignifyApi.DEFAULT_ROLE,
+      delegateClient.agent!.pre
+    );
+  await delegateClient
+    .identifiers()
+    .get(delegateSignifyName);  
+  const delegateOobi = await delegateClient
+    .oobis()
+    .get(delegateSignifyName, "agent");
+  
+  // Create contacts
+  await Promise.all([
+    getOrCreateContact(issuerClient, "holder", delegatorOobi.oobis[0]),
+    getOrCreateContact(issuerClient, "verifier", verifierOobi.oobis[0]),
+    getOrCreateContact(delegatorClient, "issuer", issuerOobi.oobis[0]),
+    getOrCreateContact(delegatorClient, "verifier", verifierOobi.oobis[0]),
+    getOrCreateContact(verifierClient, "holder", delegatorOobi.oobis[0]),
+    getOrCreateContact(verifierClient, "issuer", issuerOobi.oobis[0]),
+    getOrCreateContact(verifierClient, "holder", delegateOobi.oobis[0]),
+    getOrCreateContact(delegateClient, "verifier", verifierOobi.oobis[0]),
+  ]);
 
-  // Issuer & Verifier resolve QVI schema
+  // resolve QVI schema
   const QVI_SCHEMA_SAID = "EBfdlu8R27Fbx-ehrqwImnK-8Cm79sqbAQ4MmvEAYqao";
-  await waitAndGetDoneOp(
-    issuerClient,
-    await issuerClient
-      .oobis()
-      .resolve(
-        `https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/${QVI_SCHEMA_SAID}`
-      )
-  );
-  await waitAndGetDoneOp(
-    verifierClient,
-    await verifierClient
-      .oobis()
-      .resolve(
-        `https://dev.vlei-server.cf-keripy.metadata.dev.cf-deployments.org/oobi/${QVI_SCHEMA_SAID}`
-      )
-  );    
-  console.log("Issuer & Verifier resolved the schema!");
+  await Promise.all([
+    waitAndGetDoneOp(
+      issuerClient,
+      await issuerClient
+        .oobis()
+        .resolve(`${credServer}/oobi/${QVI_SCHEMA_SAID}`)
+    ),
+    waitAndGetDoneOp(
+      delegatorClient,
+      await delegatorClient
+        .oobis()
+        .resolve(`${credServer}/oobi/${QVI_SCHEMA_SAID}`)
+    ),
+    waitAndGetDoneOp(
+      verifierClient,
+      await verifierClient
+        .oobis()
+        .resolve(`${credServer}/oobi/${QVI_SCHEMA_SAID}`)
+    ),
+    waitAndGetDoneOp(
+      delegateClient,
+      await delegateClient
+        .oobis()
+        .resolve(`${credServer}/oobi/${QVI_SCHEMA_SAID}`)
+    ),
+  ]);
+  console.log("Resolved the QVI schema!");
   const registryName = "vLEI-test-registry";
   const regResult = await issuerClient
     .registries()
@@ -248,7 +309,7 @@ async function main() {
     .admit(
       delegatorAid.name,
       "",
-      grantNotification!,
+      grantNotification.said!,
       new Date().toISOString().replace("Z", "000+00:00")
     );
   const admitOp = await delegatorClient
@@ -261,10 +322,66 @@ async function main() {
     issuerClient,
     "/exn/ipex/admit"
   );
-  console.log({ issuerGrantResponseNotification })
+  console.log({ issuerGrantResponseNotification });
 
   const delegatorCreds = await retryGetCredentials(delegatorClient);
   console.log({ delegatorCreds });
+
+  //Delegator IPEX present
+  const credential = delegatorCreds[0];
+  const [grant2, gsigs2, gend2] = await delegatorClient.ipex().grant({
+    senderName: delegatorAid.name,
+    recipient: verifierAid.prefix,
+    acdc: new Serder(credential.sad),
+    anc: new Serder(credential.anc),
+    iss: new Serder(credential.iss),
+    acdcAttachment: credential.atc,
+    ancAttachment: credential.ancatc,
+    issAttachment: credential.issAtc,
+    datetime: new Date().toISOString().replace("Z", "000+00:00"),
+  });
+
+  await waitAndGetDoneOp(
+    delegatorClient,
+    await delegatorClient
+      .ipex()
+      .submitGrant(delegatorAid.name, grant2, gsigs2, gend2, [
+        verifierAid.prefix,
+      ])
+  );
+  console.log("Delegator presented!");
+
+  //Verifier receives IPEX grant from delegator
+  const verifierGrantNotification = await waitForFirstNotification(
+    verifierClient,
+    "/exn/ipex/grant"
+  );
+  console.log({ verifierGrantNotification });
+  const [admit3, sigs3, aend3] = await verifierClient
+    .ipex()
+    .admit(
+      verifierAid.name,
+      "",
+      verifierGrantNotification.said!,
+      new Date().toISOString().replace("Z", "000+00:00")
+    );
+  console.log(`admit!`)
+  await waitAndGetDoneOp(
+    delegatorClient,
+    await verifierClient
+      .ipex()
+      .submitAdmit(verifierAid.name, admit3, sigs3, aend3, [
+        delegatorAid.prefix,
+      ])
+  );
+  console.log(`op done!`, { verifierGrantNotification })
+  // await verifierClient.notifications().mark(verifierGrantNotification.id);
+  // await verifierClient.notifications().delete(verifierGrantNotification.id);
+  // console.log(`noti deleted!`)
+  const verifierCreds = await retryGetCredentials(verifierClient);
+  console.log({ verifierCreds });
+
+  console.timeEnd("Time");
 }
 
 main();
