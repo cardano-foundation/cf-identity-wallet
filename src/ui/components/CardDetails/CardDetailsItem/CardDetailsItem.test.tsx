@@ -34,12 +34,11 @@ describe("Card detail item", () => {
           copyButton
           keyValue="Key:"
           textIcon="T"
-          infoTestId="info-test-id"
         />
       </Provider>
     );
 
-    expect(getByTestId("info-test-id")).toBeVisible();
+    expect(getByTestId("card-test-id-text-value")).toBeVisible();
     expect(getByText("T")).toBeVisible();
     expect(getByText("Key:")).toBeVisible();
     expect(getByTestId("card-test-id").querySelector(".copy-button")).not.toBe(
@@ -53,12 +52,11 @@ describe("Card detail item", () => {
           testId="card-test-id"
           icon={keyOutline}
           info="Test card detail"
-          infoTestId="info-test-id"
         />
       </Provider>
     );
 
-    expect(getByTestId("info-test-id")).toBeVisible();
+    expect(getByTestId("card-test-id")).toBeVisible();
     const container = getByTestId("card-test-id");
     expect(container.querySelector(".card-details-info-block-text-icon")).toBe(
       null

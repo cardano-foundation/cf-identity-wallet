@@ -2,7 +2,7 @@ import { addOutline } from "ionicons/icons";
 import { ConnectionNotesProps } from "./ConnectionNotes.types";
 import { i18n } from "../../../../../i18n";
 import { PageFooter } from "../../../../components/PageFooter";
-import { CardDetailsBlock } from "../../../../components/card-detail";
+import { CardDetailsBlock } from "../../../../components/CardDetails";
 import "./ConnectionNotes.scss";
 import { IonText } from "@ionic/react";
 

@@ -1,9 +1,17 @@
 import { expect } from "expect-webdriverio";
-import { GenerateSeedPhrase } from "../constants/text.constants.js";
+import { SeedPhraseGenerate } from "../../constants/text.constants.js";
 
-export class GenerateSeedPhraseScreen {
+export class SeedPhraseGenerateScreen {
+  get alertModal() {
+    return "[data-testid=\"seed-phrase-generate-alert-continue\"]";
+  }
+
   get continueButton() {
     return $("[data-testid=\"primary-button-generate-seed-phrase\"]");
+  }
+
+  get id() {
+    return "[data-testid=\"generate-seed-phrase-page\"]";
   }
 
   get screenBottomParagraph() {
@@ -46,16 +54,12 @@ export class GenerateSeedPhraseScreen {
     return $(`[data-testid="${phraseLength.toString()}-words-segment-button"]`);
   }
 
-  seedPhraseWordText(wordNumber: number) {
-    return $(`[data-testid="word-index-${wordNumber.toString()}"]`);
-  }
-
   async loads() {
     await expect(this.screenTitle).toBeExisting();
-    await expect(this.screenTitle).toHaveText(GenerateSeedPhrase.Title);
+    await expect(this.screenTitle).toHaveText(SeedPhraseGenerate.Title);
     await expect(this.screenTopParagraph).toBeDisplayed();
     await expect(this.screenTopParagraph).toHaveText(
-      GenerateSeedPhrase.DescriptionTop
+      SeedPhraseGenerate.DescriptionTop
     );
     await expect(this.phraseWordsButton(15)).toBeDisplayed();
     await expect(this.phraseWordsButton(24)).toBeDisplayed();
@@ -63,7 +67,7 @@ export class GenerateSeedPhraseScreen {
     await expect(this.viewSeedPhraseButton).toBeDisplayed();
     await expect(this.screenBottomParagraph).toBeDisplayed();
     await expect(this.screenBottomParagraph).toHaveText(
-      GenerateSeedPhrase.DescriptionBottom
+      SeedPhraseGenerate.DescriptionBottom
     );
     await expect(this.termsAndConditionsCheckbox).toBeDisplayed();
     await expect(this.termsOfUseLink).toBeDisplayed();
@@ -72,4 +76,4 @@ export class GenerateSeedPhraseScreen {
   }
 }
 
-export default new GenerateSeedPhraseScreen();
+export default new SeedPhraseGenerateScreen();

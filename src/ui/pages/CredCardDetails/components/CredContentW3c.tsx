@@ -13,7 +13,7 @@ import {
   CardDetailsAttributes,
   CardDetailsBlock,
   CardDetailsItem,
-} from "../../../components/card-detail";
+} from "../../../components/CardDetails";
 
 interface CredContentW3cProps {
   cardData: W3CCredentialDetails;

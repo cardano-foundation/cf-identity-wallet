@@ -14,7 +14,9 @@ const CardDetailsBlock = ({
     <div className={classes}>
       {title && (
         <h4
-          data-testid="card-details-info-block-title"
+          data-testid={`card-block-title-${title
+            .replace(/\s+/g, "")
+            .toLowerCase()}`}
           className="card-details-info-block-title"
         >
           {title}

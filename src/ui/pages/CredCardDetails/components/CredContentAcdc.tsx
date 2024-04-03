@@ -6,7 +6,7 @@ import {
   CardDetailsBlock,
   CardDetailsItem,
   CardDetailsAttributes,
-} from "../../../components/card-detail";
+} from "../../../components/CardDetails";
 
 interface ACDCContentProps {
   cardData: ACDCDetails;

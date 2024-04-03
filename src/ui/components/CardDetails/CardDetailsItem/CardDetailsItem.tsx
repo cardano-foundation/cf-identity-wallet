@@ -60,8 +60,8 @@ const CardDetailsItem = ({
       )}
       <div className="card-details-info-content">
         <IonText
-          data-testid={infoTestId}
           className={textClass}
+          data-testid={`${testId}-text-value`}
         >
           {keyValue && (
             <IonText className="card-details-info-block-key">
@@ -75,6 +75,7 @@ const CardDetailsItem = ({
             slot="end"
             shape="round"
             className="copy-button"
+            data-testid={`${testId}-copy-button`}
           >
             <IonIcon icon={copyOutline} />
           </IonButton>

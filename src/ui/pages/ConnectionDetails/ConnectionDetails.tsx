@@ -59,7 +59,7 @@ import DidComLogo from "../../assets/images/didCommGeneric.jpg";
 import {
   CardDetailsBlock,
   CardDetailsItem,
-} from "../../components/card-detail";
+} from "../../components/CardDetails";
 import { ConnectionNotes } from "./components/ConnectionNotes";
 
 const ConnectionDetails = () => {
