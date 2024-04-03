@@ -3,7 +3,7 @@ import { Operation, SignifyClient } from "signify-ts";
 async function waitAndGetDoneOp(
   client: SignifyClient,
   op: Operation,
-  timeout = 10000,
+  timeout = 20000,
   interval = 250
 ): Promise<Operation> {
   const startTime = new Date().getTime();
