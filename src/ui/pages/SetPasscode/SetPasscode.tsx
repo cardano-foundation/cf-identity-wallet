@@ -81,12 +81,16 @@ const SetPasscode = () => {
     }
   }, [originalPassCode, passcode]);
 
+  const isOnReenterPasscodeStep =
+    originalPassCode.length > 0 && passcode.length < 6;
+
   return (
     <ResponsivePageLayout
       pageId={pageId}
       header={
         <PageHeader
           backButton={true}
+          onBack={isOnReenterPasscodeStep ? handleClearState : undefined}
           beforeBack={handleBeforeBack}
           currentPath={RoutePath.SET_PASSCODE}
           progressBar={true}

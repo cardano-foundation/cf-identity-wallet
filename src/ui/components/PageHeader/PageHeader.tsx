@@ -81,6 +81,7 @@ const PageHeader = ({
               onClick={handleOnBack}
               className="back-button"
               data-testid="back-button"
+              shape="round"
             >
               <IonIcon
                 icon={arrowBackOutline}

@@ -1,0 +1,49 @@
+.card-details-attribute-item {
+  &.card-details-info-block-line {
+    --min-height: unset;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 1rem;
+  }
+
+  &.has-nested-item {
+    margin-bottom: 0;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    &:not(:last-child) {
+      margin-bottom: 0.25rem;
+    }
+
+    &.has-nested-item {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.card-details-nested-content {
+  margin-top: 0.875rem;
+
+  & > .card-details-info-block-inner {
+    background-color: var(--ion-color-light-grey);
+    border-radius: 0.75rem;
+    padding: 0.8125rem 1rem;
+
+    & > .card-details-attribute-item {
+      --background: transparent;
+    }
+  }
+
+  & + .card-details-attribute-item {
+    margin-top: 1rem;
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    margin-top: 0.5rem;
+
+    & + .card-details-attribute-item {
+      margin-top: 0.4rem;
+    }
+  }
+}
