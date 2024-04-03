@@ -139,6 +139,7 @@ class SignifyNotificationService extends AgentService {
 
       // @TODO - foconnor: This stops us from showing pop-ups for multi-sig joins
       // but this should be done better.
+      // @TODO - test for this later.
       if (notif.a.r === NotificationRoute.MultiSigIcp) {
         const msgSaid = notif.a.d as string;
         const icpMsg: MultiSigExnMessage[] =
