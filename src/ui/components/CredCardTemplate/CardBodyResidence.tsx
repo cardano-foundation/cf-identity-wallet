@@ -17,50 +17,55 @@ const CardBodyResidency = ({ cardData }: any) => {
             }}
           />
         </div>
-        <div className="center-column">
-          <div className="card-body-info">
-            <span className="card-body-info-label">
-              {i18n.t("creds.card.layout.name")}
-            </span>
-            <span className="card-body-info-value">
-              {cardData.cachedDetails?.givenName +
-                " " +
-                cardData.cachedDetails?.familyName}
-            </span>
+        <div className="residence-card-info">
+          <div className="info-row">
+            <div className="card-body-info">
+              <span className="card-body-info-label">
+                {i18n.t("creds.card.layout.name")}
+              </span>
+              <span className="card-body-info-value">
+                {cardData.cachedDetails?.givenName +
+                  " " +
+                  cardData.cachedDetails?.familyName}
+              </span>
+            </div>
+            <div></div>
           </div>
-          <div className="card-body-info">
-            <span className="card-body-info-label">
-              {i18n.t("creds.card.layout.countryofbirth")}
-            </span>
-            <span className="card-body-info-value">
-              {cardData.cachedDetails?.birthCountry}
-            </span>
+          <div className="info-row">
+            <div className="card-body-info">
+              <span className="card-body-info-label">
+                {i18n.t("creds.card.layout.countryofbirth")}
+              </span>
+              <span className="card-body-info-value">
+                {cardData.cachedDetails?.birthCountry}
+              </span>
+            </div>
+            <div className="card-body-info">
+              <span className="card-body-info-label">
+                {i18n.t("creds.card.layout.category")}
+              </span>
+              <span className="card-body-info-value">
+                {cardData.cachedDetails?.lprCategory}
+              </span>
+            </div>
           </div>
-          <div className="card-body-info">
-            <span className="card-body-info-label">
-              {i18n.t("creds.card.layout.expirationdate")}
-            </span>
-            <span className="card-body-info-value">
-              {formatShortDate(cardData.cachedDetails?.expirationDate)}
-            </span>
-          </div>
-        </div>
-        <div className="right-column">
-          <div className="card-body-info">
-            <span className="card-body-info-label">
-              {i18n.t("creds.card.layout.category")}
-            </span>
-            <span className="card-body-info-value">
-              {cardData.cachedDetails?.lprCategory}
-            </span>
-          </div>
-          <div className="card-body-info">
-            <span className="card-body-info-label">
-              {i18n.t("creds.card.layout.residentsince")}
-            </span>
-            <span className="card-body-info-value">
-              {formatShortDate(cardData.cachedDetails?.residentSince)}
-            </span>
+          <div className="info-row">
+            <div className="card-body-info">
+              <span className="card-body-info-label">
+                {i18n.t("creds.card.layout.expirationdate")}
+              </span>
+              <span className="card-body-info-value">
+                {formatShortDate(cardData.cachedDetails?.expirationDate)}
+              </span>
+            </div>
+            <div className="card-body-info">
+              <span className="card-body-info-label">
+                {i18n.t("creds.card.layout.residentsince")}
+              </span>
+              <span className="card-body-info-value">
+                {formatShortDate(cardData.cachedDetails?.residentSince)}
+              </span>
+            </div>
           </div>
         </div>
       </div>

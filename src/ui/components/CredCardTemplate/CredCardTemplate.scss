@@ -199,7 +199,13 @@
         display: flex;
         flex-direction: row;
         justify-content: space-between;
-        height: 100%;
+        height: 8rem;
+
+        .residence-card-info {
+          flex: 1;
+          justify-content: space-between;
+          margin-left: 1.25rem;
+        }
 
         > div {
           display: flex;
@@ -209,24 +215,21 @@
           line-height: normal;
 
           &.left-column {
-            width: 33%;
+            width: 31%;
             z-index: 1;
 
             img {
               border-radius: 0.5rem;
+              height: 100%;
             }
           }
 
-          &.center-column {
-            width: 36%;
-            margin-left: 0.5rem;
-          }
+          .info-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
 
-          &.right-column {
-            width: 25%;
-            margin-left: 0.25rem;
-
-            .card-body-info {
+            & > .card-body-info:nth-child(2) {
               text-align: right;
             }
           }
@@ -235,10 +238,6 @@
             display: flex;
             flex-direction: column;
             text-align: left;
-
-            &:not(:first-of-type) {
-              margin-top: 0.75rem;
-            }
 
             .card-body-info-label {
               font-size: 0.625rem;
@@ -400,26 +399,18 @@
     &.permanent-resident-card {
       .cred-card-template-inner {
         .card-body {
+          height: 6.5rem;
+
           > div {
             &.left-column {
+              width: 35%;
+
               img {
                 border-radius: 0.375rem;
               }
             }
 
-            &.center-column {
-              margin-left: 0.375rem;
-            }
-
-            &.right-column {
-              margin-left: 0.1875rem;
-            }
-
             .card-body-info {
-              &:not(:first-of-type) {
-                margin-top: 0.5625rem;
-              }
-
               .card-body-info-label {
                 font-size: 0.46875rem;
               }
@@ -481,6 +472,32 @@
 
       .card-body {
         font-size: 0.46875rem;
+      }
+    }
+  }
+
+  @media screen and (min-width: 480px) {
+    height: 15.375rem;
+
+    &:not(:first-child) {
+      margin-top: -12rem;
+    }
+
+    &.permanent-resident-card {
+      .cred-card-template-inner {
+        .card-body {
+          height: 9.5rem;
+
+          > div {
+            &.left-column {
+              width: 29%;
+            }
+          }
+
+          .residence-card-info {
+            margin-left: 1.5rem;
+          }
+        }
       }
     }
   }

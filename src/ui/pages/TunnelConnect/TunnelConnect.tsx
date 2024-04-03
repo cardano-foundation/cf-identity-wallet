@@ -56,7 +56,10 @@ const TunnelConnect = () => {
 
   useEffect(() => {
     const aid = identifiersData.find(
-      (id) => id.method === IdentifierType.KERI && id.signifyName !== undefined
+      (id) =>
+        id.method === IdentifierType.KERI &&
+        id.signifyName !== undefined &&
+        id.displayName === "Demo"
     );
 
     if (aid) {

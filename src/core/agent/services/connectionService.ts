@@ -172,7 +172,8 @@ class ConnectionService extends AgentService {
         const aid = (await AriesAgent.agent.identifiers.getIdentifiers()).find(
           (identifier) =>
             identifier.method === IdentifierType.KERI &&
-            identifier.isPending === false
+            identifier.isPending === false &&
+            identifier.displayName === "Demo"
         );
         if (aid && aid.signifyName) {
           let userName;
