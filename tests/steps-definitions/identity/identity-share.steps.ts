@@ -11,7 +11,6 @@ When(
   async function () {
     await driver.setClipboard("");
     await IdentityShareModal.copyButton.click();
-    await IdentityShareModal.copyButton.click();
   }
 );
 
