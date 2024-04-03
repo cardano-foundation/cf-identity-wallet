@@ -197,7 +197,7 @@ const keriNotificationsChangeHandler = async (
         id: event?.id,
         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
         logo: "", // TODO: must define Keri logo
-        label: "Credential Issuance Server", // TODO: must define it
+        label: "CF Credential Issuance", // TODO: must define it
         source: ConnectionType.KERI,
       })
     );
