@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
 import { Provider } from "react-redux";
 import { store } from "../../../store";
 import { CredCardTemplate } from "./CredCardTemplate";
@@ -28,7 +34,7 @@ describe("CredCardTemplate", () => {
         <CredCardTemplate
           name="name"
           index={0}
-          shortData={shortCredsFix[0]}
+          cardData={shortCredsFix[0]}
           isActive={true}
           onHandleShowCardDetails={() => handleShowCardDetails(0)}
         />
@@ -54,7 +60,7 @@ describe("CredCardTemplate", () => {
         <CredCardTemplate
           name="name"
           index={0}
-          shortData={shortCredsFix[1]}
+          cardData={shortCredsFix[1]}
           isActive={true}
           onHandleShowCardDetails={() => handleShowCardDetails(0)}
         />
@@ -81,7 +87,7 @@ describe("CredCardTemplate", () => {
         <CredCardTemplate
           name="name"
           index={0}
-          shortData={shortCredsFix[2]}
+          cardData={shortCredsFix[2]}
           isActive={true}
           onHandleShowCardDetails={() => handleShowCardDetails(0)}
         />
@@ -110,7 +116,7 @@ describe("CredCardTemplate", () => {
         <CredCardTemplate
           name="name"
           index={0}
-          shortData={shortCredsFix[3]}
+          cardData={shortCredsFix[3]}
           isActive={true}
           onHandleShowCardDetails={() => handleShowCardDetails(0)}
         />
@@ -125,5 +131,49 @@ describe("CredCardTemplate", () => {
       fireEvent.click(card);
     });
     expect(handleShowCardDetails).toBeCalledTimes(1);
+  });
+
+  it("Click pending card", async () => {
+    const handleShowCardDetails = jest.fn();
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <CredCardTemplate
+          name="name"
+          index={0}
+          cardData={shortCredsFix[4]}
+          isActive={true}
+          onHandleShowCardDetails={() => handleShowCardDetails(0)}
+        />
+      </Provider>
+    );
+    const card = getByTestId("cred-card-template-name-index-0");
+
+    act(() => {
+      fireEvent.click(card);
+    });
+
+    expect(handleShowCardDetails).toBeCalledTimes(0);
+
+    await waitFor(() => {
+      expect(getByTestId("alert-confirm")).toBeInTheDocument();
+    });
+  });
+
+  it("In active card status", async () => {
+    const handleShowCardDetails = jest.fn();
+    const { getByTestId } = render(
+      <Provider store={store}>
+        <CredCardTemplate
+          name="name"
+          index={0}
+          cardData={shortCredsFix[4]}
+          isActive={false}
+          onHandleShowCardDetails={() => handleShowCardDetails(0)}
+        />
+      </Provider>
+    );
+    const card = getByTestId("cred-card-template-name-index-0");
+
+    expect(card.classList.contains("active")).toBe(false);
   });
 });

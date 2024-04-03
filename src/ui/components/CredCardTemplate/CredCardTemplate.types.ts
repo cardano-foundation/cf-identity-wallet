@@ -2,10 +2,11 @@ import { CredentialShortDetails } from "../../../core/agent/services/credentialS
 
 interface CredCardTemplateProps {
   name?: string;
-  shortData: CredentialShortDetails;
+  cardData: CredentialShortDetails;
   isActive: boolean;
   index?: number;
   onHandleShowCardDetails?: (index: number | undefined) => void;
+  pickedCard?: boolean;
 }
 
 export type { CredCardTemplateProps };

@@ -6,6 +6,7 @@ interface IdentifierCardTemplateProps {
   isActive: boolean;
   index?: number;
   onHandleShowCardDetails?: (index: number | undefined) => void;
+  pickedCard?: boolean;
 }
 
 export type { IdentifierCardTemplateProps };

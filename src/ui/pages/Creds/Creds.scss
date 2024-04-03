@@ -8,13 +8,87 @@
       display: flex;
       flex-direction: row;
       justify-content: center;
-      margin-bottom: 0.5rem;
+      margin: 3rem 0 0.5rem 0;
 
       ion-button {
         margin: 0 auto;
+        --border-radius: 0.5rem;
 
         &::part(native) {
           padding: 0.625rem 1rem;
+        }
+      }
+    }
+  }
+
+  .credentials-tab-content-block {
+    margin: 1.5rem 0;
+
+    h3 {
+      margin-bottom: 0.875rem;
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .credentials-tab-content-block {
+      margin-bottom: 1.6rem;
+
+      h3 {
+        margin-bottom: 0.7rem;
+      }
+    }
+  }
+}
+
+.credential-tab {
+  &.cards-credential-nav {
+    .credential-favourite-cards {
+      animation: credentialFavouriteCardResize 0.25s ease;
+      animation-fill-mode: forwards;
+
+      @keyframes credentialFavouriteCardResize {
+        from {
+          opacity: 0;
+          overflow: hidden;
+          margin-top: 0;
+        }
+        to {
+          opacity: 0;
+          height: 0;
+          overflow: hidden;
+          margin: 0;
+        }
+      }
+    }
+
+    .credential-cards {
+      h3 {
+        display: none;
+      }
+    }
+  }
+
+  &.favorite-credential-nav {
+    .credential-cards {
+      display: none;
+    }
+
+    .credential-favourite-cards {
+      h3 {
+        animation: credentialFavouriteCardHeaderResize 0.25s ease;
+        animation-fill-mode: forwards;
+
+        @keyframes credentialFavouriteCardHeaderResize {
+          from {
+            opacity: 0;
+            overflow: hidden;
+            height: 1.25rem;
+          }
+          to {
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+          }
         }
       }
     }

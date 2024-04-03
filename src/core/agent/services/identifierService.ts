@@ -4,6 +4,7 @@ import {
   GetIdentifierResult,
   IdentifierShortDetails,
   IdentifierType,
+  MultiSigIcpRequestDetails,
 } from "./identifierService.types";
 import {
   IdentifierMetadataRecord,
@@ -13,15 +14,16 @@ import { AgentService } from "./agentService";
 import {
   Aid,
   IdentifierResult,
-  MultiSigIcpNotification,
+  MultiSigExnMessage,
   NotificationRoute,
 } from "../modules/signify/signifyApi.types";
 import {
   ConnectionShortDetails,
   ConnectionType,
-  GenericRecordType,
   KeriNotification,
 } from "../agent.types";
+import { AriesAgent } from "../agent";
+import { RecordType } from "../../storage/storage.types";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
   [IdentifierType.KEY]: [0, 1, 2, 3],
@@ -45,8 +47,8 @@ class IdentifierService extends AgentService {
     "DID was successfully created but the DID was not returned in the state returned";
   static readonly IDENTIFIER_NOT_ARCHIVED = "Identifier was not archived";
   static readonly THEME_WAS_NOT_VALID = "Identifier theme was not valid";
-  static readonly SAID_NOTIFICATIONS_NOT_FOUND =
-    "There's no notifications for the given SAID";
+  static readonly EXN_MESSAGE_NOT_FOUND =
+    "There's no exchange message for the given SAID";
   static readonly ONLY_ALLOW_KERI_CONTACTS =
     "Can only create multi-sig using KERI contacts with specified OOBI URLs";
   static readonly ONLY_CREATE_DELAGATION_WITH_AID =
@@ -61,6 +63,10 @@ class IdentifierService extends AgentService {
     "This AID is not a multi sig identifier";
   static readonly NOT_FOUND_ALL_MEMBER_OF_MULTISIG =
     "Cannot find all members of multisig or one of the members does not rotate its AID";
+  static readonly CANNOT_JOIN_MULTISIG_ICP =
+    "Cannot join multi-sig inception as we do not control any member AID of the multi-sig";
+  static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
+    "Multi-sig join request contains unknown AIDs (not connected)";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -82,6 +88,7 @@ class IdentifierService extends AgentService {
         createdAtUTC: metadata.createdAt.toISOString(),
         colors: metadata.colors,
         theme: metadata.theme,
+        isPending: metadata.isPending ?? false,
       });
     }
     return identifiers;
@@ -110,12 +117,11 @@ class IdentifierService extends AgentService {
       };
     } else {
       const metadata = await this.getMetadataById(identifier);
-      const aid = await this.agent.modules.signify.getIdentifierByName(
+      const aid = await this.signifyApi.getIdentifierByName(
         metadata.signifyName as string
       );
-      //Update multisig's status if it is pending
       if (metadata.isPending && metadata.signifyOpName) {
-        await this.markMultisigCompleteIfReady(metadata);
+        return undefined;
       }
       if (!aid) {
         return undefined;
@@ -132,7 +138,7 @@ class IdentifierService extends AgentService {
           colors: metadata.colors,
           theme: metadata.theme,
           signifyOpName: metadata.signifyOpName,
-          isPending: metadata.isPending,
+          isPending: metadata.isPending ?? false,
           s: aid.state.s,
           dt: aid.state.dt,
           kt: aid.state.kt,
@@ -147,6 +153,13 @@ class IdentifierService extends AgentService {
     }
   }
 
+  //Update multisig's status
+  async checkMultisigComplete(identifier: string): Promise<boolean> {
+    const metadata = await this.getMetadataById(identifier);
+    const markMultisigResult = await this.markMultisigCompleteIfReady(metadata);
+    return markMultisigResult.done;
+  }
+
   async createIdentifier(
     metadata: Omit<
       IdentifierMetadataRecordProps,
@@ -156,7 +169,7 @@ class IdentifierService extends AgentService {
     const type = metadata.method;
     if (type === IdentifierType.KERI) {
       const { signifyName, identifier } =
-        await this.agent.modules.signify.createIdentifier();
+        await this.signifyApi.createIdentifier();
       await this.createIdentifierMetadataRecord({
         id: identifier,
         ...metadata,
@@ -228,7 +241,7 @@ class IdentifierService extends AgentService {
 
   async syncKeriaIdentifiers() {
     const { aids: signifyIdentifiers } =
-      await this.agent.modules.signify.getAllIdentifiers();
+      await this.signifyApi.getAllIdentifiers();
     const storageIdentifiers =
       await this.agent.modules.generalStorage.getKeriIdentifiersMetadata();
     const unSyncedData = signifyIdentifiers.filter(
@@ -310,6 +323,7 @@ class IdentifierService extends AgentService {
       controller: record.did,
       keyType: signingKey.type.toString(),
       publicKeyBase58: signingKey.publicKeyBase58,
+      isPending: false,
     };
   }
 
@@ -340,11 +354,13 @@ class IdentifierService extends AgentService {
     meta: Pick<
       IdentifierMetadataRecordProps,
       "displayName" | "colors" | "theme"
-    >
+    >,
+    threshold: number,
+    delegateContact?: ConnectionShortDetails
   ): Promise<string | undefined> {
     const ourMetadata = await this.getMetadataById(ourIdentifier);
     this.validIdentifierMetadata(ourMetadata);
-    const ourAid = (await this.agent.modules.signify.getIdentifierByName(
+    const ourAid = (await this.signifyApi.getIdentifierByName(
       ourMetadata.signifyName as string
     )) as Aid;
     //Make sure no non-Keri contacts get passed into this function
@@ -356,19 +372,32 @@ class IdentifierService extends AgentService {
     }
     const otherAids = await Promise.all(
       otherIdentifierContacts.map(async (contact) => {
-        const aid = await this.agent.modules.signify.resolveOobi(
-          contact.oobi as string
-        );
+        const aid = await this.signifyApi.resolveOobi(contact.oobi as string);
         return { state: aid.response };
       })
     );
+    let delegateAid;
+    if (delegateContact) {
+      const delegator = await this.signifyApi.resolveOobi(
+        delegateContact.oobi as string
+      );
+      delegateAid = { state: delegator.response } as Aid;
+    }
+
     const signifyName = utils.uuid();
-    const result = await this.agent.modules.signify.createMultisig(
+    const result = await this.signifyApi.createMultisig(
       ourAid,
       otherAids,
-      signifyName
+      signifyName,
+      threshold,
+      delegateAid
     );
     const multisigId = result.op.name.split(".")[1];
+    //this will be updated once the operation is done
+    let isPending = true;
+    if (result.op.done || threshold === 1) {
+      isPending = false;
+    }
     await this.createIdentifierMetadataRecord({
       id: multisigId,
       displayName: meta.displayName,
@@ -377,7 +406,7 @@ class IdentifierService extends AgentService {
       theme: meta.theme,
       signifyName,
       signifyOpName: result.op.name, //we save the signifyOpName here to sync the multisig's status later
-      isPending: result.op.done ? false : true, //this will be updated once the operation is done
+      isPending,
       multisigManageAid: ourIdentifier,
     });
     return multisigId;
@@ -399,7 +428,7 @@ class IdentifierService extends AgentService {
     if (!metadata.signifyName || !identifierManageAid.signifyName) {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
-    const multiSig = await this.agent.modules.signify.getIdentifierByName(
+    const multiSig = await this.signifyApi.getIdentifierByName(
       metadata.signifyName
     );
     if (!multiSig) {
@@ -407,7 +436,7 @@ class IdentifierService extends AgentService {
     }
     const nextSequence = (Number(multiSig.state.s) + 1).toString();
 
-    const members = await this.agent.modules.signify.getMultisigMembers(
+    const members = await this.signifyApi.getMultisigMembers(
       metadata.signifyName
     );
     const multisigMembers = members?.signing;
@@ -415,7 +444,7 @@ class IdentifierService extends AgentService {
     const multisigMumberAids: Aid[] = [];
     await Promise.allSettled(
       multisigMembers.map(async (signing: any) => {
-        const aid = await this.agent.modules.signify.queryKeyState(
+        const aid = await this.signifyApi.queryKeyState(
           signing.aid,
           nextSequence
         );
@@ -427,11 +456,11 @@ class IdentifierService extends AgentService {
     if (multisigMembers.length !== multisigMumberAids.length) {
       throw new Error(IdentifierService.NOT_FOUND_ALL_MEMBER_OF_MULTISIG);
     }
-    const aid = await this.agent.modules.signify.getIdentifierByName(
+    const aid = await this.signifyApi.getIdentifierByName(
       identifierManageAid?.signifyName
     );
 
-    const result = await this.agent.modules.signify.rotateMultisigAid(
+    const result = await this.signifyApi.rotateMultisigAid(
       aid,
       multisigMumberAids,
       metadata.signifyName
@@ -442,10 +471,10 @@ class IdentifierService extends AgentService {
 
   async joinMultisigRotation(notification: KeriNotification): Promise<string> {
     const msgSaid = notification.a.d as string;
-    const notifications: MultiSigIcpNotification[] =
-      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    const notifications: MultiSigExnMessage[] =
+      await this.signifyApi.getMultisigMessageBySaid(msgSaid);
     if (!notifications.length) {
-      throw new Error(IdentifierService.SAID_NOTIFICATIONS_NOT_FOUND);
+      throw new Error(IdentifierService.EXN_MESSAGE_NOT_FOUND);
     }
     const exn = notifications[0].exn;
     const multisigId = exn.a.gid;
@@ -464,30 +493,28 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
 
-    const aid = await this.agent.modules.signify.getIdentifierByName(
+    const aid = await this.signifyApi.getIdentifierByName(
       identifierManageAid.signifyName
     );
-    const res = await this.agent.modules.signify.joinMultisigRotation(
+    const res = await this.signifyApi.joinMultisigRotation(
       exn,
       aid,
       multiSig.signifyName
     );
-    await this.agent.genericRecords.deleteById(notification.id);
+    await this.basicStorage.deleteById(notification.id);
     return res.op.name.split(".")[1];
   }
 
   private async hasJoinedMultisig(msgSaid: string): Promise<boolean> {
-    const notifications: MultiSigIcpNotification[] =
-      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    const notifications: MultiSigExnMessage[] =
+      await this.signifyApi.getMultisigMessageBySaid(msgSaid);
     if (!notifications.length) {
       return false;
     }
     const exn = notifications[0].exn;
     const multisigId = exn.a.gid;
     try {
-      const multiSig = await this.agent.modules.signify.getIdentifierById(
-        multisigId
-      );
+      const multiSig = await this.signifyApi.getIdentifierById(multisigId);
       if (multiSig) {
         return true;
       }
@@ -497,6 +524,70 @@ class IdentifierService extends AgentService {
     return false;
   }
 
+  async getMultisigIcpDetails(
+    notification: KeriNotification
+  ): Promise<MultiSigIcpRequestDetails> {
+    const msgSaid = notification.a.d as string;
+    const icpMsg: MultiSigExnMessage[] =
+      await this.signifyApi.getMultisigMessageBySaid(msgSaid);
+
+    if (!icpMsg.length) {
+      throw new Error(`${IdentifierService.EXN_MESSAGE_NOT_FOUND} ${msgSaid}`);
+    }
+
+    const senderAid = icpMsg[0].exn.i;
+    // @TODO - foconnor: This cross service call should be handled better.
+    const senderContact =
+      await AriesAgent.agent.connections.getConnectionKeriShortDetailById(
+        icpMsg[0].exn.i
+      );
+
+    const smids = icpMsg[0].exn.a.smids;
+    // @TODO - foconnor: These searches should be optimised, revisit.
+    const ourIdentifiers = await this.getIdentifiers();
+    const ourConnections = await AriesAgent.agent.connections.getConnections();
+
+    let ourIdentifier;
+    const otherConnections = [];
+    for (const member of smids) {
+      if (member === senderAid) {
+        continue;
+      }
+
+      if (!ourIdentifier) {
+        const identifier = ourIdentifiers.find(
+          (identifier) => identifier.id === member
+        );
+        if (identifier) {
+          ourIdentifier = identifier;
+          continue;
+        }
+      }
+
+      for (const connection of ourConnections) {
+        if (connection.id === member) {
+          otherConnections.push(connection);
+        }
+      }
+    }
+
+    if (!ourIdentifier) {
+      throw new Error(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
+    }
+
+    if (otherConnections.length !== smids.length - 2) {
+      // Should be 2 less for us and the sender
+      throw new Error(IdentifierService.UNKNOWN_AIDS_IN_MULTISIG_ICP);
+    }
+
+    return {
+      ourIdentifier,
+      sender: senderContact,
+      otherConnections,
+      threshold: parseInt(icpMsg[0].exn.e.icp.kt),
+    };
+  }
+
   async joinMultisig(
     notification: KeriNotification,
     meta: Pick<
@@ -504,59 +595,62 @@ class IdentifierService extends AgentService {
       "displayName" | "colors" | "theme"
     >
   ): Promise<string | undefined> {
+    // @TODO - foconnor: getMultisigDetails already has much of this done so this method signature could be adjusted.
     const msgSaid = notification.a.d as string;
     const hasJoined = await this.hasJoinedMultisig(msgSaid);
     if (hasJoined) {
-      await this.agent.genericRecords.deleteById(notification.id);
+      await this.basicStorage.deleteById(notification.id);
       return;
     }
-    const notifications: MultiSigIcpNotification[] =
-      await this.agent.modules.signify.getNotificationsBySaid(msgSaid);
+    const icpMsg: MultiSigExnMessage[] =
+      await this.signifyApi.getMultisigMessageBySaid(msgSaid);
 
-    if (!notifications.length) {
-      throw new Error(
-        `${IdentifierService.SAID_NOTIFICATIONS_NOT_FOUND} ${msgSaid}`
-      );
+    if (!icpMsg.length) {
+      throw new Error(`${IdentifierService.EXN_MESSAGE_NOT_FOUND} ${msgSaid}`);
     }
-    const exn = notifications[0].exn;
-    const rstate = exn.a.rstates;
+    const exn = icpMsg[0].exn;
+    const smids = exn.a.smids;
     const identifiers = await this.getIdentifiers();
     const identifier = identifiers.find((identifier) => {
-      return rstate.find((item) => identifier.id === item.i);
+      return smids.find((member) => identifier.id === member);
     });
 
-    if (identifier && identifier.signifyName) {
-      const aid = await this.agent.modules.signify.getIdentifierByName(
-        identifier?.signifyName
-      );
-      const signifyName = utils.uuid();
-      const res = await this.agent.modules.signify.joinMultisig(
-        exn,
-        aid,
-        signifyName
-      );
-      await this.agent.genericRecords.deleteById(notification.id);
-      const multisigId = res.op.name.split(".")[1];
-      await this.createIdentifierMetadataRecord({
-        id: multisigId,
-        displayName: meta.displayName,
-        method: IdentifierType.KERI,
-        colors: meta.colors,
-        theme: meta.theme,
-        signifyName,
-        signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later
-        isPending: res.op.done ? false : true, //this will be updated once the operation is done
-        multisigManageAid: identifier.id,
-      });
-      return multisigId;
+    if (!identifier) {
+      throw new Error(IdentifierService.CANNOT_JOIN_MULTISIG_ICP);
     }
+
+    if (!identifier.signifyName) {
+      throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
+    }
+
+    const aid = await this.signifyApi.getIdentifierByName(
+      identifier?.signifyName
+    );
+    const signifyName = utils.uuid();
+    const res = await this.signifyApi.joinMultisig(exn, aid, signifyName);
+    await this.basicStorage.deleteById(notification.id);
+    const multisigId = res.op.name.split(".")[1];
+    await this.createIdentifierMetadataRecord({
+      id: multisigId,
+      displayName: meta.displayName,
+      method: IdentifierType.KERI,
+      colors: meta.colors,
+      theme: meta.theme,
+      signifyName,
+      signifyOpName: res.op.name, //we save the signifyOpName here to sync the multisig's status later
+      isPending: res.op.done ? false : true, //this will be updated once the operation is done
+      multisigManageAid: identifier.id,
+    });
+    return multisigId;
   }
 
   async markMultisigCompleteIfReady(metadata: IdentifierMetadataRecord) {
     if (!metadata.signifyOpName || !metadata.isPending) {
-      return;
+      return {
+        done: true,
+      };
     }
-    const pendingOperation = await this.agent.modules.signify.getOpByName(
+    const pendingOperation = await this.signifyApi.getOpByName(
       metadata.signifyOpName
     );
     if (pendingOperation && pendingOperation.done) {
@@ -564,20 +658,29 @@ class IdentifierService extends AgentService {
         metadata.id,
         { isPending: false }
       );
+      return { done: true };
     }
+    return { done: false };
   }
 
-  async getUnhandledMultisigIdentifiers(): Promise<KeriNotification[]> {
-    const results = await this.agent.genericRecords.findAllByQuery({
-      type: GenericRecordType.NOTIFICATION_KERI,
-      route: NotificationRoute.MultiSigIcp,
-      $or: [
-        { route: NotificationRoute.MultiSigIcp },
-        {
-          route: NotificationRoute.MultiSigRot,
-        },
-      ],
-    });
+  async getUnhandledMultisigIdentifiers(
+    filters: {
+      isDismissed?: boolean;
+    } = {}
+  ): Promise<KeriNotification[]> {
+    const results = await this.basicStorage.findAllByQuery(
+      RecordType.NOTIFICATION_KERI,
+      {
+        route: NotificationRoute.MultiSigIcp,
+        ...filters,
+        $or: [
+          { route: NotificationRoute.MultiSigIcp },
+          {
+            route: NotificationRoute.MultiSigRot,
+          },
+        ],
+      }
+    );
     return results.map((result) => {
       return {
         id: result.id,
@@ -598,9 +701,7 @@ class IdentifierService extends AgentService {
       throw new Error(IdentifierService.ONLY_CREATE_DELAGATION_WITH_AID);
     }
     const { signifyName, identifier } =
-      await this.agent.modules.signify.createDelegationIdentifier(
-        delegatorPrefix
-      );
+      await this.signifyApi.createDelegationIdentifier(delegatorPrefix);
     await this.createIdentifierMetadataRecord({
       id: identifier,
       ...metadata,
@@ -615,10 +716,7 @@ class IdentifierService extends AgentService {
     signifyName: string,
     delegatePrefix: string
   ): Promise<void> {
-    await this.agent.modules.signify.interactDelegation(
-      signifyName,
-      delegatePrefix
-    );
+    await this.signifyApi.interactDelegation(signifyName, delegatePrefix);
   }
 
   async checkDelegationSuccess(
@@ -630,7 +728,7 @@ class IdentifierService extends AgentService {
     if (!metadata.isPending) {
       return true;
     }
-    const isDone = await this.agent.modules.signify.delegationApproved(
+    const isDone = await this.signifyApi.delegationApproved(
       metadata.signifyName
     );
     if (isDone) {
@@ -649,7 +747,7 @@ class IdentifierService extends AgentService {
     if (!metadata.signifyName) {
       throw new Error(IdentifierService.AID_MISSING_SIGNIFY_NAME);
     }
-    await this.agent.modules.signify.rotateIdentifier(metadata.signifyName);
+    await this.signifyApi.rotateIdentifier(metadata.signifyName);
   }
 }
 

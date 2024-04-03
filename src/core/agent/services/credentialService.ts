@@ -14,7 +14,6 @@ import {
 } from "@aries-framework/core";
 import {
   KeriNotification,
-  GenericRecordType,
   AcdcKeriStateChangedEvent,
   AcdcKeriEventTypes,
   ConnectionType,
@@ -35,6 +34,7 @@ import {
 } from "./credentialService.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { SignifyNotificationService } from "./signifyNotificationService";
+import { RecordType } from "../../storage/storage.types";
 
 class CredentialService extends AgentService {
   static readonly CREDENTIAL_MISSING_METADATA_ERROR_MSG =
@@ -157,10 +157,9 @@ class CredentialService extends AgentService {
   ): Promise<W3CCredentialDetails | ACDCDetails> {
     const metadata = await this.getMetadataById(id);
     if (metadata.connectionType === ConnectionType.KERI) {
-      const { acdc, error } =
-        await this.agent.modules.signify.getCredentialBySaid(
-          metadata.credentialRecordId
-        );
+      const { acdc, error } = await this.signifyApi.getCredentialBySaid(
+        metadata.credentialRecordId
+      );
       if (error) {
         throw error;
       }
@@ -404,14 +403,16 @@ class CredentialService extends AgentService {
     });
   }
 
-  async getUnhandledCredentials(): Promise<
-    (CredentialExchangeRecord | KeriNotification)[]
-    > {
+  async getUnhandledCredentials(
+    filters: {
+      isDismissed?: boolean;
+    } = {}
+  ): Promise<(CredentialExchangeRecord | KeriNotification)[]> {
     const results = await Promise.all([
       this.agent.credentials.findAllByQuery({
         state: CredentialState.OfferReceived,
       }),
-      this.getKeriCredentialNotifications(),
+      this.getKeriCredentialNotifications(filters),
     ]);
     return results.flat();
   }
@@ -433,11 +434,18 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  private async getKeriCredentialNotifications(): Promise<KeriNotification[]> {
-    const results = await this.agent.genericRecords.findAllByQuery({
-      type: GenericRecordType.NOTIFICATION_KERI,
-      route: NotificationRoute.Credential,
-    });
+  private async getKeriCredentialNotifications(
+    filters: {
+      isDismissed?: boolean;
+    } = {}
+  ): Promise<KeriNotification[]> {
+    const results = await this.basicStorage.findAllByQuery(
+      RecordType.NOTIFICATION_KERI,
+      {
+        route: NotificationRoute.Credential,
+        ...filters,
+      }
+    );
     return results.map((result) => {
       return {
         id: result.id,
@@ -496,7 +504,7 @@ class CredentialService extends AgentService {
   private async getKeriNotificationRecordById(
     id: string
   ): Promise<KeriNotification> {
-    const result = await this.agent.genericRecords.findById(id);
+    const result = await this.basicStorage.findById(id);
     if (!result) {
       throw new Error(`${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`);
     }
@@ -508,12 +516,12 @@ class CredentialService extends AgentService {
   }
 
   async deleteKeriNotificationRecordById(id: string): Promise<void> {
-    await this.agent.genericRecords.deleteById(id);
+    await this.basicStorage.deleteById(id);
   }
 
   async acceptKeriAcdc(id: string): Promise<void> {
     const keriNoti = await this.getKeriNotificationRecordById(id);
-    const keriExchange = await this.agent.modules.signify.getKeriExchange(
+    const keriExchange = await this.signifyApi.getKeriExchange(
       keriNoti.a.d as string
     );
     const credentialId = keriExchange.exn.e.acdc.d;
@@ -534,17 +542,16 @@ class CredentialService extends AgentService {
     if (holder && holder.signifyName) {
       holderSignifyName = holder.signifyName;
     } else {
-      const identifierHolder =
-        await this.agent.modules.signify.getIdentifierById(
-          keriExchange.exn.a.i
-        );
+      const identifierHolder = await this.signifyApi.getIdentifierById(
+        keriExchange.exn.a.i
+      );
       holderSignifyName = identifierHolder?.name;
     }
     if (!holderSignifyName) {
       throw new Error(CredentialService.ISSUEE_NOT_FOUND);
     }
 
-    await this.agent.modules.signify.admitIpex(
+    await this.signifyApi.admitIpex(
       keriNoti.a.d as string,
       holderSignifyName,
       keriExchange.exn.i
@@ -567,26 +574,21 @@ class CredentialService extends AgentService {
   }
 
   private async waitForAcdcToAppear(credentialId: string): Promise<any> {
-    let { acdc } = await this.agent.modules.signify.getCredentialBySaid(
-      credentialId
-    );
+    let { acdc } = await this.signifyApi.getCredentialBySaid(credentialId);
     let retryTimes = 0;
     while (!acdc) {
       if (retryTimes > 120) {
         throw new Error(CredentialService.ACDC_NOT_APPEARING);
       }
       await new Promise((resolve) => setTimeout(resolve, 500));
-      acdc = (
-        await this.agent.modules.signify.getCredentialBySaid(credentialId)
-      ).acdc;
+      acdc = (await this.signifyApi.getCredentialBySaid(credentialId)).acdc;
       retryTimes++;
     }
     return acdc;
   }
 
   async syncACDCs() {
-    const signifyCredentials =
-      await this.agent.modules.signify.getCredentials();
+    const signifyCredentials = await this.signifyApi.getCredentials();
     const storedCredentials =
       await this.agent.modules.generalStorage.getAllCredentialMetadata();
     const unSyncedData = signifyCredentials.filter(
@@ -612,17 +614,14 @@ class CredentialService extends AgentService {
     retryTimes: number,
     triedTime = 0
   ): Promise<{ notiId: string; notiSaid: string; exchange: any }[]> {
-    const notificationsList =
-      await this.agent.modules.signify.getNotifications();
+    const notificationsList = await this.signifyApi.getNotifications();
     const unreadGrantNotes: any[] = notificationsList.notes.filter(
       (note: any) => !note.r && note.a.r === NotificationRoute.Credential
     );
 
     const unreadGrantExnMsgs = await Promise.all(
       unreadGrantNotes.map(async (note: any) => {
-        const exchange = await this.agent.modules.signify.getKeriExchange(
-          note.a.d
-        );
+        const exchange = await this.signifyApi.getKeriExchange(note.a.d);
         return {
           notiId: note.i,
           notiSaid: note.a.d,
@@ -689,12 +688,12 @@ class CredentialService extends AgentService {
     const tunnelReqNotif = await this.getKeriNotificationRecordById(
       notificationId
     );
-    const tunnelReqExnMsg = await this.agent.modules.signify.getKeriExchange(
+    const tunnelReqExnMsg = await this.signifyApi.getKeriExchange(
       tunnelReqNotif.a.d as string
     );
     const enterpriseServerEndpoint = tunnelReqExnMsg.exn.a.serverEndpoint;
 
-    const credentials = await this.agent.modules.signify.getCredentials(
+    const credentials = await this.signifyApi.getCredentials(
       tunnelReqExnMsg.exn.a.filter
     );
     if (!credentials.length) {
@@ -704,14 +703,23 @@ class CredentialService extends AgentService {
     }
 
     const serverOobiUrl = tunnelReqExnMsg.exn.a.serverOobiUrl;
-    const resolveServerOobiResult =
-      await this.agent.modules.signify.resolveOobi(serverOobiUrl);
+    const resolveServerOobiResult = await this.signifyApi.resolveOobi(
+      serverOobiUrl
+    );
     const serverAid = resolveServerOobiResult.response.i;
-    const identitiers = await this.agent.modules.signify.getAllIdentifiers();
-    //TODO: May need to create a screen to select which identifier will be used
-    const selectedIdentifier = identitiers.aids[0];
+    const identifiers = await this.signifyApi.getAllIdentifiers();
 
-    const idWalletOobiUrl = await this.agent.modules.signify.getOobi(
+    // Picking the first non multi-sig identifier (this isn't that robust...)
+    const selectedIdentifier = identifiers.aids.find(
+      (identifier) => identifier.salty
+    );
+    if (!selectedIdentifier) {
+      throw new Error(
+        "Couldn't find the single sig identifier to accept tunnel request with..."
+      );
+    }
+
+    const idWalletOobiUrl = await this.signifyApi.getOobi(
       selectedIdentifier.name
     );
 
@@ -747,25 +755,25 @@ class CredentialService extends AgentService {
     if (new Date(latestGrant.exchange.exn.a.dt).getTime() < triggerTime) {
       throw new Error("The grant is too old");
     }
-    await this.agent.modules.signify.markNotification(latestGrant.notiId);
-    await this.agent.modules.signify.admitIpex(
+    await this.signifyApi.markNotification(latestGrant.notiId);
+    await this.signifyApi.admitIpex(
       latestGrant.notiSaid,
       selectedIdentifier.name,
       latestGrant.exchange.exn.i
     );
     /**do an IPEX exchange of the holding ACDC */
     const acdc = credentials[0];
-    await this.agent.modules.signify.grantAcdcIpexExchange(
+    await this.signifyApi.grantAcdcIpexExchange(
       selectedIdentifier.name,
       acdc,
       serverAid
     );
     /**Send exchange message that contains the tunnel AID */
-    const selectedAid = await this.agent.modules.signify.getIdentifierByName(
+    const selectedAid = await this.signifyApi.getIdentifierByName(
       selectedIdentifier.name
     );
 
-    await this.agent.modules.signify.sendExn(
+    await this.signifyApi.sendExn(
       selectedIdentifier.name,
       selectedAid,
       "tunnel",
@@ -780,12 +788,18 @@ class CredentialService extends AgentService {
     await this.agent.genericRecords.deleteById(tunnelReqNotif.id);
   }
 
-  async getUnhandledTunnelRequestEvents(): Promise<KeriNotification[]> {
-    const results = await this.agent.genericRecords.findAllByQuery({
-      type: GenericRecordType.NOTIFICATION_KERI,
-      route: NotificationRoute.IncomingTunnelRequest,
-      $or: [{ route: NotificationRoute.IncomingTunnelRequest }],
-    });
+  async getUnhandledTunnelRequestEvents(
+    filters: {
+      isDismissed?: boolean;
+    } = {}
+  ): Promise<KeriNotification[]> {
+    const results = await this.basicStorage.findAllByQuery(
+      RecordType.NOTIFICATION_KERI,
+      {
+        route: NotificationRoute.IncomingTunnelRequest,
+        ...filters,
+      }
+    );
     return results.map((result) => {
       return {
         id: result.id,
@@ -796,11 +810,11 @@ class CredentialService extends AgentService {
   }
 
   async getKeriExchangeMessage(said: string) {
-    return this.agent.modules.signify.getKeriExchange(said);
+    return this.signifyApi.getKeriExchange(said);
   }
 
   async getSchemaName(said: string) {
-    return this.agent.modules.signify.getSchemaName(said);
+    return this.signifyApi.getSchemaName(said);
   }
 }
 

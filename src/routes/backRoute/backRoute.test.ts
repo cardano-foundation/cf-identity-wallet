@@ -40,6 +40,7 @@ describe("getBackRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
           loggedIn: false,
+          userName: "",
           time: 0,
         },
         currentOperation: OperationType.IDLE,
@@ -116,6 +117,7 @@ describe("getBackRoute", () => {
         routes: [],
         authentication: {
           loggedIn: false,
+          userName: "",
           time: 0,
           passcodeIsSet: true,
           seedPhraseIsSet: false,
@@ -195,6 +197,7 @@ describe("getPreviousRoute", () => {
           passwordIsSet: false,
           passwordIsSkipped: true,
           loggedIn: false,
+          userName: "",
           time: 0,
         },
         currentOperation: OperationType.IDLE,

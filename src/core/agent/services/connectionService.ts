@@ -11,7 +11,6 @@ import {
   OutOfBandRecord,
   utils,
 } from "@aries-framework/core";
-import { GenericRecord } from "@aries-framework/core/build/modules/generic-records/repository/GenericRecord";
 import {
   ConnectionDetails,
   ConnectionHistoryItem,
@@ -23,18 +22,14 @@ import {
   ConnectionShortDetails,
   ConnectionType,
   ConnectionStatus,
-  GenericRecordType,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { AriesAgent } from "../agent";
 import { IdentifierType } from "./identifierService.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
-
-const SERVER_GET_SHORTEN_URL =
-  // eslint-disable-next-line no-undef
-  process.env.REACT_APP_SERVER_GET_SHORTEN_URL ??
-  "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org";
+import { BasicRecord, RecordType } from "../../storage/storage.types";
+import { ConfigurationService } from "../../configuration";
 
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
@@ -125,7 +120,7 @@ class ConnectionService extends AgentService {
   }
 
   async resolveOObi(url: string, name: string): Promise<void> {
-    const resolvedOobi = await this.agent.modules.signify.resolveOobi(url);
+    const resolvedOobi = await this.signifyApi.resolveOobi(url);
     let resolvedOobis: Record<string, any> = {};
     try {
       const storedResolvedOobis = await PreferencesStorage.get(
@@ -158,7 +153,8 @@ class ConnectionService extends AgentService {
           },
         }
       );
-      const operation = await this.agent.modules.signify.resolveOobi(url);
+
+      const operation = await this.signifyApi.resolveOobi(url);
       const connectionId = operation.response.i;
       await this.createConnectionKeriMetadata(connectionId, {
         alias: operation.alias,
@@ -166,31 +162,50 @@ class ConnectionService extends AgentService {
       });
 
       // @TODO - foconnor: This is temporary for ease of development, will be removed soon.
-      // For now this will make KERI contacts operate similarily to DIDComm comms if it's from our deployed cred server.
-      // Will only be confirmed in our wallet once the other agent also resolves our OOBI - it will also issue an ACDC at the same time.
-      if (url.includes("127.0.0.1")) {
+      // This will take our first KERI identifier and get the server to resolve it, so that the connection is resolved from both sides and we can issue to this wallet using its API.
+      if (
+        url.includes(
+          ConfigurationService.env.keri.credentials.testServer.oobiUrl
+        )
+      ) {
         // This is inefficient but it will change going forward.
         const aid = (await AriesAgent.agent.identifiers.getIdentifiers()).find(
-          (identifier) => identifier.method === IdentifierType.KERI
+          (identifier) =>
+            identifier.method === IdentifierType.KERI &&
+            identifier.isPending === false
         );
         if (aid && aid.signifyName) {
+          let userName;
+          try {
+            userName = (
+              await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME)
+            ).userName as string;
+          } catch (error) {
+            if (
+              (error as Error).message !==
+              `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_TUNNEL_CONNECT}`
+            ) {
+              throw error;
+            }
+          }
+
           // signifyName should always be set
           const oobi = await AriesAgent.agent.connections.getKeriOobi(
-            aid.signifyName
+            aid.signifyName,
+            userName
           );
-          try {
-            await (
-              await fetch("http://127.0.0.1:3002/issueAcdcCredentialWithOobi", {
+          await (
+            await fetch(
+              `${ConfigurationService.env.keri.credentials.testServer.urlExt}/resolveOobi`,
+              {
                 method: "POST",
                 body: JSON.stringify({ oobi }),
                 headers: {
                   "Content-Type": "application/json",
                 },
-              })
-            ).json();
-          } catch (e) {
-            // TODO: handle error
-          }
+              }
+            )
+          ).json();
         } else {
           // eslint-disable-next-line no-console
           console.warn(
@@ -223,13 +238,16 @@ class ConnectionService extends AgentService {
 
   // @TODO: this is a temporary feature, an api should be added in the mediator to get the shorten url
   async getShortenUrl(invitationUrl: string): Promise<string> {
-    const getUrl = await fetch(`${SERVER_GET_SHORTEN_URL}/shorten`, {
-      method: "POST",
-      body: JSON.stringify({ url: invitationUrl }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
+    const getUrl = await fetch(
+      `${ConfigurationService.env.keri.credentials.testServer.urlExt}/shorten`,
+      {
+        method: "POST",
+        body: JSON.stringify({ url: invitationUrl }),
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
     const response = await getUrl.text();
     return JsonEncoder.fromString(response).data;
   }
@@ -296,7 +314,7 @@ class ConnectionService extends AgentService {
   }
 
   private getConnectionKeriShortDetails(
-    record: GenericRecord
+    record: BasicRecord
   ): ConnectionShortDetails {
     return {
       id: record.id,
@@ -328,14 +346,15 @@ class ConnectionService extends AgentService {
     connectionType?: ConnectionType
   ): Promise<void> {
     if (connectionType === ConnectionType.KERI) {
-      await this.agent.genericRecords.deleteById(id);
-      await this.agent.modules.signify.deleteContactById(id);
+      await this.basicStorage.deleteById(id);
+      // @TODO - foconnor: Deleting contact by ID throwing an error in KERIA right now, disabling temp...
+      // await this.signifyApi.deleteContactById(id);
     } else {
       await this.agent.connections.deleteById(id);
     }
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
-      this.agent.genericRecords.deleteById(note.id);
+      this.basicStorage.deleteById(note.id);
     }
   }
 
@@ -357,12 +376,12 @@ class ConnectionService extends AgentService {
     connectionId: string,
     note: ConnectionNoteProps
   ): Promise<void> {
-    await this.agent.genericRecords.save({
+    await this.basicStorage.save({
       id: utils.uuid(),
       content: note,
+      type: RecordType.CONNECTION_NOTE,
       tags: {
         connectionId,
-        type: GenericRecordType.CONNECTION_NOTE,
       },
     });
   }
@@ -371,43 +390,41 @@ class ConnectionService extends AgentService {
     connectionNoteId: string,
     note: ConnectionNoteProps
   ) {
-    const noteRecord = await this.agent.genericRecords.findById(
-      connectionNoteId
-    );
+    const noteRecord = await this.basicStorage.findById(connectionNoteId);
     if (!noteRecord) {
       throw new Error(ConnectionService.CONNECTION_NOTE_RECORD_NOT_FOUND);
     }
     noteRecord.content = note;
-    await this.agent.genericRecords.update(noteRecord);
+    await this.basicStorage.update(noteRecord);
   }
 
   async deleteConnectionNoteById(connectionNoteId: string) {
-    return this.agent.genericRecords.deleteById(connectionNoteId);
+    return this.basicStorage.deleteById(connectionNoteId);
   }
 
-  async getKeriOobi(signifyName: string): Promise<string> {
-    return this.agent.modules.signify.getOobi(signifyName);
+  async getKeriOobi(signifyName: string, alias?: string): Promise<string> {
+    const oobi = await this.signifyApi.getOobi(signifyName);
+    return alias ? `${oobi}?name=${encodeURIComponent(alias)}` : oobi;
   }
 
   private async createConnectionKeriMetadata(
     connectionId: string,
     metadata?: Record<string, unknown>
   ): Promise<void> {
-    await this.agent.genericRecords.save({
+    await this.basicStorage.save({
       id: connectionId,
       content: metadata || {},
+      type: RecordType.CONNECTION_KERI_METADATA,
       tags: {
-        type: GenericRecordType.CONNECTION_KERI_METADATA,
+        type: RecordType.CONNECTION_KERI_METADATA,
       },
     });
   }
 
   private async getConnectionKeriMetadataById(
     connectionId: string
-  ): Promise<GenericRecord> {
-    const connectionKeri = await this.agent.genericRecords.findById(
-      connectionId
-    );
+  ): Promise<BasicRecord> {
+    const connectionKeri = await this.basicStorage.findById(connectionId);
     if (!connectionKeri) {
       throw new Error(
         ConnectionService.CONNECTION_KERI_METADATA_RECORD_NOT_FOUND
@@ -416,10 +433,10 @@ class ConnectionService extends AgentService {
     return connectionKeri;
   }
 
-  async getAllConnectionKeriMetadata(): Promise<GenericRecord[]> {
-    const connectionKeris = await this.agent.genericRecords.findAllByQuery({
-      type: GenericRecordType.CONNECTION_KERI_METADATA,
-    });
+  async getAllConnectionKeriMetadata(): Promise<BasicRecord[]> {
+    const connectionKeris = await this.basicStorage.getAll(
+      RecordType.CONNECTION_KERI_METADATA
+    );
     return connectionKeris;
   }
 
@@ -459,11 +476,11 @@ class ConnectionService extends AgentService {
   }
 
   async syncKeriaContacts() {
-    const signifyContacts = await this.agent.modules.signify.getContacts();
+    const signifyContacts = await this.signifyApi.getContacts();
     const storageContacts = await this.getAllConnectionKeriMetadata();
     const unSyncedData = signifyContacts.filter(
       (contact: KeriContact) =>
-        !storageContacts.find((item) => contact.id === item.id)
+        !storageContacts.find((item: BasicRecord) => contact.id == item.id)
     );
     if (unSyncedData.length) {
       //sync the storage with the signify data
@@ -479,10 +496,12 @@ class ConnectionService extends AgentService {
   private async getConnectNotesByConnectionId(
     connectionId: string
   ): Promise<ConnectionNoteDetails[]> {
-    const notes = await this.agent.genericRecords.findAllByQuery({
-      connectionId,
-      type: GenericRecordType.CONNECTION_NOTE,
-    });
+    const notes = await this.basicStorage.findAllByQuery(
+      RecordType.CONNECTION_NOTE,
+      {
+        connectionId,
+      }
+    );
     return notes.map((note) => {
       return {
         id: note.id,
@@ -525,7 +544,7 @@ class ConnectionService extends AgentService {
   private async getKeriConnectionDetails(
     id: string
   ): Promise<ConnectionDetails> {
-    const connection = await this.agent.modules.signify.getContactById(id);
+    const connection = await this.signifyApi.getContactById(id);
     return {
       label: connection?.alias,
       id: connection.id,

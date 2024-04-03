@@ -55,6 +55,7 @@ import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/id
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
+import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 
 const connectionStateChangedHandler = async (
   event: ConnectionStateChangedEvent,
@@ -201,7 +202,17 @@ const keriNotificationsChangeHandler = async (
       })
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
-    //TODO: Use dispatch here, handle logic for the multisig notification
+    const multisigIcpDetails =
+      await AriesAgent.agent.identifiers.getMultisigIcpDetails(event);
+    dispatch(
+      setQueueIncomingRequest({
+        id: event?.id,
+        event: event,
+        type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
+        source: ConnectionType.KERI,
+        multisigIcpDetails: multisigIcpDetails,
+      })
+    );
   } else if (event?.a?.r === NotificationRoute.MultiSigRot) {
     //TODO: Use dispatch here, handle logic for the multisig rotation notification
   } else if (event?.a?.r === NotificationRoute.IncomingTunnelRequest) {
@@ -261,16 +272,19 @@ const AppWrapper = (props: { children: ReactNode }) => {
   };
 
   const initApp = async () => {
+    // @TODO - foconnor: This is a temp hack for development to be removed pre-release.
+    // These items are removed from the secure storage on re-install to re-test the on-boarding for iOS devices.
     try {
       const isInitialized = await PreferencesStorage.get(
         PreferencesKeys.APP_ALREADY_INIT
       );
       dispatch(setInitialized(isInitialized?.initialized as boolean));
     } catch (e) {
-      // TODO
-      await SecureStorage.set(KeyStoreKeys.IDENTITY_ENTROPY, "");
-      await SecureStorage.set(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY, "");
-      await SecureStorage.set(KeyStoreKeys.APP_PASSCODE, "");
+      await SecureStorage.delete(KeyStoreKeys.APP_PASSCODE);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ENTROPY);
+      await SecureStorage.delete(KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY);
+      await SecureStorage.delete(KeyStoreKeys.APP_OP_PASSWORD);
+      await SecureStorage.delete(KeyStoreKeys.SIGNIFY_BRAN);
     }
 
     await new ConfigurationService().start();
@@ -288,6 +302,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setPauseQueueIncomingRequest(true));
     const connectionsDetails =
       await AriesAgent.agent.connections.getConnections();
+    let userName: PreferencesStorageItem = { userName: "" };
     const credentials = await AriesAgent.agent.credentials.getCredentials();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
@@ -342,9 +357,25 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     }
 
+    try {
+      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+        )
+      ) {
+        throw e;
+      }
+    }
+
     dispatch(
       setAuthentication({
         ...authentication,
+        userName: userName.userName as string,
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
@@ -367,7 +398,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
     });
-    AriesAgent.agent.signifyNotification.onNotificationKeriStateChanged(
+    AriesAgent.agent.signifyNotifications.onNotificationKeriStateChanged(
       (event) => {
         return keriNotificationsChangeHandler(event, dispatch);
       }
@@ -382,8 +413,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
     const oldMessages = (
       await Promise.all([
         AriesAgent.agent.connections.getUnhandledConnections(),
-        AriesAgent.agent.credentials.getUnhandledCredentials(),
-        AriesAgent.agent.credentials.getUnhandledTunnelRequestEvents(),
+        AriesAgent.agent.credentials.getUnhandledCredentials({
+          isDismissed: false,
+        }),
+        AriesAgent.agent.identifiers.getUnhandledMultisigIdentifiers({
+          isDismissed: false,
+        }),
+        AriesAgent.agent.credentials.getUnhandledTunnelRequestEvents({
+          isDismissed: false,
+        }),
       ])
     )
       .flat()
@@ -410,11 +448,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     });
     // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-    await Promise.all([
-      AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
-      AriesAgent.agent.connections.syncKeriaContacts(),
-      AriesAgent.agent.credentials.syncACDCs(),
-    ]);
+    // await Promise.all([
+    //   AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
+    //   AriesAgent.agent.connections.syncKeriaContacts(),
+    //   AriesAgent.agent.credentials.syncACDCs(),
+    // ]);
   };
 
   // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.

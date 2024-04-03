@@ -13,6 +13,7 @@ enum CardType {
 enum DIDCommRequestType {
   CONNECTION = "Connection",
   CREDENTIAL = "Credential",
+  TUNNEL_LOGIN = "Tunnel login", // @TODO - foconnor: This type doesn't make sense here.
 }
 
 // String enums as some of these map to i18n values (if relevant)
@@ -31,6 +32,7 @@ enum OperationType {
 
 enum ToastMsgType {
   COPIED_TO_CLIPBOARD = "copiedToClipboard",
+  IDENTIFIER_REQUESTED = "identifierRequested",
   IDENTIFIER_CREATED = "identifierCreated",
   IDENTIFIER_UPDATED = "identifierUpdated",
   IDENTIFIER_DELETED = "identifierDeleted",
@@ -48,6 +50,8 @@ enum ToastMsgType {
   NOTES_UPDATED = "notesUpdated",
   NOTE_REMOVED = "noteRemoved",
   MAX_FAVOURITES_REACHED = "maxFavouritesReached",
+  USERNAME_CREATION_SUCCESS = "usernameCreationSuccess",
+  USERNAME_CREATION_ERROR = "usernameCreationError",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

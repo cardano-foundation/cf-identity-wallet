@@ -5,7 +5,7 @@ import {
   useIonViewWillEnter,
 } from "@ionic/react";
 import { peopleOutline, addOutline } from "ionicons/icons";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { TabLayout } from "../../components/layout/TabLayout";
 import { i18n } from "../../../i18n";
 import "./Creds.scss";
@@ -27,6 +27,9 @@ import {
   getFavouritesCredsCache,
 } from "../../../store/reducers/credsCache";
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import { StartAnimationSource } from "../Identifiers/Identifiers.type";
+
+const CLEAR_STATE_DELAY = 1000;
 
 interface AdditionalButtonsProps {
   handleCreateCred: () => void;
@@ -80,6 +83,9 @@ const Creds = () => {
   const [archivedCredentialsIsOpen, setArchivedCredentialsIsOpen] =
     useState(false);
   const [showPlaceholder, setShowPlaceholder] = useState(true);
+  const [navAnimation, setNavAnimation] =
+    useState<StartAnimationSource>("none");
+  const favouriteContainerElement = useRef<HTMLDivElement>(null);
 
   const fetchArchivedCreds = async () => {
     // @TODO - sdisalvo: handle error
@@ -138,6 +144,30 @@ const Creds = () => {
     (cred) => !favCredsCache?.some((fav) => fav.id === cred.id)
   );
 
+  const handleShowNavAnimation = (source: StartAnimationSource) => {
+    if (favouriteContainerElement.current && source !== "favourite") {
+      favouriteContainerElement.current.style.height =
+        favouriteContainerElement.current.scrollHeight + "px";
+    }
+
+    setNavAnimation(source);
+
+    setTimeout(() => {
+      setNavAnimation("none");
+      if (favouriteContainerElement.current) {
+        favouriteContainerElement.current.removeAttribute("style");
+      }
+    }, CLEAR_STATE_DELAY);
+  };
+
+  const tabClasses = `credential-tab ${
+    navAnimation === "cards"
+      ? "cards-credential-nav"
+      : navAnimation === "favourite"
+        ? "favorite-credential-nav"
+        : ""
+  }`;
+
   const ArchivedCredentialsButton = () => {
     return (
       <div className="archived-credentials-button-container">
@@ -163,6 +193,7 @@ const Creds = () => {
       <TabLayout
         pageId={pageId}
         header={true}
+        customClass={tabClasses}
         title={`${i18n.t("creds.tab.title")}`}
         additionalButtons={
           <AdditionalButtons
@@ -177,7 +208,7 @@ const Creds = () => {
               buttonAction={handleCreateCred}
               testId={pageId}
             >
-              {archivedCreds.length > 0 && <ArchivedCredentialsButton />}
+              {!!archivedCreds.length && <ArchivedCredentialsButton />}
             </CardsPlaceholder>
           )
         }
@@ -185,32 +216,31 @@ const Creds = () => {
         {!showPlaceholder && (
           <>
             {favCreds.length > 0 && (
-              <>
-                <div className="cards-title">
-                  {i18n.t("creds.tab.favourites")}
-                </div>
+              <div
+                ref={favouriteContainerElement}
+                className="credentials-tab-content-block credential-favourite-cards"
+              >
+                {!!allCreds.length && <h3>{i18n.t("creds.tab.favourites")}</h3>}
                 <CardsStack
                   name="favs"
                   cardsType={CardType.CREDS}
                   cardsData={sortedFavCreds}
+                  onShowCardDetails={() => handleShowNavAnimation("favourite")}
                 />
-              </>
+              </div>
             )}
-            {allCreds.length > 0 && (
-              <>
-                {favCreds.length > 0 && (
-                  <div className="cards-title cards-title-all">
-                    {i18n.t("creds.tab.allcreds")}
-                  </div>
-                )}
+            {!!allCreds.length && (
+              <div className="credentials-tab-content-block credential-cards">
+                {!!favCreds.length && <h3>{i18n.t("creds.tab.allcreds")}</h3>}
                 <CardsStack
                   name="allcreds"
                   cardsType={CardType.CREDS}
                   cardsData={allCreds}
+                  onShowCardDetails={() => handleShowNavAnimation("cards")}
                 />
-              </>
+              </div>
             )}
-            {archivedCreds.length > 0 && <ArchivedCredentialsButton />}
+            {!!archivedCreds.length && <ArchivedCredentialsButton />}
           </>
         )}
       </TabLayout>

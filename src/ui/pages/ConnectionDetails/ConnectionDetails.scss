@@ -1,6 +1,24 @@
 .connection-details {
-  ion-toolbar ion-buttons ion-button.action-button {
-    background: white;
+  background: var(--ion-color-light-grey);
+
+  ion-header ion-toolbar {
+    --background: var(--ion-color-light-grey);
+
+    ion-button:not(.close-button-label),
+    ion-button.md:not(.close-button-label) {
+      width: 2.8125rem;
+      height: 2.8125rem;
+      border-radius: 1.5rem;
+      background: var(--ion-color-light);
+
+      &:not(:first-child) {
+        margin-left: 0.5rem;
+      }
+
+      &::part(native) {
+        padding: 0.5rem;
+      }
+    }
   }
 
   .connection-details-content > *,
@@ -31,6 +49,12 @@
       img {
         width: 2.75rem;
         border-radius: 2.5rem;
+
+        &.credential-miniature {
+          height: 1.56rem;
+          width: 2.75rem;
+          border-radius: 0.125rem;
+        }
       }
 
       .cred-card-template {
@@ -65,6 +89,27 @@
 
     .connection-details-history-event {
       padding: 0.65rem 0.8rem;
+
+      .connection-details-logo {
+        img {
+          height: 2.2rem;
+          width: 2.2rem;
+          border-radius: 2.2rem;
+
+          &.credential-miniature {
+            height: 1.248rem;
+            width: 2.2rem;
+            border-radius: 0.125rem;
+          }
+        }
+      }
     }
   }
+}
+
+.connection-detail-spinner-container {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

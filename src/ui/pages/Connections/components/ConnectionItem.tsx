@@ -8,15 +8,22 @@ import {
   IonIcon,
 } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
-import { ConnectionStatus } from "../../../../core/agent/agent.types";
+import {
+  ConnectionStatus,
+  ConnectionType,
+} from "../../../../core/agent/agent.types";
 import { formatShortDate } from "../../../utils/formatters";
 import { ConnectionItemProps } from "../Connections.types";
-import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
+import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
+import DidComLogo from "../../../../ui/assets/images/didCommGeneric.jpg";
 
 const ConnectionItem = ({
   item,
   handleShowConnectionDetails,
 }: ConnectionItemProps) => {
+  const fallbackLogo =
+    item.type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
+
   return (
     <IonItem onClick={() => handleShowConnectionDetails(item)}>
       <IonGrid>
@@ -26,7 +33,7 @@ const ConnectionItem = ({
             className="connection-logo"
           >
             <img
-              src={item?.logo ?? CardanoLogo}
+              src={item?.logo || fallbackLogo}
               alt="connection-logo"
             />
           </IonCol>
