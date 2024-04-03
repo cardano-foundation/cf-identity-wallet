@@ -1,4 +1,10 @@
 .cred-card-detail {
+  &.archived-credential {
+    & ion-header ion-toolbar ion-button.action-button-label {
+      width: 4rem;
+    }
+  }
+
   .page-header {
     margin-top: 0.625rem;
   }
