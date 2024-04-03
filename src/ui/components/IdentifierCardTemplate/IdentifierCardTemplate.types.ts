@@ -1,5 +1,5 @@
 import { CSSProperties } from "react";
-import { IdentifierShortDetails } from "../../../core/agent/services/singleSig.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 
 interface IdentifierCardTemplateProps {
   name?: string;

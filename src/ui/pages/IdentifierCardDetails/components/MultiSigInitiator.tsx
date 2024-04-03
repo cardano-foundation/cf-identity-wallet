@@ -8,7 +8,7 @@ import {
   IonList,
   IonRow,
 } from "@ionic/react";
-import { KERIDetails } from "../../../../core/agent/services/singleSig.types";
+import { KERIDetails } from "../../../../core/agent/services/identifier.types";
 import { Agent } from "../../../../core/agent/agent";
 import {
   CardDetailsBlock,

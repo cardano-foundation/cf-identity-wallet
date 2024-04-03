@@ -25,7 +25,7 @@ jest.mock("react-router-dom", () => ({
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
-      singleSigs: {
+      identifiers: {
         getIdentifier: jest
           .fn()
           .mockResolvedValue({ type: "keri", result: identifierFix[0] }),
@@ -106,7 +106,7 @@ describe("Cards Details page", () => {
     expect(getAllByTestId("verify-password")[0].getAttribute("is-open")).toBe(
       "false"
     );
-    expect(Agent.agent.singleSigs.getIdentifier).toBeCalledWith(
+    expect(Agent.agent.identifiers.getIdentifier).toBeCalledWith(
       filteredKeriFix[0].id
     );
   });

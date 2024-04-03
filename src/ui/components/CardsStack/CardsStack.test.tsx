@@ -13,7 +13,7 @@ import { CardType } from "../../globals/types";
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
-      singleSigs: {
+      identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({
           type: "key",
           result: {

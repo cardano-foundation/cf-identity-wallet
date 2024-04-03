@@ -123,6 +123,16 @@ const agentServicesProps = {
   credentialStorage: credentialStorage as any,
 };
 
+jest.mock("../../../core/agent/agent", () => ({
+  Agent: {
+    agent: {
+      connections: {
+        resolveOobi: jest.fn(),
+      },
+    },
+  },
+}));
+
 const ipexCommunicationService = new IpexCommunicationService(
   agentServicesProps
 );

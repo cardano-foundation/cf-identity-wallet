@@ -1,13 +1,9 @@
-import {
-  IdentifierMetadataRecord,
-  IdentifierMetadataRecordProps,
-} from "../records/identifierMetadataRecord";
-import { IdentifierType } from "./singleSig.types";
+import { IdentifierMetadataRecord } from "../records/identifierMetadataRecord";
+import { IdentifierType } from "./identifier.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
-import { CredentialStorage, IdentifierStorage } from "../records";
-import { SingleSigService } from "./singleSigService";
+import { CredentialStorage } from "../records";
 import { MultiSigService } from "./multiSigService";
 
 const basicStorage = jest.mocked({

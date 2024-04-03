@@ -9,13 +9,13 @@ import {
   GetIdentifierResult,
   IdentifierShortDetails,
   IdentifierType,
-} from "./singleSig.types";
+} from "./identifier.types";
 
 const identifierTypeMappingTheme: Record<IdentifierType, number[]> = {
   [IdentifierType.KERI]: [0, 1],
 };
 
-class SingleSigService extends AgentService {
+class IdentifierService extends AgentService {
   static readonly IDENTIFIER_NOT_ARCHIVED = "Identifier was not archived";
   static readonly THEME_WAS_NOT_VALID = "Identifier theme was not valid";
 
@@ -169,7 +169,7 @@ class SingleSigService extends AgentService {
   private validArchivedIdentifier(metadata: IdentifierMetadataRecord): void {
     if (!metadata.isArchived) {
       throw new Error(
-        `${SingleSigService.IDENTIFIER_NOT_ARCHIVED} ${metadata.id}`
+        `${IdentifierService.IDENTIFIER_NOT_ARCHIVED} ${metadata.id}`
       );
     }
   }
@@ -181,9 +181,9 @@ class SingleSigService extends AgentService {
       metadata.theme &&
       !identifierTypeMappingTheme[metadata.method].includes(metadata.theme)
     ) {
-      throw new Error(`${SingleSigService.THEME_WAS_NOT_VALID}`);
+      throw new Error(`${IdentifierService.THEME_WAS_NOT_VALID}`);
     }
   }
 }
 
-export { SingleSigService };
+export { IdentifierService };

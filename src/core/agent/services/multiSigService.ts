@@ -1,7 +1,9 @@
 import { Algos, d, EventResult, messagize, Siger } from "signify-ts";
 import { v4 as uuidv4 } from "uuid";
 import { Agent } from "../agent";
-import { ConnectionShortDetails, KeriNotification ,
+import {
+  ConnectionShortDetails,
+  KeriNotification,
   Aid,
   IdentifierResult,
   MultiSigExnMessage,
@@ -13,7 +15,7 @@ import {
   IdentifierMetadataRecordProps,
 } from "../records";
 import { AgentService } from "./agentService";
-import { IdentifierType, MultiSigIcpRequestDetails } from "./singleSig.types";
+import { IdentifierType, MultiSigIcpRequestDetails } from "./identifier.types";
 import { sendMultisigExn, waitAndGetDoneOp } from "./utils";
 import { RecordType } from "../../storage/storage.types";
 
@@ -309,7 +311,7 @@ class MultiSigService extends AgentService {
 
     const smids = icpMsg[0].exn.a.smids;
     // @TODO - foconnor: These searches should be optimised, revisit.
-    const ourIdentifiers = await Agent.agent.singleSigs.getIdentifiers();
+    const ourIdentifiers = await Agent.agent.identifiers.getIdentifiers();
     const ourConnections = await Agent.agent.connections.getConnections();
 
     let ourIdentifier;
@@ -376,7 +378,7 @@ class MultiSigService extends AgentService {
     }
     const exn = icpMsg[0].exn;
     const smids = exn.a.smids;
-    const identifiers = await Agent.agent.singleSigs.getIdentifiers();
+    const identifiers = await Agent.agent.identifiers.getIdentifiers();
     const identifier = identifiers.find((identifier) => {
       return smids.find((member) => identifier.id === member);
     });

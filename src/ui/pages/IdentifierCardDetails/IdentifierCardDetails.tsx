@@ -34,7 +34,7 @@ import {
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import { Agent } from "../../../core/agent/agent";
-import { KERIDetails } from "../../../core/agent/services/singleSig.types";
+import { KERIDetails } from "../../../core/agent/services/identifier.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { IdentifierCardInfoKeri } from "../../components/IdentifierCardInfoKeri";
 import { MAX_FAVOURITES } from "../../globals/constants";
@@ -75,7 +75,7 @@ const IdentifierCardDetails = () => {
 
   useEffect(() => {
     const fetchDetails = async () => {
-      const cardDetailsResult = await Agent.agent.singleSigs.getIdentifier(
+      const cardDetailsResult = await Agent.agent.identifiers.getIdentifier(
         params.id
       );
       if (cardDetailsResult) {
@@ -133,8 +133,8 @@ const IdentifierCardDetails = () => {
   const deleteIdentifier = async () => {
     if (cardData) {
       // For now there is no archiving in the UI so does both.
-      await Agent.agent.singleSigs.archiveIdentifier(cardData.id);
-      await Agent.agent.singleSigs.deleteIdentifier(cardData.id);
+      await Agent.agent.identifiers.archiveIdentifier(cardData.id);
+      await Agent.agent.identifiers.deleteIdentifier(cardData.id);
       if (isFavourite) {
         handleSetFavourite(cardData.id);
       }

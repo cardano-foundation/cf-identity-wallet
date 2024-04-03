@@ -27,7 +27,7 @@ jest.mock("react-router-dom", () => ({
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
-      singleSigs: {
+      identifiers: {
         getIdentifier: jest
           .fn()
           .mockResolvedValue({ type: "key", result: identifierFix[0] }),
@@ -367,7 +367,7 @@ describe("Cards Details page", () => {
   });
 
   test("Show loading when indetifier data is null", async () => {
-    Agent.agent.singleSigs.getIdentifiers = jest.fn().mockResolvedValue(null);
+    Agent.agent.identifiers.getIdentifiers = jest.fn().mockResolvedValue(null);
 
     const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>

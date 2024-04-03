@@ -50,7 +50,7 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../utils/clipboard";
 import { Agent } from "../../../core/agent/agent";
-import { IdentifierType } from "../../../core/agent/services/singleSig.types";
+import { IdentifierType } from "../../../core/agent/services/identifier.types";
 import { IdentifierThemeSelector } from "../CreateIdentifier/components/IdentifierThemeSelector";
 
 const IdentifierOptions = ({
@@ -122,7 +122,7 @@ const IdentifierOptions = ({
       displayName: newDisplayName,
       theme: newSelectedTheme,
     };
-    await Agent.agent.singleSigs.updateIdentifier(cardData.id, {
+    await Agent.agent.identifiers.updateIdentifier(cardData.id, {
       displayName: newDisplayName,
       theme: newSelectedTheme,
     });

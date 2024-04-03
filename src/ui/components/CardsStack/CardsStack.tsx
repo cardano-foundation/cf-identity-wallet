@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
-import { IdentifierShortDetails } from "../../../core/agent/services/singleSig.types";
+import { IdentifierShortDetails } from "../../../core/agent/services/identifier.types";
 import { CardType } from "../../globals/types";
 
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";

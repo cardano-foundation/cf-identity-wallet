@@ -39,9 +39,7 @@ import {
   ConnectionType,
   NotificationRoute,
 } from "../../../core/agent/agent.types";
-import {
-  CredentialStatus,
-} from "../../../core/agent/services/credentialService.types";
+import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
@@ -157,16 +155,14 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     dispatch(setPauseQueueIncomingRequest(true));
-    const connectionsDetails =
-      await Agent.agent.connections.getConnections();
+    const connectionsDetails = await Agent.agent.connections.getConnections();
     const credentials = await Agent.agent.credentials.getCredentials();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const storedIdentifiers =
-      await Agent.agent.singleSigs.getIdentifiers();
+    const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
 
     // @TODO - handle error
     try {
@@ -229,11 +225,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     Agent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
     });
-    Agent.agent.signifyNotifications.onNotificationKeriStateChanged(
-      (event) => {
-        return keriNotificationsChangeHandler(event, dispatch);
-      }
-    );
+    Agent.agent.signifyNotifications.onNotificationKeriStateChanged((event) => {
+      return keriNotificationsChangeHandler(event, dispatch);
+    });
     Agent.agent.ipexCommunications.onAcdcKeriStateChanged((event) => {
       return keriAcdcChangeHandler(event, dispatch);
     });
@@ -254,7 +248,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     });
     // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
     await Promise.all([
-      Agent.agent.singleSigs.syncKeriaIdentifiers(),
+      Agent.agent.identifiers.syncKeriaIdentifiers(),
       Agent.agent.connections.syncKeriaContacts(),
       Agent.agent.ipexCommunications.syncACDCs(),
     ]);
@@ -267,8 +261,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       <div className="agent-init-error-msg">
         <p>
           There’s an issue connecting to the cloud services we depend on right
-          now (KERIA) - please check your internet connection,
-          or if this problem persists, let us know on Discord!
+          now (KERIA) - please check your internet connection, or if this
+          problem persists, let us know on Discord!
         </p>
         <p>
           We’re working on an offline mode, as well as improving the deployment

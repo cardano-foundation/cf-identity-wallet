@@ -8,7 +8,7 @@ import {
 import {
   ConnectionService,
   CredentialService,
-  SingleSigService,
+  IdentifierService,
 } from "./services";
 import { SignifyNotificationService } from "./services/signifyNotificationService";
 import { StorageApi } from "../storage/storage.types";
@@ -43,7 +43,7 @@ class Agent {
   static ready = false;
 
   // @TODO - foconnor: Registering these should be more generic, but OK for now
-  private singleSigService!: SingleSigService;
+  private identifierService!: IdentifierService;
   private multiSigService!: MultiSigService;
   private ipexCommunicationService!: IpexCommunicationService;
 
@@ -51,11 +51,11 @@ class Agent {
   private credentialService!: CredentialService;
   private signifyNotificationService!: SignifyNotificationService;
 
-  get singleSigs() {
-    if (!this.singleSigService) {
-      this.singleSigService = new SingleSigService(this.agentServicesProps);
+  get identifiers() {
+    if (!this.identifierService) {
+      this.identifierService = new IdentifierService(this.agentServicesProps);
     }
-    return this.singleSigService;
+    return this.identifierService;
   }
 
   get multiSigs() {

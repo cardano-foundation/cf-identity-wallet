@@ -2,12 +2,12 @@ import {
   IdentifierMetadataRecord,
   IdentifierMetadataRecordProps,
 } from "../records/identifierMetadataRecord";
-import { IdentifierType } from "./singleSig.types";
+import { IdentifierType } from "./identifier.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
 import { Agent } from "../agent";
 import { EventService } from "./eventService";
 import { CredentialStorage, IdentifierStorage } from "../records";
-import { SingleSigService } from "./singleSigService";
+import { IdentifierService } from "./identifierService";
 
 const basicStorage = jest.mocked({
   open: jest.fn(),
@@ -107,7 +107,7 @@ const agentServicesProps = {
   credentialStorage: new CredentialStorage(basicStorage),
 };
 
-const singleSigService = new SingleSigService(agentServicesProps);
+const identifierService = new IdentifierService(agentServicesProps);
 
 jest.mock("../../../core/agent/agent", () => ({
   Agent: {
@@ -166,7 +166,7 @@ describe("Single sig service of agent", () => {
     identifierStorage.getAllIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([keriMetadataRecord]);
-    expect(await singleSigService.getIdentifiers()).toStrictEqual([
+    expect(await identifierService.getIdentifiers()).toStrictEqual([
       {
         id: keriMetadataRecord.id,
         displayName: "Identifier 2",
@@ -183,14 +183,14 @@ describe("Single sig service of agent", () => {
     identifierStorage.getAllIdentifierMetadata = jest
       .fn()
       .mockResolvedValue([]);
-    expect(await singleSigService.getIdentifiers()).toStrictEqual([]);
+    expect(await identifierService.getIdentifiers()).toStrictEqual([]);
   });
 
   test("identifier exists in the database but not on Signify", async () => {
     identifierStorage.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
-    expect(await singleSigService.getIdentifier(keriMetadataRecord.id)).toBe(
+    expect(await identifierService.getIdentifier(keriMetadataRecord.id)).toBe(
       undefined
     );
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
@@ -203,7 +203,7 @@ describe("Single sig service of agent", () => {
       .mockResolvedValue(keriMetadataRecord);
     identifiersGetMock.mockResolvedValue(aidReturnedBySignify);
     expect(
-      await singleSigService.getIdentifier(keriMetadataRecord.id)
+      await identifierService.getIdentifier(keriMetadataRecord.id)
     ).toStrictEqual({
       type: IdentifierType.KERI,
       result: {
@@ -232,7 +232,7 @@ describe("Single sig service of agent", () => {
       op: jest.fn(),
     });
     expect(
-      await singleSigService.createIdentifier({
+      await identifierService.createIdentifier({
         method: IdentifierType.KERI,
         displayName,
         colors,
@@ -253,13 +253,13 @@ describe("Single sig service of agent", () => {
       op: jest.fn(),
     });
     await expect(
-      singleSigService.createIdentifier({
+      identifierService.createIdentifier({
         method: IdentifierType.KERI,
         displayName,
         colors,
         theme: 3,
       })
-    ).rejects.toThrowError(SingleSigService.THEME_WAS_NOT_VALID);
+    ).rejects.toThrowError(IdentifierService.THEME_WAS_NOT_VALID);
   });
 
   // For archive/delete/restore tests
@@ -268,7 +268,7 @@ describe("Single sig service of agent", () => {
       .fn()
       .mockResolvedValue(archivedMetadataRecord);
     identifierStorage.updateIdentifierMetadata = jest.fn();
-    await singleSigService.deleteIdentifier(archivedMetadataRecord.id);
+    await identifierService.deleteIdentifier(archivedMetadataRecord.id);
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
       archivedMetadataRecord.id
     );
@@ -286,8 +286,8 @@ describe("Single sig service of agent", () => {
       .mockResolvedValue(keriMetadataRecord);
     identifierStorage.updateIdentifierMetadata = jest.fn();
     await expect(
-      singleSigService.deleteIdentifier(keriMetadataRecord.id)
-    ).rejects.toThrowError(SingleSigService.IDENTIFIER_NOT_ARCHIVED);
+      identifierService.deleteIdentifier(keriMetadataRecord.id)
+    ).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
       keriMetadataRecord.id
     );
@@ -299,7 +299,7 @@ describe("Single sig service of agent", () => {
       .fn()
       .mockResolvedValue(archivedMetadataRecord);
     identifierStorage.updateIdentifierMetadata = jest.fn();
-    await singleSigService.restoreIdentifier(archivedMetadataRecord.id);
+    await identifierService.restoreIdentifier(archivedMetadataRecord.id);
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
       archivedMetadataRecord.id
     );
@@ -314,8 +314,8 @@ describe("Single sig service of agent", () => {
       .fn()
       .mockResolvedValue(keriMetadataRecord);
     await expect(
-      singleSigService.restoreIdentifier(keriMetadataRecord.id)
-    ).rejects.toThrowError(SingleSigService.IDENTIFIER_NOT_ARCHIVED);
+      identifierService.restoreIdentifier(keriMetadataRecord.id)
+    ).rejects.toThrowError(IdentifierService.IDENTIFIER_NOT_ARCHIVED);
     expect(identifierStorage.getIdentifierMetadata).toBeCalledWith(
       keriMetadataRecord.id
     );
@@ -348,7 +348,7 @@ describe("Single sig service of agent", () => {
     identifierStorage.getKeriIdentifiersMetadata = jest
       .fn()
       .mockReturnValue([]);
-    await singleSigService.syncKeriaIdentifiers();
+    await identifierService.syncKeriaIdentifiers();
     expect(identifierStorage.createIdentifierMetadataRecord).toBeCalledTimes(1);
   });
 });

@@ -1,5 +1,5 @@
 import { BaseRecord } from "../../storage/storage.types";
-import { IdentifierType } from "../services/singleSig.types";
+import { IdentifierType } from "../services/identifier.types";
 
 interface IdentifierMetadataRecordProps {
   id: string;

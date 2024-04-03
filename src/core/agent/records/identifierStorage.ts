@@ -1,6 +1,6 @@
 import { plainToInstance } from "class-transformer";
 import { RecordType, StorageApi } from "../../storage/storage.types";
-import { IdentifierType } from "../services/singleSig.types";
+import { IdentifierType } from "../services/identifier.types";
 import { BasicRecord } from "./basicRecord";
 import {
   IdentifierMetadataRecord,
