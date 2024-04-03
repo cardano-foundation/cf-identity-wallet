@@ -346,8 +346,8 @@ const api = new SignifyApi(5, 1);
 
 describe("Signify API", () => {
   beforeAll(async () => {
-    await api.start();
     await new ConfigurationService().start();
+    await api.start();
   });
 
   test("should call boot if connect fails", async () => {

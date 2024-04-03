@@ -19,6 +19,7 @@ import {
 import { ConnectionService } from "./connectionService";
 import { SignifyApi } from "../modules/signify/signifyApi";
 import { RecordType } from "../../storage/storage.types";
+import { ConfigurationService } from "../../configuration";
 
 const eventEmitter = new EventEmitter();
 
@@ -292,6 +293,10 @@ describe("Connection service of agent - ConnectionRecord helpers", () => {
 describe("Connection service of agent", () => {
   beforeEach(() => {
     jest.resetAllMocks();
+  });
+
+  beforeAll(async () => {
+    await new ConfigurationService().start();
   });
 
   test("can receive an OOBI", async () => {
