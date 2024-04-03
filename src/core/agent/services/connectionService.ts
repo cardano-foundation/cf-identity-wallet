@@ -127,8 +127,13 @@ class ConnectionService extends AgentService {
         PreferencesKeys.APP_TUNNEL_CONNECT
       );
       resolvedOobis = storedResolvedOobis || {};
-    } catch (e) {
-      // TODO: handle error
+    } catch (error) {
+      if (
+        (error as Error).message !==
+        `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_TUNNEL_CONNECT}`
+      ) {
+        throw error;
+      }
     }
 
     resolvedOobis[resolvedOobi.response.i] = {
@@ -170,12 +175,24 @@ class ConnectionService extends AgentService {
       ) {
         // This is inefficient but it will change going forward.
         const aid = (await AriesAgent.agent.identifiers.getIdentifiers()).find(
-          (identifier) => identifier.method === IdentifierType.KERI
+          (identifier) =>
+            identifier.method === IdentifierType.KERI &&
+            identifier.isPending === false
         );
         if (aid && aid.signifyName) {
+          let userName;
+          try {
+            userName = (
+              await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME)
+            ).userName as string;
+          } catch (_) {
+            // @TODO - foconnorNot too much of an issue
+          }
+
           // signifyName should always be set
           const oobi = await AriesAgent.agent.connections.getKeriOobi(
-            aid.signifyName
+            aid.signifyName,
+            userName
           );
           await (
             await fetch(
