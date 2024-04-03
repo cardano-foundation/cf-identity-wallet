@@ -188,14 +188,38 @@ const ArchivedCredentials = ({
     );
   };
 
-  const handleRestoreCredential = async (id: string) => {
+  const handleRestoreCredentials = async (selectedIds: string[]) => {
     setVerifyPasswordIsOpen(false);
     setVerifyPasscodeIsOpen(false);
-    await AriesAgent.agent.credentials.restoreCredential(id);
-    const restoredCred = archivedCreds.find((cred) => cred.id === id);
-    if (restoredCred) {
-      // Should always exist but just in case
-      dispatch(setCredsCache([...credsCache, restoredCred]));
+
+    if (selectedIds.length === 0) return;
+
+    try {
+      const restoreRes = await Promise.allSettled(
+        selectedIds.map((id) =>
+          AriesAgent.agent.credentials.restoreCredential(id)
+        )
+      );
+
+      const restoreSuccessCrendentials: CredentialShortDetails[] = [];
+
+      restoreRes.forEach((res, index) => {
+        if (res.status === "rejected") return;
+
+        const restoredCred = archivedCreds.find(
+          (cred) => cred.id === selectedIds[index]
+        );
+
+        if (restoredCred) {
+          restoreSuccessCrendentials.push(restoredCred);
+        }
+      });
+
+      if (restoreSuccessCrendentials.length === 0) return;
+
+      dispatch(setCredsCache([...credsCache, ...restoreSuccessCrendentials]));
+    } catch (e) {
+      // TODO: Handle error
     }
   };
 
@@ -335,9 +359,7 @@ const ArchivedCredentials = ({
           "creds.card.details.alert.restore.cancel"
         )}`}
         actionConfirm={async () => {
-          await Promise.all(
-            selectedCredentials.map((id) => handleRestoreCredential(id))
-          );
+          await handleRestoreCredentials(selectedCredentials);
           dispatch(
             setToastMsg(
               selectedCredentials.length === 1
