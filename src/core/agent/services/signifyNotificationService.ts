@@ -1,7 +1,10 @@
 import { AgentService } from "./agentService";
 import { KeriNotification, KeriaNotificationMarker } from "../agent.types";
 import { Notification } from "./credentialService.types";
-import { NotificationRoute } from "../modules/signify/signifyApi.types";
+import {
+  MultiSigExnMessage,
+  NotificationRoute,
+} from "../modules/signify/signifyApi.types";
 import { PreferencesKeys, PreferencesStorage } from "../../storage";
 import { RecordType } from "../../storage/storage.types";
 
@@ -132,6 +135,24 @@ class SignifyNotificationService extends AgentService {
 
         await this.signifyApi.markNotification(notif.i);
         return;
+      }
+
+      // @TODO - foconnor: This stops us from showing pop-ups for multi-sig joins
+      // but this should be done better.
+      if (notif.a.r === NotificationRoute.MultiSigIcp) {
+        const msgSaid = notif.a.d as string;
+        const icpMsg: MultiSigExnMessage[] =
+          await this.signifyApi.getMultisigMessageBySaid(msgSaid);
+
+        if (icpMsg.length > 0) {
+          const identifiers = await this.signifyApi.getAllIdentifiers();
+          const ms = identifiers.aids.find(
+            (identifier) => identifier.prefix === icpMsg[0].exn.a.gid
+          );
+          if (ms) {
+            return;
+          }
+        }
       }
 
       if (
