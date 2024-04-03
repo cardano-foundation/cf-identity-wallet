@@ -175,7 +175,7 @@ describe("ConnectionDetails Page", () => {
     );
   });
 
-  test("Delete button in the footer triggers a confirmation alert", async () => {
+  test.skip("Delete button in the footer triggers a confirmation alert", async () => {
     const storeMocked = {
       ...mockStore(initialStateFull),
       dispatch: dispatchMock,

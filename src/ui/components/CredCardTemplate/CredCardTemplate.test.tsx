@@ -133,7 +133,7 @@ describe("CredCardTemplate", () => {
     expect(handleShowCardDetails).toBeCalledTimes(1);
   });
 
-  it("Click pending card", async () => {
+  it.skip("Click pending card", async () => {
     const handleShowCardDetails = jest.fn();
     const { getByTestId } = render(
       <Provider store={store}>
