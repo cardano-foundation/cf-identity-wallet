@@ -5,7 +5,7 @@
 }
 
 .cred-detail-spinner-container {
-  height: 100%;
+  height: calc(100vh - 11.5rem);
   display: flex;
   justify-content: center;
   align-items: center;
