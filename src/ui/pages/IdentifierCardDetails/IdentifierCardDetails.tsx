@@ -296,7 +296,7 @@ const IdentifierCardDetails = () => {
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
-        dataTestId="alert-confirm"
+        dataTestId="alert-confirm-identifier-delete-details"
         headerText={i18n.t("identifiers.card.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
           "identifiers.card.details.delete.alert.confirm"
