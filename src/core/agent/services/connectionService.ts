@@ -127,13 +127,8 @@ class ConnectionService extends AgentService {
         PreferencesKeys.APP_TUNNEL_CONNECT
       );
       resolvedOobis = storedResolvedOobis || {};
-    } catch (error) {
-      if (
-        (error as Error).message !==
-        `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_TUNNEL_CONNECT}`
-      ) {
-        throw error;
-      }
+    } catch (e) {
+      // TODO: handle error
     }
 
     resolvedOobis[resolvedOobi.response.i] = {
@@ -185,8 +180,13 @@ class ConnectionService extends AgentService {
             userName = (
               await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME)
             ).userName as string;
-          } catch (_) {
-            // @TODO - foconnorNot too much of an issue
+          } catch (error) {
+            if (
+              (error as Error).message !==
+              `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_TUNNEL_CONNECT}`
+            ) {
+              throw error;
+            }
           }
 
           // signifyName should always be set
