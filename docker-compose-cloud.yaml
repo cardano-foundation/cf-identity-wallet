@@ -1,0 +1,103 @@
+version: "3.9"
+services:
+  keria:
+    container_name: idw-keria
+    restart: unless-stopped
+    build:
+      context: ../keria
+      dockerfile: ./images/keria.dockerfile
+    environment:
+      - KERI_AGENT_CORS=true
+    volumes:
+      - keria-data:/usr/local/var/keri
+      - ./keria-oobi-config-cloud.json:/keria/scripts/keri/cf/backer-oobis.json
+    entrypoint: keria start --config-file backer-oobis --config-dir ./scripts
+    ports:
+      - 3901:3901
+      - 3902:3902
+      - 3903:3903
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.keria.rule=Host(`${KERIA_HOST:-keria}`)"
+      - "traefik.http.routers.keria.entrypoints=websecure"
+      - "traefik.http.routers.keria.tls.certresolver=myresolver"
+      - "traefik.http.routers.keria.service=keria"
+      - "traefik.http.services.keria.loadbalancer.server.port=3901"
+
+      - "traefik.http.routers.keria-ext.rule=Host(`${KERIA_EXT_HOST:-keria-ext}`)"
+      - "traefik.http.routers.keria-ext.entrypoints=websecure"
+      - "traefik.http.routers.keria-ext.tls.certresolver=myresolver"
+      - "traefik.http.routers.keria-ext.service=keria-ext"
+      - "traefik.http.services.keria-ext.loadbalancer.server.port=3902"
+
+      - "traefik.http.routers.keria-boot.rule=Host(`${KERIA_BOOT_HOST:-keria-boot}`)"
+      - "traefik.http.routers.keria-boot.entrypoints=websecure"
+      - "traefik.http.routers.keria-boot.tls.certresolver=myresolver"
+      - "traefik.http.routers.keria-boot.service=keria-boot"
+      - "traefik.http.services.keria-boot.loadbalancer.server.port=3903"
+
+  cred-issuance:
+    container_name: cred-issuance
+    build:
+      context: ./services/credential-issuance-server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - OOBI_ENDPOINT=https://${CRED_HOST}
+      - KERIA_ENDPOINT=http://keria:3901
+      - KERIA_BOOT_ENDPOINT=http://keria:3903
+      - PORT=3010
+    ports:
+      - 3010:3010
+    volumes:
+      - issuer-server-data:/usr/local/var/keri
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.credentials.rule=Host(`${CRED_HOST:-credentials}`)"
+      - "traefik.http.routers.credentials.entrypoints=websecure"
+      - "traefik.http.routers.credentials.tls.certresolver=myresolver"
+      - "traefik.http.services.credentials.loadbalancer.server.port=3010"
+
+  tunnel-demo-server:
+    container_name: tunnel-demo-server
+    build:
+      context: ../cf-poc-tunnel/demo/server
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=local
+      - ENDPOINT=https://${TUNNEL_DEMO_SERVER_HOST}
+      - PORT=3001
+      - KERIA_URL=https://dev.keria.cf-idw-demo.metadata.dev.cf-deployments.org
+      - KERIA_BOOT_URL=https://dev.keria-boot.cf-idw-demo.metadata.dev.cf-deployments.org
+      - CRED_SERVER_ENDPOINT=https://dev.credentials.cf-idw-demo.metadata.dev.cf-deployments.org
+      - BRAN=Ca58TtiY6J6ynxdigYCJN0
+      - SIGNIFY_NAME=enterpriseServer
+      - DB_DATABASE=cf-poc-tunnel.sql
+      - ISSUER_AID_PREFIX=EP10ooRj0DJF0HWZePEYMLPl-arMV-MAoTKK-o3DXbgX
+    ports:
+      - 3001:3001
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tunnel.rule=Host(`${TUNNEL_DEMO_SERVER_HOST:-tunnel-demo-server}`)"
+      - "traefik.http.routers.tunnel.entrypoints=websecure"
+      - "traefik.http.routers.tunnel.tls.certresolver=myresolver"
+      - "traefik.http.services.tunnel.loadbalancer.server.port=3001"
+
+  tunnel-demo-ui:
+    container_name: tunnel-demo-ui
+    build:
+      context: ../cf-poc-tunnel/demo/ui
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 5173:80
+
+volumes:
+  keria-data:
+  issuer-server-data:
+
+networks:
+  default:
+    name: traefik
+    external: true

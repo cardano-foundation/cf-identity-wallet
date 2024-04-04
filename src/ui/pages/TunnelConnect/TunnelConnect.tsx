@@ -21,7 +21,6 @@ import { LocationState, OobiObject } from "./TunnelConnect.types";
 import { CustomInput } from "../../components/CustomInput";
 import { ShareOOBI } from "./components/ShareOOBI";
 import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
-import { ColorGenerator } from "../../utils/colorGenerator";
 import { IdentifierType } from "../../../core/agent/services/identifierService.types";
 
 const TunnelConnect = () => {
@@ -40,6 +39,12 @@ const TunnelConnect = () => {
   const [resolvedOobis, setResolvedOobis] = useState({});
   const [walletOobi, setWalletOobi] = useState("");
   const [sharedAidName, setSharedAidName] = useState("");
+
+  useEffect(() => {
+    if (state?.oobiUrl) {
+      setOobiUrlValue(state.oobiUrl);
+    }
+  }, [state]);
 
   useEffect(() => {
     PreferencesStorage.get(PreferencesKeys.APP_TUNNEL_CONNECT)
