@@ -157,11 +157,13 @@ class Gestures {
     const { height, width } = await driver.getWindowSize();
     const x = width / 2;
     const y = (height * safePercentage) / 100;
-    await driver.touchAction({
-      action: "tap",
-      x: Math.round(x),
-      y: Math.round(y),
-    });
+    await driver
+      .action('pointer')
+      .move(Math.round(x),Math.round(y))
+      .down()
+      .pause(10)
+      .up()
+      .perform();
   }
 
   /**
