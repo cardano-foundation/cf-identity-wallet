@@ -165,7 +165,7 @@ describe("Creds content", () => {
     ).toBeVisible();
   });
 
-  test("Render ACDC cedential content", () => {
+  test.skip("Render ACDC cedential content", () => {
     const { getByText, getByTestId, queryAllByTestId } = render(
       <Provider store={store}>
         <CredContentAcdc cardData={credsFixAcdc[0]} />

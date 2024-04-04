@@ -48,7 +48,7 @@ import { IdentifierOptions } from "../../components/IdentifierOptions";
 import { IdentifierCardTemplate } from "../../components/IdentifierCardTemplate";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { PageFooter } from "../../components/PageFooter";
-import "../../components/CardDetailsElements/CardDetails.scss";
+import "../../components/CardDetails/CardDetails.scss";
 import "./IdentifierCardDetails.scss";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
@@ -296,7 +296,7 @@ const IdentifierCardDetails = () => {
       <Alert
         isOpen={alertIsOpen}
         setIsOpen={setAlertIsOpen}
-        dataTestId="alert-confirm"
+        dataTestId="alert-confirm-identifier-delete-details"
         headerText={i18n.t("identifiers.card.details.delete.alert.title")}
         confirmButtonText={`${i18n.t(
           "identifiers.card.details.delete.alert.confirm"

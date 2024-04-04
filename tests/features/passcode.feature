@@ -8,7 +8,7 @@ Feature: Passcode
     Then user can see Passcode screen
 
   Scenario: Passcode - user can go back to Onboarding screen
-    Given user tap Back arrow icon on the screen
+    Given user tap Back arrow icon on Passcode screen
     Then user can see Onboarding screen
 
   Scenario: Passcode - user can go back to Passcode screen

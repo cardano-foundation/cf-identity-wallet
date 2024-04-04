@@ -41,14 +41,19 @@ const IdentifierCardTemplate = ({
     >
       <div className="identifier-card-template-inner">
         <div className="card-header">
-          <span className="card-logo">
+          <span
+            className="card-logo"
+            data-testid={`card-key-${index}`}
+          >
             <img
               src={cardData.method === IdentifierType.KEY ? W3CLogo : KERILogo}
               alt="card-logo"
             />
             {cardData.method === IdentifierType.KEY ? "did:key" : ""}
           </span>
-          <span>{cardData.displayName}</span>
+          <span data-testid={`card-display-name-${index}`}>
+            {cardData.displayName}
+          </span>
         </div>
         <div className="card-body">
           <span>{""}</span>
@@ -58,7 +63,10 @@ const IdentifierCardTemplate = ({
             <span className="card-footer-column-label">
               {i18n.t("identifiers.card.layout.created")}
             </span>
-            <span className="card-footer-column-info">
+            <span
+              className="card-footer-column-info"
+              data-testid={`card-created-${index}`}
+            >
               {formatShortDate(cardData.createdAtUTC)}
             </span>
           </span>

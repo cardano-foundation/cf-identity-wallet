@@ -1,14 +1,11 @@
 import { keyOutline, informationCircleOutline } from "ionicons/icons";
 import { i18n } from "../../../../i18n";
+import { ACDCDetails } from "../../../../core/agent/services/credentialService.types";
 import {
+  CardDetailsAttributes,
   CardDetailsBlock,
   CardDetailsItem,
-  CardDetailsAttributes,
-} from "../../../components/CardDetailsElements";
-import {
-  ACDCDetails,
-  JSONObject,
-} from "../../../../core/agent/services/credentialService.types";
+} from "../../../components/CardDetails";
 
 interface ACDCContentProps {
   cardData: ACDCDetails;
@@ -16,7 +13,7 @@ interface ACDCContentProps {
 
 const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
   return (
-    <div className="card-details-content">
+    <>
       <CardDetailsBlock title={i18n.t("creds.card.details.title")}>
         <CardDetailsItem
           info={cardData.credentialType}
@@ -24,12 +21,15 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
           testId="card-details-credential-type"
         />
       </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("creds.card.details.description.label")}>
+      <CardDetailsBlock
+        className="cred-content-acdc-card"
+        title={i18n.t("creds.card.details.description.label")}
+      >
         {cardData.s.description}
       </CardDetailsBlock>
       {cardData.a && (
         <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>
-          <CardDetailsAttributes data={cardData.a as JSONObject} />
+          <CardDetailsAttributes data={cardData.a as any} />
         </CardDetailsBlock>
       )}
       <CardDetailsBlock title={i18n.t("creds.card.details.schemaversion")}>
@@ -47,13 +47,16 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
           testId="card-details-issuer"
         />
       </CardDetailsBlock>
-      <CardDetailsBlock title={i18n.t("creds.card.details.status.label")}>
+      <CardDetailsBlock
+        className="card-attribute-block"
+        title={i18n.t("creds.card.details.status.label")}
+      >
         <CardDetailsAttributes
-          data={cardData.lastStatus as JSONObject}
+          data={cardData.lastStatus as any}
           customType="status"
         />
       </CardDetailsBlock>
-    </div>
+    </>
   );
 };
 
