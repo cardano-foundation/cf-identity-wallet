@@ -1,5 +1,5 @@
 import { CredentialShortDetails } from "../../core/agent/services/credentialService.types";
-import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialMetadataRecordStatus } from "../../core/agent/records/credentialMetadataRecord.types";
 
 const shortCredsFix: CredentialShortDetails[] = [
   {

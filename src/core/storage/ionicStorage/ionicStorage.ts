@@ -1,12 +1,12 @@
 import { Storage, Drivers } from "@ionic/storage";
 import {
-  BasicRecord,
   StorageApi,
   Query,
   SaveBasicRecordOption,
   RecordType,
 } from "../storage.types";
 import { deserializeRecord } from "../utils";
+import { BasicRecord } from "../../agent/records";
 
 class IonicStorage implements StorageApi {
   private static readonly drivers = [Drivers.IndexedDB];
@@ -97,15 +97,16 @@ class IonicStorage implements StorageApi {
     });
   }
 
-  async findById(id: string): Promise<BasicRecord> {
+  async findById(id: string): Promise<BasicRecord | null> {
     this.checkSession(this.session);
     const recordStorage = await this.session!.get(id);
 
     if (!recordStorage) {
-      throw new Error(`${IonicStorage.RECORD_DOES_NOT_EXIST_ERROR_MSG} ${id}`);
+      return null;
     }
     return deserializeRecord(recordStorage);
   }
+
   async findAllByQuery(
     type: RecordType,
     query: Query<BasicRecord>

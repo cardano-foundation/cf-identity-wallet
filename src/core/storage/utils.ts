@@ -1,4 +1,5 @@
-import { BasicRecord, StorageRecord, Tags } from "./storage.types";
+import { BasicRecord } from "../agent/records";
+import { StorageRecord, Tags } from "./storage.types";
 
 function deserializeRecord(storageRecord: StorageRecord): BasicRecord {
   const parsedValue = JSON.parse(storageRecord.value);

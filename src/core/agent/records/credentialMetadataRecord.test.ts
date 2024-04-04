@@ -1,4 +1,4 @@
-import { ConnectionType } from "../../../agent.types";
+import { ConnectionType } from "../agent.types";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";
 import {
   CredentialMetadataRecordProps,

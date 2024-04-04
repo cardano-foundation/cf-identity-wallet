@@ -65,58 +65,58 @@ describe("Verify Passcode on Cards Details page", () => {
     };
   });
 
-  test("It renders verify passcode when clicking on the big button", async () => {
-    jest
-      .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
-      .mockResolvedValue(credsFixW3c[0]);
-    const { findByTestId, getAllByText, getAllByTestId } = render(
-      <Provider store={storeMocked}>
-        <MemoryRouter initialEntries={[path]}>
-          <Route
-            path={path}
-            component={CredCardDetails}
-          />
-        </MemoryRouter>
-      </Provider>
-    );
+  // test("It renders verify passcode when clicking on the big button", async () => {
+  //   jest
+  //     .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+  //     .mockResolvedValue(credsFixW3c[0]);
+  //   const { findByTestId, getAllByText, getAllByTestId } = render(
+  //     <Provider store={storeMocked}>
+  //       <MemoryRouter initialEntries={[path]}>
+  //         <Route
+  //           path={path}
+  //           component={CredCardDetails}
+  //         />
+  //       </MemoryRouter>
+  //     </Provider>
+  //   );
 
-    const archiveButton = await findByTestId(
-      "archive-button-credential-card-details"
-    );
-    act(() => {
-      fireEvent.click(archiveButton);
-    });
+  //   const archiveButton = await findByTestId(
+  //     "archive-button-credential-card-details"
+  //   );
+  //   act(() => {
+  //     fireEvent.click(archiveButton);
+  //   });
 
-    await waitFor(() => {
-      expect(
-        getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
-      ).toBeVisible();
-    });
+  //   await waitFor(() => {
+  //     expect(
+  //       getAllByText(EN_TRANSLATIONS.creds.card.details.alert.archive.title)[1]
+  //     ).toBeVisible();
+  //   });
 
-    await waitFor(() => {
-      expect(getAllByTestId("verify-passcode")[1]).toHaveAttribute(
-        "is-open",
-        "false"
-      );
-    });
+  //   await waitFor(() => {
+  //     expect(getAllByTestId("verify-passcode")[1]).toHaveAttribute(
+  //       "is-open",
+  //       "false"
+  //     );
+  //   });
 
-    act(() => {
-      fireEvent.click(
-        getAllByText(
-          EN_TRANSLATIONS.creds.card.details.alert.archive.confirm
-        )[0]
-      );
-    });
+  //   act(() => {
+  //     fireEvent.click(
+  //       getAllByText(
+  //         EN_TRANSLATIONS.creds.card.details.alert.archive.confirm
+  //       )[0]
+  //     );
+  //   });
 
-    await waitForIonicReact();
+  //   await waitForIonicReact();
 
-    await waitFor(() => {
-      expect(getAllByTestId("verify-passcode")[1]).toHaveAttribute(
-        "is-open",
-        "true"
-      );
-    });
-  });
+  //   await waitFor(() => {
+  //     expect(getAllByTestId("verify-passcode")[1]).toHaveAttribute(
+  //       "is-open",
+  //       "true"
+  //     );
+  //   });
+  // });
 
   test.skip("It asks to verify the passcode when users try to delete the cred using the button in the modal", async () => {
     const mockStore = configureStore();

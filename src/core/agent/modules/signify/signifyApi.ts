@@ -1,4 +1,3 @@
-import { utils } from "@aries-framework/core";
 import {
   SignifyClient,
   ready as signifyReady,
@@ -13,6 +12,7 @@ import {
   Operation,
   CreateIdentiferArgs,
 } from "signify-ts";
+import { v4 as uuidv4 } from "uuid";
 import { ConfigurationService } from "../../../configuration/configurationService";
 import {
   KeriContact,
@@ -81,7 +81,7 @@ export class SignifyApi {
   }
 
   async createIdentifier(): Promise<CreateIdentifierResult> {
-    const signifyName = utils.uuid();
+    const signifyName = uuidv4();
     const operation = await this.signifyClient
       .identifiers()
       .create(signifyName); //, this.getCreateAidOptions());
@@ -102,7 +102,7 @@ export class SignifyApi {
   async createDelegationIdentifier(
     delegatorPrefix: string
   ): Promise<CreateIdentifierResult> {
-    const signifyName = utils.uuid();
+    const signifyName = uuidv4();
     const operation = await this.signifyClient
       .identifiers()
       .create(signifyName, { delpre: delegatorPrefix });
@@ -177,7 +177,7 @@ export class SignifyApi {
     if (SignifyApi.resolvedOobi[url]) {
       return SignifyApi.resolvedOobi[url];
     }
-    const alias = new URL(url).searchParams.get("name") ?? utils.uuid();
+    const alias = new URL(url).searchParams.get("name") ?? uuidv4();
     const operation = await this.waitAndGetDoneOp(
       await this.signifyClient.oobis().resolve(url, alias),
       this.opTimeout,

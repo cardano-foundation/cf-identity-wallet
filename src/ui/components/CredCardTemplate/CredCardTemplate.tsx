@@ -3,7 +3,7 @@ import { IonChip, IonIcon } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
 import { Alert } from "../Alert";
 import { CredCardTemplateProps } from "./CredCardTemplate.types";
-import { CredentialMetadataRecordStatus } from "../../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";
 import { i18n } from "../../../i18n";
 import {
   ConnectionType,

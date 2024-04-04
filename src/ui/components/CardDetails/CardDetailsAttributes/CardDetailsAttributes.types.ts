@@ -1,12 +1,15 @@
-import { JsonObject, JsonValue } from "@aries-framework/core";
+import {
+  JSONObject,
+  JSONValue,
+} from "../../../../core/agent/services/credentialService.types";
 
 export interface CardDetailsAttributesProps {
-  data: JsonObject;
+  data: JSONObject;
   customType?: string;
 }
 
 export interface CardDetailsNestedAttributesProps {
-  attribute: [string, JsonValue];
+  attribute: [string, JSONValue];
   customType?: string;
   cardKeyValue?: string;
 }

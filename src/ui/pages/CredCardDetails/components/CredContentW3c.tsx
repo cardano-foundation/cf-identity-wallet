@@ -4,10 +4,12 @@ import {
   informationCircleOutline,
   pricetagOutline,
 } from "ionicons/icons";
-import { JsonObject } from "@aries-framework/core";
 import { i18n } from "../../../../i18n";
 import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
-import { W3CCredentialDetails } from "../../../../core/agent/services/credentialService.types";
+import {
+  JSONObject,
+  W3CCredentialDetails,
+} from "../../../../core/agent/services/credentialService.types";
 import { ConnectionDetails } from "../../Connections/Connections.types";
 import {
   CardDetailsAttributes,
@@ -41,7 +43,7 @@ const CredContentW3c = ({
           title={i18n.t("creds.card.details.attributes.label")}
         >
           <CardDetailsAttributes
-            data={cardData.credentialSubject as JsonObject}
+            data={cardData.credentialSubject as JSONObject}
           />
         </CardDetailsBlock>
       )}

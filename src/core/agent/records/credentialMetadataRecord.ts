@@ -1,4 +1,3 @@
-import { BaseRecord } from "@aries-framework/core";
 import {
   CredentialMetadataRecordProps,
   CredentialMetadataRecordStatus,
@@ -6,7 +5,8 @@ import {
   SummitCredCachedDetails,
   UniversityCredCachedDetails,
 } from "./credentialMetadataRecord.types";
-import { ConnectionType } from "../../../agent.types";
+import { ConnectionType } from "../agent.types";
+import { BaseRecord } from "../../storage/storage.types";
 
 class CredentialMetadataRecord
   extends BaseRecord

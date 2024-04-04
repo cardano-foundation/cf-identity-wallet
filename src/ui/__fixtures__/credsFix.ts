@@ -3,7 +3,7 @@ import {
   ConnectionStatus,
   ConnectionType,
 } from "../../core/agent/agent.types";
-import { CredentialMetadataRecordStatus } from "../../core/agent/modules/generalStorage/repositories/credentialMetadataRecord.types";
+import { CredentialMetadataRecordStatus } from "../../core/agent/records/credentialMetadataRecord.types";
 import {
   ACDCDetails,
   W3CCredentialDetails,
