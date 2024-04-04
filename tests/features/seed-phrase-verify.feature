@@ -15,4 +15,5 @@ Feature: SeedPhraseVerify
     Given user continue after choose and save 15 words seed phrase
     When user select words from his seed phrase on Seed Phrase Verify screen
     And user tap Continue button on Seed Phrase Verify screen
+    And user add name on Welcome modal
     Then user can see Identity screen
