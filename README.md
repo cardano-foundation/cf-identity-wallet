@@ -72,7 +72,7 @@ To experience the mobile application within the browser, please select one of th
 <div align="center"> 
 <p><u>🔗  Preview the latest version of the Identity Wallet on your browser 🔗 </u></p>
 <br>
-<p><a href="https://cf-identity-wallet.vercel.app/?browserPreview">* On a desktop computer</a></p>
+<p><a href="https://cf-identity-wallet.vercel.app/?browserPreview" target="_blank">* On a desktop computer</a></p>
 <br>
 <p><a href="https://cf-identity-wallet.vercel.app">* On a mobile phone</a></p>
 </div>

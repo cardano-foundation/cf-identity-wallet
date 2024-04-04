@@ -20,6 +20,7 @@ describe("CreateIdentifier modal", () => {
       routes: ["/"],
       authentication: {
         loggedIn: true,
+        userName: "Test",
         time: Date.now(),
         passcodeIsSet: true,
       },

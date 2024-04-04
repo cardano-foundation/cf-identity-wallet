@@ -5,8 +5,8 @@ import {
 } from "ionicons/icons";
 import { formatShortDate } from "../../utils/formatters";
 import { IdentifierCardInfoDidProps } from "./IdentifierCardInfoKey.types";
-import { CardDetailsBlock, CardDetailsItem } from "../CardDetailsElements";
 import { i18n } from "../../../i18n";
+import { CardDetailsBlock, CardDetailsItem } from "../CardDetails";
 
 const IdentifierCardInfoDid = ({ cardData }: IdentifierCardInfoDidProps) => {
   return (
@@ -16,12 +16,13 @@ const IdentifierCardInfoDid = ({ cardData }: IdentifierCardInfoDidProps) => {
           info={cardData.id}
           copyButton={true}
           icon={keyOutline}
-          testId="copy-button-id"
+          testId="information"
         />
         <CardDetailsItem
           info={formatShortDate(cardData?.createdAtUTC)}
           copyButton={false}
           icon={calendarNumberOutline}
+          testId="information-date"
         />
       </CardDetailsBlock>
       <CardDetailsBlock title={i18n.t("identifiers.card.details.type")}>
@@ -29,7 +30,7 @@ const IdentifierCardInfoDid = ({ cardData }: IdentifierCardInfoDidProps) => {
           info={cardData.keyType}
           copyButton={true}
           icon={pricetagOutline}
-          testId="copy-button-type"
+          testId="type"
         />
       </CardDetailsBlock>
       <CardDetailsBlock
@@ -39,7 +40,7 @@ const IdentifierCardInfoDid = ({ cardData }: IdentifierCardInfoDidProps) => {
           info={cardData.publicKeyBase58}
           copyButton={true}
           icon={keyOutline}
-          testId="copy-button-publicKeyBase58"
+          testId="publickeybase58"
         />
       </CardDetailsBlock>
     </>

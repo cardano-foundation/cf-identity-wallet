@@ -510,4 +510,19 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       CredentialService.CREDENTIAL_MISSING_METADATA_ERROR_MSG
     );
   });
+
+  // test("Should pass the filter throught findAllByQuery when call getUnhandledCredentials", async () => {
+  //   agent.credentials.findAllByQuery = jest.fn().mockResolvedValueOnce([]);
+  //   basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+  //   await credentialService.getUnhandledCredentials({
+  //     isDismissed: false,
+  //   });
+  //   expect(basicStorage.findAllByQuery).toBeCalledWith(
+  //     RecordType.NOTIFICATION_KERI,
+  //     {
+  //       route: NotificationRoute.Credential,
+  //       isDismissed: false,
+  //     }
+  //   );
+  // });
 });

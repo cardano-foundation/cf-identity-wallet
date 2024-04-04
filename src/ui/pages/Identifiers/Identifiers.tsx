@@ -202,9 +202,9 @@ const Identifiers = () => {
                 ref={favouriteContainerElement}
                 className="identifiers-tab-content-block identifier-favourite-cards"
               >
-                {allIdentifiers.length ? (
-                  <h3>{i18n.t("creds.tab.favourites")}</h3>
-                ) : null}
+                {!!allIdentifiers.length && (
+                  <h3>{i18n.t("identifiers.tab.favourites")}</h3>
+                )}
                 <CardsStack
                   name="favs"
                   cardsType={CardType.IDENTIFIERS}

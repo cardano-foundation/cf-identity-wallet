@@ -177,8 +177,9 @@ class ConnectionService extends AgentService {
     return this.basicStorage.deleteById(connectionNoteId);
   }
 
-  async getKeriOobi(signifyName: string): Promise<string> {
-    return this.signifyApi.getOobi(signifyName);
+  async getKeriOobi(signifyName: string, alias?: string): Promise<string> {
+    const oobi = await this.signifyApi.getOobi(signifyName);
+    return alias ? `${oobi}?name=${encodeURIComponent(alias)}` : oobi;
   }
 
   private async createConnectionKeriMetadata(

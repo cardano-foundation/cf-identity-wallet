@@ -21,21 +21,21 @@ import summitLogo from "../../../ui/assets/images/summit-logo.svg";
 import "./CredCardTemplate.scss";
 
 const CredCardTemplate = ({
-  name,
-  shortData,
+  name = "default",
+  cardData,
   isActive,
-  index,
+  index = 0,
   onHandleShowCardDetails,
-  styles,
+  pickedCard,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const isResidency =
-    shortData?.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
+    cardData?.credentialType === CredentialType.PERMANENT_RESIDENT_CARD;
   const isAccessPass =
-    shortData?.credentialType === CredentialType.ACCESS_PASS_CREDENTIAL;
+    cardData?.credentialType === CredentialType.ACCESS_PASS_CREDENTIAL;
   const isCustomTemplate = isResidency || isAccessPass;
-  const isW3CTemplate = shortData?.connectionType === ConnectionType.DIDCOMM;
-  const isAcdcTemplate = shortData?.connectionType === ConnectionType.KERI;
+  const isW3CTemplate = cardData?.connectionType === ConnectionType.DIDCOMM;
+  const isAcdcTemplate = cardData?.connectionType === ConnectionType.KERI;
 
   const credCardTemplateStyles = {
     zIndex: index,
@@ -43,105 +43,105 @@ const CredCardTemplate = ({
       backgroundImage: `url(${KeriBackground})`,
       backgroundSize: "cover",
     }),
-    ...styles,
+  };
+
+  const handleCardClick = () => {
+    if (cardData.status === CredentialMetadataRecordStatus.PENDING) {
+      setAlertIsOpen(true);
+    } else if (onHandleShowCardDetails) {
+      onHandleShowCardDetails(index);
+    }
   };
 
   return (
-    <>
-      <div
-        key={index}
-        data-testid={`cred-card-template${
-          index !== undefined ? `-${name}-index-${index}` : ""
-        }`}
-        className={`cred-card-template ${isActive ? "active" : ""} ${
-          isCustomTemplate
-            ? shortData.credentialType
-              .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
-              .toLowerCase()
-            : "card-body-w3c-generic"
-        }`}
-        onClick={() => {
-          if (shortData.status === CredentialMetadataRecordStatus.PENDING) {
-            setAlertIsOpen(true);
-          } else if (onHandleShowCardDetails) {
-            onHandleShowCardDetails(index);
-          }
-        }}
-        style={credCardTemplateStyles}
-      >
-        {isW3CTemplate && !isCustomTemplate && (
-          <img
-            src={W3CLogo}
-            alt="w3c-card-background"
-          />
-        )}
-        {isResidency && (
-          <img
-            src={uscisLogo}
-            alt="us-immigration-background"
-          />
-        )}
-        {isAccessPass && (
-          <img
-            src={summitLogo}
-            alt="summit-background"
-          />
-        )}
-        <div className={`cred-card-template-inner ${shortData.status}`}>
-          <div className="card-header">
-            <span className="card-logo">
-              <img
-                src={
-                  (isResidency && uscisLogo) ||
-                  (isAccessPass && summitLogo) ||
-                  (isW3CTemplate && W3CLogo) ||
-                  (isAcdcTemplate && ACDCLogo)
-                }
-                alt="card-logo"
+    <div
+      key={index}
+      data-testid={`cred-card-template${
+        index !== undefined ? `-${name}-index-${index}` : ""
+      }`}
+      className={`cred-card-template ${isActive ? "active" : ""} ${
+        isCustomTemplate
+          ? cardData.credentialType
+            .replace(/([a-z0–9])([A-Z])/g, "$1-$2")
+            .toLowerCase()
+          : "card-body-w3c-generic"
+      } ${pickedCard ? "picked-card" : "not-picked"}`}
+      onClick={() => handleCardClick()}
+      style={credCardTemplateStyles}
+    >
+      {isW3CTemplate && !isCustomTemplate && (
+        <img
+          src={W3CLogo}
+          alt="w3c-card-background"
+        />
+      )}
+      {isResidency && (
+        <img
+          src={uscisLogo}
+          alt="us-immigration-background"
+        />
+      )}
+      {isAccessPass && (
+        <img
+          src={summitLogo}
+          alt="summit-background"
+        />
+      )}
+      <div className={`cred-card-template-inner ${cardData.status}`}>
+        <div className="card-header">
+          <span className="card-logo">
+            <img
+              src={
+                (isResidency && uscisLogo) ||
+                (isAccessPass && summitLogo) ||
+                (isW3CTemplate && W3CLogo) ||
+                (isAcdcTemplate && ACDCLogo)
+              }
+              alt="card-logo"
+            />
+          </span>
+          {cardData.status === CredentialMetadataRecordStatus.PENDING ? (
+            <IonChip>
+              <IonIcon
+                icon={hourglassOutline}
+                color="primary"
               />
+              <span>{CredentialMetadataRecordStatus.PENDING}</span>
+            </IonChip>
+          ) : (
+            <span className="credential-type">
+              {isAcdcTemplate
+                ? cardData.credentialType
+                : cardData.credentialType.replace(/([a-z])([A-Z])/g, "$1 $2")}
             </span>
-            {shortData.status === CredentialMetadataRecordStatus.PENDING ? (
-              <IonChip>
-                <IonIcon
-                  icon={hourglassOutline}
-                  color="primary"
-                />
-                <span>{CredentialMetadataRecordStatus.PENDING}</span>
-              </IonChip>
-            ) : (
-              <span className="credential-type">
-                {isAcdcTemplate
-                  ? shortData.credentialType
-                  : shortData.credentialType.replace(
-                    /([a-z])([A-Z])/g,
-                    "$1 $2"
-                  )}
-              </span>
-            )}
-          </div>
-          {shortData.status === CredentialMetadataRecordStatus.PENDING && (
-            <CardBodyPending />
           )}
-          {shortData.status === CredentialMetadataRecordStatus.CONFIRMED &&
-            (isCustomTemplate ? (
-              <>
-                {isResidency && <CardBodyResidency cardData={shortData} />}
-                {isAccessPass && <CardBodySummit cardData={shortData} />}
-              </>
-            ) : (
-              <CardBodyGeneric cardData={shortData} />
-            ))}
         </div>
+        {cardData.status === CredentialMetadataRecordStatus.PENDING && (
+          <CardBodyPending />
+        )}
+        {cardData.status === CredentialMetadataRecordStatus.CONFIRMED &&
+          (isCustomTemplate ? (
+            <>
+              {isResidency && <CardBodyResidency cardData={cardData} />}
+              {isAccessPass && <CardBodySummit cardData={cardData} />}
+            </>
+          ) : (
+            <CardBodyGeneric cardData={cardData} />
+          ))}
       </div>
-      <Alert
-        isOpen={alertIsOpen}
-        setIsOpen={setAlertIsOpen}
-        dataTestId="alert-confirm"
-        headerText={i18n.t("creds.create.alert.title")}
-        confirmButtonText={`${i18n.t("creds.create.alert.confirm")}`}
-        actionConfirm={() => setAlertIsOpen(false)}
-      />
-    </>
+      {cardData.status === CredentialMetadataRecordStatus.PENDING &&
+        alertIsOpen && (
+        <Alert
+          isOpen={alertIsOpen}
+          setIsOpen={setAlertIsOpen}
+          dataTestId="alert-confirm"
+          headerText={i18n.t("creds.create.alert.title")}
+          confirmButtonText={`${i18n.t("creds.create.alert.confirm")}`}
+          actionConfirm={() => setAlertIsOpen(false)}
+          backdropDismiss={false}
+        />
+      )}
+    </div>
   );
 };
 

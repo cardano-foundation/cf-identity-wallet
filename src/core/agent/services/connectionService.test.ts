@@ -189,6 +189,20 @@ describe("Connection service of agent", () => {
     expect(KeriOobi).toEqual(oobiPrefix + signifyName);
   });
 
+  test("can get a KERI OOBI with an alias (URL encoded)", async () => {
+    signifyApi.getOobi = jest.fn().mockImplementation((name: string) => {
+      return `${oobiPrefix}${name}`;
+    });
+    const signifyName = "keriuuid";
+    const KeriOobi = await connectionService.getKeriOobi(
+      signifyName,
+      "alias with spaces"
+    );
+    expect(KeriOobi).toEqual(
+      `${oobiPrefix}${signifyName}?name=alias%20with%20spaces`
+    );
+  });
+
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
     signifyApi.getContacts = jest.fn().mockReturnValue([
       {
