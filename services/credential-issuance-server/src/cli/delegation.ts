@@ -3,19 +3,11 @@ import {
   randomPasscode,
   Tier,
   ready as signifyReady,
-  Algos,
-  Siger,
-  d,
-  messagize,
   Serder,
 } from "signify-ts";
-import qrcode from "qrcode-terminal";
-import { createInterface } from "node:readline/promises";
-import { stdin, stdout } from "node:process";
+import { utils } from "@aries-framework/core";
 import { SignifyApi } from "../modules/signify/signifyApi";
 import { waitAndGetDoneOp } from "../modules/signify/utils";
-import { utils } from "@aries-framework/core";
-import { config } from "../config";
 
 const credServer =
   "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org";
@@ -54,7 +46,6 @@ async function waitForFirstNotification(
     const notes = (await client.notifications().list()).notes;
     const note = notes.find((note) => note.a.r === route && note.r === false);
     if (note) {
-      console.log({ note })
       await client.notifications().mark(note.i);
       return {
         said: note.a.d,
@@ -102,24 +93,7 @@ async function retryGetCredentials(
   throw new Error("No credential");
 }
 
-async function createProfile(name) {
-  const client = await getClient();
-  const signifyName = utils.uuid();
-  const aid = await createIdentifier(client, signifyName);
-  const oobi = await client.oobis().get(signifyName, "agent");
-  console.info(
-    `${name} created: { prefix: ${aid.prefix}, name: ${signifyName} }`
-  );
-  return {
-    client,
-    signifyName,
-    aid,
-    oobi,
-  };
-}
-
 async function main() {
-  console.time("Time");
   await signifyReady();
 
   //Issuer identifier
@@ -208,13 +182,11 @@ async function main() {
       SignifyApi.DEFAULT_ROLE,
       delegateClient.agent!.pre
     );
-  await delegateClient
-    .identifiers()
-    .get(delegateSignifyName);  
+  await delegateClient.identifiers().get(delegateSignifyName);
   const delegateOobi = await delegateClient
     .oobis()
     .get(delegateSignifyName, "agent");
-  
+
   // Create contacts
   await Promise.all([
     getOrCreateContact(issuerClient, "holder", delegatorOobi.oobis[0]),
@@ -223,7 +195,7 @@ async function main() {
     getOrCreateContact(delegatorClient, "verifier", verifierOobi.oobis[0]),
     getOrCreateContact(verifierClient, "holder", delegatorOobi.oobis[0]),
     getOrCreateContact(verifierClient, "issuer", issuerOobi.oobis[0]),
-    getOrCreateContact(verifierClient, "holder", delegateOobi.oobis[0]),
+    getOrCreateContact(verifierClient, "delegate", delegateOobi.oobis[0]),
     getOrCreateContact(delegateClient, "verifier", verifierOobi.oobis[0]),
   ]);
 
@@ -365,23 +337,21 @@ async function main() {
       verifierGrantNotification.said!,
       new Date().toISOString().replace("Z", "000+00:00")
     );
-  console.log(`admit!`)
+  console.log(`admit!`);
   await waitAndGetDoneOp(
-    delegatorClient,
+    verifierClient,
     await verifierClient
       .ipex()
       .submitAdmit(verifierAid.name, admit3, sigs3, aend3, [
         delegatorAid.prefix,
       ])
   );
-  console.log(`op done!`, { verifierGrantNotification })
-  // await verifierClient.notifications().mark(verifierGrantNotification.id);
-  // await verifierClient.notifications().delete(verifierGrantNotification.id);
-  // console.log(`noti deleted!`)
-  const verifierCreds = await retryGetCredentials(verifierClient);
+  console.log(`op done!`, { verifierGrantNotification });
+  const verifierCreds = await verifierClient
+    .credentials()
+    .get(verifierAid.name, qviCredentialId); //await retryGetCredentials(verifierClient);
+  //I got "405 Method Not Allowed" here
   console.log({ verifierCreds });
-
-  console.timeEnd("Time");
 }
 
 main();
