@@ -125,7 +125,17 @@ class ConnectionService extends AgentService {
     id: string,
     type?: ConnectionType
   ): Promise<ConnectionDetails> {
-    return this.getKeriConnectionDetails(id);
+    const connection = await this.signifyApi.getContactById(id);
+    return {
+      label: connection?.alias,
+      id: connection.id,
+      status: ConnectionStatus.CONFIRMED,
+      connectionDate: (
+        await this.getConnectionKeriMetadataById(connection.id)
+      ).createdAt.toISOString(),
+      serviceEndpoints: [connection.oobi],
+      notes: await this.getConnectNotesByConnectionId(connection.id),
+    };
   }
 
   async deleteConnectionById(
@@ -269,22 +279,6 @@ class ConnectionService extends AgentService {
         message: note.content.message as string,
       };
     });
-  }
-
-  private async getKeriConnectionDetails(
-    id: string
-  ): Promise<ConnectionDetails> {
-    const connection = await this.signifyApi.getContactById(id);
-    return {
-      label: connection?.alias,
-      id: connection.id,
-      status: ConnectionStatus.CONFIRMED,
-      connectionDate: (
-        await this.getConnectionKeriMetadataById(connection.id)
-      ).createdAt.toISOString(),
-      serviceEndpoints: [connection.oobi],
-      notes: await this.getConnectNotesByConnectionId(connection.id),
-    };
   }
 }
 
