@@ -1,0 +1,11 @@
+keri:
+  keria:
+    url: "https://dev.keria.cf-idw-demo.metadata.dev.cf-deployments.org"
+    bootUrl: "https://dev.keria-boot.cf-idw-demo.metadata.dev.cf-deployments.org"
+  credentials:
+    testServer:
+      urlExt: "https://dev.credentials.cf-idw-demo.metadata.dev.cf-deployments.org"
+      urlInt: "https://dev.credentials.cf-idw-demo.metadata.dev.cf-deployments.org"
+      oobiUrl: "http://dev.keria.cf-idw-demo.metadata.dev.cf-deployments.org:3902/oobi"
+  backing:
+    mode: direct 
