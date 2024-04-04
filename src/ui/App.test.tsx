@@ -40,7 +40,7 @@ jest.mock("../core/agent/agent", () => ({
         createMetadata: jest.fn(),
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
-        getUnhandledCredentials: jest.fn(),
+        getKeriCredentialNotifications: jest.fn(),
         onAcdcKeriStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },

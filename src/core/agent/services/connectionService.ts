@@ -133,7 +133,7 @@ class ConnectionService extends AgentService {
     connectionType?: ConnectionType
   ): Promise<void> {
     await this.basicStorage.deleteById(id);
-    await this.signifyApi.deleteContactById(id);
+    // await this.signifyApi.deleteContactById(id); TODO: must open when Keria runs well
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
       this.basicStorage.deleteById(note.id);

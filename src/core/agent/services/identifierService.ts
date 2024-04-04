@@ -659,6 +659,8 @@ class IdentifierService extends AgentService {
     });
   }
 
+  // TODO @bao-sotatek: must write the unit test for aid storage in recontructing agent services
+
   async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
     const basicRecords = await this.basicStorage.findAllByQuery(
       RecordType.IDENTIFIER_METADATA_RECORD,

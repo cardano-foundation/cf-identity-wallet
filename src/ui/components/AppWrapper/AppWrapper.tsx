@@ -263,7 +263,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     const oldMessages = (
       await Promise.all([
-        AriesAgent.agent.credentials.getUnhandledCredentials(),
+        AriesAgent.agent.credentials.getKeriCredentialNotifications(),
         AriesAgent.agent.identifiers.getUnhandledMultisigIdentifiers({
           isDismissed: false,
         }),

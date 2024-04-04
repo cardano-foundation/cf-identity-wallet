@@ -1,10 +1,15 @@
+import {
+  JSONObject,
+  JSONValue,
+} from "../../../../core/agent/services/credentialService.types";
+
 export interface CardDetailsAttributesProps {
-  data: any; //TODO - bao-sotatek: Will replace with type in another PR
+  data: JSONObject;
   customType?: string;
 }
 
 export interface CardDetailsNestedAttributesProps {
-  attribute: [string, any];
+  attribute: [string, JSONValue];
   customType?: string;
   cardKeyValue?: string;
 }
