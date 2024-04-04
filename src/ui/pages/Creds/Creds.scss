@@ -20,6 +20,24 @@
       }
     }
   }
+
+  .credentials-tab-content-block {
+    margin: 1.5rem 0;
+
+    h3 {
+      margin-bottom: 0.875rem;
+    }
+  }
+
+  @media screen and (min-width: 250px) and (max-width: 370px) {
+    .credentials-tab-content-block {
+      margin-bottom: 1.6rem;
+
+      h3 {
+        margin-bottom: 0.7rem;
+      }
+    }
+  }
 }
 
 .credential-tab {
@@ -38,6 +56,7 @@
           opacity: 0;
           height: 0;
           overflow: hidden;
+          margin: 0;
         }
       }
     }
@@ -63,7 +82,6 @@
           from {
             opacity: 0;
             overflow: hidden;
-            margin-top: 0;
             height: 1.25rem;
           }
           to {

@@ -9,11 +9,12 @@ import {
 import { CredContentW3c } from "./CredContentW3c";
 import { CredContentAcdc } from "./CredContentAcdc";
 import { store } from "../../../../store";
+import { formatShortDate, formatTimeToSec } from "../../../utils/formatters";
 
 // TODO: @bao-sotatek must open testing datetime in card
 describe("Creds content", () => {
   test("Render University Degree Credential content", () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, queryByText } = render(
       <Provider store={store}>
         <CredContentW3c
           cardData={credsFixW3c[0]}
@@ -59,7 +60,7 @@ describe("Creds content", () => {
   });
 
   test("Render Access Pass Credential content", () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, queryByText } = render(
       <Provider store={store}>
         <CredContentW3c
           cardData={credsFixW3c[1]}
@@ -109,7 +110,7 @@ describe("Creds content", () => {
   });
 
   test("Render Permanent Resident Card content", () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, queryByText } = render(
       <Provider store={store}>
         <CredContentW3c
           cardData={credsFixW3c[2]}
@@ -165,7 +166,7 @@ describe("Creds content", () => {
   });
 
   test("Render ACDC cedential content", () => {
-    const { getByText, getByTestId } = render(
+    const { getByText, getByTestId, queryAllByTestId } = render(
       <Provider store={store}>
         <CredContentAcdc cardData={credsFixAcdc[0]} />
       </Provider>

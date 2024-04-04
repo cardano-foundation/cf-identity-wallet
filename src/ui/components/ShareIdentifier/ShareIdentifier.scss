@@ -1,68 +1,101 @@
-.share-identifier {
-  h2 {
-    text-align: left;
-  }
-
-  ion-col {
-    display: flex;
-    flex-direction: column;
-  }
-
-  ion-button,
-  ion-button.md {
-    width: 2.8125rem;
-    height: 2.8125rem;
-    margin: 0;
-    --background: transparent;
-    --box-shadow: none;
-    --color: var(--ion-color-secondary);
-    --background-activated: var(--ion-color-light-grey);
-
-    &::part(native) {
-      padding: 0;
+.share-identifier-modal {
+  &.md {
+    .share-identifier-body {
+      margin-bottom: 0;
     }
   }
 
-  ion-icon {
-    width: 1.475rem;
-    height: 1.475rem;
-    margin: 0;
-  }
-
-  #react-qrcode-logo {
-    padding: 1.5rem;
-    margin: 1rem auto;
-    background-color: white;
-    box-shadow: 0px 2px 4px rgba(54, 60, 74, 0.2);
-    border-radius: 16px;
-  }
-
-  .share-identifier-divider {
-    display: flex;
-    margin-bottom: 1rem;
-
-    .share-identifier-divider-line {
-      border-bottom: 1px solid var(--ion-color-dark-grey);
-      display: flex;
-      flex-grow: 2;
-      margin-bottom: 0.5rem;
+  .responsive-modal-content {
+    .page-header {
+      ion-toolbar {
+        --background: transparent;
+      }
     }
-    .share-identifier-divider-text {
-      margin-inline: 0.5rem;
+
+    p.share-identifier-subtitle {
+      text-align: center;
+      margin: 0 0 0.5rem;
     }
-  }
 
-  .share-identifier-option {
-    display: flex;
-
-    > * {
+    .share-identifier-body-component {
       display: flex;
       flex-direction: column;
-      justify-content: center;
     }
 
-    &:not(:last-child) {
-      margin-bottom: 0.5rem;
+    ion-button,
+    ion-button.md {
+      width: 2.8125rem;
+      height: 2.8125rem;
+      margin: 0;
+      --background: transparent;
+      --box-shadow: none;
+      --color: var(--ion-color-secondary);
+      --background-activated: var(--ion-color-light-grey);
+
+      &::part(native) {
+        padding: 0;
+      }
+    }
+
+    ion-icon {
+      width: 1.475rem;
+      height: 1.475rem;
+      margin: 0;
+    }
+
+    #react-qrcode-logo {
+      width: 70vw !important;
+      height: 70vw !important;
+      padding: 1.5rem;
+      margin: 1rem auto;
+      background-color: white;
+      box-shadow: 0px 2px 4px rgba(54, 60, 74, 0.2);
+      border-radius: 16px;
+    }
+
+    .share-identifier-divider {
+      display: flex;
+      margin-bottom: 1rem;
+
+      .share-identifier-divider-line {
+        border-bottom: 1px solid var(--ion-color-dark-grey);
+        display: flex;
+        flex-grow: 2;
+        margin-bottom: 0.5rem;
+      }
+      .share-identifier-divider-text {
+        margin-inline: 0.5rem;
+      }
+    }
+
+    .share-identifier-option {
+      display: flex;
+      height: 2.875rem;
+
+      > * {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+
+      &:not(:last-child) {
+        margin-bottom: 0.25rem;
+      }
+    }
+
+    @media screen and (min-width: 250px) and (max-width: 370px) {
+      #react-qrcode-logo {
+        padding: 1.2rem;
+      }
+
+      .share-identifier-body-component,
+      .share-identifier-divider-text {
+        font-size: 0.8rem;
+      }
+
+      .share-identifier-option {
+        height: 2.3rem;
+      }
     }
   }
 }

@@ -19,7 +19,7 @@ import {
   apps,
   appsOutline,
 } from "ionicons/icons";
-import React from "react";
+import { ComponentType } from "react";
 import { useLocation } from "react-router-dom";
 import { i18n } from "../../../../i18n";
 import "./TabsMenu.scss";
@@ -62,14 +62,9 @@ const tabsRoutes = [
     icon: [apps, appsOutline],
   },
 ];
-const TabsMenu = ({
-  tab,
-  path,
-}: {
-  tab: React.ComponentType;
-  path: string;
-}) => {
+const TabsMenu = ({ tab, path }: { tab: ComponentType; path: string }) => {
   const location = useLocation();
+
   return (
     <IonTabs>
       <IonRouterOutlet animated={false}>

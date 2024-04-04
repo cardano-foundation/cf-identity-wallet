@@ -10,7 +10,10 @@ import { ToastMsgType } from "../../../globals/types";
 import { ConnectionNoteProps } from "./ConnectionNote.types";
 import { useAppDispatch } from "../../../../store/hooks";
 import { EditConnectionsModalProps } from "./EditConnectionsModal.types";
+import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
+import DidComLogo from "../../../../ui/assets/images/didCommGeneric.jpg";
 import "./EditConnectionsModal.scss";
+import { ConnectionType } from "../../../../core/agent/agent.types";
 
 const EditConnectionsModal = ({
   notes,
@@ -22,6 +25,8 @@ const EditConnectionsModal = ({
   connectionDetails,
   setAlertDeleteNoteIsOpen,
 }: EditConnectionsModalProps) => {
+  const fallbackLogo =
+    connectionDetails.type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
   const TEMP_ID_PREFIX = "temp";
   const dispatch = useAppDispatch();
 
@@ -96,7 +101,7 @@ const EditConnectionsModal = ({
         >
           <div className="connection-details-content">
             <ConnectionDetailsHeader
-              logo={connectionDetails?.logo}
+              logo={connectionDetails?.logo || fallbackLogo}
               label={connectionDetails?.label}
               date={connectionDetails?.connectionDate}
             />

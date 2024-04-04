@@ -70,4 +70,28 @@ describe("Signify notification service of agent", () => {
     expect(basicStorage.save).toBeCalledTimes(2);
     expect(callback).toBeCalledTimes(2);
   });
+
+  test("Should call update when dismiss a notification", async () => {
+    const notification = {
+      id: "id",
+      _tags: {
+        isDismissed: false,
+      } as any,
+      setTag: function (name: string, value: any) {
+        this._tags[name] = value;
+      },
+    };
+    basicStorage.findById = jest.fn().mockResolvedValue(notification);
+    await signifyNotificationService.dismissNotification(notification.id);
+    expect(basicStorage.update).toBeCalledTimes(1);
+  });
+
+  test("Should throw error when dismiss an invalid notification", async () => {
+    basicStorage.findById = jest.fn().mockResolvedValue(null);
+    await expect(
+      signifyNotificationService.dismissNotification("not-exist-noti-id")
+    ).rejects.toThrowError(
+      SignifyNotificationService.KERI_NOTIFICATION_NOT_FOUND
+    );
+  });
 });

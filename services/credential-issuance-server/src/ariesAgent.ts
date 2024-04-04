@@ -229,7 +229,7 @@ class AriesAgent {
   }
 
   async createKeriOobi() {
-    return this.agent.modules.signify.getOobi(AriesAgent.ISSUER_AID_NAME);
+    return `${await this.agent.modules.signify.getOobi(AriesAgent.ISSUER_AID_NAME)}?name=CF%20Credential%20Issuance`;
   }
 
   async resolveOobi(url: string) {

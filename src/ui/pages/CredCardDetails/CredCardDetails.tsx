@@ -281,7 +281,7 @@ const CredCardDetails = () => {
         ) : (
           <>
             <CredCardTemplate
-              shortData={cardData}
+              cardData={cardData}
               isActive={false}
             />
             <div className="card-details-content">

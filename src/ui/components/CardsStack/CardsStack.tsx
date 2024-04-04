@@ -14,9 +14,6 @@ import { CardsStackProps } from "./CardsStack.types";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_STATE_DELAY = 1000;
-const getCardStyles = (index: number) => ({
-  top: index * 30,
-});
 
 const CardsStack = ({
   name,
@@ -25,7 +22,7 @@ const CardsStack = ({
   onShowCardDetails,
 }: CardsStackProps) => {
   const history = useHistory();
-  const [isActive, setIsActive] = useState(false);
+  const [pickedCardIndex, setPickedCardIndex] = useState<number | null>(null);
   const inShowCardProgress = useRef(false);
 
   const renderCards = (
@@ -42,19 +39,19 @@ const CardsStack = ({
             key={index}
             index={index}
             cardData={cardData as IdentifierShortDetails}
-            isActive={isActive}
+            isActive={pickedCardIndex !== null}
+            pickedCard={index === pickedCardIndex}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
-            styles={getCardStyles(index)}
           />
         ) : (
           <CredCardTemplate
             name={name}
             key={index}
             index={index}
-            shortData={cardData as CredentialShortDetails}
-            isActive={isActive}
+            cardData={cardData as CredentialShortDetails}
+            isActive={pickedCardIndex !== null}
+            pickedCard={index === pickedCardIndex}
             onHandleShowCardDetails={() => handleShowCardDetails(index)}
-            styles={getCardStyles(index)}
           />
         )
     );
@@ -63,7 +60,7 @@ const CardsStack = ({
   const handleShowCardDetails = async (index: number) => {
     if (inShowCardProgress.current) return;
     inShowCardProgress.current = true;
-    setIsActive(true);
+    setPickedCardIndex(index);
     onShowCardDetails?.();
     let pathname = "";
 
@@ -80,13 +77,13 @@ const CardsStack = ({
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {
-      setIsActive(false);
+      setPickedCardIndex(null);
       inShowCardProgress.current = false;
     }, CLEAR_STATE_DELAY);
   };
 
   const containerClasses = `cards-stack-container ${
-    isActive ? "transition-start" : ""
+    pickedCardIndex !== null ? "transition-start" : ""
   }`;
 
   return <div className={containerClasses}>{renderCards(cardsData)}</div>;
