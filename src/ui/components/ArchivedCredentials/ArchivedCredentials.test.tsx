@@ -3,10 +3,15 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import { AnyAction, Store } from "@reduxjs/toolkit";
 import { TabsRoutePath } from "../../../routes/paths";
-import { ArchivedCredentials } from "./ArchivedCredentials";
+import {
+  ArchivedCredentials,
+  ArchivedCredentialsContainer,
+} from "./ArchivedCredentials";
 import { credsFixW3c } from "../../__fixtures__/credsFix";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { setCredsCache } from "../../../store/reducers/credsCache";
+
+const deleteCredentailsMock = jest.fn((id: string) => Promise.resolve(true));
 
 jest.mock("../../../core/agent/agent", () => ({
   AriesAgent: {
@@ -16,8 +21,16 @@ jest.mock("../../../core/agent/agent", () => ({
       },
       credentials: {
         restoreCredential: jest.fn((id: string) => Promise.resolve(id)),
+        deleteCredential: (id: string) => deleteCredentailsMock(id),
       },
     },
+  },
+}));
+
+jest.mock("../../../core/storage", () => ({
+  ...jest.requireActual("../../../core/storage"),
+  SecureStorage: {
+    get: (key: string) => "111111",
   },
 }));
 
@@ -81,10 +94,10 @@ describe("Creds Tab", () => {
     );
   });
 
-  test.skip("Restore archived credentials", async () => {
+  test("Restore multiple archived credentials", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={mockedStore}>
-        <ArchivedCredentials
+        <ArchivedCredentialsContainer
           archivedCredentialsIsOpen={true}
           archivedCreds={credsFixW3c}
           setArchivedCredentialsIsOpen={jest.fn()}
@@ -96,9 +109,8 @@ describe("Creds Tab", () => {
       expect(getByTestId("action-button")).toBeVisible();
     });
 
-    const actionBtn = getByText("Select");
     act(() => {
-      actionBtn.click();
+      fireEvent.click(getByText("Select"));
     });
 
     await waitFor(() => {
@@ -140,6 +152,69 @@ describe("Creds Tab", () => {
 
     await waitFor(() => {
       expect(dispatchMock).toBeCalledWith(setCredsCache([...credsFixW3c]));
+    });
+  });
+
+  test.skip("Delete multiple archived credential", async () => {
+    const { getByText, getByTestId } = render(
+      <Provider store={mockedStore}>
+        <ArchivedCredentialsContainer
+          archivedCredentialsIsOpen={true}
+          archivedCreds={credsFixW3c}
+          setArchivedCredentialsIsOpen={jest.fn()}
+        />
+      </Provider>
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("action-button")).toBeVisible();
+    });
+
+    act(() => {
+      fireEvent.click(getByText("Select"));
+    });
+
+    await waitFor(() => {
+      expect(getByTestId("action-button").children.item(0)?.innerHTML).toBe(
+        "Cancel"
+      );
+
+      expect(getByTestId("delete-credentials")).toBeVisible();
+    });
+
+    await waitFor(() => {
+      expect(getByText("0 Credentials Selected")).toBeVisible();
+    });
+
+    const cardItem = getByTestId(`crendential-card-item-${credsFixW3c[0].id}`);
+
+    fireEvent.click(cardItem);
+
+    fireEvent.click(getByTestId("delete-credentials"));
+
+    await waitFor(() => {
+      expect(
+        getByText(EN_TRANSLATIONS.creds.card.details.alert.delete.confirm)
+      ).toBeVisible();
+    });
+
+    fireEvent.click(
+      getByText(EN_TRANSLATIONS.creds.card.details.alert.delete.confirm)
+    );
+
+    await waitFor(() => {
+      expect(getByTestId("verify-passcode-title")).toBeVisible();
+    });
+
+    fireEvent.click(getByTestId("passcode-button-1"));
+    fireEvent.click(getByTestId("passcode-button-1"));
+    fireEvent.click(getByTestId("passcode-button-1"));
+    fireEvent.click(getByTestId("passcode-button-1"));
+    fireEvent.click(getByTestId("passcode-button-1"));
+    fireEvent.click(getByTestId("passcode-button-1"));
+
+    await waitFor(() => {
+      expect(deleteCredentailsMock).toBeCalledWith(1);
     });
   });
 });
