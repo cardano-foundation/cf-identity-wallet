@@ -1,12 +1,10 @@
-import { JsonObject, JsonValue } from "@aries-framework/core";
-
 export interface CardDetailsAttributesProps {
-  data: JsonObject;
+  data: any; //TODO - bao-sotatek: Will replace with type in another PR
   customType?: string;
 }
 
 export interface CardDetailsNestedAttributesProps {
-  attribute: [string, JsonValue];
+  attribute: [string, any];
   customType?: string;
   cardKeyValue?: string;
 }
