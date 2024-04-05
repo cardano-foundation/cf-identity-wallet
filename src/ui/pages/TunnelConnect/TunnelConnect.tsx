@@ -20,8 +20,10 @@ import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { LocationState, OobiObject } from "./TunnelConnect.types";
 import { CustomInput } from "../../components/CustomInput";
 import { ShareOOBI } from "./components/ShareOOBI";
-import { getIdentifiersCache } from "../../../store/reducers/identifiersCache";
+import { getIdentifiersCache , setIdentifiersCache } from "../../../store/reducers/identifiersCache";
 import { IdentifierType } from "../../../core/agent/services/identifierService.types";
+import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
+import { setCredsCache } from "../../../store/reducers/credsCache";
 
 const TunnelConnect = () => {
   const pageId = "tunnel-connect";
@@ -39,6 +41,8 @@ const TunnelConnect = () => {
   const [resolvedOobis, setResolvedOobis] = useState({});
   const [walletOobi, setWalletOobi] = useState("");
   const [sharedAidName, setSharedAidName] = useState("");
+  const [resetCounter, setResetCounter] = useState(0);
+  const [timer, setTimer] = useState<number | undefined>();
 
   useEffect(() => {
     if (state?.oobiUrl) {
@@ -120,6 +124,36 @@ const TunnelConnect = () => {
     setShowLoading(false);
   };
 
+  useEffect(() => {
+    async function resetForDemo() {
+      for (const identifier of await AriesAgent.agent.identifiers.getIdentifiers()) {
+        await AriesAgent.agent.identifiers.archiveIdentifier(identifier.id);
+        await AriesAgent.agent.identifiers.deleteIdentifier(identifier.id);
+      }
+      for (const connection of await AriesAgent.agent.connections.getConnections()) {
+        await AriesAgent.agent.connections.deleteConnectionById(connection.id);
+      }
+      for (const credential of await AriesAgent.agent.credentials.getCredentials()) {
+        await AriesAgent.agent.credentials.archiveCredential(credential.id);
+        await AriesAgent.agent.credentials.deleteCredential(credential.id);
+      }
+      await PreferencesStorage.set(PreferencesKeys.APP_TUNNEL_CONNECT, {});
+      dispatch(setIdentifiersCache([]));
+      dispatch(setConnectionsCache([]));
+      dispatch(setCredsCache([]));
+      setResolvedOobis({});
+      setResetCounter(0);
+      alert("App is reset.");
+    }
+
+    if (timer && Date.now() - timer > 7500) {
+      setTimer(undefined);
+      setResetCounter(0);
+    } else if (resetCounter === 5) {
+      resetForDemo();
+    }
+  }, [resetCounter]);
+
   return (
     <ScrollablePageLayout
       pageId={pageId}
@@ -127,6 +161,15 @@ const TunnelConnect = () => {
         <PageHeader
           title="Tunnel Connect"
           backButton={true}
+          actionButton={true}
+          actionButtonAction={() => {
+            if (resetCounter === 0) {
+              // First time hitting
+              setTimer(Date.now());
+            }
+            setResetCounter(resetCounter + 1);
+          }}
+          actionButtonLabel={"Reset"}
           currentPath={RoutePath.TUNNEL_CONNECT}
         />
       }
