@@ -49,9 +49,7 @@ import { PageFooter } from "../../components/PageFooter";
 import { ConnectionType } from "../../../core/agent/agent.types";
 import { CredContentW3c } from "./components/CredContentW3c";
 import { CredContentAcdc } from "./components/CredContentAcdc";
-
-const NAVIGATION_DELAY = 250;
-const CLEAR_ANIMATION = 1000;
+import { combineClassNames } from "../../utils/style";
 
 const CredCardDetails = () => {
   const pageId = "credential-card-details";
@@ -73,7 +71,6 @@ const CredCardDetails = () => {
   const [connectionDetails, setConnectionDetails] =
     useState<ConnectionDetails>();
 
-  const [navAnimation, setNavAnimation] = useState(false);
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
@@ -104,8 +101,6 @@ const CredCardDetails = () => {
   };
 
   const handleDone = () => {
-    setNavAnimation(true);
-
     const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CRED_DETAILS, {
       store: { stateCache },
     });
@@ -117,13 +112,7 @@ const CredCardDetails = () => {
       updateRedux
     );
 
-    setTimeout(() => {
-      history.push(nextPath.pathname);
-    }, NAVIGATION_DELAY);
-
-    setTimeout(() => {
-      setNavAnimation(false);
-    }, CLEAR_ANIMATION);
+    history.push(nextPath.pathname);
   };
 
   const handleArchiveCredential = async () => {
@@ -246,9 +235,12 @@ const CredCardDetails = () => {
     return null;
   }
 
-  const pageClasses = `cred-card-detail card-details${
-    isArchived ? " archived-credential" : ""
-  } ${navAnimation ? "cred-back-animation" : "cred-open-animation"}`;
+  const pageClasses = combineClassNames(
+    "cred-card-detail card-details cred-open-animation",
+    {
+      "archived-credential": isArchived,
+    }
+  );
 
   return (
     <TabLayout

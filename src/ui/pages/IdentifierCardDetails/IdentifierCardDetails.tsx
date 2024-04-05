@@ -52,9 +52,7 @@ import "../../components/CardDetails/CardDetails.scss";
 import "./IdentifierCardDetails.scss";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
-
-const NAVIGATION_DELAY = 250;
-const CLEAR_ANIMATION = 1000;
+import { combineClassNames } from "../../utils/style";
 
 const IdentifierCardDetails = () => {
   const pageId = "identifier-card-details";
@@ -74,7 +72,6 @@ const IdentifierCardDetails = () => {
     DIDDetails | KERIDetails | undefined
   >();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
-  const [navAnimation, setNavAnimation] = useState(false);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id
@@ -98,7 +95,6 @@ const IdentifierCardDetails = () => {
   });
 
   const handleDone = () => {
-    setNavAnimation(true);
     const { backPath, updateRedux } = getBackRoute(
       TabsRoutePath.IDENTIFIER_DETAILS,
       {
@@ -113,13 +109,7 @@ const IdentifierCardDetails = () => {
       updateRedux
     );
 
-    setTimeout(() => {
-      history.push(backPath.pathname);
-    }, NAVIGATION_DELAY);
-
-    setTimeout(() => {
-      setNavAnimation(false);
-    }, CLEAR_ANIMATION);
+    history.push(backPath.pathname);
   };
 
   const handleDelete = async () => {
@@ -127,10 +117,10 @@ const IdentifierCardDetails = () => {
     // @TODO - sdisalvo: Update Database.
     // Remember to update identifiers.card.details.options file too.
     if (cardData) {
+      await deleteIdentifier();
       const updatedIdentifiers = identifierData.filter(
         (item) => item.id !== cardData.id
       );
-      await deleteIdentifier();
       dispatch(setIdentifiersCache(updatedIdentifiers));
     }
     handleDone();
@@ -232,9 +222,7 @@ const IdentifierCardDetails = () => {
     );
   };
 
-  const pageClasses = `card-details ${
-    navAnimation ? "back-animation" : "open-animation"
-  }`;
+  const pageClasses = combineClassNames("card-details open-animation");
 
   return (
     <ScrollablePageLayout
