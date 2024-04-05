@@ -118,10 +118,52 @@ const AppWrapper = (props: { children: ReactNode }) => {
   const authentication = useAppSelector(getAuthentication);
   const [initialised, setInitialised] = useState(false);
   const [agentInitErr, setAgentInitErr] = useState(false);
+  const [isOffline, setIsOffline] = useState(true);
 
   useEffect(() => {
     initApp();
   }, []);
+
+  useEffect(() => {
+    if (!isOffline && initialised) {
+      const handleMessages = async () => {
+        AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
+          return connectionKeriStateChangedHandler(event, dispatch);
+        });
+        AriesAgent.agent.signifyNotifications.onNotificationKeriStateChanged(
+          (event) => {
+            return keriNotificationsChangeHandler(event, dispatch);
+          }
+        );
+        AriesAgent.agent.credentials.onAcdcKeriStateChanged((event) => {
+          return keriAcdcChangeHandler(event, dispatch);
+        });
+
+        const oldMessages = (
+          await Promise.all([
+            AriesAgent.agent.credentials.getKeriCredentialNotifications(),
+            AriesAgent.agent.identifiers.getUnhandledMultisigIdentifiers({
+              isDismissed: false,
+            }),
+          ])
+        )
+          .flat()
+          .sort(function (messageA, messageB) {
+            return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
+          });
+        oldMessages.forEach(async (message) => {
+          await keriNotificationsChangeHandler(message, dispatch);
+        });
+        // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
+        await Promise.all([
+          AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
+          AriesAgent.agent.connections.syncKeriaContacts(),
+          AriesAgent.agent.credentials.syncACDCs(),
+        ]);
+      };
+      handleMessages();
+    }
+  }, [isOffline, initialised]);
 
   const checkKeyStore = async (key: string) => {
     try {
@@ -152,12 +194,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     try {
       await AriesAgent.agent.start();
+      setIsOffline(false);
     } catch (e) {
       // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
-      setAgentInitErr(true);
+      // setAgentInitErr(true);
       // eslint-disable-next-line no-console
-      console.error(e);
-      return;
+      AriesAgent.agent.bootAndConnect().then(() => {
+        setIsOffline(!AriesAgent.agent.isAgentReady());
+      });
+      // return;
     }
 
     dispatch(setPauseQueueIncomingRequest(true));
@@ -247,41 +292,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setCredsCache(credentials));
     dispatch(setConnectionsCache(connectionsDetails));
 
-    AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
-      return connectionKeriStateChangedHandler(event, dispatch);
-    });
-    AriesAgent.agent.signifyNotifications.onNotificationKeriStateChanged(
-      (event) => {
-        return keriNotificationsChangeHandler(event, dispatch);
-      }
-    );
-    AriesAgent.agent.credentials.onAcdcKeriStateChanged((event) => {
-      return keriAcdcChangeHandler(event, dispatch);
-    });
-
     setInitialised(true);
-
-    const oldMessages = (
-      await Promise.all([
-        AriesAgent.agent.credentials.getKeriCredentialNotifications(),
-        AriesAgent.agent.identifiers.getUnhandledMultisigIdentifiers({
-          isDismissed: false,
-        }),
-      ])
-    )
-      .flat()
-      .sort(function (messageA, messageB) {
-        return messageA.createdAt.valueOf() - messageB.createdAt.valueOf();
-      });
-    oldMessages.forEach(async (message) => {
-      await keriNotificationsChangeHandler(message, dispatch);
-    });
-    // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-    await Promise.all([
-      AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
-      AriesAgent.agent.connections.syncKeriaContacts(),
-      AriesAgent.agent.credentials.syncACDCs(),
-    ]);
   };
 
   // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.

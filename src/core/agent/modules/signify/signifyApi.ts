@@ -59,6 +59,17 @@ export class SignifyApi {
     this.opRetryInterval = opRetryInterval;
   }
 
+  async bootAndConnect(retryInterval = 1000): Promise<boolean> {
+    try {
+      await this.signifyClient.boot();
+      await this.signifyClient.connect();
+      return true;
+    } catch (error) {
+      await new Promise((resolve) => setTimeout(resolve, retryInterval));
+      await this.bootAndConnect();
+      return true;
+    }
+  }
   /**
    * Must be called first. (guard rails pending)
    */
