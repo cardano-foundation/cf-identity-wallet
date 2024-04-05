@@ -53,10 +53,7 @@ const Scan = () => {
       pageId={pageId}
       header={false}
     >
-      <Scanner
-        isValueCaptured={isValueCaptured}
-        setIsValueCaptured={setIsValueCaptured}
-      />
+      <Scanner setIsValueCaptured={setIsValueCaptured} />
     </TabLayout>
   );
 };

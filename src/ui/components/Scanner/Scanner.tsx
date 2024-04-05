@@ -17,7 +17,7 @@ import {
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
-import ScannerProps from "./Scanner.types";
+import { ScannerProps } from "./Scanner.types";
 
 const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
   const dispatch = useAppDispatch();
