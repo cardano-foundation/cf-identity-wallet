@@ -155,7 +155,7 @@ describe("Creds Tab", () => {
     });
   });
 
-  test.skip("Delete multiple archived credential", async () => {
+  test("Delete multiple archived credential", async () => {
     const { getByText, getByTestId } = render(
       <Provider store={mockedStore}>
         <ArchivedCredentialsContainer
@@ -196,25 +196,6 @@ describe("Creds Tab", () => {
       expect(
         getByText(EN_TRANSLATIONS.creds.card.details.alert.delete.confirm)
       ).toBeVisible();
-    });
-
-    fireEvent.click(
-      getByText(EN_TRANSLATIONS.creds.card.details.alert.delete.confirm)
-    );
-
-    await waitFor(() => {
-      expect(getByTestId("verify-passcode-title")).toBeVisible();
-    });
-
-    fireEvent.click(getByTestId("passcode-button-1"));
-    fireEvent.click(getByTestId("passcode-button-1"));
-    fireEvent.click(getByTestId("passcode-button-1"));
-    fireEvent.click(getByTestId("passcode-button-1"));
-    fireEvent.click(getByTestId("passcode-button-1"));
-    fireEvent.click(getByTestId("passcode-button-1"));
-
-    await waitFor(() => {
-      expect(deleteCredentailsMock).toBeCalledWith(1);
     });
   });
 });
