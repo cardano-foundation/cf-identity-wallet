@@ -10,7 +10,7 @@ import { store } from "../store";
 import { Identifiers } from "./pages/Identifiers";
 
 jest.mock("../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       start: jest.fn(),
       identifiers: {

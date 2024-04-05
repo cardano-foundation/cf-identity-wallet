@@ -11,7 +11,7 @@ import { CredentialMetadataRecordStatus } from "../../../core/agent/records/cred
 import { CardType } from "../../globals/types";
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       identifiers: {
         getIdentifier: jest.fn().mockResolvedValue({
@@ -121,7 +121,7 @@ describe("Cards Stack Component", () => {
   // test("It navigates to Cred Card Details and back", async () => {
   //   jest.useFakeTimers();
   //   jest
-  //     .spyOn(AriesAgent.agent.credentials, "getCredentialDetailsById")
+  //     .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
   //     .mockResolvedValue(credsFixW3c[0]);
   //   const { findByTestId } = render(
   //     <MemoryRouter>

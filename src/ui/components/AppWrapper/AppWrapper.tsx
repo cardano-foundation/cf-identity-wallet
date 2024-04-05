@@ -24,7 +24,7 @@ import {
   setFavouritesCredsCache,
   updateOrAddCredsCache,
 } from "../../../store/reducers/credsCache";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import {
   setConnectionsCache,
   updateOrAddConnectionCache,
@@ -55,7 +55,7 @@ const connectionKeriStateChangedHandler = async (
   } else {
     const connectionRecordId = event.payload.connectionId!;
     const connectionDetails =
-      await AriesAgent.agent.connections.getConnectionKeriShortDetailById(
+      await Agent.agent.connections.getConnectionKeriShortDetailById(
         connectionRecordId
       );
     dispatch(updateOrAddConnectionCache(connectionDetails));
@@ -79,7 +79,7 @@ const keriNotificationsChangeHandler = async (
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
     const multisigIcpDetails =
-      await AriesAgent.agent.identifiers.getMultisigIcpDetails(event);
+      await Agent.agent.identifiers.getMultisigIcpDetails(event);
     dispatch(
       setQueueIncomingRequest({
         id: event?.id,
@@ -146,7 +146,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     await new ConfigurationService().start();
 
     try {
-      await AriesAgent.agent.start();
+      await Agent.agent.start();
     } catch (e) {
       // @TODO - foconnor: Should specifically catch the error instead of all, but OK for now.
       setAgentInitErr(true);
@@ -156,17 +156,15 @@ const AppWrapper = (props: { children: ReactNode }) => {
     }
 
     dispatch(setPauseQueueIncomingRequest(true));
-    const connectionsDetails =
-      await AriesAgent.agent.connections.getConnections();
+    const connectionsDetails = await Agent.agent.connections.getConnections();
     let userName: PreferencesStorageItem = { userName: "" };
-    const credentials = await AriesAgent.agent.credentials.getCredentials();
+    const credentials = await Agent.agent.credentials.getCredentials();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
       KeyStoreKeys.IDENTITY_ROOT_XPRV_KEY
     );
     const passwordIsSet = await checkKeyStore(KeyStoreKeys.APP_OP_PASSWORD);
-    const storedIdentifiers =
-      await AriesAgent.agent.identifiers.getIdentifiers();
+    const storedIdentifiers = await Agent.agent.identifiers.getIdentifiers();
 
     // @TODO - handle error
     try {
@@ -242,15 +240,13 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setCredsCache(credentials));
     dispatch(setConnectionsCache(connectionsDetails));
 
-    AriesAgent.agent.connections.onConnectionKeriStateChanged((event) => {
+    Agent.agent.connections.onConnectionKeriStateChanged((event) => {
       return connectionKeriStateChangedHandler(event, dispatch);
     });
-    AriesAgent.agent.signifyNotifications.onNotificationKeriStateChanged(
-      (event) => {
-        return keriNotificationsChangeHandler(event, dispatch);
-      }
-    );
-    AriesAgent.agent.credentials.onAcdcKeriStateChanged((event) => {
+    Agent.agent.signifyNotifications.onNotificationKeriStateChanged((event) => {
+      return keriNotificationsChangeHandler(event, dispatch);
+    });
+    Agent.agent.credentials.onAcdcKeriStateChanged((event) => {
       return keriAcdcChangeHandler(event, dispatch);
     });
 
@@ -258,8 +254,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     const oldMessages = (
       await Promise.all([
-        AriesAgent.agent.credentials.getKeriCredentialNotifications(),
-        AriesAgent.agent.identifiers.getUnhandledMultisigIdentifiers({
+        Agent.agent.credentials.getKeriCredentialNotifications(),
+        Agent.agent.identifiers.getUnhandledMultisigIdentifiers({
           isDismissed: false,
         }),
       ])
@@ -273,9 +269,9 @@ const AppWrapper = (props: { children: ReactNode }) => {
     });
     // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
     await Promise.all([
-      AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
-      AriesAgent.agent.connections.syncKeriaContacts(),
-      AriesAgent.agent.credentials.syncACDCs(),
+      Agent.agent.identifiers.syncKeriaIdentifiers(),
+      Agent.agent.connections.syncKeriaContacts(),
+      Agent.agent.credentials.syncACDCs(),
     ]);
   };
 

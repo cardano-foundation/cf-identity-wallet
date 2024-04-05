@@ -49,7 +49,7 @@ import { VerifyPasscode } from "../VerifyPasscode";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../utils/clipboard";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { IdentifierType } from "../../../core/agent/services/identifierService.types";
 import { IdentifierThemeSelector } from "../CreateIdentifier/components/IdentifierThemeSelector";
 
@@ -122,7 +122,7 @@ const IdentifierOptions = ({
       displayName: newDisplayName,
       theme: newSelectedTheme,
     };
-    await AriesAgent.agent.identifiers.updateIdentifier(cardData.id, {
+    await Agent.agent.identifiers.updateIdentifier(cardData.id, {
       displayName: newDisplayName,
       theme: newSelectedTheme,
     });

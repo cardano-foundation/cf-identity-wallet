@@ -8,7 +8,7 @@ import { IdentifierOptions } from "./IdentifierOptions";
 import { TabsRoutePath } from "../navigation/TabsMenu";
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       genericRecords: {
         findById: jest.fn(),

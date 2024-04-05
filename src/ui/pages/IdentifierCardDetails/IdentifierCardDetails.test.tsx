@@ -11,7 +11,7 @@ import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
 import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { ConfigurationService } from "../../../core/configuration";
 
 const path = TabsRoutePath.IDENTIFIERS + "/" + identifierFix[0].id;
@@ -25,7 +25,7 @@ jest.mock("react-router-dom", () => ({
 }));
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       identifiers: {
         getIdentifier: jest
@@ -359,9 +359,7 @@ describe("Cards Details page", () => {
   });
 
   test("Show loading when indetifier data is null", async () => {
-    AriesAgent.agent.identifiers.getIdentifiers = jest
-      .fn()
-      .mockResolvedValue(null);
+    Agent.agent.identifiers.getIdentifiers = jest.fn().mockResolvedValue(null);
 
     const { getByTestId } = render(
       <Provider store={storeMockedAidKeri}>

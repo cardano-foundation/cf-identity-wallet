@@ -2,7 +2,7 @@ import { render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { AppWrapper } from "./AppWrapper";
 import { store } from "../../../store";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { updateOrAddConnectionCache } from "../../../store/reducers/connectionsCache";
 import {
   setQueueIncomingRequest,
@@ -19,7 +19,7 @@ import { CredentialMetadataRecordStatus } from "../../../core/agent/records/cred
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       start: jest.fn(),
       identifiers: {
@@ -102,7 +102,7 @@ const dispatch = jest.fn();
 describe("Connection state changed handler", () => {
   // beforeAll(() => {
   //   const getConnectionShortDetailsSpy = jest.spyOn(
-  //     AriesAgent.agent.connections,
+  //     Agent.agent.connections,
   //     "getConnectionShortDetails"
   //   );
   //   getConnectionShortDetailsSpy.mockReturnValue(connectionShortDetailsMock);
@@ -110,7 +110,7 @@ describe("Connection state changed handler", () => {
 
   // test("handles connection state request sent", async () => {
   //   const isConnectionRequestSentSpy = jest.spyOn(
-  //     AriesAgent.agent.connections,
+  //     Agent.agent.connections,
   //     "isConnectionRequestSent"
   //   );
   //   isConnectionRequestSentSpy.mockImplementationOnce(() => true);
@@ -128,7 +128,7 @@ describe("Connection state changed handler", () => {
 
   // test("handles connection state response received", async () => {
   //   const isConnectionResponseReceivedSpy = jest.spyOn(
-  //     AriesAgent.agent.connections,
+  //     Agent.agent.connections,
   //     "isConnectionResponseReceived"
   //   );
   //   isConnectionResponseReceivedSpy.mockImplementationOnce(() => true);
@@ -148,7 +148,7 @@ describe("Connection state changed handler", () => {
 
   // test("handles connection state request received", async () => {
   //   const isConnectionRequestReceivedSpy = jest.spyOn(
-  //     AriesAgent.agent.connections,
+  //     Agent.agent.connections,
   //     "isConnectionRequestReceived"
   //   );
   //   isConnectionRequestReceivedSpy.mockImplementationOnce(() => true);
@@ -174,7 +174,7 @@ describe("Connection state changed handler", () => {
 
   // test("handles connection state request sent", async () => {
   //   const isConnectionResponseSentSpy = jest.spyOn(
-  //     AriesAgent.agent.connections,
+  //     Agent.agent.connections,
   //     "isConnectionResponseSent"
   //   );
   //   isConnectionResponseSentSpy.mockImplementationOnce(() => true);
@@ -189,7 +189,7 @@ describe("Connection state changed handler", () => {
 
   //   test("handles connection state connected", async () => {
   //     const isConnectionResponseSentSpy = jest.spyOn(
-  //       AriesAgent.agent.connections,
+  //       Agent.agent.connections,
   //       "isConnectionConnected"
   //     );
   //     isConnectionResponseSentSpy.mockImplementationOnce(() => true);
@@ -220,12 +220,12 @@ describe("Connection state changed handler", () => {
   // describe("Credential state changed handler", () => {
   //   test("handles credential state offer received", async () => {
   //     const isCredentialOfferReceivedSpy = jest.spyOn(
-  //       AriesAgent.agent.credentials,
+  //       Agent.agent.credentials,
   //       "isCredentialOfferReceived"
   //     );
   //     isCredentialOfferReceivedSpy.mockImplementationOnce(() => true);
   //     jest
-  //       .spyOn(AriesAgent.agent.connections, "getConnectionShortDetailById")
+  //       .spyOn(Agent.agent.connections, "getConnectionShortDetailById")
   //       .mockResolvedValue(connectionShortDetailsMock);
   //     await credentialStateChangedHandler(
   //       credentialStateChangedEventMock,
@@ -243,7 +243,7 @@ describe("Connection state changed handler", () => {
 
   //   test("handles credential state request sent", async () => {
   //     const isCredentialRequestSentSpy = jest.spyOn(
-  //       AriesAgent.agent.credentials,
+  //       Agent.agent.credentials,
   //       "isCredentialRequestSent"
   //     );
   //     isCredentialRequestSentSpy.mockImplementationOnce(() => true);
@@ -280,12 +280,12 @@ describe("Connection state changed handler", () => {
   //     status: CredentialMetadataRecordStatus.CONFIRMED,
   //   } as CredentialShortDetails;
   //   const isCredentialDoneSpy = jest.spyOn(
-  //     AriesAgent.agent.credentials,
+  //     Agent.agent.credentials,
   //     "isCredentialDone"
   //   );
   //   isCredentialDoneSpy.mockImplementationOnce(() => true);
   //   const updateMetadataCompletedSpy = jest.spyOn(
-  //     AriesAgent.agent.credentials,
+  //     Agent.agent.credentials,
   //     "updateMetadataCompleted"
   //   );
   //   updateMetadataCompletedSpy.mockResolvedValue(credentialShortDetail);

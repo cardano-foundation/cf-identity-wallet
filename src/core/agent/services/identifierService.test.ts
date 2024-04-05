@@ -5,7 +5,7 @@ import {
 } from "../records/identifierMetadataRecord";
 import { IdentifierType } from "./identifierService.types";
 import { ConnectionStatus, ConnectionType } from "../agent.types";
-import { AriesAgent } from "../agent";
+import { Agent } from "../agent";
 import { SignifyApi } from "../modules/signify/signifyApi";
 import { RecordType } from "../../storage/storage.types";
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
@@ -46,7 +46,7 @@ const identifierService = new IdentifierService(
 );
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       connections: {
         getConnectionKeriShortDetailById: jest.fn(),
@@ -1264,12 +1264,10 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
-    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionKeriShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
-    AriesAgent.agent.connections.getConnections = jest
-      .fn()
-      .mockResolvedValue([]);
+    Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([]);
 
     const result = await identifierService.getMultisigIcpDetails({
       id: "AIhrazlnKPLYOvqiNJrmG290VEcXsFnfTV2lSGOMiX88",
@@ -1322,10 +1320,10 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
-    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionKeriShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
-    AriesAgent.agent.connections.getConnections = jest.fn().mockResolvedValue([
+    Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([
       {
         id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
         connectionDate: nowISO,
@@ -1398,10 +1396,10 @@ describe("Identifier service of agent", () => {
       .fn()
       .mockResolvedValue([identifierMetadata]);
 
-    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionKeriShortDetailById = jest
       .fn()
       .mockResolvedValue(senderData);
-    AriesAgent.agent.connections.getConnections = jest.fn().mockResolvedValue([
+    Agent.agent.connections.getConnections = jest.fn().mockResolvedValue([
       {
         id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
         connectionDate: nowISO,
@@ -1466,28 +1464,26 @@ describe("Identifier service of agent", () => {
       .mockResolvedValue([identifierMetadata]);
 
     jest
-      .spyOn(AriesAgent.agent.connections, "getConnectionKeriShortDetailById")
+      .spyOn(Agent.agent.connections, "getConnectionKeriShortDetailById")
       .mockResolvedValue(senderData);
-    jest
-      .spyOn(AriesAgent.agent.connections, "getConnections")
-      .mockResolvedValue([
-        {
-          id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.PENDING,
-          type: ConnectionType.KERI,
-        },
-        {
-          id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
-          connectionDate: nowISO,
-          label: "",
-          logo: "logoUrl",
-          status: ConnectionStatus.CONFIRMED,
-          type: ConnectionType.KERI,
-        },
-      ]);
+    jest.spyOn(Agent.agent.connections, "getConnections").mockResolvedValue([
+      {
+        id: "EHxEwa9UAcThqxuxbq56BYMq7YPWYxA63A1nau2AZ-1A",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.PENDING,
+        type: ConnectionType.KERI,
+      },
+      {
+        id: "EDEp4MS9lFGBkV8sKFV0ldqcyiVd1iOEVZAhZnbqk6A3",
+        connectionDate: nowISO,
+        label: "",
+        logo: "logoUrl",
+        status: ConnectionStatus.CONFIRMED,
+        type: ConnectionType.KERI,
+      },
+    ]);
 
     await expect(
       identifierService.getMultisigIcpDetails({
@@ -1518,7 +1514,7 @@ describe("Identifier service of agent", () => {
     ]);
     // @TODO - foconnor: This is not ideal as our identifier service is getting tightly coupled with the connection service.
     // Re-work this later.
-    AriesAgent.agent.connections.getConnectionKeriShortDetailById = jest
+    Agent.agent.connections.getConnectionKeriShortDetailById = jest
       .fn()
       .mockImplementation(() => {
         throw new Error("Some error from connection service");

@@ -4,7 +4,7 @@ import { PageLayout } from "../../../components/layout/PageLayout";
 import { i18n } from "../../../../i18n";
 import { ConnectionNote } from "./ConnectionNote";
 import ConnectionDetailsHeader from "./ConnectionDetailsHeader";
-import { AriesAgent } from "../../../../core/agent/agent";
+import { Agent } from "../../../../core/agent/agent";
 import { setToastMsg } from "../../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../../globals/types";
 import { ConnectionNoteProps } from "./ConnectionNote.types";
@@ -62,7 +62,7 @@ const EditConnectionsModal = ({
               let update = false;
               filteredNotes.forEach((note) => {
                 if (note.id.includes(TEMP_ID_PREFIX)) {
-                  AriesAgent.agent.connections.createConnectionNote(
+                  Agent.agent.connections.createConnectionNote(
                     connectionDetails.id,
                     note
                   );
@@ -74,15 +74,13 @@ const EditConnectionsModal = ({
                   (noteFilter) => noteCore.id === noteFilter.id
                 );
                 if (!noteFind) {
-                  AriesAgent.agent.connections.deleteConnectionNoteById(
-                    noteCore.id
-                  );
+                  Agent.agent.connections.deleteConnectionNoteById(noteCore.id);
                   update = true;
                 } else if (
                   noteCore.title !== noteFind.title ||
                   noteCore.message !== noteFind.message
                 ) {
-                  AriesAgent.agent.connections.updateConnectionNoteById(
+                  Agent.agent.connections.updateConnectionNoteById(
                     noteCore.id,
                     noteFind
                   );

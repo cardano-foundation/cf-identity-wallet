@@ -22,7 +22,7 @@ import {
   ConnectionType,
   KeriNotification,
 } from "../agent.types";
-import { AriesAgent } from "../agent";
+import { Agent } from "../agent";
 import { RecordType } from "../../storage/storage.types";
 import { BasicRecord } from "../records";
 
@@ -438,14 +438,14 @@ class IdentifierService extends AgentService {
     const senderAid = icpMsg[0].exn.i;
     // @TODO - foconnor: This cross service call should be handled better.
     const senderContact =
-      await AriesAgent.agent.connections.getConnectionKeriShortDetailById(
+      await Agent.agent.connections.getConnectionKeriShortDetailById(
         icpMsg[0].exn.i
       );
 
     const smids = icpMsg[0].exn.a.smids;
     // @TODO - foconnor: These searches should be optimised, revisit.
     const ourIdentifiers = await this.getIdentifiers();
-    const ourConnections = await AriesAgent.agent.connections.getConnections();
+    const ourConnections = await Agent.agent.connections.getConnections();
 
     let ourIdentifier;
     const otherConnections = [];

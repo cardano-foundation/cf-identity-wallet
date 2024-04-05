@@ -19,7 +19,7 @@ import {
 import { NotificationRoute } from "../modules/signify/signifyApi.types";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
 import { RecordType } from "../../storage/storage.types";
-import { AriesAgent } from "../agent";
+import { Agent } from "../agent";
 import { BasicRecord } from "../records";
 
 class CredentialService extends AgentService {
@@ -249,7 +249,7 @@ class CredentialService extends AgentService {
       },
     });
     let holderSignifyName;
-    const holder = await AriesAgent.agent.identifiers.getIdentifierMetadata(
+    const holder = await Agent.agent.identifiers.getIdentifierMetadata(
       keriExchange.exn.a.i
     );
     if (holder && holder.signifyName) {

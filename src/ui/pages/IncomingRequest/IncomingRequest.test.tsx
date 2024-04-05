@@ -18,7 +18,7 @@ import { CredentialService } from "../../../core/agent/services";
 import { SignifyApi } from "../../../core/agent/modules/signify/signifyApi";
 
 jest.mock("../../../core/agent/agent", () => ({
-  AriesAgent: {
+  Agent: {
     agent: {
       connections: {
         acceptRequestConnection: jest.fn(),
@@ -152,7 +152,7 @@ describe("Connection request", () => {
   //       })
   //     );
   //     const acceptRequestConnectionSpy = jest.spyOn(
-  //       AriesAgent.agent.connections,
+  //       Agent.agent.connections,
   //       "acceptRequestConnection"
   //     );
   //     const { findByTestId } = render(
@@ -182,7 +182,7 @@ describe("Connection request", () => {
   //       })
   //     );
   //     const acceptResponseConnectionSpy = jest.spyOn(
-  //       AriesAgent.agent.connections,
+  //       Agent.agent.connections,
   //       "acceptResponseConnection"
   //     );
   //     const { findByTestId } = render(
@@ -214,7 +214,7 @@ describe("Connection request", () => {
   //       })
   //     );
   //     const acceptCredentialOfferSpy = jest.spyOn(
-  //       AriesAgent.agent.credentials,
+  //       Agent.agent.credentials,
   //       "acceptCredentialOffer"
   //     );
   //     const { findByTestId } = render(
@@ -239,7 +239,7 @@ describe("Connection request", () => {
   //       })
   //     );
   //     const declineCredentialOfferSpy = jest.spyOn(
-  //       AriesAgent.agent.credentials,
+  //       Agent.agent.credentials,
   //       "declineCredentialOffer"
   //     );
   //     const { findByText } = render(

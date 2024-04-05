@@ -27,7 +27,7 @@ import { CredsOptions } from "../../components/CredsOptions";
 import { MAX_FAVOURITES } from "../../globals/constants";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import {
   addFavouritesCredsCache,
   getCredsCache,
@@ -80,14 +80,15 @@ const CredCardDetails = () => {
   });
 
   const getCredDetails = async () => {
-    const cardDetails =
-      await AriesAgent.agent.credentials.getCredentialDetailsById(params.id);
+    const cardDetails = await Agent.agent.credentials.getCredentialDetailsById(
+      params.id
+    );
     setCardData(cardDetails);
 
     // if (cardDetails.connectionType === ConnectionType.KERI) {
     //   const connectionDetails =
     //     cardDetails.connectionId &&
-    //     (await AriesAgent.agent.connections?.getConnectionById(
+    //     (await Agent.agent.connections?.getConnectionById(
     //       cardDetails.connectionId
     //     ));
     //   if (connectionDetails) {
@@ -120,7 +121,7 @@ const CredCardDetails = () => {
   };
 
   const handleArchiveCredential = async () => {
-    await AriesAgent.agent.credentials.archiveCredential(params.id);
+    await Agent.agent.credentials.archiveCredential(params.id);
     const creds = credsCache.filter((item) => item.id !== params.id);
     if (isFavourite) {
       handleSetFavourite(params.id);
@@ -131,17 +132,16 @@ const CredCardDetails = () => {
 
   const handleDeleteCredential = async () => {
     // @TODO - sdisalvo: handle error
-    await AriesAgent.agent.credentials.deleteCredential(params.id);
+    await Agent.agent.credentials.deleteCredential(params.id);
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_DELETED));
   };
 
   const handleRestoreCredential = async () => {
-    await AriesAgent.agent.credentials.restoreCredential(params.id);
+    await Agent.agent.credentials.restoreCredential(params.id);
     // @TODO - sdisalvo: handle error
-    const creds =
-      await AriesAgent.agent.credentials.getCredentialShortDetailsById(
-        params.id
-      );
+    const creds = await Agent.agent.credentials.getCredentialShortDetailsById(
+      params.id
+    );
     dispatch(setCredsCache([...credsCache, creds]));
     dispatch(setToastMsg(ToastMsgType.CREDENTIAL_RESTORED));
     handleDone();

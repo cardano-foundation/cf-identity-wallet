@@ -18,8 +18,8 @@ const config = {
   },
   autoUpdateStorageOnStartup: true,
 };
-class AriesAgent {
-  private static instance: AriesAgent;
+class Agent {
+  private static instance: Agent;
   private basicRecordStorage!: StorageApi;
   private signifyApi!: SignifyApi;
   static ready = false;
@@ -83,18 +83,18 @@ class AriesAgent {
 
   static get agent() {
     if (!this.instance) {
-      this.instance = new AriesAgent();
+      this.instance = new Agent();
     }
     return this.instance;
   }
 
   async start(): Promise<void> {
-    if (!AriesAgent.ready) {
+    if (!Agent.ready) {
       await this.basicRecordStorage.open(config.walletConfig?.id || "idw");
       await this.signifyApi.start();
-      AriesAgent.ready = true;
+      Agent.ready = true;
     }
   }
 }
 
-export { AriesAgent };
+export { Agent };

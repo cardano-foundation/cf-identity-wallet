@@ -4,7 +4,7 @@ import {
   getQueueIncomingRequest,
   dequeueCredentialRequest,
 } from "../../../store/reducers/stateCache";
-import { AriesAgent } from "../../../core/agent/agent";
+import { Agent } from "../../../core/agent/agent";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import {
   IncomingRequestProps,
@@ -57,7 +57,7 @@ const IncomingRequest = () => {
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
       if (incomingRequest.source === ConnectionType.KERI) {
-        await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
+        await Agent.agent.credentials.deleteKeriNotificationRecordById(
           incomingRequest.id
         );
       }
@@ -66,17 +66,17 @@ const IncomingRequest = () => {
       incomingRequest.type === IncomingRequestType.CONNECTION_RESPONSE
     ) {
       // TODO: will handle with KERI connection if it is supported
-      // await AriesAgent.agent.connections.deleteConnectionById(
+      // await Agent.agent.connections.deleteConnectionById(
       //   incomingRequest.id,
       //   ConnectionType.DIDCOMM
       // );
       // const updatedConnections =
-      //   await AriesAgent.agent.connections.getConnections();
+      //   await Agent.agent.connections.getConnections();
       // dispatch(setConnectionsCache([...updatedConnections]));
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      await AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
+      await Agent.agent.credentials.deleteKeriNotificationRecordById(
         incomingRequest.id
       );
     }
@@ -86,23 +86,23 @@ const IncomingRequest = () => {
   const handleAccept = async () => {
     setInitiateAnimation(true);
     if (incomingRequest.type === IncomingRequestType.CONNECTION_INCOMING) {
-      // AriesAgent.agent.connections.acceptRequestConnection(incomingRequest.id);
+      // Agent.agent.connections.acceptRequestConnection(incomingRequest.id);
     } else if (
       incomingRequest.type === IncomingRequestType.CONNECTION_RESPONSE
     ) {
-      // AriesAgent.agent.connections.acceptResponseConnection(incomingRequest.id);
+      // Agent.agent.connections.acceptResponseConnection(incomingRequest.id);
     } else if (
       incomingRequest.type === IncomingRequestType.CREDENTIAL_OFFER_RECEIVED
     ) {
       if (incomingRequest.source === ConnectionType.KERI) {
-        AriesAgent.agent.credentials.acceptKeriAcdc(incomingRequest.id);
+        Agent.agent.credentials.acceptKeriAcdc(incomingRequest.id);
       } else {
-        // AriesAgent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
+        // Agent.agent.credentials.acceptCredentialOffer(incomingRequest.id);
       }
     } else if (
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
-      AriesAgent.agent.credentials.deleteKeriNotificationRecordById(
+      Agent.agent.credentials.deleteKeriNotificationRecordById(
         incomingRequest.id
       );
     }
@@ -116,7 +116,7 @@ const IncomingRequest = () => {
       incomingRequest.type === IncomingRequestType.MULTI_SIG_REQUEST_INCOMING
     ) {
       // @TODO - sdisalvo: placeholder for ignoring the request
-      await AriesAgent.agent.signifyNotifications.dismissNotification(
+      await Agent.agent.signifyNotifications.dismissNotification(
         incomingRequest.id
       );
     }
