@@ -125,7 +125,17 @@ class ConnectionService extends AgentService {
     id: string,
     type?: ConnectionType
   ): Promise<ConnectionDetails> {
-    return this.getKeriConnectionDetails(id);
+    const connection = await this.signifyApi.getContactById(id);
+    return {
+      label: connection?.alias,
+      id: connection.id,
+      status: ConnectionStatus.CONFIRMED,
+      connectionDate: (
+        await this.getConnectionKeriMetadataById(connection.id)
+      ).createdAt.toISOString(),
+      serviceEndpoints: [connection.oobi],
+      notes: await this.getConnectNotesByConnectionId(connection.id),
+    };
   }
 
   async deleteConnectionById(
@@ -133,7 +143,7 @@ class ConnectionService extends AgentService {
     connectionType?: ConnectionType
   ): Promise<void> {
     await this.basicStorage.deleteById(id);
-    await this.signifyApi.deleteContactById(id);
+    // await this.signifyApi.deleteContactById(id); TODO: must open when Keria runs well
     const notes = await this.getConnectNotesByConnectionId(id);
     for (const note of notes) {
       this.basicStorage.deleteById(note.id);
@@ -177,8 +187,9 @@ class ConnectionService extends AgentService {
     return this.basicStorage.deleteById(connectionNoteId);
   }
 
-  async getKeriOobi(signifyName: string): Promise<string> {
-    return this.signifyApi.getOobi(signifyName);
+  async getKeriOobi(signifyName: string, alias?: string): Promise<string> {
+    const oobi = await this.signifyApi.getOobi(signifyName);
+    return alias ? `${oobi}?name=${encodeURIComponent(alias)}` : oobi;
   }
 
   private async createConnectionKeriMetadata(
@@ -268,22 +279,6 @@ class ConnectionService extends AgentService {
         message: note.content.message as string,
       };
     });
-  }
-
-  private async getKeriConnectionDetails(
-    id: string
-  ): Promise<ConnectionDetails> {
-    const connection = await this.signifyApi.getContactById(id);
-    return {
-      label: connection?.alias,
-      id: connection.id,
-      status: ConnectionStatus.CONFIRMED,
-      connectionDate: (
-        await this.getConnectionKeriMetadataById(connection.id)
-      ).createdAt.toISOString(),
-      serviceEndpoints: [connection.oobi],
-      notes: await this.getConnectNotesByConnectionId(connection.id),
-    };
   }
 }
 

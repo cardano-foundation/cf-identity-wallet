@@ -38,13 +38,12 @@ import {
   AcdcKeriStateChangedEvent,
   ConnectionType,
 } from "../../../core/agent/agent.types";
-import {
-  CredentialStatus,
-} from "../../../core/agent/services/credentialService.types";
+import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
 import { NotificationRoute } from "../../../core/agent/modules/signify/signifyApi.types";
 import "./AppWrapper.scss";
 import { ConfigurationService } from "../../../core/configuration";
+import { PreferencesStorageItem } from "../../../core/storage/preferences/preferencesStorage.type";
 
 const connectionKeriStateChangedHandler = async (
   event: ConnectionKeriStateChangedEvent,
@@ -159,6 +158,7 @@ const AppWrapper = (props: { children: ReactNode }) => {
     dispatch(setPauseQueueIncomingRequest(true));
     const connectionsDetails =
       await AriesAgent.agent.connections.getConnections();
+    let userName: PreferencesStorageItem = { userName: "" };
     const credentials = await AriesAgent.agent.credentials.getCredentials();
     const passcodeIsSet = await checkKeyStore(KeyStoreKeys.APP_PASSCODE);
     const seedPhraseIsSet = await checkKeyStore(
@@ -213,9 +213,25 @@ const AppWrapper = (props: { children: ReactNode }) => {
       }
     }
 
+    try {
+      userName = await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME);
+    } catch (e) {
+      if (
+        !(e instanceof Error) ||
+        !(
+          e instanceof Error &&
+          e.message ===
+            `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+        )
+      ) {
+        throw e;
+      }
+    }
+
     dispatch(
       setAuthentication({
         ...authentication,
+        userName: userName.userName as string,
         passcodeIsSet,
         seedPhraseIsSet,
         passwordIsSet,
@@ -242,7 +258,10 @@ const AppWrapper = (props: { children: ReactNode }) => {
 
     const oldMessages = (
       await Promise.all([
-        AriesAgent.agent.credentials.getUnhandledCredentials(),
+        AriesAgent.agent.credentials.getKeriCredentialNotifications(),
+        AriesAgent.agent.identifiers.getUnhandledMultisigIdentifiers({
+          isDismissed: false,
+        }),
       ])
     )
       .flat()
@@ -267,8 +286,8 @@ const AppWrapper = (props: { children: ReactNode }) => {
       <div className="agent-init-error-msg">
         <p>
           There’s an issue connecting to the cloud services we depend on right
-          now (KERIA) - please check your internet connection,
-          or if this problem persists, let us know on Discord!
+          now (KERIA) - please check your internet connection, or if this
+          problem persists, let us know on Discord!
         </p>
         <p>
           We’re working on an offline mode, as well as improving the deployment

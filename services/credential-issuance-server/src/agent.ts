@@ -28,7 +28,7 @@ class Agent {
   }
 
   async createKeriOobi() {
-    return this.signifyApi.getOobi(Agent.ISSUER_AID_NAME);
+    return `${await this.signifyApi.getOobi(Agent.ISSUER_AID_NAME)}?name=CF%20Credential%20Issuance`;
   }
 
   async resolveOobi(url: string) {

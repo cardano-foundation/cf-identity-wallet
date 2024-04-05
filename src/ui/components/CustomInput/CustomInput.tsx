@@ -26,7 +26,10 @@ const CustomInput = ({
   };
   return (
     <IonItem className={`custom-input ${error ? "error" : ""}`}>
-      <IonLabel position="stacked">
+      <IonLabel
+        position="stacked"
+        data-testid={`${title?.toLowerCase().replace(" ", "-")}-title`}
+      >
         {title}
         {optional && (
           <span className="custom-input-optional">

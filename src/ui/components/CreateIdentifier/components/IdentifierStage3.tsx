@@ -21,6 +21,9 @@ import {
   IdentifierShortDetails,
   IdentifierType,
 } from "../../../../core/agent/services/identifierService.types";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import DidComLogo from "../../../assets/images/didCommGeneric.jpg";
+import { ConnectionType } from "../../../../core/agent/agent.types";
 
 const IdentifierStage3 = ({
   state,
@@ -104,6 +107,9 @@ const IdentifierStage3 = ({
     }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
   };
 
+  const getFallbackLogo = (type?: ConnectionType) =>
+    type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
+
   return (
     <>
       <ScrollablePageLayout
@@ -159,9 +165,10 @@ const IdentifierStage3 = ({
                 >
                   <IonLabel>
                     <img
-                      src={connection?.logo ?? CardanoLogo}
+                      src={connection?.logo || getFallbackLogo(connection.type)}
                       className="connection-logo"
                       alt="connection-logo"
+                      data-testid={`identifier-stage-3-connection-logo-${index}`}
                     />
                     <span className="connection-name">{connection.label}</span>
                     <IonIcon

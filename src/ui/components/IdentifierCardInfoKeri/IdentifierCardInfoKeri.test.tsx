@@ -124,11 +124,9 @@ describe("Cards Details page", () => {
       </Provider>
     );
 
-    await waitFor(() =>
-      expect(getByTestId("delegator-copy-button")).toBeInTheDocument()
-    );
+    await waitFor(() => expect(getByTestId("delegator")).toBeInTheDocument());
 
-    fireEvent.click(getByTestId("delegator-copy-button"));
+    fireEvent.click(getByTestId("delegator"));
 
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
@@ -136,14 +134,14 @@ describe("Cards Details page", () => {
       });
     });
 
-    fireEvent.click(getByTestId("signing-keys-list-copy-button-0"));
+    fireEvent.click(getByTestId("signing-key-0"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
         string: keriFix[0].k[0],
       });
     });
 
-    fireEvent.click(getByTestId("next-keys-list-copy-button-0"));
+    fireEvent.click(getByTestId("next-key-0"));
     await waitFor(() => {
       expect(Clipboard.write).toHaveBeenCalledWith({
         string: keriFix[0].n[0],

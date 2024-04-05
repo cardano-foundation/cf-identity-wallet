@@ -6,6 +6,7 @@ interface CreateIdentifierProps {
 }
 
 interface TypeItemProps {
+  dataTestId: string;
   index: number;
   text: string;
   clickEvent: () => void;

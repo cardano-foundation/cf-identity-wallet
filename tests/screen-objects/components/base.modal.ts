@@ -1,14 +1,29 @@
+import {
+  findAndClickLocator,
+  findFilterAndClickElement,
+} from "../base.screen.js";
+
 export class BaseModal {
-  get closeButton() {
-    return $("[data-testid=\"close-button\"]");
+  closeButtonLocator = "[data-testid=\"close-button\"]";
+
+  async clickCloseButtonOf(parent: string) {
+    await findAndClickLocator(`${parent} ${this.closeButtonLocator}`);
+  }
+
+  async clickDoneButton() {
+    await findFilterAndClickElement(this.closeButtonLocator);
+  }
+
+  async clickDoneLabel() {
+    await findFilterAndClickElement("[data-testid=\"close-button-label\"]");
   }
 
   async introTitle(modalName: string) {
-    return $(`[data-testid="${modalName}"]`);
+    return $(`[data-testid="${modalName}-title"]`);
   }
 
   async introText(modalName: string) {
-    return this.introTitle(`${modalName}-modal-intro-text`);
+    return $(`[data-testid="${modalName}-modal-intro-text"]`);
   }
 
   returnSectionTitleLocator = (modalName: string, sectionName: string) =>

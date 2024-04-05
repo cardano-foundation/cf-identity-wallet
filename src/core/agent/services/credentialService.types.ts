@@ -58,4 +58,5 @@ export type {
   ACDCDetails,
   Notification,
   JSONObject,
+  JSONValue,
 };

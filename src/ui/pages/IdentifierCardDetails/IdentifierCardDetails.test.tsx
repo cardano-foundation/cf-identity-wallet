@@ -153,9 +153,7 @@ describe("Cards Details page", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByTestId("identifier-options-identifier-options-button")
-      ).toBeInTheDocument();
+      expect(getByTestId("edit-identifier-options")).toBeInTheDocument();
     });
   });
 
@@ -185,15 +183,11 @@ describe("Cards Details page", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByTestId("identifier-options-identifier-options-button")
-      ).toBeInTheDocument();
+      expect(getByTestId("edit-identifier-options")).toBeInTheDocument();
     });
 
     act(() => {
-      fireEvent.click(
-        getByTestId("identifier-options-identifier-options-button")
-      );
+      fireEvent.click(getByTestId("edit-identifier-options"));
     });
 
     await waitFor(() => {
@@ -229,9 +223,7 @@ describe("Cards Details page", () => {
     });
 
     await waitFor(() => {
-      expect(
-        getByTestId("delete-button-identifier-options")
-      ).toBeInTheDocument();
+      expect(getByTestId("delete-identifier-options")).toBeInTheDocument();
     });
 
     act(() => {

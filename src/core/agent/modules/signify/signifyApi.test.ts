@@ -9,7 +9,7 @@ const secondAid = "aid2";
 const aidPrefix = "keri-";
 const witnessPrefix = "witness.";
 const uuidToThrow = "throwMe";
-const oobiPrefix = "oobi.";
+const oobiPrefix = "http://server.com/oobi/";
 
 let connectMock = jest.fn();
 const bootMock = jest.fn();
@@ -383,9 +383,8 @@ describe("Signify API", () => {
     expect(await api.getOobi(mockName)).toEqual(oobiPrefix + mockName);
   });
 
-  test("can resolve oobi", async () => {
-    const aid = "keriuuid";
-    const url = oobiPrefix + aid;
+  test("can resolve oobi with no name parameter", async () => {
+    const url = `${oobiPrefix}keriuuid`;
     const op = await api.resolveOobi(url);
     expect(op).toEqual({
       name: url,
@@ -394,11 +393,20 @@ describe("Signify API", () => {
     });
   });
 
+  test("can resolve oobi with a name parameter (URL decoded)", async () => {
+    const url = `${oobiPrefix}keriuuid?name=alias%20with%20spaces`;
+    const op = await api.resolveOobi(url);
+    expect(op).toEqual({
+      name: url,
+      alias: "alias with spaces",
+      done: true,
+    });
+  });
+
   test("should timeout if oobi resolving is not completing", async () => {
-    const url = oobiPrefix + uuidToThrow;
-    await expect(api.resolveOobi(url)).rejects.toThrowError(
-      SignifyApi.FAILED_TO_RESOLVE_OOBI
-    );
+    await expect(
+      api.resolveOobi(`${oobiPrefix}${uuidToThrow}`)
+    ).rejects.toThrowError(SignifyApi.FAILED_TO_RESOLVE_OOBI);
   });
 
   test("should get contacts successfully", async () => {

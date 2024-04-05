@@ -6,18 +6,23 @@ import {
   IonRow,
   IonCol,
   IonLabel,
+  IonIcon,
 } from "@ionic/react";
+import { personCircleOutline } from "ionicons/icons";
 import { useState } from "react";
 import {
   Alert as AlertAccept,
   Alert as AlertDecline,
 } from "../../../components/Alert";
 import { i18n } from "../../../../i18n";
-import CardanoLogo from "../../../../ui/assets/images/CardanoLogo.jpg";
 import { ScrollablePageLayout } from "../../../components/layout/ScrollablePageLayout";
 import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
 import { PageHeader } from "../../../components/PageHeader";
+import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
+import DidComLogo from "../../../assets/images/didCommGeneric.jpg";
+import { ConnectionType } from "../../../../core/agent/agent.types";
+import "./MultiSigRequestStageOne.scss";
 
 const MultiSigRequestStageOne = ({
   pageId,
@@ -43,6 +48,9 @@ const MultiSigRequestStageOne = ({
   const actionIgnore = () => {
     handleIgnore && handleIgnore();
   };
+
+  const getFallbackLogo = (type?: ConnectionType) =>
+    type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
 
   return (
     <>
@@ -73,13 +81,23 @@ const MultiSigRequestStageOne = ({
                       size="1.25"
                       className="multisig-connection-logo"
                     >
-                      <img
-                        src={
-                          requestData.multisigIcpDetails?.sender.logo ??
-                          CardanoLogo
-                        }
-                        alt="multisig-connection-logo"
-                      />
+                      {requestData.multisigIcpDetails?.sender.logo ? (
+                        <img
+                          data-testid="multisig-connection-logo"
+                          src={requestData.multisigIcpDetails?.sender.logo}
+                          alt="multisig-connection-logo"
+                        />
+                      ) : (
+                        <div
+                          data-testid="multisig-connection-fallback-logo"
+                          className="request-user-logo"
+                        >
+                          <IonIcon
+                            icon={personCircleOutline}
+                            color="light"
+                          />
+                        </div>
+                      )}
                     </IonCol>
                     <IonCol
                       size="10.35"
@@ -114,7 +132,11 @@ const MultiSigRequestStageOne = ({
                             className="multisig-connection-logo"
                           >
                             <img
-                              src={connection.logo ?? CardanoLogo}
+                              data-testid={`other-multisig-connection-logo-${index}`}
+                              src={
+                                connection.logo ||
+                                getFallbackLogo(connection.type)
+                              }
                               alt="multisig-connection-logo"
                             />
                           </IonCol>

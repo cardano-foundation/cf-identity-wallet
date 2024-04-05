@@ -108,6 +108,7 @@
           opacity: 0;
           height: 0;
           overflow: hidden;
+          margin: 0;
         }
       }
     }
@@ -133,7 +134,6 @@
           from {
             opacity: 0;
             overflow: hidden;
-            margin-top: 0;
             height: 1.25rem;
           }
           to {

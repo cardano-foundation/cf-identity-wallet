@@ -25,6 +25,7 @@ jest.mock("../../../core/agent/agent", () => ({
       identifiers: {
         getIdentifiers: jest.fn().mockResolvedValue([]),
         syncKeriaIdentifiers: jest.fn(),
+        getUnhandledMultisigIdentifiers: jest.fn(),
       },
       connections: {
         getConnections: jest.fn().mockResolvedValue([]),
@@ -48,7 +49,7 @@ jest.mock("../../../core/agent/agent", () => ({
         createMetadata: jest.fn(),
         isCredentialDone: jest.fn(),
         updateMetadataCompleted: jest.fn(),
-        getUnhandledCredentials: jest.fn(),
+        getKeriCredentialNotifications: jest.fn(),
         onAcdcKeriStateChanged: jest.fn(),
         syncACDCs: jest.fn(),
       },

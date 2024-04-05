@@ -2,6 +2,10 @@ import { expect } from "expect-webdriverio";
 import { CreatePassword } from "../constants/text.constants.js";
 
 export class CreatePasswordScreen {
+  get alertModal() {
+    return "[data-testid=\"create-password-alert-skip\"]";
+  }
+
   get backArrowIcon() {
     return $("[data-testid=\"back-button\"]");
   }
@@ -24,6 +28,10 @@ export class CreatePasswordScreen {
 
   get hintInput() {
     return $("#ion-input-2");
+  }
+
+  get id() {
+    return "[data-testid=\"create-password-page\"]";
   }
 
   get screenTitle() {

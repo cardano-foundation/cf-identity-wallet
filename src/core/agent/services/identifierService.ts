@@ -560,11 +560,16 @@ class IdentifierService extends AgentService {
     return { done: false };
   }
 
-  async getUnhandledMultisigIdentifiers(): Promise<KeriNotification[]> {
+  async getUnhandledMultisigIdentifiers(
+    filters: {
+      isDismissed?: boolean;
+    } = {}
+  ): Promise<KeriNotification[]> {
     const results = await this.basicStorage.findAllByQuery(
       RecordType.NOTIFICATION_KERI,
       {
         route: NotificationRoute.MultiSigIcp,
+        ...filters,
         $or: [
           { route: NotificationRoute.MultiSigIcp },
           {
@@ -652,6 +657,8 @@ class IdentifierService extends AgentService {
       return this.parseIdentifierMetadataRecord(bc);
     });
   }
+
+  // TODO @bao-sotatek: must write the unit test for aid storage in recontructing agent services
 
   async getKeriIdentifiersMetadata(): Promise<IdentifierMetadataRecord[]> {
     const basicRecords = await this.basicStorage.findAllByQuery(
