@@ -28,7 +28,9 @@ class Agent {
   }
 
   async createKeriOobi() {
-    return `${await this.signifyApi.getOobi(Agent.ISSUER_AID_NAME)}?name=CF%20Credential%20Issuance`;
+    return `${await this.signifyApi.getOobi(
+      Agent.ISSUER_AID_NAME
+    )}?name=CF%20Credential%20Issuance`;
   }
 
   async resolveOobi(url: string) {
@@ -56,15 +58,13 @@ class Agent {
   async contacts() {
     return this.signifyApi.contacts();
   }
-  async initKeri(schema?: string, issuerName?: string) {
-    const SAIDSchema = schema ? schema : Agent.SCHEMA_SAID;
+  async initKeri(issuerName?: string) {
     const AIDIssuerName = issuerName ? issuerName : Agent.ISSUER_AID_NAME;
     const existedIndentifier = await this.signifyApi
       .getIdentifierByName(AIDIssuerName)
       .catch(() => null);
     if (existedIndentifier) return existedIndentifier;
     const identifier = await this.signifyApi.createIdentifier(AIDIssuerName);
-    await this.signifyApi.resolveOobi(Agent.VLEI_HOST + SAIDSchema);
     this.keriRegistryRegk = await this.signifyApi.createRegistry(AIDIssuerName);
     return identifier;
   }
