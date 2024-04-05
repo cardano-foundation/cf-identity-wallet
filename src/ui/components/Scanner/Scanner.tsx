@@ -75,9 +75,8 @@ const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
           // and it can update to an error if the QR is invalid with a re-scan btn
           dispatch(setCurrentOperation(OperationType.IDLE));
           // @TODO - foconnor: when above loading screen in place, handle invalid QR code
-          await AriesAgent.agent.connections.receiveInvitationFromUrl(
-            result.content
-          );
+          // @TODO - sdisalvo: receiveInvitationFromUrl should be awaited once we have error handling
+          AriesAgent.agent.connections.receiveInvitationFromUrl(result.content);
           setIsValueCaptured && setIsValueCaptured(true);
         }
       }
