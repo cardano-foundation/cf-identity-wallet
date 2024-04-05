@@ -17,8 +17,9 @@ import {
 import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
+import ScannerProps from "./Scanner.types";
 
-const Scanner = forwardRef((props, ref) => {
+const Scanner = forwardRef(({ setIsValueCaptured }: ScannerProps, ref) => {
   const dispatch = useAppDispatch();
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentToastMsg = useAppSelector(getToastMsg);
@@ -77,6 +78,7 @@ const Scanner = forwardRef((props, ref) => {
           await AriesAgent.agent.connections.receiveInvitationFromUrl(
             result.content
           );
+          setIsValueCaptured && setIsValueCaptured(true);
         }
       }
     }

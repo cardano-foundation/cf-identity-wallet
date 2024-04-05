@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { useIonViewWillEnter } from "@ionic/react";
 import { TabLayout } from "../../components/layout/TabLayout";
@@ -15,7 +15,6 @@ import "./Scan.scss";
 import { DataProps } from "../../../routes/nextRoute/nextRoute.types";
 import { getNextRoute } from "../../../routes/nextRoute";
 import { updateReduxState } from "../../../store/utils";
-import { OperationType } from "../../globals/types";
 
 const Scan = () => {
   const pageId = "scan-tab";
@@ -24,13 +23,14 @@ const Scan = () => {
   const stateCache = useAppSelector(getStateCache);
   const currentOperation = useAppSelector(getCurrentOperation);
   const currentToastMsg = useAppSelector(getToastMsg);
+  const [isValueCaptured, setIsValueCaptured] = useState(false);
 
   useIonViewWillEnter(() => {
     dispatch(setCurrentRoute({ path: TabsRoutePath.SCAN }));
   });
 
   useEffect(() => {
-    if (currentOperation !== OperationType.IDLE) {
+    if (isValueCaptured) {
       const data: DataProps = {
         store: { stateCache },
         state: {
@@ -44,15 +44,19 @@ const Scan = () => {
         pathname: nextPath.pathname,
         state: data.state,
       });
+      setIsValueCaptured(false);
     }
-  }, [currentToastMsg, currentOperation]);
+  }, [currentToastMsg, currentOperation, isValueCaptured]);
 
   return (
     <TabLayout
       pageId={pageId}
       header={false}
     >
-      <Scanner />
+      <Scanner
+        isValueCaptured={isValueCaptured}
+        setIsValueCaptured={setIsValueCaptured}
+      />
     </TabLayout>
   );
 };
