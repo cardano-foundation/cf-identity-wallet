@@ -1,4 +1,3 @@
-import { utils } from "@aries-framework/core";
 import {
   SignifyClient,
   ready as signifyReady,
@@ -6,9 +5,10 @@ import {
   randomPasscode,
   Operation,
 } from "signify-ts";
-import { AriesAgent } from "../../ariesAgent";
+import { Agent } from "../../agent";
 import { waitAndGetDoneOp } from "./utils";
 import { config } from "../../config";
+import { v4 as uuidv4 } from "uuid";
 
 export class SignifyApi {
   static readonly LOCAL_KERIA_ENDPOINT =
@@ -45,7 +45,7 @@ export class SignifyApi {
       await this.signifyClient.boot();
       await this.signifyClient.connect();
     }
-    await AriesAgent.agent.initKeri();
+    await Agent.agent.initKeri();
   }
 
   async createIdentifier(signifyName: string): Promise<any> {
@@ -74,7 +74,7 @@ export class SignifyApi {
   }
 
   async resolveOobi(url: string): Promise<any> {
-    const alias = utils.uuid();
+    const alias = uuidv4();
     let operation = await this.signifyClient.oobis().resolve(url, alias);
     operation = await waitAndGetDoneOp(
       this.signifyClient,
