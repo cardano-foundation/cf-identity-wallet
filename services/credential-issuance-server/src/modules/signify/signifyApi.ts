@@ -107,7 +107,7 @@ export class SignifyApi {
     await this.resolveOobi(`${config.endpoint}/oobi/${schemaId}`);
     
     let vcdata = {}
-    if (schemaId === "EKYv475K1k6uMt9IJw99NM8iLQuQf1bKfSHqA1XIKoQy") {
+    if (schemaId === "EBIFDhtSE0cM4nbTnaMqiV1vUIlcnbsqBMeVMmeGmXOu") {
       vcdata = {
         attendeeName: name,
       };
