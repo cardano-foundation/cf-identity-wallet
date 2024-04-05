@@ -277,11 +277,11 @@ const AppWrapper = (props: { children: ReactNode }) => {
       await keriNotificationsChangeHandler(message, dispatch);
     });
     // Fetch and sync the identifiers, contacts and ACDCs from KERIA to our storage
-    await Promise.all([
-      AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
-      AriesAgent.agent.connections.syncKeriaContacts(),
-      AriesAgent.agent.credentials.syncACDCs(),
-    ]);
+    // await Promise.all([
+    //   AriesAgent.agent.identifiers.syncKeriaIdentifiers(),
+    //   AriesAgent.agent.connections.syncKeriaContacts(),
+    //   AriesAgent.agent.credentials.syncACDCs(),
+    // ]);
   };
 
   // @TODO - foconnor: We should allow the app to load and give more accurate feedback - this is a temp solution.
