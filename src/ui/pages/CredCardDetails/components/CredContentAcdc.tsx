@@ -1,6 +1,9 @@
 import { keyOutline, informationCircleOutline } from "ionicons/icons";
 import { i18n } from "../../../../i18n";
-import { ACDCDetails } from "../../../../core/agent/services/credentialService.types";
+import {
+  ACDCDetails,
+  JSONObject,
+} from "../../../../core/agent/services/credentialService.types";
 import {
   CardDetailsAttributes,
   CardDetailsBlock,
@@ -29,7 +32,7 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
       </CardDetailsBlock>
       {cardData.a && (
         <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>
-          <CardDetailsAttributes data={cardData.a as any} />
+          <CardDetailsAttributes data={cardData.a as JSONObject} />
         </CardDetailsBlock>
       )}
       <CardDetailsBlock title={i18n.t("creds.card.details.schemaversion")}>
@@ -52,7 +55,7 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
         title={i18n.t("creds.card.details.status.label")}
       >
         <CardDetailsAttributes
-          data={cardData.lastStatus as any}
+          data={cardData.lastStatus as JSONObject}
           customType="status"
         />
       </CardDetailsBlock>

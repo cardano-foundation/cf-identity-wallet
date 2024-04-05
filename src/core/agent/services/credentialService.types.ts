@@ -69,4 +69,5 @@ export type {
   Notification,
   W3CCredentialDetails,
   JSONObject,
+  JSONValue,
 };

@@ -141,10 +141,6 @@ class CredentialService extends AgentService {
     });
   }
 
-  async getUnhandledCredentials(): Promise<KeriNotification[]> {
-    return this.getKeriCredentialNotifications();
-  }
-
   private validArchivedCredential(metadata: CredentialMetadataRecord): void {
     if (!metadata.isArchived) {
       throw new Error(
@@ -161,7 +157,7 @@ class CredentialService extends AgentService {
     return metadata;
   }
 
-  private async getKeriCredentialNotifications(
+  async getKeriCredentialNotifications(
     filters: {
       isDismissed?: boolean;
     } = {}
@@ -324,6 +320,8 @@ class CredentialService extends AgentService {
       }
     }
   }
+
+  // TODO @bao-sotatek: must write the unit test for cred storage in recontructing agent services
 
   async getAllCredentialMetadata(isArchived?: boolean) {
     const basicRecords = await this.basicStorage.findAllByQuery(
