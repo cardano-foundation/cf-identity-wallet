@@ -21,8 +21,7 @@ const ConnectionItem = ({
   item,
   handleShowConnectionDetails,
 }: ConnectionItemProps) => {
-  const fallbackLogo =
-    item.type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
+  const fallbackLogo = KeriLogo;
 
   return (
     <IonItem onClick={() => handleShowConnectionDetails(item)}>

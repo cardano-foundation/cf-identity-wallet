@@ -63,9 +63,6 @@ const IdentifierStage1 = ({
     }));
   };
 
-  const getFallbackLogo = (type?: ConnectionType) =>
-    type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
-
   return (
     <>
       <ScrollablePageLayout
@@ -104,7 +101,7 @@ const IdentifierStage1 = ({
               >
                 <IonLabel className="connection-item">
                   <img
-                    src={connection?.logo || getFallbackLogo(connection?.type)}
+                    src={connection?.logo || KeriLogo}
                     className="connection-logo"
                     data-testid="identifier-stage-1-logo"
                     alt="connection-logo"

@@ -4,7 +4,7 @@ import { Provider } from "react-redux";
 import configureStore from "redux-mock-store";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { connectionsFix } from "../../__fixtures__/connectionsFix";
-import { filteredDidFix } from "../../__fixtures__/filteredIdentifierFix";
+import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
 import { CustomToast } from "./CustomToast";
 import { ToastMsgType } from "../../globals/types";
 
@@ -30,7 +30,7 @@ describe("CreateIdentifier modal", () => {
       connections: connectionsFix,
     },
     identifiersCache: {
-      identifiers: filteredDidFix,
+      identifiers: filteredKeriFix,
       favourites: [],
     },
   };

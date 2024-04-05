@@ -25,8 +25,7 @@ const EditConnectionsModal = ({
   connectionDetails,
   setAlertDeleteNoteIsOpen,
 }: EditConnectionsModalProps) => {
-  const fallbackLogo =
-    connectionDetails.type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
+  const fallbackLogo = KeriLogo;
   const TEMP_ID_PREFIX = "temp";
   const dispatch = useAppDispatch();
 

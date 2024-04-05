@@ -107,9 +107,6 @@ const IdentifierStage3 = ({
     }, CREATE_IDENTIFIER_BLUR_TIMEOUT);
   };
 
-  const getFallbackLogo = (type?: ConnectionType) =>
-    type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
-
   return (
     <>
       <ScrollablePageLayout
@@ -165,7 +162,7 @@ const IdentifierStage3 = ({
                 >
                   <IonLabel>
                     <img
-                      src={connection?.logo || getFallbackLogo(connection.type)}
+                      src={connection?.logo || KeriLogo}
                       className="connection-logo"
                       alt="connection-logo"
                       data-testid={`identifier-stage-3-connection-logo-${index}`}

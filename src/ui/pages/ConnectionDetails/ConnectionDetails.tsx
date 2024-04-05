@@ -188,8 +188,7 @@ const ConnectionDetails = () => {
     return Minicred4;
   };
 
-  const fallbackLogo =
-    connectionDetails?.type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
+  const fallbackLogo = KeriLogo;
 
   if (loading.details || loading.history) {
     return (

@@ -49,9 +49,6 @@ const MultiSigRequestStageOne = ({
     handleIgnore && handleIgnore();
   };
 
-  const getFallbackLogo = (type?: ConnectionType) =>
-    type === ConnectionType.DIDCOMM ? DidComLogo : KeriLogo;
-
   return (
     <>
       <ScrollablePageLayout
@@ -133,10 +130,7 @@ const MultiSigRequestStageOne = ({
                           >
                             <img
                               data-testid={`other-multisig-connection-logo-${index}`}
-                              src={
-                                connection.logo ||
-                                getFallbackLogo(connection.type)
-                              }
+                              src={connection.logo || KeriLogo}
                               alt="multisig-connection-logo"
                             />
                           </IonCol>
