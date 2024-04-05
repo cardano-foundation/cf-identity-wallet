@@ -12,7 +12,9 @@ async function startServer() {
   app.use(bodyParser.json());
   app.use(router);
   await Agent.agent.start();
-  log(`Listening on port ${config.port}`);
+  app.listen(config.port, () => {
+    log(`Listening on port ${config.port}`);
+  });
 }
 
 void startServer();
