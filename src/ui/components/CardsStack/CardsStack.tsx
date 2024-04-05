@@ -6,7 +6,10 @@ import { CardType } from "../../globals/types";
 
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
 import { CredCardTemplate } from "../CredCardTemplate";
-import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
+import {
+  CredentialShortDetails,
+  JSONObject,
+} from "../../../core/agent/services/credentialService.types";
 import { CardsStackProps } from "./CardsStack.types";
 
 const NAVIGATION_DELAY = 250;
@@ -62,7 +65,7 @@ const CardsStack = ({
     let pathname = "";
 
     if (cardsType === CardType.IDENTIFIERS) {
-      const data = cardsData[index] as any; // @bao-sotatek: TODO
+      const data = cardsData[index] as JSONObject; // @bao-sotatek: TODO
       pathname = `/tabs/identifiers/${data.id}`;
     } else {
       const data = cardsData[index] as CredentialShortDetails;

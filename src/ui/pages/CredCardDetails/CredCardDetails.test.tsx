@@ -204,7 +204,7 @@ describe("Cards Details page - current not archived credential", () => {
   });
 
   test("It shows the warning when I click on the big archive button", async () => {
-    const { findByTestId, getAllByText, queryByTestId } = render(
+    const { findByTestId, getAllByText, queryAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -222,7 +222,7 @@ describe("Cards Details page - current not archived credential", () => {
     });
 
     await waitFor(() => {
-      expect(queryByTestId("alert-delete-archive")).toBeInTheDocument();
+      expect(queryAllByTestId("alert-delete-archive")[0]).toBeInTheDocument();
     });
 
     await waitFor(() => {
@@ -266,9 +266,9 @@ describe("Cards Details page - current not archived credential", () => {
 describe("Cards Details page - archived credential", () => {
   let storeMocked: Store<unknown, AnyAction>;
   beforeAll(() => {
-    // jest
-    //   .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
-    //   .mockResolvedValue(credsFixW3c[0]);
+    jest
+      .spyOn(Agent.agent.credentials, "getCredentialDetailsById")
+      .mockResolvedValue(credsFixAcdc[0]);
   });
   beforeEach(() => {
     const mockStore = configureStore();
@@ -279,8 +279,8 @@ describe("Cards Details page - archived credential", () => {
     };
   });
 
-  test.skip("It shows the restore alert", async () => {
-    const { queryByTestId, queryByText, getByText } = render(
+  test("It shows the restore alert", async () => {
+    const { queryByText, getByText, queryAllByTestId } = render(
       <Provider store={storeMocked}>
         <MemoryRouter initialEntries={[path]}>
           <Route
@@ -304,7 +304,7 @@ describe("Cards Details page - archived credential", () => {
     });
 
     await waitFor(() => {
-      expect(queryByTestId("alert-restore")).toBeInTheDocument();
+      expect(queryAllByTestId("alert-restore")[0]).toBeInTheDocument();
     });
 
     await waitFor(() => {
