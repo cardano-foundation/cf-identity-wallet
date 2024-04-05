@@ -65,7 +65,7 @@ const CardsStack = ({
     let pathname = "";
 
     if (cardsType === CardType.IDENTIFIERS) {
-      const data = cardsData[index] as JSONObject; // @bao-sotatek: TODO
+      const data = cardsData[index] as JSONObject;
       pathname = `/tabs/identifiers/${data.id}`;
     } else {
       const data = cardsData[index] as CredentialShortDetails;
