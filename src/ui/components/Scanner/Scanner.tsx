@@ -18,115 +18,117 @@ import { TabsRoutePath } from "../navigation/TabsMenu";
 import { OperationType, ToastMsgType } from "../../globals/types";
 import { AriesAgent } from "../../../core/agent/agent";
 import { RoutePath } from "../../../routes";
+import { ScannerProps } from "./Scanner.types";
 
-interface ScannerProps {
-  handleContent?: (content: string) => void;
-}
-const Scanner = forwardRef((props: ScannerProps, ref) => {
-  const dispatch = useAppDispatch();
-  const currentOperation = useAppSelector(getCurrentOperation);
-  const currentToastMsg = useAppSelector(getToastMsg);
-  const currentRoute = useAppSelector(getCurrentRoute);
+const Scanner = forwardRef(
+  ({ handleContent, setIsValueCaptured }: ScannerProps, ref) => {
+    const dispatch = useAppDispatch();
+    const currentOperation = useAppSelector(getCurrentOperation);
+    const currentToastMsg = useAppSelector(getToastMsg);
+    const currentRoute = useAppSelector(getCurrentRoute);
 
-  const checkPermission = async () => {
-    const status = await BarcodeScanner.checkPermission({ force: true });
-    if (status.granted) {
-      return true;
-    }
-    if (status.neverAsked) {
-      const allow = confirm(`${i18n.t("scan.alert.title")}`);
-      if (allow) {
+    const checkPermission = async () => {
+      const status = await BarcodeScanner.checkPermission({ force: true });
+      if (status.granted) {
         return true;
       }
-    }
-    return false;
-  };
+      if (status.neverAsked) {
+        const allow = confirm(`${i18n.t("scan.alert.title")}`);
+        if (allow) {
+          return true;
+        }
+      }
+      return false;
+    };
 
-  const startScan = async () => {
-    await BarcodeScanner.hideBackground();
-    document?.querySelector("body")?.classList.add("scanner-active");
-    document
-      ?.querySelector("body.scanner-active > div:last-child")
-      ?.classList.remove("hide");
-    const result = await BarcodeScanner.startScan({
-      targetedFormats: [SupportedFormat.QR_CODE],
-    });
-    return result;
-  };
+    const startScan = async () => {
+      await BarcodeScanner.hideBackground();
+      document?.querySelector("body")?.classList.add("scanner-active");
+      document
+        ?.querySelector("body.scanner-active > div:last-child")
+        ?.classList.remove("hide");
+      const result = await BarcodeScanner.startScan({
+        targetedFormats: [SupportedFormat.QR_CODE],
+      });
+      return result;
+    };
 
-  const stopScan = async () => {
-    await BarcodeScanner.stopScan();
-    await BarcodeScanner.showBackground();
-    document?.querySelector("body")?.classList.remove("scanner-active");
-  };
+    const stopScan = async () => {
+      await BarcodeScanner.stopScan();
+      await BarcodeScanner.showBackground();
+      document?.querySelector("body")?.classList.remove("scanner-active");
+    };
 
-  useImperativeHandle(ref, () => ({
-    stopScan,
-  }));
+    useImperativeHandle(ref, () => ({
+      stopScan,
+    }));
 
-  const initScan = async () => {
-    if (isPlatform("ios") || isPlatform("android")) {
-      const allowed = await checkPermission();
-      if (allowed) {
-        document?.querySelector("body")?.classList.add("scanner-active");
-        BarcodeScanner.hideBackground();
-        const result = await startScan();
-        if (result.hasContent) {
-          stopScan();
-          if (props.handleContent) props.handleContent(result.content);
-          // @TODO - foconnor: instead of setting the optype to idle we should
-          // have a loading screen with "waiting for server..." etc,
-          // and it can update to an error if the QR is invalid with a re-scan btn
+    const initScan = async () => {
+      if (isPlatform("ios") || isPlatform("android")) {
+        const allowed = await checkPermission();
+        if (allowed) {
+          document?.querySelector("body")?.classList.add("scanner-active");
+          BarcodeScanner.hideBackground();
+          const result = await startScan();
+          if (result.hasContent) {
+            stopScan();
+            if (handleContent) handleContent(result.content);
+            // @TODO - foconnor: instead of setting the optype to idle we should
+            // have a loading screen with "waiting for server..." etc,
+            // and it can update to an error if the QR is invalid with a re-scan btn
 
-          if (currentRoute?.path !== RoutePath.OOBI_SCANNER) {
-            dispatch(setCurrentOperation(OperationType.IDLE));
-            // @TODO - foconnor: when above loading screen in place, handle invalid QR code
-            await AriesAgent.agent.connections.receiveInvitationFromUrl(
-              result.content
-            );
+            if (currentRoute?.path !== RoutePath.OOBI_SCANNER) {
+              dispatch(setCurrentOperation(OperationType.IDLE));
+              // @TODO - foconnor: when above loading screen in place, handle invalid QR code
+              // @TODO - sdisalvo: receiveInvitationFromUrl should be awaited once we have error handling
+              AriesAgent.agent.connections.receiveInvitationFromUrl(
+                result.content
+              );
+              setIsValueCaptured && setIsValueCaptured(true);
+            }
           }
         }
       }
-    }
-  };
+    };
 
-  useEffect(() => {
-    if (
-      currentRoute?.path === RoutePath.OOBI_SCANNER ||
-      ((currentRoute?.path === TabsRoutePath.SCAN ||
-        currentOperation === OperationType.SCAN_CONNECTION) &&
-        currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
-        currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING)
-    ) {
-      initScan();
-    } else {
-      stopScan();
-    }
-  }, [currentOperation, currentRoute]);
+    useEffect(() => {
+      if (
+        currentRoute?.path === RoutePath.OOBI_SCANNER ||
+        ((currentRoute?.path === TabsRoutePath.SCAN ||
+          currentOperation === OperationType.SCAN_CONNECTION) &&
+          currentToastMsg !== ToastMsgType.CONNECTION_REQUEST_PENDING &&
+          currentToastMsg !== ToastMsgType.CREDENTIAL_REQUEST_PENDING)
+      ) {
+        initScan();
+      } else {
+        stopScan();
+      }
+    }, [currentOperation, currentRoute]);
 
-  return (
-    <>
-      <IonGrid
-        className="qr-code-scanner"
-        data-testid="qr-code-scanner"
-      >
-        <IonRow>
-          <IonCol size="12">
-            <span className="qr-code-scanner-text">
-              {i18n.t("scan.tab.title")}
-            </span>
-          </IonCol>
-        </IonRow>
-        <IonRow>
-          <IonIcon
-            icon={scanOutline}
-            color="light"
-            className="qr-code-scanner-icon"
-          />
-        </IonRow>
-      </IonGrid>
-    </>
-  );
-});
+    return (
+      <>
+        <IonGrid
+          className="qr-code-scanner"
+          data-testid="qr-code-scanner"
+        >
+          <IonRow>
+            <IonCol size="12">
+              <span className="qr-code-scanner-text">
+                {i18n.t("scan.tab.title")}
+              </span>
+            </IonCol>
+          </IonRow>
+          <IonRow>
+            <IonIcon
+              icon={scanOutline}
+              color="light"
+              className="qr-code-scanner-icon"
+            />
+          </IonRow>
+        </IonGrid>
+      </>
+    );
+  }
+);
 
 export { Scanner };
