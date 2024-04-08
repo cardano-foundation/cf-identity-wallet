@@ -1,12 +1,8 @@
-import {
-  IdentifierType,
-  KERIDetails,
-} from "../../core/agent/services/identifierService.types";
+import { IdentifierDetails } from "../../core/agent/services/identifierService.types";
 
-const keriFix: KERIDetails[] = [
+const identifierFix: IdentifierDetails[] = [
   {
     id: "ED4KeyyTKFj-72B008OTGgDCrFo6y7B2B73kfyzu5Inb",
-    method: IdentifierType.KERI,
     displayName: "Professional ID",
     createdAtUTC: "2023-01-01T19:23:24Z",
     colors: ["#47E0FF", "#00C6EF"],
@@ -30,6 +26,4 @@ const keriFix: KERIDetails[] = [
   },
 ];
 
-const identifierFix = [...keriFix];
-
-export { keriFix, identifierFix };
+export { identifierFix };

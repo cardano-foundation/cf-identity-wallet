@@ -34,7 +34,7 @@ import {
   setIdentifiersCache,
 } from "../../../store/reducers/identifiersCache";
 import { Agent } from "../../../core/agent/agent";
-import { KERIDetails } from "../../../core/agent/services/identifierService.types";
+import { IdentifierDetails } from "../../../core/agent/services/identifierService.types";
 import { VerifyPasscode } from "../../components/VerifyPasscode";
 import { IdentifierCardInfoKeri } from "../../components/IdentifierCardInfoKeri";
 import { MAX_FAVOURITES } from "../../globals/constants";
@@ -65,7 +65,7 @@ const IdentifierCardDetails = () => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
   const [verifyPasswordIsOpen, setVerifyPasswordIsOpen] = useState(false);
   const params: { id: string } = useParams();
-  const [cardData, setCardData] = useState<KERIDetails | undefined>();
+  const [cardData, setCardData] = useState<IdentifierDetails | undefined>();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
   const [navAnimation, setNavAnimation] = useState(false);
 
@@ -79,7 +79,7 @@ const IdentifierCardDetails = () => {
         params.id
       );
       if (cardDetailsResult) {
-        setCardData(cardDetailsResult.result);
+        setCardData(cardDetailsResult);
       } else {
         // @TODO - Error handling.
       }
@@ -257,7 +257,7 @@ const IdentifierCardDetails = () => {
             isActive={false}
           />
           <div className="card-details-content">
-            <IdentifierCardInfoKeri cardData={cardData as KERIDetails} />
+            <IdentifierCardInfoKeri cardData={cardData as IdentifierDetails} />
             <PageFooter
               pageId={pageId}
               deleteButtonText={`${i18n.t(

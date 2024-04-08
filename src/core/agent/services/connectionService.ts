@@ -8,12 +8,10 @@ import {
   ConnectionNoteDetails,
   ConnectionNoteProps,
   ConnectionShortDetails,
-  ConnectionType,
   ConnectionStatus,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import { Agent } from "../agent";
-import { IdentifierType } from "./identifierService.types";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { BasicRecord } from "../records";
 import { RecordType } from "../../storage/storage.types";
@@ -60,9 +58,7 @@ class ConnectionService extends AgentService {
     // This will take our first KERI identifier and get the server to resolve it, so that the connection is resolved from both sides and we can issue to this wallet using its API.
     if (url.includes("dev.keria.cf-keripy.metadata.dev.cf-deployments.org")) {
       // This is inefficient but it will change going forward.
-      const aid = (await Agent.agent.identifiers.getIdentifiers()).find(
-        (identifier) => identifier.method === IdentifierType.KERI
-      );
+      const aid = (await Agent.agent.identifiers.getIdentifiers())[0];
       if (aid && aid.signifyName) {
         // signifyName should always be set
         const oobi = await Agent.agent.connections.getKeriOobi(aid.signifyName);
@@ -112,15 +108,11 @@ class ConnectionService extends AgentService {
       label: record.content?.alias as string,
       connectionDate: record.createdAt.toISOString(),
       status: ConnectionStatus.CONFIRMED,
-      type: ConnectionType.KERI,
       oobi: record.content?.oobi as string,
     };
   }
 
-  async getConnectionById(
-    id: string,
-    type?: ConnectionType
-  ): Promise<ConnectionDetails> {
+  async getConnectionById(id: string): Promise<ConnectionDetails> {
     const connection = await this.signifyApi.getContactById(id);
     return {
       label: connection?.alias,
@@ -134,10 +126,7 @@ class ConnectionService extends AgentService {
     };
   }
 
-  async deleteConnectionById(
-    id: string,
-    connectionType?: ConnectionType
-  ): Promise<void> {
+  async deleteConnectionById(id: string): Promise<void> {
     await this.basicStorage.deleteById(id);
     // await this.signifyApi.deleteContactById(id); TODO: must open when Keria runs well
     const notes = await this.getConnectNotesByConnectionId(id);

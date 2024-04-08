@@ -1,7 +1,6 @@
 import { formatShortDate } from "../../../utils/formatters";
 import { ConnectionDetailsHeaderProps } from "./ConnectionDetailsHeader.types";
 import "./ConnectionDetailsHeader.scss";
-import { ConnectionType } from "../../../../core/agent/agent.types";
 
 const ConnectionDetailsHeader = ({
   logo,

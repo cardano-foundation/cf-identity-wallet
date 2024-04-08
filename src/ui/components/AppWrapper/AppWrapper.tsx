@@ -36,7 +36,6 @@ import {
   ConnectionKeriStateChangedEvent,
   ConnectionStatus,
   AcdcKeriStateChangedEvent,
-  ConnectionType,
 } from "../../../core/agent/agent.types";
 import { CredentialStatus } from "../../../core/agent/services/credentialService.types";
 import { FavouriteIdentifier } from "../../../store/reducers/identifiersCache/identifiersCache.types";
@@ -74,7 +73,6 @@ const keriNotificationsChangeHandler = async (
         type: IncomingRequestType.CREDENTIAL_OFFER_RECEIVED,
         logo: "", // TODO: must define Keri logo
         label: "Credential Issuance Server", // TODO: must define it
-        source: ConnectionType.KERI,
       })
     );
   } else if (event?.a?.r === NotificationRoute.MultiSigIcp) {
@@ -85,7 +83,6 @@ const keriNotificationsChangeHandler = async (
         id: event?.id,
         event: event,
         type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-        source: ConnectionType.KERI,
         multisigIcpDetails: multisigIcpDetails,
       })
     );

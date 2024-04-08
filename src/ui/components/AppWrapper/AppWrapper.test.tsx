@@ -9,10 +9,7 @@ import {
   setToastMsg,
 } from "../../../store/reducers/stateCache";
 import { ToastMsgType } from "../../globals/types";
-import {
-  ConnectionShortDetails,
-  ConnectionType,
-} from "../../../core/agent/agent.types";
+import { ConnectionShortDetails } from "../../../core/agent/agent.types";
 import { IncomingRequestType } from "../../../store/reducers/stateCache/stateCache.types";
 import { updateOrAddCredsCache } from "../../../store/reducers/credsCache";
 import { CredentialMetadataRecordStatus } from "../../../core/agent/records/credentialMetadataRecord.types";

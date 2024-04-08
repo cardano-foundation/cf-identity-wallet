@@ -8,14 +8,10 @@ import {
   IonIcon,
 } from "@ionic/react";
 import { hourglassOutline } from "ionicons/icons";
-import {
-  ConnectionStatus,
-  ConnectionType,
-} from "../../../../core/agent/agent.types";
+import { ConnectionStatus } from "../../../../core/agent/agent.types";
 import { formatShortDate } from "../../../utils/formatters";
 import { ConnectionItemProps } from "../Connections.types";
 import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
-import DidComLogo from "../../../../ui/assets/images/didCommGeneric.jpg";
 
 const ConnectionItem = ({
   item,

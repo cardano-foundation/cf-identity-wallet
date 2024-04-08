@@ -77,10 +77,6 @@ const ArchivedCredentials = ({
   }: {
     credential: CredentialShortDetails;
   }) => {
-    const credentialBackground = () => {
-      return Minicred4;
-    };
-
     return (
       <IonItemSliding>
         <IonItem
@@ -104,7 +100,7 @@ const ArchivedCredentials = ({
               />
             )}
             <img
-              src={credentialBackground()}
+              src={Minicred4}
               alt="credential-miniature"
               className="credential-miniature"
             />
@@ -267,8 +263,8 @@ const ArchivedCredentials = ({
                 {selectedCredentials.length === 1
                   ? i18n.t("creds.archived.oneselected")
                   : i18next.t("creds.archived.manyselected", {
-                    amount: selectedCredentials.length,
-                  })}
+                      amount: selectedCredentials.length,
+                    })}
               </div>
               <IonButtons slot="end">
                 <IonButton

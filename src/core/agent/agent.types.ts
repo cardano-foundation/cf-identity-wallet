@@ -17,10 +17,6 @@ enum ConnectionHistoryType {
   CREDENTIAL_ACCEPTED,
 }
 
-enum ConnectionType {
-  KERI,
-}
-
 interface ConnectionHistoryItem {
   type: ConnectionHistoryType;
   credentialType?: string;
@@ -45,7 +41,6 @@ interface ConnectionShortDetails {
   connectionDate: string;
   logo?: string;
   status: ConnectionStatus;
-  type?: ConnectionType;
   oobi?: string;
 }
 
@@ -113,7 +108,6 @@ export {
   ConnectionStatus,
   ConnectionHistoryType,
   MiscRecordId,
-  ConnectionType,
   ConnectionKeriEventTypes,
   AcdcKeriEventTypes,
 };

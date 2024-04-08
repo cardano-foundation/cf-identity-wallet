@@ -8,8 +8,7 @@ import { Provider } from "react-redux";
 import { IncomingRequestType } from "../../../../store/reducers/stateCache/stateCache.types";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import EN_TRANSLATIONS from "../../../../locales/en/en.json";
-import { ConnectionType } from "../../../../core/agent/agent.types";
-import { filteredKeriFix } from "../../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 import { RequestComponent } from "./RequestComponent";
 import { store } from "../../../../store";
 
@@ -33,9 +32,8 @@ describe("Multi-Sig request", () => {
   const requestData = {
     id: "abc123456",
     type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-    source: ConnectionType.KERI,
     multisigIcpDetails: {
-      ourIdentifier: filteredKeriFix[0],
+      ourIdentifier: filteredIdentifierFix[0],
       sender: connectionsFix[3],
       otherConnections: [connectionsFix[4], connectionsFix[5]],
       threshold: 1,
@@ -45,56 +43,6 @@ describe("Multi-Sig request", () => {
   const handleAccept = jest.fn();
   const handleCancel = jest.fn();
   const handleIgnore = jest.fn();
-
-  test("It renders content for CONNECTION_INCOMING ", async () => {
-    const { getAllByText } = render(
-      <Provider store={storeMocked}>
-        <RequestComponent
-          pageId={pageId}
-          activeStatus={activeStatus}
-          blur={blur}
-          setBlur={setBlur}
-          requestData={requestData}
-          initiateAnimation={initiateAnimation}
-          handleAccept={handleAccept}
-          handleCancel={handleCancel}
-          handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.CONNECTION_INCOMING}
-        />
-      </Provider>
-    );
-
-    expect(
-      getAllByText(EN_TRANSLATIONS.request.connection.title)[0]
-    ).toBeInTheDocument();
-  });
-
-  test("Display fallback when provider logo is empty for CONNECTION_INCOMING", async () => {
-    const testData = {
-      ...requestData,
-      logo: "",
-    };
-    const { getByTestId } = render(
-      <Provider store={storeMocked}>
-        <RequestComponent
-          pageId={pageId}
-          activeStatus={activeStatus}
-          blur={blur}
-          setBlur={setBlur}
-          requestData={testData}
-          initiateAnimation={initiateAnimation}
-          handleAccept={handleAccept}
-          handleCancel={handleCancel}
-          handleIgnore={handleIgnore}
-          incomingRequestType={IncomingRequestType.CONNECTION_INCOMING}
-        />
-      </Provider>
-    );
-
-    expect(getByTestId("request-provider-logo").getAttribute("src")).not.toBe(
-      undefined
-    );
-  });
 
   test("It renders content for CREDENTIAL_OFFER_RECEIVED ", async () => {
     const { getByText } = render(
@@ -176,9 +124,8 @@ describe("Multi-Sig request", () => {
     const data = {
       id: "abc123456",
       type: IncomingRequestType.MULTI_SIG_REQUEST_INCOMING,
-      source: ConnectionType.KERI,
       multisigIcpDetails: {
-        ourIdentifier: filteredKeriFix[0],
+        ourIdentifier: filteredIdentifierFix[0],
         sender: {
           ...connectionsFix[3],
           logo: "",

@@ -84,17 +84,6 @@ const CredCardDetails = () => {
       params.id
     );
     setCardData(cardDetails);
-
-    // if (cardDetails.connectionType === ConnectionType.KERI) {
-    //   const connectionDetails =
-    //     cardDetails.connectionId &&
-    //     (await Agent.agent.connections?.getConnectionById(
-    //       cardDetails.connectionId
-    //     ));
-    //   if (connectionDetails) {
-    //     setConnectionDetails(connectionDetails);
-    //   }
-    // }
   };
 
   const handleDone = () => {

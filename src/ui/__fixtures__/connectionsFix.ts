@@ -1,4 +1,4 @@
-import { ConnectionStatus, ConnectionType } from "../../core/agent/agent.types";
+import { ConnectionStatus } from "../../core/agent/agent.types";
 import CardanoLogo from "../assets/images/CardanoLogo.jpg";
 import UserPicture from "../assets/images/UserPicture.jpg";
 import { ConnectionShortDetails } from "../pages/Connections/Connections.types";
@@ -10,7 +10,6 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-01-14T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.PENDING,
-    type: ConnectionType.KERI,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec21",
@@ -18,7 +17,6 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-01-16T08:21:54Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
-    type: ConnectionType.KERI,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec22",
@@ -26,7 +24,6 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2017-01-13T10:15:11Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
-    type: ConnectionType.KERI,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec23",
@@ -34,7 +31,6 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2024-02-13T11:39:20Z",
     logo: UserPicture,
     status: ConnectionStatus.CONFIRMED,
-    type: ConnectionType.KERI,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec24",
@@ -42,7 +38,6 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2016-01-10T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.PENDING,
-    type: ConnectionType.KERI,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec25",
@@ -50,7 +45,6 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2018-01-14T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.ACCEPTED,
-    type: ConnectionType.KERI,
   },
   {
     id: "ebfeb1ebc6f1c276ef71212ec26",
@@ -58,7 +52,6 @@ const connectionsFix: ConnectionShortDetails[] = [
     connectionDate: "2020-07-06T19:23:24Z",
     logo: CardanoLogo,
     status: ConnectionStatus.CONFIRMED,
-    type: ConnectionType.KERI,
   },
 ];
 

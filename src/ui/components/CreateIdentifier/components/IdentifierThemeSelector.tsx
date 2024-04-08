@@ -58,12 +58,10 @@ const IdentifierThemeSelector = ({
       className="identifier-theme-selector"
       data-testid="identifier-theme-selector"
     >
-      <>
-        <IonRow className="identifier-theme-input">
-          <ThemeItem index={0} />
-          <ThemeItem index={1} />
-        </IonRow>
-      </>
+      <IonRow className="identifier-theme-input">
+        <ThemeItem index={0} />
+        <ThemeItem index={1} />
+      </IonRow>
     </IonGrid>
   );
 };

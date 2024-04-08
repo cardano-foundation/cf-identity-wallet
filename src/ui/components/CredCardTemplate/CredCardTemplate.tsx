@@ -10,7 +10,6 @@ import CardBodyGeneric from "./CardBodyGeneric";
 import ACDCLogo from "../../../ui/assets/images/keri-acdc.svg";
 import KeriBackground from "../../../ui/assets/images/keri-0.png";
 import "./CredCardTemplate.scss";
-import { ConnectionType } from "../../../core/agent/agent.types";
 
 const CredCardTemplate = ({
   name = "default",
@@ -21,14 +20,11 @@ const CredCardTemplate = ({
   pickedCard,
 }: CredCardTemplateProps) => {
   const [alertIsOpen, setAlertIsOpen] = useState(false);
-  const isAcdcTemplate = cardData?.connectionType === ConnectionType.KERI;
 
   const credCardTemplateStyles = {
     zIndex: index,
-    ...(isAcdcTemplate && {
-      backgroundImage: `url(${KeriBackground})`,
-      backgroundSize: "cover",
-    }),
+    backgroundImage: `url(${KeriBackground})`,
+    backgroundSize: "cover",
   };
 
   const handleCardClick = () => {
@@ -57,7 +53,7 @@ const CredCardTemplate = ({
         <div className="card-header">
           <span className="card-logo">
             <img
-              src={isAcdcTemplate && ACDCLogo}
+              src={ACDCLogo}
               alt="card-logo"
             />
           </span>
@@ -70,11 +66,7 @@ const CredCardTemplate = ({
               <span>{CredentialMetadataRecordStatus.PENDING}</span>
             </IonChip>
           ) : (
-            <span className="credential-type">
-              {isAcdcTemplate
-                ? cardData.credentialType
-                : cardData.credentialType.replace(/([a-z])([A-Z])/g, "$1 $2")}
-            </span>
+            <span className="credential-type">{cardData.credentialType}</span>
           )}
         </div>
         {cardData.status === CredentialMetadataRecordStatus.PENDING && (
@@ -86,16 +78,16 @@ const CredCardTemplate = ({
       </div>
       {cardData.status === CredentialMetadataRecordStatus.PENDING &&
         alertIsOpen && (
-        <Alert
-          isOpen={alertIsOpen}
-          setIsOpen={setAlertIsOpen}
-          dataTestId="alert-confirm"
-          headerText={i18n.t("creds.create.alert.title")}
-          confirmButtonText={`${i18n.t("creds.create.alert.confirm")}`}
-          actionConfirm={() => setAlertIsOpen(false)}
-          backdropDismiss={false}
-        />
-      )}
+          <Alert
+            isOpen={alertIsOpen}
+            setIsOpen={setAlertIsOpen}
+            dataTestId="alert-confirm"
+            headerText={i18n.t("creds.create.alert.title")}
+            confirmButtonText={`${i18n.t("creds.create.alert.confirm")}`}
+            actionConfirm={() => setAlertIsOpen(false)}
+            backdropDismiss={false}
+          />
+        )}
     </div>
   );
 };

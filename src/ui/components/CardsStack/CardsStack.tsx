@@ -1,7 +1,10 @@
 import { useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import "./CardsStack.scss";
-import { IdentifierShortDetails } from "../../../core/agent/services/identifierService.types";
+import {
+  IdentifierDetails,
+  IdentifierShortDetails,
+} from "../../../core/agent/services/identifierService.types";
 import { CardType } from "../../globals/types";
 
 import { IdentifierCardTemplate } from "../IdentifierCardTemplate";
@@ -65,7 +68,7 @@ const CardsStack = ({
     let pathname = "";
 
     if (cardsType === CardType.IDENTIFIERS) {
-      const data = cardsData[index] as JSONObject;
+      const data = cardsData[index] as IdentifierDetails;
       pathname = `/tabs/identifiers/${data.id}`;
     } else {
       const data = cardsData[index] as CredentialShortDetails;

@@ -7,7 +7,6 @@ import { CredentialStatus } from "./credentialService.types";
 import {
   AcdcKeriEventTypes,
   AcdcKeriStateChangedEvent,
-  ConnectionType,
 } from "../agent.types";
 import { SignifyApi } from "../modules/signify/signifyApi";
 import { CredentialMetadataRecord } from "../records/credentialMetadataRecord";
@@ -55,7 +54,6 @@ const credentialMetadataProps: CredentialMetadataRecordProps = {
   credentialType: "credType",
   status: CredentialMetadataRecordStatus.CONFIRMED,
   credentialRecordId: credentialRecordId1,
-  connectionType: ConnectionType.KERI,
 };
 
 const credentialMetadataRecordA = new CredentialMetadataRecord(
@@ -483,7 +481,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       status: CredentialMetadataRecordStatus.CONFIRMED,
       colors,
       credentialType,
-      connectionType: ConnectionType.KERI,
       issuanceDate: nowISO,
       isDeleted: false,
       connectionId: undefined,
@@ -495,7 +492,6 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
       colors,
       status: CredentialMetadataRecordStatus.CONFIRMED,
       credentialType,
-      connectionType: ConnectionType.KERI,
       issuanceDate: nowISO,
     });
   });

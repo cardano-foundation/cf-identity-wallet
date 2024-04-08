@@ -9,7 +9,7 @@ import { IdentifierCardDetails } from "./IdentifierCardDetails";
 import { TabsRoutePath } from "../../components/navigation/TabsMenu";
 import EN_TRANSLATIONS from "../../../locales/en/en.json";
 import { FIFTEEN_WORDS_BIT_LENGTH } from "../../globals/constants";
-import { filteredKeriFix } from "../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierFix } from "../../__fixtures__/filteredIdentifierFix";
 import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { Agent } from "../../../core/agent/agent";
 import { ConfigurationService } from "../../../core/configuration";
@@ -28,9 +28,7 @@ jest.mock("../../../core/agent/agent", () => ({
   Agent: {
     agent: {
       identifiers: {
-        getIdentifier: jest
-          .fn()
-          .mockResolvedValue({ type: "key", result: identifierFix[0] }),
+        getIdentifier: jest.fn().mockResolvedValue(identifierFix[0]),
       },
       genericRecords: {
         findById: jest.fn(),
@@ -59,7 +57,7 @@ const initialStateKeri = {
     selected: FIFTEEN_WORDS_BIT_LENGTH,
   },
   identifiersCache: {
-    identifiers: filteredKeriFix,
+    identifiers: filteredIdentifierFix,
     favourites: [],
   },
 };
@@ -112,9 +110,9 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(0, 5) +
+          filteredIdentifierFix[0].id.substring(0, 5) +
             "..." +
-            filteredKeriFix[0].id.slice(-5)
+            filteredIdentifierFix[0].id.slice(-5)
         )
       ).toBeInTheDocument()
     );
@@ -142,9 +140,9 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(0, 5) +
+          filteredIdentifierFix[0].id.substring(0, 5) +
             "..." +
-            filteredKeriFix[0].id.slice(-5)
+            filteredIdentifierFix[0].id.slice(-5)
         )
       ).toBeInTheDocument()
     );
@@ -172,9 +170,9 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(0, 5) +
+          filteredIdentifierFix[0].id.substring(0, 5) +
             "..." +
-            filteredKeriFix[0].id.slice(-5)
+            filteredIdentifierFix[0].id.slice(-5)
         )
       ).toBeInTheDocument()
     );
@@ -212,9 +210,9 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(0, 5) +
+          filteredIdentifierFix[0].id.substring(0, 5) +
             "..." +
-            filteredKeriFix[0].id.slice(-5)
+            filteredIdentifierFix[0].id.slice(-5)
         )
       ).toBeInTheDocument()
     );
@@ -268,9 +266,9 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(0, 5) +
+          filteredIdentifierFix[0].id.substring(0, 5) +
             "..." +
-            filteredKeriFix[0].id.slice(-5)
+            filteredIdentifierFix[0].id.slice(-5)
         )
       ).toBeInTheDocument()
     );
@@ -290,7 +288,7 @@ describe("Cards Details page", () => {
       .fn()
       .mockImplementation(async (data: SetOptions): Promise<void> => {
         expect(data.key).toBe(PreferencesKeys.APP_IDENTIFIERS_FAVOURITES);
-        expect(data.value).toBe(filteredKeriFix[0]);
+        expect(data.value).toBe(filteredIdentifierFix[0]);
       });
 
     const { getByTestId } = render(
@@ -330,9 +328,9 @@ describe("Cards Details page", () => {
     await waitFor(() =>
       expect(
         getByText(
-          filteredKeriFix[0].id.substring(0, 5) +
+          filteredIdentifierFix[0].id.substring(0, 5) +
             "..." +
-            filteredKeriFix[0].id.slice(-5)
+            filteredIdentifierFix[0].id.slice(-5)
         )
       ).toBeInTheDocument()
     );

@@ -50,7 +50,6 @@ import { OperationType, ToastMsgType } from "../../globals/types";
 import { PageLayout } from "../layout/PageLayout";
 import { writeToClipboard } from "../../utils/clipboard";
 import { Agent } from "../../../core/agent/agent";
-import { IdentifierType } from "../../../core/agent/services/identifierService.types";
 import { IdentifierThemeSelector } from "../CreateIdentifier/components/IdentifierThemeSelector";
 
 const IdentifierOptions = ({

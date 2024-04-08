@@ -5,7 +5,7 @@ import { IdentifierThemeSelector } from "./IdentifierThemeSelector";
 import { connectionsFix } from "../../../__fixtures__/connectionsFix";
 import { IdentifierStage1 } from "./IdentifierStage1";
 import { IdentifierStage3 } from "./IdentifierStage3";
-import { filteredKeriFix } from "../../../__fixtures__/filteredIdentifierFix";
+import { filteredIdentifierFix } from "../../../__fixtures__/filteredIdentifierFix";
 
 describe("Identifier Theme Selector", () => {
   test("It switches KERI card from theme 0 to theme 1", async () => {
@@ -51,7 +51,7 @@ describe("Render Identifier Stage", () => {
       ],
     },
     identifiersCache: {
-      identifiers: filteredKeriFix,
+      identifiers: filteredIdentifierFix,
     },
   };
 
@@ -67,7 +67,6 @@ describe("Render Identifier Stage", () => {
           state={{
             identifierCreationStage: 1,
             displayNameValue: "Duke",
-            selectedIdentifierType: 1,
             selectedAidType: 1,
             selectedTheme: 1,
             threshold: 1,
@@ -92,7 +91,6 @@ describe("Render Identifier Stage", () => {
           state={{
             identifierCreationStage: 1,
             displayNameValue: "Duke",
-            selectedIdentifierType: 1,
             selectedAidType: 1,
             selectedTheme: 1,
             threshold: 1,

@@ -3,7 +3,6 @@ import {
   KeriNotification,
   AcdcKeriStateChangedEvent,
   AcdcKeriEventTypes,
-  ConnectionType,
 } from "../agent.types";
 import { AgentService } from "./agentService";
 import {
@@ -67,7 +66,6 @@ class CredentialService extends AgentService {
       issuanceDate: metadata.issuanceDate,
       credentialType: metadata.credentialType,
       status: metadata.status,
-      connectionType: metadata.connectionType,
     };
   }
 
@@ -101,7 +99,6 @@ class CredentialService extends AgentService {
         s: acdc.status.s,
         dt: new Date(acdc.status.dt).toISOString(),
       },
-      connectionType: ConnectionType.KERI,
     };
   }
 
@@ -123,13 +120,9 @@ class CredentialService extends AgentService {
     const metadata = await this.getMetadataById(id);
     this.validArchivedCredential(metadata);
     //With KERI, we only soft delete because we need to sync with KERIA. This will prevent re-sync deleted records.
-    if (metadata.connectionType === ConnectionType.KERI) {
-      await this.updateCredentialMetadata(id, {
-        isDeleted: true,
-      });
-    } else {
-      await this.deleteCredentialMetadata(id);
-    }
+    await this.updateCredentialMetadata(id, {
+      isDeleted: true,
+    });
   }
 
   async restoreCredential(id: string): Promise<void> {
@@ -192,7 +185,6 @@ class CredentialService extends AgentService {
       credentialType: "",
       issuanceDate: new Date(dateTime).toISOString(),
       status: CredentialMetadataRecordStatus.PENDING,
-      connectionType: ConnectionType.KERI,
     };
     await this.createMetadata({
       ...credentialDetails,

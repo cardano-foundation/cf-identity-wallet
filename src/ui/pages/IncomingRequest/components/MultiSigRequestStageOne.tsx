@@ -20,8 +20,6 @@ import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
 import { PageHeader } from "../../../components/PageHeader";
 import KeriLogo from "../../../assets/images/KeriGeneric.jpg";
-import DidComLogo from "../../../assets/images/didCommGeneric.jpg";
-import { ConnectionType } from "../../../../core/agent/agent.types";
 import "./MultiSigRequestStageOne.scss";
 
 const MultiSigRequestStageOne = ({

@@ -1,4 +1,3 @@
-import { ConnectionType } from "../agent.types";
 import { CredentialMetadataRecord } from "./credentialMetadataRecord";
 import {
   CredentialMetadataRecordProps,
@@ -14,7 +13,7 @@ const mockData: CredentialMetadataRecordProps = {
   credentialType: "test",
   status: CredentialMetadataRecordStatus.CONFIRMED,
   credentialRecordId: "1",
-  connectionType: ConnectionType.KERI,
+  
 };
 
 describe("Credential metadata record", () => {
@@ -47,7 +46,7 @@ describe("Credential metadata record", () => {
       credentialType: "test",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       credentialRecordId: "1",
-      connectionType: ConnectionType.KERI,
+      
     });
     expect(settingsRecord.createdAt.getTime()).toBeGreaterThan(
       createdAt.getTime()
@@ -65,7 +64,7 @@ describe("Credential metadata record", () => {
       credentialType: "test",
       status: CredentialMetadataRecordStatus.CONFIRMED,
       credentialRecordId: "1",
-      connectionType: ConnectionType.KERI,
+      
     });
     expect(settingsRecord.isArchived).toBe(false);
   });

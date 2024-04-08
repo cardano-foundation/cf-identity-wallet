@@ -1,4 +1,4 @@
-import { ellipsisVertical, addOutline } from "ionicons/icons";
+import { ellipsisVertical } from "ionicons/icons";
 import { useEffect, useRef, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
@@ -42,23 +42,15 @@ import { Agent } from "../../../core/agent/agent";
 import {
   ConnectionHistoryItem,
   ConnectionNoteDetails,
-  ConnectionType,
 } from "../../../core/agent/agent.types";
 import ConnectionDetailsHeader from "./components/ConnectionDetailsHeader";
 import { EditConnectionsModal } from "./components/EditConnectionsModal";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import Minicred1 from "../../assets/images/minicred1.jpg";
-import Minicred2 from "../../assets/images/minicred2.jpg";
-import Minicred3 from "../../assets/images/minicred3.jpg";
 import Minicred4 from "../../assets/images/minicred4.jpg";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
-import DidComLogo from "../../assets/images/didCommGeneric.jpg";
-import {
-  CardDetailsBlock,
-  CardDetailsItem,
-} from "../../components/CardDetails";
+import { CardDetailsBlock } from "../../components/CardDetails";
 import { ConnectionNotes } from "./components/ConnectionNotes";
 
 const ConnectionDetails = () => {
@@ -94,8 +86,7 @@ const ConnectionDetails = () => {
       try {
         const connectionDetails =
           await Agent.agent.connections.getConnectionById(
-            connectionShortDetails.id,
-            connectionShortDetails.type
+            connectionShortDetails.id
           );
         setConnectionDetails(connectionDetails);
         if (connectionDetails.notes) {
@@ -153,8 +144,7 @@ const ConnectionDetails = () => {
   const verifyAction = () => {
     async function deleteConnection() {
       await Agent.agent.connections.deleteConnectionById(
-        connectionShortDetails.id,
-        connectionShortDetails.type
+        connectionShortDetails.id
       );
       const updatedConnections = connectionsData.filter(
         (item) => item.id !== connectionDetails?.id
@@ -183,10 +173,6 @@ const ConnectionDetails = () => {
         i18n.t("connections.details.notavailable"),
     },
   ];
-
-  const credentialBackground = () => {
-    return Minicred4;
-  };
 
   const fallbackLogo = KeriLogo;
 
@@ -272,7 +258,7 @@ const ConnectionDetails = () => {
                   <div className="connection-details-history-event">
                     <div className="connection-details-logo">
                       <img
-                        src={credentialBackground()}
+                        src={Minicred4}
                         alt="credential-miniature"
                         className="credential-miniature"
                       />

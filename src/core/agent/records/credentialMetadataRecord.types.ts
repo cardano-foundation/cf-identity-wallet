@@ -1,5 +1,3 @@
-import { ConnectionType } from "../agent.types";
-
 enum CredentialMetadataRecordStatus {
   CONFIRMED = "confirmed",
   PENDING = "pending",
@@ -16,7 +14,6 @@ interface CredentialMetadataRecordProps {
   credentialRecordId: string;
   status: CredentialMetadataRecordStatus;
   connectionId?: string;
-  connectionType: ConnectionType;
 }
 
 export { CredentialMetadataRecordStatus };

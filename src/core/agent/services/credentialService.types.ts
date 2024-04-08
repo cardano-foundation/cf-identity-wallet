@@ -1,4 +1,3 @@
-import { ConnectionType } from "../agent.types";
 import { CredentialMetadataRecordProps } from "../records/credentialMetadataRecord.types";
 
 enum CredentialStatus {
@@ -23,7 +22,6 @@ interface JSONObject {
 }
 
 interface ACDCDetails extends CredentialShortDetails {
-  connectionType: ConnectionType.KERI;
   i: string;
   a: {
     i: string;

@@ -10,7 +10,6 @@ import KeriLogo from "../../../../ui/assets/images/KeriGeneric.jpg";
 import { PageFooter } from "../../../components/PageFooter";
 import { RequestProps } from "../IncomingRequest.types";
 import { ResponsivePageLayout } from "../../../components/layout/ResponsivePageLayout";
-import { ConnectionType } from "../../../../core/agent/agent.types";
 import { RequestType } from "../../../globals/types";
 
 const CredentialRequest = ({
