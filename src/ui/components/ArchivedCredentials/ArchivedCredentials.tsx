@@ -254,7 +254,10 @@ const ArchivedCredentialsContainer = forwardRef<
                   {i18n.t("creds.archived.delete")}
                 </IonButton>
               </IonButtons>
-              <div className="selected-amount-credentials-label">
+              <div
+                data-testid="selected-amount-credentials"
+                className="selected-amount-credentials-label"
+              >
                 {selectedCredentials.length === 1
                   ? i18n.t("creds.archived.oneselected")
                   : i18next.t("creds.archived.manyselected", {
