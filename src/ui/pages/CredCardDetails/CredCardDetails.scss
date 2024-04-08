@@ -1,4 +1,10 @@
 .cred-card-detail {
+  &.archived-credential {
+    & ion-header ion-toolbar ion-button.action-button-label {
+      width: 4rem;
+    }
+  }
+
   .page-header {
     margin-top: 0.625rem;
   }
@@ -33,7 +39,7 @@
 
 .cred-back-animation {
   .card-details-content {
-    animation: credCollapse 0.25s ease-in-out;
+    animation: credCollapse 0.2s ease-in-out;
     animation-fill-mode: forwards;
   }
 
