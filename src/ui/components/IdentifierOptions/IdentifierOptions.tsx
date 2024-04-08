@@ -141,6 +141,7 @@ const IdentifierOptions = ({
       (item) => item.id !== cardData.id
     );
     dispatch(setIdentifiersCache(updatedIdentifiers));
+    dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
     handleDone();
   };
 

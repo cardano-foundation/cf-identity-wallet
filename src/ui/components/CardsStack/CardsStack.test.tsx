@@ -1,6 +1,7 @@
 import { act, fireEvent, render, waitFor } from "@testing-library/react";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
+import { IonReactRouter } from "@ionic/react-router";
 import { CLEAR_STATE_DELAY, CardsStack, NAVIGATION_DELAY } from "./CardsStack";
 import { identifierFix } from "../../__fixtures__/identifierFix";
 import { store } from "../../../store";
@@ -78,7 +79,7 @@ describe("Cards Stack Component", () => {
   test("It navigates to Identifier Card Details and back", async () => {
     jest.useFakeTimers();
     const { findByTestId } = render(
-      <MemoryRouter>
+      <IonReactRouter>
         <Provider store={store}>
           <CardsStack
             name="example"
@@ -90,7 +91,7 @@ describe("Cards Stack Component", () => {
             component={IdentifierCardDetails}
           />
         </Provider>
-      </MemoryRouter>
+      </IonReactRouter>
     );
 
     const firstCard = await findByTestId(

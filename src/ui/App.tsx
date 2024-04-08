@@ -1,5 +1,5 @@
 import { StrictMode, useEffect, useMemo, useState } from "react";
-import { setupIonicReact, IonApp, isPlatform } from "@ionic/react";
+import { setupIonicReact, IonApp, getPlatforms } from "@ionic/react";
 import { StatusBar, Style } from "@capacitor/status-bar";
 import { Routes } from "../routes";
 import "./styles/ionic.scss";
@@ -68,7 +68,11 @@ const App = () => {
   }, [authentication, currentRoute]);
 
   useEffect(() => {
-    if (isPlatform("ios")) {
+    const platforms = getPlatforms();
+    const isIosAppPlatform =
+      platforms.includes("ios") && !platforms.includes("mobileweb");
+
+    if (isIosAppPlatform) {
       StatusBar.setStyle({
         style: Style.Light,
       });

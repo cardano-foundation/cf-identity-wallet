@@ -2,7 +2,6 @@ import { render, waitFor } from "@testing-library/react";
 import configureStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import { MemoryRouter, Route } from "react-router-dom";
-import { isPlatform } from "@ionic/react";
 import { Style, StyleOptions } from "@capacitor/status-bar";
 import { App } from "./App";
 import { TabsRoutePath } from "../routes/paths";
@@ -71,11 +70,11 @@ jest.mock("@capacitor/status-bar", () => ({
   },
 }));
 
-const isPlatformMock = jest.fn();
+const getPlatformsMock = jest.fn(() => ["android"]);
 
 jest.mock("@ionic/react", () => ({
   ...jest.requireActual("@ionic/react"),
-  isPlatform: (env: string) => isPlatformMock(env),
+  getPlatforms: () => getPlatformsMock(),
 }));
 
 const mockStore = configureStore();
@@ -118,7 +117,7 @@ describe("App", () => {
   });
 
   test("Force status bar style is dark mode on ios", async () => {
-    isPlatformMock.mockImplementationOnce(() => true);
+    getPlatformsMock.mockImplementationOnce(() => ["ios"]);
 
     render(
       <Provider store={store}>
@@ -134,7 +133,7 @@ describe("App", () => {
   });
 
   test("Should not force status bar style is dark mode on android or browser", async () => {
-    isPlatformMock.mockImplementationOnce(() => false);
+    getPlatformsMock.mockImplementationOnce(() => ["android", "mobileweb"]);
 
     render(
       <Provider store={store}>

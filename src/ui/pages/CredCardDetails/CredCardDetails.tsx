@@ -3,6 +3,7 @@ import {
   IonButton,
   IonIcon,
   IonSpinner,
+  useIonRouter,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
@@ -44,12 +45,14 @@ import "../../components/CardDetails/CardDetails.scss";
 import "./CredCardDetails.scss";
 import { PageFooter } from "../../components/PageFooter";
 import { CredContentAcdc } from "./components/CredContentAcdc";
+import { combineClassNames } from "../../utils/style";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
 
 const CredCardDetails = () => {
   const pageId = "credential-card-details";
+  const ionRouter = useIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
@@ -65,6 +68,7 @@ const CredCardDetails = () => {
   const [cardData, setCardData] = useState<ACDCDetails>();
 
   const [navAnimation, setNavAnimation] = useState(false);
+
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
   const isFavourite = favouritesCredsCache?.some((fav) => fav.id === params.id);
@@ -99,7 +103,7 @@ const CredCardDetails = () => {
     );
 
     setTimeout(() => {
-      history.push(nextPath.pathname);
+      ionRouter.push(nextPath.pathname, "root");
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {
@@ -216,9 +220,14 @@ const CredCardDetails = () => {
     );
   };
 
-  const pageClasses = `cred-card-detail card-details${
-    isArchived ? " archived-credential" : ""
-  } ${navAnimation ? "cred-back-animation" : "cred-open-animation"}`;
+  const pageClasses = combineClassNames(
+    "cred-card-detail card-details cred-open-animation",
+    {
+      "archived-credential": isArchived,
+      "cred-back-animation": navAnimation,
+      "cred-open-animation": !navAnimation,
+    }
+  );
 
   return (
     <TabLayout

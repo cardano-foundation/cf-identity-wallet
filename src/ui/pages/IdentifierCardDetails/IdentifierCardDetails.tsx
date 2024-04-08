@@ -3,6 +3,7 @@ import {
   IonButton,
   IonIcon,
   IonSpinner,
+  useIonRouter,
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
@@ -47,12 +48,14 @@ import "../../components/CardDetails/CardDetails.scss";
 import "./IdentifierCardDetails.scss";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
 import { PageHeader } from "../../components/PageHeader";
+import { combineClassNames } from "../../utils/style";
 
 const NAVIGATION_DELAY = 250;
 const CLEAR_ANIMATION = 1000;
 
 const IdentifierCardDetails = () => {
   const pageId = "identifier-card-details";
+  const ionRouter = useIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -67,6 +70,7 @@ const IdentifierCardDetails = () => {
   const params: { id: string } = useParams();
   const [cardData, setCardData] = useState<IdentifierDetails | undefined>();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+
   const [navAnimation, setNavAnimation] = useState(false);
 
   const isFavourite = favouritesIdentifiersData?.some(
@@ -108,7 +112,7 @@ const IdentifierCardDetails = () => {
     );
 
     setTimeout(() => {
-      history.push(backPath.pathname);
+      ionRouter.push(backPath.pathname, "root");
     }, NAVIGATION_DELAY);
 
     setTimeout(() => {
@@ -125,6 +129,7 @@ const IdentifierCardDetails = () => {
         (item) => item.id !== cardData.id
       );
       await deleteIdentifier();
+      dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));
     }
     handleDone();
@@ -226,9 +231,10 @@ const IdentifierCardDetails = () => {
     );
   };
 
-  const pageClasses = `card-details ${
-    navAnimation ? "back-animation" : "open-animation"
-  }`;
+  const pageClasses = combineClassNames("card-details", {
+    "back-animation": navAnimation,
+    "open-animation": !navAnimation,
+  });
 
   return (
     <ScrollablePageLayout

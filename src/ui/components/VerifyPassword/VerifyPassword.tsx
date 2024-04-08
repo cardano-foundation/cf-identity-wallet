@@ -10,27 +10,12 @@ import { Alert } from "../Alert";
 import { KeyStoreKeys, SecureStorage } from "../../../core/storage";
 import { Agent } from "../../../core/agent/agent";
 import { MiscRecordId } from "../../../core/agent/agent.types";
-import { useAppDispatch, useAppSelector } from "../../../store/hooks";
-import {
-  getCurrentOperation,
-  getCurrentRoute,
-  setToastMsg,
-} from "../../../store/reducers/stateCache";
-import { TabsRoutePath } from "../navigation/TabsMenu";
-import { OperationType, ToastMsgType } from "../../globals/types";
-import { RoutePath } from "../../../routes";
 
 const VerifyPassword = ({
   isOpen,
   setIsOpen,
   onVerify,
 }: VerifyPasswordProps) => {
-  const dispatch = useAppDispatch();
-  const currentOperation = useAppSelector(getCurrentOperation);
-  const currentRoute = useAppSelector(getCurrentRoute);
-  const [currentAction, setCurrentAction] = useState<
-    ToastMsgType | undefined
-  >();
   const [verifyPasswordValue, setVerifyPasswordValue] = useState("");
   const [attempts, setAttempts] = useState(6);
   const [alertChoiceIsOpen, setAlertChoiceIsOpen] = useState(false);
@@ -53,27 +38,6 @@ const VerifyPassword = ({
       setFocus();
     }
   }, [isOpen]);
-
-  useEffect(() => {
-    let operation;
-    if (
-      currentRoute?.path?.includes(TabsRoutePath.IDENTIFIERS) &&
-      currentOperation === OperationType.DELETE_IDENTIFIER
-    ) {
-      operation = ToastMsgType.IDENTIFIER_DELETED;
-    } else if (
-      currentRoute?.path?.includes(TabsRoutePath.CREDS) &&
-      currentOperation === OperationType.DELETE_CREDENTIAL
-    ) {
-      operation = ToastMsgType.CREDENTIAL_DELETED;
-    } else if (
-      currentRoute?.path?.includes(RoutePath.CONNECTION_DETAILS) &&
-      currentOperation === OperationType.DELETE_CONNECTION
-    ) {
-      operation = ToastMsgType.CONNECTION_DELETED;
-    }
-    setCurrentAction(operation);
-  }, [currentRoute?.path, currentOperation]);
 
   const errorMessages = {
     hasNoMatch: i18n.t("verifypassword.error.hasNoMatch"),
@@ -143,7 +107,6 @@ const VerifyPassword = ({
       verifyPasswordValue === storedPassword
     ) {
       resetModal();
-      dispatch(setToastMsg(currentAction));
       onVerify();
     }
   }, [attempts]);
