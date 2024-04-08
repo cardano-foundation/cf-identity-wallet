@@ -31,7 +31,10 @@ const CredContentAcdc = ({ cardData }: ACDCContentProps) => {
         {cardData.s.description}
       </CardDetailsBlock>
       {cardData.a && (
-        <CardDetailsBlock title={i18n.t("creds.card.details.attributes.label")}>
+        <CardDetailsBlock
+          className="card-attribute-block"
+          title={i18n.t("creds.card.details.attributes.label")}
+        >
           <CardDetailsAttributes data={cardData.a as JSONObject} />
         </CardDetailsBlock>
       )}

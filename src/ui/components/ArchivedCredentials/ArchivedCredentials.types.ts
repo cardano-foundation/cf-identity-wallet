@@ -6,4 +6,22 @@ interface ArchivedCredentialsProps {
   setArchivedCredentialsIsOpen: (value: boolean) => void;
 }
 
-export type { ArchivedCredentialsProps };
+interface ArchivedCredentialsContainerRef {
+  clearAchirvedState: () => void;
+}
+
+interface CredentialItemProps {
+  credential: CredentialShortDetails;
+  activeList: boolean;
+  onClick: (credentialId: string) => void;
+  isSelected: boolean;
+  onCheckboxChange: (credentialId: string) => void;
+  onRestore: (credentialId: string) => void;
+  onDelete: (credentialId: string) => void;
+}
+
+export type {
+  ArchivedCredentialsProps,
+  ArchivedCredentialsContainerRef,
+  CredentialItemProps,
+};

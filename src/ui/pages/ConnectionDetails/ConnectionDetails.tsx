@@ -160,6 +160,7 @@ const ConnectionDetails = () => {
       const updatedConnections = connectionsData.filter(
         (item) => item.id !== connectionDetails?.id
       );
+      dispatch(setToastMsg(ToastMsgType.CONNECTION_DELETED));
       dispatch(setConnectionsCache(updatedConnections));
       handleDone();
       setVerifyPasswordIsOpen(false);
