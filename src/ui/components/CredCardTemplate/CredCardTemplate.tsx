@@ -43,9 +43,7 @@ const CredCardTemplate = ({
       }`}
       className={`cred-card-template ${
         isActive ? "active" : ""
-      } ${"card-body-w3c-generic"} ${
-        pickedCard ? "picked-card" : "not-picked"
-      }`}
+      } ${"card-body-generic"} ${pickedCard ? "picked-card" : "not-picked"}`}
       onClick={() => handleCardClick()}
       style={credCardTemplateStyles}
     >

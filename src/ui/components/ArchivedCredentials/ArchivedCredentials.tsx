@@ -40,7 +40,7 @@ import {
 import { CredentialShortDetails } from "../../../core/agent/services/credentialService.types";
 import { ScrollablePageLayout } from "../layout/ScrollablePageLayout";
 import { PageHeader } from "../PageHeader";
-import Minicred4 from "../../assets/images/minicred4.jpg";
+import Minicred from "../../assets/images/minicred.jpg";
 
 const ArchivedCredentials = ({
   archivedCreds,
@@ -100,7 +100,7 @@ const ArchivedCredentials = ({
               />
             )}
             <img
-              src={Minicred4}
+              src={Minicred}
               alt="credential-miniature"
               className="credential-miniature"
             />

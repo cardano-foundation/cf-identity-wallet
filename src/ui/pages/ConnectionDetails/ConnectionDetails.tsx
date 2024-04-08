@@ -48,7 +48,7 @@ import { EditConnectionsModal } from "./components/EditConnectionsModal";
 import { PageFooter } from "../../components/PageFooter";
 import { PageHeader } from "../../components/PageHeader";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
-import Minicred4 from "../../assets/images/minicred4.jpg";
+import Minicred from "../../assets/images/minicred.jpg";
 import KeriLogo from "../../assets/images/KeriGeneric.jpg";
 import { CardDetailsBlock } from "../../components/CardDetails";
 import { ConnectionNotes } from "./components/ConnectionNotes";
@@ -256,7 +256,7 @@ const ConnectionDetails = () => {
                   <div className="connection-details-history-event">
                     <div className="connection-details-logo">
                       <img
-                        src={Minicred4}
+                        src={Minicred}
                         alt="credential-miniature"
                         className="credential-miniature"
                       />

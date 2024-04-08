@@ -69,9 +69,6 @@ const agent = jest.mocked({
       getIdentifierMetadata: jest.fn(),
     },
   },
-  w3cCredentials: {
-    getCredentialRecordById: jest.fn(),
-  },
   dids: {
     getCreatedDids: jest.fn(),
   },
