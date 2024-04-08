@@ -52,6 +52,7 @@ enum ToastMsgType {
   MAX_FAVOURITES_REACHED = "maxFavouritesReached",
   USERNAME_CREATION_SUCCESS = "usernameCreationSuccess",
   USERNAME_CREATION_ERROR = "usernameCreationError",
+  APP_IS_RESET = "appReset",
 }
 
 const IDENTIFIER_BG_MAPPING: Record<number, unknown> = {

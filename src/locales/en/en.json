@@ -1095,7 +1095,8 @@
     "noteremoved": "Note removed successfully",
     "maxfavouritesreached": "Maximum of 5 favourites reached",
     "usernamecreationsuccess": "Welcome, {{username}}!",
-    "usernamecreationerror": "Unable to set name. Please try again."
+    "usernamecreationerror": "Unable to set name. Please try again.",
+    "appreset": "App is reset"
   },
   "request": {
     "connection": {
