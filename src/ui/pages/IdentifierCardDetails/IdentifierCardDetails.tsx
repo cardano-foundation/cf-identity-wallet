@@ -3,6 +3,7 @@ import {
   IonButton,
   IonIcon,
   IonSpinner,
+  useIonRouter,
   useIonViewWillEnter,
 } from "@ionic/react";
 import {
@@ -54,8 +55,12 @@ import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayo
 import { PageHeader } from "../../components/PageHeader";
 import { combineClassNames } from "../../utils/style";
 
+const NAVIGATION_DELAY = 250;
+const CLEAR_ANIMATION = 1000;
+
 const IdentifierCardDetails = () => {
   const pageId = "identifier-card-details";
+  const ionRouter = useIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const stateCache = useAppSelector(getStateCache);
@@ -72,6 +77,8 @@ const IdentifierCardDetails = () => {
     DIDDetails | KERIDetails | undefined
   >();
   const [verifyPasscodeIsOpen, setVerifyPasscodeIsOpen] = useState(false);
+
+  const [navAnimation, setNavAnimation] = useState(false);
 
   const isFavourite = favouritesIdentifiersData?.some(
     (fav) => fav.id === params.id
@@ -95,6 +102,7 @@ const IdentifierCardDetails = () => {
   });
 
   const handleDone = () => {
+    setNavAnimation(true);
     const { backPath, updateRedux } = getBackRoute(
       TabsRoutePath.IDENTIFIER_DETAILS,
       {
@@ -109,7 +117,13 @@ const IdentifierCardDetails = () => {
       updateRedux
     );
 
-    history.push(backPath.pathname);
+    setTimeout(() => {
+      ionRouter.push(backPath.pathname, "root");
+    }, NAVIGATION_DELAY);
+
+    setTimeout(() => {
+      setNavAnimation(false);
+    }, CLEAR_ANIMATION);
   };
 
   const handleDelete = async () => {
@@ -117,10 +131,10 @@ const IdentifierCardDetails = () => {
     // @TODO - sdisalvo: Update Database.
     // Remember to update identifiers.card.details.options file too.
     if (cardData) {
-      await deleteIdentifier();
       const updatedIdentifiers = identifierData.filter(
         (item) => item.id !== cardData.id
       );
+      await deleteIdentifier();
       dispatch(setToastMsg(ToastMsgType.IDENTIFIER_DELETED));
       dispatch(setIdentifiersCache(updatedIdentifiers));
     }
@@ -223,7 +237,10 @@ const IdentifierCardDetails = () => {
     );
   };
 
-  const pageClasses = combineClassNames("card-details open-animation");
+  const pageClasses = combineClassNames("card-details", {
+    "back-animation": navAnimation,
+    "open-animation": !navAnimation,
+  });
 
   return (
     <ScrollablePageLayout

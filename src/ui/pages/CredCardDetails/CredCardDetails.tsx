@@ -3,6 +3,7 @@ import {
   IonButton,
   IonIcon,
   IonSpinner,
+  useIonRouter,
   useIonViewWillEnter,
 } from "@ionic/react";
 import { ellipsisVertical, heart, heartOutline } from "ionicons/icons";
@@ -51,8 +52,12 @@ import { CredContentW3c } from "./components/CredContentW3c";
 import { CredContentAcdc } from "./components/CredContentAcdc";
 import { combineClassNames } from "../../utils/style";
 
+const NAVIGATION_DELAY = 250;
+const CLEAR_ANIMATION = 1000;
+
 const CredCardDetails = () => {
   const pageId = "credential-card-details";
+  const ionRouter = useIonRouter();
   const history = useHistory();
   const dispatch = useAppDispatch();
   const credsCache = useAppSelector(getCredsCache);
@@ -70,6 +75,8 @@ const CredCardDetails = () => {
   >();
   const [connectionDetails, setConnectionDetails] =
     useState<ConnectionDetails>();
+
+  const [navAnimation, setNavAnimation] = useState(false);
 
   const isArchived =
     credsCache.filter((item) => item.id === params.id).length === 0;
@@ -101,6 +108,8 @@ const CredCardDetails = () => {
   };
 
   const handleDone = () => {
+    setNavAnimation(true);
+
     const { nextPath, updateRedux } = getNextRoute(TabsRoutePath.CRED_DETAILS, {
       store: { stateCache },
     });
@@ -112,7 +121,13 @@ const CredCardDetails = () => {
       updateRedux
     );
 
-    history.push(nextPath.pathname);
+    setTimeout(() => {
+      ionRouter.push(nextPath.pathname, "root");
+    }, NAVIGATION_DELAY);
+
+    setTimeout(() => {
+      setNavAnimation(false);
+    }, CLEAR_ANIMATION);
   };
 
   const handleArchiveCredential = async () => {
@@ -239,6 +254,8 @@ const CredCardDetails = () => {
     "cred-card-detail card-details cred-open-animation",
     {
       "archived-credential": isArchived,
+      "cred-back-animation": navAnimation,
+      "cred-open-animation": !navAnimation,
     }
   );
 
