@@ -168,6 +168,12 @@ const Creds = () => {
         : ""
   }`;
 
+  const handleArchivedCredentialsDisplayChange = (value: boolean) => {
+    if (value === archivedCredentialsIsOpen) return;
+    setArchivedCredentialsIsOpen(value);
+    fetchArchivedCreds();
+  };
+
   const ArchivedCredentialsButton = () => {
     return (
       <div className="archived-credentials-button-container">
@@ -247,7 +253,7 @@ const Creds = () => {
       <ArchivedCredentials
         archivedCreds={archivedCreds}
         archivedCredentialsIsOpen={archivedCredentialsIsOpen}
-        setArchivedCredentialsIsOpen={setArchivedCredentialsIsOpen}
+        setArchivedCredentialsIsOpen={handleArchivedCredentialsDisplayChange}
       />
     </>
   );

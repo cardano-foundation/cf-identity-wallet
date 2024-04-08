@@ -1,4 +1,10 @@
-import { forwardRef, useImperativeHandle, useRef, useState } from "react";
+import {
+  forwardRef,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { useHistory } from "react-router-dom";
 import {
   IonButton,
@@ -54,17 +60,18 @@ const ArchivedCredentialsContainer = forwardRef<
   const [alertDeleteIsOpen, setAlertDeleteIsOpen] = useState(false);
   const [alertRestoreIsOpen, setAlertRestoreIsOpen] = useState(false);
 
-  useImperativeHandle(ref, () => ({
-    clearAchirvedState: () => {
-      setActiveList(false);
-      setSelectedCredentials([]);
-    },
-  }));
+  useEffect(() => {
+    if (archivedCreds.length === 0) setArchivedCredentialsIsOpen(false);
+  }, [archivedCreds.length]);
 
   const resetList = () => {
     setActiveList(false);
     setSelectedCredentials([]);
   };
+
+  useImperativeHandle(ref, () => ({
+    clearAchirvedState: resetList,
+  }));
 
   const selectAll = () => {
     const data = [];
@@ -181,6 +188,18 @@ const ArchivedCredentialsContainer = forwardRef<
   const handleCardDeleteClick = (id: string) => {
     setSelectedCredentials([id]);
     setAlertDeleteIsOpen(true);
+  };
+
+  const handleAfterVerify = async () => {
+    await handleDeleteCredentialBatches(selectedCredentials);
+    dispatch(
+      setToastMsg(
+        selectedCredentials.length === 1
+          ? ToastMsgType.CREDENTIAL_DELETED
+          : ToastMsgType.CREDENTIALS_DELETED
+      )
+    );
+    resetList();
   };
 
   return (
@@ -307,32 +326,12 @@ const ArchivedCredentialsContainer = forwardRef<
       <VerifyPassword
         isOpen={verifyPasswordIsOpen}
         setIsOpen={setVerifyPasswordIsOpen}
-        onVerify={async () => {
-          await handleDeleteCredentialBatches(selectedCredentials);
-          dispatch(
-            setToastMsg(
-              selectedCredentials.length === 1
-                ? ToastMsgType.CREDENTIAL_DELETED
-                : ToastMsgType.CREDENTIALS_DELETED
-            )
-          );
-          resetList();
-        }}
+        onVerify={handleAfterVerify}
       />
       <VerifyPasscode
         isOpen={verifyPasscodeIsOpen}
         setIsOpen={setVerifyPasscodeIsOpen}
-        onVerify={async () => {
-          await handleDeleteCredentialBatches(selectedCredentials);
-          dispatch(
-            setToastMsg(
-              selectedCredentials.length === 1
-                ? ToastMsgType.CREDENTIAL_DELETED
-                : ToastMsgType.CREDENTIALS_DELETED
-            )
-          );
-          resetList();
-        }}
+        onVerify={handleAfterVerify}
       />
     </>
   );
