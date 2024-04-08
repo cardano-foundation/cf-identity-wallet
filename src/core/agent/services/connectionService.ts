@@ -17,6 +17,7 @@ import { IdentifierType } from "./identifierService.types";
 import { KeriContact } from "../modules/signify/signifyApi.types";
 import { BasicRecord } from "../records";
 import { RecordType } from "../../storage/storage.types";
+import { PreferencesKeys, PreferencesStorage } from "../../storage";
 
 class ConnectionService extends AgentService {
   // static readonly NOT_FOUND_DOMAIN_CONFIG_ERROR_MSG =
@@ -65,9 +66,24 @@ class ConnectionService extends AgentService {
           (identifier) => identifier.method === IdentifierType.KERI
         );
         if (aid && aid.signifyName) {
+          let userName;
+          try {
+            userName = (
+              await PreferencesStorage.get(PreferencesKeys.APP_USER_NAME)
+            ).userName as string;
+          } catch (error) {
+            if (
+              (error as Error).message !==
+              `${PreferencesStorage.KEY_NOT_FOUND} ${PreferencesKeys.APP_USER_NAME}`
+            ) {
+              throw error;
+            }
+          }
+
           // signifyName should always be set
           const oobi = await AriesAgent.agent.connections.getKeriOobi(
-            aid.signifyName
+            aid.signifyName,
+            userName
           );
           await (
             await fetch(
