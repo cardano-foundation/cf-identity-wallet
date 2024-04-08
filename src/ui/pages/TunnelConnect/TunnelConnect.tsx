@@ -10,7 +10,10 @@ import {
   IonLoading,
 } from "@ionic/react";
 import { qrCodeOutline, trashOutline } from "ionicons/icons";
-import { setCurrentRoute } from "../../../store/reducers/stateCache";
+import {
+  setCurrentRoute,
+  setToastMsg,
+} from "../../../store/reducers/stateCache";
 import { useAppDispatch, useAppSelector } from "../../../store/hooks";
 import { RoutePath } from "../../../routes";
 import { ScrollablePageLayout } from "../../components/layout/ScrollablePageLayout";
@@ -20,10 +23,14 @@ import { PreferencesKeys, PreferencesStorage } from "../../../core/storage";
 import { LocationState, OobiObject } from "./TunnelConnect.types";
 import { CustomInput } from "../../components/CustomInput";
 import { ShareOOBI } from "./components/ShareOOBI";
-import { getIdentifiersCache , setIdentifiersCache } from "../../../store/reducers/identifiersCache";
+import {
+  getIdentifiersCache,
+  setIdentifiersCache,
+} from "../../../store/reducers/identifiersCache";
 import { IdentifierType } from "../../../core/agent/services/identifierService.types";
 import { setConnectionsCache } from "../../../store/reducers/connectionsCache";
 import { setCredsCache } from "../../../store/reducers/credsCache";
+import { ToastMsgType } from "../../globals/types";
 
 const TunnelConnect = () => {
   const pageId = "tunnel-connect";
@@ -143,7 +150,7 @@ const TunnelConnect = () => {
       dispatch(setCredsCache([]));
       setResolvedOobis({});
       setResetCounter(0);
-      alert("App is reset.");
+      dispatch(setToastMsg(ToastMsgType.APP_IS_RESET));
     }
 
     if (timer && Date.now() - timer > 7500) {
