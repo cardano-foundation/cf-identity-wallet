@@ -32,6 +32,7 @@ const signifyApi = jest.mocked({
   getKeriExchange: jest.fn(),
   getCredentials: jest.fn(),
   getCredentialBySaid: jest.fn(),
+  getKeriaOnlineStatus: jest.fn(),
 });
 
 const credentialService = new CredentialService(
@@ -325,6 +326,9 @@ const keriNotifications = genericRecords.map((result) => {
 // });
 
 describe("Credential service of agent - CredentialExchangeRecord helpers", () => {
+  beforeEach(() => {
+    jest.resetAllMocks();
+  });
   // test("callback will run when have a event listener of ACDC KERI state changed", async () => {
   //   const callback = jest.fn();
   //   credentialService.onAcdcKeriStateChanged(callback);
@@ -408,6 +412,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
   test("Must throw an error when there's no KERI notification", async () => {
     const id = "not-found-id";
     basicStorage.findById = jest.fn();
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     await expect(credentialService.acceptKeriAcdc(id)).rejects.toThrowError(
       `${CredentialService.KERI_NOTIFICATION_NOT_FOUND} ${id}`
     );
@@ -423,6 +428,7 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
   //   ).rejects.toThrowError(CredentialService.CREDENTIAL_NOT_FOUND);
   // });
   test("Must throw an error when there's error from Signigy-ts ", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const id = "not-found-id";
     signifyApi.getCredentialBySaid = jest.fn().mockResolvedValue({
       credential: undefined,
@@ -525,4 +531,30 @@ describe("Credential service of agent - CredentialExchangeRecord helpers", () =>
   //     }
   //   );
   // });
+
+  test("getCredentialDetailsById should throw an error when KERIA is offline ", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    const id = "not-found-id";
+    await expect(
+      credentialService.getCredentialDetailsById(id)
+    ).rejects.toThrowError(CredentialService.KERIA_IS_DOWN);
+  });
+  test("getKeriCredentialNotifications should throw an error when KERIA is offline ", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(
+      credentialService.getKeriCredentialNotifications()
+    ).rejects.toThrowError(CredentialService.KERIA_IS_DOWN);
+  });
+  test("acceptKeriAcdc should throw an error when KERIA is offline ", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(credentialService.acceptKeriAcdc("id")).rejects.toThrowError(
+      CredentialService.KERIA_IS_DOWN
+    );
+  });
+  test("syncACDCs should throw an error when KERIA is offline ", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(credentialService.syncACDCs()).rejects.toThrowError(
+      CredentialService.KERIA_IS_DOWN
+    );
+  });
 });

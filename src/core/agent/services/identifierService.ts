@@ -68,6 +68,7 @@ class IdentifierService extends AgentService {
     "Cannot join multi-sig inception as we do not control any member AID of the multi-sig";
   static readonly UNKNOWN_AIDS_IN_MULTISIG_ICP =
     "Multi-sig join request contains unknown AIDs (not connected)";
+  static readonly KERIA_IS_DOWN = "The KERIA is down at the moment";
 
   async getIdentifiers(getArchived = false): Promise<IdentifierShortDetails[]> {
     const identifiers: IdentifierShortDetails[] = [];
@@ -93,6 +94,10 @@ class IdentifierService extends AgentService {
   async getIdentifier(
     identifier: string
   ): Promise<GetIdentifierResult | undefined> {
+    const isKeriOnline = this.signifyApi.getKeriaOnlineStatus();
+    if (!isKeriOnline) {
+      throw new Error(IdentifierService.KERIA_IS_DOWN);
+    }
     const metadata = await this.getIdentifierMetadata(identifier);
     const aid = await this.signifyApi.getIdentifierByName(
       metadata.signifyName as string
@@ -183,6 +188,10 @@ class IdentifierService extends AgentService {
   }
 
   async syncKeriaIdentifiers() {
+    const isKeriOnline = this.signifyApi.getKeriaOnlineStatus();
+    if (!isKeriOnline) {
+      throw new Error(IdentifierService.KERIA_IS_DOWN);
+    }
     const { aids: signifyIdentifiers } =
       await this.signifyApi.getAllIdentifiers();
     const storageIdentifiers = await this.getKeriIdentifiersMetadata();
@@ -566,6 +575,10 @@ class IdentifierService extends AgentService {
       isDismissed?: boolean;
     } = {}
   ): Promise<KeriNotification[]> {
+    const isKeriOnline = this.signifyApi.getKeriaOnlineStatus();
+    if (!isKeriOnline) {
+      throw new Error(IdentifierService.KERIA_IS_DOWN);
+    }
     const results = await this.basicStorage.findAllByQuery(
       RecordType.NOTIFICATION_KERI,
       {

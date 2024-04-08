@@ -38,6 +38,7 @@ const signifyApi = jest.mocked({
   getIdentifierById: jest.fn(),
   getMultisigMembers: jest.fn(),
   queryKeyState: jest.fn(),
+  getKeriaOnlineStatus: jest.fn(),
 });
 
 const identifierService = new IdentifierService(
@@ -125,6 +126,7 @@ describe("Identifier service of agent", () => {
   });
 
   test("search for non existant keri aid (in db)", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     basicStorage.findById = jest.fn().mockResolvedValue(null);
     await expect(
       identifierService.getIdentifier(keriMetadataRecord.id)
@@ -135,6 +137,7 @@ describe("Identifier service of agent", () => {
   });
 
   test("identifier exists in the database but not on Signify", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     identifierService.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
@@ -150,6 +153,7 @@ describe("Identifier service of agent", () => {
   });
 
   test("can get a keri identifier in detailed view", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     identifierService.getIdentifierMetadata = jest
       .fn()
       .mockResolvedValue(keriMetadataRecord);
@@ -294,6 +298,7 @@ describe("Identifier service of agent", () => {
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI identifiers", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     signifyApi.getAllIdentifiers = jest.fn().mockReturnValue({
       aids: [
         {
@@ -1552,6 +1557,7 @@ describe("Identifier service of agent", () => {
   });
 
   test("Can get unhandled Multisig Identifier notifications", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     const basicRecord = {
       _tags: {
         isDismiss: true,
@@ -1580,6 +1586,7 @@ describe("Identifier service of agent", () => {
 
   test("Should pass the filter throught findAllByQuery when call getUnhandledMultisigIdentifiers", async () => {
     basicStorage.findAllByQuery = jest.fn().mockResolvedValue([]);
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValue(true);
     await identifierService.getUnhandledMultisigIdentifiers({
       isDismissed: false,
     });
@@ -1596,5 +1603,26 @@ describe("Identifier service of agent", () => {
         ],
       }
     );
+  });
+
+  test("getIdentifier should throw an error when KERIA is offline ", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(identifierService.getIdentifier("id")).rejects.toThrowError(
+      IdentifierService.KERIA_IS_DOWN
+    );
+  });
+
+  test("syncKeriaIdentifiers should throw an error when KERIA is offline ", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(identifierService.syncKeriaIdentifiers()).rejects.toThrowError(
+      IdentifierService.KERIA_IS_DOWN
+    );
+  });
+
+  test("getUnhandledMultisigIdentifiers should throw an error when KERIA is offline ", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(
+      identifierService.getUnhandledMultisigIdentifiers()
+    ).rejects.toThrowError(IdentifierService.KERIA_IS_DOWN);
   });
 });

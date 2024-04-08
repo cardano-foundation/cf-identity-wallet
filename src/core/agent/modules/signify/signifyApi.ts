@@ -41,6 +41,7 @@ export class SignifyApi {
   static readonly INVALID_THRESHOLD = "Invalid threshold";
   static readonly CANNOT_GET_KEYSTATES_FOR_MULTISIG_MEMBER =
     "Unable to retrieve key states for given multi-sig member";
+  static readonly KERIA_IS_DOWN = "The KERIA is down at the moment";
 
   static readonly CREDENTIAL_SERVER =
     "https://dev.credentials.cf-keripy.metadata.dev.cf-deployments.org/oobi/";
@@ -49,6 +50,8 @@ export class SignifyApi {
   static readonly SCHEMA_SAID_IIW_DEMO =
     "EKYv475K1k6uMt9IJw99NM8iLQuQf1bKfSHqA1XIKoQy";
   static resolvedOobi: { [key: string]: any } = {};
+
+  private isOnline = false;
 
   private signifyClient!: SignifyClient;
   private opTimeout: number;
@@ -59,21 +62,21 @@ export class SignifyApi {
     this.opRetryInterval = opRetryInterval;
   }
 
-  async bootAndConnect(retryInterval = 1000): Promise<boolean> {
+  async bootAndConnect(retryInterval = 1000) {
     try {
       await this.signifyClient.boot();
       await this.signifyClient.connect();
-      return true;
+      this.isOnline = true;
     } catch (error) {
       await new Promise((resolve) => setTimeout(resolve, retryInterval));
       await this.bootAndConnect();
-      return true;
     }
   }
   /**
    * Must be called first. (guard rails pending)
    */
   async start(): Promise<void> {
+    this.isOnline = false; //reset the online status to false
     await signifyReady();
     const bran = await this.getBran();
     // @TODO - foconnor: Review of Tier level.
@@ -85,6 +88,7 @@ export class SignifyApi {
     );
     try {
       await this.signifyClient.connect();
+      this.isOnline = true;
     } catch (err) {
       await this.signifyClient.boot();
       await this.signifyClient.connect();
@@ -92,6 +96,10 @@ export class SignifyApi {
   }
 
   async createIdentifier(): Promise<CreateIdentifierResult> {
+    const isKeriOnline = this.getKeriaOnlineStatus();
+    if (!isKeriOnline) {
+      throw new Error(SignifyApi.KERIA_IS_DOWN);
+    }
     const signifyName = uuidv4();
     const operation = await this.signifyClient
       .identifiers()
@@ -113,6 +121,10 @@ export class SignifyApi {
   async createDelegationIdentifier(
     delegatorPrefix: string
   ): Promise<CreateIdentifierResult> {
+    const isKeriOnline = this.getKeriaOnlineStatus();
+    if (!isKeriOnline) {
+      throw new Error(SignifyApi.KERIA_IS_DOWN);
+    }
     const signifyName = uuidv4();
     const operation = await this.signifyClient
       .identifiers()
@@ -185,6 +197,10 @@ export class SignifyApi {
   }
 
   async resolveOobi(url: string): Promise<any> {
+    const isKeriOnline = this.getKeriaOnlineStatus();
+    if (!isKeriOnline) {
+      throw new Error(SignifyApi.KERIA_IS_DOWN);
+    }
     if (SignifyApi.resolvedOobi[url]) {
       return SignifyApi.resolvedOobi[url];
     }
@@ -203,6 +219,10 @@ export class SignifyApi {
   }
 
   async getNotifications(start = 0, end = 24) {
+    const isKeriOnline = this.getKeriaOnlineStatus();
+    if (!isKeriOnline) {
+      throw new Error(SignifyApi.KERIA_IS_DOWN);
+    }
     return this.signifyClient.notifications().list(start, end);
   }
 
@@ -595,5 +615,9 @@ export class SignifyApi {
       toad: ConfigurationService.env.keri.pools.length,
       wits: ConfigurationService.env.keri.pools,
     };
+  }
+
+  getKeriaOnlineStatus(): boolean {
+    return this.isOnline;
   }
 }

@@ -29,7 +29,7 @@ class ConnectionService extends AgentService {
     "Connection note record not found";
   static readonly CONNECTION_KERI_METADATA_RECORD_NOT_FOUND =
     "Connection keri metadata record not found";
-
+  static readonly KERIA_IS_DOWN = "The KERIA is down at the moment";
   onConnectionKeriStateChanged(
     callback: (event: ConnectionKeriStateChangedEvent) => void
   ) {
@@ -125,6 +125,10 @@ class ConnectionService extends AgentService {
     id: string,
     type?: ConnectionType
   ): Promise<ConnectionDetails> {
+    const isKeriOnline = this.signifyApi.getKeriaOnlineStatus();
+    if (!isKeriOnline) {
+      throw new Error(ConnectionService.KERIA_IS_DOWN);
+    }
     const connection = await this.signifyApi.getContactById(id);
     return {
       label: connection?.alias,
@@ -246,6 +250,10 @@ class ConnectionService extends AgentService {
   }
 
   async syncKeriaContacts() {
+    const isKeriOnline = this.signifyApi.getKeriaOnlineStatus();
+    if (!isKeriOnline) {
+      throw new Error(ConnectionService.KERIA_IS_DOWN);
+    }
     const signifyContacts = await this.signifyApi.getContacts();
     const storageContacts = await this.getAllConnectionKeriMetadata();
     const unSyncedData = signifyContacts.filter(

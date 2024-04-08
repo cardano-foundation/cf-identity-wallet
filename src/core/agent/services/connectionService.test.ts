@@ -19,6 +19,7 @@ const signifyApi = jest.mocked({
   getContacts: jest.fn(),
   getOobi: jest.fn(),
   deleteContactById: jest.fn(),
+  getKeriaOnlineStatus: jest.fn(),
 });
 
 const connectionService = new ConnectionService(
@@ -204,6 +205,7 @@ describe("Connection service of agent", () => {
   });
 
   test("Should call createIdentifierMetadataRecord when there are un-synced KERI contacts", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(true);
     signifyApi.getContacts = jest.fn().mockReturnValue([
       {
         id: "EBaDnyriYK_FAruigHO42avVN40fOlVSUxpxXJ1fNxFR",
@@ -223,5 +225,19 @@ describe("Connection service of agent", () => {
     basicStorage.getAll = jest.fn().mockReturnValue([]);
     await connectionService.syncKeriaContacts();
     expect(basicStorage.save).toBeCalledTimes(2);
+  });
+
+  test("getConnectionById should throw error when KERIA is offline", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(
+      connectionService.getConnectionById("id")
+    ).rejects.toThrowError(ConnectionService.KERIA_IS_DOWN);
+  });
+
+  test("syncKeriaContacts should throw error when KERIA is offline", async () => {
+    signifyApi.getKeriaOnlineStatus = jest.fn().mockReturnValueOnce(false);
+    await expect(connectionService.syncKeriaContacts()).rejects.toThrowError(
+      ConnectionService.KERIA_IS_DOWN
+    );
   });
 });

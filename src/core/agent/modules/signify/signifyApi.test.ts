@@ -12,7 +12,7 @@ const uuidToThrow = "throwMe";
 const oobiPrefix = "http://server.com/oobi/";
 
 let connectMock = jest.fn();
-const bootMock = jest.fn();
+let bootMock = jest.fn();
 const admitMock = jest
   .fn()
   .mockImplementation(
@@ -345,7 +345,7 @@ const multisigMember = {
 const api = new SignifyApi(5, 1);
 
 describe("Signify API", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await api.start();
     await new ConfigurationService().start();
   });
@@ -923,5 +923,50 @@ describe("Signify API", () => {
     await expect(
       api.createMultisig(multisigMember, otherAids, uuidv4(), 0)
     ).rejects.toThrowError(SignifyApi.INVALID_THRESHOLD);
+  });
+
+  test("can get Keria online status", async () => {
+    const KeriaStatus = api.getKeriaOnlineStatus();
+    expect(KeriaStatus).toEqual(true);
+  });
+});
+
+describe("Offline Signify API", () => {
+  beforeEach(async () => {
+    connectMock = jest.fn().mockImplementationOnce(() => {
+      throw new Error("Connect error");
+    });
+    bootMock = jest.fn().mockImplementationOnce(() => {
+      throw new Error("Boot error");
+    });
+    await expect(api.start()).rejects.toThrowError();
+  });
+
+  test("Should return false when getting KERIA online status", async () => {
+    expect(api.getKeriaOnlineStatus()).toEqual(false);
+  });
+
+  test("createIdentifier should throw error when KERIA is offline", async () => {
+    await expect(api.createIdentifier()).rejects.toThrowError(
+      SignifyApi.KERIA_IS_DOWN
+    );
+  });
+
+  test("createDelegationIdentifier should throw error when KERIA is offline", async () => {
+    await expect(api.createDelegationIdentifier("prefix")).rejects.toThrowError(
+      SignifyApi.KERIA_IS_DOWN
+    );
+  });
+
+  test("resolveOobi should throw error when KERIA is offline", async () => {
+    await expect(api.resolveOobi("url")).rejects.toThrowError(
+      SignifyApi.KERIA_IS_DOWN
+    );
+  });
+
+  test("getNotifications should throw error when KERIA is offline", async () => {
+    await expect(api.getNotifications()).rejects.toThrowError(
+      SignifyApi.KERIA_IS_DOWN
+    );
   });
 });
